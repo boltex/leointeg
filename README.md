@@ -45,4 +45,5 @@ commit & push comming soon :)
 
 ---
 
+![Leo Editor](resources/background.jpg)
 **Enjoy!**
