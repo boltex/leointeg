@@ -4,20 +4,21 @@
   "description": "Leo Editor Integration with VS Code",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.36.0"
+    "vscode": "^1.37.0"
   },
   "categories": [
     "Other"
   ],
   "activationEvents": [
-    "onCommand:extension.helloWorld"
+    "onCommand:extension.openLeoFile",
+    "onView:leoIntegration"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "extension.helloWorld",
-        "title": "Hello World"
+        "command": "extension.openLeoFile",
+        "title": "Open Leo File"
       }
     ],
     "viewsContainers": {
@@ -25,7 +26,15 @@
         {
           "id": "leo-integration",
           "title": "Leo Integration",
-          "icon": "resources/leo-integration.svg"
+          "icon": "resources/leo-integration-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "leoIntegration",
+          "name": "Outline"
         }
       ]
     }
