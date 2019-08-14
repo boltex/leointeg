@@ -3,6 +3,10 @@
   "displayName": "leointeg",
   "description": "Leo Editor Integration with VS Code",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/boltex/leointeg"
+  },
   "engines": {
     "vscode": "^1.36.0"
   },
