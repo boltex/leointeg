@@ -1,6 +1,6 @@
 # leointeg README
 
-Leo Editor Integration with Visual Studio Code.
+Leo editor integration with Visual Studio Code.
 
 See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
