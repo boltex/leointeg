@@ -1,7 +1,10 @@
 import * as vscode from "vscode";
+import { LeoIntegration } from "./leoIntegration";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('Extension "leointeg" is now active!');
+  const leoIntegration = new LeoIntegration(context);
+  console.log(leoIntegration.test());
 
   // The commandId parameter must match the command field in package.json
   let disposable = vscode.commands.registerCommand(
@@ -32,16 +35,6 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.workspace
     .openTextDocument(uri)
     .then(doc => vscode.window.showTextDocument(doc));
-
-  // register a command that opens a cowsay-document
-  // subscriptions.push(vscode.commands.registerCommand('cowsay.say', async () => {
-  // 	let what = await vscode.window.showInputBox({ placeHolder: 'cowsay...' });
-  // 	if (what) {
-  // 		let uri = vscode.Uri.parse('cowsay:' + what);
-  // 		let doc = await vscode.workspace.openTextDocument(uri); // calls back into the provider
-  // 		await vscode.window.showTextDocument(doc, { preview: false });
-  // 	}
-  // }));
 }
 
 export function deactivate() {
