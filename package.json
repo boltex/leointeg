@@ -40,9 +40,22 @@
     "commands": [
       {
         "command": "extension.openLeoFile",
-        "title": "Open Leo File"
+        "title": "Open Leo File",
+        "icon": {
+          "light": "resources/light/folder.svg",
+          "dark": "resources/dark/folder.svg"
+        }
       }
-    ]
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "extension.openLeoFile",
+          "when": "view == leoIntegration",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
