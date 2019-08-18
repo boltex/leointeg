@@ -45,6 +45,14 @@
           "light": "resources/light/folder.svg",
           "dark": "resources/dark/folder.svg"
         }
+      },
+      {
+        "command": "extension.test",
+        "title": "Test Leo Integration"
+      },
+      {
+        "command": "extension.killLeo",
+        "title": "Kill Leo Integration"
       }
     ],
     "menus": {

@@ -21,19 +21,14 @@ export class LeoIntegration {
 
   constructor(private context: vscode.ExtensionContext) {
     console.log(
-      "in constructor. context.extensionPath: ",
+      "Running LeoIntegration constructor. context.extensionPath: ",
       this.context.extensionPath
     );
     this.leoProcess = this.initLeoProcess();
   }
 
   public stdin(p_message: string): any {
-    return this.leoProcess.stdin.write(p_message);
-  }
-
-  public test(): string {
-    console.log("test called in leoIntegration");
-    return "test string";
+    this.leoProcess.stdin.write(p_message);
   }
 
   private initLeoProcess(): child.ChildProcess {
@@ -43,14 +38,17 @@ export class LeoIntegration {
 
     pythonProcess.stdout.on("data", (data: string) => {
       console.log(`stdout: ${data}`);
+      console.log("done stdout");
     });
 
     pythonProcess.stderr.on("data", (data: string) => {
       console.log(`stderr: ${data}`);
+      console.log("done stderr");
     });
 
     pythonProcess.on("close", (code: any) => {
       console.log(`child process exited with code ${code}`);
+      console.log("done exited");
     });
 
     return pythonProcess;

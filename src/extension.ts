@@ -4,7 +4,6 @@ import { LeoIntegration } from "./leoIntegration";
 export function activate(context: vscode.ExtensionContext) {
   console.log('Extension "leointeg" is now active!');
   const leoIntegration = new LeoIntegration(context);
-  console.log(leoIntegration.test());
 
   // The commandId parameter must match the command field in package.json
   let disposable = vscode.commands.registerCommand(
@@ -14,6 +13,21 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.window.showInformationMessage(w_message);
     }
   );
+  context.subscriptions.push(disposable);
+
+  disposable = vscode.commands.registerCommand("extension.test", () => {
+    const w_message = "Testing... ";
+    vscode.window.showInformationMessage(w_message);
+    leoIntegration.stdin("allo\n"); // exit shoud kill it
+    // leoIntegration.stdin("\n");
+  });
+  context.subscriptions.push(disposable);
+
+  disposable = vscode.commands.registerCommand("extension.killLeo", () => {
+    const w_message = "sending exit";
+    vscode.window.showInformationMessage(w_message);
+    leoIntegration.stdin("exit\n"); // exit shoud kill it
+  });
   context.subscriptions.push(disposable);
 
   // register a content provider for the leo-scheme
