@@ -25,27 +25,22 @@ controller = leoBridge.controller(gui='nullGui',
 
 g = controller.globals()
 
-es("leobridge Started!")
+es("leobridge Started")
 
 time.sleep(2)
 es("leobridge slept")
 
 es(dir(g))
-sleepFlag = False
+exitFlag = False
 
-while not sleepFlag:
-    time.sleep(0.1)
-    for line in sys.stdin.readline():
-        print("got line")
-        sys.stdout.flush()
-        try:
-            es(line)
-            if line.toString().strip() == "exit":
-                es("exiting leobridge via break")
-                sleepFlag = True
-                break
-        except:
-            pass
+while not exitFlag:
+    line = sys.stdin.readline()
+    if line.strip() == "exit":
+        es("exiting leobridge via break")
+        exitFlag = True
+    else:
+        es("start"+line+"end")
+
 
 es("finally exiting leobridge")
 

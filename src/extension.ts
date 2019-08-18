@@ -19,7 +19,6 @@ export function activate(context: vscode.ExtensionContext) {
     const w_message = "Testing... ";
     vscode.window.showInformationMessage(w_message);
     leoIntegration.stdin("allo\n"); // exit shoud kill it
-    // leoIntegration.stdin("\n");
   });
   context.subscriptions.push(disposable);
 
