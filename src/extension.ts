@@ -2,32 +2,24 @@ import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('Extension "leointeg" is now active!');
+  console.log('activate "leointeg" extension');
+
   const leoIntegration = new LeoIntegration(context);
-
-  // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand(
-    "extension.openLeoFile",
-    () => {
-      const w_message = "Open Leo File";
-      vscode.window.showInformationMessage(w_message);
-    }
+  context.subscriptions.push(
+    vscode.commands.registerCommand("leointeg.openLeoFile", () =>
+      leoIntegration.openLeoFile()
+    )
   );
-  context.subscriptions.push(disposable);
-
-  disposable = vscode.commands.registerCommand("extension.test", () => {
-    const w_message = "Testing... ";
-    vscode.window.showInformationMessage(w_message);
-    leoIntegration.stdin("allo\n"); // exit shoud kill it
-  });
-  context.subscriptions.push(disposable);
-
-  disposable = vscode.commands.registerCommand("extension.killLeo", () => {
-    const w_message = "sending exit";
-    vscode.window.showInformationMessage(w_message);
-    leoIntegration.stdin("exit\n"); // exit shoud kill it
-  });
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(
+    vscode.commands.registerCommand("leointeg.test", () =>
+      leoIntegration.test()
+    )
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand("leointeg.killLeo", () =>
+      leoIntegration.killLeoBridge()
+    )
+  );
 
   // register a content provider for the leo-scheme
   const leoSheme = "leo";

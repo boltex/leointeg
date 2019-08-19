@@ -1,22 +1,14 @@
-//* How to call a Python function from Node.js
-//const spawn = require("child_process").spawn;
-//const pythonProcess = spawn('python',["path/to/script.py", arg1, arg2, ...]);
-//* Then all you have to do is make sure that you import sys in your python script,
-//* and then you can access arg1 using sys.argv[1], arg2 using sys.argv[2], and so on.
-//* To send data back to node just do the following in the python script:
-//print(dataToSendBack)
-//sys.stdout.flush()
-//* And then node can listen for data using:
-//pythonProcess.stdout.on("data", data => {
-//  /* Do something with the data */
-// });
-//* Since this allows multiple arguments to be passed to a script using spawn,
-//* you can restructure a python script so that one of the arguments decides
-//* which function to call, and the other argument gets passed to that function, etc.
 import * as child from "child_process";
 import * as vscode from "vscode";
 
 export class LeoIntegration {
+  public leoBridgeReady: boolean = false;
+  public fileOpenedReady: boolean = false;
+  public outlineDataReady: boolean = false;
+  public bodyDataReady: boolean = false;
+
+  // private leoBridgePromise: Promise;
+
   private leoProcess: child.ChildProcess;
 
   constructor(private context: vscode.ExtensionContext) {
@@ -27,7 +19,44 @@ export class LeoIntegration {
     this.leoProcess = this.initLeoProcess();
   }
 
-  public stdin(p_message: string): any {
+  public test(): void {
+    const w_message = "Testing... ";
+    vscode.window.showInformationMessage(w_message);
+    this.stdin("allo\n");
+  }
+  public killLeoBridge(): void {
+    const w_message = "sending exit to leoBridge";
+    vscode.window.showInformationMessage(w_message);
+    this.stdin("exit\n"); // exit shoud kill it
+  }
+  public openLeoFile(): void {
+    const w_message = "Open Leo File";
+    vscode.window.showInformationMessage(w_message);
+  }
+
+  private processAnswer(p_data: string): void {
+    console.log("p_data:", p_data);
+
+    const w_lines = p_data.split("\n");
+    w_lines.forEach(p_line => {
+      console.log("p_line:", p_line);
+      if (p_line.trim() === "leoBridgeReady") {
+        console.log("leoBridge is ready");
+        this.leoBridgeReady = true;
+      }
+      if (p_line.trim() === "fileOpenedReady") {
+        this.fileOpenedReady = true;
+      }
+      if (p_line.trim() === "outlineDataReady") {
+        this.outlineDataReady = true;
+      }
+      if (p_line.trim() === "bodyDataReady") {
+        this.bodyDataReady = true;
+      }
+    });
+  }
+
+  private stdin(p_message: string): any {
     this.leoProcess.stdin.write(p_message);
   }
 
@@ -38,17 +67,15 @@ export class LeoIntegration {
 
     pythonProcess.stdout.on("data", (data: string) => {
       console.log(`stdout: ${data}`);
-      console.log("done stdout");
+      this.processAnswer(data.toString());
     });
 
     pythonProcess.stderr.on("data", (data: string) => {
       console.log(`stderr: ${data}`);
-      console.log("done stderr");
     });
 
     pythonProcess.on("close", (code: any) => {
       console.log(`child process exited with code ${code}`);
-      console.log("done exited");
     });
 
     return pythonProcess;

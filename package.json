@@ -15,7 +15,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:extension.openLeoFile",
+    "onCommand:leointeg.openLeoFile",
     "onView:leoIntegration"
   ],
   "main": "./out/extension.js",
@@ -39,7 +39,7 @@
     },
     "commands": [
       {
-        "command": "extension.openLeoFile",
+        "command": "leointeg.openLeoFile",
         "title": "Open Leo File",
         "icon": {
           "light": "resources/light/folder.svg",
@@ -47,18 +47,18 @@
         }
       },
       {
-        "command": "extension.test",
+        "command": "leointeg.test",
         "title": "Test Leo Integration"
       },
       {
-        "command": "extension.killLeo",
+        "command": "leointeg.killLeo",
         "title": "Kill Leo Integration"
       }
     ],
     "menus": {
       "view/title": [
         {
-          "command": "extension.openLeoFile",
+          "command": "leointeg.openLeoFile",
           "when": "view == leoIntegration",
           "group": "navigation"
         }
