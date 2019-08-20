@@ -2,27 +2,26 @@ import * as child from "child_process";
 import * as vscode from "vscode";
 
 export class LeoIntegration {
-  public leoBridgeReady: boolean = false;
   public fileOpenedReady: boolean = false;
   public outlineDataReady: boolean = false;
   public bodyDataReady: boolean = false;
 
-  // private leoBridgePromise: Promise;
-
-  private leoProcess: child.ChildProcess;
+  private leoBridgeReadyPromise: Promise<child.ChildProcess>; // set when leoBridge has a leo controller ready
 
   constructor(private context: vscode.ExtensionContext) {
     console.log(
       "Running LeoIntegration constructor. context.extensionPath: ",
       this.context.extensionPath
     );
-    this.leoProcess = this.initLeoProcess();
+    this.leoBridgeReadyPromise = new Promise<child.ChildProcess>(resolve => {
+      this.initLeoProcess(resolve);
+    });
   }
 
   public test(): void {
-    const w_message = "Testing... ";
+    const w_message = "Testing... should output g = controller.globals()  ";
     vscode.window.showInformationMessage(w_message);
-    this.stdin("allo\n");
+    this.stdin("test\n");
   }
   public killLeoBridge(): void {
     const w_message = "sending exit to leoBridge";
@@ -35,49 +34,57 @@ export class LeoIntegration {
   }
 
   private processAnswer(p_data: string): void {
-    console.log("p_data:", p_data);
-
-    const w_lines = p_data.split("\n");
-    w_lines.forEach(p_line => {
-      console.log("p_line:", p_line);
-      if (p_line.trim() === "leoBridgeReady") {
-        console.log("leoBridge is ready");
-        this.leoBridgeReady = true;
-      }
-      if (p_line.trim() === "fileOpenedReady") {
+    switch (p_data) {
+      case "fileOpenedReady": {
         this.fileOpenedReady = true;
+        break;
       }
-      if (p_line.trim() === "outlineDataReady") {
+      case "outlineDataReady": {
         this.outlineDataReady = true;
+        break;
       }
-      if (p_line.trim() === "bodyDataReady") {
+      case "bodyDataReady": {
         this.bodyDataReady = true;
+        break;
       }
-    });
+      default: {
+        //pass
+      }
+    }
   }
 
   private stdin(p_message: string): any {
-    this.leoProcess.stdin.write(p_message);
+    this.leoBridgeReadyPromise.then(p_leoProcess => {
+      p_leoProcess.stdin.write(p_message);
+    });
   }
 
-  private initLeoProcess(): child.ChildProcess {
-    const pythonProcess: child.ChildProcess = child.spawn("python3", [
+  private initLeoProcess(
+    p_promiseResolve: (value?: any | PromiseLike<any>) => void
+  ): void {
+    const w_pythonProcess: child.ChildProcess = child.spawn("python3", [
       this.context.extensionPath + "/scripts/leobridge.py"
     ]);
 
-    pythonProcess.stdout.on("data", (data: string) => {
-      console.log(`stdout: ${data}`);
-      this.processAnswer(data.toString());
+    w_pythonProcess.stdout.on("data", (data: string) => {
+      const w_lines = data.toString().split("\n");
+      w_lines.forEach(p_line => {
+        p_line = p_line.trim();
+        if (p_line === "leoBridgeReady") {
+          console.log("leoBridgeReady PROMISE RESOLVED!");
+          p_promiseResolve(w_pythonProcess);
+        } else {
+          this.processAnswer(p_line);
+        }
+      });
     });
 
-    pythonProcess.stderr.on("data", (data: string) => {
+    w_pythonProcess.stderr.on("data", (data: string) => {
       console.log(`stderr: ${data}`);
     });
 
-    pythonProcess.on("close", (code: any) => {
+    w_pythonProcess.on("close", (code: any) => {
       console.log(`child process exited with code ${code}`);
     });
-
-    return pythonProcess;
   }
 }

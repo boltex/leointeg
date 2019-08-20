@@ -22,9 +22,11 @@ def main():
                                       verbose=False)     # True: print informational messages.
     g = controller.globals()
     es("leobridge Started")
-    time.sleep(1)
-    es("leobridge slept 1 secs")
-    es("leoBridgeReady")  # sending test answer !
+    time.sleep(4)
+    es("leobridge slept 4 secs")
+
+    # sending READY answer
+    es("leoBridgeReady")
 
     exitFlag = False
     while not exitFlag:
