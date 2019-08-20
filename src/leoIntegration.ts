@@ -2,6 +2,7 @@ import * as child from "child_process";
 import * as vscode from "vscode";
 
 export class LeoIntegration {
+  public leoBridgeReady: boolean = false;
   public fileOpenedReady: boolean = false;
   public outlineDataReady: boolean = false;
   public bodyDataReady: boolean = false;
@@ -69,9 +70,13 @@ export class LeoIntegration {
     w_pythonProcess.stdout.on("data", (data: string) => {
       const w_lines = data.toString().split("\n");
       w_lines.forEach(p_line => {
+        if (this.leoBridgeReady) {
+          console.log(p_line);
+        }
         p_line = p_line.trim();
         if (p_line === "leoBridgeReady") {
           console.log("leoBridgeReady PROMISE RESOLVED!");
+          this.leoBridgeReady = true;
           p_promiseResolve(w_pythonProcess);
         } else {
           this.processAnswer(p_line);
