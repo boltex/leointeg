@@ -1,25 +1,18 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
+import { LeoOutlineProvider } from "./leoOutline";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('activate "leointeg" extension');
 
   const leoIntegration = new LeoIntegration(context);
   context.subscriptions.push(
-    vscode.commands.registerCommand("leointeg.openLeoFile", () =>
-      leoIntegration.openLeoFile()
-    )
+    vscode.commands.registerCommand("leointeg.openLeoFile", () => leoIntegration.openLeoFile())
   );
-  context.subscriptions.push(
-    vscode.commands.registerCommand("leointeg.test", () =>
-      leoIntegration.test()
-    )
-  );
-  context.subscriptions.push(
-    vscode.commands.registerCommand("leointeg.killLeo", () =>
-      leoIntegration.killLeoBridge()
-    )
-  );
+  context.subscriptions.push(vscode.commands.registerCommand("leointeg.test", () => leoIntegration.test()));
+  context.subscriptions.push(vscode.commands.registerCommand("leointeg.killLeo", () => leoIntegration.killLeoBridge()));
+
+  vscode.window.registerTreeDataProvider("leoIntegration", new LeoOutlineProvider());
 
   // register a content provider for the leo-scheme
   const leoSheme = "leo";
@@ -32,14 +25,10 @@ export function activate(context: vscode.ExtensionContext) {
       return "Body pane content";
     }
   })();
-  context.subscriptions.push(
-    vscode.workspace.registerTextDocumentContentProvider(leoSheme, leoProvider)
-  );
+  context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(leoSheme, leoProvider));
 
   let uri = vscode.Uri.parse("leo:body");
-  vscode.workspace
-    .openTextDocument(uri)
-    .then(doc => vscode.window.showTextDocument(doc));
+  vscode.workspace.openTextDocument(uri).then(doc => vscode.window.showTextDocument(doc));
 }
 
 export function deactivate() {

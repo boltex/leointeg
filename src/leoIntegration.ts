@@ -1,5 +1,6 @@
 import * as child from "child_process";
 import * as vscode from "vscode";
+import { Uri } from "vscode";
 
 export class LeoIntegration {
   public leoBridgeReady: boolean = false;
@@ -10,28 +11,53 @@ export class LeoIntegration {
   private leoBridgeReadyPromise: Promise<child.ChildProcess>; // set when leoBridge has a leo controller ready
 
   constructor(private context: vscode.ExtensionContext) {
-    console.log(
-      "Running LeoIntegration constructor. context.extensionPath: ",
-      this.context.extensionPath
-    );
     this.leoBridgeReadyPromise = new Promise<child.ChildProcess>(resolve => {
       this.initLeoProcess(resolve);
     });
   }
 
   public test(): void {
-    const w_message = "Testing... should output g = controller.globals()  ";
-    vscode.window.showInformationMessage(w_message);
     this.stdin("test\n");
   }
   public killLeoBridge(): void {
-    const w_message = "sending exit to leoBridge";
-    vscode.window.showInformationMessage(w_message);
     this.stdin("exit\n"); // exit shoud kill it
   }
   public openLeoFile(): void {
-    const w_message = "Open Leo File";
-    vscode.window.showInformationMessage(w_message);
+    if (!this.leoBridgeReady) {
+      vscode.window.showInformationMessage("leoBridge Not Ready Yet!");
+      return;
+    }
+    // ----------------------------------------------- // * ONLY IF READY * //
+    let w_openedFileEnvUri: Uri | boolean = false;
+    const w_activeUri: Uri | undefined = vscode.window.activeTextEditor
+      ? vscode.window.activeTextEditor.document.uri
+      : undefined;
+    if (w_activeUri) {
+      const w_defaultFolder = vscode.workspace.getWorkspaceFolder(w_activeUri);
+      if (w_defaultFolder) {
+        w_openedFileEnvUri = w_defaultFolder.uri;
+      }
+    }
+    if (!w_openedFileEnvUri) {
+      w_openedFileEnvUri = Uri.file("~"); // set as home
+    }
+
+    vscode.window
+      .showOpenDialog({
+        canSelectMany: false,
+        defaultUri: w_openedFileEnvUri, // vscode.Uri.file(vscode.window.wor),
+        filters: {
+          "Leo Files": ["leo"]
+        }
+      })
+      .then(p_chosenLeoFile => {
+        if (p_chosenLeoFile) {
+          console.log("chosen leo file: ", p_chosenLeoFile[0].fsPath);
+          this.stdin("openFile:" + p_chosenLeoFile[0].fsPath + "\n");
+        } else {
+          vscode.window.showInformationMessage("Open Cancelled");
+        }
+      });
   }
 
   private processAnswer(p_data: string): void {
@@ -63,6 +89,12 @@ export class LeoIntegration {
   private initLeoProcess(
     p_promiseResolve: (value?: any | PromiseLike<any>) => void
   ): void {
+    // * ONLY IF NOT READY *
+    if (this.leoBridgeReady) {
+      console.log("leoBridgeReady already Started");
+      return;
+    }
+    // * START INIT PROCESS *
     const w_pythonProcess: child.ChildProcess = child.spawn("python3", [
       this.context.extensionPath + "/scripts/leobridge.py"
     ]);
@@ -75,7 +107,7 @@ export class LeoIntegration {
         }
         p_line = p_line.trim();
         if (p_line === "leoBridgeReady") {
-          console.log("leoBridgeReady PROMISE RESOLVED!");
+          vscode.window.showInformationMessage("leoBridge Ready");
           this.leoBridgeReady = true;
           p_promiseResolve(w_pythonProcess);
         } else {
@@ -90,6 +122,7 @@ export class LeoIntegration {
 
     w_pythonProcess.on("close", (code: any) => {
       console.log(`child process exited with code ${code}`);
+      this.leoBridgeReady = false;
     });
   }
 }
