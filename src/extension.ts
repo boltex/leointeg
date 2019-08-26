@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(leoSheme, leoProvider));
 
   let uri = vscode.Uri.parse("leo:body");
-  vscode.workspace.openTextDocument(uri).then(doc => vscode.window.showTextDocument(doc));
+  vscode.workspace.openTextDocument(uri).then(p_doc => vscode.window.showTextDocument(p_doc));
 }
 
 export function deactivate() {

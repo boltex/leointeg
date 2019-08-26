@@ -17,6 +17,8 @@ export class LeoIntegration {
   }
 
   public test(): void {
+    console.log("sending test");
+
     this.stdin("test\n");
   }
   public killLeoBridge(): void {
@@ -86,9 +88,7 @@ export class LeoIntegration {
     });
   }
 
-  private initLeoProcess(
-    p_promiseResolve: (value?: any | PromiseLike<any>) => void
-  ): void {
+  private initLeoProcess(p_promiseResolve: (value?: any | PromiseLike<any>) => void): void {
     // * ONLY IF NOT READY *
     if (this.leoBridgeReady) {
       console.log("leoBridgeReady already Started");
@@ -100,12 +100,14 @@ export class LeoIntegration {
     ]);
 
     w_pythonProcess.stdout.on("data", (data: string) => {
-      const w_lines = data.toString().split("\n");
+      const w_data = data.toString();
+      const w_lines = w_data.split("\n");
       w_lines.forEach(p_line => {
-        if (this.leoBridgeReady) {
-          console.log(p_line);
-        }
         p_line = p_line.trim();
+        if (p_line && (1 || this.leoBridgeReady)) {
+          // test
+          console.log("from python", p_line);
+        }
         if (p_line === "leoBridgeReady") {
           vscode.window.showInformationMessage("leoBridge Ready");
           this.leoBridgeReady = true;
