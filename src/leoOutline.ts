@@ -46,30 +46,33 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 }
 
 export class LeoNode extends vscode.TreeItem {
-  public childIndex: number;
-  public hasChildren: boolean;
-  public cloned: boolean;
-  public expanded: boolean; // * should be same as collapsibleState ?
-  public gnx: string;
-  public level: number;
+  // public childIndex: number; // * not needed
+  // public hasChildren: boolean; // * not needed after computing collapsibleState
+  // public expanded: boolean; // * should be same as collapsibleState ?
+  // public gnx: string; // * apJson is sufficient
+  // public level: number; // * not needed
   // public headline; // * HEADLINE IS LABEL ?
-  public marked: boolean;
+  // public cloned: boolean; // needed for icon ?
+  // public marked: boolean;
 
   constructor(
-    public readonly label: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-    public readonly apJson: string,
-    public readonly command?: vscode.Command
+    public label: string,
+    public collapsibleState: vscode.TreeItemCollapsibleState, // computed in receiver/creator
+    public apJson: string,
+    public cloned: boolean,
+    public dirty: boolean,
+    public marked: boolean,
+    public command?: vscode.Command
   ) {
     super(label, collapsibleState);
-    const apObject: ApObject = JSON.parse(apJson);
-    this.childIndex = apObject.childIndex;
-    this.hasChildren = apObject.hasChildren;
-    this.cloned = apObject.cloned;
-    this.expanded = apObject.expanded;
-    this.gnx = apObject.gnx;
-    this.level = apObject.level;
-    this.marked = apObject.marked;
+    // const apObject: ApObject = JSON.parse(apJson);
+    // this.childIndex = apObject.childIndex;
+    // this.hasChildren = apObject.hasChildren;
+    // this.cloned = apObject.cloned;
+    //this.expanded = apObject.expanded;
+    //this.gnx = apObject.gnx;
+    //this.level = apObject.level;
+    // this.marked = apObject.marked;
     console.log("leoNode constructor");
   }
 

@@ -133,9 +133,11 @@ def p_to_ap(p):
             # len(list(self.gnx_to_vnode.keys())
         gnx_to_vnode[p_gnx] = p.v
     return {
+        'hasBody': bool(p.b),
         'hasChildren': p.hasChildren(),
         'childIndex': p._childIndex,
         'cloned': p.isCloned(),
+        'dirty': p.isDirty(),
         'expanded': p.isExpanded(),
         'gnx': p.v.gnx,
         'level': p.level(),

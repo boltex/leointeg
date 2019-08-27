@@ -1,12 +1,38 @@
 import * as child from "child_process";
 import * as vscode from "vscode";
+import { LeoNode } from "./leoOutline";
 import { Uri } from "vscode";
+
+interface LeoAction {
+  action: string;
+  parameter: string;
+  resolveFn: (result: any) => void;
+  rejectFn: (result: any) => void;
+}
+
+interface ApData {
+  hasBody: boolean;
+  hasChildren: boolean;
+  childIndex: number;
+  cloned: boolean;
+  dirty: boolean;
+  expanded: boolean;
+  gnx: string;
+  level: number;
+  headline: string;
+  marked: boolean;
+  stack: any; // approximated
+}
 
 export class LeoIntegration {
   public leoBridgeReady: boolean = false;
+  public fileBrowserOpen: boolean = false;
   public fileOpenedReady: boolean = false;
   public outlineDataReady: boolean = false;
   public bodyDataReady: boolean = false;
+  public actionBusy: boolean = false;
+
+  private callStack: LeoAction[] = [];
 
   private leoBridgeReadyPromise: Promise<child.ChildProcess>; // set when leoBridge has a leo controller ready
 
@@ -16,20 +42,51 @@ export class LeoIntegration {
     });
   }
 
+  public getChildren(p_apJson: string): Promise<LeoNode> {
+    return new Promise((resolve, reject) => {
+      const w_action: LeoAction = {
+        action: "getChildren:",
+        parameter: p_apJson,
+        resolveFn: resolve,
+        rejectFn: reject
+      };
+      this.callStack.push(w_action);
+      this.tryResolve();
+    });
+  }
+
+  private tryResolve(): void {
+    if (!this.callStack.length || this.actionBusy) {
+      return;
+    }
+    // resolve bottom one
+    this.actionBusy = true;
+    const w_action = this.callStack[0];
+    this.stdin(w_action + w_action.parameter + "\n");
+  }
+
   public test(): void {
     console.log("sending test");
-
     this.stdin("test\n");
   }
   public killLeoBridge(): void {
     this.stdin("exit\n"); // exit shoud kill it
   }
   public openLeoFile(): void {
+    // ----------------------------------------------- // * CANCEL IF NEEDED * //
+    let w_returnMessage: string | undefined;
     if (!this.leoBridgeReady) {
-      vscode.window.showInformationMessage("leoBridge Not Ready Yet!");
+      w_returnMessage = "leoBridge not ready";
+    }
+    if (this.fileOpenedReady || this.fileBrowserOpen) {
+      w_returnMessage = "leo file already opened!";
+    }
+    if (w_returnMessage) {
+      vscode.window.showInformationMessage(w_returnMessage);
       return;
     }
-    // ----------------------------------------------- // * ONLY IF READY * //
+    // ----------------------------------------------- // * READY TO OPEN * //
+    this.fileBrowserOpen = true;
     let w_openedFileEnvUri: Uri | boolean = false;
     const w_activeUri: Uri | undefined = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.document.uri
@@ -37,17 +94,17 @@ export class LeoIntegration {
     if (w_activeUri) {
       const w_defaultFolder = vscode.workspace.getWorkspaceFolder(w_activeUri);
       if (w_defaultFolder) {
-        w_openedFileEnvUri = w_defaultFolder.uri;
+        w_openedFileEnvUri = w_defaultFolder.uri; // set as current opened document-path's folder
       }
     }
     if (!w_openedFileEnvUri) {
-      w_openedFileEnvUri = Uri.file("~"); // set as home
+      w_openedFileEnvUri = Uri.file("~"); // set as home folder
     }
 
     vscode.window
       .showOpenDialog({
         canSelectMany: false,
-        defaultUri: w_openedFileEnvUri, // vscode.Uri.file(vscode.window.wor),
+        defaultUri: w_openedFileEnvUri,
         filters: {
           "Leo Files": ["leo"]
         }
@@ -63,22 +120,40 @@ export class LeoIntegration {
   }
 
   private processAnswer(p_data: string): void {
-    switch (p_data) {
-      case "fileOpenedReady": {
-        this.fileOpenedReady = true;
-        break;
+    if (p_data.startsWith("outlineDataReady")) {
+      if (!this.callStack.length) {
+        console.log("ERROR STACK EMPTY");
+        return;
       }
-      case "outlineDataReady": {
-        this.outlineDataReady = true;
-        break;
+      let w_jsonArray: string = p_data.substring(16);
+      // resolve promise from this.callStack's bottom
+      let w_apDataArray: ApData[] = JSON.parse(w_jsonArray);
+
+      const w_leoNodesArray: LeoNode[] = [];
+      for (let w_apData of w_apDataArray) {
+        const w_apJson: string = JSON.stringify(w_apData); //  just this part back to JSON
+
+        let w_collaps: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
+        if (w_apData.hasChildren) {
+          if (w_apData.expanded) {
+            w_collaps = vscode.TreeItemCollapsibleState.Expanded;
+          } else {
+            w_collaps = vscode.TreeItemCollapsibleState.Collapsed;
+          }
+        }
+
+        w_leoNodesArray.push(
+          new LeoNode(w_apData.headline, w_collaps, w_apJson, w_apData.cloned, w_apData.dirty, w_apData.marked)
+        );
       }
-      case "bodyDataReady": {
-        this.bodyDataReady = true;
-        break;
-      }
-      default: {
-        //pass
-      }
+
+      let w_bottomAction = this.callStack[0];
+      w_bottomAction.resolveFn(w_leoNodesArray);
+      return;
+    }
+    if (p_data === "fileOpenedReady") {
+      this.fileOpenedReady = true;
+      this.fileBrowserOpen = false;
     }
   }
 
