@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { LeoIntegration } from "./leoIntegration";
 
 interface ApObject {
   childIndex: number;
@@ -24,7 +25,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   >();
   readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
 
-  constructor() {
+  constructor(leoIntegration: LeoIntegration) {
     console.log("LeoOutlineProvider constructor");
   }
 
@@ -40,8 +41,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
   getChildren(element?: LeoNode): Thenable<LeoNode[]> {
     console.log("leo getChildren");
-
-    return Promise.resolve([]);
+    //return leoIntegration.getChildren(element);
+    return Promise.resolve([]); // test : give an empty tree
   }
 }
 
@@ -51,40 +52,32 @@ export class LeoNode extends vscode.TreeItem {
   // public expanded: boolean; // * should be same as collapsibleState ?
   // public gnx: string; // * apJson is sufficient
   // public level: number; // * not needed
-  // public headline; // * HEADLINE IS LABEL ?
-  // public cloned: boolean; // needed for icon ?
-  // public marked: boolean;
+  // public headline; // * HEADLINE IS LABEL
+  // public cloned: boolean; // * needed for icon
+  // public dirty: boolean; // * needed for icon
+  // public marked: boolean; // * needed for icon
 
   constructor(
-    public label: string,
+    public label: string, // Header
     public collapsibleState: vscode.TreeItemCollapsibleState, // computed in receiver/creator
-    public apJson: string,
+    public apJson: string, // Key for leo/python side of things
     public cloned: boolean,
     public dirty: boolean,
     public marked: boolean,
     public command?: vscode.Command
   ) {
     super(label, collapsibleState);
-    // const apObject: ApObject = JSON.parse(apJson);
-    // this.childIndex = apObject.childIndex;
-    // this.hasChildren = apObject.hasChildren;
-    // this.cloned = apObject.cloned;
-    //this.expanded = apObject.expanded;
-    //this.gnx = apObject.gnx;
-    //this.level = apObject.level;
-    // this.marked = apObject.marked;
     console.log("leoNode constructor");
   }
 
-  // get tooltip(): string {
-  //   return `${this.label} tooltip`;
-  // }
-
-  // get description(): string {
-  //   return 'a desc';
-  // }
-
   iconPath = "resources/leoNode.svg";
-
   contextValue = "leoNode"; // for use in package.json
+
+  get tooltip(): string {
+    return `${this.label}`;
+  }
+
+  get description(): string {
+    return "a desc";
+  }
 }

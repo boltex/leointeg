@@ -65,9 +65,7 @@ def getChildren(p_apJson):
     if w_p and w_p.hasChildren():
         outputPList(w_p.children)
     else:
-        outputPList([])
-
-    # default empty
+        outputPList([])  # default empty
 
 
 def processCommand(p_string):
@@ -76,9 +74,9 @@ def processCommand(p_string):
     if p_string == "test":
         outputTest()
     if p_string.startswith("openFile:"):
-        openFile(p_string[9:])
+        openFile(p_string[9:])  # open file : rest of line as parameter
     if p_string.startswith("getChildren:"):
-        getChildren(p_string[12:])
+        getChildren(p_string[12:])  # get child array : rest of line as parameter
 
 
 def create_gnx_to_vnode():

@@ -12,7 +12,8 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.commands.registerCommand("leointeg.test", () => leoIntegration.test()));
   context.subscriptions.push(vscode.commands.registerCommand("leointeg.killLeo", () => leoIntegration.killLeoBridge()));
 
-  vscode.window.registerTreeDataProvider("leoIntegration", new LeoOutlineProvider());
+  // Tree provider needs a reference to the 'leoIntegration' main object class instance
+  vscode.window.registerTreeDataProvider("leoIntegration", new LeoOutlineProvider(leoIntegration));
 
   // register a content provider for the leo-scheme
   const leoSheme = "leo";

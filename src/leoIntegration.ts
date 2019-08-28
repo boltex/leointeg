@@ -21,7 +21,7 @@ interface ApData {
   level: number;
   headline: string;
   marked: boolean;
-  stack: any; // approximated
+  stack: any; // approximated as any for now
 }
 
 export class LeoIntegration {
@@ -42,27 +42,58 @@ export class LeoIntegration {
     });
   }
 
+  private resolveGetChildren(p_jsonArray: string) {
+    let w_bottomAction = this.callStack.shift();
+    if (w_bottomAction) {
+      let w_apDataArray: ApData[] = JSON.parse(p_jsonArray);
+
+      const w_leoNodesArray: LeoNode[] = [];
+      for (let w_apData of w_apDataArray) {
+        const w_apJson: string = JSON.stringify(w_apData); //  just this part back to JSON
+
+        let w_collaps: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
+        if (w_apData.hasChildren) {
+          if (w_apData.expanded) {
+            w_collaps = vscode.TreeItemCollapsibleState.Expanded;
+          } else {
+            w_collaps = vscode.TreeItemCollapsibleState.Collapsed;
+          }
+        }
+
+        w_leoNodesArray.push(
+          new LeoNode(w_apData.headline, w_collaps, w_apJson, w_apData.cloned, w_apData.dirty, w_apData.marked)
+        );
+      }
+      w_bottomAction.resolveFn(w_leoNodesArray);
+      this.actionBusy = false;
+    } else {
+      console.log("ERROR STACK EMPTY");
+    }
+  }
+
   public getChildren(p_apJson: string): Promise<LeoNode> {
     return new Promise((resolve, reject) => {
       const w_action: LeoAction = {
-        action: "getChildren:",
+        action: "getChildren:", // ! INCLUDES THE COLON ':'
         parameter: p_apJson,
         resolveFn: resolve,
         rejectFn: reject
       };
       this.callStack.push(w_action);
-      this.tryResolve();
+      this.callAction();
     });
   }
 
-  private tryResolve(): void {
+  private callAction(): void {
     if (!this.callStack.length || this.actionBusy) {
       return;
     }
-    // resolve bottom one
+    // launch / resolve bottom one
     this.actionBusy = true;
     const w_action = this.callStack[0];
-    this.stdin(w_action + w_action.parameter + "\n");
+
+    // * example "getChildren:{blablabla some JSON blablabla}"
+    this.stdin(w_action.action + w_action.parameter + "\n");
   }
 
   public test(): void {
@@ -70,10 +101,10 @@ export class LeoIntegration {
     this.stdin("test\n");
   }
   public killLeoBridge(): void {
-    this.stdin("exit\n"); // exit shoud kill it
+    this.stdin("exit\n"); // exit. should kill the python script
   }
   public openLeoFile(): void {
-    // ----------------------------------------------- // * CANCEL IF NEEDED * //
+    // * prevent opening if already open/opening
     let w_returnMessage: string | undefined;
     if (!this.leoBridgeReady) {
       w_returnMessage = "leoBridge not ready";
@@ -85,8 +116,8 @@ export class LeoIntegration {
       vscode.window.showInformationMessage(w_returnMessage);
       return;
     }
-    // ----------------------------------------------- // * READY TO OPEN * //
-    this.fileBrowserOpen = true;
+    this.fileBrowserOpen = true; // flag for multiple click prevention
+    // * find a folder to propose when opening the browse-for-leo-file chooser
     let w_openedFileEnvUri: Uri | boolean = false;
     const w_activeUri: Uri | undefined = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.document.uri
@@ -100,7 +131,7 @@ export class LeoIntegration {
     if (!w_openedFileEnvUri) {
       w_openedFileEnvUri = Uri.file("~"); // set as home folder
     }
-
+    // * found a folder to propose: now open the file browser
     vscode.window
       .showOpenDialog({
         canSelectMany: false,
@@ -121,66 +152,39 @@ export class LeoIntegration {
 
   private processAnswer(p_data: string): void {
     if (p_data.startsWith("outlineDataReady")) {
-      if (!this.callStack.length) {
-        console.log("ERROR STACK EMPTY");
-        return;
-      }
-      let w_jsonArray: string = p_data.substring(16);
-      // resolve promise from this.callStack's bottom
-      let w_apDataArray: ApData[] = JSON.parse(w_jsonArray);
-
-      const w_leoNodesArray: LeoNode[] = [];
-      for (let w_apData of w_apDataArray) {
-        const w_apJson: string = JSON.stringify(w_apData); //  just this part back to JSON
-
-        let w_collaps: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
-        if (w_apData.hasChildren) {
-          if (w_apData.expanded) {
-            w_collaps = vscode.TreeItemCollapsibleState.Expanded;
-          } else {
-            w_collaps = vscode.TreeItemCollapsibleState.Collapsed;
-          }
-        }
-
-        w_leoNodesArray.push(
-          new LeoNode(w_apData.headline, w_collaps, w_apJson, w_apData.cloned, w_apData.dirty, w_apData.marked)
-        );
-      }
-
-      let w_bottomAction = this.callStack[0];
-      w_bottomAction.resolveFn(w_leoNodesArray);
-      return;
-    }
-    if (p_data === "fileOpenedReady") {
-      this.fileOpenedReady = true;
+      this.resolveGetChildren(p_data.substring(16)); // ANSWER to getChildren
+    } else if (p_data === "fileOpenedReady") {
+      this.fileOpenedReady = true; // ANSWER to openLeoFile
       this.fileBrowserOpen = false;
     }
+    this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
   }
 
   private stdin(p_message: string): any {
+    // not using 'this.leoBridgeReady' : using '.then' to be buffered before process ready.
     this.leoBridgeReadyPromise.then(p_leoProcess => {
-      p_leoProcess.stdin.write(p_message);
+      p_leoProcess.stdin.write(p_message); // * std in interaction sending to python script
     });
   }
 
   private initLeoProcess(p_promiseResolve: (value?: any | PromiseLike<any>) => void): void {
-    // * ONLY IF NOT READY *
+    // * prevent re-init
     if (this.leoBridgeReady) {
       console.log("leoBridgeReady already Started");
       return;
     }
-    // * START INIT PROCESS *
+    // * start leo via leoBridge python script.
     const w_pythonProcess: child.ChildProcess = child.spawn("python3", [
       this.context.extensionPath + "/scripts/leobridge.py"
     ]);
-
+    // * interact via std in out
     w_pythonProcess.stdout.on("data", (data: string) => {
       const w_data = data.toString();
       const w_lines = w_data.split("\n");
       w_lines.forEach(p_line => {
         p_line = p_line.trim();
         if (p_line && (1 || this.leoBridgeReady)) {
-          // test
+          // test reception of python output
           console.log("from python", p_line);
         }
         if (p_line === "leoBridgeReady") {
@@ -188,7 +192,7 @@ export class LeoIntegration {
           this.leoBridgeReady = true;
           p_promiseResolve(w_pythonProcess);
         } else {
-          this.processAnswer(p_line);
+          this.processAnswer(p_line); // * std out interaction listening
         }
       });
     });
