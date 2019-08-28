@@ -33,6 +33,7 @@ export class LeoIntegration {
   public actionBusy: boolean = false;
 
   private callStack: LeoAction[] = [];
+  private onDidChangeTreeDataObject: any;
 
   private leoBridgeReadyPromise: Promise<child.ChildProcess>; // set when leoBridge has a leo controller ready
 
@@ -42,8 +43,11 @@ export class LeoIntegration {
     });
   }
 
+  public setupRefreshFn(p_refreshObj: any): void {
+    this.onDidChangeTreeDataObject = p_refreshObj;
+  }
+
   private resolveGetChildren(p_jsonArray: string) {
-    console.log("getChildren resolving *******************");
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
       let w_apDataArray: ApData[] = JSON.parse(p_jsonArray);
@@ -73,8 +77,6 @@ export class LeoIntegration {
   }
 
   public getChildren(p_apJson?: string): Promise<LeoNode[]> {
-    console.log("getChildren started *******************");
-
     return new Promise((resolve, reject) => {
       const w_action: LeoAction = {
         action: "getChildren:", // ! INCLUDES THE COLON ':'
@@ -145,7 +147,6 @@ export class LeoIntegration {
       })
       .then(p_chosenLeoFile => {
         if (p_chosenLeoFile) {
-          console.log("chosen leo file: ", p_chosenLeoFile[0].fsPath);
           this.stdin("openFile:" + p_chosenLeoFile[0].fsPath + "\n");
         } else {
           vscode.window.showInformationMessage("Open Cancelled");
@@ -159,6 +160,11 @@ export class LeoIntegration {
     } else if (p_data === "fileOpenedReady") {
       this.fileOpenedReady = true; // ANSWER to openLeoFile
       this.fileBrowserOpen = false;
+      if (this.onDidChangeTreeDataObject) {
+        this.onDidChangeTreeDataObject.fire();
+      } else {
+        console.log("ERROR onDidChangeTreeDataObject NOT READY");
+      }
     }
     this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
   }
@@ -173,7 +179,7 @@ export class LeoIntegration {
   private initLeoProcess(p_promiseResolve: (value?: any | PromiseLike<any>) => void): void {
     // * prevent re-init
     if (this.leoBridgeReady) {
-      console.log("leoBridgeReady already Started");
+      console.log("ERROR : leoBridgeReady already Started");
       return;
     }
     // * start leo via leoBridge python script.
@@ -187,8 +193,7 @@ export class LeoIntegration {
       w_lines.forEach(p_line => {
         p_line = p_line.trim();
         if (p_line && (1 || this.leoBridgeReady)) {
-          // test reception of python output
-          console.log("from python", p_line);
+          console.log("from python", p_line); // test reception of python output
         }
         if (p_line === "leoBridgeReady") {
           vscode.window.showInformationMessage("leoBridge Ready");

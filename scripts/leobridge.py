@@ -24,12 +24,12 @@ def es(p_string):
     print(p_string, flush=True)
 
 
-def outputPList(p_pList):
+def outputOutlineData(p_pList):
     w_apList = []
     for p in p_pList:
         w_apList.append(p_to_ap(p))
     # now covert as a whole
-    es(json.dumps(w_apList))
+    es("outlineDataReady"+json.dumps(w_apList))
 
 
 def outputTest():
@@ -38,16 +38,13 @@ def outputTest():
     # commander.dumpOutline()
     # es(commander.dumpOutline().toString())
     es('called test in python')
-    for p in commander.all_positions():
-        #es(' '*p.level()+p.h)
-        es(json.dumps(p_to_ap(p)))
-        # es(  p_to_ap(p) )
+    # for p in commander.all_positions():
+    #     es(json.dumps(p_to_ap(p)))
 
 
 def openFile(p_file):
     """Open a leo file via leoBridge controller"""
     global bridge, commander
-    es("Open .leo file "+p_file)
     commander = bridge.openLeoFile(p_file)
     if(commander):
         create_gnx_to_vnode()
@@ -55,17 +52,25 @@ def openFile(p_file):
         es("fileOpenedReady")
 
 
+def getAllRootChildren():
+    global bridge, commander
+    p = commander.rootPosition()
+    while p:
+        yield p
+        p.moveToNext()
+
+
 def getChildren(p_apJson):
     """EMIT OUT list of children of a node"""
     global bridge, commander
     if(p_apJson):
         w_p = ap_to_p(json.loads(p_apJson))
+        if w_p and w_p.hasChildren():
+            outputOutlineData(w_p.children())
+        else:
+            outputOutlineData([])  # default empty
     else:
-        w_p = commander.rootPosition()
-    if w_p and w_p.hasChildren():
-        outputPList(w_p.children)
-    else:
-        outputPList([])  # default empty
+        outputOutlineData(getAllRootChildren())
 
 
 def processCommand(p_string):
@@ -84,7 +89,7 @@ def create_gnx_to_vnode():
     t1 = time.clock()
     gnx_to_vnode = {v.gnx: v for v in commander.all_unique_nodes()}
     # This is likely the only data that ever will be needed.
-    if 1:
+    if 0:
         es('app.create_all_data: %5.3f sec. %s entries' % (
             (time.clock()-t1), len(list(gnx_to_vnode.keys()))))
     test_round_trip_positions()
