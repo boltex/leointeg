@@ -25,7 +25,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   >();
   readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
 
-  constructor(leoIntegration: LeoIntegration) {
+  constructor(private leoIntegration: LeoIntegration) {
     console.log("LeoOutlineProvider constructor");
   }
 
@@ -41,7 +41,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
   getChildren(element?: LeoNode): Thenable<LeoNode[]> {
     console.log("leo getChildren");
-    //return leoIntegration.getChildren(element);
+    // return this.leoIntegration.getChildren(element ? element.apJson : undefined);
     return Promise.resolve([]); // test : give an empty tree
   }
 }

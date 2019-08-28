@@ -43,6 +43,7 @@ export class LeoIntegration {
   }
 
   private resolveGetChildren(p_jsonArray: string) {
+    console.log("getChildren resolving *******************");
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
       let w_apDataArray: ApData[] = JSON.parse(p_jsonArray);
@@ -71,11 +72,13 @@ export class LeoIntegration {
     }
   }
 
-  public getChildren(p_apJson: string): Promise<LeoNode> {
+  public getChildren(p_apJson?: string): Promise<LeoNode[]> {
+    console.log("getChildren started *******************");
+
     return new Promise((resolve, reject) => {
       const w_action: LeoAction = {
         action: "getChildren:", // ! INCLUDES THE COLON ':'
-        parameter: p_apJson,
+        parameter: p_apJson || "", // nothing shoud get root
         resolveFn: resolve,
         rejectFn: reject
       };
