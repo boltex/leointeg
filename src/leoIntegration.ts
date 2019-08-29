@@ -1,5 +1,6 @@
 import * as child from "child_process";
 import * as vscode from "vscode";
+import * as path from "path";
 import { LeoNode } from "./leoOutline";
 import { Uri } from "vscode";
 
@@ -32,6 +33,9 @@ export class LeoIntegration {
   public bodyDataReady: boolean = false;
   public actionBusy: boolean = false;
 
+  public icons: string[] = [];
+  public iconsInverted: boolean = false; // used to flip dirty/pristine outline of icon
+
   private callStack: LeoAction[] = [];
   private onDidChangeTreeDataObject: any;
 
@@ -40,7 +44,20 @@ export class LeoIntegration {
   constructor(private context: vscode.ExtensionContext) {
     this.leoBridgeReadyPromise = new Promise<child.ChildProcess>(resolve => {
       this.initLeoProcess(resolve);
+      this.initIconPaths();
     });
+  }
+
+  private initIconPaths(): void {
+    // build icons so that 8=dirty, 4=cloned, 2=marked, 1=content
+    for (let index = 0; index < 16; index++) {
+      this.icons.push(path.join(__filename, "..", "..", "resources", "box" + ("0" + index).slice(-2) + ".svg"));
+    }
+    // * example for light/dark themes
+    // iconPath = {
+    //   light: path.join(__filename, "..", "..", "resources", "dependency.svg"),
+    //   dark: path.join(__filename, "..", "..", "resources", "dependency.svg")
+    // };
   }
 
   public setupRefreshFn(p_refreshObj: any): void {
@@ -66,7 +83,16 @@ export class LeoIntegration {
         }
 
         w_leoNodesArray.push(
-          new LeoNode(w_apData.headline, w_collaps, w_apJson, w_apData.cloned, w_apData.dirty, w_apData.marked)
+          new LeoNode(
+            this,
+            w_apData.headline,
+            w_collaps,
+            w_apJson,
+            w_apData.cloned,
+            w_apData.dirty,
+            w_apData.marked,
+            w_apData.hasBody
+          )
         );
       }
       w_bottomAction.resolveFn(w_leoNodesArray);
@@ -150,14 +176,19 @@ export class LeoIntegration {
           this.stdin("openFile:" + p_chosenLeoFile[0].fsPath + "\n");
         } else {
           vscode.window.showInformationMessage("Open Cancelled");
+          this.fileBrowserOpen = false;
         }
       });
   }
 
   private processAnswer(p_data: string): void {
     if (p_data.startsWith("outlineDataReady")) {
+      // * ----------------------------------------- outlineDataReady
       this.resolveGetChildren(p_data.substring(16)); // ANSWER to getChildren
+      this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
+      return;
     } else if (p_data === "fileOpenedReady") {
+      // * ----------------------------------------- fileOpenedReady
       this.fileOpenedReady = true; // ANSWER to openLeoFile
       this.fileBrowserOpen = false;
       if (this.onDidChangeTreeDataObject) {
@@ -165,8 +196,10 @@ export class LeoIntegration {
       } else {
         console.log("ERROR onDidChangeTreeDataObject NOT READY");
       }
+      this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
+      return;
     }
-    this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
+    // * ----------------------------------------- NO PROCESSED ANSWER : LOG STRING
   }
 
   private stdin(p_message: string): any {
@@ -192,9 +225,6 @@ export class LeoIntegration {
       const w_lines = w_data.split("\n");
       w_lines.forEach(p_line => {
         p_line = p_line.trim();
-        if (p_line && (1 || this.leoBridgeReady)) {
-          console.log("from python", p_line); // test reception of python output
-        }
         if (p_line === "leoBridgeReady") {
           vscode.window.showInformationMessage("leoBridge Ready");
           this.leoBridgeReady = true;

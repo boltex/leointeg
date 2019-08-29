@@ -3,7 +3,7 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoOutlineProvider } from "./leoOutline";
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('activate "leointeg" extension');
+  console.log('activate "leointeg" extension. filename:', __filename);
 
   const leoIntegration = new LeoIntegration(context);
   context.subscriptions.push(

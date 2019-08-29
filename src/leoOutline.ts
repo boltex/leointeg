@@ -27,21 +27,20 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
   constructor(private leoIntegration: LeoIntegration) {
     leoIntegration.setupRefreshFn(this._onDidChangeTreeData);
-    console.log("LeoOutlineProvider constructor");
   }
 
   public refresh(): void {
     this._onDidChangeTreeData.fire();
-    console.log("Leo refresh");
+    console.log("Leo outline refresh");
   }
 
   getTreeItem(element: LeoNode): vscode.TreeItem {
-    console.log("leo getTreeItem");
     return element;
   }
 
   getChildren(element?: LeoNode): Thenable<LeoNode[]> {
-    console.log("leo getChildren");
+    console.log("get children");
+
     if (this.leoIntegration.fileOpenedReady) {
       return this.leoIntegration.getChildren(element ? element.apJson : undefined);
     } else {
@@ -60,28 +59,42 @@ export class LeoNode extends vscode.TreeItem {
   // public cloned: boolean; // * needed for icon
   // public dirty: boolean; // * needed for icon
   // public marked: boolean; // * needed for icon
+  // public hasBody: boolean; // * needed for icon
 
   constructor(
+    private leoIntegration: LeoIntegration, // For access to leo integration's globals (e.g. icons)
     public label: string, // Header
     public collapsibleState: vscode.TreeItemCollapsibleState, // computed in receiver/creator
     public apJson: string, // Key for leo/python side of things
     public cloned: boolean,
     public dirty: boolean,
     public marked: boolean,
+    public hasBody: boolean,
     public command?: vscode.Command
   ) {
     super(label, collapsibleState);
-    console.log("leoNode constructor");
   }
 
-  iconPath = "resources/leoNode.svg";
   contextValue = "leoNode"; // for use in package.json
 
+  get iconPath(): string {
+    //return path.join(__filename, "..", "..", "resources", "box00.svg");
+    // * 8=dirty, 4=cloned, 2=marked, 1=content (iconsInverted is dirty for light/dark inversion)
+    let w_icon: number =
+      (+(this.dirty && this.leoIntegration.iconsInverted) << 3) |
+      (+this.cloned << 2) |
+      (+this.marked << 1) |
+      +this.hasBody;
+    return this.leoIntegration.icons[w_icon];
+  }
+
+  // * whole headline as tooltip is useful if outline pane is too narrow
   get tooltip(): string {
     return `${this.label}`;
   }
 
-  get description(): string {
-    return "a desc";
-  }
+  // * some smaller grayed-out text acompanying the main label
+  // get description(): string {
+  //   return "a desc";
+  // }
 }

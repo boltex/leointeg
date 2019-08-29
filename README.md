@@ -4,6 +4,8 @@ Leo editor integration with Visual Studio Code.
 
 See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
+![Screenshot](resources/screenshot1.png)
+
 ## Features
 
 _As a starting point, here are a couple of intended features:_
@@ -39,9 +41,11 @@ Here's the progress so far...
 
 Initial basic skeleton of this extension. Press F5 to view icon and test the startup of the extension!
 
-### 1.0.1
+### 0.1.1
 
-commit & push comming soon :)
+Leo File Opening
+
+Basic outline browsing, along with the recognizable node icons
 
 ---
 
