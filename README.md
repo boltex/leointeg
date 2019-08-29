@@ -31,7 +31,7 @@ more to be added...
 - Leo installed
 - Leo's path made available in \$PYTHONPATH
 
-(So that python imports work. e.g. `import leo.core.leoBridge as leoBridge` )
+(Needed so python imports work. e.g. `import leo.core.leoBridge as leoBridge` )
 
 ## Extension Settings
 
