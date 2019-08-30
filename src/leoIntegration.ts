@@ -11,19 +11,26 @@ interface LeoAction {
   resolveFn: (result: any) => void; // call that with an aswer from python's (or other) side
   rejectFn: (reason: any) => void; // call if problem is encountered
 }
+// (serializable) Archived Position
+interface ArchivedPosition {
+  // * as reference, comments below are (almost) from source of Leo's plugin leoflexx.py
+  hasBody: boolean; //  bool(p.b),
+  hasChildren: boolean; // p.hasChildren()
+  childIndex: number; // p._childIndex
+  cloned: boolean; // p.isCloned()
+  dirty: boolean; // p.isDirty()
+  expanded: boolean; // p.isExpanded()
+  gnx: string; //p.v.gnx
+  level: number; // p.level()
+  headline: string; // p.h
+  marked: boolean; // p.isMarked()
+  stack: ApStack; // for (stack_v, stack_childIndex) in p.stack]
+}
 
-interface ApData {
-  hasBody: boolean;
-  hasChildren: boolean;
-  childIndex: number;
-  cloned: boolean;
-  dirty: boolean;
-  expanded: boolean;
-  gnx: string;
-  level: number;
-  headline: string;
-  marked: boolean;
-  stack: any; // approximated as any for now
+interface ApStack {
+  gnx: string; //  stack_v.gnx
+  childIndex: number; // stack_childIndex
+  headline: string; // stack_v.h
 }
 
 export class LeoIntegration {
@@ -32,6 +39,7 @@ export class LeoIntegration {
   public fileOpenedReady: boolean = false;
   public outlineDataReady: boolean = false;
   public bodyDataReady: boolean = false;
+  public bodyText: string = "";
   public actionBusy: boolean = false;
 
   public icons: string[] = [];
@@ -39,6 +47,7 @@ export class LeoIntegration {
 
   private callStack: LeoAction[] = [];
   private onDidChangeTreeDataObject: any;
+  private onDidChangeBodyDataObject: any;
 
   private leoBridgeReadyPromise: Promise<child.ChildProcess>; // set when leoBridge has a leo controller ready
 
@@ -65,6 +74,12 @@ export class LeoIntegration {
     this.onDidChangeTreeDataObject = p_refreshObj;
   }
 
+  public setupRefreshBodyFn(p_refreshObj: any) {
+    console.log("setup refresh body", p_refreshObj);
+
+    this.onDidChangeBodyDataObject = p_refreshObj;
+  }
+
   private resolveBridgeReady() {
     vscode.window.showInformationMessage("leoBridge Ready");
     this.leoBridgeReady = true;
@@ -75,6 +90,7 @@ export class LeoIntegration {
   }
 
   private resolveFileOpenedReady() {
+    // Todo : use call stack for opening files too
     this.fileOpenedReady = true; // ANSWER to openLeoFile
     this.fileBrowserOpen = false;
     if (this.onDidChangeTreeDataObject) {
@@ -84,10 +100,21 @@ export class LeoIntegration {
     }
   }
 
+  private resolveGetBody(p_jsonObject: string) {
+    let w_bottomAction = this.callStack.shift();
+    if (w_bottomAction) {
+      let w_apDataObject: any = JSON.parse(p_jsonObject);
+      w_bottomAction.resolveFn(w_apDataObject.body);
+      this.actionBusy = false;
+    } else {
+      console.log("ERROR STACK EMPTY");
+    }
+  }
+
   private resolveGetChildren(p_jsonArray: string) {
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
-      let w_apDataArray: ApData[] = JSON.parse(p_jsonArray);
+      let w_apDataArray: ArchivedPosition[] = JSON.parse(p_jsonArray);
 
       const w_leoNodesArray: LeoNode[] = [];
       for (let w_apData of w_apDataArray) {
@@ -122,11 +149,24 @@ export class LeoIntegration {
     }
   }
 
+  public getBody(p_apJson?: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const w_action: LeoAction = {
+        action: "getBody:", // ! INCLUDES THE COLON ':'
+        parameter: p_apJson || "",
+        resolveFn: resolve,
+        rejectFn: reject
+      };
+      this.callStack.push(w_action);
+      this.callAction();
+    });
+  }
+
   public getChildren(p_apJson?: string): Promise<LeoNode[]> {
     return new Promise((resolve, reject) => {
       const w_action: LeoAction = {
         action: "getChildren:", // ! INCLUDES THE COLON ':'
-        parameter: p_apJson || "", // nothing shoud get root
+        parameter: p_apJson || "", // nothing should get root nodes of the leo file
         resolveFn: resolve,
         rejectFn: reject
       };
@@ -154,6 +194,14 @@ export class LeoIntegration {
 
   public killLeoBridge(): void {
     this.stdin("exit\n"); // exit. should kill the python script
+  }
+
+  public selectNode(p_para: LeoNode): void {
+    this.getBody(p_para.apJson).then(p_body => {
+      this.bodyText = p_body;
+      this.onDidChangeBodyDataObject.fire();
+      console.log("My body: " + p_body);
+    });
   }
 
   public openLeoFile(): void {
@@ -209,6 +257,11 @@ export class LeoIntegration {
       this.resolveGetChildren(p_data.substring(16)); // ANSWER to getChildren
       this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
       return;
+    } else if (p_data.startsWith("bodyDataReady")) {
+      // * ------------------------------------- bodyDataReady
+      this.resolveGetBody(p_data.substring(13)); // ANSWER to getChildren
+      this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
+      return;
     } else if (p_data === "fileOpenedReady") {
       // * ----------------------------------- fileOpenedReady
       this.resolveFileOpenedReady();
@@ -246,7 +299,7 @@ export class LeoIntegration {
       this.context.extensionPath + "/scripts/leobridge.py"
     ]);
     const w_action: LeoAction = {
-      action: "", // just waiting for ready, no need to call an action
+      action: "", // just waiting for ready, no need to call an action for this first one
       parameter: "",
       deferedPayload: w_pythonProcess,
       resolveFn: p_promiseResolve,
@@ -259,7 +312,9 @@ export class LeoIntegration {
       const w_lines = w_data.split("\n");
       w_lines.forEach(p_line => {
         p_line = p_line.trim();
-        this.processAnswer(p_line); // * std out interaction listening
+        if (p_line) {
+          this.processAnswer(p_line); // * std out interaction listening
+        }
       });
     });
 

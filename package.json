@@ -53,6 +53,10 @@
       {
         "command": "leointeg.killLeo",
         "title": "Kill Leo Integration"
+      },
+      {
+        "command": "leointeg.selectNode",
+        "title": "Select Node"
       }
     ],
     "menus": {

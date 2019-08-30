@@ -1,24 +1,6 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 
-interface ApObject {
-  childIndex: number;
-  hasChildren: boolean;
-  cloned: boolean;
-  expanded: boolean;
-  gnx: string;
-  level: number;
-  headline: string;
-  marked: boolean;
-  stack: ApStackObject[];
-}
-
-interface ApStackObject {
-  gnx: string;
-  childIndex: number;
-  headline: string;
-}
-
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> = new vscode.EventEmitter<
     LeoNode | undefined
@@ -50,17 +32,6 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 }
 
 export class LeoNode extends vscode.TreeItem {
-  // public childIndex: number; // * not needed
-  // public hasChildren: boolean; // * not needed after computing collapsibleState
-  // public expanded: boolean; // * should be same as collapsibleState ?
-  // public gnx: string; // * apJson is sufficient
-  // public level: number; // * not needed
-  // public headline; // * HEADLINE IS LABEL
-  // public cloned: boolean; // * needed for icon
-  // public dirty: boolean; // * needed for icon
-  // public marked: boolean; // * needed for icon
-  // public hasBody: boolean; // * needed for icon
-
   constructor(
     private leoIntegration: LeoIntegration, // For access to leo integration's globals (e.g. icons)
     public label: string, // Header
@@ -73,6 +44,7 @@ export class LeoNode extends vscode.TreeItem {
     public command?: vscode.Command
   ) {
     super(label, collapsibleState);
+    this.command = { title: "select", command: "leointeg.selectNode", arguments: [this] };
   }
 
   contextValue = "leoNode"; // for use in package.json

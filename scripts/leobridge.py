@@ -24,6 +24,13 @@ def es(p_string):
     print(p_string, flush=True)
 
 
+def outputBodyData(p_bodyText):
+    if p_bodyText:
+        es("bodyDataReady"+json.dumps({'body': p_bodyText}))
+    else:
+        es("bodyDataReady"+json.dumps({'body': ""}))
+
+
 def outputOutlineData(p_pList):
     w_apList = []
     for p in p_pList:
@@ -68,15 +75,37 @@ def getChildren(p_apJson):
         outputOutlineData(getAllRootChildren())
 
 
+def getBody(p_apJson):
+    '''EMIT OUT body of a node'''
+    global bridge, commander
+    if(p_apJson):
+        w_p = ap_to_p(json.loads(p_apJson))
+        if w_p and w_p.b:
+            outputBodyData(w_p.b)
+        else:
+            outputBodyData(False)  # default empty
+    else:
+        outputBodyData(False)
+
+
 def processCommand(p_string):
     '''Process incoming command'''
     p_string = p_string.strip()
     if p_string == "test":
         outputTest()
+        return
     if p_string.startswith("openFile:"):
         openFile(p_string[9:])  # open file : rest of line as parameter
+        return
     if p_string.startswith("getChildren:"):
         getChildren(p_string[12:])  # get child array : rest of line as parameter
+        return
+    if p_string.startswith("getBody:"):
+        getBody(p_string[8:])  # get child array : rest of line as parameter
+        return
+    # If still in this function then unkown command was sent
+    if p_string:
+        es('from vscode'+p_string)  # Emit if not an empty string
 
 
 def create_gnx_to_vnode():
