@@ -20,7 +20,7 @@ gnx_to_vnode = []
 
 
 def es(p_string):
-    """Emit String Function"""
+    '''Emit String Function'''
     print(p_string, flush=True)
 
 
@@ -28,22 +28,17 @@ def outputOutlineData(p_pList):
     w_apList = []
     for p in p_pList:
         w_apList.append(p_to_ap(p))
-    # now covert as a whole
-    es("outlineDataReady"+json.dumps(w_apList))
+    es("outlineDataReady"+json.dumps(w_apList))  # now convert to JSON as a whole
 
 
 def outputTest():
-    """Emit a test"""
+    '''Emit a test'''
     global bridgeGlobals, commander
-    # commander.dumpOutline()
-    # es(commander.dumpOutline().toString())
     es('called test in python')
-    # for p in commander.all_positions():
-    #     es(json.dumps(p_to_ap(p)))
 
 
 def openFile(p_file):
-    """Open a leo file via leoBridge controller"""
+    '''Open a leo file via leoBridge controller'''
     global bridge, commander
     commander = bridge.openLeoFile(p_file)
     if(commander):
@@ -61,7 +56,7 @@ def getAllRootChildren():
 
 
 def getChildren(p_apJson):
-    """EMIT OUT list of children of a node"""
+    '''EMIT OUT list of children of a node'''
     global bridge, commander
     if(p_apJson):
         w_p = ap_to_p(json.loads(p_apJson))
@@ -74,7 +69,7 @@ def getChildren(p_apJson):
 
 
 def processCommand(p_string):
-    """Process incoming command"""
+    '''Process incoming command'''
     p_string = p_string.strip()
     if p_string == "test":
         outputTest()
@@ -85,6 +80,7 @@ def processCommand(p_string):
 
 
 def create_gnx_to_vnode():
+    '''Make the first gnx_to_vnode array with all unique nodes'''
     global gnx_to_vnode, commander
     t1 = time.clock()
     gnx_to_vnode = {v.gnx: v for v in commander.all_unique_nodes()}
@@ -96,7 +92,7 @@ def create_gnx_to_vnode():
 
 
 def test_round_trip_positions():
-    '''Test the round tripping of p_to_ap and ap_to_p.'''
+    '''(From Leo plugin leoflexx.py) Test the round tripping of p_to_ap and ap_to_p.'''
     global gnx_to_vnode, commander
     c = commander
     # Bug fix: p_to_ap updates app.gnx_to_vnode. Save and restore it.
@@ -104,7 +100,6 @@ def test_round_trip_positions():
     old_len = len(list(gnx_to_vnode.keys()))
     t1 = time.clock()
     for p in c.all_positions():
-
         ap = p_to_ap(p)
         p2 = ap_to_p(ap)
         assert p == p2, (repr(p), repr(p2), repr(ap))
@@ -115,7 +110,7 @@ def test_round_trip_positions():
 
 
 def ap_to_p(ap):
-    '''Convert an archived position to a true Leo position.'''
+    '''(From Leo plugin leoflexx.py) Convert an archived position to a true Leo position.'''
     childIndex = ap['childIndex']
     v = gnx_to_vnode[ap['gnx']]
     stack = [
@@ -126,14 +121,12 @@ def ap_to_p(ap):
 
 
 def p_to_ap(p):
-    '''Converts Leo position to a serializable archived position.'''
+    '''(From Leo plugin leoflexx.py) Converts Leo position to a serializable archived position.'''
     if not p.v:
         es('app.p_to_ap: no p.v: %r %s' % (p))
         assert False
     p_gnx = p.v.gnx
     if p_gnx not in gnx_to_vnode:
-        # print('=== update gnx_to_vnode', p_gnx, p.h)
-            # len(list(self.gnx_to_vnode.keys())
         gnx_to_vnode[p_gnx] = p.v
     return {
         'hasBody': bool(p.b),
@@ -155,7 +148,7 @@ def p_to_ap(p):
 
 
 def main():
-    """python script for leo integration via leoBridge"""
+    '''python script for leo integration via leoBridge'''
     sys.stdin = os.fdopen(sys.stdin.fileno(), 'r')
     # Sending READY CODE
     es("leoBridgeReady")

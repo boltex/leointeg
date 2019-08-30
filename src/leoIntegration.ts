@@ -5,10 +5,11 @@ import { LeoNode } from "./leoOutline";
 import { Uri } from "vscode";
 
 interface LeoAction {
-  action: string;
-  parameter: string;
-  resolveFn: (result: any) => void;
-  rejectFn: (result: any) => void;
+  action: string; // action to call on python's side
+  parameter: string; // to pass along with action to python's side
+  deferedPayload?: any | undefined; // Used when the action already has a return value ready but is also waiting for python's side
+  resolveFn: (result: any) => void; // call that with an aswer from python's (or other) side
+  rejectFn: (reason: any) => void; // call if problem is encountered
 }
 
 interface ApData {
@@ -42,8 +43,8 @@ export class LeoIntegration {
   private leoBridgeReadyPromise: Promise<child.ChildProcess>; // set when leoBridge has a leo controller ready
 
   constructor(private context: vscode.ExtensionContext) {
-    this.leoBridgeReadyPromise = new Promise<child.ChildProcess>(resolve => {
-      this.initLeoProcess(resolve);
+    this.leoBridgeReadyPromise = new Promise<child.ChildProcess>((resolve, reject) => {
+      this.initLeoProcess(resolve, reject);
       this.initIconPaths();
     });
   }
@@ -62,6 +63,25 @@ export class LeoIntegration {
 
   public setupRefreshFn(p_refreshObj: any): void {
     this.onDidChangeTreeDataObject = p_refreshObj;
+  }
+
+  private resolveBridgeReady() {
+    vscode.window.showInformationMessage("leoBridge Ready");
+    this.leoBridgeReady = true;
+    let w_bottomAction = this.callStack.shift();
+    if (w_bottomAction) {
+      w_bottomAction.resolveFn(w_bottomAction.deferedPayload);
+    }
+  }
+
+  private resolveFileOpenedReady() {
+    this.fileOpenedReady = true; // ANSWER to openLeoFile
+    this.fileBrowserOpen = false;
+    if (this.onDidChangeTreeDataObject) {
+      this.onDidChangeTreeDataObject.fire();
+    } else {
+      console.log("ERROR onDidChangeTreeDataObject NOT READY");
+    }
   }
 
   private resolveGetChildren(p_jsonArray: string) {
@@ -131,9 +151,11 @@ export class LeoIntegration {
     console.log("sending test");
     this.stdin("test\n");
   }
+
   public killLeoBridge(): void {
     this.stdin("exit\n"); // exit. should kill the python script
   }
+
   public openLeoFile(): void {
     // * prevent opening if already open/opening
     let w_returnMessage: string | undefined;
@@ -183,23 +205,24 @@ export class LeoIntegration {
 
   private processAnswer(p_data: string): void {
     if (p_data.startsWith("outlineDataReady")) {
-      // * ----------------------------------------- outlineDataReady
+      // * ------------------------------------- outlineDataReady
       this.resolveGetChildren(p_data.substring(16)); // ANSWER to getChildren
       this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
       return;
     } else if (p_data === "fileOpenedReady") {
-      // * ----------------------------------------- fileOpenedReady
-      this.fileOpenedReady = true; // ANSWER to openLeoFile
-      this.fileBrowserOpen = false;
-      if (this.onDidChangeTreeDataObject) {
-        this.onDidChangeTreeDataObject.fire();
-      } else {
-        console.log("ERROR onDidChangeTreeDataObject NOT READY");
-      }
+      // * ----------------------------------- fileOpenedReady
+      this.resolveFileOpenedReady();
+      this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
+      return;
+    } else if (p_data === "leoBridgeReady") {
+      this.resolveBridgeReady();
       this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
       return;
     }
-    // * ----------------------------------------- NO PROCESSED ANSWER : LOG STRING
+    // * --------------------- NO PROCESSED ANSWER: LOG STRING
+    if (this.leoBridgeReady) {
+      console.log("from python", p_data); // unprocessed/unknown python output
+    }
   }
 
   private stdin(p_message: string): any {
@@ -209,29 +232,34 @@ export class LeoIntegration {
     });
   }
 
-  private initLeoProcess(p_promiseResolve: (value?: any | PromiseLike<any>) => void): void {
+  private initLeoProcess(
+    p_promiseResolve: (value?: any | PromiseLike<any>) => void,
+    p_promiseReject: (value?: any | PromiseLike<any>) => void
+  ): void {
     // * prevent re-init
     if (this.leoBridgeReady) {
-      console.log("ERROR : leoBridgeReady already Started");
+      console.log("ERROR : leoBridge already Started");
       return;
     }
     // * start leo via leoBridge python script.
     const w_pythonProcess: child.ChildProcess = child.spawn("python3", [
       this.context.extensionPath + "/scripts/leobridge.py"
     ]);
+    const w_action: LeoAction = {
+      action: "", // just waiting for ready, no need to call an action
+      parameter: "",
+      deferedPayload: w_pythonProcess,
+      resolveFn: p_promiseResolve,
+      rejectFn: p_promiseReject
+    };
+    this.callStack.push(w_action); // push the first action on callstack for answering leoBridgeReady
     // * interact via std in out
     w_pythonProcess.stdout.on("data", (data: string) => {
       const w_data = data.toString();
       const w_lines = w_data.split("\n");
       w_lines.forEach(p_line => {
         p_line = p_line.trim();
-        if (p_line === "leoBridgeReady") {
-          vscode.window.showInformationMessage("leoBridge Ready");
-          this.leoBridgeReady = true;
-          p_promiseResolve(w_pythonProcess);
-        } else {
-          this.processAnswer(p_line); // * std out interaction listening
-        }
+        this.processAnswer(p_line); // * std out interaction listening
       });
     });
 
