@@ -37,26 +37,9 @@ more to be added...
 
 None for now.
 
-## Release Notes
+There will be settings for communicating either locally, via stdIn/out, and remotely over tcp, through a rest api or websockets. (communication consists of simple JSON data)
 
-Here's the progress so far...
-
-### 0.0.1
-
-Initial basic skeleton of this extension. Press F5 to view icon and test the startup of the extension!
-
-### 0.1.1
-
-Leo File Opening
-
-Basic outline browsing, along with the recognizable node icons
-
-### 0.1.2
-
-Prototype Goal Achieved!
-
-Browsing Now shows body text too, just like browsing in Leo without editing body nor headlines.
-(read only for now)
+There will also be graphic-related settings such as light/dark theme and icon set selection
 
 ---
 

@@ -1,40 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   id="svg4572"
-   version="1.1"
-   fill="none"
-   viewBox="0 0 16 16"
-   height="16"
-   width="16">
-  <metadata
-     id="metadata4578">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <defs
-     id="defs4576" />
-  <path
-     id="rect4641"
-     d="M 7.0742188 5 L 7.0742188 12 L 8.0742188 12 L 8.0742188 5 L 7.0742188 5 z "
-     style="fill:#d40000;fill-opacity:1;stroke:none;stroke-width:0.03549838;stroke-miterlimit:4;stroke-dasharray:none" />
-  <path
-     id="rect4615"
-     d="m 0,4 v 9 H 15.150391 V 4 Z m 1,1 h 13.150391 v 7 H 1 Z"
-     style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:0.03779528;stroke-miterlimit:4;stroke-dasharray:none" />
-  <path
-     style="fill:#0066ff;fill-opacity:1;stroke:none;stroke-width:0.03779528;stroke-miterlimit:4;stroke-dasharray:none"
-     d="m 9.0751953,6 v 5 H 13.15 V 6 Z M 10.075195,7 H 12.151 v 3.000001 h -2.075805 z"
-     id="path4668" />
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" id="svg4572" width="16" height="16" fill="none" version="1.1" viewBox="0 0 16 16">
+   <metadata id="metadata4578">
+      <rdf:RDF>
+         <cc:Work rdf:about="">
+            <dc:format>
+               image/svg+xml
+            </dc:format>
+            <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+            <dc:title/>
+         </cc:Work>
+      </rdf:RDF>
+   </metadata>
+   <defs id="defs4576"/>
+   <path id="rect4641" d="m 7.0742188,4.5 v 8 h 1 v -8 z" style="fill:#e54a16;fill-opacity:1;stroke:none;stroke-width:0.03794936;stroke-miterlimit:4;stroke-dasharray:none"/>
+   <path id="rect4615" d="m 0,4 v 9 H 15.150391 V 4 Z m 1,1 h 13.150391 v 7 H 1 Z" style="fill:#4d4d4d;fill-opacity:1;stroke:none;stroke-width:0.03779528;stroke-miterlimit:4;stroke-dasharray:none"/>
+   <path id="path4668" d="m 9.0751953,6 v 5 H 13.15 V 6 Z M 10.075195,7 H 12.151 v 3.000001 h -2.075805 z" style="fill:#42a5f5;fill-opacity:1;stroke:none;stroke-width:0.03779528;stroke-miterlimit:4;stroke-dasharray:none"/>
 </svg>

@@ -1,18 +1,16 @@
 # Change Log
 
-All notable changes to the "leointeg" extension will be documented in this file.
+### 0.1.2
 
-## [Unreleased]
+- Prototype Goal Achieved!
 
-- Initial release
+- Browsing Now shows body text too, just like browsing in Leo without editing body nor headlines. (read only for now)
 
-## 0.1.1
+### 0.1.1
 
-Leo File Opening
-Basic outline browsing, along with the recognizable node icons
+- Leo File Opening
+- Basic outline browsing, along with the recognizable node icons
 
-## 0.1.2
+### 0.0.1
 
-Prototype Goal Achieved!
-Browsing Now shows body text too, just like browsing in Leo without editing body nor headlines.
-(read only for now)
+- Initial basic skeleton of this extension. Press F5 to view icon and test the startup of the extension!
