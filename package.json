@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "leointeg",
   "description": "Leo Editor Integration with VS Code",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "license": "MIT",
   "repository": {
     "type": "git",

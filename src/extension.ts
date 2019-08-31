@@ -4,9 +4,11 @@ import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyProvider } from "./leoBody";
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('activate "leointeg" extension. filename:', __filename);
+  console.log('activate "leointeg" extension.');
 
-  const leoIntegration = new LeoIntegration(context);
+  let bodyUri = vscode.Uri.parse("leo:body");
+
+  const leoIntegration = new LeoIntegration(context, bodyUri);
   context.subscriptions.push(
     vscode.commands.registerCommand("leointeg.openLeoFile", () => leoIntegration.openLeoFile())
   );
@@ -24,8 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
   const leoBodyProvider = new LeoBodyProvider(leoIntegration);
   context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(leoSheme, leoBodyProvider));
 
-  let uri = vscode.Uri.parse("leo:body");
-  vscode.workspace.openTextDocument(uri).then(p_doc => vscode.window.showTextDocument(p_doc));
+  vscode.workspace.openTextDocument(bodyUri).then(p_doc => vscode.window.showTextDocument(p_doc));
 }
 
 export function deactivate() {

@@ -11,8 +11,6 @@ export class LeoBodyProvider implements vscode.TextDocumentContentProvider {
   }
 
   provideTextDocumentContent(uri: vscode.Uri): string {
-    console.log("whats i");
-
     return this.leoIntegration.bodyText;
   }
 }

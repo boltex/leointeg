@@ -51,7 +51,7 @@ export class LeoIntegration {
 
   private leoBridgeReadyPromise: Promise<child.ChildProcess>; // set when leoBridge has a leo controller ready
 
-  constructor(private context: vscode.ExtensionContext) {
+  constructor(private context: vscode.ExtensionContext, public bodyUri: vscode.Uri) {
     this.leoBridgeReadyPromise = new Promise<child.ChildProcess>((resolve, reject) => {
       this.initLeoProcess(resolve, reject);
       this.initIconPaths();
@@ -75,8 +75,6 @@ export class LeoIntegration {
   }
 
   public setupRefreshBodyFn(p_refreshObj: any) {
-    console.log("setup refresh body", p_refreshObj);
-
     this.onDidChangeBodyDataObject = p_refreshObj;
   }
 
@@ -199,8 +197,7 @@ export class LeoIntegration {
   public selectNode(p_para: LeoNode): void {
     this.getBody(p_para.apJson).then(p_body => {
       this.bodyText = p_body;
-      this.onDidChangeBodyDataObject.fire();
-      console.log("My body: " + p_body);
+      this.onDidChangeBodyDataObject.fire(this.bodyUri);
     });
   }
 
