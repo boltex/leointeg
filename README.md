@@ -1,4 +1,4 @@
-# leointeg README
+# ![LeoEditor](resources/leoapp.png) leointeg README
 
 Leo editor integration with Visual Studio Code.
 

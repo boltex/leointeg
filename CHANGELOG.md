@@ -14,3 +14,5 @@
 ### 0.0.1
 
 - Initial basic skeleton of this extension. Press F5 to view icon and test the startup of the extension!
+
+![LeoEditor](resources/leoapp96px.png)
