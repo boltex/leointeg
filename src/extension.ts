@@ -3,6 +3,8 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyProvider } from "./leoBody";
 
+let leoStatusBarItem: vscode.StatusBarItem;
+
 export function activate(context: vscode.ExtensionContext) {
   console.log('activate "leointeg" extension.');
 

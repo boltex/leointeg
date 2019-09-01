@@ -45,6 +45,8 @@ export class LeoIntegration {
   public icons: string[] = [];
   public iconsInverted: boolean = false; // used to flip dirty/pristine outline of icon
 
+  public leoStatusBarItem: vscode.StatusBarItem;
+
   private callStack: LeoAction[] = [];
   private onDidChangeTreeDataObject: any;
   private onDidChangeBodyDataObject: any;
@@ -56,6 +58,35 @@ export class LeoIntegration {
       this.initLeoProcess(resolve, reject);
       this.initIconPaths();
     });
+    this.leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
+    this.leoStatusBarItem.color = "#fb7c47";
+    this.leoStatusBarItem.command = "leointeg.test";
+    context.subscriptions.push(this.leoStatusBarItem);
+    this.leoStatusBarItem.hide();
+  }
+
+  // create a new status bar item that we can now manage
+
+  // leoStatusBarItem.command = myCommandId;
+
+  // register some listener that make sure the status bar
+  // item always up-to-date
+  //context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(updateStatusBarItem));
+  //context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(updateStatusBarItem));
+
+  // update status bar item once at start for now
+
+  private updateStatusBarItem(): void {
+    // let n = getNumberOfSelectedLines(vscode.window.activeTextEditor);
+    let n = 42;
+
+    if (n > 0) {
+      this.leoStatusBarItem.text = `$(keyboard) Literate `;
+      this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
+      this.leoStatusBarItem.show();
+    } else {
+      this.leoStatusBarItem.hide();
+    }
   }
 
   private initIconPaths(): void {
@@ -96,6 +127,8 @@ export class LeoIntegration {
     } else {
       console.log("ERROR onDidChangeTreeDataObject NOT READY");
     }
+    // update status bar for first time
+    this.updateStatusBarItem();
   }
 
   private resolveGetBody(p_jsonObject: string) {
@@ -249,27 +282,25 @@ export class LeoIntegration {
   }
 
   private processAnswer(p_data: string): void {
+    let w_processed: boolean = false;
     if (p_data.startsWith("outlineDataReady")) {
-      // * ------------------------------------- outlineDataReady
       this.resolveGetChildren(p_data.substring(16)); // ANSWER to getChildren
-      this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
-      return;
+      w_processed = true;
     } else if (p_data.startsWith("bodyDataReady")) {
-      // * ------------------------------------- bodyDataReady
       this.resolveGetBody(p_data.substring(13)); // ANSWER to getChildren
-      this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
-      return;
+      w_processed = true;
     } else if (p_data === "fileOpenedReady") {
-      // * ----------------------------------- fileOpenedReady
       this.resolveFileOpenedReady();
-      this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
-      return;
+      w_processed = true;
     } else if (p_data === "leoBridgeReady") {
       this.resolveBridgeReady();
-      this.callAction(); // Maybe theres another action waiting to be launched, and resolved.
+      w_processed = true;
+    }
+    if (w_processed) {
+      this.callAction();
       return;
     }
-    // * --------------------- NO PROCESSED ANSWER: LOG STRING
+    // * past this point only if p_data did not match any known commands!
     if (this.leoBridgeReady) {
       console.log("from python", p_data); // unprocessed/unknown python output
     }

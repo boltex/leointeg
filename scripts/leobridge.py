@@ -41,7 +41,7 @@ def outputOutlineData(p_pList):
 def outputTest():
     '''Emit a test'''
     global bridgeGlobals, commander
-    es('called test in python')
+    es('vsCode called test. Hello from leoBridge!')
 
 
 def openFile(p_file):
