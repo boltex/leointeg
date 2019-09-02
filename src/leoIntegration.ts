@@ -58,23 +58,16 @@ export class LeoIntegration {
       this.initLeoProcess(resolve, reject);
       this.initIconPaths();
     });
+    // * Status bar Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
+    // EXAMPLE: register some listener that make sure the status bar item always up-to-date
+    // context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(updateStatusBarItem));
+    // context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(updateStatusBarItem));
     this.leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
-    this.leoStatusBarItem.color = "#fb7c47";
-    this.leoStatusBarItem.command = "leointeg.test";
+    this.leoStatusBarItem.color = "#fb7c47"; // TODO : Centralize or make available in a config setting.
+    this.leoStatusBarItem.command = "leointeg.test"; // just call test function for now
     context.subscriptions.push(this.leoStatusBarItem);
     this.leoStatusBarItem.hide();
   }
-
-  // create a new status bar item that we can now manage
-
-  // leoStatusBarItem.command = myCommandId;
-
-  // register some listener that make sure the status bar
-  // item always up-to-date
-  //context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(updateStatusBarItem));
-  //context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(updateStatusBarItem));
-
-  // update status bar item once at start for now
 
   private updateStatusBarItem(): void {
     // let n = getNumberOfSelectedLines(vscode.window.activeTextEditor);
@@ -94,7 +87,7 @@ export class LeoIntegration {
     for (let index = 0; index < 16; index++) {
       this.icons.push(path.join(__filename, "..", "..", "resources", "box" + ("0" + index).slice(-2) + ".svg"));
     }
-    // * example for light/dark themes
+    // * example for future light/dark themes support
     // iconPath = {
     //   light: path.join(__filename, "..", "..", "resources", "dependency.svg"),
     //   dark: path.join(__filename, "..", "..", "resources", "dependency.svg")
@@ -109,6 +102,57 @@ export class LeoIntegration {
     this.onDidChangeBodyDataObject = p_refreshObj;
   }
 
+
+  private jsonArrayToLeoNodesArray(p_jsonArray: string): LeoNode[] {
+    let w_apDataArray: ArchivedPosition[] = JSON.parse(p_jsonArray);
+
+    const w_leoNodesArray: LeoNode[] = [];
+    for (let w_apData of w_apDataArray) {
+      const w_apJson: string = JSON.stringify(w_apData); //  just this part back to JSON
+
+      let w_collaps: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
+      if (w_apData.hasChildren) {
+        if (w_apData.expanded) {
+          w_collaps = vscode.TreeItemCollapsibleState.Expanded;
+        } else {
+          w_collaps = vscode.TreeItemCollapsibleState.Collapsed;
+        }
+      }
+
+      w_leoNodesArray.push(
+        new LeoNode(
+          this,
+          w_apData.headline,
+          w_collaps,
+          w_apJson,
+          w_apData.cloned,
+          w_apData.dirty,
+          w_apData.marked,
+          w_apData.hasBody
+        )
+      );
+    }
+    return w_leoNodesArray;
+  }
+
+  private getBestOpenFolderUri(): Uri {
+    // Find a folder to propose when opening the browse-for-leo-file chooser
+    let w_openedFileEnvUri: Uri | boolean = false;
+    const w_activeUri: Uri | undefined = vscode.window.activeTextEditor
+      ? vscode.window.activeTextEditor.document.uri
+      : undefined;
+    if (w_activeUri) {
+      const w_defaultFolder = vscode.workspace.getWorkspaceFolder(w_activeUri);
+      if (w_defaultFolder) {
+        w_openedFileEnvUri = w_defaultFolder.uri; // set as current opened document-path's folder
+      }
+    }
+    if (!w_openedFileEnvUri) {
+      w_openedFileEnvUri = Uri.file("~"); // TODO : set as home folder properly this doesn't work
+    }
+    return w_openedFileEnvUri;
+  }
+
   private resolveBridgeReady() {
     vscode.window.showInformationMessage("leoBridge Ready");
     this.leoBridgeReady = true;
@@ -119,23 +163,19 @@ export class LeoIntegration {
   }
 
   private resolveFileOpenedReady() {
-    // Todo : use call stack for opening files too
-    this.fileOpenedReady = true; // ANSWER to openLeoFile
-    this.fileBrowserOpen = false;
-    if (this.onDidChangeTreeDataObject) {
-      this.onDidChangeTreeDataObject.fire();
+    let w_bottomAction = this.callStack.shift();
+    if (w_bottomAction) {
+      w_bottomAction.resolveFn(null);
+      this.actionBusy = false;
     } else {
-      console.log("ERROR onDidChangeTreeDataObject NOT READY");
+      console.log("ERROR STACK EMPTY");
     }
-    // update status bar for first time
-    this.updateStatusBarItem();
   }
 
   private resolveGetBody(p_jsonObject: string) {
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
-      let w_apDataObject: any = JSON.parse(p_jsonObject);
-      w_bottomAction.resolveFn(w_apDataObject.body);
+      w_bottomAction.resolveFn(JSON.parse(p_jsonObject).body);
       this.actionBusy = false;
     } else {
       console.log("ERROR STACK EMPTY");
@@ -145,35 +185,7 @@ export class LeoIntegration {
   private resolveGetChildren(p_jsonArray: string) {
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
-      let w_apDataArray: ArchivedPosition[] = JSON.parse(p_jsonArray);
-
-      const w_leoNodesArray: LeoNode[] = [];
-      for (let w_apData of w_apDataArray) {
-        const w_apJson: string = JSON.stringify(w_apData); //  just this part back to JSON
-
-        let w_collaps: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
-        if (w_apData.hasChildren) {
-          if (w_apData.expanded) {
-            w_collaps = vscode.TreeItemCollapsibleState.Expanded;
-          } else {
-            w_collaps = vscode.TreeItemCollapsibleState.Collapsed;
-          }
-        }
-
-        w_leoNodesArray.push(
-          new LeoNode(
-            this,
-            w_apData.headline,
-            w_collaps,
-            w_apJson,
-            w_apData.cloned,
-            w_apData.dirty,
-            w_apData.marked,
-            w_apData.hasBody
-          )
-        );
-      }
-      w_bottomAction.resolveFn(w_leoNodesArray);
+      w_bottomAction.resolveFn(this.jsonArrayToLeoNodesArray(p_jsonArray));
       this.actionBusy = false;
     } else {
       console.log("ERROR STACK EMPTY");
@@ -218,15 +230,6 @@ export class LeoIntegration {
     this.stdin(w_action.action + w_action.parameter + "\n");
   }
 
-  public test(): void {
-    console.log("sending test");
-    this.stdin("test\n");
-  }
-
-  public killLeoBridge(): void {
-    this.stdin("exit\n"); // exit. should kill the python script
-  }
-
   public selectNode(p_para: LeoNode): void {
     this.getBody(p_para.apJson).then(p_body => {
       this.bodyText = p_body;
@@ -235,7 +238,6 @@ export class LeoIntegration {
   }
 
   public openLeoFile(): void {
-    // * prevent opening if already open/opening
     let w_returnMessage: string | undefined;
     if (!this.leoBridgeReady) {
       w_returnMessage = "leoBridge not ready";
@@ -245,35 +247,42 @@ export class LeoIntegration {
     }
     if (w_returnMessage) {
       vscode.window.showInformationMessage(w_returnMessage);
-      return;
+      return; // prevent opening if already open/opening
     }
     this.fileBrowserOpen = true; // flag for multiple click prevention
-    // * find a folder to propose when opening the browse-for-leo-file chooser
-    let w_openedFileEnvUri: Uri | boolean = false;
-    const w_activeUri: Uri | undefined = vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.document.uri
-      : undefined;
-    if (w_activeUri) {
-      const w_defaultFolder = vscode.workspace.getWorkspaceFolder(w_activeUri);
-      if (w_defaultFolder) {
-        w_openedFileEnvUri = w_defaultFolder.uri; // set as current opened document-path's folder
-      }
-    }
-    if (!w_openedFileEnvUri) {
-      w_openedFileEnvUri = Uri.file("~"); // set as home folder
-    }
-    // * found a folder to propose: now open the file browser
     vscode.window
       .showOpenDialog({
         canSelectMany: false,
-        defaultUri: w_openedFileEnvUri,
+        defaultUri: this.getBestOpenFolderUri(),
         filters: {
           "Leo Files": ["leo"]
         }
       })
       .then(p_chosenLeoFile => {
         if (p_chosenLeoFile) {
-          this.stdin("openFile:" + p_chosenLeoFile[0].fsPath + "\n");
+          const w_openFile = new Promise((resolve, reject) => {
+            const w_action: LeoAction = {
+              action: "openFile:", // ! INCLUDES THE COLON ':'
+              parameter: p_chosenLeoFile[0].fsPath + "\n", // nothing should get root nodes of the leo file
+              resolveFn: resolve,
+              rejectFn: reject
+            };
+            this.callStack.push(w_action);
+            this.callAction();
+          });
+          // * Resolution of the 'open file' promise
+          w_openFile.then(() => {
+            this.fileOpenedReady = true; // ANSWER to openLeoFile
+            this.fileBrowserOpen = false;
+            if (this.onDidChangeTreeDataObject) {
+              this.onDidChangeTreeDataObject.fire();
+            } else {
+              console.log("ERROR onDidChangeTreeDataObject NOT READY");
+            }
+            // update status bar for first time
+            this.updateStatusBarItem();
+          });
+
         } else {
           vscode.window.showInformationMessage("Open Cancelled");
           this.fileBrowserOpen = false;
@@ -307,10 +316,20 @@ export class LeoIntegration {
   }
 
   private stdin(p_message: string): any {
-    // not using 'this.leoBridgeReady' : using '.then' to be buffered before process ready.
+    // not using 'this.leoBridgeReady' : using '.then' to be buffered in case process isn't ready.
     this.leoBridgeReadyPromise.then(p_leoProcess => {
       p_leoProcess.stdin.write(p_message); // * std in interaction sending to python script
     });
+  }
+
+  public test(): void {
+    console.log("sending test");
+    this.stdin("test\n"); // 'test' should trigger a test output from python script
+  }
+
+  public killLeoBridge(): void {
+    console.log("sending kill command");
+    this.stdin("exit\n"); // 'exit' should kill the python script
   }
 
   private initLeoProcess(
@@ -340,8 +359,8 @@ export class LeoIntegration {
       const w_lines = w_data.split("\n");
       w_lines.forEach(p_line => {
         p_line = p_line.trim();
-        if (p_line) {
-          this.processAnswer(p_line); // * std out interaction listening
+        if (p_line) { // * std out process line by line: json shouldn't have line breaks
+          this.processAnswer(p_line);
         }
       });
     });

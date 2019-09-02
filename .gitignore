@@ -2,6 +2,3 @@ out
 node_modules
 .vscode-test/
 *.vsix
-commander-list.txt
-resources-backup
-

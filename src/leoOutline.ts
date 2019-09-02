@@ -8,10 +8,12 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
 
   constructor(private leoIntegration: LeoIntegration) {
+    // give the event for 'refresh' of either root, without params, or a node when passed as parameter
     leoIntegration.setupRefreshFn(this._onDidChangeTreeData);
   }
 
   public refresh(): void {
+    // * Not used for now. Kept as example from treeoutline extension template
     this._onDidChangeTreeData.fire();
     console.log("Leo outline refresh");
   }
@@ -50,8 +52,8 @@ export class LeoNode extends vscode.TreeItem {
   contextValue = "leoNode"; // for use in package.json
 
   get iconPath(): string {
-    //return path.join(__filename, "..", "..", "resources", "box00.svg");
-    // * 8=dirty, 4=cloned, 2=marked, 1=content (iconsInverted is dirty for light/dark inversion)
+    // For usage as: return path.join(__filename, "..", "..", "resources", "box00.svg");
+    // 8=dirty, 4=cloned, 2=marked, 1=content (iconsInverted is dirty for light/dark inversion)
     let w_icon: number =
       (+(this.dirty && this.leoIntegration.iconsInverted) << 3) |
       (+this.cloned << 2) |
@@ -60,8 +62,8 @@ export class LeoNode extends vscode.TreeItem {
     return this.leoIntegration.icons[w_icon];
   }
 
-  // * whole headline as tooltip is useful if outline pane is too narrow
   get tooltip(): string {
+    // whole headline as tooltip is useful if outline pane is too narrow
     return `${this.label}`;
   }
 
