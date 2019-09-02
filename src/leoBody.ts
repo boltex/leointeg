@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 
+// This class provides a read-only panel in order to get a basic body pane output
+
 export class LeoBodyProvider implements vscode.TextDocumentContentProvider {
   // emitter and its event
   private _onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();

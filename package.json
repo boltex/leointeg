@@ -74,9 +74,14 @@
     },
     "keybindings": [
       {
+        "command": "-editor.action.startFindReplaceAction",
+        "key": "ctrl+h",
+        "mac": "cmd+h"
+      },
+      {
         "command": "leointeg.editHeadline",
-        "key": "ctrl+f1",
-        "mac": "cmd+f1"
+        "key": "ctrl+h",
+        "mac": "cmd+h"
       }
     ]
   },
