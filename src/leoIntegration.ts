@@ -71,8 +71,7 @@ export class LeoIntegration {
 
   private updateStatusBarItem(): void {
     // let n = getNumberOfSelectedLines(vscode.window.activeTextEditor);
-    let n = 42;
-
+    let n = 42; // TODO : TEMPORARY VALUE : update at proper event (focus/blur of proper element)
     if (n > 0) {
       this.leoStatusBarItem.text = `$(keyboard) Literate `;
       this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";

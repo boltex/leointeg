@@ -10,7 +10,11 @@ export class LeoBodyProvider implements vscode.TextDocumentContentProvider {
     leoIntegration.setupRefreshBodyFn(this._onDidChangeEmitter);
   }
 
-  provideTextDocumentContent(uri: vscode.Uri): string {
-    return this.leoIntegration.bodyText;
+  provideTextDocumentContent(uri: vscode.Uri): Thenable<string> {
+    if (this.leoIntegration.bodyText) {
+      return Promise.resolve(this.leoIntegration.bodyText);
+    } else {
+      return Promise.resolve(" ");
+    }
   }
 }
