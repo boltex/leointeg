@@ -236,6 +236,10 @@ export class LeoIntegration {
     });
   }
 
+  public editHeadline() {
+    console.log('edit headline');
+  }
+
   public openLeoFile(): void {
     let w_returnMessage: string | undefined;
     if (!this.leoBridgeReady) {

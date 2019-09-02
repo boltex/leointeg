@@ -3,8 +3,6 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyProvider } from "./leoBody";
 
-let leoStatusBarItem: vscode.StatusBarItem;
-
 export function activate(context: vscode.ExtensionContext) {
   console.log('activate "leointeg" extension.');
 
@@ -18,6 +16,9 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.commands.registerCommand("leointeg.killLeo", () => leoIntegration.killLeoBridge()));
   context.subscriptions.push(
     vscode.commands.registerCommand("leointeg.selectNode", (p_para: any) => leoIntegration.selectNode(p_para))
+  );
+  context.subscriptions.push(
+    vscode.commands.registerCommand("leointeg.editHeadline", (p_para: any) => leoIntegration.editHeadline())
   );
 
   // Tree provider needs a reference to the 'leoIntegration' main object class instance
