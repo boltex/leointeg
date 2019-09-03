@@ -6,7 +6,8 @@ import { LeoBodyFsProvider } from "./leoBodyFs";
 export function activate(context: vscode.ExtensionContext) {
   console.log('activate "leointeg" extension.');
 
-  let bodyUri = vscode.Uri.parse("leo:body");
+  const leoSheme = "leoBody"; // Not sure is Sheme is the right construct...
+  let bodyUri = vscode.Uri.parse("leoBody:/");
 
   const leoIntegration = new LeoIntegration(context, bodyUri);
   context.subscriptions.push(
@@ -25,7 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.window.registerTreeDataProvider("leoIntegration", new LeoOutlineProvider(leoIntegration));
 
   // register a content provider for the leo-scheme
-  const leoSheme = "leo";
+
   //const leoBodyProvider = new LeoBodyProvider(leoIntegration);
   //context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(leoSheme, leoBodyProvider));
 

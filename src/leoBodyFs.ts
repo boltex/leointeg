@@ -9,11 +9,11 @@ export class BodyFileStatTest implements vscode.FileStat {
     mtime: number;
     size: number;
 
-    constructor() {
+    constructor(p_size: number) {
         this.type = vscode.FileType.File;
         this.ctime = Date.now();
         this.mtime = Date.now();
-        this.size = 0;
+        this.size = p_size;
     }
 }
 
@@ -73,37 +73,66 @@ export class LeoBodyFsProvider implements vscode.FileSystemProvider {
     // @throws [`FileNotFound`](#FileSystemError.FileNotFound) when `uri` doesn't exist.
     stat(uri: vscode.Uri): vscode.FileStat {
         console.log('called stat');
-        return new BodyFileStatTest();  // Fake Dates, size = 0
+        return new BodyFileStatTest(this.leoIntegration.bodyText.length);  // Fake Dates, size = 0
     }
 
-    readDirectory(uri: vscode.Uri): [string, vscode.FileType][] {
-        console.log('called readDirectory');
+    readDirectory(uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
+        console.log('called readDirectory', uri.fsPath);
         //const entry = this._lookupAsDirectory(uri, false);
         let result: [string, vscode.FileType][] = [];
-        // for (const [name, child] of entry.entries) {
-        //     result.push([name, child.type]);
-        // }
-        return result;
+        result.push(['body', vscode.FileType.File]); // only body for now
+        return Promise.resolve(result);
     }
     createDirectory(uri: vscode.Uri): void {
+        console.log('called createDirectory');
+        throw vscode.FileSystemError.NoPermissions();
     }
-    readFile(uri: vscode.Uri): Uint8Array {
-        console.log('called readFile');
-        const data = Buffer.from('abcdef');
-        if (data) {
-            return data;
+    readFile(uri: vscode.Uri): Thenable<Uint8Array> {
+        console.log('called readFile', uri.fsPath);
+        if (true || uri.fsPath === '') { // TODO : check if uri is leo:body
+            if (this.leoIntegration.bodyText) {
+                return Promise.resolve(Buffer.from(this.leoIntegration.bodyText));
+            } else {
+                return Promise.resolve(Buffer.from(" "));
+            }
+        } else {
+            throw vscode.FileSystemError.FileNotFound();
         }
-        throw vscode.FileSystemError.FileNotFound();
+
     }
     writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
-        console.log('called writeFile');
+        // TODO : Send/Save on leoBridge's side!
+        console.log('called writeFile!');
     }
     rename(oldUri: vscode.Uri, newUri: vscode.Uri, options: { overwrite: boolean }): void {
         console.log('called oldUri');
+        throw vscode.FileSystemError.NoPermissions();
     }
     delete(uri: vscode.Uri): void {
         console.log('called uri');
+        throw vscode.FileSystemError.NoPermissions();
+    }
+    copy(uri: vscode.Uri): void {
+        throw vscode.FileSystemError.NoPermissions();
     }
 
+    // TODO : --- manage file events IS THIS NECESSARY?
 
+    private _emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
+    private _bufferedEvents: vscode.FileChangeEvent[] = [];
+    private _fireSoonHandle?: NodeJS.Timer;
+
+    private _fireSoon(...events: vscode.FileChangeEvent[]): void {
+        this._bufferedEvents.push(...events);
+
+        if (this._fireSoonHandle) {
+            clearTimeout(this._fireSoonHandle);
+        }
+
+        this._fireSoonHandle = setTimeout(() => {
+            this._emitter.fire(this._bufferedEvents);
+            this._bufferedEvents.length = 0;
+        }, 5);
+    }
 }
+

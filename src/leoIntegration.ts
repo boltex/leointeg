@@ -37,10 +37,12 @@ export class LeoIntegration {
   public leoBridgeReady: boolean = false;
   public fileBrowserOpen: boolean = false;
   public fileOpenedReady: boolean = false;
+  public actionBusy: boolean = false;
+
   public outlineDataReady: boolean = false;
+
   public bodyDataReady: boolean = false;
   public bodyText: string = "";
-  public actionBusy: boolean = false;
 
   public icons: string[] = [];
   public iconsInverted: boolean = false; // used to flip dirty/pristine outline of icon
@@ -230,9 +232,13 @@ export class LeoIntegration {
   }
 
   public selectNode(p_para: LeoNode): void {
+    console.log('Clicked on a node!');
     this.getBody(p_para.apJson).then(p_body => {
       this.bodyText = p_body;
-      this.onDidChangeBodyDataObject.fire(this.bodyUri);
+      // this.onDidChangeBodyDataObject.fire(this.bodyUri); // * For virtualdocument leoBody.ts tests
+      console.log("sending refresh", this.bodyUri);
+
+      this.onDidChangeBodyDataObject.fire({ type: vscode.FileChangeType.Changed, uri: this.bodyUri }); // * for file system implementation
     });
   }
 
@@ -275,6 +281,7 @@ export class LeoIntegration {
           });
           // * Resolution of the 'open file' promise
           w_openFile.then(() => {
+            // TODO : Revise order of this startup stuff
             this.fileOpenedReady = true; // ANSWER to openLeoFile
             this.fileBrowserOpen = false;
             if (this.onDidChangeTreeDataObject) {
@@ -284,6 +291,20 @@ export class LeoIntegration {
             }
             // update status bar for first time
             this.updateStatusBarItem();
+            // * Make body pane appear
+            // vscode.Uri.parse('memfs:/') // from examples on github
+
+            //vscode.workspace.openTextDocument(this.bodyUri)
+            //.then(p_doc => vscode.window.showTextDocument(p_doc));
+
+            // const w_workspaceStarted = vscode.workspace.updateWorkspaceFolders(0, 0, { uri: vscode.Uri.parse(this.bodyUri) });
+            // if (w_workspaceStarted) {
+
+            //   vscode.window.showTextDocument(vscode.Uri.parse(this.bodyUri));
+            // } else {
+            //   console.log('Error starting workspace');
+            // }
+
           });
 
         } else {
