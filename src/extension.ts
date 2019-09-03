@@ -4,6 +4,7 @@ import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyFsProvider } from "./leoBodyFs";
 
 export function activate(context: vscode.ExtensionContext) {
+
   console.log('activate "leointeg" extension.');
 
   const leoSheme = "leoBody"; // Not sure is Sheme is the right construct...

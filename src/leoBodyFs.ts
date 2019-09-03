@@ -72,7 +72,7 @@ export class LeoBodyFsProvider implements vscode.FileSystemProvider {
     // @return The file metadata about the file.
     // @throws [`FileNotFound`](#FileSystemError.FileNotFound) when `uri` doesn't exist.
     stat(uri: vscode.Uri): vscode.FileStat {
-        console.log('called stat');
+        console.log('called stat', uri.fsPath);
         return new BodyFileStatTest(this.leoIntegration.bodyText.length);  // Fake Dates, size = 0
     }
 
@@ -102,7 +102,7 @@ export class LeoBodyFsProvider implements vscode.FileSystemProvider {
     }
     writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
         // TODO : Send/Save on leoBridge's side!
-        console.log('called writeFile!');
+        console.log('called writeFile!', uri.fsPath);
     }
     rename(oldUri: vscode.Uri, newUri: vscode.Uri, options: { overwrite: boolean }): void {
         console.log('called oldUri');

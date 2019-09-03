@@ -300,11 +300,16 @@ export class LeoIntegration {
             // const w_workspaceStarted = vscode.workspace.updateWorkspaceFolders(0, 0, { uri: vscode.Uri.parse(this.bodyUri) });
             // if (w_workspaceStarted) {
 
-            //   vscode.window.showTextDocument(vscode.Uri.parse(this.bodyUri));
+            //   vscode.window.showTextDocument(this.bodyUri);
             // } else {
             //   console.log('Error starting workspace');
             // }
-
+            vscode.window.showTextDocument(this.bodyUri, {
+              viewColumn: 1,
+              preserveFocus: false,
+              preview: false
+              //  selection: new Range( new Position(0,0), new Position(0,0) )
+            });
           });
 
         } else {
