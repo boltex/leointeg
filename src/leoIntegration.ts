@@ -232,13 +232,16 @@ export class LeoIntegration {
   }
 
   public selectNode(p_para: LeoNode): void {
-    console.log('Clicked on a node!');
     this.getBody(p_para.apJson).then(p_body => {
       this.bodyText = p_body;
       // this.onDidChangeBodyDataObject.fire(this.bodyUri); // * For virtualdocument leoBody.ts tests
-      console.log("sending refresh", this.bodyUri);
-
-      this.onDidChangeBodyDataObject.fire({ type: vscode.FileChangeType.Changed, uri: this.bodyUri }); // * for file system implementation
+      vscode.window.showTextDocument(this.bodyUri, {
+        viewColumn: 1,
+        preserveFocus: false,
+        preview: false
+        // selection: new Range( new Position(0,0), new Position(0,0) )
+      });
+      this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
     });
   }
 
@@ -292,23 +295,11 @@ export class LeoIntegration {
             // update status bar for first time
             this.updateStatusBarItem();
             // * Make body pane appear
-            // vscode.Uri.parse('memfs:/') // from examples on github
-
-            //vscode.workspace.openTextDocument(this.bodyUri)
-            //.then(p_doc => vscode.window.showTextDocument(p_doc));
-
-            // const w_workspaceStarted = vscode.workspace.updateWorkspaceFolders(0, 0, { uri: vscode.Uri.parse(this.bodyUri) });
-            // if (w_workspaceStarted) {
-
-            //   vscode.window.showTextDocument(this.bodyUri);
-            // } else {
-            //   console.log('Error starting workspace');
-            // }
             vscode.window.showTextDocument(this.bodyUri, {
               viewColumn: 1,
               preserveFocus: false,
               preview: false
-              //  selection: new Range( new Position(0,0), new Position(0,0) )
+              // selection: new Range( new Position(0,0), new Position(0,0) )
             });
           });
 
