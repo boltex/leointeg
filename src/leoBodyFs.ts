@@ -54,7 +54,7 @@ export class LeoBodyFsProvider implements vscode.FileSystemProvider {
     }
     readFile(uri: vscode.Uri): Thenable<Uint8Array> {
         console.log('called readFile', uri.fsPath);
-        if (uri.fsPath === '/') { // TODO : check if uri is leo:body
+        if (uri.fsPath === '/') {
             throw vscode.FileSystemError.FileIsADirectory();
         } else if (uri.fsPath === '/body') {
             if (this.leoIntegration.bodyText) {

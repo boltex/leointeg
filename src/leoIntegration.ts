@@ -139,9 +139,13 @@ export class LeoIntegration {
   private getBestOpenFolderUri(): Uri {
     // Find a folder to propose when opening the browse-for-leo-file chooser
     let w_openedFileEnvUri: Uri | boolean = false;
-    const w_activeUri: Uri | undefined = vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.document.uri
-      : undefined;
+    let w_activeUri: Uri | undefined = undefined;
+
+    // let w_activeUri: Uri | undefined = vscode.window.activeTextEditor?vscode.window.activeTextEditor.document.uri:undefined;
+    if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]) {
+      w_activeUri = vscode.workspace.workspaceFolders[0].uri;
+    }
+
     if (w_activeUri) {
       const w_defaultFolder = vscode.workspace.getWorkspaceFolder(w_activeUri);
       if (w_defaultFolder) {
@@ -301,6 +305,8 @@ export class LeoIntegration {
               preview: false
               // selection: new Range( new Position(0,0), new Position(0,0) )
             });
+            // TODO : try to make leftmost tab so it touches the outline pane
+
           });
 
         } else {
