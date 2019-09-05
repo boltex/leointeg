@@ -235,23 +235,21 @@ export class LeoIntegration {
     this.stdin(w_action.action + w_action.parameter + "\n");
   }
 
-  public selectNode(p_para: LeoNode): void {
-    this.getBody(p_para.apJson).then(p_body => {
+  public selectNode(p_node: LeoNode): void {
+    this.getBody(p_node.apJson).then(p_body => {
       this.bodyText = p_body;
       // this.onDidChangeBodyDataObject.fire(this.bodyUri); // * For virtualdocument leoBody.ts tests
       vscode.window.showTextDocument(this.bodyUri, {
         viewColumn: 1,
         preserveFocus: false,
         preview: false
-        // selection: new Range( new Position(0,0), new Position(0,0) )
+        // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
       });
       this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
     });
   }
 
-  public editHeadline() {
-    console.log('edit headline');
-  }
+
 
   public openLeoFile(): void {
     let w_returnMessage: string | undefined;
@@ -299,13 +297,24 @@ export class LeoIntegration {
             // update status bar for first time
             this.updateStatusBarItem();
             // * Make body pane appear
-            vscode.window.showTextDocument(this.bodyUri, {
+            const w_leoBody = vscode.window.showTextDocument(this.bodyUri, {
               viewColumn: 1,
               preserveFocus: false,
               preview: false
-              // selection: new Range( new Position(0,0), new Position(0,0) )
+              // selection: new Range( new Position(0,0), new Position(0,0) ) // First time open, no need to set scroll
             });
-            // TODO : try to make leftmost tab so it touches the outline pane
+
+            // console.log(vscode.window.visibleTextEditors);
+            // for (let entry of vscode.window.visibleTextEditors) {
+            //   console.log(entry.); // 1, "string", false
+            // }
+
+            w_leoBody.then(w_bodyEditor => {
+              // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
+              // TODO : try to make leftmost tab so it touches the outline pane
+              // console.log('created body:', w_bodyEditor);
+
+            });
 
           });
 
@@ -357,6 +366,29 @@ export class LeoIntegration {
     console.log("sending kill command");
     this.stdin("exit\n"); // 'exit' should kill the python script
   }
+
+  public editHeadline(p_node: LeoNode) {
+    vscode.window.showInformationMessage(`editHeadline on ${p_node.label}.`);
+  }
+  public mark(p_node: LeoNode): void {
+    vscode.window.showInformationMessage(`mark on ${p_node.label}.`);
+  }
+  public copyNode(p_node: LeoNode): void {
+    vscode.window.showInformationMessage(`copyNode on ${p_node.label}.`);
+  }
+  public cutNode(p_node: LeoNode): void {
+    vscode.window.showInformationMessage(`cutNode on ${p_node.label}.`);
+  }
+  public pasteNode(p_node: LeoNode): void {
+    vscode.window.showInformationMessage(`pasteNode on ${p_node.label}.`);
+  }
+  public pasteNodeAsClone(p_node: LeoNode): void {
+    vscode.window.showInformationMessage(`pasteNodeAsClone on ${p_node.label}.`);
+  }
+  public delete(p_node: LeoNode): void {
+    vscode.window.showInformationMessage(`delete on ${p_node.label}.`);
+  }
+
 
   private initLeoProcess(
     p_promiseResolve: (value?: any | PromiseLike<any>) => void,

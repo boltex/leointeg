@@ -60,7 +60,35 @@
       },
       {
         "command": "leointeg.editHeadline",
-        "title": "Edit Headline"
+        "title": "Edit Headline",
+        "icon": {
+          "light": "resources/light/edit.svg",
+          "dark": "resources/dark/edit.svg"
+        }
+      },
+      {
+        "command": "leointeg.mark",
+        "title": "Mark"
+      },
+      {
+        "command": "leointeg.copyNode",
+        "title": "Copy Node"
+      },
+      {
+        "command": "leointeg.cutNode",
+        "title": "Cut Node"
+      },
+      {
+        "command": "leointeg.pasteNode",
+        "title": "Paste Node"
+      },
+      {
+        "command": "leointeg.pasteNodeAsClone",
+        "title": "Paste Node as Clone"
+      },
+      {
+        "command": "leointeg.delete",
+        "title": "Delete"
       }
     ],
     "menus": {
@@ -70,18 +98,51 @@
           "when": "view == leoIntegration",
           "group": "navigation"
         }
+      ],
+      "view/item/context": [
+        {
+          "command": "leointeg.editHeadline",
+          "when": "view == leoIntegration && viewItem == leoNode",
+          "group": "inline"
+        },
+        {
+          "command": "leointeg.mark",
+          "when": "view == leoIntegration && viewItem == leoNode"
+        },
+        {
+          "command": "leointeg.copyNode",
+          "when": "view == leoIntegration && viewItem == leoNode"
+        },
+        {
+          "command": "leointeg.cutNode",
+          "when": "view == leoIntegration && viewItem == leoNode"
+        },
+        {
+          "command": "leointeg.pasteNode",
+          "when": "view == leoIntegration && viewItem == leoNode"
+        },
+        {
+          "command": "leointeg.pasteNodeAsClone",
+          "when": "view == leoIntegration && viewItem == leoNode"
+        },
+        {
+          "command": "leointeg.delete",
+          "when": "view == leoIntegration && viewItem == leoNode"
+        }
       ]
     },
     "keybindings": [
       {
         "command": "-editor.action.startFindReplaceAction",
         "key": "ctrl+h",
-        "mac": "cmd+h"
+        "mac": "cmd+h",
+        "when": "view == leoIntegrationView && viewItem == leoNode"
       },
       {
         "command": "leointeg.editHeadline",
         "key": "ctrl+h",
-        "mac": "cmd+h"
+        "mac": "cmd+h",
+        "when": "view == leoIntegrationView && viewItem == leoNode"
       }
     ]
   },

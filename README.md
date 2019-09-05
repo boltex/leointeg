@@ -1,6 +1,4 @@
-# ![LeoEditor](resources/leoapp.png) leointeg README
-
-Leo editor integration with Visual Studio Code.
+# ![LeoEditor](resources/leoapp.png) Leo editor integration with Visual Studio Code.
 
 See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
@@ -12,7 +10,7 @@ _As a starting point, here are a couple of intended features:_
 
 Integration done with a python script. It interacts with leo via 'leoBridge'. (see https://leoeditor.com/leoBridge.html)
 
-A 'view container' with its own icon in the activitybar. It's provided view is the actual outline of a leo file.
+A treeview of an actual outline of a leo file. Maybe integrated below the explorer view, or standalone in its own panel.
 
 When in this 'leo-integration' mode, the functionality of vscode is altered to suit the interactions with the opened leo file. (For example: by re-maping shortcut keys to the familiar tree-editing shortcut keys of Leo.)
 
@@ -20,7 +18,7 @@ An appropriate editor on the right side, acting as the body pane.
 
 2 way synchronisation of leo's output files and vscode's explorer & 'normal mode' of operation.
 
-Go-to appropriate line in generated files. (Reproducing xcc-nodes behaviour see http://xccnode.sourceforge.net/)
+Error lookup, or breakpoints cycling with automatic go-to line in generated file's nodes and body position, in the outline itself. (Reproducing xcc-nodes behaviour see http://xccnode.sourceforge.net/)
 
 File generating 'at' nodes that show their derived line number instead of the body-pane's line number (Also reproducing xcc-nodes behaviour)
 
