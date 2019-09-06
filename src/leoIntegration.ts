@@ -69,6 +69,51 @@ export class LeoIntegration {
     this.leoStatusBarItem.command = "leointeg.test"; // just call test function for now
     context.subscriptions.push(this.leoStatusBarItem);
     this.leoStatusBarItem.hide();
+
+    // * React to change in active panel/text editor to toggle Leo Mode Shortcuts and behavior
+    vscode.window.onDidChangeActiveTextEditor(p_event => this.onActiveEditorChanged(p_event));
+    vscode.window.onDidChangeTextEditorSelection(p_event => this.onChangeEditorSelection(p_event));
+    vscode.window.onDidChangeTextEditorViewColumn(p_event => this.onChangeEditorViewColumn(p_event));
+    vscode.window.onDidChangeVisibleTextEditors(p_event => this.onChangeVisibleEditor(p_event));
+    vscode.window.onDidChangeWindowState(p_event => this.onChangeWindowState(p_event));
+
+    vscode.workspace.onDidChangeTextDocument(p_event => this.onDocumentChanged(p_event));
+    vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
+
+  }
+
+  private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
+    if (p_event) {
+      console.log("onActiveEditorChanged", p_event);
+
+    } else {
+      console.log("onActiveEditorChanged, no editor");
+    }
+    if (vscode.window.activeTextEditor) {
+      if (vscode.window.activeTextEditor.document.uri.scheme === 'leo') {
+        // test
+      }
+    }
+  }
+  private onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
+    console.log("onChangeEditorSelection", p_event.textEditor.document.fileName);
+  }
+  private onChangeEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void {
+    console.log("onChangeEditorViewColumn", p_event.textEditor.document.fileName, p_event.viewColumn);
+  }
+  private onChangeVisibleEditor(p_event: vscode.TextEditor[]): void {
+    console.log("onChangeVisibleEditor", p_event);
+  }
+  private onChangeWindowState(p_event: vscode.WindowState): void {
+    console.log("onChangeWindowState", p_event);
+  }
+
+
+  private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
+    console.log("onDocumentChanged", p_event);
+  }
+  private onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
+    console.log("onChangeConfiguration", p_event.affectsConfiguration.toString());
   }
 
   private updateStatusBarItem(): void {
