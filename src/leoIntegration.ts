@@ -48,6 +48,16 @@ export class LeoIntegration {
   public iconsInverted: boolean = false; // used to flip dirty/pristine outline of icon
 
   public leoStatusBarItem: vscode.StatusBarItem;
+  public leoObjectSelected: boolean = false; // represents having focus on outline or body, as opposed to anything else
+  private statusbarNormalColor = new vscode.ThemeColor("statusBar.foreground");  //"statusBar.foreground"
+
+  private editHeadlineInputOptions: vscode.InputBoxOptions = {
+    ignoreFocusOut: false,
+    value: "", // will be replaced live upon showing from the node's text
+    valueSelection: undefined,
+    // prompt: 'Headline',
+    placeHolder: 'Enter Headline',
+  };
 
   private callStack: LeoAction[] = [];
   private onDidChangeTreeDataObject: any;
@@ -67,8 +77,12 @@ export class LeoIntegration {
     this.leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
     this.leoStatusBarItem.color = "#fb7c47"; // TODO : Centralize or make available in a config setting.
     this.leoStatusBarItem.command = "leointeg.test"; // just call test function for now
+    this.leoStatusBarItem.text = `$(keyboard) Literate `;
+    this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
     context.subscriptions.push(this.leoStatusBarItem);
     this.leoStatusBarItem.hide();
+
+
 
     // * React to change in active panel/text editor to toggle Leo Mode Shortcuts and behavior
     vscode.window.onDidChangeActiveTextEditor(p_event => this.onActiveEditorChanged(p_event));
@@ -78,52 +92,75 @@ export class LeoIntegration {
     vscode.window.onDidChangeWindowState(p_event => this.onChangeWindowState(p_event));
 
     vscode.workspace.onDidChangeTextDocument(p_event => this.onDocumentChanged(p_event));
+    vscode.workspace.onDidSaveTextDocument(p_event => this.onDocumentSaved(p_event));
     vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
 
   }
 
   private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
+    // selecting another editor of the same window by the tab
     if (p_event) {
-      console.log("onActiveEditorChanged", p_event);
-
-    } else {
-      console.log("onActiveEditorChanged, no editor");
+      // console.log("onActiveEditorChanged", p_event);
+    } else if (this.leoObjectSelected) {
+      //console.log("onActiveEditorChanged, no editor");
+      this.leoObjectSelected = false;
+      this.updateStatusBarItem();
+      return;
     }
     if (vscode.window.activeTextEditor) {
       if (vscode.window.activeTextEditor.document.uri.scheme === 'leo') {
-        // test
+        // Selecting Leo body, either by placing cursor in the editor pane or clicking its tab
+        if (!this.leoObjectSelected) {
+          //console.log('selected a leo sheme text editor');
+          this.leoObjectSelected = true;
+          this.updateStatusBarItem();
+          return;
+        }
+      } else {
+        //console.log('selected Out of leo');
+        this.leoObjectSelected = false;
+        this.updateStatusBarItem();
+        return;
       }
     }
   }
   private onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
-    console.log("onChangeEditorSelection", p_event.textEditor.document.fileName);
+    // console.log("onChangeEditorSelection", p_event.textEditor.document.fileName);
   }
   private onChangeEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void {
     console.log("onChangeEditorViewColumn", p_event.textEditor.document.fileName, p_event.viewColumn);
   }
   private onChangeVisibleEditor(p_event: vscode.TextEditor[]): void {
-    console.log("onChangeVisibleEditor", p_event);
+    // Bring in focus an editor tab that was not on front
+    // console.log("onChangeVisibleEditor", p_event);
   }
   private onChangeWindowState(p_event: vscode.WindowState): void {
-    console.log("onChangeWindowState", p_event);
+    // console.log("onChangeWindowState", p_event);
+    // selecting another vscode window by the os title bar
   }
-
-
   private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
-    console.log("onDocumentChanged", p_event);
+    // edited the document // TODO : DEBOUNCE/CHECK IF IT WAS LEO BODY !
+    // console.log("onDocumentChanged", p_event);
   }
+  private onDocumentSaved(p_event: vscode.TextDocument): void {
+    // edited the document // TODO : DEBOUNCE/CHECK IF IT WAS LEO BODY !
+    console.log("onDocumentSaved", p_event.fileName);
+  }
+
   private onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
     console.log("onChangeConfiguration", p_event.affectsConfiguration.toString());
   }
 
   private updateStatusBarItem(): void {
     // let n = getNumberOfSelectedLines(vscode.window.activeTextEditor);
-    let n = 42; // TODO : TEMPORARY VALUE : update at proper event (focus/blur of proper element)
-    if (n > 0) {
-      this.leoStatusBarItem.text = `$(keyboard) Literate `;
-      this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
+    if (this.leoObjectSelected) {
+      // this.leoStatusBarItem.color = "#fb7c47";
+      // this.leoStatusBarItem.text = `$(keyboard) Literate `;
+      // this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
       this.leoStatusBarItem.show();
     } else {
+      // this.leoStatusBarItem.color = this.statusbarNormalColor;
+      // this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
       this.leoStatusBarItem.hide();
     }
   }
@@ -147,7 +184,6 @@ export class LeoIntegration {
   public setupRefreshBodyFn(p_refreshObj: any) {
     this.onDidChangeBodyDataObject = p_refreshObj;
   }
-
 
   private jsonArrayToLeoNodesArray(p_jsonArray: string): LeoNode[] {
     let w_apDataArray: ArchivedPosition[] = JSON.parse(p_jsonArray);
@@ -413,25 +449,33 @@ export class LeoIntegration {
   }
 
   public editHeadline(p_node: LeoNode) {
-    vscode.window.showInformationMessage(`editHeadline on ${p_node.label}.`);
+    // vscode.window.showInformationMessage(`editHeadline on ${p_node.label}.`);
+    // Popup input for rename
+    this.editHeadlineInputOptions.value = p_node.label;
+    vscode.window.showInputBox(this.editHeadlineInputOptions).then(
+      p_newHeadline => {
+        console.log('Change for: ', p_newHeadline);
+
+      }
+    );
   }
   public mark(p_node: LeoNode): void {
-    vscode.window.showInformationMessage(`mark on ${p_node.label}.`);
+    vscode.window.showInformationMessage(`mark on ${p_node.label}.`); // Temp placeholder
   }
   public copyNode(p_node: LeoNode): void {
-    vscode.window.showInformationMessage(`copyNode on ${p_node.label}.`);
+    vscode.window.showInformationMessage(`copyNode on ${p_node.label}.`); // Temp placeholder
   }
   public cutNode(p_node: LeoNode): void {
-    vscode.window.showInformationMessage(`cutNode on ${p_node.label}.`);
+    vscode.window.showInformationMessage(`cutNode on ${p_node.label}.`); // Temp placeholder
   }
   public pasteNode(p_node: LeoNode): void {
-    vscode.window.showInformationMessage(`pasteNode on ${p_node.label}.`);
+    vscode.window.showInformationMessage(`pasteNode on ${p_node.label}.`); // Temp placeholder
   }
   public pasteNodeAsClone(p_node: LeoNode): void {
-    vscode.window.showInformationMessage(`pasteNodeAsClone on ${p_node.label}.`);
+    vscode.window.showInformationMessage(`pasteNodeAsClone on ${p_node.label}.`); // Temp placeholder
   }
   public delete(p_node: LeoNode): void {
-    vscode.window.showInformationMessage(`delete on ${p_node.label}.`);
+    vscode.window.showInformationMessage(`delete on ${p_node.label}.`); // Temp placeholder
   }
 
 

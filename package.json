@@ -144,6 +144,16 @@
         "mac": "cmd+h",
         "when": "view == leoIntegrationView && viewItem == leoNode"
       }
+    ],
+    "resourceLabelFormatters": [
+      {
+        "scheme": "leo",
+        "formatting": {
+          "label": "LEO: BODY",
+          "separator": "/",
+          "workspaceSuffix": ""
+        }
+      }
     ]
   },
   "scripts": {
