@@ -55,8 +55,8 @@ export class LeoIntegration {
     ignoreFocusOut: false,
     value: "", // will be replaced live upon showing from the node's text
     valueSelection: undefined,
-    // prompt: 'Headline',
-    placeHolder: 'Enter Headline',
+    prompt: 'Edit headline'
+    // placeHolder: 'Enter Headline',
   };
 
   private callStack: LeoAction[] = [];
