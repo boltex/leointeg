@@ -40,6 +40,7 @@ export class LeoIntegration {
   public actionBusy: boolean = false;
 
   public outlineDataReady: boolean = false;
+  public leoTreeView: vscode.TreeView<LeoNode> | undefined;
 
   public bodyDataReady: boolean = false;
   public bodyText: string = "";
@@ -94,6 +95,8 @@ export class LeoIntegration {
     vscode.workspace.onDidChangeTextDocument(p_event => this.onDocumentChanged(p_event));
     vscode.workspace.onDidSaveTextDocument(p_event => this.onDocumentSaved(p_event));
     vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
+
+
 
   }
 
@@ -183,6 +186,10 @@ export class LeoIntegration {
 
   public setupRefreshBodyFn(p_refreshObj: any) {
     this.onDidChangeBodyDataObject = p_refreshObj;
+  }
+
+  public setTreeView(p_treeView: vscode.TreeView<LeoNode>) {
+    this.leoTreeView = p_treeView;
   }
 
   private jsonArrayToLeoNodesArray(p_jsonArray: string): LeoNode[] {
@@ -367,6 +374,9 @@ export class LeoIntegration {
           });
           // * Resolution of the 'open file' promise
           w_openFile.then(() => {
+            // TODO : Get selected node position and set it aftert getting first refresh
+
+
             // TODO : Revise order of this startup stuff
             this.fileOpenedReady = true; // ANSWER to openLeoFile
             this.fileBrowserOpen = false;

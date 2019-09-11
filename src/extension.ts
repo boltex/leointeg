@@ -32,7 +32,12 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   // Tree provider needs a reference to the 'leoIntegration' main object class instance
-  vscode.window.registerTreeDataProvider("leoIntegration", new LeoOutlineProvider(leoIntegration));
+  const w_leoOutlineProvider = new LeoOutlineProvider(leoIntegration);
+
+  //vscode.window.registerTreeDataProvider("leoIntegration", w_leoOutlineProvider);
+  const w_leoTreeView = vscode.window.createTreeView("leoIntegration", { showCollapseAll: true, treeDataProvider: w_leoOutlineProvider });
+  leoIntegration.setTreeView(w_leoTreeView);
+
 
   // * old test : register a content provider for the leo-scheme
   // const leoBodyProvider = new LeoBodyProvider(leoIntegration);

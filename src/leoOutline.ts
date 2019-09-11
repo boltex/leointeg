@@ -7,6 +7,9 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   >();
   readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
 
+  // TODO : Save and restore selection / cursor position from selection object saved in each node
+  // TODO : before / upon selection of other nodes
+
   constructor(private leoIntegration: LeoIntegration) {
     // give the event for 'refresh' of either root, without params, or a node when passed as parameter
     leoIntegration.setupRefreshFn(this._onDidChangeTreeData);
@@ -22,6 +25,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     return element;
   }
 
+  //getParent( ){}
+
   getChildren(element?: LeoNode): Thenable<LeoNode[]> {
     console.log("get children");
 
@@ -34,6 +39,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 }
 
 export class LeoNode extends vscode.TreeItem {
+  public cursorSelection: any;
+
   constructor(
     private leoIntegration: LeoIntegration, // For access to leo integration's globals (e.g. icons)
     public label: string, // Header
@@ -44,6 +51,7 @@ export class LeoNode extends vscode.TreeItem {
     public marked: boolean,
     public hasBody: boolean,
     public command?: vscode.Command
+
   ) {
     super(label, collapsibleState);
     this.command = { title: "select", command: "leointeg.selectNode", arguments: [this] };
@@ -66,6 +74,15 @@ export class LeoNode extends vscode.TreeItem {
     // whole headline as tooltip is useful if outline pane is too narrow
     return `${this.label}`;
   }
+
+  getCursorSelection(): any {
+    return this.cursorSelection;
+  }
+
+  setCursorSelection(p_cursorSelection:any): void {
+    this.cursorSelection = p_cursorSelection;
+  }
+
 
   // * some smaller grayed-out text acompanying the main label
   // get description(): string {

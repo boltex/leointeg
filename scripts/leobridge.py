@@ -55,7 +55,7 @@ def openFile(p_file):
 
 
 def getAllRootChildren():
-    global bridge, commander
+    global commander
     p = commander.rootPosition()
     while p:
         yield p
@@ -64,7 +64,6 @@ def getAllRootChildren():
 
 def getChildren(p_apJson):
     '''EMIT OUT list of children of a node'''
-    global bridge, commander
     if(p_apJson):
         w_p = ap_to_p(json.loads(p_apJson))
         if w_p and w_p.hasChildren():
@@ -75,9 +74,20 @@ def getChildren(p_apJson):
         outputOutlineData(getAllRootChildren())
 
 
+def getParent(p_apJson):
+    '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
+    if(p_apJson):
+        w_p = ap_to_p(json.loads(p_apJson))
+        if w_p and w_p.hasParent():
+            outputOutlineData([w_p.getParent()])  # as array
+        else:
+            outputOutlineData([])  # default empty for root
+    else:
+        outputOutlineData([])
+
+
 def getBody(p_apJson):
     '''EMIT OUT body of a node'''
-    global bridge, commander
     if(p_apJson):
         w_p = ap_to_p(json.loads(p_apJson))
         if w_p and w_p.b:
@@ -86,6 +96,16 @@ def getBody(p_apJson):
             outputBodyData(False)  # default empty
     else:
         outputBodyData(False)
+
+
+def getSelectedNode():
+    '''EMIT OUT Selected Position as an array, even if unique'''
+    global commander
+    c = commander
+    if(c.p):
+        outputOutlineData([c.p])
+    else:
+        outputOutlineData([])
 
 
 def processCommand(p_string):
@@ -97,8 +117,14 @@ def processCommand(p_string):
     if p_string.startswith("openFile:"):
         openFile(p_string[9:])  # open file : rest of line as parameter
         return
+    if p_string.startswith("getSelectedNode:"):
+        getSelectedNode()  # get selected node in an array : no parameter
+        return
     if p_string.startswith("getChildren:"):
         getChildren(p_string[12:])  # get child array : rest of line as parameter
+        return
+    if p_string.startswith("getParent:"):
+        getParent(p_string[10:])  # get single parent or none, as an array : rest of line as parameter
         return
     if p_string.startswith("getBody:"):
         getBody(p_string[8:])  # get child array : rest of line as parameter
@@ -140,6 +166,7 @@ def test_round_trip_positions():
 
 def ap_to_p(ap):
     '''(From Leo plugin leoflexx.py) Convert an archived position to a true Leo position.'''
+    global gnx_to_vnode
     childIndex = ap['childIndex']
     v = gnx_to_vnode[ap['gnx']]
     stack = [
@@ -151,6 +178,7 @@ def ap_to_p(ap):
 
 def p_to_ap(p):
     '''(From Leo plugin leoflexx.py) Converts Leo position to a serializable archived position.'''
+    global gnx_to_vnode
     if not p.v:
         es('app.p_to_ap: no p.v: %r %s' % (p))
         assert False
