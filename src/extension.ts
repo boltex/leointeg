@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
-import { LeoOutlineProvider, LeoNode } from "./leoOutline";
+import { LeoNode } from "./leoNode";
+import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyFsProvider } from "./leoBodyFs";
 
 export function activate(context: vscode.ExtensionContext) {

@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 
+// * For virtualdocument tests - unused
 // This class provides a read-only panel in order to get a basic body pane output
 
 export class LeoBodyProvider implements vscode.TextDocumentContentProvider {

@@ -1,7 +1,7 @@
 import * as child from "child_process";
 import * as vscode from "vscode";
 import * as path from "path";
-import { LeoNode } from "./leoOutline";
+import { LeoNode } from "./leoNode";
 import { Uri } from "vscode";
 
 interface LeoAction {
@@ -24,6 +24,7 @@ interface ArchivedPosition {
   level: number; // p.level()
   headline: string; // p.h
   marked: boolean; // p.isMarked()
+  selected: boolean; // p.isSelected()
   stack: ApStack; // for (stack_v, stack_childIndex) in p.stack]
 }
 
@@ -63,6 +64,7 @@ export class LeoIntegration {
   private callStack: LeoAction[] = [];
   private onDidChangeTreeDataObject: any;
   private onDidChangeBodyDataObject: any;
+  public revealSelectedNode: boolean = false; // to be read by nodes to check if they should self-select. (and lower this flag)
 
   private leoBridgeReadyPromise: Promise<child.ChildProcess>; // set when leoBridge has a leo controller ready
 
@@ -208,18 +210,28 @@ export class LeoIntegration {
         }
       }
 
-      w_leoNodesArray.push(
-        new LeoNode(
-          this,
-          w_apData.headline,
-          w_collaps,
-          w_apJson,
-          w_apData.cloned,
-          w_apData.dirty,
-          w_apData.marked,
-          w_apData.hasBody
-        )
+      const w_leoNode = new LeoNode(
+        this,
+        w_apData.headline,
+        w_collaps,
+        w_apJson,
+        !!w_apData.cloned,
+        !!w_apData.dirty,
+        !!w_apData.marked,
+        !!w_apData.hasBody
       );
+      if (w_apData.selected && this.revealSelectedNode) {
+        console.log('got selection! *********');
+
+        this.revealSelectedNode = false;
+        setTimeout(() => {
+          if (this.leoTreeView) {
+            this.leoTreeView.reveal(w_leoNode, { select: true, focus: true });
+          }
+        }, 0);
+      }
+
+      w_leoNodesArray.push(w_leoNode);
     }
     return w_leoNodesArray;
   }
@@ -375,7 +387,7 @@ export class LeoIntegration {
           // * Resolution of the 'open file' promise
           w_openFile.then(() => {
             // TODO : Get selected node position and set it aftert getting first refresh
-
+            this.revealSelectedNode = true;
 
             // TODO : Revise order of this startup stuff
             this.fileOpenedReady = true; // ANSWER to openLeoFile

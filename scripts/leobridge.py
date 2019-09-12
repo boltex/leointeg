@@ -55,6 +55,7 @@ def openFile(p_file):
 
 
 def getAllRootChildren():
+    '''EMIT OUT list of all root nodes'''
     global commander
     p = commander.rootPosition()
     while p:
@@ -185,23 +186,33 @@ def p_to_ap(p):
     p_gnx = p.v.gnx
     if p_gnx not in gnx_to_vnode:
         gnx_to_vnode[p_gnx] = p.v
-    return {
-        'hasBody': bool(p.b),
-        'hasChildren': p.hasChildren(),
+    # * necessary properties for outline
+    w_ap = {
         'childIndex': p._childIndex,
-        'cloned': p.isCloned(),
-        'dirty': p.isDirty(),
-        'expanded': p.isExpanded(),
         'gnx': p.v.gnx,
         'level': p.level(),
         'headline': p.h,
-        'marked': p.isMarked(),
         'stack': [{
             'gnx': stack_v.gnx,
             'childIndex': stack_childIndex,
             'headline': stack_v.h,
         } for (stack_v, stack_childIndex) in p.stack],
     }
+    if bool(p.b):
+        w_ap['hasBody'] = True
+    if p.hasChildren():
+        w_ap['hasChildren'] = True
+    if p.isCloned():
+        w_ap['cloned'] = True
+    if p.isDirty():
+        w_ap['dirty'] = True
+    if p.isExpanded():
+        w_ap['expanded'] = True
+    if p.isMarked():
+        w_ap['marked'] = True
+    if p.isSelected():
+        w_ap['selected'] = True
+    return w_ap
 
 
 def main():
