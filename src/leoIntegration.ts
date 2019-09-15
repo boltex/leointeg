@@ -64,7 +64,9 @@ export class LeoIntegration {
   private callStack: LeoAction[] = [];
   private onDidChangeTreeDataObject: any;
   private onDidChangeBodyDataObject: any;
-  public revealStartupSelectedNode: boolean = false; // to be read by nodes to check if they should self-select. (and lower this flag)
+
+  // public lastModifiedNode: { old: LeoNode, new: LeoNode } | undefined; // * tests for integrity
+  public revealSelectedNode: boolean = false; // to be read by nodes to check if they should self-select. (and lower this flag)
 
   private leoBridgeReadyPromise: Promise<child.ChildProcess>; // set when leoBridge has a leo controller ready
 
@@ -249,9 +251,8 @@ export class LeoIntegration {
         !!w_apData.hasBody
       );
 
-      if (w_apData.selected && this.revealStartupSelectedNode) {
-        console.log('revealStartupSelectedNode');
-        this.revealStartupSelectedNode = false;
+      if (w_apData.selected && this.revealSelectedNode) {
+        this.revealSelectedNode = false;
         setTimeout(() => {
           if (this.leoTreeView) {
             this.leoTreeView.reveal(w_leoNode, { select: true, focus: true });
@@ -301,6 +302,7 @@ export class LeoIntegration {
     this.leoBridgeReady = true;
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
+      // Used when the action already has a return value ready but is also waiting for python's side
       w_bottomAction.resolveFn(w_bottomAction.deferedPayload);
     }
   }
@@ -316,8 +318,6 @@ export class LeoIntegration {
   }
 
   private resolveSelectionReady() {
-    console.log('resolveSelectionReady');
-
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
       w_bottomAction.resolveFn(null);
@@ -338,7 +338,6 @@ export class LeoIntegration {
   }
 
   private resolveGetNode(p_jsonArray: string) {
-    console.log('got a node from python!');
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
       w_bottomAction.resolveFn(this.jsonArrayToSingleLeoNode(p_jsonArray));
@@ -424,6 +423,19 @@ export class LeoIntegration {
     });
   }
 
+  public setNewHeadline(p_apJson: string, p_newHeadline: string): Promise<LeoNode> {
+    return new Promise((resolve, reject) => {
+      const w_action: LeoAction = {
+        action: "setNewHeadline:", // ! INCLUDES THE COLON ':'
+        parameter: "{\"node\":" + p_apJson + ", \"headline\": \"" + p_newHeadline + "\"  }",
+        resolveFn: resolve,
+        rejectFn: reject
+      };
+      this.callStack.push(w_action);
+      this.callAction();
+    });
+  }
+
   private callAction(): void {
     if (!this.callStack.length || this.actionBusy) {
       return;
@@ -437,13 +449,12 @@ export class LeoIntegration {
   }
 
   public selectNode(p_node: LeoNode): void {
-    console.log("selectNode:", p_node.label);
-    this.setSelectedNode(p_node.apJson).then(p_val => {
-      //
-      console.log('GOT BACK FROM SELECT NODE! set in leo!');
 
+    this.setSelectedNode(p_node.apJson).then(p_val => {
+      // * Node now selected in leo
     });
 
+    // Dont even wait for trying to get the body, the stack makes sure order is preserved
     this.getBody(p_node.apJson).then(p_body => {
       this.bodyText = p_body;
       // this.onDidChangeBodyDataObject.fire(this.bodyUri); // * For virtualdocument leoBody.ts tests
@@ -493,10 +504,8 @@ export class LeoIntegration {
           });
           // * Resolution of the 'open file' promise
           w_openFile.then(() => {
-            // TODO : Get selected node position and set it aftert getting first refresh
-            this.revealStartupSelectedNode = true;
+            this.revealSelectedNode = true;
 
-            // TODO : Revise order of this startup stuff
             this.fileOpenedReady = true; // ANSWER to openLeoFile
             this.fileBrowserOpen = false;
             if (this.onDidChangeTreeDataObject) {
@@ -591,13 +600,34 @@ export class LeoIntegration {
   }
 
   public editHeadline(p_node: LeoNode) {
-    // vscode.window.showInformationMessage(`editHeadline on ${p_node.label}.`);
-    // Popup input for rename
     this.editHeadlineInputOptions.value = p_node.label;
     vscode.window.showInputBox(this.editHeadlineInputOptions).then(
       p_newHeadline => {
-        console.log('Change for: ', p_newHeadline);
+        if (p_newHeadline) {
+          p_node.label = p_newHeadline; // ! This refreshes automatic ID as per documentation :
+          /**
+           * Optional id for the tree item that has to be unique across tree.
+           * The id is used to preserve the selection and expansion state of the tree item.
+           *
+           * If not provided, an id is generated using the tree item's label.
+           *
+           * **Note** that when labels change, ids will change and that selection
+           * and expansion state cannot be kept stable anymore.
+           */
+          this.setNewHeadline(p_node.apJson, p_newHeadline).then(
+            // * should we redraw/refresh/reveal just changed ?
+            // If so, Dont select because in vscode its possible to edit headline of unselected nodes.comment
+            // So keep node selection unchanged in tree and leo.
+            (p_newNode) => {
+              // this.lastModifiedNode = { old: p_node, new: p_newNode }; // tests
+              // this.onDidChangeTreeDataObject.fire(p_node); // * does not refresh clones !
+              this.revealSelectedNode = true; // ! needed because we voluntarily refreshed the automatic ID
+              this.onDidChangeTreeDataObject.fire(); // refresh all, needed to get clones to refresh too!
+            }
+          );
 
+
+        }
       }
     );
   }

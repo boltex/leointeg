@@ -21,7 +21,6 @@ export class LeoBodyFsProvider implements vscode.FileSystemProvider {
     }
 
     stat(uri: vscode.Uri): vscode.FileStat {
-        console.log('called stat', this.leoIntegration.bodyText.length);
         if (uri.fsPath === '/') {
             return {
                 type: vscode.FileType.Directory,
@@ -53,7 +52,7 @@ export class LeoBodyFsProvider implements vscode.FileSystemProvider {
         throw vscode.FileSystemError.NoPermissions();
     }
     readFile(uri: vscode.Uri): Thenable<Uint8Array> {
-        console.log('called readFile', uri.fsPath);
+        // console.log('called readFile', uri.fsPath);
         if (uri.fsPath === '/') {
             throw vscode.FileSystemError.FileIsADirectory();
         } else if (uri.fsPath === '/body') {

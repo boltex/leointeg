@@ -23,7 +23,24 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   }
 
   getTreeItem(element: LeoNode): vscode.TreeItem {
-    console.log('called getTreeItem on ', element.label);
+    // console.log('called getTreeItem on ', element.label);
+    // if(this.leoIntegration.lastModifiedNode && this.leoIntegration.lastModifiedNode.old ){
+
+    //   const w_elementAp = JSON.parse(element.apJson);
+    //   const w_oldAp = JSON.parse(this.leoIntegration.lastModifiedNode.old.apJson);
+    //   const w_newAp = JSON.parse(this.leoIntegration.lastModifiedNode.new.apJson);
+
+
+    //   console.log("he", w_elementAp.headline);
+    //   console.log("ho", w_oldAp.headline);
+    //   console.log("hn", w_newAp.headline);
+
+    //   if(w_elementAp.headline === w_oldAp.headline){
+    //     console.log("got a match!");
+    //     element =  this.leoIntegration.lastModifiedNode.new; // replace the parameter
+    //     this.leoIntegration.lastModifiedNode = undefined; // clear
+    //   }
+    // }
     return element;
   }
 
@@ -38,8 +55,6 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
    * @return Parent of `element`.
    */
   getParent(element: LeoNode ): Thenable<LeoNode>|null {
-    console.log('calling getParent');
-
     if (this.leoIntegration.fileOpenedReady) {
       return this.leoIntegration.getParent(element ? element.apJson : undefined);
     } else {

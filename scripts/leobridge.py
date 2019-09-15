@@ -128,6 +128,22 @@ def getBody(p_apJson):
         outputBodyData(False)
 
 
+def setNewHeadline(p_apHeadlineJson):
+    '''Change Headline of a node'''
+    global commander
+    w_apHeadline = json.loads(p_apHeadlineJson)
+    w_newHeadline = w_apHeadline['headline']
+    w_ap = w_apHeadline['node']
+    if(w_ap):
+        w_p = ap_to_p(w_ap)
+        if w_p:
+            # set this node's new headline
+            w_p.h = w_newHeadline
+            outputPNode(w_p)
+    else:
+        es("error in setNewHeadline")
+
+
 def setSelectedNode(p_apJson):
     '''Select a node'''
     global commander
@@ -155,13 +171,16 @@ def processCommand(p_string):
         getChildren(p_string[12:])  # get child array : rest of line as parameter
         return
     if p_string.startswith("setSelectedNode:"):
-        setSelectedNode(p_string[16:])  # get single parent or none, as an array : rest of line as parameter
+        setSelectedNode(p_string[16:])  # set the currently selected node : rest of line as parameter
         return
     if p_string.startswith("getParent:"):
         getParent(p_string[10:])  # get single parent or none, as an array : rest of line as parameter
         return
     if p_string.startswith("getBody:"):
-        getBody(p_string[8:])  # get child array : rest of line as parameter
+        getBody(p_string[8:])  # get body of node : rest of line as parameter
+        return
+    if p_string.startswith("setNewHeadline:"):
+        setNewHeadline(p_string[15:])  # change node to new headline : rest of line as parameter
         return
     # If still in this function then unkown command was sent
     if p_string:
