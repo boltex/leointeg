@@ -24,7 +24,7 @@ interface ArchivedPosition {
   level: number; // p.level()
   headline: string; // p.h
   marked: boolean; // p.isMarked()
-  selected: boolean; // p.isSelected()
+  selected: boolean; //  p == commander.p
   stack: ApStack; // for (stack_v, stack_childIndex) in p.stack]
 }
 
@@ -64,7 +64,7 @@ export class LeoIntegration {
   private callStack: LeoAction[] = [];
   private onDidChangeTreeDataObject: any;
   private onDidChangeBodyDataObject: any;
-  public revealSelectedNode: boolean = false; // to be read by nodes to check if they should self-select. (and lower this flag)
+  public revealStartupSelectedNode: boolean = false; // to be read by nodes to check if they should self-select. (and lower this flag)
 
   private leoBridgeReadyPromise: Promise<child.ChildProcess>; // set when leoBridge has a leo controller ready
 
@@ -249,13 +249,22 @@ export class LeoIntegration {
         !!w_apData.hasBody
       );
 
-      if (w_apData.selected && this.revealSelectedNode) {
-        console.log('got selection! *********');
-
-        this.revealSelectedNode = false;
+      if (w_apData.selected && this.revealStartupSelectedNode) {
+        console.log('revealStartupSelectedNode');
+        this.revealStartupSelectedNode = false;
         setTimeout(() => {
           if (this.leoTreeView) {
             this.leoTreeView.reveal(w_leoNode, { select: true, focus: true });
+            this.getBody(w_leoNode.apJson).then(p_body => {
+              this.bodyText = p_body;
+              vscode.window.showTextDocument(this.bodyUri, {
+                viewColumn: 1,
+                preserveFocus: false,
+                preview: false
+                // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
+              });
+              this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
+            });
           }
         }, 0);
       }
@@ -306,6 +315,18 @@ export class LeoIntegration {
     }
   }
 
+  private resolveSelectionReady() {
+    console.log('resolveSelectionReady');
+
+    let w_bottomAction = this.callStack.shift();
+    if (w_bottomAction) {
+      w_bottomAction.resolveFn(null);
+      this.actionBusy = false;
+    } else {
+      console.log("ERROR STACK EMPTY");
+    }
+  }
+
   private resolveGetBody(p_jsonObject: string) {
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
@@ -336,6 +357,20 @@ export class LeoIntegration {
       console.log("ERROR STACK EMPTY");
     }
   }
+
+  public setSelectedNode(p_apJson?: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const w_action: LeoAction = {
+        action: "setSelectedNode:", // ! INCLUDES THE COLON ':'
+        parameter: p_apJson || "",
+        resolveFn: resolve,
+        rejectFn: reject
+      };
+      this.callStack.push(w_action);
+      this.callAction();
+    });
+  }
+
 
   public getBody(p_apJson?: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -403,6 +438,11 @@ export class LeoIntegration {
 
   public selectNode(p_node: LeoNode): void {
     console.log("selectNode:", p_node.label);
+    this.setSelectedNode(p_node.apJson).then(p_val => {
+      //
+      console.log('GOT BACK FROM SELECT NODE! set in leo!');
+
+    });
 
     this.getBody(p_node.apJson).then(p_body => {
       this.bodyText = p_body;
@@ -416,7 +456,6 @@ export class LeoIntegration {
       this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
     });
   }
-
 
 
   public openLeoFile(): void {
@@ -455,7 +494,7 @@ export class LeoIntegration {
           // * Resolution of the 'open file' promise
           w_openFile.then(() => {
             // TODO : Get selected node position and set it aftert getting first refresh
-            this.revealSelectedNode = true;
+            this.revealStartupSelectedNode = true;
 
             // TODO : Revise order of this startup stuff
             this.fileOpenedReady = true; // ANSWER to openLeoFile
@@ -506,6 +545,9 @@ export class LeoIntegration {
       w_processed = true;
     } else if (p_data.startsWith("bodyDataReady")) {
       this.resolveGetBody(p_data.substring(13)); // ANSWER to getChildren
+      w_processed = true;
+    } else if (p_data === "selectionReady") {
+      this.resolveSelectionReady();
       w_processed = true;
     } else if (p_data === "fileOpenedReady") {
       this.resolveFileOpenedReady();

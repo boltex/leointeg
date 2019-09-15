@@ -128,6 +128,17 @@ def getBody(p_apJson):
         outputBodyData(False)
 
 
+def setSelectedNode(p_apJson):
+    '''Select a node'''
+    global commander
+    if(p_apJson):
+        w_p = ap_to_p(json.loads(p_apJson))
+        if w_p:
+            # set this node as selection
+            commander.selectPosition(w_p)
+    es('selectionReady')
+
+
 def processCommand(p_string):
     '''Process incoming command'''
     p_string = p_string.strip()
@@ -142,6 +153,9 @@ def processCommand(p_string):
         return
     if p_string.startswith("getChildren:"):
         getChildren(p_string[12:])  # get child array : rest of line as parameter
+        return
+    if p_string.startswith("setSelectedNode:"):
+        setSelectedNode(p_string[16:])  # get single parent or none, as an array : rest of line as parameter
         return
     if p_string.startswith("getParent:"):
         getParent(p_string[10:])  # get single parent or none, as an array : rest of line as parameter
