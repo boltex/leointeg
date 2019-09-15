@@ -194,6 +194,34 @@ export class LeoIntegration {
     this.leoTreeView = p_treeView;
   }
 
+  private jsonArrayToSingleLeoNode(p_jsonArray: string): LeoNode | null {
+    let w_apDataArray: ArchivedPosition[] = JSON.parse(p_jsonArray);
+    if (!w_apDataArray.length) {
+      return null;
+    }
+    const w_apData = w_apDataArray[0];
+    const w_apJson: string = JSON.stringify(w_apData); //  just this part back to JSON
+    let w_collaps: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
+    if (w_apData.hasChildren) {
+      if (w_apData.expanded) {
+        w_collaps = vscode.TreeItemCollapsibleState.Expanded;
+      } else {
+        w_collaps = vscode.TreeItemCollapsibleState.Collapsed;
+      }
+    }
+    const w_leoNode = new LeoNode(
+      this,
+      w_apData.headline,
+      w_collaps,
+      w_apJson,
+      !!w_apData.cloned,
+      !!w_apData.dirty,
+      !!w_apData.marked,
+      !!w_apData.hasBody
+    );
+    return w_leoNode;
+  }
+
   private jsonArrayToLeoNodesArray(p_jsonArray: string): LeoNode[] {
     let w_apDataArray: ArchivedPosition[] = JSON.parse(p_jsonArray);
 
@@ -220,6 +248,7 @@ export class LeoIntegration {
         !!w_apData.marked,
         !!w_apData.hasBody
       );
+
       if (w_apData.selected && this.revealSelectedNode) {
         console.log('got selection! *********');
 
@@ -287,6 +316,17 @@ export class LeoIntegration {
     }
   }
 
+  private resolveGetNode(p_jsonArray: string) {
+    console.log('got a node from python!');
+    let w_bottomAction = this.callStack.shift();
+    if (w_bottomAction) {
+      w_bottomAction.resolveFn(this.jsonArrayToSingleLeoNode(p_jsonArray));
+      this.actionBusy = false;
+    } else {
+      console.log("ERROR STACK EMPTY");
+    }
+  }
+
   private resolveGetChildren(p_jsonArray: string) {
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
@@ -310,11 +350,37 @@ export class LeoIntegration {
     });
   }
 
+  public getParent(p_apJson?: string): Promise<LeoNode> {
+    return new Promise((resolve, reject) => {
+      const w_action: LeoAction = {
+        action: "getParent:", // ! INCLUDES THE COLON ':'
+        parameter: p_apJson || "", // nothing should get root nodes of the leo file
+        resolveFn: resolve,
+        rejectFn: reject
+      };
+      this.callStack.push(w_action);
+      this.callAction();
+    });
+  }
+
   public getChildren(p_apJson?: string): Promise<LeoNode[]> {
     return new Promise((resolve, reject) => {
       const w_action: LeoAction = {
         action: "getChildren:", // ! INCLUDES THE COLON ':'
         parameter: p_apJson || "", // nothing should get root nodes of the leo file
+        resolveFn: resolve,
+        rejectFn: reject
+      };
+      this.callStack.push(w_action);
+      this.callAction();
+    });
+  }
+
+  public getSelectedNode(): Promise<LeoNode> {
+    return new Promise((resolve, reject) => {
+      const w_action: LeoAction = {
+        action: "getSelectedNode:", // ! INCLUDES THE COLON ':'
+        parameter: "",
         resolveFn: resolve,
         rejectFn: reject
       };
@@ -336,6 +402,8 @@ export class LeoIntegration {
   }
 
   public selectNode(p_node: LeoNode): void {
+    console.log("selectNode:", p_node.label);
+
     this.getBody(p_node.apJson).then(p_body => {
       this.bodyText = p_body;
       // this.onDidChangeBodyDataObject.fire(this.bodyUri); // * For virtualdocument leoBody.ts tests
@@ -430,7 +498,10 @@ export class LeoIntegration {
 
   private processAnswer(p_data: string): void {
     let w_processed: boolean = false;
-    if (p_data.startsWith("outlineDataReady")) {
+    if (p_data.startsWith("nodeReady")) {
+      this.resolveGetNode(p_data.substring(9)); // ANSWER to getChildren
+      w_processed = true;
+    } else if (p_data.startsWith("outlineDataReady")) {
       this.resolveGetChildren(p_data.substring(16)); // ANSWER to getChildren
       w_processed = true;
     } else if (p_data.startsWith("bodyDataReady")) {
@@ -462,7 +533,14 @@ export class LeoIntegration {
 
   public test(): void {
     console.log("sending test");
-    this.stdin("test\n"); // 'test' should trigger a test output from python script
+    //this.stdin("test\n"); // 'test' should trigger a test output from python script
+    // getSelectedNode
+    this.getSelectedNode().then(p_leoNode => {
+      console.log('ok, now got back from test: ', p_leoNode.label);
+      if (this.leoTreeView) {
+        this.leoTreeView.reveal(p_leoNode, { select: true, focus: true });
+      }
+    });
   }
 
   public killLeoBridge(): void {

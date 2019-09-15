@@ -23,14 +23,31 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   }
 
   getTreeItem(element: LeoNode): vscode.TreeItem {
+    console.log('called getTreeItem on ', element.label);
     return element;
   }
 
-  //getParent( ){}
+   /**
+   * * FROM VSCODE DOCUMENTATION:
+   * Optional method to return the parent of `element`.
+   * Return `null` or `undefined` if `element` is a child of root.
+   *
+   * **NOTE:** This method should be implemented in order to access [reveal](#TreeView.reveal) API.
+   *
+   * @param element The element for which the parent has to be returned.
+   * @return Parent of `element`.
+   */
+  getParent(element: LeoNode ): Thenable<LeoNode>|null {
+    console.log('calling getParent');
+
+    if (this.leoIntegration.fileOpenedReady) {
+      return this.leoIntegration.getParent(element ? element.apJson : undefined);
+    } else {
+      return null; // default give an empty tree
+    }
+  }
 
   getChildren(element?: LeoNode): Thenable<LeoNode[]> {
-    console.log("get children");
-
     if (this.leoIntegration.fileOpenedReady) {
       return this.leoIntegration.getChildren(element ? element.apJson : undefined);
     } else {

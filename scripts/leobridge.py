@@ -24,11 +24,25 @@ def es(p_string):
     print(p_string, flush=True)
 
 
+def dumpPNodes(p_pList):
+    w_apList = []
+    for p in p_pList:
+        w_apList.append(p_to_ap(p))
+    es("dumpPNodes"+json.dumps(w_apList))  # now convert to JSON as a whole
+
+
 def outputBodyData(p_bodyText):
     if p_bodyText:
         es("bodyDataReady"+json.dumps({'body': p_bodyText}))
     else:
         es("bodyDataReady"+json.dumps({'body': ""}))
+
+
+def outputPNode(p_node):
+    if p_node:
+        es("nodeReady"+json.dumps([p_to_ap(p_node)]))  # now convert to JSON as a whole
+    else:
+        es("nodeReady"+json.dumps([]))
 
 
 def outputOutlineData(p_pList):
@@ -42,6 +56,9 @@ def outputTest():
     '''Emit a test'''
     global bridgeGlobals, commander
     es('vsCode called test. Hello from leoBridge!')
+    # for p in commander.all_positions():
+    #     if p.h:
+    #         outputPNode(p)
 
 
 def openFile(p_file):
@@ -50,6 +67,8 @@ def openFile(p_file):
     commander = bridge.openLeoFile(p_file)
     if(commander):
         create_gnx_to_vnode()
+
+        dumpPNodes([commander.p])
         # Sending FILEREADY CODE
         es("fileOpenedReady")
 
@@ -80,11 +99,21 @@ def getParent(p_apJson):
     if(p_apJson):
         w_p = ap_to_p(json.loads(p_apJson))
         if w_p and w_p.hasParent():
-            outputOutlineData([w_p.getParent()])  # as array
+            outputPNode(w_p.getParent())
         else:
-            outputOutlineData([])  # default empty for root
+            outputPNode(False)  # default empty for root
     else:
-        outputOutlineData([])
+        outputPNode(False)
+
+
+def getSelectedNode():
+    '''EMIT OUT Selected Position as an array, even if unique'''
+    global commander
+    c = commander
+    if(c.p):
+        outputPNode(c.p)
+    else:
+        outputPNode(False)
 
 
 def getBody(p_apJson):
@@ -97,16 +126,6 @@ def getBody(p_apJson):
             outputBodyData(False)  # default empty
     else:
         outputBodyData(False)
-
-
-def getSelectedNode():
-    '''EMIT OUT Selected Position as an array, even if unique'''
-    global commander
-    c = commander
-    if(c.p):
-        outputOutlineData([c.p])
-    else:
-        outputOutlineData([])
 
 
 def processCommand(p_string):
@@ -155,14 +174,17 @@ def test_round_trip_positions():
     old_d = gnx_to_vnode.copy()
     old_len = len(list(gnx_to_vnode.keys()))
     t1 = time.clock()
+    qtyAllPositions = 0
     for p in c.all_positions():
+        qtyAllPositions += 1
         ap = p_to_ap(p)
         p2 = ap_to_p(ap)
         assert p == p2, (repr(p), repr(p2), repr(ap))
     gnx_to_vnode = old_d
     new_len = len(list(gnx_to_vnode.keys()))
     assert old_len == new_len, (old_len, new_len)
-    es('app.test_round_trip_positions: %5.3f sec' % (time.clock()-t1))
+    es('qtyAllPositions : ' + str(qtyAllPositions))
+    es(('app.test_round_trip_positions: %5.3f sec for nodes total: ' % (time.clock()-t1))+str(qtyAllPositions))
 
 
 def ap_to_p(ap):
@@ -179,7 +201,7 @@ def ap_to_p(ap):
 
 def p_to_ap(p):
     '''(From Leo plugin leoflexx.py) Converts Leo position to a serializable archived position.'''
-    global gnx_to_vnode
+    global commander, gnx_to_vnode
     if not p.v:
         es('app.p_to_ap: no p.v: %r %s' % (p))
         assert False
@@ -210,7 +232,7 @@ def p_to_ap(p):
         w_ap['expanded'] = True
     if p.isMarked():
         w_ap['marked'] = True
-    if p.isSelected():
+    if p == commander.p:
         w_ap['selected'] = True
     return w_ap
 
