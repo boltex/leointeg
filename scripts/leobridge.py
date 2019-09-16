@@ -128,6 +128,17 @@ def getBody(p_apJson):
         outputBodyData(False)
 
 
+def setNewBody(p_bodyJson):
+    '''Change Body of selected node'''
+    global commander
+    w_body = json.loads(p_bodyJson)
+    if(commander.p):
+        commander.p.b = w_body['body']
+        outputPNode(commander.p)
+    else:
+        es("error in setNewBody")
+
+
 def setNewHeadline(p_apHeadlineJson):
     '''Change Headline of a node'''
     global commander
@@ -178,6 +189,9 @@ def processCommand(p_string):
         return
     if p_string.startswith("getBody:"):
         getBody(p_string[8:])  # get body of node : rest of line as parameter
+        return
+    if p_string.startswith("setNewBody:"):
+        setNewBody(p_string[11:])  # change node to new headline : rest of line as parameter
         return
     if p_string.startswith("setNewHeadline:"):
         setNewHeadline(p_string[15:])  # change node to new headline : rest of line as parameter

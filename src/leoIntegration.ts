@@ -51,7 +51,10 @@ export class LeoIntegration {
 
   public leoStatusBarItem: vscode.StatusBarItem;
   public leoObjectSelected: boolean = false; // represents having focus on outline or body, as opposed to anything else
-  private statusbarNormalColor = new vscode.ThemeColor("statusBar.foreground");  //"statusBar.foreground"
+  public statusbarNormalColor = new vscode.ThemeColor("statusBar.foreground");  //"statusBar.foreground"
+
+  private bodyChangeTimeout: NodeJS.Timeout | undefined;
+  private bodyChangedDocument: vscode.TextDocument | undefined;
 
   private editHeadlineInputOptions: vscode.InputBoxOptions = {
     ignoreFocusOut: false,
@@ -147,9 +150,22 @@ export class LeoIntegration {
   }
   private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
     // edited the document // TODO : DEBOUNCE/CHECK IF IT WAS LEO BODY !
-    // console.log("onDocumentChanged", p_event);
+    if (p_event.document.uri.scheme === "leo" && p_event.document.isDirty) {
+      // && p_event.document.fileName === "/body" // unnecessary
+      if (this.bodyChangeTimeout) {
+        clearTimeout(this.bodyChangeTimeout);
+      }
+      this.bodyChangedDocument = p_event.document;
+      this.bodyChangeTimeout = setTimeout(() => {
+        this.triggerBodySave();
+      }, 200);
+
+    }
+
   }
+
   private onDocumentSaved(p_event: vscode.TextDocument): void {
+    // * watch out!  does it on any document in editor
     // edited the document // TODO : DEBOUNCE/CHECK IF IT WAS LEO BODY !
     console.log("onDocumentSaved", p_event.fileName);
   }
@@ -436,6 +452,29 @@ export class LeoIntegration {
     });
   }
 
+  public setNewBody(p_newBody: string): Promise<LeoNode> {
+    return new Promise((resolve, reject) => {
+      const w_action: LeoAction = {
+        action: "setNewBody:", // ! INCLUDES THE COLON ':'
+        parameter: JSON.stringify({ body: p_newBody }), // simple object with body property
+        resolveFn: resolve,
+        rejectFn: reject
+      };
+      this.callStack.push(w_action);
+      this.callAction();
+    });
+  }
+
+  public triggerBodySave(): Thenable<boolean> {
+    // * sets new body text of currently selected node on leo's side
+    this.bodyChangeTimeout = undefined; // Make falsy
+    if (this.bodyChangedDocument) {
+      return this.bodyChangedDocument.save();
+    } else {
+      return Promise.resolve(false);
+    }
+  }
+
   private callAction(): void {
     if (!this.callStack.length || this.actionBusy) {
       return;
@@ -449,25 +488,47 @@ export class LeoIntegration {
   }
 
   public selectNode(p_node: LeoNode): void {
+    let w_savedBody: Thenable<boolean>;
 
-    this.setSelectedNode(p_node.apJson).then(p_val => {
-      // * Node now selected in leo
-    });
+    if (this.bodyChangeTimeout) {
+      // there was one, maybe trigger it.
+      w_savedBody = this.triggerBodySave();
+    } else {
+      w_savedBody = Promise.resolve(true);
+    }
 
-    // Dont even wait for trying to get the body, the stack makes sure order is preserved
-    this.getBody(p_node.apJson).then(p_body => {
-      this.bodyText = p_body;
-      // this.onDidChangeBodyDataObject.fire(this.bodyUri); // * For virtualdocument leoBody.ts tests
-      vscode.window.showTextDocument(this.bodyUri, {
-        viewColumn: 1,
-        preserveFocus: false,
-        preview: false
-        // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
-      });
-      this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
-    });
+    w_savedBody.then(
+      () => {
+        this.setSelectedNode(p_node.apJson).then(p_val => {
+          // * Node now selected in leo
+        });
+        // Dont even wait for trying to get the body, the stack makes sure order is preserved
+        this.getBody(p_node.apJson).then(p_body => {
+          this.bodyText = p_body;
+          // this.onDidChangeBodyDataObject.fire(this.bodyUri); // * For virtualdocument leoBody.ts tests
+          this.showBodyDocument();
+          this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
+        });
+      }
+    );
+
+
   }
 
+  public showBodyDocument(): void {
+    const w_leoBodyEditor = vscode.window.showTextDocument(this.bodyUri, {
+      viewColumn: 1,
+      preserveFocus: false,
+      preview: false
+      // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
+    });
+    w_leoBodyEditor.then(w_bodyEditor => {
+      // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
+      // TODO : try to make leftmost tab so it touches the outline pane
+      // console.log('created body:', w_leoBodyEditor);
+
+    });
+  }
 
   public openLeoFile(): void {
     let w_returnMessage: string | undefined;
@@ -516,24 +577,12 @@ export class LeoIntegration {
             // update status bar for first time
             this.updateStatusBarItem();
             // * Make body pane appear
-            const w_leoBody = vscode.window.showTextDocument(this.bodyUri, {
-              viewColumn: 1,
-              preserveFocus: false,
-              preview: false
-              // selection: new Range( new Position(0,0), new Position(0,0) ) // First time open, no need to set scroll
-            });
+            this.showBodyDocument();
 
             // console.log(vscode.window.visibleTextEditors);
             // for (let entry of vscode.window.visibleTextEditors) {
             //   console.log(entry.); // 1, "string", false
             // }
-
-            w_leoBody.then(w_bodyEditor => {
-              // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
-              // TODO : try to make leftmost tab so it touches the outline pane
-              // console.log('created body:', w_bodyEditor);
-
-            });
 
           });
 

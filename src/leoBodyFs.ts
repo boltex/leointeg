@@ -25,14 +25,14 @@ export class LeoBodyFsProvider implements vscode.FileSystemProvider {
             return {
                 type: vscode.FileType.Directory,
                 ctime: 0,
-                mtime: Date.now(),
+                mtime: 0, // Date.now(),
                 size: 0
             };
         } else if (uri.fsPath === '/body') {
             return {
                 type: vscode.FileType.File,
                 ctime: 0,
-                mtime: Date.now(),
+                mtime: 0, // Date.now(),
                 size: this.leoIntegration.bodyText.length
             };
         } else {
@@ -69,6 +69,12 @@ export class LeoBodyFsProvider implements vscode.FileSystemProvider {
     writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
         // TODO : Send/Save on leoBridge's side!
         console.log('called writeFile!', uri.fsPath);
+        if (uri.fsPath === '/body') {
+            this.leoIntegration.setNewBody(content.toString()).then((p_node) => {
+                console.log('back from write file', p_node.label);
+
+            });
+        }
     }
     rename(oldUri: vscode.Uri, newUri: vscode.Uri, options: { overwrite: boolean }): void {
         console.log('called oldUri');
