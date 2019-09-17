@@ -45,6 +45,8 @@ export class LeoIntegration {
 
   public bodyDataReady: boolean = false;
   public bodyText: string = "";
+  // public bodyFileName: string = ""; // Solution to deal with vsCode's undos. Vary body filename instead of 'body'
+  // ... because undo history stack non accessible via API
 
   public icons: string[] = [];
   public iconsInverted: boolean = false; // used to flip dirty/pristine outline of icon
@@ -90,8 +92,6 @@ export class LeoIntegration {
     context.subscriptions.push(this.leoStatusBarItem);
     this.leoStatusBarItem.hide();
 
-
-
     // * React to change in active panel/text editor to toggle Leo Mode Shortcuts and behavior
     vscode.window.onDidChangeActiveTextEditor(p_event => this.onActiveEditorChanged(p_event));
     vscode.window.onDidChangeTextEditorSelection(p_event => this.onChangeEditorSelection(p_event));
@@ -102,8 +102,6 @@ export class LeoIntegration {
     vscode.workspace.onDidChangeTextDocument(p_event => this.onDocumentChanged(p_event));
     vscode.workspace.onDidSaveTextDocument(p_event => this.onDocumentSaved(p_event));
     vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
-
-
 
   }
 
@@ -149,7 +147,7 @@ export class LeoIntegration {
     // selecting another vscode window by the os title bar
   }
   private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
-    // edited the document // TODO : DEBOUNCE/CHECK IF IT WAS LEO BODY !
+    // edited the document: debounce/check if it was leo body
     if (p_event.document.uri.scheme === "leo" && p_event.document.isDirty) {
       // && p_event.document.fileName === "/body" // unnecessary
       if (this.bodyChangeTimeout) {
@@ -157,15 +155,19 @@ export class LeoIntegration {
       }
       this.bodyChangedDocument = p_event.document;
       this.bodyChangeTimeout = setTimeout(() => {
-        this.triggerBodySave();
+        // * Debounce
+        this.triggerBodySave().then(() => {
+          if (this.bodyChangeTimeout) {
+            clearTimeout(this.bodyChangeTimeout);
+          }
+          this.bodyChangeTimeout = undefined; // Make falsy
+        });
       }, 200);
-
     }
-
   }
 
   private onDocumentSaved(p_event: vscode.TextDocument): void {
-    // * watch out!  does it on any document in editor
+    // * watch out! does it on any document in editor
     // edited the document // TODO : DEBOUNCE/CHECK IF IT WAS LEO BODY !
     console.log("onDocumentSaved", p_event.fileName);
   }
@@ -467,7 +469,6 @@ export class LeoIntegration {
 
   public triggerBodySave(): Thenable<boolean> {
     // * sets new body text of currently selected node on leo's side
-    this.bodyChangeTimeout = undefined; // Make falsy
     if (this.bodyChangedDocument) {
       return this.bodyChangedDocument.save();
     } else {
@@ -488,6 +489,7 @@ export class LeoIntegration {
   }
 
   public selectNode(p_node: LeoNode): void {
+    // User has selected a node in the outline with the mouse
     let w_savedBody: Thenable<boolean>;
 
     if (this.bodyChangeTimeout) {
@@ -499,6 +501,11 @@ export class LeoIntegration {
 
     w_savedBody.then(
       () => {
+        console.log('finished saving body to leo');
+        if (this.bodyChangeTimeout) {
+          clearTimeout(this.bodyChangeTimeout);
+        }
+        this.bodyChangeTimeout = undefined; // Make falsy
         this.setSelectedNode(p_node.apJson).then(p_val => {
           // * Node now selected in leo
         });
@@ -516,6 +523,7 @@ export class LeoIntegration {
   }
 
   public showBodyDocument(): void {
+    console.log('start showBodyDocument');
     const w_leoBodyEditor = vscode.window.showTextDocument(this.bodyUri, {
       viewColumn: 1,
       preserveFocus: false,
@@ -526,7 +534,6 @@ export class LeoIntegration {
       // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
       // TODO : try to make leftmost tab so it touches the outline pane
       // console.log('created body:', w_leoBodyEditor);
-
     });
   }
 
