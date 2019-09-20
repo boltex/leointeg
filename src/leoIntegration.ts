@@ -34,6 +34,12 @@ interface ApStack {
   headline: string; // stack_v.h
 }
 
+interface LeoBridgePackage {
+  id: number;
+  package: any; // json
+}
+
+
 export class LeoIntegration {
   public leoBridgeReady: boolean = false;
   public fileBrowserOpen: boolean = false;
@@ -65,6 +71,8 @@ export class LeoIntegration {
     prompt: 'Edit headline'
     // placeHolder: 'Enter Headline',
   };
+
+  private leoBridgePackageId: number = 9;
 
   private callStack: LeoAction[] = [];
   private onDidChangeTreeDataObject: any;
@@ -375,6 +383,23 @@ export class LeoIntegration {
     }
   }
 
+
+  public leoBridgeAction(p_action: string, p_jsonParam: string): Promise<LeoBridgePackage> {
+    this.leoBridgePackageId = this.leoBridgePackageId + 1;
+    const w_jsonParam = "{\"id\":" + this.leoBridgePackageId + ", \"action\": \"" + p_action + "\", \"param\":" + p_jsonParam + "}";
+    // leoBridgePackageId
+    return new Promise((resolve, reject) => {
+      const w_action: LeoAction = {
+        action: "leoBridge:", // ! INCLUDES THE COLON ':'
+        parameter: w_jsonParam,
+        resolveFn: resolve,
+        rejectFn: reject
+      };
+      this.callStack.push(w_action);
+      this.callAction();
+    });
+  }
+
   public setSelectedNode(p_apJson?: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const w_action: LeoAction = {
@@ -642,12 +667,23 @@ export class LeoIntegration {
     console.log("sending test");
     //this.stdin("test\n"); // 'test' should trigger a test output from python script
     // getSelectedNode
-    this.getSelectedNode().then(p_leoNode => {
-      console.log('ok, now got back from test: ', p_leoNode.label);
-      if (this.leoTreeView) {
-        this.leoTreeView.reveal(p_leoNode, { select: true, focus: true });
+    //
+    // this.getSelectedNode().then(p_leoNode => {
+    //   console.log('ok, now got back from test: ', p_leoNode.label);
+    //   if (this.leoTreeView) {
+    //     this.leoTreeView.reveal(p_leoNode, { select: true, focus: true });
+    //   }
+    // });
+
+    const w_testPromise = this.leoBridgeAction("test", "{\"testparam\":\"hello\"}");
+
+    w_testPromise.then(
+      (p_awnser: LeoBridgePackage) => {
+        console.log('Got BAck from leoBridgeAction test! ', p_awnser);
       }
-    });
+    );
+
+
   }
 
   public killLeoBridge(): void {

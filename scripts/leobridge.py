@@ -172,6 +172,9 @@ def processCommand(p_string):
     if p_string == "test":
         outputTest()
         return
+    if p_string.startswith("leoBridge:"):
+        outputTest()
+        return
     if p_string.startswith("openFile:"):
         openFile(p_string[9:])  # open file : rest of line as parameter
         return
