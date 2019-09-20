@@ -173,7 +173,7 @@ def processCommand(p_string):
         outputTest()
         return
     if p_string.startswith("leoBridge:"):
-        outputTest()
+        getSelectedNode()  # TEST OF LEOBRIDGE GENERAL FUNCTION
         return
     if p_string.startswith("openFile:"):
         openFile(p_string[9:])  # open file : rest of line as parameter
