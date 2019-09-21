@@ -28,7 +28,8 @@ export class LeoNode extends vscode.TreeItem {
         // For usage as: return path.join(__filename, "..", "..", "resources", "box00.svg");
         // 8=dirty, 4=cloned, 2=marked, 1=content (iconsInverted is dirty for light/dark inversion)
         let w_icon: number =
-            (+(this.dirty && this.leoIntegration.iconsInverted) << 3) |
+            //(+(this.leoIntegration.iconsInverted ? !this.dirty : this.dirty) << 3) |
+            (+this.dirty << 3) |
             (+this.cloned << 2) |
             (+this.marked << 1) |
             +this.hasBody;

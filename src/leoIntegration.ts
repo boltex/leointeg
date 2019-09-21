@@ -72,7 +72,7 @@ export class LeoIntegration {
     // placeHolder: 'Enter Headline',
   };
 
-  private leoBridgePackageId: number = 9;
+  private leoBridgeSerialId: number = 0;
 
   private callStack: LeoAction[] = [];
   private onDidChangeTreeDataObject: any;
@@ -385,8 +385,8 @@ export class LeoIntegration {
 
 
   public leoBridgeAction(p_action: string, p_jsonParam: string): Promise<LeoBridgePackage> {
-    this.leoBridgePackageId = this.leoBridgePackageId + 1;
-    const w_jsonParam = "{\"id\":" + this.leoBridgePackageId + ", \"action\": \"" + p_action + "\", \"param\":" + p_jsonParam + "}";
+    this.leoBridgeSerialId = this.leoBridgeSerialId + 1;
+    const w_jsonParam = "{\"id\":" + this.leoBridgeSerialId + ", \"action\": \"" + p_action + "\", \"param\":" + p_jsonParam + "}";
     // leoBridgePackageId
     return new Promise((resolve, reject) => {
       const w_action: LeoAction = {
@@ -540,6 +540,8 @@ export class LeoIntegration {
           // this.onDidChangeBodyDataObject.fire(this.bodyUri); // * For virtualdocument leoBody.ts tests
           this.showBodyDocument();
           this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
+          // this.onDidChangeTreeDataObject.fire(p_node);
+
         });
       }
     );

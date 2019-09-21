@@ -166,6 +166,12 @@ def setSelectedNode(p_apJson):
     es('selectionReady')
 
 
+def processLeoBridge(p_paramJson):
+    '''Process incoming command'''
+    es(p_paramJson)
+    getSelectedNode()
+
+
 def processCommand(p_string):
     '''Process incoming command'''
     p_string = p_string.strip()
@@ -173,7 +179,7 @@ def processCommand(p_string):
         outputTest()
         return
     if p_string.startswith("leoBridge:"):
-        getSelectedNode()  # TEST OF LEOBRIDGE GENERAL FUNCTION
+        processLeoBridge(p_string[10:])  # TEST OF LEOBRIDGE GENERAL FUNCTION
         return
     if p_string.startswith("openFile:"):
         openFile(p_string[9:])  # open file : rest of line as parameter
