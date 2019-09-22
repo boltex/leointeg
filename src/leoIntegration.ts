@@ -78,6 +78,9 @@ export class LeoIntegration {
   private onDidChangeTreeDataObject: any;
   private onDidChangeBodyDataObject: any;
 
+
+  public refreshSingleNodeFlag: boolean = false; // checked AND CLEARED by leoOutline to see if it has to really refresh
+
   // public lastModifiedNode: { old: LeoNode, new: LeoNode } | undefined; // * tests for integrity
   public revealSelectedNode: boolean = false; // to be read by nodes to check if they should self-select. (and lower this flag)
 
@@ -240,6 +243,7 @@ export class LeoIntegration {
     const w_leoNode = new LeoNode(
       this,
       w_apData.headline,
+      w_apData.gnx,
       w_collaps,
       w_apJson,
       !!w_apData.cloned,
@@ -269,6 +273,7 @@ export class LeoIntegration {
       const w_leoNode = new LeoNode(
         this,
         w_apData.headline,
+        w_apData.gnx,
         w_collaps,
         w_apJson,
         !!w_apData.cloned,
@@ -453,6 +458,19 @@ export class LeoIntegration {
     });
   }
 
+  public getPNode(p_apJson: string): Promise<LeoNode> {
+    return new Promise((resolve, reject) => {
+      const w_action: LeoAction = {
+        action: "getPNode:", // ! INCLUDES THE COLON ':'
+        parameter: p_apJson,
+        resolveFn: resolve,
+        rejectFn: reject
+      };
+      this.callStack.push(w_action);
+      this.callAction();
+    });
+  }
+
   public getSelectedNode(): Promise<LeoNode> {
     return new Promise((resolve, reject) => {
       const w_action: LeoAction = {
@@ -517,6 +535,12 @@ export class LeoIntegration {
     // User has selected a node in the outline with the mouse
     let w_savedBody: Thenable<boolean>;
 
+    if (p_node) {
+      console.log('About to refresh', p_node);
+      this.refreshSingleNodeFlag = true;
+      this.onDidChangeTreeDataObject.fire(p_node);
+    }
+
     if (this.bodyChangeTimeout) {
       // there was one, maybe trigger it.
       w_savedBody = this.triggerBodySave();
@@ -540,8 +564,6 @@ export class LeoIntegration {
           // this.onDidChangeBodyDataObject.fire(this.bodyUri); // * For virtualdocument leoBody.ts tests
           this.showBodyDocument();
           this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
-          // this.onDidChangeTreeDataObject.fire(p_node);
-
         });
       }
     );
@@ -550,7 +572,6 @@ export class LeoIntegration {
   }
 
   public showBodyDocument(): void {
-    console.log('start showBodyDocument');
     const w_leoBodyEditor = vscode.window.showTextDocument(this.bodyUri, {
       viewColumn: 1,
       preserveFocus: false,

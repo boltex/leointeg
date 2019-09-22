@@ -3,9 +3,8 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
-  private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> = new vscode.EventEmitter<
-    LeoNode | undefined
-  >();
+  private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> =
+    new vscode.EventEmitter<LeoNode | undefined>();
   readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
 
   // TODO : Save and restore selection / cursor position from selection object saved in each node
@@ -22,8 +21,20 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     console.log("Leo outline refresh");
   }
 
-  getTreeItem(element: LeoNode): vscode.TreeItem {
-    // console.log('called getTreeItem on ', element.label);
+  getTreeItem(element: LeoNode): vscode.TreeItem | Thenable<vscode.TreeItem> {
+    console.log('Wanna getTreeItem on ', element.label);
+    if (this.leoIntegration.refreshSingleNodeFlag) {
+      console.log('Did call getTreeItem on ', element.label);
+      this.leoIntegration.refreshSingleNodeFlag = false;
+      return this.leoIntegration.getPNode(element.apJson).then(
+        p_node => {
+          console.log(p_node);
+          return p_node;
+        }
+      );
+    } else {
+      return element;
+    }
     // if(this.leoIntegration.lastModifiedNode && this.leoIntegration.lastModifiedNode.old ){
 
     //   const w_elementAp = JSON.parse(element.apJson);
@@ -41,20 +52,20 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     //     this.leoIntegration.lastModifiedNode = undefined; // clear
     //   }
     // }
-    return element;
+
   }
 
-   /**
-   * * FROM VSCODE DOCUMENTATION:
-   * Optional method to return the parent of `element`.
-   * Return `null` or `undefined` if `element` is a child of root.
-   *
-   * **NOTE:** This method should be implemented in order to access [reveal](#TreeView.reveal) API.
-   *
-   * @param element The element for which the parent has to be returned.
-   * @return Parent of `element`.
-   */
-  getParent(element: LeoNode ): Thenable<LeoNode>|null {
+  /**
+  * * FROM VSCODE DOCUMENTATION:
+  * Optional method to return the parent of `element`.
+  * Return `null` or `undefined` if `element` is a child of root.
+  *
+  * **NOTE:** This method should be implemented in order to access [reveal](#TreeView.reveal) API.
+  *
+  * @param element The element for which the parent has to be returned.
+  * @return Parent of `element`.
+  */
+  getParent(element: LeoNode): Thenable<LeoNode> | null {
     if (this.leoIntegration.fileOpenedReady) {
       return this.leoIntegration.getParent(element ? element.apJson : undefined);
     } else {

@@ -82,6 +82,18 @@ def getAllRootChildren():
         p.moveToNext()
 
 
+def getPNode(p_apJson):
+    '''EMIT OUT a node, don't select it.'''
+    if(p_apJson):
+        w_p = ap_to_p(json.loads(p_apJson))
+        if w_p:
+            outputPNode(w_p)
+        else:
+            es("error in getPNode no w_p node found")  # default empty
+    else:
+        es("error in getPNode no param p_apJson")
+
+
 def getChildren(p_apJson):
     '''EMIT OUT list of children of a node'''
     if(p_apJson):
@@ -186,6 +198,9 @@ def processCommand(p_string):
         return
     if p_string.startswith("getSelectedNode:"):
         getSelectedNode()  # get selected node in an array : no parameter
+        return
+    if p_string.startswith("getPNode:"):
+        getPNode(p_string[9:])  # get child array : rest of line as parameter
         return
     if p_string.startswith("getChildren:"):
         getChildren(p_string[12:])  # get child array : rest of line as parameter

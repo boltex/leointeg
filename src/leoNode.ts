@@ -9,6 +9,7 @@ export class LeoNode extends vscode.TreeItem {
         private leoIntegration: LeoIntegration,
         // For access to leo integration's globals (e.g. icons)
         public label: string, // Header
+        public gnx: string,
         public collapsibleState: vscode.TreeItemCollapsibleState, // computed in receiver/creator
         public apJson: string, // Key for leo/python side of things
         public cloned: boolean,

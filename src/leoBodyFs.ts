@@ -21,18 +21,20 @@ export class LeoBodyFsProvider implements vscode.FileSystemProvider {
     }
 
     stat(uri: vscode.Uri): vscode.FileStat {
+        console.log('called stat', uri.fsPath);
+
         if (uri.fsPath === '/') {
             return {
                 type: vscode.FileType.Directory,
                 ctime: 0,
-                mtime: 0, // Date.now(),
+                mtime: Date.now(),
                 size: 0
             };
         } else if (uri.fsPath === '/body') {
             return {
                 type: vscode.FileType.File,
                 ctime: 0,
-                mtime: 0, // Date.now(),
+                mtime: Date.now(),
                 size: this.leoIntegration.bodyText.length
             };
         } else {
