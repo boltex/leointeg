@@ -1,13 +1,10 @@
 import * as vscode from "vscode";
-import { LeoIntegration } from "./leoIntegration";
-import { LeoOutlineProvider } from "./leoOutline";
+import { LeoIcons } from "./leoIcons";
 
 export class LeoNode extends vscode.TreeItem {
     public cursorSelection: any; // TODO : Keep body's cursor and selection position from vscode to get it back
 
     constructor(
-        private leoIntegration: LeoIntegration,
-        // For access to leo integration's globals (e.g. icons)
         public label: string, // Header
         public gnx: string,
         public collapsibleState: vscode.TreeItemCollapsibleState, // computed in receiver/creator
@@ -15,27 +12,27 @@ export class LeoNode extends vscode.TreeItem {
         public cloned: boolean,
         public dirty: boolean,
         public marked: boolean,
-        public hasBody: boolean,
-        public command?: vscode.Command
+        public hasBody: boolean
 
     ) {
         super(label, collapsibleState);
-        this.command = { title: "select", command: "leointeg.selectNode", arguments: [this] };
+        this.command = {
+            command: 'leointeg.selectNode',
+            title: '',
+            arguments: [this]
+        };
     }
 
     contextValue = "leoNode"; // for use in package.json
 
     get iconPath(): string {
-        // For usage as: return path.join(__filename, "..", "..", "resources", "box00.svg");
         // 8=dirty, 4=cloned, 2=marked, 1=content (iconsInverted is dirty for light/dark inversion)
         let w_icon: number =
-            // * below is a way of inverting outline color of dirty/not dirty aspect of node icons
-            //(+(this.leoIntegration.iconsInverted ? !this.dirty : this.dirty) << 3) |
-            (+this.dirty << 3) |
+            (+this.dirty << 3) | // flip this bit with this.leoIntegration.iconsInverted
             (+this.cloned << 2) |
             (+this.marked << 1) |
             +this.hasBody;
-        return this.leoIntegration.icons[w_icon];
+        return LeoIcons.icons[w_icon];
     }
 
     get tooltip(): string {

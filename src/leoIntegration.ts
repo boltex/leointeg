@@ -61,8 +61,8 @@ export class LeoIntegration {
   public leoObjectSelected: boolean = false; // represents having focus on outline or body, as opposed to anything else
   public statusbarNormalColor = new vscode.ThemeColor("statusBar.foreground");  //"statusBar.foreground"
 
-  private bodyChangeTimeout: NodeJS.Timeout | undefined;
-  private bodyChangedDocument: vscode.TextDocument | undefined;
+  //private bodyChangeTimeout: NodeJS.Timeout | undefined;
+  //private bodyChangedDocument: vscode.TextDocument | undefined;
 
   private editHeadlineInputOptions: vscode.InputBoxOptions = {
     ignoreFocusOut: false,
@@ -158,23 +158,22 @@ export class LeoIntegration {
     // selecting another vscode window by the os title bar
   }
   private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
-    // edited the document: debounce/check if it was leo body
-    if (p_event.document.uri.scheme === "leo" && p_event.document.isDirty) {
-      // && p_event.document.fileName === "/body" // unnecessary
-      if (this.bodyChangeTimeout) {
-        clearTimeout(this.bodyChangeTimeout);
-      }
-      this.bodyChangedDocument = p_event.document;
-      this.bodyChangeTimeout = setTimeout(() => {
-        // * Debounce
-        this.triggerBodySave().then(() => {
-          if (this.bodyChangeTimeout) {
-            clearTimeout(this.bodyChangeTimeout);
-          }
-          this.bodyChangeTimeout = undefined; // Make falsy
-        });
-      }, 200);
-    }
+    // * edited the document: debounce/check if it was leo body
+    // if (p_event.document.uri.scheme === "leo" && p_event.document.isDirty) {
+    //   if (this.bodyChangeTimeout) {
+    //     clearTimeout(this.bodyChangeTimeout);
+    //   }
+    //   this.bodyChangedDocument = p_event.document;
+    //   this.bodyChangeTimeout = setTimeout(() => {
+    //     // * Debounce
+    //     this.triggerBodySave().then(() => {
+    //       if (this.bodyChangeTimeout) {
+    //         clearTimeout(this.bodyChangeTimeout);
+    //       }
+    //       this.bodyChangeTimeout = undefined; // Make falsy
+    //     });
+    //   }, 200);
+    // }
   }
 
   private onDocumentSaved(p_event: vscode.TextDocument): void {
@@ -241,7 +240,6 @@ export class LeoIntegration {
       }
     }
     const w_leoNode = new LeoNode(
-      this,
       w_apData.headline,
       w_apData.gnx,
       w_collaps,
@@ -271,7 +269,6 @@ export class LeoIntegration {
       }
 
       const w_leoNode = new LeoNode(
-        this,
         w_apData.headline,
         w_apData.gnx,
         w_collaps,
@@ -510,14 +507,14 @@ export class LeoIntegration {
     });
   }
 
-  public triggerBodySave(): Thenable<boolean> {
-    // * sets new body text of currently selected node on leo's side
-    if (this.bodyChangedDocument) {
-      return this.bodyChangedDocument.save();
-    } else {
-      return Promise.resolve(false);
-    }
-  }
+  // public triggerBodySave(): Thenable<boolean> {
+  //   // * sets new body text of currently selected node on leo's side
+  //   if (this.bodyChangedDocument) {
+  //     return this.bodyChangedDocument.save();
+  //   } else {
+  //     return Promise.resolve(false);
+  //   }
+  // }
 
   private callAction(): void {
     if (!this.callStack.length || this.actionBusy) {
@@ -533,7 +530,6 @@ export class LeoIntegration {
 
   public selectNode(p_node: LeoNode): void {
     // User has selected a node in the outline with the mouse
-    let w_savedBody: Thenable<boolean>;
 
     if (p_node) {
       console.log('About to refresh', p_node);
@@ -541,32 +537,34 @@ export class LeoIntegration {
       this.onDidChangeTreeDataObject.fire(p_node);
     }
 
-    if (this.bodyChangeTimeout) {
-      // there was one, maybe trigger it.
-      w_savedBody = this.triggerBodySave();
-    } else {
-      w_savedBody = Promise.resolve(true);
-    }
+    let w_savedBody: Thenable<boolean>;
 
-    w_savedBody.then(
-      () => {
-        console.log('finished saving body to leo');
-        if (this.bodyChangeTimeout) {
-          clearTimeout(this.bodyChangeTimeout);
-        }
-        this.bodyChangeTimeout = undefined; // Make falsy
-        this.setSelectedNode(p_node.apJson).then(p_val => {
-          // * Node now selected in leo
-        });
-        // Dont even wait for trying to get the body, the stack makes sure order is preserved
-        this.getBody(p_node.apJson).then(p_body => {
-          this.bodyText = p_body;
-          // this.onDidChangeBodyDataObject.fire(this.bodyUri); // * For virtualdocument leoBody.ts tests
-          this.showBodyDocument();
-          this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
-        });
-      }
-    );
+    // if (this.bodyChangeTimeout) {
+    //   // there was one, maybe trigger it.
+    //   w_savedBody = this.triggerBodySave();
+    // } else {
+    //   w_savedBody = Promise.resolve(true);
+    // }
+
+    // w_savedBody.then(
+    //   () => {
+    //     console.log('finished saving body to leo');
+    //     if (this.bodyChangeTimeout) {
+    //       clearTimeout(this.bodyChangeTimeout);
+    //     }
+    //     this.bodyChangeTimeout = undefined; // Make falsy
+    //     this.setSelectedNode(p_node.apJson).then(p_val => {
+    //       // * Node now selected in leo
+    //     });
+    //     // Dont even wait for trying to get the body, the stack makes sure order is preserved
+    //     this.getBody(p_node.apJson).then(p_body => {
+    //       this.bodyText = p_body;
+    //       // this.onDidChangeBodyDataObject.fire(this.bodyUri); // * For virtualdocument leoBody.ts tests
+    //       this.showBodyDocument();
+    //       this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
+    //     });
+    //   }
+    // );
 
 
   }

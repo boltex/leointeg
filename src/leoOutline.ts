@@ -21,50 +21,24 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     console.log("Leo outline refresh");
   }
 
-  getTreeItem(element: LeoNode): vscode.TreeItem | Thenable<vscode.TreeItem> {
+  getTreeItem(element: LeoNode): Thenable<vscode.TreeItem> {
     console.log('Wanna getTreeItem on ', element.label);
     if (this.leoIntegration.refreshSingleNodeFlag) {
       console.log('Did call getTreeItem on ', element.label);
-      this.leoIntegration.refreshSingleNodeFlag = false;
-      return this.leoIntegration.getPNode(element.apJson).then(
-        p_node => {
-          console.log(p_node);
-          return p_node;
-        }
-      );
+      // this.leoIntegration.refreshSingleNodeFlag = false;
+      // return this.leoIntegration.getPNode(element.apJson).then(
+      //   p_node => {
+      //     console.log(p_node);
+      //     return p_node;
+      //   }
+      // );
+      return Promise.resolve(element); // test
     } else {
-      return element;
+      console.log('nevermind, send the same');
+      return Promise.resolve(element);
     }
-    // if(this.leoIntegration.lastModifiedNode && this.leoIntegration.lastModifiedNode.old ){
-
-    //   const w_elementAp = JSON.parse(element.apJson);
-    //   const w_oldAp = JSON.parse(this.leoIntegration.lastModifiedNode.old.apJson);
-    //   const w_newAp = JSON.parse(this.leoIntegration.lastModifiedNode.new.apJson);
-
-
-    //   console.log("he", w_elementAp.headline);
-    //   console.log("ho", w_oldAp.headline);
-    //   console.log("hn", w_newAp.headline);
-
-    //   if(w_elementAp.headline === w_oldAp.headline){
-    //     console.log("got a match!");
-    //     element =  this.leoIntegration.lastModifiedNode.new; // replace the parameter
-    //     this.leoIntegration.lastModifiedNode = undefined; // clear
-    //   }
-    // }
-
   }
 
-  /**
-  * * FROM VSCODE DOCUMENTATION:
-  * Optional method to return the parent of `element`.
-  * Return `null` or `undefined` if `element` is a child of root.
-  *
-  * **NOTE:** This method should be implemented in order to access [reveal](#TreeView.reveal) API.
-  *
-  * @param element The element for which the parent has to be returned.
-  * @return Parent of `element`.
-  */
   getParent(element: LeoNode): Thenable<LeoNode> | null {
     if (this.leoIntegration.fileOpenedReady) {
       return this.leoIntegration.getParent(element ? element.apJson : undefined);
@@ -72,7 +46,6 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
       return null; // default give an empty tree
     }
   }
-
   getChildren(element?: LeoNode): Thenable<LeoNode[]> {
     if (this.leoIntegration.fileOpenedReady) {
       return this.leoIntegration.getChildren(element ? element.apJson : undefined);
