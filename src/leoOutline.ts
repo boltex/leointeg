@@ -21,21 +21,19 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     console.log("Leo outline refresh");
   }
 
-  getTreeItem(element: LeoNode): Thenable<vscode.TreeItem> {
-    console.log('Wanna getTreeItem on ', element.label);
+  getTreeItem(element: LeoNode): Thenable<LeoNode> | LeoNode {
+    console.log('Wanna getTreeItem ');
     if (this.leoIntegration.refreshSingleNodeFlag) {
-      console.log('Did call getTreeItem on ', element.label);
-      // this.leoIntegration.refreshSingleNodeFlag = false;
-      // return this.leoIntegration.getPNode(element.apJson).then(
-      //   p_node => {
-      //     console.log(p_node);
-      //     return p_node;
-      //   }
-      // );
-      return Promise.resolve(element); // test
+      console.log('Did call getTreeItem');
+      this.leoIntegration.refreshSingleNodeFlag = false;
+      return this.leoIntegration.getPNode(element.apJson).then(p_node => {
+        // element.marked = true; // test YES IT WORKS ! SEND SAME ELEMENT BUT MODIFY IT NO PROB!
+        return element;
+      });
+      //return Promise.resolve(element); // test
     } else {
       console.log('nevermind, send the same');
-      return Promise.resolve(element);
+      return element;
     }
   }
 

@@ -2,7 +2,7 @@ import * as child from "child_process";
 import * as vscode from "vscode";
 import * as path from "path";
 import { LeoNode } from "./leoNode";
-import { Uri } from "vscode";
+
 
 interface LeoAction {
   action: string; // action to call on python's side
@@ -11,6 +11,7 @@ interface LeoAction {
   resolveFn: (result: any) => void; // call that with an aswer from python's (or other) side
   rejectFn: (reason: any) => void; // call if problem is encountered
 }
+
 // (serializable) Archived Position
 interface ArchivedPosition {
   // * as reference, comments below are (almost) from source of Leo's plugin leoflexx.py
@@ -25,10 +26,9 @@ interface ArchivedPosition {
   headline: string; // p.h
   marked: boolean; // p.isMarked()
   selected: boolean; //  p == commander.p
-  stack: ApStack; // for (stack_v, stack_childIndex) in p.stack]
+  stack: ApStackItem[]; // for (stack_v, stack_childIndex) in p.stack]
 }
-
-interface ApStack {
+interface ApStackItem {
   gnx: string; //  stack_v.gnx
   childIndex: number; // stack_childIndex
   headline: string; // stack_v.h
@@ -303,10 +303,10 @@ export class LeoIntegration {
     return w_leoNodesArray;
   }
 
-  private getBestOpenFolderUri(): Uri {
+  private getBestOpenFolderUri(): vscode.Uri {
     // Find a folder to propose when opening the browse-for-leo-file chooser
-    let w_openedFileEnvUri: Uri | boolean = false;
-    let w_activeUri: Uri | undefined = undefined;
+    let w_openedFileEnvUri: vscode.Uri | boolean = false;
+    let w_activeUri: vscode.Uri | undefined = undefined;
 
     // let w_activeUri: Uri | undefined = vscode.window.activeTextEditor?vscode.window.activeTextEditor.document.uri:undefined;
     if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]) {
@@ -320,7 +320,7 @@ export class LeoIntegration {
       }
     }
     if (!w_openedFileEnvUri) {
-      w_openedFileEnvUri = Uri.file("~"); // TODO : set as home folder properly this doesn't work
+      w_openedFileEnvUri = vscode.Uri.file("~"); // TODO : set as home folder properly this doesn't work
     }
     return w_openedFileEnvUri;
   }
@@ -368,6 +368,8 @@ export class LeoIntegration {
   private resolveGetNode(p_jsonArray: string) {
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
+      console.log('resolving ', this.jsonArrayToSingleLeoNode(p_jsonArray));
+
       w_bottomAction.resolveFn(this.jsonArrayToSingleLeoNode(p_jsonArray));
       this.actionBusy = false;
     } else {
