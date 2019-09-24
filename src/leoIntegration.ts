@@ -46,16 +46,12 @@ export class LeoIntegration {
   public fileOpenedReady: boolean = false;
   public actionBusy: boolean = false;
 
-  public outlineDataReady: boolean = false;
   public leoTreeView: vscode.TreeView<LeoNode> | undefined;
 
   public bodyDataReady: boolean = false;
   public bodyText: string = "";
   // public bodyFileName: string = ""; // Solution to deal with vsCode's undos. Vary body filename instead of 'body'
   // ... because undo history stack non accessible via API
-
-  public icons: string[] = [];
-  public iconsInverted: boolean = false; // used to flip dirty/pristine outline of icon
 
   public leoStatusBarItem: vscode.StatusBarItem;
   public leoObjectSelected: boolean = false; // represents having focus on outline or body, as opposed to anything else
@@ -89,8 +85,8 @@ export class LeoIntegration {
   constructor(private context: vscode.ExtensionContext, public bodyUri: vscode.Uri) {
     this.leoBridgeReadyPromise = new Promise<child.ChildProcess>((resolve, reject) => {
       this.initLeoProcess(resolve, reject);
-      this.initIconPaths();
     });
+
     // * Status bar Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
     // EXAMPLE: register some listener that make sure the status bar item always up-to-date
     // context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(updateStatusBarItem));
@@ -198,18 +194,6 @@ export class LeoIntegration {
       // this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
       this.leoStatusBarItem.hide();
     }
-  }
-
-  private initIconPaths(): void {
-    // build icons so that 8=dirty, 4=cloned, 2=marked, 1=content
-    for (let index = 0; index < 16; index++) {
-      this.icons.push(path.join(__filename, "..", "..", "resources", "box" + ("0" + index).slice(-2) + ".svg"));
-    }
-    // * example for future light/dark themes support
-    // iconPath = {
-    //   light: path.join(__filename, "..", "..", "resources", "dependency.svg"),
-    //   dark: path.join(__filename, "..", "..", "resources", "dependency.svg")
-    // };
   }
 
   public setupRefreshFn(p_refreshObj: any): void {

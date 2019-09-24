@@ -4,12 +4,10 @@ import { LeoNode } from "./leoNode";
 import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyFsProvider } from "./leoBody";
 
-
 export function activate(context: vscode.ExtensionContext) {
 
   console.log('activate "leointeg" extension.');
 
-  const leoSheme = "leo"; // Not sure is Sheme is the right construct...
   let bodyUri = vscode.Uri.parse("leo:/body");
 
   const leoIntegration = new LeoIntegration(context, bodyUri);
@@ -34,10 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNodeAsClone", (node: LeoNode) => leoIntegration.pasteNodeAsClone(node)));
   context.subscriptions.push(vscode.commands.registerCommand("leointeg.delete", (node: LeoNode) => leoIntegration.delete(node)));
 
-  // Tree provider needs a reference to the 'leoIntegration' main object class instance
   const w_leoOutlineProvider = new LeoOutlineProvider(leoIntegration);
-
-  //vscode.window.registerTreeDataProvider("leoIntegration", w_leoOutlineProvider);
   const w_leoTreeView = vscode.window.createTreeView("leoIntegration", { showCollapseAll: true, treeDataProvider: w_leoOutlineProvider });
   leoIntegration.setTreeView(w_leoTreeView);
 
@@ -48,7 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
   // vscode.workspace.openTextDocument(bodyUri).then(p_doc => vscode.window.showTextDocument(p_doc));
 
   const leoBodyProvider = new LeoBodyFsProvider(leoIntegration);
-  context.subscriptions.push(vscode.workspace.registerFileSystemProvider(leoSheme, leoBodyProvider, { isCaseSensitive: true }));
+  context.subscriptions.push(vscode.workspace.registerFileSystemProvider("leo", leoBodyProvider, { isCaseSensitive: true }));
 
 }
 

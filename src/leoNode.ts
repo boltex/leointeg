@@ -37,7 +37,7 @@ export class LeoNode extends vscode.TreeItem {
 
     get tooltip(): string {
         // whole headline as tooltip is useful if outline pane is too narrow
-        return `${this.label}`;
+        return this.label;
     }
 
     getCursorSelection(): any {
@@ -47,7 +47,6 @@ export class LeoNode extends vscode.TreeItem {
     setCursorSelection(p_cursorSelection: any): void {
         this.cursorSelection = p_cursorSelection;
     }
-
 
     // * some smaller grayed-out text acompanying the main label
     // get description(): string {
