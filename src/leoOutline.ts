@@ -24,17 +24,18 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   getTreeItem(element: LeoNode): Thenable<LeoNode> | LeoNode {
     if (this.leoIntegration.refreshSingleNodeFlag) {
       this.leoIntegration.refreshSingleNodeFlag = false;
-      return this.leoIntegration.getPNode(element.apJson).then(p_node => {
-        element.label = p_node.label;
-        element.gnx = p_node.gnx;
-        element.collapsibleState = p_node.collapsibleState;
-        element.apJson = p_node.apJson;
-        element.cloned = p_node.cloned;
-        element.dirty = p_node.dirty;
-        element.marked = p_node.marked;
-        element.hasBody = p_node.hasBody;
-        return element;
-      });
+      // return this.leoIntegration.getPNode(element.apJson).then(p_node => {
+      //   element.label = p_node.label;
+      //   element.gnx = p_node.gnx;
+      //   element.collapsibleState = p_node.collapsibleState;
+      //   element.apJson = p_node.apJson;
+      //   element.cloned = p_node.cloned;
+      //   element.dirty = p_node.dirty;
+      //   element.marked = p_node.marked;
+      //   element.hasBody = p_node.hasBody;
+      //   return element;
+      // });
+      return element; // TODO : REPLACE ABOVE COMMENTS
     } else {
       return element;
     }
@@ -42,14 +43,16 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
   getParent(element: LeoNode): Thenable<LeoNode> | null {
     if (this.leoIntegration.fileOpenedReady) {
-      return this.leoIntegration.getParent(element ? element.apJson : undefined);
+      // return this.leoIntegration.getParent(element ? element.apJson : undefined);
+      return null; // TODO : REPLACE ABOVE COMMENTS
     } else {
       return null; // default give an empty tree
     }
   }
   getChildren(element?: LeoNode): Thenable<LeoNode[]> {
     if (this.leoIntegration.fileOpenedReady) {
-      return this.leoIntegration.getChildren(element ? element.apJson : undefined);
+      // return this.leoIntegration.getChildren(element ? element.apJson : undefined);
+      return Promise.resolve([]); // TODO : REPLACE ABOVE COMMENTS
     } else {
       return Promise.resolve([]); // default give an empty tree
     }

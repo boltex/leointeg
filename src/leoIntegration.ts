@@ -41,13 +41,13 @@ interface LeoBridgePackage {
 
 
 export class LeoIntegration {
-  public leoBridgeReady: boolean = false;
+  // TODO : Move file browsing and opening in another js file
   public fileBrowserOpen: boolean = false;
   public fileOpenedReady: boolean = false;
-  public actionBusy: boolean = false;
 
   public leoTreeView: vscode.TreeView<LeoNode> | undefined;
 
+  private bodyUri: vscode.Uri = vscode.Uri.parse("leo:/body");
   public bodyDataReady: boolean = false;
   public bodyText: string = "";
   // public bodyFileName: string = ""; // Solution to deal with vsCode's undos. Vary body filename instead of 'body'
@@ -68,12 +68,12 @@ export class LeoIntegration {
     // placeHolder: 'Enter Headline',
   };
 
+  public actionBusy: boolean = false;
   private leoBridgeSerialId: number = 0;
-
   private callStack: LeoAction[] = [];
+
   private onDidChangeTreeDataObject: any;
   private onDidChangeBodyDataObject: any;
-
 
   public refreshSingleNodeFlag: boolean = false; // checked AND CLEARED by leoOutline to see if it has to really refresh
 
@@ -81,10 +81,16 @@ export class LeoIntegration {
   public revealSelectedNode: boolean = false; // to be read by nodes to check if they should self-select. (and lower this flag)
 
   private leoBridgeReadyPromise: Promise<child.ChildProcess>; // set when leoBridge has a leo controller ready
+  public leoBridgeReady: boolean = false;
 
-  constructor(private context: vscode.ExtensionContext, public bodyUri: vscode.Uri) {
+  constructor(private context: vscode.ExtensionContext) {
+
     this.leoBridgeReadyPromise = new Promise<child.ChildProcess>((resolve, reject) => {
       this.initLeoProcess(resolve, reject);
+    });
+    this.leoBridgeReadyPromise.then(() => {
+      vscode.window.showInformationMessage("leoBridge Ready");
+      this.leoBridgeReady = true;
     });
 
     // * Status bar Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
@@ -263,24 +269,27 @@ export class LeoIntegration {
         !!w_apData.hasBody
       );
 
-      if (w_apData.selected && this.revealSelectedNode) {
-        this.revealSelectedNode = false;
-        setTimeout(() => {
-          if (this.leoTreeView) {
-            this.leoTreeView.reveal(w_leoNode, { select: true, focus: true });
-            this.getBody(w_leoNode.apJson).then(p_body => {
-              this.bodyText = p_body;
-              vscode.window.showTextDocument(this.bodyUri, {
-                viewColumn: 1,
-                preserveFocus: false,
-                preview: false
-                // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
-              });
-              this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
-            });
-          }
-        }, 0);
-      }
+      // * THIS SHOULD BE DONE BY CALLER ! with help of a function 'revealNode' that also sets its body
+      // if (w_apData.selected && this.revealSelectedNode) {
+      //   this.revealSelectedNode = false;
+      //   setTimeout(() => {
+      //     if (this.leoTreeView) {
+      //       this.leoTreeView.reveal(w_leoNode, { select: true, focus: true });
+
+      //       this.getBody(w_leoNode.apJson).then(p_body => {
+      //         this.bodyText = p_body;
+      //         vscode.window.showTextDocument(this.bodyUri, {
+      //           viewColumn: 1,
+      //           preserveFocus: false,
+      //           preview: false
+      //           // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
+      //         });
+      //         this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
+      //       });
+
+      //     }
+      //   }, 0);
+      // }
 
       w_leoNodesArray.push(w_leoNode);
     }
@@ -319,67 +328,64 @@ export class LeoIntegration {
     }
   }
 
-  private resolveFileOpenedReady() {
-    let w_bottomAction = this.callStack.shift();
-    if (w_bottomAction) {
-      w_bottomAction.resolveFn(null);
-      this.actionBusy = false;
-    } else {
-      console.log("ERROR STACK EMPTY");
+  /*
+    private resolveFileOpenedReady() {
+      let w_bottomAction = this.callStack.shift();
+      if (w_bottomAction) {
+        w_bottomAction.resolveFn(null);
+        this.actionBusy = false;
+      } else {
+        console.log("ERROR STACK EMPTY");
+      }
     }
-  }
 
-  private resolveSelectionReady() {
-    let w_bottomAction = this.callStack.shift();
-    if (w_bottomAction) {
-      w_bottomAction.resolveFn(null);
-      this.actionBusy = false;
-    } else {
-      console.log("ERROR STACK EMPTY");
+    private resolveSelectionReady() {
+      let w_bottomAction = this.callStack.shift();
+      if (w_bottomAction) {
+        w_bottomAction.resolveFn(null);
+        this.actionBusy = false;
+      } else {
+        console.log("ERROR STACK EMPTY");
+      }
     }
-  }
 
-  private resolveGetBody(p_jsonObject: string) {
-    let w_bottomAction = this.callStack.shift();
-    if (w_bottomAction) {
-      w_bottomAction.resolveFn(JSON.parse(p_jsonObject).body);
-      this.actionBusy = false;
-    } else {
-      console.log("ERROR STACK EMPTY");
+    private resolveGetBody(p_jsonObject: string) {
+      let w_bottomAction = this.callStack.shift();
+      if (w_bottomAction) {
+        w_bottomAction.resolveFn(JSON.parse(p_jsonObject).body);
+        this.actionBusy = false;
+      } else {
+        console.log("ERROR STACK EMPTY");
+      }
     }
-  }
 
-  private resolveGetNode(p_jsonArray: string) {
-    let w_bottomAction = this.callStack.shift();
-    if (w_bottomAction) {
-      console.log('resolving ', this.jsonArrayToSingleLeoNode(p_jsonArray));
-
-      w_bottomAction.resolveFn(this.jsonArrayToSingleLeoNode(p_jsonArray));
-      this.actionBusy = false;
-    } else {
-      console.log("ERROR STACK EMPTY");
+    private resolveGetNode(p_jsonArray: string) {
+      let w_bottomAction = this.callStack.shift();
+      if (w_bottomAction) {
+        w_bottomAction.resolveFn(this.jsonArrayToSingleLeoNode(p_jsonArray));
+        this.actionBusy = false;
+      } else {
+        console.log("ERROR STACK EMPTY");
+      }
     }
-  }
 
-  private resolveGetChildren(p_jsonArray: string) {
-    let w_bottomAction = this.callStack.shift();
-    if (w_bottomAction) {
-      w_bottomAction.resolveFn(this.jsonArrayToLeoNodesArray(p_jsonArray));
-      this.actionBusy = false;
-    } else {
-      console.log("ERROR STACK EMPTY");
+    private resolveGetChildren(p_jsonArray: string) {
+      let w_bottomAction = this.callStack.shift();
+      if (w_bottomAction) {
+        w_bottomAction.resolveFn(this.jsonArrayToLeoNodesArray(p_jsonArray));
+        this.actionBusy = false;
+      } else {
+        console.log("ERROR STACK EMPTY");
+      }
     }
-  }
+  */
 
-
-  public leoBridgeAction(p_action: string, p_jsonParam: string): Promise<LeoBridgePackage> {
-    this.leoBridgeSerialId = this.leoBridgeSerialId + 1;
-    const w_jsonParam = "{\"id\":" + this.leoBridgeSerialId + ", \"action\": \"" + p_action + "\", \"param\":" + p_jsonParam + "}";
-    // leoBridgePackageId
+  public leoBridgeAction(p_action: string, p_jsonParam: string, p_deferedPayload?: string): Promise<LeoBridgePackage> {
     return new Promise((resolve, reject) => {
       const w_action: LeoAction = {
         action: "leoBridge:", // ! INCLUDES THE COLON ':'
-        parameter: w_jsonParam,
+        parameter: "{\"id\":" + (++this.leoBridgeSerialId) + ", \"action\": \"" + p_action + "\", \"param\":" + p_jsonParam + "}",
+        deferedPayload: p_deferedPayload ? p_deferedPayload : undefined,
         resolveFn: resolve,
         rejectFn: reject
       };
@@ -388,6 +394,7 @@ export class LeoIntegration {
     });
   }
 
+  /*
   public setSelectedNode(p_apJson?: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const w_action: LeoAction = {
@@ -492,6 +499,7 @@ export class LeoIntegration {
       this.callAction();
     });
   }
+  */
 
   // public triggerBodySave(): Thenable<boolean> {
   //   // * sets new body text of currently selected node on leo's side
@@ -503,55 +511,51 @@ export class LeoIntegration {
   // }
 
   private callAction(): void {
-    if (!this.callStack.length || this.actionBusy) {
-      return;
+    if (this.callStack.length && !this.actionBusy) {
+      this.actionBusy = true; // launch / resolve bottom one
+      const w_action = this.callStack[0];
+      this.stdin(w_action.action + w_action.parameter + "\n");
     }
-    // launch / resolve bottom one
-    this.actionBusy = true;
-    const w_action = this.callStack[0];
-
-    // * example "getChildren:{blablabla some JSON blablabla}"
-    this.stdin(w_action.action + w_action.parameter + "\n");
   }
 
   public selectNode(p_node: LeoNode): void {
     // User has selected a node in the outline with the mouse
 
     if (p_node) {
-      console.log('About to refresh', p_node);
       this.refreshSingleNodeFlag = true;
       this.onDidChangeTreeDataObject.fire(p_node);
     }
 
     let w_savedBody: Thenable<boolean>;
 
-    // if (this.bodyChangeTimeout) {
-    //   // there was one, maybe trigger it.
-    //   w_savedBody = this.triggerBodySave();
-    // } else {
-    //   w_savedBody = Promise.resolve(true);
-    // }
+    /*
+    if (this.bodyChangeTimeout) {
+      // there was one, maybe trigger it.
+      w_savedBody = this.triggerBodySave();
+    } else {
+      w_savedBody = Promise.resolve(true);
+    }
 
-    // w_savedBody.then(
-    //   () => {
-    //     console.log('finished saving body to leo');
-    //     if (this.bodyChangeTimeout) {
-    //       clearTimeout(this.bodyChangeTimeout);
-    //     }
-    //     this.bodyChangeTimeout = undefined; // Make falsy
-    //     this.setSelectedNode(p_node.apJson).then(p_val => {
-    //       // * Node now selected in leo
-    //     });
-    //     // Dont even wait for trying to get the body, the stack makes sure order is preserved
-    //     this.getBody(p_node.apJson).then(p_body => {
-    //       this.bodyText = p_body;
-    //       // this.onDidChangeBodyDataObject.fire(this.bodyUri); // * For virtualdocument leoBody.ts tests
-    //       this.showBodyDocument();
-    //       this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
-    //     });
-    //   }
-    // );
-
+    w_savedBody.then(
+      () => {
+        console.log('finished saving body to leo');
+        if (this.bodyChangeTimeout) {
+          clearTimeout(this.bodyChangeTimeout);
+        }
+        this.bodyChangeTimeout = undefined; // Make falsy
+        this.setSelectedNode(p_node.apJson).then(p_val => {
+          // * Node now selected in leo
+        });
+        // Dont even wait for trying to get the body, the stack makes sure order is preserved
+        this.getBody(p_node.apJson).then(p_body => {
+          this.bodyText = p_body;
+          // this.onDidChangeBodyDataObject.fire(this.bodyUri); // * For virtualdocument leoBody.ts tests
+          this.showBodyDocument();
+          this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
+        });
+      }
+    );
+    */
 
   }
 
@@ -634,31 +638,32 @@ export class LeoIntegration {
 
   private processAnswer(p_data: string): void {
     let w_processed: boolean = false;
-    if (p_data.startsWith("nodeReady")) {
-      this.resolveGetNode(p_data.substring(9)); // ANSWER to getChildren
-      w_processed = true;
-    } else if (p_data.startsWith("outlineDataReady")) {
-      this.resolveGetChildren(p_data.substring(16)); // ANSWER to getChildren
-      w_processed = true;
-    } else if (p_data.startsWith("bodyDataReady")) {
-      this.resolveGetBody(p_data.substring(13)); // ANSWER to getChildren
-      w_processed = true;
-    } else if (p_data === "selectionReady") {
-      this.resolveSelectionReady();
-      w_processed = true;
-    } else if (p_data === "fileOpenedReady") {
-      this.resolveFileOpenedReady();
-      w_processed = true;
-    } else if (p_data === "leoBridgeReady") {
+    /*
+        if (p_data.startsWith("nodeReady")) {
+          this.resolveGetNode(p_data.substring(9)); // ANSWER to getChildren
+          w_processed = true;
+        } else if (p_data.startsWith("outlineDataReady")) {
+          this.resolveGetChildren(p_data.substring(16)); // ANSWER to getChildren
+          w_processed = true;
+        } else if (p_data.startsWith("bodyDataReady")) {
+          this.resolveGetBody(p_data.substring(13)); // ANSWER to getChildren
+          w_processed = true;
+        } else if (p_data === "selectionReady") {
+          this.resolveSelectionReady();
+          w_processed = true;
+        } else if (p_data === "fileOpenedReady") {
+          this.resolveFileOpenedReady();
+          w_processed = true;
+        }
+    */
+    if (p_data === "leoBridgeReady") {
       this.resolveBridgeReady();
       w_processed = true;
     }
     if (w_processed) {
       this.callAction();
       return;
-    }
-    // * past this point only if p_data did not match any known commands!
-    if (this.leoBridgeReady) {
+    } else if (this.leoBridgeReady) {
       console.log("from python", p_data); // unprocessed/unknown python output
     }
   }
@@ -672,25 +677,17 @@ export class LeoIntegration {
 
   public test(): void {
     console.log("sending test");
-    //this.stdin("test\n"); // 'test' should trigger a test output from python script
-    // getSelectedNode
-    //
     // this.getSelectedNode().then(p_leoNode => {
     //   console.log('ok, now got back from test: ', p_leoNode.label);
     //   if (this.leoTreeView) {
     //     this.leoTreeView.reveal(p_leoNode, { select: true, focus: true });
     //   }
     // });
-
-    const w_testPromise = this.leoBridgeAction("test", "{\"testparam\":\"hello\"}");
-
-    w_testPromise.then(
+    this.leoBridgeAction("test", "{\"testparam\":\"hello\"}").then(
       (p_awnser: LeoBridgePackage) => {
         console.log('Got BAck from leoBridgeAction test! ', p_awnser);
       }
     );
-
-
   }
 
   public killLeoBridge(): void {
@@ -700,35 +697,29 @@ export class LeoIntegration {
 
   public editHeadline(p_node: LeoNode) {
     this.editHeadlineInputOptions.value = p_node.label;
-    vscode.window.showInputBox(this.editHeadlineInputOptions).then(
-      p_newHeadline => {
-        if (p_newHeadline) {
-          p_node.label = p_newHeadline; // ! This refreshes automatic ID as per documentation :
-          /**
-           * Optional id for the tree item that has to be unique across tree.
-           * The id is used to preserve the selection and expansion state of the tree item.
-           *
-           * If not provided, an id is generated using the tree item's label.
-           *
-           * **Note** that when labels change, ids will change and that selection
-           * and expansion state cannot be kept stable anymore.
-           */
-          this.setNewHeadline(p_node.apJson, p_newHeadline).then(
-            // * should we redraw/refresh/reveal just changed ?
-            // If so, Dont select because in vscode its possible to edit headline of unselected nodes.comment
-            // So keep node selection unchanged in tree and leo.
-            (p_newNode) => {
-              // this.lastModifiedNode = { old: p_node, new: p_newNode }; // tests
-              // this.onDidChangeTreeDataObject.fire(p_node); // * does not refresh clones !
-              this.revealSelectedNode = true; // ! needed because we voluntarily refreshed the automatic ID
-              this.onDidChangeTreeDataObject.fire(); // refresh all, needed to get clones to refresh too!
-            }
-          );
 
+    vscode.window.showInputBox(this.editHeadlineInputOptions)
+      .then(
+        p_newHeadline => {
+          if (p_newHeadline) {
+            p_node.label = p_newHeadline; //! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
 
+            // TODO : FIX THIS COMMENTED CODE
+            // this.setNewHeadline(p_node.apJson, p_newHeadline).then(
+            //   // * should we redraw/refresh/reveal just changed ?
+            //   // If so, Dont select because in vscode its possible to edit headline of unselected nodes.
+            //   // So keep node selection unchanged in tree and leo.
+            //   (p_newNode) => {
+            //     // this.lastModifiedNode = { old: p_node, new: p_newNode }; // tests
+            //     // this.onDidChangeTreeDataObject.fire(p_node); // * does not refresh clones !
+            //     this.revealSelectedNode = true; // ! needed because we voluntarily refreshed the automatic ID
+            //     this.onDidChangeTreeDataObject.fire(); // refresh all, needed to get clones to refresh too!
+            //   }
+            // );
+
+          }
         }
-      }
-    );
+      );
   }
   public mark(p_node: LeoNode): void {
     vscode.window.showInformationMessage(`mark on ${p_node.label}.`); // Temp placeholder
@@ -763,6 +754,7 @@ export class LeoIntegration {
     const w_pythonProcess: child.ChildProcess = child.spawn("python3", [
       this.context.extensionPath + "/scripts/leobridge.py"
     ]);
+
     const w_action: LeoAction = {
       action: "", // just waiting for ready, no need to call an action for this first one
       parameter: "",
@@ -771,7 +763,8 @@ export class LeoIntegration {
       rejectFn: p_promiseReject
     };
     this.callStack.push(w_action); // push the first action on callstack for answering leoBridgeReady
-    // * interact via std in out
+
+    // * interact via std in out : Listen to python's leoBridge output
     w_pythonProcess.stdout.on("data", (data: string) => {
       const w_data = data.toString();
       const w_lines = w_data.split("\n");

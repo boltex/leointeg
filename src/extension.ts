@@ -8,9 +8,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   console.log('activate "leointeg" extension.');
 
-  let bodyUri = vscode.Uri.parse("leo:/body");
-
-  const leoIntegration = new LeoIntegration(context, bodyUri);
+  const leoIntegration = new LeoIntegration(context);
 
   context.subscriptions.push(
     vscode.commands.registerCommand("leointeg.openLeoFile", () => leoIntegration.openLeoFile())
