@@ -85,9 +85,7 @@ export class LeoIntegration {
 
   constructor(private context: vscode.ExtensionContext) {
 
-    this.leoBridgeReadyPromise = new Promise<child.ChildProcess>((resolve, reject) => {
-      this.initLeoProcess(resolve, reject);
-    });
+    this.leoBridgeReadyPromise = this.initLeoProcess();
     this.leoBridgeReadyPromise.then(() => {
       vscode.window.showInformationMessage("leoBridge Ready");
       this.leoBridgeReady = true;
@@ -318,15 +316,6 @@ export class LeoIntegration {
     return w_openedFileEnvUri;
   }
 
-  private resolveBridgeReady() {
-    vscode.window.showInformationMessage("leoBridge Ready");
-    this.leoBridgeReady = true;
-    let w_bottomAction = this.callStack.shift();
-    if (w_bottomAction) {
-      // Used when the action already has a return value ready but is also waiting for python's side
-      w_bottomAction.resolveFn(w_bottomAction.deferedPayload);
-    }
-  }
 
   /*
     private resolveFileOpenedReady() {
@@ -380,7 +369,8 @@ export class LeoIntegration {
     }
   */
 
-  public leoBridgeAction(p_action: string, p_jsonParam: string, p_deferedPayload?: string): Promise<LeoBridgePackage> {
+  // ! return TYPE was Promise<LeoBridgePackage> but deferedPayload can make return anything. Therefore now its Promise<any>
+  public leoBridgeAction(p_action: string, p_jsonParam: string, p_deferedPayload?: any, p_preventCall?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       const w_action: LeoAction = {
         action: "leoBridge:", // ! INCLUDES THE COLON ':'
@@ -390,8 +380,21 @@ export class LeoIntegration {
         rejectFn: reject
       };
       this.callStack.push(w_action);
-      this.callAction();
+      if (!p_preventCall) {
+        this.callAction();
+      }
     });
+  }
+
+
+  private resolveBridgeReady() {
+    vscode.window.showInformationMessage("leoBridge Ready");
+    this.leoBridgeReady = true;
+    let w_bottomAction = this.callStack.shift();
+    if (w_bottomAction) {
+      // Used when the action already has a return value ready but is also waiting for python's side
+      w_bottomAction.resolveFn(w_bottomAction.deferedPayload);
+    }
   }
 
   /*
@@ -741,31 +744,20 @@ export class LeoIntegration {
   }
 
 
-  private initLeoProcess(
-    p_promiseResolve: (value?: any | PromiseLike<any>) => void,
-    p_promiseReject: (value?: any | PromiseLike<any>) => void
-  ): void {
+  private initLeoProcess(): Promise<child.ChildProcess> {
     // * prevent re-init
     if (this.leoBridgeReady) {
       console.log("ERROR : leoBridge already Started");
-      return;
+      return this.leoBridgeReadyPromise;
     }
     // * start leo via leoBridge python script.
     const w_pythonProcess: child.ChildProcess = child.spawn("python3", [
       this.context.extensionPath + "/scripts/leobridge.py"
     ]);
 
-    const w_action: LeoAction = {
-      action: "", // just waiting for ready, no need to call an action for this first one
-      parameter: "",
-      deferedPayload: w_pythonProcess,
-      resolveFn: p_promiseResolve,
-      rejectFn: p_promiseReject
-    };
-    this.callStack.push(w_action); // push the first action on callstack for answering leoBridgeReady
-
     // * interact via std in out : Listen to python's leoBridge output
     w_pythonProcess.stdout.on("data", (data: string) => {
+      // TODO : if stable, concatenate those next three lines and remove variables
       const w_data = data.toString();
       const w_lines = w_data.split("\n");
       w_lines.forEach(p_line => {
@@ -784,5 +776,7 @@ export class LeoIntegration {
       console.log(`child process exited with code ${code}`);
       this.leoBridgeReady = false;
     });
+
+    return this.leoBridgeAction("", "", w_pythonProcess, true);
   }
 }
