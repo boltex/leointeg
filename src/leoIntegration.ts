@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import { LeoNode } from "./leoNode";
 
-
+// Action calls to the python's side, to be pushed and resolved as a stack
 interface LeoAction {
   action: string; // action to call on python's side
   parameter: string; // to pass along with action to python's side
@@ -12,7 +12,7 @@ interface LeoAction {
   rejectFn: (reason: any) => void; // call if problem is encountered
 }
 
-// (serializable) Archived Position
+// (Serializable) Archived Position
 interface ArchivedPosition {
   // * as reference, comments below are (almost) from source of Leo's plugin leoflexx.py
   hasBody: boolean; //  bool(p.b),
@@ -26,12 +26,11 @@ interface ArchivedPosition {
   headline: string; // p.h
   marked: boolean; // p.isMarked()
   selected: boolean; //  p == commander.p
-  stack: ApStackItem[]; // for (stack_v, stack_childIndex) in p.stack]
-}
-interface ApStackItem {
-  gnx: string; //  stack_v.gnx
-  childIndex: number; // stack_childIndex
-  headline: string; // stack_v.h
+  stack: {
+    gnx: string; //  stack_v.gnx
+    childIndex: number; // stack_childIndex
+    headline: string; // stack_v.h
+  }[]; // for (stack_v, stack_childIndex) in p.stack]
 }
 
 interface LeoBridgePackage {
@@ -80,13 +79,16 @@ export class LeoIntegration {
   // public lastModifiedNode: { old: LeoNode, new: LeoNode } | undefined; // * tests for integrity
   public revealSelectedNode: boolean = false; // to be read by nodes to check if they should self-select. (and lower this flag)
 
-  private leoBridgeReadyPromise: Promise<child.ChildProcess>; // set when leoBridge has a leo controller ready
-  public leoBridgeReady: boolean = false;
+  public leoBridgeReady: boolean = false; // Can be used in cunjunction with promise to wait for leoPython
+  private leoBridgeReadyPromise: Promise<LeoBridgePackage>; // set when leoBridge has a leo controller ready
+  private leoPythonProcess: child.ChildProcess | undefined;
 
   constructor(private context: vscode.ExtensionContext) {
 
     this.leoBridgeReadyPromise = this.initLeoProcess();
-    this.leoBridgeReadyPromise.then(() => {
+    this.leoBridgeReadyPromise.then((p_package) => {
+      this.assert(p_package.id === 0); // test integrity
+      this.leoPythonProcess = p_package.package;
       vscode.window.showInformationMessage("leoBridge Ready");
       this.leoBridgeReady = true;
     });
@@ -114,6 +116,12 @@ export class LeoIntegration {
     vscode.workspace.onDidSaveTextDocument(p_event => this.onDocumentSaved(p_event));
     vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
 
+  }
+
+  private assert(p_val: boolean): void {
+    if (!p_val) {
+      console.error();
+    }
   }
 
   private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
@@ -369,8 +377,7 @@ export class LeoIntegration {
     }
   */
 
-  // ! return TYPE was Promise<LeoBridgePackage> but deferedPayload can make return anything. Therefore now its Promise<any>
-  public leoBridgeAction(p_action: string, p_jsonParam: string, p_deferedPayload?: any, p_preventCall?: boolean): Promise<any> {
+  public leoBridgeAction(p_action: string, p_jsonParam: string, p_deferedPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
     return new Promise((resolve, reject) => {
       const w_action: LeoAction = {
         action: "leoBridge:", // ! INCLUDES THE COLON ':'
@@ -387,13 +394,19 @@ export class LeoIntegration {
   }
 
 
-  private resolveBridgeReady() {
-    vscode.window.showInformationMessage("leoBridge Ready");
-    this.leoBridgeReady = true;
+  private resolveBridgeReady(p_jsonObject: string) {
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
       // Used when the action already has a return value ready but is also waiting for python's side
-      w_bottomAction.resolveFn(w_bottomAction.deferedPayload);
+      if (w_bottomAction.deferedPayload) {
+        w_bottomAction.resolveFn(w_bottomAction.deferedPayload); // TODO : SHOULD JSON BE INTERPRETED INTO OBJECT ???
+        // JSON.parse(p_jsonObject).body
+      } else {
+        w_bottomAction.resolveFn(p_jsonObject);
+      }
+      this.actionBusy = false;
+    } else {
+      console.log("ERROR STACK EMPTY");
     }
   }
 
@@ -660,7 +673,7 @@ export class LeoIntegration {
         }
     */
     if (p_data === "leoBridgeReady") {
-      this.resolveBridgeReady();
+      this.resolveBridgeReady(p_data.substring(14));
       w_processed = true;
     }
     if (w_processed) {
@@ -671,32 +684,7 @@ export class LeoIntegration {
     }
   }
 
-  private stdin(p_message: string): any {
-    // not using 'this.leoBridgeReady' : using '.then' to be buffered in case process isn't ready.
-    this.leoBridgeReadyPromise.then(p_leoProcess => {
-      p_leoProcess.stdin.write(p_message); // * std in interaction sending to python script
-    });
-  }
 
-  public test(): void {
-    console.log("sending test");
-    // this.getSelectedNode().then(p_leoNode => {
-    //   console.log('ok, now got back from test: ', p_leoNode.label);
-    //   if (this.leoTreeView) {
-    //     this.leoTreeView.reveal(p_leoNode, { select: true, focus: true });
-    //   }
-    // });
-    this.leoBridgeAction("test", "{\"testparam\":\"hello\"}").then(
-      (p_awnser: LeoBridgePackage) => {
-        console.log('Got BAck from leoBridgeAction test! ', p_awnser);
-      }
-    );
-  }
-
-  public killLeoBridge(): void {
-    console.log("sending kill command");
-    this.stdin("exit\n"); // 'exit' should kill the python script
-  }
 
   public editHeadline(p_node: LeoNode) {
     this.editHeadlineInputOptions.value = p_node.label;
@@ -744,39 +732,62 @@ export class LeoIntegration {
   }
 
 
-  private initLeoProcess(): Promise<child.ChildProcess> {
+  private initLeoProcess(): Promise<LeoBridgePackage> {
     // * prevent re-init
     if (this.leoBridgeReady) {
-      console.log("ERROR : leoBridge already Started");
+      console.error("leobridge.py already Started");
       return this.leoBridgeReadyPromise;
     }
     // * start leo via leoBridge python script.
     const w_pythonProcess: child.ChildProcess = child.spawn("python3", [
       this.context.extensionPath + "/scripts/leobridge.py"
     ]);
-
     // * interact via std in out : Listen to python's leoBridge output
     w_pythonProcess.stdout.on("data", (data: string) => {
-      // TODO : if stable, concatenate those next three lines and remove variables
-      const w_data = data.toString();
-      const w_lines = w_data.split("\n");
-      w_lines.forEach(p_line => {
+      data.toString().split("\n").forEach(p_line => {
         p_line = p_line.trim();
         if (p_line) { // * std out process line by line: json shouldn't have line breaks
           this.processAnswer(p_line);
         }
       });
     });
-
     w_pythonProcess.stderr.on("data", (data: string) => {
       console.log(`stderr: ${data}`);
     });
-
     w_pythonProcess.on("close", (code: any) => {
       console.log(`child process exited with code ${code}`);
       this.leoBridgeReady = false;
     });
+    // * Start action with preventCall set to true: no need to call anything for 'ready' answer
+    return this.leoBridgeAction("", "", { id: 0, package: w_pythonProcess }, true);
+  }
 
-    return this.leoBridgeAction("", "", w_pythonProcess, true);
+  private stdin(p_message: string): any {
+    // not using 'this.leoBridgeReady' : using '.then' to be buffered in case process isn't ready.
+    this.leoBridgeReadyPromise.then(() => {
+      if (this.leoPythonProcess) {
+        this.leoPythonProcess.stdin.write(p_message); // * std in interaction sending to python script
+      }
+    });
+  }
+
+  public killLeoBridge(): void {
+    console.log("sending kill command");
+    this.stdin("exit\n"); // 'exit' should kill the python script
+  }
+
+  public test(): void {
+    console.log("sending test");
+    // this.getSelectedNode().then(p_leoNode => {
+    //   console.log('ok, now got back from test: ', p_leoNode.label);
+    //   if (this.leoTreeView) {
+    //     this.leoTreeView.reveal(p_leoNode, { select: true, focus: true });
+    //   }
+    // });
+    this.leoBridgeAction("test", "{\"testparam\":\"hello\"}").then(
+      (p_answer: LeoBridgePackage) => {
+        console.log('Got BAck from leoBridgeAction test! ', p_answer.id, p_answer.package);
+      }
+    );
   }
 }
