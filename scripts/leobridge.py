@@ -178,29 +178,6 @@ def setSelectedNode(p_apJson):
     es('selectionReady')
 
 
-def processLeoBridge(p_paramJson):
-    '''Process incoming command'''  # TODO : Select right action !
-    es(p_paramJson)
-    w_param = json.loads(p_paramJson)
-    if w_param and w_param['action']:
-        globals()[w_param['action']](w_param['param'])
-    else:
-        es("error in processLeoBridge")
-
-
-def processCommand(p_string):
-    '''Process incoming command'''
-    p_string = p_string.strip()
-    if p_string.startswith("leoBridge:"):
-        processLeoBridge(p_string[10:])
-        return
-    if p_string == "test":
-        outputTest()
-        return
-    if p_string:
-        es('from vscode' + p_string)  # NOT REOCOGNIZED : Emit if not an empty string
-
-
 def create_gnx_to_vnode():
     '''Make the first gnx_to_vnode array with all unique nodes'''
     global gnx_to_vnode, commander
@@ -282,6 +259,24 @@ def p_to_ap(p):
     if p == commander.p:
         w_ap['selected'] = True
     return w_ap
+
+
+def processCommand(p_string):
+    '''Process incoming command'''
+    p_string = p_string.strip()
+    if p_string.startswith("leoBridge:"):
+        # processLeoBridge(p_string[10:])
+        w_param = json.loads(p_string[10:])
+        if w_param and w_param['action']:
+            globals()[w_param['action']](w_param['param'])
+        else:
+            es("error in processCommand")
+        return
+    if p_string == "test":
+        outputTest()
+        return
+    if p_string:
+        es('from vscode' + p_string)  # NOT REOCOGNIZED : Emit if not an empty string
 
 
 def main():
