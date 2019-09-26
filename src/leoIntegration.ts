@@ -2,9 +2,10 @@ import * as child from "child_process";
 import * as vscode from "vscode";
 import * as path from "path";
 import { LeoNode } from "./leoNode";
+import { LeoOutlineProvider } from "./leoOutline";
+import { LeoBodyFsProvider } from "./leoBody";
 
-// Action calls to the python's side, to be pushed and resolved as a stack
-interface LeoAction {
+interface LeoAction { // pushed and resolved as a stack
   action: string; // action to call on python's side
   parameter: string; // to pass along with action to python's side
   deferedPayload?: any | undefined; // Used when the action already has a return value ready but is also waiting for python's side
@@ -12,59 +13,55 @@ interface LeoAction {
   rejectFn: (reason: any) => void; // call if problem is encountered
 }
 
-// (Serializable) Archived Position
-interface ArchivedPosition {
-  // * as reference, comments below are (almost) from source of Leo's plugin leoflexx.py
-  hasBody: boolean; //  bool(p.b),
+interface ArchivedPosition { // * from Leo's leoflexx.py
+  hasBody: boolean;     // bool(p.b),
   hasChildren: boolean; // p.hasChildren()
-  childIndex: number; // p._childIndex
-  cloned: boolean; // p.isCloned()
-  dirty: boolean; // p.isDirty()
-  expanded: boolean; // p.isExpanded()
-  gnx: string; //p.v.gnx
-  level: number; // p.level()
-  headline: string; // p.h
-  marked: boolean; // p.isMarked()
-  selected: boolean; //  p == commander.p
+  childIndex: number;   // p._childIndex
+  cloned: boolean;      // p.isCloned()
+  dirty: boolean;       // p.isDirty()
+  expanded: boolean;    // p.isExpanded()
+  gnx: string;          // p.v.gnx
+  level: number;        // p.level()
+  headline: string;     // p.h
+  marked: boolean;      // p.isMarked()
+  selected: boolean;    // p == commander.p
   stack: {
-    gnx: string; //  stack_v.gnx
+    gnx: string;        // stack_v.gnx
     childIndex: number; // stack_childIndex
-    headline: string; // stack_v.h
-  }[]; // for (stack_v, stack_childIndex) in p.stack]
+    headline: string;   // stack_v.h
+  }[];                  // for (stack_v, stack_childIndex) in p.stack]
 }
 
 interface LeoBridgePackage {
   id: number;
-  package: any; // json
+  [key: string]: any;
 }
-
 
 export class LeoIntegration {
   // TODO : Move file browsing and opening in another js file
   public fileBrowserOpen: boolean = false;
   public fileOpenedReady: boolean = false;
 
-  public leoTreeView: vscode.TreeView<LeoNode> | undefined;
+  public leoTreeView: vscode.TreeView<LeoNode>;
 
   private bodyUri: vscode.Uri = vscode.Uri.parse("leo:/body");
   public bodyDataReady: boolean = false;
   public bodyText: string = "";
+
   // public bodyFileName: string = ""; // Solution to deal with vsCode's undos. Vary body filename instead of 'body'
-  // ... because undo history stack non accessible via API
+  // private bodyChangeTimeout: NodeJS.Timeout | undefined;
+  // private bodyChangedDocument: vscode.TextDocument | undefined;
+  // public lastModifiedNode: { old: LeoNode, new: LeoNode } | undefined; // * tests for integrity
 
   public leoStatusBarItem: vscode.StatusBarItem;
   public leoObjectSelected: boolean = false; // represents having focus on outline or body, as opposed to anything else
   public statusbarNormalColor = new vscode.ThemeColor("statusBar.foreground");  //"statusBar.foreground"
 
-  //private bodyChangeTimeout: NodeJS.Timeout | undefined;
-  //private bodyChangedDocument: vscode.TextDocument | undefined;
-
   private editHeadlineInputOptions: vscode.InputBoxOptions = {
-    ignoreFocusOut: false,
+    ignoreFocusOut: false, // TODO : Try this option
     value: "", // will be replaced live upon showing from the node's text
     valueSelection: undefined,
-    prompt: 'Edit headline'
-    // placeHolder: 'Enter Headline',
+    prompt: 'Edit Headline'
   };
 
   public actionBusy: boolean = false;
@@ -75,11 +72,9 @@ export class LeoIntegration {
   private onDidChangeBodyDataObject: any;
 
   public refreshSingleNodeFlag: boolean = false; // checked AND CLEARED by leoOutline to see if it has to really refresh
+  public revealSelectedNode: boolean = false; // to be read by nodes to check if they should self-select. (and CLEAR this flag)
 
-  // public lastModifiedNode: { old: LeoNode, new: LeoNode } | undefined; // * tests for integrity
-  public revealSelectedNode: boolean = false; // to be read by nodes to check if they should self-select. (and lower this flag)
-
-  public leoBridgeReady: boolean = false; // Can be used in cunjunction with promise to wait for leoPython
+  public leoBridgeReady: boolean = false; // Can be used in conjunction with leoBridgeReadyPromise to stack call even before its ready
   private leoBridgeReadyPromise: Promise<LeoBridgePackage>; // set when leoBridge has a leo controller ready
   private leoPythonProcess: child.ChildProcess | undefined;
 
@@ -87,11 +82,17 @@ export class LeoIntegration {
 
     this.leoBridgeReadyPromise = this.initLeoProcess();
     this.leoBridgeReadyPromise.then((p_package) => {
-      this.assert(p_package.id === 0); // test integrity
+      this.assert(p_package.id === 0, "p_package.id === 0"); // test integrity
       this.leoPythonProcess = p_package.package;
       vscode.window.showInformationMessage("leoBridge Ready");
       this.leoBridgeReady = true;
     });
+
+    // * Outline Pane
+    this.leoTreeView = vscode.window.createTreeView("leoIntegration", { showCollapseAll: true, treeDataProvider: new LeoOutlineProvider(this) });
+
+    // * Body Pane
+    context.subscriptions.push(vscode.workspace.registerFileSystemProvider("leo", new LeoBodyFsProvider(this), { isCaseSensitive: true }));
 
     // * Status bar Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
     // EXAMPLE: register some listener that make sure the status bar item always up-to-date
@@ -115,36 +116,30 @@ export class LeoIntegration {
     vscode.workspace.onDidChangeTextDocument(p_event => this.onDocumentChanged(p_event));
     vscode.workspace.onDidSaveTextDocument(p_event => this.onDocumentSaved(p_event));
     vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
-
   }
 
-  private assert(p_val: boolean): void {
+  private assert(p_val: boolean, p_from: string): void {
     if (!p_val) {
-      console.error();
+      console.error("ASSERT FAILED in ", p_from);
     }
   }
 
   private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
     // selecting another editor of the same window by the tab
     if (p_event) {
-      // console.log("onActiveEditorChanged", p_event);
     } else if (this.leoObjectSelected) {
-      //console.log("onActiveEditorChanged, no editor");
-      this.leoObjectSelected = false;
+      this.leoObjectSelected = false; // no editor!
       this.updateStatusBarItem();
       return;
     }
-    if (vscode.window.activeTextEditor) {
+    if (vscode.window.activeTextEditor) { //  placing cursor in the editor pane or clicking its tab
       if (vscode.window.activeTextEditor.document.uri.scheme === 'leo') {
-        // Selecting Leo body, either by placing cursor in the editor pane or clicking its tab
         if (!this.leoObjectSelected) {
-          //console.log('selected a leo sheme text editor');
           this.leoObjectSelected = true;
           this.updateStatusBarItem();
           return;
         }
       } else {
-        //console.log('selected Out of leo');
         this.leoObjectSelected = false;
         this.updateStatusBarItem();
         return;
@@ -185,8 +180,7 @@ export class LeoIntegration {
   }
 
   private onDocumentSaved(p_event: vscode.TextDocument): void {
-    // * watch out! does it on any document in editor
-    // edited the document // TODO : DEBOUNCE/CHECK IF IT WAS LEO BODY !
+    // edited and saved the document, does it on any document in editor // TODO : DEBOUNCE/CHECK IF IT WAS LEO BODY !
     console.log("onDocumentSaved", p_event.fileName);
   }
 
@@ -195,8 +189,7 @@ export class LeoIntegration {
   }
 
   private updateStatusBarItem(): void {
-    // let n = getNumberOfSelectedLines(vscode.window.activeTextEditor);
-    if (this.leoObjectSelected) {
+    if (this.leoObjectSelected) { // * Also check in constructor for statusBar properties
       // this.leoStatusBarItem.color = "#fb7c47";
       // this.leoStatusBarItem.text = `$(keyboard) Literate `;
       // this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
@@ -214,10 +207,6 @@ export class LeoIntegration {
 
   public setupRefreshBodyFn(p_refreshObj: any) {
     this.onDidChangeBodyDataObject = p_refreshObj;
-  }
-
-  public setTreeView(p_treeView: vscode.TreeView<LeoNode>) {
-    this.leoTreeView = p_treeView;
   }
 
   private jsonArrayToSingleLeoNode(p_jsonArray: string): LeoNode | null {
@@ -279,21 +268,19 @@ export class LeoIntegration {
       // if (w_apData.selected && this.revealSelectedNode) {
       //   this.revealSelectedNode = false;
       //   setTimeout(() => {
-      //     if (this.leoTreeView) {
-      //       this.leoTreeView.reveal(w_leoNode, { select: true, focus: true });
+      //     this.leoTreeView.reveal(w_leoNode, { select: true, focus: true });
 
-      //       this.getBody(w_leoNode.apJson).then(p_body => {
-      //         this.bodyText = p_body;
-      //         vscode.window.showTextDocument(this.bodyUri, {
-      //           viewColumn: 1,
-      //           preserveFocus: false,
-      //           preview: false
-      //           // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
-      //         });
-      //         this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
+      //     this.getBody(w_leoNode.apJson).then(p_body => {
+      //       this.bodyText = p_body;
+      //       vscode.window.showTextDocument(this.bodyUri, {
+      //         viewColumn: 1,
+      //         preserveFocus: false,
+      //         preview: false
+      //         // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
       //       });
+      //       this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
+      //     });
 
-      //     }
       //   }, 0);
       // }
 
@@ -323,7 +310,6 @@ export class LeoIntegration {
     }
     return w_openedFileEnvUri;
   }
-
 
   /*
     private resolveFileOpenedReady() {
@@ -393,16 +379,13 @@ export class LeoIntegration {
     });
   }
 
-
   private resolveBridgeReady(p_jsonObject: string) {
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
-      // Used when the action already has a return value ready but is also waiting for python's side
-      if (w_bottomAction.deferedPayload) {
-        w_bottomAction.resolveFn(w_bottomAction.deferedPayload); // TODO : SHOULD JSON BE INTERPRETED INTO OBJECT ???
-        // JSON.parse(p_jsonObject).body
+      if (w_bottomAction.deferedPayload) { // Used when the action already has a return value ready but is also waiting for python's side
+        w_bottomAction.resolveFn(w_bottomAction.deferedPayload); // given back 'as is'
       } else {
-        w_bottomAction.resolveFn(p_jsonObject);
+        w_bottomAction.resolveFn(p_jsonObject); // TODO : SHOULD JSON BE INTERPRETED INTO OBJECT WITH JSON.parse(p_jsonObject) ???
       }
       this.actionBusy = false;
     } else {
@@ -572,20 +555,19 @@ export class LeoIntegration {
       }
     );
     */
-
   }
 
   public showBodyDocument(): void {
+    // A short-hand for openTextDocument(uri).then(document => showTextDocument(document, options)).
+    // Note: 'Uri' is a universal resource identifier representing either a file on disk or another resource
     const w_leoBodyEditor = vscode.window.showTextDocument(this.bodyUri, {
-      viewColumn: 1,
+      viewColumn: 1, // TODO : try to make leftmost tab so it touches the outline pane
       preserveFocus: false,
       preview: false
       // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
     });
     w_leoBodyEditor.then(w_bodyEditor => {
       // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
-      // TODO : try to make leftmost tab so it touches the outline pane
-      // console.log('created body:', w_leoBodyEditor);
     });
   }
 
@@ -633,16 +615,13 @@ export class LeoIntegration {
             } else {
               console.log("ERROR onDidChangeTreeDataObject NOT READY");
             }
-            // update status bar for first time
             this.updateStatusBarItem();
-            // * Make body pane appear
             this.showBodyDocument();
 
             // console.log(vscode.window.visibleTextEditors);
             // for (let entry of vscode.window.visibleTextEditors) {
             //   console.log(entry.); // 1, "string", false
             // }
-
           });
 
         } else {
@@ -683,8 +662,6 @@ export class LeoIntegration {
       console.log("from python", p_data); // unprocessed/unknown python output
     }
   }
-
-
 
   public editHeadline(p_node: LeoNode) {
     this.editHeadlineInputOptions.value = p_node.label;
@@ -730,7 +707,6 @@ export class LeoIntegration {
   public delete(p_node: LeoNode): void {
     vscode.window.showInformationMessage(`delete on ${p_node.label}.`); // Temp placeholder
   }
-
 
   private initLeoProcess(): Promise<LeoBridgePackage> {
     // * prevent re-init
@@ -786,7 +762,7 @@ export class LeoIntegration {
     // });
     this.leoBridgeAction("test", "{\"testparam\":\"hello\"}").then(
       (p_answer: LeoBridgePackage) => {
-        console.log('Got BAck from leoBridgeAction test! ', p_answer.id, p_answer.package);
+        console.log('Got Back from leoBridgeAction test! ', p_answer.id, p_answer.package);
       }
     );
   }
