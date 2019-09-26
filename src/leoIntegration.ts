@@ -372,6 +372,7 @@ export class LeoIntegration {
         resolveFn: resolve,
         rejectFn: reject
       };
+      console.log('Created Action Id:', this.leoBridgeSerialId);
       this.callStack.push(w_action);
       if (!p_preventCall) {
         this.callAction();
@@ -567,6 +568,7 @@ export class LeoIntegration {
       // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
     });
     w_leoBodyEditor.then(w_bodyEditor => {
+      console.log('body shown resolved!');
       // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
     });
   }
@@ -594,35 +596,28 @@ export class LeoIntegration {
       })
       .then(p_chosenLeoFile => {
         if (p_chosenLeoFile) {
-          const w_openFile = new Promise((resolve, reject) => {
-            const w_action: LeoAction = {
-              action: "openFile:", // ! INCLUDES THE COLON ':'
-              parameter: p_chosenLeoFile[0].fsPath + "\n", // nothing should get root nodes of the leo file
-              resolveFn: resolve,
-              rejectFn: reject
-            };
-            this.callStack.push(w_action);
-            this.callAction();
-          });
-          // * Resolution of the 'open file' promise
-          w_openFile.then(() => {
-            this.revealSelectedNode = true;
 
-            this.fileOpenedReady = true; // ANSWER to openLeoFile
-            this.fileBrowserOpen = false;
-            if (this.onDidChangeTreeDataObject) {
-              this.onDidChangeTreeDataObject.fire();
-            } else {
-              console.log("ERROR onDidChangeTreeDataObject NOT READY");
-            }
-            this.updateStatusBarItem();
-            this.showBodyDocument();
+          this.leoBridgeAction("openFile", '"' + p_chosenLeoFile[0].fsPath + '"')
+            .then((value: LeoBridgePackage) => {
+              this.revealSelectedNode = true;
 
-            // console.log(vscode.window.visibleTextEditors);
-            // for (let entry of vscode.window.visibleTextEditors) {
-            //   console.log(entry.); // 1, "string", false
-            // }
-          });
+              this.fileOpenedReady = true; // ANSWER to openLeoFile
+              this.fileBrowserOpen = false;
+
+              if (this.onDidChangeTreeDataObject) {
+                this.onDidChangeTreeDataObject.fire();
+              } else {
+                console.log("ERROR onDidChangeTreeDataObject NOT READY");
+              }
+
+              this.updateStatusBarItem();
+              this.showBodyDocument();
+
+              // console.log(vscode.window.visibleTextEditors);
+              // for (let entry of vscode.window.visibleTextEditors) {
+              //   console.log(entry.); // 1, "string", false
+              // }
+            });
 
         } else {
           vscode.window.showInformationMessage("Open Cancelled");
