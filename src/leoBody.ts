@@ -10,7 +10,6 @@ export class LeoBodyFsProvider implements vscode.FileSystemProvider {
     readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> = this._onDidChangeFileEmitter.event;
 
     constructor(private leoIntegration: LeoIntegration) {
-        console.log('LeoBodyFsProvider constructor');
         leoIntegration.setupRefreshBodyFn(this._onDidChangeFileEmitter);
     }
 

@@ -208,35 +208,36 @@ export class LeoIntegration {
     this.onDidChangeBodyDataObject = p_refreshObj;
   }
 
-  public arrayToSingleLeoNode(p_array: ArchivedPosition[]): LeoNode | null {
-    // let w_apDataArray: ArchivedPosition[] = JSON.parse(p_array);
-    // if (!w_apDataArray.length) {
-    //   return null;
-    // }
-    if (!p_array.length) {
-      return null;
-    }
-    const w_apData = p_array[0];
-    const w_apJson: string = JSON.stringify(w_apData); //  just this part back to JSON
+  public apToLeoNode(p_apData: ArchivedPosition): LeoNode {
+    const w_apJson: string = JSON.stringify(p_apData); //  just this part back to JSON
+
     let w_collaps: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
-    if (w_apData.hasChildren) {
-      if (w_apData.expanded) {
+    if (p_apData.hasChildren) {
+      if (p_apData.expanded) {
         w_collaps = vscode.TreeItemCollapsibleState.Expanded;
       } else {
         w_collaps = vscode.TreeItemCollapsibleState.Collapsed;
       }
     }
     const w_leoNode = new LeoNode(
-      w_apData.headline,
-      w_apData.gnx,
+      p_apData.headline,
+      p_apData.gnx,
       w_collaps,
       w_apJson,
-      !!w_apData.cloned,
-      !!w_apData.dirty,
-      !!w_apData.marked,
-      !!w_apData.hasBody
+      !!p_apData.cloned,
+      !!p_apData.dirty,
+      !!p_apData.marked,
+      !!p_apData.hasBody
     );
     return w_leoNode;
+  }
+
+
+  public arrayToSingleLeoNode(p_array: ArchivedPosition[]): LeoNode | null {
+    if (!p_array.length) {
+      return null;
+    }
+    return this.apToLeoNode(p_array[0]);
   }
 
   public arrayToLeoNodesArray(p_array: ArchivedPosition[]): LeoNode[] {
@@ -244,48 +245,26 @@ export class LeoIntegration {
 
     const w_leoNodesArray: LeoNode[] = [];
     for (let w_apData of p_array) {
-      const w_apJson: string = JSON.stringify(w_apData); //  just this part back to JSON
+      const w_leoNode = this.apToLeoNode(w_apData);
+      // TODO : THIS SHOULD BE DONE BY CALLER ! with help of a function 'revealNode' that also sets its body
+      if (w_apData.selected && this.revealSelectedNode) {
+        this.revealSelectedNode = false;
+        setTimeout(() => {
+          this.leoTreeView.reveal(w_leoNode, { select: true, focus: true });
 
-      let w_collaps: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
-      if (w_apData.hasChildren) {
-        if (w_apData.expanded) {
-          w_collaps = vscode.TreeItemCollapsibleState.Expanded;
-        } else {
-          w_collaps = vscode.TreeItemCollapsibleState.Collapsed;
-        }
+          // this.getBody(w_leoNode.apJson).then(p_body => {
+          //   this.bodyText = p_body;
+          //   vscode.window.showTextDocument(this.bodyUri, {
+          //     viewColumn: 1,
+          //     preserveFocus: false,
+          //     preview: false
+          //     // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
+          //   });
+          //   this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
+          // });
+
+        }, 0);
       }
-
-      const w_leoNode = new LeoNode(
-        w_apData.headline,
-        w_apData.gnx,
-        w_collaps,
-        w_apJson,
-        !!w_apData.cloned,
-        !!w_apData.dirty,
-        !!w_apData.marked,
-        !!w_apData.hasBody
-      );
-
-      // * THIS SHOULD BE DONE BY CALLER ! with help of a function 'revealNode' that also sets its body
-      // if (w_apData.selected && this.revealSelectedNode) {
-      //   this.revealSelectedNode = false;
-      //   setTimeout(() => {
-      //     this.leoTreeView.reveal(w_leoNode, { select: true, focus: true });
-
-      //     this.getBody(w_leoNode.apJson).then(p_body => {
-      //       this.bodyText = p_body;
-      //       vscode.window.showTextDocument(this.bodyUri, {
-      //         viewColumn: 1,
-      //         preserveFocus: false,
-      //         preview: false
-      //         // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
-      //       });
-      //       this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
-      //     });
-
-      //   }, 0);
-      // }
-
       w_leoNodesArray.push(w_leoNode);
     }
     return w_leoNodesArray;
@@ -523,7 +502,6 @@ export class LeoIntegration {
 
   public selectNode(p_node: LeoNode): void {
     // User has selected a node in the outline with the mouse
-    console.log('selectNode', p_node.label);
 
     if (p_node) {
       this.refreshSingleNodeFlag = true;

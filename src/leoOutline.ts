@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
+import { ProviderResult } from "vscode";
 
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> =
@@ -11,7 +12,6 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   // TODO : before / upon selection of other nodes
 
   constructor(private leoIntegration: LeoIntegration) {
-    console.log('LeoOutlineProvider constructor');
     // give the event for 'refresh' of either root, without params, or a node when passed as parameter
     leoIntegration.setupRefreshFn(this._onDidChangeTreeData);
   }
@@ -42,10 +42,12 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     }
   }
 
-  getParent(element: LeoNode): Thenable<LeoNode> | null {
+  getParent(element: LeoNode): ProviderResult<LeoNode> | null {
     if (this.leoIntegration.fileOpenedReady) {
       // return this.leoIntegration.getParent(element ? element.apJson : undefined);
-      return null; // TODO : REPLACE ABOVE COMMENTS
+      return this.leoIntegration.leoBridgeAction('getParent', element ? element.apJson : "null").then((p_thing) => {
+        return this.leoIntegration.apToLeoNode(p_thing.node);
+      });
     } else {
       return null; // default give an empty tree
     }
