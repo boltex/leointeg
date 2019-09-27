@@ -11,6 +11,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   // TODO : before / upon selection of other nodes
 
   constructor(private leoIntegration: LeoIntegration) {
+    console.log('LeoOutlineProvider constructor');
     // give the event for 'refresh' of either root, without params, or a node when passed as parameter
     leoIntegration.setupRefreshFn(this._onDidChangeTreeData);
   }

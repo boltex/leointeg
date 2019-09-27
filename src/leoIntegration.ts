@@ -6,7 +6,6 @@ import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyFsProvider } from "./leoBody";
 
 interface LeoAction { // pushed and resolved as a stack
-  action: string; // action to call on python's side
   parameter: string; // to pass along with action to python's side
   deferedPayload?: any | undefined; // Used when the action already has a return value ready but is also waiting for python's side
   resolveFn: (result: any) => void; // call that with an aswer from python's (or other) side
@@ -366,7 +365,6 @@ export class LeoIntegration {
   public leoBridgeAction(p_action: string, p_jsonParam: string, p_deferedPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
     return new Promise((resolve, reject) => {
       const w_action: LeoAction = {
-        action: "leoBridge:", // ! INCLUDES THE COLON ':'
         parameter: "{\"id\":" + (++this.leoBridgeSerialId) + ", \"action\": \"" + p_action + "\", \"param\":" + p_jsonParam + "}",
         deferedPayload: p_deferedPayload ? p_deferedPayload : undefined,
         resolveFn: resolve,
@@ -386,7 +384,9 @@ export class LeoIntegration {
       if (w_bottomAction.deferedPayload) { // Used when the action already has a return value ready but is also waiting for python's side
         w_bottomAction.resolveFn(w_bottomAction.deferedPayload); // given back 'as is'
       } else {
-        w_bottomAction.resolveFn(p_jsonObject); // TODO : SHOULD JSON BE INTERPRETED INTO OBJECT WITH JSON.parse(p_jsonObject) ???
+        const w_package = JSON.parse(p_jsonObject);
+        console.log('Received Action Id:', w_package.id);
+        w_bottomAction.resolveFn(w_package);
       }
       this.actionBusy = false;
     } else {
@@ -514,7 +514,7 @@ export class LeoIntegration {
     if (this.callStack.length && !this.actionBusy) {
       this.actionBusy = true; // launch / resolve bottom one
       const w_action = this.callStack[0];
-      this.stdin(w_action.action + w_action.parameter + "\n");
+      this.stdin("leoBridge:" + w_action.parameter + "\n");
     }
   }
 
@@ -646,8 +646,8 @@ export class LeoIntegration {
           w_processed = true;
         }
     */
-    if (p_data === "leoBridgeReady") {
-      this.resolveBridgeReady(p_data.substring(14));
+    if (p_data.startsWith("leoBridge:")) {
+      this.resolveBridgeReady(p_data.substring(10));
       w_processed = true;
     }
     if (w_processed) {

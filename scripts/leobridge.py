@@ -14,6 +14,8 @@ bridge = leoBridge.controller(gui='nullGui',
 
 bridgeGlobals = bridge.globals()
 
+currentActionId = 0  # Id of action being processed
+
 commander = None  # going to store the leo file commander once its opened
 
 gnx_to_vnode = []
@@ -24,32 +26,35 @@ def es(p_string):
     print(p_string, flush=True)
 
 
-def dumpPNodes(p_pList):
-    w_apList = []
-    for p in p_pList:
-        w_apList.append(p_to_ap(p))
-    es("dumpPNodes"+json.dumps(w_apList))  # now convert to JSON as a whole
+def sendLeoBridgePackage(p_key=False, p_any=None):
+    global currentActionId
+    w_package = {"id": currentActionId}
+    if p_key:
+        w_package[p_key] = p_any  # add [key]?:any
+    es("leoBridge:"+json.dumps(w_package))
 
 
-def outputBodyData(p_bodyText):
+def outputBodyData(p_bodyText=""):
     if p_bodyText:
-        es("bodyDataReady"+json.dumps({'body': p_bodyText}))
-    else:
-        es("bodyDataReady"+json.dumps({'body': ""}))
+        sendLeoBridgePackage("bodyData", p_bodyText)
+        #es("bodyData"+json.dumps({'body': p_bodyText}))
 
 
-def outputPNode(p_node):
+def outputPNode(p_node=False):
     if p_node:
-        es("nodeReady"+json.dumps([p_to_ap(p_node)]))  # now convert to JSON as a whole
+        sendLeoBridgePackage("node", p_to_ap(p_node))  # Single node, singular
+        # es("nodeReady"+json.dumps([p_to_ap(p_node)]))  # now convert to JSON as a whole
     else:
-        es("nodeReady"+json.dumps([]))
+        sendLeoBridgePackage("node", None)
+        # es("nodeReady"+json.dumps([]))
 
 
-def outputOutlineData(p_pList):
+def outputPNodes(p_pList):
     w_apList = []
     for p in p_pList:
         w_apList.append(p_to_ap(p))
-    es("outlineDataReady"+json.dumps(w_apList))  # now convert to JSON as a whole
+    sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
+    # es("outlineDataReady"+json.dumps(w_apList))  # now convert to JSON as a whole
 
 
 def outputTest():
@@ -67,55 +72,56 @@ def openFile(p_file):
     commander = bridge.openLeoFile(p_file)
     if(commander):
         create_gnx_to_vnode()
-
-        dumpPNodes([commander.p])
-        # Sending FILEREADY CODE
-        es("fileOpenedReady")
+        outputPNode(commander.p)
+    else:
+        es('Error in openFile')
 
 
 def getAllRootChildren():
     '''EMIT OUT list of all root nodes'''
     global commander
     p = commander.rootPosition()
+    w_rootChildren = []
     while p:
-        yield p
+        w_rootChildren.append(w_rootChildren)
         p.moveToNext()
+    outputPNodes(w_rootChildren)
 
 
-def getPNode(p_apJson):
+def getPNode(p_ap):
     '''EMIT OUT a node, don't select it.'''
-    if(p_apJson):
-        w_p = ap_to_p(json.loads(p_apJson))
+    if(p_ap):
+        w_p = ap_to_p(p_ap)
         if w_p:
             outputPNode(w_p)
         else:
-            es("error in getPNode no w_p node found")  # default empty
+            es("Error in getPNode no w_p node found")  # default empty
     else:
-        es("error in getPNode no param p_apJson")
+        es("Error in getPNode no param p_ap")
 
 
-def getChildren(p_apJson):
+def getChildren(p_ap):
     '''EMIT OUT list of children of a node'''
-    if(p_apJson):
-        w_p = ap_to_p(json.loads(p_apJson))
+    if(p_ap):
+        w_p = ap_to_p(p_ap)
         if w_p and w_p.hasChildren():
-            outputOutlineData(w_p.children())
+            outputPNodes(w_p.children())
         else:
-            outputOutlineData([])  # default empty
+            outputPNodes([])  # default empty array
     else:
-        outputOutlineData(getAllRootChildren())
+        getAllRootChildren()  # this outputs all Root Children
 
 
-def getParent(p_apJson):
+def getParent(p_ap):
     '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
-    if(p_apJson):
-        w_p = ap_to_p(json.loads(p_apJson))
+    if(p_ap):
+        w_p = ap_to_p(p_ap)
         if w_p and w_p.hasParent():
             outputPNode(w_p.getParent())
         else:
-            outputPNode(False)  # default empty for root
+            outputPNode()  # default empty for root
     else:
-        outputPNode(False)
+        outputPNode()
 
 
 def getSelectedNode():
@@ -125,36 +131,36 @@ def getSelectedNode():
     if(c.p):
         outputPNode(c.p)
     else:
-        outputPNode(False)
+        outputPNode()
 
 
-def getBody(p_apJson):
+def getBody(p_ap):
     '''EMIT OUT body of a node'''
-    if(p_apJson):
-        w_p = ap_to_p(json.loads(p_apJson))
+    # TODO : Get body from V NODE
+    if(p_ap):
+        w_p = ap_to_p(p_ap)
         if w_p and w_p.b:
             outputBodyData(w_p.b)
         else:
-            outputBodyData(False)  # default empty
+            outputBodyData()  # default empty
     else:
-        outputBodyData(False)
+        outputBodyData()
 
 
-def setNewBody(p_bodyJson):
+def setNewBody(p_body):
     '''Change Body of selected node'''
     global commander
-    w_body = json.loads(p_bodyJson)
     if(commander.p):
-        commander.p.b = w_body['body']
+        commander.p.b = p_body['body']
         outputPNode(commander.p)
     else:
-        es("error in setNewBody")
+        es("Error in setNewBody")
 
 
-def setNewHeadline(p_apHeadlineJson):
+def setNewHeadline(p_apHeadline):
     '''Change Headline of a node'''
     global commander
-    w_apHeadline = json.loads(p_apHeadlineJson)
+    w_apHeadline = p_apHeadline
     w_newHeadline = w_apHeadline['headline']
     w_ap = w_apHeadline['node']
     if(w_ap):
@@ -164,18 +170,18 @@ def setNewHeadline(p_apHeadlineJson):
             w_p.h = w_newHeadline
             outputPNode(w_p)
     else:
-        es("error in setNewHeadline")
+        es("Error in setNewHeadline")
 
 
-def setSelectedNode(p_apJson):
+def setSelectedNode(p_ap):
     '''Select a node'''
     global commander
-    if(p_apJson):
-        w_p = ap_to_p(json.loads(p_apJson))
+    if(p_ap):
+        w_p = ap_to_p(p_ap)
         if w_p:
             # set this node as selection
             commander.selectPosition(w_p)
-    es('selectionReady')
+    sendLeoBridgePackage()  # Just send empty as 'ok'
 
 
 def create_gnx_to_vnode():
@@ -244,6 +250,7 @@ def p_to_ap(p):
             'headline': stack_v.h,
         } for (stack_v, stack_childIndex) in p.stack],
     }
+    # TODO : Convert all those bools in an integer : 'status' Flags
     if bool(p.b):
         w_ap['hasBody'] = True
     if p.hasChildren():
@@ -263,14 +270,17 @@ def p_to_ap(p):
 
 def processCommand(p_string):
     '''Process incoming command'''
+    global currentActionId
     p_string = p_string.strip()
     if p_string.startswith("leoBridge:"):
-        # processLeoBridge(p_string[10:])
+        es('got leoBridge going!')
         w_param = json.loads(p_string[10:])
         if w_param and w_param['action']:
+            # * Storing id of action in global var instead of passing as parameter
+            currentActionId = w_param['id']
             globals()[w_param['action']](w_param['param'])
         else:
-            es("error in processCommand")
+            es("Error in processCommand")
         return
     if p_string == "test":
         outputTest()
@@ -283,7 +293,8 @@ def main():
     '''python script for leo integration via leoBridge'''
     sys.stdin = os.fdopen(sys.stdin.fileno(), 'r')
     # Sending READY CODE
-    es("leoBridgeReady")
+    # es("leoBridgeReady")
+    sendLeoBridgePackage()  # Just send empty as 'ok'
 
     # Pocess incoming commands until EXIT CODE
     exitFlag = False
