@@ -208,12 +208,15 @@ export class LeoIntegration {
     this.onDidChangeBodyDataObject = p_refreshObj;
   }
 
-  private jsonArrayToSingleLeoNode(p_jsonArray: string): LeoNode | null {
-    let w_apDataArray: ArchivedPosition[] = JSON.parse(p_jsonArray);
-    if (!w_apDataArray.length) {
+  public arrayToSingleLeoNode(p_array: ArchivedPosition[]): LeoNode | null {
+    // let w_apDataArray: ArchivedPosition[] = JSON.parse(p_array);
+    // if (!w_apDataArray.length) {
+    //   return null;
+    // }
+    if (!p_array.length) {
       return null;
     }
-    const w_apData = w_apDataArray[0];
+    const w_apData = p_array[0];
     const w_apJson: string = JSON.stringify(w_apData); //  just this part back to JSON
     let w_collaps: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
     if (w_apData.hasChildren) {
@@ -236,11 +239,11 @@ export class LeoIntegration {
     return w_leoNode;
   }
 
-  private jsonArrayToLeoNodesArray(p_jsonArray: string): LeoNode[] {
-    let w_apDataArray: ArchivedPosition[] = JSON.parse(p_jsonArray);
+  public arrayToLeoNodesArray(p_array: ArchivedPosition[]): LeoNode[] {
+    // let w_apDataArray: ArchivedPosition[] = JSON.parse(p_array);
 
     const w_leoNodesArray: LeoNode[] = [];
-    for (let w_apData of w_apDataArray) {
+    for (let w_apData of p_array) {
       const w_apJson: string = JSON.stringify(w_apData); //  just this part back to JSON
 
       let w_collaps: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
@@ -381,16 +384,16 @@ export class LeoIntegration {
   private resolveBridgeReady(p_jsonObject: string) {
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
+      const w_package = JSON.parse(p_jsonObject);
+      console.log('Received Action Id:', w_package.id);
       if (w_bottomAction.deferedPayload) { // Used when the action already has a return value ready but is also waiting for python's side
         w_bottomAction.resolveFn(w_bottomAction.deferedPayload); // given back 'as is'
       } else {
-        const w_package = JSON.parse(p_jsonObject);
-        console.log('Received Action Id:', w_package.id);
         w_bottomAction.resolveFn(w_package);
       }
       this.actionBusy = false;
     } else {
-      console.log("ERROR STACK EMPTY");
+      console.log("Error stack empty");
     }
   }
 
@@ -520,6 +523,7 @@ export class LeoIntegration {
 
   public selectNode(p_node: LeoNode): void {
     // User has selected a node in the outline with the mouse
+    console.log('selectNode', p_node.label);
 
     if (p_node) {
       this.refreshSingleNodeFlag = true;

@@ -78,14 +78,12 @@ def openFile(p_file):
 
 
 def getAllRootChildren():
-    '''EMIT OUT list of all root nodes'''
+    '''Return all root children'''
     global commander
     p = commander.rootPosition()
-    w_rootChildren = []
     while p:
-        w_rootChildren.append(w_rootChildren)
+        yield p
         p.moveToNext()
-    outputPNodes(w_rootChildren)
 
 
 def getPNode(p_ap):
@@ -109,7 +107,7 @@ def getChildren(p_ap):
         else:
             outputPNodes([])  # default empty array
     else:
-        getAllRootChildren()  # this outputs all Root Children
+        outputPNodes(getAllRootChildren())  # this outputs all Root Children
 
 
 def getParent(p_ap):
@@ -273,7 +271,6 @@ def processCommand(p_string):
     global currentActionId
     p_string = p_string.strip()
     if p_string.startswith("leoBridge:"):
-        es('got leoBridge going!')
         w_param = json.loads(p_string[10:])
         if w_param and w_param['action']:
             # * Storing id of action in global var instead of passing as parameter

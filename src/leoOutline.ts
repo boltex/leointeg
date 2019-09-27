@@ -53,7 +53,10 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   getChildren(element?: LeoNode): Thenable<LeoNode[]> {
     if (this.leoIntegration.fileOpenedReady) {
       // return this.leoIntegration.getChildren(element ? element.apJson : undefined);
-      return Promise.resolve([]); // TODO : REPLACE ABOVE COMMENTS
+      return this.leoIntegration.leoBridgeAction('getChildren', element ? element.apJson : "null").then((p_thing) => {
+        return this.leoIntegration.arrayToLeoNodesArray(p_thing.nodes);
+      });
+
     } else {
       return Promise.resolve([]); // default give an empty tree
     }
