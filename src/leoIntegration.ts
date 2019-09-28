@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import { LeoNode } from "./leoNode";
 import { LeoOutlineProvider } from "./leoOutline";
-import { LeoBodyFsProvider } from "./leoBody";
+import { LeoBodyProvider } from "./leoBody";
 
 interface LeoAction { // pushed and resolved as a stack
   parameter: string; // to pass along with action to python's side
@@ -81,7 +81,7 @@ export class LeoIntegration {
 
     this.leoBridgeReadyPromise = this.initLeoProcess();
     this.leoBridgeReadyPromise.then((p_package) => {
-      this.assert(p_package.id === 0, "p_package.id === 0"); // test integrity
+      this.assert(p_package.id === 1, "p_package.id === 0"); // test integrity
       this.leoPythonProcess = p_package.package;
       vscode.window.showInformationMessage("leoBridge Ready");
       this.leoBridgeReady = true;
@@ -91,7 +91,7 @@ export class LeoIntegration {
     this.leoTreeView = vscode.window.createTreeView("leoIntegration", { showCollapseAll: true, treeDataProvider: new LeoOutlineProvider(this) });
 
     // * Body Pane
-    context.subscriptions.push(vscode.workspace.registerFileSystemProvider("leo", new LeoBodyFsProvider(this), { isCaseSensitive: true }));
+    context.subscriptions.push(vscode.workspace.registerFileSystemProvider("leo", new LeoBodyProvider(this), { isCaseSensitive: true }));
 
     // * Status bar Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
     // EXAMPLE: register some listener that make sure the status bar item always up-to-date
@@ -508,9 +508,17 @@ export class LeoIntegration {
       this.onDidChangeTreeDataObject.fire(p_node);
     }
 
-    let w_savedBody: Thenable<boolean>;
+    this.leoBridgeAction("setSelectedNode", p_node.apJson)
+      .then(() => {
+        console.log('Back from selecting a node');
+      });
+
+    // this.setSelectedNode(p_node.apJson).then(p_val => {
+    //   // * Node now selected in leo
+    // });
 
     /*
+    let w_savedBody: Thenable<boolean>;
     if (this.bodyChangeTimeout) {
       // there was one, maybe trigger it.
       w_savedBody = this.triggerBodySave();
@@ -712,7 +720,7 @@ export class LeoIntegration {
       this.leoBridgeReady = false;
     });
     // * Start action with preventCall set to true: no need to call anything for 'ready' answer
-    return this.leoBridgeAction("", "", { id: 0, package: w_pythonProcess }, true);
+    return this.leoBridgeAction("", "", { id: 1, package: w_pythonProcess }, true);
   }
 
   private stdin(p_message: string): any {
@@ -731,16 +739,28 @@ export class LeoIntegration {
 
   public test(): void {
     console.log("sending test");
+
+
+
     // this.getSelectedNode().then(p_leoNode => {
     //   console.log('ok, now got back from test: ', p_leoNode.label);
     //   if (this.leoTreeView) {
     //     this.leoTreeView.reveal(p_leoNode, { select: true, focus: true });
     //   }
     // });
-    this.leoBridgeAction("test", "{\"testparam\":\"hello\"}").then(
+
+    this.leoBridgeAction("getSelectedNode", "{\"testparam\":\"hello\"}").then(
       (p_answer: LeoBridgePackage) => {
-        console.log('Got Back from leoBridgeAction test! ', p_answer.id, p_answer.package);
+        console.log('Got Back from getSelectedNode test! ', p_answer.node.headline);
       }
     );
+
+
+    // this.leoBridgeAction("test", "{\"testparam\":\"hello\"}").then(
+    //   (p_answer: LeoBridgePackage) => {
+    //     console.log('Got Back from leoBridgeAction test! ', p_answer.id, p_answer.package);
+    //   }
+    // );
+
   }
 }

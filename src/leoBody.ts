@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 
 // * There is an activation event `onFileSystem:<scheme>` that fires when a file is being accessed
-export class LeoBodyFsProvider implements vscode.FileSystemProvider {
+export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     // * An event to signal that a resource has been changed
     // * it should fire for resources that are being [watched](#FileSystemProvider.watch) by clients of this provider

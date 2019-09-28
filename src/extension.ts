@@ -23,11 +23,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNode", (node: LeoNode) => leoIntegration.pasteNode(node)));
   context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNodeAsClone", (node: LeoNode) => leoIntegration.pasteNodeAsClone(node)));
   context.subscriptions.push(vscode.commands.registerCommand("leointeg.delete", (node: LeoNode) => leoIntegration.delete(node)));
-
-  // * old test : register a content provider for the leo-scheme
-  // const leoBodyProvider = new LeoBodyProvider(leoIntegration);
-  // context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(leoSheme, leoBodyProvider));
-  // vscode.workspace.openTextDocument(bodyUri).then(p_doc => vscode.window.showTextDocument(p_doc));
 }
 
 export function deactivate() {

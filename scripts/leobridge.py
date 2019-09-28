@@ -14,7 +14,7 @@ bridge = leoBridge.controller(gui='nullGui',
 
 bridgeGlobals = bridge.globals()
 
-currentActionId = 0  # Id of action being processed
+currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
 
 commander = None  # going to store the leo file commander once its opened
 
@@ -57,10 +57,11 @@ def outputPNodes(p_pList):
     # es("outlineDataReady"+json.dumps(w_apList))  # now convert to JSON as a whole
 
 
-def outputTest():
+def test(p_param):
     '''Emit a test'''
     global bridgeGlobals, commander
-    es('vsCode called test. Hello from leoBridge!')
+    es('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param))
+    sendLeoBridgePackage("package", "test string from the response package")
     # for p in commander.all_positions():
     #     if p.h:
     #         outputPNode(p)
@@ -78,7 +79,7 @@ def openFile(p_file):
 
 
 def getAllRootChildren():
-    '''Return all root children'''
+    '''Return all root children P nodes'''
     global commander
     p = commander.rootPosition()
     while p:
@@ -122,7 +123,7 @@ def getParent(p_ap):
         outputPNode()
 
 
-def getSelectedNode():
+def getSelectedNode(p_param):
     '''EMIT OUT Selected Position as an array, even if unique'''
     global commander
     c = commander
@@ -278,9 +279,6 @@ def processCommand(p_string):
             globals()[w_param['action']](w_param['param'])
         else:
             es("Error in processCommand")
-        return
-    if p_string == "test":
-        outputTest()
         return
     if p_string:
         es('from vscode' + p_string)  # NOT REOCOGNIZED : Emit if not an empty string
