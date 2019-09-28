@@ -352,7 +352,7 @@ export class LeoIntegration {
         resolveFn: resolve,
         rejectFn: reject
       };
-      console.log('Created Action Id:', this.leoBridgeSerialId);
+      // console.log('Created Action Id:', this.leoBridgeSerialId);
       this.callStack.push(w_action);
       if (!p_preventCall) {
         this.callAction();
@@ -364,7 +364,7 @@ export class LeoIntegration {
     let w_bottomAction = this.callStack.shift();
     if (w_bottomAction) {
       const w_package = JSON.parse(p_jsonObject);
-      console.log('Received Action Id:', w_package.id);
+      // console.log('Received Action Id:', w_package.id);
       if (w_bottomAction.deferedPayload) { // Used when the action already has a return value ready but is also waiting for python's side
         w_bottomAction.resolveFn(w_bottomAction.deferedPayload); // given back 'as is'
       } else {
@@ -503,10 +503,11 @@ export class LeoIntegration {
   public selectNode(p_node: LeoNode): void {
     // User has selected a node in the outline with the mouse
 
-    if (p_node) {
-      this.refreshSingleNodeFlag = true;
-      this.onDidChangeTreeDataObject.fire(p_node);
-    }
+    //* Force refresh of the node upon selection? Is it needed in any way?
+    // if (p_node) {
+    //   this.refreshSingleNodeFlag = true;
+    //   this.onDidChangeTreeDataObject.fire(p_node);
+    // }
 
     this.leoBridgeAction("setSelectedNode", p_node.apJson)
       .then(() => {
@@ -649,26 +650,20 @@ export class LeoIntegration {
   }
 
   public editHeadline(p_node: LeoNode) {
-    this.editHeadlineInputOptions.value = p_node.label;
-
+    this.editHeadlineInputOptions.value = p_node.label; // Preset input pop up
     vscode.window.showInputBox(this.editHeadlineInputOptions)
       .then(
         p_newHeadline => {
           if (p_newHeadline) {
             p_node.label = p_newHeadline; //! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
 
-            // TODO : FIX THIS COMMENTED CODE
-            // this.setNewHeadline(p_node.apJson, p_newHeadline).then(
-            //   // * should we redraw/refresh/reveal just changed ?
-            //   // If so, Dont select because in vscode its possible to edit headline of unselected nodes.
-            //   // So keep node selection unchanged in tree and leo.
-            //   (p_newNode) => {
-            //     // this.lastModifiedNode = { old: p_node, new: p_newNode }; // tests
-            //     // this.onDidChangeTreeDataObject.fire(p_node); // * does not refresh clones !
-            //     this.revealSelectedNode = true; // ! needed because we voluntarily refreshed the automatic ID
-            //     this.onDidChangeTreeDataObject.fire(); // refresh all, needed to get clones to refresh too!
-            //   }
-            // );
+            this.leoBridgeAction("setNewHeadline", "{\"node\":" + p_node.apJson + ", \"headline\": \"" + p_newHeadline + "\"}"
+            ).then(
+              (p_answer: LeoBridgePackage) => {
+                this.revealSelectedNode = true; // ! needed because we voluntarily refreshed the automatic ID
+                this.onDidChangeTreeDataObject.fire(); // refresh all, needed to get clones to refresh too!
+              }
+            );
 
           }
         }
@@ -739,28 +734,16 @@ export class LeoIntegration {
 
   public test(): void {
     console.log("sending test");
-
-
-
-    // this.getSelectedNode().then(p_leoNode => {
-    //   console.log('ok, now got back from test: ', p_leoNode.label);
-    //   if (this.leoTreeView) {
-    //     this.leoTreeView.reveal(p_leoNode, { select: true, focus: true });
-    //   }
-    // });
-
     this.leoBridgeAction("getSelectedNode", "{\"testparam\":\"hello\"}").then(
       (p_answer: LeoBridgePackage) => {
         console.log('Got Back from getSelectedNode test! ', p_answer.node.headline);
+        this.leoTreeView.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true });
       }
     );
-
-
     // this.leoBridgeAction("test", "{\"testparam\":\"hello\"}").then(
     //   (p_answer: LeoBridgePackage) => {
     //     console.log('Got Back from leoBridgeAction test! ', p_answer.id, p_answer.package);
     //   }
     // );
-
   }
 }
