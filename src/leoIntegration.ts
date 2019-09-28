@@ -511,12 +511,15 @@ export class LeoIntegration {
 
     this.leoBridgeAction("setSelectedNode", p_node.apJson)
       .then(() => {
-        console.log('Back from selecting a node');
+        // console.log('Back from selecting a node');
       });
 
-    // this.setSelectedNode(p_node.apJson).then(p_val => {
-    //   // * Node now selected in leo
-    // });
+    this.leoBridgeAction("getBody", p_node.apJson)
+      .then((p_result) => {
+        this.bodyText = p_result.bodyData;
+        this.showBodyDocument();
+        this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
+      });
 
     /*
     let w_savedBody: Thenable<boolean>;
@@ -559,7 +562,7 @@ export class LeoIntegration {
       // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
     });
     w_leoBodyEditor.then(w_bodyEditor => {
-      console.log('body shown resolved!');
+      // console.log('body shown resolved!');
       // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
     });
   }

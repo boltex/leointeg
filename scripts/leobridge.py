@@ -35,9 +35,7 @@ def sendLeoBridgePackage(p_key=False, p_any=None):
 
 
 def outputBodyData(p_bodyText=""):
-    if p_bodyText:
-        sendLeoBridgePackage("bodyData", p_bodyText)
-        #es("bodyData"+json.dumps({'body': p_bodyText}))
+    sendLeoBridgePackage("bodyData", p_bodyText)
 
 
 def outputPNode(p_node=False):
@@ -135,7 +133,7 @@ def getSelectedNode(p_param):
 
 def getBody(p_ap):
     '''EMIT OUT body of a node'''
-    # TODO : Get body from V NODE
+    # TODO : Get body from V NODE USING THE GNX AS ID
     if(p_ap):
         w_p = ap_to_p(p_ap)
         if w_p and w_p.b:
