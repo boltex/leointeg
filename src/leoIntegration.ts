@@ -178,6 +178,15 @@ export class LeoIntegration {
     // }
   }
 
+  // public triggerBodySave(): Thenable<boolean> {
+  //   // * sets new body text of currently selected node on leo's side
+  //   if (this.bodyChangedDocument) {
+  //     return this.bodyChangedDocument.save();
+  //   } else {
+  //     return Promise.resolve(false);
+  //   }
+  // }
+
   private onDocumentSaved(p_event: vscode.TextDocument): void {
     // edited and saved the document, does it on any document in editor // TODO : DEBOUNCE/CHECK IF IT WAS LEO BODY !
     console.log("onDocumentSaved", p_event.fileName);
@@ -325,16 +334,6 @@ export class LeoIntegration {
     }
   }
 
-
-  // public triggerBodySave(): Thenable<boolean> {
-  //   // * sets new body text of currently selected node on leo's side
-  //   if (this.bodyChangedDocument) {
-  //     return this.bodyChangedDocument.save();
-  //   } else {
-  //     return Promise.resolve(false);
-  //   }
-  // }
-
   private callAction(): void {
     if (this.callStack.length && !this.actionBusy) {
       this.actionBusy = true; // launch / resolve bottom one
@@ -410,6 +409,43 @@ export class LeoIntegration {
     });
   }
 
+  public editHeadline(p_node: LeoNode) {
+    this.editHeadlineInputOptions.value = p_node.label; // Preset input pop up
+    vscode.window.showInputBox(this.editHeadlineInputOptions)
+      .then(
+        p_newHeadline => {
+          if (p_newHeadline) {
+            p_node.label = p_newHeadline; //! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
+            this.leoBridgeAction("setNewHeadline", "{\"node\":" + p_node.apJson + ", \"headline\": \"" + p_newHeadline + "\"}"
+            ).then(
+              (p_answer: LeoBridgePackage) => {
+                this.revealSelectedNode = true; // ! needed because we voluntarily refreshed the automatic ID
+                this.onDidChangeTreeDataObject.fire(); // refresh all, needed to get clones to refresh too!
+              }
+            );
+          }
+        }
+      );
+  }
+  public mark(p_node: LeoNode): void {
+    vscode.window.showInformationMessage(`mark on ${p_node.label}.`); // Temp placeholder
+  }
+  public copyNode(p_node: LeoNode): void {
+    vscode.window.showInformationMessage(`copyNode on ${p_node.label}.`); // Temp placeholder
+  }
+  public cutNode(p_node: LeoNode): void {
+    vscode.window.showInformationMessage(`cutNode on ${p_node.label}.`); // Temp placeholder
+  }
+  public pasteNode(p_node: LeoNode): void {
+    vscode.window.showInformationMessage(`pasteNode on ${p_node.label}.`); // Temp placeholder
+  }
+  public pasteNodeAsClone(p_node: LeoNode): void {
+    vscode.window.showInformationMessage(`pasteNodeAsClone on ${p_node.label}.`); // Temp placeholder
+  }
+  public delete(p_node: LeoNode): void {
+    vscode.window.showInformationMessage(`delete on ${p_node.label}.`); // Temp placeholder
+  }
+
   public openLeoFile(): void {
     let w_returnMessage: string | undefined;
     if (!this.leoBridgeReady) {
@@ -471,59 +507,15 @@ export class LeoIntegration {
     }
     if (w_processed) {
       this.callAction();
-    } else if (this.leoBridgeReady) {
-      console.log("from python", p_data); // unprocessed/unknown python output
+    } else if (this.leoBridgeReady) { // unprocessed/unknown python output
+      console.log("from python", p_data);
     }
-  }
-
-  public editHeadline(p_node: LeoNode) {
-    this.editHeadlineInputOptions.value = p_node.label; // Preset input pop up
-    vscode.window.showInputBox(this.editHeadlineInputOptions)
-      .then(
-        p_newHeadline => {
-          if (p_newHeadline) {
-            p_node.label = p_newHeadline; //! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
-            this.leoBridgeAction("setNewHeadline", "{\"node\":" + p_node.apJson + ", \"headline\": \"" + p_newHeadline + "\"}"
-            ).then(
-              (p_answer: LeoBridgePackage) => {
-                this.revealSelectedNode = true; // ! needed because we voluntarily refreshed the automatic ID
-                this.onDidChangeTreeDataObject.fire(); // refresh all, needed to get clones to refresh too!
-              }
-            );
-          }
-        }
-      );
-  }
-  public mark(p_node: LeoNode): void {
-    vscode.window.showInformationMessage(`mark on ${p_node.label}.`); // Temp placeholder
-  }
-  public copyNode(p_node: LeoNode): void {
-    vscode.window.showInformationMessage(`copyNode on ${p_node.label}.`); // Temp placeholder
-  }
-  public cutNode(p_node: LeoNode): void {
-    vscode.window.showInformationMessage(`cutNode on ${p_node.label}.`); // Temp placeholder
-  }
-  public pasteNode(p_node: LeoNode): void {
-    vscode.window.showInformationMessage(`pasteNode on ${p_node.label}.`); // Temp placeholder
-  }
-  public pasteNodeAsClone(p_node: LeoNode): void {
-    vscode.window.showInformationMessage(`pasteNodeAsClone on ${p_node.label}.`); // Temp placeholder
-  }
-  public delete(p_node: LeoNode): void {
-    vscode.window.showInformationMessage(`delete on ${p_node.label}.`); // Temp placeholder
   }
 
   private initLeoProcess(): Promise<LeoBridgePackage> {
-    // * prevent re-init
-    if (this.leoBridgeReady) {
-      console.error("leobridge.py already Started");
-      return this.leoBridgeReadyPromise;
-    }
-    // * start leo via leoBridge python script.
     const w_pythonProcess: child.ChildProcess = child.spawn("python3", [
       this.context.extensionPath + "/scripts/leobridge.py"
     ]);
-    // * interact via std in out : Listen to python's leoBridge output
     w_pythonProcess.stdout.on("data", (data: string) => {
       data.toString().split("\n").forEach(p_line => {
         p_line = p_line.trim();
@@ -539,7 +531,7 @@ export class LeoIntegration {
       console.log(`child process exited with code ${code}`);
       this.leoBridgeReady = false;
     });
-    // * Start action with preventCall set to true: no need to call anything for 'ready' answer
+    // * Start first with preventCall set to true: no need to call anything for the first 'ready'
     return this.leoBridgeAction("", "", { id: 1, package: w_pythonProcess }, true);
   }
 

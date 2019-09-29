@@ -48,10 +48,12 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         result.push(['body', vscode.FileType.File]); // only body for now
         return Promise.resolve(result);
     }
+
     createDirectory(uri: vscode.Uri): void {
         console.log('called createDirectory');
         throw vscode.FileSystemError.NoPermissions();
     }
+
     readFile(uri: vscode.Uri): Thenable<Uint8Array> {
         console.log('called readFile', uri.fsPath);
         if (uri.fsPath === '/') {
@@ -65,8 +67,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         } else {
             throw vscode.FileSystemError.FileNotFound();
         }
-
     }
+
     writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
         // TODO : Send/Save on leoBridge's side!
         console.log('called writeFile!', uri.fsPath);
@@ -77,6 +79,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             // });
         }
     }
+
     rename(oldUri: vscode.Uri, newUri: vscode.Uri, options: { overwrite: boolean }): void {
         console.log('called rename');
         throw vscode.FileSystemError.NoPermissions();

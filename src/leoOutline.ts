@@ -20,7 +20,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     this._onDidChangeTreeData.fire(p_node);
   }
 
-  public refreshTreeRoot(p_revealSelection: boolean): void {
+  public refreshTreeRoot(p_revealSelection?: boolean): void {
     this._onDidChangeTreeData.fire();
   }
 
