@@ -89,6 +89,13 @@ export class LeoIntegration {
 
     // * Outline Pane
     this.leoTreeView = vscode.window.createTreeView("leoIntegration", { showCollapseAll: true, treeDataProvider: new LeoOutlineProvider(this) });
+    this.leoTreeView.onDidChangeSelection((p_event => this.treeViewChangedSelection(p_event)));
+    this.leoTreeView.onDidExpandElement((p_event => this.treeViewExpandedElement(p_event)));
+    this.leoTreeView.onDidCollapseElement((p_event => this.treeViewCollapsedElement(p_event)));
+    this.leoTreeView.onDidChangeVisibility((p_event => this.treeViewVisibilityChanged(p_event)));
+    // * Outline Pane's TreeVies properties:
+    // *    readonly selection: T[];   // Currently selected elements of TreeView
+    // *    readonly visible: boolean; // true if the TreeView is visible otherwise false
 
     // * Body Pane
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider("leo", new LeoBodyProvider(this), { isCaseSensitive: true }));
@@ -121,6 +128,25 @@ export class LeoIntegration {
     if (!p_val) {
       console.error("ASSERT FAILED in ", p_from);
     }
+  }
+
+  private treeViewChangedSelection(p_event: vscode.TreeViewSelectionChangeEvent<LeoNode>): void {
+    // * We capture and act upon the the 'select node' command, so this event is redundant for now
+    //console.log("treeViewChangedSelection, selection length:", p_event.selection.length);
+  }
+  private treeViewExpandedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
+    this.leoBridgeAction("expandNode", p_event.element.apJson).then(() => {
+      //console.log('back from expand');
+    });
+  }
+  private treeViewCollapsedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
+    this.leoBridgeAction("collapseNode", p_event.element.apJson).then(() => {
+      //console.log('back from collapse');
+    });
+  }
+  private treeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent): void {
+    // * May be useful for toggling 'literate mode'
+    // console.log("treeViewChangedElement, visible: ", p_event.visible);
   }
 
   private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
@@ -550,11 +576,14 @@ export class LeoIntegration {
 
   public test(): void {
     console.log("sending test");
+    // * TEST : GET SELECTED NODE FROM LEO AND REVEAL 'SELECTED' NODE IN TREEVIEW
     this.leoBridgeAction("getSelectedNode", "{\"testparam\":\"hello\"}").then(
       (p_answer: LeoBridgePackage) => {
         console.log('Test got Back from getSelectedNode, now revealing :', p_answer.node.headline);
         this.leoTreeView.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true });
       }
     );
+    // * TEST : REFRESH ALL TREE NODES
+    // this.onDidChangeTreeDataObject.fire(); // refresh all
   }
 }

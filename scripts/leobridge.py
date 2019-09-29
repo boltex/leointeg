@@ -181,6 +181,24 @@ def setSelectedNode(p_ap):
     sendLeoBridgePackage()  # Just send empty as 'ok'
 
 
+def expandNode(p_ap):
+    '''Expand a node'''
+    if(p_ap):
+        w_p = ap_to_p(p_ap)
+        if w_p:
+            w_p.expand()
+    sendLeoBridgePackage()  # Just send empty as 'ok'
+
+
+def collapseNode(p_ap):
+    '''Collapse a node'''
+    if(p_ap):
+        w_p = ap_to_p(p_ap)
+        if w_p:
+            w_p.contract()
+    sendLeoBridgePackage()  # Just send empty as 'ok'
+
+
 def create_gnx_to_vnode():
     '''Make the first gnx_to_vnode array with all unique nodes'''
     global gnx_to_vnode, commander
