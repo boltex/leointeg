@@ -17,7 +17,7 @@ export class LeoNode extends vscode.TreeItem {
     ) {
         super(label, collapsibleState);
         this.command = {
-            command: 'leointeg.selectNode',
+            command: 'leointeg.selectTreeNode',
             title: '',
             arguments: [this]
         };

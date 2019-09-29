@@ -12,7 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.commands.registerCommand("leointeg.killLeo", () => leoIntegration.killLeoBridge()));
 
   context.subscriptions.push(
-    vscode.commands.registerCommand("leointeg.selectNode", (p_node: LeoNode) => leoIntegration.selectNode(p_node))
+    vscode.commands.registerCommand("leointeg.selectTreeNode", (p_node: LeoNode) => leoIntegration.selectTreeNode(p_node))
   );
   context.subscriptions.push(
     vscode.commands.registerCommand("leointeg.editHeadline", (p_node: LeoNode) => leoIntegration.editHeadline(p_node))

@@ -16,31 +16,30 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     leoIntegration.setupRefreshFn(this._onDidChangeTreeData);
   }
 
-  public refresh(): void {
-    // * Not used for now. Kept as example from treeoutline extension template
+  public refreshTreeNode(p_node: LeoNode): void {
+    this._onDidChangeTreeData.fire(p_node);
+  }
+
+  public refreshTreeRoot(p_revealSelection: boolean): void {
     this._onDidChangeTreeData.fire();
-    console.log("Leo outline refresh");
   }
 
   getTreeItem(element: LeoNode): Thenable<LeoNode> | LeoNode {
     if (this.leoIntegration.refreshSingleNodeFlag) {
       this.leoIntegration.refreshSingleNodeFlag = false;
-
-
-      // return this.leoIntegration.getPNode(element.apJson).then(p_node => {
-      //   element.label = p_node.label;
-      //   element.gnx = p_node.gnx;
-      //   element.collapsibleState = p_node.collapsibleState;
-      //   element.apJson = p_node.apJson;
-      //   element.cloned = p_node.cloned;
-      //   element.dirty = p_node.dirty;
-      //   element.marked = p_node.marked;
-      //   element.hasBody = p_node.hasBody;
-      //   return element;
-      // });
-
-
-      return element; // TODO : REPLACE ABOVE COMMENTS
+      return this.leoIntegration.leoBridgeAction("getPNode", element.apJson)
+        .then((p_result) => {
+          const w_node = this.leoIntegration.apToLeoNode(p_result.node);
+          element.label = w_node.label;
+          element.gnx = w_node.gnx;
+          element.collapsibleState = w_node.collapsibleState;
+          element.apJson = w_node.apJson;
+          element.cloned = w_node.cloned;
+          element.dirty = w_node.dirty;
+          element.marked = w_node.marked;
+          element.hasBody = w_node.hasBody;
+          return element;
+        });
     } else {
       return element;
     }
@@ -48,11 +47,11 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
   getParent(element: LeoNode): ProviderResult<LeoNode> | null {
     if (this.leoIntegration.fileOpenedReady) {
-      return this.leoIntegration.leoBridgeAction('getParent', element ? element.apJson : "null").then((p_thing) => {
-        if (p_thing.node === null) {
+      return this.leoIntegration.leoBridgeAction('getParent', element ? element.apJson : "null").then((p_result) => {
+        if (p_result.node === null) {
           return null;
         } else {
-          return this.leoIntegration.apToLeoNode(p_thing.node); // TODO : return n
+          return this.leoIntegration.apToLeoNode(p_result.node);
         }
       });
     } else {
@@ -62,8 +61,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
   getChildren(element?: LeoNode): Thenable<LeoNode[]> {
     if (this.leoIntegration.fileOpenedReady) {
-      return this.leoIntegration.leoBridgeAction('getChildren', element ? element.apJson : "null").then((p_thing) => {
-        return this.leoIntegration.arrayToLeoNodesArray(p_thing.nodes);
+      return this.leoIntegration.leoBridgeAction('getChildren', element ? element.apJson : "null").then((p_result) => {
+        return this.leoIntegration.arrayToLeoNodesArray(p_result.nodes);
       });
     } else {
       return Promise.resolve([]); // default give an empty tree
