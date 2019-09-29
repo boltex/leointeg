@@ -382,7 +382,7 @@ export class LeoIntegration {
         // console.log('Back from selecting a node');
       });
 
-    this.leoBridgeAction("getBody", p_node.apJson)
+    this.leoBridgeAction("getBody", '"' + p_node.gnx + '"')
       .then((p_result) => {
         this.bodyText = p_result.bodyData;
         this.showBodyDocument();

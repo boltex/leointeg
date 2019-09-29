@@ -131,17 +131,18 @@ def getSelectedNode(p_param):
         outputPNode()
 
 
-def getBody(p_ap):
+def getBody(p_gnx):
     '''EMIT OUT body of a node'''
-    # TODO : Get body from V NODE USING THE GNX AS ID
-    if(p_ap):
-        w_p = ap_to_p(p_ap)
-        if w_p and w_p.b:
-            outputBodyData(w_p.b)
+    global commander
+    c = commander
+    if(p_gnx):
+        w_v = c.fileCommands.gnxDict.get(p_gnx)  # vitalije
+        if w_v.b:
+            outputBodyData(w_v.b)
         else:
             outputBodyData()  # default empty
     else:
-        outputBodyData()
+        outputBodyData()  # default empty
 
 
 def setNewBody(p_body):

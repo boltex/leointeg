@@ -26,7 +26,8 @@ export class LeoNode extends vscode.TreeItem {
     contextValue = "leoNode"; // for use in package.json
 
     get iconPath(): string {
-        // 8=dirty, 4=cloned, 2=marked, 1=content (iconsInverted is dirty for light/dark inversion)
+        // From Leo's leoNodes.py computeIcon function
+        // 1=has Body, 2=marked, 4=cloned, 8=dirty (iconsInverted is dirty for light/dark inversion)
         let w_icon: number =
             (+this.dirty << 3) | // flip this bit with this.leoIntegration.iconsInverted
             (+this.cloned << 2) |
