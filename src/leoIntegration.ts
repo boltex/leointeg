@@ -37,15 +37,13 @@ interface LeoBridgePackage {
 }
 
 export class LeoIntegration {
-  // TODO : Move file browsing and opening in another js file
   public fileBrowserOpen: boolean = false;
   public fileOpenedReady: boolean = false;
 
   public leoTreeView: vscode.TreeView<LeoNode>;
 
-  private bodyUri: vscode.Uri = vscode.Uri.parse("leo:/body");
-  public bodyDataReady: boolean = false;
-  public bodyText: string = "";
+  private bodyUri: vscode.Uri = vscode.Uri.parse("leo:/" + "");
+  private bodyTextEditor: vscode.TextEditor | undefined;
 
   // public bodyFileName: string = ""; // Solution to deal with vsCode's undos. Vary body filename instead of 'body'
   // private bodyChangeTimeout: NodeJS.Timeout | undefined;
@@ -81,7 +79,7 @@ export class LeoIntegration {
 
     this.leoBridgeReadyPromise = this.initLeoProcess();
     this.leoBridgeReadyPromise.then((p_package) => {
-      this.assert(p_package.id === 1, "p_package.id === 0"); // test integrity
+      this.assertId(p_package.id === 1, "p_package.id === 0"); // test integrity
       this.leoPythonProcess = p_package.package;
       vscode.window.showInformationMessage("leoBridge Ready");
       this.leoBridgeReady = true;
@@ -124,9 +122,9 @@ export class LeoIntegration {
     vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
   }
 
-  private assert(p_val: boolean, p_from: string): void {
+  private assertId(p_val: boolean, p_from: string): void {
     if (!p_val) {
-      console.error("ASSERT FAILED in ", p_from);
+      console.error("ASSERT FAILED in ", p_from); // TODO : Improve id error checking
     }
   }
 
@@ -278,6 +276,8 @@ export class LeoIntegration {
   public revealTreeNode(p_node: LeoNode): void {
     this.leoTreeView.reveal(p_node, { select: true, focus: true });
 
+
+
     // this.getBody(w_leoNode.apJson).then(p_body => {
     //   this.bodyText = p_body;
     //   vscode.window.showTextDocument(this.bodyUri, {
@@ -371,7 +371,7 @@ export class LeoIntegration {
   public selectTreeNode(p_node: LeoNode): void {
     // User has selected a node in the outline with the mouse
 
-    /* // TEST : Force refresh of the node upon selection to test full refresh of node
+    /* // TEST : Force refresh of the node upon selection
     // if (p_node) {
     //   this.refreshSingleNodeFlag = true;
     //   this.onDidChangeTreeDataObject.fire(p_node);
@@ -379,15 +379,33 @@ export class LeoIntegration {
     */
     this.leoBridgeAction("setSelectedNode", p_node.apJson)
       .then(() => {
-        // console.log('Back from selecting a node');
+        console.log('Back from selecting a node');
       });
 
-    this.leoBridgeAction("getBody", '"' + p_node.gnx + '"')
-      .then((p_result) => {
-        this.bodyText = p_result.bodyData;
-        this.showBodyDocument();
-        this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
-      });
+    if (false && this.bodyTextEditor) {
+
+      // console.log('has text editor');
+      // vscode.window.showTextDocument(this.bodyTextEditor.document, 1, false)
+      //   .then(p_editor => {
+      //     console.log('text on front now we close it!! and set new uri');
+      //     vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+      //     this.bodyUri = vscode.Uri.parse("leo:/" + p_node.gnx);
+      //     this.showBodyDocument();
+      //   });
+    } else {
+      console.log('no text editor');
+      this.bodyUri = vscode.Uri.parse("leo:/" + p_node.gnx);
+      this.showBodyDocument();
+    }
+
+
+
+    // this.leoBridgeAction("getBody", '"' + p_node.gnx + '"')
+    //   .then((p_result) => {
+    //     this.bodyText = p_result.bodyData;
+    //     this.showBodyDocument();
+    //     this.onDidChangeBodyDataObject.fire([{ type: vscode.FileChangeType.Changed, uri: this.bodyUri }]); // * for file system implementation
+    //   });
 
     /*
     let w_savedBody: Thenable<boolean>;
@@ -426,11 +444,13 @@ export class LeoIntegration {
     const w_leoBodyEditor = vscode.window.showTextDocument(this.bodyUri, {
       viewColumn: 1, // TODO : try to make leftmost tab so it touches the outline pane
       preserveFocus: false,
-      preview: false
+      preview: true
       // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
     });
     w_leoBodyEditor.then(w_bodyEditor => {
-      // console.log('body shown resolved!');
+      console.log('body shown resolved!');
+      this.bodyTextEditor = w_bodyEditor;
+
       // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
     });
   }
@@ -497,20 +517,23 @@ export class LeoIntegration {
         if (p_chosenLeoFile) {
 
           this.leoBridgeAction("openFile", '"' + p_chosenLeoFile[0].fsPath + '"')
-            .then((value: LeoBridgePackage) => {
-              this.revealSelectedNode = true;
+            .then((p_result: LeoBridgePackage) => {
 
               this.fileOpenedReady = true; // ANSWER to openLeoFile
               this.fileBrowserOpen = false;
 
               if (this.onDidChangeTreeDataObject) {
+                this.revealSelectedNode = true;
                 this.onDidChangeTreeDataObject.fire();
               } else {
                 console.log("ERROR onDidChangeTreeDataObject NOT READY");
               }
 
-              this.updateStatusBarItem();
+              // * set body URI for body filesystem
+              this.bodyUri = vscode.Uri.parse("leo:/" + p_result.node.gnx);
               this.showBodyDocument();
+
+              this.updateStatusBarItem();
 
               // console.log(vscode.window.visibleTextEditors);
               // for (let entry of vscode.window.visibleTextEditors) {
