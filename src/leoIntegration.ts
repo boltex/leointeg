@@ -41,12 +41,13 @@ export class LeoIntegration {
   public fileOpenedReady: boolean = false;
 
   public leoTreeView: vscode.TreeView<LeoNode>;
+  public leoFileSystem: LeoBodyProvider;
 
   private bodyUri: vscode.Uri = vscode.Uri.parse("leo:/" + "");
+  private bodyTextDocument: vscode.TextDocument | undefined;
   private bodyTextEditor: vscode.TextEditor | undefined;
 
-  // public bodyFileName: string = ""; // Solution to deal with vsCode's undos. Vary body filename instead of 'body'
-  // private bodyChangeTimeout: NodeJS.Timeout | undefined;
+  private bodyChangeTimeout: NodeJS.Timeout | undefined;
   // private bodyChangedDocument: vscode.TextDocument | undefined;
   // public lastModifiedNode: { old: LeoNode, new: LeoNode } | undefined; // * tests for integrity
 
@@ -96,7 +97,8 @@ export class LeoIntegration {
     // *    readonly visible: boolean; // true if the TreeView is visible otherwise false
 
     // * Body Pane
-    context.subscriptions.push(vscode.workspace.registerFileSystemProvider("leo", new LeoBodyProvider(this), { isCaseSensitive: true }));
+    this.leoFileSystem = new LeoBodyProvider(this);
+    context.subscriptions.push(vscode.workspace.registerFileSystemProvider("leo", this.leoFileSystem, { isCaseSensitive: true }));
 
     // * Status bar Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
     // EXAMPLE: register some listener that make sure the status bar item always up-to-date
@@ -185,31 +187,37 @@ export class LeoIntegration {
   }
   private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
     // * edited the document: debounce/check if it was leo body
-    // if (p_event.document.uri.scheme === "leo" && p_event.document.isDirty) {
-    //   if (this.bodyChangeTimeout) {
-    //     clearTimeout(this.bodyChangeTimeout);
-    //   }
-    //   this.bodyChangedDocument = p_event.document;
-    //   this.bodyChangeTimeout = setTimeout(() => {
-    //     // * Debounce
-    //     this.triggerBodySave().then(() => {
-    //       if (this.bodyChangeTimeout) {
-    //         clearTimeout(this.bodyChangeTimeout);
-    //       }
-    //       this.bodyChangeTimeout = undefined; // Make falsy
-    //     });
-    //   }, 200);
-    // }
+    if (p_event.document.uri.scheme === "leo" && p_event.document.isDirty) {
+      if (this.bodyChangeTimeout) {
+        clearTimeout(this.bodyChangeTimeout);
+      }
+      this.bodyChangeTimeout = setTimeout(() => {
+        // * Debounce
+        this.triggerBodySave(p_event.document).then(() => {
+          if (this.bodyChangeTimeout) {
+            clearTimeout(this.bodyChangeTimeout);
+          }
+          this.bodyChangeTimeout = undefined; // Make falsy
+        });
+      }, 200);
+    }
   }
 
-  // public triggerBodySave(): Thenable<boolean> {
-  //   // * sets new body text of currently selected node on leo's side
-  //   if (this.bodyChangedDocument) {
-  //     return this.bodyChangedDocument.save();
-  //   } else {
-  //     return Promise.resolve(false);
-  //   }
-  // }
+  public triggerBodySave(p_document: vscode.TextDocument): Thenable<boolean> {
+    // * sets new body text of currently selected node on leo's side
+    if (p_document) {
+      const w_param = {
+        gnx: p_document.uri.fsPath.substr(1), //uri.fsPath.substr(1),
+        body: p_document.getText()
+      };
+      return this.leoBridgeAction("setBody", JSON.stringify(w_param)).then(p_result => {
+        console.log('Back from triggerBodySave body to leo');
+        return Promise.resolve(true);
+      });
+    } else {
+      return Promise.resolve(false);
+    }
+  }
 
   private onDocumentSaved(p_event: vscode.TextDocument): void {
     // edited and saved the document, does it on any document in editor // TODO : DEBOUNCE/CHECK IF IT WAS LEO BODY !
@@ -382,18 +390,22 @@ export class LeoIntegration {
         console.log('Back from selecting a node');
       });
 
-    if (false && this.bodyTextEditor) {
+    if (this.bodyTextDocument && !this.bodyTextDocument.isClosed) {
+      this.bodyTextDocument.save().then((p_result) => {
+        const w_edit = new vscode.WorkspaceEdit();
+        w_edit.renameFile(
+          this.bodyUri,
+          vscode.Uri.parse("leo:/" + p_node.gnx),
+          { overwrite: true, ignoreIfExists: true }
+        );
+        const applyRename = vscode.workspace.applyEdit(w_edit);
+        applyRename.then(p_result => {
+          this.bodyUri = vscode.Uri.parse("leo:/" + p_node.gnx);
+          this.showBodyDocument();
+        });
 
-      // console.log('has text editor');
-      // vscode.window.showTextDocument(this.bodyTextEditor.document, 1, false)
-      //   .then(p_editor => {
-      //     console.log('text on front now we close it!! and set new uri');
-      //     vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-      //     this.bodyUri = vscode.Uri.parse("leo:/" + p_node.gnx);
-      //     this.showBodyDocument();
-      //   });
+      });
     } else {
-      console.log('no text editor');
       this.bodyUri = vscode.Uri.parse("leo:/" + p_node.gnx);
       this.showBodyDocument();
     }
@@ -439,19 +451,18 @@ export class LeoIntegration {
   }
 
   public showBodyDocument(): void {
-    // A short-hand for openTextDocument(uri).then(document => showTextDocument(document, options)).
-    // Note: 'Uri' is a universal resource identifier representing either a file on disk or another resource
-    const w_leoBodyEditor = vscode.window.showTextDocument(this.bodyUri, {
-      viewColumn: 1, // TODO : try to make leftmost tab so it touches the outline pane
-      preserveFocus: false,
-      preview: true
-      // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
-    });
-    w_leoBodyEditor.then(w_bodyEditor => {
-      console.log('body shown resolved!');
-      this.bodyTextEditor = w_bodyEditor;
-
-      // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
+    vscode.workspace.openTextDocument(this.bodyUri).then(p_document => {
+      this.bodyTextDocument = p_document;
+      vscode.window.showTextDocument(this.bodyTextDocument, {
+        viewColumn: 1, // TODO : try to make leftmost tab so it touches the outline pane
+        preserveFocus: false, // set focus on this new body pane
+        preview: true
+        // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
+      }).then(w_bodyEditor => {
+        console.log('body shown resolved!');
+        this.bodyTextEditor = w_bodyEditor;
+        // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
+      });
     });
   }
 

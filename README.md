@@ -33,13 +33,12 @@ more to be added...
 
 ## Extension Settings
 
-None for now.
+Planned Settings :
 
-There will be settings for communicating either locally, via stdIn/out, and remotely over tcp, through a rest api or websockets. (communication consists of simple JSON data)
+- Settings for communicating either locally, via stdIn/out, and remotely over tcp, through a rest api or websockets. (communication consists of simple JSON data)
 
-There will also be graphic-related settings such as light/dark theme and icon set selection
+- Graphic-related settings such as light/dark theme and icon set selection
 
 ---
 
-![Leo Editor](resources/background.jpg)
 **Enjoy!**

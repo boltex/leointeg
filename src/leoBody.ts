@@ -29,27 +29,27 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             return {
                 type: vscode.FileType.Directory,
                 ctime: 0,
-                mtime: Date.now(),
+                mtime: 0, // Date.now(),
                 size: 0
             };
         } else if (uri.fsPath === '/' + this.lastGnx) {
             return {
                 type: vscode.FileType.File,
                 ctime: 0,
-                mtime: Date.now(),
+                mtime: 0, //Date.now(),
                 size: this.lastGnxBodyLength // this.leoIntegration.bodyText.length
             };
         } else {
-            console.log('had to get stats manually');
-            return this.leoIntegration.leoBridgeAction("getBody", '"' + uri.fsPath.substr(1) + '"')
+            return this.leoIntegration.leoBridgeAction("getBodyLength", '"' + uri.fsPath.substr(1) + '"')
                 .then((p_result) => {
-                    if (p_result.bodyData) {
+
+                    if (p_result.bodyLenght) {
                         return Promise.resolve(
                             {
                                 type: vscode.FileType.File,
                                 ctime: 0,
                                 mtime: Date.now(),
-                                size: p_result.bodyData.length // this.leoIntegration.bodyText.length
+                                size: p_result.bodyLenght // this.leoIntegration.bodyText.length
                             }
                         );
                     } else {
@@ -90,9 +90,10 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             throw vscode.FileSystemError.FileIsADirectory();
             // } else if (uri.fsPath === '/body') {
         } else {
-            this.lastGnx = uri.fsPath.substr(1);
-            return this.leoIntegration.leoBridgeAction("getBody", '"' + this.lastGnx + '"')
+            const w_gnx = uri.fsPath.substr(1);
+            return this.leoIntegration.leoBridgeAction("getBody", '"' + w_gnx + '"')
                 .then((p_result) => {
+                    this.lastGnx = w_gnx;
                     if (p_result.bodyData) {
                         this.lastGnxBodyLength = p_result.bodyData.length;
                         return Promise.resolve(Buffer.from(p_result.bodyData));
@@ -113,7 +114,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             //         });
             // });
 
-
         }
         // TODO : Add case for GNX 'not found' : throw vscode.FileSystemError.FileNotFound();
         // }else {
@@ -124,21 +124,28 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
         // TODO : Send/Save on leoBridge's side!
         console.log('called writeFile!', uri.fsPath);
-        if (uri.fsPath === '/body') {
+        const w_param = {
+            gnx: uri.fsPath.substr(1),
+            body: content.toString()
+        };
+        this.leoIntegration.leoBridgeAction("setBody", JSON.stringify(w_param)).then(p_result => {
+            console.log('Back from set body to leo');
+        });
 
-            // this.leoIntegration.setNewBody(content.toString()).then((p_node) => {
-            //     console.log('back from write file', p_node.label);
-            // });
-        }
+        // if (uri.fsPath === '/body') {
+        //     this.leoIntegration.setNewBody(content.toString()).then((p_node) => {
+        //         console.log('back from write file', p_node.label);
+        //     });
+        // }
     }
 
     rename(oldUri: vscode.Uri, newUri: vscode.Uri, options: { overwrite: boolean }): void {
         console.log('called rename');
-        throw vscode.FileSystemError.NoPermissions();
+        // throw vscode.FileSystemError.NoPermissions();
     }
     delete(uri: vscode.Uri): void {
         console.log('called delete');
-        throw vscode.FileSystemError.NoPermissions();
+        // throw vscode.FileSystemError.NoPermissions();
     }
     copy(uri: vscode.Uri): void {
         console.log('called copy');

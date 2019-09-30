@@ -1,5 +1,11 @@
 # Change Log
 
+### 0.1.4
+
+- Major Refactor to streamline codebase; Eliminated code duplication.
+- Complete rewrite after going trying out most of what is possible with both vscode and leo APIs.
+- New body pane system that prevents corrupting undos across different positions
+
 ### 0.1.3
 
 - This version creates a body panel via a custom filesystem: 'leo'. It only has a file, "leo:/body", the body of the currently selected node.

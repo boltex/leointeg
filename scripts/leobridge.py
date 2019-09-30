@@ -134,15 +134,27 @@ def getSelectedNode(p_param):
 def getBody(p_gnx):
     '''EMIT OUT body of a node'''
     global commander
-    c = commander
     if(p_gnx):
-        w_v = c.fileCommands.gnxDict.get(p_gnx)  # vitalije
+        w_v = commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
         if w_v.b:
             outputBodyData(w_v.b)
         else:
             outputBodyData()  # default empty
     else:
         outputBodyData()  # default empty
+
+
+def getBodyLength(p_gnx):
+    '''EMIT OUT body string length of a node'''
+    global commander
+    if(p_gnx):
+        w_v = commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
+        if w_v and len(w_v.b):
+            sendLeoBridgePackage("bodyLenght", len(w_v.b))
+        else:
+            sendLeoBridgePackage("bodyLenght", 0)
+    else:
+        sendLeoBridgePackage("bodyLenght", 0)
 
 
 def setNewBody(p_body):
@@ -155,12 +167,19 @@ def setNewBody(p_body):
         es("Error in setNewBody")
 
 
-def setNewHeadline(p_apHeadline):
+def setBody(p_package):
     '''Change Headline of a node'''
     global commander
-    w_apHeadline = p_apHeadline
-    w_newHeadline = w_apHeadline['headline']
-    w_ap = w_apHeadline['node']
+    w_v = commander.fileCommands.gnxDict.get(p_package['gnx'])
+    w_v.setBodyString(p_package['body'])
+    w_v.setDirty()
+    sendLeoBridgePackage()  # Just send empty as 'ok'
+
+
+def setNewHeadline(p_apHeadline):
+    '''Change Headline of a node'''
+    w_newHeadline = p_apHeadline['headline']
+    w_ap = p_apHeadline['node']
     if(w_ap):
         w_p = ap_to_p(w_ap)
         if w_p:
