@@ -404,13 +404,18 @@ export class LeoIntegration {
   }
 
   public showBodyDocument(): void {
-
-    /*
-      TODO If gnx already in opened in the visible textEditors array, just focus on it
-           * set this.bodyTextDocument also
-           * set this.bodyTextEditor also
-    */
-
+    let w_sameUri = false;
+    vscode.window.visibleTextEditors.forEach(p_textEditor => {
+      if (p_textEditor.document.uri.fsPath === this.bodyUri.fsPath) {
+        w_sameUri = true;
+        // * vscode.window.showTextDocument(p_textEditor.document); // DO NOT show?
+        this.bodyTextDocument = p_textEditor.document; // TODO : Find a way to focus (only if wanted in options)
+        this.bodyTextEditor = p_textEditor;
+      }
+    });
+    if (w_sameUri) {
+      return;
+    }
     vscode.workspace.openTextDocument(this.bodyUri).then(p_document => {
       this.bodyTextDocument = p_document;
       vscode.window.showTextDocument(this.bodyTextDocument, {
@@ -419,7 +424,6 @@ export class LeoIntegration {
         preview: false // Should text document be in preview only? set false for fully opened
         // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
       }).then(w_bodyEditor => {
-        console.log('body shown resolved!');
         this.bodyTextEditor = w_bodyEditor;
         // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
         // Other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
