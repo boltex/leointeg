@@ -70,7 +70,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         console.log('called readDirectory', uri.fsPath);
         //const entry = this._lookupAsDirectory(uri, false);
         let result: [string, vscode.FileType][] = [];
-        //result.push(['body', vscode.FileType.File]); // only body for now
+
+        // TODO : Return list of gnx from leo file - make a function to return list in leoBridge.py!
+
         if (this.lastGnx) {
             result.push([this.lastGnx, vscode.FileType.File]); // only body for now
         }

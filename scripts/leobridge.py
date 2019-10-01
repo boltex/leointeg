@@ -285,7 +285,7 @@ def p_to_ap(p):
             'headline': stack_v.h,
         } for (stack_v, stack_childIndex) in p.stack],
     }
-    # TODO : Convert all those bools in an integer : 'status' Flags
+    # TODO : (MAYBE) Convert all those bools in an integer : 'status' Flags
     if bool(p.b):
         w_ap['hasBody'] = True
     if p.hasChildren():

@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { ProviderResult } from "vscode";
+import { RevealType } from "./leoIntegrationTypes";
+
 
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> =
@@ -15,9 +17,9 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     this._onDidChangeTreeData.fire(p_node);
   }
 
-  public refreshTreeRoot(p_revealSelection?: boolean): void {
-    if (p_revealSelection) { // to check if selected node should self-select while redrawing whole tree
-      this.leoIntegration.revealSelectedNode = true; // to be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
+  public refreshTreeRoot(p_revealType?: RevealType): void {
+    if (p_revealType) { // to check if selected node should self-select while redrawing whole tree
+      this.leoIntegration.revealSelectedNode = p_revealType; // to be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
     }
     this._onDidChangeTreeData.fire();
   }
