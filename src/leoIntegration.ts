@@ -40,6 +40,7 @@ export class LeoIntegration {
   // * Timing
   private bodyChangeTimeout: NodeJS.Timeout | undefined;
   private bodyChangeTimeoutSkipped: boolean = false;
+  private lastbodyChangedRootRefreshedGnx: string = "";
   private bodyLastChangedDocument: vscode.TextDocument | undefined;
 
   // * Communications with Python
@@ -165,7 +166,7 @@ export class LeoIntegration {
 
       if (this.bodyLastChangedDocument && (p_event.document.uri.fsPath !== this.bodyLastChangedDocument.uri.fsPath)) {
         console.log('Switched Node while waiting edit debounce!');
-        this.triggerBodySave(true); //Set p_switchedNode flag, this will also have cleared timeout
+        this.triggerBodySave(true); //Set p_forcedRefresh flag, this will also have cleared timeout
       }
 
       if (!this.bodyChangeTimeout && !this.bodyChangeTimeoutSkipped) { // * If icon should change then do it now, but only if there was no document edits pending
@@ -194,7 +195,7 @@ export class LeoIntegration {
     }
   }
 
-  private triggerBodySave(p_switchedNode?: boolean): Thenable<boolean> {
+  private triggerBodySave(p_forcedRefresh?: boolean): Thenable<boolean> {
     // * Clear possible timeout if triggered by event from other than 'onDocumentChanged'
     if (this.bodyChangeTimeout) {
       clearTimeout(this.bodyChangeTimeout);
@@ -204,7 +205,10 @@ export class LeoIntegration {
     if (this.bodyLastChangedDocument) {
       const w_document = this.bodyLastChangedDocument; // backup
       this.bodyLastChangedDocument = undefined; // Make falsy
-      return this.bodySaveDocument(w_document, p_switchedNode);
+      if (this.lastbodyChangedRootRefreshedGnx !== w_document.uri.fsPath.substr(1)) {
+        p_forcedRefresh = true;
+      }
+      return this.bodySaveDocument(w_document, p_forcedRefresh);
     } else {
       return Promise.resolve(true);
     }
@@ -212,13 +216,12 @@ export class LeoIntegration {
 
   public bodySaveDocument(p_document: vscode.TextDocument, p_forceRefreshTree?: boolean): Thenable<boolean> {
     // * sets new body text of currently selected node on leo's side
-    if (p_document && p_document.isDirty) {
+    if (p_document && (p_document.isDirty || p_forceRefreshTree)) {
 
       const w_param = {
         gnx: p_document.uri.fsPath.substr(1), //uri.fsPath.substr(1),
         body: p_document.getText()
       };
-      console.log('lineCount', p_document.lineCount);
 
       // * setup refresh if dirtied or filled/emptied
       let w_needsRefresh = false;
@@ -230,14 +233,15 @@ export class LeoIntegration {
         }
       }
       if (p_forceRefreshTree || (w_needsRefresh && this.lastSelectedLeoNode)) {
-        console.log(p_forceRefreshTree ? 'switched node' : 'needed refresh');
+        console.log(p_forceRefreshTree ? 'force refresh' : 'needed refresh');
         // this.leoTreeDataProvider.refreshTreeNode(this.lastSelectedLeoNode);
         //* refresh root because of need to dirty parent if in derived file
-        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);  // No focus
+        this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal);  // No focus this.leoTreeDataProvider.refreshTreeRoot
+        this.lastbodyChangedRootRefreshedGnx = w_param.gnx;
       }
       this.bodyChangeTimeoutSkipped = false;
       return this.leoBridgeAction("setBody", JSON.stringify(w_param)).then(p_result => {
-        console.log('in bodySaveDocument, Back from setBody body to leo');
+        // console.log('in bodySaveDocument, Back from setBody body to leo');
         return Promise.resolve(true);
       });
     } else {

@@ -172,7 +172,11 @@ def setBody(p_package):
     global commander
     w_v = commander.fileCommands.gnxDict.get(p_package['gnx'])
     w_v.setBodyString(p_package['body'])
-    w_v.setDirty()
+    if not w_v.isDirty():
+        for w_p in commander.all_positions():
+            if w_p.v == w_v:  # found
+                w_p.setDirty()
+                break
     sendLeoBridgePackage()  # Just send empty as 'ok'
 
 
