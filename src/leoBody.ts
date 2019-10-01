@@ -16,14 +16,14 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     constructor(private leoIntegration: LeoIntegration) { }
 
     watch(_resource: vscode.Uri): vscode.Disposable {
-        console.log('watch called! path:', _resource.fsPath);
+        // console.log('watch called! path:', _resource.fsPath);
         // ignore, fires for all changes...
         return new vscode.Disposable(() => { });
     }
 
     stat(uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
-        console.log('called stat', uri.fsPath);
         if (uri.fsPath === '/') {
+            console.log('called stat on root : "/" ! ');
             return {
                 type: vscode.FileType.Directory,
                 ctime: 0,
@@ -38,10 +38,12 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 size: this.lastGnxBodyLength // this.leoIntegration.bodyText.length
             };
         } else {
-            return this.leoIntegration.leoBridgeAction("getBodyLength", '"' + uri.fsPath.substr(1) + '"')
+            const w_gnx = uri.fsPath.substr(1);
+            return this.leoIntegration.leoBridgeAction("getBodyLength", '"' + w_gnx + '"')
                 .then((p_result) => {
-
+                    // this.lastGnx = w_gnx; // * Leave as is for now : requires more testing
                     if (p_result.bodyLenght) {
+                        // this.lastGnxBodyLength = p_result.bodyLenght; // * Leave as is for now
                         return Promise.resolve(
                             {
                                 type: vscode.FileType.File,
@@ -51,6 +53,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                             }
                         );
                     } else {
+                        // this.lastGnxBodyLength = 0; // * Leave as is for now
                         return Promise.resolve({
                             type: vscode.FileType.File,
                             ctime: 0,
