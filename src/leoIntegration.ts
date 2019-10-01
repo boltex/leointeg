@@ -384,19 +384,25 @@ export class LeoIntegration {
     this.lastSelectedLeoNode = p_node; // kept mostly in order to do refreshes if it changes, as opposed to a full tree refresh
 
     if (this.bodyTextDocument && !this.bodyTextDocument.isClosed) {
-      this.bodyTextDocument.save().then((p_result) => {
-        const w_edit = new vscode.WorkspaceEdit();
-        w_edit.renameFile(
-          this.bodyUri,
-          vscode.Uri.parse("leo:/" + p_node.gnx),
-          { overwrite: true, ignoreIfExists: true }
-        );
-        vscode.workspace.applyEdit(w_edit).then(p_result => {
-          this.bodyUri = vscode.Uri.parse("leo:/" + p_node.gnx);
-          this.showBodyDocument();
-        });
+
+      this.triggerBodySave(this.bodyTextDocument).then(p_result => {
+        if (this.bodyTextDocument) { // Have to re-test inside .then, oh well
+          this.bodyTextDocument.save().then((p_result) => {
+            const w_edit = new vscode.WorkspaceEdit();
+            w_edit.renameFile(
+              this.bodyUri,
+              vscode.Uri.parse("leo:/" + p_node.gnx),
+              { overwrite: true, ignoreIfExists: true }
+            );
+            vscode.workspace.applyEdit(w_edit).then(p_result => {
+              this.bodyUri = vscode.Uri.parse("leo:/" + p_node.gnx);
+              this.showBodyDocument();
+            });
+          });
+        }
 
       });
+
     } else {
       this.bodyUri = vscode.Uri.parse("leo:/" + p_node.gnx);
       this.showBodyDocument();
