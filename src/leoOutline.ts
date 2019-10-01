@@ -8,19 +8,17 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     new vscode.EventEmitter<LeoNode | undefined>();
   readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
 
-  // TODO : Save and restore selection / cursor position from selection object saved in each node
-  // TODO : before / upon selection of other nodes
-
-  constructor(private leoIntegration: LeoIntegration) {
-    // give the event for 'refresh' of either root, without params, or a node when passed as parameter
-    leoIntegration.setupRefreshFn(this._onDidChangeTreeData);
-  }
+  constructor(private leoIntegration: LeoIntegration) { }
 
   public refreshTreeNode(p_node: LeoNode): void {
+    this.leoIntegration.refreshSingleNodeFlag = true; // of course we want to do a real refresh!
     this._onDidChangeTreeData.fire(p_node);
   }
 
   public refreshTreeRoot(p_revealSelection?: boolean): void {
+    if (p_revealSelection) { // to check if selected node should self-select while redrawing whole tree
+      this.leoIntegration.revealSelectedNode = true; // to be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
+    }
     this._onDidChangeTreeData.fire();
   }
 

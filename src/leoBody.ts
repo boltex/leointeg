@@ -13,9 +13,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     private _onDidChangeFileEmitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
     readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> = this._onDidChangeFileEmitter.event;
 
-    constructor(private leoIntegration: LeoIntegration) {
-        leoIntegration.setupRefreshBodyFn(this._onDidChangeFileEmitter);
-    }
+    constructor(private leoIntegration: LeoIntegration) { }
 
     watch(_resource: vscode.Uri): vscode.Disposable {
         console.log('watch called! path:', _resource.fsPath);
@@ -99,21 +97,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                         return Promise.resolve(Buffer.from(p_result.bodyData));
                     } else {
                         this.lastGnxBodyLength = 0;
-                        return Promise.resolve(Buffer.from(" "));
+                        return Promise.resolve(Buffer.from(""));
                     }
                 });
-
-            // return new Promise((resolve, reject) => {
-            //     this.leoIntegration.leoBridgeAction("getBody", '"' + uri.fsPath.substr(1) + '"')
-            //         .then((p_result) => {
-            //             if (p_result.bodyData) {
-            //                 return resolve(Buffer.from(p_result.bodyData));
-            //             } else {
-            //                 return resolve(Buffer.from(" "));
-            //             }
-            //         });
-            // });
-
         }
         // TODO : Add case for GNX 'not found' : throw vscode.FileSystemError.FileNotFound();
         // }else {

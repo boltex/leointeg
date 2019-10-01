@@ -35,6 +35,10 @@ more to be added...
 
 Planned Settings :
 
+- Option to focus on body pane or keep focus in outline when a tree node is selected (May help for keyboard navigation)
+
+- Milliseconds to wait when debouncing after body text modifications are detected (for performance tuning)
+
 - Settings for communicating either locally, via stdIn/out, and remotely over tcp, through a rest api or websockets. (communication consists of simple JSON data)
 
 - Graphic-related settings such as light/dark theme and icon set selection

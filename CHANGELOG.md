@@ -4,7 +4,7 @@
 
 - Major Refactor to streamline codebase; Eliminated code duplication.
 - Complete rewrite after going trying out most of what is possible with both vscode and leo APIs.
-- New body pane system that prevents corrupting undos across different positions
+- New body pane system that prevents corrupting undos across different positions: It uses the node's actual gnx instead of a generic "body" string as a file path for the custom filesystem.
 
 ### 0.1.3
 
