@@ -161,8 +161,10 @@ export class LeoIntegration {
     // selecting another vscode window by the os title bar
   }
   private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
-    // * edited the document: debounce/check if it was leo body
-    if (p_event.document.uri.scheme === "leo") {
+
+    // * edited the document: debounce/check if it was leo body and actual changes
+    // * .length check https://github.com/microsoft/vscode/issues/50344
+    if (p_event.document.uri.scheme === "leo" && p_event.contentChanges.length) {
 
       if (this.bodyLastChangedDocument && (p_event.document.uri.fsPath !== this.bodyLastChangedDocument.uri.fsPath)) {
         console.log('Switched Node while waiting edit debounce!');
@@ -196,6 +198,8 @@ export class LeoIntegration {
   }
 
   private triggerBodySave(p_forcedRefresh?: boolean): Thenable<boolean> {
+    //console.log('triggerBodySave');
+
     // * Clear possible timeout if triggered by event from other than 'onDocumentChanged'
     if (this.bodyChangeTimeout) {
       clearTimeout(this.bodyChangeTimeout);
@@ -241,7 +245,7 @@ export class LeoIntegration {
       }
       this.bodyChangeTimeoutSkipped = false;
       return this.leoBridgeAction("setBody", JSON.stringify(w_param)).then(p_result => {
-        // console.log('in bodySaveDocument, Back from setBody body to leo');
+        //console.log('Back from setBody body to leo');
         return Promise.resolve(true);
       });
     } else {
@@ -295,7 +299,6 @@ export class LeoIntegration {
     return w_leoNode;
   }
 
-
   public arrayToSingleLeoNode(p_array: ArchivedPosition[]): LeoNode | null {
     if (!p_array.length) {
       return null;
@@ -311,6 +314,9 @@ export class LeoIntegration {
         const w_selectFlag = this.revealSelectedNode >= RevealType.RevealSelect; // at least RevealSelect
         const w_focusFlag = this.revealSelectedNode === RevealType.RevealSelectFocus;
         this.revealSelectedNode = RevealType.NoReveal;
+        if (!this.lastSelectedLeoNode) { // very first time
+          this.lastSelectedLeoNode = w_leoNode;
+        }
         setTimeout(() => {
           this.leoTreeView.reveal(w_leoNode, { select: w_selectFlag, focus: w_focusFlag });
         }, 0);
