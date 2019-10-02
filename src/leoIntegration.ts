@@ -310,7 +310,7 @@ export class LeoIntegration {
       if (this.revealSelectedNode && w_apData.selected) { // * revealSelectedNode flag: Reveal, select and focus!
         const w_selectFlag = this.revealSelectedNode >= RevealType.RevealSelect; // at least RevealSelect
         const w_focusFlag = this.revealSelectedNode === RevealType.RevealSelectFocus;
-        this.revealSelectedNode = RevealType.NoReveal;
+        this.revealSelectedNode = RevealType.NoReveal; // ok reset
         if (!this.lastSelectedLeoNode) { // very first time
           this.lastSelectedLeoNode = w_leoNode;
         }
@@ -391,7 +391,7 @@ export class LeoIntegration {
 
     // TODO : Save and restore selection, and cursor position, from selection object saved in each node (or gnx array)
 
-    const w_isAlreadySelected: boolean = (p_node.gnx === (this.lastSelectedLeoNode ? this.lastSelectedLeoNode.gnx : ""));
+    const w_isAlreadySelected: boolean = (p_node === (this.lastSelectedLeoNode ? this.lastSelectedLeoNode : ""));
     if (w_isAlreadySelected) {
       // Just reopen
       this.showBodyDocument();
