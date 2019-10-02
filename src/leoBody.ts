@@ -88,7 +88,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     readFile(uri: vscode.Uri): Thenable<Uint8Array> {
-        console.log('called readFile', uri.fsPath.substr(1));
+        // console.log('called readFile', uri.fsPath.substr(1));
         if (uri.fsPath === '/') {
             throw vscode.FileSystemError.FileIsADirectory();
             // } else if (uri.fsPath === '/body') {
@@ -124,11 +124,11 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     rename(oldUri: vscode.Uri, newUri: vscode.Uri, options: { overwrite: boolean }): void {
-        console.log('called rename');
+        // console.log('called rename');
         // throw vscode.FileSystemError.NoPermissions();
     }
     delete(uri: vscode.Uri): void {
-        console.log('called delete');
+        // console.log('called delete');
         // throw vscode.FileSystemError.NoPermissions();
     }
     copy(uri: vscode.Uri): void {

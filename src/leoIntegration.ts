@@ -150,7 +150,7 @@ export class LeoIntegration {
     // console.log("onChangeEditorSelection", p_event.textEditor.document.fileName);
   }
   private onChangeEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void {
-    console.log("onChangeEditorViewColumn", p_event.textEditor.document.fileName, p_event.viewColumn);
+    // console.log("onChangeEditorViewColumn", p_event.textEditor.document.fileName, p_event.viewColumn);
   }
   private onChangeVisibleEditor(p_event: vscode.TextEditor[]): void {
     // Bring in focus an editor tab that was not on front
@@ -161,21 +161,19 @@ export class LeoIntegration {
     // selecting another vscode window by the os title bar
   }
   private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
-
     // * edited the document: debounce/check if it was leo body and actual changes
     // * .length check https://github.com/microsoft/vscode/issues/50344
     if (p_event.document.uri.scheme === "leo" && p_event.contentChanges.length) {
 
       if (this.bodyLastChangedDocument && (p_event.document.uri.fsPath !== this.bodyLastChangedDocument.uri.fsPath)) {
-        console.log('Switched Node while waiting edit debounce!');
+        // console.log('Switched Node while waiting edit debounce!');
         this.triggerBodySave(true); //Set p_forcedRefresh flag, this will also have cleared timeout
       }
 
       if (!this.bodyChangeTimeout && !this.bodyChangeTimeoutSkipped) { // * If icon should change then do it now, but only if there was no document edits pending
         if (this.lastSelectedLeoNode && p_event.document.uri.fsPath.substr(1) === this.lastSelectedLeoNode.gnx) {
           if (!this.lastSelectedLeoNode.dirty || (this.lastSelectedLeoNode.hasBody === !p_event.document.getText().length)) {
-
-            console.log('NO WAIT');
+            // console.log('NO WAIT');
             this.bodyChangeTimeoutSkipped = true;
             this.bodySaveDocument(p_event.document, true);
             return;
@@ -198,9 +196,8 @@ export class LeoIntegration {
   }
 
   private triggerBodySave(p_forcedRefresh?: boolean): Thenable<boolean> {
-    //console.log('triggerBodySave');
-
     // * Clear possible timeout if triggered by event from other than 'onDocumentChanged'
+    // console.log('triggerBodySave');
     if (this.bodyChangeTimeout) {
       clearTimeout(this.bodyChangeTimeout);
     }
@@ -237,7 +234,7 @@ export class LeoIntegration {
         }
       }
       if (p_forceRefreshTree || (w_needsRefresh && this.lastSelectedLeoNode)) {
-        console.log(p_forceRefreshTree ? 'force refresh' : 'needed refresh');
+        // console.log(p_forceRefreshTree ? 'force refresh' : 'needed refresh');
         // this.leoTreeDataProvider.refreshTreeNode(this.lastSelectedLeoNode);
         //* refresh root because of need to dirty parent if in derived file
         this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal);  // No focus this.leoTreeDataProvider.refreshTreeRoot
@@ -255,7 +252,7 @@ export class LeoIntegration {
 
   private onDocumentSaved(p_event: vscode.TextDocument): void {
     // edited and saved the document, does it on any document in editor // TODO : DEBOUNCE/CHECK IF IT WAS LEO BODY !
-    console.log("onDocumentSaved", p_event.fileName);
+    // console.log("onDocumentSaved", p_event.fileName);
   }
 
   private onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
@@ -390,7 +387,7 @@ export class LeoIntegration {
 
   public selectTreeNode(p_node: LeoNode): void {
     // User has selected a node in the outline with the mouse
-    console.log("Starting selectTreeNode");
+    // ! console.log("Starting selectTreeNode");
 
     // TODO : Save and restore selection, and cursor position, from selection object saved in each node (or gnx array)
 
@@ -401,7 +398,7 @@ export class LeoIntegration {
       return;
     }
     this.leoBridgeAction("setSelectedNode", p_node.apJson).then(() => {
-      console.log('Back from setSelectedNode in leo');
+      // ! console.log('Back from setSelectedNode in leo');
     });
 
     this.triggerBodySave(); // Trigger event to save previous document if timer to save if already started for another document
