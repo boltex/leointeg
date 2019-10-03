@@ -30,15 +30,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
       return this.leoIntegration.leoBridgeAction("getPNode", element.apJson)
         .then((p_result) => {
           const w_node = this.leoIntegration.apToLeoNode(p_result.node);
-          element.label = w_node.label;
-          element.gnx = w_node.gnx;
-          element.collapsibleState = w_node.collapsibleState;
-          element.apJson = w_node.apJson;
-          element.cloned = w_node.cloned;
-          element.dirty = w_node.dirty;
-          element.marked = w_node.marked;
-          element.hasBody = w_node.hasBody;
-          return element;
+          return element.copyProperties(w_node);
         });
     } else {
       return element;

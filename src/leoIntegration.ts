@@ -481,6 +481,9 @@ export class LeoIntegration {
   public mark(p_node: LeoNode): void {
     vscode.window.showInformationMessage(`mark on ${p_node.label}.`); // Temp placeholder
   }
+  public unmark(p_node: LeoNode): void {
+    vscode.window.showInformationMessage(`unmark on ${p_node.label}.`); // Temp placeholder
+  }
   public copyNode(p_node: LeoNode): void {
     vscode.window.showInformationMessage(`copyNode on ${p_node.label}.`); // Temp placeholder
   }

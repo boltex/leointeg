@@ -1,35 +1,40 @@
-# ![LeoEditor](resources/leoapp.png) Leo editor integration with Visual Studio Code.
-
+<h1 align="center">
+    <img src="https://github.com/boltex/leoInteg/blob/master/resources/leoapp96px.png?raw=true" alt="logo">
+  <br>
+  Leo Editor integration with Visual Studio Code
+</h1>
 See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
-![Screenshot](resources/screenshot1.png)
-
-## Features
-
-_As a starting point, here are a couple of intended features:_
-
-Integration done with a python script. It interacts with leo via 'leoBridge'. (see https://leoeditor.com/leoBridge.html)
-
-A treeview of an actual outline of a leo file. Maybe integrated below the explorer view, or standalone in its own panel.
-
-When in this 'leo-integration' mode, the functionality of vscode is altered to suit the interactions with the opened leo file. (For example: by re-maping shortcut keys to the familiar tree-editing shortcut keys of Leo.)
-
-An appropriate editor on the right side, acting as the body pane.
-
-2 way synchronisation of leo's output files and vscode's explorer & 'normal mode' of operation.
-
-Error lookup, or breakpoints cycling with automatic go-to line in generated file's nodes and body position, in the outline itself. (Reproducing xcc-nodes behaviour see http://xccnode.sourceforge.net/)
-
-File generating 'at' nodes that show their derived line number instead of the body-pane's line number (Also reproducing xcc-nodes behaviour)
-
-more to be added...
+![Screenshot](resources/animated-screenshot.gif)
 
 ## Requirements
 
 - Leo installed
-- Leo's path made available in \$PYTHONPATH
+- Leo's path made available in \$PYTHONPATH environment variable
 
-(Needed so python imports work. e.g. `import leo.core.leoBridge as leoBridge` )
+(See **Adding Leo to Your Path** in https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT)
+
+## Features
+
+### _Features done so far:_
+
+- Integration is done by communicating with a python script, it interacts with leo via 'leoBridge'. (see https://leoeditor.com/leoBridge.html)
+
+- A treeview of an actual outline of a leo file. Can be integrated below the explorer view, or standalone in its own panel.
+
+- An editor on the right side, acting as the body pane.
+
+### _Intended Features:_
+
+- Re-mapping of most of Leo's outline editing features through vscode and more, via leoBridge.
+
+- Detection of focused element to toggle functionality to suit the interactions with the opened leo file. (by re-maping shortcut keys to the shortcut keys of Leo.)
+
+- 2 way synchronisation of leo's output files and vscode's explorer & 'normal mode' of operation.
+
+- Error lookup, or breakpoints cycling with automatic go-to line in generated file's nodes and body position.
+
+- File generating 'at' nodes that show their derived line number instead of the body-pane's line number (Also reproducing xcc-nodes behaviour)
 
 ## Extension Settings
 

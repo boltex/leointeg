@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "leointeg",
   "description": "Leo Editor Integration with VS Code",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -67,6 +67,10 @@
         "title": "Mark"
       },
       {
+        "command": "leointeg.unmark",
+        "title": "Unmark"
+      },
+      {
         "command": "leointeg.copyNode",
         "title": "Copy Node"
       },
@@ -98,32 +102,43 @@
       "view/item/context": [
         {
           "command": "leointeg.editHeadline",
-          "when": "view == leoIntegration && viewItem == leoNode",
+          "when": "viewItem =~ /leoNode/",
           "group": "inline"
         },
         {
           "command": "leointeg.mark",
-          "when": "view == leoIntegration && viewItem == leoNode"
+          "when": "viewItem == leoNode",
+          "group": "leoNodeContext@1"
+        },
+        {
+          "command": "leointeg.unmark",
+          "when": "viewItem == leoNodeMarked",
+          "group": "leoNodeContext@2"
         },
         {
           "command": "leointeg.copyNode",
-          "when": "view == leoIntegration && viewItem == leoNode"
+          "when": "viewItem =~ /leoNode/",
+          "group": "leoNodeContext@3"
         },
         {
           "command": "leointeg.cutNode",
-          "when": "view == leoIntegration && viewItem == leoNode"
+          "when": "viewItem =~ /leoNode/",
+          "group": "leoNodeContext@4"
         },
         {
           "command": "leointeg.pasteNode",
-          "when": "view == leoIntegration && viewItem == leoNode"
+          "when": "viewItem =~ /leoNode/",
+          "group": "leoNodeContext@5"
         },
         {
           "command": "leointeg.pasteNodeAsClone",
-          "when": "view == leoIntegration && viewItem == leoNode"
+          "when": "viewItem =~ /leoNode/",
+          "group": "leoNodeContext@6"
         },
         {
           "command": "leointeg.delete",
-          "when": "view == leoIntegration && viewItem == leoNode"
+          "when": "viewItem =~ /leoNode/",
+          "group": "leoNodeContext@7"
         }
       ]
     },

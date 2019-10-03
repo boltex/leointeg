@@ -1,5 +1,9 @@
 # Change Log
 
+### 0.1.5
+
+- Stabilized for browsing, headline and body editing.
+
 ### 0.1.4
 
 - Major Refactor to streamline codebase; Eliminated code duplication.

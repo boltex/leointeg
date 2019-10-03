@@ -3,6 +3,7 @@ import { LeoIcons } from "./leoIcons";
 
 export class LeoNode extends vscode.TreeItem {
     public cursorSelection: any; // TODO : Keep body's cursor and selection position from vscode to get it back
+    public contextValue: string;
 
     constructor(
         public label: string, // Header
@@ -13,9 +14,13 @@ export class LeoNode extends vscode.TreeItem {
         public dirty: boolean,
         public marked: boolean,
         public hasBody: boolean
-
     ) {
         super(label, collapsibleState);
+        if (marked) {
+            this.contextValue = "leoNodeMarked"; // for use in package.json
+        } else {
+            this.contextValue = "leoNode"; // for use in package.json
+        }
         this.command = {
             command: 'leointeg.selectTreeNode',
             title: '',
@@ -23,7 +28,18 @@ export class LeoNode extends vscode.TreeItem {
         };
     }
 
-    contextValue = "leoNode"; // for use in package.json
+    copyProperties(p_node: LeoNode): LeoNode {
+        this.label = p_node.label;
+        this.gnx = p_node.gnx;
+        this.collapsibleState = p_node.collapsibleState;
+        this.apJson = p_node.apJson;
+        this.cloned = p_node.cloned;
+        this.dirty = p_node.dirty;
+        this.marked = p_node.marked;
+        this.hasBody = p_node.hasBody;
+        this.contextValue = p_node.contextValue;
+        return this;
+    }
 
     get iconPath(): string {
         // From Leo's leoNodes.py computeIcon function
