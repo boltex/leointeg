@@ -536,10 +536,7 @@ export class LeoIntegration {
 
               // * set body URI for body filesystem
               this.bodyUri = vscode.Uri.parse("leo:/" + p_result.node.gnx);
-              this.showBodyDocument().then(p_result => {
-                console.log("return from showBodyDocument PRomise:", p_result);
-
-              });
+              this.showBodyDocument();
 
               this.updateStatusBarItem();
             });
