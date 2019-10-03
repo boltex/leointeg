@@ -15,7 +15,6 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:leointeg.openLeoFile",
     "onView:leoIntegration"
   ],
   "main": "./out/extension.js",
@@ -30,6 +29,13 @@
       ]
     },
     "views": {
+      "explorer": [
+        {
+          "id": "leoIntegrationExplorer",
+          "name": "Leo Outline",
+          "when": "leoBridgeReady==true && leoTreeOpened==true"
+        }
+      ],
       "leoIntegrationView": [
         {
           "id": "leoIntegration",
@@ -47,6 +53,14 @@
         }
       },
       {
+        "command": "leointeg.closeLeoFile",
+        "title": "Close Leo File",
+        "icon": {
+          "light": "resources/light/close.svg",
+          "dark": "resources/dark/close.svg"
+        }
+      },
+      {
         "command": "leointeg.test",
         "title": "Test Leo Integration"
       },
@@ -61,6 +75,10 @@
           "light": "resources/light/edit.svg",
           "dark": "resources/dark/edit.svg"
         }
+      },
+      {
+        "command": "leointeg.openAside",
+        "title": "Open to the Side"
       },
       {
         "command": "leointeg.mark",
@@ -95,7 +113,12 @@
       "view/title": [
         {
           "command": "leointeg.openLeoFile",
-          "when": "view == leoIntegration",
+          "when": "view == leoIntegration && leoBridgeReady==true && !leoTreeOpened",
+          "group": "navigation"
+        },
+        {
+          "command": "leointeg.closeLeoFile",
+          "when": "view == leoIntegration && leoTreeOpened==true",
           "group": "navigation"
         }
       ],
@@ -106,39 +129,44 @@
           "group": "inline"
         },
         {
+          "command": "leointeg.openAside",
+          "when": "viewItem =~ /leoNode/",
+          "group": "leoNodeContext1@1"
+        },
+        {
           "command": "leointeg.mark",
           "when": "viewItem == leoNode",
-          "group": "leoNodeContext@1"
+          "group": "leoNodeContext2@1"
         },
         {
           "command": "leointeg.unmark",
           "when": "viewItem == leoNodeMarked",
-          "group": "leoNodeContext@2"
+          "group": "leoNodeContext2@2"
         },
         {
           "command": "leointeg.copyNode",
           "when": "viewItem =~ /leoNode/",
-          "group": "leoNodeContext@3"
+          "group": "leoNodeContext2@3"
         },
         {
           "command": "leointeg.cutNode",
           "when": "viewItem =~ /leoNode/",
-          "group": "leoNodeContext@4"
+          "group": "leoNodeContext2@4"
         },
         {
           "command": "leointeg.pasteNode",
           "when": "viewItem =~ /leoNode/",
-          "group": "leoNodeContext@5"
+          "group": "leoNodeContext2@5"
         },
         {
           "command": "leointeg.pasteNodeAsClone",
           "when": "viewItem =~ /leoNode/",
-          "group": "leoNodeContext@6"
+          "group": "leoNodeContext2@6"
         },
         {
           "command": "leointeg.delete",
           "when": "viewItem =~ /leoNode/",
-          "group": "leoNodeContext@7"
+          "group": "leoNodeContext2@7"
         }
       ]
     },
