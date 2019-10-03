@@ -58,6 +58,7 @@ export class LeoIntegration {
     this.leoBridgeReadyPromise.then((p_package) => {
       this.assertId(p_package.id === 1, "p_package.id === 0"); // test integrity
       this.leoPythonProcess = p_package.package;
+      vscode.commands.executeCommand('setContext', 'leoTreeCanOpen', true);
     });
 
     // * Outline Pane
@@ -432,7 +433,7 @@ export class LeoIntegration {
     }
   }
 
-  public showBodyDocument(): void {
+  public showBodyDocument(): Thenable<boolean> {
     let w_sameUri = false;
     vscode.window.visibleTextEditors.forEach(p_textEditor => {
       if (p_textEditor.document.uri.fsPath === this.bodyUri.fsPath) {
@@ -443,11 +444,11 @@ export class LeoIntegration {
       }
     });
     if (w_sameUri) {
-      return;
+      return Promise.resolve(false);
     }
-    vscode.workspace.openTextDocument(this.bodyUri).then(p_document => {
+    return vscode.workspace.openTextDocument(this.bodyUri).then(p_document => {
       this.bodyTextDocument = p_document;
-      vscode.window.showTextDocument(this.bodyTextDocument, {
+      return vscode.window.showTextDocument(this.bodyTextDocument, {
         viewColumn: 1, // TODO : try to make leftmost tab so it touches the outline pane
         preserveFocus: true, // An optional flag that when true will stop the editor from taking focus
         preview: false // Should text document be in preview only? set false for fully opened
@@ -456,6 +457,7 @@ export class LeoIntegration {
         this.bodyTextEditor = w_bodyEditor;
         // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
         // Other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
+        return (true);
       });
     });
   }
@@ -534,7 +536,10 @@ export class LeoIntegration {
 
               // * set body URI for body filesystem
               this.bodyUri = vscode.Uri.parse("leo:/" + p_result.node.gnx);
-              this.showBodyDocument();
+              this.showBodyDocument().then(p_result => {
+                console.log("return from showBodyDocument PRomise:", p_result);
+
+              });
 
               this.updateStatusBarItem();
             });
