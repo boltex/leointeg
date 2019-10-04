@@ -4,7 +4,6 @@ import { LeoNode } from "./leoNode";
 import { ProviderResult } from "vscode";
 import { RevealType } from "./leoIntegrationTypes";
 
-
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
   private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> =
     new vscode.EventEmitter<LeoNode | undefined>();
@@ -24,7 +23,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     this._onDidChangeTreeData.fire();
   }
 
-  getTreeItem(element: LeoNode): Thenable<LeoNode> | LeoNode {
+  public getTreeItem(element: LeoNode): Thenable<LeoNode> | LeoNode {
     if (this.leoIntegration.refreshSingleNodeFlag) {
       this.leoIntegration.refreshSingleNodeFlag = false;
       return this.leoIntegration.leoBridgeAction("getPNode", element.apJson)
@@ -37,7 +36,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     }
   }
 
-  getParent(element: LeoNode): ProviderResult<LeoNode> | null {
+  public getParent(element: LeoNode): ProviderResult<LeoNode> | null {
     if (this.leoIntegration.fileOpenedReady) {
       return this.leoIntegration.leoBridgeAction('getParent', element ? element.apJson : "null").then((p_result) => {
         if (p_result.node === null) {
@@ -51,7 +50,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     }
   }
 
-  getChildren(element?: LeoNode): Thenable<LeoNode[]> {
+  public getChildren(element?: LeoNode): Thenable<LeoNode[]> {
     if (this.leoIntegration.fileOpenedReady) {
       return this.leoIntegration.leoBridgeAction('getChildren', element ? element.apJson : "null").then((p_result) => {
         return this.leoIntegration.arrayToLeoNodesArray(p_result.nodes);

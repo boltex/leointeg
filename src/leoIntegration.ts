@@ -1,11 +1,10 @@
 import * as child from "child_process";
 import * as vscode from "vscode";
 
+import { LeoBridgePackage, LeoAction, RevealType, ArchivedPosition } from "./leoIntegrationTypes";
 import { LeoNode } from "./leoNode";
 import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyProvider } from "./leoBody";
-import { LeoBridgePackage, LeoAction, RevealType, ArchivedPosition } from "./leoIntegrationTypes";
-import { TIMEOUT } from "dns";
 
 export class LeoIntegration {
   // * Startup flags
@@ -26,6 +25,10 @@ export class LeoIntegration {
   public leoTreeDataProvider: LeoOutlineProvider;
   public leoTreeView: vscode.TreeView<LeoNode>;
   public leoTreeExplorerView: vscode.TreeView<LeoNode>;
+
+  // * Outline Pane redraw/refresh 'helper flags'
+  public refreshSingleNodeFlag: boolean = false; // read/cleared by leoOutline, so getTreeItem should refresh or return as-is
+  public revealSelectedNode: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
   private hadFirstExplorerView: boolean = false;
   private hadFirstView: boolean = false;
   private lastSelectedLeoNode: LeoNode | undefined; // last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
@@ -59,12 +62,9 @@ export class LeoIntegration {
   private leoBridgeSerialId: number = 0;
   private callStack: LeoAction[] = [];
 
-  public refreshSingleNodeFlag: boolean = false; // read/cleared by leoOutline, so getTreeItem should refresh or return as-is
-  public revealSelectedNode: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
-
   constructor(private context: vscode.ExtensionContext) {
 
-    // * Get Configuration
+    // * Get configuration settings
     this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
     this.treeKeepFocusAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusAside', false);
     this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
@@ -81,7 +81,7 @@ export class LeoIntegration {
       vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
     });
 
-    // * Outline Pane
+    // * Leo view outline pane
     this.leoTreeDataProvider = new LeoOutlineProvider(this);
     this.leoTreeView = vscode.window.createTreeView("leoIntegration", { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
     this.leoTreeView.onDidChangeSelection((p_event => this.treeViewChangedSelection(p_event)));
@@ -89,24 +89,20 @@ export class LeoIntegration {
     this.leoTreeView.onDidCollapseElement((p_event => this.treeViewCollapsedElement(p_event)));
     this.leoTreeView.onDidChangeVisibility((p_event => this.treeViewVisibilityChanged(p_event, false)));
 
-    // * Explorer's Outline Pane
+    // * Explorer view outline pane
     this.leoTreeExplorerView = vscode.window.createTreeView("leoIntegrationExplorer", { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
     this.leoTreeExplorerView.onDidChangeSelection((p_event => this.treeViewChangedSelection(p_event)));
     this.leoTreeExplorerView.onDidExpandElement((p_event => this.treeViewExpandedElement(p_event)));
     this.leoTreeExplorerView.onDidCollapseElement((p_event => this.treeViewCollapsedElement(p_event)));
     this.leoTreeExplorerView.onDidChangeVisibility((p_event => this.treeViewVisibilityChanged(p_event, true)));
 
-    // * Outline Pane's TreeVies properties:
-    // *    readonly selection: T[];   // Currently selected elements of TreeView
-    // *    readonly visible: boolean; // true if the TreeView is visible otherwise false
-
     // * Body Pane
     this.leoFileSystem = new LeoBodyProvider(this);
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider("leo", this.leoFileSystem, { isCaseSensitive: true }));
 
     // * Status bar Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
-    // EXAMPLE: register some listener that make sure the status bar item always up-to-date
-    // context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(updateStatusBarItem));
+    // * Example : register some listener that make sure the status bar item always up-to-date
+    // context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(updateStatusBarItem)); // TODO : Select tree node when focus set on textEditor
     // context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(updateStatusBarItem));
     this.leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
     this.leoStatusBarItem.color = "#fb7c47"; // TODO : Centralize or make available in a config setting.

@@ -4,7 +4,6 @@ import { LeoIntegration } from "./leoIntegration";
 // * There is an activation event `onFileSystem:<scheme>` that fires when a file is being accessed
 export class LeoBodyProvider implements vscode.FileSystemProvider {
 
-
     private lastGnx = "";
     private lastGnxBodyLength = 0;
 
@@ -15,13 +14,13 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     constructor(private leoIntegration: LeoIntegration) { }
 
-    watch(_resource: vscode.Uri): vscode.Disposable {
+    public watch(_resource: vscode.Uri): vscode.Disposable {
         // console.log('watch called! path:', _resource.fsPath);
         // ignore, fires for all changes...
         return new vscode.Disposable(() => { });
     }
 
-    stat(uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
+    public stat(uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
         if (uri.fsPath === '/') {
             console.log('called stat on root : "/" ! ');
             return {
@@ -69,7 +68,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         // }
     }
 
-    readDirectory(uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
+    public readDirectory(uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
         console.log('called readDirectory', uri.fsPath);
         //const entry = this._lookupAsDirectory(uri, false);
         let result: [string, vscode.FileType][] = [];
@@ -82,12 +81,12 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         return Promise.resolve(result);
     }
 
-    createDirectory(uri: vscode.Uri): void {
+    public createDirectory(uri: vscode.Uri): void {
         console.log('called createDirectory');
         throw vscode.FileSystemError.NoPermissions();
     }
 
-    readFile(uri: vscode.Uri): Thenable<Uint8Array> {
+    public readFile(uri: vscode.Uri): Thenable<Uint8Array> {
         // console.log('called readFile', uri.fsPath.substr(1));
         if (uri.fsPath === '/') {
             throw vscode.FileSystemError.FileIsADirectory();
@@ -112,7 +111,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         //       }
     }
 
-    writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
+    public writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
         // console.log('called writeFile!', uri.fsPath);
         // const w_param = {
         //     gnx: uri.fsPath.substr(1),
@@ -123,15 +122,17 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         // });
     }
 
-    rename(oldUri: vscode.Uri, newUri: vscode.Uri, options: { overwrite: boolean }): void {
+    public rename(oldUri: vscode.Uri, newUri: vscode.Uri, options: { overwrite: boolean }): void {
         // console.log('called rename');
         // throw vscode.FileSystemError.NoPermissions();
     }
-    delete(uri: vscode.Uri): void {
+
+    public delete(uri: vscode.Uri): void {
         // console.log('called delete');
         // throw vscode.FileSystemError.NoPermissions();
     }
-    copy(uri: vscode.Uri): void {
+
+    public copy(uri: vscode.Uri): void {
         console.log('called copy');
         throw vscode.FileSystemError.NoPermissions();
     }
