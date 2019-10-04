@@ -33,13 +33,19 @@
   },
   "contributes": {
     "configuration": {
-      "title": "leoIntegration",
+      "title": "LeoIntegration",
       "properties": {
         "leoIntegration.treeKeepFocus": {
           "scope": "application",
           "default": true,
           "type": "boolean",
           "description": "Specifies whether to keep focus in the outline when selecting a node"
+        },
+        "leoIntegration.treeKeepFocusAside": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Specifies whether to keep focus in the outline when opening an additional body pane on the side"
         },
         "leoIntegration.treeInExplorer": {
           "scope": "application",

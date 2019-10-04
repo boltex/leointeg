@@ -16,6 +16,7 @@ export class LeoIntegration {
 
   // * Configuration Settings
   public treeKeepFocus: boolean;
+  public treeKeepFocusAside: boolean;
   public treeInExplorer: boolean;
   public treeInvertTheme: boolean;
   public bodyEditDelay: number;
@@ -66,6 +67,7 @@ export class LeoIntegration {
 
     // * Get Configuration
     this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
+    this.treeKeepFocusAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusAside', false);
     this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
     this.treeInvertTheme = vscode.workspace.getConfiguration('leoIntegration').get('treeInvertTheme', false);
     this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
@@ -167,7 +169,7 @@ export class LeoIntegration {
       setTimeout(() => {
         this.leoBridgeAction("getSelectedNode", "{}").then(
           (p_answer: LeoBridgePackage) => {
-            this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: false });
+            this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: false }); // dont use this.treeKeepFocus
           }
         );
         this.hadFirstExplorerView = true;
@@ -176,14 +178,14 @@ export class LeoIntegration {
       setTimeout(() => {
         this.leoBridgeAction("getSelectedNode", "{}").then(
           (p_answer: LeoBridgePackage) => {
-            this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: false });
+            this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: false }); // dont use this.treeKeepFocus
           }
         );
         this.hadFirstView = true;
       }, 0);
     }
     if (p_event.visible && this.lastSelectedLeoNode) {
-      this.reveal(this.lastSelectedLeoNode, { select: true, focus: false });
+      this.reveal(this.lastSelectedLeoNode, { select: true, focus: false }); // dont use this.treeKeepFocus
     }
   }
 
@@ -319,13 +321,17 @@ export class LeoIntegration {
   }
 
   private onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
-    console.log("onChangeConfiguration", p_event.affectsConfiguration.toString());
-    this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
-    this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
-    this.treeInvertTheme = vscode.workspace.getConfiguration('leoIntegration').get('treeInvertTheme', false);
-    this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
-    this.connectionType = vscode.workspace.getConfiguration('leoIntegration').get('connectionType', "standard I/O");
-    this.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', 80);
+    if (p_event.affectsConfiguration('leoIntegration')) {
+      this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
+      this.treeKeepFocusAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusAside', false);
+      this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
+      this.treeInvertTheme = vscode.workspace.getConfiguration('leoIntegration').get('treeInvertTheme', false);
+      this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
+      this.connectionType = vscode.workspace.getConfiguration('leoIntegration').get('connectionType', "standard I/O");
+      this.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', 80);
+    }
+    console.log(this.connectionPort);
+
   }
 
   private updateStatusBarItem(): void {
@@ -384,7 +390,7 @@ export class LeoIntegration {
           this.lastSelectedLeoNode = w_leoNode;
         }
         setTimeout(() => {
-          this.reveal(w_leoNode, { select: w_selectFlag, focus: w_focusFlag });
+          this.reveal(w_leoNode, { select: w_selectFlag, focus: w_focusFlag }); // dont use this.treeKeepFocus
         }, 0);
       }
       w_leoNodesArray.push(w_leoNode);
@@ -518,7 +524,7 @@ export class LeoIntegration {
       this.bodyTextDocument = p_document;
       return vscode.window.showTextDocument(this.bodyTextDocument, {
         viewColumn: 1, // TODO : try to make leftmost tab so it touches the outline pane
-        preserveFocus: true, // An optional flag that when true will stop the editor from taking focus
+        preserveFocus: this.treeKeepFocus, // An optional flag that when true will stop the editor from taking focus
         preview: false // Should text document be in preview only? set false for fully opened
         // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
       }).then(w_bodyEditor => {
@@ -535,7 +541,7 @@ export class LeoIntegration {
     return vscode.workspace.openTextDocument(w_uri).then(p_document => {
       return vscode.window.showTextDocument(p_document, {
         viewColumn: vscode.ViewColumn.Beside, // TODO : try to make leftmost tab so it touches the outline pane
-        preserveFocus: true, // An optional flag that when true will stop the editor from taking focus
+        preserveFocus: this.treeKeepFocusAside, // An optional flag that when true will stop the editor from taking focus
         preview: true // Should text document be in preview only? set false for fully opened
         // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
       }).then(w_bodyEditor => {
