@@ -507,15 +507,26 @@ export class LeoIntegration {
 
   public showSelectedBodyDocument(): Thenable<boolean> {
     let w_sameUri = false;
+    let w_column: vscode.ViewColumn | undefined;
     vscode.window.visibleTextEditors.forEach(p_textEditor => {
       if (p_textEditor.document.uri.fsPath === this.bodyUri.fsPath) {
         w_sameUri = true;
+        w_column = p_textEditor.viewColumn;
         // * vscode.window.showTextDocument(p_textEditor.document); // DO NOT show?
         this.bodyTextDocument = p_textEditor.document; // TODO : Find a way to focus (only if wanted in options)
       }
     });
-    if (w_sameUri) {
-      return Promise.resolve(false);
+    if (w_sameUri && this.bodyTextDocument) {
+      return vscode.window.showTextDocument(this.bodyTextDocument, {
+        viewColumn: w_column, // TODO : try to make leftmost tab so it touches the outline pane
+        preserveFocus: this.treeKeepFocus, // An optional flag that when true will stop the editor from taking focus
+        preview: false // Should text document be in preview only? set false for fully opened
+        // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
+      }).then(w_bodyEditor => {
+        // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
+        // Other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
+        return (true);
+      });
     }
     return vscode.workspace.openTextDocument(this.bodyUri).then(p_document => {
       this.bodyTextDocument = p_document;

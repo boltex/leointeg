@@ -113,7 +113,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
-        console.log('called writeFile!', uri.fsPath);
+        // console.log('called writeFile!', uri.fsPath);
         // const w_param = {
         //     gnx: uri.fsPath.substr(1),
         //     body: content.toString()
