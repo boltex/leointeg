@@ -1,8 +1,5 @@
-<h1 align="center">
-    <img src="https://github.com/boltex/leoInteg/blob/master/resources/leoapp96px.png?raw=true" alt="logo">
-  <br>
-  Leo Editor integration with Visual Studio Code
-</h1>
+# ![LeoEditor](resources/leoapp.png) Leo Editor Integration with Visual Studio Code
+
 See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
 ![Screenshot](resources/animated-screenshot.gif)
@@ -18,9 +15,9 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
 ### _Features done so far:_
 
-- Integration is done by communicating with a python script, it interacts with leo via 'leoBridge'. (see https://leoeditor.com/leoBridge.html)
+- Integration is done by communicating with a python script, it interacts with Leo via 'leoBridge'. (see https://leoeditor.com/leoBridge.html)
 
-- A treeview of an actual outline of a leo file. Can be integrated below the explorer view, or standalone in its own panel.
+- A treeview of an actual outline of a Leo file. Can be integrated below the explorer view, or standalone in its own panel.
 
 - An editor on the right side, acting as the body pane.
 
@@ -28,7 +25,7 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
 - Re-mapping of most of Leo's outline editing features through vscode and more, via leoBridge.
 
-- Detection of focused element to toggle functionality to suit the interactions with the opened leo file. (by re-maping shortcut keys to the shortcut keys of Leo.)
+- Detection of focused element to toggle functionality to suit the interactions with the opened Leo file. (by re-maping shortcut keys to the shortcut keys of Leo.)
 
 - 2 way synchronisation of leo's output files and vscode's explorer & 'normal mode' of operation.
 
@@ -40,11 +37,11 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
 Planned Settings :
 
-- Option to focus on body pane or keep focus in outline when a tree node is selected (May help for keyboard navigation)
+- Option to either focus on body pane or keep focus in outline when a tree node is selected (May help for keyboard navigation)
 
-- Milliseconds to wait when debouncing after body text modifications are detected (for performance tuning)
+- Number of milliseconds to wait when debouncing after body text modifications are detected (for performance tuning)
 
-- Settings for communicating either locally, via stdIn/out, and remotely over tcp, through a rest api or websockets. (communication consists of simple JSON data)
+- Settings for communicating either locally, via stdIn/out, and remotely over tcp, through a REST api or websockets. (Communication consists of simple JSON data)
 
 - Graphic-related settings such as light/dark theme and icon set selection
 
