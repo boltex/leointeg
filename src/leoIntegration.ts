@@ -18,7 +18,6 @@ export class LeoIntegration {
   public treeKeepFocus: boolean;
   public treeKeepFocusAside: boolean;
   public treeInExplorer: boolean;
-  public treeInvertTheme: boolean;
   public bodyEditDelay: number;
   public connectionType: string;
   public connectionPort: number;
@@ -69,7 +68,7 @@ export class LeoIntegration {
     this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
     this.treeKeepFocusAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusAside', false);
     this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
-    this.treeInvertTheme = vscode.workspace.getConfiguration('leoIntegration').get('treeInvertTheme', false);
+    vscode.commands.executeCommand('setContext', 'treeInExplorer', this.treeInExplorer);
     this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
     this.connectionType = vscode.workspace.getConfiguration('leoIntegration').get('connectionType', "standard I/O");
     this.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', 80);
@@ -139,7 +138,7 @@ export class LeoIntegration {
     if (this.leoTreeView.visible) {
       this.leoTreeView.reveal(p_leoNode, p_options);
     }
-    if (this.leoTreeExplorerView.visible) {
+    if (this.leoTreeExplorerView.visible && this.treeInExplorer) {
       this.leoTreeExplorerView.reveal(p_leoNode, p_options);
     }
   }
@@ -248,7 +247,7 @@ export class LeoIntegration {
 
       this.bodyChangeTimeoutSkipped = false;
       // * debounce by restarting the timeout
-      let w_delay = 500;
+      let w_delay = this.bodyEditDelay;
       if (this.bodyChangeTimeout) {
         clearTimeout(this.bodyChangeTimeout);
       }
@@ -325,13 +324,11 @@ export class LeoIntegration {
       this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
       this.treeKeepFocusAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusAside', false);
       this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
-      this.treeInvertTheme = vscode.workspace.getConfiguration('leoIntegration').get('treeInvertTheme', false);
+      vscode.commands.executeCommand('setContext', 'treeInExplorer', this.treeInExplorer);
       this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
       this.connectionType = vscode.workspace.getConfiguration('leoIntegration').get('connectionType', "standard I/O");
       this.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', 80);
     }
-    console.log(this.connectionPort);
-
   }
 
   private updateStatusBarItem(): void {

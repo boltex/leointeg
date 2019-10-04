@@ -47,8 +47,6 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
 - Settings for communicating either locally, via stdIn/out, and remotely over tcp, through a REST api or websockets. (Communication consists of simple JSON data)
 
-- Graphic-related settings such as light/dark theme and icon set selection
-
 ---
 
 **Enjoy!**
