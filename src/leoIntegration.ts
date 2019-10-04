@@ -25,13 +25,13 @@ export class LeoIntegration {
   public leoTreeDataProvider: LeoOutlineProvider;
   public leoTreeView: vscode.TreeView<LeoNode>;
   public leoTreeExplorerView: vscode.TreeView<LeoNode>;
+  private lastSelectedLeoNode: LeoNode | undefined; // last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
 
   // * Outline Pane redraw/refresh 'helper flags'
   public refreshSingleNodeFlag: boolean = false; // read/cleared by leoOutline, so getTreeItem should refresh or return as-is
   public revealSelectedNode: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
   private hadFirstExplorerView: boolean = false;
   private hadFirstView: boolean = false;
-  private lastSelectedLeoNode: LeoNode | undefined; // last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
 
   // * Body Pane
   public leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
@@ -53,7 +53,7 @@ export class LeoIntegration {
 
   // * Timing
   private bodyChangeTimeout: NodeJS.Timeout | undefined;
-  private bodyChangeTimeoutSkipped: boolean = false;
+  private bodyChangeTimeoutSkipped: boolean = false; // Used for instant tree node refresh trick
   private lastbodyChangedRootRefreshedGnx: string = "";
   private bodyLastChangedDocument: vscode.TextDocument | undefined;
 
@@ -239,7 +239,8 @@ export class LeoIntegration {
         this.triggerBodySave(true); //Set p_forcedRefresh flag, this will also have cleared timeout
       }
 
-      if (!this.bodyChangeTimeout && !this.bodyChangeTimeoutSkipped) { // * If icon should change then do it now, but only if there was no document edits pending
+      // * Instant tree node refresh trick: If icon should change then do it now, but only if there was no document edits pending
+      if (!this.bodyChangeTimeout && !this.bodyChangeTimeoutSkipped) {
         if (this.lastSelectedLeoNode && p_event.document.uri.fsPath.substr(1) === this.lastSelectedLeoNode.gnx) {
           if (!this.lastSelectedLeoNode.dirty || (this.lastSelectedLeoNode.hasBody === !p_event.document.getText().length)) {
             // console.log('NO WAIT');
@@ -287,12 +288,11 @@ export class LeoIntegration {
   public bodySaveDocument(p_document: vscode.TextDocument, p_forceRefreshTree?: boolean): Thenable<boolean> {
     // * sets new body text of currently selected node on leo's side
     if (p_document && (p_document.isDirty || p_forceRefreshTree)) {
-
+      // * fetch gnx and document's body text first, to be reused more than once in this method
       const w_param = {
         gnx: p_document.uri.fsPath.substr(1), //uri.fsPath.substr(1),
         body: p_document.getText()
       };
-
       // * setup refresh if dirtied or filled/emptied
       let w_needsRefresh = false;
       if (this.lastSelectedLeoNode && (w_param.gnx === this.lastSelectedLeoNode.gnx)) {
@@ -302,6 +302,11 @@ export class LeoIntegration {
           this.lastSelectedLeoNode.hasBody = !!w_param.body.length;
         }
       }
+      // * maybe it was an 'aside' body pane, if so, force a full refresh
+      if (this.lastSelectedLeoNode && (w_param.gnx !== this.lastSelectedLeoNode.gnx)) {
+        w_needsRefresh = true;
+      }
+      // * perform refresh if needed
       if (p_forceRefreshTree || (w_needsRefresh && this.lastSelectedLeoNode)) {
         // console.log(p_forceRefreshTree ? 'force refresh' : 'needed refresh');
         // this.leoTreeDataProvider.refreshTreeNode(this.lastSelectedLeoNode);
@@ -639,6 +644,7 @@ export class LeoIntegration {
               this.fileOpenedReady = true; // ANSWER to openLeoFile
               this.fileBrowserOpen = false;
 
+              // TODO : Maybe also FOCUS on the selected node when first opening a Leo file... ?
               this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // p_revealSelection flag set
 
               // * set body URI for body filesystem

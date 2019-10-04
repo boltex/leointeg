@@ -33,7 +33,7 @@
   },
   "contributes": {
     "configuration": {
-      "title": "LeoIntegration",
+      "title": "Leo Integration",
       "properties": {
         "leoIntegration.treeKeepFocus": {
           "scope": "application",
