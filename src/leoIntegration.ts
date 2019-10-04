@@ -87,14 +87,14 @@ export class LeoIntegration {
     this.leoTreeView.onDidChangeSelection((p_event => this.treeViewChangedSelection(p_event)));
     this.leoTreeView.onDidExpandElement((p_event => this.treeViewExpandedElement(p_event)));
     this.leoTreeView.onDidCollapseElement((p_event => this.treeViewCollapsedElement(p_event)));
-    this.leoTreeView.onDidChangeVisibility((p_event => this.treeViewVisibilityChanged(p_event, false)));
+    this.leoTreeView.onDidChangeVisibility((p_event => this.treeViewVisibilityChanged(p_event, false))); // * Trigger 'show tree in Leo's view'
 
     // * Explorer view outline pane
     this.leoTreeExplorerView = vscode.window.createTreeView("leoIntegrationExplorer", { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
     this.leoTreeExplorerView.onDidChangeSelection((p_event => this.treeViewChangedSelection(p_event)));
     this.leoTreeExplorerView.onDidExpandElement((p_event => this.treeViewExpandedElement(p_event)));
     this.leoTreeExplorerView.onDidCollapseElement((p_event => this.treeViewCollapsedElement(p_event)));
-    this.leoTreeExplorerView.onDidChangeVisibility((p_event => this.treeViewVisibilityChanged(p_event, true)));
+    this.leoTreeExplorerView.onDidChangeVisibility((p_event => this.treeViewVisibilityChanged(p_event, true)));  // * Trigger 'show tree in explorer view'
 
     // * Body Pane
     this.leoFileSystem = new LeoBodyProvider(this);
@@ -155,33 +155,42 @@ export class LeoIntegration {
   }
 
   private treeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
-    if (!this.lastSelectedLeoNode) {
-      return;
-    }
-    // * May be useful for toggling 'literate mode'
-    // console.log("treeViewChangedElement, visible: ", p_event.visible);
-    if (p_explorerView && !this.hadFirstExplorerView) {
-      setTimeout(() => {
-        this.leoBridgeAction("getSelectedNode", "{}").then(
-          (p_answer: LeoBridgePackage) => {
-            this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: false }); // dont use this.treeKeepFocus
-          }
-        );
-        this.hadFirstExplorerView = true;
-      }, 0);
-    } else if (!p_explorerView && !this.hadFirstView) {
-      setTimeout(() => {
-        this.leoBridgeAction("getSelectedNode", "{}").then(
-          (p_answer: LeoBridgePackage) => {
-            this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: false }); // dont use this.treeKeepFocus
-          }
-        );
-        this.hadFirstView = true;
-      }, 0);
-    }
     if (p_event.visible && this.lastSelectedLeoNode) {
-      this.reveal(this.lastSelectedLeoNode, { select: true, focus: false }); // dont use this.treeKeepFocus
+      this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // TODO: test if really needed, along with timeout (0) "getSelectedNode"
+      setTimeout(() => {
+        this.leoBridgeAction("getSelectedNode", "{}").then(
+          (p_answer: LeoBridgePackage) => {
+            this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true });
+          }
+        );
+      }, 0);
     }
+
+    // if (!this.lastSelectedLeoNode) {
+    //   return;
+    // }
+    // if (p_explorerView && !this.hadFirstExplorerView) {
+    //   setTimeout(() => {
+    //     this.leoBridgeAction("getSelectedNode", "{}").then(
+    //       (p_answer: LeoBridgePackage) => {
+    //         this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: false }); // dont use this.treeKeepFocus
+    //       }
+    //     );
+    //     this.hadFirstExplorerView = true;
+    //   }, 0);
+    // } else if (!p_explorerView && !this.hadFirstView) {
+    //   setTimeout(() => {
+    //     this.leoBridgeAction("getSelectedNode", "{}").then(
+    //       (p_answer: LeoBridgePackage) => {
+    //         this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: false }); // dont use this.treeKeepFocus
+    //       }
+    //     );
+    //     this.hadFirstView = true;
+    //   }, 0);
+    // }
+    // if (p_event.visible && this.lastSelectedLeoNode) {
+    //   this.reveal(this.lastSelectedLeoNode, { select: true, focus: false }); // dont use this.treeKeepFocus
+    // }
   }
 
   private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
@@ -701,6 +710,7 @@ export class LeoIntegration {
     console.log("sending test");
     // * TEST : GET SELECTED NODE FROM LEO AND REVEAL 'SELECTED' NODE IN TREEVIEW
     this.leoBridgeAction("getSelectedNode", "{\"testparam\":\"hello\"}").then(
+      // this.leoBridgeAction("getSelectedNode", "{}").then(
       (p_answer: LeoBridgePackage) => {
         console.log('Test got Back from getSelectedNode, now revealing :', p_answer.node.headline);
         this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true });
