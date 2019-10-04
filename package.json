@@ -32,6 +32,63 @@
     "theme": "light"
   },
   "contributes": {
+    "configuration": {
+      "title": "leoIntegration",
+      "properties": {
+        "leoIntegration.treeKeepFocus": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Specifies whether to keep focus in the outline when selecting a node"
+        },
+        "leoIntegration.treeInExplorer": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Show the outline tree in the explorer view"
+        },
+        "leoIntegration.treeInvertTheme": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Inverts the light/dark outline of icons to signify that a node is dirty"
+        },
+        "leoIntegration.bodyEditDelay": {
+          "scope": "application",
+          "type": "number",
+          "default": 500,
+          "minimum": 250,
+          "maximum": 1000,
+          "description": "Specifies delay time for edits to be sent to Leo, in milliseconds"
+        },
+        "leoIntegration.connectionType": {
+          "scope": "application",
+          "description": "Connection to leoBridge",
+          "type": "string",
+          "default": "standard I/O",
+          "enum": [
+            "standard I/O",
+            "TCP/IP",
+            "HTTP",
+            "WebSocket"
+          ],
+          "enumDescriptions": [
+            "Uses stdin/stdout",
+            "TCP/IP on port 'Connection Port'",
+            "HTTP REST Api",
+            "WebSocket stream"
+          ]
+        },
+        "leoIntegration.connectionPort": {
+          "default": 80,
+          "scope": "application",
+          "minimum": 0,
+          "maximum": 65535,
+          "type": "number",
+          "description": "Connection port"
+        }
+      }
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -46,7 +103,7 @@
         {
           "id": "leoIntegrationExplorer",
           "name": "Leo Outline",
-          "when": "leoBridgeReady==true && leoTreeOpened==true"
+          "when": "leoBridgeReady==true"
         }
       ],
       "leoIntegrationView": [
@@ -126,12 +183,12 @@
       "view/title": [
         {
           "command": "leointeg.openLeoFile",
-          "when": "view == leoIntegration && leoBridgeReady==true && !leoTreeOpened",
+          "when": "leoBridgeReady==true && !leoTreeOpened",
           "group": "navigation"
         },
         {
           "command": "leointeg.closeLeoFile",
-          "when": "view == leoIntegration && leoTreeOpened==true",
+          "when": "leoTreeOpened==true",
           "group": "navigation"
         }
       ],

@@ -14,6 +14,14 @@ export class LeoIntegration {
   private leoBridgeReadyPromise: Promise<LeoBridgePackage>; // set when leoBridge has a leo controller ready
   private leoPythonProcess: child.ChildProcess | undefined;
 
+  // * Configuration Settings
+  public treeKeepFocus: boolean;
+  public treeInExplorer: boolean;
+  public treeInvertTheme: boolean;
+  public bodyEditDelay: number;
+  public connectionType: string;
+  public connectionPort: number;
+
   // * Outline Pane
   public leoTreeDataProvider: LeoOutlineProvider;
   public leoTreeView: vscode.TreeView<LeoNode>;
@@ -55,6 +63,14 @@ export class LeoIntegration {
   public revealSelectedNode: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
 
   constructor(private context: vscode.ExtensionContext) {
+
+    // * Get Configuration
+    this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
+    this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
+    this.treeInvertTheme = vscode.workspace.getConfiguration('leoIntegration').get('treeInvertTheme', false);
+    this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
+    this.connectionType = vscode.workspace.getConfiguration('leoIntegration').get('connectionType', "standard I/O");
+    this.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', 80);
 
     // * Setup leoBridge as a python process
     this.leoBridgeReadyPromise = this.initLeoProcess();
@@ -304,6 +320,12 @@ export class LeoIntegration {
 
   private onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
     console.log("onChangeConfiguration", p_event.affectsConfiguration.toString());
+    this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
+    this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
+    this.treeInvertTheme = vscode.workspace.getConfiguration('leoIntegration').get('treeInvertTheme', false);
+    this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
+    this.connectionType = vscode.workspace.getConfiguration('leoIntegration').get('connectionType', "standard I/O");
+    this.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', 80);
   }
 
   private updateStatusBarItem(): void {

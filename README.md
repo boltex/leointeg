@@ -25,6 +25,8 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
 - An editor on the right side, acting as the body pane.
 
+![Preview](resources/screenshot-explorer.png)
+
 ### _Intended Features:_
 
 - Re-mapping of most of Leo's outline editing features through vscode and more, via leoBridge.
@@ -38,8 +40,6 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 - File generating 'at' nodes that show their derived line number instead of the body-pane's line number (Also reproducing xcc-nodes behaviour)
 
 ## Extension Settings
-
-Planned Settings :
 
 - Option to either focus on body pane or keep focus in outline when a tree node is selected (May help for keyboard navigation)
 
