@@ -1,5 +1,9 @@
 # ![LeoEditor](resources/leoapp.png) Leo Editor Integration with Visual Studio Code
 
+## Literate programming
+
+Program by using directed-acyclic-graphs, section-references, clones, '@other' and the Mulder/Ream update algorithm to either derive your files, or read and parse them back into an outline!
+
 See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
 ![Screenshot](resources/animated-screenshot.gif)

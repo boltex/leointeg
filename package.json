@@ -11,12 +11,19 @@
   "engines": {
     "vscode": "^1.38.0"
   },
+  "keywords": [
+    "leo",
+    "literate",
+    "outline",
+    "programming",
+    "IDE"
+  ],
   "categories": [
     "Other"
   ],
   "activationEvents": [
     "onView:leoIntegration",
-    "workspaceContains:**/.leo"
+    "workspaceContains:**/*.leo"
   ],
   "main": "./out/extension.js",
   "icon": "resources/leoapp128px.png",
