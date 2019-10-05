@@ -53,6 +53,12 @@
           "type": "boolean",
           "description": "Show the outline tree in the explorer view"
         },
+        "leoIntegration.showOpenAside": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Offer 'Open to the Side' in nodes context menu"
+        },
         "leoIntegration.bodyEditDelay": {
           "scope": "application",
           "type": "number",
@@ -200,7 +206,7 @@
         },
         {
           "command": "leointeg.openAside",
-          "when": "viewItem =~ /leoNode/",
+          "when": "showOpenAside == true && viewItem =~ /leoNode/",
           "group": "leoNodeContext1@1"
         },
         {

@@ -17,6 +17,7 @@ export class LeoIntegration {
   public treeKeepFocus: boolean;
   public treeKeepFocusAside: boolean;
   public treeInExplorer: boolean;
+  public showOpenAside: boolean;
   public bodyEditDelay: number;
   public connectionType: string;
   public connectionPort: number;
@@ -70,6 +71,8 @@ export class LeoIntegration {
     this.treeKeepFocusAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusAside', false);
     this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
     vscode.commands.executeCommand('setContext', 'treeInExplorer', this.treeInExplorer);
+    this.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
+    vscode.commands.executeCommand('setContext', 'showOpenAside', this.showOpenAside);
     this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
     this.connectionType = vscode.workspace.getConfiguration('leoIntegration').get('connectionType', "standard I/O");
     this.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', 80);
@@ -324,7 +327,7 @@ export class LeoIntegration {
   }
 
   private onDocumentSaved(p_event: vscode.TextDocument): void {
-    // edited and saved the document, does it on any document in editor // TODO : DEBOUNCE/CHECK IF IT WAS LEO BODY !
+    // edited and saved the document, does it on any document in editor // TODO : debounce/check if it was leo body / Maybe not needed
     // console.log("onDocumentSaved", p_event.fileName);
   }
 
@@ -334,6 +337,8 @@ export class LeoIntegration {
       this.treeKeepFocusAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusAside', false);
       this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
       vscode.commands.executeCommand('setContext', 'treeInExplorer', this.treeInExplorer);
+      this.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
+      vscode.commands.executeCommand('setContext', 'showOpenAside', this.showOpenAside);
       this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
       this.connectionType = vscode.workspace.getConfiguration('leoIntegration').get('connectionType', "standard I/O");
       this.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', 80);
@@ -466,7 +471,6 @@ export class LeoIntegration {
     }
   }
 
-
   public selectTreeNode(p_node: LeoNode): void {
     // User has selected a node in the outline with the mouse
     // console.log("Starting selectTreeNode");
@@ -487,6 +491,7 @@ export class LeoIntegration {
       this.showSelectedBodyDocument();
       return;
     }
+
     this.leoBridgeAction("setSelectedNode", p_node.apJson).then(() => {
       // console.log('Back from setSelectedNode in Leo');
     });
@@ -541,7 +546,7 @@ export class LeoIntegration {
   }
 
   public showSelectedBodyDocument(): Thenable<boolean> {
-
+    // * Make sure not to open unnecessary TextEditors
     return vscode.workspace.openTextDocument(this.bodyUri).then(p_document => {
       this.bodyTextDocument = p_document;
 
