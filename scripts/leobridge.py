@@ -78,6 +78,7 @@ def openFile(p_file):
 
 def getAllRootChildren():
     '''Return all root children P nodes'''
+    # TODO : Wrong Naming! Does not emit out strings! Rename this function, or integrate it inside 'getChildren'
     global commander
     p = commander.rootPosition()
     while p:

@@ -30,13 +30,14 @@ export class LeoIntegration {
   // * Outline Pane redraw/refresh 'helper flags'
   public refreshSingleNodeFlag: boolean = false; // read/cleared by leoOutline, so getTreeItem should refresh or return as-is
   public revealSelectedNode: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
-  private hadFirstExplorerView: boolean = false;
-  private hadFirstView: boolean = false;
 
   // * Body Pane
   public leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
   private bodyUri: vscode.Uri = vscode.Uri.parse("leo:/" + "");
   private bodyTextDocument: vscode.TextDocument | undefined;
+
+  private bodyTextDocumentSameUri: boolean = false;
+  private bodyMainSelectionColumn: vscode.ViewColumn | undefined;
 
   // * Status Bar
   public leoStatusBarItem: vscode.StatusBarItem;
@@ -99,6 +100,7 @@ export class LeoIntegration {
     // * Body Pane
     this.leoFileSystem = new LeoBodyProvider(this);
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider("leo", this.leoFileSystem, { isCaseSensitive: true }));
+    this.bodyMainSelectionColumn = 1;
 
     // * Status bar Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
     // * Example : register some listener that make sure the status bar item always up-to-date
@@ -116,7 +118,7 @@ export class LeoIntegration {
     vscode.window.onDidChangeActiveTextEditor(p_event => this.onActiveEditorChanged(p_event));
     vscode.window.onDidChangeTextEditorSelection(p_event => this.onChangeEditorSelection(p_event));
     vscode.window.onDidChangeTextEditorViewColumn(p_event => this.onChangeEditorViewColumn(p_event));
-    vscode.window.onDidChangeVisibleTextEditors(p_event => this.onChangeVisibleEditor(p_event));
+    vscode.window.onDidChangeVisibleTextEditors(p_event => this.onChangeVisibleEditors(p_event));
     vscode.window.onDidChangeWindowState(p_event => this.onChangeWindowState(p_event));
 
     vscode.workspace.onDidChangeTextDocument(p_event => this.onDocumentChanged(p_event));
@@ -165,32 +167,6 @@ export class LeoIntegration {
         );
       }, 0);
     }
-
-    // if (!this.lastSelectedLeoNode) {
-    //   return;
-    // }
-    // if (p_explorerView && !this.hadFirstExplorerView) {
-    //   setTimeout(() => {
-    //     this.leoBridgeAction("getSelectedNode", "{}").then(
-    //       (p_answer: LeoBridgePackage) => {
-    //         this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: false }); // dont use this.treeKeepFocus
-    //       }
-    //     );
-    //     this.hadFirstExplorerView = true;
-    //   }, 0);
-    // } else if (!p_explorerView && !this.hadFirstView) {
-    //   setTimeout(() => {
-    //     this.leoBridgeAction("getSelectedNode", "{}").then(
-    //       (p_answer: LeoBridgePackage) => {
-    //         this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: false }); // dont use this.treeKeepFocus
-    //       }
-    //     );
-    //     this.hadFirstView = true;
-    //   }, 0);
-    // }
-    // if (p_event.visible && this.lastSelectedLeoNode) {
-    //   this.reveal(this.lastSelectedLeoNode, { select: true, focus: false }); // dont use this.treeKeepFocus
-    // }
   }
 
   private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
@@ -215,20 +191,44 @@ export class LeoIntegration {
       }
     }
   }
+
   private onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
-    // console.log("onChangeEditorSelection", p_event.textEditor.document.fileName);
+    //console.log("onChangeEditorSelection", p_event.textEditor.document.fileName);
   }
+
   private onChangeEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void {
-    // console.log("onChangeEditorViewColumn", p_event.textEditor.document.fileName, p_event.viewColumn);
+    // console.log('on change view column!');
+    // * See onChangeVisibleEditors below, vscode api docum inconsistent
   }
-  private onChangeVisibleEditor(p_event: vscode.TextEditor[]): void {
-    // Bring in focus an editor tab that was not on front
-    // console.log("onChangeVisibleEditor", p_event);
+
+  private onChangeVisibleEditors(p_event: vscode.TextEditor[]): void {
+    // TODO : Unused / fix this to reset this.bodyMainSelectionColumn properly / Maybe not needed
+    // * No effect when drag & dropped, only effect when shifting through closing => vscode api docum inconsistent
+    // if (p_event.length && vscode.window.visibleTextEditors.length) {
+    //   let w_foundBody = false; // find  this.bodyMainSelectionColumn
+    //   vscode.window.visibleTextEditors.forEach(w_textEditor => {
+    //     console.log(w_textEditor.document.uri.scheme);
+
+    //     if (w_textEditor.document.uri.scheme === "leo") {
+
+    //       if (w_textEditor.viewColumn === this.bodyMainSelectionColumn) {
+    //         w_foundBody = true;
+    //       }
+    //     }
+    //   });
+    //   if (!w_foundBody) {
+    //     console.log('Not found!! ', this.bodyMainSelectionColumn);
+    //     this.bodyMainSelectionColumn = 1; // changes default if next to open is not already olened elsewhere
+    //   }
+    // }
+
   }
+
   private onChangeWindowState(p_event: vscode.WindowState): void {
     // console.log("onChangeWindowState", p_event);
     // selecting another vscode window by the os title bar
   }
+
   private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
     // * edited the document: debounce/check if it was leo body and actual changes
     // * .length check https://github.com/microsoft/vscode/issues/50344
@@ -470,18 +470,26 @@ export class LeoIntegration {
 
   public selectTreeNode(p_node: LeoNode): void {
     // User has selected a node in the outline with the mouse
-    // ! console.log("Starting selectTreeNode");
+    // console.log("Starting selectTreeNode");
 
     // TODO : Save and restore selection, and cursor position, from selection object saved in each node (or gnx array)
 
     const w_isAlreadySelected: boolean = (p_node === (this.lastSelectedLeoNode ? this.lastSelectedLeoNode : ""));
     if (w_isAlreadySelected) {
-      // Just reopen
+      // same so just find and reopen
+      this.bodyTextDocumentSameUri = false;
+      vscode.window.visibleTextEditors.forEach(p_textEditor => {
+        if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
+          this.bodyTextDocumentSameUri = true;
+          this.bodyMainSelectionColumn = p_textEditor.viewColumn;
+          this.bodyTextDocument = p_textEditor.document;
+        }
+      });
       this.showSelectedBodyDocument();
       return;
     }
     this.leoBridgeAction("setSelectedNode", p_node.apJson).then(() => {
-      // ! console.log('Back from setSelectedNode in leo');
+      // console.log('Back from setSelectedNode in Leo');
     });
 
     this.triggerBodySave(); // Trigger event to save previous document if timer to save if already started for another document
@@ -491,20 +499,38 @@ export class LeoIntegration {
 
     if (this.bodyTextDocument && !this.bodyTextDocument.isClosed) {
 
+      this.bodyTextDocumentSameUri = false;
+      vscode.window.visibleTextEditors.forEach(p_textEditor => {
+        if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
+          // console.log('new selection found: ', p_textEditor.viewColumn, "was set on ", this.bodyMainSelectionColumn);
+          this.bodyTextDocumentSameUri = true;
+          this.bodyMainSelectionColumn = p_textEditor.viewColumn;
+          this.bodyTextDocument = p_textEditor.document;
+        }
+      });
+      // * Save body to leo for the bodyTextDocument were going to rename to clear UNDO BUFFER
       this.bodySaveDocument(this.bodyTextDocument).then(p_result => {
         if (this.bodyTextDocument) { // Have to re-test inside .then, oh well
-          this.bodyTextDocument.save().then((p_result) => {
-            const w_edit = new vscode.WorkspaceEdit();
-            w_edit.renameFile(
-              this.bodyUri,
-              vscode.Uri.parse("leo:/" + p_node.gnx),
-              { overwrite: true, ignoreIfExists: true }
-            );
-            vscode.workspace.applyEdit(w_edit).then(p_result => {
-              this.bodyUri = vscode.Uri.parse("leo:/" + p_node.gnx);
-              this.showSelectedBodyDocument();
+
+          if (this.bodyTextDocumentSameUri) {
+            this.bodyUri = vscode.Uri.parse("leo:/" + p_node.gnx);
+            this.showSelectedBodyDocument();
+          } else {
+            this.bodyTextDocument.save().then((p_result) => {
+              const w_edit = new vscode.WorkspaceEdit();
+              w_edit.renameFile(
+                this.bodyUri,
+                vscode.Uri.parse("leo:/" + p_node.gnx),
+                { overwrite: true, ignoreIfExists: true }
+              );
+              // ! Rename file operation to clear undo buffer
+              vscode.workspace.applyEdit(w_edit).then(p_result => {
+                this.bodyUri = vscode.Uri.parse("leo:/" + p_node.gnx);
+                this.showSelectedBodyDocument();
+              });
             });
-          });
+          }
+
         }
 
       });
@@ -516,32 +542,20 @@ export class LeoIntegration {
   }
 
   public showSelectedBodyDocument(): Thenable<boolean> {
-    let w_sameUri = false;
-    let w_column: vscode.ViewColumn | undefined;
-    vscode.window.visibleTextEditors.forEach(p_textEditor => {
-      if (p_textEditor.document.uri.fsPath === this.bodyUri.fsPath) {
-        w_sameUri = true;
-        w_column = p_textEditor.viewColumn;
-        // * vscode.window.showTextDocument(p_textEditor.document); // DO NOT show?
-        this.bodyTextDocument = p_textEditor.document; // TODO : Find a way to focus (only if wanted in options)
-      }
-    });
-    if (w_sameUri && this.bodyTextDocument) {
-      return vscode.window.showTextDocument(this.bodyTextDocument, {
-        viewColumn: w_column, // TODO : try to make leftmost tab so it touches the outline pane
-        preserveFocus: this.treeKeepFocus, // An optional flag that when true will stop the editor from taking focus
-        preview: false // Should text document be in preview only? set false for fully opened
-        // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
-      }).then(w_bodyEditor => {
-        // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
-        // Other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
-        return (true);
-      });
-    }
+
     return vscode.workspace.openTextDocument(this.bodyUri).then(p_document => {
       this.bodyTextDocument = p_document;
+
+      vscode.window.visibleTextEditors.forEach(p_textEditor => {
+        if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
+          // console.log('new selection found last second!: ', p_textEditor.viewColumn);
+          this.bodyMainSelectionColumn = p_textEditor.viewColumn;
+          this.bodyTextDocument = p_textEditor.document;
+        }
+      });
+
       return vscode.window.showTextDocument(this.bodyTextDocument, {
-        viewColumn: 1, // TODO : try to make leftmost tab so it touches the outline pane
+        viewColumn: this.bodyMainSelectionColumn ? this.bodyMainSelectionColumn : 1, // TODO : try to make leftmost tab so it touches the outline pane
         preserveFocus: this.treeKeepFocus, // An optional flag that when true will stop the editor from taking focus
         preview: false // Should text document be in preview only? set false for fully opened
         // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
@@ -558,7 +572,7 @@ export class LeoIntegration {
     const w_uri = vscode.Uri.parse("leo:/" + p_node.gnx);
     return vscode.workspace.openTextDocument(w_uri).then(p_document => {
       return vscode.window.showTextDocument(p_document, {
-        viewColumn: vscode.ViewColumn.Beside, // TODO : try to make leftmost tab so it touches the outline pane
+        viewColumn: vscode.ViewColumn.Beside,
         preserveFocus: this.treeKeepFocusAside, // An optional flag that when true will stop the editor from taking focus
         preview: true // Should text document be in preview only? set false for fully opened
         // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
