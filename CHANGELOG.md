@@ -1,5 +1,16 @@
 # Change Log
 
+### 0.1.6
+
+- Major 'Browsing' update before adding outline editing and file saving & derivation (Thanks for testing!)
+- Refactored and simplified communication between vscode and leoBridge
+- Stabilized browsing with multiple simultaneous body panes
+- Added Leo Outline into explorer view
+- Supports new command to open a node on the side from the context menu
+- Multiple configuration options: Open Settings with CTRL+',' type 'leo', or look for 'leo integration' in extensions
+
+_Note: Headline and body edition does not affect the Leo file yet._
+
 ### 0.1.5
 
 - Stabilized for browsing, headline and body editing.

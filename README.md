@@ -23,7 +23,7 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
 - A treeview of an actual outline of a Leo file. Can be integrated below the explorer view, or standalone in its own panel.
 
-- An editor on the right side, acting as the body pane.
+- Editors on the right side, acting as the body pane(s).
 
 ![Preview](resources/screenshot-explorer.png)
 
@@ -39,13 +39,17 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
 - File generating 'at' nodes that show their derived line number instead of the body-pane's line number (Also reproducing xcc-nodes behaviour)
 
+- Choosing between communicating using stdIn/out, or remotely over tcp, through a REST api or websockets. (Communication consists of simple JSON data)
+
 ## Extension Settings
 
 - Option to either focus on body pane or keep focus in outline when a tree node is selected (May help for keyboard navigation)
 
-- Number of milliseconds to wait when debouncing after body text modifications are detected (for performance tuning)
+- Control the visibility of the outline pane in the explorer view
 
-- Settings for communicating either locally, via stdIn/out, and remotely over tcp, through a REST api or websockets. (Communication consists of simple JSON data)
+- Show additional context menu item : "Open on the side" for tree node's body to open beside current body pane
+
+- Number of milliseconds to wait when debouncing after body text modifications are detected (for performance tuning)
 
 ---
 

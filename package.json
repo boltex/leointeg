@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -41,11 +41,11 @@
           "type": "boolean",
           "description": "Specifies whether to keep focus in the outline when selecting a node"
         },
-        "leoIntegration.treeKeepFocusAside": {
+        "leoIntegration.treeKeepFocusWhenAside": {
           "scope": "application",
           "default": false,
           "type": "boolean",
-          "description": "Specifies whether to keep focus in the outline when opening an additional body pane on the side"
+          "description": "Specifies whether to keep focus in the outline when opening a body pane on the side"
         },
         "leoIntegration.treeInExplorer": {
           "scope": "application",
@@ -69,7 +69,7 @@
         },
         "leoIntegration.connectionType": {
           "scope": "application",
-          "description": "Connection to leoBridge",
+          "description": "Connection to leoBridge - ONLY 'standard I/O' FOR NOW",
           "type": "string",
           "default": "standard I/O",
           "enum": [
@@ -80,9 +80,9 @@
           ],
           "enumDescriptions": [
             "Uses stdin/stdout",
-            "TCP/IP on port 'Connection Port'",
-            "HTTP REST Api",
-            "WebSocket stream"
+            "TCP/IP on port 'Connection Port' * Not Available",
+            "HTTP REST Api * Not Available",
+            "WebSocket stream * Not Available"
           ]
         },
         "leoIntegration.connectionPort": {
