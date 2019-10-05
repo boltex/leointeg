@@ -60,5 +60,3 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     }
   }
 }
-
-

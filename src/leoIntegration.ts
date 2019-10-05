@@ -221,7 +221,6 @@ export class LeoIntegration {
     //     this.bodyMainSelectionColumn = 1; // changes default if next to open is not already olened elsewhere
     //   }
     // }
-
   }
 
   private onChangeWindowState(p_event: vscode.WindowState): void {
@@ -231,7 +230,7 @@ export class LeoIntegration {
 
   private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
     // * edited the document: debounce/check if it was leo body and actual changes
-    // * .length check https://github.com/microsoft/vscode/issues/50344
+    // * .length check necessary, see https://github.com/microsoft/vscode/issues/50344
     if (p_event.document.uri.scheme === "leo" && p_event.contentChanges.length) {
 
       if (this.bodyLastChangedDocument && (p_event.document.uri.fsPath !== this.bodyLastChangedDocument.uri.fsPath)) {
@@ -727,15 +726,19 @@ export class LeoIntegration {
   }
 
   public test(): void {
-    console.log("sending test");
-    // * TEST : GET SELECTED NODE FROM LEO AND REVEAL 'SELECTED' NODE IN TREEVIEW
-    this.leoBridgeAction("getSelectedNode", "{\"testparam\":\"hello\"}").then(
-      // this.leoBridgeAction("getSelectedNode", "{}").then(
-      (p_answer: LeoBridgePackage) => {
-        console.log('Test got Back from getSelectedNode, now revealing :', p_answer.node.headline);
-        this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true });
-      }
-    );
+    if (this.leoPythonProcess && this.fileOpenedReady) {
+      console.log("sending test");
+      // * TEST : GET SELECTED NODE FROM LEO AND REVEAL 'SELECTED' NODE IN TREEVIEW
+      this.leoBridgeAction("getSelectedNode", "{\"testparam\":\"hello\"}").then(
+        // this.leoBridgeAction("getSelectedNode", "{}").then(
+        (p_answer: LeoBridgePackage) => {
+          console.log('Test got Back from getSelectedNode, now revealing :', p_answer.node.headline);
+          this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true });
+        }
+      );
+    } else {
+      vscode.window.showInformationMessage("Click the folder icon on the Leo Outline sidebar to open a Leo file");
+    }
     // * TEST : REFRESH ALL TREE NODES
     //  this.leoTreeDataProvider.refreshTreeRoot(true); // p_revealSelection flag set
   }

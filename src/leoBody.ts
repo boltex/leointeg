@@ -113,13 +113,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
         // console.log('called writeFile!', uri.fsPath);
-        // const w_param = {
-        //     gnx: uri.fsPath.substr(1),
-        //     body: content.toString()
-        // };
-        // this.leoIntegration.leoBridgeAction("setBody", JSON.stringify(w_param)).then(p_result => {
-        //     console.log('Back from set body to leo');
-        // });
     }
 
     public rename(oldUri: vscode.Uri, newUri: vscode.Uri, options: { overwrite: boolean }): void {

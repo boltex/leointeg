@@ -67,6 +67,6 @@ export class LeoNode extends vscode.TreeItem {
 
     // * some smaller grayed-out text acompanying the main label
     // get description(): string {
-    //   return "a desc";
+    //   return "here's a description";
     // }
 }
