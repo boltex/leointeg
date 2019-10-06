@@ -1,6 +1,5 @@
 import * as child from "child_process";
 import * as vscode from "vscode";
-
 import { LeoBridgePackage, LeoAction, RevealType, ArchivedPosition } from "./leoIntegrationTypes";
 import { LeoNode } from "./leoNode";
 import { LeoOutlineProvider } from "./leoOutline";
@@ -179,12 +178,23 @@ export class LeoIntegration {
         );
       }, 0);
     }
+    if (!p_explorerView) {
+      if (p_event.visible) {
+        // console.log("treeViewVisibilityChanged visible! SET STATUS!");
+        this.leoObjectSelected = true; // no editor!
+      } else {
+        // console.log("treeViewVisibilityChanged HIDDEN! no status!");
+        this.leoObjectSelected = false; // no editor!
+      }
+      this.updateStatusBarItem();
+    }
   }
 
   private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
     this.triggerBodySave(); // Save in case edits were pending
     // selecting another editor of the same window by the tab
     if (!p_event && this.leoObjectSelected) {
+      // console.log("editor changed to : none! no status!");
       this.leoObjectSelected = false; // no editor!
       this.updateStatusBarItem();
       return;
@@ -198,15 +208,16 @@ export class LeoIntegration {
         });
       }
     }
-
     if (vscode.window.activeTextEditor) {
       if (vscode.window.activeTextEditor.document.uri.scheme === this.leoUriScheme) {
         if (!this.leoObjectSelected) {
+          // console.log("editor changed to : leo! SET STATUS!");
           this.leoObjectSelected = true;
           this.updateStatusBarItem();
           return;
         }
       } else {
+        // console.log("editor changed to : other, no status!");
         this.leoObjectSelected = false;
         this.updateStatusBarItem();
         return;
@@ -230,9 +241,7 @@ export class LeoIntegration {
     //   let w_foundBody = false; // find  this.bodyMainSelectionColumn
     //   vscode.window.visibleTextEditors.forEach(w_textEditor => {
     //     console.log(w_textEditor.document.uri.scheme);
-
     //     if (w_textEditor.document.uri.scheme === this.leoUriScheme) {
-
     //       if (w_textEditor.viewColumn === this.bodyMainSelectionColumn) {
     //         w_foundBody = true;
     //       }
@@ -246,8 +255,8 @@ export class LeoIntegration {
   }
 
   private onChangeWindowState(p_event: vscode.WindowState): void {
-    // console.log("onChangeWindowState", p_event);
     // selecting another vscode window by the os title bar
+    // console.log("onChangeWindowState", p_event);
   }
 
   private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
@@ -365,6 +374,8 @@ export class LeoIntegration {
   }
 
   private updateStatusBarItem(): void {
+    vscode.commands.executeCommand('setContext', 'leoObjectSelected', this.leoObjectSelected);
+    // this.leoObjectSelected
     // TODO : fleshout status bar
     if (this.leoObjectSelected) { // * Also check in constructor for statusBar properties
       // this.leoStatusBarItem.color = "#fb7c47";
@@ -495,6 +506,10 @@ export class LeoIntegration {
     // User has selected a node in the outline with the mouse
     // console.log("Starting selectTreeNode");
 
+    // console.log("selectTreeNode clicked node  SET STATUS!");
+    this.leoObjectSelected = true;
+    this.updateStatusBarItem();
+
     // TODO : Save and restore selection, and cursor position, from selection object saved in each node (or gnx array)
 
     const w_isAlreadySelected: boolean = (p_node === (this.lastSelectedLeoNode ? this.lastSelectedLeoNode : ""));
@@ -595,7 +610,13 @@ export class LeoIntegration {
   }
 
   public showBodyDocumentAside(p_node: LeoNode): Thenable<boolean> {
+
     this.triggerBodySave(); // Trigger event to save previous document if timer to save if already started for another document
+
+    // console.log("open to the Side clicked, SET STATUS!");
+    this.leoObjectSelected = true;
+    this.updateStatusBarItem();
+
     const w_uri = vscode.Uri.parse(this.leoUriSchemeHeader + p_node.gnx);
     return vscode.workspace.openTextDocument(w_uri).then(p_document => {
       this.leoTextDocumentNodesRef[p_node.gnx] = p_node;
