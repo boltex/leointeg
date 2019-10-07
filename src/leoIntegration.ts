@@ -50,8 +50,9 @@ export class LeoIntegration {
 
   // * Status Bar
   public leoStatusBarItem: vscode.StatusBarItem;
-  public leoObjectSelected: boolean = false; // represents having focus on outline or body, as opposed to anything else
+  public leoObjectSelected: boolean = false; // represents having focus on a leo body, as opposed to anything else
   public statusbarNormalColor = new vscode.ThemeColor("statusBar.foreground");  //"statusBar.foreground"
+  private updateStatusBarTimeout: NodeJS.Timeout | undefined;
 
   // * Edit Headline Input Box
   private editHeadlineInputOptions: vscode.InputBoxOptions = {
@@ -113,10 +114,8 @@ export class LeoIntegration {
     context.subscriptions.push(vscode.workspace.registerFileSystemProvider(this.leoUriScheme, this.leoFileSystem, { isCaseSensitive: true }));
     this.bodyMainSelectionColumn = 1;
 
-    // * Status bar Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
-    // * Example : register some listener that make sure the status bar item always up-to-date
-    // context.subscriptions.push(vscode.window.onDidChangeActiveTextEditor(updateStatusBarItem)); // TODO : Select tree node when focus set on textEditor
-    // context.subscriptions.push(vscode.window.onDidChangeTextEditorSelection(updateStatusBarItem));
+    // * Status bar
+    // Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
     this.leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
     this.leoStatusBarItem.color = "#fb7c47"; // TODO : Centralize or make available in a config setting.
     this.leoStatusBarItem.command = "leointeg.test"; // just call test function for now
@@ -178,25 +177,26 @@ export class LeoIntegration {
         );
       }, 0);
     }
-    if (!p_explorerView) {
-      if (p_event.visible) {
-        // console.log("treeViewVisibilityChanged visible! SET STATUS!");
-        this.leoObjectSelected = true; // no editor!
-      } else {
-        // console.log("treeViewVisibilityChanged HIDDEN! no status!");
-        this.leoObjectSelected = false; // no editor!
-      }
-      this.updateStatusBarItem();
-    }
+    // * leo status flag
+    // if (!p_explorerView) {
+    //   if (p_event.visible) {
+    //     // console.log("treeViewVisibilityChanged visible! SET STATUS!");
+    //     this.leoObjectSelected = true; // no editor!
+    //   } else {
+    //     // console.log("treeViewVisibilityChanged HIDDEN! no status!");
+    //     this.leoObjectSelected = false; // no editor!
+    //   }
+    //   this.updateStatusBar();
+    // }
   }
 
   private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
     this.triggerBodySave(); // Save in case edits were pending
     // selecting another editor of the same window by the tab
     if (!p_event && this.leoObjectSelected) {
-      // console.log("editor changed to : none! no status!");
+      // * leo status flag none, no status
       this.leoObjectSelected = false; // no editor!
-      this.updateStatusBarItem();
+      this.updateStatusBar();
       return;
     }
     if (p_event && p_event.document.uri.scheme === this.leoUriScheme) {
@@ -208,25 +208,50 @@ export class LeoIntegration {
         });
       }
     }
+    // * leo status flag
     if (vscode.window.activeTextEditor) {
       if (vscode.window.activeTextEditor.document.uri.scheme === this.leoUriScheme) {
         if (!this.leoObjectSelected) {
           // console.log("editor changed to : leo! SET STATUS!");
           this.leoObjectSelected = true;
-          this.updateStatusBarItem();
+          this.updateStatusBar();
           return;
         }
       } else {
         // console.log("editor changed to : other, no status!");
-        this.leoObjectSelected = false;
-        this.updateStatusBarItem();
-        return;
+        if (this.leoObjectSelected) {
+          this.leoObjectSelected = false;
+          this.updateStatusBar();
+          return;
+        }
       }
     }
   }
 
   private onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
-    //console.log("onChangeEditorSelection", p_event.textEditor.document.fileName);
+    // console.log("onChangeEditorSelection", p_event.textEditor.document.fileName);
+    // * leo status flag
+    if (vscode.window.activeTextEditor) {
+      if (p_event.textEditor.document.uri.scheme === this.leoUriScheme && vscode.window.activeTextEditor.document.uri.scheme === this.leoUriScheme) {
+        if (!this.leoObjectSelected) {
+          this.leoObjectSelected = true;
+          this.updateStatusBar();
+          return;
+        }
+      } else {
+        if (this.leoObjectSelected) {
+          this.leoObjectSelected = false;
+          this.updateStatusBar();
+          return;
+        }
+      }
+    } else {
+      if (this.leoObjectSelected) {
+        this.leoObjectSelected = false;
+        this.updateStatusBar();
+        return;
+      }
+    }
   }
 
   private onChangeEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void {
@@ -373,21 +398,31 @@ export class LeoIntegration {
     }
   }
 
-  private updateStatusBarItem(): void {
+  private updateStatusBar(): void {
+    if (this.updateStatusBarTimeout) {
+      clearTimeout(this.updateStatusBarTimeout);
+    }
+    this.updateStatusBarTimeout = setTimeout(() => {
+      this.applyStatusBarUpdate();
+    }, 100);
+  }
+
+  private applyStatusBarUpdate(): void {
     vscode.commands.executeCommand('setContext', 'leoObjectSelected', this.leoObjectSelected);
-    // this.leoObjectSelected
-    // TODO : fleshout status bar
-    if (this.leoObjectSelected) { // * Also check in constructor for statusBar properties
-      // this.leoStatusBarItem.color = "#fb7c47";
+
+    if (this.leoObjectSelected && (this.leoPythonProcess && this.fileOpenedReady)) { // * Also check in constructor for statusBar properties
+      this.leoStatusBarItem.color = "#fb7c47";
       // this.leoStatusBarItem.text = `$(keyboard) Literate `;
-      // this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
-      this.leoStatusBarItem.show();
+      this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
+      // this.leoStatusBarItem.show();
     } else {
-      // this.leoStatusBarItem.color = this.statusbarNormalColor;
-      // this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
-      this.leoStatusBarItem.hide();
+      // this.leoStatusBarItem.color = undefined;
+      this.leoStatusBarItem.color = this.statusbarNormalColor;
+      this.leoStatusBarItem.tooltip = "Leo Key Bindings off";
+      // this.leoStatusBarItem.hide();
     }
   }
+
 
   public apToLeoNode(p_apData: ArchivedPosition): LeoNode {
     const w_apJson: string = JSON.stringify(p_apData); //  just this part back to JSON
@@ -506,10 +541,6 @@ export class LeoIntegration {
     // User has selected a node in the outline with the mouse
     // console.log("Starting selectTreeNode");
 
-    // console.log("selectTreeNode clicked node  SET STATUS!");
-    this.leoObjectSelected = true;
-    this.updateStatusBarItem();
-
     // TODO : Save and restore selection, and cursor position, from selection object saved in each node (or gnx array)
 
     const w_isAlreadySelected: boolean = (p_node === (this.lastSelectedLeoNode ? this.lastSelectedLeoNode : ""));
@@ -612,10 +643,6 @@ export class LeoIntegration {
   public showBodyDocumentAside(p_node: LeoNode): Thenable<boolean> {
 
     this.triggerBodySave(); // Trigger event to save previous document if timer to save if already started for another document
-
-    // console.log("open to the Side clicked, SET STATUS!");
-    this.leoObjectSelected = true;
-    this.updateStatusBarItem();
 
     const w_uri = vscode.Uri.parse(this.leoUriSchemeHeader + p_node.gnx);
     return vscode.workspace.openTextDocument(w_uri).then(p_document => {
@@ -720,8 +747,9 @@ export class LeoIntegration {
               this.showSelectedBodyDocument().then(p_result => {
                 vscode.commands.executeCommand('setContext', 'leoTreeOpened', true);
               });
-
-              this.updateStatusBarItem();
+              // * First StatusBar appearance
+              this.updateStatusBar();
+              this.leoStatusBarItem.show();
             });
 
         } else {
