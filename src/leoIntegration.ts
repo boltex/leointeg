@@ -43,7 +43,7 @@ export class LeoIntegration {
   private bodyUri: vscode.Uri = vscode.Uri.parse(this.leoUriSchemeHeader);
   private bodyTextDocument: vscode.TextDocument | undefined;
 
-  private bodyTextDocumentSameUri: boolean = false;
+  private bodyTextDocumentSameUri: boolean = false; // Flag used when checking if clicking a node requires opening a body pane text editor
   private bodyMainSelectionColumn: vscode.ViewColumn | undefined;
 
   private leoTextDocumentNodesRef: { [gnx: string]: LeoNode } = {};
@@ -111,7 +111,6 @@ export class LeoIntegration {
 
     // * Body Pane
     this.leoFileSystem = new LeoBodyProvider(this);
-    context.subscriptions.push(vscode.workspace.registerFileSystemProvider(this.leoUriScheme, this.leoFileSystem, { isCaseSensitive: true }));
     this.bodyMainSelectionColumn = 1;
 
     // * Status bar
@@ -134,6 +133,12 @@ export class LeoIntegration {
     vscode.workspace.onDidChangeTextDocument(p_event => this.onDocumentChanged(p_event));
     vscode.workspace.onDidSaveTextDocument(p_event => this.onDocumentSaved(p_event));
     vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
+
+    // vscode.workspace.textDocuments.forEach(p_textDocument => {
+    //   if(p_textDocument.uri.scheme === this.leoUriScheme){
+    //     // should delete / close ?
+    //   }
+    // });
   }
 
   private assertId(p_val: boolean, p_from: string): void {
@@ -235,20 +240,20 @@ export class LeoIntegration {
       if (p_event.textEditor.document.uri.scheme === this.leoUriScheme && vscode.window.activeTextEditor.document.uri.scheme === this.leoUriScheme) {
         if (!this.leoObjectSelected) {
           this.leoObjectSelected = true;
-          this.updateStatusBar();
+          this.updateStatusBarDebounced();
           return;
         }
       } else {
         if (this.leoObjectSelected) {
           this.leoObjectSelected = false;
-          this.updateStatusBar();
+          this.updateStatusBarDebounced();
           return;
         }
       }
     } else {
       if (this.leoObjectSelected) {
         this.leoObjectSelected = false;
-        this.updateStatusBar();
+        this.updateStatusBarDebounced();
         return;
       }
     }
@@ -398,16 +403,19 @@ export class LeoIntegration {
     }
   }
 
-  private updateStatusBar(): void {
+  private updateStatusBarDebounced(): void {
     if (this.updateStatusBarTimeout) {
       clearTimeout(this.updateStatusBarTimeout);
     }
     this.updateStatusBarTimeout = setTimeout(() => {
-      this.applyStatusBarUpdate();
+      this.updateStatusBar();
     }, 100);
   }
 
-  private applyStatusBarUpdate(): void {
+  private updateStatusBar(): void {
+    if (this.updateStatusBarTimeout) { // Can be called directly, so clear timer if any
+      clearTimeout(this.updateStatusBarTimeout);
+    }
     vscode.commands.executeCommand('setContext', 'leoObjectSelected', this.leoObjectSelected);
 
     if (this.leoObjectSelected && (this.leoPythonProcess && this.fileOpenedReady)) { // * Also check in constructor for statusBar properties
@@ -422,7 +430,6 @@ export class LeoIntegration {
       // this.leoStatusBarItem.hide();
     }
   }
-
 
   public apToLeoNode(p_apData: ArchivedPosition): LeoNode {
     const w_apJson: string = JSON.stringify(p_apData); //  just this part back to JSON
@@ -735,6 +742,7 @@ export class LeoIntegration {
 
           this.leoBridgeAction("openFile", '"' + p_chosenLeoFile[0].fsPath + '"')
             .then((p_result: LeoBridgePackage) => {
+              this.context.subscriptions.push(vscode.workspace.registerFileSystemProvider(this.leoUriScheme, this.leoFileSystem, { isCaseSensitive: true }));
 
               this.fileOpenedReady = true; // ANSWER to openLeoFile
               this.fileBrowserOpen = false;
