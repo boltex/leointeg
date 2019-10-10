@@ -96,17 +96,17 @@ export class LeoIntegration {
         // * Leo view outline pane
         this.leoTreeDataProvider = new LeoOutlineProvider(this);
         this.leoTreeView = vscode.window.createTreeView("leoIntegration", { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
-        this.leoTreeView.onDidChangeSelection((p_event => this.treeViewChangedSelection(p_event)));
-        this.leoTreeView.onDidExpandElement((p_event => this.treeViewExpandedElement(p_event)));
-        this.leoTreeView.onDidCollapseElement((p_event => this.treeViewCollapsedElement(p_event)));
-        this.leoTreeView.onDidChangeVisibility((p_event => this.treeViewVisibilityChanged(p_event, false))); // * Trigger 'show tree in Leo's view'
+        this.leoTreeView.onDidChangeSelection((p_event => this.onTreeViewChangedSelection(p_event)));
+        this.leoTreeView.onDidExpandElement((p_event => this.onTreeViewExpandedElement(p_event)));
+        this.leoTreeView.onDidCollapseElement((p_event => this.onTreeViewCollapsedElement(p_event)));
+        this.leoTreeView.onDidChangeVisibility((p_event => this.onTreeViewVisibilityChanged(p_event, false))); // * Trigger 'show tree in Leo's view'
 
         // * Explorer view outline pane
         this.leoTreeExplorerView = vscode.window.createTreeView("leoIntegrationExplorer", { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
-        this.leoTreeExplorerView.onDidChangeSelection((p_event => this.treeViewChangedSelection(p_event)));
-        this.leoTreeExplorerView.onDidExpandElement((p_event => this.treeViewExpandedElement(p_event)));
-        this.leoTreeExplorerView.onDidCollapseElement((p_event => this.treeViewCollapsedElement(p_event)));
-        this.leoTreeExplorerView.onDidChangeVisibility((p_event => this.treeViewVisibilityChanged(p_event, true)));  // * Trigger 'show tree in explorer view'
+        this.leoTreeExplorerView.onDidChangeSelection((p_event => this.onTreeViewChangedSelection(p_event)));
+        this.leoTreeExplorerView.onDidExpandElement((p_event => this.onTreeViewExpandedElement(p_event)));
+        this.leoTreeExplorerView.onDidCollapseElement((p_event => this.onTreeViewCollapsedElement(p_event)));
+        this.leoTreeExplorerView.onDidChangeVisibility((p_event => this.onTreeViewVisibilityChanged(p_event, true)));  // * Trigger 'show tree in explorer view'
 
         // * Body Pane
         this.leoFileSystem = new LeoBodyProvider(this);
@@ -132,12 +132,6 @@ export class LeoIntegration {
         vscode.workspace.onDidChangeTextDocument(p_event => this.onDocumentChanged(p_event));
         vscode.workspace.onDidSaveTextDocument(p_event => this.onDocumentSaved(p_event));
         vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
-
-        // vscode.workspace.textDocuments.forEach(p_textDocument => {
-        //   if(p_textDocument.uri.scheme === this.leoUriScheme){
-        //     // should delete / close ?
-        //   }
-        // });
     }
 
     private assertId(p_val: boolean, p_from: string): void {
@@ -155,22 +149,22 @@ export class LeoIntegration {
         }
     }
 
-    private treeViewChangedSelection(p_event: vscode.TreeViewSelectionChangeEvent<LeoNode>): void {
+    private onTreeViewChangedSelection(p_event: vscode.TreeViewSelectionChangeEvent<LeoNode>): void {
         // * We capture and act upon the the 'select node' command, so this event is redundant for now
         //console.log("treeViewChangedSelection, selection length:", p_event.selection.length);
     }
-    private treeViewExpandedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
+    private onTreeViewExpandedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
         this.leoBridge.action("expandNode", p_event.element.apJson).then(() => {
             //console.log('back from expand');
         });
     }
-    private treeViewCollapsedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
+    private onTreeViewCollapsedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
         this.leoBridge.action("collapseNode", p_event.element.apJson).then(() => {
             //console.log('back from collapse');
         });
     }
 
-    private treeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
+    private onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
         if (p_event.visible && this.lastSelectedLeoNode) {
             this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // TODO: test if really needed, along with timeout (0) "getSelectedNode"
             setTimeout(() => {
@@ -181,17 +175,6 @@ export class LeoIntegration {
                 );
             }, 0);
         }
-        // * leo status flag
-        // if (!p_explorerView) {
-        //   if (p_event.visible) {
-        //     // console.log("treeViewVisibilityChanged visible! SET STATUS!");
-        //     this.leoObjectSelected = true; // no editor!
-        //   } else {
-        //     // console.log("treeViewVisibilityChanged HIDDEN! no status!");
-        //     this.leoObjectSelected = false; // no editor!
-        //   }
-        //   this.updateStatusBar();
-        // }
     }
 
     private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
@@ -259,33 +242,21 @@ export class LeoIntegration {
     }
 
     private onChangeEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void {
-        // console.log('on change view column!');
-        // * See onChangeVisibleEditors below, vscode api docum inconsistent
+        // * this trigger when shifting editors through closing/inserting editors or closing columns
+        // * no effect when dragging editor tabs: it just closes and reopens in other column, see 'onChangeVisibleEditors'
     }
 
     private onChangeVisibleEditors(p_event: vscode.TextEditor[]): void {
-        // TODO : Unused / fix this to reset this.bodyMainSelectionColumn properly / Maybe not needed
-        // * No effect when drag & dropped, only effect when shifting through closing => vscode api docum inconsistent
-        // if (p_event.length && vscode.window.visibleTextEditors.length) {
-        //   let w_foundBody = false; // find  this.bodyMainSelectionColumn
-        //   vscode.window.visibleTextEditors.forEach(w_textEditor => {
-        //     console.log(w_textEditor.document.uri.scheme);
-        //     if (w_textEditor.document.uri.scheme === this.leoUriScheme) {
-        //       if (w_textEditor.viewColumn === this.bodyMainSelectionColumn) {
-        //         w_foundBody = true;
-        //       }
-        //     }
-        //   });
-        //   if (!w_foundBody) {
-        //     console.log('Not found!! ', this.bodyMainSelectionColumn);
-        //     this.bodyMainSelectionColumn = 1; // changes default if next to open is not already olened elsewhere
-        //   }
-        // }
+        // * triggers when a different text editor in any column, either tab or body, is focused
+        // * this is also what triggers after drag and drop, see onChangeEditorViewColumn
     }
 
     private onChangeWindowState(p_event: vscode.WindowState): void {
-        // selecting another vscode window by the os title bar
-        // console.log("onChangeWindowState", p_event);
+        // * triggers when a vscode window have gained or lost focus
+    }
+
+    private onDocumentSaved(p_event: vscode.TextDocument): void {
+        // * edited and saved the document, does it on any document in editor
     }
 
     private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
@@ -326,7 +297,6 @@ export class LeoIntegration {
 
     private triggerBodySave(p_forcedRefresh?: boolean): Thenable<boolean> {
         // * Clear possible timeout if triggered by event from other than 'onDocumentChanged'
-        // console.log('triggerBodySave');
         if (this.bodyChangeTimeout) {
             clearTimeout(this.bodyChangeTimeout);
         }
@@ -368,7 +338,6 @@ export class LeoIntegration {
             // * perform refresh if needed
             if (p_forceRefreshTree || (w_needsRefresh && this.lastSelectedLeoNode)) {
                 // console.log(p_forceRefreshTree ? 'force refresh' : 'needed refresh');
-                // this.leoTreeDataProvider.refreshTreeNode(this.lastSelectedLeoNode);
                 // * refresh root because of need to dirty parent if in derived file
                 this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // No focus this.leoTreeDataProvider.refreshTreeRoot
                 this.lastbodyChangedRootRefreshedGnx = w_param.gnx;
@@ -381,11 +350,6 @@ export class LeoIntegration {
         } else {
             return Promise.resolve(false);
         }
-    }
-
-    private onDocumentSaved(p_event: vscode.TextDocument): void {
-        // edited and saved the document, does it on any document in editor // TODO : debounce/check if it was leo body / Maybe not needed
-        // console.log("onDocumentSaved", p_event.fileName);
     }
 
     private onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
@@ -570,7 +534,7 @@ export class LeoIntegration {
             });
 
             return vscode.window.showTextDocument(this.bodyTextDocument, {
-                viewColumn: this.bodyMainSelectionColumn ? this.bodyMainSelectionColumn : 1, // TODO : try to make leftmost tab so it touches the outline pane
+                viewColumn: this.bodyMainSelectionColumn ? this.bodyMainSelectionColumn : 1,
                 preserveFocus: this.treeKeepFocus, // An optional flag that when true will stop the editor from taking focus
                 preview: false // Should text document be in preview only? set false for fully opened
                 // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
