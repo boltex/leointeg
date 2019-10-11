@@ -4,7 +4,7 @@
 
 Program by using directed-acyclic-graphs, section-references, clones, '@other' and the Mulder/Ream update algorithm to either derive your files, or read and parse them back into an outline!
 
-See Leo, the Literate Editor with Outline at: https://leoeditor.com/
+See Leo, the Literate Editor with Outline at: https://leoeditor.com/ or on GitHub https://github.com/leo-editor/leo-editor
 
 ![Screenshot](resources/animated-screenshot.gif)
 
@@ -33,6 +33,7 @@ Make sure you have Node.js and Git installed, then...
 - Integration is done by communicating with a python script, it interacts with Leo via 'leoBridge'. (see https://leoeditor.com/leoBridge.html)
 - A treeview of an actual outline of a Leo file. Can be integrated below the explorer view, or standalone in its own panel.
 - Editors on the right side, acting as the body pane(s).
+- Extension-specific settings for user interface preferences: _Available in settings_ `[ctrl+,]`
 
 ![Preview](resources/screenshot-explorer.png)
 
@@ -43,7 +44,7 @@ Make sure you have Node.js and Git installed, then...
 - 2 way synchronisation of leo's output files and vscode's explorer & 'normal mode' of operation.
 - Error lookup, or breakpoints cycling with automatic go-to line in generated file's nodes and body position.
 - File generating 'at' nodes that show their derived line number instead of the body-pane's line number (Also reproducing xcc-nodes behaviour)
-- Choosing between communicating using stdIn/out, or remotely over tcp, through a REST api or websockets. (Communication consists of simple JSON data)
+- Choosing between communicating using stdin/stdout, or remotely over tcp, through a REST api or websockets. (Data transfer is just simple JSON)
 
 ## Extension Settings
 
