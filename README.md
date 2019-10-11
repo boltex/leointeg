@@ -15,14 +15,23 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 
 (See **Adding Leo to Your Path** in https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT)
 
+## Development version installation
+
+### _Want to try out this development version?_
+
+Make sure you have Node.js and Git installed, then...
+
+1. Get this repository `git clone https://github.com/boltex/leointeg.git`
+2. Right-click that folder -> open with vscode, or, from inside a vscode window, File-> Open Folder...
+3. Run `npm install` in terminal to install dependencies
+4. Press F5 (the 'Run Extension' command shortcut of vscode's debug panel)
+
 ## Features
 
 ### _Features done so far:_
 
 - Integration is done by communicating with a python script, it interacts with Leo via 'leoBridge'. (see https://leoeditor.com/leoBridge.html)
-
 - A treeview of an actual outline of a Leo file. Can be integrated below the explorer view, or standalone in its own panel.
-
 - Editors on the right side, acting as the body pane(s).
 
 ![Preview](resources/screenshot-explorer.png)
@@ -30,25 +39,17 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/
 ### _Intended Features:_
 
 - Re-mapping of most of Leo's outline editing features through vscode and more, via leoBridge.
-
 - Detection of focused element to toggle functionality to suit the interactions with the opened Leo file. (by re-maping shortcut keys to the shortcut keys of Leo.)
-
 - 2 way synchronisation of leo's output files and vscode's explorer & 'normal mode' of operation.
-
 - Error lookup, or breakpoints cycling with automatic go-to line in generated file's nodes and body position.
-
 - File generating 'at' nodes that show their derived line number instead of the body-pane's line number (Also reproducing xcc-nodes behaviour)
-
 - Choosing between communicating using stdIn/out, or remotely over tcp, through a REST api or websockets. (Communication consists of simple JSON data)
 
 ## Extension Settings
 
 - Option to either focus on body pane or keep focus in outline when a tree node is selected (May help for keyboard navigation)
-
 - Control the visibility of the outline pane in the explorer view
-
 - Show additional context menu item : "Open on the side" for tree node's body to open beside current body pane
-
 - Number of milliseconds to wait when debouncing after body text modifications are detected (for performance tuning)
 
 ---
