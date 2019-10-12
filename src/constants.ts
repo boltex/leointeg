@@ -1,5 +1,7 @@
 // TODO : move constants from leointegration.ts and leoBridge.ts
-    // private leoFileTypeExtension: string = "leo";
-    // private leoUriScheme: string = "leo";
-    // private leoUriSchemeHeader: string = this.leoUriScheme + ":/";
-    // private leoTransactionHeader: string = "leoBridge:";  // string used to prefix transaction, to differenciate from errors
+// export class Constants {
+//     public static LEO_FILE_TYPE_EXTENSION: string = "leo";
+//     public static LEO_URI_SCHEME: string = "leo";
+//     public static LEO_URI_SCHEME_HEADER: string = "leo:/";
+//     public static LEO_TRANSACTION_HEADER: string = "leoBridge:";  // string used to prefix transaction, to differenciate from errors
+// }

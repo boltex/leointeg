@@ -1,7 +1,10 @@
 import * as child from "child_process";
 import * as vscode from "vscode";
 import { LeoBridgePackage, LeoAction } from "./types";
+// import * as hasbin from '../node_modules/hasbin';
 
+// var isPyAvailable = require('hasbin').sync('python')  import * as hasbin from "hasbin";
+// npm install --save @types/hasbin
 export class LeoBridge {
     // * Communications with Python
     public actionBusy: boolean = false;
@@ -9,12 +12,16 @@ export class LeoBridge {
     private callStack: LeoAction[] = [];
     private process: child.ChildProcess | undefined;
     private readyPromise: Promise<LeoBridgePackage> | undefined;
+    private pythonString = "";
+    private hasbin = require('hasbin');
 
     // * Constants
     // TODO : separate constants
     private leoTransactionHeader: string = "leoBridge:";  // string used to prefix transaction, to differenciate from errors
 
-    constructor(private context: vscode.ExtensionContext) { }
+    constructor(private context: vscode.ExtensionContext) {
+        this.pythonString = vscode.workspace.getConfiguration('leoIntegration').get('python', "");
+    }
 
     public action(p_action: string, p_jsonParam: string, p_deferedPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
         // * Places an action to be made by leoBridge.py on top of a stack, to be resolved from the bottom
@@ -75,9 +82,24 @@ export class LeoBridge {
         }
     }
 
+    private findBestPythonString(): string {
+        let w_paths = ["randomz1s9k20a", "python3", "py", "python"];
+        let w_foundPath = "";
+        w_paths.forEach(p_path => {
+            if (this.hasbin.sync(p_path) && !w_foundPath) {
+                w_foundPath = p_path;
+            }
+        });
+        return w_foundPath;
+    }
+
     public initLeoProcess(): Promise<LeoBridgePackage> {
+        let w_pythonPath = this.pythonString;
+        if (!w_pythonPath) {
+            w_pythonPath = this.findBestPythonString(); // Thanks to EDK for finding the first bug!
+        }
         // * Spawn a python child process
-        this.process = child.spawn("python3", [
+        this.process = child.spawn(w_pythonPath, [
             this.context.extensionPath + "/scripts/leobridge.py"
         ]);
         // * Capture the python process output

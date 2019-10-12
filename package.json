@@ -53,6 +53,12 @@
           "type": "boolean",
           "description": "Show the outline tree in the explorer view"
         },
+        "leoIntegration.python": {
+          "scope": "application",
+          "default": "",
+          "type": "string",
+          "description": "Specifies the name of the python3 launcher - leaving empty will try 'python3', 'py' and 'python'"
+        },
         "leoIntegration.showOpenAside": {
           "scope": "application",
           "default": true,
@@ -274,5 +280,8 @@
     "typescript": "^3.3.1",
     "tslint": "^5.12.1",
     "vscode-test": "^1.0.2"
+  },
+  "dependencies": {
+    "hasbin": "^1.2.3"
   }
 }
