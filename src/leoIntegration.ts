@@ -667,7 +667,7 @@ export class LeoIntegration {
             })
             .then(p_chosenLeoFile => {
                 if (p_chosenLeoFile) {
-                    this.leoBridge.action("openFile", '"' + p_chosenLeoFile[0].fsPath + '"')
+                    this.leoBridge.action("openFile", '"' + p_chosenLeoFile[0].fsPath.replace(/\\/g, "/") + '"')
                         .then((p_result: LeoBridgePackage) => {
 
                             this.context.subscriptions.push(vscode.workspace.registerFileSystemProvider(this.leoUriScheme, this.leoFileSystem, { isCaseSensitive: true }));
