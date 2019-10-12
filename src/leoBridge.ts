@@ -83,7 +83,7 @@ export class LeoBridge {
     }
 
     private findBestPythonString(): string {
-        let w_paths = ["randomz1s9k20a", "python3", "py", "python"];
+        let w_paths = ["python3", "py", "python"];
         let w_foundPath = "";
         w_paths.forEach(p_path => {
             if (this.hasbin.sync(p_path) && !w_foundPath) {
