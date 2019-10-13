@@ -192,6 +192,24 @@
       }
     ],
     "menus": {
+      "commandPalette": [
+        {
+          "command": "leointeg.openLeoFile",
+          "when": "leoBridgeReady==true && !leoTreeOpened"
+        },
+        {
+          "command": "leointeg.closeLeoFile",
+          "when": "leoTreeOpened==true"
+        },
+        {
+          "command": "leointeg.test",
+          "when": "true"
+        },
+        {
+          "command": "leointeg.killLeo",
+          "when": "leoBridgeReady==true"
+        }
+      ],
       "view/title": [
         {
           "command": "leointeg.openLeoFile",
