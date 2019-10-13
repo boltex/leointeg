@@ -1,4 +1,5 @@
 export class Constants {
+    public static LEO_STATUSBAR_COLOR: string = "#fb7c47"; // TODO : Status bar color and text should be user settings
     public static LEO_FILE_TYPE_EXTENSION: string = "leo";
     public static LEO_URI_SCHEME: string = "leo";
     public static LEO_URI_SCHEME_HEADER: string = "leo:/";

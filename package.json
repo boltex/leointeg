@@ -202,10 +202,6 @@
           "when": "leoTreeOpened==true"
         },
         {
-          "command": "leointeg.test",
-          "when": "true"
-        },
-        {
           "command": "leointeg.killLeo",
           "when": "leoBridgeReady==true"
         }
