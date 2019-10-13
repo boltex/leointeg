@@ -1,5 +1,4 @@
 // TODO : move commands from leointegration.ts (see Leo-Commands-Notes.md)
-
 export class LeoCommands { }
 // public editHeadline(p_node: LeoNode) {
 //     this.editHeadlineInputOptions.value = p_node.label; // Preset input pop up
