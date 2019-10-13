@@ -1,5 +1,6 @@
 import * as child from "child_process";
 import * as vscode from "vscode";
+import { Constants } from "./constants";
 import { LeoBridgePackage, LeoAction } from "./types";
 // import * as hasbin from '../node_modules/hasbin';
 
@@ -14,10 +15,6 @@ export class LeoBridge {
     private readyPromise: Promise<LeoBridgePackage> | undefined;
     private pythonString = "";
     private hasbin = require('hasbin');
-
-    // * Constants
-    // TODO : separate constants
-    private leoTransactionHeader: string = "leoBridge:";  // string used to prefix transaction, to differenciate from errors
 
     constructor(private context: vscode.ExtensionContext) {
         this.pythonString = vscode.workspace.getConfiguration('leoIntegration').get('python', "");
@@ -62,7 +59,7 @@ export class LeoBridge {
         if (this.callStack.length && !this.actionBusy) {
             this.actionBusy = true; // launch / resolve bottom one
             const w_action = this.callStack[0];
-            this.stdin(this.leoTransactionHeader + w_action.parameter + "\n");
+            this.stdin(Constants.LEO_TRANSACTION_HEADER + w_action.parameter + "\n");
         }
     }
 
@@ -70,7 +67,7 @@ export class LeoBridge {
         // * Process data that came out of leoBridge.py's process stdout
         let w_processed: boolean = false;
 
-        if (p_data.startsWith(this.leoTransactionHeader)) {
+        if (p_data.startsWith(Constants.LEO_TRANSACTION_HEADER)) {
             this.resolveBridgeReady(p_data.substring(10));
             w_processed = true;
         }

@@ -92,7 +92,7 @@
           ]
         },
         "leoIntegration.connectionPort": {
-          "default": 80,
+          "default": 32125,
           "scope": "application",
           "minimum": 0,
           "maximum": 65535,

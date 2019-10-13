@@ -3,7 +3,7 @@
 // import * as vscode from "vscode";
 // import { LeoBridgePackage, LeoAction } from "./types";
 
-// export class LeoFiles {
+export class LeoFiles { }
 
 //     private getBestOpenFolderUri(): vscode.Uri {
 //         // Find a folder to propose when opening the browse-for-leo-file chooser
@@ -79,5 +79,3 @@
 //                 }
 //             });
 //     }
-
-// }
