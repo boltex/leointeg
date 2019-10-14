@@ -7,9 +7,17 @@ import os
 import time
 import json
 
-# globals
+# server defaults
 websocketHost = "localhost"
 websocketPort = 32125
+
+
+# class leoBridgeIntegController:
+#     '''Leo Bridge Controller'''
+
+#     def __init__(self):
+#         self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
+
 
 bridge = leoBridge.controller(gui='nullGui',
                               loadPlugins=False,  # True: attempt to load plugins.
@@ -23,12 +31,7 @@ currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'read
 
 commander = None  # going to store the leo file commander once its opened
 
-gnx_to_vnode = []
-
-
-def es(p_string):
-    '''Emit String Function'''
-    print(p_string, flush=True)
+gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
 
 
 def sendLeoBridgePackage(p_key=False, p_any=None):
@@ -63,7 +66,7 @@ def outputPNodes(p_pList):
 def test(p_param):
     '''Emit a test'''
     global bridgeGlobals, commander
-    es('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param))
+    print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param))
     return sendLeoBridgePackage("package", "test string from the response package")
     # for p in commander.all_positions():
     #     if p.h:
@@ -78,7 +81,7 @@ def openFile(p_file):
         create_gnx_to_vnode()
         return outputPNode(commander.p)
     else:
-        es('Error in openFile')
+        print('Error in openFile')
         return('Error in openFile')
 
 
@@ -89,10 +92,10 @@ def getPNode(p_ap):
         if w_p:
             return outputPNode(w_p)
         else:
-            es("Error in getPNode no w_p node found")  # default empty
+            print("Error in getPNode no w_p node found")  # default empty
             return ("Error in getPNode no w_p node found")  # default empty
     else:
-        es("Error in getPNode no param p_ap")
+        print("Error in getPNode no param p_ap")
         return("Error in getPNode no param p_ap")
 
 
@@ -163,7 +166,7 @@ def setNewBody(p_body):
         commander.p.b = p_body['body']
         return outputPNode(commander.p)
     else:
-        es("Error in setNewBody")
+        print("Error in setNewBody")
         return("Error in setNewBody")
 
 
@@ -191,7 +194,7 @@ def setNewHeadline(p_apHeadline):
             w_p.h = w_newHeadline
             return outputPNode(w_p)
     else:
-        es("Error in setNewHeadline")
+        print("Error in setNewHeadline")
         return("Error in setNewHeadline")
 
 
@@ -231,7 +234,7 @@ def create_gnx_to_vnode():
     gnx_to_vnode = {v.gnx: v for v in commander.all_unique_nodes()}
     # This is likely the only data that ever will be needed.
     if 0:
-        es('app.create_all_data: %5.3f sec. %s entries' % (
+        print('app.create_all_data: %5.3f sec. %s entries' % (
             (time.clock()-t1), len(list(gnx_to_vnode.keys()))))
     test_round_trip_positions()
 
@@ -253,8 +256,8 @@ def test_round_trip_positions():
     gnx_to_vnode = old_d
     new_len = len(list(gnx_to_vnode.keys()))
     assert old_len == new_len, (old_len, new_len)
-    es('qtyAllPositions : ' + str(qtyAllPositions))
-    es(('app.test_round_trip_positions: %5.3f sec for nodes total: ' % (time.clock()-t1))+str(qtyAllPositions))
+    print('qtyAllPositions : ' + str(qtyAllPositions))
+    print(('app.test_round_trip_positions: %5.3f sec for nodes total: ' % (time.clock()-t1))+str(qtyAllPositions))
 
 
 def yieldAllRootChildren():
@@ -282,7 +285,7 @@ def p_to_ap(p):
     '''(From Leo plugin leoflexx.py) Converts Leo position to a serializable archived position.'''
     global commander, gnx_to_vnode
     if not p.v:
-        es('app.p_to_ap: no p.v: %r %s' % (p))
+        print('app.p_to_ap: no p.v: %r %s' % (p))
         assert False
     p_gnx = p.v.gnx
     if p_gnx not in gnx_to_vnode:
@@ -299,7 +302,7 @@ def p_to_ap(p):
             'headline': stack_v.h,
         } for (stack_v, stack_childIndex) in p.stack],
     }
-    # TODO : (MAYBE) Convert all those bools in an integer : 'status' Flags
+    # TODO : (MAYBE) Convert all those bools into an integer 'status' Flags
     if bool(p.b):
         w_ap['hasBody'] = True
     if p.hasChildren():
@@ -317,6 +320,11 @@ def p_to_ap(p):
     return w_ap
 
 
+# ! #######################
+# ! #     SERVER LOOP     #
+# ! #######################
+
+
 def processCommand(p_string):
     '''Process incoming command'''
     global currentActionId
@@ -331,20 +339,21 @@ def processCommand(p_string):
             return("Error in processCommand")
         return
     if p_string:
-        es('from vscode' + p_string)  # NOT REOCOGNIZED : Emit if not an empty string
+        print('from vscode' + p_string)  # NOT REOCOGNIZED : Emit if not an empty string
 
 
 def main():
     '''python script for leo integration via leoBridge'''
     global websocketHost, websocketPort
-    sys.stdin = os.fdopen(sys.stdin.fileno(), 'r')
-    es("Starting leobridge server... [ctrl+c] to break")
+    print("Starting leobridge server... [ctrl+c] to break", flush=True)
+
+    # create leo bridge instance
 
     async def leoBridgeServer(websocket, path):
-        await websocket.send(sendLeoBridgePackage())  # Just send empty as 'ok'
+        await websocket.send(sendLeoBridgePackage())  # * Start by just sending empty as 'ok'
         async for message in websocket:
-            message = processCommand(message)  # Process entry from stdin(message)
-            await websocket.send(message)
+            answer = processCommand(message)
+            await websocket.send(answer)
 
     start_server = websockets.serve(leoBridgeServer, websocketHost, websocketPort)
 

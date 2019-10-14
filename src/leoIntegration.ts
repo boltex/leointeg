@@ -1,4 +1,3 @@
-import * as child from "child_process";
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoBridgePackage, RevealType, ArchivedPosition } from "./types";
