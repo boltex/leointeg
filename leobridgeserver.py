@@ -1,11 +1,16 @@
 import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
+import asyncio
+import websockets
 import sys
 import os
 import time
 import json
 
 # globals
+websocketHost = "localhost"
+websocketPort = 32125
+
 bridge = leoBridge.controller(gui='nullGui',
                               loadPlugins=False,  # True: attempt to load plugins.
                               readSettings=True,  # True: read standard settings files.
@@ -31,19 +36,19 @@ def sendLeoBridgePackage(p_key=False, p_any=None):
     w_package = {"id": currentActionId}
     if p_key:
         w_package[p_key] = p_any  # add [key]?:any
-    es("leoBridge:"+json.dumps(w_package))
+    return("leoBridge:"+json.dumps(w_package))
 
 
 def outputBodyData(p_bodyText=""):
-    sendLeoBridgePackage("bodyData", p_bodyText)
+    return sendLeoBridgePackage("bodyData", p_bodyText)
 
 
 def outputPNode(p_node=False):
     if p_node:
-        sendLeoBridgePackage("node", p_to_ap(p_node))  # Single node, singular
+        return sendLeoBridgePackage("node", p_to_ap(p_node))  # Single node, singular
         # es("nodeReady"+json.dumps([p_to_ap(p_node)]))  # now convert to JSON as a whole
     else:
-        sendLeoBridgePackage("node", None)
+        return sendLeoBridgePackage("node", None)
         # es("nodeReady"+json.dumps([]))
 
 
@@ -51,7 +56,7 @@ def outputPNodes(p_pList):
     w_apList = []
     for p in p_pList:
         w_apList.append(p_to_ap(p))
-    sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
+    return sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
     # es("outlineDataReady"+json.dumps(w_apList))  # now convert to JSON as a whole
 
 
@@ -59,7 +64,7 @@ def test(p_param):
     '''Emit a test'''
     global bridgeGlobals, commander
     es('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param))
-    sendLeoBridgePackage("package", "test string from the response package")
+    return sendLeoBridgePackage("package", "test string from the response package")
     # for p in commander.all_positions():
     #     if p.h:
     #         outputPNode(p)
@@ -71,19 +76,10 @@ def openFile(p_file):
     commander = bridge.openLeoFile(p_file)
     if(commander):
         create_gnx_to_vnode()
-        outputPNode(commander.p)
+        return outputPNode(commander.p)
     else:
         es('Error in openFile')
-
-
-def getAllRootChildren():
-    '''Return all root children P nodes'''
-    # TODO : Wrong Naming! Does not emit out strings! Rename this function, or integrate it inside 'getChildren'
-    global commander
-    p = commander.rootPosition()
-    while p:
-        yield p
-        p.moveToNext()
+        return('Error in openFile')
 
 
 def getPNode(p_ap):
@@ -91,11 +87,13 @@ def getPNode(p_ap):
     if(p_ap):
         w_p = ap_to_p(p_ap)
         if w_p:
-            outputPNode(w_p)
+            return outputPNode(w_p)
         else:
             es("Error in getPNode no w_p node found")  # default empty
+            return ("Error in getPNode no w_p node found")  # default empty
     else:
         es("Error in getPNode no param p_ap")
+        return("Error in getPNode no param p_ap")
 
 
 def getChildren(p_ap):
@@ -103,11 +101,11 @@ def getChildren(p_ap):
     if(p_ap):
         w_p = ap_to_p(p_ap)
         if w_p and w_p.hasChildren():
-            outputPNodes(w_p.children())
+            return outputPNodes(w_p.children())
         else:
-            outputPNodes([])  # default empty array
+            return outputPNodes([])  # default empty array
     else:
-        outputPNodes(getAllRootChildren())  # this outputs all Root Children
+        return outputPNodes(yieldAllRootChildren())  # this outputs all Root Children
 
 
 def getParent(p_ap):
@@ -115,11 +113,11 @@ def getParent(p_ap):
     if(p_ap):
         w_p = ap_to_p(p_ap)
         if w_p and w_p.hasParent():
-            outputPNode(w_p.getParent())
+            return outputPNode(w_p.getParent())
         else:
-            outputPNode()  # default empty for root
+            return outputPNode()  # default empty for root
     else:
-        outputPNode()
+        return outputPNode()
 
 
 def getSelectedNode(p_param):
@@ -127,9 +125,9 @@ def getSelectedNode(p_param):
     global commander
     c = commander
     if(c.p):
-        outputPNode(c.p)
+        return outputPNode(c.p)
     else:
-        outputPNode()
+        return outputPNode()
 
 
 def getBody(p_gnx):
@@ -138,11 +136,11 @@ def getBody(p_gnx):
     if(p_gnx):
         w_v = commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
         if w_v.b:
-            outputBodyData(w_v.b)
+            return outputBodyData(w_v.b)
         else:
-            outputBodyData()  # default empty
+            return outputBodyData()  # default empty
     else:
-        outputBodyData()  # default empty
+        return outputBodyData()  # default empty
 
 
 def getBodyLength(p_gnx):
@@ -151,11 +149,11 @@ def getBodyLength(p_gnx):
     if(p_gnx):
         w_v = commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
         if w_v and len(w_v.b):
-            sendLeoBridgePackage("bodyLenght", len(w_v.b))
+            return sendLeoBridgePackage("bodyLenght", len(w_v.b))
         else:
-            sendLeoBridgePackage("bodyLenght", 0)
+            return sendLeoBridgePackage("bodyLenght", 0)
     else:
-        sendLeoBridgePackage("bodyLenght", 0)
+        return sendLeoBridgePackage("bodyLenght", 0)
 
 
 def setNewBody(p_body):
@@ -163,9 +161,10 @@ def setNewBody(p_body):
     global commander
     if(commander.p):
         commander.p.b = p_body['body']
-        outputPNode(commander.p)
+        return outputPNode(commander.p)
     else:
         es("Error in setNewBody")
+        return("Error in setNewBody")
 
 
 def setBody(p_package):
@@ -178,7 +177,7 @@ def setBody(p_package):
             if w_p.v == w_v:  # found
                 w_p.setDirty()
                 break
-    sendLeoBridgePackage()  # Just send empty as 'ok'
+    return sendLeoBridgePackage()  # Just send empty as 'ok'
 
 
 def setNewHeadline(p_apHeadline):
@@ -190,9 +189,10 @@ def setNewHeadline(p_apHeadline):
         if w_p:
             # set this node's new headline
             w_p.h = w_newHeadline
-            outputPNode(w_p)
+            return outputPNode(w_p)
     else:
         es("Error in setNewHeadline")
+        return("Error in setNewHeadline")
 
 
 def setSelectedNode(p_ap):
@@ -203,7 +203,7 @@ def setSelectedNode(p_ap):
         if w_p:
             # set this node as selection
             commander.selectPosition(w_p)
-    sendLeoBridgePackage()  # Just send empty as 'ok'
+    return sendLeoBridgePackage()  # Just send empty as 'ok'
 
 
 def expandNode(p_ap):
@@ -212,7 +212,7 @@ def expandNode(p_ap):
         w_p = ap_to_p(p_ap)
         if w_p:
             w_p.expand()
-    sendLeoBridgePackage()  # Just send empty as 'ok'
+    return sendLeoBridgePackage()  # Just send empty as 'ok'
 
 
 def collapseNode(p_ap):
@@ -221,7 +221,7 @@ def collapseNode(p_ap):
         w_p = ap_to_p(p_ap)
         if w_p:
             w_p.contract()
-    sendLeoBridgePackage()  # Just send empty as 'ok'
+    return sendLeoBridgePackage()  # Just send empty as 'ok'
 
 
 def create_gnx_to_vnode():
@@ -255,6 +255,15 @@ def test_round_trip_positions():
     assert old_len == new_len, (old_len, new_len)
     es('qtyAllPositions : ' + str(qtyAllPositions))
     es(('app.test_round_trip_positions: %5.3f sec for nodes total: ' % (time.clock()-t1))+str(qtyAllPositions))
+
+
+def yieldAllRootChildren():
+    '''Return all root children P nodes'''
+    global commander
+    p = commander.rootPosition()
+    while p:
+        yield p
+        p.moveToNext()
 
 
 def ap_to_p(ap):
@@ -317,9 +326,9 @@ def processCommand(p_string):
         if w_param and w_param['action']:
             # * Storing id of action in global var instead of passing as parameter
             currentActionId = w_param['id']
-            globals()[w_param['action']](w_param['param'])
+            return globals()[w_param['action']](w_param['param'])
         else:
-            es("Error in processCommand")
+            return("Error in processCommand")
         return
     if p_string:
         es('from vscode' + p_string)  # NOT REOCOGNIZED : Emit if not an empty string
@@ -327,22 +336,20 @@ def processCommand(p_string):
 
 def main():
     '''python script for leo integration via leoBridge'''
+    global websocketHost, websocketPort
     sys.stdin = os.fdopen(sys.stdin.fileno(), 'r')
-    # Sending READY CODE
-    # es("leoBridgeReady")
-    sendLeoBridgePackage()  # Just send empty as 'ok'
+    es("Starting leobridge server... [ctrl+c] to break")
 
-    # Pocess incoming commands until EXIT CODE
-    exitFlag = False
-    while not exitFlag:
-        w_line = sys.stdin.readline()
-        if w_line.strip() == "exit":
-            exitFlag = True
-        else:
-            processCommand(w_line)
+    async def leoBridgeServer(websocket, path):
+        await websocket.send(sendLeoBridgePackage())  # Just send empty as 'ok'
+        async for message in websocket:
+            message = processCommand(message)  # Process entry from stdin(message)
+            await websocket.send(message)
 
-    # end
-    es("finally exiting leobridge")
+    start_server = websockets.serve(leoBridgeServer, websocketHost, websocketPort)
+
+    asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().run_forever()
 
 
 # Startup

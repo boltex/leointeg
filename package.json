@@ -289,6 +289,7 @@
     "@types/mocha": "^5.2.6",
     "@types/node": "^10.12.21",
     "@types/vscode": "^1.38.0",
+    "@types/ws": "^6.0.0",
     "glob": "^7.1.4",
     "mocha": "^6.1.4",
     "typescript": "^3.3.1",
@@ -296,6 +297,7 @@
     "vscode-test": "^1.0.2"
   },
   "dependencies": {
+    "ws": "^6.0.0",
     "hasbin": "^1.2.3"
   }
 }

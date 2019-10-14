@@ -1,11 +1,9 @@
 import * as child from "child_process";
 import * as vscode from "vscode";
+import * as WebSocket from 'ws';
 import { Constants } from "./constants";
 import { LeoBridgePackage, LeoAction } from "./types";
-// import * as hasbin from '../node_modules/hasbin';
 
-// var isPyAvailable = require('hasbin').sync('python')  import * as hasbin from "hasbin";
-// npm install --save @types/hasbin
 export class LeoBridge {
     // * Communications with Python
     public actionBusy: boolean = false;
@@ -13,12 +11,10 @@ export class LeoBridge {
     private callStack: LeoAction[] = [];
     private process: child.ChildProcess | undefined;
     private readyPromise: Promise<LeoBridgePackage> | undefined;
-    private pythonString = "";
     private hasbin = require('hasbin');
+    private websocket: WebSocket | null = null;
 
-    constructor(private context: vscode.ExtensionContext) {
-        this.pythonString = vscode.workspace.getConfiguration('leoIntegration').get('python', "");
-    }
+    constructor(private context: vscode.ExtensionContext) { }
 
     public action(p_action: string, p_jsonParam: string, p_deferedPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
         // * Places an action to be made by leoBridge.py on top of a stack, to be resolved from the bottom
@@ -91,33 +87,27 @@ export class LeoBridge {
     }
 
     public initLeoProcess(): Promise<LeoBridgePackage> {
-        let w_pythonPath = this.pythonString;
-        if (!w_pythonPath) {
-            w_pythonPath = this.findBestPythonString(); // Thanks to EDK for finding the first bug!
-        }
-        // * Spawn a python child process
-        this.process = child.spawn(w_pythonPath, [
-            this.context.extensionPath + "/scripts/leobridge.py"
-        ]);
+        const w_socketProtocol = vscode.workspace.getConfiguration('leoIntegration').get('connectionProtocol', Constants.LEO_TCPIP_DEFAULT_PROTOCOL); // 'ws://'
+        const w_socketAdress = vscode.workspace.getConfiguration('leoIntegration').get('connectionAdress', Constants.LEO_TCPIP_DEFAULT_ADRESS); // 'ws://'
+        const w_socketPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', Constants.LEO_TCPIP_DEFAULT_PORT); // 32125
+
+        // * Spawn a websocket
+        this.websocket = new WebSocket(w_socketProtocol + w_socketAdress + ":" + w_socketPort);
         // * Capture the python process output
-        this.process.stdout.on("data", (data: string) => {
-            data.toString().split("\n").forEach(p_line => {
-                p_line = p_line.trim();
-                if (p_line) { // * std out process line by line: json shouldn't have line breaks
-                    this.processAnswer(p_line);
-                }
-            });
-        });
+        this.websocket.onmessage = (p_event) => {
+            if (p_event.data) {
+                this.processAnswer(p_event.data.toString());
+            }
+        };
         // * Capture other python process outputs
-        this.process.stderr.on("data", (data: string) => {
-            console.log(`stderr: ${data}`);
-        });
-        this.process.on("close", (code: any) => {
-            console.log(`child process exited with code ${code}`);
-            this.process = undefined;
-        });
+        this.websocket.onerror = (p_event) => {
+            console.log(`websocket error: ${p_event.message}`);
+        };
+        this.websocket.onclose = (p_event) => {
+            console.log(`websocket closed, code: ${p_event.code}`);
+        };
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
-        this.readyPromise = this.action("", "", { id: 1, package: this.process }, true);
+        this.readyPromise = this.action("", "", { id: 1 }, true);
         return this.readyPromise; // This promise will resolve when the started python process starts
     }
 
@@ -125,8 +115,8 @@ export class LeoBridge {
         // * Send into the python process input
         if (this.readyPromise) {
             this.readyPromise.then(() => {  //  using '.then' to be buffered in case process isn't ready.
-                if (this.process) {
-                    this.process.stdin.write(p_message); // * std in interaction sending to python script
+                if (this.websocket && this.websocket.OPEN) {
+                    this.websocket.send(p_message); // p_message should be json
                 }
             });
         }

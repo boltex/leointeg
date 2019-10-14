@@ -12,7 +12,6 @@ export class LeoIntegration {
     // * Startup flags
     public fileOpenedReady: boolean = false;
     private leoBridgeReadyPromise: Promise<LeoBridgePackage>; // set when leoBridge has a leo controller ready
-    private leoPythonProcess: child.ChildProcess | undefined;
 
     // * Configuration Settings
     public treeKeepFocus: boolean;
@@ -90,7 +89,6 @@ export class LeoIntegration {
         this.leoBridgeReadyPromise = this.leoBridge.initLeoProcess();
         this.leoBridgeReadyPromise.then((p_package) => {
             this.assertId(p_package.id === 1, "p_package.id === 0"); // test integrity
-            this.leoPythonProcess = p_package.package;
             vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
         });
 
@@ -380,7 +378,7 @@ export class LeoIntegration {
         }
         vscode.commands.executeCommand('setContext', 'leoObjectSelected', this.leoObjectSelected);
 
-        if (this.leoObjectSelected && (this.leoPythonProcess && this.fileOpenedReady)) { // * Also check in constructor for statusBar properties
+        if (this.leoObjectSelected && this.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
             this.leoStatusBarItem.color = Constants.LEO_STATUSBAR_COLOR;
             this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
             // this.leoStatusBarItem.text = `$(keyboard) Literate `;
@@ -429,7 +427,6 @@ export class LeoIntegration {
         }
         return w_leoNodesArray;
     }
-
 
     public selectTreeNode(p_node: LeoNode): void {
         // * User has selected a node in the outline
@@ -635,7 +632,7 @@ export class LeoIntegration {
     }
 
     public test(): void {
-        if (this.leoPythonProcess && this.fileOpenedReady) {
+        if (this.fileOpenedReady) {
             console.log("sending test 'getSelectedNode'");
             // this.leoBridge.action("getSelectedNode", "{}").then(
             this.leoBridge.action("getSelectedNode", "{\"testparam\":\"hello test parameter\"}").then(
