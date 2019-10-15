@@ -83,11 +83,11 @@ export class LeoIntegration {
         // * File Browser
         this.leoFiles = new LeoFiles(context);
 
-        // * Setup leoBridge as a python process
+        // * Setup leoBridge
         this.leoBridge = new LeoBridge(context);
         this.leoBridgeReadyPromise = this.leoBridge.initLeoProcess();
         this.leoBridgeReadyPromise.then((p_package) => {
-            this.assertId(p_package.id === 1, "p_package.id === 0"); // test integrity
+            this.assertId(p_package.id === 1, "p_package.id === 1"); // test integrity
             vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
         });
 

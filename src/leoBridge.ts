@@ -1,4 +1,3 @@
-import * as child from "child_process";
 import * as vscode from "vscode";
 import * as WebSocket from 'ws';
 import { Constants } from "./constants";
@@ -9,7 +8,6 @@ export class LeoBridge {
     public actionBusy: boolean = false;
     private leoBridgeSerialId: number = 0;
     private callStack: LeoAction[] = [];
-    private process: child.ChildProcess | undefined;
     private readyPromise: Promise<LeoBridgePackage> | undefined;
     private hasbin = require('hasbin');
     private websocket: WebSocket | null = null;
@@ -33,16 +31,15 @@ export class LeoBridge {
         });
     }
 
-    private resolveBridgeReady(p_jsonObject: string) {
+    private resolveBridgeReady(p_object: string) {
         // * Resolves promises with the answers from an action that was done by leoBridge.py
         let w_bottomAction = this.callStack.shift();
 
         if (w_bottomAction) {
-            const w_package = JSON.parse(p_jsonObject);
             if (w_bottomAction.deferedPayload) { // Used when the action already has a return value ready but is also waiting for python's side
                 w_bottomAction.resolveFn(w_bottomAction.deferedPayload); // given back 'as is'
             } else {
-                w_bottomAction.resolveFn(w_package);
+                w_bottomAction.resolveFn(p_object);
             }
             this.actionBusy = false;
         } else {
@@ -55,27 +52,40 @@ export class LeoBridge {
         if (this.callStack.length && !this.actionBusy) {
             this.actionBusy = true; // launch / resolve bottom one
             const w_action = this.callStack[0];
-            this.stdin(Constants.LEO_TRANSACTION_HEADER + w_action.parameter + "\n");
+            this.stdin(w_action.parameter + "\n");
         }
+    }
+
+    private tryParseJSON(p_jsonStr: string) {
+        try {
+            var w_object = JSON.parse(p_jsonStr);
+            // JSON.parse(null) returns null, and typeof null === "object", null is falsey, so this suffices:
+            if (w_object && typeof w_object === "object") {
+                return w_object;
+            }
+        }
+        catch (e) {
+            console.log('json was invalid: ' + p_jsonStr);
+        }
+        return false;
     }
 
     private processAnswer(p_data: string): void {
         // * Process data that came out of leoBridge.py's process stdout
-        let w_processed: boolean = false;
 
-        if (p_data.startsWith(Constants.LEO_TRANSACTION_HEADER)) {
-            this.resolveBridgeReady(p_data.substring(10));
-            w_processed = true;
-        }
+        const w_parsedData = this.tryParseJSON(p_data);
 
-        if (w_processed) {
+        if (w_parsedData) {
+            this.resolveBridgeReady(w_parsedData);
             this.callAction();
-        } else if (!!this.process) { // unprocessed/unknown python output
+        } else { // unprocessed/unknown python output
             console.log("from python", p_data);
         }
     }
 
     private findBestPythonString(): string {
+        // * Used if starting server ourself...
+
         let w_paths = ["python3", "py", "python"];
         let w_foundPath = "";
         w_paths.forEach(p_path => {
