@@ -141,6 +141,7 @@ export class LeoIntegration {
         this.leoBridgeReadyPromise.then((p_package) => {
             this.assertId(p_package.id === 1, "p_package.id === 1"); // test integrity
             vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
+            vscode.window.showInformationMessage(`Connected`);
         });
     }
 
