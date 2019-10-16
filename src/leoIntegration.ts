@@ -10,7 +10,7 @@ import { LeoBridge } from "./leoBridge";
 export class LeoIntegration {
     // * Startup flags
     public fileOpenedReady: boolean = false;
-    private leoBridgeReadyPromise: Promise<LeoBridgePackage>; // set when leoBridge has a leo controller ready
+    private leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // set when leoBridge has a leo controller ready
 
     // * Configuration Settings
     public treeKeepFocus: boolean;
@@ -18,7 +18,6 @@ export class LeoIntegration {
     public treeInExplorer: boolean;
     public showOpenAside: boolean;
     public bodyEditDelay: number;
-    public connectionType: string;
     public connectionPort: number;
 
     // * Browse
@@ -77,7 +76,9 @@ export class LeoIntegration {
         this.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
         vscode.commands.executeCommand('setContext', 'showOpenAside', this.showOpenAside);
         this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
-        this.connectionType = vscode.workspace.getConfiguration('leoIntegration').get('connectionType', "standard I/O");
+        // leoServerCommand
+        // startServerAutomatically
+        // connectToServerAutomatically
         this.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', 80);
 
         // * File Browser
@@ -85,11 +86,6 @@ export class LeoIntegration {
 
         // * Setup leoBridge
         this.leoBridge = new LeoBridge(context);
-        this.leoBridgeReadyPromise = this.leoBridge.initLeoProcess();
-        this.leoBridgeReadyPromise.then((p_package) => {
-            this.assertId(p_package.id === 1, "p_package.id === 1"); // test integrity
-            vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
-        });
 
         // * Leo view outline pane
         this.leoTreeDataProvider = new LeoOutlineProvider(this);
@@ -132,10 +128,20 @@ export class LeoIntegration {
         vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
     }
 
+
+
     private assertId(p_val: boolean, p_from: string): void {
         if (!p_val) {
             console.error("ASSERT FAILED in ", p_from); // TODO : Improve id error checking
         }
+    }
+
+    public connect(): void {
+        this.leoBridgeReadyPromise = this.leoBridge.initLeoProcess();
+        this.leoBridgeReadyPromise.then((p_package) => {
+            this.assertId(p_package.id === 1, "p_package.id === 1"); // test integrity
+            vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
+        });
     }
 
     public reveal(p_leoNode: LeoNode, p_options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): void {
@@ -357,7 +363,6 @@ export class LeoIntegration {
             this.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
             vscode.commands.executeCommand('setContext', 'showOpenAside', this.showOpenAside);
             this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
-            this.connectionType = vscode.workspace.getConfiguration('leoIntegration').get('connectionType', "standard I/O");
             this.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', 80);
         }
     }

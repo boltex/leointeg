@@ -6,12 +6,13 @@ export function activate(context: vscode.ExtensionContext) {
     const leoIntegration: LeoIntegration = new LeoIntegration(context);
 
     // * Reset Extension context flags (used in 'when' clauses in package.json)
-    vscode.commands.executeCommand('setContext', 'leoBridgeReady', false);
-    vscode.commands.executeCommand('setContext', 'leoTreeOpened', false);
+    vscode.commands.executeCommand('setContext', 'leoBridgeReady', false); // connected to a leobridge server?
+    vscode.commands.executeCommand('setContext', 'leoTreeOpened', false); // Having a Leo file opened on that server?
 
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.test", () => leoIntegration.test()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.killLeo", () => leoIntegration.leoBridge.killLeoBridge()));
 
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.connectToServer", () => leoIntegration.connect()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.openLeoFile", () => leoIntegration.openLeoFile()));
     // TODO : Fleshout this function, also support closing, re-opening and multiple simultaneous Leo documents support
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.closeLeoFile", () => leoIntegration.closeLeoFile()));
@@ -20,8 +21,8 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.selectTreeNode", (p_node: LeoNode) => leoIntegration.selectTreeNode(p_node)));
 
     // * LeoNode Context Menu Actions
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.editHeadline", (p_node: LeoNode) => leoIntegration.editHeadline(p_node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.openAside", (node: LeoNode) => leoIntegration.showBodyDocumentAside(node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.editHeadline", (p_node: LeoNode) => leoIntegration.editHeadline(p_node)));
 
     // TODO : Fleshout the functions below and setup the rest of outline and body editing, scripting and other functionality of Leo!
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.mark", (node: LeoNode) => leoIntegration.mark(node)));

@@ -21,10 +21,13 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/ or on GitHu
 
 Make sure you have Node.js and Git installed, then...
 
-1. Get this repository `git clone https://github.com/boltex/leointeg.git`
+1. Get this repository: `git clone https://github.com/boltex/leointeg.git`
 2. Right-click that folder -> open with vscode, or, from inside a vscode window, File-> Open Folder...
-3. Run `npm install` in terminal to install dependencies
-4. Press F5 (the 'Run Extension' command shortcut of vscode's debug panel)
+3. Run `npm install` in terminal to install dependencies.
+4. Press F5. (the 'Run Extension' command shortcut of vscode's debug panel)
+5. A new vscode window is now running with leoInteg! (open it's preferences settings [ctrl+,] and make sure server settings are ok)
+6. The plugin will be activated if the workspace of this window has a leo file, or it can be manualy activated, by going to the Leo view.
+7. Click 'Connect' on the Leo Treeview header if not already connected. Once connected, the 'Open Leo File' icon will be available.
 
 ## Features
 
@@ -35,23 +38,23 @@ Make sure you have Node.js and Git installed, then...
 - Editors on the right side, acting as the body pane(s).
 - Extension-specific settings for user interface preferences: _Available in settings_ `[ctrl+,]`
 
-![Preview](resources/screenshot-explorer.png)
-
-### _Intended Features:_
-
-- Re-mapping of most of Leo's outline editing features through vscode and more, via leoBridge.
-- Detection of focused element to toggle functionality to suit the interactions with the opened Leo file. (by re-maping shortcut keys to the shortcut keys of Leo.)
-- 2 way synchronisation of leo's output files and vscode's explorer & 'normal mode' of operation.
-- Error lookup, or breakpoints cycling with automatic go-to line in generated file's nodes and body position.
-- File generating 'at' nodes that show their derived line number instead of the body-pane's line number (Also reproducing xcc-nodes behaviour)
-- Choosing between communicating using stdin/stdout, or remotely over tcp, through a REST api or websockets. (Data transfer is just simple JSON)
-
 ## Extension Settings
 
-- Option to either focus on body pane or keep focus in outline when a tree node is selected (May help for keyboard navigation)
-- Control the visibility of the outline pane in the explorer view
-- Show additional context menu item : "Open on the side" for tree node's body to open beside current body pane
-- Number of milliseconds to wait when debouncing after body text modifications are detected (for performance tuning)
+- Option to either focus on body pane or keep focus in outline when a tree node is selected. (May help for keyboard navigation)
+- Control the visibility of the outline pane in the explorer view.
+- Show additional context menu item : "Open on the side" for tree node's body to open beside current body pane.
+- Number of milliseconds to wait when debouncing after body text modifications are detected. (for performance tuning)
+- Preferences for setting the address and port, and for automatically starting, and connecting to a Leo Bridge server.
+
+![Preview](resources/screenshot-explorer.png)
+
+## _Intended Features:_
+
+- Re-mapping of most of Leo's outline editing features through vscode and more, via leoBridge.
+- Detection of focused element to toggle functionality, by re-maping shortcut keys, to suit the interactions with the opened Leo file.
+- 2 way synchronisation of leo's output files and vscode's explorer & 'normal mode' of operation.
+- Error lookup, or breakpoints cycling with automatic go-to line in generated file's nodes and body position.
+- File generating 'at' nodes that show their derived line number instead of the body-pane's line number along with color-syntaxing.
 
 ---
 
