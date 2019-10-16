@@ -69,7 +69,7 @@
         },
         "leoIntegration.leoServerCommand": {
           "scope": "application",
-          "default": "python3 leobridgeserver.py",
+          "default": "",
           "type": "string",
           "description": "Specifies the command to start a LeoBridge server (if starting a server automatically)"
         },
@@ -84,6 +84,12 @@
           "default": false,
           "type": "boolean",
           "description": "Connect automatically to a Leo server on specified 'Connection Port' upon activation of this expansion"
+        },
+        "leoIntegration.connectionAdress": {
+          "default": "localhost",
+          "scope": "application",
+          "type": "string",
+          "description": "Connection host"
         },
         "leoIntegration.connectionPort": {
           "default": 32125,

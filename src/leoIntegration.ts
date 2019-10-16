@@ -18,7 +18,6 @@ export class LeoIntegration {
     public treeInExplorer: boolean;
     public showOpenAside: boolean;
     public bodyEditDelay: number;
-    public connectionPort: number;
 
     // * Browse
     private leoFiles: LeoFiles;
@@ -79,7 +78,6 @@ export class LeoIntegration {
         // leoServerCommand
         // startServerAutomatically
         // connectToServerAutomatically
-        this.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', 80);
 
         // * File Browser
         this.leoFiles = new LeoFiles(context);
@@ -364,7 +362,6 @@ export class LeoIntegration {
             this.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
             vscode.commands.executeCommand('setContext', 'showOpenAside', this.showOpenAside);
             this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
-            this.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', 80);
         }
     }
 

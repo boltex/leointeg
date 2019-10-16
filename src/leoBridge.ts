@@ -34,7 +34,6 @@ export class LeoBridge {
     private resolveBridgeReady(p_object: string) {
         // * Resolves promises with the answers from an action that was done by leoBridge.py
         let w_bottomAction = this.callStack.shift();
-
         if (w_bottomAction) {
             if (w_bottomAction.deferedPayload) { // Used when the action already has a return value ready but is also waiting for python's side
                 w_bottomAction.resolveFn(w_bottomAction.deferedPayload); // given back 'as is'
@@ -52,7 +51,7 @@ export class LeoBridge {
         if (this.callStack.length && !this.actionBusy) {
             this.actionBusy = true; // launch / resolve bottom one
             const w_action = this.callStack[0];
-            this.stdin(w_action.parameter + "\n");
+            this.send(w_action.parameter + "\n");
         }
     }
 
@@ -72,9 +71,7 @@ export class LeoBridge {
 
     private processAnswer(p_data: string): void {
         // * Process data that came out of leoBridge.py's process stdout
-
         const w_parsedData = this.tryParseJSON(p_data);
-
         if (w_parsedData) {
             this.resolveBridgeReady(w_parsedData);
             this.callAction();
@@ -85,7 +82,6 @@ export class LeoBridge {
 
     private findBestPythonString(): string {
         // * Used if starting server ourself...
-
         let w_paths = ["python3", "py", "python"];
         let w_foundPath = "";
         w_paths.forEach(p_path => {
@@ -97,12 +93,11 @@ export class LeoBridge {
     }
 
     public initLeoProcess(): Promise<LeoBridgePackage> {
-        const w_socketProtocol = vscode.workspace.getConfiguration('leoIntegration').get('connectionProtocol', Constants.LEO_TCPIP_DEFAULT_PROTOCOL); // 'ws://'
         const w_socketAdress = vscode.workspace.getConfiguration('leoIntegration').get('connectionAdress', Constants.LEO_TCPIP_DEFAULT_ADRESS); // 'ws://'
         const w_socketPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', Constants.LEO_TCPIP_DEFAULT_PORT); // 32125
 
         // * Spawn a websocket
-        this.websocket = new WebSocket(w_socketProtocol + w_socketAdress + ":" + w_socketPort);
+        this.websocket = new WebSocket(Constants.LEO_TCPIP_DEFAULT_PROTOCOL + w_socketAdress + ":" + w_socketPort);
         // * Capture the python process output
         this.websocket.onmessage = (p_event) => {
             if (p_event.data) {
@@ -121,7 +116,7 @@ export class LeoBridge {
         return this.readyPromise; // This promise will resolve when the started python process starts
     }
 
-    private stdin(p_message: string): any {
+    private send(p_message: string): any {
         // * Send into the python process input
         if (this.readyPromise) {
             this.readyPromise.then(() => {  //  using '.then' to be buffered in case process isn't ready.
@@ -134,6 +129,6 @@ export class LeoBridge {
 
     public killLeoBridge(): void {
         console.log("sending kill command");
-        this.stdin("exit\n"); // 'exit' should kill the python script
+        this.send("exit\n"); // 'exit' should kill the python script
     }
 }
