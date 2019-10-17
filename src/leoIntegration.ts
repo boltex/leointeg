@@ -137,7 +137,7 @@ export class LeoIntegration {
     }
 
     private startNetworkServices(): void {
-        this.setOutlineTitle();
+
         if (this.startServerAutomatically) {
             if (this.leoServerCommand && this.leoServerCommand.length) {
                 // start by running command (see executeCommand for multiple useful snippets)
@@ -157,9 +157,9 @@ export class LeoIntegration {
         }
     }
 
-    private setOutlineTitle(): void {
-        this.leoTreeView.title = "test";
-        this.leoTreeExplorerView.title = "test";
+    private setOutlineTitle(): void { // * Available soon, see enable-proposed-api https://code.visualstudio.com/updates/v1_39#_treeview-message-api
+        // this.leoTreeView.title = "test"; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
+        // this.leoTreeExplorerView.title = "test"; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
     }
 
     // * This 'executeCommand' functions is taken from https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts
