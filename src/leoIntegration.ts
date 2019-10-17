@@ -1,4 +1,7 @@
 import * as vscode from "vscode";
+import * as child from 'child_process';
+import * as os from 'os';
+import * as which from 'which';
 import { Constants } from "./constants";
 import { LeoBridgePackage, RevealType, ArchivedPosition } from "./types";
 import { LeoFiles } from "./leoFiles";
@@ -18,6 +21,9 @@ export class LeoIntegration {
     public treeInExplorer: boolean;
     public showOpenAside: boolean;
     public bodyEditDelay: number;
+    public leoServerCommand: string;
+    public startServerAutomatically: boolean;
+    public connectToServerAutomatically: boolean;
 
     // * Browse
     private leoFiles: LeoFiles;
@@ -66,7 +72,6 @@ export class LeoIntegration {
     private bodyLastChangedDocument: vscode.TextDocument | undefined;
 
     constructor(private context: vscode.ExtensionContext) {
-
         // * Get configuration settings
         this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
         this.treeKeepFocusWhenAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusWhenAside', false);
@@ -75,9 +80,9 @@ export class LeoIntegration {
         this.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
         vscode.commands.executeCommand('setContext', 'showOpenAside', this.showOpenAside);
         this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
-        // leoServerCommand
-        // startServerAutomatically
-        // connectToServerAutomatically
+        this.leoServerCommand = vscode.workspace.getConfiguration('leoIntegration').get('leoServerCommand', "");
+        this.startServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('startServerAutomatically', false);
+        this.connectToServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('connectToServerAutomatically', false);
 
         // * File Browser
         this.leoFiles = new LeoFiles(context);
@@ -85,8 +90,10 @@ export class LeoIntegration {
         // * Setup leoBridge
         this.leoBridge = new LeoBridge(context);
 
-        // * Leo view outline pane
+        // * Same data provider for both outline trees, Leo view and Explorer view
         this.leoTreeDataProvider = new LeoOutlineProvider(this);
+
+        // * Leo view outline panes
         this.leoTreeView = vscode.window.createTreeView("leoIntegration", { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
         this.leoTreeView.onDidChangeSelection((p_event => this.onTreeViewChangedSelection(p_event)));
         this.leoTreeView.onDidExpandElement((p_event => this.onTreeViewExpandedElement(p_event)));
@@ -124,22 +131,110 @@ export class LeoIntegration {
         vscode.workspace.onDidChangeTextDocument(p_event => this.onDocumentChanged(p_event));
         vscode.workspace.onDidSaveTextDocument(p_event => this.onDocumentSaved(p_event));
         vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
+
+        // * Start server and / or connect to it (as specified in settings)
+        this.startNetworkServices();
     }
 
+    private startNetworkServices(): void {
+        this.setOutlineTitle();
+        if (this.startServerAutomatically) {
+            if (this.leoServerCommand && this.leoServerCommand.length) {
+                // start by running command (see executeCommand for multiple useful snippets)
+            } else {
+                console.log('No server command to launch! Set command in LeoInteg settings.');
+                vscode.window.showInformationMessage('No server command to launch! Set command in LeoInteg settings.');
+            }
+        }
+        if (this.connectToServerAutomatically) {
+            if (this.leoServerCommand && this.leoServerCommand.length) {
+                // also had to start server, wait a bit or check if really started
 
+            } else {
+                this.connect();
+            }
 
-    private assertId(p_val: boolean, p_from: string): void {
-        if (!p_val) {
-            console.error("ASSERT FAILED in ", p_from); // TODO : Improve id error checking
         }
     }
 
+    private setOutlineTitle(): void {
+        this.leoTreeView.title = "test";
+        this.leoTreeExplorerView.title = "test";
+    }
+
+    // * This 'executeCommand' functions is taken from https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts
+    private executeCommand(name: string, args: string[], inputText: string, options: any): Promise<string> {
+        let config = (vscode.workspace.getConfiguration('filterText') as any);
+        let platform = os.platform();
+        let bashPath: string | null = null;
+        if (platform === 'win32' && config.invokeViaBash.windows === true) {
+            bashPath = config.bashPath.windows; // config.bashPath.windows default to "C:/cygwin/bin/bash.exe"
+        }
+        return new Promise((resolve, reject) => {
+            let run = (path: string, args: any, resolve: (value?: string | PromiseLike<string> | undefined) => void) => {
+                let filter = child.spawn(path, args, options);
+
+                if (inputText.length > 0) {
+                    filter.stdin.write(inputText);
+                }
+                filter.stdin.end();
+
+                let filteredText = '';
+                let errorText = '';
+                filter.stdout.on('data', function (data) {
+                    filteredText += data;
+                });
+
+                filter.stderr.on('data', function (data) {
+                    errorText += data;
+                });
+                filter.on('close', function (code: number, signal: string) {
+                    if (filteredText === '' && code !== 0 && errorText !== '') { // Only reject and show error when stdout got nothing, exit status indicate failure, and stderr got something.  E.g. grep with no match will have failure status, but no error message or output, shouldn't show error here.
+                        reject("Command exits (status: " + code + ") with error message:\n" + errorText);
+                    } else {
+                        resolve(filteredText);
+                    }
+                });
+            };
+            if (bashPath === null) {
+                which(name, (err, path) => {
+                    if (err) {
+                        reject('Invalid command is entered.');
+                        return;
+                    } if (path) {
+                        run(path, args, resolve);
+                    } else {
+                        reject('No Path.');
+                    }
+                });
+            } else {
+                let prependArgs;
+                let cwd = options['cwd'];
+                // invoke bash with "-l" (--login) option.  This is needed for Cygwin where the Cygwin's C:/cygwin/bin path may exist in PATH only after --login.
+                if (cwd !== null) {
+                    prependArgs = ['-lc', 'cd "$1"; shift; "$@"', 'bash', cwd, name]; // set current working directory after bash's --login (-l)
+                }
+                else {
+                    prependArgs = ['-lc', '"$@"', 'bash', name]; // 'bash' at "$0" is the program name for stderr messages' labels.
+                }
+                run(bashPath, prependArgs.concat(args), resolve);
+            }
+        });
+    }
+
     public connect(): void {
+        // this 'ready' promise starts undefined, so debounce by returning if not undefined
+        if (this.leoBridgeReadyPromise) {
+            return;
+        }
         this.leoBridgeReadyPromise = this.leoBridge.initLeoProcess();
         this.leoBridgeReadyPromise.then((p_package) => {
-            this.assertId(p_package.id === 1, "p_package.id === 1"); // test integrity
-            vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
-            vscode.window.showInformationMessage(`Connected`);
+            if (p_package.id !== 1) {
+                console.error("Leo Bridge Connection Error: Incorrect id");
+            } else {
+                vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
+                vscode.window.showInformationMessage(`Connected`);
+            }
         });
     }
 
@@ -353,15 +448,22 @@ export class LeoIntegration {
         }
     }
 
+    private getLeoIntegSettings(): void {
+        this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
+        this.treeKeepFocusWhenAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusWhenAside', false);
+        this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
+        vscode.commands.executeCommand('setContext', 'treeInExplorer', this.treeInExplorer);
+        this.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
+        vscode.commands.executeCommand('setContext', 'showOpenAside', this.showOpenAside);
+        this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
+        this.leoServerCommand = vscode.workspace.getConfiguration('leoIntegration').get('leoServerCommand', "");
+        this.startServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('startServerAutomatically', false);
+        this.connectToServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('connectToServerAutomatically', false);
+    }
+
     private onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
         if (p_event.affectsConfiguration('leoIntegration')) {
-            this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
-            this.treeKeepFocusWhenAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusWhenAside', false);
-            this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
-            vscode.commands.executeCommand('setContext', 'treeInExplorer', this.treeInExplorer);
-            this.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
-            vscode.commands.executeCommand('setContext', 'showOpenAside', this.showOpenAside);
-            this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
+            this.getLeoIntegSettings();
         }
     }
 
@@ -614,11 +716,13 @@ export class LeoIntegration {
 
                 this.leoBridge.action("openFile", '"' + p_chosenLeoFile + '"')
                     .then((p_result: LeoBridgePackage) => {
+                        // TODO : Validate p_result
+
                         // * Start body pane system
                         this.context.subscriptions.push(vscode.workspace.registerFileSystemProvider(Constants.LEO_URI_SCHEME, this.leoFileSystem, { isCaseSensitive: true }));
-                        // *  Startup flag
+                        // * Startup flag
                         this.fileOpenedReady = true;
-                        // * fi
+                        // * First valid redraw of tree
                         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // p_revealSelection flag set
                         // * set body URI for body filesystem
                         this.bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_result.node.gnx);
