@@ -130,8 +130,8 @@
         "command": "leointeg.connectToServer",
         "title": "Connect to Leo Bridge server",
         "icon": {
-          "light": "resources/light/connect.svg",
-          "dark": "resources/dark/connect.svg"
+          "light": "resources/light/connect3.svg",
+          "dark": "resources/dark/connect3.svg"
         }
       },
       {

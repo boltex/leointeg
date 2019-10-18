@@ -141,6 +141,10 @@ export class LeoIntegration {
         if (this.startServerAutomatically) {
             if (this.leoServerCommand && this.leoServerCommand.length) {
                 // start by running command (see executeCommand for multiple useful snippets)
+                console.log('Starting server with command: ' + this.leoServerCommand);
+
+
+
             } else {
                 console.log('No server command to launch! Set command in LeoInteg settings.');
                 vscode.window.showInformationMessage('No server command to launch! Set command in LeoInteg settings.');
