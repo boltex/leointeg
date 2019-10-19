@@ -715,33 +715,62 @@ export class LeoIntegration {
             );
     }
 
+    // TODO : Leo Commands
     public mark(p_node: LeoNode): void {
         vscode.window.showInformationMessage(`mark on ${p_node.label}.`); // temp placeholder
     }
-
     public unmark(p_node: LeoNode): void {
         vscode.window.showInformationMessage(`unmark on ${p_node.label}.`); // temp placeholder
     }
-
     public copyNode(p_node: LeoNode): void {
         vscode.window.showInformationMessage(`copyNode on ${p_node.label}.`); // temp placeholder
     }
-
     public cutNode(p_node: LeoNode): void {
         vscode.window.showInformationMessage(`cutNode on ${p_node.label}.`); // temp placeholder
     }
-
     public pasteNode(p_node: LeoNode): void {
         vscode.window.showInformationMessage(`pasteNode on ${p_node.label}.`); // temp placeholder
     }
-
     public pasteNodeAsClone(p_node: LeoNode): void {
         vscode.window.showInformationMessage(`pasteNodeAsClone on ${p_node.label}.`); // temp placeholder
     }
-
     public delete(p_node: LeoNode): void {
         vscode.window.showInformationMessage(`delete on ${p_node.label}.`); // temp placeholder
     }
+    public moveOutlineDown(p_node: LeoNode): void {
+        vscode.window.showInformationMessage(`moveOutlineDown on ${p_node.label}.`); // temp placeholder
+    }
+    public moveOutlineLeft(p_node: LeoNode): void {
+        vscode.window.showInformationMessage(`moveOutlineLeft on ${p_node.label}.`); // temp placeholder
+    }
+    public moveOutlineRight(p_node: LeoNode): void {
+        vscode.window.showInformationMessage(`moveOutlineRight on ${p_node.label}.`); // temp placeholder
+    }
+    public moveOutlineUp(p_node: LeoNode): void {
+        vscode.window.showInformationMessage(`moveOutlineUp on ${p_node.label}.`); // temp placeholder
+    }
+    public insertNode(p_node: LeoNode): void {
+        vscode.window.showInformationMessage(`insertNode on ${p_node.label}.`); // temp placeholder
+    }
+    public cloneNode(p_node: LeoNode): void {
+        vscode.window.showInformationMessage(`cloneNode on ${p_node.label}.`); // temp placeholder
+    }
+    public promote(p_node: LeoNode): void {
+        vscode.window.showInformationMessage(`promote on ${p_node.label}.`); // temp placeholder
+    }
+    public demode(p_node: LeoNode): void {
+        vscode.window.showInformationMessage(`demode on ${p_node.label}.`); // temp placeholder
+    }
+    public undo(p_node: LeoNode): void {
+        vscode.window.showInformationMessage(`undo on ${p_node.label}.`); // temp placeholder
+    }
+    public executeScript(p_node: LeoNode): void {
+        vscode.window.showInformationMessage(`executeScript on ${p_node.label}.`); // temp placeholder
+    }
+    public saveFile(): void {
+        vscode.window.showInformationMessage(`saveFile : Try to save Leo File`); // temp placeholder
+    }
+
 
     public closeLeoFile(): void {
         vscode.window.showInformationMessage(`close leo file`); // temp placeholder

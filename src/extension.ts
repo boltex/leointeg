@@ -32,6 +32,18 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNode", (node: LeoNode) => leoIntegration.pasteNode(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNodeAsClone", (node: LeoNode) => leoIntegration.pasteNodeAsClone(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.delete", (node: LeoNode) => leoIntegration.delete(node)));
+
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineDown", (node: LeoNode) => leoIntegration.moveOutlineDown(node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineLeft", (node: LeoNode) => leoIntegration.moveOutlineLeft(node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineRight", (node: LeoNode) => leoIntegration.moveOutlineRight(node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineUp", (node: LeoNode) => leoIntegration.moveOutlineUp(node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.insertNode", (node: LeoNode) => leoIntegration.insertNode(node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.cloneNode", (node: LeoNode) => leoIntegration.cloneNode(node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.promote", (node: LeoNode) => leoIntegration.promote(node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.demode", (node: LeoNode) => leoIntegration.demode(node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.undo", (node: LeoNode) => leoIntegration.undo(node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.executeScript", (node: LeoNode) => leoIntegration.executeScript(node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.saveFile", () => leoIntegration.saveFile()));
 }
 
 export function deactivate() {

@@ -13,8 +13,29 @@
 // ! - execute-script (Ctrl-B)
 // ! - Ctrl-S (save-file)
 
+// * content for package.json
 /*
-# Context variables for package.json "when" clauses
+{
+    "command": "leointeg.moveOutlineDown",
+    "when": "leoTreeOpened==true"
+  },
+  {
+    "command": "leointeg.moveOutlineLeft",
+    "when": "leoTreeOpened==true"
+  },
+  {
+    "command": "leointeg.moveOutlineRight",
+    "when": "leoTreeOpened==true"
+  },
+  {
+    "command": "leointeg.moveOutlineUp",
+    "when": "leoTreeOpened==true"
+  },
+*/
+
+
+/*
+# Context variables for package.json "when" clauses so far
 
 - treeInExplorer
 - showOpenAside
