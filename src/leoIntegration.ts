@@ -25,6 +25,9 @@ export class LeoIntegration {
     public startServerAutomatically: boolean;
     public connectToServerAutomatically: boolean;
 
+    // * Leo Bridge Server Process
+    private process: child.ChildProcess | undefined;
+
     // * Browse
     private leoFiles: LeoFiles;
 
@@ -137,27 +140,61 @@ export class LeoIntegration {
     }
 
     private startNetworkServices(): void {
-
+        // * (via settings) Start a server and / or also connect automatically to a server upon extension activation
         if (this.startServerAutomatically) {
+            let w_pythonPath = "";
+            const w_serverScriptPath = this.context.extensionPath + Constants.LEO_BRIDGE_SERVER_PATH;
             if (this.leoServerCommand && this.leoServerCommand.length) {
                 // start by running command (see executeCommand for multiple useful snippets)
                 console.log('Starting server with command: ' + this.leoServerCommand);
-
-
-
+                // set path
+                w_pythonPath = this.leoServerCommand;
             } else {
-                console.log('No server command to launch! Set command in LeoInteg settings.');
-                vscode.window.showInformationMessage('No server command to launch! Set command in LeoInteg settings.');
+                w_pythonPath = Constants.LEO_DEFAULT_PYTHON;
+
+                let platform = os.platform();
+                if (platform === "win32") {
+                    w_pythonPath = Constants.LEO_WIN32_PYTHON;
+                }
+                console.log('Launch with default command : ' + w_pythonPath + " " + w_serverScriptPath);
+                vscode.window.showInformationMessage('Launch with default command : ' + w_pythonPath + " " + w_serverScriptPath);
             }
+            // * Spawn a python child process for a leobridge server
+            this.process = child.spawn(w_pythonPath, [
+                "\"" + w_serverScriptPath + "\""
+            ]);
+            // * Capture the python process output
+            this.process.stdout.on("data", (data: string) => {
+                data.toString().split("\n").forEach(p_line => {
+                    p_line = p_line.trim();
+                    if (p_line) { // * std out process line by line: json shouldn't have line breaks
+                        console.log("leoBridge: ", p_line);
+                    }
+                });
+            });
+            // * Capture other python process outputs
+            this.process.stderr.on("data", (data: string) => {
+                console.log(`stderr: ${data}`);
+            });
+            this.process.on("close", (code: any) => {
+                console.log(`leoBridge exited with code ${code}`);
+                this.process = undefined;
+            });
+
         }
+        // * (via settings) Connect to Leo Bridge server automatically
         if (this.connectToServerAutomatically) {
-            if (this.leoServerCommand && this.leoServerCommand.length) {
-                // also had to start server, wait a bit or check if really started
-
-            } else {
-                this.connect();
+            let w_startTimeout = 0;
+            if (this.startServerAutomatically) {
+                // * also had to start server, wait a bit or check if really started
+                console.log('waiting 2 seconds');
+                w_startTimeout = 2000;
             }
-
+            // * finally connect
+            setTimeout(() => {
+                console.log('connecting...');
+                this.connect();
+            }, w_startTimeout);
         }
     }
 

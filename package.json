@@ -71,13 +71,13 @@
           "scope": "application",
           "default": "",
           "type": "string",
-          "description": "Specifies the command to start a LeoBridge server (if starting a server automatically)"
+          "description": "Specifies the command to start a LeoBridge server (Overrides the default command to run the 'leobridgeserver.py' python3 script)"
         },
         "leoIntegration.startServerAutomatically": {
           "scope": "application",
           "default": false,
           "type": "boolean",
-          "description": "Starts a LeoBridge server using the 'Leo Server Command' upon activation of this expansion"
+          "description": "Starts a LeoBridge server, either with a specified command, or the default command to run the 'leobridgeserver.py' python3 script"
         },
         "leoIntegration.connectToServerAutomatically": {
           "scope": "application",
@@ -130,8 +130,8 @@
         "command": "leointeg.connectToServer",
         "title": "Connect to Leo Bridge server",
         "icon": {
-          "light": "resources/light/connect3.svg",
-          "dark": "resources/dark/connect3.svg"
+          "light": "resources/light/connect.svg",
+          "dark": "resources/dark/connect.svg"
         }
       },
       {
@@ -197,6 +197,46 @@
       {
         "command": "leointeg.delete",
         "title": "Delete"
+      },
+      {
+        "command": "leointeg.moveOutlineDown",
+        "title": "Move Outline Down"
+      },
+      {
+        "command": "leointeg.moveOutlineLeft",
+        "title": "Move Outline Left"
+      },
+      {
+        "command": "leointeg.moveOutlineRight",
+        "title": "Move Outline Right"
+      },
+      {
+        "command": "leointeg.moveOutlineUp",
+        "title": "Move Outline Up"
+      },
+      {
+        "command": "leointeg.insertNode",
+        "title": "Insert Node"
+      },
+      {
+        "command": "leointeg.cloneNode",
+        "title": "Clone Node"
+      },
+      {
+        "command": "leointeg.promote",
+        "title": "Promote"
+      },
+      {
+        "command": "leointeg.demode",
+        "title": "Demote"
+      },
+      {
+        "command": "leointeg.undo",
+        "title": "Undo"
+      },
+      {
+        "command": "leointeg.executeScript",
+        "title": "Execute Script"
       }
     ],
     "menus": {
@@ -233,6 +273,46 @@
           "command": "leointeg.closeLeoFile",
           "when": "leoTreeOpened==true",
           "group": "navigation"
+        },
+        {
+          "command": "leointeg.moveOutlineDown",
+          "when": "leoTreeOpened==true"
+        },
+        {
+          "command": "leointeg.moveOutlineLeft",
+          "when": "leoTreeOpened==true"
+        },
+        {
+          "command": "leointeg.moveOutlineRight",
+          "when": "leoTreeOpened==true"
+        },
+        {
+          "command": "leointeg.moveOutlineUp",
+          "when": "leoTreeOpened==true"
+        },
+        {
+          "command": "leointeg.insertNode",
+          "when": "leoTreeOpened==true"
+        },
+        {
+          "command": "leointeg.cloneNode",
+          "when": "leoTreeOpened==true"
+        },
+        {
+          "command": "leointeg.promote",
+          "when": "leoTreeOpened==true"
+        },
+        {
+          "command": "leointeg.demode",
+          "when": "leoTreeOpened==true"
+        },
+        {
+          "command": "leointeg.undo",
+          "when": "leoTreeOpened==true"
+        },
+        {
+          "command": "leointeg.executeScript",
+          "when": "leoTreeOpened==true"
         }
       ],
       "view/item/context": [

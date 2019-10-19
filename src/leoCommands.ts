@@ -1,4 +1,18 @@
 // TODO : move commands from leointegration.ts 'mark/unmark', 'copy node' etc., along with the commands below:
+
+// TODO : Top Priority Commands
+// * - Ctrl-D (move-outline-down)
+// * - Ctrl-L (move-outline-left)
+// * - Ctrl-R (move-outline-right)
+// * - Ctrl-U (move-outline-up)
+// * - clone-node
+// * - Ctrl-I insert-node
+// * - Ctrl-{ (promote)
+// * - Ctrl-} (demote)
+// ! - Ctrl-Z (undo)
+// ! - execute-script (Ctrl-B)
+// ! - Ctrl-S (save-file)
+
 /*
 # Context variables for package.json "when" clauses
 

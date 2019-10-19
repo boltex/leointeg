@@ -1,3 +1,4 @@
+#! python3
 import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
 import asyncio
@@ -214,8 +215,8 @@ class leoBridgeIntegController:
         gnx_to_vnode = old_d
         new_len = len(list(gnx_to_vnode.keys()))
         assert old_len == new_len, (old_len, new_len)
-        print('qtyAllPositions : ' + str(qtyAllPositions))
-        print(('app.test_round_trip_positions: %5.3f sec for nodes total: ' % (time.clock()-t1))+str(qtyAllPositions))
+        print('Leo file opened. Its outline contains ' + str(qtyAllPositions) + " nodes positions.")
+        print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.clock()-t1)))
 
     def yieldAllRootChildren(self):
         '''Return all root children P nodes'''
@@ -272,10 +273,6 @@ class leoBridgeIntegController:
         return w_ap
 
 
-# ! #######################
-# ! #     SERVER LOOP     #
-# ! #######################
-
 def main():
     '''python script for leo integration via leoBridge'''
     global websocketHost, websocketPort
@@ -287,23 +284,33 @@ def main():
 
     # TODO : This is a basic test loop, fix it with 2 way async comm and error checking
     async def leoBridgeServer(websocket, path):
-        await websocket.send(integController.sendLeoBridgePackage())  # * Start by just sending empty as 'ok'
-        async for w_message in websocket:
-            w_param = json.loads(w_message)
-            if w_param and w_param['action']:
-                # * Storing id of action in global var instead of passing as parameter
-                integController.setActionId(w_param['id'])
-                answer = getattr(integController, w_param['action'])(w_param['param'])
-            else:
-                print("Error in processCommand")
-            await websocket.send(answer)
+        try:
+            await websocket.send(integController.sendLeoBridgePackage())  # * Start by just sending empty as 'ok'
+            async for w_message in websocket:
+                w_param = json.loads(w_message)
+                if w_param and w_param['action']:
+                    # * Storing id of action in global var instead of passing as parameter
+                    integController.setActionId(w_param['id'])
+                    answer = getattr(integController, w_param['action'])(w_param['param'])
+                else:
+                    print("Error in processCommand")
+                await websocket.send(answer)
+        except:
+            print("Catched Websocket Disconnect Event")
+        finally:
+            asyncio.get_event_loop().stop()
 
     start_server = websockets.serve(leoBridgeServer, websocketHost, websocketPort)
 
     asyncio.get_event_loop().run_until_complete(start_server)
     asyncio.get_event_loop().run_forever()
+    print("Stopping leobridge server")
 
 
 # Startup
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nStopping leobridge server")
+        sys.exit()
