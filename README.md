@@ -11,15 +11,16 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/ or on GitHu
 ## Requirements
 
 - Leo installed
-- Leo's path made available in \$PYTHONPATH environment variable
-
-(See **Adding Leo to Your Path** in https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT)
+- Leo's path made available in \$PYTHONPATH environment variable\
+  (See **Adding Leo to Your Path** in https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT)
+- Websocket Python Library _install with_ : `pip install websockets`\
+  (See https://websockets.readthedocs.io/en/stable/intro.html)
 
 ## Development version installation
 
 ### _Want to try out this development version?_
 
-Make sure you have Node.js and Git installed, then...
+Make sure you have Node.js and Git installed along with the above general requirements, then:
 
 1. Get this repository: `git clone https://github.com/boltex/leointeg.git`
 2. Right-click that folder -> open with vscode, or, from inside a vscode window, File-> Open Folder...
