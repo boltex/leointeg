@@ -9,8 +9,8 @@ import time
 import json
 
 # server defaults
-websocketHost = "localhost"
-websocketPort = 32125
+wsHost = "localhost"
+wsPort = 32125
 
 
 class leoBridgeIntegController:
@@ -275,10 +275,7 @@ class leoBridgeIntegController:
 
 def main():
     '''python script for leo integration via leoBridge'''
-    global websocketHost, websocketPort
-    print(
-        "Starting leobridge server at " + websocketHost + " on port: " + str(websocketPort) + " [ctrl+c] to break",
-        flush=True)
+    global wsHost, wsPort
 
     integController = leoBridgeIntegController()
 
@@ -300,9 +297,10 @@ def main():
         finally:
             asyncio.get_event_loop().stop()
 
-    start_server = websockets.serve(leoBridgeServer, websocketHost, websocketPort)
+    start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
 
     asyncio.get_event_loop().run_until_complete(start_server)
+    print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     asyncio.get_event_loop().run_forever()
     print("Stopping leobridge server")
 
@@ -312,5 +310,5 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print("\nStopping leobridge server")
+        print("\nKeyboard Interupt: Stopping leobridge server")
         sys.exit()

@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import * as child from 'child_process';
 import * as os from 'os';
 import * as which from 'which';
+import * as WebSocket from 'ws';
 import { Constants } from "./constants";
 import { LeoBridgePackage, RevealType, ArchivedPosition } from "./types";
 import { LeoFiles } from "./leoFiles";
@@ -26,7 +27,7 @@ export class LeoIntegration {
     public connectToServerAutomatically: boolean;
 
     // * Leo Bridge Server Process
-    private process: child.ChildProcess | undefined;
+    private serverProcess: child.ChildProcess | undefined;
 
     // * Browse
     private leoFiles: LeoFiles;
@@ -140,8 +141,9 @@ export class LeoIntegration {
     }
 
     private startNetworkServices(): void {
-        // * (via settings) Start a server and / or also connect automatically to a server upon extension activation
+        // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
         if (this.startServerAutomatically) {
+            // * Get command from settings or best command for the current OS
             let w_pythonPath = "";
             const w_serverScriptPath = this.context.extensionPath + Constants.LEO_BRIDGE_SERVER_PATH;
             if (this.leoServerCommand && this.leoServerCommand.length) {
@@ -159,46 +161,58 @@ export class LeoIntegration {
                 console.log('Launch with default command : ' + w_pythonPath + " " + w_serverScriptPath);
                 vscode.window.showInformationMessage('Launch with default command : ' + w_pythonPath + " " + w_serverScriptPath);
             }
-            // * Spawn a python child process for a leobridge server
-            this.process = child.spawn(w_pythonPath, [
-                "\"" + w_serverScriptPath + "\""
-            ]);
-            // * Capture the python process output
-            this.process.stdout.on("data", (data: string) => {
-                data.toString().split("\n").forEach(p_line => {
-                    p_line = p_line.trim();
-                    if (p_line) { // * std out process line by line: json shouldn't have line breaks
-                        console.log("leoBridge: ", p_line);
-                    }
+
+            console.log('Creating a promise for starting a server...');
+
+            const w_serverStartPromise = new Promise((resolve, reject) => {
+                // * Spawn a python child process for a leobridge server
+                this.serverProcess = child.spawn(w_pythonPath, [w_serverScriptPath
+                    //  "\"" + w_serverScriptPath + "\"" // For on windows ??
+                ]);
+                // * Capture the python process output
+                this.serverProcess.stdout.on("data", (data: string) => {
+                    data.toString().split("\n").forEach(p_line => {
+                        p_line = p_line.trim();
+                        if (p_line) { // * std out process line by line: json shouldn't have line breaks
+                            if (p_line.startsWith('LeoBridge started')) {
+                                resolve(p_line); // * Server confirmed started
+                            }
+                            console.log("leoBridge: ", p_line); // Output message anyways
+                        }
+                    });
+                });
+                // * Capture other python process outputs
+                this.serverProcess.stderr.on("data", (data: string) => {
+                    console.log(`stderr: ${data}`);
+                    this.serverProcess = undefined;
+                    reject(`stderr: ${data}`);
+                });
+                this.serverProcess.on("close", (code: any) => {
+                    console.log(`leoBridge exited with code ${code}`);
+                    this.serverProcess = undefined;
+                    reject(`leoBridge exited with code ${code}`);
                 });
             });
-            // * Capture other python process outputs
-            this.process.stderr.on("data", (data: string) => {
-                console.log(`stderr: ${data}`);
-            });
-            this.process.on("close", (code: any) => {
-                console.log(`leoBridge exited with code ${code}`);
-                this.process = undefined;
+            // * Setup reactions to w_serverStartPromise resolution or rejection
+            w_serverStartPromise.then((p_message) => {
+                if (this.connectToServerAutomatically) {
+                    console.log('auto connect...');
+                    this.connect();
+                }
+            }, (p_reason) => {
+                vscode.window.showErrorMessage('Error - Cannot start Server: ' + p_reason);
             });
 
-        }
-        // * (via settings) Connect to Leo Bridge server automatically
-        if (this.connectToServerAutomatically) {
-            let w_startTimeout = 0;
-            if (this.startServerAutomatically) {
-                // * also had to start server, wait a bit or check if really started
-                console.log('waiting 2 seconds');
-                w_startTimeout = 2000;
-            }
-            // * finally connect
-            setTimeout(() => {
-                console.log('connecting...');
+        } else {
+            // * (via settings) Connect to Leo Bridge server automatically without starting one first
+            if (this.connectToServerAutomatically) {
                 this.connect();
-            }, w_startTimeout);
+            }
         }
     }
 
-    private setOutlineTitle(): void { // * Available soon, see enable-proposed-api https://code.visualstudio.com/updates/v1_39#_treeview-message-api
+    private setTreeViewTitle(): void { // * Available soon, see enable-proposed-api https://code.visualstudio.com/updates/v1_39#_treeview-message-api
+        // // Set/Change outline pane title
         // this.leoTreeView.title = "test"; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
         // this.leoTreeExplorerView.title = "test"; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
     }
@@ -273,6 +287,18 @@ export class LeoIntegration {
             if (p_package.id !== 1) {
                 console.error("Leo Bridge Connection Error: Incorrect id");
             } else {
+
+                // p_package.connection
+                // * Capture other python process outputs
+                p_package.connection.onerror = (p_event: WebSocket.ErrorEvent) => {
+                    console.log(`websocket error: ${p_event.message}`);
+
+                };
+                p_package.connection.onclose = (p_event: WebSocket.CloseEvent) => {
+                    // * Disconnected from server
+                    console.log(`websocket closed, code: ${p_event.code}`);
+                    this.resetExtension(); // Remove tree and icons, reset flags
+                };
                 vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
                 vscode.window.showInformationMessage(`Connected`);
             }
@@ -717,63 +743,61 @@ export class LeoIntegration {
 
     // TODO : Leo Commands
     public mark(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`mark on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: mark on ${p_node.label}.`); // temp placeholder
     }
     public unmark(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`unmark on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: unmark on ${p_node.label}.`); // temp placeholder
     }
     public copyNode(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`copyNode on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: copyNode on ${p_node.label}.`); // temp placeholder
     }
     public cutNode(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`cutNode on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: cutNode on ${p_node.label}.`); // temp placeholder
     }
     public pasteNode(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`pasteNode on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: pasteNode on ${p_node.label}.`); // temp placeholder
     }
     public pasteNodeAsClone(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`pasteNodeAsClone on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: pasteNodeAsClone on ${p_node.label}.`); // temp placeholder
     }
     public delete(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`delete on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: delete on ${p_node.label}.`); // temp placeholder
     }
     public moveOutlineDown(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`moveOutlineDown on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: moveOutlineDown on ${p_node.label}.`); // temp placeholder
     }
     public moveOutlineLeft(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`moveOutlineLeft on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: moveOutlineLeft on ${p_node.label}.`); // temp placeholder
     }
     public moveOutlineRight(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`moveOutlineRight on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: moveOutlineRight on ${p_node.label}.`); // temp placeholder
     }
     public moveOutlineUp(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`moveOutlineUp on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: moveOutlineUp on ${p_node.label}.`); // temp placeholder
     }
     public insertNode(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`insertNode on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: insertNode on ${p_node.label}.`); // temp placeholder
     }
     public cloneNode(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`cloneNode on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: cloneNode on ${p_node.label}.`); // temp placeholder
     }
     public promote(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`promote on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: promote on ${p_node.label}.`); // temp placeholder
     }
     public demode(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`demode on ${p_node.label}.`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: demode on ${p_node.label}.`); // temp placeholder
     }
-    public undo(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`undo on ${p_node.label}.`); // temp placeholder
+    public undo(): void {
+        vscode.window.showInformationMessage(`TODO: undo last operation`); // temp placeholder
     }
-    public executeScript(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`executeScript on ${p_node.label}.`); // temp placeholder
+    public executeScript(): void {
+        vscode.window.showInformationMessage(`TODO: executeScript`); // temp placeholder
     }
     public saveFile(): void {
-        vscode.window.showInformationMessage(`saveFile : Try to save Leo File`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: saveFile : Try to save Leo File`); // temp placeholder
     }
-
-
     public closeLeoFile(): void {
-        vscode.window.showInformationMessage(`close leo file`); // temp placeholder
+        vscode.window.showInformationMessage(`TODO: close leo file`); // temp placeholder
     }
 
     public openLeoFile(): void {
@@ -805,6 +829,18 @@ export class LeoIntegration {
                     });
 
             });
+    }
+
+    public resetExtension(): void {
+        vscode.commands.executeCommand('setContext', 'leoTreeOpened', false);
+        vscode.commands.executeCommand('setContext', 'leoBridgeReady', false);
+        this.fileOpenedReady = false;
+        this.leoBridgeReadyPromise = undefined;
+        this.leoObjectSelected = false;
+        this.leoStatusBarItem.hide();
+        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+        vscode.window.showInformationMessage(`Disconnected`);
+        // TODO : Close all leo body panes
     }
 
     public test(): void {

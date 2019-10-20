@@ -41,8 +41,8 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.cloneNode", (node: LeoNode) => leoIntegration.cloneNode(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.promote", (node: LeoNode) => leoIntegration.promote(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.demode", (node: LeoNode) => leoIntegration.demode(node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.undo", (node: LeoNode) => leoIntegration.undo(node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.executeScript", (node: LeoNode) => leoIntegration.executeScript(node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.undo", () => leoIntegration.undo()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.executeScript", () => leoIntegration.executeScript()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.saveFile", () => leoIntegration.saveFile()));
 }
 

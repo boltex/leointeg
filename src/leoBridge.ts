@@ -104,15 +104,8 @@ export class LeoBridge {
                 this.processAnswer(p_event.data.toString());
             }
         };
-        // * Capture other python process outputs
-        this.websocket.onerror = (p_event) => {
-            console.log(`websocket error: ${p_event.message}`);
-        };
-        this.websocket.onclose = (p_event) => {
-            console.log(`websocket closed, code: ${p_event.code}`);
-        };
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
-        this.readyPromise = this.action("", "", { id: 1 }, true);
+        this.readyPromise = this.action("", "", { id: 1, connection: this.websocket }, true);
         return this.readyPromise; // This promise will resolve when the started python process starts
     }
 
