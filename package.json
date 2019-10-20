@@ -151,6 +151,10 @@
         }
       },
       {
+        "command": "leointeg.startServer",
+        "title": "Start Leo Bridge Server"
+      },
+      {
         "command": "leointeg.test",
         "title": "Test Leo Integration"
       },
@@ -245,6 +249,10 @@
     ],
     "menus": {
       "commandPalette": [
+        {
+          "command": "leointeg.startServer",
+          "when": "!leoBridgeReady && !leoTreeOpened && !leoServerStarted"
+        },
         {
           "command": "leointeg.connectToServer",
           "when": "!leoBridgeReady && !leoTreeOpened"

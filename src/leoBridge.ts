@@ -104,6 +104,14 @@ export class LeoBridge {
                 this.processAnswer(p_event.data.toString());
             }
         };
+        this.websocket.onerror = (p_event: WebSocket.ErrorEvent) => {
+            console.log(`websocket error in leoBridge.ts in initLeoProcess! message: ${p_event.message}`);
+        };
+        this.websocket.onclose = (p_event: WebSocket.CloseEvent) => {
+            // * Disconnected from server
+            console.log(`websocket closed in leoBridge.ts in initLeoProcess! , code: ${p_event.code}`);
+            //this.resetExtension(); // Remove tree and icons, reset flags
+        };
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
         this.readyPromise = this.action("", "", { id: 1, connection: this.websocket }, true);
         return this.readyPromise; // This promise will resolve when the started python process starts

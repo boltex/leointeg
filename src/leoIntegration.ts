@@ -14,8 +14,9 @@ import { LeoBridge } from "./leoBridge";
 export class LeoIntegration {
     // * Startup flags
     public fileOpenedReady: boolean = false;
+    public leoBridgeReady: boolean = false;
     private leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // set when leoBridge has a leo controller ready
-    private platform:string; 
+    private platform: string;
 
     // * Configuration Settings
     public treeKeepFocus: boolean;
@@ -147,74 +148,81 @@ export class LeoIntegration {
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
         // * Note: See example: 'executeCommand' functions from https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts
         if (this.startServerAutomatically) {
-            // * Get command from settings or best command for the current OS
-            let w_pythonPath = "";
-            const w_serverScriptPath = this.context.extensionPath + Constants.LEO_BRIDGE_SERVER_PATH;
-            if (this.leoPythonCommand && this.leoPythonCommand.length) {
-                // start by running command (see executeCommand for multiple useful snippets)
-                console.log('Starting server with command: ' + this.leoPythonCommand);
-                // set path
-                w_pythonPath = this.leoPythonCommand;
-            } else {
-                w_pythonPath = Constants.LEO_DEFAULT_PYTHON;
-
-                if (this.platform === "win32") {
-                    w_pythonPath = Constants.LEO_WIN32_PYTHON;
-                }
-                console.log('Launch with default command : ' + w_pythonPath + " " + w_serverScriptPath);
-                vscode.window.showInformationMessage('Launch with default command : ' + w_pythonPath + " " + w_serverScriptPath);
-            }
-
-            console.log('Creating a promise for starting a server...');
-
-            const w_serverStartPromise = new Promise((resolve, reject) => {
-                // * Spawn a python child process for a leobridge server
-                let w_args:string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
-                if (this.platform === "win32" && w_pythonPath ==="py") {
-                    w_args.push("-3");
-                }
-                w_args.push(w_serverScriptPath);
-                this.serverProcess = child.spawn(w_pythonPath, w_args);
-                // * Capture the python process output
-                this.serverProcess.stdout.on("data", (data: string) => {
-                    data.toString().split("\n").forEach(p_line => {
-                        p_line = p_line.trim();
-                        if (p_line) { // * std out process line by line: json shouldn't have line breaks
-                            if (p_line.startsWith('LeoBridge started')) {
-                                resolve(p_line); // * Server confirmed started
-                            }
-                            console.log("leoBridge: ", p_line); // Output message anyways
-                        }
-                    });
-                });
-                // * Capture other python process outputs
-                this.serverProcess.stderr.on("data", (data: string) => {
-                    console.log(`stderr: ${data}`);
-                    this.serverProcess = undefined;
-                    reject(`stderr: ${data}`);
-                });
-                this.serverProcess.on("close", (code: any) => {
-                    console.log(`leoBridge exited with code ${code}`);
-                    this.serverProcess = undefined;
-                    reject(`leoBridge exited with code ${code}`);
-                });
-            });
-            // * Setup reactions to w_serverStartPromise resolution or rejection
-            w_serverStartPromise.then((p_message) => {
-                if (this.connectToServerAutomatically) {
-                    console.log('auto connect...');
-                    this.connect();
-                }
-            }, (p_reason) => {
-                vscode.window.showErrorMessage('Error - Cannot start Server: ' + p_reason);
-            });
-
+            this.startServer();
         } else {
             // * (via settings) Connect to Leo Bridge server automatically without starting one first
             if (this.connectToServerAutomatically) {
                 this.connect();
             }
         }
+    }
+
+    public startServer(): void {
+        // * Get command from settings or best command for the current OS
+        let w_pythonPath = "";
+        const w_serverScriptPath = this.context.extensionPath + Constants.LEO_BRIDGE_SERVER_PATH;
+        if (this.leoPythonCommand && this.leoPythonCommand.length) {
+            // start by running command (see executeCommand for multiple useful snippets)
+            console.log('Starting server with command: ' + this.leoPythonCommand);
+            // set path
+            w_pythonPath = this.leoPythonCommand;
+        } else {
+            w_pythonPath = Constants.LEO_DEFAULT_PYTHON;
+
+            if (this.platform === "win32") {
+                w_pythonPath = Constants.LEO_WIN32_PYTHON;
+            }
+            console.log('Launch with default command : ' + w_pythonPath + " " + w_serverScriptPath);
+            vscode.window.showInformationMessage('Launch with default command : ' + w_pythonPath + " " + w_serverScriptPath);
+        }
+
+        console.log('Creating a promise for starting a server...');
+
+        const w_serverStartPromise = new Promise((resolve, reject) => {
+            // * Spawn a python child process for a leobridge server
+            let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
+            if (this.platform === "win32" && w_pythonPath === "py") {
+                w_args.push("-3");
+            }
+            w_args.push(w_serverScriptPath);
+            this.serverProcess = child.spawn(w_pythonPath, w_args);
+            // * Capture the python process output
+            this.serverProcess.stdout.on("data", (data: string) => {
+                data.toString().split("\n").forEach(p_line => {
+                    p_line = p_line.trim();
+                    if (p_line) { // * std out process line by line: json shouldn't have line breaks
+                        if (p_line.startsWith('LeoBridge started')) {
+                            resolve(p_line); // * Server confirmed started
+                        }
+                        console.log("leoBridge: ", p_line); // Output message anyways
+                    }
+                });
+            });
+            // * Capture other python process outputs
+            this.serverProcess.stderr.on("data", (data: string) => {
+                console.log(`stderr: ${data}`);
+                vscode.commands.executeCommand('setContext', 'leoServerStarted', false);
+                this.serverProcess = undefined;
+                reject(`stderr: ${data}`);
+            });
+            this.serverProcess.on("close", (code: any) => {
+                console.log(`leoBridge exited with code ${code}`);
+                vscode.commands.executeCommand('setContext', 'leoServerStarted', false);
+                this.serverProcess = undefined;
+                reject(`leoBridge exited with code ${code}`);
+            });
+        });
+        // * Setup reactions to w_serverStartPromise resolution or rejection
+        w_serverStartPromise.then((p_message) => {
+            vscode.commands.executeCommand('setContext', 'leoServerStarted', true); // server started
+            if (this.connectToServerAutomatically) {
+                console.log('auto connect...');
+                this.connect();
+            }
+        }, (p_reason) => {
+            vscode.window.showErrorMessage('Error - Cannot start Server: ' + p_reason);
+        });
+
     }
 
     private setTreeViewTitle(): void { // * Available soon, see enable-proposed-api https://code.visualstudio.com/updates/v1_39#_treeview-message-api
@@ -225,7 +233,8 @@ export class LeoIntegration {
 
     public connect(): void {
         // this 'ready' promise starts undefined, so debounce by returning if not undefined
-        if (this.leoBridgeReadyPromise) {
+        if (this.leoBridgeReady) {
+            console.log('Already connected');
             return;
         }
         this.leoBridgeReadyPromise = this.leoBridge.initLeoProcess();
@@ -245,6 +254,7 @@ export class LeoIntegration {
                     console.log(`websocket closed, code: ${p_event.code}`);
                     this.resetExtension(); // Remove tree and icons, reset flags
                 };
+                this.leoBridgeReady = true;
                 vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
                 vscode.window.showInformationMessage(`Connected`);
             }
@@ -780,6 +790,7 @@ export class LeoIntegration {
     public resetExtension(): void {
         vscode.commands.executeCommand('setContext', 'leoTreeOpened', false);
         vscode.commands.executeCommand('setContext', 'leoBridgeReady', false);
+        this.leoBridgeReady = false;
         this.fileOpenedReady = false;
         this.leoBridgeReadyPromise = undefined;
         this.leoObjectSelected = false;

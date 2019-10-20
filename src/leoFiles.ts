@@ -8,7 +8,7 @@ export class LeoFiles {
     constructor(private context: vscode.ExtensionContext) { }
 
     private getBestOpenFolderUri(): vscode.Uri {
-        // Find a folder to propose when opening the browse-for-leo-file chooser
+        // find a folder to propose when opening the browse-for-leo-file chooser
         let w_openedFileEnvUri: vscode.Uri | boolean = false;
         let w_activeUri: vscode.Uri | undefined = undefined;
 

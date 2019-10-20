@@ -12,6 +12,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.test", () => leoIntegration.test()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.killLeo", () => leoIntegration.leoBridge.killLeoBridge()));
 
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.startServer", () => leoIntegration.startServer()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.connectToServer", () => leoIntegration.connect()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.openLeoFile", () => leoIntegration.openLeoFile()));
     // TODO : Fleshout this function, also support closing, re-opening and multiple simultaneous Leo documents support
