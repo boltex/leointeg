@@ -15,6 +15,7 @@ export class LeoIntegration {
     // * Startup flags
     public fileOpenedReady: boolean = false;
     private leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // set when leoBridge has a leo controller ready
+    private platform:string; 
 
     // * Configuration Settings
     public treeKeepFocus: boolean;
@@ -22,7 +23,7 @@ export class LeoIntegration {
     public treeInExplorer: boolean;
     public showOpenAside: boolean;
     public bodyEditDelay: number;
-    public leoServerCommand: string;
+    public leoPythonCommand: string;
     public startServerAutomatically: boolean;
     public connectToServerAutomatically: boolean;
 
@@ -76,6 +77,8 @@ export class LeoIntegration {
     private bodyLastChangedDocument: vscode.TextDocument | undefined;
 
     constructor(private context: vscode.ExtensionContext) {
+        // * Startup flags
+        this.platform = os.platform();
         // * Get configuration settings
         this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
         this.treeKeepFocusWhenAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusWhenAside', false);
@@ -84,7 +87,7 @@ export class LeoIntegration {
         this.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
         vscode.commands.executeCommand('setContext', 'showOpenAside', this.showOpenAside);
         this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
-        this.leoServerCommand = vscode.workspace.getConfiguration('leoIntegration').get('leoServerCommand', "");
+        this.leoPythonCommand = vscode.workspace.getConfiguration('leoIntegration').get('leoPythonCommand', "");
         this.startServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('startServerAutomatically', false);
         this.connectToServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('connectToServerAutomatically', false);
 
@@ -142,20 +145,20 @@ export class LeoIntegration {
 
     private startNetworkServices(): void {
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
+        // * Note: See example: 'executeCommand' functions from https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts
         if (this.startServerAutomatically) {
             // * Get command from settings or best command for the current OS
             let w_pythonPath = "";
             const w_serverScriptPath = this.context.extensionPath + Constants.LEO_BRIDGE_SERVER_PATH;
-            if (this.leoServerCommand && this.leoServerCommand.length) {
+            if (this.leoPythonCommand && this.leoPythonCommand.length) {
                 // start by running command (see executeCommand for multiple useful snippets)
-                console.log('Starting server with command: ' + this.leoServerCommand);
+                console.log('Starting server with command: ' + this.leoPythonCommand);
                 // set path
-                w_pythonPath = this.leoServerCommand;
+                w_pythonPath = this.leoPythonCommand;
             } else {
                 w_pythonPath = Constants.LEO_DEFAULT_PYTHON;
 
-                let platform = os.platform();
-                if (platform === "win32") {
+                if (this.platform === "win32") {
                     w_pythonPath = Constants.LEO_WIN32_PYTHON;
                 }
                 console.log('Launch with default command : ' + w_pythonPath + " " + w_serverScriptPath);
@@ -166,9 +169,12 @@ export class LeoIntegration {
 
             const w_serverStartPromise = new Promise((resolve, reject) => {
                 // * Spawn a python child process for a leobridge server
-                this.serverProcess = child.spawn(w_pythonPath, [w_serverScriptPath
-                    //  "\"" + w_serverScriptPath + "\"" // For on windows ??
-                ]);
+                let w_args:string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
+                if (this.platform === "win32" && w_pythonPath ==="py") {
+                    w_args.push("-3");
+                }
+                w_args.push(w_serverScriptPath);
+                this.serverProcess = child.spawn(w_pythonPath, w_args);
                 // * Capture the python process output
                 this.serverProcess.stdout.on("data", (data: string) => {
                     data.toString().split("\n").forEach(p_line => {
@@ -215,66 +221,6 @@ export class LeoIntegration {
         // // Set/Change outline pane title
         // this.leoTreeView.title = "test"; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
         // this.leoTreeExplorerView.title = "test"; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
-    }
-
-    // * This 'executeCommand' functions is taken from https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts
-    private executeCommand(name: string, args: string[], inputText: string, options: any): Promise<string> {
-        let config = (vscode.workspace.getConfiguration('filterText') as any);
-        let platform = os.platform();
-        let bashPath: string | null = null;
-        if (platform === 'win32' && config.invokeViaBash.windows === true) {
-            bashPath = config.bashPath.windows; // config.bashPath.windows default to "C:/cygwin/bin/bash.exe"
-        }
-        return new Promise((resolve, reject) => {
-            let run = (path: string, args: any, resolve: (value?: string | PromiseLike<string> | undefined) => void) => {
-                let filter = child.spawn(path, args, options);
-
-                if (inputText.length > 0) {
-                    filter.stdin.write(inputText);
-                }
-                filter.stdin.end();
-
-                let filteredText = '';
-                let errorText = '';
-                filter.stdout.on('data', function (data) {
-                    filteredText += data;
-                });
-
-                filter.stderr.on('data', function (data) {
-                    errorText += data;
-                });
-                filter.on('close', function (code: number, signal: string) {
-                    if (filteredText === '' && code !== 0 && errorText !== '') { // Only reject and show error when stdout got nothing, exit status indicate failure, and stderr got something.  E.g. grep with no match will have failure status, but no error message or output, shouldn't show error here.
-                        reject("Command exits (status: " + code + ") with error message:\n" + errorText);
-                    } else {
-                        resolve(filteredText);
-                    }
-                });
-            };
-            if (bashPath === null) {
-                which(name, (err, path) => {
-                    if (err) {
-                        reject('Invalid command is entered.');
-                        return;
-                    } if (path) {
-                        run(path, args, resolve);
-                    } else {
-                        reject('No Path.');
-                    }
-                });
-            } else {
-                let prependArgs;
-                let cwd = options['cwd'];
-                // invoke bash with "-l" (--login) option.  This is needed for Cygwin where the Cygwin's C:/cygwin/bin path may exist in PATH only after --login.
-                if (cwd !== null) {
-                    prependArgs = ['-lc', 'cd "$1"; shift; "$@"', 'bash', cwd, name]; // set current working directory after bash's --login (-l)
-                }
-                else {
-                    prependArgs = ['-lc', '"$@"', 'bash', name]; // 'bash' at "$0" is the program name for stderr messages' labels.
-                }
-                run(bashPath, prependArgs.concat(args), resolve);
-            }
-        });
     }
 
     public connect(): void {
@@ -523,7 +469,7 @@ export class LeoIntegration {
         this.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
         vscode.commands.executeCommand('setContext', 'showOpenAside', this.showOpenAside);
         this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
-        this.leoServerCommand = vscode.workspace.getConfiguration('leoIntegration').get('leoServerCommand', "");
+        this.leoPythonCommand = vscode.workspace.getConfiguration('leoIntegration').get('leoPythonCommand', "");
         this.startServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('startServerAutomatically', false);
         this.connectToServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('connectToServerAutomatically', false);
     }

@@ -67,11 +67,11 @@
           "maximum": 1000,
           "description": "Specifies delay time for edits to be sent to Leo, in milliseconds"
         },
-        "leoIntegration.leoServerCommand": {
+        "leoIntegration.leoPythonCommand": {
           "scope": "application",
           "default": "",
           "type": "string",
-          "description": "Specifies the command to start a LeoBridge server (Overrides the default command to run the 'leobridgeserver.py' python3 script)"
+          "description": "Specifies the command to start python (Defaults to 'py' on windows and 'python3' otherwise)"
         },
         "leoIntegration.startServerAutomatically": {
           "scope": "application",
