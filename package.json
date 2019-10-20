@@ -115,13 +115,14 @@
         {
           "id": "leoIntegrationExplorer",
           "name": "Leo Outline",
-          "when": "treeInExplorer==true"
+          "when": "treeInExplorer==true && !leoDisconnected"
         }
       ],
       "leoIntegrationView": [
         {
           "id": "leoIntegration",
-          "name": "Outline"
+          "name": "Outline",
+          "when": "!leoDisconnected"
         }
       ]
     },

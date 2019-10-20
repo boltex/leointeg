@@ -192,12 +192,13 @@ class leoBridgeIntegController:
 
     def create_gnx_to_vnode(self):
         '''Make the first gnx_to_vnode array with all unique nodes'''
-        t1 = time.clock()
+        
+        t1 = time.process_time()
         self.gnx_to_vnode = {v.gnx: v for v in self.commander.all_unique_nodes()}
         # This is likely the only data that ever will be needed.
         if 0:
             print('app.create_all_data: %5.3f sec. %s entries' % (
-                (time.clock()-t1), len(list(self.gnx_to_vnode.keys()))))
+                (time.process_time()-t1), len(list(self.gnx_to_vnode.keys()))))
         self.test_round_trip_positions()
 
     def test_round_trip_positions(self):
@@ -205,7 +206,7 @@ class leoBridgeIntegController:
         # Bug fix: p_to_ap updates app.gnx_to_vnode. Save and restore it.
         old_d = self.gnx_to_vnode.copy()
         old_len = len(list(self.gnx_to_vnode.keys()))
-        t1 = time.clock()
+        t1 = time.process_time()
         qtyAllPositions = 0
         for p in self.commander.all_positions():
             qtyAllPositions += 1
@@ -216,7 +217,7 @@ class leoBridgeIntegController:
         new_len = len(list(gnx_to_vnode.keys()))
         assert old_len == new_len, (old_len, new_len)
         print('Leo file opened. Its outline contains ' + str(qtyAllPositions) + " nodes positions.")
-        print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.clock()-t1)))
+        print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)))
 
     def yieldAllRootChildren(self):
         '''Return all root children P nodes'''
