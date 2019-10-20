@@ -1,8 +1,6 @@
 import * as vscode from "vscode";
 import * as child from 'child_process';
 import * as os from 'os';
-import * as which from 'which';
-import * as WebSocket from 'ws';
 import { Constants } from "./constants";
 import { LeoBridgePackage, RevealType, ArchivedPosition } from "./types";
 import { LeoFiles } from "./leoFiles";
@@ -12,11 +10,12 @@ import { LeoBodyProvider } from "./leoBody";
 import { LeoBridge } from "./leoBridge";
 
 export class LeoIntegration {
-    // * Startup flags
+    // * Control Flags
     public fileOpenedReady: boolean = false;
     public leoBridgeReady: boolean = false;
+    public leoIsConnecting: boolean = false;
     private leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // set when leoBridge has a leo controller ready
-    private platform: string;
+    private platform: string = os.platform();
 
     // * Configuration Settings
     public treeKeepFocus: boolean;
@@ -78,8 +77,6 @@ export class LeoIntegration {
     private bodyLastChangedDocument: vscode.TextDocument | undefined;
 
     constructor(private context: vscode.ExtensionContext) {
-        // * Startup flags
-        this.platform = os.platform();
         // * Get configuration settings
         this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
         this.treeKeepFocusWhenAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusWhenAside', false);
@@ -172,8 +169,7 @@ export class LeoIntegration {
             if (this.platform === "win32") {
                 w_pythonPath = Constants.LEO_WIN32_PYTHON;
             }
-            console.log('Launch with default command : ' + w_pythonPath + " " + w_serverScriptPath);
-            vscode.window.showInformationMessage('Launch with default command : ' + w_pythonPath + " " + w_serverScriptPath);
+            console.log('Launch with default command : ' + w_pythonPath + ((this.platform === "win32" && w_pythonPath === "py") ? " -3 " : "") + " " + w_serverScriptPath);
         }
 
         console.log('Creating a promise for starting a server...');
@@ -233,32 +229,42 @@ export class LeoIntegration {
 
     public connect(): void {
         // this 'ready' promise starts undefined, so debounce by returning if not undefined
-        if (this.leoBridgeReady) {
+        if (this.leoBridgeReady || this.leoIsConnecting) {
             console.log('Already connected');
             return;
         }
+        this.leoIsConnecting = true;
         this.leoBridgeReadyPromise = this.leoBridge.initLeoProcess();
         this.leoBridgeReadyPromise.then((p_package) => {
+            this.leoIsConnecting = false;
             if (p_package.id !== 1) {
                 console.error("Leo Bridge Connection Error: Incorrect id");
             } else {
-
-                // p_package.connection
-                // * Capture other python process outputs
-                p_package.connection.onerror = (p_event: WebSocket.ErrorEvent) => {
-                    console.log(`websocket error: ${p_event.message}`);
-
-                };
-                p_package.connection.onclose = (p_event: WebSocket.CloseEvent) => {
-                    // * Disconnected from server
-                    console.log(`websocket closed, code: ${p_event.code}`);
-                    this.resetExtension(); // Remove tree and icons, reset flags
-                };
                 this.leoBridgeReady = true;
                 vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
                 vscode.window.showInformationMessage(`Connected`);
             }
-        });
+        },
+            (p_reason) => {
+                this.cancelConnect("Leo Bridge Connection Failed");
+            });
+    }
+
+    public cancelConnect(p_message?: string): void {
+        // * Called from leoBridge.ts when its websocket reports disconnection
+        vscode.commands.executeCommand('setContext', 'leoTreeOpened', false);
+        this.fileOpenedReady = false;
+
+        vscode.commands.executeCommand('setContext', 'leoBridgeReady', false);
+        this.leoBridgeReady = false;
+
+        this.leoIsConnecting = false;
+        this.leoBridgeReadyPromise = undefined;
+        this.leoObjectSelected = false;
+        this.updateStatusBar();
+
+        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+        vscode.window.showInformationMessage(p_message ? p_message : "Disconnected");
     }
 
     public reveal(p_leoNode: LeoNode, p_options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): void {
@@ -785,19 +791,6 @@ export class LeoIntegration {
                     });
 
             });
-    }
-
-    public resetExtension(): void {
-        vscode.commands.executeCommand('setContext', 'leoTreeOpened', false);
-        vscode.commands.executeCommand('setContext', 'leoBridgeReady', false);
-        this.leoBridgeReady = false;
-        this.fileOpenedReady = false;
-        this.leoBridgeReadyPromise = undefined;
-        this.leoObjectSelected = false;
-        this.leoStatusBarItem.hide();
-        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-        vscode.window.showInformationMessage(`Disconnected`);
-        // TODO : Close all leo body panes
     }
 
     public test(): void {

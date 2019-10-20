@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import * as WebSocket from 'ws';
 import { Constants } from "./constants";
 import { LeoBridgePackage, LeoAction } from "./types";
+import { LeoIntegration } from "./leoIntegration";
 
 export class LeoBridge {
     // * Communications with Python
@@ -46,6 +47,14 @@ export class LeoBridge {
         }
     }
 
+    private rejectAction(p_reason: string): void {
+        // * Rejects an action from the bottom of the stack
+        const w_bottomAction = this.callStack.shift();
+        if (w_bottomAction) {
+            w_bottomAction.rejectFn(p_reason);
+        }
+    }
+
     private callAction(): void {
         // * Sends an action from the bottom of the stack to leoBridge.py's process stdin
         if (this.callStack.length && !this.actionBusy) {
@@ -80,18 +89,6 @@ export class LeoBridge {
         }
     }
 
-    private findBestPythonString(): string {
-        // * Used if starting server ourself...
-        let w_paths = ["python3", "py", "python"];
-        let w_foundPath = "";
-        w_paths.forEach(p_path => {
-            if (this.hasbin.sync(p_path) && !w_foundPath) {
-                w_foundPath = p_path;
-            }
-        });
-        return w_foundPath;
-    }
-
     public initLeoProcess(): Promise<LeoBridgePackage> {
         const w_socketAdress = vscode.workspace.getConfiguration('leoIntegration').get('connectionAdress', Constants.LEO_TCPIP_DEFAULT_ADRESS); // 'ws://'
         const w_socketPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', Constants.LEO_TCPIP_DEFAULT_PORT); // 32125
@@ -105,15 +102,16 @@ export class LeoBridge {
             }
         };
         this.websocket.onerror = (p_event: WebSocket.ErrorEvent) => {
-            console.log(`websocket error in leoBridge.ts in initLeoProcess! message: ${p_event.message}`);
+            console.log(`websocket error: ${p_event.message}`);
         };
         this.websocket.onclose = (p_event: WebSocket.CloseEvent) => {
             // * Disconnected from server
-            console.log(`websocket closed in leoBridge.ts in initLeoProcess! , code: ${p_event.code}`);
-            //this.resetExtension(); // Remove tree and icons, reset flags
+            console.log(`websocket closed, code: ${p_event.code}`);
+            this.rejectAction(`websocket closed, code: ${p_event.code}`)
         };
+
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
-        this.readyPromise = this.action("", "", { id: 1, connection: this.websocket }, true);
+        this.readyPromise = this.action("", "", { id: 1 }, true);
         return this.readyPromise; // This promise will resolve when the started python process starts
     }
 
