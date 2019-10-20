@@ -93,7 +93,7 @@ export class LeoIntegration {
         this.leoFiles = new LeoFiles(context);
 
         // * Setup leoBridge
-        this.leoBridge = new LeoBridge(context);
+        this.leoBridge = new LeoBridge(context, this);
 
         // * Same data provider for both outline trees, Leo view and Explorer view
         this.leoTreeDataProvider = new LeoOutlineProvider(this);
@@ -238,7 +238,7 @@ export class LeoIntegration {
         this.leoBridgeReadyPromise.then((p_package) => {
             this.leoIsConnecting = false;
             if (p_package.id !== 1) {
-                console.error("Leo Bridge Connection Error: Incorrect id");
+                this.cancelConnect("Leo Bridge Connection Error: Incorrect id");
             } else {
                 this.leoBridgeReady = true;
                 vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
@@ -251,7 +251,16 @@ export class LeoIntegration {
     }
 
     public cancelConnect(p_message?: string): void {
-        // * Called from leoBridge.ts when its websocket reports disconnection
+        // * Also alled from leoBridge.ts when its websocket reports disconnection
+        if (this.leoBridgeReady) {
+            // * Real disconnect error
+            vscode.window.showErrorMessage(p_message ? p_message : "Disconnected");
+            vscode.commands.executeCommand('setContext', 'leoDisconnected', true);
+        } else {
+            // * Simple failed to connect
+            vscode.window.showInformationMessage(p_message ? p_message : "Disconnected");
+        }
+
         vscode.commands.executeCommand('setContext', 'leoTreeOpened', false);
         this.fileOpenedReady = false;
 
@@ -264,7 +273,6 @@ export class LeoIntegration {
         this.updateStatusBar();
 
         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-        vscode.window.showInformationMessage(p_message ? p_message : "Disconnected");
     }
 
     public reveal(p_leoNode: LeoNode, p_options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): void {
@@ -614,7 +622,7 @@ export class LeoIntegration {
                                 vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx),
                                 { overwrite: true, ignoreIfExists: true }
                             );
-                            // ! Rename file operation to clear undo buffer
+                            // * Rename file operation to clear undo buffer
                             vscode.workspace.applyEdit(w_edit).then(p_result => {
                                 this.bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx);
                                 this.showSelectedBodyDocument();

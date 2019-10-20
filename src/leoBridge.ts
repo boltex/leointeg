@@ -13,7 +13,7 @@ export class LeoBridge {
     private hasbin = require('hasbin');
     private websocket: WebSocket | null = null;
 
-    constructor(private context: vscode.ExtensionContext) { }
+    constructor(private context: vscode.ExtensionContext, private leoIntegration: LeoIntegration) { }
 
     public action(p_action: string, p_jsonParam: string, p_deferedPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
         // * Places an action to be made by leoBridge.py on top of a stack, to be resolved from the bottom
@@ -47,6 +47,12 @@ export class LeoBridge {
         }
     }
 
+    private rejectActions(p_reason: string): void {
+        // * Rejects all actions from the the stack
+        while (this.callStack.length) {
+            this.rejectAction(p_reason);
+        }
+    }
     private rejectAction(p_reason: string): void {
         // * Rejects an action from the bottom of the stack
         const w_bottomAction = this.callStack.shift();
@@ -107,7 +113,11 @@ export class LeoBridge {
         this.websocket.onclose = (p_event: WebSocket.CloseEvent) => {
             // * Disconnected from server
             console.log(`websocket closed, code: ${p_event.code}`);
-            this.rejectAction(`websocket closed, code: ${p_event.code}`)
+            this.rejectAction(`websocket closed, code: ${p_event.code}`);
+            // TODO : Implement a better connection error handling
+            if (this.leoIntegration.leoBridgeReady) {
+                this.leoIntegration.cancelConnect(`websocket closed, code: ${p_event.code}`);
+            }
         };
 
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
@@ -126,8 +136,4 @@ export class LeoBridge {
         }
     }
 
-    public killLeoBridge(): void {
-        console.log("sending kill command");
-        this.send("exit\n"); // 'exit' should kill the python script
-    }
 }

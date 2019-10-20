@@ -159,10 +159,6 @@
         "title": "Test Leo Integration"
       },
       {
-        "command": "leointeg.killLeo",
-        "title": "Kill Leo Integration"
-      },
-      {
         "command": "leointeg.editHeadline",
         "title": "Edit Headline",
         "icon": {
@@ -255,7 +251,7 @@
         },
         {
           "command": "leointeg.connectToServer",
-          "when": "!leoBridgeReady && !leoTreeOpened"
+          "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
         },
         {
           "command": "leointeg.openLeoFile",
@@ -264,16 +260,12 @@
         {
           "command": "leointeg.closeLeoFile",
           "when": "leoTreeOpened==true"
-        },
-        {
-          "command": "leointeg.killLeo",
-          "when": "leoBridgeReady==true"
         }
       ],
       "view/title": [
         {
           "command": "leointeg.connectToServer",
-          "when": "!leoBridgeReady && !leoTreeOpened",
+          "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected",
           "group": "navigation"
         },
         {

@@ -10,7 +10,6 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.executeCommand('setContext', 'leoTreeOpened', false); // Having a Leo file opened on that server?
 
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.test", () => leoIntegration.test()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.killLeo", () => leoIntegration.leoBridge.killLeoBridge()));
 
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.startServer", () => leoIntegration.startServer()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.connectToServer", () => leoIntegration.connect()));
