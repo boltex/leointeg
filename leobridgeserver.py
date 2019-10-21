@@ -4,6 +4,7 @@ import leo.core.leoNodes as leoNodes
 import asyncio
 import websockets
 import sys
+import getopt
 import os
 import time
 import json
@@ -192,7 +193,7 @@ class leoBridgeIntegController:
 
     def create_gnx_to_vnode(self):
         '''Make the first gnx_to_vnode array with all unique nodes'''
-        
+
         t1 = time.process_time()
         self.gnx_to_vnode = {v.gnx: v for v in self.commander.all_unique_nodes()}
         # This is likely the only data that ever will be needed.
@@ -277,6 +278,28 @@ class leoBridgeIntegController:
 def main():
     '''python script for leo integration via leoBridge'''
     global wsHost, wsPort
+
+    # replace default host address and port if provided as arguments
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "ha:p:", ["help", "address=", "port="])
+    except getopt.GetoptError:
+        print('leobridgeserver.py -a <address> -p <port>')
+        print('defaults to localhost on port 32125')
+        if args:
+            print("unused args: " + str(args))
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            print('leobridgeserver.py -a <address> -p <port>')
+            print('defaults to localhost on port 32125')
+            sys.exit()
+        elif opt in ("-a", "--address"):
+            wsHost = arg
+        elif opt in ("-p", "--port"):
+            wsPort = arg
+
+    # start Server
 
     integController = leoBridgeIntegController()
 

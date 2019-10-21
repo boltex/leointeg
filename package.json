@@ -75,13 +75,13 @@
         },
         "leoIntegration.startServerAutomatically": {
           "scope": "application",
-          "default": false,
+          "default": true,
           "type": "boolean",
           "description": "Starts a LeoBridge server, either with a specified command, or the default command to run the 'leobridgeserver.py' python3 script"
         },
         "leoIntegration.connectToServerAutomatically": {
           "scope": "application",
-          "default": false,
+          "default": true,
           "type": "boolean",
           "description": "Connect automatically to a Leo server on specified 'Connection Port' upon activation of this expansion"
         },
