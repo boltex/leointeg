@@ -18,14 +18,17 @@ export class LeoIntegration {
     private platform: string = os.platform();
 
     // * Configuration Settings
-    public treeKeepFocus: boolean;
-    public treeKeepFocusWhenAside: boolean;
-    public treeInExplorer: boolean;
-    public showOpenAside: boolean;
-    public bodyEditDelay: number;
-    public leoPythonCommand: string;
-    public startServerAutomatically: boolean;
-    public connectToServerAutomatically: boolean;
+    public treeKeepFocus: boolean = false;
+    public treeKeepFocusWhenAside: boolean = false;
+    public treeInExplorer: boolean = false;
+    public showOpenAside: boolean = false;
+    public bodyEditDelay: number = 0;
+    public leoPythonCommand: string = "";
+    public startServerAutomatically: boolean = false;
+    public connectToServerAutomatically: boolean = false;
+    public showArrowsOnNodes: boolean = false;
+    public showAddOnNodes: boolean = false;
+    public showMarkOnNodes: boolean = false;
 
     // * Leo Bridge Server Process
     private serverProcess: child.ChildProcess | undefined;
@@ -78,16 +81,7 @@ export class LeoIntegration {
 
     constructor(private context: vscode.ExtensionContext) {
         // * Get configuration settings
-        this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
-        this.treeKeepFocusWhenAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusWhenAside', false);
-        this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
-        vscode.commands.executeCommand('setContext', 'treeInExplorer', this.treeInExplorer);
-        this.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
-        vscode.commands.executeCommand('setContext', 'showOpenAside', this.showOpenAside);
-        this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
-        this.leoPythonCommand = vscode.workspace.getConfiguration('leoIntegration').get('leoPythonCommand', "");
-        this.startServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('startServerAutomatically', false);
-        this.connectToServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('connectToServerAutomatically', false);
+        this.getLeoIntegSettings();
 
         // * File Browser
         this.leoFiles = new LeoFiles(context);
@@ -242,7 +236,9 @@ export class LeoIntegration {
             } else {
                 this.leoBridgeReady = true;
                 vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
-                vscode.window.showInformationMessage(`Connected`);
+                if (!this.connectToServerAutomatically) {
+                    vscode.window.showInformationMessage(`Connected`);
+                }
             }
         },
             (p_reason) => {
@@ -318,7 +314,7 @@ export class LeoIntegration {
         // * Status flag check
         if (!p_event && this.leoObjectSelected) {
             this.leoObjectSelected = false; // no editor!
-            this.updateStatusBar();
+            this.updateStatusBarDebounced();
             return;
         }
         // * Reveal if needed
@@ -486,12 +482,20 @@ export class LeoIntegration {
     }
 
     private getLeoIntegSettings(): void {
-        this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
-        this.treeKeepFocusWhenAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusWhenAside', false);
+        // * Code repetition from constructor
         this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
         vscode.commands.executeCommand('setContext', 'treeInExplorer', this.treeInExplorer);
         this.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
         vscode.commands.executeCommand('setContext', 'showOpenAside', this.showOpenAside);
+        this.showArrowsOnNodes = vscode.workspace.getConfiguration('leoIntegration').get('showArrowsOnNodes', false);
+        vscode.commands.executeCommand('setContext', 'showArrowsOnNodes', this.showArrowsOnNodes);
+        this.showAddOnNodes = vscode.workspace.getConfiguration('leoIntegration').get('showAddOnNodes', false);
+        vscode.commands.executeCommand('setContext', 'showAddOnNodes', this.showAddOnNodes);
+        this.showMarkOnNodes = vscode.workspace.getConfiguration('leoIntegration').get('showMarkOnNodes', false);
+        vscode.commands.executeCommand('setContext', 'showMarkOnNodes', this.showMarkOnNodes);
+
+        this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
+        this.treeKeepFocusWhenAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusWhenAside', false);
         this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
         this.leoPythonCommand = vscode.workspace.getConfiguration('leoIntegration').get('leoPythonCommand', "");
         this.startServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('startServerAutomatically', false);
@@ -510,14 +514,14 @@ export class LeoIntegration {
         }
         this.updateStatusBarTimeout = setTimeout(() => {
             this.updateStatusBar();
-        }, 100);
+        }, 200);
     }
 
     private updateStatusBar(): void {
         if (this.updateStatusBarTimeout) { // Can be called directly, so clear timer if any
             clearTimeout(this.updateStatusBarTimeout);
         }
-        vscode.commands.executeCommand('setContext', 'leoObjectSelected', this.leoObjectSelected);
+        vscode.commands.executeCommand('setContext', 'leoObjectSelected', !!this.leoObjectSelected);
 
         if (this.leoObjectSelected && this.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
             this.leoStatusBarItem.color = Constants.LEO_STATUSBAR_COLOR;
@@ -733,6 +737,29 @@ export class LeoIntegration {
     public delete(p_node: LeoNode): void {
         vscode.window.showInformationMessage(`TODO: delete on ${p_node.label}.`); // temp placeholder
     }
+
+    public markSelection(): void {
+        vscode.window.showInformationMessage(`TODO: mark selected node`); // temp placeholder
+    }
+    public unmarkSelection(): void {
+        vscode.window.showInformationMessage(`TODO: unmark selected node`); // temp placeholder
+    }
+    public copyNodeSelection(): void {
+        vscode.window.showInformationMessage(`TODO: copy selected node`); // temp placeholder
+    }
+    public cutNodeSelection(): void {
+        vscode.window.showInformationMessage(`TODO: cut selected node`); // temp placeholder
+    }
+    public pasteNodeAtSelection(): void {
+        vscode.window.showInformationMessage(`TODO: pasteNode at selected node`); // temp placeholder
+    }
+    public pasteNodeAsCloneAtSelection(): void {
+        vscode.window.showInformationMessage(`TODO: pasteNodeAsClone at selected node`); // temp placeholder
+    }
+    public deleteSelection(): void {
+        vscode.window.showInformationMessage(`TODO: delete selected node`); // temp placeholder
+    }
+
     public moveOutlineDown(p_node: LeoNode): void {
         vscode.window.showInformationMessage(`TODO: moveOutlineDown on ${p_node.label}.`); // temp placeholder
     }
@@ -757,6 +784,33 @@ export class LeoIntegration {
     public demode(p_node: LeoNode): void {
         vscode.window.showInformationMessage(`TODO: demode on ${p_node.label}.`); // temp placeholder
     }
+
+    public moveOutlineDownSelection(): void {
+        vscode.window.showInformationMessage(`TODO: moveOutlineDown on selected node`); // temp placeholder
+    }
+    public moveOutlineLeftSelection(): void {
+        vscode.window.showInformationMessage(`TODO: moveOutlineLeft on selected node`); // temp placeholder
+    }
+    public moveOutlineRightSelection(): void {
+        vscode.window.showInformationMessage(`TODO: moveOutlineRight on selected node`); // temp placeholder
+    }
+    public moveOutlineUpSelection(): void {
+        vscode.window.showInformationMessage(`TODO: moveOutlineUp on selected node`); // temp placeholder
+    }
+    public insertNodeSelection(): void {
+        vscode.window.showInformationMessage(`TODO: insertNode at selected node`); // temp placeholder
+    }
+    public cloneNodeSelection(): void {
+        vscode.window.showInformationMessage(`TODO: clone selected node`); // temp placeholder
+    }
+    public promoteSelection(): void {
+        vscode.window.showInformationMessage(`TODO: promote selected node`); // temp placeholder
+    }
+    public demodeSelection(): void {
+        vscode.window.showInformationMessage(`TODO: demode selected node`); // temp placeholder
+    }
+
+
     public undo(): void {
         vscode.window.showInformationMessage(`TODO: undo last operation`); // temp placeholder
     }

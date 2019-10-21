@@ -33,6 +33,14 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNodeAsClone", (node: LeoNode) => leoIntegration.pasteNodeAsClone(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.delete", (node: LeoNode) => leoIntegration.delete(node)));
 
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.markSelection", () => leoIntegration.markSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.unmarkSelection", () => leoIntegration.unmarkSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.copyNodeSelection", () => leoIntegration.copyNodeSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.cutNodeSelection", () => leoIntegration.cutNodeSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNodeAtSelection", () => leoIntegration.pasteNodeAtSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNodeAsCloneAtSelection", () => leoIntegration.pasteNodeAsCloneAtSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.deleteSelection", () => leoIntegration.deleteSelection()));
+
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineDown", (node: LeoNode) => leoIntegration.moveOutlineDown(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineLeft", (node: LeoNode) => leoIntegration.moveOutlineLeft(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineRight", (node: LeoNode) => leoIntegration.moveOutlineRight(node)));
@@ -41,6 +49,16 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.cloneNode", (node: LeoNode) => leoIntegration.cloneNode(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.promote", (node: LeoNode) => leoIntegration.promote(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.demode", (node: LeoNode) => leoIntegration.demode(node)));
+
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineDownSelection", () => leoIntegration.moveOutlineDownSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineLeftSelection", () => leoIntegration.moveOutlineLeftSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineRightSelection", () => leoIntegration.moveOutlineRightSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineUpSelection", () => leoIntegration.moveOutlineUpSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.insertNodeSelection", () => leoIntegration.insertNodeSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.cloneNodeSelection", () => leoIntegration.cloneNodeSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.promoteSelection", () => leoIntegration.promoteSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.demodeSelection", () => leoIntegration.demodeSelection()));
+
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.undo", () => leoIntegration.undo()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.executeScript", () => leoIntegration.executeScript()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.saveFile", () => leoIntegration.saveFile()));
