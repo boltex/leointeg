@@ -1,8 +1,10 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 
-// * There is an activation event `onFileSystem:<scheme>` that fires when a file is being accessed
 export class LeoBodyProvider implements vscode.FileSystemProvider {
+    // * The bodies of Leo nodes are implemented as a 'file system' in vscode's api
+    // * Saving and renaming prevents flickering and prevents undos to 'traverse throught' nodes, see leoIntegration.ts
+    // * note: There is an activation event `onFileSystem:<scheme>` that fires when a file is being accessed
 
     private lastGnx = "";
     private lastGnxBodyLength = 0;

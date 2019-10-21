@@ -1,13 +1,18 @@
 # Change Log
 
+### 0.1.7
+
+- Changed main mode of communication from stdin/out to tcp/ip websockets.
+- Made a standalone 'Leo Server' python script.
+
 ### 0.1.6
 
 - Major 'Browsing' update before adding outline editing and file saving & derivation (Thanks for testing!)
-- Refactored and simplified communication between vscode and leoBridge
-- Stabilized browsing with multiple simultaneous body panes
-- Added Leo Outline into explorer view
-- Supports new command to open a node on the side from the context menu
-- Multiple configuration options: Open Settings with CTRL+',' type 'leo', or look for 'leo integration' in extensions
+- Refactored and simplified communication between vscode and leoBridge.
+- Stabilized browsing with multiple simultaneous body panes.
+- Added Leo Outline into explorer view.
+- Supports new command to open a node on the side from the context menu.
+- Multiple configuration options: Open Settings with CTRL+',' type 'leo', or look for 'leo integration' in extensions.
 
 _Note: Headline and body edition does not affect the Leo file yet._
 
@@ -34,8 +39,8 @@ _Note: This editable body panel does not affect Leo file yet._
 
 ### 0.1.1
 
-- Leo File Opening
-- Basic outline browsing, along with the recognizable node icons
+- Leo File Opening.
+- Basic outline browsing, along with the recognizable node icons.
 
 ### 0.0.1
 

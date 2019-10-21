@@ -1,24 +1,19 @@
-import * as child from "child_process";
 import * as vscode from "vscode";
+import * as WebSocket from 'ws';
 import { Constants } from "./constants";
 import { LeoBridgePackage, LeoAction } from "./types";
-// import * as hasbin from '../node_modules/hasbin';
+import { LeoIntegration } from "./leoIntegration";
 
-// var isPyAvailable = require('hasbin').sync('python')  import * as hasbin from "hasbin";
-// npm install --save @types/hasbin
 export class LeoBridge {
     // * Communications with Python
     public actionBusy: boolean = false;
     private leoBridgeSerialId: number = 0;
     private callStack: LeoAction[] = [];
-    private process: child.ChildProcess | undefined;
     private readyPromise: Promise<LeoBridgePackage> | undefined;
-    private pythonString = "";
     private hasbin = require('hasbin');
+    private websocket: WebSocket | null = null;
 
-    constructor(private context: vscode.ExtensionContext) {
-        this.pythonString = vscode.workspace.getConfiguration('leoIntegration').get('python', "");
-    }
+    constructor(private context: vscode.ExtensionContext, private leoIntegration: LeoIntegration) { }
 
     public action(p_action: string, p_jsonParam: string, p_deferedPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
         // * Places an action to be made by leoBridge.py on top of a stack, to be resolved from the bottom
@@ -37,20 +32,32 @@ export class LeoBridge {
         });
     }
 
-    private resolveBridgeReady(p_jsonObject: string) {
+    private resolveBridgeReady(p_object: string) {
         // * Resolves promises with the answers from an action that was done by leoBridge.py
         let w_bottomAction = this.callStack.shift();
-
         if (w_bottomAction) {
-            const w_package = JSON.parse(p_jsonObject);
             if (w_bottomAction.deferedPayload) { // Used when the action already has a return value ready but is also waiting for python's side
                 w_bottomAction.resolveFn(w_bottomAction.deferedPayload); // given back 'as is'
             } else {
-                w_bottomAction.resolveFn(w_package);
+                w_bottomAction.resolveFn(p_object);
             }
             this.actionBusy = false;
         } else {
             console.log("Error stack empty");
+        }
+    }
+
+    private rejectActions(p_reason: string): void {
+        // * Rejects all actions from the the stack
+        while (this.callStack.length) {
+            this.rejectAction(p_reason);
+        }
+    }
+    private rejectAction(p_reason: string): void {
+        // * Rejects an action from the bottom of the stack
+        const w_bottomAction = this.callStack.shift();
+        if (w_bottomAction) {
+            w_bottomAction.rejectFn(p_reason);
         }
     }
 
@@ -59,81 +66,74 @@ export class LeoBridge {
         if (this.callStack.length && !this.actionBusy) {
             this.actionBusy = true; // launch / resolve bottom one
             const w_action = this.callStack[0];
-            this.stdin(Constants.LEO_TRANSACTION_HEADER + w_action.parameter + "\n");
+            this.send(w_action.parameter + "\n");
         }
+    }
+
+    private tryParseJSON(p_jsonStr: string) {
+        try {
+            var w_object = JSON.parse(p_jsonStr);
+            // JSON.parse(null) returns null, and typeof null === "object", null is falsey, so this suffices:
+            if (w_object && typeof w_object === "object") {
+                return w_object;
+            }
+        }
+        catch (e) {
+            console.log('json was invalid: ' + p_jsonStr);
+        }
+        return false;
     }
 
     private processAnswer(p_data: string): void {
         // * Process data that came out of leoBridge.py's process stdout
-        let w_processed: boolean = false;
-
-        if (p_data.startsWith(Constants.LEO_TRANSACTION_HEADER)) {
-            this.resolveBridgeReady(p_data.substring(10));
-            w_processed = true;
-        }
-
-        if (w_processed) {
+        const w_parsedData = this.tryParseJSON(p_data);
+        if (w_parsedData) {
+            this.resolveBridgeReady(w_parsedData);
             this.callAction();
-        } else if (!!this.process) { // unprocessed/unknown python output
+        } else { // unprocessed/unknown python output
             console.log("from python", p_data);
         }
     }
 
-    private findBestPythonString(): string {
-        let w_paths = ["python3", "py", "python"];
-        let w_foundPath = "";
-        w_paths.forEach(p_path => {
-            if (this.hasbin.sync(p_path) && !w_foundPath) {
-                w_foundPath = p_path;
-            }
-        });
-        return w_foundPath;
-    }
-
     public initLeoProcess(): Promise<LeoBridgePackage> {
-        let w_pythonPath = this.pythonString;
-        if (!w_pythonPath) {
-            w_pythonPath = this.findBestPythonString(); // Thanks to EDK for finding the first bug!
-        }
-        // * Spawn a python child process
-        this.process = child.spawn(w_pythonPath, [
-            this.context.extensionPath + "/scripts/leobridge.py"
-        ]);
+        const w_socketAdress = vscode.workspace.getConfiguration('leoIntegration').get('connectionAdress', Constants.LEO_TCPIP_DEFAULT_ADRESS); // 'ws://'
+        const w_socketPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', Constants.LEO_TCPIP_DEFAULT_PORT); // 32125
+
+        // * Spawn a websocket
+        this.websocket = new WebSocket(Constants.LEO_TCPIP_DEFAULT_PROTOCOL + w_socketAdress + ":" + w_socketPort);
         // * Capture the python process output
-        this.process.stdout.on("data", (data: string) => {
-            data.toString().split("\n").forEach(p_line => {
-                p_line = p_line.trim();
-                if (p_line) { // * std out process line by line: json shouldn't have line breaks
-                    this.processAnswer(p_line);
-                }
-            });
-        });
-        // * Capture other python process outputs
-        this.process.stderr.on("data", (data: string) => {
-            console.log(`stderr: ${data}`);
-        });
-        this.process.on("close", (code: any) => {
-            console.log(`child process exited with code ${code}`);
-            this.process = undefined;
-        });
+        this.websocket.onmessage = (p_event) => {
+            if (p_event.data) {
+                this.processAnswer(p_event.data.toString());
+            }
+        };
+        this.websocket.onerror = (p_event: WebSocket.ErrorEvent) => {
+            console.log(`websocket error: ${p_event.message}`);
+        };
+        this.websocket.onclose = (p_event: WebSocket.CloseEvent) => {
+            // * Disconnected from server
+            console.log(`websocket closed, code: ${p_event.code}`);
+            this.rejectAction(`websocket closed, code: ${p_event.code}`);
+            // TODO : Implement a better connection error handling
+            if (this.leoIntegration.leoBridgeReady) {
+                this.leoIntegration.cancelConnect(`websocket closed, code: ${p_event.code}`);
+            }
+        };
+
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
-        this.readyPromise = this.action("", "", { id: 1, package: this.process }, true);
+        this.readyPromise = this.action("", "", { id: 1 }, true);
         return this.readyPromise; // This promise will resolve when the started python process starts
     }
 
-    private stdin(p_message: string): any {
+    private send(p_message: string): any {
         // * Send into the python process input
         if (this.readyPromise) {
             this.readyPromise.then(() => {  //  using '.then' to be buffered in case process isn't ready.
-                if (this.process) {
-                    this.process.stdin.write(p_message); // * std in interaction sending to python script
+                if (this.websocket && this.websocket.OPEN) {
+                    this.websocket.send(p_message); // p_message should be json
                 }
             });
         }
     }
 
-    public killLeoBridge(): void {
-        console.log("sending kill command");
-        this.stdin("exit\n"); // 'exit' should kill the python script
-    }
 }

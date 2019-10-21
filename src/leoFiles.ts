@@ -8,7 +8,7 @@ export class LeoFiles {
     constructor(private context: vscode.ExtensionContext) { }
 
     private getBestOpenFolderUri(): vscode.Uri {
-        // Find a folder to propose when opening the browse-for-leo-file chooser
+        // find a folder to propose when opening the browse-for-leo-file chooser
         let w_openedFileEnvUri: vscode.Uri | boolean = false;
         let w_activeUri: vscode.Uri | undefined = undefined;
 
@@ -25,6 +25,7 @@ export class LeoFiles {
         }
         if (!w_openedFileEnvUri) {
             w_openedFileEnvUri = vscode.Uri.file("~"); // TODO : set as home folder properly, this doesn't work
+            // ! EXAMPLE WITH os : const homedir = require('os').homedir();
         }
         return w_openedFileEnvUri;
     }
@@ -32,7 +33,6 @@ export class LeoFiles {
     // TODO : Better Windows support
     public getLeoFileUrl(): Promise<string> {
         if (this.fileBrowserOpen) {
-            vscode.window.showInformationMessage("Open Cancelled");
             return Promise.resolve("");
         }
         return new Promise((resolve, reject) => {
@@ -45,12 +45,10 @@ export class LeoFiles {
                     }
                 })
                 .then(p_chosenLeoFile => {
+                    this.fileBrowserOpen = false;
                     if (p_chosenLeoFile) {
-                        this.fileBrowserOpen = false;
                         resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // replace backslashes for windiws support
                     } else {
-                        vscode.window.showInformationMessage("Open Cancelled");
-                        this.fileBrowserOpen = false;
                         resolve("");
                     }
                 });

@@ -2,21 +2,21 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.38.0"
+    "vscode": "^1.39.0"
   },
   "keywords": [
     "leo",
     "literate",
     "outline",
     "programming",
-    "IDE"
+    "editor"
   ],
   "categories": [
     "Other"
@@ -53,17 +53,29 @@
           "type": "boolean",
           "description": "Show the outline tree in the explorer view"
         },
-        "leoIntegration.python": {
-          "scope": "application",
-          "default": "",
-          "type": "string",
-          "description": "Specifies the name of the python3 launcher - leaving empty will try 'python3', 'py' and 'python'"
-        },
         "leoIntegration.showOpenAside": {
           "scope": "application",
           "default": true,
           "type": "boolean",
           "description": "Offer 'Open to the Side' in nodes context menu"
+        },
+        "leoIntegration.showArrowsOnNodes": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Shows 'Move Node' arrow buttons on tree nodes"
+        },
+        "leoIntegration.showAddOnNodes": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Shows 'Insert' button on tree nodes"
+        },
+        "leoIntegration.showMarkOnNodes": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Shows 'Mark/Unmark' buttons on tree nodes"
         },
         "leoIntegration.bodyEditDelay": {
           "scope": "application",
@@ -73,23 +85,29 @@
           "maximum": 1000,
           "description": "Specifies delay time for edits to be sent to Leo, in milliseconds"
         },
-        "leoIntegration.connectionType": {
+        "leoIntegration.leoPythonCommand": {
           "scope": "application",
-          "description": "Connection to leoBridge - ONLY 'standard I/O' FOR NOW",
+          "default": "",
           "type": "string",
-          "default": "standard I/O",
-          "enum": [
-            "standard I/O",
-            "TCP/IP",
-            "HTTP",
-            "WebSocket"
-          ],
-          "enumDescriptions": [
-            "Uses stdin/stdout",
-            "TCP/IP on port 'Connection Port' * Not Available",
-            "HTTP REST Api * Not Available",
-            "WebSocket stream * Not Available"
-          ]
+          "description": "Specifies the command to start python (Defaults to 'py' on windows and 'python3' otherwise)"
+        },
+        "leoIntegration.startServerAutomatically": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Starts a LeoBridge server, either with a specified command, or the default command to run the 'leobridgeserver.py' python3 script"
+        },
+        "leoIntegration.connectToServerAutomatically": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Connect automatically to a Leo server on specified 'Connection Port' upon activation of this expansion"
+        },
+        "leoIntegration.connectionAdress": {
+          "default": "localhost",
+          "scope": "application",
+          "type": "string",
+          "description": "Connection host"
         },
         "leoIntegration.connectionPort": {
           "default": 32125,
@@ -115,17 +133,26 @@
         {
           "id": "leoIntegrationExplorer",
           "name": "Leo Outline",
-          "when": "leoBridgeReady==true && treeInExplorer==true"
+          "when": "treeInExplorer==true && !leoDisconnected"
         }
       ],
       "leoIntegrationView": [
         {
           "id": "leoIntegration",
-          "name": "Outline"
+          "name": "Outline",
+          "when": "!leoDisconnected"
         }
       ]
     },
     "commands": [
+      {
+        "command": "leointeg.connectToServer",
+        "title": "Connect to Leo Bridge server",
+        "icon": {
+          "light": "resources/light/connect.svg",
+          "dark": "resources/dark/connect.svg"
+        }
+      },
       {
         "command": "leointeg.openLeoFile",
         "title": "Open Leo File",
@@ -143,12 +170,12 @@
         }
       },
       {
-        "command": "leointeg.test",
-        "title": "Test Leo Integration"
+        "command": "leointeg.startServer",
+        "title": "Start Leo Bridge Server"
       },
       {
-        "command": "leointeg.killLeo",
-        "title": "Kill Leo Integration"
+        "command": "leointeg.test",
+        "title": "Test Leo Integration"
       },
       {
         "command": "leointeg.editHeadline",
@@ -164,22 +191,50 @@
       },
       {
         "command": "leointeg.mark",
-        "title": "Mark"
+        "title": "Mark",
+        "icon": {
+          "light": "resources/light/mark.svg",
+          "dark": "resources/dark/mark.svg"
+        }
+      },
+      {
+        "command": "leointeg.markSelection",
+        "title": "Mark Selected Node"
       },
       {
         "command": "leointeg.unmark",
-        "title": "Unmark"
+        "title": "Unmark",
+        "icon": {
+          "light": "resources/light/unmark.svg",
+          "dark": "resources/dark/unmark.svg"
+        }
+      },
+      {
+        "command": "leointeg.unmarkSelection",
+        "title": "Unmark Selected Node"
       },
       {
         "command": "leointeg.copyNode",
         "title": "Copy Node"
       },
       {
+        "command": "leointeg.copyNodeSelection",
+        "title": "Copy Selected Node"
+      },
+      {
         "command": "leointeg.cutNode",
         "title": "Cut Node"
       },
       {
+        "command": "leointeg.cutNodeSelection",
+        "title": "Cut Selected Node"
+      },
+      {
         "command": "leointeg.pasteNode",
+        "title": "Paste Node"
+      },
+      {
+        "command": "leointeg.pasteNodeAtSelection",
         "title": "Paste Node"
       },
       {
@@ -187,12 +242,140 @@
         "title": "Paste Node as Clone"
       },
       {
+        "command": "leointeg.pasteNodeAsCloneAtSelection",
+        "title": "Paste Node as Clone"
+      },
+      {
         "command": "leointeg.delete",
-        "title": "Delete"
+        "title": "Delete",
+        "icon": {
+          "light": "resources/light/close.svg",
+          "dark": "resources/dark/close.svg"
+        }
+      },
+      {
+        "command": "leointeg.deleteSelection",
+        "title": "Delete Selected Node"
+      },
+      {
+        "command": "leointeg.moveOutlineDown",
+        "title": "Move Outline Down",
+        "icon": {
+          "light": "resources/light/arrow-small-down.svg",
+          "dark": "resources/dark/arrow-small-down.svg"
+        }
+      },
+      {
+        "command": "leointeg.moveOutlineDownSelection",
+        "title": "Move Selected Outline Down"
+      },
+      {
+        "command": "leointeg.moveOutlineLeft",
+        "title": "Move Outline Left",
+        "icon": {
+          "light": "resources/light/arrow-small-left.svg",
+          "dark": "resources/dark/arrow-small-left.svg"
+        }
+      },
+      {
+        "command": "leointeg.moveOutlineLeftSelection",
+        "title": "Move Selected Outline Left"
+      },
+      {
+        "command": "leointeg.moveOutlineRight",
+        "title": "Move Outline Right",
+        "icon": {
+          "light": "resources/light/arrow-small-right.svg",
+          "dark": "resources/dark/arrow-small-right.svg"
+        }
+      },
+      {
+        "command": "leointeg.moveOutlineRightSelection",
+        "title": "Move Selected Outline Right"
+      },
+      {
+        "command": "leointeg.moveOutlineUp",
+        "title": "Move Outline Up",
+        "icon": {
+          "light": "resources/light/arrow-small-up.svg",
+          "dark": "resources/dark/arrow-small-up.svg"
+        }
+      },
+      {
+        "command": "leointeg.moveOutlineUpSelection",
+        "title": "Move Selected Outline Up"
+      },
+      {
+        "command": "leointeg.insertNode",
+        "title": "Insert Node",
+        "icon": {
+          "light": "resources/light/plus.svg",
+          "dark": "resources/dark/plus.svg"
+        }
+      },
+      {
+        "command": "leointeg.insertNodeSelection",
+        "title": "Insert Node",
+        "icon": {
+          "light": "resources/light/plus.svg",
+          "dark": "resources/dark/plus.svg"
+        }
+      },
+      {
+        "command": "leointeg.cloneNode",
+        "title": "Clone Node"
+      },
+      {
+        "command": "leointeg.cloneNodeSelection",
+        "title": "Clone Selected Node"
+      },
+      {
+        "command": "leointeg.promote",
+        "title": "Promote"
+      },
+      {
+        "command": "leointeg.promoteSelection",
+        "title": "Promote Selected Node"
+      },
+      {
+        "command": "leointeg.demode",
+        "title": "Demote"
+      },
+      {
+        "command": "leointeg.demodeSelection",
+        "title": "Demote Selected Node"
+      },
+      {
+        "command": "leointeg.undo",
+        "title": "Undo",
+        "icon": {
+          "light": "resources/light/undo.svg",
+          "dark": "resources/dark/undo.svg"
+        }
+      },
+      {
+        "command": "leointeg.executeScript",
+        "title": "Execute Script"
+      },
+      {
+        "command": "leointeg.saveFile",
+        "title": "Save Leo File",
+        "icon": {
+          "light": "resources/light/save.svg",
+          "dark": "resources/dark/save.svg"
+        }
       }
     ],
     "menus": {
       "commandPalette": [
+        {
+          "command": "leointeg.startServer",
+          "when": "!leoBridgeReady && !leoTreeOpened && !leoServerStarted"
+        },
+        {
+          "command": "leointeg.connectToServer",
+          "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
+        },
         {
           "command": "leointeg.openLeoFile",
           "when": "leoBridgeReady==true && !leoTreeOpened"
@@ -202,26 +385,127 @@
           "when": "leoTreeOpened==true"
         },
         {
-          "command": "leointeg.killLeo",
-          "when": "leoBridgeReady==true"
+          "command": "leointeg.markSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.unmarkSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.copyNodeSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.cutNodeSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.pasteNodeAtSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.pasteNodeAsCloneAtSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.deleteSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.moveOutlineDownSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.moveOutlineLeftSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.moveOutlineRightSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.moveOutlineUpSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.insertNodeSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.cloneNodeSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.promoteSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.demodeSelection",
+          "when": "leoObjectSelected==true"
         }
       ],
       "view/title": [
+        {
+          "command": "leointeg.connectToServer",
+          "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected",
+          "group": "navigation"
+        },
         {
           "command": "leointeg.openLeoFile",
           "when": "leoBridgeReady==true && !leoTreeOpened",
           "group": "navigation"
         },
         {
-          "command": "leointeg.closeLeoFile",
+          "command": "leointeg.saveFile",
+          "when": "leoTreeOpened==true",
+          "group": "navigation"
+        },
+        {
+          "command": "leointeg.undo",
           "when": "leoTreeOpened==true",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
+          "command": "leointeg.moveOutlineDown",
+          "when": "showArrowsOnNodes == true && viewItem =~ /leoNode/",
+          "group": "inline"
+        },
+        {
+          "command": "leointeg.moveOutlineLeft",
+          "when": "showArrowsOnNodes == true && viewItem =~ /leoNode/",
+          "group": "inline"
+        },
+        {
+          "command": "leointeg.moveOutlineRight",
+          "when": "showArrowsOnNodes == true && viewItem =~ /leoNode/",
+          "group": "inline"
+        },
+        {
+          "command": "leointeg.moveOutlineUp",
+          "when": "showArrowsOnNodes == true && viewItem =~ /leoNode/",
+          "group": "inline"
+        },
+        {
           "command": "leointeg.editHeadline",
           "when": "viewItem =~ /leoNode/",
+          "group": "inline"
+        },
+        {
+          "command": "leointeg.insertNode",
+          "when": "showAddOnNodes == true && viewItem =~ /leoNode/",
+          "group": "inline"
+        },
+        {
+          "command": "leointeg.mark",
+          "when": "showMarkOnNodes == true && viewItem == leoNode",
+          "group": "inline"
+        },
+        {
+          "command": "leointeg.unmark",
+          "when": "showMarkOnNodes == true && viewItem == leoNodeMarked",
           "group": "inline"
         },
         {
@@ -263,6 +547,26 @@
           "command": "leointeg.delete",
           "when": "viewItem =~ /leoNode/",
           "group": "leoNodeContext2@7"
+        },
+        {
+          "command": "leointeg.insertNode",
+          "when": "leoTreeOpened==true",
+          "group": "leoNodeContext3@1"
+        },
+        {
+          "command": "leointeg.cloneNode",
+          "when": "leoTreeOpened==true",
+          "group": "leoNodeContext3@2"
+        },
+        {
+          "command": "leointeg.promote",
+          "when": "leoTreeOpened==true",
+          "group": "leoNodeContext3@3"
+        },
+        {
+          "command": "leointeg.demode",
+          "when": "leoTreeOpened==true",
+          "group": "leoNodeContext3@4"
         }
       ]
     },
@@ -289,6 +593,8 @@
     "@types/mocha": "^5.2.6",
     "@types/node": "^10.12.21",
     "@types/vscode": "^1.38.0",
+    "@types/ws": "^6.0.0",
+    "@types/which": "^1.3.2",
     "glob": "^7.1.4",
     "mocha": "^6.1.4",
     "typescript": "^3.3.1",
@@ -296,6 +602,8 @@
     "vscode-test": "^1.0.2"
   },
   "dependencies": {
-    "hasbin": "^1.2.3"
+    "hasbin": "^1.2.3",
+    "which": "^1.3.0",
+    "ws": "^6.0.0"
   }
 }
