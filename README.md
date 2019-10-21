@@ -28,7 +28,7 @@ Make sure you have Node.js and Git installed along with the above general requir
 4. Press F5. (the 'Run Extension' command shortcut of vscode's debug panel)
 5. A new vscode window is now running with leoInteg! (open it's preferences settings [ctrl+,] and make sure server settings are ok)
 6. The plugin will be activated if the workspace of this window has a leo file, or it can be manualy activated, by going to the Leo view.
-7. Click 'Connect' on the Leo Treeview header if not already connected. Once connected, the 'Open Leo File' icon will be available.
+7. Once activated, it will start a bridge and connect to it by default automatically. The 'Open Leo File' icon will then be available.
 
 ## Features
 
