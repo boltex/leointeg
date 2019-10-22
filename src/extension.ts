@@ -50,6 +50,8 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.promote", (node: LeoNode) => leoIntegration.promote(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.demode", (node: LeoNode) => leoIntegration.demode(node)));
 
+
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.editSelectedHeadline", () => leoIntegration.editSelectedHeadline()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineDownSelection", () => leoIntegration.moveOutlineDownSelection()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineLeftSelection", () => leoIntegration.moveOutlineLeftSelection()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineRightSelection", () => leoIntegration.moveOutlineRightSelection()));
