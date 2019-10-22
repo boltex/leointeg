@@ -148,6 +148,7 @@
       {
         "command": "leointeg.connectToServer",
         "title": "Connect to Leo Bridge server",
+        "category": "Leo",
         "icon": {
           "light": "resources/light/connect.svg",
           "dark": "resources/dark/connect.svg"
@@ -156,6 +157,7 @@
       {
         "command": "leointeg.openLeoFile",
         "title": "Open Leo File",
+        "category": "Leo",
         "icon": {
           "light": "resources/light/folder.svg",
           "dark": "resources/dark/folder.svg"
@@ -164,6 +166,7 @@
       {
         "command": "leointeg.closeLeoFile",
         "title": "Close Leo File",
+        "category": "Leo",
         "icon": {
           "light": "resources/light/close.svg",
           "dark": "resources/dark/close.svg"
@@ -171,14 +174,17 @@
       },
       {
         "command": "leointeg.startServer",
+        "category": "Leo",
         "title": "Start Leo Bridge Server"
       },
       {
         "command": "leointeg.test",
+        "category": "Leo",
         "title": "Test Leo Integration"
       },
       {
         "command": "leointeg.editHeadline",
+        "category": "Leo",
         "title": "Edit Headline",
         "icon": {
           "light": "resources/light/edit.svg",
@@ -186,11 +192,18 @@
         }
       },
       {
+        "command": "leointeg.editSelectedHeadline",
+        "category": "Leo",
+        "title": "Edit Headline"
+      },
+      {
         "command": "leointeg.openAside",
+        "category": "Leo",
         "title": "Open to the Side"
       },
       {
         "command": "leointeg.mark",
+        "category": "Leo",
         "title": "Mark",
         "icon": {
           "light": "resources/light/mark.svg",
@@ -199,10 +212,12 @@
       },
       {
         "command": "leointeg.markSelection",
+        "category": "Leo",
         "title": "Mark Selected Node"
       },
       {
         "command": "leointeg.unmark",
+        "category": "Leo",
         "title": "Unmark",
         "icon": {
           "light": "resources/light/unmark.svg",
@@ -211,42 +226,52 @@
       },
       {
         "command": "leointeg.unmarkSelection",
+        "category": "Leo",
         "title": "Unmark Selected Node"
       },
       {
         "command": "leointeg.copyNode",
+        "category": "Leo",
         "title": "Copy Node"
       },
       {
         "command": "leointeg.copyNodeSelection",
+        "category": "Leo",
         "title": "Copy Selected Node"
       },
       {
         "command": "leointeg.cutNode",
+        "category": "Leo",
         "title": "Cut Node"
       },
       {
         "command": "leointeg.cutNodeSelection",
+        "category": "Leo",
         "title": "Cut Selected Node"
       },
       {
         "command": "leointeg.pasteNode",
+        "category": "Leo",
         "title": "Paste Node"
       },
       {
         "command": "leointeg.pasteNodeAtSelection",
+        "category": "Leo",
         "title": "Paste Node"
       },
       {
         "command": "leointeg.pasteNodeAsClone",
+        "category": "Leo",
         "title": "Paste Node as Clone"
       },
       {
         "command": "leointeg.pasteNodeAsCloneAtSelection",
+        "category": "Leo",
         "title": "Paste Node as Clone"
       },
       {
         "command": "leointeg.delete",
+        "category": "Leo",
         "title": "Delete",
         "icon": {
           "light": "resources/light/close.svg",
@@ -255,58 +280,68 @@
       },
       {
         "command": "leointeg.deleteSelection",
+        "category": "Leo",
         "title": "Delete Selected Node"
       },
       {
         "command": "leointeg.moveOutlineDown",
+        "category": "Leo",
         "title": "Move Outline Down",
         "icon": {
-          "light": "resources/light/arrow-small-down.svg",
-          "dark": "resources/dark/arrow-small-down.svg"
+          "light": "resources/light/arrow-down.svg",
+          "dark": "resources/dark/arrow-down.svg"
         }
       },
       {
         "command": "leointeg.moveOutlineDownSelection",
+        "category": "Leo",
         "title": "Move Selected Outline Down"
       },
       {
         "command": "leointeg.moveOutlineLeft",
+        "category": "Leo",
         "title": "Move Outline Left",
         "icon": {
-          "light": "resources/light/arrow-small-left.svg",
-          "dark": "resources/dark/arrow-small-left.svg"
+          "light": "resources/light/arrow-left.svg",
+          "dark": "resources/dark/arrow-left.svg"
         }
       },
       {
         "command": "leointeg.moveOutlineLeftSelection",
+        "category": "Leo",
         "title": "Move Selected Outline Left"
       },
       {
         "command": "leointeg.moveOutlineRight",
+        "category": "Leo",
         "title": "Move Outline Right",
         "icon": {
-          "light": "resources/light/arrow-small-right.svg",
-          "dark": "resources/dark/arrow-small-right.svg"
+          "light": "resources/light/arrow-right.svg",
+          "dark": "resources/dark/arrow-right.svg"
         }
       },
       {
         "command": "leointeg.moveOutlineRightSelection",
+        "category": "Leo",
         "title": "Move Selected Outline Right"
       },
       {
         "command": "leointeg.moveOutlineUp",
+        "category": "Leo",
         "title": "Move Outline Up",
         "icon": {
-          "light": "resources/light/arrow-small-up.svg",
-          "dark": "resources/dark/arrow-small-up.svg"
+          "light": "resources/light/arrow-up.svg",
+          "dark": "resources/dark/arrow-up.svg"
         }
       },
       {
         "command": "leointeg.moveOutlineUpSelection",
+        "category": "Leo",
         "title": "Move Selected Outline Up"
       },
       {
         "command": "leointeg.insertNode",
+        "category": "Leo",
         "title": "Insert Node",
         "icon": {
           "light": "resources/light/plus.svg",
@@ -315,6 +350,7 @@
       },
       {
         "command": "leointeg.insertNodeSelection",
+        "category": "Leo",
         "title": "Insert Node",
         "icon": {
           "light": "resources/light/plus.svg",
@@ -323,30 +359,37 @@
       },
       {
         "command": "leointeg.cloneNode",
+        "category": "Leo",
         "title": "Clone Node"
       },
       {
         "command": "leointeg.cloneNodeSelection",
+        "category": "Leo",
         "title": "Clone Selected Node"
       },
       {
         "command": "leointeg.promote",
+        "category": "Leo",
         "title": "Promote"
       },
       {
         "command": "leointeg.promoteSelection",
+        "category": "Leo",
         "title": "Promote Selected Node"
       },
       {
         "command": "leointeg.demode",
+        "category": "Leo",
         "title": "Demote"
       },
       {
         "command": "leointeg.demodeSelection",
+        "category": "Leo",
         "title": "Demote Selected Node"
       },
       {
         "command": "leointeg.undo",
+        "category": "Leo",
         "title": "Undo",
         "icon": {
           "light": "resources/light/undo.svg",
@@ -355,10 +398,12 @@
       },
       {
         "command": "leointeg.executeScript",
+        "category": "Leo",
         "title": "Execute Script"
       },
       {
         "command": "leointeg.saveFile",
+        "category": "Leo",
         "title": "Save Leo File",
         "icon": {
           "light": "resources/light/save.svg",
@@ -368,6 +413,74 @@
     ],
     "menus": {
       "commandPalette": [
+        {
+          "command": "leointeg.editHeadline",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.openAside",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.mark",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.unmark",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.copyNode",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.cutNode",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.pasteNode",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.pasteNodeAsClone",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.delete",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.moveOutlineDown",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.moveOutlineLeft",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.moveOutlineRight",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.moveOutlineUp",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.insertNode",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.cloneNode",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.promote",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.demode",
+          "when": "false"
+        },
         {
           "command": "leointeg.startServer",
           "when": "!leoBridgeReady && !leoTreeOpened && !leoServerStarted"
@@ -383,6 +496,10 @@
         {
           "command": "leointeg.closeLeoFile",
           "when": "leoTreeOpened==true"
+        },
+        {
+          "command": "leointeg.editSelectedHeadline",
+          "when": "leoObjectSelected==true"
         },
         {
           "command": "leointeg.markSelection",

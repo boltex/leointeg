@@ -715,6 +715,12 @@ export class LeoIntegration {
             );
     }
 
+    public editSelectedHeadline() {
+        if (this.lastSelectedLeoNode) {
+            this.editHeadline(this.lastSelectedLeoNode);
+        }
+    }
+
     // TODO : Leo Commands
     public mark(p_node: LeoNode): void {
         vscode.window.showInformationMessage(`TODO: mark on ${p_node.label}.`); // temp placeholder
