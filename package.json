@@ -77,6 +77,24 @@
           "type": "boolean",
           "description": "Shows 'Mark/Unmark' buttons on tree nodes"
         },
+        "leoIntegration.showCloneOnNodes": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Shows 'Clone' button on tree nodes"
+        },
+        "leoIntegration.showCopyOnNodes": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Shows 'Copy' button on tree nodes"
+        },
+        "leoIntegration.invertNodeContrast": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Inverts the contrast of the dirty/clean border aspect of tree nodes"
+        },
         "leoIntegration.bodyEditDelay": {
           "scope": "application",
           "type": "number",
@@ -232,7 +250,11 @@
       {
         "command": "leointeg.copyNode",
         "category": "Leo",
-        "title": "Copy Node"
+        "title": "Copy Node",
+        "icon": {
+          "light": "resources/light/clipboard.svg",
+          "dark": "resources/dark/clipboard.svg"
+        }
       },
       {
         "command": "leointeg.copyNodeSelection",
@@ -360,7 +382,11 @@
       {
         "command": "leointeg.cloneNode",
         "category": "Leo",
-        "title": "Clone Node"
+        "title": "Clone Node",
+        "icon": {
+          "light": "resources/light/link.svg",
+          "dark": "resources/dark/link.svg"
+        }
       },
       {
         "command": "leointeg.cloneNodeSelection",
@@ -588,42 +614,52 @@
         {
           "command": "leointeg.moveOutlineDown",
           "when": "showArrowsOnNodes == true && viewItem =~ /leoNode/",
-          "group": "inline"
+          "group": "inline@3"
         },
         {
           "command": "leointeg.moveOutlineLeft",
           "when": "showArrowsOnNodes == true && viewItem =~ /leoNode/",
-          "group": "inline"
+          "group": "inline@3"
         },
         {
           "command": "leointeg.moveOutlineRight",
           "when": "showArrowsOnNodes == true && viewItem =~ /leoNode/",
-          "group": "inline"
+          "group": "inline@3"
         },
         {
           "command": "leointeg.moveOutlineUp",
           "when": "showArrowsOnNodes == true && viewItem =~ /leoNode/",
-          "group": "inline"
+          "group": "inline@3"
         },
         {
           "command": "leointeg.editHeadline",
           "when": "viewItem =~ /leoNode/",
-          "group": "inline"
+          "group": "inline@1"
         },
         {
           "command": "leointeg.insertNode",
           "when": "showAddOnNodes == true && viewItem =~ /leoNode/",
-          "group": "inline"
+          "group": "inline@2"
+        },
+        {
+          "command": "leointeg.copyNode",
+          "when": "showCopyOnNodes == true && viewItem =~ /leoNode/",
+          "group": "inline@4"
+        },
+        {
+          "command": "leointeg.cloneNode",
+          "when": "showCloneOnNodes == true && viewItem =~ /leoNode/",
+          "group": "inline@4"
         },
         {
           "command": "leointeg.mark",
           "when": "showMarkOnNodes == true && viewItem == leoNode",
-          "group": "inline"
+          "group": "inline@5"
         },
         {
           "command": "leointeg.unmark",
           "when": "showMarkOnNodes == true && viewItem == leoNodeMarked",
-          "group": "inline"
+          "group": "inline@5"
         },
         {
           "command": "leointeg.openAside",

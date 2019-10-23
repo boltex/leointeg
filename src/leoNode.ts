@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { LeoIcons } from "./leoIcons";
+import { LeoIntegration } from "./leoIntegration";
 
 export class LeoNode extends vscode.TreeItem {
     public cursorSelection: any; // TODO : Keep body's cursor and selection position from vscode to get it back
@@ -13,7 +14,8 @@ export class LeoNode extends vscode.TreeItem {
         public cloned: boolean,
         public dirty: boolean,
         public marked: boolean,
-        public hasBody: boolean
+        public hasBody: boolean,
+        private leoIntegration: LeoIntegration
     ) {
         super(label, collapsibleState);
         if (marked) {
@@ -41,11 +43,12 @@ export class LeoNode extends vscode.TreeItem {
         return this;
     }
 
-    public get iconPath(): string {
+    public get iconPath(): { light: string; dark: string } {
         // From Leo's leoNodes.py computeIcon function
         // 1=has Body, 2=marked, 4=cloned, 8=dirty
+        let w_dirty: boolean = this.leoIntegration.invertNodeContrast ? !this.dirty : this.dirty;
         let w_icon: number =
-            (+this.dirty << 3) |
+            (+w_dirty << 3) |
             (+this.cloned << 2) |
             (+this.marked << 1) |
             +this.hasBody;

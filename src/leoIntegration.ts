@@ -26,9 +26,12 @@ export class LeoIntegration {
     public leoPythonCommand: string = "";
     public startServerAutomatically: boolean = false;
     public connectToServerAutomatically: boolean = false;
+    public invertNodeContrast: boolean = false;
     public showArrowsOnNodes: boolean = false;
     public showAddOnNodes: boolean = false;
     public showMarkOnNodes: boolean = false;
+    public showCloneOnNodes: boolean = false;
+    public showCopyOnNodes: boolean = false;
 
     // * Leo Bridge Server Process
     private serverProcess: child.ChildProcess | undefined;
@@ -482,7 +485,9 @@ export class LeoIntegration {
     }
 
     private getLeoIntegSettings(): void {
-        // * Code repetition from constructor
+        // * Graphic and theming settings
+        this.invertNodeContrast = vscode.workspace.getConfiguration('leoIntegration').get('invertNodeContrast', false);
+        // * Interface elements visibility
         this.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', false);
         vscode.commands.executeCommand('setContext', 'treeInExplorer', this.treeInExplorer);
         this.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
@@ -493,10 +498,20 @@ export class LeoIntegration {
         vscode.commands.executeCommand('setContext', 'showAddOnNodes', this.showAddOnNodes);
         this.showMarkOnNodes = vscode.workspace.getConfiguration('leoIntegration').get('showMarkOnNodes', false);
         vscode.commands.executeCommand('setContext', 'showMarkOnNodes', this.showMarkOnNodes);
+        this.showCloneOnNodes = vscode.workspace.getConfiguration('leoIntegration').get('showCloneOnNodes', false);
+        vscode.commands.executeCommand('setContext', 'showCloneOnNodes', this.showCloneOnNodes);
+        this.showCopyOnNodes = vscode.workspace.getConfiguration('leoIntegration').get('showCopyOnNodes', false);
+        vscode.commands.executeCommand('setContext', 'showCopyOnNodes', this.showCopyOnNodes);
 
+
+
+
+
+        //* Interface settings
         this.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', false);
         this.treeKeepFocusWhenAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusWhenAside', false);
         this.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
+        // * Server and connection automation
         this.leoPythonCommand = vscode.workspace.getConfiguration('leoIntegration').get('leoPythonCommand', "");
         this.startServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('startServerAutomatically', false);
         this.connectToServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('connectToServerAutomatically', false);
@@ -541,7 +556,7 @@ export class LeoIntegration {
             w_collaps = p_ap.expanded ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed;
         }
         const w_leoNode = new LeoNode(
-            p_ap.headline, p_ap.gnx, w_collaps, JSON.stringify(p_ap), !!p_ap.cloned, !!p_ap.dirty, !!p_ap.marked, !!p_ap.hasBody
+            p_ap.headline, p_ap.gnx, w_collaps, JSON.stringify(p_ap), !!p_ap.cloned, !!p_ap.dirty, !!p_ap.marked, !!p_ap.hasBody, this
         );
         return w_leoNode;
     }
