@@ -802,8 +802,8 @@ export class LeoIntegration {
     public promote(p_node: LeoNode): void {
         vscode.window.showInformationMessage(`TODO: promote on ${p_node.label}.`); // temp placeholder
     }
-    public demode(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: demode on ${p_node.label}.`); // temp placeholder
+    public demote(p_node: LeoNode): void {
+        vscode.window.showInformationMessage(`TODO: demote on ${p_node.label}.`); // temp placeholder
     }
 
     public moveOutlineDownSelection(): void {
@@ -827,8 +827,8 @@ export class LeoIntegration {
     public promoteSelection(): void {
         vscode.window.showInformationMessage(`TODO: promote selected node`); // temp placeholder
     }
-    public demodeSelection(): void {
-        vscode.window.showInformationMessage(`TODO: demode selected node`); // temp placeholder
+    public demoteSelection(): void {
+        vscode.window.showInformationMessage(`TODO: demote selected node`); // temp placeholder
     }
 
 

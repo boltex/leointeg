@@ -1,19 +1,25 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
+import { LeoSettingsWebview } from "./webview/leoSettingsWebview";
 
 export function activate(context: vscode.ExtensionContext) {
     const leoIntegration: LeoIntegration = new LeoIntegration(context);
+    const leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(context);
 
     // * Reset Extension context flags (used in 'when' clauses in package.json)
     vscode.commands.executeCommand('setContext', 'leoBridgeReady', false); // connected to a leobridge server?
     vscode.commands.executeCommand('setContext', 'leoTreeOpened', false); // Having a Leo file opened on that server?
+
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.showWelcomePage", () => leoSettingsWebview.openWebview())); // openWebview
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.showSettingsPage", () => leoSettingsWebview.openWebview())); // openWebview
 
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.test", () => leoIntegration.test()));
 
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.startServer", () => leoIntegration.startServer()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.connectToServer", () => leoIntegration.connect()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.openLeoFile", () => leoIntegration.openLeoFile()));
+
     // TODO : Fleshout this function, also support closing, re-opening and multiple simultaneous Leo documents support
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.closeLeoFile", () => leoIntegration.closeLeoFile()));
 
@@ -48,7 +54,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.insertNode", (node: LeoNode) => leoIntegration.insertNode(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.cloneNode", (node: LeoNode) => leoIntegration.cloneNode(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.promote", (node: LeoNode) => leoIntegration.promote(node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.demode", (node: LeoNode) => leoIntegration.demode(node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.demote", (node: LeoNode) => leoIntegration.demote(node)));
 
 
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.editSelectedHeadline", () => leoIntegration.editSelectedHeadline()));
@@ -59,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.insertNodeSelection", () => leoIntegration.insertNodeSelection()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.cloneNodeSelection", () => leoIntegration.cloneNodeSelection()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.promoteSelection", () => leoIntegration.promoteSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.demodeSelection", () => leoIntegration.demodeSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.demoteSelection", () => leoIntegration.demoteSelection()));
 
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.undo", () => leoIntegration.undo()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.executeScript", () => leoIntegration.executeScript()));
