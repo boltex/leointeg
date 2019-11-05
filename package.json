@@ -25,7 +25,7 @@
     "onView:leoIntegration",
     "workspaceContains:**/*.leo"
   ],
-  "main": "./out/extension.js",
+  "main": "./dist/extension",
   "icon": "resources/leoapp128px.png",
   "galleryBanner": {
     "color": "#fffbdc",
@@ -749,11 +749,11 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile",
-    "test": "node ./out/test/runTest.js"
+    "vscode:prepublish": "webpack --mode production",
+    "webpack": "webpack --mode development",
+    "webpack-dev": "webpack --mode development --watch",
+    "test-compile": "tsc -p ./",
+    "lint": "tslint -p ./"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",

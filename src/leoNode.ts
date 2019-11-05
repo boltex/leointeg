@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { LeoIcons } from "./leoIcons";
 import { LeoIntegration } from "./leoIntegration";
 
 export class LeoNode extends vscode.TreeItem {
@@ -52,7 +51,8 @@ export class LeoNode extends vscode.TreeItem {
             (+this.cloned << 2) |
             (+this.marked << 1) |
             +this.hasBody;
-        return LeoIcons.icons[w_icon];
+
+        return this.leoIntegration.icons[w_icon];
     }
 
     public get tooltip(): string {

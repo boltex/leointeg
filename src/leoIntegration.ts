@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as child from 'child_process';
 import * as os from 'os';
+import * as path from "path";
 import { Constants } from "./constants";
 import { LeoBridgePackage, RevealType, ArchivedPosition } from "./types";
 import { LeoFiles } from "./leoFiles";
@@ -32,6 +33,9 @@ export class LeoIntegration {
     public showMarkOnNodes: boolean = false;
     public showCloneOnNodes: boolean = false;
     public showCopyOnNodes: boolean = false;
+
+    // * Icon Paths
+    public icons: { light: string; dark: string; }[] = [];
 
     // * Leo Bridge Server Process
     private serverProcess: child.ChildProcess | undefined;
@@ -82,9 +86,19 @@ export class LeoIntegration {
     private lastbodyChangedRootRefreshedGnx: string = "";
     private bodyLastChangedDocument: vscode.TextDocument | undefined;
 
-    constructor(private context: vscode.ExtensionContext) {
+    constructor(public context: vscode.ExtensionContext) {
         // * Get configuration settings
         this.getLeoIntegSettings();
+
+        // * Build Icons
+        this.icons = Array(16)
+            .fill("")
+            .map((_, p_index) => {
+                return {
+                    light: this.context.asAbsolutePath('resources/light/box' + ("0" + p_index).slice(-2) + '.svg'),
+                    dark: this.context.asAbsolutePath('resources/dark/box' + ("0" + p_index).slice(-2) + '.svg')
+                };
+            });
 
         // * File Browser
         this.leoFiles = new LeoFiles(context);
