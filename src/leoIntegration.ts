@@ -866,7 +866,6 @@ export class LeoIntegration {
         }
         this.leoFiles.getLeoFileUrl()
             .then(p_chosenLeoFile => {
-
                 this.leoBridge.action("openFile", '"' + p_chosenLeoFile + '"')
                     .then((p_result: LeoBridgePackage) => {
                         // TODO : Validate p_result
@@ -887,7 +886,9 @@ export class LeoIntegration {
                         this.leoStatusBarItem.show();
                     });
 
-            });
+            },
+                p_reason => { } // console.log('canceled', p_reason); // File Open is Canceled - Ignore
+            );
     }
 
     public test(): void {

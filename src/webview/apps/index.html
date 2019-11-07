@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Leo Integration Settings</title>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <a class="header-link" title="Learn more about Leo Integration" href="https://github.com/boltex/leointeg">
+          <div class="header-logo">
+            <!-- <img class="image__logo" src="#{root}/images/gitlens-icon.png" /> -->
+            <div>
+              <h1>leointeg</h1>
+              <p class="header-subtitle">Leo Editor Integration with Visual Studio Code</p>
+            </div>
+          </div>
+        </a>
+        <p class="header-blurb">
+          <b>Literate programming:</b> Program by using directed acyclic graphs, section-references, clones, '@other'
+          and the Mulder/Ream update algorithm.
+        </p>
+      </header>
+      <section id="leointeg" class="section-settings">
+        <div class="section__content">
+          <div class="section__header">
+            <div class="setting__input setting__input--big">
+              <input id="leoInteg.enabled" name="leoInteg.enabled" type="checkbox" data-setting />
+              <label for="leoInteg.enabled">Leo Integration</label>
+              <!-- <a
+                class="link__configure"
+                title="Jump to more Git Code Lens settings"
+                href="command:gitlens.showSettingsPage?%22code-lens%22"
+              >
+                <i class="icon icon__gear"></i>
+              </a> -->
+            </div>
+            <p class="section__header-hint">
+              Text for a header hint section
+            </p>
+          </div>
+        </div>
+        <div class="section__preview">
+          another div
+          <!-- <img class="image__preview" src="#{root}/images/settings/code-lens.png" />
+          <img
+            class="image__preview--overlay hidden"
+            src="#{root}/images/settings/code-lens-file-recent+authors.png"
+            data-visibility="codeLens.enabled &amp; codeLens.recentChange.enabled &amp; codeLens.authors.enabled &amp; codeLens.scopes +document"
+          />
+
+          <img
+            class="image__preview--overlay hidden"
+            src="#{root}/images/settings/code-lens-blocks-authors.png"
+            data-visibility="codeLens.enabled &amp; codeLens.recentChange.enabled =false &amp; codeLens.authors.enabled &amp; codeLens.scopes +blocks"
+          /> -->
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

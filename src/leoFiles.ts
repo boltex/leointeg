@@ -49,7 +49,7 @@ export class LeoFiles {
                     if (p_chosenLeoFile) {
                         resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // replace backslashes for windiws support
                     } else {
-                        resolve("");
+                        reject("");
                     }
                 });
         });
