@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
-import { LeoSettingsWebview } from "./webview/leoSettingsWebview";
+import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 
 export function activate(context: vscode.ExtensionContext) {
     const leoIntegration: LeoIntegration = new LeoIntegration(context);

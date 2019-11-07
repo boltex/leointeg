@@ -56,10 +56,10 @@ export class LeoSettingsWebview {
     private getHtml(webview: vscode.Webview): string {
         // Local path to main script run in the webview
         const scriptPathOnDisk = vscode.Uri.file(
-            path.join(this._extensionPath, 'src', 'webview', 'apps', 'test.js')
+            path.join(this._extensionPath, 'src', 'webviews', 'apps', 'test.js')
         );
         const imgPathOnDisk = vscode.Uri.file(
-            path.join(this._extensionPath, 'src', 'webview', 'apps', 'images', 'testimg1.png')
+            path.join(this._extensionPath, 'src', 'webviews', 'apps', 'images', 'testimg1.png')
         );
 
         // And the uri we use to load this script in the webview

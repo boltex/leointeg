@@ -186,5 +186,5 @@ const configWebview = {
   }
 };
 
-// module.exports = [configExtension, configWebview];
-module.exports = configExtension;
+module.exports = [configExtension, configWebview];
+// module.exports = configExtension;
