@@ -6,6 +6,7 @@ export class LeoSettingsWebview {
 
     private panel: vscode.WebviewPanel | undefined;
     private readonly _extensionPath: string;
+    private _html: string | undefined;
 
     constructor(private context: vscode.ExtensionContext) {
         console.log("init webview");
@@ -26,7 +27,12 @@ export class LeoSettingsWebview {
                     enableScripts: true
                 }
             );
-            this.panel.webview.html = this.getHtml(this.panel.webview);
+            this.getHtml(this.panel.webview).then(p_html => {
+                if (this.panel) {
+
+                    this.panel.webview.html = p_html;
+                }
+            });
             // this.panel.iconPath = vscode.Uri.file(this.context.asAbsolutePath('images/gitlens-icon.png'));
 
             this.panel.webview.onDidReceiveMessage(
@@ -53,7 +59,32 @@ export class LeoSettingsWebview {
         }
     }
 
-    private getHtml(webview: vscode.Webview): string {
+    private async getHtml(webview: vscode.Webview): Promise<string> {
+        console.log('Fetching filename');
+
+        const filename = this.context.asAbsolutePath(path.join('dist/webviews/', 'settings.html'));
+
+        let content;
+        // When we are debugging avoid any caching so that we can change the html and have it update without reloading
+
+        if (this._html !== undefined) { return this._html; }
+
+        const doc = await vscode.workspace.openTextDocument(filename);
+        content = doc.getText();
+
+
+        let html = content.replace(
+            /#{root}/g,
+            vscode.Uri.file(this.context.asAbsolutePath('.'))
+                .with({ scheme: 'vscode-resource' })
+                .toString()
+        );
+
+        this._html = html;
+        return html;
+    }
+
+    private getHtmlOld(webview: vscode.Webview): string {
         // Local path to main script run in the webview
         const scriptPathOnDisk = vscode.Uri.file(
             path.join(this._extensionPath, 'src', 'webviews', 'apps', 'test.js')
