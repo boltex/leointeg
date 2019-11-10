@@ -1,3 +1,6 @@
+import { initializeAndWatchThemeColors } from './theme';
+
+
 interface VsCodeApi {
     postMessage(msg: {}): void;
     setState(state: {}): void;
@@ -7,7 +10,7 @@ interface VsCodeApi {
 declare function acquireVsCodeApi(): VsCodeApi;
 
 function testWebview() {
-    console.log("dude");
+    console.log("dude in index.js");
 }
 testWebview();
 
@@ -15,6 +18,7 @@ testWebview();
 (function () {
     console.log("init tests");
     const vscode = acquireVsCodeApi();
+    initializeAndWatchThemeColors();
 
     const oldState = vscode.getState();
 
@@ -22,7 +26,6 @@ testWebview();
     console.log(oldState);
     let currentCount: number = (oldState && oldState.count) || 0;
     if (counter) {
-
 
         counter.textContent = currentCount.toString();
 
