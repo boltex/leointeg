@@ -3,50 +3,95 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>Leo Integration Settings</title>
 </head>
 
 <body>
   <div class="container">
+
     <header>
-      <a class="header-link" title="Learn more about Leo Integration" href="https://github.com/boltex/leointeg#readme">
-        <div class="header-logo">
-          <!-- <img class="image__logo" src="#{root}/images/gitlens-icon.png" /> -->
+      <a class="header__link" title="Learn more about Leo Integration" href="https://github.com/boltex/leointeg#readme">
+        <div class="header__logo">
+          <img class="image__logo" src="#{root}/resources/leoapp128px.png" />
           <div>
-            <h1>leointeg</h1>
-            <p class="header-subtitle">Leo Editor Integration with Visual Studio Code</p>
+            <h1>Leo<span class="header__logo--highlight">Integ</span></h1>
+            <p class="header__subtitle">Leo Editor Integration</p>
           </div>
         </div>
       </a>
-      <p class="header-blurb">
-        <b>Literate programming:</b> Program by using directed acyclic graphs, section-references, clones, '@other'
-        and the Mulder/Ream update algorithm.
+      <p class="header__blurb">
+        <b>Literate programming</b>: Program by using directed acyclic graphs, section-references, clones, '@other'
+        and the Mulder/Ream update algorithm. Build a <b>structural representation</b>
+        to gain further insights and write in a more efficient way by using Leo.
       </p>
     </header>
-    <section id="leointeg" class="section-settings">
-      <div class="section__content">
-        <div class="section__header">
-          <div class="setting__input setting__input--big">
-            <input id="leoInteg.enabled" name="leoInteg.enabled" type="checkbox" data-setting />
-            <label for="leoInteg.enabled">Leo Integration</label>
-            <!-- <a
+
+    <div class="hero__area">
+      <p>
+        <a class="bold" title="Learn more about LeoInteg" href="https://github.com/boltex/leointeg#readme">LeoInteg</a>
+        is an open-source extension for Visual Studio Code created by
+        <a class="bold" title="Learn more about Félix" href="https://github.com/boltex">Félix</a>.
+      </p>
+      <p>
+        <a class="bold" title="Learn more about Leo" href="https://leoeditor.com/">Leo is a PIM, IDE and outliner</a>
+        that accelerates the work flow of programmers, authors and web designers.
+        <i>Outline nodes may appear in more than one place</i>, allowing multiple organizations of data within a single
+        outline.
+      </p>
+      <div class="cta is-sidebar-hidden center">
+        <div class="cta--primary">
+          <a class="button button--flat-primary button--big" title="Support LeoInteg"
+            href="https://github.com/boltex/leointeg">Support LeoInteg &#x2764;</a>
+          <p>
+            LeoInteg is built by the support of generous open source users and programmers like <b>you</b>!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="content__area">
+      <section id="welcome" class="section--full">
+        <h2 class="section__title section__title--primary">
+          Welcome to <span class="highlight">LeoInteg 0.1.8</span>
+        </h2>
+        <!-- <div class="center mt-1">
+          <a class="button button--flat" title="See What's New"
+            href="https://github.com/boltex/leointeg/blob/master/CHANGELOG.md#change-log">See What's New
+            in LeoInteg 0.1.8</a>
+        </div> -->
+        <p class="blurb ml-0 mr-0">
+          LeoInteg, while <b>powerful and feature rich</b>, is also highly <b>customizable</b> to meet your
+          needs. Do you find icons in the outline to be intrusive or the current cursor behavior distracting &mdash;
+          no problem, quickly turn them off or change how they behave using the options below.
+        </p>
+      </section>
+
+      <section id="leointeg" class="section-settings">
+        <div class="section__content">
+          <div class="section__header">
+            <div class="setting__input setting__input--big">
+              <input id="leoInteg.enabled" name="leoInteg.enabled" type="checkbox" data-setting />
+              <label for="leoInteg.enabled">Leo Integration</label>
+              <!-- <a
                 class="link__configure"
                 title="Jump to more Git Code Lens settings"
                 href="command:gitlens.showSettingsPage?%22code-lens%22"
               >
                 <i class="icon icon__gear"></i>
               </a> -->
+            </div>
+            <p class="section__header-hint">
+              Text for a header hint section
+            </p>
           </div>
-          <p class="section__header-hint">
-            Text for a header hint section
-          </p>
         </div>
-      </div>
-      <div class="section__preview">
-        <h1 id="lines-of-code-counter">0</h1>
-        <img src="#{root}/resources/testimg1.png" width="300" />
-        another div
-        <!-- <img class="image__preview" src="#{root}/images/settings/code-lens.png" />
+        <div class="section__preview">
+          <img class="image__preview" src="#{root}/resources/testimg1.png" />
+          <p>
+            another div</p>
+          <p>
+            <span id="lines-of-code-counter">0</span>
+          </p>
+          <!-- <img class="image__preview" src="#{root}/images/settings/code-lens.png" />
           <img
             class="image__preview--overlay hidden"
             src="#{root}/images/settings/code-lens-file-recent+authors.png"
@@ -58,8 +103,53 @@
             src="#{root}/images/settings/code-lens-blocks-authors.png"
             data-visibility="codeLens.enabled &amp; codeLens.recentChange.enabled =false &amp; codeLens.authors.enabled &amp; codeLens.scopes +blocks"
           /> -->
+        </div>
+      </section>
+    </div>
+
+    <div class="sidebar">
+      <div class="sidebar__group">
+        <a class="button button--flat-primary" title="Support LeoInteg"
+          href="https://github.com/boltex/leointeg">Support LeoInteg &#x2764;</a>
+        <p>
+          LeoInteg is built by the support of generous open source users and programmers like <b>you</b>!
+        </p>
       </div>
-    </section>
+
+      <div class="sidebar__group">
+        <h2>Help</h2>
+        <ul>
+          <li>
+            <a href="https://github.com/boltex/leointeg#requirements">Documentation</a>
+          </li>
+          <li>
+            <a href="https://github.com/boltex/leointeg/blob/master/CHANGELOG.md#change-log">Changelog</a>
+          </li>
+        </ul>
+      </div>
+
+
+      <div class="sidebar__group">
+        <h2>About Leo</h2>
+        <ul>
+          <li>
+            <a href="https://leoeditor.com/">Home Page</a>
+          </li>
+          <li>
+            <a href="https://leoeditor.com/leo_toc.html">Documentation</a>
+          </li>
+          <li>
+            <a href="https://groups.google.com/forum/#!forum/leo-editor">Forum</a>
+            <small> &nbsp;&nbsp;&mdash;&nbsp; #Google Group</small>
+          </li>
+          <li>
+            <a href="https://github.com/leo-editor/leo-editor">Source</a>
+            <small> &nbsp;&nbsp;&mdash;&nbsp; #GitHub</small>
+          </li>
+        </ul>
+      </div>
+
+    </div>
   </div>
 </body>
 
