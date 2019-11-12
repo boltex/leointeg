@@ -119,7 +119,7 @@
           "scope": "application",
           "default": true,
           "type": "boolean",
-          "description": "Connect automatically to a Leo server on specified 'Connection Port' upon activation of this expansion"
+          "description": "Connect automatically to a Leo server on specified 'Connection Port' upon activation of this extension"
         },
         "leoIntegration.connectionAdress": {
           "default": "localhost",

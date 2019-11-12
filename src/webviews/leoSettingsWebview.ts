@@ -65,7 +65,10 @@ export class LeoSettingsWebview {
                 // this.panel.webview.html = this.getHtmlOld(this.panel.webview); // html;
                 this.panel.webview.html = html;
 
-                // this.panel.iconPath = vscode.Uri.file(this.context.asAbsolutePath('images/gitlens-icon.png'));
+                this.panel.iconPath = vscode.Uri.file(this.context.asAbsolutePath('resources/leoapp128px.png'));
+
+
+
 
                 this.panel.webview.onDidReceiveMessage(
                     message => {
