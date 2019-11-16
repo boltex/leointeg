@@ -9,6 +9,7 @@ import { LeoNode } from "./leoNode";
 import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyProvider } from "./leoBody";
 import { LeoBridge } from "./leoBridge";
+import { Config } from "./config";
 
 export class LeoIntegration {
     // * Control Flags
@@ -19,6 +20,24 @@ export class LeoIntegration {
     private platform: string = os.platform();
 
     // * Configuration Settings
+    public config: Config = {
+        treeKeepFocus: true,
+        treeKeepFocusWhenAside: false,
+        treeInExplorer: true,
+        showOpenAside: true,
+        showArrowsOnNodes: false,
+        showAddOnNodes: false,
+        showMarkOnNodes: false,
+        showCloneOnNodes: false,
+        showCopyOnNodes: false,
+        invertNodeContrast: false,
+        bodyEditDelay: 500,
+        leoPythonCommand: "",
+        startServerAutomatically: true,
+        connectToServerAutomatically: true,
+        connectionAdress: "localhost",
+        connectionPort: 32125
+    };
     public treeKeepFocus: boolean = false;
     public treeKeepFocusWhenAside: boolean = false;
     public treeInExplorer: boolean = false;
@@ -89,6 +108,7 @@ export class LeoIntegration {
     constructor(public context: vscode.ExtensionContext) {
         // * Get configuration settings
         this.getLeoIntegSettings();
+
 
         // * Build Icons
         this.icons = Array(16)

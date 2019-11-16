@@ -71,7 +71,7 @@ function getWebviewsConfig(env) {
   const cspPolicy = {
     "default-src": "'none'",
     "img-src": ["vscode-resource:", "https:", "data:"],
-    "script-src": ["vscode-resource:"],
+    "script-src": ["vscode-resource:", "'nonce-Z2l0bGVucy1ib290c3RyYXA='"],
     "style-src": ["vscode-resource:"]
   };
   if (!env.production) {

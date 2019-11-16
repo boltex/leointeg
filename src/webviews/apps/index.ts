@@ -11,6 +11,10 @@ declare function acquireVsCodeApi(): VsCodeApi;
 
 function testWebview() {
     console.log("dude in index.js");
+
+    console.log((window as any).leoConfig);
+
+
 }
 testWebview();
 

@@ -2,13 +2,15 @@
 import * as vscode from "vscode";
 import * as path from 'path';
 
+import { LeoIntegration } from "../leoIntegration";
+
 export class LeoSettingsWebview {
 
     private panel: vscode.WebviewPanel | undefined;
     private readonly _extensionPath: string;
     private _html: string | undefined;
 
-    constructor(private context: vscode.ExtensionContext) {
+    constructor(private context: vscode.ExtensionContext, private leoIntegration: LeoIntegration) {
         console.log("init LeoSettingsWebview control class");
         this._extensionPath = context.extensionPath;
     }
@@ -59,15 +61,20 @@ export class LeoSettingsWebview {
                     testuri.toString()
                 );
 
-                console.log('new html: ', html);
-                //return;
+                html = html.replace(
+                    /#{endOfBody}/g,
+                    `<script type="text/javascript" nonce="Z2l0bGVucy1ib290c3RyYXA=">window.leoConfig = ${JSON.stringify(
+                        this.leoIntegration.config
+                    )};</script>`
+                );
+
+                // console.log('new html: ', html);
+
 
                 // this.panel.webview.html = this.getHtmlOld(this.panel.webview); // html;
                 this.panel.webview.html = html;
 
                 this.panel.iconPath = vscode.Uri.file(this.context.asAbsolutePath('resources/leoapp128px.png'));
-
-
 
 
                 this.panel.webview.onDidReceiveMessage(
