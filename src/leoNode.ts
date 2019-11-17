@@ -45,7 +45,7 @@ export class LeoNode extends vscode.TreeItem {
     public get iconPath(): { light: string; dark: string } {
         // From Leo's leoNodes.py computeIcon function
         // 1=has Body, 2=marked, 4=cloned, 8=dirty
-        let w_dirty: boolean = this.leoIntegration.invertNodeContrast ? !this.dirty : this.dirty;
+        let w_dirty: boolean = this.leoIntegration.config.invertNodeContrast ? !this.dirty : this.dirty;
         let w_icon: number =
             (+w_dirty << 3) |
             (+this.cloned << 2) |

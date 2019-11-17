@@ -1,5 +1,4 @@
 'use strict';
-
 export interface Config {
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;

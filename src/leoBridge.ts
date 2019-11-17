@@ -96,11 +96,10 @@ export class LeoBridge {
     }
 
     public initLeoProcess(): Promise<LeoBridgePackage> {
-        const w_socketAdress = vscode.workspace.getConfiguration('leoIntegration').get('connectionAdress', Constants.LEO_TCPIP_DEFAULT_ADRESS); // 'ws://'
-        const w_socketPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', Constants.LEO_TCPIP_DEFAULT_PORT); // 32125
-
         // * Spawn a websocket
-        this.websocket = new WebSocket(Constants.LEO_TCPIP_DEFAULT_PROTOCOL + w_socketAdress + ":" + w_socketPort);
+        this.websocket = new WebSocket(Constants.LEO_TCPIP_DEFAULT_PROTOCOL +
+            this.leoIntegration.config.connectionAdress +
+            ":" + this.leoIntegration.config.connectionPort);
         // * Capture the python process output
         this.websocket.onmessage = (p_event) => {
             if (p_event.data) {

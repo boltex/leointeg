@@ -13,6 +13,17 @@ export class LeoSettingsWebview {
     constructor(private context: vscode.ExtensionContext, private leoIntegration: LeoIntegration) {
         console.log("init LeoSettingsWebview control class");
         this._extensionPath = context.extensionPath;
+        vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
+
+    }
+
+    private onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
+        console.log('Detected Change of vscode config in webview controler !');
+        if (this.panel) {
+            console.log('trying to send new config to panel!');
+            // example : this._panel.webview.postMessage({ command: 'refactor' });
+            this.panel.webview.postMessage({ command: 'config', config: this.leoIntegration.config });
+        }
     }
 
     public openWebview(): void {
