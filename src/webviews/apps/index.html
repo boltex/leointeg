@@ -32,7 +32,7 @@
           class="bold" title="Learn more about Leo" href="https://leoeditor.com/">Leo</a> into Visual Studio
         Code.
       </p>
-      <div class="cta is-sidebar-hidden center">
+      <!-- <div class="cta is-sidebar-hidden center">
         <div class="cta--primary">
           <a class="button button--flat-primary button--big" title="Support LeoInteg"
             href="https://github.com/boltex/leointeg">Support LeoInteg &#x2764;</a>
@@ -40,7 +40,7 @@
             LeoInteg is built by the support of generous open source users and programmers like <b>you</b>!
           </p>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <div class="content__area">
@@ -59,12 +59,12 @@
         </p>
       </section>
 
-      <section id="tree-in-explorer" class="section-settings">
+      <section id="tree-in-explorer" class="section--settings">
         <div class="section__content">
           <div class="section__header">
             <div class="setting__input setting__input--big">
-              <input id="treeInExplorer.enabled" name="treeInExplorer.enabled" type="checkbox" data-setting />
-              <label for="treeInExplorer.enabled">Leo&nbsp;Outline&nbsp;in&nbsp;Explorer</label>
+              <input id="treeInExplorer" name="treeInExplorer" type="checkbox" data-setting />
+              <label for="treeInExplorer">Show&nbsp;Leo&nbsp;Outline&nbsp;in&nbsp;Explorer</label>
             </div>
             <p class="section__header-hint">
               Adds an instance of the outline pane in the explorer view
@@ -74,16 +74,16 @@
         <div class="section__preview">
           <img class="image__preview" src="#{root}/resources/treeInExplorerDisabled.png" />
           <img class="image__preview--overlay hidden" src="#{root}/resources/treeInExplorerEnabled.png"
-            data-visibility="leoInteg.enabled &amp; leoInteg.treeInExplorer.enabled" />
+            data-visibility="treeInExplorer" />
         </div>
       </section>
 
-      <section id="show-open-aside" class="section-settings">
+      <section id="show-open-aside" class="section--settings">
         <div class="section__content">
           <div class="section__header">
             <div class="setting__input setting__input--big">
-              <input id="showOpenAside.enabled" name="showOpenAside.enabled" type="checkbox" data-setting />
-              <label for="showOpenAside.enabled">Show&nbsp;'Open&nbsp;to&nbsp;the&nbsp;Side'</label>
+              <input id="showOpenAside" name="showOpenAside" type="checkbox" data-setting />
+              <label for="showOpenAside">Show&nbsp;'Open&nbsp;to&nbsp;the&nbsp;Side'</label>
             </div>
             <p class="section__header-hint">
               Adds 'Open to the Side' command in nodes context menu
@@ -93,16 +93,16 @@
         <div class="section__preview">
           <img class="image__preview" src="#{root}/resources/showOpenAsideDisabled.png" />
           <img class="image__preview--overlay hidden" src="#{root}/resources/showOpenAsideEnabled.png"
-            data-visibility="leoInteg.enabled &amp; leoInteg.showOpenAside.enabled" />
+            data-visibility="showOpenAside" />
         </div>
       </section>
 
-      <section id="show-open-aside" class="section-settings">
+      <section id="invert-contrast" class="section--settings">
         <div class="section__content">
           <div class="section__header">
             <div class="setting__input setting__input--big">
-              <input id="invertNodeContrast.enabled" name="invertNodeContrast.enabled" type="checkbox" data-setting />
-              <label for="invertNodeContrast.enabled">Invert Node Contrast</label>
+              <input id="invertNodeContrast" name="invertNodeContrast" type="checkbox" data-setting />
+              <label for="invertNodeContrast">Invert Node Contrast</label>
             </div>
             <p class="section__header-hint">
               Inverts the contrast of the dirty/clean border aspect of tree nodes
@@ -110,13 +110,13 @@
           </div>
         </div>
         <div class="section__preview">
-          <img class="image__preview" src="#{root}/resources/nodeInvertedDisabled.png" />
-          <img class="image__preview--overlay hidden" src="#{root}/resources/nodeInvertedEnabled.png"
-            data-visibility="leoInteg.enabled &amp; leoInteg.invertNodeContrast.enabled" />
+          <img class="image__preview" src="#{root}/resources/invertedDisabled.png" />
+          <img class="image__preview--overlay hidden" src="#{root}/resources/invertedEnabled.png"
+            data-visibility="invertNodeContrast" />
         </div>
       </section>
 
-      <section id="show-x-on-nodes" class="section-settings">
+      <section id="node-commands" class="section--settings">
         <div class="section__content">
           <div class="section__header">
             <h2>
@@ -125,8 +125,17 @@
           </div>
           <div class="section__preview">
             <!-- * test img -->
-            <img class="image__preview" src="#{root}/resources/allIconsEnabled.png" />
-            <img class="image__preview--overlay hidden" src="#{root}/resources/allIconsDisabled.png" />
+            <img class="image__preview" src="#{root}/resources/allIconsDisabled.png" />
+
+
+            <div class="image__preview--float-container">
+              <img class="image__preview--float image-command-edit-headline" src="#{root}/resources/editHeadline.png" />
+              <img class="image__preview--float" src="#{root}/resources/add.png" />
+              <img class="image__preview--float" src="#{root}/resources/arrows.png" />
+              <img class="image__preview--float" src="#{root}/resources/clone.png" />
+              <img class="image__preview--float" src="#{root}/resources/copy.png" />
+              <img class="image__preview--float" src="#{root}/resources/bookmark.png" />
+            </div>
           </div>
 
           <div class="settings">
@@ -170,7 +179,7 @@
         </div>
       </section>
 
-      <section id="show-x-on-nodes" class="section-settings">
+      <section id="inteface-behavior" class="section--settings">
         <div class="section__content">
           <div class="section__header">
             <h2>
@@ -196,7 +205,7 @@
         </div>
       </section>
 
-      <section id="show-x-on-nodes" class="section-settings">
+      <section id="leobridge-options" class="section--settings">
         <div class="section__content">
           <div class="section__header">
             <h2>
@@ -249,9 +258,8 @@
             </div>
             <div class="setting">
               <div class="setting__input">
-                <label for="connectionAdress">Connection&nbsp;Port</label>
-                <input id="connectionAdress" name="connectionAdress" type="text" placeholder="Port Number"
-                  data-setting />
+                <label for="connectionPort">Connection&nbsp;Port</label>
+                <input id="connectionPort" name="connectionPort" type="number" placeholder="Port Number" data-setting />
               </div>
               <span class="setting__hint">Connection host port number</span>
             </div>
@@ -263,14 +271,39 @@
     </div>
 
     <div class="sidebar">
-      <div class="sidebar__group">
+      <!-- <div class="sidebar__group">
         <a class="button button--flat-primary" title="Support LeoInteg"
           href="https://github.com/boltex/leointeg">Support
           LeoInteg &#x2764;</a>
         <p>
           LeoInteg is built by the support of generous open source users and programmers like <b>you</b>!
         </p>
+      </div> -->
+
+      <div class="sidebar__group">
+        <h2>Configuration</h2>
+        <ul>
+          <li>
+            <a href="#tree-in-explorer">Outline in Explorer</a>
+          </li>
+          <li>
+            <a href="#show-open-aside">Open to the Side</a>
+          </li>
+          <li>
+            <a href="#invert-contrast">Invert Contrast</a>
+          </li>
+          <li>
+            <a href="#node-commands">Node Hover Commands</a>
+          </li>
+          <li>
+            <a href="#inteface-behavior">Interface Behavior</a>
+          </li>
+          <li>
+            <a href="#leobridge-options">LeoBridge Options</a>
+          </li>
+        </ul>
       </div>
+
 
       <div class="sidebar__group">
         <h2>Help</h2>

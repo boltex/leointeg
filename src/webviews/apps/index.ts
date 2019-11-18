@@ -52,6 +52,10 @@ testWebview();
     //  *********  ********  ********  ********  ********  ********  ********
     //  * SETUP *  ********  ********  ********  ********  ********  ********
     //  *********  ********  ********  ********  ********  ********  ********
+    // Global variable config
+    let config: { [key: string]: any } = {};
+    config = (window as any).leoConfig;
+
     // Handle messages sent from the extension to the webview
     window.addEventListener("message", event => {
         const message = event.data; // The json data that the extension sent
@@ -62,6 +66,8 @@ testWebview();
 
             case "config":
                 console.log('got new config, set controls!', message.config);
+                config = message.config;
+                setControls();
                 break;
 
             default:
@@ -69,9 +75,6 @@ testWebview();
         }
     });
 
-    //  ************  ********  ********  ********  ********  ********  ********
-    //  * ONCHANGE *  ********  ********  ********  ********  ********  ********
-    //  ************  ********  ********  ********  ********  ********  ********
     function listenAll(selector: string, name: string, listener: EventListener) {
         const els = (document.querySelectorAll(selector) as unknown) as Element[];
         for (const el of els) {
@@ -101,7 +104,9 @@ testWebview();
     }
 
     function onInputChecked(element: HTMLInputElement) {
-        console.log('onInputChecked', element);
+        config[element.id] = element.checked;
+        setVisibility(config);
+        applyChanges();
     }
     function onInputBlurred(element: HTMLInputElement) {
         console.log('onInputBlurred', element);
@@ -113,8 +118,93 @@ testWebview();
         console.log('onInputChanged', element);
     }
 
-    console.log('Starting onBind !');
+    function setControls(): void {
+        for (const key in config) {
+            if (config.hasOwnProperty(key)) {
+                const w_element = document.getElementById(key);
+                if (w_element && w_element.getAttribute('type') === 'checkbox') {
+                    (w_element as HTMLInputElement).checked = config[key];
+                } else if (w_element) {
+                    (w_element as HTMLInputElement).value = config[key];
+                } else {
+                    console.log('WHAT ? w_element', key, ' is ', w_element);
 
+                }
+
+            }
+        }
+    }
+
+    function setVisibility(state: { [key: string]: string | boolean }) {
+        for (const el of document.querySelectorAll<HTMLElement>('[data-visibility]')) {
+            el.classList.toggle('hidden', !evaluateStateExpression(el.dataset.visibility!, state));
+        }
+    }
+    function parseStateExpression(expression: string): [string, string, string | boolean | undefined] {
+        const [lhs, op, rhs] = expression.trim().split(/([=+!])/);
+        return [lhs.trim(), op !== undefined ? op.trim() : '=', rhs !== undefined ? rhs.trim() : rhs];
+    }
+
+    function evaluateStateExpression(expression: string, changes: { [key: string]: string | boolean }): boolean {
+        let state = false;
+        console.log('evaluating ', expression);
+
+        for (const expr of expression.trim().split('&')) {
+            const [lhs, op, rhs] = parseStateExpression(expr);
+
+            switch (op) {
+                case '=': {
+                    // Equals
+                    let value = changes[lhs];
+                    if (value === undefined) {
+                        value = getSettingValue(lhs) || false;
+                    }
+                    state = rhs !== undefined ? rhs === String(value) : Boolean(value);
+                    break;
+                }
+                case '!': {
+                    // Not equals
+                    let value = changes[lhs];
+                    if (value === undefined) {
+                        value = getSettingValue(lhs) || false;
+                    }
+                    state = rhs !== undefined ? rhs !== String(value) : !value;
+                    break;
+                }
+                case '+': {
+                    // Contains
+                    if (rhs !== undefined) {
+                        const setting = getSettingValue(lhs);
+                        state = setting !== undefined ? setting.includes(rhs.toString()) : false;
+                    }
+                    break;
+                }
+            }
+
+            if (!state) { break; }
+        }
+        console.log('result is : ', state);
+
+        return state;
+    }
+
+    function getSettingValue(p_setting: string): any {
+        console.log('get value for : ', p_setting, 'which is: ', config[p_setting]);
+        return config[p_setting];
+    }
+
+    function applyChanges(): void {
+        console.log('Sending config changes to be debounced, and then applied ');
+
+    }
+
+    //  *********  ********  ********  ********  ********  ********  ********
+    //  * START *  ********  ********  ********  ********  ********  ********
+    //  *********  ********  ********  ********  ********  ********  ********
+
+    console.log('Starting onBind !');
+    setControls();
+    setVisibility(config);
     onBind();
 
 
