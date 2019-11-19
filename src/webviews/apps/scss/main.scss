@@ -593,6 +593,7 @@ ul {
 }
 
 .image__preview {
+  display: block;
   border-radius: 8px;
   box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.8), 0px 0px 12px 1px rgba(0, 0, 0, 0.5);
   width: 600px;
@@ -608,19 +609,13 @@ ul {
   left: 0;
   position: absolute;
   top: 0;
-  width: 600px;
-  height: 90px;
-  max-height: 100%;
-  max-width: 100%;
+  bottom: 0;
+  right: 0;
+  padding-right: 15%;
 }
 
 .image__preview--float {
   float: right;
-  height: 100%;
-}
-
-.image-command-edit-headline {
-  margin-right: 3rem;
 }
 
 .link__configure,
@@ -857,6 +852,7 @@ section {
   flex: 0 1 auto;
   position: relative;
   margin-right: 1em;
+  min-width: 21em;
 
   & input[type="checkbox"] {
     flex: 0 0 16px;

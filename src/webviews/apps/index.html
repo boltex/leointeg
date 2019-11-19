@@ -122,19 +122,23 @@
             <h2>
               Node Commands
             </h2>
+            <p class="section__header-hint">
+              Hovering tree nodes displays an edit icon by default - Choose other commands to display below
+            </p>
           </div>
           <div class="section__preview">
             <!-- * test img -->
             <img class="image__preview" src="#{root}/resources/allIconsDisabled.png" />
 
-
             <div class="image__preview--float-container">
-              <img class="image__preview--float image-command-edit-headline" src="#{root}/resources/editHeadline.png" />
-              <img class="image__preview--float" src="#{root}/resources/add.png" />
-              <img class="image__preview--float" src="#{root}/resources/arrows.png" />
-              <img class="image__preview--float" src="#{root}/resources/clone.png" />
-              <img class="image__preview--float" src="#{root}/resources/copy.png" />
-              <img class="image__preview--float" src="#{root}/resources/bookmark.png" />
+              <img class="image__preview--float" src="#{root}/resources/bookmark.png"
+                data-visibility="showMarkOnNodes" />
+              <img class="image__preview--float" src="#{root}/resources/copy.png" data-visibility="showCopyOnNodes" />
+              <img class="image__preview--float" src="#{root}/resources/clone.png" data-visibility="showCloneOnNodes" />
+              <img class="image__preview--float" src="#{root}/resources/arrows.png"
+                data-visibility="showArrowsOnNodes" />
+              <img class="image__preview--float" src="#{root}/resources/add.png" data-visibility="showAddOnNodes" />
+              <img class="image__preview--float" src="#{root}/resources/editHeadline.png" />
             </div>
           </div>
 
@@ -144,35 +148,35 @@
                 <input id="showMarkOnNodes" name="showMarkOnNodes" type="checkbox" data-setting />
                 <label for="showMarkOnNodes">Mark&nbsp;/&nbsp;Unmark</label>
               </div>
-              <span class="setting__hint">Shows 'Mark/Unmark' buttons on tree nodes</span>
+              <span class="setting__hint">Shows 'Mark/Unmark' on hover</span>
             </div>
             <div class="setting">
               <div class="setting__input">
                 <input id="showCopyOnNodes" name="showCopyOnNodes" type="checkbox" data-setting />
                 <label for="showCopyOnNodes">Copy&nbsp;Node</label>
               </div>
-              <span class="setting__hint">Shows 'Copy' button on tree nodes</span>
+              <span class="setting__hint">Shows 'Copy' on hover</span>
             </div>
             <div class="setting">
               <div class="setting__input">
                 <input id="showCloneOnNodes" name="showCloneOnNodes" type="checkbox" data-setting />
                 <label for="showCloneOnNodes">Clone&nbsp;Node</label>
               </div>
-              <span class="setting__hint">Shows 'Clone' button on tree nodes</span>
+              <span class="setting__hint">Shows 'Clone' on hover</span>
             </div>
             <div class="setting">
               <div class="setting__input">
                 <input id="showArrowsOnNodes" name="showArrowsOnNodes" type="checkbox" data-setting />
                 <label for="showArrowsOnNodes">Move&nbsp;arrow&nbsp;commands</label>
               </div>
-              <span class="setting__hint">Shows 'Move Node' arrow buttons on tree nodes</span>
+              <span class="setting__hint">Shows 'Move Node' arrows on hover</span>
             </div>
             <div class="setting">
               <div class="setting__input">
                 <input id="showAddOnNodes" name="showAddOnNodes" type="checkbox" data-setting />
                 <label for="showAddOnNodes">Add&nbsp;Node</label>
               </div>
-              <span class="setting__hint">Shows 'Insert' button on tree nodes</span>
+              <span class="setting__hint">Shows 'Insert' on hover</span>
             </div>
           </div>
 
