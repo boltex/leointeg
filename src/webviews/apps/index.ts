@@ -8,12 +8,6 @@ interface VsCodeApi {
 
 declare function acquireVsCodeApi(): VsCodeApi;
 
-function testWebview() {
-    console.log("dude in index.js");
-    console.log((window as any).leoConfig);
-}
-testWebview();
-
 // This script will be run within the webview itself
 (function () {
     console.log("init tests");
@@ -23,21 +17,15 @@ testWebview();
     const oldState = vscode.getState();
     console.log("oldState: ", oldState);
 
-    //  ********  ********  ********  ********  ********  ********  ********
     //  * TEST *  ********  ********  ********  ********  ********  ********
-    //  ********  ********  ********  ********  ********  ********  ********
     const counter = document.getElementById("lines-of-code-counter");
     let currentCount: number = (oldState && oldState.count) || 0;
     if (counter) {
-
         counter.textContent = currentCount.toString();
-
         setInterval(() => {
             counter.textContent = (currentCount++).toString();
-
             // Update state
             vscode.setState({ count: currentCount });
-
             // Alert the extension when the cat introduces a bug
             if (Math.random() < Math.min(0.001 * currentCount, 0.05)) {
                 // Send a message back to the extension
@@ -49,12 +37,13 @@ testWebview();
         }, 300);
     }
 
-    //  *********  ********  ********  ********  ********  ********  ********
     //  * SETUP *  ********  ********  ********  ********  ********  ********
-    //  *********  ********  ********  ********  ********  ********  ********
     // Global variable config
-    let config: { [key: string]: any } = {};
-    config = (window as any).leoConfig;
+    let frontConfig: { [key: string]: any } = {};
+    let vscodeConfig: { [key: string]: any } = {};
+
+    vscodeConfig = (window as any).leoConfig; // ! PRE SET BY leoSettingsWebview
+    frontConfig = JSON.parse(JSON.stringify(vscodeConfig));
 
     // Handle messages sent from the extension to the webview
     window.addEventListener("message", event => {
@@ -66,7 +55,7 @@ testWebview();
 
             case "config":
                 console.log('got new config, set controls!', message.config);
-                config = message.config;
+                frontConfig = message.config;
                 setControls();
                 break;
 
@@ -104,8 +93,8 @@ testWebview();
     }
 
     function onInputChecked(element: HTMLInputElement) {
-        config[element.id] = element.checked;
-        setVisibility(config);
+        frontConfig[element.id] = element.checked;
+        setVisibility(frontConfig);
         applyChanges();
     }
     function onInputBlurred(element: HTMLInputElement) {
@@ -119,18 +108,16 @@ testWebview();
     }
 
     function setControls(): void {
-        for (const key in config) {
-            if (config.hasOwnProperty(key)) {
+        for (const key in frontConfig) {
+            if (frontConfig.hasOwnProperty(key)) {
                 const w_element = document.getElementById(key);
                 if (w_element && w_element.getAttribute('type') === 'checkbox') {
-                    (w_element as HTMLInputElement).checked = config[key];
+                    (w_element as HTMLInputElement).checked = frontConfig[key];
                 } else if (w_element) {
-                    (w_element as HTMLInputElement).value = config[key];
+                    (w_element as HTMLInputElement).value = frontConfig[key];
                 } else {
                     console.log('WHAT ? w_element', key, ' is ', w_element);
-
                 }
-
             }
         }
     }
@@ -189,8 +176,8 @@ testWebview();
     }
 
     function getSettingValue(p_setting: string): any {
-        console.log('get value for : ', p_setting, 'which is: ', config[p_setting]);
-        return config[p_setting];
+        console.log('get value for : ', p_setting, 'which is: ', frontConfig[p_setting]);
+        return frontConfig[p_setting];
     }
 
     function applyChanges(): void {
@@ -198,15 +185,10 @@ testWebview();
 
     }
 
-    //  *********  ********  ********  ********  ********  ********  ********
     //  * START *  ********  ********  ********  ********  ********  ********
-    //  *********  ********  ********  ********  ********  ********  ********
-
-    console.log('Starting onBind !');
+    console.log('Starting index.ts');
     setControls();
-    setVisibility(config);
+    setVisibility(frontConfig);
     onBind();
-
-
 
 })();
