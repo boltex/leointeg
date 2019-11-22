@@ -1,115 +1,156 @@
-.popup {
-    box-shadow: 0px 0px 28px 0 rgba(0, 0, 0, 0.5);
-    cursor: default;
-    padding: 1em;
-    position: absolute;
-    top: 46px;
-    width: 80vw;
-    min-width: 373px;
-    max-width: 472px;
-    z-index: 1;
+#saved-config-toast {
+  box-shadow: 0px 0px 28px 0 rgba(0, 0, 0, 0.5);
+  // background-color: #000 !important;
 
-    &:before {
-        background: transparent;
-        border: 12px solid transparent;
-        content: '';
-        left: 50%;
-        position: absolute;
-        pointer-events: none;
-        top: -24px;
-        z-index: 1001;
+  cursor: default;
+  display: block;
+  padding: 1em 0.5rem;
+  position: fixed;
+  text-align: center;
+  width: 60%;
+  // height: 200px;
+  top: 50px;
+  left: 50%;
+  border-radius: 12px;
+  // margin-top: -100px; /* Negative half of height. */
+  margin-left: -30%; /* Negative half of width. */
+  visibility: hidden;
+  font-size: 2rem;
+  z-index: 100;
 
-        .vscode-light & {
-            border-bottom-color: var(--color-background--darken-075);
-        }
+  &.show {
+    visibility: visible; /* Show the snackbar */
+    /* Add animation: Take 0.5 seconds to fade in and out the snackbar.
+    However, delay the fade out process for 2.5 seconds */
+    // -webkit-animation: fadein 0.3s, fadeout 0.3s 0.5s;
+    // animation: fadein 0.3s, fadeout 0.3s 0.4s;
+    animation: fadein 0.5s, fadeout 0.5s 1s;
+  }
 
-        .vscode-dark & {
-            border-bottom-color: var(--color-background--lighten-075);
-        }
-    }
+  &:before {
+    // background: transparent;
+    // border: 12px solid transparent;
+    // content: '';
+    // left: 50%;
+    // position: absolute;
+    // pointer-events: none;
+    // top: -24px;
+    // z-index: 1001;
 
     .vscode-light & {
-        background: var(--color-background--darken-075);
+      border-bottom-color: var(--color-background--darken-075);
     }
 
     .vscode-dark & {
-        background: var(--color-background--lighten-075);
+      border-bottom-color: var(--color-background--lighten-075);
     }
+  }
+
+  .vscode-light & {
+    background: var(--color-background--darken-075);
+  }
+
+  .vscode-dark & {
+    background: var(--color-background--lighten-075);
+  }
+}
+
+/* Animations to fade the snackbar in and out */
+@keyframes fadein {
+  from {
+    // top: 0;
+    opacity: 0;
+  }
+  to {
+    // top: 30px;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    // top: 30px;
+    opacity: 1;
+  }
+  to {
+    // top: 0;
+    opacity: 0;
+  }
 }
 
 .token-popup__scroller {
-    margin-right: -0.4em;
-    max-height: 35vh;
-    overflow-y: scroll;
-    padding-right: 0.4em;
+  margin-right: -0.4em;
+  max-height: 35vh;
+  overflow-y: scroll;
+  padding-right: 0.4em;
 }
 
 .token-popup__hint {
-    color: var(--color-foreground--75);
-    display: inline-block;
-    font-weight: 200;
-    margin: 1.25em 0.5em 0 0.25em;
+  color: var(--color-foreground--75);
+  display: inline-block;
+  font-weight: 200;
+  margin: 1.25em 0.5em 0 0.25em;
 }
 
 .token-popup__title {
-    color: var(--color-foreground);
-    font-weight: 400;
-    margin: 0.25em 0 1em 0;
-    text-align: center;
+  color: var(--color-foreground);
+  font-weight: 400;
+  margin: 0.25em 0 1em 0;
+  text-align: center;
 }
 
 .token-popup__table {
-    border-collapse: collapse;
-    color: var(--color-foreground--75);
-    table-layout: fixed;
+  border-collapse: collapse;
+  color: var(--color-foreground--75);
+  table-layout: fixed;
 
-    & tr:nth-child(even) {
-        .vscode-light & {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .vscode-dark & {
-            background-color: rgba(255, 255, 255, 0.04);
-        }
+  & tr:nth-child(even) {
+    .vscode-light & {
+      background-color: rgba(0, 0, 0, 0.05);
     }
 
-    & td {
-        padding: 6px;
-
-        i {
-            opacity: 0.6;
-        }
+    .vscode-dark & {
+      background-color: rgba(255, 255, 255, 0.04);
     }
+  }
 
-    & td:first-child {
-        padding: 6px 12px;
-    }
+  & td {
+    padding: 6px;
 
-    & td:last-child {
-        padding-right: 12px;
-        text-align: end;
+    i {
+      opacity: 0.6;
     }
+  }
+
+  & td:first-child {
+    padding: 6px 12px;
+  }
+
+  & td:last-child {
+    padding-right: 12px;
+    text-align: end;
+  }
 }
 
 .token {
-    background: var(--color-link-foreground--darken-20);
-    border-bottom: 2px solid var(--color-link-foreground--darken-20);
-    border-radius: 3px;
-    color: white;
-    cursor: pointer;
-    display: inline-block;
-    padding: 1px 8px !important;
+  background: var(--color-link-foreground--darken-20);
+  border-bottom: 2px solid var(--color-link-foreground--darken-20);
+  border-radius: 3px;
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  padding: 1px 8px !important;
 
-    &:before {
-        content: '${';
-    }
+  &:before {
+    content: "${";
+  }
 
-    &:after {
-        content: '}';
-    }
+  &:after {
+    content: "}";
+  }
 
-    .vscode-light & {
-        background: var(--color-link-foreground--lighten-20);
-        border-bottom-color: var(--color-link-foreground--lighten-20);
-    }
+  .vscode-light & {
+    background: var(--color-link-foreground--lighten-20);
+    border-bottom-color: var(--color-link-foreground--lighten-20);
+  }
 }

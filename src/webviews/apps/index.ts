@@ -1,4 +1,5 @@
 import { initializeAndWatchThemeColors } from './theme';
+import { debounce } from "debounce";
 
 interface VsCodeApi {
     postMessage(msg: {}): void;
@@ -8,6 +9,7 @@ interface VsCodeApi {
 
 declare function acquireVsCodeApi(): VsCodeApi;
 
+
 // This script will be run within the webview itself
 (function () {
     console.log("init tests");
@@ -16,6 +18,8 @@ declare function acquireVsCodeApi(): VsCodeApi;
 
     const oldState = vscode.getState();
     console.log("oldState: ", oldState);
+
+    const toast = document.getElementById("saved-config-toast");
 
     //  * TEST *  ********  ********  ********  ********  ********  ********
     const counter = document.getElementById("lines-of-code-counter");
@@ -98,13 +102,14 @@ declare function acquireVsCodeApi(): VsCodeApi;
         applyChanges();
     }
     function onInputBlurred(element: HTMLInputElement) {
-        console.log('onInputBlurred', element);
+        // console.log('onInputBlurred', element);
     }
     function onInputFocused(element: HTMLInputElement) {
-        console.log('onInputFocused', element);
+        // console.log('onInputFocused', element);
     }
     function onInputChanged(element: HTMLInputElement) {
-        console.log('onInputChanged', element);
+        // console.log('onInputChanged', element);
+        applyChanges();
     }
 
     function setControls(): void {
@@ -170,20 +175,28 @@ declare function acquireVsCodeApi(): VsCodeApi;
 
             if (!state) { break; }
         }
-        console.log('result is : ', state);
-
         return state;
     }
 
     function getSettingValue(p_setting: string): any {
-        console.log('get value for : ', p_setting, 'which is: ', frontConfig[p_setting]);
         return frontConfig[p_setting];
     }
 
-    function applyChanges(): void {
+    var applyChanges = debounce(function () {
         console.log('Sending config changes to be debounced, and then applied ');
+        if (frontConfig) {
 
-    }
+            for (var prop in frontConfig) {
+                if (Object.prototype.hasOwnProperty.call(frontConfig, prop)) {
+                    console.log(prop);
+
+                }
+            }
+
+        }
+        toast!.className = "show";
+        setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
+    }, 1500);
 
     //  * START *  ********  ********  ********  ********  ********  ********
     console.log('Starting index.ts');
