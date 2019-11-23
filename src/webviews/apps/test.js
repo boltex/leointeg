@@ -1,5 +1,5 @@
 function testWebview() {
-  console.log("dude in test.js");
+  console.log("webpack inclusion from many files - log from test.js");
 }
 testWebview();
 

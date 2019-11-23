@@ -504,28 +504,44 @@ export class LeoIntegration {
         }
     }
 
-    public setLeoIntegSettings(p_config: Config): Promise<void> {
+    public setLeoIntegSettings(p_changes: { code: string, value: any }[]): Promise<void> {
         // also returns as a promise in case additional procedures need to be run on completion
         this.isSettingConfig = true;
         const w_promises: Thenable<void>[] = [];
-        const w_vscodeConfig = vscode.workspace.getConfiguration();
+        const w_vscodeConfig = vscode.workspace.getConfiguration('leoIntegration');
+
+        p_changes.forEach(change => {
+            if (w_vscodeConfig.inspect(change.code)!.defaultValue === change.value) {
+                // set as undefined - same as default
+                w_promises.push(w_vscodeConfig.update(change.code, undefined, true));
+                // console.log('clearing ', change.code, 'to undefined');
+            } else {
+                // set as value which is not default
+                w_promises.push(w_vscodeConfig.update(change.code, change.value, true));
+                // console.log('setting ', change.code, 'to ', change.value);
+            }
+        });
+
+        //console.log('test:', w_vscodeConfig.inspect('showOpenAside')!.defaultValue);
+        //console.log('test:', w_vscodeConfig.inspect('bodyEditDelay')!.defaultValue);
+
         // TODO : Find a way to loop through typescript interface 'members/properties/object-keys' without compiler warnings!
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' treeKeepFocus', p_config.treeKeepFocus, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' treeKeepFocusWhenAside', p_config.treeKeepFocusWhenAside, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' treeInExplorer', p_config.treeInExplorer, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' showOpenAside', p_config.showOpenAside, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' showArrowsOnNodes', p_config.showArrowsOnNodes, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' showAddOnNodes', p_config.showAddOnNodes, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' showMarkOnNodes', p_config.showMarkOnNodes, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' showCloneOnNodes', p_config.showCloneOnNodes, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' showCopyOnNodes', p_config.showCopyOnNodes, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' invertNodeContrast', p_config.invertNodeContrast, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' bodyEditDelay', p_config.bodyEditDelay, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' leoPythonCommand', p_config.leoPythonCommand, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' startServerAutomatically', p_config.startServerAutomatically, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' connectToServerAutomatically', p_config.connectToServerAutomatically, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' connectionAddress', p_config.connectionAddress, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' connectionPort', p_config.connectionPort, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' treeKeepFocus', p_config.treeKeepFocus, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' treeKeepFocusWhenAside', p_config.treeKeepFocusWhenAside, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' treeInExplorer', p_config.treeInExplorer, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' showOpenAside', p_config.showOpenAside, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' showArrowsOnNodes', p_config.showArrowsOnNodes, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' showAddOnNodes', p_config.showAddOnNodes, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' showMarkOnNodes', p_config.showMarkOnNodes, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' showCloneOnNodes', p_config.showCloneOnNodes, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' showCopyOnNodes', p_config.showCopyOnNodes, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' invertNodeContrast', p_config.invertNodeContrast, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' bodyEditDelay', p_config.bodyEditDelay, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' leoPythonCommand', p_config.leoPythonCommand, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' startServerAutomatically', p_config.startServerAutomatically, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' connectToServerAutomatically', p_config.connectToServerAutomatically, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' connectionAddress', p_config.connectionAddress, true));
+        // w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' connectionPort', p_config.connectionPort, true));
         return Promise.all(w_promises).then(
             () => {
                 console.log('ALL DONE!');

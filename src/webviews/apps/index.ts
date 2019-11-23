@@ -9,19 +9,16 @@ interface VsCodeApi {
 
 declare function acquireVsCodeApi(): VsCodeApi;
 
-
 // This script will be run within the webview itself
 (function () {
-    console.log("init tests");
     const vscode = acquireVsCodeApi();
     initializeAndWatchThemeColors();
 
-    const oldState = vscode.getState();
-    console.log("oldState: ", oldState);
-
     const toast = document.getElementById("saved-config-toast");
 
-    //  * TEST *  ********  ********  ********  ********  ********  ********
+    // * TEST *  ********  ********  ********  ********  ********  ********
+    const oldState = vscode.getState();
+    console.log("oldState: ", oldState);
     const counter = document.getElementById("lines-of-code-counter");
     let currentCount: number = (oldState && oldState.count) || 0;
     if (counter) {
@@ -41,7 +38,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
         }, 300);
     }
 
-    //  * SETUP *  ********  ********  ********  ********  ********  ********
+    // * SETUP *  ********  ********  ********  ********  ********  ********
     // Global variable config
     let frontConfig: { [key: string]: any } = {};
     let vscodeConfig: { [key: string]: any } = {};
@@ -58,7 +55,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
                 break;
 
             case "config":
-                console.log('got new config, set controls!', message.config);
+                console.log('got new config FROM VSCODE! , set controls!', message.config);
                 frontConfig = message.config;
                 setControls();
                 break;

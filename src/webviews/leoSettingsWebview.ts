@@ -9,6 +9,7 @@ export class LeoSettingsWebview {
     private panel: vscode.WebviewPanel | undefined;
     private readonly _extensionPath: string;
     private _html: string | undefined;
+    private waitingForUpdate: boolean = false;
 
     constructor(private context: vscode.ExtensionContext, private leoIntegration: LeoIntegration) {
         this._extensionPath = context.extensionPath;
@@ -16,13 +17,9 @@ export class LeoSettingsWebview {
     }
 
     private onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
-        if (this.panel) {
+        if (this.panel && !this.waitingForUpdate) {
             this.panel.webview.postMessage({ command: 'config', config: this.leoIntegration.config });
         }
-    }
-
-    private setConfig(p_configChanges: { [key: string]: any }): void {
-        console.log('Debounce and set this new config in vscode! : ', p_configChanges);
     }
 
     public openWebview(): void {
@@ -31,7 +28,6 @@ export class LeoSettingsWebview {
             this.panel.reveal();
         } else {
             this.getBaseHtml().then(p_baseHtml => {
-
                 this.panel = vscode.window.createWebviewPanel(
                     'leoSettings', // Identifies the type of the webview. Used internally
                     'Leo Integration Settings', // Title of the panel displayed to the user
@@ -43,42 +39,37 @@ export class LeoSettingsWebview {
                         enableScripts: true
                     }
                 );
-
                 let baseUri = this.panel.webview.asWebviewUri(vscode.Uri.file(
                     path.join(this._extensionPath)
                 ));
-
-                let html = p_baseHtml.replace(
+                this.panel.iconPath = vscode.Uri.file(this.context.asAbsolutePath('resources/leoapp128px.png'));
+                this.panel.webview.html = p_baseHtml.replace(
                     /#{root}/g,
                     baseUri.toString()
-                );
-
-                html = html.replace(
+                ).replace(
                     /#{endOfBody}/g,
                     `<script type="text/javascript" nonce="Z2l0bGVucy1ib290c3RyYXA=">window.leoConfig = ${JSON.stringify(
                         this.leoIntegration.config
                     )};</script>`
                 );
-
-                this.panel.webview.html = html;
-
-                this.panel.iconPath = vscode.Uri.file(this.context.asAbsolutePath('resources/leoapp128px.png'));
-
                 this.panel.webview.onDidReceiveMessage(
                     message => {
-                        console.log('received message: ', message.command);
                         switch (message.command) {
                             case 'alert':
                                 vscode.window.showErrorMessage(message.text);
-                                return;
+                                break;
                             case 'config':
-                                this.setConfig(message.changes);
+                                this.waitingForUpdate = true;
+                                this.leoIntegration.setLeoIntegSettings(message.changes).then(() => {
+                                    this.panel!.webview.postMessage({ command: 'config', config: this.leoIntegration.config });
+                                    this.waitingForUpdate = false;
+                                });
+                                break;
                         }
                     },
                     null,
                     this.context.subscriptions
                 );
-
                 this.panel.onDidDispose(() => {
                     console.log('disposed');
                     this.panel = undefined;
