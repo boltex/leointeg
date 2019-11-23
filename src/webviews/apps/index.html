@@ -220,16 +220,16 @@
             <div class="setting">
               <div class="setting__input">
                 <label for="bodyEditDelay">Edit&nbsp;Delay</label>
-                <input id="bodyEditDelay" name="bodyEditDelay" type="text" placeholder="value in milliseconds"
-                  data-setting />
+                <input id="bodyEditDelay" name="bodyEditDelay" type="number" min="250" max="1000" max-length="4"
+                  placeholder="value in milliseconds" data-setting />
               </div>
               <span class="setting__hint">Specifies delay time for edits to be sent to Leo, in milliseconds</span>
             </div>
             <div class="setting">
               <div class="setting__input">
                 <label for="leoPythonCommand">Python&nbsp;Command</label>
-                <input id="leoPythonCommand" name="leoPythonCommand" type="text" placeholder="Command to start python"
-                  data-setting />
+                <input id="leoPythonCommand" name="leoPythonCommand" type="text" maxlength="256"
+                  placeholder="Command to start python" data-setting />
               </div>
               <span class="setting__hint">Command to start python (Leaving empty defaults to 'py' on windows, and
                 'python3' otherwise)</span>
@@ -254,15 +254,16 @@
             <div class="setting">
               <div class="setting__input">
                 <label for="connectionAddress">Connection&nbsp;Address</label>
-                <input id="connectionAddress" name="connectionAddress" type="text" placeholder="Address or 'localhost'"
-                  data-setting />
+                <input id="connectionAddress" name="connectionAddress" type="text" maxlength="256"
+                  placeholder="Host Name, IP Address or localhost" data-setting />
               </div>
               <span class="setting__hint">Connection host</span>
             </div>
             <div class="setting">
               <div class="setting__input">
                 <label for="connectionPort">Connection&nbsp;Port</label>
-                <input id="connectionPort" name="connectionPort" type="number" placeholder="Port Number" data-setting />
+                <input id="connectionPort" name="connectionPort" type="number" min="0" max="65535" max-length="5"
+                  placeholder="Port Number" data-setting />
               </div>
               <span class="setting__hint">Connection host port number</span>
             </div>

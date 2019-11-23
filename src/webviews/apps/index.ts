@@ -105,8 +105,11 @@ declare function acquireVsCodeApi(): VsCodeApi;
         // console.log('onInputFocused', element);
     }
     function onInputChanged(element: HTMLInputElement) {
-        // console.log('onInputChanged', element);
-        frontConfig[element.id] = element.value;
+        if (element.type === 'number' && Number(element.value) < Number(element.max) && Number(element.value) > Number(element.min)) {
+            frontConfig[element.id] = Number(element.value);
+        } else if (element.type === 'text' && element.value.length < element.maxLength) {
+            frontConfig[element.id] = element.value;
+        }
         applyChanges();
     }
 
