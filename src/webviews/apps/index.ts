@@ -89,7 +89,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
         ) {
             return onInputFocused(this);
         });
-        listenAll('input[type=text][data-setting], input:not([type])[data-setting]', 'input', function (
+        listenAll('input[type=text][data-setting], input[type=number][data-setting]', 'input', function (
             this: HTMLInputElement
         ) {
             return onInputChanged(this);
@@ -109,6 +109,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
     }
     function onInputChanged(element: HTMLInputElement) {
         // console.log('onInputChanged', element);
+        frontConfig[element.id] = element.value;
         applyChanges();
     }
 
@@ -183,19 +184,30 @@ declare function acquireVsCodeApi(): VsCodeApi;
     }
 
     var applyChanges = debounce(function () {
-        console.log('Sending config changes to be debounced, and then applied ');
+        var w_changes = [];
         if (frontConfig) {
-
             for (var prop in frontConfig) {
                 if (Object.prototype.hasOwnProperty.call(frontConfig, prop)) {
-                    console.log(prop);
-
+                    // console.log(prop);
+                    if (frontConfig[prop] !== vscodeConfig[prop]) {
+                        w_changes.push({ code: prop, value: frontConfig[prop] });
+                    }
                 }
             }
-
         }
-        toast!.className = "show";
-        setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
+        if (w_changes.length) {
+            // ok replace!
+            vscodeConfig = frontConfig;
+            frontConfig = JSON.parse(JSON.stringify(frontConfig));
+            console.log('w_changes', w_changes);
+            toast!.className = "show";
+            setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
+
+            vscode.postMessage({
+                command: "config",
+                changes: w_changes
+            });
+        }
     }, 1500);
 
     //  * START *  ********  ********  ********  ********  ********  ********

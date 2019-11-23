@@ -30,7 +30,7 @@ export class LeoFiles {
         return w_openedFileEnvUri;
     }
 
-    // TODO : Better Windows support
+    // TODO : Better Windows support ! USE 'PATH' LIBRARY
     public getLeoFileUrl(): Promise<string> {
         if (this.fileBrowserOpen) {
             return Promise.resolve("");
@@ -47,7 +47,7 @@ export class LeoFiles {
                 .then(p_chosenLeoFile => {
                     this.fileBrowserOpen = false;
                     if (p_chosenLeoFile) {
-                        resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // replace backslashes for windiws support
+                        resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // replace backslashes for windows support
                     } else {
                         reject("");
                     }

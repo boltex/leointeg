@@ -15,12 +15,12 @@ export class LeoBridge {
 
     constructor(private context: vscode.ExtensionContext, private leoIntegration: LeoIntegration) { }
 
-    public action(p_action: string, p_jsonParam: string, p_deferedPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
+    public action(p_action: string, p_jsonParam: string, p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
         // * Places an action to be made by leoBridge.py on top of a stack, to be resolved from the bottom
         return new Promise((resolve, reject) => {
             const w_action: LeoAction = {
                 parameter: "{\"id\":" + (++this.leoBridgeSerialId) + ", \"action\": \"" + p_action + "\", \"param\":" + p_jsonParam + "}",
-                deferedPayload: p_deferedPayload ? p_deferedPayload : undefined,
+                deferredPayload: p_deferredPayload ? p_deferredPayload : undefined,
                 resolveFn: resolve,
                 rejectFn: reject
             };
@@ -36,8 +36,8 @@ export class LeoBridge {
         // * Resolves promises with the answers from an action that was done by leoBridge.py
         let w_bottomAction = this.callStack.shift();
         if (w_bottomAction) {
-            if (w_bottomAction.deferedPayload) { // Used when the action already has a return value ready but is also waiting for python's side
-                w_bottomAction.resolveFn(w_bottomAction.deferedPayload); // given back 'as is'
+            if (w_bottomAction.deferredPayload) { // Used when the action already has a return value ready but is also waiting for python's side
+                w_bottomAction.resolveFn(w_bottomAction.deferredPayload); // given back 'as is'
             } else {
                 w_bottomAction.resolveFn(p_object);
             }
@@ -98,7 +98,7 @@ export class LeoBridge {
     public initLeoProcess(): Promise<LeoBridgePackage> {
         // * Spawn a websocket
         this.websocket = new WebSocket(Constants.LEO_TCPIP_DEFAULT_PROTOCOL +
-            this.leoIntegration.config.connectionAdress +
+            this.leoIntegration.config.connectionAddress +
             ":" + this.leoIntegration.config.connectionPort);
         // * Capture the python process output
         this.websocket.onmessage = (p_event) => {

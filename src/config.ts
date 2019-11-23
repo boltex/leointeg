@@ -14,6 +14,6 @@ export interface Config {
     leoPythonCommand: string;
     startServerAutomatically: boolean;
     connectToServerAutomatically: boolean;
-    connectionAdress: string;
+    connectionAddress: string;
     connectionPort: number;
 }

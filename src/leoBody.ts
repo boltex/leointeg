@@ -2,9 +2,9 @@ import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 
 export class LeoBodyProvider implements vscode.FileSystemProvider {
-    // * The bodies of Leo nodes are implemented as a 'file system' in vscode's api
-    // * Saving and renaming prevents flickering and prevents undos to 'traverse throught' nodes, see leoIntegration.ts
-    // * note: There is an activation event `onFileSystem:<scheme>` that fires when a file is being accessed
+    // * The bodies of Leo nodes are implemented as a 'file system' in the vscode api
+    // * Saving and renaming prevents flickering and prevents undos to 'traverse through' nodes, see leoIntegration.ts
+    // * Note that there is an activation event `onFileSystem:<scheme>` that fires when a file is being accessed
 
     private lastGnx = "";
     private lastGnxBodyLength = 0;
@@ -47,14 +47,14 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 return this.leoIntegration.leoBridge.action("getBodyLength", '"' + w_gnx + '"')
                     .then((p_result) => {
                         // this.lastGnx = w_gnx; // * Leave as is for now : requires more testing
-                        if (p_result.bodyLenght) {
-                            // this.lastGnxBodyLength = p_result.bodyLenght; // * Leave as is for now
+                        if (p_result.bodyLength) {
+                            // this.lastGnxBodyLength = p_result.bodyLength; // * Leave as is for now
                             return Promise.resolve(
                                 {
                                     type: vscode.FileType.File,
                                     ctime: 0,
                                     mtime: Date.now(),
-                                    size: p_result.bodyLenght // this.leoIntegration.bodyText.length
+                                    size: p_result.bodyLength // this.leoIntegration.bodyText.length
                                 }
                             );
                         } else {
@@ -69,7 +69,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     });
             }
             // } else {
-            //     console.log('Error stat on file not folowing a getBody');
+            //     console.log('Error stat on file not following a getBody');
             //     throw vscode.FileSystemError.FileNotFound();
             // }
         } else {

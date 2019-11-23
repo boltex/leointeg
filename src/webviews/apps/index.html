@@ -183,7 +183,7 @@
         </div>
       </section>
 
-      <section id="inteface-behavior" class="section--settings">
+      <section id="interface-behavior" class="section--settings">
         <div class="section__content">
           <div class="section__header">
             <h2>
@@ -231,7 +231,7 @@
                 <input id="leoPythonCommand" name="leoPythonCommand" type="text" placeholder="Command to start python"
                   data-setting />
               </div>
-              <span class="setting__hint">Specifies the command to start python (Defaults to 'py' on windows and
+              <span class="setting__hint">Command to start python (Leaving empty defaults to 'py' on windows, and
                 'python3' otherwise)</span>
             </div>
             <div class="setting">
@@ -239,9 +239,8 @@
                 <input id="startServerAutomatically" name="startServerAutomatically" type="checkbox" data-setting />
                 <label for="startServerAutomatically">Start&nbsp;Server</label>
               </div>
-              <span class="setting__hint">Starts a LeoBridge server automatically, either with a specified command, or
-                the default
-                command to run the 'leobridgeserver.py' python3 script</span>
+              <span class="setting__hint">Starts a LeoBridge server automatically, by running the leobridgeserver.py
+                python script</span>
             </div>
             <div class="setting">
               <div class="setting__input">
@@ -249,13 +248,13 @@
                   data-setting />
                 <label for="connectToServerAutomatically">Connect&nbsp;to&nbsp;Server</label>
               </div>
-              <span class="setting__hint">Connect automatically to a Leo server on specified 'Connection Port' upon
-                activation of this extension</span>
+              <span class="setting__hint">Connects automatically to a Leo server upon activation of this
+                extension</span>
             </div>
             <div class="setting">
               <div class="setting__input">
-                <label for="connectionAdress">Connection&nbsp;Adress</label>
-                <input id="connectionAdress" name="connectionAdress" type="text" placeholder="Adress or 'localhost'"
+                <label for="connectionAddress">Connection&nbsp;Address</label>
+                <input id="connectionAddress" name="connectionAddress" type="text" placeholder="Address or 'localhost'"
                   data-setting />
               </div>
               <span class="setting__hint">Connection host</span>
@@ -300,7 +299,7 @@
             <a href="#node-commands">Node Hover Commands</a>
           </li>
           <li>
-            <a href="#inteface-behavior">Interface Behavior</a>
+            <a href="#interface-behavior">Interface Behavior</a>
           </li>
           <li>
             <a href="#leobridge-options">LeoBridge Options</a>

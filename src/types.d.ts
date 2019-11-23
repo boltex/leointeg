@@ -7,8 +7,8 @@ export const enum RevealType {
 
 export interface LeoAction { // pushed and resolved as a stack
     parameter: string; // to pass along with action to python's side
-    deferedPayload?: any | undefined; // Used when the action already has a return value ready but is also waiting for python's side
-    resolveFn: (result: any) => void; // call that with an aswer from python's (or other) side
+    deferredPayload?: any | undefined; // Used when the action already has a return value ready but is also waiting for python's side
+    resolveFn: (result: any) => void; // call that with an answer from python's (or other) side
     rejectFn: (reason: any) => void; // call if problem is encountered
 }
 

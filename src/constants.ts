@@ -11,5 +11,5 @@ export class Constants {
 
     public static LEO_TCPIP_DEFAULT_PORT: number = 32125;
     public static LEO_TCPIP_DEFAULT_PROTOCOL: string = "ws://";
-    public static LEO_TCPIP_DEFAULT_ADRESS: string = "localhost";
+    public static LEO_TCPIP_DEFAULT_ADDRESS: string = "localhost";
 }

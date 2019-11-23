@@ -36,7 +36,7 @@ class leoBridgeIntegController:
             w_package[p_key] = p_any  # add [key]?:any
         return(json.dumps(w_package))  # send as json
 
-    def outputError(self, p_message="Unkown Error"):
+    def outputError(self, p_message="Unknown Error"):
         print("ERROR: " + p_message)  # Output to this server's running console
         w_package = {"id": self.currentActionId}
         w_package["error"] = p_message
@@ -128,11 +128,11 @@ class leoBridgeIntegController:
         if(p_gnx):
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
             if w_v and len(w_v.b):
-                return self.sendLeoBridgePackage("bodyLenght", len(w_v.b))
+                return self.sendLeoBridgePackage("bodyLength", len(w_v.b))
             else:
-                return self.sendLeoBridgePackage("bodyLenght", 0)
+                return self.sendLeoBridgePackage("bodyLength", 0)
         else:
-            return self.sendLeoBridgePackage("bodyLenght", 0)
+            return self.sendLeoBridgePackage("bodyLength", 0)
 
     def setNewBody(self, p_body):
         '''Change Body of selected node'''
@@ -257,7 +257,7 @@ class leoBridgeIntegController:
                 'headline': stack_v.h,
             } for (stack_v, stack_childIndex) in p.stack],
         }
-        # TODO : (MAYBE) Convert all those bools into an integer 'status' Flags
+        # TODO : (MAYBE) Convert all those booleans into an integer 'status' Flags
         if bool(p.b):
             w_ap['hasBody'] = True
         if p.hasChildren():

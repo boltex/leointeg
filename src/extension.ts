@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.connectToServer", () => leoIntegration.connect()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.openLeoFile", () => leoIntegration.openLeoFile()));
 
-    // TODO : Fleshout this function, also support closing, re-opening and multiple simultaneous Leo documents support
+    // TODO : Flesh out this function, also support closing, re-opening and multiple simultaneous Leo documents support
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.closeLeoFile", () => leoIntegration.closeLeoFile()));
 
     // * Select a LeoNode Action
@@ -30,7 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.openAside", (node: LeoNode) => leoIntegration.showBodyDocumentAside(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.editHeadline", (p_node: LeoNode) => leoIntegration.editHeadline(p_node)));
 
-    // TODO : Fleshout the functions below and setup the rest of outline and body editing, scripting and other functionality of Leo!
+    // TODO : Flesh out the functions below and setup the rest of outline and body editing, scripting and other functionality of Leo!
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.mark", (node: LeoNode) => leoIntegration.mark(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.unmark", (node: LeoNode) => leoIntegration.unmark(node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.copyNode", (node: LeoNode) => leoIntegration.copyNode(node)));

@@ -68,7 +68,7 @@ export class LeoNode extends vscode.TreeItem {
         this.cursorSelection = p_cursorSelection;
     }
 
-    // * some smaller grayed-out text acompanying the main label
+    // * some smaller grayed-out text accompanying the main label
     // get description(): string {
     //   return "here's a description";
     // }

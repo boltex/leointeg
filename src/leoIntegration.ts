@@ -36,7 +36,7 @@ export class LeoIntegration {
         leoPythonCommand: "",
         startServerAutomatically: true,
         connectToServerAutomatically: true,
-        connectionAdress: Constants.LEO_TCPIP_DEFAULT_ADRESS,
+        connectionAddress: Constants.LEO_TCPIP_DEFAULT_ADDRESS,
         connectionPort: Constants.LEO_TCPIP_DEFAULT_PORT
     };
 
@@ -89,14 +89,14 @@ export class LeoIntegration {
     // * Timing
     private bodyChangeTimeout: NodeJS.Timeout | undefined;
     private bodyChangeTimeoutSkipped: boolean = false; // Used for instant tree node refresh trick
-    private lastbodyChangedRootRefreshedGnx: string = "";
+    private lastBodyChangedRootRefreshedGnx: string = "";
     private bodyLastChangedDocument: vscode.TextDocument | undefined;
 
     constructor(public context: vscode.ExtensionContext) {
         // * Get configuration settings
         this.getLeoIntegSettings();
 
-        // * Build Icon filname paths
+        // * Build Icon filename paths
         this.icons = Array(16)
             .fill("")
             .map((_, p_index) => {
@@ -192,7 +192,7 @@ export class LeoIntegration {
         console.log('Creating a promise for starting a server...');
 
         const w_serverStartPromise = new Promise((resolve, reject) => {
-            // * Spawn a python child process for a leobridge server
+            // * Spawn a python child process for a leoBridge server
             let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
             if (this.platform === "win32" && w_pythonPath === "py") {
                 w_args.push("-3");
@@ -270,7 +270,7 @@ export class LeoIntegration {
     }
 
     public cancelConnect(p_message?: string): void {
-        // * Also alled from leoBridge.ts when its websocket reports disconnection
+        // * Also called from leoBridge.ts when its websocket reports disconnection
         if (this.leoBridgeReady) {
             // * Real disconnect error
             vscode.window.showErrorMessage(p_message ? p_message : "Disconnected");
@@ -457,7 +457,7 @@ export class LeoIntegration {
         if (this.bodyLastChangedDocument) {
             const w_document = this.bodyLastChangedDocument; // backup
             this.bodyLastChangedDocument = undefined; // make falsy
-            if (this.lastbodyChangedRootRefreshedGnx !== w_document.uri.fsPath.substr(1)) {
+            if (this.lastBodyChangedRootRefreshedGnx !== w_document.uri.fsPath.substr(1)) {
                 p_forcedRefresh = true;
             }
             return this.bodySaveDocument(w_document, p_forcedRefresh);
@@ -492,7 +492,7 @@ export class LeoIntegration {
                 // console.log(p_forceRefreshTree ? 'force refresh' : 'needed refresh');
                 // * Refresh root because of need to dirty parent if in derived file
                 this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // No focus this.leoTreeDataProvider.refreshTreeRoot
-                this.lastbodyChangedRootRefreshedGnx = w_param.gnx;
+                this.lastBodyChangedRootRefreshedGnx = w_param.gnx;
             }
             this.bodyChangeTimeoutSkipped = false;
             return this.leoBridge.action("setBody", JSON.stringify(w_param)).then(p_result => {
@@ -524,7 +524,7 @@ export class LeoIntegration {
         w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' leoPythonCommand', p_config.leoPythonCommand, true));
         w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' startServerAutomatically', p_config.startServerAutomatically, true));
         w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' connectToServerAutomatically', p_config.connectToServerAutomatically, true));
-        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' connectionAdress', p_config.connectionAdress, true));
+        w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' connectionAddress', p_config.connectionAddress, true));
         w_promises.push(w_vscodeConfig.update('leoIntegration.' + ' connectionPort', p_config.connectionPort, true));
         return Promise.all(w_promises).then(
             () => {
@@ -539,7 +539,7 @@ export class LeoIntegration {
         if (this.isSettingConfig) {
             return; // * Currently setting config, wait until its done all, and this will be called automatically
         } else {
-            // * Graphic and theming settings
+            // * Graphic and theme settings
             this.config.invertNodeContrast = vscode.workspace.getConfiguration('leoIntegration').get('invertNodeContrast', false);
             // * Interface elements visibility
             this.config.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', true);
@@ -557,7 +557,7 @@ export class LeoIntegration {
             this.config.leoPythonCommand = vscode.workspace.getConfiguration('leoIntegration').get('leoPythonCommand', "");
             this.config.startServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('startServerAutomatically', true);
             this.config.connectToServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('connectToServerAutomatically', true);
-            this.config.connectionAdress = vscode.workspace.getConfiguration('leoIntegration').get('connectionAdress', Constants.LEO_TCPIP_DEFAULT_ADRESS); // 'ws://'
+            this.config.connectionAddress = vscode.workspace.getConfiguration('leoIntegration').get('connectionAddress', Constants.LEO_TCPIP_DEFAULT_ADDRESS); // 'ws://'
             this.config.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', Constants.LEO_TCPIP_DEFAULT_PORT); // 32125
             // * Set context for tree items visibility that are based on config options
             vscode.commands.executeCommand('setContext', 'treeInExplorer', this.config.treeInExplorer);
@@ -605,12 +605,12 @@ export class LeoIntegration {
     }
 
     public apToLeoNode(p_ap: ArchivedPosition): LeoNode {
-        let w_collaps: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
+        let w_collapse: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
         if (p_ap.hasChildren) {
-            w_collaps = p_ap.expanded ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed;
+            w_collapse = p_ap.expanded ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed;
         }
         const w_leoNode = new LeoNode(
-            p_ap.headline, p_ap.gnx, w_collaps, JSON.stringify(p_ap), !!p_ap.cloned, !!p_ap.dirty, !!p_ap.marked, !!p_ap.hasBody, this
+            p_ap.headline, p_ap.gnx, w_collapse, JSON.stringify(p_ap), !!p_ap.cloned, !!p_ap.dirty, !!p_ap.marked, !!p_ap.hasBody, this
         );
         return w_leoNode;
     }
@@ -634,7 +634,7 @@ export class LeoIntegration {
                     this.lastSelectedLeoNode = w_leoNode;
                 }
                 setTimeout(() => {
-                    this.reveal(w_leoNode, { select: w_selectFlag, focus: w_focusFlag }); // dont use this.treeKeepFocus
+                    this.reveal(w_leoNode, { select: w_selectFlag, focus: w_focusFlag }); // don't use this.treeKeepFocus
                 }, 0);
             }
             w_leoNodesArray.push(w_leoNode);

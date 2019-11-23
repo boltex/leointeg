@@ -21,8 +21,8 @@ export class LeoSettingsWebview {
         }
     }
 
-    private setConfig(p_config: { [key: string]: any }): void {
-        console.log('Debounce and set this new config in vscode! : ', p_config);
+    private setConfig(p_configChanges: { [key: string]: any }): void {
+        console.log('Debounce and set this new config in vscode! : ', p_configChanges);
     }
 
     public openWebview(): void {
@@ -71,8 +71,8 @@ export class LeoSettingsWebview {
                             case 'alert':
                                 vscode.window.showErrorMessage(message.text);
                                 return;
-                            case 'setConfig':
-                                this.setConfig(message.config);
+                            case 'config':
+                                this.setConfig(message.changes);
                         }
                     },
                     null,
