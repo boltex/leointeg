@@ -48,7 +48,7 @@ export class LeoSettingsWebview {
                     baseUri.toString()
                 ).replace(
                     /#{endOfBody}/g,
-                    `<script type="text/javascript" nonce="Z2l0bGVucy1ib290c3RyYXA=">window.leoConfig = ${JSON.stringify(
+                    `<script type="text/javascript" nonce="Z2l0bGV1cy1ib290c3RyYXA=">window.leoConfig = ${JSON.stringify(
                         this.leoIntegration.config
                     )};</script>`
                 );

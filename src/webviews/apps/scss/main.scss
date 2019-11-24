@@ -165,6 +165,11 @@ input:not([type]) {
     }
   }
 
+  &.is-invalid {
+    outline-color: red !important;
+    border-color: red !important;
+  }
+
   &[disabled] {
     color: var(--color-foreground--75);
     cursor: default;

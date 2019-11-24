@@ -71,7 +71,7 @@ function getWebviewsConfig(env) {
   const cspPolicy = {
     "default-src": "'none'",
     "img-src": ["vscode-resource:", "https:", "data:"],
-    "script-src": ["vscode-resource:", "'nonce-Z2l0bGVucy1ib290c3RyYXA='"],
+    "script-src": ["vscode-resource:", "'nonce-Z2l0bGV1cy1ib290c3RyYXA='"],
     "style-src": ["vscode-resource:"]
   };
   if (!env.production) {
@@ -141,8 +141,7 @@ function getWebviewsConfig(env) {
     context: path.resolve(__dirname, "src/webviews/apps"),
     entry: {
       "main-styles": ["./scss/main.scss"],
-      settings: ["./index.ts"],
-      test1: ["./test.js"]
+      settings: ["./index.ts"]
     },
     mode: env.production ? "production" : "development",
     devtool: env.production ? undefined : "eval-source-map",

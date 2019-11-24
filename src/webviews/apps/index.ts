@@ -9,36 +9,19 @@ interface VsCodeApi {
 
 declare function acquireVsCodeApi(): VsCodeApi;
 
-// This script will be run within the webview itself
 (function () {
     const vscode = acquireVsCodeApi();
     initializeAndWatchThemeColors();
 
     const toast = document.getElementById("saved-config-toast");
 
-    // * TEST *  ********  ********  ********  ********  ********  ********
-    const oldState = vscode.getState();
-    console.log("oldState: ", oldState);
-    const counter = document.getElementById("lines-of-code-counter");
-    let currentCount: number = (oldState && oldState.count) || 0;
-    if (counter) {
-        counter.textContent = currentCount.toString();
-        setInterval(() => {
-            counter.textContent = (currentCount++).toString();
-            // Update state
-            vscode.setState({ count: currentCount });
-            // Alert the extension when the cat introduces a bug
-            if (Math.random() < Math.min(0.001 * currentCount, 0.05)) {
-                // Send a message back to the extension
-                vscode.postMessage({
-                    command: "alert",
-                    text: "🐛  on line " + currentCount
-                });
-            }
-        }, 300);
-    }
+    // * TEST
+    // const oldState = vscode.getState();
+    // console.log("oldState: ", oldState);
+    // let currentCount: number = (oldState && oldState.count) || 0;
+    // vscode.setState({ count: currentCount });
 
-    // * SETUP *  ********  ********  ********  ********  ********  ********
+    // * SETUP
     // Global variable config
     let frontConfig: { [key: string]: any } = {};
     let vscodeConfig: { [key: string]: any } = {};
@@ -55,8 +38,10 @@ declare function acquireVsCodeApi(): VsCodeApi;
                 break;
 
             case "config":
-                console.log('got new config FROM VSCODE! , set controls!', message.config);
-                frontConfig = message.config;
+                // console.log('got new config FROM VSCODE! , set controls!', message.config);
+                toast!.className = "show";
+                setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
+                vscodeConfig = message.config; // next changes will be confronted to those settings
                 setControls();
                 break;
 
@@ -107,6 +92,10 @@ declare function acquireVsCodeApi(): VsCodeApi;
     function onInputChanged(element: HTMLInputElement) {
         if (element.type === 'number' && Number(element.value) < Number(element.max) && Number(element.value) > Number(element.min)) {
             frontConfig[element.id] = Number(element.value);
+            element.classList.remove("is-invalid");
+        } else if (element.type === 'number' && (Number(element.value) > Number(element.max) || Number(element.value) < Number(element.min))) {
+            // make red
+            element.classList.add("is-invalid");
         } else if (element.type === 'text' && element.value.length < element.maxLength) {
             frontConfig[element.id] = element.value;
         }
@@ -199,10 +188,6 @@ declare function acquireVsCodeApi(): VsCodeApi;
             // ok replace!
             vscodeConfig = frontConfig;
             frontConfig = JSON.parse(JSON.stringify(frontConfig));
-            console.log('w_changes', w_changes);
-            toast!.className = "show";
-            setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
-
             vscode.postMessage({
                 command: "config",
                 changes: w_changes
@@ -211,7 +196,6 @@ declare function acquireVsCodeApi(): VsCodeApi;
     }, 1500);
 
     //  * START *  ********  ********  ********  ********  ********  ********
-    console.log('Starting index.ts');
     setControls();
     setVisibility(frontConfig);
     onBind();

@@ -13,7 +13,7 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/ or on GitHu
 - Leo installed
 - Leo's path made available in \$PYTHONPATH environment variable\
   (See **Adding Leo to Your Path** in https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT)
-- Websocket Python Library _install with_ : `pip install websockets`\
+- Websocket Python Library - _Install with_ : `pip install websockets`\
   (See https://websockets.readthedocs.io/en/stable/intro.html)
 
 ## Development version installation
@@ -53,7 +53,7 @@ Make sure you have Node.js and Git installed along with the above general requir
 
 - Re-mapping of most of Leo's outline editing features through vscode and more, via leoBridge.
 - Detection of focused element to toggle functionality, by re-maping shortcut keys, to suit the interactions with the opened Leo file.
-- 2 way synchronisation of leo's output files and vscode's explorer & 'normal mode' of operation.
+- 2 way synchronization of leo's output files and vscode's explorer & 'normal mode' of operation.
 - Error lookup, or breakpoints cycling with automatic go-to line in generated file's nodes and body position.
 - File generating 'at' nodes that show their derived line number instead of the body-pane's line number along with color-syntaxing.
 
