@@ -129,7 +129,6 @@ declare function acquireVsCodeApi(): VsCodeApi;
 
     function evaluateStateExpression(expression: string, changes: { [key: string]: string | boolean }): boolean {
         let state = false;
-        console.log('evaluating ', expression);
 
         for (const expr of expression.trim().split('&')) {
             const [lhs, op, rhs] = parseStateExpression(expr);
