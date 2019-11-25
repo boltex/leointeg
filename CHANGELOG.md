@@ -2,8 +2,8 @@
 
 ## 0.1.8
 
-- Extension now builds itself with webpack. [As per recommendations](https://code.visualstudio.com/api/working-with-extensions/bundling-extension#using-webpack)
-- Now includes a webview to give 'welcome' support and information along with access to change settings configurations.
+- Extension now builds itself with webpack. [As recommended by vsCode's extension guidelines](https://code.visualstudio.com/api/working-with-extensions/bundling-extension#using-webpack)
+- Now includes a 'webview' to show a welcome message along with an easy and friendly way to change settings configurations.
 
 ## 0.1.7
 

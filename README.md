@@ -4,7 +4,7 @@
 
 Program by using directed acyclic graphs, section-references, clones, '@other' and the Mulder/Ream update algorithm to either derive your files, or parse them back into an outline!
 
-See Leo, the Literate Editor with Outline at: https://leoeditor.com/ or on GitHub https://github.com/leo-editor/leo-editor
+See Leo, the Literate Editor with Outline at [leoeditor.com](https://leoeditor.com/) or on [GitHub](https://github.com/leo-editor/leo-editor)
 
 ![Screenshot](resources/animated-screenshot.gif)
 
@@ -12,9 +12,9 @@ See Leo, the Literate Editor with Outline at: https://leoeditor.com/ or on GitHu
 
 - Leo installed
 - Leo's path made available in \$PYTHONPATH environment variable\
-  (See **Adding Leo to Your Path** in https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT)
+  (See **Adding Leo to Your Path** in [github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT](https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT))
 - Websocket Python Library - _Install with_ : `pip install websockets`\
-  (See https://websockets.readthedocs.io/en/stable/intro.html)
+  (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
 
 ## Development version installation
 
@@ -27,14 +27,14 @@ Make sure you have Node.js and Git installed along with the above general requir
 3. Run `npm install` in terminal to install dependencies.
 4. Press F5. (the 'Run Extension' command shortcut of vscode's debug panel)
 5. A new vscode window is now running with leoInteg! (open it's preferences settings [ctrl+,] and make sure server settings are ok)
-6. The plugin will be activated if the workspace of this window has a leo file, or it can be manualy activated, by going to the Leo view.
+6. The plugin will be activated if the workspace of this window has a leo file, or it can be manually activated, by going to the Leo view.
 7. Once activated, it will start a bridge and connect to it by default automatically. The 'Open Leo File' icon will then be available.
 
 ## Features
 
 ### _Features done so far:_
 
-- Integration is done by communicating with a python script, it interacts with Leo via 'leoBridge'. (see https://leoeditor.com/leoBridge.html)
+- Integration is done by communicating with a python script, it interacts with Leo via 'leoBridge'. (see [leoeditor.com/leoBridge.html](https://leoeditor.com/leoBridge.html))
 - A treeview of an actual outline of a Leo file. Can be integrated below the explorer view, or standalone in its own panel.
 - Editors on the right side, acting as the body pane(s).
 - Extension-specific settings for user interface preferences: _Available in settings_ `[ctrl+,]`
@@ -52,7 +52,7 @@ Make sure you have Node.js and Git installed along with the above general requir
 ## _Intended Features:_
 
 - Re-mapping of most of Leo's outline editing features through vscode and more, via leoBridge.
-- Detection of focused element to toggle functionality, by re-maping shortcut keys, to suit the interactions with the opened Leo file.
+- Detection of focused element to toggle functionality, by re-mapping shortcut keys, to suit the interactions with the opened Leo file.
 - 2 way synchronization of leo's output files and vscode's explorer & 'normal mode' of operation.
 - Error lookup, or breakpoints cycling with automatic go-to line in generated file's nodes and body position.
 - File generating 'at' nodes that show their derived line number instead of the body-pane's line number along with color-syntaxing.

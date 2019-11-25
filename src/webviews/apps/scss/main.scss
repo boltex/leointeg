@@ -617,7 +617,7 @@ ul {
   top: 0;
   bottom: 0;
   right: 0;
-  padding-right: 15%;
+  padding-right: 17%;
 }
 
 .image__preview--float {
@@ -858,7 +858,7 @@ section {
   flex: 0 1 auto;
   position: relative;
   margin-right: 1em;
-  min-width: 21em;
+  min-width: 17em;
 
   & input[type="checkbox"] {
     flex: 0 0 16px;
@@ -1008,10 +1008,6 @@ section {
   flex-wrap: wrap;
   // align-items: baseline;
   // justify-content: space-between;
-
-  .setting {
-    margin-right: 3em;
-  }
 }
 
 .settings--fixed {

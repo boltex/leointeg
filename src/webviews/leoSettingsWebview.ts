@@ -58,10 +58,15 @@ export class LeoSettingsWebview {
                             case 'alert':
                                 vscode.window.showErrorMessage(message.text);
                                 break;
+                            case 'getNewConfig':
+                                if (this.panel && !this.waitingForUpdate) {
+                                    this.panel.webview.postMessage({ command: 'newConfig', config: this.leoIntegration.config });
+                                }
+                                break;
                             case 'config':
                                 this.waitingForUpdate = true;
                                 this.leoIntegration.setLeoIntegSettings(message.changes).then(() => {
-                                    this.panel!.webview.postMessage({ command: 'config', config: this.leoIntegration.config });
+                                    this.panel!.webview.postMessage({ command: 'vscodeConfig', config: this.leoIntegration.config });
                                     this.waitingForUpdate = false;
                                 });
                                 break;

@@ -16,10 +16,16 @@ declare function acquireVsCodeApi(): VsCodeApi;
     const toast = document.getElementById("saved-config-toast");
 
     // * TEST
-    // const oldState = vscode.getState();
-    // console.log("oldState: ", oldState);
-    // let currentCount: number = (oldState && oldState.count) || 0;
-    // vscode.setState({ count: currentCount });
+    const oldState = vscode.getState();
+    let currentCount: number = (oldState && oldState.count) || 0;
+    if (currentCount) {
+        // Already opened! Get fresh and recent config!
+        vscode.postMessage({
+            command: "getNewConfig"
+        });
+    }
+    currentCount = currentCount + 1;
+    vscode.setState({ count: currentCount });
 
     // * SETUP
     // Global variable config
@@ -36,15 +42,16 @@ declare function acquireVsCodeApi(): VsCodeApi;
             case "test":
                 console.log("got test message");
                 break;
-
-            case "config":
-                // console.log('got new config FROM VSCODE! , set controls!', message.config);
+            case "newConfig":
+                vscodeConfig = message.config;
+                frontConfig = JSON.parse(JSON.stringify(message.config));
+                setControls();
+                break;
+            case "vscodeConfig":
                 toast!.className = "show";
                 setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
                 vscodeConfig = message.config; // next changes will be confronted to those settings
-                setControls();
                 break;
-
             default:
                 console.log("got message: ", message.command);
         }
