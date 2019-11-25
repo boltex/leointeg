@@ -4,7 +4,7 @@
 
 Program by using directed acyclic graphs, section-references, clones, '@other' and the Mulder/Ream update algorithm to either derive your files, or parse them back into an outline!
 
-See Leo, the Literate Editor with Outline at [leoeditor.com](https://leoeditor.com/) or on [GitHub](https://github.com/leo-editor/leo-editor)
+See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/) or on [github.com/leo-editor](https://github.com/leo-editor/leo-editor)
 
 ![Screenshot](resources/animated-screenshot.gif)
 
@@ -12,8 +12,9 @@ See Leo, the Literate Editor with Outline at [leoeditor.com](https://leoeditor.c
 
 - Leo installed
 - Leo's path made available in \$PYTHONPATH environment variable\
-  (See **Adding Leo to Your Path** in [github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT](https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT))
-- Websocket Python Library - _Install with_ : `pip install websockets`\
+  (See **Adding Leo to Your Path** in [github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT](https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT#L126))
+- Websocket Python Library installed\
+  _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
 
 ## Development version installation
@@ -24,28 +25,33 @@ Make sure you have Node.js and Git installed along with the above general requir
 
 1. Get this repository: `git clone https://github.com/boltex/leointeg.git`
 2. Right-click that folder -> open with vscode, or, from inside a vscode window, File-> Open Folder...
-3. Run `npm install` in terminal to install dependencies.
-4. Press F5. (the 'Run Extension' command shortcut of vscode's debug panel)
-5. A new vscode window is now running with leoInteg! (open it's preferences settings [ctrl+,] and make sure server settings are ok)
-6. The plugin will be activated if the workspace of this window has a leo file, or it can be manually activated, by going to the Leo view.
-7. Once activated, it will start a bridge and connect to it by default automatically. The 'Open Leo File' icon will then be available.
+3. Run `npm install` in terminal before the first run to install dependencies.
+4. Press F5 (the 'Run Extension' shortcut) - A new vscode window is now running with leoInteg!
+
+The plugin will be activated if the workspace of this new window has a leo file, it can also be manually activated, by going to the Leo view. Once activated, it will start a bridge and connect to it automatically. The 'Open Leo File' icon will then be available.
+
+#### _How it works:_
+
+Integration is done by starting a python script and connecting to it via a simple websocket with JSON data. (Can be customized in settings)
 
 ## Features
 
 ### _Features done so far:_
 
-- Integration is done by communicating with a python script, it interacts with Leo via 'leoBridge'. (see [leoeditor.com/leoBridge.html](https://leoeditor.com/leoBridge.html))
+- A Settings/Welcome screen. (Open the command palette, type `leo Welcome`)
 - A treeview of an actual outline of a Leo file. Can be integrated below the explorer view, or standalone in its own panel.
 - Editors on the right side, acting as the body pane(s).
 - Extension-specific settings for user interface preferences: _Available in settings_ `[ctrl+,]`
 
 ## Extension Settings
 
-- Option to either focus on body pane or keep focus in outline when a tree node is selected. (May help for keyboard navigation)
+### (Open the command palette, type `leo Welcome` to access the settings/welcome screen)
+
 - Control the visibility of the outline pane in the explorer view.
+- Choose to either focus on body pane or keep focus in outline when a tree node is selected. (May help for keyboard navigation)
 - Show additional context menu item : "Open on the side" for tree node's body to open beside current body pane.
-- Number of milliseconds to wait when debouncing after body text modifications are detected. (for performance tuning)
-- Preferences for setting the address and port, and for automatically starting, and connecting to a Leo Bridge server.
+- Set the number of milliseconds to wait when debouncing after body text modifications are detected. (for performance tuning)
+- Set preferences for setting the address and port, and for automatically starting, and connecting to a Leo Bridge server.
 
 ![Preview](resources/screenshot-explorer.png)
 

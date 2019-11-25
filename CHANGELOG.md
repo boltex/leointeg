@@ -2,8 +2,8 @@
 
 ## 0.1.8
 
-- Extension now builds itself with webpack. [As recommended by vsCode's extension guidelines](https://code.visualstudio.com/api/working-with-extensions/bundling-extension#using-webpack)
-- Now includes a 'webview' to show a welcome message along with an easy and friendly way to change settings configurations.
+- Extension now built with webpack. [As recommended by vsCode's extension guidelines](https://code.visualstudio.com/api/working-with-extensions/bundling-extension#using-webpack)
+- Added a 'webview' to show a welcome message along with an easy and friendly way to change settings configurations.
 
 ## 0.1.7
 
@@ -50,5 +50,6 @@ _Note: This editable body panel does not affect Leo file yet._
 ## 0.0.1
 
 - Initial basic skeleton of this extension. Press F5 to view icon and test the startup of the extension!
+- Implemented [leoBridge](https://leoeditor.com/leoBridge.html) interaction.
 
 ![LeoEditor](resources/leoapp96px.png)
