@@ -3,6 +3,10 @@
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
   "version": "0.1.8",
+  "author": {
+    "name": "Félix"
+  },
+  "publisher": "boltex",
   "license": "MIT",
   "repository": {
     "type": "git",

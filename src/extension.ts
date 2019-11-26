@@ -4,6 +4,12 @@ import { LeoNode } from "./leoNode";
 import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 
 export function activate(context: vscode.ExtensionContext) {
+    const start = process.hrtime();
+
+    const leoInteg = vscode.extensions.getExtension("boltex.leoInteg")!;
+    const leoIntegVersion = leoInteg.packageJSON.version;
+    const previousVersion = context.globalState.get<string>("leoIntegVersion");
+
     const leoIntegration: LeoIntegration = new LeoIntegration(context);
     const leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(context, leoIntegration);
 
@@ -70,8 +76,47 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.undo", () => leoIntegration.undo()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.executeScript", () => leoIntegration.executeScript()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.saveFile", () => leoIntegration.saveFile()));
+
+    // Show Welcome / settings screen if the version is newer than last time leointeg started
+    void showWelcome(leoIntegVersion, previousVersion);
+
+    context.globalState.update("leoIntegVersion", leoIntegVersion);
+
+    console.log('leoInteg startup launched in ', getDurationMilliseconds(start), 'ms');
 }
 
 export function deactivate() {
-    console.log('Extension "leointeg" is deactivated');
+    console.log('deactivate called for extension "leointeg"');
+}
+
+async function showWelcome(version: string, previousVersion: string | undefined) {
+    if (previousVersion === undefined) {
+        console.log('leoInteg first-time install');
+        await vscode.commands.executeCommand("leointeg.showWelcomePage");
+        return;
+    }
+
+    if (previousVersion !== version) {
+        console.log(`leoInteg upgraded from v${previousVersion} to v${version}`);
+    }
+
+    const [major, minor] = version.split('.').map(v => parseInt(v, 10));
+    const [prevMajor, prevMinor] = previousVersion.split('.').map(v => parseInt(v, 10));
+
+    if (
+        (major === prevMajor && minor === prevMinor) ||
+        // Don't notify on downgrades
+        (major < prevMajor || (major === prevMajor && minor < prevMinor))
+    ) {
+        return;
+    }
+    // Will show on major or minor upgrade, Formated as 'Major.Minor.Revision' eg. 1.2.3
+    if (major !== prevMajor || (major === prevMajor && minor > prevMinor)) {
+        await vscode.commands.executeCommand("leointeg.showWelcomePage");
+    }
+}
+
+function getDurationMilliseconds(start: [number, number]) {
+    const [secs, nanosecs] = process.hrtime(start);
+    return secs * 1000 + Math.floor(nanosecs / 1000000);
 }

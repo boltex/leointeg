@@ -3,7 +3,7 @@
 ## 0.1.8
 
 - Extension now built with webpack. [As recommended by vsCode's extension guidelines](https://code.visualstudio.com/api/working-with-extensions/bundling-extension#using-webpack)
-- Added a 'webview' to show a welcome message along with an easy and friendly way to change settings configurations.
+- Added a 'Welcome Screen' webview (also compiled by webpack from html, scss and ts files) to show a greeting with basic info, and provide an easy way to change the configuration settings.
 
 ## 0.1.7
 
@@ -23,7 +23,7 @@ _Note: Headline and body edition does not affect the Leo file yet._
 
 ## 0.1.5
 
-- Stabilized for browsing, headline and body editing.
+- Stabilized tree browsing, along with headline and body editing.
 
 ## 0.1.4
 

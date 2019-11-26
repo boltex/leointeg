@@ -317,7 +317,7 @@ def main():
                     print("Error in processCommand")
                 await websocket.send(answer)
         except:
-            print("Catched Websocket Disconnect Event")
+            print("Caught Websocket Disconnect Event")
         finally:
             asyncio.get_event_loop().stop()
 
