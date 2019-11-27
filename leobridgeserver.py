@@ -72,6 +72,15 @@ class leoBridgeIntegController:
         else:
             return self.outputError('Error in openFile')
 
+    def closeFile(self):
+        '''Closes a leo file. A file can then be opened with "openFile"'''
+        print("Trying to close opened file")
+        if(self.commander):
+            pass
+            # TODO Close an opened leo file. Another file could then be opened afterward with "openFile"
+            # self.commander.fileCommands.
+        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
     def getPNode(self, p_ap):
         '''EMIT OUT a node, don't select it.'''
         if(p_ap):
