@@ -92,6 +92,105 @@ class leoBridgeIntegController:
         else:
             return self.outputError("Error in getPNode no param p_ap")
 
+    def movePNodeDown(self, p_ap):
+        '''Move a node DOWN, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in getPNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in getPNode no param p_ap")
+
+    def movePNodeLeft(self, p_ap):
+        '''Move a node LEFT, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in getPNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in getPNode no param p_ap")
+
+    def movePNodeRight(self, p_ap):
+        '''Move a node RIGHT, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in getPNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in getPNode no param p_ap")
+
+    def movePNodeUp(self, p_ap):
+        '''Move a node UP, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in getPNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in getPNode no param p_ap")
+
+    def clonePNode(self, p_ap):
+        '''Clone a node, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in getPNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in getPNode no param p_ap")
+
+    def insertPNode(self, p_ap):
+        '''Insert a node, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in getPNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in getPNode no param p_ap")
+
+    def deletePNode(self, p_ap):
+        '''Delete a node, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in getPNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in getPNode no param p_ap")
+
+    def promotePNode(self, p_ap):
+        '''Promote a node, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in getPNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in getPNode no param p_ap")
+
+    def demotePNode(self, p_ap):
+        '''EMIT OUT a node, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in getPNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in getPNode no param p_ap")
+
     def getChildren(self, p_ap):
         '''EMIT OUT list of children of a node'''
         if(p_ap):
@@ -338,8 +437,8 @@ def main():
     print("Stopping leobridge server")
 
 
-# Startup
 if __name__ == '__main__':
+    # Startup
     try:
         main()
     except KeyboardInterrupt:

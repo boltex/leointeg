@@ -7,32 +7,12 @@
 // * - Ctrl-U (move-outline-up)
 // * - clone-node
 // * - Ctrl-I insert-node
+// * - Ctrl-I delete-node
 // * - Ctrl-{ (promote)
 // * - Ctrl-} (demote)
 // ! - Ctrl-Z (undo)
 // ! - execute-script (Ctrl-B)
 // ! - Ctrl-S (save-file)
-
-// * content for package.json
-/*
-{
-    "command": "leointeg.moveOutlineDown",
-    "when": "leoTreeOpened==true"
-  },
-  {
-    "command": "leointeg.moveOutlineLeft",
-    "when": "leoTreeOpened==true"
-  },
-  {
-    "command": "leointeg.moveOutlineRight",
-    "when": "leoTreeOpened==true"
-  },
-  {
-    "command": "leointeg.moveOutlineUp",
-    "when": "leoTreeOpened==true"
-  },
-*/
-
 
 /*
 # Context variables for package.json "when" clauses so far
