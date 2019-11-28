@@ -6,30 +6,40 @@
 <preferences/>
 <find_panel_settings/>
 <vnodes>
-<v t="felix.20190922171916.2"><vh>NewHeadline</vh></v>
+<v t="felix.20190922171916.2"><vh>Introduction</vh></v>
 <v t="felix.20191126232434.2"><vh>@clean leobridgeserver.py</vh>
-<v t="felix.20191126232434.3"><vh>Declarations</vh></v>
+<v t="felix.20191128002414.1"><vh>Imports</vh></v>
+<v t="felix.20191128002417.1"><vh>Constants</vh></v>
 <v t="felix.20191126232434.4"><vh>class leoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
-<v t="felix.20191126232434.6"><vh>setActionId</vh></v>
+<v t="felix.20191126232434.12"><vh>test</vh></v>
+<v t="felix.20191126232434.13"><vh>openFile</vh></v>
+<v t="felix.20191126232434.14"><vh>closeFile</vh></v>
+<v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
+<v t="felix.20191128004456.1"><vh>setActionId</vh></v>
 <v t="felix.20191126232434.7"><vh>sendLeoBridgePackage</vh></v>
 <v t="felix.20191126232434.8"><vh>outputError</vh></v>
 <v t="felix.20191126232434.9"><vh>outputBodyData</vh></v>
 <v t="felix.20191126232434.10"><vh>outputPNode</vh></v>
 <v t="felix.20191126232434.11"><vh>outputPNodes</vh></v>
-<v t="felix.20191126232434.12"><vh>test</vh></v>
-<v t="felix.20191126232434.13"><vh>openFile</vh></v>
-<v t="felix.20191126232434.14"><vh>closeFile</vh></v>
-<v t="felix.20191126232434.15"><vh>getPNode</vh></v>
+</v>
+<v t="felix.20191128000818.1"><vh>Outline Edition Commands</vh>
 <v t="felix.20191127000344.1"><vh>movePNodeDown</vh></v>
 <v t="felix.20191127000419.1"><vh>movePNodeLeft</vh></v>
 <v t="felix.20191127000420.1"><vh>movePNodeRight</vh></v>
 <v t="felix.20191127000420.2"><vh>movePNodeUp</vh></v>
 <v t="felix.20191127001502.1"><vh>clonePNode</vh></v>
+<v t="felix.20191127004619.1"><vh>copyPNode</vh></v>
+<v t="felix.20191127004620.1"><vh>cutPNode</vh></v>
+<v t="felix.20191127004621.1"><vh>markPNode</vh></v>
+<v t="felix.20191127235913.1"><vh>unmarkPNode</vh></v>
 <v t="felix.20191127001506.1"><vh>insertPNode</vh></v>
 <v t="felix.20191127002548.1"><vh>deletePNode</vh></v>
 <v t="felix.20191127001506.2"><vh>promotePNode</vh></v>
 <v t="felix.20191127001506.3"><vh>demotePNode</vh></v>
+</v>
+<v t="felix.20191128001054.1"><vh>Outline and Body Interaction</vh>
+<v t="felix.20191126232434.15"><vh>getPNode</vh></v>
 <v t="felix.20191126232434.16"><vh>getChildren</vh></v>
 <v t="felix.20191126232434.17"><vh>getParent</vh></v>
 <v t="felix.20191126232434.18"><vh>getSelectedNode</vh></v>
@@ -41,17 +51,21 @@
 <v t="felix.20191126232434.24"><vh>setSelectedNode</vh></v>
 <v t="felix.20191126232434.25"><vh>expandNode</vh></v>
 <v t="felix.20191126232434.26"><vh>collapseNode</vh></v>
+<v t="felix.20191126232434.29"><vh>yieldAllRootChildren</vh></v>
+</v>
+<v t="felix.20191128003648.1"><vh>leoFlexx Conversion Functions</vh>
 <v t="felix.20191126232434.27"><vh>create_gnx_to_vnode</vh></v>
 <v t="felix.20191126232434.28"><vh>test_round_trip_positions</vh></v>
-<v t="felix.20191126232434.29"><vh>yieldAllRootChildren</vh></v>
 <v t="felix.20191126232434.30"><vh>ap_to_p</vh></v>
 <v t="felix.20191126232434.31"><vh>p_to_ap</vh></v>
+</v>
 </v>
 <v t="felix.20191126232435.1"><vh>main</vh></v>
 </v>
 </vnodes>
 <tnodes>
-<t tx="felix.20190922171916.2"></t>
+<t tx="felix.20190922171916.2">I should have started self documentation here from the start in august! 
+todo: flesh this out!</t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
         return self.sendLeoBridgePackage("node", self.p_to_ap(p_node))  # Single node, singular
@@ -275,22 +289,6 @@ if __name__ == '__main__':
         p.moveToNext()
 
 </t>
-<t tx="felix.20191126232434.3">import leo.core.leoBridge as leoBridge
-import leo.core.leoNodes as leoNodes
-import asyncio
-import websockets
-import sys
-import getopt
-import os
-import time
-import json
-
-# server defaults
-wsHost = "localhost"
-wsPort = 32125
-
-
-</t>
 <t tx="felix.20191126232434.30">def ap_to_p(self, ap):
     '''(From Leo plugin leoflexx.py) Convert an archived position to a true Leo position.'''
     childIndex = ap['childIndex']
@@ -355,10 +353,6 @@ wsPort = 32125
                                        verbose=False)     # True: print informational messages.
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
     # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
-
-</t>
-<t tx="felix.20191126232434.6">def setActionId(self, p_id):
-    self.currentActionId = p_id
 
 </t>
 <t tx="felix.20191126232434.7">def sendLeoBridgePackage(self, p_key=False, p_any=None):
@@ -541,6 +535,81 @@ wsPort = 32125
     else:
         return self.outputError("Error in getPNode no param p_ap")
 
+</t>
+<t tx="felix.20191127004619.1">def copyPNode(self, p_ap):
+    '''Copy a node, don't select it.'''
+    if(p_ap):
+        w_p = self.ap_to_p(p_ap)
+        if w_p:
+            return self.outputPNode(w_p)
+        else:
+            return self.outputError("Error in getPNode no w_p node found")  # default empty
+    else:
+        return self.outputError("Error in getPNode no param p_ap")
+
+</t>
+<t tx="felix.20191127004620.1">def cutPNode(self, p_ap):
+    '''Cut a node, don't select it.'''
+    if(p_ap):
+        w_p = self.ap_to_p(p_ap)
+        if w_p:
+            return self.outputPNode(w_p)
+        else:
+            return self.outputError("Error in getPNode no w_p node found")  # default empty
+    else:
+        return self.outputError("Error in getPNode no param p_ap")
+
+</t>
+<t tx="felix.20191127004621.1">def markPNode(self, p_ap):
+    '''Mark a node, don't select it.'''
+    if(p_ap):
+        w_p = self.ap_to_p(p_ap)
+        if w_p:
+            return self.outputPNode(w_p)
+        else:
+            return self.outputError("Error in getPNode no w_p node found")  # default empty
+    else:
+        return self.outputError("Error in getPNode no param p_ap")
+
+</t>
+<t tx="felix.20191127235913.1">def unmarkPNode(self, p_ap):
+    '''Unmark a node, don't select it.'''
+    if(p_ap):
+        w_p = self.ap_to_p(p_ap)
+        if w_p:
+            return self.outputPNode(w_p)
+        else:
+            return self.outputError("Error in getPNode no w_p node found")  # default empty
+    else:
+        return self.outputError("Error in getPNode no param p_ap")
+
+</t>
+<t tx="felix.20191128000818.1">@others
+</t>
+<t tx="felix.20191128001054.1">@others
+</t>
+<t tx="felix.20191128002414.1">import leo.core.leoBridge as leoBridge
+import leo.core.leoNodes as leoNodes
+import asyncio
+import websockets
+import sys
+import getopt
+import os
+import time
+import json
+
+</t>
+<t tx="felix.20191128002417.1"># server defaults
+wsHost = "localhost"
+wsPort = 32125
+
+
+</t>
+<t tx="felix.20191128003151.1"></t>
+<t tx="felix.20191128003648.1">@others
+</t>
+<t tx="felix.20191128004456.1">def setActionId(self, p_id):
+    self.currentActionId = p_id
 </t>
 </tnodes>
 </leo_file>

@@ -741,6 +741,14 @@
         }
       ]
     },
+    "keybindings": [
+      {
+        "command": "leointeg.test",
+        "key": "ctrl+h",
+        "mac": "cmd+h",
+        "when": "leoObjectSelected"
+      }
+    ],
     "resourceLabelFormatters": [
       {
         "scheme": "leo",
