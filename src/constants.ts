@@ -12,4 +12,19 @@ export class Constants {
     public static LEO_TCPIP_DEFAULT_PORT: number = 32125;
     public static LEO_TCPIP_DEFAULT_PROTOCOL: string = "ws://";
     public static LEO_TCPIP_DEFAULT_ADDRESS: string = "localhost";
+
+    public static CONTEXT_FLAGS = {
+        BRIDGE_READY: "leoBridgeReady",
+        TREE_OPENED: "leoTreeOpened",
+        SERVER_STARTED: "leoServerStarted",
+        DISCONNECTED: "leoDisconnected",
+        TREE_IN_EXPLORER: "treeInExplorer",
+        SHOW_OPEN_ASIDE: "showOpenAside",
+        SHOW_ARROWS: "showArrowsOnNodes",
+        SHOW_ADD: "showAddOnNodes",
+        SHOW_MARK: "showMarkOnNodes",
+        SHOW_CLONE: "showCloneOnNodes",
+        SHOW_COPY: "showCopyOnNodes",
+        LEO_SELECTED: "leoObjectSelected"
+    };
 }

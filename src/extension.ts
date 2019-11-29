@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
@@ -14,8 +15,8 @@ export function activate(context: vscode.ExtensionContext) {
     const leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(context, leoIntegration);
 
     // * Reset Extension context flags (used in 'when' clauses in package.json)
-    vscode.commands.executeCommand('setContext', 'leoBridgeReady', false); // connected to a leobridge server?
-    vscode.commands.executeCommand('setContext', 'leoTreeOpened', false); // Having a Leo file opened on that server?
+    vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // connected to a leobridge server?
+    vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
 
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.showWelcomePage", () => leoSettingsWebview.openWebview())); // openWebview
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.showSettingsPage", () => leoSettingsWebview.openWebview())); // openWebview

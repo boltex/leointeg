@@ -214,20 +214,20 @@ export class LeoIntegration {
             // * Capture other python process outputs
             this.serverProcess.stderr.on("data", (data: string) => {
                 console.log(`stderr: ${data}`);
-                vscode.commands.executeCommand('setContext', 'leoServerStarted', false);
+                vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                 this.serverProcess = undefined;
                 reject(`stderr: ${data}`);
             });
             this.serverProcess.on("close", (code: any) => {
                 console.log(`leoBridge exited with code ${code}`);
-                vscode.commands.executeCommand('setContext', 'leoServerStarted', false);
+                vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                 this.serverProcess = undefined;
                 reject(`leoBridge exited with code ${code}`);
             });
         });
         // * Setup reactions to w_serverStartPromise resolution or rejection
         w_serverStartPromise.then((p_message) => {
-            vscode.commands.executeCommand('setContext', 'leoServerStarted', true); // server started
+            vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
             if (this.config.connectToServerAutomatically) {
                 console.log('auto connect...');
                 this.connect();
@@ -258,7 +258,7 @@ export class LeoIntegration {
                 this.cancelConnect("Leo Bridge Connection Error: Incorrect id");
             } else {
                 this.leoBridgeReady = true;
-                vscode.commands.executeCommand('setContext', 'leoBridgeReady', true);
+                vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
                 if (!this.config.connectToServerAutomatically) {
                     vscode.window.showInformationMessage(`Connected`);
                 }
@@ -274,16 +274,16 @@ export class LeoIntegration {
         if (this.leoBridgeReady) {
             // * Real disconnect error
             vscode.window.showErrorMessage(p_message ? p_message : "Disconnected");
-            vscode.commands.executeCommand('setContext', 'leoDisconnected', true);
+            vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.DISCONNECTED, true);
         } else {
             // * Simple failed to connect
             vscode.window.showInformationMessage(p_message ? p_message : "Disconnected");
         }
 
-        vscode.commands.executeCommand('setContext', 'leoTreeOpened', false);
+        vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.TREE_OPENED, false);
         this.fileOpenedReady = false;
 
-        vscode.commands.executeCommand('setContext', 'leoBridgeReady', false);
+        vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.BRIDGE_READY, false);
         this.leoBridgeReady = false;
 
         this.leoIsConnecting = false;
@@ -556,13 +556,13 @@ export class LeoIntegration {
             this.config.connectionAddress = vscode.workspace.getConfiguration('leoIntegration').get('connectionAddress', Constants.LEO_TCPIP_DEFAULT_ADDRESS); // 'ws://'
             this.config.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', Constants.LEO_TCPIP_DEFAULT_PORT); // 32125
             // * Set context for tree items visibility that are based on config options
-            vscode.commands.executeCommand('setContext', 'treeInExplorer', this.config.treeInExplorer);
-            vscode.commands.executeCommand('setContext', 'showOpenAside', this.config.showOpenAside);
-            vscode.commands.executeCommand('setContext', 'showArrowsOnNodes', this.config.showArrowsOnNodes);
-            vscode.commands.executeCommand('setContext', 'showAddOnNodes', this.config.showAddOnNodes);
-            vscode.commands.executeCommand('setContext', 'showMarkOnNodes', this.config.showMarkOnNodes);
-            vscode.commands.executeCommand('setContext', 'showCloneOnNodes', this.config.showCloneOnNodes);
-            vscode.commands.executeCommand('setContext', 'showCopyOnNodes', this.config.showCopyOnNodes);
+            vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.TREE_IN_EXPLORER, this.config.treeInExplorer);
+            vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SHOW_OPEN_ASIDE, this.config.showOpenAside);
+            vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SHOW_ARROWS, this.config.showArrowsOnNodes);
+            vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SHOW_ADD, this.config.showAddOnNodes);
+            vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SHOW_MARK, this.config.showMarkOnNodes);
+            vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SHOW_CLONE, this.config.showCloneOnNodes);
+            vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SHOW_COPY, this.config.showCopyOnNodes);
         }
     }
 
@@ -586,7 +586,7 @@ export class LeoIntegration {
         if (this.updateStatusBarTimeout) { // Can be called directly, so clear timer if any
             clearTimeout(this.updateStatusBarTimeout);
         }
-        vscode.commands.executeCommand('setContext', 'leoObjectSelected', !!this.leoObjectSelected);
+        vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.leoObjectSelected);
 
         if (this.leoObjectSelected && this.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
             this.leoStatusBarItem.color = Constants.LEO_STATUSBAR_COLOR;
@@ -915,7 +915,7 @@ export class LeoIntegration {
                         // * set body URI for body filesystem
                         this.bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_result.node.gnx);
                         this.showSelectedBodyDocument().then(p_result => {
-                            vscode.commands.executeCommand('setContext', 'leoTreeOpened', true);
+                            vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.TREE_OPENED, true);
                         });
                         // * First StatusBar appearance
                         this.updateStatusBar();
