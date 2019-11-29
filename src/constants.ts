@@ -25,6 +25,7 @@ export class Constants {
         SHOW_MARK: "showMarkOnNodes",
         SHOW_CLONE: "showCloneOnNodes",
         SHOW_COPY: "showCopyOnNodes",
-        LEO_SELECTED: "leoObjectSelected"
+        LEO_SELECTED: "leoObjectSelected",
+        SELECTED_MARKED: "leoNodeMarked"
     };
 }

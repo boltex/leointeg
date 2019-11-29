@@ -743,10 +743,22 @@
     },
     "keybindings": [
       {
-        "command": "leointeg.test",
+        "command": "leointeg.editSelectedHeadline",
         "key": "ctrl+h",
         "mac": "cmd+h",
-        "when": "leoObjectSelected"
+        "when": "leoTreeOpened && leoObjectSelected"
+      },
+      {
+        "command": "leointeg.markSelection",
+        "key": "ctrl+m",
+        "mac": "cmd+m",
+        "when": "leoTreeOpened && leoObjectSelected && !leoNodeMarked"
+      },
+      {
+        "command": "leointeg.unmarkSelection",
+        "key": "ctrl+m",
+        "mac": "cmd+m",
+        "when": "leoTreeOpened && leoObjectSelected && leoNodeMarked"
       }
     ],
     "resourceLabelFormatters": [

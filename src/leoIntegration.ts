@@ -640,6 +640,11 @@ export class LeoIntegration {
 
     public selectTreeNode(p_node: LeoNode): void {
         // * User has selected a node in the outline
+
+        // TODO : WHY THE HECK DOES THIS FLASH BACK WHITE?
+        // ! this.leoObjectSelected = true;
+        // ! this.updateStatusBar();
+
         // TODO : Save and restore selection, along with cursor position, from selection object saved in each node (or gnx array)
         const w_isAlreadySelected: boolean = (p_node === (this.lastSelectedLeoNode ? this.lastSelectedLeoNode : ""));
         if (w_isAlreadySelected) {
@@ -663,6 +668,7 @@ export class LeoIntegration {
 
         this.triggerBodySave(); // trigger event to save previous document if timer to save if already started for another document
 
+        vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_node.marked);
         this.lastSelectedLeoNode = p_node; // kept mostly in order to do refreshes if it changes, as opposed to a full tree refresh
 
         if (this.bodyTextDocument && !this.bodyTextDocument.isClosed) {
