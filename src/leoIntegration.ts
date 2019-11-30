@@ -46,7 +46,7 @@ export class LeoIntegration {
     // * Leo Bridge Server Process
     private serverProcess: child.ChildProcess | undefined;
 
-    // * Browse
+    // * File Browser for opening Leo Files
     private leoFiles: LeoFiles;
 
     // * LeoBridge
@@ -894,11 +894,15 @@ export class LeoIntegration {
     public executeScript(): void {
         vscode.window.showInformationMessage(`TODO: executeScript`); // temp placeholder
     }
-    public saveFile(): void {
-        vscode.window.showInformationMessage(`TODO: saveFile : Try to save Leo File`); // temp placeholder
+    public saveLeoFile(): void {
+        vscode.window.showInformationMessage(`TODO: saveLeoFile : Try to save Leo File`); // temp placeholder
     }
     public closeLeoFile(): void {
-        vscode.window.showInformationMessage(`TODO: close leo file`); // temp placeholder
+        if (this.fileOpenedReady) {
+            vscode.window.showInformationMessage(`TODO: close leo file`); // temp placeholder
+        } else {
+            console.log('closeLeoFile should not be callable');
+        }
     }
 
     public openLeoFile(): void {

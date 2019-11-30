@@ -101,9 +101,7 @@ todo: flesh this out!</t>
     '''Closes a leo file. A file can then be opened with "openFile"'''
     print("Trying to close opened file")
     if(self.commander):
-        pass
-        # TODO Close an opened leo file. Another file could then be opened afterward with "openFile"
-        # self.commander.fileCommands.
+        self.commander.close()
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>

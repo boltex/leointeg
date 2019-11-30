@@ -76,7 +76,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.undo", () => leoIntegration.undo()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.executeScript", () => leoIntegration.executeScript()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.saveFile", () => leoIntegration.saveFile()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.saveLeoFile", () => leoIntegration.saveLeoFile()));
 
     // Show Welcome / settings screen if the version is newer than last time leointeg started
     void showWelcome(leoIntegVersion, previousVersion);
