@@ -78,148 +78,186 @@ class leoBridgeIntegController:
             w_apList.append(self.p_to_ap(p))
         return self.sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
 
-    def movePNodeDown(self, p_ap):
-        '''Move a node DOWN, don't select it.'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                return self.outputPNode(w_p)
-            else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in getPNode no param p_ap")
-
-    def movePNodeLeft(self, p_ap):
-        '''Move a node LEFT, don't select it.'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                return self.outputPNode(w_p)
-            else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in getPNode no param p_ap")
-
-    def movePNodeRight(self, p_ap):
-        '''Move a node RIGHT, don't select it.'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                return self.outputPNode(w_p)
-            else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in getPNode no param p_ap")
-
-    def movePNodeUp(self, p_ap):
-        '''Move a node UP, don't select it.'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                return self.outputPNode(w_p)
-            else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in getPNode no param p_ap")
-
-    def clonePNode(self, p_ap):
-        '''Clone a node, don't select it.'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                return self.outputPNode(w_p)
-            else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in getPNode no param p_ap")
-
-    def copyPNode(self, p_ap):
-        '''Copy a node, don't select it.'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                return self.outputPNode(w_p)
-            else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in getPNode no param p_ap")
-
-    def cutPNode(self, p_ap):
-        '''Cut a node, don't select it.'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                return self.outputPNode(w_p)
-            else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in getPNode no param p_ap")
-
     def markPNode(self, p_ap):
         '''Mark a node, don't select it.'''
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
-                return self.outputPNode(w_p)
+                w_p.setMarked()
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
             else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
+                return self.outputError("Error in markPNode no w_p node found") 
         else:
-            return self.outputError("Error in getPNode no param p_ap")
+            return self.outputError("Error in markPNode no param p_ap")
 
     def unmarkPNode(self, p_ap):
         '''Unmark a node, don't select it.'''
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
-                return self.outputPNode(w_p)
+                w_p.clearMarked()
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
             else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
+                return self.outputError("Error in unmarkPNode no w_p node found")  
         else:
-            return self.outputError("Error in getPNode no param p_ap")
+            return self.outputError("Error in unmarkPNode no param p_ap")
 
-    def insertPNode(self, p_ap):
-        '''Insert a node, don't select it.'''
+    def copyPNode(self, p_ap):
+        '''Copy a node, don't select it.'''
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
-                return self.outputPNode(w_p)
+                # self.clipboard = self.commander.fileCommands.putLeoOutline(w_p) # Replace clipboard
+                self.commander.copyOutline()
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
             else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
+                return self.outputError("Error in copyPNode no w_p node found") 
         else:
-            return self.outputError("Error in getPNode no param p_ap")
+            return self.outputError("Error in copyPNode no param p_ap")
+
+    def cutPNode(self, p_ap):
+        '''Cut a node, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                self.commander.cutOutline()
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+            else:
+                return self.outputError("Error in cutPNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in cutPNode no param p_ap")
+
+    def pastePNode(self, p_ap):
+        '''Paste a node, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                #return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in pastePNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in pastePNode no param p_ap")
+
+    def pasteAsClonePNode(self, p_ap):
+        '''Paste as clone, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                #return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in pasteAsClonePNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in pasteAsClonePNode no param p_ap")
 
     def deletePNode(self, p_ap):
         '''Delete a node, don't select it.'''
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
-                return self.outputPNode(w_p)
+                self.commander.deleteOutline()
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
             else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
+                return self.outputError("Error in deletePNode no w_p node found")  # default empty
         else:
-            return self.outputError("Error in getPNode no param p_ap")
+            return self.outputError("Error in deletePNode no param p_ap")
+
+    def movePNodeDown(self, p_ap):
+        '''Move a node DOWN, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                #return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in movePNodeDown no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in movePNodeDown no param p_ap")
+
+    def movePNodeLeft(self, p_ap):
+        '''Move a node LEFT, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                #return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in movePNodeLeft no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in movePNodeLeft no param p_ap")
+
+    def movePNodeRight(self, p_ap):
+        '''Move a node RIGHT, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                #return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in movePNodeRight no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in movePNodeRight no param p_ap")
+
+    def movePNodeUp(self, p_ap):
+        '''Move a node UP, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                #return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in movePNodeUp no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in movePNodeUp no param p_ap")
+
+    def insertPNode(self, p_ap):
+        '''Insert a node, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                #return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in insertPNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in insertPNode no param p_ap")
+
+    def clonePNode(self, p_ap):
+        '''Clone a node, don't select it.'''
+        if(p_ap):
+            w_p = self.ap_to_p(p_ap)
+            if w_p:
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                #return self.outputPNode(w_p)
+            else:
+                return self.outputError("Error in clonePNode no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in clonePNode no param p_ap")
 
     def promotePNode(self, p_ap):
         '''Promote a node, don't select it.'''
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
-                return self.outputPNode(w_p)
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                #return self.outputPNode(w_p)
             else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
+                return self.outputError("Error in promotePNode no w_p node found")  # default empty
         else:
-            return self.outputError("Error in getPNode no param p_ap")
+            return self.outputError("Error in promotePNode no param p_ap")
 
     def demotePNode(self, p_ap):
         '''EMIT OUT a node, don't select it.'''
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
-                return self.outputPNode(w_p)
+                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                #return self.outputPNode(w_p)
             else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
+                return self.outputError("Error in demotePNode no w_p node found")  # default empty
         else:
-            return self.outputError("Error in getPNode no param p_ap")
+            return self.outputError("Error in demotePNode no param p_ap")
 
     def getPNode(self, p_ap):
         '''EMIT OUT a node, don't select it.'''
@@ -228,7 +266,7 @@ class leoBridgeIntegController:
             if w_p:
                 return self.outputPNode(w_p)
             else:
-                return self.outputError("Error in getPNode no w_p node found")  # default empty
+                return self.outputError("Error in getPNode no w_p node found")  
         else:
             return self.outputError("Error in getPNode no param p_ap")
 
@@ -339,7 +377,6 @@ class leoBridgeIntegController:
             if w_p:
                 w_p.contract()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-
     def yieldAllRootChildren(self):
         '''Return all root children P nodes'''
         p = self.commander.rootPosition()
@@ -455,7 +492,7 @@ def main():
     # TODO : This is a basic test loop, fix it with 2 way async comm and error checking
     async def leoBridgeServer(websocket, path):
         try:
-            await websocket.send(integController.sendLeoBridgePackage())  # * Start by just sending empty as 'ok'
+            await websocket.send(integController.sendLeoBridgePackage())  # * Start by sending empty as 'ok'
             async for w_message in websocket:
                 w_param = json.loads(w_message)
                 if w_param and w_param['action']:

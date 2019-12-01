@@ -17,6 +17,7 @@ export class LeoIntegration {
     public leoBridgeReady: boolean = false;
     public leoIsConnecting: boolean = false;
     private leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // set when leoBridge has a leo controller ready
+    private leoBridgeActionBusy: boolean = false;
     private platform: string = os.platform();
 
     // * Configuration Settings
@@ -346,6 +347,7 @@ export class LeoIntegration {
             if (w_node && this.lastSelectedLeoNode) {
                 // select node in tree
                 this.leoBridge.action("setSelectedNode", w_node.apJson).then(() => {
+                    this.lastSelectedLeoNode = w_node;
                     this.reveal(w_node, { select: true, focus: false });
                 });
             }
@@ -638,50 +640,50 @@ export class LeoIntegration {
         return w_leoNodesArray;
     }
 
-    public selectTreeNode(p_node: LeoNode): void {
-        // * User has selected a node in the outline
+    private locateOpenedBody(p_gnx: string): void {
+        this.bodyTextDocumentSameUri = false;
+        vscode.window.visibleTextEditors.forEach(p_textEditor => {
+            if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {
+                this.bodyTextDocumentSameUri = true;
+                this.bodyMainSelectionColumn = p_textEditor.viewColumn;
+                this.bodyTextDocument = p_textEditor.document;
+            }
+        });
+    }
 
-        // TODO : WHY THE HECK DOES THIS FLASH BACK WHITE?
+    public selectTreeNode(p_node: LeoNode): void {
+        // * User has selected a node via mouse click or 'enter' keypress in the outline
+
+        // TODO / FIX THIS : WHY TF DOES THIS MAKE THE STATUS BAR INDICATOR FLASH BACK WHITE?
         // ! this.leoObjectSelected = true;
         // ! this.updateStatusBar();
 
         // TODO : Save and restore selection, along with cursor position, from selection object saved in each node (or gnx array)
-        const w_isAlreadySelected: boolean = (p_node === (this.lastSelectedLeoNode ? this.lastSelectedLeoNode : ""));
-        if (w_isAlreadySelected) {
+
+        // * First check if having already this exact node selected
+        if (p_node === this.lastSelectedLeoNode) {
             // same so just find and reopen
-            this.bodyTextDocumentSameUri = false;
-            vscode.window.visibleTextEditors.forEach(p_textEditor => {
-                if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
-                    this.bodyTextDocumentSameUri = true;
-                    this.bodyMainSelectionColumn = p_textEditor.viewColumn;
-                    this.bodyTextDocument = p_textEditor.document;
-                }
-            });
+            this.locateOpenedBody(p_node.gnx);
             this.showSelectedBodyDocument();
             return;
         }
 
+        // * Get a promise to set selected node in Leo via leoBridge
         this.leoBridge.action("setSelectedNode", p_node.apJson).then(() => {
             // console.log('Back from setSelectedNode in Leo');
+            // Place other functionality pending upon node selection here if needed
         });
-        // * don't wait for setSelectedNode promise to resolve
 
+        // * don't wait for promise to resolve a selection because there's no tree structure change
         this.triggerBodySave(); // trigger event to save previous document if timer to save if already started for another document
 
-        vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_node.marked);
         this.lastSelectedLeoNode = p_node; // kept mostly in order to do refreshes if it changes, as opposed to a full tree refresh
+        vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SELECTED_MARKED, this.lastSelectedLeoNode.marked);
 
         if (this.bodyTextDocument && !this.bodyTextDocument.isClosed) {
 
-            this.bodyTextDocumentSameUri = false;
-            vscode.window.visibleTextEditors.forEach(p_textEditor => {
-                if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
-                    // console.log('new selection found: ', p_textEditor.viewColumn, "was set on ", this.bodyMainSelectionColumn);
-                    this.bodyTextDocumentSameUri = true;
-                    this.bodyMainSelectionColumn = p_textEditor.viewColumn;
-                    this.bodyTextDocument = p_textEditor.document;
-                }
-            });
+            this.locateOpenedBody(p_node.gnx);
+
             // * Save body to leo for the bodyTextDocument, then check if already opened, if not save and rename to clear undo buffer
             this.bodySaveDocument(this.bodyTextDocument).then(p_result => {
                 if (this.bodyTextDocument) { // have to re-test inside .then, oh well
@@ -767,127 +769,179 @@ export class LeoIntegration {
         });
     }
 
-    public editHeadline(p_node: LeoNode) {
-        this.editHeadlineInputOptions.value = p_node.label; // preset input pop up
-        vscode.window.showInputBox(this.editHeadlineInputOptions)
-            .then(
-                p_newHeadline => {
-                    if (p_newHeadline) {
-                        p_node.label = p_newHeadline; //! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
-                        this.leoBridge.action("setNewHeadline", "{\"node\":" + p_node.apJson + ", \"headline\": \"" + p_newHeadline + "\"}"
-                        ).then(
-                            (p_answer: LeoBridgePackage) => {
-                                // ! p_revealSelection flag needed because we voluntarily refreshed the automatic ID
-                                this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocus); // refresh all, needed to get clones to refresh too!
-                            }
-                        );
-                    }
-                }
-            );
+    private leoBridgeActionAndRefresh(p_action: string, p_node: LeoNode): void {
+        if (this.leoBridgeActionBusy) {
+            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
+            console.log('Too fast! ', p_action);
+        } else {
+            console.log('all right, doing action: ', p_action);
+
+            this.leoBridgeActionBusy = true;
+            this.leoBridge.action(p_action, p_node.apJson).then(() => {
+                this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // refresh all, needed to get clones to refresh too!
+                this.leoBridgeActionBusy = false;
+            });
+        }
     }
 
+    // * Leo Commands accessible via mouse clicks and right-click menu entries for single nodes
+    public editHeadline(p_node: LeoNode) {
+        if (this.leoBridgeActionBusy) {
+            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
+            console.log('Too fast! editHeadline');
+        } else {
+            this.leoBridgeActionBusy = true;
+            this.editHeadlineInputOptions.value = p_node.label; // preset input pop up
+            vscode.window.showInputBox(this.editHeadlineInputOptions)
+                .then(
+                    p_newHeadline => {
+                        if (p_newHeadline) {
+                            p_node.label = p_newHeadline; //! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
+                            this.leoBridge.action("setNewHeadline", "{\"node\":" + p_node.apJson + ", \"headline\": \"" + p_newHeadline + "\"}"
+                            ).then(
+                                (p_answer: LeoBridgePackage) => {
+                                    // ! p_revealSelection flag needed because we voluntarily refreshed the automatic ID
+                                    this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocus); // refresh all, needed to get clones to refresh too!
+                                    this.leoBridgeActionBusy = false;
+                                }
+                            );
+                        } else {
+                            this.leoBridgeActionBusy = false;
+                        }
+                    }
+                );
+        }
+    }
+    public mark(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("markPNode", p_node);
+        vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SELECTED_MARKED, true);
+    }
+    public unmark(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("unmarkPNode", p_node);
+        vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SELECTED_MARKED, false);
+    }
+    public copyNode(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("copyPNode", p_node);
+    }
+    public cutNode(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("cutPNode", p_node);
+    }
+    public pasteNode(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("pastePNode", p_node);
+    }
+    public pasteNodeAsClone(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("pasteAsClonePNode", p_node);
+    }
+    public delete(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("deletePNode", p_node);
+    }
+    public moveOutlineDown(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("movePNodeDown", p_node);
+    }
+    public moveOutlineLeft(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("movePNodeLeft", p_node);
+    }
+    public moveOutlineRight(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("movePNodeRight", p_node);
+    }
+    public moveOutlineUp(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("movePNodeUp", p_node);
+    }
+    public insertNode(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("insertPNode", p_node);
+    }
+    public cloneNode(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("clonePNode", p_node);
+    }
+    public promote(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("promotePNode", p_node);
+    }
+    public demote(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("demotePNode", p_node);
+    }
+    // * Leo Commands accessible via the command palette or keyboard shortcuts applied to the currently selected node
     public editSelectedHeadline() {
         if (this.lastSelectedLeoNode) {
             this.editHeadline(this.lastSelectedLeoNode);
         }
     }
-
-    // TODO : Leo Commands
-    public mark(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: mark on ${p_node.label}.`); // temp placeholder
-    }
-    public unmark(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: unmark on ${p_node.label}.`); // temp placeholder
-    }
-    public copyNode(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: copyNode on ${p_node.label}.`); // temp placeholder
-    }
-    public cutNode(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: cutNode on ${p_node.label}.`); // temp placeholder
-    }
-    public pasteNode(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: pasteNode on ${p_node.label}.`); // temp placeholder
-    }
-    public pasteNodeAsClone(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: pasteNodeAsClone on ${p_node.label}.`); // temp placeholder
-    }
-    public delete(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: delete on ${p_node.label}.`); // temp placeholder
-    }
-
     public markSelection(): void {
-        vscode.window.showInformationMessage(`TODO: mark selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.mark(this.lastSelectedLeoNode);
+        }
     }
     public unmarkSelection(): void {
-        vscode.window.showInformationMessage(`TODO: unmark selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.unmark(this.lastSelectedLeoNode);
+        }
     }
     public copyNodeSelection(): void {
-        vscode.window.showInformationMessage(`TODO: copy selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.copyNode(this.lastSelectedLeoNode);
+        }
     }
     public cutNodeSelection(): void {
-        vscode.window.showInformationMessage(`TODO: cut selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.cutNode(this.lastSelectedLeoNode);
+        }
     }
     public pasteNodeAtSelection(): void {
-        vscode.window.showInformationMessage(`TODO: pasteNode at selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.pasteNode(this.lastSelectedLeoNode);
+        }
     }
     public pasteNodeAsCloneAtSelection(): void {
-        vscode.window.showInformationMessage(`TODO: pasteNodeAsClone at selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.pasteNodeAsClone(this.lastSelectedLeoNode);
+        }
     }
     public deleteSelection(): void {
-        vscode.window.showInformationMessage(`TODO: delete selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.delete(this.lastSelectedLeoNode);
+        }
     }
-
-    public moveOutlineDown(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: moveOutlineDown on ${p_node.label}.`); // temp placeholder
-    }
-    public moveOutlineLeft(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: moveOutlineLeft on ${p_node.label}.`); // temp placeholder
-    }
-    public moveOutlineRight(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: moveOutlineRight on ${p_node.label}.`); // temp placeholder
-    }
-    public moveOutlineUp(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: moveOutlineUp on ${p_node.label}.`); // temp placeholder
-    }
-    public insertNode(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: insertNode on ${p_node.label}.`); // temp placeholder
-    }
-    public cloneNode(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: cloneNode on ${p_node.label}.`); // temp placeholder
-    }
-    public promote(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: promote on ${p_node.label}.`); // temp placeholder
-    }
-    public demote(p_node: LeoNode): void {
-        vscode.window.showInformationMessage(`TODO: demote on ${p_node.label}.`); // temp placeholder
-    }
-
     public moveOutlineDownSelection(): void {
-        vscode.window.showInformationMessage(`TODO: moveOutlineDown on selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.moveOutlineDown(this.lastSelectedLeoNode);
+        }
     }
     public moveOutlineLeftSelection(): void {
-        vscode.window.showInformationMessage(`TODO: moveOutlineLeft on selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.moveOutlineLeft(this.lastSelectedLeoNode);
+        }
     }
     public moveOutlineRightSelection(): void {
-        vscode.window.showInformationMessage(`TODO: moveOutlineRight on selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.moveOutlineRight(this.lastSelectedLeoNode);
+        }
     }
     public moveOutlineUpSelection(): void {
-        vscode.window.showInformationMessage(`TODO: moveOutlineUp on selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.moveOutlineUp(this.lastSelectedLeoNode);
+        }
     }
     public insertNodeSelection(): void {
-        vscode.window.showInformationMessage(`TODO: insertNode at selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.insertNode(this.lastSelectedLeoNode);
+        }
     }
     public cloneNodeSelection(): void {
-        vscode.window.showInformationMessage(`TODO: clone selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.cloneNode(this.lastSelectedLeoNode);
+        }
     }
     public promoteSelection(): void {
-        vscode.window.showInformationMessage(`TODO: promote selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.promote(this.lastSelectedLeoNode);
+        }
     }
     public demoteSelection(): void {
-        vscode.window.showInformationMessage(`TODO: demote selected node`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.demote(this.lastSelectedLeoNode);
+        }
     }
 
-
+    // * Critical Leo Bridge Actions
     public undo(): void {
         vscode.window.showInformationMessage(`TODO: undo last operation`); // temp placeholder
     }
