@@ -769,17 +769,19 @@ export class LeoIntegration {
         });
     }
 
-    private leoBridgeActionAndRefresh(p_action: string, p_node: LeoNode): void {
+    private leoBridgeActionAndRefresh(p_action: string, p_node: LeoNode, p_revealType?: RevealType | undefined): Promise<LeoBridgePackage> {
         if (this.leoBridgeActionBusy) {
             // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
             console.log('Too fast! ', p_action);
+            return Promise.reject('Too fast');
         } else {
             console.log('all right, doing action: ', p_action);
 
             this.leoBridgeActionBusy = true;
-            this.leoBridge.action(p_action, p_node.apJson).then(() => {
-                this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // refresh all, needed to get clones to refresh too!
+            return this.leoBridge.action(p_action, p_node.apJson).then(p_package => {
+                this.leoTreeDataProvider.refreshTreeRoot(p_revealType); // refresh all, needed to get clones to refresh too!
                 this.leoBridgeActionBusy = false;
+                return Promise.resolve(p_package);
             });
         }
     }
@@ -796,7 +798,7 @@ export class LeoIntegration {
                 .then(
                     p_newHeadline => {
                         if (p_newHeadline) {
-                            p_node.label = p_newHeadline; //! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
+                            p_node.label = p_newHeadline; // ! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
                             this.leoBridge.action("setNewHeadline", "{\"node\":" + p_node.apJson + ", \"headline\": \"" + p_newHeadline + "\"}"
                             ).then(
                                 (p_answer: LeoBridgePackage) => {
@@ -813,17 +815,18 @@ export class LeoIntegration {
         }
     }
     public mark(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("markPNode", p_node);
+        this.leoBridgeActionAndRefresh("markPNode", p_node); // don't wait for promise to resolve
         vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SELECTED_MARKED, true);
     }
     public unmark(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("unmarkPNode", p_node);
+        this.leoBridgeActionAndRefresh("unmarkPNode", p_node); // don't wait for promise to resolve
         vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SELECTED_MARKED, false);
     }
     public copyNode(p_node: LeoNode): void {
         this.leoBridgeActionAndRefresh("copyPNode", p_node);
     }
     public cutNode(p_node: LeoNode): void {
+        // TODO : Set up like delete to close body panes
         this.leoBridgeActionAndRefresh("cutPNode", p_node);
     }
     public pasteNode(p_node: LeoNode): void {
@@ -833,7 +836,24 @@ export class LeoIntegration {
         this.leoBridgeActionAndRefresh("pasteAsClonePNode", p_node);
     }
     public delete(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("deletePNode", p_node);
+
+        // TODO : Buggy FiX This ! !
+        this.triggerBodySave();
+        vscode.window.visibleTextEditors.forEach(p_textEditor => {
+            if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
+                vscode.window.showTextDocument(p_textEditor.document.uri, { preview: true, preserveFocus: false })
+                    .then(() => {
+                        vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+                        vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.fsPath);
+                    });
+            }
+        });
+        this.leoBridgeActionAndRefresh("deletePNode", p_node, RevealType.RevealSelect).then(p_result => {
+            // close all body opened for this gnx too
+            this.leoBridgeActionBusy = false;
+
+        });
+
     }
     public moveOutlineDown(p_node: LeoNode): void {
         this.leoBridgeActionAndRefresh("movePNodeDown", p_node);

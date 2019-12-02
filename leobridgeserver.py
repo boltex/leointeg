@@ -29,7 +29,7 @@ class leoBridgeIntegController:
 
     def test(self, p_param):
         '''Emit a test'''
-        print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param))
+        print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param,separators=(',', ':')))
         return self.sendLeoBridgePackage("package", "test string from the response package")
 
     def openFile(self, p_file):
@@ -37,6 +37,7 @@ class leoBridgeIntegController:
         print("Trying to open file: "+p_file)
         self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
         if(self.commander):
+            self.getAllGnx() #test
             self.create_gnx_to_vnode()
             return self.outputPNode(self.commander.p)
         else:
@@ -55,7 +56,7 @@ class leoBridgeIntegController:
         w_package = {"id": self.currentActionId}
         if p_key:
             w_package[p_key] = p_any  # add [key]?:any
-        return(json.dumps(w_package))  # send as json
+        return(json.dumps(w_package, separators=(',', ':')))  # send as json
 
     def outputError(self, p_message="Unknown Error"):
         print("ERROR: " + p_message)  # Output to this server's running console
@@ -156,7 +157,14 @@ class leoBridgeIntegController:
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
-                self.commander.deleteOutline()
+                if w_p == self.commander.p:
+                    self.commander.deleteOutline()
+                else:
+                    oldPosition = self.commander.p
+                    self.commander.selectPosition(w_p)
+                    self.commander.deleteOutline()
+                    if self.commander.positionExists(oldPosition):
+                        self.commander.selectPosition(oldPosition)
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
             else:
                 return self.outputError("Error in deletePNode no w_p node found")  # default empty
@@ -299,16 +307,23 @@ class leoBridgeIntegController:
         else:
             return self.outputPNode()
 
+    def getAllGnx(self):
+        '''Get gnx array from all unique nodes'''
+        w_all_gnx = [p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
+        return self.sendLeoBridgePackage("allGnx", w_all_gnx)
     def getBody(self, p_gnx):
         '''EMIT OUT body of a node'''
         if(p_gnx):
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
-            if w_v.b:
-                return self.outputBodyData(w_v.b)
+            if w_v:
+                if w_v.b:
+                    return self.outputBodyData(w_v.b)
+                else:
+                    return self.outputBodyData()  # default "" empty string
             else:
-                return self.outputBodyData()  # default empty
+                return self.sendLeoBridgePackage()  # empty as inexistant
         else:
-            return self.outputBodyData()  # default empty
+            return self.sendLeoBridgePackage()  # empty as inexistant
 
     def getBodyLength(self, p_gnx):
         '''EMIT OUT body string length of a node'''
@@ -319,6 +334,7 @@ class leoBridgeIntegController:
             else:
                 return self.sendLeoBridgePackage("bodyLength", 0)
         else:
+            # TODO : May need to signal inexistant by self.sendLeoBridgePackage()  # empty as inexistant
             return self.sendLeoBridgePackage("bodyLength", 0)
 
     def setNewBody(self, p_body):

@@ -73,7 +73,7 @@ export class LeoBridge {
     private tryParseJSON(p_jsonStr: string) {
         try {
             var w_object = JSON.parse(p_jsonStr);
-            // JSON.parse(null) returns null, and typeof null === "object", null is falsey, so this suffices:
+            // JSON.parse(null) returns null, and typeof null === "object", null is falsy, so this suffices:
             if (w_object && typeof w_object === "object") {
                 return w_object;
             }
@@ -85,7 +85,7 @@ export class LeoBridge {
     }
 
     private processAnswer(p_data: string): void {
-        // * Process data that came out of leoBridge.py's process stdout
+        // * Process data that came out of leoBridge.py process stdout
         const w_parsedData = this.tryParseJSON(p_data);
         if (w_parsedData) {
             this.resolveBridgeReady(w_parsedData);

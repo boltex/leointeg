@@ -26,14 +26,14 @@
 # Commands
 
 - Ctrl-N (new)
-- Ctrl-O (open-outline)
+- Ctrl-O (open-outline)     // * DONE
 - Ctrl-S (save-file)
 - Ctrl-I or Insert (insert-node)
-- Ctrl-H (edit-headline)
+- Ctrl-H (edit-headline)    // * DONE
 - Ctrl-Shift-C (copy-node)
 - Ctrl-Shift-X (cut-node)
 - Ctrl-Shift-V (paste-node)
-- Ctrl-M (mark/Unmark) Marks node if it is unmarked, and unmarks the node if it is already marked.
+- Ctrl-M (mark/Unmark)     // * DONE
 - Ctrl-{ (promote)
 - Ctrl-} (demote)
 - copy-marked _Copies all marked nodes as children of a new node._

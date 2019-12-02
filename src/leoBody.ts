@@ -19,7 +19,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public watch(_resource: vscode.Uri): vscode.Disposable {
         // * for now, ignore, fires for all changes
         // TODO : Handle watch / dispose
-        // console.log('watch called! path:', _resource.fsPath);
+        console.log('watch called! path:', _resource.fsPath);
         return new vscode.Disposable(() => {
             // console.log('disposed file');
         });
@@ -86,15 +86,28 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public readDirectory(uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
         console.log('called readDirectory', uri.fsPath);
-        // const entry = this._lookupAsDirectory(uri, false);
-        let result: [string, vscode.FileType][] = [];
 
-        // TODO : Return list of gnx from leo file - make a function to return list in leoBridge.py!
+        // TODO test this
+        // getAllGnx in leobridge will return an array of gnx strings: allGnx
+        if (uri.fsPath === '/') {
+            return this.leoIntegration.leoBridge.action("getAllGnx", "{}").then((p_result) => {
 
-        if (this.lastGnx) {
-            result.push([this.lastGnx, vscode.FileType.File]); // only body for now
+                console.log('got back from getAllGnx:', p_result.allGnx);
+
+                const w_directory: [string, vscode.FileType][] = [];
+                if (p_result.allGnx) {
+                    p_result.allGnx.forEach((p_gnx: string) => {
+                        w_directory.push([p_gnx, vscode.FileType.File]);
+                    });
+                    Promise.resolve(w_directory);
+                } else {
+                    Promise.resolve([]);
+                }
+                return p_result.allGnx;
+            });
+        } else {
+            throw vscode.FileSystemError.FileNotFound();
         }
-        return Promise.resolve(result);
     }
 
     public createDirectory(uri: vscode.Uri): void {
@@ -112,12 +125,17 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 return this.leoIntegration.leoBridge.action("getBody", '"' + w_gnx + '"')
                     .then((p_result) => {
                         this.lastGnx = w_gnx;
+
                         if (p_result.bodyData) {
                             this.lastGnxBodyLength = p_result.bodyData.length;
                             return Promise.resolve(Buffer.from(p_result.bodyData));
-                        } else {
+                        } else if (p_result.bodyData === "") {
+                            console.log('bodyData was just empty string');
                             this.lastGnxBodyLength = 0;
                             return Promise.resolve(Buffer.from(""));
+                        } else {
+                            console.log('no bodyData at all : so no gnx/file not found');
+                            throw vscode.FileSystemError.FileNotFound();
                         }
                     });
             }
