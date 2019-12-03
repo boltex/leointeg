@@ -203,7 +203,7 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191126232434.22">def setBody(self, p_package):
-    '''Change Headline of a node'''
+    '''Change Body text of a node'''
     w_v = self.commander.fileCommands.gnxDict.get(p_package['gnx'])
     w_v.setBodyString(p_package['body'])
     if not w_v.isDirty():
@@ -538,21 +538,24 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127002548.1">def deletePNode(self, p_ap):
-    '''Delete a node, don't select it.'''
+    '''Delete a node, don't select it. Then return the '''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
             if w_p == self.commander.p:
-                self.commander.deleteOutline()
+                print("already on selection")
+                self.commander.deleteOutline() # already on this node, so delete it
             else:
-                oldPosition = self.commander.p
+                print("not on selection")
+                oldPosition = self.commander.p # not same node, save position to possibly return to
                 self.commander.selectPosition(w_p)
                 self.commander.deleteOutline()
                 if self.commander.positionExists(oldPosition):
-                    self.commander.selectPosition(oldPosition)
-            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                    self.commander.selectPosition(oldPosition) # select if old position still valid
+            print("finally returning node" + self.commander.p.v.headString())
+            return self.outputPNode(self.commander.p) # in both cases, return selected node
         else:
-            return self.outputError("Error in deletePNode no w_p node found")  # default empty
+            return self.outputError("Error in deletePNode no w_p node found") # default empty
     else:
         return self.outputError("Error in deletePNode no param p_ap")
 
