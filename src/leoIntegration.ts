@@ -870,18 +870,20 @@ export class LeoIntegration {
                 this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
                 this.selectTreeNode(this.lastSelectedLeoNode).then(p_result => {
                     console.log("select ended with result: ", p_result);
-                    vscode.window.visibleTextEditors.forEach(p_textEditor => {
-                        if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
-                            vscode.window.showTextDocument(p_textEditor.document.uri, { preview: true, preserveFocus: false })
-                                .then(() => {
-                                    vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-                                    vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.fsPath);
-                                });
-                        }
-                    });
+                    // vscode.window.visibleTextEditors.forEach(p_textEditor => {
+                    //     if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
+                    //         console.log('Found one! ', p_node.gnx, "for", p_node.label);
+
+                    //         /*  vscode.window.showTextDocument(p_textEditor.document.uri, { preview: true, preserveFocus: false })
+                    //              .then(() => {
+                    //                  vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+                    //                  vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.fsPath);
+                    //              }); */
+                    //     }
+                    // });
+
                     this.leoBridgeActionBusy = false;
-                }
-                );
+                });
 
             });
 

@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
+import { ArchivedPosition } from "./types";
 
 export class LeoNode extends vscode.TreeItem {
     public cursorSelection: any; // TODO : Keep body's cursor and selection position from vscode to get it back
@@ -57,7 +58,9 @@ export class LeoNode extends vscode.TreeItem {
 
     public get tooltip(): string {
         // whole headline as tooltip is useful if outline pane is too narrow
-        return this.label;
+        // return this.label;
+        const w_ap: ArchivedPosition = JSON.parse(this.apJson);
+        return "child:" + w_ap.childIndex + " gnx:" + w_ap.gnx + " lvl:" + w_ap.level;
     }
 
     public getCursorSelection(): any {

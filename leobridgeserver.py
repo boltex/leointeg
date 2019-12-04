@@ -29,7 +29,7 @@ class leoBridgeIntegController:
 
     def test(self, p_param):
         '''Emit a test'''
-        print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param,separators=(',', ':')))
+        print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param, separators=(',', ':')))
         return self.sendLeoBridgePackage("package", "test string from the response package")
 
     def openFile(self, p_file):
@@ -37,7 +37,7 @@ class leoBridgeIntegController:
         print("Trying to open file: "+p_file)
         self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
         if(self.commander):
-            self.getAllGnx() #test
+            self.getAllGnx()  # test
             self.create_gnx_to_vnode()
             return self.outputPNode(self.commander.p)
         else:
@@ -52,6 +52,7 @@ class leoBridgeIntegController:
 
     def setActionId(self, p_id):
         self.currentActionId = p_id
+
     def sendLeoBridgePackage(self, p_key=False, p_any=None):
         w_package = {"id": self.currentActionId}
         if p_key:
@@ -87,7 +88,7 @@ class leoBridgeIntegController:
                 w_p.setMarked()
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
             else:
-                return self.outputError("Error in markPNode no w_p node found") 
+                return self.outputError("Error in markPNode no w_p node found")
         else:
             return self.outputError("Error in markPNode no param p_ap")
 
@@ -99,7 +100,7 @@ class leoBridgeIntegController:
                 w_p.clearMarked()
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
             else:
-                return self.outputError("Error in unmarkPNode no w_p node found")  
+                return self.outputError("Error in unmarkPNode no w_p node found")
         else:
             return self.outputError("Error in unmarkPNode no param p_ap")
 
@@ -112,7 +113,7 @@ class leoBridgeIntegController:
                 self.commander.copyOutline()
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
             else:
-                return self.outputError("Error in copyPNode no w_p node found") 
+                return self.outputError("Error in copyPNode no w_p node found")
         else:
             return self.outputError("Error in copyPNode no param p_ap")
 
@@ -134,7 +135,7 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-                #return self.outputPNode(w_p)
+                # return self.outputPNode(w_p)
             else:
                 return self.outputError("Error in pastePNode no w_p node found")  # default empty
         else:
@@ -146,7 +147,7 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-                #return self.outputPNode(w_p)
+                # return self.outputPNode(w_p)
             else:
                 return self.outputError("Error in pasteAsClonePNode no w_p node found")  # default empty
         else:
@@ -159,18 +160,18 @@ class leoBridgeIntegController:
             if w_p:
                 if w_p == self.commander.p:
                     print("already on selection")
-                    self.commander.deleteOutline() # already on this node, so delete it
+                    self.commander.deleteOutline()  # already on this node, so delete it
                 else:
                     print("not on selection")
-                    oldPosition = self.commander.p # not same node, save position to possibly return to
+                    oldPosition = self.commander.p  # not same node, save position to possibly return to
                     self.commander.selectPosition(w_p)
                     self.commander.deleteOutline()
                     if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition) # select if old position still valid
+                        self.commander.selectPosition(oldPosition)  # select if old position still valid
                 print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p) # in both cases, return selected node
+                return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
-                return self.outputError("Error in deletePNode no w_p node found") # default empty
+                return self.outputError("Error in deletePNode no w_p node found")  # default empty
         else:
             return self.outputError("Error in deletePNode no param p_ap")
 
@@ -180,7 +181,7 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-                #return self.outputPNode(w_p)
+                # return self.outputPNode(w_p)
             else:
                 return self.outputError("Error in movePNodeDown no w_p node found")  # default empty
         else:
@@ -192,7 +193,7 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-                #return self.outputPNode(w_p)
+                # return self.outputPNode(w_p)
             else:
                 return self.outputError("Error in movePNodeLeft no w_p node found")  # default empty
         else:
@@ -204,7 +205,7 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-                #return self.outputPNode(w_p)
+                # return self.outputPNode(w_p)
             else:
                 return self.outputError("Error in movePNodeRight no w_p node found")  # default empty
         else:
@@ -216,7 +217,7 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-                #return self.outputPNode(w_p)
+                # return self.outputPNode(w_p)
             else:
                 return self.outputError("Error in movePNodeUp no w_p node found")  # default empty
         else:
@@ -228,7 +229,7 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-                #return self.outputPNode(w_p)
+                # return self.outputPNode(w_p)
             else:
                 return self.outputError("Error in insertPNode no w_p node found")  # default empty
         else:
@@ -240,7 +241,7 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-                #return self.outputPNode(w_p)
+                # return self.outputPNode(w_p)
             else:
                 return self.outputError("Error in clonePNode no w_p node found")  # default empty
         else:
@@ -252,7 +253,7 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-                #return self.outputPNode(w_p)
+                # return self.outputPNode(w_p)
             else:
                 return self.outputError("Error in promotePNode no w_p node found")  # default empty
         else:
@@ -264,7 +265,7 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-                #return self.outputPNode(w_p)
+                # return self.outputPNode(w_p)
             else:
                 return self.outputError("Error in demotePNode no w_p node found")  # default empty
         else:
@@ -277,7 +278,7 @@ class leoBridgeIntegController:
             if w_p:
                 return self.outputPNode(w_p)
             else:
-                return self.outputError("Error in getPNode no w_p node found")  
+                return self.outputError("Error in getPNode no w_p node found")
         else:
             return self.outputError("Error in getPNode no param p_ap")
 
@@ -314,6 +315,7 @@ class leoBridgeIntegController:
         '''Get gnx array from all unique nodes'''
         w_all_gnx = [p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
         return self.sendLeoBridgePackage("allGnx", w_all_gnx)
+
     def getBody(self, p_gnx):
         '''EMIT OUT body of a node'''
         if(p_gnx):
@@ -396,6 +398,7 @@ class leoBridgeIntegController:
             if w_p:
                 w_p.contract()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
     def yieldAllRootChildren(self):
         '''Return all root children P nodes'''
         p = self.commander.rootPosition()
@@ -515,6 +518,7 @@ def main():
             async for w_message in websocket:
                 w_param = json.loads(w_message)
                 if w_param and w_param['action']:
+                    print("action:" + w_param['action'])
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
                     answer = getattr(integController, w_param['action'])(w_param['param'])

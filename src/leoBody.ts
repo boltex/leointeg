@@ -21,7 +21,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         // TODO : Handle watch / dispose
         console.log('watch called! path:', _resource.fsPath);
         return new vscode.Disposable(() => {
-            // console.log('disposed file');
+            console.log('disposed file', _resource.fsPath);
         });
     }
 
