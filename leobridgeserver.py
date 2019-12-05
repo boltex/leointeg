@@ -26,6 +26,8 @@ class leoBridgeIntegController:
                                            verbose=False)     # True: print informational messages.
         self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
         # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
+        self.hasDeleted = False
+
 
     def test(self, p_param):
         '''Emit a test'''
@@ -166,6 +168,7 @@ class leoBridgeIntegController:
                     oldPosition = self.commander.p  # not same node, save position to possibly return to
                     self.commander.selectPosition(w_p)
                     self.commander.deleteOutline()
+                    self.hasDeleted = True
                     if self.commander.positionExists(oldPosition):
                         self.commander.selectPosition(oldPosition)  # select if old position still valid
                 print("finally returning node" + self.commander.p.v.headString())
@@ -287,6 +290,8 @@ class leoBridgeIntegController:
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p and w_p.hasChildren():
+                if(self.hasDeleted):
+                    print("children:" + self.outputPNodes(w_p.children()))
                 return self.outputPNodes(w_p.children())
             else:
                 return self.outputPNodes([])  # default empty array
@@ -379,8 +384,11 @@ class leoBridgeIntegController:
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
-                # set this node as selection
-                self.commander.selectPosition(w_p)
+                if self.commander.positionExists(w_p):
+                    # set this node as selection
+                    self.commander.selectPosition(w_p)
+                else:
+                    print("Set Selection node does not exist! ap was:" + json.dumps(p_ap) )
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def expandNode(self, p_ap):

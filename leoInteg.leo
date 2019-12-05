@@ -85,7 +85,7 @@ todo: flesh this out!</t>
 </t>
 <t tx="felix.20191126232434.12">def test(self, p_param):
     '''Emit a test'''
-    print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param,separators=(',', ':')))
+    print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param, separators=(',', ':')))
     return self.sendLeoBridgePackage("package", "test string from the response package")
 
 </t>
@@ -94,7 +94,7 @@ todo: flesh this out!</t>
     print("Trying to open file: "+p_file)
     self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
     if(self.commander):
-        self.getAllGnx() #test
+        self.getAllGnx()  # test
         self.create_gnx_to_vnode()
         return self.outputPNode(self.commander.p)
     else:
@@ -116,7 +116,7 @@ todo: flesh this out!</t>
         if w_p:
             return self.outputPNode(w_p)
         else:
-            return self.outputError("Error in getPNode no w_p node found")  
+            return self.outputError("Error in getPNode no w_p node found")
     else:
         return self.outputError("Error in getPNode no param p_ap")
 
@@ -126,6 +126,8 @@ todo: flesh this out!</t>
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p and w_p.hasChildren():
+            if(self.hasDeleted):
+                print("children:" + self.outputPNodes(w_p.children()))
             return self.outputPNodes(w_p.children())
         else:
             return self.outputPNodes([])  # default empty array
@@ -233,8 +235,11 @@ if __name__ == '__main__':
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
-            # set this node as selection
-            self.commander.selectPosition(w_p)
+            if self.commander.positionExists(w_p):
+                # set this node as selection
+                self.commander.selectPosition(w_p)
+            else:
+                print("Set Selection node does not exist! ap was:" + json.dumps(p_ap) )
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
@@ -254,6 +259,7 @@ if __name__ == '__main__':
         if w_p:
             w_p.contract()
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
 </t>
 <t tx="felix.20191126232434.27">def create_gnx_to_vnode(self):
     '''Make the first gnx_to_vnode array with all unique nodes'''
@@ -358,6 +364,8 @@ if __name__ == '__main__':
                                        verbose=False)     # True: print informational messages.
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
     # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
+    self.hasDeleted = False
+
 
 </t>
 <t tx="felix.20191126232434.7">def sendLeoBridgePackage(self, p_key=False, p_any=None):
@@ -413,6 +421,7 @@ if __name__ == '__main__':
             async for w_message in websocket:
                 w_param = json.loads(w_message)
                 if w_param and w_param['action']:
+                    print("action:" + w_param['action'])
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
                     answer = getattr(integController, w_param['action'])(w_param['param'])
@@ -439,7 +448,7 @@ if __name__ == '__main__':
         w_p = self.ap_to_p(p_ap)
         if w_p:
             return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            #return self.outputPNode(w_p)
+            # return self.outputPNode(w_p)
         else:
             return self.outputError("Error in movePNodeDown no w_p node found")  # default empty
     else:
@@ -452,7 +461,7 @@ if __name__ == '__main__':
         w_p = self.ap_to_p(p_ap)
         if w_p:
             return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            #return self.outputPNode(w_p)
+            # return self.outputPNode(w_p)
         else:
             return self.outputError("Error in movePNodeLeft no w_p node found")  # default empty
     else:
@@ -465,7 +474,7 @@ if __name__ == '__main__':
         w_p = self.ap_to_p(p_ap)
         if w_p:
             return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            #return self.outputPNode(w_p)
+            # return self.outputPNode(w_p)
         else:
             return self.outputError("Error in movePNodeRight no w_p node found")  # default empty
     else:
@@ -478,7 +487,7 @@ if __name__ == '__main__':
         w_p = self.ap_to_p(p_ap)
         if w_p:
             return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            #return self.outputPNode(w_p)
+            # return self.outputPNode(w_p)
         else:
             return self.outputError("Error in movePNodeUp no w_p node found")  # default empty
     else:
@@ -491,7 +500,7 @@ if __name__ == '__main__':
         w_p = self.ap_to_p(p_ap)
         if w_p:
             return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            #return self.outputPNode(w_p)
+            # return self.outputPNode(w_p)
         else:
             return self.outputError("Error in clonePNode no w_p node found")  # default empty
     else:
@@ -504,7 +513,7 @@ if __name__ == '__main__':
         w_p = self.ap_to_p(p_ap)
         if w_p:
             return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            #return self.outputPNode(w_p)
+            # return self.outputPNode(w_p)
         else:
             return self.outputError("Error in insertPNode no w_p node found")  # default empty
     else:
@@ -517,7 +526,7 @@ if __name__ == '__main__':
         w_p = self.ap_to_p(p_ap)
         if w_p:
             return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            #return self.outputPNode(w_p)
+            # return self.outputPNode(w_p)
         else:
             return self.outputError("Error in promotePNode no w_p node found")  # default empty
     else:
@@ -530,7 +539,7 @@ if __name__ == '__main__':
         w_p = self.ap_to_p(p_ap)
         if w_p:
             return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            #return self.outputPNode(w_p)
+            # return self.outputPNode(w_p)
         else:
             return self.outputError("Error in demotePNode no w_p node found")  # default empty
     else:
@@ -544,18 +553,19 @@ if __name__ == '__main__':
         if w_p:
             if w_p == self.commander.p:
                 print("already on selection")
-                self.commander.deleteOutline() # already on this node, so delete it
+                self.commander.deleteOutline()  # already on this node, so delete it
             else:
                 print("not on selection")
-                oldPosition = self.commander.p # not same node, save position to possibly return to
+                oldPosition = self.commander.p  # not same node, save position to possibly return to
                 self.commander.selectPosition(w_p)
                 self.commander.deleteOutline()
+                self.hasDeleted = True
                 if self.commander.positionExists(oldPosition):
-                    self.commander.selectPosition(oldPosition) # select if old position still valid
+                    self.commander.selectPosition(oldPosition)  # select if old position still valid
             print("finally returning node" + self.commander.p.v.headString())
-            return self.outputPNode(self.commander.p) # in both cases, return selected node
+            return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
-            return self.outputError("Error in deletePNode no w_p node found") # default empty
+            return self.outputError("Error in deletePNode no w_p node found")  # default empty
     else:
         return self.outputError("Error in deletePNode no param p_ap")
 
@@ -569,7 +579,7 @@ if __name__ == '__main__':
             self.commander.copyOutline()
             return self.sendLeoBridgePackage()  # Just send empty as 'ok'
         else:
-            return self.outputError("Error in copyPNode no w_p node found") 
+            return self.outputError("Error in copyPNode no w_p node found")
     else:
         return self.outputError("Error in copyPNode no param p_ap")
 
@@ -595,7 +605,7 @@ if __name__ == '__main__':
             w_p.setMarked()
             return self.sendLeoBridgePackage()  # Just send empty as 'ok'
         else:
-            return self.outputError("Error in markPNode no w_p node found") 
+            return self.outputError("Error in markPNode no w_p node found")
     else:
         return self.outputError("Error in markPNode no param p_ap")
 
@@ -608,7 +618,7 @@ if __name__ == '__main__':
             w_p.clearMarked()
             return self.sendLeoBridgePackage()  # Just send empty as 'ok'
         else:
-            return self.outputError("Error in unmarkPNode no w_p node found")  
+            return self.outputError("Error in unmarkPNode no w_p node found")
     else:
         return self.outputError("Error in unmarkPNode no param p_ap")
 
@@ -640,6 +650,7 @@ wsPort = 32125
 </t>
 <t tx="felix.20191128004456.1">def setActionId(self, p_id):
     self.currentActionId = p_id
+
 </t>
 <t tx="felix.20191130211048.1">def pastePNode(self, p_ap):
     '''Paste a node, don't select it.'''
@@ -647,7 +658,7 @@ wsPort = 32125
         w_p = self.ap_to_p(p_ap)
         if w_p:
             return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            #return self.outputPNode(w_p)
+            # return self.outputPNode(w_p)
         else:
             return self.outputError("Error in pastePNode no w_p node found")  # default empty
     else:
@@ -660,7 +671,7 @@ wsPort = 32125
         w_p = self.ap_to_p(p_ap)
         if w_p:
             return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            #return self.outputPNode(w_p)
+            # return self.outputPNode(w_p)
         else:
             return self.outputError("Error in pasteAsClonePNode no w_p node found")  # default empty
     else:
@@ -671,6 +682,7 @@ wsPort = 32125
     '''Get gnx array from all unique nodes'''
     w_all_gnx = [p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
     return self.sendLeoBridgePackage("allGnx", w_all_gnx)
+
 </t>
 </tnodes>
 </leo_file>
