@@ -166,9 +166,9 @@ todo: flesh this out!</t>
             else:
                 return self.outputBodyData()  # default "" empty string
         else:
-            return self.sendLeoBridgePackage()  # empty as inexistant
+            return self.sendLeoBridgePackage()  # empty as inexistent
     else:
-        return self.sendLeoBridgePackage()  # empty as inexistant
+        return self.sendLeoBridgePackage()  # empty as inexistent
 
 </t>
 <t tx="felix.20191126232434.2">#! python3
@@ -192,7 +192,7 @@ if __name__ == '__main__':
         else:
             return self.sendLeoBridgePackage("bodyLength", 0)
     else:
-        # TODO : May need to signal inexistant by self.sendLeoBridgePackage()  # empty as inexistant
+        # TODO : May need to signal inexistent by self.sendLeoBridgePackage()  # empty as inexistent
         return self.sendLeoBridgePackage("bodyLength", 0)
 
 </t>

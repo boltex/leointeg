@@ -332,9 +332,9 @@ class leoBridgeIntegController:
                 else:
                     return self.outputBodyData()  # default "" empty string
             else:
-                return self.sendLeoBridgePackage()  # empty as inexistant
+                return self.sendLeoBridgePackage()  # empty as inexistent
         else:
-            return self.sendLeoBridgePackage()  # empty as inexistant
+            return self.sendLeoBridgePackage()  # empty as inexistent
 
     def getBodyLength(self, p_gnx):
         '''EMIT OUT body string length of a node'''
@@ -345,7 +345,7 @@ class leoBridgeIntegController:
             else:
                 return self.sendLeoBridgePackage("bodyLength", 0)
         else:
-            # TODO : May need to signal inexistant by self.sendLeoBridgePackage()  # empty as inexistant
+            # TODO : May need to signal inexistent by self.sendLeoBridgePackage()  # empty as inexistent
             return self.sendLeoBridgePackage("bodyLength", 0)
 
     def setNewBody(self, p_body):
