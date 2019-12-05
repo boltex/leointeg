@@ -289,6 +289,7 @@ class leoBridgeIntegController:
         '''EMIT OUT list of children of a node'''
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
+            print('Get children for '+ w_p.h)
             if w_p and w_p.hasChildren():
                 if(self.hasDeleted):
                     print("children:" + self.outputPNodes(w_p.children()))
