@@ -346,6 +346,8 @@ export class LeoIntegration {
             const w_node: LeoNode | undefined = this.leoTextDocumentNodesRef[p_event.document.uri.fsPath.substr(1)];
             if (w_node && this.lastSelectedLeoNode) {
                 // select node in tree
+                console.log("FORCED SELECTED NODE onActiveEditorChanged ");
+                // ! This is the DELETE BUG
                 this.leoBridge.action("setSelectedNode", w_node.apJson).then(() => {
                     this.lastSelectedLeoNode = w_node;
                     this.reveal(w_node, { select: true, focus: false });
@@ -653,7 +655,10 @@ export class LeoIntegration {
 
     public selectTreeNode(p_node: LeoNode): Thenable<boolean> {
         // * User has selected a node via mouse click or 'enter' keypress in the outline
-        console.log("Selected node ", p_node.label);
+        let w_apJsonString: string = "";
+        w_apJsonString = w_apJsonString + p_node.apJson + " ";
+        w_apJsonString = w_apJsonString.trim();
+        console.log("Clicked on : ", p_node.label, w_apJsonString);
 
         // TODO / FIX THIS : WHY TF DOES THIS MAKE THE STATUS BAR INDICATOR FLASH BACK WHITE?
         // ! this.leoObjectSelected = true;
@@ -754,6 +759,7 @@ export class LeoIntegration {
         return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
             this.leoTextDocumentNodesRef[p_node.gnx] = p_node;
             if (!this.config.treeKeepFocusWhenAside) {
+                console.log("FORCED SELECTED NODE showBodyDocumentAside ");
                 this.leoBridge.action("setSelectedNode", p_node.apJson).then(() => {
                     this.reveal(p_node, { select: true, focus: false });
                 });

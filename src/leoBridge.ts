@@ -62,11 +62,15 @@ export class LeoBridge {
     }
 
     private callAction(): void {
-        // * Sends an action from the bottom of the stack to leoBridge.py's process stdin
+        // * Sends an action from the bottom of the stack to leoBridge.py process stdin
         if (this.callStack.length && !this.actionBusy) {
             this.actionBusy = true; // launch / resolve bottom one
             const w_action = this.callStack[0];
             this.send(w_action.parameter + "\n");
+
+            if (w_action.parameter.indexOf("setSelectedNode") > 1) {
+                console.log('via leobridge : setSelectedNode', w_action.parameter);
+            }
         }
     }
 
@@ -127,7 +131,7 @@ export class LeoBridge {
     private send(p_message: string): any {
         // * Send into the python process input
         if (this.readyPromise) {
-            this.readyPromise.then(() => {  //  using '.then' to be buffered in case process isn't ready.
+            this.readyPromise.then(() => { // using '.then' that was surely resolved already: to be buffered in case process isn't ready.
                 if (this.websocket && this.websocket.OPEN) {
                     this.websocket.send(p_message); // p_message should be json
                 }
