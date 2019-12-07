@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as child from 'child_process';
 import * as os from 'os';
-import * as path from "path";
+import * as path from "path"; // TODO: Use this library to have reliable support for window-vs-linux file-paths
 import { Constants } from "./constants";
 import { LeoBridgePackage, RevealType, ArchivedPosition } from "./types";
 import { LeoFiles } from "./leoFiles";
@@ -71,12 +71,15 @@ export class LeoIntegration {
     private bodyTextDocumentSameUri: boolean = false; // Flag used when checking if clicking a node requires opening a body pane text editor
     private bodyMainSelectionColumn: vscode.ViewColumn | undefined;
 
-    private leoTextDocumentNodesRef: { [gnx: string]: LeoNode } = {};
+    // * Body pane dictionary of GNX, linking to leoNodes
+    // * Used when showing a body text, to force selection of node when editor tabs are switched
+    // * Note: Kept up to date in the apToLeoNode function, as nodes from python are received and decoded.
+    private leoTextDocumentNodesRef: { [gnx: string]: LeoNode } = {}; // Node dictionary
 
     // * Status Bar
     public leoStatusBarItem: vscode.StatusBarItem;
     public leoObjectSelected: boolean = false; // represents having focus on a leo body, as opposed to anything else
-    public statusbarNormalColor = new vscode.ThemeColor("statusBar.foreground");  //"statusBar.foreground"
+    public statusbarNormalColor = new vscode.ThemeColor("statusBar.foreground");  // "statusBar.foreground"
     private updateStatusBarTimeout: NodeJS.Timeout | undefined;
 
     // * Edit Headline Input Box
@@ -346,7 +349,7 @@ export class LeoIntegration {
             const w_node: LeoNode | undefined = this.leoTextDocumentNodesRef[p_event.document.uri.fsPath.substr(1)];
             if (w_node && this.lastSelectedLeoNode) {
                 // select node in tree
-                console.log("FORCED SELECTED NODE onActiveEditorChanged ");
+                // console.log("FORCED SELECTED NODE onActiveEditorChanged ");
                 // ! This is the DELETE BUG
                 this.leoBridge.action("setSelectedNode", w_node.apJson).then(() => {
                     this.lastSelectedLeoNode = w_node;
@@ -612,6 +615,9 @@ export class LeoIntegration {
         const w_leoNode = new LeoNode(
             p_ap.headline, p_ap.gnx, w_collapse, JSON.stringify(p_ap), !!p_ap.cloned, !!p_ap.dirty, !!p_ap.marked, !!p_ap.hasBody, this
         );
+        if (this.leoTextDocumentNodesRef[w_leoNode.gnx]) {
+            this.leoTextDocumentNodesRef[w_leoNode.gnx] = w_leoNode;
+        }
         return w_leoNode;
     }
 
@@ -658,7 +664,7 @@ export class LeoIntegration {
         let w_apJsonString: string = "";
         w_apJsonString = w_apJsonString + p_node.apJson + " ";
         w_apJsonString = w_apJsonString.trim();
-        console.log("Clicked on : ", p_node.label, w_apJsonString);
+        // console.log("Clicked on : ", p_node.label, w_apJsonString);
 
         // TODO / FIX THIS : WHY TF DOES THIS MAKE THE STATUS BAR INDICATOR FLASH BACK WHITE?
         // ! this.leoObjectSelected = true;
@@ -759,7 +765,6 @@ export class LeoIntegration {
         return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
             this.leoTextDocumentNodesRef[p_node.gnx] = p_node;
             if (!this.config.treeKeepFocusWhenAside) {
-                console.log("FORCED SELECTED NODE showBodyDocumentAside ");
                 this.leoBridge.action("setSelectedNode", p_node.apJson).then(() => {
                     this.reveal(p_node, { select: true, focus: false });
                 });
@@ -1016,7 +1021,7 @@ export class LeoIntegration {
         if (this.fileOpenedReady) {
             vscode.window.showInformationMessage(`TODO: close leo file`); // temp placeholder
         } else {
-            console.log('closeLeoFile should not be callable');
+            console.log('Error: Cannot close. No Files Opened.');
         }
     }
 

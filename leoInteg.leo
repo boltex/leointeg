@@ -125,10 +125,8 @@ todo: flesh this out!</t>
     '''EMIT OUT list of children of a node'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
-        print('Get children for '+ w_p.h)
+        # print('Get children for ' + w_p.h)
         if w_p and w_p.hasChildren():
-            if(self.hasDeleted):
-                print("children:" + self.outputPNodes(w_p.children()))
             return self.outputPNodes(w_p.children())
         else:
             return self.outputPNodes([])  # default empty array
@@ -240,7 +238,7 @@ if __name__ == '__main__':
                 # set this node as selection
                 self.commander.selectPosition(w_p)
             else:
-                print("Set Selection node does not exist! ap was:" + json.dumps(p_ap) )
+                print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
@@ -365,8 +363,6 @@ if __name__ == '__main__':
                                        verbose=False)     # True: print informational messages.
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
     # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
-    self.hasDeleted = False
-
 
 </t>
 <t tx="felix.20191126232434.7">def sendLeoBridgePackage(self, p_key=False, p_any=None):
@@ -422,7 +418,7 @@ if __name__ == '__main__':
             async for w_message in websocket:
                 w_param = json.loads(w_message)
                 if w_param and w_param['action']:
-                    print("action:" + w_param['action'])
+                    # print("action:" + w_param['action'])
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
                     answer = getattr(integController, w_param['action'])(w_param['param'])
@@ -548,22 +544,26 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127002548.1">def deletePNode(self, p_ap):
-    '''Delete a node, don't select it. Then return the '''
+    '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
             if w_p == self.commander.p:
-                print("already on selection")
+                # print("already on selection")
                 self.commander.deleteOutline()  # already on this node, so delete it
             else:
-                print("not on selection")
+                # print("not on selection")
                 oldPosition = self.commander.p  # not same node, save position to possibly return to
                 self.commander.selectPosition(w_p)
                 self.commander.deleteOutline()
-                self.hasDeleted = True
                 if self.commander.positionExists(oldPosition):
                     self.commander.selectPosition(oldPosition)  # select if old position still valid
-            print("finally returning node" + self.commander.p.v.headString())
+                else:
+                    oldPosition._childIndex = oldPosition._childIndex-1
+                    if self.commander.positionExists(oldPosition):
+                        self.commander.selectPosition(oldPosition)  # try with lowered childIndex
+
+            # print("finally returning node" + self.commander.p.v.headString())
             return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
             return self.outputError("Error in deletePNode no w_p node found")  # default empty

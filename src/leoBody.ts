@@ -130,11 +130,11 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                             this.lastGnxBodyLength = p_result.bodyData.length;
                             return Promise.resolve(Buffer.from(p_result.bodyData));
                         } else if (p_result.bodyData === "") {
-                            console.log('bodyData was just empty string');
+                            // console.log('bodyData was just empty string');
                             this.lastGnxBodyLength = 0;
                             return Promise.resolve(Buffer.from(""));
                         } else {
-                            console.log('no bodyData at all : so no gnx/file not found');
+                            // console.log('no bodyData at all : so no gnx/file not found');
                             throw vscode.FileSystemError.FileNotFound();
                         }
                     });

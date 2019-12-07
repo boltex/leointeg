@@ -67,10 +67,6 @@ export class LeoBridge {
             this.actionBusy = true; // launch / resolve bottom one
             const w_action = this.callStack[0];
             this.send(w_action.parameter + "\n");
-
-            if (w_action.parameter.indexOf("setSelectedNode") > 1) {
-                console.log('via leobridge : setSelectedNode', w_action.parameter);
-            }
         }
     }
 
