@@ -8,6 +8,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     private lastGnx = "";
     private lastGnxBodyLength = 0;
+    public openedBodies: string[] = [];
 
     // * An event to signal that a resource has been changed
     // * it should fire for resources that are being [watched](#FileSystemProvider.watch) by clients of this provider
@@ -16,12 +17,27 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     constructor(private leoIntegration: LeoIntegration) { }
 
-    public watch(_resource: vscode.Uri): vscode.Disposable {
+    public watch(p_resource: vscode.Uri): vscode.Disposable {
         // * for now, ignore, fires for all changes
-        // TODO : Handle watch / dispose
-        console.log('watch called! path:', _resource.fsPath);
+        if (this.openedBodies.includes(p_resource.fsPath.substr(1))) {
+            // pass
+            // console.log('watch called! Already known path:', p_resource.fsPath);
+        } else {
+            this.openedBodies.push(p_resource.fsPath.substr(1));
+            // console.log('watch called! NEW path:', p_resource.fsPath);
+        }
+        // console.log(JSON.stringify(this.openedBodies));
+
         return new vscode.Disposable(() => {
-            console.log('disposed file', _resource.fsPath);
+            const w_position = this.openedBodies.indexOf(p_resource.fsPath.substr(1)); // find gnx
+            if (w_position > -1) {
+                // console.log('disposed called! Already known path:', p_resource.fsPath);
+                this.openedBodies.splice(w_position, 1);
+            } else {
+                // pass
+                // console.log('disposed file already gone from array', p_resource.fsPath);
+            }
+            // console.log(JSON.stringify(this.openedBodies));
         });
     }
 

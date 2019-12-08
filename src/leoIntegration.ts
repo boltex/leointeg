@@ -734,6 +734,8 @@ export class LeoIntegration {
         // * Make sure not to open unnecessary TextEditors
         return vscode.workspace.openTextDocument(this.bodyUri).then(p_document => {
             if (this.lastSelectedLeoNode) {
+                // set entry of leoNodes Ref : leoTextDocumentNodesRef
+                // (used when showing a body text, to force selection of node when editor tabs are switched)
                 this.leoTextDocumentNodesRef[p_document.uri.fsPath.substr(1)] = this.lastSelectedLeoNode;
             }
             this.bodyTextDocument = p_document;
@@ -863,39 +865,55 @@ export class LeoIntegration {
         } else {
             this.leoBridgeActionBusy = true;
             // start by finishing any pending edits by triggering body save
-            this.triggerBodySave();
-            // close all body opened for this gnx
-            /*             vscode.window.visibleTextEditors.forEach(p_textEditor => {
-                            if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
-                                vscode.window.showTextDocument(p_textEditor.document.uri, { preview: true, preserveFocus: false })
-                                    .then(() => {
-                                        vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-                                        vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.fsPath);
-                                    });
-                            }
-                        }); */
-            // call delete on a particular node, if it's not the selected node try to select it back
-            this.leoBridge.action("deletePNode", p_node.apJson).then(p_package => {
+            this.triggerBodySave().then(p_result => {
+                // close all body opened for this gnx
+                const w_closePromiseArray: Thenable<unknown>[] = [];
+                // ! buggy !
+                vscode.window.visibleTextEditors.forEach(p_textEditor => {
+                    console.log('visible editor: ', p_textEditor.document.uri.fsPath.substr(1));
+
+                    if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
+                        w_closePromiseArray.push(vscode.window.showTextDocument(p_textEditor.document.uri, { preview: true, preserveFocus: false })
+                            .then((p_shownEditor: vscode.TextEditor) => {
+                                console.log('from promise show document to close: ', p_shownEditor.document.uri.fsPath);
+                                return Promise.all([
+                                    vscode.commands.executeCommand('workbench.action.closeActiveEditor').then(p_cmdResult => {
+                                        console.log('p_cmdResult from closeActiveEditor: ', p_cmdResult);
+
+                                        return Promise.resolve(p_cmdResult);
+                                    }),
+                                    vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.fsPath)
+                                ]);
+                            })
+                        );
+                    }
+                });
+                return Promise.all(w_closePromiseArray);
+            }).then(p_closeResult => {
+                console.log('from promise all, p_closeResult:', p_closeResult);
+
+                return this.leoBridge.action("deletePNode", p_node.apJson);
+            }).then(p_package => {
+                // call delete on a particular node, if it's not the selected node try to select it back
                 console.log('got Back from deletePNode, now revealing :', p_package.node.headline);
                 this.lastSelectedLeoNode = this.apToLeoNode(p_package.node);
                 this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-                this.selectTreeNode(this.lastSelectedLeoNode).then(p_result => {
-                    console.log("select ended with result: ", p_result);
-                    // vscode.window.visibleTextEditors.forEach(p_textEditor => {
-                    //     if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
-                    //         console.log('Found one! ', p_node.gnx, "for", p_node.label);
+                return this.selectTreeNode(this.lastSelectedLeoNode);
+            }).then(p_result => {
+                console.log("select ended with result: ", p_result);
+                // vscode.window.visibleTextEditors.forEach(p_textEditor => {
+                //     if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
+                //         console.log('Found one! ', p_node.gnx, "for", p_node.label);
 
-                    //         /*  vscode.window.showTextDocument(p_textEditor.document.uri, { preview: true, preserveFocus: false })
-                    //              .then(() => {
-                    //                  vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-                    //                  vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.fsPath);
-                    //              }); */
-                    //     }
-                    // });
+                //         /*  vscode.window.showTextDocument(p_textEditor.document.uri, { preview: true, preserveFocus: false })
+                //              .then(() => {
+                //                  vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+                //                  vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.fsPath);
+                //              }); */
+                //     }
+                // });
 
-                    this.leoBridgeActionBusy = false;
-                });
-
+                this.leoBridgeActionBusy = false;
             });
 
         }
