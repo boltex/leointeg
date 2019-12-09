@@ -131,11 +131,23 @@ export class LeoIntegration {
         this.leoTreeExplorerView.onDidChangeSelection((p_event => this.onTreeViewChangedSelection(p_event)));
         this.leoTreeExplorerView.onDidExpandElement((p_event => this.onTreeViewExpandedElement(p_event)));
         this.leoTreeExplorerView.onDidCollapseElement((p_event => this.onTreeViewCollapsedElement(p_event)));
-        this.leoTreeExplorerView.onDidChangeVisibility((p_event => this.onTreeViewVisibilityChanged(p_event, true)));  // * Trigger 'show tree in explorer view'
+        this.leoTreeExplorerView.onDidChangeVisibility((p_event => this.onTreeViewVisibilityChanged(p_event, true))); // * Trigger 'show tree in explorer view'
 
         // * Body Pane
         this.leoFileSystem = new LeoBodyProvider(this);
         this.bodyMainSelectionColumn = 1;
+        // set workbench.editor.closeOnFileDelete to true
+
+
+        /*         const w_closeConfig = vscode.workspace.getConfiguration('workbench.editor');
+                console.log("test:",
+                    w_closeConfig.get('closeOnFileDelete')
+                );
+                w_closeConfig.update('closeOnFileDelete', true, true)
+                    .then(p_result => {
+                        console.log('Finally changed config??: ', vscode.workspace.getConfiguration('workbench.editor').get('closeOnFileDelete'));
+                    }); */
+
 
         // * Status bar
         // Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
@@ -164,7 +176,7 @@ export class LeoIntegration {
 
     private startNetworkServices(): void {
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
-        // * Note: See example: 'executeCommand' functions from https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts
+        // * See 'executeCommand' from https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts
         if (this.config.startServerAutomatically) {
             this.startServer();
         } else {
@@ -190,7 +202,9 @@ export class LeoIntegration {
             if (this.platform === "win32") {
                 w_pythonPath = Constants.LEO_WIN32_PYTHON;
             }
-            console.log('Launch with default command : ' + w_pythonPath + ((this.platform === "win32" && w_pythonPath === "py") ? " -3 " : "") + " " + w_serverScriptPath);
+            console.log('Launch with default command : ' +
+                w_pythonPath + ((this.platform === "win32" && w_pythonPath === "py") ? " -3 " : "") +
+                " " + w_serverScriptPath);
         }
 
         console.log('Creating a promise for starting a server...');
@@ -756,7 +770,7 @@ export class LeoIntegration {
             }).then(w_bodyEditor => {
                 // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
                 // other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
-                return (true);
+                return Promise.resolve(true);
             });
         });
     }
@@ -779,7 +793,7 @@ export class LeoIntegration {
             }).then(w_bodyEditor => {
                 // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
                 // other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
-                return (true);
+                return Promise.resolve(true);
             });
         });
     }
@@ -865,56 +879,73 @@ export class LeoIntegration {
         } else {
             this.leoBridgeActionBusy = true;
             // start by finishing any pending edits by triggering body save
-            this.triggerBodySave().then(p_result => {
-                // close all body opened for this gnx
-                const w_closePromiseArray: Thenable<unknown>[] = [];
-                // ! buggy !
-                vscode.window.visibleTextEditors.forEach(p_textEditor => {
-                    console.log('visible editor: ', p_textEditor.document.uri.fsPath.substr(1));
+            this.triggerBodySave()
+                .then(p_result => {
+                    // close all body opened for this gnx
 
-                    if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
-                        w_closePromiseArray.push(vscode.window.showTextDocument(p_textEditor.document.uri, { preview: true, preserveFocus: false })
-                            .then((p_shownEditor: vscode.TextEditor) => {
-                                console.log('from promise show document to close: ', p_shownEditor.document.uri.fsPath);
-                                return Promise.all([
-                                    vscode.commands.executeCommand('workbench.action.closeActiveEditor').then(p_cmdResult => {
-                                        console.log('p_cmdResult from closeActiveEditor: ', p_cmdResult);
+                    /*
+                    const w_closePromiseArray: Thenable<unknown>[] = [];
+                    // ! buggy !
+                    vscode.window.visibleTextEditors.forEach(p_textEditor => {
+                        console.log('visible editor: ', p_textEditor.document.uri.fsPath.substr(1));
 
-                                        return Promise.resolve(p_cmdResult);
-                                    }),
-                                    vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.fsPath)
-                                ]);
-                            })
-                        );
-                    }
-                });
-                return Promise.all(w_closePromiseArray);
-            }).then(p_closeResult => {
-                console.log('from promise all, p_closeResult:', p_closeResult);
+                        if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
+                            w_closePromiseArray.push(vscode.window.showTextDocument(p_textEditor.document.uri, { preview: true, preserveFocus: false })
+                                .then((p_shownEditor: vscode.TextEditor) => {
+                                    console.log('from promise show document to close: ', p_shownEditor.document.uri.fsPath);
+                                    return Promise.all([
+                                        vscode.commands.executeCommand('workbench.action.closeActiveEditor').then(p_cmdResult => {
+                                            console.log('p_cmdResult from closeActiveEditor: ', p_cmdResult);
 
-                return this.leoBridge.action("deletePNode", p_node.apJson);
-            }).then(p_package => {
-                // call delete on a particular node, if it's not the selected node try to select it back
-                console.log('got Back from deletePNode, now revealing :', p_package.node.headline);
-                this.lastSelectedLeoNode = this.apToLeoNode(p_package.node);
-                this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-                return this.selectTreeNode(this.lastSelectedLeoNode);
-            }).then(p_result => {
-                console.log("select ended with result: ", p_result);
-                // vscode.window.visibleTextEditors.forEach(p_textEditor => {
-                //     if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
-                //         console.log('Found one! ', p_node.gnx, "for", p_node.label);
+                                            return Promise.resolve(p_cmdResult);
+                                        }),
+                                        vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.fsPath)
+                                    ]);
+                                })
+                            );
+                        }
+                    });
+                    return Promise.all(w_closePromiseArray);
+                    */
+                    return Promise.resolve("some string");
 
-                //         /*  vscode.window.showTextDocument(p_textEditor.document.uri, { preview: true, preserveFocus: false })
-                //              .then(() => {
-                //                  vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-                //                  vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.fsPath);
-                //              }); */
-                //     }
-                // });
+                })
+                .then(p_closeResult => {
+                    console.log('resolve from possible pending save with a string: ', p_closeResult);
+                    return this.leoBridge.action("deletePNode", p_node.apJson);
+                })
+                .then(p_package => {
+                    console.log('got Back from deletePNode, now revealing: ', p_package.node.headline);
+                    this.lastSelectedLeoNode = this.apToLeoNode(p_package.node);
+                    // Get list of bodies to close
+                    return this.leoFileSystem.refreshPossibleGnxList();
+                })
+                .then(p_list => {
+                    return this.leoFileSystem.getExpiredGnxList();
+                })
+                .then(p_expiredList => {
+                    console.log('Try to close those deleted bodies: ', p_expiredList);
+                    //
+                    this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // finish by refreshing the tree and selecting the node
+                    return this.selectTreeNode(this.lastSelectedLeoNode!);
+                })
+                .then(p_result => {
+                    console.log("finished by select tree node ended with result: ", p_result);
+                    // vscode.window.visibleTextEditors.forEach(p_textEditor => {
+                    //     if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
+                    //         console.log('Found one! ', p_node.gnx, "for", p_node.label);
 
-                this.leoBridgeActionBusy = false;
-            });
+                    //         /*  vscode.window.showTextDocument(p_textEditor.document.uri, { preview: true, preserveFocus: false })
+                    //              .then(() => {
+                    //                  vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+                    //                  vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.fsPath);
+                    //              }); */
+                    //     }
+                    // });
+
+                    this.leoBridgeActionBusy = false;
+                })
+                ;
 
         }
 
@@ -1050,36 +1081,41 @@ export class LeoIntegration {
         }
         this.leoFiles.getLeoFileUrl()
             .then(p_chosenLeoFile => {
-                this.leoBridge.action("openFile", '"' + p_chosenLeoFile + '"')
-                    .then((p_result: LeoBridgePackage) => {
-                        // TODO : Validate p_result
-
-                        // * Start body pane system
-                        this.context.subscriptions.push(vscode.workspace.registerFileSystemProvider(Constants.LEO_URI_SCHEME, this.leoFileSystem, { isCaseSensitive: true }));
-                        // * Startup flag
-                        this.fileOpenedReady = true;
-                        // * First valid redraw of tree
-                        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // p_revealSelection flag set
-                        // * set body URI for body filesystem
-                        this.bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_result.node.gnx);
-                        this.showSelectedBodyDocument().then(p_result => {
-                            vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.TREE_OPENED, true);
-                        });
-                        // * First StatusBar appearance
-                        this.updateStatusBar();
-                        this.leoStatusBarItem.show();
-                    });
-
-            },
-                p_reason => { } // console.log('canceled', p_reason); // File Open is Canceled - Ignore
-            );
+                return this.leoBridge.action("openFile", '"' + p_chosenLeoFile + '"');
+            }, p_reason => {
+                // console.log('canceled', p_reason); // File Open is Canceled - Ignore
+                return Promise.reject(p_reason);
+            })
+            .then((p_result: LeoBridgePackage) => {
+                // TODO : Validate p_result
+                // * Start body pane system
+                this.context.subscriptions.push(vscode.workspace.registerFileSystemProvider(Constants.LEO_URI_SCHEME, this.leoFileSystem, { isCaseSensitive: true }));
+                // * Startup flag
+                this.fileOpenedReady = true;
+                // * First valid redraw of tree
+                this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // p_revealSelection flag set
+                // * set body URI for body filesystem
+                this.bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_result.node.gnx);
+                // * First StatusBar appearance
+                this.updateStatusBar();
+                this.leoStatusBarItem.show();
+                // * First Body appearance
+                return this.leoFileSystem.refreshPossibleGnxList();
+            })
+            .then(p_list => {
+                return vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.TREE_OPENED, true);
+            })
+            .then(p_result => {
+                return this.showSelectedBodyDocument();
+            });
     }
 
     public test(): void {
         if (this.fileOpenedReady) {
             console.log("sending test 'getSelectedNode'");
-            // this.leoBridge.action("getSelectedNode", "{}").then(
-            this.leoBridge.action("getSelectedNode", "{\"testparam\":\"hello test parameter\"}").then(
+            // * if no parameter required, still send "{}"
+            this.leoBridge.action("getSelectedNode", "{}").then(
+                // this.leoBridge.action("getSelectedNode", "{\"testparam\":\"hello test parameter\"}").then(
                 (p_answer: LeoBridgePackage) => {
                     console.log('Test got Back from getSelectedNode, now revealing :', p_answer.node.headline);
                     this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true });

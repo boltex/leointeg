@@ -37,7 +37,6 @@ class leoBridgeIntegController:
         print("Trying to open file: "+p_file)
         self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
         if(self.commander):
-            self.getAllGnx()  # test
             self.create_gnx_to_vnode()
             return self.outputPNode(self.commander.p)
         else:
@@ -310,14 +309,14 @@ class leoBridgeIntegController:
         else:
             return self.outputPNode()
 
-    def getSelectedNode(self, p_param):
+    def getSelectedNode(self, p_paramUnused):
         '''EMIT OUT Selected Position as an array, even if unique'''
         if(self.commander.p):
             return self.outputPNode(self.commander.p)
         else:
             return self.outputPNode()
 
-    def getAllGnx(self):
+    def getAllGnx(self, p_paramUnused):
         '''Get gnx array from all unique nodes'''
         w_all_gnx = [p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
         return self.sendLeoBridgePackage("allGnx", w_all_gnx)
@@ -530,6 +529,8 @@ def main():
                     # print("action:" + w_param['action'])
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
+                    # ! functions called this way need to accept at least a parameter other than 'self'
+                    # ! See : getSelectedNode and getAllGnx
                     answer = getattr(integController, w_param['action'])(w_param['param'])
                 else:
                     print("Error in processCommand")
