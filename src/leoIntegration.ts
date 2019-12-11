@@ -926,6 +926,18 @@ export class LeoIntegration {
                 .then(p_expiredList => {
                     console.log('Try to close those deleted bodies: ', p_expiredList);
                     //
+                    vscode.window.visibleTextEditors.forEach(p_textEditor => {
+                        console.log('looping visible text editors ', p_textEditor.document.fileName);
+                    });
+                    p_expiredList.forEach(p_gnx => {
+                        const w_uri: vscode.Uri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_gnx);
+                        vscode.workspace.openTextDocument(w_uri).then(p_textDocument => {
+                            console.log('save all expired documents');
+                            p_textDocument.save();
+                        });
+                    });
+
+
                     this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // finish by refreshing the tree and selecting the node
                     return this.selectTreeNode(this.lastSelectedLeoNode!);
                 })
