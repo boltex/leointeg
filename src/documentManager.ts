@@ -27,7 +27,9 @@ export class DocumentManager extends Disposable {
 
     async open(restore: boolean = false) {
         try {
+            console.log('DocumentManager get documents');
             const editors = this.get();
+
             if (!editors.length) { return; }
 
             if (restore) {
@@ -59,6 +61,7 @@ export class DocumentManager extends Disposable {
                         active = editor;
                     }
 
+                    console.log('DocumentManager Push Editor');
                     openEditors.push(editor);
                 }
 
@@ -78,7 +81,9 @@ export class DocumentManager extends Disposable {
                 });
 
             // save documents
+            console.log('DocumentManager save documents');
             this.savedDocuments = editors; // this.context.workspaceState.update(WorkspaceState.SavedDocuments, editors);
+            return this.savedDocuments; // this.context.workspaceState.update(WorkspaceState.SavedDocuments, editors);
         }
         catch (ex) {
             console.error(ex, 'DocumentManager.save');

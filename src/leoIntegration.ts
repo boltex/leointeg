@@ -10,6 +10,7 @@ import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyProvider } from "./leoBody";
 import { LeoBridge } from "./leoBridge";
 import { Config } from "./config";
+import { DocumentManager } from "./documentManager";
 
 export class LeoIntegration {
     // * Control Flags
@@ -67,6 +68,7 @@ export class LeoIntegration {
     public leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
     private bodyUri: vscode.Uri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER);
     private bodyTextDocument: vscode.TextDocument | undefined;
+    private documentManager: DocumentManager;
 
     private bodyTextDocumentSameUri: boolean = false; // Flag used when checking if clicking a node requires opening a body pane text editor
     private bodyMainSelectionColumn: vscode.ViewColumn | undefined;
@@ -138,6 +140,8 @@ export class LeoIntegration {
         this.bodyMainSelectionColumn = 1;
         // set workbench.editor.closeOnFileDelete to true
 
+        // * DocumentManager
+        this.documentManager = new DocumentManager(this.context);
 
         /*         const w_closeConfig = vscode.workspace.getConfiguration('workbench.editor');
                 console.log("test:",
@@ -936,7 +940,10 @@ export class LeoIntegration {
                             p_textDocument.save();
                         });
                     });
+                    this.documentManager.save().then(p_docResult => {
+                        console.log('Back from doc manager', p_docResult);
 
+                    });
 
                     this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // finish by refreshing the tree and selecting the node
                     return this.selectTreeNode(this.lastSelectedLeoNode!);
