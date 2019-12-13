@@ -1137,9 +1137,13 @@ export class LeoIntegration {
                 // this.leoBridge.action("getSelectedNode", "{\"testparam\":\"hello test parameter\"}").then(
                 (p_answer: LeoBridgePackage) => {
                     console.log('Test got Back from getSelectedNode, now revealing :', p_answer.node.headline);
-                    this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true });
-                }
-            );
+                    return Promise.resolve(this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true }));
+                }).then(() => {
+                    console.log("...now testing documentManager ");
+                    return this.documentManager.save();
+                }).then(p_docResult => {
+                    console.log('Back from doc manager', p_docResult);
+                });
         } else {
             vscode.window.showInformationMessage("Click the folder icon on the Leo Outline sidebar to open a Leo file");
         }
