@@ -10,7 +10,7 @@ import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyProvider } from "./leoBody";
 import { LeoBridge } from "./leoBridge";
 import { Config } from "./config";
-import { DocumentManager } from "./documentManager";
+import { DocumentManager } from "./eamodioEditorManager/documentManager";
 
 export class LeoIntegration {
     // * Control Flags
@@ -940,7 +940,7 @@ export class LeoIntegration {
                             p_textDocument.save();
                         });
                     });
-                    this.documentManager.save().then(p_docResult => {
+                    this.documentManager.closeExpired(p_expiredList).then(p_docResult => {
                         console.log('Back from doc manager', p_docResult);
 
                     });
@@ -1140,7 +1140,7 @@ export class LeoIntegration {
                     return Promise.resolve(this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true }));
                 }).then(() => {
                     console.log("...now testing documentManager ");
-                    return this.documentManager.save();
+                    return this.documentManager.countOpen();
                 }).then(p_docResult => {
                     console.log('Back from doc manager', p_docResult);
                 });
