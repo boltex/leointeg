@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
+import * as path from "path"; // TODO: Use this library to have reliable support for window-vs-linux file-paths
 
 export class LeoFiles {
 
@@ -30,7 +31,7 @@ export class LeoFiles {
         return w_openedFileEnvUri;
     }
 
-    // TODO : Better Windows support ! USE 'PATH' LIBRARY
+    // TODO : Use 'path' library to have reliable support for Windows
     public getLeoFileUrl(): Promise<string> {
         if (this.fileBrowserOpen) {
             return Promise.resolve("");

@@ -15,7 +15,11 @@ export class ActiveEditorTracker extends Disposable {
 
     constructor() {
         super(() => this.dispose());
-
+		/**
+		 * An [event](#Event) which fires when the [active editor](#window.activeTextEditor)
+		 * has changed. *Note* that the event also fires when the active editor changes
+		 * to `undefined`.
+		 */
         this._disposable = window.onDidChangeActiveTextEditor(e => this._resolver && this._resolver(e));
     }
 
@@ -45,16 +49,34 @@ export class ActiveEditorTracker extends Disposable {
         const editor = await new Promise<TextEditor>((resolve, reject) => {
             let timer: any;
 
-            this._resolver = (editor: TextEditor | PromiseLike<TextEditor> | undefined) => {
+            this._resolver = (p_editor: TextEditor | PromiseLike<TextEditor> | undefined) => {
+
+
                 if (timer) {
                     clearTimeout(timer as any);
                     timer = 0;
-                    resolve(editor);
+                    // * test console output
+                    console.log('from resolver:');
+                    if (p_editor) {
+                        console.log((p_editor as any)['_documentData']['_uri']);
+                    } else {
+                        console.log('no editor');
+                    }
+                    resolve(p_editor);
                 }
             };
 
             timer = setTimeout(() => {
+                // * test console output
+                console.log("from timer: ");
+                if (window.activeTextEditor) {
+                    console.log((window.activeTextEditor as any)['_documentData']['_uri']);
+                } else {
+                    console.log('no editor');
+                }
+
                 resolve(window.activeTextEditor);
+                // TODO : test if this._resolver should be cleared here ?!?
                 timer = 0;
             }, timeout) as any;
         });

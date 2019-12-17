@@ -57,7 +57,7 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 
 - Re-mapping of most of Leo's outline editing features through vscode and more, via leoBridge.
 - Detection of focused element to toggle functionality, by re-mapping shortcut keys, to suit the interactions with the opened Leo file.
-- 2 way synchronization of leo's output files and vscode's explorer & 'normal mode' of operation.
+- 2 way synchronization of leo's output files and vscode's explorer.
 - Error lookup, or breakpoints cycling with automatic go-to line in generated file's nodes and body position.
 - File generating 'at' nodes that show their derived line number instead of the body-pane's line number along with color-syntaxing.
 

@@ -55,6 +55,7 @@
 <v t="felix.20191126232434.25"><vh>expandNode</vh></v>
 <v t="felix.20191126232434.26"><vh>collapseNode</vh></v>
 <v t="felix.20191126232434.29"><vh>yieldAllRootChildren</vh></v>
+<v t="felix.20191216195906.1"><vh>findPNodeFromGnx</vh></v>
 </v>
 <v t="felix.20191128003648.1"><vh>leoFlexx Conversion Functions</vh>
 <v t="felix.20191126232434.27"><vh>create_gnx_to_vnode</vh></v>
@@ -237,8 +238,18 @@ if __name__ == '__main__':
                 # set this node as selection
                 self.commander.selectPosition(w_p)
             else:
-                print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
-    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                w_foundPNode = self.findPNodeFromGnx(p_ap['gnx'])
+                if w_foundPNode:
+                    print("got first p node with gnx: "+ p_ap['gnx'])
+                    self.commander.selectPosition(foundPNode)
+                else:
+                    print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
+    # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+    # * return the finally selected node instead
+    if(self.commander.p):
+        return self.outputPNode(self.commander.p)
+    else:
+        return self.outputPNode()
 
 </t>
 <t tx="felix.20191126232434.25">def expandNode(self, p_ap):
@@ -684,6 +695,14 @@ wsPort = 32125
     '''Get gnx array from all unique nodes'''
     w_all_gnx = [p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
     return self.sendLeoBridgePackage("allGnx", w_all_gnx)
+
+</t>
+<t tx="felix.20191216195906.1">def findPNodeFromGnx(self, p_gnx):
+    '''Return first p node with this gnx or false'''
+    for p in self.commander.all_unique_positions():
+        if p.v.gnx == p_gnx:
+            return p
+    return False
 
 </t>
 </tnodes>

@@ -13,13 +13,16 @@ import { Config } from "./config";
 import { DocumentManager } from "./eamodioEditorManager/documentManager";
 
 export class LeoIntegration {
+    // * Misc.
+    private platform: string = os.platform();
+
     // * Control Flags
     public fileOpenedReady: boolean = false;
     public leoBridgeReady: boolean = false;
     public leoIsConnecting: boolean = false;
     private leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // set when leoBridge has a leo controller ready
     private leoBridgeActionBusy: boolean = false;
-    private platform: string = os.platform();
+    private leoCyclingBodies: boolean = false; // used when closing removed bodies: onActiveEditorChanged, onChangeEditorSelection
 
     // * Configuration Settings
     private isSettingConfig: boolean = false;
@@ -143,16 +146,6 @@ export class LeoIntegration {
         // * DocumentManager
         this.documentManager = new DocumentManager(this.context);
 
-        /*         const w_closeConfig = vscode.workspace.getConfiguration('workbench.editor');
-                console.log("test:",
-                    w_closeConfig.get('closeOnFileDelete')
-                );
-                w_closeConfig.update('closeOnFileDelete', true, true)
-                    .then(p_result => {
-                        console.log('Finally changed config??: ', vscode.workspace.getConfiguration('workbench.editor').get('closeOnFileDelete'));
-                    }); */
-
-
         // * Status bar
         // Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
         this.leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
@@ -164,14 +157,23 @@ export class LeoIntegration {
         this.leoStatusBarItem.hide();
 
         // * React to change in active panel/text editor to toggle Leo Mode Shortcuts and behavior
-        vscode.window.onDidChangeActiveTextEditor(p_event => this.onActiveEditorChanged(p_event));
+        /**
+         * An [event](#Event) which fires when the [active editor](#window.activeTextEditor)
+         * has changed. *Note* that the event also fires when the active editor changes
+         * to `undefined`.
+         */
+        vscode.window.onDidChangeActiveTextEditor(p_event => this.onActiveEditorChanged(p_event)); // TODO : handle deleted bodies
+        // * other events
         vscode.window.onDidChangeTextEditorSelection(p_event => this.onChangeEditorSelection(p_event));
-        vscode.window.onDidChangeTextEditorViewColumn(p_event => this.onChangeEditorViewColumn(p_event));
-        vscode.window.onDidChangeVisibleTextEditors(p_event => this.onChangeVisibleEditors(p_event));
+        vscode.window.onDidChangeTextEditorViewColumn(p_event => this.onChangeEditorViewColumn(p_event)); // TODO : handle deleted bodies
+        vscode.window.onDidChangeVisibleTextEditors(p_event => this.onChangeVisibleEditors(p_event)); // TODO : handle deleted bodies
         vscode.window.onDidChangeWindowState(p_event => this.onChangeWindowState(p_event));
 
+        // * React when typing and changing body pane
         vscode.workspace.onDidChangeTextDocument(p_event => this.onDocumentChanged(p_event));
         vscode.workspace.onDidSaveTextDocument(p_event => this.onDocumentSaved(p_event));
+
+        // * React to configuration settings events
         vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
 
         // * Start server and / or connect to it (as specified in settings)
@@ -354,6 +356,9 @@ export class LeoIntegration {
     }
 
     private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
+        if (this.leoCyclingBodies) {
+            return;
+        }
         this.triggerBodySave(); // Save in case edits were pending
         // selecting another editor of the same window by the tab
         // * Status flag check
@@ -369,6 +374,8 @@ export class LeoIntegration {
                 // select node in tree
                 // console.log("FORCED SELECTED NODE onActiveEditorChanged ");
                 // ! This is the DELETE BUG
+                // * setSelectedNode now returns what it could select, if anything
+                // TODO : Used returned node instead!
                 this.leoBridge.action("setSelectedNode", w_node.apJson).then(() => {
                     this.lastSelectedLeoNode = w_node;
                     this.reveal(w_node, { select: true, focus: false });
@@ -396,6 +403,9 @@ export class LeoIntegration {
     }
 
     private onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
+        if (this.leoCyclingBodies) {
+            return;
+        }
         // * Status flag check
         if (vscode.window.activeTextEditor) {
             if (p_event.textEditor.document.uri.scheme === Constants.LEO_URI_SCHEME && vscode.window.activeTextEditor.document.uri.scheme === Constants.LEO_URI_SCHEME) {
@@ -428,6 +438,9 @@ export class LeoIntegration {
     private onChangeVisibleEditors(p_event: vscode.TextEditor[]): void {
         // * Triggers when a different text editor in any column, either tab or body, is focused
         // * This is also what triggers after drag and drop, see onChangeEditorViewColumn
+
+        // console.log('testing delete? onDidChangeVisibleTextEditors:', p_event.length);
+
     }
 
     private onChangeWindowState(p_event: vscode.WindowState): void {
@@ -492,7 +505,7 @@ export class LeoIntegration {
     }
 
     public bodySaveDocument(p_document: vscode.TextDocument, p_forceRefreshTree?: boolean): Thenable<boolean> {
-        // * Sets new body text of currently selected node on leo's side
+        // * Sets new body text of currently selected node on leo's side (test: ALSO SAVE leo scheme file)
         if (p_document && (p_document.isDirty || p_forceRefreshTree)) {
             // * Fetch gnx and document's body text first, to be reused more than once in this method
             const w_param = {
@@ -522,7 +535,8 @@ export class LeoIntegration {
             this.bodyChangeTimeoutSkipped = false;
             return this.leoBridge.action("setBody", JSON.stringify(w_param)).then(p_result => {
                 // console.log('Back from setBody to leo');
-                return Promise.resolve(true);
+                return p_document.save();
+                // return Promise.resolve(true);
             });
         } else {
             return Promise.resolve(false);
@@ -668,6 +682,8 @@ export class LeoIntegration {
 
     private locateOpenedBody(p_gnx: string): void {
         this.bodyTextDocumentSameUri = false;
+        // * Only gets to visible editors, not every tab per editor
+        // TODO : fix with newer vscode API
         vscode.window.visibleTextEditors.forEach(p_textEditor => {
             if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {
                 this.bodyTextDocumentSameUri = true;
@@ -882,45 +898,17 @@ export class LeoIntegration {
             console.log('Too fast! delete');
         } else {
             this.leoBridgeActionBusy = true;
+            this.leoCyclingBodies = true;
             // start by finishing any pending edits by triggering body save
             this.triggerBodySave()
-                .then(p_result => {
-                    // close all body opened for this gnx
-
-                    /*
-                    const w_closePromiseArray: Thenable<unknown>[] = [];
-                    // ! buggy !
-                    vscode.window.visibleTextEditors.forEach(p_textEditor => {
-                        console.log('visible editor: ', p_textEditor.document.uri.fsPath.substr(1));
-
-                        if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
-                            w_closePromiseArray.push(vscode.window.showTextDocument(p_textEditor.document.uri, { preview: true, preserveFocus: false })
-                                .then((p_shownEditor: vscode.TextEditor) => {
-                                    console.log('from promise show document to close: ', p_shownEditor.document.uri.fsPath);
-                                    return Promise.all([
-                                        vscode.commands.executeCommand('workbench.action.closeActiveEditor').then(p_cmdResult => {
-                                            console.log('p_cmdResult from closeActiveEditor: ', p_cmdResult);
-
-                                            return Promise.resolve(p_cmdResult);
-                                        }),
-                                        vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.fsPath)
-                                    ]);
-                                })
-                            );
-                        }
-                    });
-                    return Promise.all(w_closePromiseArray);
-                    */
-                    return Promise.resolve("some string");
-
-                })
-                .then(p_closeResult => {
-                    console.log('resolve from possible pending save with a string: ', p_closeResult);
+                .then(p_saveResult => {
+                    console.log('resolve from possible pending save : ', p_saveResult);
                     return this.leoBridge.action("deletePNode", p_node.apJson);
                 })
                 .then(p_package => {
-                    console.log('got Back from deletePNode, now revealing: ', p_package.node.headline);
-                    this.lastSelectedLeoNode = this.apToLeoNode(p_package.node);
+                    console.log('got Back from deletePNode, close expired, then reveal: ', p_package.node.headline);
+                    // * If this.lastSelectedLeoNode is undefined it will be set by arrayToLeoNodesArray when refreshing tree root
+                    this.lastSelectedLeoNode = undefined;
                     // Get list of bodies to close
                     return this.leoFileSystem.refreshPossibleGnxList();
                 })
@@ -928,44 +916,16 @@ export class LeoIntegration {
                     return this.leoFileSystem.getExpiredGnxList();
                 })
                 .then(p_expiredList => {
-                    console.log('Try to close those deleted bodies: ', p_expiredList);
-                    //
-                    vscode.window.visibleTextEditors.forEach(p_textEditor => {
-                        console.log('looping visible text editors ', p_textEditor.document.fileName);
-                    });
-                    p_expiredList.forEach(p_gnx => {
-                        const w_uri: vscode.Uri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_gnx);
-                        vscode.workspace.openTextDocument(w_uri).then(p_textDocument => {
-                            console.log('save all expired documents');
-                            p_textDocument.save();
-                        });
-                    });
-                    this.documentManager.closeExpired(p_expiredList).then(p_docResult => {
-                        console.log('Back from doc manager', p_docResult);
-
-                    });
-
+                    return this.documentManager.closeExpired(p_expiredList);
+                })
+                .then(p_docResult => {
+                    console.log('Back from doc manager', p_docResult);
+                    // * If this.lastSelectedLeoNode is undefined it will be set by arrayToLeoNodesArray when refreshing tree root
                     this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // finish by refreshing the tree and selecting the node
-                    return this.selectTreeNode(this.lastSelectedLeoNode!);
-                })
-                .then(p_result => {
-                    console.log("finished by select tree node ended with result: ", p_result);
-                    // vscode.window.visibleTextEditors.forEach(p_textEditor => {
-                    //     if (p_textEditor.document.uri.fsPath.substr(1) === p_node.gnx) {
-                    //         console.log('Found one! ', p_node.gnx, "for", p_node.label);
-
-                    //         /*  vscode.window.showTextDocument(p_textEditor.document.uri, { preview: true, preserveFocus: false })
-                    //              .then(() => {
-                    //                  vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-                    //                  vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.fsPath);
-                    //              }); */
-                    //     }
-                    // });
-
+                    this.leoCyclingBodies = false;
                     this.leoBridgeActionBusy = false;
-                })
-                ;
-
+                    return this.showSelectedBodyDocument();
+                });
         }
 
     }

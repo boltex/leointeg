@@ -12,7 +12,7 @@
 // * - Ctrl-} (demote)
 // ! - Ctrl-Z (undo)
 // ! - execute-script (Ctrl-B)
-// ! - Ctrl-S (save-file)
+// ! - Ctrl-S (save-file) DERIVES/OUTPUT FILES !
 
 /*
 # Context variables for package.json "when" clauses so far

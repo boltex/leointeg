@@ -388,8 +388,18 @@ class leoBridgeIntegController:
                     # set this node as selection
                     self.commander.selectPosition(w_p)
                 else:
-                    print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
-        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                    w_foundPNode = self.findPNodeFromGnx(p_ap['gnx'])
+                    if w_foundPNode:
+                        print("got first p node with gnx: " + p_ap['gnx'])
+                        self.commander.selectPosition(w_foundPNode)
+                    else:
+                        print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
+        # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+        # * return the finally selected node instead
+        if(self.commander.p):
+            return self.outputPNode(self.commander.p)
+        else:
+            return self.outputPNode()
 
     def expandNode(self, p_ap):
         '''Expand a node'''
@@ -413,6 +423,13 @@ class leoBridgeIntegController:
         while p:
             yield p
             p.moveToNext()
+
+    def findPNodeFromGnx(self, p_gnx):
+        '''Return first p node with this gnx or false'''
+        for p in self.commander.all_unique_positions():
+            if p.v.gnx == p_gnx:
+                return p
+        return False
 
     def create_gnx_to_vnode(self):
         '''Make the first gnx_to_vnode array with all unique nodes'''
