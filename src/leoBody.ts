@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
 export class LeoBodyProvider implements vscode.FileSystemProvider {
@@ -31,20 +32,24 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             } else {
                 this.possibleGnxList = [];
             }
+            console.log('possibleGnxList LENGTH: ', this.possibleGnxList.length);
             return Promise.resolve(this.possibleGnxList);
         });
     }
 
     public getExpiredGnxList(): Thenable<string[]> {
         // * Get list of bodies that should be closed: gnx from openedBodiesGnx that are not in possibleGnxList
-        // ! should have a fresh possibleGnx list beforehand
-        const w_gnxToClose: string[] = [];
-        this.openedBodiesGnx.forEach(p_openedGnx => {
-            if (!this.possibleGnxList.includes(p_openedGnx)) {
-                w_gnxToClose.push(p_openedGnx);
-            }
-        });
-        return Promise.resolve(w_gnxToClose);
+        return this.refreshPossibleGnxList()
+            .then(p_possibleGnxList => {
+                const w_gnxToClose: string[] = [];
+                this.openedBodiesGnx.forEach(p_openedGnx => {
+                    if (!p_possibleGnxList.includes(p_openedGnx)) {
+                        w_gnxToClose.push(p_openedGnx);
+                    }
+                });
+                this.fireDeleteExpiredGnx(w_gnxToClose);
+                return Promise.resolve(w_gnxToClose);
+            });
     }
 
     public watch(p_resource: vscode.Uri): vscode.Disposable {
@@ -56,6 +61,14 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             if (w_position > -1) {
                 this.openedBodiesGnx.splice(w_position, 1);
             }
+        });
+    }
+
+    public fireDeleteExpiredGnx(p_gnxList: string[]): void {
+        console.log('fireDeletedEvent for total # of gnx: ', p_gnxList.length);
+        p_gnxList.forEach(p_gnx => {
+            const w_uri: vscode.Uri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_gnx)
+            this._fireSoon({ uri: w_uri, type: vscode.FileChangeType.Deleted });
         });
     }
 
@@ -161,7 +174,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public delete(uri: vscode.Uri): void {
-        // console.log('called delete');
+        console.log('called delete ', uri.fsPath);
         // throw vscode.FileSystemError.NoPermissions();
     }
 
@@ -185,7 +198,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
         this._fireSoonHandle = setTimeout(() => {
             this._emitter.fire(this._bufferedEvents);
-            this._bufferedEvents.length = 0;
+            console.log('firing # of events :', this._bufferedEvents.length);
+            this._bufferedEvents.length = 0; // clearing events array
         }, 5);
     }
 }

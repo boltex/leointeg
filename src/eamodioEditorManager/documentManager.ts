@@ -96,6 +96,14 @@ export class DocumentManager extends Disposable {
     }
 
     async closeExpired(p_gnxToClose: string[]) {
+        if (!window.visibleTextEditors.length) {
+            console.log("No visible text editors at start");
+            return ([]);
+        }
+        if (!p_gnxToClose.length) {
+            console.log("No gnx to close");
+            return ([]);
+        }
         try {
             const editorTracker = new ActiveEditorTracker();
 
@@ -132,10 +140,13 @@ export class DocumentManager extends Disposable {
                 } else {
                     editor = await editorTracker.awaitNext(500);
                 }
+                if (w_hasDeleted && !window.visibleTextEditors.length) {
+                    console.log("No visible text editors anymore");
+                    break;
+                }
                 if (editor !== undefined &&
                     openEditors.some(_ => TextEditorComparer.equals(_, editor, { useId: true, usePosition: true }))) {
                     // break;
-
                     if (w_endLoopDetectSoFar === 0) {
                         console.log('detected same! openEditors.length:', openEditors.length);
                         if (totalVisibleAtStart > openEditors.length) {

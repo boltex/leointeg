@@ -13,9 +13,6 @@ import { Config } from "./config";
 import { DocumentManager } from "./eamodioEditorManager/documentManager";
 
 export class LeoIntegration {
-    // * Misc.
-    private platform: string = os.platform();
-
     // * Control Flags
     public fileOpenedReady: boolean = false;
     public leoBridgeReady: boolean = false;
@@ -197,6 +194,7 @@ export class LeoIntegration {
         // * Get command from settings or best command for the current OS
         let w_pythonPath = "";
         const w_serverScriptPath = this.context.extensionPath + Constants.LEO_BRIDGE_SERVER_PATH;
+        const w_platform: string = os.platform();
         if (this.config.leoPythonCommand && this.config.leoPythonCommand.length) {
             // start by running command (see executeCommand for multiple useful snippets)
             console.log('Starting server with command: ' + this.config.leoPythonCommand);
@@ -205,11 +203,11 @@ export class LeoIntegration {
         } else {
             w_pythonPath = Constants.LEO_DEFAULT_PYTHON;
 
-            if (this.platform === "win32") {
+            if (w_platform === "win32") {
                 w_pythonPath = Constants.LEO_WIN32_PYTHON;
             }
             console.log('Launch with default command : ' +
-                w_pythonPath + ((this.platform === "win32" && w_pythonPath === "py") ? " -3 " : "") +
+                w_pythonPath + ((w_platform === "win32" && w_pythonPath === "py") ? " -3 " : "") +
                 " " + w_serverScriptPath);
         }
 
@@ -218,7 +216,7 @@ export class LeoIntegration {
         const w_serverStartPromise = new Promise((resolve, reject) => {
             // * Spawn a python child process for a leoBridge server
             let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
-            if (this.platform === "win32" && w_pythonPath === "py") {
+            if (os.platform() === "win32" && w_pythonPath === "py") {
                 w_args.push("-3");
             }
             w_args.push(w_serverScriptPath);
@@ -259,7 +257,6 @@ export class LeoIntegration {
         }, (p_reason) => {
             vscode.window.showErrorMessage('Error - Cannot start Server: ' + p_reason);
         });
-
     }
 
     private setTreeViewTitle(): void { // * Available soon, see enable-proposed-api https://code.visualstudio.com/updates/v1_39#_treeview-message-api
@@ -375,11 +372,17 @@ export class LeoIntegration {
                 // console.log("FORCED SELECTED NODE onActiveEditorChanged ");
                 // ! This is the DELETE BUG
                 // * setSelectedNode now returns what it could select, if anything
-                // TODO : Used returned node instead!
-                this.leoBridge.action("setSelectedNode", w_node.apJson).then(() => {
-                    this.lastSelectedLeoNode = w_node;
-                    this.reveal(w_node, { select: true, focus: false });
+
+                this.leoBridge.action("setSelectedNode", w_node.apJson).then((p_answer: LeoBridgePackage) => {
+                    const p_selectedNode = this.apToLeoNode(p_answer.node);
+                    this.lastSelectedLeoNode = p_selectedNode;
+                    this.reveal(p_selectedNode, { select: true, focus: false });
                 });
+
+                // this.leoBridge.action("setSelectedNode", w_node.apJson).then(() => {
+                //     this.lastSelectedLeoNode = w_node;
+                //     this.reveal(w_node, { select: true, focus: false });
+                // });
             }
         }
         // * Status flag check
@@ -408,6 +411,7 @@ export class LeoIntegration {
         }
         // * Status flag check
         if (vscode.window.activeTextEditor) {
+            // Yes an editor is active, just check if its leo scheme
             if (p_event.textEditor.document.uri.scheme === Constants.LEO_URI_SCHEME && vscode.window.activeTextEditor.document.uri.scheme === Constants.LEO_URI_SCHEME) {
                 if (!this.leoObjectSelected) {
                     this.leoObjectSelected = true;
@@ -422,6 +426,7 @@ export class LeoIntegration {
                 }
             }
         } else {
+            // No editor even active
             if (this.leoObjectSelected) {
                 this.leoObjectSelected = false;
                 this.updateStatusBarDebounced();
@@ -799,10 +804,15 @@ export class LeoIntegration {
         // * Trigger event to save previous document just in in case (if timer to save is already started for another document)
         this.triggerBodySave();
         return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
-            this.leoTextDocumentNodesRef[p_node.gnx] = p_node;
+            // this.leoTextDocumentNodesRef[p_node.gnx] = p_node;
             if (!this.config.treeKeepFocusWhenAside) {
-                this.leoBridge.action("setSelectedNode", p_node.apJson).then(() => {
-                    this.reveal(p_node, { select: true, focus: false });
+                // this.leoBridge.action("setSelectedNode", p_node.apJson).then(() => {
+                //     this.reveal(p_node, { select: true, focus: false });
+                // });
+                this.leoBridge.action("setSelectedNode", p_node.apJson).then((p_answer: LeoBridgePackage) => {
+                    const p_selectedNode = this.apToLeoNode(p_answer.node);
+                    this.leoTextDocumentNodesRef[p_node.gnx] = p_selectedNode;
+                    this.reveal(p_selectedNode, { select: true, focus: false });
                 });
             }
             return vscode.window.showTextDocument(p_document, {
@@ -902,29 +912,32 @@ export class LeoIntegration {
             // start by finishing any pending edits by triggering body save
             this.triggerBodySave()
                 .then(p_saveResult => {
-                    console.log('resolve from possible pending save : ', p_saveResult);
                     return this.leoBridge.action("deletePNode", p_node.apJson);
                 })
                 .then(p_package => {
-                    console.log('got Back from deletePNode, close expired, then reveal: ', p_package.node.headline);
+                    console.log('got Back from deletePNode, should reveal: ', p_package.node.headline);
                     // * If this.lastSelectedLeoNode is undefined it will be set by arrayToLeoNodesArray when refreshing tree root
+                    // this.lastSelectedLeoNode = this.apToLeoNode(p_package.node); // Set to answer from delete (selection)
                     this.lastSelectedLeoNode = undefined;
-                    // Get list of bodies to close
-                    return this.leoFileSystem.refreshPossibleGnxList();
-                })
-                .then(p_list => {
+                    this.bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_package.node.gnx); // ! don't showSelectedBodyDocument yet
                     return this.leoFileSystem.getExpiredGnxList();
                 })
                 .then(p_expiredList => {
+                    p_expiredList.forEach(p_expiredGnx => {
+                        console.log('expired list item gnx: ', p_expiredGnx);
+                        vscode.workspace.fs.delete(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_expiredGnx));
+                    });
+                    console.log('done calling delete on all expired gnx still opened');
                     return this.documentManager.closeExpired(p_expiredList);
                 })
                 .then(p_docResult => {
                     console.log('Back from doc manager', p_docResult);
                     // * If this.lastSelectedLeoNode is undefined it will be set by arrayToLeoNodesArray when refreshing tree root
-                    this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // finish by refreshing the tree and selecting the node
                     this.leoCyclingBodies = false;
                     this.leoBridgeActionBusy = false;
-                    return this.showSelectedBodyDocument();
+                    this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // ! finish by refreshing the tree and selecting the node
+
+                    return this.showSelectedBodyDocument(); // TODO : BETTER TIMING FOR SHOWING SELECTED BODY !!!
                 });
         }
 
