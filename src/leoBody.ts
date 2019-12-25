@@ -23,6 +23,14 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     constructor(private leoIntegration: LeoIntegration) { }
 
+    public gnxValid(p_gnx: string): boolean {
+        if (this.possibleGnxList.includes(p_gnx)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public refreshPossibleGnxList(): Thenable<string[]> {
         // get updated list of possible gnx
         console.log('calling leoBridge with getAllGnx');
@@ -77,7 +85,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public fireDeleteExpiredGnx(p_gnxList: string[]): void {
         console.log('fireDeletedEvent for total # of gnx: ', p_gnxList.length);
         p_gnxList.forEach(p_gnx => {
-            const w_uri: vscode.Uri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_gnx)
+            const w_uri: vscode.Uri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_gnx);
             this._fireSoon({ uri: w_uri, type: vscode.FileChangeType.Deleted });
         });
     }

@@ -365,9 +365,18 @@ export class LeoIntegration {
             this.updateStatusBarDebounced();
             return;
         }
-        // * Reveal if needed
+        // * Close and return  if deleted, or reveal in outline tree if needed
         if (p_event && p_event.document.uri.scheme === Constants.LEO_URI_SCHEME) {
-            const w_node: LeoNode | undefined = this.leoTextDocumentNodesRef[p_event.document.uri.fsPath.substr(1)];
+            const w_editorGnx: string = p_event.document.uri.fsPath.substr(1);
+            // If already deleted and not closed: just close it and return!
+            if (!this.leoFileSystem.gnxValid(w_editorGnx)) {
+                vscode.commands.executeCommand('workbench.action.closeActiveEditor')
+                    .then(() => {
+                        console.log('got back from "closeActiveEditor" EDITOR HAD CHANGED TO A DELETED GNX!');
+                    });
+                return;
+            }
+            const w_node: LeoNode | undefined = this.leoTextDocumentNodesRef[w_editorGnx];
             if (w_node && this.lastSelectedLeoNode) {
                 // select node in tree
                 // console.log("FORCED SELECTED NODE onActiveEditorChanged ");
