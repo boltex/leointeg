@@ -52,6 +52,16 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             });
     }
 
+    public getRemainingWatchedGnxList(): Thenable<string[]> {
+        const w_remaining: string[] = [];
+        this.possibleGnxList.forEach(p_openedGnx => {
+            if (this.openedBodiesGnx.includes(p_openedGnx)) {
+                w_remaining.push(p_openedGnx);
+            }
+        });
+        return Promise.resolve(w_remaining);
+    }
+
     public watch(p_resource: vscode.Uri): vscode.Disposable {
         if (!this.openedBodiesGnx.includes(p_resource.fsPath.substr(1))) {
             this.openedBodiesGnx.push(p_resource.fsPath.substr(1)); // add gnx

@@ -106,7 +106,7 @@ export class DocumentManager extends Disposable {
         }
         try {
             const editorTracker = new ActiveEditorTracker();
-
+            let w_noEditorCount = 0;
             let active = window.activeTextEditor;
             let editor = active;
             const openEditors: TextEditor[] = [];
@@ -129,8 +129,8 @@ export class DocumentManager extends Disposable {
                     if (p_gnxToClose.includes(editor.document.fileName.substr(1))) {
                         // remove
                         w_hasDeleted = true;
+                        console.log('closeExpired Push Editor');
                     } else {
-
                         console.log('closeExpired Push Editor');
                         openEditors.push(editor);
                     }
@@ -165,8 +165,15 @@ export class DocumentManager extends Disposable {
                             break;
                         }
                     }
-
+                } else {
+                    console.log('No editor');
+                    w_noEditorCount = w_noEditorCount + 1;
+                    if (w_noEditorCount > 1) {
+                        break;
+                    }
                 }
+
+
             } while (
                 (w_endLoopDetectSoFar < w_endLoopDetectNeeded) ||
                 ((active === undefined && editor === undefined) ||

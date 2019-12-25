@@ -2,7 +2,8 @@ export const enum RevealType {
     NoReveal = 0,
     Reveal,
     RevealSelect,
-    RevealSelectFocus
+    RevealSelectFocus,
+    RevealSelectFocusShowBody
 }
 
 export interface LeoAction { // pushed and resolved as a stack
