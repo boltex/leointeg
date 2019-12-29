@@ -355,6 +355,7 @@ export class LeoIntegration {
 
     private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
         if (this.leoCyclingBodies) {
+            // Active Editor might change during 'delete expired gnx'
             return;
         }
         this.triggerBodySave(); // Save in case edits were pending
@@ -417,6 +418,7 @@ export class LeoIntegration {
 
     private onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
         if (this.leoCyclingBodies) {
+            // Active Editor might change during 'delete expired gnx'
             return;
         }
         // * Status flag check
@@ -935,7 +937,7 @@ export class LeoIntegration {
                     return this.leoBridge.action("deletePNode", p_node.apJson);
                 })
                 .then(p_package => {
-                    console.log('got Back from delete, after closing unneeded bodies we should reveal: ', p_package.node.headline);
+                    console.log('Back from delete, after closing unneeded bodies, we should reveal node: ', p_package.node.headline);
                     // this.bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_package.node.gnx); // ! don't showSelectedBodyDocument yet
                     return this.leoFileSystem.getExpiredGnxList();
                 })
