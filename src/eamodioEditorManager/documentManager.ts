@@ -103,6 +103,8 @@ export class DocumentManager extends Disposable {
         }
         // eamodio method of cycling tabs to get to each text editors
         try {
+            let w_exitReason = "";
+            let w_closedCount = 0;
             const editorTracker = new ActiveEditorTracker();
             let w_noEditorCount = 0;
             let w_noEditorNeeded = window.visibleTextEditors.length; // may end up with as many as editor panes are in use
@@ -133,7 +135,7 @@ export class DocumentManager extends Disposable {
                     }
                 }
                 if (w_hasDeleted) {
-                    console.log(' - CloseActiveEditor - ');
+                    w_closedCount = w_closedCount + 1;
                     editor = await editorTracker.awaitClose(500); // perform "BuiltInCommands.CloseActiveEditor"
                     // falls back on one already scanned?
                     // better push limit back for w_endLoopDetectNeeded and w_noEditorNeeded !
@@ -143,7 +145,8 @@ export class DocumentManager extends Disposable {
                     editor = await editorTracker.awaitNext(500);
                 }
                 if (w_hasDeleted && !window.visibleTextEditors.length) {
-                    console.log("break : No more visible text editors");
+                    // console.log("break : No more visible text editors");
+                    w_exitReason = "No more editors";
                     break;
                 }
                 if (editor !== undefined &&
@@ -159,14 +162,16 @@ export class DocumentManager extends Disposable {
                         w_endLoopDetectSoFar = w_endLoopDetectSoFar + 1;
                         if (w_endLoopDetectSoFar >= w_endLoopDetectNeeded) {
                             w_comparedEqual = true;
-                            console.log("break : DetectSoFar = DetectNeeded = ", w_endLoopDetectSoFar);
+                            // console.log("break : DetectSoFar = DetectNeeded = ", w_endLoopDetectSoFar);
+                            w_exitReason = "Detect same " + w_endLoopDetectSoFar + " times";
                             break;
                         }
                     }
                 } else {
                     w_noEditorCount = w_noEditorCount + 1;
                     if (w_noEditorCount >= w_noEditorNeeded) {
-                        console.log('break : noEditorCount = noEditorNeeded = ', w_noEditorNeeded);
+                        // console.log('break : noEditorCount = noEditorNeeded = ', w_noEditorNeeded);
+                        w_exitReason = 'No editor ' + w_noEditorNeeded + " times";
                         break;
                     }
 
@@ -180,6 +185,9 @@ export class DocumentManager extends Disposable {
             );
 
             editorTracker.dispose();
+            if (w_closedCount > 0) {
+                window.showInformationMessage("" + w_closedCount + " body editor" + (w_closedCount > 1 ? "s" : "") + " closed after delete. Stopped cycling after " + w_exitReason);
+            }
 
             const editors = openEditors
                 .filter(_ => _.document !== undefined)
