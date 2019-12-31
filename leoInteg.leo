@@ -240,8 +240,8 @@ if __name__ == '__main__':
             else:
                 w_foundPNode = self.findPNodeFromGnx(p_ap['gnx'])
                 if w_foundPNode:
-                    print("got first p node with gnx: "+ p_ap['gnx'])
-                    self.commander.selectPosition(foundPNode)
+                    print("got first p node with gnx: " + p_ap['gnx'])
+                    self.commander.selectPosition(w_foundPNode)
                 else:
                     print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
     # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
@@ -517,11 +517,16 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127001506.1">def insertPNode(self, p_ap):
-    '''Insert a node, don't select it.'''
+    '''Insert a node at given node, then select it once created, and finally return it'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
-            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+            self.commander.selectPosition(w_p)
+
+            # print("finally returning node" + self.commander.p.v.headString())
+            return self.outputPNode(self.commander.p)  # in both cases, return selected node
+
+            # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
             # return self.outputPNode(w_p)
         else:
             return self.outputError("Error in insertPNode no w_p node found")  # default empty

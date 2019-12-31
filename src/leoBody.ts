@@ -23,6 +23,11 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     constructor(private leoIntegration: LeoIntegration) { }
 
+
+    public addGnx(p_gnx: string): void {
+        this.possibleGnxList.push(p_gnx);
+    }
+
     public gnxValid(p_gnx: string): boolean {
         if (this.possibleGnxList.includes(p_gnx)) {
             return true;
@@ -33,14 +38,14 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public refreshPossibleGnxList(): Thenable<string[]> {
         // get updated list of possible gnx
-        console.log('calling leoBridge with getAllGnx');
+        // console.log('calling leoBridge with getAllGnx');
         return this.leoIntegration.leoBridge.action("getAllGnx", "{}").then((p_result) => {
             if (p_result.allGnx) {
                 this.possibleGnxList = p_result.allGnx;
             } else {
                 this.possibleGnxList = [];
             }
-            console.log('possibleGnxList LENGTH: ', this.possibleGnxList.length);
+            // console.log('possibleGnxList LENGTH: ', this.possibleGnxList.length);
             return Promise.resolve(this.possibleGnxList);
         });
     }
@@ -83,7 +88,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public fireDeleteExpiredGnx(p_gnxList: string[]): void {
-        console.log('fireDeletedEvent for total # of gnx: ', p_gnxList.length);
+        // console.log('fireDeletedEvent for total # of gnx: ', p_gnxList.length);
         p_gnxList.forEach(p_gnx => {
             const w_uri: vscode.Uri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_gnx);
             this._fireSoon({ uri: w_uri, type: vscode.FileChangeType.Deleted });
@@ -100,7 +105,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             } else {
                 const w_gnx = uri.fsPath.substr(1);
                 if (!this.possibleGnxList.includes(w_gnx)) {
-                    console.log("hey! Not in list! stat missing refreshes??");
+                    // console.log("hey! Not in list! stat missing refreshes??");
                     throw vscode.FileSystemError.FileNotFound();
                 } else {
                     return this.leoIntegration.leoBridge.action("getBodyLength", '"' + w_gnx + '"')
@@ -131,10 +136,10 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public readDirectory(uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
-        console.log('called readDirectory', uri.fsPath);
+        // console.log('called readDirectory', uri.fsPath);
         if (uri.fsPath === '/') {
             return this.refreshPossibleGnxList().then((p_result) => {
-                console.log('FROM readDirectory - got back from getAllGnx:', p_result);
+                // console.log('FROM readDirectory - got back from getAllGnx:', p_result);
                 const w_directory: [string, vscode.FileType][] = [];
                 p_result.forEach((p_gnx: string) => {
                     w_directory.push([p_gnx, vscode.FileType.File]);
@@ -147,7 +152,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public createDirectory(uri: vscode.Uri): void {
-        console.log('called createDirectory');
+        console.log('called createDirectory'); // should not happen
         throw vscode.FileSystemError.NoPermissions();
     }
 
@@ -158,7 +163,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             } else {
                 const w_gnx = uri.fsPath.substr(1);
                 if (!this.possibleGnxList.includes(w_gnx)) {
-                    console.log("hey! Not in list! readFile missing refreshes??");
+                    // console.log("hey! Not in list! readFile missing refreshes??");
                     throw vscode.FileSystemError.FileNotFound();
                 } else {
                     return this.leoIntegration.leoBridge.action("getBody", '"' + w_gnx + '"')
@@ -192,12 +197,12 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public delete(uri: vscode.Uri): void {
-        console.log('called delete ', uri.fsPath);
+        // console.log('called delete ', uri.fsPath);
         // throw vscode.FileSystemError.NoPermissions();
     }
 
     public copy(uri: vscode.Uri): void {
-        console.log('called copy');
+        console.log('called copy'); // should not happen
         throw vscode.FileSystemError.NoPermissions();
     }
 
@@ -216,7 +221,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
         this._fireSoonHandle = setTimeout(() => {
             this._emitter.fire(this._bufferedEvents);
-            console.log('firing # of events :', this._bufferedEvents.length);
+            // console.log('firing # of events :', this._bufferedEvents.length);
             this._bufferedEvents.length = 0; // clearing events array
         }, 5);
     }

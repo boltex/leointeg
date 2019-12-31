@@ -72,6 +72,7 @@ export class LeoIntegration {
 
     private bodyTextDocumentSameUri: boolean = false; // Flag used when checking if clicking a node requires opening a body pane text editor
     private bodyMainSelectionColumn: vscode.ViewColumn | undefined;
+    private forceBodyFocus: boolean = false; // Flag used to force focus in body when next 'showing' of this body occurs (after edit headline if already selected)
 
     // * Body pane dictionary of GNX, linking to leoNodes
     // * Used when showing a body text, to force selection of node when editor tabs are switched
@@ -90,6 +91,13 @@ export class LeoIntegration {
         value: "", // will be replaced live upon showing from the node's text
         valueSelection: undefined,
         prompt: 'Edit Headline'
+    };
+    // * Insert Node Headline Input Box
+    private newHeadlineInputOptions: vscode.InputBoxOptions = {
+        ignoreFocusOut: true, // clicking outside cancels the headline change
+        value: "", // will be replaced live upon showing from the node's text
+        valueSelection: undefined,
+        prompt: 'New Node\'s Headline'
     };
 
     // * Timing
@@ -683,7 +691,10 @@ export class LeoIntegration {
             const w_leoNode = this.apToLeoNode(w_apData);
             if (this.revealSelectedNode && w_apData.selected) { // * revealSelectedNode flag: Reveal, select and focus or even show body pane!
                 const w_selectFlag = this.revealSelectedNode >= RevealType.RevealSelect; // at least RevealSelect
-                const w_focusFlag = this.revealSelectedNode >= RevealType.RevealSelectFocus;  // at least RevealSelectFocus
+                let w_focusFlag = this.revealSelectedNode >= RevealType.RevealSelectFocus;  // at least RevealSelectFocus
+                if (this.revealSelectedNode === RevealType.RevealSelectShowBody) {
+                    w_focusFlag = false;
+                }
                 const w_showBodyFlag = this.revealSelectedNode >= RevealType.RevealSelectFocusShowBody; // at least RevealSelectFocusShowBody
                 this.revealSelectedNode = RevealType.NoReveal; // ok reset
                 if (!this.lastSelectedLeoNode && this.revealSelectedNode < RevealType.RevealSelectFocusShowBody) { // very first time
@@ -807,10 +818,13 @@ export class LeoIntegration {
                     this.bodyTextDocument = p_textEditor.document;
                 }
             });
-
+            const w_keepFocus = this.forceBodyFocus ? false : this.config.treeKeepFocus;
+            if (this.forceBodyFocus) {
+                this.forceBodyFocus = false; // Reset this single-use flag
+            }
             return vscode.window.showTextDocument(this.bodyTextDocument, {
                 viewColumn: this.bodyMainSelectionColumn ? this.bodyMainSelectionColumn : 1,
-                preserveFocus: this.config.treeKeepFocus, // an optional flag that when true will stop the editor from taking focus
+                preserveFocus: w_keepFocus, // an optional flag that when true will stop the editor from taking focus
                 preview: false // should text document be in preview only? set false for fully opened
                 // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
             }).then(w_bodyEditor => {
@@ -825,11 +839,7 @@ export class LeoIntegration {
         // * Trigger event to save previous document just in in case (if timer to save is already started for another document)
         this.triggerBodySave();
         return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
-            // this.leoTextDocumentNodesRef[p_node.gnx] = p_node;
             if (!this.config.treeKeepFocusWhenAside) {
-                // this.leoBridge.action("setSelectedNode", p_node.apJson).then(() => {
-                //     this.reveal(p_node, { select: true, focus: false });
-                // });
                 this.leoBridge.action("setSelectedNode", p_node.apJson).then((p_answer: LeoBridgePackage) => {
                     const p_selectedNode = this.apToLeoNode(p_answer.node);
                     this.leoTextDocumentNodesRef[p_node.gnx] = p_selectedNode;
@@ -849,6 +859,30 @@ export class LeoIntegration {
         });
     }
 
+    public focusBodyIfVisible(p_gnx: string): Thenable<boolean> {
+        let w_found: undefined | vscode.TextEditor;
+        vscode.window.visibleTextEditors.forEach(p_textEditor => {
+            if (!w_found && (p_textEditor.document.uri.fsPath.substr(1) === p_gnx)) {
+                w_found = p_textEditor;
+            }
+        });
+        if (w_found) {
+            return vscode.window.showTextDocument(w_found.document, {
+                viewColumn: w_found.viewColumn,
+                preserveFocus: false, // an optional flag that when true will stop the editor from taking focus
+                preview: false // should text document be in preview only? set false for fully opened
+                // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
+            }).then(w_bodyEditor => {
+                // console.log('focusBodyIfVisible in column: ', w_bodyEditor.viewColumn);
+                // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
+                // other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
+                return Promise.resolve(true);
+            });
+        } else {
+            return Promise.resolve(false);
+        }
+    }
+
     private leoBridgeActionAndRefresh(p_action: string, p_node: LeoNode, p_revealType?: RevealType | undefined): Promise<LeoBridgePackage> {
         return this.leoBridge.action(p_action, p_node.apJson).then(p_package => {
             this.leoTreeDataProvider.refreshTreeRoot(p_revealType); // refresh all, needed to get clones to refresh too!
@@ -857,11 +891,14 @@ export class LeoIntegration {
     }
 
     // * Leo Commands accessible via mouse clicks and right-click menu entries for single nodes
-    public editHeadline(p_node: LeoNode) {
+    public editHeadline(p_node: LeoNode, p_isSelectedNode?: boolean) {
         if (this.leoBridgeActionBusy) {
             // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
             console.log('Too fast! editHeadline');
         } else {
+            if (!p_isSelectedNode && p_node === this.lastSelectedLeoNode) {
+                p_isSelectedNode = true;
+            }
             this.leoBridgeActionBusy = true;
             this.editHeadlineInputOptions.value = p_node.label; // preset input pop up
             vscode.window.showInputBox(this.editHeadlineInputOptions)
@@ -872,12 +909,22 @@ export class LeoIntegration {
                             this.leoBridge.action("setNewHeadline", "{\"node\":" + p_node.apJson + ", \"headline\": \"" + p_newHeadline + "\"}"
                             ).then(
                                 (p_answer: LeoBridgePackage) => {
+                                    if (p_isSelectedNode) {
+                                        this.forceBodyFocus = true;
+                                    }
                                     // ! p_revealSelection flag needed because we voluntarily refreshed the automatic ID
-                                    this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocus); // refresh all, needed to get clones to refresh too!
+                                    this.leoTreeDataProvider.refreshTreeRoot(p_isSelectedNode ? RevealType.RevealSelect : RevealType.RevealSelectFocus); // refresh all, needed to get clones to refresh too!
+                                    // focus on body pane
+                                    // if (p_isSelectedNode) {
+                                    //     this.focusBodyIfVisible(p_node.gnx);
+                                    // }
                                     this.leoBridgeActionBusy = false;
                                 }
                             );
                         } else {
+                            if (p_isSelectedNode) {
+                                this.focusBodyIfVisible(p_node.gnx);
+                            }
                             this.leoBridgeActionBusy = false;
                         }
                     }
@@ -890,9 +937,10 @@ export class LeoIntegration {
             console.log('Too fast! mark');
         } else {
             this.leoBridgeActionBusy = true;
-            this.leoBridgeActionAndRefresh("markPNode", p_node).then(() => {
-                this.leoBridgeActionBusy = false;
-            });
+            this.leoBridgeActionAndRefresh("markPNode", p_node)
+                .then(() => {
+                    this.leoBridgeActionBusy = false;
+                });
             // don't wait for promise to resolve for setting context
             vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SELECTED_MARKED, true);
         }
@@ -903,9 +951,10 @@ export class LeoIntegration {
             console.log('Too fast! unmark');
         } else {
             this.leoBridgeActionBusy = true;
-            this.leoBridgeActionAndRefresh("unmarkPNode", p_node).then(() => {
-                this.leoBridgeActionBusy = false;
-            });
+            this.leoBridgeActionAndRefresh("unmarkPNode", p_node)
+                .then(() => {
+                    this.leoBridgeActionBusy = false;
+                });
             // don't wait for promise to resolve for setting context
             vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SELECTED_MARKED, false);
         }
@@ -937,25 +986,25 @@ export class LeoIntegration {
                     return this.leoBridge.action("deletePNode", p_node.apJson);
                 })
                 .then(p_package => {
-                    console.log('Back from delete, after closing unneeded bodies, we should reveal node: ', p_package.node.headline);
+                    // console.log('Back from delete, after closing unneeded bodies, we should reveal node: ', p_package.node.headline);
                     // this.bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_package.node.gnx); // ! don't showSelectedBodyDocument yet
                     return this.leoFileSystem.getExpiredGnxList();
                 })
                 .then(p_expiredList => {
                     p_expiredList.forEach(p_expiredGnx => {
-                        console.log('expired list item gnx: ', p_expiredGnx);
+                        // console.log('expired list item gnx: ', p_expiredGnx);
                         vscode.workspace.fs.delete(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_expiredGnx));
                     });
-                    console.log('done calling delete on all expired gnx still opened');
+                    // console.log('done calling delete on all expired gnx still opened');
                     return this.documentManager.closeExpired(p_expiredList);
                 })
                 .then(p_docResult => {
-                    console.log('Back from doc manager', p_docResult);
+                    // console.log('Back from doc manager', p_docResult);
                     // With any remaining opened text editors watched:
                     return this.leoFileSystem.getRemainingWatchedGnxList();
                 })
                 .then((p_remainingGnxList) => {
-                    console.log('Back from get remaining Gnx List', p_remainingGnxList);
+                    // console.log('Back from get remaining Gnx List', p_remainingGnxList);
                     let w_located: boolean | string = false;
                     p_remainingGnxList.forEach(p_remainingGnx => {
                         if (!w_located && this.locateOpenedBody(p_remainingGnx)) {
@@ -965,14 +1014,11 @@ export class LeoIntegration {
                     return Promise.resolve(w_located);
                 })
                 .then(p_locatedResult => {
-                    console.log('Back from locate (false if not found):', p_locatedResult);
+                    // console.log('Back from locate (false if not found):', p_locatedResult);
                     // * If this.lastSelectedLeoNode is undefined it will be set by arrayToLeoNodesArray when refreshing tree root
                     this.leoCyclingBodies = false;
                     this.leoBridgeActionBusy = false;
                     this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocusShowBody); // ! finish by refreshing the tree and selecting the node
-                    // return this.showSelectedBodyDocument();
-                    // TODO : BETTER TIMING FOR SHOWING SELECTED BODY
-                    // TODO : OR REPLACE WITH REVEAL-FLAG TO SHOW BODY!!!
                 });
         }
 
@@ -990,7 +1036,39 @@ export class LeoIntegration {
         this.leoBridgeActionAndRefresh("movePNodeUp", p_node);
     }
     public insertNode(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("insertPNode", p_node);
+        if (this.leoBridgeActionBusy) {
+            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
+            console.log('Too fast! insert');
+        } else {
+            this.leoBridgeActionBusy = true;
+            this.leoBridge.action("insertPNode", p_node.apJson).then(p_package => {
+                this.leoFileSystem.addGnx(p_package.node.gnx);
+                this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectShowBody); // refresh all, needed to get clones to refresh too!
+
+                this.newHeadlineInputOptions.value = p_package.node.headline; // preset input pop up
+                vscode.window.showInputBox(this.newHeadlineInputOptions)
+                    .then(
+                        p_newHeadline => {
+                            if (p_newHeadline) {
+                                p_node.label = p_newHeadline; // ! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
+                                this.leoBridge.action("setNewHeadline", "{\"node\":" + JSON.stringify(p_package.node) + ", \"headline\": \"" + p_newHeadline + "\"}"
+                                ).then(
+                                    (p_answer: LeoBridgePackage) => {
+                                        this.forceBodyFocus = true;
+                                        // ! p_revealSelection flag needed because we voluntarily refreshed the automatic ID
+                                        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // refresh all, needed to get clones to refresh too!
+                                        this.leoBridgeActionBusy = false;
+                                    }
+                                );
+                            } else {
+                                this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // refresh all, needed to get clones to refresh too!
+                                this.focusBodyIfVisible(p_node.gnx);
+                                this.leoBridgeActionBusy = false;
+                            }
+                        }
+                    );
+            });
+        }
     }
     public cloneNode(p_node: LeoNode): void {
         this.leoBridgeActionAndRefresh("clonePNode", p_node);
@@ -1004,7 +1082,7 @@ export class LeoIntegration {
     // * Leo Commands accessible via the command palette or keyboard shortcuts applied to the currently selected node
     public editSelectedHeadline() {
         if (this.lastSelectedLeoNode) {
-            this.editHeadline(this.lastSelectedLeoNode);
+            this.editHeadline(this.lastSelectedLeoNode, true);
         }
     }
     public markSelection(): void {
@@ -1141,15 +1219,16 @@ export class LeoIntegration {
         if (this.fileOpenedReady) {
             console.log("sending test 'getSelectedNode'");
             // * if no parameter required, still send "{}"
-            this.leoBridge.action("getSelectedNode", "{}").then(
-                // this.leoBridge.action("getSelectedNode", "{\"testparam\":\"hello test parameter\"}").then(
-                (p_answer: LeoBridgePackage) => {
+            this.leoBridge.action("getSelectedNode", "{}")
+                .then((p_answer: LeoBridgePackage) => {
                     console.log('Test got Back from getSelectedNode, now revealing :', p_answer.node.headline);
                     return Promise.resolve(this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true }));
-                }).then(() => {
+                })
+                .then(() => {
                     console.log("...now testing documentManager ");
                     return this.documentManager.countOpen();
-                }).then(p_docResult => {
+                })
+                .then(p_docResult => {
                     console.log('Back from doc manager', p_docResult);
                 });
         } else {

@@ -1,9 +1,10 @@
-export const enum RevealType {
+export const enum RevealType { // TODO : Document
     NoReveal = 0,
     Reveal,
     RevealSelect,
     RevealSelectFocus,
-    RevealSelectFocusShowBody
+    RevealSelectFocusShowBody,
+    RevealSelectShowBody
 }
 
 export interface LeoAction { // pushed and resolved as a stack
@@ -32,7 +33,7 @@ export interface ArchivedPosition { // * from Leo's leoflexx.py
     }[];                  // for (stack_v, stack_childIndex) in p.stack]
 }
 
-export interface LeoBridgePackage {
+export interface LeoBridgePackage { // TODO : Document
     id: number;
     [key: string]: any;
 }

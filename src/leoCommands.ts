@@ -7,7 +7,7 @@
 // * - Ctrl-U (move-outline-up)
 // * - clone-node
 // * - Ctrl-I insert-node
-// * - Ctrl-I delete-node
+// * - ?????? delete-node
 // * - Ctrl-{ (promote)
 // * - Ctrl-} (demote)
 // ! - Ctrl-Z (undo)
