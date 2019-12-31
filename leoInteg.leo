@@ -452,12 +452,23 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127000344.1">def movePNodeDown(self, p_ap):
-    '''Move a node DOWN, don't select it.'''
+    '''Move a node DOWN, don't select it. '''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
-            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            # return self.outputPNode(w_p)
+            if w_p == self.commander.p:
+                # print("already on selection")
+                self.commander.moveOutlineDown()  # Move node
+            else:
+                # print("not on selection")
+                oldPosition = self.commander.p  # not same node, save position to possibly return to
+                self.commander.selectPosition(w_p)
+                self.commander.moveOutlineDown()  # Move node
+                if self.commander.positionExists(oldPosition):
+                    self.commander.selectPosition(oldPosition)  # select if old position still valid
+
+            # print("finally returning node" + self.commander.p.v.headString())
+            return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
             return self.outputError("Error in movePNodeDown no w_p node found")  # default empty
     else:
@@ -469,8 +480,19 @@ if __name__ == '__main__':
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
-            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            # return self.outputPNode(w_p)
+            if w_p == self.commander.p:
+                # print("already on selection")
+                self.commander.moveOutlineLeft()  # Move node
+            else:
+                # print("not on selection")
+                oldPosition = self.commander.p  # not same node, save position to possibly return to
+                self.commander.selectPosition(w_p)
+                self.commander.moveOutlineLeft()  # Move node
+                if self.commander.positionExists(oldPosition):
+                    self.commander.selectPosition(oldPosition)  # select if old position still valid
+
+            # print("finally returning node" + self.commander.p.v.headString())
+            return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
             return self.outputError("Error in movePNodeLeft no w_p node found")  # default empty
     else:
@@ -482,8 +504,19 @@ if __name__ == '__main__':
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
-            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            # return self.outputPNode(w_p)
+            if w_p == self.commander.p:
+                # print("already on selection")
+                self.commander.moveOutlineRight()  # Move node
+            else:
+                # print("not on selection")
+                oldPosition = self.commander.p  # not same node, save position to possibly return to
+                self.commander.selectPosition(w_p)
+                self.commander.moveOutlineRight()  # Move node
+                if self.commander.positionExists(oldPosition):
+                    self.commander.selectPosition(oldPosition)  # select if old position still valid
+
+            # print("finally returning node" + self.commander.p.v.headString())
+            return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
             return self.outputError("Error in movePNodeRight no w_p node found")  # default empty
     else:
@@ -495,8 +528,19 @@ if __name__ == '__main__':
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
-            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            # return self.outputPNode(w_p)
+            if w_p == self.commander.p:
+                # print("already on selection")
+                self.commander.moveOutlineUp()  # Move node
+            else:
+                # print("not on selection")
+                oldPosition = self.commander.p  # not same node, save position to possibly return to
+                self.commander.selectPosition(w_p)
+                self.commander.moveOutlineUp()  # Move node
+                if self.commander.positionExists(oldPosition):
+                    self.commander.selectPosition(oldPosition)  # select if old position still valid
+
+            # print("finally returning node" + self.commander.p.v.headString())
+            return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
             return self.outputError("Error in movePNodeUp no w_p node found")  # default empty
     else:
@@ -521,13 +565,9 @@ if __name__ == '__main__':
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
-            self.commander.selectPosition(w_p)
-
-            # print("finally returning node" + self.commander.p.v.headString())
+            w_newNode = w_p.insertAfter()
+            self.commander.selectPosition(w_newNode)
             return self.outputPNode(self.commander.p)  # in both cases, return selected node
-
-            # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            # return self.outputPNode(w_p)
         else:
             return self.outputError("Error in insertPNode no w_p node found")  # default empty
     else:

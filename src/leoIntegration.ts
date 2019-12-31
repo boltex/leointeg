@@ -1024,16 +1024,16 @@ export class LeoIntegration {
 
     }
     public moveOutlineDown(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("movePNodeDown", p_node);
+        this.leoBridgeActionAndRefresh("movePNodeDown", p_node, RevealType.RevealSelectFocusShowBody);
     }
     public moveOutlineLeft(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("movePNodeLeft", p_node);
+        this.leoBridgeActionAndRefresh("movePNodeLeft", p_node, RevealType.RevealSelectFocusShowBody);
     }
     public moveOutlineRight(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("movePNodeRight", p_node);
+        this.leoBridgeActionAndRefresh("movePNodeRight", p_node, RevealType.RevealSelectFocusShowBody);
     }
     public moveOutlineUp(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("movePNodeUp", p_node);
+        this.leoBridgeActionAndRefresh("movePNodeUp", p_node, RevealType.RevealSelectFocusShowBody);
     }
     public insertNode(p_node: LeoNode): void {
         if (this.leoBridgeActionBusy) {

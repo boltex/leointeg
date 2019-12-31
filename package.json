@@ -258,7 +258,7 @@
       {
         "command": "leointeg.markSelection",
         "category": "Leo",
-        "title": "Mark Selected Node"
+        "title": "Mark"
       },
       {
         "command": "leointeg.unmark",
@@ -272,7 +272,7 @@
       {
         "command": "leointeg.unmarkSelection",
         "category": "Leo",
-        "title": "Unmark Selected Node"
+        "title": "Unmark"
       },
       {
         "command": "leointeg.copyNode",
@@ -286,7 +286,7 @@
       {
         "command": "leointeg.copyNodeSelection",
         "category": "Leo",
-        "title": "Copy Selected Node"
+        "title": "Copy Node"
       },
       {
         "command": "leointeg.cutNode",
@@ -296,7 +296,7 @@
       {
         "command": "leointeg.cutNodeSelection",
         "category": "Leo",
-        "title": "Cut Selected Node"
+        "title": "Cut Node"
       },
       {
         "command": "leointeg.pasteNode",
@@ -330,7 +330,7 @@
       {
         "command": "leointeg.deleteSelection",
         "category": "Leo",
-        "title": "Delete Selected Node"
+        "title": "Delete Node"
       },
       {
         "command": "leointeg.moveOutlineDown",
@@ -344,7 +344,7 @@
       {
         "command": "leointeg.moveOutlineDownSelection",
         "category": "Leo",
-        "title": "Move Selected Outline Down"
+        "title": "Move Outline Down"
       },
       {
         "command": "leointeg.moveOutlineLeft",
@@ -358,7 +358,7 @@
       {
         "command": "leointeg.moveOutlineLeftSelection",
         "category": "Leo",
-        "title": "Move Selected Outline Left"
+        "title": "Move Outline Left"
       },
       {
         "command": "leointeg.moveOutlineRight",
@@ -372,7 +372,7 @@
       {
         "command": "leointeg.moveOutlineRightSelection",
         "category": "Leo",
-        "title": "Move Selected Outline Right"
+        "title": "Move Outline Right"
       },
       {
         "command": "leointeg.moveOutlineUp",
@@ -386,7 +386,7 @@
       {
         "command": "leointeg.moveOutlineUpSelection",
         "category": "Leo",
-        "title": "Move Selected Outline Up"
+        "title": "Move Outline Up"
       },
       {
         "command": "leointeg.insertNode",
@@ -418,7 +418,7 @@
       {
         "command": "leointeg.cloneNodeSelection",
         "category": "Leo",
-        "title": "Clone Selected Node"
+        "title": "Clone Node"
       },
       {
         "command": "leointeg.promote",
@@ -428,7 +428,7 @@
       {
         "command": "leointeg.promoteSelection",
         "category": "Leo",
-        "title": "Promote Selected Node"
+        "title": "Promote"
       },
       {
         "command": "leointeg.demote",
@@ -438,7 +438,7 @@
       {
         "command": "leointeg.demoteSelection",
         "category": "Leo",
-        "title": "Demote Selected Node"
+        "title": "Demote"
       },
       {
         "command": "leointeg.undo",
