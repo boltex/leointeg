@@ -570,14 +570,6 @@
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leointeg.hoistSelection",
-          "when": "leoObjectSelected==true"
-        },
-        {
-          "command": "leointeg.deHoist",
-          "when": "leoObjectSelected==true"
-        },
-        {
           "command": "leointeg.editHeadline",
           "when": "false"
         },

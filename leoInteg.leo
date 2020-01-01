@@ -574,12 +574,12 @@ if __name__ == '__main__':
         if w_p:
             if w_p == self.commander.p:
                 # print("already on selection")
-                self.commander.promote()  
+                self.commander.promote()
             else:
                 # print("not on selection")
                 oldPosition = self.commander.p  # not same node, save position to possibly return to
                 self.commander.selectPosition(w_p)
-                self.commander.promote()  
+                self.commander.promote()
                 if self.commander.positionExists(oldPosition):
                     self.commander.selectPosition(oldPosition)  # select if old position still valid
 
@@ -598,12 +598,12 @@ if __name__ == '__main__':
         if w_p:
             if w_p == self.commander.p:
                 # print("already on selection")
-                self.commander.demote()  
+                self.commander.demote()
             else:
                 # print("not on selection")
                 oldPosition = self.commander.p  # not same node, save position to possibly return to
                 self.commander.selectPosition(w_p)
-                self.commander.demote()  
+                self.commander.demote()
                 if self.commander.positionExists(oldPosition):
                     self.commander.selectPosition(oldPosition)  # select if old position still valid
 
@@ -776,12 +776,12 @@ wsPort = 32125
         if w_p:
             if w_p == self.commander.p:
                 # print("already on selection")
-                self.commander.sortChildren()  
+                self.commander.sortChildren()
             else:
                 # print("not on selection")
                 oldPosition = self.commander.p  # not same node, save position to possibly return to
                 self.commander.selectPosition(w_p)
-                self.commander.sortChildren()  
+                self.commander.sortChildren()
                 if self.commander.positionExists(oldPosition):
                     self.commander.selectPosition(oldPosition)  # select if old position still valid
 
@@ -791,6 +791,7 @@ wsPort = 32125
             return self.outputError("Error in sortChildrenPNode no w_p node found")  # default empty
     else:
         return self.outputError("Error in sortChildrenPNode no param p_ap")
+
 </t>
 <t tx="felix.20191231184412.2">def sortSiblingsPNode(self, p_ap):
     '''Sort siblings of a node, don't select it if possible'''
@@ -799,12 +800,12 @@ wsPort = 32125
         if w_p:
             if w_p == self.commander.p:
                 # print("already on selection")
-                self.commander.sortSiblings()  
+                self.commander.sortSiblings()
             else:
                 # print("not on selection")
                 oldPosition = self.commander.p  # not same node, save position to possibly return to
                 self.commander.selectPosition(w_p)
-                self.commander.sortSiblings()  
+                self.commander.sortSiblings()
                 if self.commander.positionExists(oldPosition):
                     self.commander.selectPosition(oldPosition)  # select if old position still valid
 
@@ -822,7 +823,7 @@ wsPort = 32125
         w_p = self.ap_to_p(p_ap)
         if w_p:
             self.commander.selectPosition(w_p)
-            self.commander.hoist()  
+            self.commander.hoist()
             # print("finally returning node" + self.commander.p.v.headString())
             return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
@@ -864,12 +865,14 @@ wsPort = 32125
         w_p = self.ap_to_p(p_ap)
         if w_p:
             self.commander.selectPosition(w_p)
-            self.commander.executeScript()  
+            self.commander.executeScript()
             # print("finally returning node" + self.commander.p.v.headString())
             return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
             return self.outputError("Error in run no w_p node found")  # default empty
     else:
-        return self.outputError("Error in run no param p_ap")</t>
+        return self.outputError("Error in run no param p_ap")
+
+</t>
 </tnodes>
 </leo_file>

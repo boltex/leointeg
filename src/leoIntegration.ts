@@ -1074,26 +1074,26 @@ export class LeoIntegration {
         this.leoBridgeActionAndRefresh("clonePNode", p_node);
     }
     public promote(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("promotePNode", p_node);
+        this.leoBridgeActionAndRefresh("promotePNode", p_node, RevealType.RevealSelectFocusShowBody);
     }
     public demote(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("demotePNode", p_node);
+        this.leoBridgeActionAndRefresh("demotePNode", p_node, RevealType.RevealSelectFocusShowBody);
     }
     public sortChildren(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("sortChildrenPNode", p_node);
+        this.leoBridgeActionAndRefresh("sortChildrenPNode", p_node, RevealType.RevealSelectFocusShowBody);
     }
     public sortSiblings(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("sortSiblingsPNode", p_node);
+        this.leoBridgeActionAndRefresh("sortSiblingsPNode", p_node, RevealType.RevealSelectFocusShowBody);
     }
-    public hoist(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("hoistPNode", p_node);
-    }
-    public deHoist(): void {
-        // * deHoist is a direct call - no command with a selection
-        if (this.lastSelectedLeoNode) {
-            this.leoBridgeActionAndRefresh("deHoist", this.lastSelectedLeoNode);
-        }
-    }
+    // public hoist(p_node: LeoNode): void {
+    //     this.leoBridgeActionAndRefresh("hoistPNode", p_node, RevealType.RevealSelectFocusShowBody);
+    // }
+    // public deHoist(): void {
+    //     // * deHoist is a direct call - no command with a selection
+    //     if (this.lastSelectedLeoNode) {
+    //         this.leoBridgeActionAndRefresh("deHoist", this.lastSelectedLeoNode, RevealType.RevealSelectFocusShowBody);
+    //     }
+    // }
 
     // * Leo Commands accessible via the command palette or keyboard shortcuts applied to the currently selected node
     public editSelectedHeadline() {
@@ -1186,11 +1186,12 @@ export class LeoIntegration {
             this.sortSiblings(this.lastSelectedLeoNode);
         }
     }
-    public hoistSelection(): void {
-        if (this.lastSelectedLeoNode) {
-            this.hoist(this.lastSelectedLeoNode);
-        }
-    }
+
+    // public hoistSelection(): void {
+    //     if (this.lastSelectedLeoNode) {
+    //         this.hoist(this.lastSelectedLeoNode);
+    //     }
+    // }
     // * De-Hoist is a direct call - no command with a selection such as "deHoistSelection"
 
     // * Critical Leo Bridge Actions
