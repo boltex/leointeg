@@ -1079,6 +1079,22 @@ export class LeoIntegration {
     public demote(p_node: LeoNode): void {
         this.leoBridgeActionAndRefresh("demotePNode", p_node);
     }
+    public sortChildren(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("sortChildrenPNode", p_node);
+    }
+    public sortSiblings(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("sortSiblingsPNode", p_node);
+    }
+    public hoist(p_node: LeoNode): void {
+        this.leoBridgeActionAndRefresh("hoistPNode", p_node);
+    }
+    public deHoist(): void {
+        // * deHoist is a direct call - no command with a selection
+        if (this.lastSelectedLeoNode) {
+            this.leoBridgeActionAndRefresh("deHoist", this.lastSelectedLeoNode);
+        }
+    }
+
     // * Leo Commands accessible via the command palette or keyboard shortcuts applied to the currently selected node
     public editSelectedHeadline() {
         if (this.lastSelectedLeoNode) {
@@ -1160,6 +1176,22 @@ export class LeoIntegration {
             this.demote(this.lastSelectedLeoNode);
         }
     }
+    public sortChildrenSelection(): void {
+        if (this.lastSelectedLeoNode) {
+            this.sortChildren(this.lastSelectedLeoNode);
+        }
+    }
+    public sortSiblingsSelection(): void {
+        if (this.lastSelectedLeoNode) {
+            this.sortSiblings(this.lastSelectedLeoNode);
+        }
+    }
+    public hoistSelection(): void {
+        if (this.lastSelectedLeoNode) {
+            this.hoist(this.lastSelectedLeoNode);
+        }
+    }
+    // * De-Hoist is a direct call - no command with a selection such as "deHoistSelection"
 
     // * Critical Leo Bridge Actions
     public undo(): void {

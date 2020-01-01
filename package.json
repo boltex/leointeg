@@ -441,6 +441,26 @@
         "title": "Demote"
       },
       {
+        "command": "leointeg.sortChildrenSelection",
+        "category": "Leo",
+        "title": "Sort Children"
+      },
+      {
+        "command": "leointeg.sortSiblingsSelection",
+        "category": "Leo",
+        "title": "Sort Siblings"
+      },
+      {
+        "command": "leointeg.hoistSelection",
+        "category": "Leo",
+        "title": "Hoist"
+      },
+      {
+        "command": "leointeg.deHoist",
+        "category": "Leo",
+        "title": "De-Hoist"
+      },
+      {
         "command": "leointeg.undo",
         "category": "Leo",
         "title": "Undo",
@@ -539,6 +559,22 @@
         },
         {
           "command": "leointeg.demoteSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.sortChildrenSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.sortSiblingsSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.hoistSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.deHoist",
           "when": "leoObjectSelected==true"
         },
         {

@@ -26,6 +26,7 @@
 <v t="felix.20191128000818.1"><vh>Outline Edition Commands</vh>
 <v t="felix.20191127004621.1"><vh>markPNode</vh></v>
 <v t="felix.20191127235913.1"><vh>unmarkPNode</vh></v>
+<v t="felix.20191231203545.1"><vh>clonePNode</vh></v>
 <v t="felix.20191127004619.1"><vh>copyPNode</vh></v>
 <v t="felix.20191127004620.1"><vh>cutPNode</vh></v>
 <v t="felix.20191130211048.1"><vh>pastePNode</vh></v>
@@ -36,11 +37,16 @@
 <v t="felix.20191127000420.1"><vh>movePNodeRight</vh></v>
 <v t="felix.20191127000420.2"><vh>movePNodeUp</vh></v>
 <v t="felix.20191127001506.1"><vh>insertPNode</vh></v>
-<v t="felix.20191127001502.1"><vh>clonePNode</vh></v>
 <v t="felix.20191127001506.2"><vh>promotePNode</vh></v>
 <v t="felix.20191127001506.3"><vh>demotePNode</vh></v>
+<v t="felix.20191231201748.1"><vh>hoistPNode</vh></v>
+<v t="felix.20191231201749.1"><vh>deHoist</vh></v>
+<v t="felix.20191231184412.1"><vh>sortChildrenPNode</vh></v>
+<v t="felix.20191231184412.2"><vh>sortSiblingsPNode</vh></v>
 </v>
 <v t="felix.20191128001054.1"><vh>Outline and Body Interaction</vh>
+<v t="felix.20191231203711.1"><vh>undo</vh></v>
+<v t="felix.20191231214801.1"><vh>run</vh></v>
 <v t="felix.20191126232434.15"><vh>getPNode</vh></v>
 <v t="felix.20191126232434.16"><vh>getChildren</vh></v>
 <v t="felix.20191126232434.17"><vh>getParent</vh></v>
@@ -110,7 +116,7 @@ todo: flesh this out!</t>
 
 </t>
 <t tx="felix.20191126232434.15">def getPNode(self, p_ap):
-    '''EMIT OUT a node, don't select it.'''
+    '''EMIT OUT a node, don't select it'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
@@ -452,7 +458,7 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127000344.1">def movePNodeDown(self, p_ap):
-    '''Move a node DOWN, don't select it. '''
+    '''Move a node DOWN, don't select it if possible'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
@@ -476,7 +482,7 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127000419.1">def movePNodeLeft(self, p_ap):
-    '''Move a node LEFT, don't select it.'''
+    '''Move a node LEFT, don't select it if possible'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
@@ -500,7 +506,7 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127000420.1">def movePNodeRight(self, p_ap):
-    '''Move a node RIGHT, don't select it.'''
+    '''Move a node RIGHT, don't select it if possible'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
@@ -524,7 +530,7 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127000420.2">def movePNodeUp(self, p_ap):
-    '''Move a node UP, don't select it.'''
+    '''Move a node UP, don't select it if possible'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
@@ -547,19 +553,6 @@ if __name__ == '__main__':
         return self.outputError("Error in movePNodeUp no param p_ap")
 
 </t>
-<t tx="felix.20191127001502.1">def clonePNode(self, p_ap):
-    '''Clone a node, don't select it.'''
-    if(p_ap):
-        w_p = self.ap_to_p(p_ap)
-        if w_p:
-            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            # return self.outputPNode(w_p)
-        else:
-            return self.outputError("Error in clonePNode no w_p node found")  # default empty
-    else:
-        return self.outputError("Error in clonePNode no param p_ap")
-
-</t>
 <t tx="felix.20191127001506.1">def insertPNode(self, p_ap):
     '''Insert a node at given node, then select it once created, and finally return it'''
     if(p_ap):
@@ -575,12 +568,23 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127001506.2">def promotePNode(self, p_ap):
-    '''Promote a node, don't select it.'''
+    '''Promote a node, don't select it'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
-            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            # return self.outputPNode(w_p)
+            if w_p == self.commander.p:
+                # print("already on selection")
+                self.commander.promote()  
+            else:
+                # print("not on selection")
+                oldPosition = self.commander.p  # not same node, save position to possibly return to
+                self.commander.selectPosition(w_p)
+                self.commander.promote()  
+                if self.commander.positionExists(oldPosition):
+                    self.commander.selectPosition(oldPosition)  # select if old position still valid
+
+            # print("finally returning node" + self.commander.p.v.headString())
+            return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
             return self.outputError("Error in promotePNode no w_p node found")  # default empty
     else:
@@ -588,12 +592,23 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127001506.3">def demotePNode(self, p_ap):
-    '''EMIT OUT a node, don't select it.'''
+    '''Demote a node, don't select it'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
-            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-            # return self.outputPNode(w_p)
+            if w_p == self.commander.p:
+                # print("already on selection")
+                self.commander.demote()  
+            else:
+                # print("not on selection")
+                oldPosition = self.commander.p  # not same node, save position to possibly return to
+                self.commander.selectPosition(w_p)
+                self.commander.demote()  
+                if self.commander.positionExists(oldPosition):
+                    self.commander.selectPosition(oldPosition)  # select if old position still valid
+
+            # print("finally returning node" + self.commander.p.v.headString())
+            return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
             return self.outputError("Error in demotePNode no w_p node found")  # default empty
     else:
@@ -629,7 +644,8 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127004619.1">def copyPNode(self, p_ap):
-    '''Copy a node, don't select it.'''
+    '''Copy a node, don't select it'''
+    # TODO : copy
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
@@ -643,7 +659,8 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127004620.1">def cutPNode(self, p_ap):
-    '''Cut a node, don't select it.'''
+    '''Cut a node, don't select it'''
+    # TODO : cut
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
@@ -656,7 +673,7 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127004621.1">def markPNode(self, p_ap):
-    '''Mark a node, don't select it.'''
+    '''Mark a node, don't select it'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
@@ -669,7 +686,7 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191127235913.1">def unmarkPNode(self, p_ap):
-    '''Unmark a node, don't select it.'''
+    '''Unmark a node, don't select it'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
@@ -711,7 +728,8 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20191130211048.1">def pastePNode(self, p_ap):
-    '''Paste a node, don't select it.'''
+    '''Paste a node, don't select it'''
+    # TODO : Paste
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
@@ -724,7 +742,8 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20191130211048.2">def pasteAsClonePNode(self, p_ap):
-    '''Paste as clone, don't select it.'''
+    '''Paste as clone, don't select it'''
+    # TODO : Paste as clone
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
@@ -750,5 +769,107 @@ wsPort = 32125
     return False
 
 </t>
+<t tx="felix.20191231184412.1">def sortChildrenPNode(self, p_ap):
+    '''Sort children of a node, don't select it if possible'''
+    if(p_ap):
+        w_p = self.ap_to_p(p_ap)
+        if w_p:
+            if w_p == self.commander.p:
+                # print("already on selection")
+                self.commander.sortChildren()  
+            else:
+                # print("not on selection")
+                oldPosition = self.commander.p  # not same node, save position to possibly return to
+                self.commander.selectPosition(w_p)
+                self.commander.sortChildren()  
+                if self.commander.positionExists(oldPosition):
+                    self.commander.selectPosition(oldPosition)  # select if old position still valid
+
+            # print("finally returning node" + self.commander.p.v.headString())
+            return self.outputPNode(self.commander.p)  # in both cases, return selected node
+        else:
+            return self.outputError("Error in sortChildrenPNode no w_p node found")  # default empty
+    else:
+        return self.outputError("Error in sortChildrenPNode no param p_ap")
+</t>
+<t tx="felix.20191231184412.2">def sortSiblingsPNode(self, p_ap):
+    '''Sort siblings of a node, don't select it if possible'''
+    if(p_ap):
+        w_p = self.ap_to_p(p_ap)
+        if w_p:
+            if w_p == self.commander.p:
+                # print("already on selection")
+                self.commander.sortSiblings()  
+            else:
+                # print("not on selection")
+                oldPosition = self.commander.p  # not same node, save position to possibly return to
+                self.commander.selectPosition(w_p)
+                self.commander.sortSiblings()  
+                if self.commander.positionExists(oldPosition):
+                    self.commander.selectPosition(oldPosition)  # select if old position still valid
+
+            # print("finally returning node" + self.commander.p.v.headString())
+            return self.outputPNode(self.commander.p)  # in both cases, return selected node
+        else:
+            return self.outputError("Error in sortSiblingsPNode no w_p node found")  # default empty
+    else:
+        return self.outputError("Error in sortSiblingsPNode no param p_ap")
+
+</t>
+<t tx="felix.20191231201748.1">def hoistPNode(self, p_ap):
+    '''Select and Hoist a node'''
+    if(p_ap):
+        w_p = self.ap_to_p(p_ap)
+        if w_p:
+            self.commander.selectPosition(w_p)
+            self.commander.hoist()  
+            # print("finally returning node" + self.commander.p.v.headString())
+            return self.outputPNode(self.commander.p)  # in both cases, return selected node
+        else:
+            return self.outputError("Error in hoistPNode no w_p node found")  # default empty
+    else:
+        return self.outputError("Error in hoistPNode no param p_ap")
+
+</t>
+<t tx="felix.20191231201749.1">def deHoist(self, p_paramUnused):
+    '''De-Hoist'''
+    self.commander.dehoist()
+    return self.outputPNode(self.commander.p)  # in any case, return selected node
+
+</t>
+<t tx="felix.20191231203545.1">def clonePNode(self, p_ap):
+    '''Clone a node, don't select it'''
+    # TODO : clone
+    if(p_ap):
+        w_p = self.ap_to_p(p_ap)
+        if w_p:
+            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+            # return self.outputPNode(w_p)
+        else:
+            return self.outputError("Error in clonePNode no w_p node found")  # default empty
+    else:
+        return self.outputError("Error in clonePNode no param p_ap")
+
+</t>
+<t tx="felix.20191231203711.1">def undo(self, p_paramUnused):
+    '''Undo last un-doable operation'''
+    # TODO : undo
+    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+</t>
+<t tx="felix.20191231214801.1">def run(self, p_ap):
+    '''Select a node and run its script'''
+    # TODO : run
+    if(p_ap):
+        w_p = self.ap_to_p(p_ap)
+        if w_p:
+            self.commander.selectPosition(w_p)
+            self.commander.executeScript()  
+            # print("finally returning node" + self.commander.p.v.headString())
+            return self.outputPNode(self.commander.p)  # in both cases, return selected node
+        else:
+            return self.outputError("Error in run no w_p node found")  # default empty
+    else:
+        return self.outputError("Error in run no param p_ap")</t>
 </tnodes>
 </leo_file>

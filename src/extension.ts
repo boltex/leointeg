@@ -72,6 +72,10 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.cloneNodeSelection", () => leoIntegration.cloneNodeSelection()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.promoteSelection", () => leoIntegration.promoteSelection()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.demoteSelection", () => leoIntegration.demoteSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.sortChildrenSelection", () => leoIntegration.sortChildrenSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.sortSiblingsSelection", () => leoIntegration.sortSiblingsSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.hoistSelection", () => leoIntegration.hoistSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.deHoist", () => leoIntegration.deHoist()));
 
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.undo", () => leoIntegration.undo()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.executeScript", () => leoIntegration.executeScript()));
