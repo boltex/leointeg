@@ -7,7 +7,7 @@
 // * - Ctrl-U (move-outline-up)
 // * - clone-node
 // * - Ctrl-I insert-node
-// * - ?????? delete-node
+// * - Ctrl+Shift+Backspace delete-node
 // * - Ctrl-{ (promote)
 // * - Ctrl-} (demote)
 // ! - Ctrl-Z (undo)
@@ -26,16 +26,18 @@
 # Commands
 
 - Ctrl-N (new)
-- Ctrl-O (open-outline)     // * DONE
+- Ctrl-O (open-outline)
 - Ctrl-S (save-file)
-- Ctrl-I or Insert (insert-node)
+- Ctrl-I or Insert (insert-node) // * DONE
 - Ctrl-H (edit-headline)    // * DONE
-- Ctrl-Shift-C (copy-node)
-- Ctrl-Shift-X (cut-node)
-- Ctrl-Shift-V (paste-node)
-- Ctrl-M (mark/Unmark)     // * DONE
-- Ctrl-{ (promote)
-- Ctrl-} (demote)
+- Ctrl-Shift-C (copy-node)  // * DONE
+- Ctrl-Shift-X (cut-node)   // * DONE
+- Ctrl-Shift-V (paste-node) // * DONE
+- Ctrl-M (mark/Unmark)      // * DONE
+- Ctrl-{ (promote)          // * DONE
+- Ctrl-} (demote)           // * DONE
+- execute-script (Ctrl-B)
+- clone-node (Ctrl-\`) (Grave accent or tick, not sure, not a single quote)
 - copy-marked _Copies all marked nodes as children of a new node._
 - diff-marked-nodes
 - goto-next-marked
@@ -80,7 +82,20 @@ Regardless of focus:
 - clone-node-to-last-node _Creates a clone as the last top-level node of the outline._
 - insert-node (Ctrl-I or Insert) _Inserts a new node into the outline. The new node becomes the first child of the present node if the present node is expanded. Otherwise, the new node becomes the next sibling of the present node._
 - insert-node-before _Inserts a node before the presently selected node._
-- delete-node _Deletes a node and all its descendants._
+- delete-node (Ctrl+Shift+Backspace) _Deletes a node and all its descendants._
+
+TREE NAVIGATION :
+Regardless of focus::
+
+    Alt-Home (goto-first-visible-node)
+    Alt-End (goto-last-visible-node)
+    Alt-Right-arrow (expand-and-go-right)
+    Alt-Left-arrow (contract-or-go-left)
+    Alt-Up-arrow (goto-prev-visible)
+    Alt-Down-arrow (goto-next-visible)
+
+
+
 */
 
 export class LeoCommands { }

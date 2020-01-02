@@ -105,12 +105,22 @@ class leoBridgeIntegController:
 
     def clonePNode(self, p_ap):
         '''Clone a node, don't select it'''
-        # TODO : clone
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
-                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-                # return self.outputPNode(w_p)
+                if w_p == self.commander.p:
+                    # print("already on selection")
+                    self.commander.clone()
+                else:
+                    # print("not on selection")
+                    oldPosition = self.commander.p  # not same node, save position to possibly return to
+                    self.commander.selectPosition(w_p)
+                    self.commander.clone()
+                    if self.commander.positionExists(oldPosition):
+                        self.commander.selectPosition(oldPosition)  # select if old position still valid
+
+                # print("finally returning node" + self.commander.p.v.headString())
+                return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
                 return self.outputError("Error in clonePNode no w_p node found")  # default empty
         else:

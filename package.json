@@ -570,6 +570,14 @@
           "when": "leoObjectSelected==true"
         },
         {
+          "command": "leointeg.executeScript",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.undo",
+          "when": "leoObjectSelected==true"
+        },
+        {
           "command": "leointeg.editHeadline",
           "when": "false"
         },
@@ -635,6 +643,14 @@
         },
         {
           "command": "leointeg.demote",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.hoistSelection",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.deHoist",
           "when": "false"
         }
       ],
@@ -791,6 +807,96 @@
         "key": "ctrl+m",
         "mac": "cmd+m",
         "when": "leoTreeOpened && leoObjectSelected && leoNodeMarked"
+      },
+      {
+        "command": "leointeg.promoteSelection",
+        "key": "ctrl+[BracketLeft]",
+        "mac": "cmd+[BracketLeft]",
+        "when": "leoTreeOpened && leoObjectSelected"
+      },
+      {
+        "command": "leointeg.demoteSelection",
+        "key": "ctrl+[BracketRight]",
+        "mac": "cmd+[BracketRight]",
+        "when": "leoTreeOpened && leoObjectSelected"
+      },
+      {
+        "command": "leointeg.moveOutlineDownSelection",
+        "key": "ctrl+d",
+        "mac": "cmd+d",
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
+      },
+      {
+        "command": "leointeg.moveOutlineLeftSelection",
+        "key": "ctrl+l",
+        "mac": "cmd+l",
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
+      },
+      {
+        "command": "leointeg.moveOutlineRightSelection",
+        "key": "ctrl+r",
+        "mac": "cmd+r",
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
+      },
+      {
+        "command": "leointeg.moveOutlineUpSelection",
+        "key": "ctrl+u",
+        "mac": "cmd+u",
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
+      },
+      {
+        "command": "leointeg.moveOutlineDownSelection",
+        "key": "shift+alt+down",
+        "mac": "shift+alt+down",
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
+      },
+      {
+        "command": "leointeg.moveOutlineLeftSelection",
+        "key": "shift+alt+left",
+        "mac": "shift+alt+left",
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
+      },
+      {
+        "command": "leointeg.moveOutlineRightSelection",
+        "key": "shift+alt+right",
+        "mac": "shift+alt+right",
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
+      },
+      {
+        "command": "leointeg.moveOutlineUpSelection",
+        "key": "shift+alt+up",
+        "mac": "shift+alt+up",
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
+      },
+      {
+        "command": "leointeg.insertNodeSelection",
+        "key": "ctrl+i",
+        "mac": "cmd+i",
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
+      },
+      {
+        "command": "leointeg.cutNodeSelection",
+        "key": "ctrl+shift+x",
+        "mac": "cmd+shift+x",
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
+      },
+      {
+        "command": "leointeg.copyNodeSelection",
+        "key": "ctrl+shift+c",
+        "mac": "cmd+shift+c",
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
+      },
+      {
+        "command": "leointeg.pasteNodeAtSelection",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
+      },
+      {
+        "command": "leointeg.deleteSelection",
+        "key": "ctrl+shift+backspace",
+        "mac": "cmd+shift+backspace",
+        "when": "leoTreeOpened && leoObjectSelected"
       }
     ],
     "resourceLabelFormatters": [

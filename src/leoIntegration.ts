@@ -963,8 +963,8 @@ export class LeoIntegration {
         this.leoBridgeActionAndRefresh("copyPNode", p_node);
     }
     public cutNode(p_node: LeoNode): void {
-        // TODO : Set up like delete to close body panes
-        this.leoBridgeActionAndRefresh("cutPNode", p_node);
+        // * Set up like delete to close body panes
+        this.delete(p_node, true);
     }
     public pasteNode(p_node: LeoNode): void {
         this.leoBridgeActionAndRefresh("pastePNode", p_node);
@@ -972,7 +972,7 @@ export class LeoIntegration {
     public pasteNodeAsClone(p_node: LeoNode): void {
         this.leoBridgeActionAndRefresh("pasteAsClonePNode", p_node);
     }
-    public delete(p_node: LeoNode): void {
+    public delete(p_node: LeoNode, p_cutToClipboard?: boolean): void {
         // * Delete node and close bodies of deleted nodes
         if (this.leoBridgeActionBusy) {
             // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
@@ -983,7 +983,7 @@ export class LeoIntegration {
             // start by finishing any pending edits by triggering body save
             this.triggerBodySave()
                 .then(p_saveResult => {
-                    return this.leoBridge.action("deletePNode", p_node.apJson);
+                    return this.leoBridge.action((p_cutToClipboard ? "cutPNode" : "deletePNode"), p_node.apJson);
                 })
                 .then(p_package => {
                     // console.log('Back from delete, after closing unneeded bodies, we should reveal node: ', p_package.node.headline);
@@ -1021,7 +1021,6 @@ export class LeoIntegration {
                     this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocusShowBody); // ! finish by refreshing the tree and selecting the node
                 });
         }
-
     }
     public moveOutlineDown(p_node: LeoNode): void {
         this.leoBridgeActionAndRefresh("movePNodeDown", p_node, RevealType.RevealSelectFocusShowBody);
@@ -1211,7 +1210,6 @@ export class LeoIntegration {
             console.log('Error: Cannot close. No Files Opened.');
         }
     }
-
     public openLeoFile(): void {
         if (this.fileOpenedReady) {
             vscode.window.showInformationMessage("leo file already opened!");
@@ -1247,7 +1245,6 @@ export class LeoIntegration {
                 return this.showSelectedBodyDocument();
             });
     }
-
     public test(): void {
         if (this.fileOpenedReady) {
             console.log("sending test 'getSelectedNode'");
