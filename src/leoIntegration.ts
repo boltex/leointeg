@@ -1253,14 +1253,15 @@ export class LeoIntegration {
                 .then((p_answer: LeoBridgePackage) => {
                     console.log('Test got Back from getSelectedNode, now revealing :', p_answer.node.headline);
                     return Promise.resolve(this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true }));
-                })
-                .then(() => {
-                    console.log("...now testing documentManager ");
-                    return this.documentManager.countOpen();
-                })
-                .then(p_docResult => {
-                    console.log('Back from doc manager', p_docResult);
                 });
+
+            // .then(() => {
+            //     console.log("...now testing documentManager ");
+            //     return this.documentManager.countOpen();
+            // })
+            // .then(p_docResult => {
+            //     console.log('Back from doc manager', p_docResult);
+            // });
         } else {
             vscode.window.showInformationMessage("Click the folder icon on the Leo Outline sidebar to open a Leo file");
         }

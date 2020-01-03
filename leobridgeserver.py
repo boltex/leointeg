@@ -118,7 +118,6 @@ class leoBridgeIntegController:
                     self.commander.clone()
                     if self.commander.positionExists(oldPosition):
                         self.commander.selectPosition(oldPosition)  # select if old position still valid
-
                 # print("finally returning node" + self.commander.p.v.headString())
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
@@ -132,9 +131,18 @@ class leoBridgeIntegController:
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
-                # self.clipboard = self.commander.fileCommands.putLeoOutline(w_p) # Replace clipboard
-                self.commander.copyOutline()
-                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                if w_p == self.commander.p:
+                    # print("already on selection")
+                    self.commander.copyOutline()
+                else:
+                    # print("not on selection")
+                    oldPosition = self.commander.p  # not same node, save position to possibly return to
+                    self.commander.selectPosition(w_p)
+                    self.commander.copyOutline()
+                    if self.commander.positionExists(oldPosition):
+                        self.commander.selectPosition(oldPosition)  # select if old position still valid
+                # print("finally returning node" + self.commander.p.v.headString())
+                return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
                 return self.outputError("Error in copyPNode no w_p node found")
         else:
@@ -146,8 +154,18 @@ class leoBridgeIntegController:
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
-                self.commander.cutOutline()
-                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                if w_p == self.commander.p:
+                    # print("already on selection")
+                    self.commander.cutOutline()
+                else:
+                    # print("not on selection")
+                    oldPosition = self.commander.p  # not same node, save position to possibly return to
+                    self.commander.selectPosition(w_p)
+                    self.commander.cutOutline()
+                    if self.commander.positionExists(oldPosition):
+                        self.commander.selectPosition(oldPosition)  # select if old position still valid
+                # print("finally returning node" + self.commander.p.v.headString())
+                return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
                 return self.outputError("Error in cutPNode no w_p node found")  # default empty
         else:
@@ -159,8 +177,18 @@ class leoBridgeIntegController:
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
-                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-                # return self.outputPNode(w_p)
+                if w_p == self.commander.p:
+                    # print("already on selection")
+                    self.commander.pasteOutline()
+                else:
+                    # print("not on selection")
+                    oldPosition = self.commander.p  # not same node, save position to possibly return to
+                    self.commander.selectPosition(w_p)
+                    self.commander.pasteOutline()
+                    if self.commander.positionExists(oldPosition):
+                        self.commander.selectPosition(oldPosition)  # select if old position still valid
+                # print("finally returning node" + self.commander.p.v.headString())
+                return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
                 return self.outputError("Error in pastePNode no w_p node found")  # default empty
         else:
@@ -172,8 +200,18 @@ class leoBridgeIntegController:
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
-                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-                # return self.outputPNode(w_p)
+                if w_p == self.commander.p:
+                    # print("already on selection")
+                    self.commander.pasteOutlineRetainingClones()
+                else:
+                    # print("not on selection")
+                    oldPosition = self.commander.p  # not same node, save position to possibly return to
+                    self.commander.selectPosition(w_p)
+                    self.commander.pasteOutlineRetainingClones()
+                    if self.commander.positionExists(oldPosition):
+                        self.commander.selectPosition(oldPosition)  # select if old position still valid
+                # print("finally returning node" + self.commander.p.v.headString())
+                return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
                 return self.outputError("Error in pasteAsClonePNode no w_p node found")  # default empty
         else:
@@ -198,7 +236,6 @@ class leoBridgeIntegController:
                         oldPosition._childIndex = oldPosition._childIndex-1
                         if self.commander.positionExists(oldPosition):
                             self.commander.selectPosition(oldPosition)  # try with lowered childIndex
-
                 # print("finally returning node" + self.commander.p.v.headString())
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
@@ -221,7 +258,6 @@ class leoBridgeIntegController:
                     self.commander.moveOutlineDown()  # Move node
                     if self.commander.positionExists(oldPosition):
                         self.commander.selectPosition(oldPosition)  # select if old position still valid
-
                 # print("finally returning node" + self.commander.p.v.headString())
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
@@ -244,7 +280,6 @@ class leoBridgeIntegController:
                     self.commander.moveOutlineLeft()  # Move node
                     if self.commander.positionExists(oldPosition):
                         self.commander.selectPosition(oldPosition)  # select if old position still valid
-
                 # print("finally returning node" + self.commander.p.v.headString())
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
@@ -267,7 +302,6 @@ class leoBridgeIntegController:
                     self.commander.moveOutlineRight()  # Move node
                     if self.commander.positionExists(oldPosition):
                         self.commander.selectPosition(oldPosition)  # select if old position still valid
-
                 # print("finally returning node" + self.commander.p.v.headString())
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
@@ -290,7 +324,6 @@ class leoBridgeIntegController:
                     self.commander.moveOutlineUp()  # Move node
                     if self.commander.positionExists(oldPosition):
                         self.commander.selectPosition(oldPosition)  # select if old position still valid
-
                 # print("finally returning node" + self.commander.p.v.headString())
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
@@ -326,7 +359,6 @@ class leoBridgeIntegController:
                     self.commander.promote()
                     if self.commander.positionExists(oldPosition):
                         self.commander.selectPosition(oldPosition)  # select if old position still valid
-
                 # print("finally returning node" + self.commander.p.v.headString())
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
@@ -349,7 +381,6 @@ class leoBridgeIntegController:
                     self.commander.demote()
                     if self.commander.positionExists(oldPosition):
                         self.commander.selectPosition(oldPosition)  # select if old position still valid
-
                 # print("finally returning node" + self.commander.p.v.headString())
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
