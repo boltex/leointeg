@@ -127,7 +127,6 @@ class leoBridgeIntegController:
 
     def copyPNode(self, p_ap):
         '''Copy a node, don't select it'''
-        # TODO : copy
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
@@ -150,7 +149,6 @@ class leoBridgeIntegController:
 
     def cutPNode(self, p_ap):
         '''Cut a node, don't select it'''
-        # TODO : cut
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
@@ -173,7 +171,6 @@ class leoBridgeIntegController:
 
     def pastePNode(self, p_ap):
         '''Paste a node, don't select it'''
-        # TODO : Paste
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
@@ -196,7 +193,6 @@ class leoBridgeIntegController:
 
     def pasteAsClonePNode(self, p_ap):
         '''Paste as clone, don't select it'''
-        # TODO : Paste as clone
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
@@ -455,12 +451,18 @@ class leoBridgeIntegController:
 
     def undo(self, p_paramUnused):
         '''Undo last un-doable operation'''
-        # TODO : undo
+        if(self.commander.undoer.canUndo()):
+            self.commander.undoer.undo()
+        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+    def redo(self, p_paramUnused):
+        '''Undo last un-doable operation'''
+        if(self.commander.undoer.canRedo()):
+            self.commander.undoer.redo()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def run(self, p_ap):
         '''Select a node and run its script'''
-        # TODO : run
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:

@@ -1195,7 +1195,16 @@ export class LeoIntegration {
 
     // * Critical Leo Bridge Actions
     public undo(): void {
-        vscode.window.showInformationMessage(`TODO: undo last operation`); // temp placeholder
+        if (this.leoBridgeActionBusy) {
+            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
+            console.log('Too fast! undo');
+            return;
+        }
+        // TODO : Fix undo 'Delete' & 'Cut' nodes that focus on deleted bodies too fast: Detail: Unable to read file (EntryNotFound (FileSystemError))
+        // vscode.window.showInformationMessage(`TODO: undo last operation`); // temp placeholder
+        if (this.lastSelectedLeoNode) {
+            this.leoBridgeActionAndRefresh("undo", this.lastSelectedLeoNode, RevealType.RevealSelectFocusShowBody);
+        }
     }
     public executeScript(): void {
         vscode.window.showInformationMessage(`TODO: executeScript`); // temp placeholder
