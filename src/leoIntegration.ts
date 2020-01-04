@@ -959,6 +959,10 @@ export class LeoIntegration {
             vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SELECTED_MARKED, false);
         }
     }
+    // * Clipboard Operations
+    // TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
+    // TODO : ('Real Clipboard') Use globals.gui.clipboard and the real clipboard with g.app.gui.getTextFromClipboard()
+    // TODO : ('Real Clipboard') For pasting, use g.app.gui.replaceClipboardWith(p_realClipboard)
     public copyNode(p_node: LeoNode): void {
         this.leoBridgeActionAndRefresh("copyPNode", p_node);
     }

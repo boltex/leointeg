@@ -127,6 +127,8 @@ class leoBridgeIntegController:
 
     def copyPNode(self, p_ap):
         '''Copy a node, don't select it'''
+        # TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
+        # TODO : ('Real Clipboard') Use globals.gui.clipboard and the real clipboard with g.app.gui.getTextFromClipboard()
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
@@ -149,6 +151,7 @@ class leoBridgeIntegController:
 
     def cutPNode(self, p_ap):
         '''Cut a node, don't select it'''
+        # TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
@@ -171,6 +174,8 @@ class leoBridgeIntegController:
 
     def pastePNode(self, p_ap):
         '''Paste a node, don't select it'''
+        # TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
+        # TODO : ('Real Clipboard') For pasting, use g.app.gui.replaceClipboardWith(p_realClipboard)
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
