@@ -4,6 +4,11 @@
 
 - Extension now built with webpack. [As recommended by vsCode's extension guidelines](https://code.visualstudio.com/api/working-with-extensions/bundling-extension#using-webpack)
 - Added a 'Welcome Screen' webview (also compiled by webpack from html, scss and ts files) to show a greeting with basic info, and provide an easy way to change the configuration settings.
+- Added commands accessible via either tree menu, context menu, and 'standard' Leo keyboard shortcuts:
+  - Insert, delete
+  - Cut/Copy/Paste/Clone/Paste as clone
+  - Move, promote, demote node operations
+  - Mark, unmark, sort children, sort siblings and undo
 
 ## 0.1.7
 

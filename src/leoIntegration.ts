@@ -884,10 +884,62 @@ export class LeoIntegration {
     }
 
     private leoBridgeActionAndRefresh(p_action: string, p_node: LeoNode, p_revealType?: RevealType | undefined): Promise<LeoBridgePackage> {
+        // * For actions that do not need full gnx refresh (moving, renaming nodes)
         return this.leoBridge.action(p_action, p_node.apJson).then(p_package => {
             this.leoTreeDataProvider.refreshTreeRoot(p_revealType); // refresh all, needed to get clones to refresh too!
             return Promise.resolve(p_package);
         });
+    }
+
+    private leoBridgeActionAndFullRefresh(p_action: string, p_node: LeoNode): void {
+        // * For actions that may delete or add nodes so that bodies gnx need refreshing
+        // * Perform action on node and close bodies of removed nodes, if any
+        if (this.leoBridgeActionBusy) {
+            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
+            console.log('Too fast! leoBridgeActionAndFullRefresh: ' + p_action);
+        } else {
+            this.leoBridgeActionBusy = true;
+            this.leoCyclingBodies = true;
+            // start by finishing any pending edits by triggering body save
+            this.triggerBodySave()
+                .then(p_saveResult => {
+                    return this.leoBridge.action(p_action, p_node.apJson);
+                })
+                .then(p_package => {
+                    // this.bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_package.node.gnx); // ! don't showSelectedBodyDocument yet
+                    return this.leoFileSystem.getExpiredGnxList();
+                })
+                .then(p_expiredList => {
+                    p_expiredList.forEach(p_expiredGnx => {
+                        // console.log('expired list item gnx: ', p_expiredGnx);
+                        vscode.workspace.fs.delete(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_expiredGnx));
+                    });
+                    // console.log('done calling delete on all expired gnx still opened');
+                    return this.documentManager.closeExpired(p_expiredList);
+                })
+                .then(p_docResult => {
+                    // console.log('Back from doc manager', p_docResult);
+                    // With any remaining opened text editors watched:
+                    return this.leoFileSystem.getRemainingWatchedGnxList();
+                })
+                .then((p_remainingGnxList) => {
+                    // console.log('Back from get remaining Gnx List', p_remainingGnxList);
+                    let w_located: boolean | string = false;
+                    p_remainingGnxList.forEach(p_remainingGnx => {
+                        if (!w_located && this.locateOpenedBody(p_remainingGnx)) {
+                            w_located = p_remainingGnx;
+                        }
+                    });
+                    return Promise.resolve(w_located);
+                })
+                .then(p_locatedResult => {
+                    // console.log('Back from locate (false if not found):', p_locatedResult);
+                    // * If this.lastSelectedLeoNode is undefined it will be set by arrayToLeoNodesArray when refreshing tree root
+                    this.leoCyclingBodies = false;
+                    this.leoBridgeActionBusy = false;
+                    this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocusShowBody); // ! finish by refreshing the tree and selecting the node
+                });
+        }
     }
 
     // * Leo Commands accessible via mouse clicks and right-click menu entries for single nodes
@@ -967,64 +1019,18 @@ export class LeoIntegration {
         this.leoBridgeActionAndRefresh("copyPNode", p_node);
     }
     public cutNode(p_node: LeoNode): void {
-        // * Set up like delete to close body panes
-        this.delete(p_node, true);
+        this.leoBridgeActionAndFullRefresh("cutPNode", p_node);
     }
     public pasteNode(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("pastePNode", p_node);
+        this.leoBridgeActionAndFullRefresh("pastePNode", p_node);
+        // this.leoBridgeActionAndRefresh("pastePNode", p_node);
     }
     public pasteNodeAsClone(p_node: LeoNode): void {
-        this.leoBridgeActionAndRefresh("pasteAsClonePNode", p_node);
+        this.leoBridgeActionAndFullRefresh("pasteAsClonePNode", p_node);
+        // this.leoBridgeActionAndRefresh("pasteAsClonePNode", p_node);
     }
-    public delete(p_node: LeoNode, p_cutToClipboard?: boolean): void {
-        // * Delete node and close bodies of deleted nodes
-        if (this.leoBridgeActionBusy) {
-            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
-            console.log('Too fast! delete');
-        } else {
-            this.leoBridgeActionBusy = true;
-            this.leoCyclingBodies = true;
-            // start by finishing any pending edits by triggering body save
-            this.triggerBodySave()
-                .then(p_saveResult => {
-                    return this.leoBridge.action((p_cutToClipboard ? "cutPNode" : "deletePNode"), p_node.apJson);
-                })
-                .then(p_package => {
-                    // console.log('Back from delete, after closing unneeded bodies, we should reveal node: ', p_package.node.headline);
-                    // this.bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_package.node.gnx); // ! don't showSelectedBodyDocument yet
-                    return this.leoFileSystem.getExpiredGnxList();
-                })
-                .then(p_expiredList => {
-                    p_expiredList.forEach(p_expiredGnx => {
-                        // console.log('expired list item gnx: ', p_expiredGnx);
-                        vscode.workspace.fs.delete(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_expiredGnx));
-                    });
-                    // console.log('done calling delete on all expired gnx still opened');
-                    return this.documentManager.closeExpired(p_expiredList);
-                })
-                .then(p_docResult => {
-                    // console.log('Back from doc manager', p_docResult);
-                    // With any remaining opened text editors watched:
-                    return this.leoFileSystem.getRemainingWatchedGnxList();
-                })
-                .then((p_remainingGnxList) => {
-                    // console.log('Back from get remaining Gnx List', p_remainingGnxList);
-                    let w_located: boolean | string = false;
-                    p_remainingGnxList.forEach(p_remainingGnx => {
-                        if (!w_located && this.locateOpenedBody(p_remainingGnx)) {
-                            w_located = p_remainingGnx;
-                        }
-                    });
-                    return Promise.resolve(w_located);
-                })
-                .then(p_locatedResult => {
-                    // console.log('Back from locate (false if not found):', p_locatedResult);
-                    // * If this.lastSelectedLeoNode is undefined it will be set by arrayToLeoNodesArray when refreshing tree root
-                    this.leoCyclingBodies = false;
-                    this.leoBridgeActionBusy = false;
-                    this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocusShowBody); // ! finish by refreshing the tree and selecting the node
-                });
-        }
+    public delete(p_node: LeoNode): void {
+        this.leoBridgeActionAndFullRefresh("deletePNode", p_node);
     }
     public moveOutlineDown(p_node: LeoNode): void {
         this.leoBridgeActionAndRefresh("movePNodeDown", p_node, RevealType.RevealSelectFocusShowBody);
@@ -1097,8 +1103,17 @@ export class LeoIntegration {
     //         this.leoBridgeActionAndRefresh("deHoist", this.lastSelectedLeoNode, RevealType.RevealSelectFocusShowBody);
     //     }
     // }
+    public actionWithNode(p_action: string, p_node: LeoNode) {
+
+    }
 
     // * Leo Commands accessible via the command palette or keyboard shortcuts applied to the currently selected node
+    public actionWithSelectedNode(p_action: string) {
+        if (this.lastSelectedLeoNode) {
+            this.actionWithNode(p_action, this.lastSelectedLeoNode);
+        }
+    }
+
     public editSelectedHeadline() {
         if (this.lastSelectedLeoNode) {
             this.editHeadline(this.lastSelectedLeoNode, true);
@@ -1199,15 +1214,18 @@ export class LeoIntegration {
 
     // * Critical Leo Bridge Actions
     public undo(): void {
-        if (this.leoBridgeActionBusy) {
-            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
-            console.log('Too fast! undo');
-            return;
-        }
-        // TODO : Fix undo 'Delete' & 'Cut' nodes that focus on deleted bodies too fast: Detail: Unable to read file (EntryNotFound (FileSystemError))
-        // vscode.window.showInformationMessage(`TODO: undo last operation`); // temp placeholder
+        // if (this.leoBridgeActionBusy) {
+        //     // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
+        //     console.log('Too fast! undo');
+        //     return;
+        // }
+        // // TODO : Fix undo 'Delete' & 'Cut' nodes that focus on deleted bodies too fast: Detail: Unable to read file (EntryNotFound (FileSystemError))
+        // // vscode.window.showInformationMessage(`TODO: undo last operation`); // temp placeholder
+        // if (this.lastSelectedLeoNode) {
+        //     this.leoBridgeActionAndRefresh("undo", this.lastSelectedLeoNode, RevealType.RevealSelectFocusShowBody);
+        // }
         if (this.lastSelectedLeoNode) {
-            this.leoBridgeActionAndRefresh("undo", this.lastSelectedLeoNode, RevealType.RevealSelectFocusShowBody);
+            this.leoBridgeActionAndFullRefresh("undo", this.lastSelectedLeoNode);
         }
     }
     public executeScript(): void {
