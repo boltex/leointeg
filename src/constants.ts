@@ -13,6 +13,8 @@ export class Constants {
     public static LEO_TCPIP_DEFAULT_PROTOCOL: string = "ws://";
     public static LEO_TCPIP_DEFAULT_ADDRESS: string = "localhost";
 
+    public static LEO_STATUSBAR_STRING: string = "$(keyboard) Literate"; // 🦁 Lion Face Icon ?
+
     public static CONTEXT_FLAGS = {
         BRIDGE_READY: "leoBridgeReady",
         TREE_OPENED: "leoTreeOpened",

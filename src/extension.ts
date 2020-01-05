@@ -1,10 +1,17 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
+import { RevealType } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 
+
 /*
+# Clipboard Operations
+TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
+TODO : ('Real Clipboard') Use globals.gui.clipboard and the real clipboard with g.app.gui.getTextFromClipboard()
+TODO : ('Real Clipboard') For pasting, use g.app.gui.replaceClipboardWith(p_realClipboard)
+
 # Context variables for package.json "when" clauses
 
 - treeInExplorer
@@ -100,45 +107,48 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.selectTreeNode", (p_node: LeoNode) => leoIntegration.selectTreeNode(p_node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.openAside", (p_node: LeoNode) => leoIntegration.showBodyDocumentAside(p_node)));
 
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.editHeadline", (p_node: LeoNode) => leoIntegration.editHeadline(p_node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.mark", (p_node: LeoNode) => leoIntegration.mark(p_node)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.unmark", (p_node: LeoNode) => leoIntegration.unmark(p_node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.copyNode", (p_node: LeoNode) => leoIntegration.copyNode(p_node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.cutNode", (p_node: LeoNode) => leoIntegration.cutNode(p_node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNode", (p_node: LeoNode) => leoIntegration.pasteNode(p_node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNodeAsClone", (p_node: LeoNode) => leoIntegration.pasteNodeAsClone(p_node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.delete", (p_node: LeoNode) => leoIntegration.delete(p_node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.markSelection", () => leoIntegration.mark()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.unmarkSelection", () => leoIntegration.unmark()));
 
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.markSelection", () => leoIntegration.markSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.unmarkSelection", () => leoIntegration.unmarkSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.copyNodeSelection", () => leoIntegration.copyNodeSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.cutNodeSelection", () => leoIntegration.cutNodeSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNodeAtSelection", () => leoIntegration.pasteNodeAtSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNodeAsCloneAtSelection", () => leoIntegration.pasteNodeAsCloneAtSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.deleteSelection", () => leoIntegration.deleteSelection()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.copyNode", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("copyPNode", p_node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.cutNode", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndFullRefresh("cutPNode", p_node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNode", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndFullRefresh("pastePNode", p_node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNodeAsClone", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndFullRefresh("pasteAsClonePNode", p_node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.delete", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndFullRefresh("deletePNode", p_node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.copyNodeSelection", () => leoIntegration.leoBridgeActionAndRefresh("copyPNode")));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.cutNodeSelection", () => leoIntegration.leoBridgeActionAndFullRefresh("cutPNode")));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNodeAtSelection", () => leoIntegration.leoBridgeActionAndFullRefresh("pastePNode")));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.pasteNodeAsCloneAtSelection", () => leoIntegration.leoBridgeActionAndFullRefresh("pasteAsClonePNode")));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.deleteSelection", () => leoIntegration.leoBridgeActionAndFullRefresh("deletePNode")));
 
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineDown", (p_node: LeoNode) => leoIntegration.moveOutlineDown(p_node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineLeft", (p_node: LeoNode) => leoIntegration.moveOutlineLeft(p_node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineRight", (p_node: LeoNode) => leoIntegration.moveOutlineRight(p_node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineUp", (p_node: LeoNode) => leoIntegration.moveOutlineUp(p_node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.editHeadline", (p_node: LeoNode) => leoIntegration.editHeadline(p_node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.editSelectedHeadline", () => leoIntegration.editHeadline()));
+
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineDown", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("movePNodeDown", p_node, RevealType.RevealSelectFocusShowBody)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineLeft", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("movePNodeLeft", p_node, RevealType.RevealSelectFocusShowBody)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineRight", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("movePNodeRight", p_node, RevealType.RevealSelectFocusShowBody)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineUp", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("movePNodeUp", p_node, RevealType.RevealSelectFocusShowBody)));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.insertNode", (p_node: LeoNode) => leoIntegration.insertNode(p_node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.cloneNode", (p_node: LeoNode) => leoIntegration.cloneNode(p_node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.promote", (p_node: LeoNode) => leoIntegration.promote(p_node)));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.demote", (p_node: LeoNode) => leoIntegration.demote(p_node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.cloneNode", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("clonePNode", p_node)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.promote", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("promotePNode", p_node, RevealType.RevealSelectFocusShowBody)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.demote", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("demotePNode", p_node, RevealType.RevealSelectFocusShowBody)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineDownSelection", () => leoIntegration.leoBridgeActionAndRefresh("movePNodeDown", undefined, RevealType.RevealSelectFocusShowBody)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineLeftSelection", () => leoIntegration.leoBridgeActionAndRefresh("movePNodeLeft", undefined, RevealType.RevealSelectFocusShowBody)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineRightSelection", () => leoIntegration.leoBridgeActionAndRefresh("movePNodeRight", undefined, RevealType.RevealSelectFocusShowBody)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineUpSelection", () => leoIntegration.leoBridgeActionAndRefresh("movePNodeUp", undefined, RevealType.RevealSelectFocusShowBody)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.insertNodeSelection", () => leoIntegration.insertNode()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.cloneNodeSelection", () => leoIntegration.leoBridgeActionAndRefresh("clonePNode")));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.promoteSelection", () => leoIntegration.leoBridgeActionAndRefresh("promotePNode", undefined, RevealType.RevealSelectFocusShowBody)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.demoteSelection", () => leoIntegration.leoBridgeActionAndRefresh("demotePNode", undefined, RevealType.RevealSelectFocusShowBody)));
 
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.editSelectedHeadline", () => leoIntegration.editSelectedHeadline()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineDownSelection", () => leoIntegration.moveOutlineDownSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineLeftSelection", () => leoIntegration.moveOutlineLeftSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineRightSelection", () => leoIntegration.moveOutlineRightSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.moveOutlineUpSelection", () => leoIntegration.moveOutlineUpSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.insertNodeSelection", () => leoIntegration.insertNodeSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.cloneNodeSelection", () => leoIntegration.cloneNodeSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.promoteSelection", () => leoIntegration.promoteSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.demoteSelection", () => leoIntegration.demoteSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.sortChildrenSelection", () => leoIntegration.sortChildrenSelection()));
-    context.subscriptions.push(vscode.commands.registerCommand("leointeg.sortSiblingsSelection", () => leoIntegration.sortSiblingsSelection()));
-    // context.subscriptions.push(vscode.commands.registerCommand("leointeg.hoistSelection", () => leoIntegration.hoistSelection()));
-    // context.subscriptions.push(vscode.commands.registerCommand("leointeg.deHoist", () => leoIntegration.deHoist()));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.sortChildrenSelection", () => leoIntegration.leoBridgeActionAndRefresh("sortChildrenPNode", undefined, RevealType.RevealSelectFocusShowBody)));
+    context.subscriptions.push(vscode.commands.registerCommand("leointeg.sortSiblingsSelection", () => leoIntegration.leoBridgeActionAndRefresh("sortSiblingsPNode", undefined, RevealType.RevealSelectFocusShowBody)));
+
+    // TODO : hoist, de-hoist & other leo commands
+    // context.subscriptions.push(vscode.commands.registerCommand("leointeg.hoistSelection", () => leoIntegration.hoistSelection())); // hoistPNode
+    // context.subscriptions.push(vscode.commands.registerCommand("leointeg.deHoist", () => leoIntegration.deHoist())); // deHoist
 
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.undo", () => leoIntegration.undo()));
     context.subscriptions.push(vscode.commands.registerCommand("leointeg.executeScript", () => leoIntegration.executeScript()));
