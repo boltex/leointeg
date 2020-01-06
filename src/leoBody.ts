@@ -23,6 +23,15 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     constructor(private leoIntegration: LeoIntegration) { }
 
+    public fireRefreshFiles(): void {
+        this.openedBodiesGnx.forEach(p_bodyGnx => {
+            // console.log('refresh body:', p_bodyGnx);
+            this._onDidChangeFileEmitter.fire([{
+                type: vscode.FileChangeType.Changed,
+                uri: vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_bodyGnx)
+            } as vscode.FileChangeEvent]);
+        });
+    }
 
     public addGnx(p_gnx: string): void {
         this.possibleGnxList.push(p_gnx);

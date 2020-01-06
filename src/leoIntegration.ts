@@ -898,7 +898,7 @@ export class LeoIntegration {
         }
     }
 
-    public leoBridgeActionAndFullRefresh(p_action: string, p_node?: LeoNode): void {
+    public leoBridgeActionAndFullRefresh(p_action: string, p_node?: LeoNode, p_refreshBodyContent?: boolean): void {
         // * For actions that may delete or add nodes so that bodies gnx need refreshing
         // * Perform action on node and close bodies of removed nodes, if any
         if (this.leoBridgeActionBusy) {
@@ -935,6 +935,9 @@ export class LeoIntegration {
                     })
                     .then((p_remainingGnxList) => {
                         // console.log('Back from get remaining Gnx List', p_remainingGnxList);
+                        if (p_refreshBodyContent) {
+                            this.leoFileSystem.fireRefreshFiles(); // watched files may have changed their content
+                        }
                         let w_located: boolean | string = false;
                         p_remainingGnxList.forEach(p_remainingGnx => {
                             if (!w_located && this.locateOpenedBody(p_remainingGnx)) {
@@ -1083,7 +1086,7 @@ export class LeoIntegration {
             return;
         }
         if (this.lastSelectedLeoNode) {
-            this.leoBridgeActionAndFullRefresh("undo", this.lastSelectedLeoNode);
+            this.leoBridgeActionAndFullRefresh("undo", this.lastSelectedLeoNode, true);
         }
     }
 
