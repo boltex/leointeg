@@ -105,118 +105,23 @@ class leoBridgeIntegController:
 
     def clonePNode(self, p_ap):
         '''Clone a node, don't select it'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                if w_p == self.commander.p:
-                    # print("already on selection")
-                    self.commander.clone()
-                else:
-                    # print("not on selection")
-                    oldPosition = self.commander.p  # not same node, save position to possibly return to
-                    self.commander.selectPosition(w_p)
-                    self.commander.clone()
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
-                # print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in clonePNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in clonePNode no param p_ap")
+        return self.outlineCommand("clone", p_ap, True)
 
     def copyPNode(self, p_ap):
         '''Copy a node, don't select it'''
-        # TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
-        # TODO : ('Real Clipboard') Use globals.gui.clipboard and the real clipboard with g.app.gui.getTextFromClipboard()
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                if w_p == self.commander.p:
-                    # print("already on selection")
-                    self.commander.copyOutline()
-                else:
-                    # print("not on selection")
-                    oldPosition = self.commander.p  # not same node, save position to possibly return to
-                    self.commander.selectPosition(w_p)
-                    self.commander.copyOutline()
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
-                # print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in copyPNode no w_p node found")
-        else:
-            return self.outputError("Error in copyPNode no param p_ap")
+        return self.outlineCommand("copyOutline", p_ap, True)
 
     def cutPNode(self, p_ap):
         '''Cut a node, don't select it'''
-        # TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                if w_p == self.commander.p:
-                    # print("already on selection")
-                    self.commander.cutOutline()
-                else:
-                    # print("not on selection")
-                    oldPosition = self.commander.p  # not same node, save position to possibly return to
-                    self.commander.selectPosition(w_p)
-                    self.commander.cutOutline()
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
-                # print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in cutPNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in cutPNode no param p_ap")
+        return self.outlineCommand("cutOutline", p_ap, True)
 
     def pastePNode(self, p_ap):
-        '''Paste a node, don't select it'''
-        # TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
-        # TODO : ('Real Clipboard') For pasting, use g.app.gui.replaceClipboardWith(p_realClipboard)
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                if w_p == self.commander.p:
-                    # print("already on selection")
-                    self.commander.pasteOutline()
-                else:
-                    # print("not on selection")
-                    oldPosition = self.commander.p  # not same node, save position to possibly return to
-                    self.commander.selectPosition(w_p)
-                    self.commander.pasteOutline()
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
-                # print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in pastePNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in pastePNode no param p_ap")
+        '''Paste a node, don't select it if possible'''
+        return self.outlineCommand("pasteOutline", p_ap, True)
 
     def pasteAsClonePNode(self, p_ap):
-        '''Paste as clone, don't select it'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                if w_p == self.commander.p:
-                    # print("already on selection")
-                    self.commander.pasteOutlineRetainingClones()
-                else:
-                    # print("not on selection")
-                    oldPosition = self.commander.p  # not same node, save position to possibly return to
-                    self.commander.selectPosition(w_p)
-                    self.commander.pasteOutlineRetainingClones()
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
-                # print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in pasteAsClonePNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in pasteAsClonePNode no param p_ap")
+        '''Paste as clone, don't select it if possible'''
+        return self.outlineCommand("pasteOutlineRetainingClones", p_ap, True)
 
     def deletePNode(self, p_ap):
         '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
@@ -235,8 +140,9 @@ class leoBridgeIntegController:
                         self.commander.selectPosition(oldPosition)  # select if old position still valid
                     else:
                         oldPosition._childIndex = oldPosition._childIndex-1
+                        # Try again with childIndex
                         if self.commander.positionExists(oldPosition):
-                            self.commander.selectPosition(oldPosition)  # try with lowered childIndex
+                            self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
                 # print("finally returning node" + self.commander.p.v.headString())
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
@@ -246,91 +152,19 @@ class leoBridgeIntegController:
 
     def movePNodeDown(self, p_ap):
         '''Move a node DOWN, don't select it if possible'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                if w_p == self.commander.p:
-                    # print("already on selection")
-                    self.commander.moveOutlineDown()  # Move node
-                else:
-                    # print("not on selection")
-                    oldPosition = self.commander.p  # not same node, save position to possibly return to
-                    self.commander.selectPosition(w_p)
-                    self.commander.moveOutlineDown()  # Move node
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
-                # print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in movePNodeDown no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in movePNodeDown no param p_ap")
+        return self.outlineCommand("moveOutlineDown", p_ap, True)
 
     def movePNodeLeft(self, p_ap):
         '''Move a node LEFT, don't select it if possible'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                if w_p == self.commander.p:
-                    # print("already on selection")
-                    self.commander.moveOutlineLeft()  # Move node
-                else:
-                    # print("not on selection")
-                    oldPosition = self.commander.p  # not same node, save position to possibly return to
-                    self.commander.selectPosition(w_p)
-                    self.commander.moveOutlineLeft()  # Move node
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
-                # print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in movePNodeLeft no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in movePNodeLeft no param p_ap")
+        return self.outlineCommand("moveOutlineLeft", p_ap, True)
 
     def movePNodeRight(self, p_ap):
         '''Move a node RIGHT, don't select it if possible'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                if w_p == self.commander.p:
-                    # print("already on selection")
-                    self.commander.moveOutlineRight()  # Move node
-                else:
-                    # print("not on selection")
-                    oldPosition = self.commander.p  # not same node, save position to possibly return to
-                    self.commander.selectPosition(w_p)
-                    self.commander.moveOutlineRight()  # Move node
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
-                # print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in movePNodeRight no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in movePNodeRight no param p_ap")
+        return self.outlineCommand("moveOutlineRight", p_ap, True)
 
     def movePNodeUp(self, p_ap):
         '''Move a node UP, don't select it if possible'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                if w_p == self.commander.p:
-                    # print("already on selection")
-                    self.commander.moveOutlineUp()  # Move node
-                else:
-                    # print("not on selection")
-                    oldPosition = self.commander.p  # not same node, save position to possibly return to
-                    self.commander.selectPosition(w_p)
-                    self.commander.moveOutlineUp()  # Move node
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
-                # print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in movePNodeUp no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in movePNodeUp no param p_ap")
+        return self.outlineCommand("moveOutlineUp", p_ap, True)
 
     def insertPNode(self, p_ap):
         '''Insert a node at given node, then select it once created, and finally return it'''
@@ -346,113 +180,52 @@ class leoBridgeIntegController:
             return self.outputError("Error in insertPNode no param p_ap")
 
     def promotePNode(self, p_ap):
-        '''Promote a node, don't select it'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                if w_p == self.commander.p:
-                    # print("already on selection")
-                    self.commander.promote()
-                else:
-                    # print("not on selection")
-                    oldPosition = self.commander.p  # not same node, save position to possibly return to
-                    self.commander.selectPosition(w_p)
-                    self.commander.promote()
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
-                # print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in promotePNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in promotePNode no param p_ap")
+        '''Promote a node, don't select it if possible'''
+        return self.outlineCommand("promote", p_ap, True)
 
     def demotePNode(self, p_ap):
-        '''Demote a node, don't select it'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                if w_p == self.commander.p:
-                    # print("already on selection")
-                    self.commander.demote()
-                else:
-                    # print("not on selection")
-                    oldPosition = self.commander.p  # not same node, save position to possibly return to
-                    self.commander.selectPosition(w_p)
-                    self.commander.demote()
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
-                # print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in demotePNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in demotePNode no param p_ap")
+        '''Demote a node, don't select it if possible'''
+        return self.outlineCommand("demote", p_ap, True)
+
+    def sortChildrenPNode(self, p_ap):
+        '''Sort children of a node, don't select it if possible'''
+        return self.outlineCommand("sortChildren", p_ap, True)
+
+    def sortSiblingsPNode(self, p_ap):
+        '''Sort siblings of a node, don't select it if possible'''
+        return self.outlineCommand("sortSiblings", p_ap, True)
 
     def hoistPNode(self, p_ap):
         '''Select and Hoist a node'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                self.commander.selectPosition(w_p)
-                self.commander.hoist()
-                # print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in hoistPNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in hoistPNode no param p_ap")
+        return self.outlineCommand("hoist", p_ap)  # Don't try to re-select node
 
     def deHoist(self, p_paramUnused):
         '''De-Hoist'''
         self.commander.dehoist()
         return self.outputPNode(self.commander.p)  # in any case, return selected node
 
-    def sortChildrenPNode(self, p_ap):
-        '''Sort children of a node, don't select it if possible'''
+    def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
+        '''Generic call to an outline operation (p_command) for specific p-node (p_ap), with possibility of trying to preserve the current selection (p_keepSelection)'''
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
+                w_func = getattr(self.commander, p_command)
                 if w_p == self.commander.p:
                     # print("already on selection")
-                    self.commander.sortChildren()
+                    w_func()
                 else:
                     # print("not on selection")
                     oldPosition = self.commander.p  # not same node, save position to possibly return to
                     self.commander.selectPosition(w_p)
-                    self.commander.sortChildren()
-                    if self.commander.positionExists(oldPosition):
+                    w_func()
+                    if p_keepSelection and self.commander.positionExists(oldPosition):
                         self.commander.selectPosition(oldPosition)  # select if old position still valid
-
                 # print("finally returning node" + self.commander.p.v.headString())
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
-                return self.outputError("Error in sortChildrenPNode no w_p node found")  # default empty
+                return self.outputError("Error in " + p_command + " no w_p node found")  # default empty
         else:
-            return self.outputError("Error in sortChildrenPNode no param p_ap")
-
-    def sortSiblingsPNode(self, p_ap):
-        '''Sort siblings of a node, don't select it if possible'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                if w_p == self.commander.p:
-                    # print("already on selection")
-                    self.commander.sortSiblings()
-                else:
-                    # print("not on selection")
-                    oldPosition = self.commander.p  # not same node, save position to possibly return to
-                    self.commander.selectPosition(w_p)
-                    self.commander.sortSiblings()
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
-
-                # print("finally returning node" + self.commander.p.v.headString())
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in sortSiblingsPNode no w_p node found")  # default empty
-        else:
-            return self.outputError("Error in sortSiblingsPNode no param p_ap")
+            return self.outputError("Error in " + p_command + " no param p_ap")
 
     def undo(self, p_paramUnused):
         '''Undo last un-doable operation'''
