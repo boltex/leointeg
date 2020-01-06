@@ -335,13 +335,14 @@ class leoBridgeIntegController:
 
     def setBody(self, p_package):
         '''Change Body text of a node'''
-        w_v = self.commander.fileCommands.gnxDict.get(p_package['gnx'])
-        w_v.setBodyString(p_package['body'])
-        if not w_v.isDirty():
-            for w_p in self.commander.all_positions():
-                if w_p.v == w_v:  # found
+        for w_p in self.commander.all_positions():
+            if w_p.v.gnx == p_package['gnx']:  # found
+                b = self.commander.undoer.beforeChangeNodeContents(w_p, oldYScroll=0)
+                w_p.v.setBodyString(p_package['body'])
+                self.commander.undoer.afterChangeNodeContents(w_p, command="set-body", bunch=b, dirtyVnodeList=[w_p.v])
+                if not w_p.v.isDirty():
                     w_p.setDirty()
-                    break
+                break
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def setNewHeadline(self, p_apHeadline):
