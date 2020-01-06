@@ -337,7 +337,7 @@ class leoBridgeIntegController:
         '''Change Body text of a node'''
         for w_p in self.commander.all_positions():
             if w_p.v.gnx == p_package['gnx']:  # found
-                b = self.commander.undoer.beforeChangeNodeContents(w_p, oldYScroll=0)
+                b = self.commander.undoer.beforeChangeNodeContents(w_p, oldYScroll=0) # setup undoable operation
                 w_p.v.setBodyString(p_package['body'])
                 self.commander.undoer.afterChangeNodeContents(w_p, command="set-body", bunch=b, dirtyVnodeList=[w_p.v])
                 if not w_p.v.isDirty():
