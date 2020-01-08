@@ -56,7 +56,7 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 - Set the number of milliseconds to wait when debouncing after body text modifications are detected. (for performance tuning)
 - Set preferences for setting the address and port, and for automatically starting, and connecting to a Leo Bridge server.
 
-![Preview](resources/screenshot-explorer.png)
+![Settings](resources/welcome-settings.gif)
 
 ## Intended Features
 
