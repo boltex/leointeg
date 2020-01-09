@@ -45,6 +45,16 @@ Once activated, it will start a bridge and connect to it automatically by defaul
   - Clipboard commands for tree nodes such as copy, cut, paste, etc.
   - Undo command.
 
+### _Same default shortcuts as Leo_
+
+- Ctrl-I Insert a node
+- Ctrl-H Edit the headline of a node
+- Ctrl-M Mark/Unmark
+- Ctrl-{ and Ctrl-} Promote/Demote
+- Ctrl-U, Ctrl-D, Ctrl-L, Ctrl-R or shift+alt+_arrow_ to move nodes
+- Ctrl-Shift-C, Ctrl-Shift-X, Ctrl-Shift-V, to copy, cut and paste
+- Ctrl-shift-backspace Delete node
+
 ## Extension Settings
 
 ### _Open the command palette and start typing_ `leo settings`

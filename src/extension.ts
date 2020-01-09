@@ -7,56 +7,22 @@ import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 
 
 /*
-# Clipboard Operations
-TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
-TODO : ('Real Clipboard') Use globals.gui.clipboard and the real clipboard with g.app.gui.getTextFromClipboard()
-TODO : ('Real Clipboard') For pasting, use g.app.gui.replaceClipboardWith(p_realClipboard)
-
-# Context variables for package.json "when" clauses
-
+* Note: Context variables for package.json "when" clauses
 - treeInExplorer
 - showOpenAside
 - leoBridgeReady
 - leoTreeOpened
 - leoObjectSelected ( Leo keyboard mode ? )
 
-# Tree Navigation - Regardless of focus:
+TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
+TODO : ('Real Clipboard') Use globals.gui.clipboard and the real clipboard with g.app.gui.getTextFromClipboard()
+TODO : ('Real Clipboard') For pasting, use g.app.gui.replaceClipboardWith(p_realClipboard)
 
-- Alt-Home (goto-first-visible-node)
-- Alt-End (goto-last-visible-node)
-- Alt-Right-arrow (expand-and-go-right)
-- Alt-Left-arrow (contract-or-go-left)
-- Alt-Up-arrow (goto-prev-visible)
-- Alt-Down-arrow (goto-next-visible)
-
-# Basic Commands
-
-- Ctrl-N (new)
-- Ctrl-O (open-outline)
-- Ctrl-S (save-file)
-- Ctrl-I or Insert (insert-node)
-- Ctrl-H (edit-headline)
-- Ctrl-Shift-C (copy-node)
-- Ctrl-Shift-X (cut-node)
-- Ctrl-Shift-V (paste-node)
-- Ctrl-\` (clone-node)
-- Ctrl-M (mark/Unmark)
-- Ctrl-{ (promote)
-- Ctrl-} (demote)
-- Shift+[Arrow] (Move node) When focus is in the outline
-- Ctrl-[D/L/R/U] (Move node) Regardless of focus
-- Alt+Shift+[Arrow] (Move node) Regardless of focus
-- Ctrl-Z (undo)
-- Ctrl-Shift-Z (redo)
-- execute-script (Ctrl-B)
-
-# These commands create nodes from selected text
-
+TODO : Commands that create nodes from selected text
 - Extract
 - Extract-Names
 
-# These commands use the 'marked' property of nodes
-
+TODO : Commands that use the 'marked' property of nodes
 - copy-marked _Copies all marked nodes as children of a new node._
 - diff-marked-nodes
 - goto-next-marked
@@ -67,14 +33,11 @@ TODO : ('Real Clipboard') For pasting, use g.app.gui.replaceClipboardWith(p_real
 - delete-marked-nodes
 - move-marked-nodes
 
-# These commands move clones of all nodes matching the search pattern under a single organizer node, created as the last top-level node.
-## Flattened searches put all nodes as direct children of the organizer node:
-
+TODO : Commands that move clones of all nodes matching the search pattern under a single organizer node, created as the last top-level node.
 - cfa clone-find-all
-- cff clone-find-all-flattened
+- cff clone-find-all-flattened (Flattened searches put all nodes as direct children of the organizer node)
 
-# The clone-marked commands move clones of all marked nodes under an organizer node.
-
+TODO : 'Clone-marked' commands that move clones of all marked nodes under an organizer node.
 - cfam clone-find-marked
 - cffm clone-find-flattened-marked
 
