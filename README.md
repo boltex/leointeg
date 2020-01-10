@@ -36,24 +36,29 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 
 ### _Features done so far_
 
-- A Welcome screen that also lets you change Leo integration's configuration settings.
-- A treeview of an actual leo outline. It can be integrated below the files in the explorer's view, or stand alone in its own panel.
+- A welcome screen that provides some information about this extension, and an easy access to its configuration settings.
+- A treeview implementation of an actual leo outline. It can be integrated below the files in the explorer's view, or it can be used in its own panel.
 - Support for multiple, simultaneous body panes.
 - Commands, available in context menus, as keyboard shortcuts, or in the command palette:
   - Open body panes to the side.
   - Outline edition commands such as insert, delete, move, clone, etc.
   - Clipboard commands for tree nodes such as copy, cut, paste, etc.
-  - Undo command.
+  - Undo operation.
 
-### _Same default shortcuts as Leo_
-
-- Ctrl-I Insert a node
-- Ctrl-H Edit the headline of a node
-- Ctrl-M Mark/Unmark
-- Ctrl-{ and Ctrl-} Promote/Demote
-- Ctrl-U, Ctrl-D, Ctrl-L, Ctrl-R or shift+alt+_arrow_ to move nodes
-- Ctrl-Shift-C, Ctrl-Shift-X, Ctrl-Shift-V, to copy, cut and paste
-- Ctrl-shift-backspace Delete node
+| Keybinding                 |      |                       | Command            |
+| :------------------------- | :--- | :-------------------- | :----------------- |
+| `Ctrl + I`                 |      |                       | Insert Node        |
+| `Ctrl + H`                 |      |                       | Edit Headline      |
+| `Ctrl + Shift + C`         |      |                       | Copy Node          |
+| `Ctrl + Shift + X`         |      |                       | Cut Node           |
+| `Ctrl + Shift + V`         |      |                       | Paste Node         |
+| `Ctrl + Shift + Backspace` |      |                       | Delete Node        |
+| `Ctrl + M`                 |      |                       | Mark / Unmark      |
+| `Ctrl + {`                 |      | `Ctrl + }`            | Promote / Demote   |
+| `Ctrl + U`                 | or   | `Shift + Alt + Up`    | Move Outline Up    |
+| `Ctrl + D`                 | or   | `Shift + Alt + Down`  | Move Outline Down  |
+| `Ctrl + L`                 | or   | `Shift + Alt + Left`  | Move Outline Left  |
+| `Ctrl + R`                 | or   | `Shift + Alt + Right` | Move Outline Right |
 
 ## Extension Settings
 
