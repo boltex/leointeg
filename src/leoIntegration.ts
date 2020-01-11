@@ -79,6 +79,9 @@ export class LeoIntegration {
     // * Note: Kept up to date in the apToLeoNode function, as nodes from python are received and decoded.
     private leoTextDocumentNodesRef: { [gnx: string]: LeoNode } = {}; // Node dictionary
 
+    // * Log Pane
+    public leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel("Leo Log Window"); // Copy-pasted from leo's log pane
+
     // * Status Bar
     public leoStatusBarItem: vscode.StatusBarItem;
     public leoObjectSelected: boolean = false; // represents having focus on a leo body, as opposed to anything else
@@ -219,7 +222,7 @@ export class LeoIntegration {
                 " " + w_serverScriptPath);
         }
 
-        console.log('Creating a promise for starting a server...');
+        console.log('Creating a promise to start a leoBridge server...');
 
         const w_serverStartPromise = new Promise((resolve, reject) => {
             // * Spawn a python child process for a leoBridge server
@@ -1131,6 +1134,8 @@ export class LeoIntegration {
                 // * First StatusBar appearance
                 this.updateStatusBar();
                 this.leoStatusBarItem.show();
+                // * Show leo log pane
+                this.leoLogPane.show(true);
                 // * First Body appearance
                 return this.leoFileSystem.refreshPossibleGnxList();
             })

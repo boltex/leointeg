@@ -13,7 +13,10 @@ export class LeoBridge {
     private hasbin = require('hasbin');
     private websocket: WebSocket | null = null;
 
-    constructor(private context: vscode.ExtensionContext, private leoIntegration: LeoIntegration) { }
+    constructor(
+        private context: vscode.ExtensionContext,
+        private leoIntegration: LeoIntegration
+    ) { }
 
     public action(p_action: string, p_jsonParam: string, p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
         // * Places an action to be made by leoBridge.py on top of a stack, to be resolved from the bottom
@@ -70,7 +73,7 @@ export class LeoBridge {
         }
     }
 
-    private tryParseJSON(p_jsonStr: string) {
+    private tryParseJSON(p_jsonStr: string): boolean | any {
         try {
             var w_object = JSON.parse(p_jsonStr);
             // JSON.parse(null) returns null, and typeof null === "object", null is falsy, so this suffices:

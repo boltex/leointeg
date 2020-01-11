@@ -19,18 +19,17 @@ See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.
 
 ## Development version installation
 
-### _Want to try out this development version?_
-
 Make sure you have Node.js and Git installed along with the above general requirements, then:
 
 1. Get this repository: `git clone https://github.com/boltex/leointeg.git`
-2. Right-click that folder -> open with vscode, or, from inside a vscode window, File-> Open Folder...
+2. Right-click it -> open with vscode (or from a vscode window, File-> Open Folder...)
 3. Run `npm install` in terminal before the first run to install dependencies.
-4. Press F5 (the 'Run Extension' shortcut) - After compiling, a new vscode window will be running with leoInteg!
+4. Press F5 (the 'Run Extension' shortcut)
 
+After compiling, a new vscode window will be running with leoInteg.
 The plugin will be activated if the workspace of this new window contains a leo file, or it can also be manually activated by going to the Leo view.
 
-Once activated, it will start a bridge and connect to it automatically by default. The 'Open Leo File' icon will then be available. _For more info see 'How it works' at the bottom of this readme._
+Once activated, it will start a bridge and connect to it automatically by default. The 'Open Leo File' icon will then be available.
 
 ## Features
 
@@ -59,6 +58,12 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 | `Ctrl + D`                 | or   | `Shift + Alt + Down`  | Move Outline Down  |
 | `Ctrl + L`                 | or   | `Shift + Alt + Left`  | Move Outline Left  |
 | `Ctrl + R`                 | or   | `Shift + Alt + Right` | Move Outline Right |
+
+## Issues
+
+Deleting a node that had opened 'body panes' may cycle through your opened editors to search and close them. There is no current API command in vscode to close a particular editor so this cycling happens because 'next tab' and 'close active editor' commands are performed as a trick to close them. An appropriate command from the vscode api to fix this issue is on the way.
+
+For most users, **`Ctrl+D`** is often already assigned to some useful command. To help with this conflict, move commands will only trigger at an additional condition of having no selection in the text.  So select at least one character to use the usual **`Ctrl+D`** vscode command in body panes.
 
 ## Extension Settings
 
