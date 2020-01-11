@@ -23,7 +23,7 @@ class leoBridgeIntegController:
                                            loadPlugins=False,  # True: attempt to load plugins.
                                            readSettings=True,  # True: read standard settings files.
                                            silent=True,      # True: don't print signon messages.
-                                           verbose=False)     # True: print informational messages.
+                                           verbose=False)     # True: prints messages that would be sent to the log pane.
         self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
         # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
 
@@ -337,7 +337,7 @@ class leoBridgeIntegController:
         '''Change Body text of a node'''
         for w_p in self.commander.all_positions():
             if w_p.v.gnx == p_package['gnx']:  # found
-                b = self.commander.undoer.beforeChangeNodeContents(w_p, oldYScroll=0) # setup undoable operation
+                b = self.commander.undoer.beforeChangeNodeContents(w_p, oldYScroll=0)  # setup undoable operation
                 w_p.v.setBodyString(p_package['body'])
                 self.commander.undoer.afterChangeNodeContents(w_p, command="set-body", bunch=b, dirtyVnodeList=[w_p.v])
                 if not w_p.v.isDirty():
