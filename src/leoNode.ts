@@ -57,10 +57,10 @@ export class LeoNode extends vscode.TreeItem {
     }
 
     public get tooltip(): string {
-        // whole headline as tooltip is useful if outline pane is too narrow
-        // return this.label;
-        const w_ap: ArchivedPosition = JSON.parse(this.apJson);
-        return "child:" + w_ap.childIndex + " gnx:" + w_ap.gnx + " lvl:" + w_ap.level;
+        // * Whole headline as tooltip is useful if it is wider than the outline pane
+        return this.label;
+        // const w_ap: ArchivedPosition = JSON.parse(this.apJson);
+        // return "child:" + w_ap.childIndex + " gnx:" + w_ap.gnx + " lvl:" + w_ap.level;
     }
 
     public getCursorSelection(): any {

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as child from 'child_process';
-import * as os from 'os';
+
 import * as path from "path"; // TODO: Use this library to have reliable support for window-vs-linux file-paths
 import { Constants } from "./constants";
 import { LeoBridgePackage, RevealType, ArchivedPosition } from "./types";
@@ -11,6 +11,7 @@ import { LeoBodyProvider } from "./leoBody";
 import { LeoBridge } from "./leoBridge";
 import { Config } from "./config";
 import { DocumentManager } from "./eamodioEditorManager/documentManager";
+import { ServerService } from "./serverService";
 
 export class LeoIntegration {
     // * Control Flags
@@ -74,10 +75,8 @@ export class LeoIntegration {
     private bodyMainSelectionColumn: vscode.ViewColumn | undefined;
     private forceBodyFocus: boolean = false; // Flag used to force focus in body when next 'showing' of this body occurs (after edit headline if already selected)
 
-    // * Body pane dictionary of GNX, linking to leoNodes
-    // * Used when showing a body text, to force selection of node when editor tabs are switched
-    // * Note: Kept up to date in the apToLeoNode function, as nodes from python are received and decoded.
-    private leoTextDocumentNodesRef: { [gnx: string]: LeoNode } = {}; // Node dictionary
+    // * Body pane dictionary of GNX linking to leoNodes, used when showing a body pane to force selection in outline
+    private leoTextDocumentNodesRef: { [gnx: string]: LeoNode } = {}; // Kept updated in the apToLeoNode function
 
     // * Log Pane
     public leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel("Leo Log Window"); // Copy-pasted from leo's log pane
@@ -103,6 +102,9 @@ export class LeoIntegration {
         prompt: 'New Node\'s Headline'
     };
 
+    // * Automatic server start service
+    private serverService: ServerService;
+
     // * Timing
     private bodyChangeTimeout: NodeJS.Timeout | undefined;
     private bodyChangeTimeoutSkipped: boolean = false; // Used for instant tree node refresh trick
@@ -118,8 +120,8 @@ export class LeoIntegration {
             .fill("")
             .map((_, p_index) => {
                 return {
-                    light: this.context.asAbsolutePath('resources/light/box' + ("0" + p_index).slice(-2) + '.svg'),
-                    dark: this.context.asAbsolutePath('resources/dark/box' + ("0" + p_index).slice(-2) + '.svg')
+                    light: context.asAbsolutePath('resources/light/box' + ("0" + p_index).slice(-2) + '.svg'),
+                    dark: context.asAbsolutePath('resources/dark/box' + ("0" + p_index).slice(-2) + '.svg')
                 };
             });
 
@@ -152,7 +154,7 @@ export class LeoIntegration {
         // set workbench.editor.closeOnFileDelete to true
 
         // * DocumentManager
-        this.documentManager = new DocumentManager(this.context);
+        this.documentManager = new DocumentManager(context);
 
         // * Status bar
         // Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
@@ -164,12 +166,10 @@ export class LeoIntegration {
         context.subscriptions.push(this.leoStatusBarItem);
         this.leoStatusBarItem.hide();
 
-        // * React to change in active panel/text editor to toggle Leo Mode Shortcuts and behavior
-        /**
-         * An [event](#Event) which fires when the [active editor](#window.activeTextEditor)
-         * has changed. *Note* that the event also fires when the active editor changes
-         * to `undefined`.
-         */
+        // * Automatic server start service
+        this.serverService = new ServerService(context);
+
+        // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
         vscode.window.onDidChangeActiveTextEditor(p_event => this.onActiveEditorChanged(p_event)); // TODO : handle deleted bodies
         // * other events
         vscode.window.onDidChangeTextEditorSelection(p_event => this.onChangeEditorSelection(p_event));
@@ -190,7 +190,6 @@ export class LeoIntegration {
 
     private startNetworkServices(): void {
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
-        // * See 'executeCommand' from https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts
         if (this.config.startServerAutomatically) {
             this.startServer();
         } else {
@@ -202,82 +201,25 @@ export class LeoIntegration {
     }
 
     public startServer(): void {
-        // * Get command from settings or best command for the current OS
-        let w_pythonPath = "";
-        const w_serverScriptPath = this.context.extensionPath + Constants.LEO_BRIDGE_SERVER_PATH;
-        const w_platform: string = os.platform();
-        if (this.config.leoPythonCommand && this.config.leoPythonCommand.length) {
-            // start by running command (see executeCommand for multiple useful snippets)
-            console.log('Starting server with command: ' + this.config.leoPythonCommand);
-            // set path
-            w_pythonPath = this.config.leoPythonCommand;
-        } else {
-            w_pythonPath = Constants.LEO_DEFAULT_PYTHON;
-
-            if (w_platform === "win32") {
-                w_pythonPath = Constants.LEO_WIN32_PYTHON;
-            }
-            console.log('Launch with default command : ' +
-                w_pythonPath + ((w_platform === "win32" && w_pythonPath === "py") ? " -3 " : "") +
-                " " + w_serverScriptPath);
-        }
-
-        console.log('Creating a promise to start a leoBridge server...');
-
-        const w_serverStartPromise = new Promise((resolve, reject) => {
-            // * Spawn a python child process for a leoBridge server
-            let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
-            if (os.platform() === "win32" && w_pythonPath === "py") {
-                w_args.push("-3");
-            }
-            w_args.push(w_serverScriptPath);
-            this.serverProcess = child.spawn(w_pythonPath, w_args);
-            // * Capture the python process output
-            this.serverProcess.stdout.on("data", (data: string) => {
-                data.toString().split("\n").forEach(p_line => {
-                    p_line = p_line.trim();
-                    if (p_line) { // * std out process line by line: json shouldn't have line breaks
-                        if (p_line.startsWith('LeoBridge started')) {
-                            resolve(p_line); // * Server confirmed started
-                        }
-                        console.log("leoBridge: ", p_line); // Output message anyways
-                    }
-                });
+        this.serverService.startServer(this.serverProcess, this.config.leoPythonCommand)
+            .then((p_message) => {
+                vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
+                if (this.config.connectToServerAutomatically) {
+                    this.connect();
+                }
+            }, (p_reason) => {
+                vscode.window.showErrorMessage('Error - Cannot start Server: ' + p_reason);
             });
-            // * Capture other python process outputs
-            this.serverProcess.stderr.on("data", (data: string) => {
-                console.log(`stderr: ${data}`);
-                vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
-                this.serverProcess = undefined;
-                reject(`stderr: ${data}`);
-            });
-            this.serverProcess.on("close", (code: any) => {
-                console.log(`leoBridge exited with code ${code}`);
-                vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
-                this.serverProcess = undefined;
-                reject(`leoBridge exited with code ${code}`);
-            });
-        });
-        // * Setup reactions to w_serverStartPromise resolution or rejection
-        w_serverStartPromise.then((p_message) => {
-            vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
-            if (this.config.connectToServerAutomatically) {
-                console.log('auto connect...');
-                this.connect();
-            }
-        }, (p_reason) => {
-            vscode.window.showErrorMessage('Error - Cannot start Server: ' + p_reason);
-        });
     }
 
-    private setTreeViewTitle(): void { // * Available soon, see enable-proposed-api https://code.visualstudio.com/updates/v1_39#_treeview-message-api
-        // // Set/Change outline pane title
-        // this.leoTreeView.title = "test"; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
-        // this.leoTreeExplorerView.title = "test"; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
+    private setTreeViewTitle(p_title: string): void {
+        // TODO - Available soon, see enable-proposed-api https://code.visualstudio.com/updates/v1_39#_treeview-message-api
+        // * Set/Change outline pane title e.g. "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
+        // this.leoTreeView.title = p_title;
+        // this.leoTreeExplorerView.title = p_title; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
     }
 
     public connect(): void {
-        // this 'ready' promise starts undefined, so debounce by returning if not undefined
         if (this.leoBridgeReady || this.leoIsConnecting) {
             console.log('Already connected');
             return;
@@ -304,11 +246,10 @@ export class LeoIntegration {
     public cancelConnect(p_message?: string): void {
         // * Also called from leoBridge.ts when its websocket reports disconnection
         if (this.leoBridgeReady) {
-            // * Real disconnect error
+            // * Real disconnect error versus a simple 'failed to connect'
             vscode.window.showErrorMessage(p_message ? p_message : "Disconnected");
             vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.DISCONNECTED, true);
         } else {
-            // * Simple failed to connect
             vscode.window.showInformationMessage(p_message ? p_message : "Disconnected");
         }
 
@@ -338,16 +279,16 @@ export class LeoIntegration {
 
     private onTreeViewChangedSelection(p_event: vscode.TreeViewSelectionChangeEvent<LeoNode>): void {
         // * We capture and act upon the the 'select node' command, so this event is redundant for now
-        //console.log("treeViewChangedSelection, selection length:", p_event.selection.length);
+        // console.log("treeViewChangedSelection, selection length:", p_event.selection.length);
     }
     private onTreeViewExpandedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
         this.leoBridge.action("expandNode", p_event.element.apJson).then(() => {
-            //console.log('back from expand');
+            // console.log('back from expand');
         });
     }
     private onTreeViewCollapsedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
         this.leoBridge.action("collapseNode", p_event.element.apJson).then(() => {
-            //console.log('back from collapse');
+            // console.log('back from collapse');
         });
     }
 
@@ -390,21 +331,12 @@ export class LeoIntegration {
             }
             const w_node: LeoNode | undefined = this.leoTextDocumentNodesRef[w_editorGnx];
             if (w_node && this.lastSelectedLeoNode) {
-                // select node in tree
-                // console.log("FORCED SELECTED NODE onActiveEditorChanged ");
-                // ! This is the DELETE BUG
                 // * setSelectedNode now returns what it could select, if anything
-
                 this.leoBridge.action("setSelectedNode", w_node.apJson).then((p_answer: LeoBridgePackage) => {
                     const p_selectedNode = this.apToLeoNode(p_answer.node);
                     this.lastSelectedLeoNode = p_selectedNode;
                     this.reveal(p_selectedNode, { select: true, focus: false });
                 });
-
-                // this.leoBridge.action("setSelectedNode", w_node.apJson).then(() => {
-                //     this.lastSelectedLeoNode = w_node;
-                //     this.reveal(w_node, { select: true, focus: false });
-                // });
             }
         }
         // * Status flag check
@@ -466,9 +398,7 @@ export class LeoIntegration {
     private onChangeVisibleEditors(p_event: vscode.TextEditor[]): void {
         // * Triggers when a different text editor in any column, either tab or body, is focused
         // * This is also what triggers after drag and drop, see onChangeEditorViewColumn
-
-        // console.log('testing delete? onDidChangeVisibleTextEditors:', p_event.length);
-
+        // console.log('onDidChangeVisibleTextEditors:', p_event.length);
     }
 
     private onChangeWindowState(p_event: vscode.WindowState): void {
@@ -480,8 +410,7 @@ export class LeoIntegration {
     }
 
     private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
-        // * Edited the document: debounce/check if it was leo body and actual changes
-        // * ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
+        // * Edited the document: ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
         if (p_event.document.uri.scheme === Constants.LEO_URI_SCHEME && p_event.contentChanges.length) {
 
             if (this.bodyLastChangedDocument && (p_event.document.uri.fsPath !== this.bodyLastChangedDocument.uri.fsPath)) {
@@ -589,13 +518,10 @@ export class LeoIntegration {
             }
         });
 
-        return Promise.all(w_promises).then(
-            () => {
-                // console.log('ALL DONE!');
-                this.isSettingConfig = false;
-                this.getLeoIntegSettings();
-            }
-        );
+        return Promise.all(w_promises).then(() => {
+            this.isSettingConfig = false;
+            this.getLeoIntegSettings();
+        });
     }
 
     private getLeoIntegSettings(): void {
@@ -654,7 +580,6 @@ export class LeoIntegration {
             clearTimeout(this.updateStatusBarTimeout);
         }
         vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.leoObjectSelected);
-
         if (this.leoObjectSelected && this.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
             this.leoStatusBarItem.color = Constants.LEO_STATUSBAR_COLOR;
             this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
@@ -1147,15 +1072,21 @@ export class LeoIntegration {
             });
     }
 
+    private showLeoCommands(): void {
+        // * Status bar indicator clicked: Offer all leo commands in the command palette
+        vscode.commands.executeCommand('workbench.action.quickOpen', '>leo: ');
+    }
+
     public test(): void {
         if (this.fileOpenedReady) {
-            console.log("sending test 'getSelectedNode'");
+            this.showLeoCommands();
+            /* console.log("sending test 'getSelectedNode'");
             // * if no parameter required, still send "{}"
             this.leoBridge.action("getSelectedNode", "{}")
                 .then((p_answer: LeoBridgePackage) => {
                     console.log('Test got Back from getSelectedNode, now revealing :', p_answer.node.headline);
                     return Promise.resolve(this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true }));
-                });
+                }); */
 
             // .then(() => {
             //     console.log("...now testing documentManager ");
