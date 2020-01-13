@@ -35,35 +35,43 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 
 ### _Features done so far_
 
-- A welcome screen that provides some information about this extension, and an easy access to its configuration settings.
+- A welcome screen that also provides access to this expansion's configuration settings.
 - A treeview implementation of an actual leo outline. It can be integrated below the files in the explorer's view, or it can be used in its own panel.
 - Support for multiple, simultaneous body panes.
-- Commands, available in context menus, as keyboard shortcuts, or in the command palette:
+- Multiple commands: _Accessible either through context menus, on-hover icons, keyboard shortcuts, or the command palette_
   - Open body panes to the side.
-  - Outline edition commands such as insert, delete, move, clone, etc.
-  - Clipboard commands for tree nodes such as copy, cut, paste, etc.
+  - Outline edition commands.
+  - Clipboard operations
   - Undo operation.
 
-| Keybinding                 |      |                       | Command            |
-| :------------------------- | :--- | :-------------------- | :----------------- |
-| `Ctrl + I`                 |      |                       | Insert Node        |
-| `Ctrl + H`                 |      |                       | Edit Headline      |
-| `Ctrl + Shift + C`         |      |                       | Copy Node          |
-| `Ctrl + Shift + X`         |      |                       | Cut Node           |
-| `Ctrl + Shift + V`         |      |                       | Paste Node         |
-| `Ctrl + Shift + Backspace` |      |                       | Delete Node        |
-| `Ctrl + M`                 |      |                       | Mark / Unmark      |
-| `Ctrl + {`                 |      | `Ctrl + }`            | Promote / Demote   |
-| `Ctrl + U`                 | or   | `Shift + Alt + Up`    | Move Outline Up    |
-| `Ctrl + D`                 | or   | `Shift + Alt + Down`  | Move Outline Down  |
-| `Ctrl + L`                 | or   | `Shift + Alt + Left`  | Move Outline Left  |
-| `Ctrl + R`                 | or   | `Shift + Alt + Right` | Move Outline Right |
+![Menu](resources/context-hover-menus.png)
+
+| Keybinding                 |     |                       | Command            |
+| :------------------------- | :-- | :-------------------- | :----------------- |
+| `Ctrl + I`                 |     |                       | Insert Node        |
+| `Ctrl + H`                 |     |                       | Edit Headline      |
+| `Ctrl + Shift + C`         |     |                       | Copy Node          |
+| `Ctrl + Shift + X`         |     |                       | Cut Node           |
+| `Ctrl + Shift + V`         |     |                       | Paste Node         |
+| `Ctrl + Shift + Backspace` |     |                       | Delete Node        |
+| `Ctrl + M`                 |     |                       | Mark / Unmark      |
+| `Ctrl + {`                 |     | `Ctrl + }`            | Promote / Demote   |
+| `Ctrl + U`                 | or  | `Shift + Alt + Up`    | Move Outline Up    |
+| `Ctrl + D`                 | or  | `Shift + Alt + Down`  | Move Outline Down  |
+| `Ctrl + L`                 | or  | `Shift + Alt + Left`  | Move Outline Left  |
+| `Ctrl + R`                 | or  | `Shift + Alt + Right` | Move Outline Right |
+
+### _Status Bar Indicator_
+
+A 'Literate' Keyboard status bar indicator is shown when this extension is activated. It will turn orange to show when leo's keyboard shortcuts are active: This occurs when a body pane has focus.
+
+![Statusbar](resources/statusbar.gif)
 
 ## Issues
 
-Deleting a node that had opened 'body panes' may cycle through your opened editors to search and close them. There is no current API command in vscode to close a particular editor so this cycling happens because 'next tab' and 'close active editor' commands are performed as a trick to close them. An appropriate command from the vscode api to fix this issue is on the way.
+Deleting a node that had opened body panes will cycle through your opened editors to search and close them. There is no current API command in vscode to close a particular editor so this cycling happens because 'next tab' and 'close active editor' commands are performed as a trick to close them. An appropriate command from the vscode api to fix this issue is on the way.
 
-For most users, **`Ctrl+D`** is often already assigned to some useful command. To help with this conflict, move commands will only trigger at an additional condition of having no selection in the text.  So select at least one character to use the usual **`Ctrl+D`** vscode command in body panes.
+For most users, **`Ctrl+D`** is often already assigned to some useful command. To help with this conflict, move commands will only trigger at an additional condition of having no selection in the text. So select at least one character to use the usual **`Ctrl+D`** vscode command in body panes.
 
 ## Extension Settings
 
