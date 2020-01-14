@@ -1,7 +1,5 @@
 import * as vscode from "vscode";
 import * as child from 'child_process';
-
-import * as path from "path"; // TODO: Use this library to have reliable support for window-vs-linux file-paths
 import { Constants } from "./constants";
 import { LeoBridgePackage, RevealType, ArchivedPosition } from "./types";
 import { LeoFiles } from "./leoFiles";
@@ -212,13 +210,6 @@ export class LeoIntegration {
             });
     }
 
-    private setTreeViewTitle(p_title: string): void {
-        // TODO - Available soon, see enable-proposed-api https://code.visualstudio.com/updates/v1_39#_treeview-message-api
-        // * Set/Change outline pane title e.g. "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
-        // this.leoTreeView.title = p_title;
-        // this.leoTreeExplorerView.title = p_title; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
-    }
-
     public connect(): void {
         if (this.leoBridgeReady || this.leoIsConnecting) {
             console.log('Already connected');
@@ -267,6 +258,18 @@ export class LeoIntegration {
         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
     }
 
+    private showLeoCommands(): void {
+        // * Status bar indicator clicked: Offer all leo commands in the command palette
+        vscode.commands.executeCommand('workbench.action.quickOpen', '>leo: ');
+    }
+
+    private setTreeViewTitle(p_title: string): void {
+        // TODO - Available soon, see enable-proposed-api https://code.visualstudio.com/updates/v1_39#_treeview-message-api
+        // * Set/Change outline pane title e.g. "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
+        // this.leoTreeView.title = p_title;
+        // this.leoTreeExplorerView.title = p_title; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
+    }
+
     public reveal(p_leoNode: LeoNode, p_options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): Thenable<void> {
         if (this.leoTreeView.visible) {
             return this.leoTreeView.reveal(p_leoNode, p_options);
@@ -274,6 +277,7 @@ export class LeoIntegration {
         if (this.leoTreeExplorerView.visible && this.config.treeInExplorer) {
             return this.leoTreeExplorerView.reveal(p_leoNode, p_options);
         }
+        // * Defaults to resolving even if both are hidden
         return Promise.resolve();
     }
 
@@ -442,6 +446,13 @@ export class LeoIntegration {
         }
     }
 
+    private onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
+        if (p_event.affectsConfiguration('leoIntegration')) {
+            // console.log('Detected Change of vscode config in leoIntegration !');
+            this.getLeoIntegSettings();
+        }
+    }
+
     private triggerBodySave(p_forcedRefresh?: boolean): Thenable<boolean> {
         // * Clear possible timeout if triggered by event from other than 'onDocumentChanged'
         if (this.bodyChangeTimeout) {
@@ -556,13 +567,6 @@ export class LeoIntegration {
             vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SHOW_MARK, this.config.showMarkOnNodes);
             vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SHOW_CLONE, this.config.showCloneOnNodes);
             vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SHOW_COPY, this.config.showCopyOnNodes);
-        }
-    }
-
-    private onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
-        if (p_event.affectsConfiguration('leoIntegration')) {
-            // console.log('Detected Change of vscode config in leoIntegration !');
-            this.getLeoIntegSettings();
         }
     }
 
@@ -1070,11 +1074,6 @@ export class LeoIntegration {
             .then(p_result => {
                 return this.showSelectedBodyDocument();
             });
-    }
-
-    private showLeoCommands(): void {
-        // * Status bar indicator clicked: Offer all leo commands in the command palette
-        vscode.commands.executeCommand('workbench.action.quickOpen', '>leo: ');
     }
 
     public test(): void {

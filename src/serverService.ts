@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import * as child from 'child_process';
+import * as path from "path"; // TODO: Use this library to have reliable support for window-vs-linux file-paths
 import * as os from 'os';
 
 export class ServerService {
