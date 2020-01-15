@@ -58,6 +58,7 @@ export class LeoIntegration {
     public leoTreeView: vscode.TreeView<LeoNode>;
     public leoTreeExplorerView: vscode.TreeView<LeoNode>;
     private lastSelectedLeoNode: LeoNode | undefined; // last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
+    public outlineRefreshCount: number = 0; // Used when refreshing leoTextDocumentNodesRef to protect the selected node - which may be a selected clone
 
     // * Outline Pane redraw/refresh 'helper flags'
     public refreshSingleNodeFlag: boolean = false; // read/cleared by leoOutline, so getTreeItem should refresh or return as-is
@@ -74,7 +75,8 @@ export class LeoIntegration {
     private forceBodyFocus: boolean = false; // Flag used to force focus in body when next 'showing' of this body occurs (after edit headline if already selected)
 
     // * Body pane dictionary of GNX linking to leoNodes, used when showing a body pane to force selection in outline
-    private leoTextDocumentNodesRef: { [gnx: string]: LeoNode } = {}; // Kept updated in the apToLeoNode function
+    // private leoTextDocumentNodesRef: { [gnx: string]: LeoNode } = {}; // Kept updated in the apToLeoNode function
+    private leoTextDocumentNodesRef: { [gnx: string]: { node: LeoNode; refreshCount: number; } } = {}; // Kept updated in the apToLeoNode function
 
     // * Log Pane
     public leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel("Leo Log Window"); // Copy-pasted from leo's log pane
@@ -365,7 +367,7 @@ export class LeoIntegration {
             this.updateStatusBarDebounced();
             return;
         }
-        // * Close and return  if deleted, or reveal in outline tree if needed
+        // * Close and return if deleted, or reveal in outline tree if needed
         if (p_event && p_event.document.uri.scheme === Constants.LEO_URI_SCHEME) {
             const w_editorGnx: string = p_event.document.uri.fsPath.substr(1);
             // If already deleted and not closed: just close it and return!
@@ -376,7 +378,7 @@ export class LeoIntegration {
                     });
                 return;
             }
-            const w_node: LeoNode | undefined = this.leoTextDocumentNodesRef[w_editorGnx];
+            const w_node: LeoNode | undefined = this.leoTextDocumentNodesRef[w_editorGnx].node;
             if (w_node && this.lastSelectedLeoNode) {
                 // * setSelectedNode now returns what it could select, if anything
                 //
@@ -408,6 +410,7 @@ export class LeoIntegration {
     }
 
     private onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
+        // * Changed the selection in a text editor - just refresh the statusBar for now
         if (this.leoCyclingBodies) {
             // Active Editor might change during 'delete expired gnx'
             return;
@@ -531,6 +534,7 @@ export class LeoIntegration {
                 w_needsRefresh = true;
             }
             // * Perform refresh if needed
+            // TODO : CHECK IF REFRESH IS APPROPRIATE FOR
             if (p_forceRefreshTree || (w_needsRefresh && this.lastSelectedLeoNode)) {
                 // console.log(p_forceRefreshTree ? 'force refresh' : 'needed refresh');
                 // * Refresh root because of need to dirty parent if in derived file
@@ -558,7 +562,15 @@ export class LeoIntegration {
         );
         // * keep leoTextDocumentNodesRef up to date
         if (this.leoTextDocumentNodesRef[w_leoNode.gnx]) {
-            this.leoTextDocumentNodesRef[w_leoNode.gnx] = w_leoNode;
+            if (p_ap.selected) {
+                console.log('got selected');
+                this.leoTextDocumentNodesRef[w_leoNode.gnx].node = w_leoNode;
+                this.leoTextDocumentNodesRef[w_leoNode.gnx].refreshCount = this.outlineRefreshCount;
+            } else if (this.leoTextDocumentNodesRef[w_leoNode.gnx].refreshCount < this.outlineRefreshCount) {
+                this.leoTextDocumentNodesRef[w_leoNode.gnx].node = w_leoNode;
+            } else {
+                console.log('prevented');
+            }
         }
         return w_leoNode;
     }
@@ -703,7 +715,11 @@ export class LeoIntegration {
             if (this.lastSelectedLeoNode) {
                 // set entry of leoNodes Ref : leoTextDocumentNodesRef
                 // (used when showing a body text, to force selection of node when editor tabs are switched)
-                this.leoTextDocumentNodesRef[p_document.uri.fsPath.substr(1)] = this.lastSelectedLeoNode;
+                if (this.leoTextDocumentNodesRef[p_document.uri.fsPath.substr(1)]) {
+                    this.leoTextDocumentNodesRef[p_document.uri.fsPath.substr(1)].node = this.lastSelectedLeoNode;
+                } else {
+                    this.leoTextDocumentNodesRef[p_document.uri.fsPath.substr(1)] = { node: this.lastSelectedLeoNode, refreshCount: this.outlineRefreshCount };
+                }
             }
             this.bodyTextDocument = p_document;
 
@@ -738,7 +754,13 @@ export class LeoIntegration {
             if (!this.config.treeKeepFocusWhenAside) {
                 this.leoBridge.action("setSelectedNode", p_node.apJson).then((p_answer: LeoBridgePackage) => {
                     const p_selectedNode = this.apToLeoNode(p_answer.node);
-                    this.leoTextDocumentNodesRef[p_node.gnx] = p_selectedNode;
+
+                    if (this.leoTextDocumentNodesRef[p_node.gnx]) {
+                        this.leoTextDocumentNodesRef[p_node.gnx].node = p_selectedNode;
+                    } else {
+                        this.leoTextDocumentNodesRef[p_node.gnx] = { node: p_selectedNode, refreshCount: this.outlineRefreshCount };
+                    }
+
                     this.reveal(p_selectedNode, { select: true, focus: false });
                 });
             }

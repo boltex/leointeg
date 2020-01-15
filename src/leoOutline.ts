@@ -17,6 +17,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     }
 
     public refreshTreeRoot(p_revealType?: RevealType): void {
+        this.leoIntegration.outlineRefreshCount += 1;
         if (p_revealType) { // to check if selected node should self-select while redrawing whole tree
             this.leoIntegration.revealSelectedNode = p_revealType; // to be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
         }
