@@ -6,10 +6,10 @@ import { LeoIntegration } from "../leoIntegration";
 
 export class LeoSettingsWebview {
 
-    private panel: vscode.WebviewPanel | undefined;
+    private _panel: vscode.WebviewPanel | undefined;
     private readonly _extensionPath: string;
     private _html: string | undefined;
-    private waitingForUpdate: boolean = false;
+    private _waitingForUpdate: boolean = false;
 
     constructor(private context: vscode.ExtensionContext, private leoIntegration: LeoIntegration) {
         this._extensionPath = context.extensionPath;
@@ -17,18 +17,17 @@ export class LeoSettingsWebview {
     }
 
     private onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
-        if (this.panel && !this.waitingForUpdate) {
-            this.panel.webview.postMessage({ command: 'config', config: this.leoIntegration.config });
+        if (this._panel && !this._waitingForUpdate) {
+            this._panel.webview.postMessage({ command: 'config', config: this.leoIntegration.config });
         }
     }
 
     public openWebview(): void {
-
-        if (this.panel) {
-            this.panel.reveal();
+        if (this._panel) {
+            this._panel.reveal();
         } else {
             this.getBaseHtml().then(p_baseHtml => {
-                this.panel = vscode.window.createWebviewPanel(
+                this._panel = vscode.window.createWebviewPanel(
                     'leoSettings', // Identifies the type of the webview. Used internally
                     'Leo Integration Settings', // Title of the panel displayed to the user
                     { viewColumn: vscode.ViewColumn.One, preserveFocus: false }, // Editor column to show the new webview panel in.
@@ -39,11 +38,11 @@ export class LeoSettingsWebview {
                         enableScripts: true
                     }
                 );
-                let baseUri = this.panel.webview.asWebviewUri(vscode.Uri.file(
+                let baseUri = this._panel.webview.asWebviewUri(vscode.Uri.file(
                     path.join(this._extensionPath)
                 ));
-                this.panel.iconPath = vscode.Uri.file(this.context.asAbsolutePath('resources/leoapp128px.png'));
-                this.panel.webview.html = p_baseHtml.replace(
+                this._panel.iconPath = vscode.Uri.file(this.context.asAbsolutePath('resources/leoapp128px.png'));
+                this._panel.webview.html = p_baseHtml.replace(
                     /#{root}/g,
                     baseUri.toString()
                 ).replace(
@@ -52,22 +51,22 @@ export class LeoSettingsWebview {
                         this.leoIntegration.config
                     )};</script>`
                 );
-                this.panel.webview.onDidReceiveMessage(
+                this._panel.webview.onDidReceiveMessage(
                     message => {
                         switch (message.command) {
                             case 'alert':
                                 vscode.window.showErrorMessage(message.text);
                                 break;
                             case 'getNewConfig':
-                                if (this.panel && !this.waitingForUpdate) {
-                                    this.panel.webview.postMessage({ command: 'newConfig', config: this.leoIntegration.config });
+                                if (this._panel && !this._waitingForUpdate) {
+                                    this._panel.webview.postMessage({ command: 'newConfig', config: this.leoIntegration.config });
                                 }
                                 break;
                             case 'config':
-                                this.waitingForUpdate = true;
+                                this._waitingForUpdate = true;
                                 this.leoIntegration.setLeoIntegSettings(message.changes).then(() => {
-                                    this.panel!.webview.postMessage({ command: 'vscodeConfig', config: this.leoIntegration.config });
-                                    this.waitingForUpdate = false;
+                                    this._panel!.webview.postMessage({ command: 'vscodeConfig', config: this.leoIntegration.config });
+                                    this._waitingForUpdate = false;
                                 });
                                 break;
                         }
@@ -75,9 +74,9 @@ export class LeoSettingsWebview {
                     null,
                     this.context.subscriptions
                 );
-                this.panel.onDidDispose(() => {
+                this._panel.onDidDispose(() => {
                     console.log('disposed');
-                    this.panel = undefined;
+                    this._panel = undefined;
                 },
                     null,
                     this.context.subscriptions);
@@ -95,5 +94,4 @@ export class LeoSettingsWebview {
 
         return this._html;
     }
-
 }

@@ -7,18 +7,17 @@ import * as os from 'os';
 export class ServerService {
     // * See https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts#L196
 
-    constructor(private context: vscode.ExtensionContext) {
-    }
+    constructor(private _context: vscode.ExtensionContext) { }
 
     public startServer(p_serverProcess: child.ChildProcess | undefined, p_leoPythonCommand: string): Promise<any> {
         // * Get command from settings or best command for the current OS
         let w_pythonPath = "";
-        const w_serverScriptPath = this.context.extensionPath + Constants.LEO_BRIDGE_SERVER_PATH;
+        const w_serverScriptPath = this._context.extensionPath + Constants.LEO_BRIDGE_SERVER_PATH;
         const w_platform: string = os.platform();
         if (p_leoPythonCommand && p_leoPythonCommand.length) {
-            // start by running command (see executeCommand for multiple useful snippets)
+            // Start by running command (see executeCommand for multiple useful snippets)
             console.log('Starting server with command: ' + p_leoPythonCommand);
-            // set path
+            // Set path
             w_pythonPath = p_leoPythonCommand;
         } else {
             w_pythonPath = Constants.LEO_DEFAULT_PYTHON;

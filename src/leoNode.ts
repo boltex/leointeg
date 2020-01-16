@@ -1,27 +1,27 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
-import { ArchivedPosition } from "./types";
+import { ArchivedPosition } from "./types"; // Kept in case we need to log from 'ap' sub objects
 
 export class LeoNode extends vscode.TreeItem {
     public cursorSelection: any; // TODO : Keep body's cursor and selection position from vscode to get it back
     public contextValue: string;
 
     constructor(
-        public label: string, // Header
+        public label: string, // Tree node header
         public gnx: string,
-        public collapsibleState: vscode.TreeItemCollapsibleState, // computed in receiver/creator
+        public collapsibleState: vscode.TreeItemCollapsibleState, // Computed in receiver/creator
         public apJson: string, // Key for leo/python side of things
         public cloned: boolean,
         public dirty: boolean,
         public marked: boolean,
         public hasBody: boolean,
-        private leoIntegration: LeoIntegration
+        private _leoIntegration: LeoIntegration
     ) {
         super(label, collapsibleState);
         if (marked) {
-            this.contextValue = "leoNodeMarked"; // for use in package.json
+            this.contextValue = "leoNodeMarked"; // For use in package.json
         } else {
-            this.contextValue = "leoNode"; // for use in package.json
+            this.contextValue = "leoNode"; // For use in package.json
         }
         this.command = {
             command: 'leointeg.selectTreeNode',
@@ -46,14 +46,14 @@ export class LeoNode extends vscode.TreeItem {
     public get iconPath(): { light: string; dark: string } {
         // From Leo's leoNodes.py computeIcon function
         // 1=has Body, 2=marked, 4=cloned, 8=dirty
-        let w_dirty: boolean = this.leoIntegration.config.invertNodeContrast ? !this.dirty : this.dirty;
+        let w_dirty: boolean = this._leoIntegration.config.invertNodeContrast ? !this.dirty : this.dirty;
         let w_icon: number =
             (+w_dirty << 3) |
             (+this.cloned << 2) |
             (+this.marked << 1) |
             +this.hasBody;
 
-        return this.leoIntegration.icons[w_icon];
+        return this._leoIntegration.icons[w_icon];
     }
 
     public get tooltip(): string {
@@ -67,7 +67,7 @@ export class LeoNode extends vscode.TreeItem {
         return this.cursorSelection;
     }
 
-    setCursorSelection(p_cursorSelection: any): void {
+    public setCursorSelection(p_cursorSelection: any): void {
         this.cursorSelection = p_cursorSelection;
     }
 

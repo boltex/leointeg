@@ -4,12 +4,12 @@ import * as path from "path"; // TODO: Use this library to have reliable support
 
 export class LeoFiles {
 
-    private fileBrowserOpen: boolean = false;
+    private _fileBrowserOpen: boolean = false;
 
-    constructor(private context: vscode.ExtensionContext) { }
+    constructor(private _context: vscode.ExtensionContext) { }
 
-    private getBestOpenFolderUri(): vscode.Uri {
-        // find a folder to propose when opening the browse-for-leo-file chooser
+    private _getBestOpenFolderUri(): vscode.Uri {
+        // Find a folder to propose when opening the browse-for-leo-file chooser
         let w_openedFileEnvUri: vscode.Uri | boolean = false;
         let w_activeUri: vscode.Uri | undefined = undefined;
 
@@ -21,7 +21,7 @@ export class LeoFiles {
         if (w_activeUri) {
             const w_defaultFolder = vscode.workspace.getWorkspaceFolder(w_activeUri);
             if (w_defaultFolder) {
-                w_openedFileEnvUri = w_defaultFolder.uri; // set as current opened document-path's folder
+                w_openedFileEnvUri = w_defaultFolder.uri; // Set as current opened document-path's folder
             }
         }
         if (!w_openedFileEnvUri) {
@@ -33,27 +33,26 @@ export class LeoFiles {
 
     // TODO : Use 'path' library to have reliable support for Windows
     public getLeoFileUrl(): Promise<string> {
-        if (this.fileBrowserOpen) {
+        if (this._fileBrowserOpen) {
             return Promise.resolve("");
         }
         return new Promise((resolve, reject) => {
             vscode.window
                 .showOpenDialog({
                     canSelectMany: false,
-                    defaultUri: this.getBestOpenFolderUri(),
+                    defaultUri: this._getBestOpenFolderUri(),
                     filters: {
                         "Leo Files": [Constants.LEO_FILE_TYPE_EXTENSION]
                     }
                 })
                 .then(p_chosenLeoFile => {
-                    this.fileBrowserOpen = false;
+                    this._fileBrowserOpen = false;
                     if (p_chosenLeoFile) {
-                        resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // replace backslashes for windows support
+                        resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
                     } else {
                         reject("");
                     }
                 });
         });
-
     }
 }

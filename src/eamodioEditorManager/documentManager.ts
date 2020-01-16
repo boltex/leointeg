@@ -10,14 +10,14 @@ export class DocumentManager extends Disposable {
 
     public savedDocuments: ISavedEditor[] = [];
 
-    constructor(private context: ExtensionContext) {
+    constructor(private _context: ExtensionContext) {
         super(() => this.dispose());
     }
 
     dispose() { }
 
     get(): SavedEditor[] {
-        const data = this.savedDocuments; // this.context.workspaceState.get<ISavedEditor[]>(WorkspaceState.SavedDocuments);
+        const data = this.savedDocuments; // this._context.workspaceState.get<ISavedEditor[]>(WorkspaceState.SavedDocuments);
         return (data && data.map(_ => new SavedEditor(_))) || [];
     }
 
@@ -88,8 +88,8 @@ export class DocumentManager extends Disposable {
 
             // save documents
             console.log('DocumentManager save documents');
-            this.savedDocuments = editors; // this.context.workspaceState.update(WorkspaceState.SavedDocuments, editors);
-            return this.savedDocuments; // this.context.workspaceState.update(WorkspaceState.SavedDocuments, editors);
+            this.savedDocuments = editors; // this._context.workspaceState.update(WorkspaceState.SavedDocuments, editors);
+            return this.savedDocuments; // this._context.workspaceState.update(WorkspaceState.SavedDocuments, editors);
         }
         catch (ex) {
             console.error(ex, 'DocumentManager.save');

@@ -8,8 +8,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * Note that there is an activation event `onFileSystem:<scheme>` that fires when a file is being accessed
 
     // * Last file read data with the readFile method
-    private lastGnx = ""; // gnx of last file read
-    private lastGnxBodyLength = 0; // length of last file read
+    private _lastGnx = ""; // gnx of last file read
+    private _lastGnxBodyLength = 0; // length of last file read
 
     // * list of currently opened body panes gnx (from 'watch' & 'dispose' methods)
     public openedBodiesGnx: string[] = [];
@@ -109,8 +109,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             if (uri.fsPath === '/') {
                 console.log('called stat on root : "/" ! ');
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-            } else if (uri.fsPath === '/' + this.lastGnx) {
-                return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: this.lastGnxBodyLength };
+            } else if (uri.fsPath === '/' + this._lastGnx) {
+                return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: this._lastGnxBodyLength };
             } else {
                 const w_gnx = uri.fsPath.substr(1);
                 if (!this.possibleGnxList.includes(w_gnx)) {
@@ -177,12 +177,12 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 } else {
                     return this.leoIntegration.leoBridge.action("getBody", '"' + w_gnx + '"')
                         .then((p_result) => {
-                            this.lastGnx = w_gnx;
+                            this._lastGnx = w_gnx;
                             if (p_result.bodyData) {
-                                this.lastGnxBodyLength = p_result.bodyData.length;
+                                this._lastGnxBodyLength = p_result.bodyData.length;
                                 return Promise.resolve(Buffer.from(p_result.bodyData));
                             } else if (p_result.bodyData === "") {
-                                this.lastGnxBodyLength = 0;
+                                this._lastGnxBodyLength = 0;
                                 return Promise.resolve(Buffer.from(""));
                             } else {
                                 console.error("ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?

@@ -5,7 +5,6 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 
-
 /*
 * Note: Context variables for package.json "when" clauses
 - treeInExplorer
@@ -13,6 +12,8 @@ import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 - leoBridgeReady
 - leoTreeOpened
 - leoObjectSelected ( Leo keyboard mode ? )
+
+TODO : React to file changes and other events: see https://github.com/leo-editor/leo-editor/issues/1281
 
 TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
 TODO : ('Real Clipboard') Use globals.gui.clipboard and the real clipboard with g.app.gui.getTextFromClipboard()

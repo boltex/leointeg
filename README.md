@@ -35,7 +35,7 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 
 ### _Features done so far_
 
-- A welcome screen that also provides access to this expansion's configuration settings.
+- A welcome screen that also gives easy access to this expansion's configuration settings.
 - A treeview implementation of an actual leo outline. It can be integrated below the files in the explorer's view, or it can be used in its own panel.
 - Support for multiple, simultaneous body panes.
 - Multiple commands: _Accessible either through context menus, on-hover icons, keyboard shortcuts, or the command palette_
@@ -46,20 +46,20 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 
 ![Menu](resources/context-hover-menus.png)
 
-| Keybinding                 |     |                       | Command            |
-| :------------------------- | :-- | :-------------------- | :----------------- |
-| `Ctrl + I`                 |     |                       | Insert Node        |
-| `Ctrl + H`                 |     |                       | Edit Headline      |
-| `Ctrl + Shift + C`         |     |                       | Copy Node          |
-| `Ctrl + Shift + X`         |     |                       | Cut Node           |
-| `Ctrl + Shift + V`         |     |                       | Paste Node         |
-| `Ctrl + Shift + Backspace` |     |                       | Delete Node        |
-| `Ctrl + M`                 |     |                       | Mark / Unmark      |
-| `Ctrl + {`                 |     | `Ctrl + }`            | Promote / Demote   |
-| `Ctrl + U`                 | or  | `Shift + Alt + Up`    | Move Outline Up    |
-| `Ctrl + D`                 | or  | `Shift + Alt + Down`  | Move Outline Down  |
-| `Ctrl + L`                 | or  | `Shift + Alt + Left`  | Move Outline Left  |
-| `Ctrl + R`                 | or  | `Shift + Alt + Right` | Move Outline Right |
+| Keybinding                 |      |                       | Command            |
+| :------------------------- | :--- | :-------------------- | :----------------- |
+| `Ctrl + I`                 |      |                       | Insert Node        |
+| `Ctrl + H`                 |      |                       | Edit Headline      |
+| `Ctrl + Shift + C`         |      |                       | Copy Node          |
+| `Ctrl + Shift + X`         |      |                       | Cut Node           |
+| `Ctrl + Shift + V`         |      |                       | Paste Node         |
+| `Ctrl + Shift + Backspace` |      |                       | Delete Node        |
+| `Ctrl + M`                 |      |                       | Mark / Unmark      |
+| `Ctrl + {`                 |      | `Ctrl + }`            | Promote / Demote   |
+| `Ctrl + U`                 | or   | `Shift + Alt + Up`    | Move Outline Up    |
+| `Ctrl + D`                 | or   | `Shift + Alt + Down`  | Move Outline Down  |
+| `Ctrl + L`                 | or   | `Shift + Alt + Left`  | Move Outline Left  |
+| `Ctrl + R`                 | or   | `Shift + Alt + Right` | Move Outline Right |
 
 ### _Status Bar Indicator_
 
@@ -97,6 +97,12 @@ For most users, **`Ctrl+D`** is often already assigned to some useful command. T
 Integration is done by starting a python server script and connecting to it via a websocket to exchange JSON data. That python script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
 
 The outline pane is made by implementing a TreeDataProvider for vscode's TreeView API, while the body panes are made by defining a 'leo' filesystem scheme with vscode's FileSystemProvider API, and using the node's gnx as identifiers.
+
+## Acknowledgments
+
+- Thanks to [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
+- Thanks to [Eric Amodio](https://github.com/eamodio) for the [tab-cycling hack](https://github.com/eamodio/vscode-restore-editors/blob/master/src/documentManager.ts#L54) and the [welcome screen template](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
+- Thanks to [Vitalije](https://github.com/vitalije) for his contributions and support
 
 ---
 

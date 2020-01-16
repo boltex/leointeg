@@ -1,3 +1,5 @@
+// * Standalone config interface file (all other structures defined in types.d.ts)
+
 export interface Config {
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
