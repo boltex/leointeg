@@ -5,7 +5,8 @@ import { LeoBridgePackage, LeoAction } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 export class LeoBridge {
-    // * Communications with Python
+    // * Handles communication with the leobridgeserver.py python script via websockets
+
     public actionBusy: boolean = false;
     private _leoBridgeSerialId: number = 0;
     private _callStack: LeoAction[] = [];

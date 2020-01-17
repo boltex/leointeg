@@ -12,14 +12,19 @@ import { DocumentManager } from "./eamodioEditorManager/documentManager";
 import { ServerService } from "./serverService";
 
 export class LeoIntegration {
-    // * Control Flags
+    // * Leo Editor Integration with Visual Studio Code
+
+    // * Status Flags
     public fileOpenedReady: boolean = false;
     public leoBridgeReady: boolean = false;
     public leoIsConnecting: boolean = false;
     private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Set when leoBridge has a leo controller ready
     private _leoBridgeActionBusy: boolean = false;
+
+    // * Control Flags
     private _leoCyclingBodies: boolean = false; // Used when closing removed bodies: onActiveEditorChanged, onChangeEditorSelection
-    private _lastOperationChangedTree: boolean = true; // Structure may have changed, as opposed to selecting, opening aside, expanding and collapsing
+    private _lastOperationChangedTree: boolean = true; // Refresh helper: Structure may have changed, as opposed to selecting, opening aside, expanding and collapsing
+    private _lastOperationSelectedBody: boolean = false; // Refresh helper : An already opened body has been selected, structure is unchanged
 
     // * Configuration Settings
     private _isSettingConfig: boolean = false;
@@ -48,7 +53,7 @@ export class LeoIntegration {
     // * Leo Bridge Server Process
     private _serverProcess: child.ChildProcess | undefined;
 
-    // * File Browser for choosing a Leo file to open
+    // * File Browser
     private _leoFilesBrowser: LeoFiles;
 
     // * LeoBridge
@@ -332,6 +337,8 @@ export class LeoIntegration {
         // console.log("treeViewChangedSelection, selection length:", p_event.selection.length);
     }
     private onTreeViewExpandedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
+        // * May reveal nodes
+        // console.log('Triggered onTreeViewExpandedElement, called "getChildren" to reveal nodes?');
         this.leoBridge.action("expandNode", p_event.element.apJson).then(() => {
             // console.log('back from expand');
         });
@@ -356,6 +363,7 @@ export class LeoIntegration {
     }
 
     private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
+        // * Active editor should be reflected in the outline if it's a leo body pane
         if (this._leoCyclingBodies) {
             // Active Editor might change during 'delete expired gnx'
             return;
@@ -368,7 +376,7 @@ export class LeoIntegration {
             this.updateStatusBarDebounced();
             return;
         }
-        // * Close and return if deleted, or reveal in outline tree if needed
+        // * Close and return if deleted
         if (p_event && p_event.document.uri.scheme === Constants.LEO_URI_SCHEME) {
             const w_editorGnx: string = p_event.document.uri.fsPath.substr(1);
             // If already deleted and not closed: just close it and return!
@@ -379,6 +387,7 @@ export class LeoIntegration {
                     });
                 return;
             }
+            // * Reveal in outline tree if needed
             const w_node: LeoNode | undefined = this._leoTextDocumentNodesRef[w_editorGnx].node;
             if (w_node && this._lastSelectedLeoNode) {
                 // * setSelectedNode now returns what it could select, if anything
@@ -603,7 +612,7 @@ export class LeoIntegration {
                     this.reveal(w_leoNode, { select: w_selectFlag, focus: w_focusFlag })
                         .then(() => {
                             if (w_showBodyFlag) {
-                                this.selectTreeNode(w_leoNode);
+                                this.selectTreeNode(w_leoNode, true);
                             }
                         });
                 }, 0);
@@ -638,8 +647,14 @@ export class LeoIntegration {
         return Promise.resolve();
     }
 
-    public selectTreeNode(p_node: LeoNode): Thenable<boolean> {
+    public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean | undefined): Thenable<boolean> {
         // * User has selected a node via mouse click or 'enter' keypress in the outline
+        // otherwise flag p_internalCall if used internally
+        if (!p_internalCall) {
+            this._lastOperationChangedTree = false;
+            this._lastOperationSelectedBody = true;
+        }
+
         let w_apJsonString: string = "";
         w_apJsonString = w_apJsonString + p_node.apJson + " ";
         w_apJsonString = w_apJsonString.trim();
@@ -748,8 +763,14 @@ export class LeoIntegration {
         });
     }
 
-    public showBodyDocumentAside(p_node: LeoNode): Thenable<boolean> {
-        // * Trigger event to save previous document just in in case (if timer to save is already started for another document)
+    public showBodyDocumentAside(p_node: LeoNode, p_internalCall?: boolean | undefined): Thenable<boolean> {
+        // * User has right-clicked a node and chosen 'open aside' in the context menu
+        // otherwise flag p_internalCall if used internally
+        if (!p_internalCall) {
+            this._lastOperationChangedTree = false;
+            this._lastOperationSelectedBody = true;
+        }
+        // Trigger event to save previous document just in in case (if timer to save is already started for another document)
         this.triggerBodySave();
         return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
             if (!this.config.treeKeepFocusWhenAside) {
@@ -802,8 +823,22 @@ export class LeoIntegration {
         }
     }
 
+    public leoBridgeAction(p_action: string, p_node?: LeoNode): Promise<LeoBridgePackage> {
+        // * For actions that need no refreshes at all
+        if (!p_node && this._lastSelectedLeoNode) {
+            p_node = this._lastSelectedLeoNode;
+        }
+        if (p_node) {
+            return this.leoBridge.action(p_action, p_node.apJson).then(p_package => {
+                return Promise.resolve(p_package);
+            });
+        } else {
+            return Promise.resolve({ id: 0 });
+        }
+    }
+
     public leoBridgeActionAndRefresh(p_action: string, p_node?: LeoNode, p_revealType?: RevealType | undefined): Promise<LeoBridgePackage> {
-        // * For actions that do not need full gnx refresh (moving, renaming nodes)
+        // * For actions that do not need full bodies gnx list to refresh (moving, renaming nodes)
         if (!p_node && this._lastSelectedLeoNode) {
             p_node = this._lastSelectedLeoNode;
         }
@@ -818,7 +853,7 @@ export class LeoIntegration {
     }
 
     public leoBridgeActionAndFullRefresh(p_action: string, p_node?: LeoNode, p_refreshBodyContent?: boolean): void {
-        // * For actions that may delete or add nodes so that bodies gnx need refreshing
+        // * For actions that may delete or add nodes so that bodies gnx list need refreshing
         // * Perform action on node and close bodies of removed nodes, if any
         if (this._leoBridgeActionBusy) {
             // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'

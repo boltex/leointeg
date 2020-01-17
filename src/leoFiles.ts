@@ -3,6 +3,7 @@ import { Constants } from "./constants";
 import * as path from "path"; // TODO: Use this library to have reliable support for window-vs-linux file-paths
 
 export class LeoFiles {
+    // * Handles opening of file browser for choosing leo files to open
 
     private _fileBrowserOpen: boolean = false;
 

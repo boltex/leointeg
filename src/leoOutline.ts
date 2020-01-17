@@ -5,6 +5,8 @@ import { ProviderResult } from "vscode";
 import { RevealType } from "./types";
 
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
+    // * Leo outline implemented as a tree view with this TreeDataProvider implementation
+
     private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> =
         new vscode.EventEmitter<LeoNode | undefined>();
     readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;

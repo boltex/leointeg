@@ -3,6 +3,8 @@ import { LeoIntegration } from "./leoIntegration";
 import { ArchivedPosition } from "./types"; // Kept in case we need to log from 'ap' sub objects
 
 export class LeoNode extends vscode.TreeItem {
+    // * Implementation of tree nodes for usage in a TreeDataProvider
+
     public cursorSelection: any; // TODO : Keep body's cursor and selection position from vscode to get it back
     public contextValue: string;
 

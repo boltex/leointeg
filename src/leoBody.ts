@@ -3,9 +3,9 @@ import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
 export class LeoBodyProvider implements vscode.FileSystemProvider {
-    // * The bodies of Leo nodes are implemented as a 'file system' in the vscode api
-    // * Saving and renaming prevents flickering and prevents undos to 'traverse through' nodes, see leoIntegration.ts
-    // * Note that there is an activation event `onFileSystem:<scheme>` that fires when a file is being accessed
+    // * Body panes implemented as a file system with this FileSystemProvider implementation (using "leo" as a scheme identifier)
+
+    // ! Saving and renaming prevents flickering and prevents undos to 'traverse through' nodes, see leoIntegration.ts
 
     // * Last file read data with the readFile method
     private _lastGnx = ""; // gnx of last file read
@@ -46,15 +46,13 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public refreshPossibleGnxList(): Thenable<string[]> {
-        // get updated list of possible gnx
-        // console.log('calling leoBridge with getAllGnx');
+        // * Get updated list of possible gnx
         return this.leoIntegration.leoBridge.action("getAllGnx", "{}").then((p_result) => {
             if (p_result.allGnx) {
                 this.possibleGnxList = p_result.allGnx;
             } else {
                 this.possibleGnxList = [];
             }
-            // console.log('possibleGnxList LENGTH: ', this.possibleGnxList.length);
             return Promise.resolve(this.possibleGnxList);
         });
     }
@@ -235,4 +233,3 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         }, 5);
     }
 }
-

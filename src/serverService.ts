@@ -5,7 +5,10 @@ import * as path from "path"; // TODO: Use this library to have reliable support
 import * as os from 'os';
 
 export class ServerService {
-    // * See https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts#L196
+    // * Provides automatic leo bridge server startup service
+
+    // TODO : Issue https://github.com/boltex/leointeg/issues/10
+    // See https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts#L196
 
     constructor(private _context: vscode.ExtensionContext) { }
 
