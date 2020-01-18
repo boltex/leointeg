@@ -201,7 +201,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
         }
     }, 1500);
 
-    //  * START *  ********  ********  ********  ********  ********  ********
+    // * START
     setControls();
     setVisibility(frontConfig);
     onBind();

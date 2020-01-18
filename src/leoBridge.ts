@@ -8,9 +8,10 @@ export class LeoBridge {
     // * Handles communication with the leobridgeserver.py python script via websockets
 
     public actionBusy: boolean = false;
+
     private _leoBridgeSerialId: number = 0;
     private _callStack: LeoAction[] = [];
-    private readyPromise: Promise<LeoBridgePackage> | undefined;
+    private _readyPromise: Promise<LeoBridgePackage> | undefined;
     private _hasbin = require('hasbin'); // TODO : Check to see if this can help with anaconda/miniconda issues
     private _websocket: WebSocket | null = null;
 
@@ -31,12 +32,12 @@ export class LeoBridge {
 
             this._callStack.push(w_action);
             if (!p_preventCall) {
-                this.callAction();
+                this._callAction();
             }
         });
     }
 
-    private resolveBridgeReady(p_object: string) {
+    private _resolveBridgeReady(p_object: string) {
         // * Resolves promises with the answers from an action that was done by leoBridge.py
         let w_bottomAction = this._callStack.shift();
         if (w_bottomAction) {
@@ -51,13 +52,13 @@ export class LeoBridge {
         }
     }
 
-    private rejectActions(p_reason: string): void {
+    private _rejectActions(p_reason: string): void {
         // * Rejects all actions from the the stack
         while (this._callStack.length) {
-            this.rejectAction(p_reason);
+            this._rejectAction(p_reason);
         }
     }
-    private rejectAction(p_reason: string): void {
+    private _rejectAction(p_reason: string): void {
         // * Rejects an action from the bottom of the stack
         const w_bottomAction = this._callStack.shift();
         if (w_bottomAction) {
@@ -65,16 +66,16 @@ export class LeoBridge {
         }
     }
 
-    private callAction(): void {
+    private _callAction(): void {
         // * Sends an action from the bottom of the stack to leoBridge.py process stdin
         if (this._callStack.length && !this.actionBusy) {
             this.actionBusy = true; // launch / resolve bottom one
             const w_action = this._callStack[0];
-            this.send(w_action.parameter + "\n");
+            this._send(w_action.parameter + "\n");
         }
     }
 
-    private tryParseJSON(p_jsonStr: string): boolean | any {
+    private _tryParseJSON(p_jsonStr: string): boolean | any {
         try {
             var w_object = JSON.parse(p_jsonStr);
             // JSON.parse(null) returns null, and typeof null === "object", null is falsy, so this suffices:
@@ -88,12 +89,12 @@ export class LeoBridge {
         return false;
     }
 
-    private processAnswer(p_data: string): void {
+    private _processAnswer(p_data: string): void {
         // * Process data that came out of leoBridge.py process stdout
-        const w_parsedData = this.tryParseJSON(p_data);
+        const w_parsedData = this._tryParseJSON(p_data);
         if (w_parsedData) {
-            this.resolveBridgeReady(w_parsedData);
-            this.callAction();
+            this._resolveBridgeReady(w_parsedData);
+            this._callAction();
         } else { // unprocessed/unknown python output
             console.log("from python", p_data);
         }
@@ -107,7 +108,7 @@ export class LeoBridge {
         // * Capture the python process output
         this._websocket.onmessage = (p_event) => {
             if (p_event.data) {
-                this.processAnswer(p_event.data.toString());
+                this._processAnswer(p_event.data.toString());
             }
         };
         this._websocket.onerror = (p_event: WebSocket.ErrorEvent) => {
@@ -116,7 +117,7 @@ export class LeoBridge {
         this._websocket.onclose = (p_event: WebSocket.CloseEvent) => {
             // * Disconnected from server
             console.log(`websocket closed, code: ${p_event.code}`);
-            this.rejectAction(`websocket closed, code: ${p_event.code}`);
+            this._rejectAction(`websocket closed, code: ${p_event.code}`);
             // TODO : Implement a better connection error handling
             if (this._leoIntegration.leoBridgeReady) {
                 this._leoIntegration.cancelConnect(`websocket closed, code: ${p_event.code}`);
@@ -124,14 +125,14 @@ export class LeoBridge {
         };
 
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
-        this.readyPromise = this.action("", "", { id: 1 }, true);
-        return this.readyPromise; // This promise will resolve when the started python process starts
+        this._readyPromise = this.action("", "", { id: 1 }, true);
+        return this._readyPromise; // This promise will resolve when the started python process starts
     }
 
-    private send(p_message: string): any {
+    private _send(p_message: string): any {
         // * Send into the python process input
-        if (this.readyPromise) {
-            this.readyPromise.then(() => { // using '.then' that was surely resolved already: to be buffered in case process isn't ready.
+        if (this._readyPromise) {
+            this._readyPromise.then(() => { // using '.then' that was surely resolved already: to be buffered in case process isn't ready.
                 if (this._websocket && this._websocket.OPEN) {
                     this._websocket.send(p_message); // p_message should be json
                 }

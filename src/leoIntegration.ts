@@ -119,7 +119,7 @@ export class LeoIntegration {
 
     constructor(private _context: vscode.ExtensionContext) {
         // * Get configuration settings
-        this.getLeoIntegSettings();
+        this._getLeoIntegSettings();
 
         // * Build Icon filename paths
         this.icons = Array(16)
@@ -142,17 +142,17 @@ export class LeoIntegration {
 
         // * Leo view outline panes
         this.leoTreeView = vscode.window.createTreeView("leoIntegration", { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
-        this.leoTreeView.onDidChangeSelection((p_event => this.onTreeViewChangedSelection(p_event)));
+        this.leoTreeView.onDidChangeSelection((p_event => this._onTreeViewChangedSelection(p_event)));
         this.leoTreeView.onDidExpandElement((p_event => this.onTreeViewExpandedElement(p_event)));
-        this.leoTreeView.onDidCollapseElement((p_event => this.onTreeViewCollapsedElement(p_event)));
-        this.leoTreeView.onDidChangeVisibility((p_event => this.onTreeViewVisibilityChanged(p_event, false))); // * Trigger 'show tree in Leo's view'
+        this.leoTreeView.onDidCollapseElement((p_event => this._onTreeViewCollapsedElement(p_event)));
+        this.leoTreeView.onDidChangeVisibility((p_event => this._onTreeViewVisibilityChanged(p_event, false))); // * Trigger 'show tree in Leo's view'
 
         // * Explorer view outline pane
         this.leoTreeExplorerView = vscode.window.createTreeView("leoIntegrationExplorer", { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
-        this.leoTreeExplorerView.onDidChangeSelection((p_event => this.onTreeViewChangedSelection(p_event)));
+        this.leoTreeExplorerView.onDidChangeSelection((p_event => this._onTreeViewChangedSelection(p_event)));
         this.leoTreeExplorerView.onDidExpandElement((p_event => this.onTreeViewExpandedElement(p_event)));
-        this.leoTreeExplorerView.onDidCollapseElement((p_event => this.onTreeViewCollapsedElement(p_event)));
-        this.leoTreeExplorerView.onDidChangeVisibility((p_event => this.onTreeViewVisibilityChanged(p_event, true))); // * Trigger 'show tree in explorer view'
+        this.leoTreeExplorerView.onDidCollapseElement((p_event => this._onTreeViewCollapsedElement(p_event)));
+        this.leoTreeExplorerView.onDidChangeVisibility((p_event => this._onTreeViewVisibilityChanged(p_event, true))); // * Trigger 'show tree in explorer view'
 
         // * Body Pane
         this.leoFileSystem = new LeoBodyProvider(this);
@@ -176,25 +176,25 @@ export class LeoIntegration {
         this._serverService = new ServerService(_context);
 
         // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
-        vscode.window.onDidChangeActiveTextEditor(p_event => this.onActiveEditorChanged(p_event)); // TODO : handle deleted bodies
+        vscode.window.onDidChangeActiveTextEditor(p_event => this._onActiveEditorChanged(p_event)); // TODO : handle deleted bodies
         // * other events
-        vscode.window.onDidChangeTextEditorSelection(p_event => this.onChangeEditorSelection(p_event));
-        vscode.window.onDidChangeTextEditorViewColumn(p_event => this.onChangeEditorViewColumn(p_event)); // TODO : handle deleted bodies
-        vscode.window.onDidChangeVisibleTextEditors(p_event => this.onChangeVisibleEditors(p_event)); // TODO : handle deleted bodies
-        vscode.window.onDidChangeWindowState(p_event => this.onChangeWindowState(p_event));
+        vscode.window.onDidChangeTextEditorSelection(p_event => this._onChangeEditorSelection(p_event));
+        vscode.window.onDidChangeTextEditorViewColumn(p_event => this._onChangeEditorViewColumn(p_event)); // TODO : handle deleted bodies
+        vscode.window.onDidChangeVisibleTextEditors(p_event => this._onChangeVisibleEditors(p_event)); // TODO : handle deleted bodies
+        vscode.window.onDidChangeWindowState(p_event => this._onChangeWindowState(p_event));
 
         // * React when typing and changing body pane
-        vscode.workspace.onDidChangeTextDocument(p_event => this.onDocumentChanged(p_event));
-        vscode.workspace.onDidSaveTextDocument(p_event => this.onDocumentSaved(p_event));
+        vscode.workspace.onDidChangeTextDocument(p_event => this._onDocumentChanged(p_event));
+        vscode.workspace.onDidSaveTextDocument(p_event => this._onDocumentSaved(p_event));
 
         // * React to configuration settings events
-        vscode.workspace.onDidChangeConfiguration(p_event => this.onChangeConfiguration(p_event));
+        vscode.workspace.onDidChangeConfiguration(p_event => this._onChangeConfiguration(p_event));
 
         // * Start server and / or connect to it (as specified in settings)
-        this.startNetworkServices();
+        this.startNetworkServices(); // TODO : Maybe start from extension.ts instead
     }
 
-    private startNetworkServices(): void {
+    public startNetworkServices(): void {
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
         if (this.config.startServerAutomatically) {
             this.startServer();
@@ -261,7 +261,7 @@ export class LeoIntegration {
         this.leoIsConnecting = false;
         this._leoBridgeReadyPromise = undefined;
         this.leoObjectSelected = false;
-        this.updateStatusBar();
+        this._updateStatusBar();
 
         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
     }
@@ -286,11 +286,11 @@ export class LeoIntegration {
 
         return Promise.all(w_promises).then(() => {
             this._isSettingConfig = false;
-            this.getLeoIntegSettings();
+            this._getLeoIntegSettings();
         });
     }
 
-    private getLeoIntegSettings(): void {
+    private _getLeoIntegSettings(): void {
         if (this._isSettingConfig) {
             return; // * Currently setting config, wait until its done all, and this will be called automatically
         } else {
@@ -325,14 +325,14 @@ export class LeoIntegration {
         }
     }
 
-    private onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
+    private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
         if (p_event.affectsConfiguration('leoIntegration')) {
             // console.log('Detected Change of vscode config in leoIntegration !');
-            this.getLeoIntegSettings();
+            this._getLeoIntegSettings();
         }
     }
 
-    private onTreeViewChangedSelection(p_event: vscode.TreeViewSelectionChangeEvent<LeoNode>): void {
+    private _onTreeViewChangedSelection(p_event: vscode.TreeViewSelectionChangeEvent<LeoNode>): void {
         // * We capture and act upon the the 'select node' command, so this event is redundant for now
         // console.log("treeViewChangedSelection, selection length:", p_event.selection.length);
     }
@@ -343,13 +343,13 @@ export class LeoIntegration {
             // console.log('back from expand');
         });
     }
-    private onTreeViewCollapsedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
+    private _onTreeViewCollapsedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
         this.leoBridge.action("collapseNode", p_event.element.apJson).then(() => {
             // console.log('back from collapse');
         });
     }
 
-    private onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
+    private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
         if (p_event.visible && this._lastSelectedLeoNode) {
             this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // TODO: test if really needed, along with timeout (0) "getSelectedNode"
             setTimeout(() => {
@@ -362,18 +362,18 @@ export class LeoIntegration {
         }
     }
 
-    private onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
+    private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined): void {
         // * Active editor should be reflected in the outline if it's a leo body pane
         if (this._leoCyclingBodies) {
             // Active Editor might change during 'delete expired gnx'
             return;
         }
-        this.triggerBodySave(); // Save in case edits were pending
+        this._triggerBodySave(); // Save in case edits were pending
         // selecting another editor of the same window by the tab
         // * Status flag check
         if (!p_event && this.leoObjectSelected) {
             this.leoObjectSelected = false; // no editor!
-            this.updateStatusBarDebounced();
+            this._updateStatusBarDebounced();
             return;
         }
         // * Close and return if deleted
@@ -405,21 +405,21 @@ export class LeoIntegration {
                 if (!this.leoObjectSelected) {
                     // console.log("editor changed to : leo! SET STATUS!");
                     this.leoObjectSelected = true;
-                    this.updateStatusBar();
+                    this._updateStatusBar();
                     return;
                 }
             } else {
                 // console.log("editor changed to : other, no status!");
                 if (this.leoObjectSelected) {
                     this.leoObjectSelected = false;
-                    this.updateStatusBar();
+                    this._updateStatusBar();
                     return;
                 }
             }
         }
     }
 
-    private onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
+    private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
         // * Changed the selection in a text editor - just refresh the statusBar for now
         if (this._leoCyclingBodies) {
             // Active Editor might change during 'delete expired gnx'
@@ -431,13 +431,13 @@ export class LeoIntegration {
             if (p_event.textEditor.document.uri.scheme === Constants.LEO_URI_SCHEME && vscode.window.activeTextEditor.document.uri.scheme === Constants.LEO_URI_SCHEME) {
                 if (!this.leoObjectSelected) {
                     this.leoObjectSelected = true;
-                    this.updateStatusBarDebounced();
+                    this._updateStatusBarDebounced();
                     return;
                 }
             } else {
                 if (this.leoObjectSelected) {
                     this.leoObjectSelected = false;
-                    this.updateStatusBarDebounced();
+                    this._updateStatusBarDebounced();
                     return;
                 }
             }
@@ -445,38 +445,38 @@ export class LeoIntegration {
             // No editor even active
             if (this.leoObjectSelected) {
                 this.leoObjectSelected = false;
-                this.updateStatusBarDebounced();
+                this._updateStatusBarDebounced();
                 return;
             }
         }
     }
 
-    private onChangeEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void {
+    private _onChangeEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void {
         // * This trigger when shifting editors through closing/inserting editors or closing columns
         // * No effect when dragging editor tabs: it just closes and reopens in other column, see 'onChangeVisibleEditors'
     }
 
-    private onChangeVisibleEditors(p_event: vscode.TextEditor[]): void {
+    private _onChangeVisibleEditors(p_event: vscode.TextEditor[]): void {
         // * Triggers when a different text editor in any column, either tab or body, is focused
         // * This is also what triggers after drag and drop, see onChangeEditorViewColumn
         // console.log('onDidChangeVisibleTextEditors:', p_event.length);
     }
 
-    private onChangeWindowState(p_event: vscode.WindowState): void {
+    private _onChangeWindowState(p_event: vscode.WindowState): void {
         // * Triggers when a vscode window have gained or lost focus
     }
 
-    private onDocumentSaved(p_event: vscode.TextDocument): void {
+    private _onDocumentSaved(p_event: vscode.TextDocument): void {
         // * Edited and saved the document, does it on any document in editor
     }
 
-    private onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
+    private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
         // * Edited the document: ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
         if (p_event.document.uri.scheme === Constants.LEO_URI_SCHEME && p_event.contentChanges.length) {
 
             if (this._bodyLastChangedDocument && (p_event.document.uri.fsPath !== this._bodyLastChangedDocument.uri.fsPath)) {
                 // console.log('Switched Node while waiting edit debounce!');
-                this.triggerBodySave(true); //Set p_forcedRefresh flag, this will also have cleared timeout
+                this._triggerBodySave(true); //Set p_forcedRefresh flag, this will also have cleared timeout
             }
 
             // * Instant tree node refresh trick: If icon should change then do it now, but only if there was no document edits pending
@@ -498,12 +498,12 @@ export class LeoIntegration {
             }
             this._bodyLastChangedDocument = p_event.document; // setup trigger
             this._bodyChangeTimeout = setTimeout(() => {
-                this.triggerBodySave(); // no .then for clearing timer, done in trigger instead
+                this._triggerBodySave(); // no .then for clearing timer, done in trigger instead
             }, w_delay);
         }
     }
 
-    private triggerBodySave(p_forcedRefresh?: boolean): Thenable<boolean> {
+    private _triggerBodySave(p_forcedRefresh?: boolean): Thenable<boolean> {
         // * Clear possible timeout if triggered by event from other than 'onDocumentChanged'
         if (this._bodyChangeTimeout) {
             clearTimeout(this._bodyChangeTimeout);
@@ -622,10 +622,10 @@ export class LeoIntegration {
         return w_leoNodesArray;
     }
 
-    private locateOpenedBody(p_gnx: string): boolean {
+    private _locateOpenedBody(p_gnx: string): boolean {
         this._bodyTextDocumentSameUri = false;
         // * Only gets to visible editors, not every tab per editor
-        // TODO : fix with newer vscode API
+        // TODO : fix with newer vscode API or eamodio's hack
         vscode.window.visibleTextEditors.forEach(p_textEditor => {
             if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {
                 this._bodyTextDocumentSameUri = true;
@@ -633,10 +633,11 @@ export class LeoIntegration {
                 this._bodyTextDocument = p_textEditor.document;
             }
         });
-        return !!this._bodyTextDocumentSameUri;
+        return this._bodyTextDocumentSameUri;
     }
 
     public reveal(p_leoNode: LeoNode, p_options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): Thenable<void> {
+        //* 'TreeView.reveal' for any opened leo outline
         if (this.leoTreeView.visible) {
             return this.leoTreeView.reveal(p_leoNode, p_options);
         }
@@ -669,7 +670,7 @@ export class LeoIntegration {
         // * First check if having already this exact node selected
         if (p_node === this._lastSelectedLeoNode) {
             // same so just find and reopen
-            this.locateOpenedBody(p_node.gnx);
+            this._locateOpenedBody(p_node.gnx);
             return this.showSelectedBodyDocument();
         }
 
@@ -680,7 +681,7 @@ export class LeoIntegration {
         });
 
         // * don't wait for promise to resolve a selection because there's no tree structure change
-        this.triggerBodySave(); // trigger event to save previous document if timer to save if already started for another document
+        this._triggerBodySave(); // trigger event to save previous document if timer to save if already started for another document
 
         this._lastSelectedLeoNode = p_node; // kept mostly in order to do refreshes if it changes, as opposed to a full tree refresh
         vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SELECTED_MARKED, this._lastSelectedLeoNode.marked);
@@ -689,7 +690,7 @@ export class LeoIntegration {
 
             // locateOpenedBody checks if already opened and visible,
             // locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
-            this.locateOpenedBody(p_node.gnx);
+            this._locateOpenedBody(p_node.gnx);
             // * Save body to leo for the bodyTextDocument, then check if already opened, if not save and rename to clear undo buffer
             return this.bodySaveDocument(this._bodyTextDocument).then(p_result => {
                 if (this._bodyTextDocument) { // have to re-test inside .then, oh well
@@ -771,7 +772,7 @@ export class LeoIntegration {
             this._lastOperationSelectedBody = true;
         }
         // Trigger event to save previous document just in in case (if timer to save is already started for another document)
-        this.triggerBodySave();
+        this._triggerBodySave();
         return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
             if (!this.config.treeKeepFocusWhenAside) {
                 this.leoBridge.action("setSelectedNode", p_node.apJson).then((p_answer: LeoBridgePackage) => {
@@ -866,7 +867,7 @@ export class LeoIntegration {
                 this._leoBridgeActionBusy = true;
                 this._leoCyclingBodies = true;
                 // start by finishing any pending edits by triggering body save
-                this.triggerBodySave()
+                this._triggerBodySave()
                     .then(p_saveResult => {
                         return this.leoBridge.action(p_action, p_node!.apJson); // p_node was just checked
                     })
@@ -894,7 +895,7 @@ export class LeoIntegration {
                         }
                         let w_located: boolean | string = false;
                         p_remainingGnxList.forEach(p_remainingGnx => {
-                            if (!w_located && this.locateOpenedBody(p_remainingGnx)) {
+                            if (!w_located && this._locateOpenedBody(p_remainingGnx)) {
                                 w_located = p_remainingGnx;
                             }
                         });
@@ -1084,7 +1085,7 @@ export class LeoIntegration {
                 // * set body URI for body filesystem
                 this._bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_result.node.gnx);
                 // * First StatusBar appearance
-                this.updateStatusBar();
+                this._updateStatusBar();
                 this.leoStatusBarItem.show();
                 // * Show leo log pane
                 this.leoLogPane.show(true);
@@ -1099,16 +1100,16 @@ export class LeoIntegration {
             });
     }
 
-    private updateStatusBarDebounced(): void {
+    private _updateStatusBarDebounced(): void {
         if (this._updateStatusBarTimeout) {
             clearTimeout(this._updateStatusBarTimeout);
         }
         this._updateStatusBarTimeout = setTimeout(() => {
-            this.updateStatusBar();
+            this._updateStatusBar();
         }, 200);
     }
 
-    private updateStatusBar(): void {
+    private _updateStatusBar(): void {
         if (this._updateStatusBarTimeout) { // Can be called directly, so clear timer if any
             clearTimeout(this._updateStatusBarTimeout);
         }
@@ -1125,12 +1126,12 @@ export class LeoIntegration {
         }
     }
 
-    private showLeoCommands(): void {
+    private _showLeoCommands(): void {
         // * Status bar indicator clicked: Offer all leo commands in the command palette
         vscode.commands.executeCommand('workbench.action.quickOpen', '>leo: ');
     }
 
-    private setTreeViewTitle(p_title: string): void {
+    public setTreeViewTitle(p_title: string): void {
         // TODO - Available soon, see enable-proposed-api https://code.visualstudio.com/updates/v1_39#_treeview-message-api
         // * Set/Change outline pane title e.g. "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
         // this.leoTreeView.title = p_title;
@@ -1139,7 +1140,7 @@ export class LeoIntegration {
 
     public test(): void {
         if (this.fileOpenedReady) {
-            this.showLeoCommands();
+            this._showLeoCommands();
             /* console.log("sending test 'getSelectedNode'");
             // * if no parameter required, still send "{}"
             this.leoBridge.action("getSelectedNode", "{}")
