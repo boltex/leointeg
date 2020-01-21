@@ -704,7 +704,6 @@ wsPort = 32125
                 w_func()
                 if p_keepSelection and self.commander.positionExists(oldPosition):
                     self.commander.selectPosition(oldPosition)  # select if old position still valid
-            print("for "+ p_command+ ", finally returning node" + self.commander.p.v.headString()+ " child index: " +self.commander.p._childIndex )
             return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
             return self.outputError("Error in " + p_command + " no w_p node found")  # default empty
