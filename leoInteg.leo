@@ -37,6 +37,7 @@
 <v t="felix.20191127000420.1"><vh>movePNodeRight</vh></v>
 <v t="felix.20191127000420.2"><vh>movePNodeUp</vh></v>
 <v t="felix.20191127001506.1"><vh>insertPNode</vh></v>
+<v t="felix.20200120224033.1"><vh>insertNamedPNode</vh></v>
 <v t="felix.20191127001506.2"><vh>promotePNode</vh></v>
 <v t="felix.20191127001506.3"><vh>demotePNode</vh></v>
 <v t="felix.20191231184412.1"><vh>sortChildrenPNode</vh></v>
@@ -242,7 +243,7 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191126232434.24">def setSelectedNode(self, p_ap):
-    '''Select a node'''
+    '''Select a node, or the first one found with its GNX'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
         if w_p:
@@ -252,12 +253,10 @@ if __name__ == '__main__':
             else:
                 w_foundPNode = self.findPNodeFromGnx(p_ap['gnx'])
                 if w_foundPNode:
-                    print("got first p node with gnx: " + p_ap['gnx'])
                     self.commander.selectPosition(w_foundPNode)
                 else:
                     print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
-    # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-    # * return the finally selected node instead
+    # * return the finally selected node
     if(self.commander.p):
         return self.outputPNode(self.commander.p)
     else:
@@ -646,8 +645,18 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20191231203545.1">def clonePNode(self, p_ap):
-    '''Clone a node, don't select it'''
-    return self.outlineCommand("clone", p_ap, True)
+    '''Clone a node, return it if it was also the current selection, otherwise try not to select it'''
+    if(p_ap):
+        w_p = self.ap_to_p(p_ap)
+        if w_p:
+            if w_p == self.commander.p:
+                return self.outlineCommand("clone", p_ap, False)
+            else:
+                return self.outlineCommand("clone", p_ap, True)
+        else:
+            return self.outputError("Error in clonePNode function, no w_p node found")  # default empty
+    else:
+        return self.outputError("Error in clonePNode function, no param p_ap")
 
 </t>
 <t tx="felix.20191231203711.1">def undo(self, p_paramUnused):
@@ -695,12 +704,30 @@ wsPort = 32125
                 w_func()
                 if p_keepSelection and self.commander.positionExists(oldPosition):
                     self.commander.selectPosition(oldPosition)  # select if old position still valid
-            # print("finally returning node" + self.commander.p.v.headString())
+            print("for "+ p_command+ ", finally returning node" + self.commander.p.v.headString()+ " child index: " +self.commander.p._childIndex )
             return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
             return self.outputError("Error in " + p_command + " no w_p node found")  # default empty
     else:
         return self.outputError("Error in " + p_command + " no param p_ap")
+
+</t>
+<t tx="felix.20200120224033.1">def insertNamedPNode(self, p_apHeadline):
+    '''Insert a node at given node, set its headline, select it and finally return it'''
+    w_newHeadline = p_apHeadline['headline']
+    w_ap = p_apHeadline['node']
+    if(w_ap):
+        w_p = self.ap_to_p(w_ap)
+        if w_p:
+            w_newNode = w_p.insertAfter()
+            self.commander.selectPosition(w_newNode)
+            # set this node's new headline
+            w_newNode.h = w_newHeadline
+            return self.outputPNode(self.commander.p)  # in any case, return selected node
+        else:
+            return self.outputError("Error in insertNamedPNode no w_p node found")  # default empty
+    else:
+        return self.outputError("Error in insertNamedPNode no param w_ap")
 
 </t>
 </tnodes>

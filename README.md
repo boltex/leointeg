@@ -100,9 +100,11 @@ The outline pane is made by implementing a TreeDataProvider for vscode's TreeVie
 
 ## Acknowledgments
 
-- Thanks to [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
-- Thanks to [Eric Amodio](https://github.com/eamodio) for the [tab-cycling hack](https://github.com/eamodio/vscode-restore-editors/blob/master/src/documentManager.ts#L54) and the [welcome screen template](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
-- Thanks to [Vitalije](https://github.com/vitalije) for his contributions and support
+### _Thanks to_
+
+- [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
+- [Eric Amodio](https://github.com/eamodio) for the [tab-cycling hack](https://github.com/eamodio/vscode-restore-editors/blob/master/src/documentManager.ts#L54) and the [welcome screen template](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
+- [Vitalije](https://github.com/vitalije) for his contributions and support
 
 ---
 
