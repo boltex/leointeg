@@ -98,7 +98,7 @@ export function activate(context: vscode.ExtensionContext) {
         ["leointeg.moveOutlineRightSelection", () => leoIntegration.leoBridgeActionAndRefresh("movePNodeRight", undefined, RevealType.RevealSelectFocusShowBody)],
         ["leointeg.moveOutlineUpSelection", () => leoIntegration.leoBridgeActionAndRefresh("movePNodeUp", undefined, RevealType.RevealSelectFocusShowBody)],
         ["leointeg.insertNodeSelection", () => leoIntegration.insertNode()],
-        ["leointeg.cloneNodeSelection", () => leoIntegration.leoBridgeActionAndRefresh("clonePNode")],
+        ["leointeg.cloneNodeSelection", () => leoIntegration.leoBridgeActionAndRefresh("clonePNode", undefined, RevealType.RevealSelectFocusShowBody)],
         ["leointeg.promoteSelection", () => leoIntegration.leoBridgeActionAndRefresh("promotePNode", undefined, RevealType.RevealSelectFocusShowBody)],
         ["leointeg.demoteSelection", () => leoIntegration.leoBridgeActionAndRefresh("demotePNode", undefined, RevealType.RevealSelectFocusShowBody)],
 
