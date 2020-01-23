@@ -586,38 +586,35 @@ export class LeoIntegration {
         return w_leoNode;
     }
 
-    public arrayToSingleLeoNode(p_array: ArchivedPosition[]): LeoNode | null {
-        if (!p_array.length) {
-            return null;
+    private _revealConvertedNode(p_leoNode: LeoNode, p_selected: boolean): void {
+        if (this.revealSelectedNode && p_selected) { // * revealSelectedNode flag: Reveal, select and focus or even show body pane!
+            const w_selectFlag = this.revealSelectedNode >= RevealType.RevealSelect; // at least RevealSelect
+            let w_focusFlag = this.revealSelectedNode >= RevealType.RevealSelectFocus;  // at least RevealSelectFocus
+            if (this.revealSelectedNode === RevealType.RevealSelectShowBody) {
+                w_focusFlag = false;
+            }
+            const w_showBodyFlag = this.revealSelectedNode >= RevealType.RevealSelectFocusShowBody; // at least RevealSelectFocusShowBody
+            this.revealSelectedNode = RevealType.NoReveal; // ok reset
+            if (!this._lastSelectedLeoNode && this.revealSelectedNode < RevealType.RevealSelectFocusShowBody) { // very first time
+                this._lastSelectedLeoNode = p_leoNode;
+            }
+            setTimeout(() => {
+                // don't use this.treeKeepFocus
+                this.reveal(p_leoNode, { select: w_selectFlag, focus: w_focusFlag })
+                    .then(() => {
+                        if (w_showBodyFlag) {
+                            this.selectTreeNode(p_leoNode, true);
+                        }
+                    });
+            }, 0);
         }
-        return this.apToLeoNode(p_array[0]);
     }
 
     public arrayToLeoNodesArray(p_array: ArchivedPosition[]): LeoNode[] {
         const w_leoNodesArray: LeoNode[] = [];
         for (let w_apData of p_array) {
             const w_leoNode = this.apToLeoNode(w_apData);
-            if (this.revealSelectedNode && w_apData.selected) { // * revealSelectedNode flag: Reveal, select and focus or even show body pane!
-                const w_selectFlag = this.revealSelectedNode >= RevealType.RevealSelect; // at least RevealSelect
-                let w_focusFlag = this.revealSelectedNode >= RevealType.RevealSelectFocus;  // at least RevealSelectFocus
-                if (this.revealSelectedNode === RevealType.RevealSelectShowBody) {
-                    w_focusFlag = false;
-                }
-                const w_showBodyFlag = this.revealSelectedNode >= RevealType.RevealSelectFocusShowBody; // at least RevealSelectFocusShowBody
-                this.revealSelectedNode = RevealType.NoReveal; // ok reset
-                if (!this._lastSelectedLeoNode && this.revealSelectedNode < RevealType.RevealSelectFocusShowBody) { // very first time
-                    this._lastSelectedLeoNode = w_leoNode;
-                }
-                setTimeout(() => {
-                    // don't use this.treeKeepFocus
-                    this.reveal(w_leoNode, { select: w_selectFlag, focus: w_focusFlag })
-                        .then(() => {
-                            if (w_showBodyFlag) {
-                                this.selectTreeNode(w_leoNode, true);
-                            }
-                        });
-                }, 0);
-            }
+            this._revealConvertedNode(w_leoNode, w_apData.selected);
             w_leoNodesArray.push(w_leoNode);
         }
         return w_leoNodesArray;
@@ -1176,14 +1173,21 @@ export class LeoIntegration {
 
     public test(): void {
         if (this.fileOpenedReady) {
-            this._showLeoCommands();
-            /* console.log("sending test 'getSelectedNode'");
+            // this._showLeoCommands();
+            // console.log("sending test 'getSelectedNode'");
             // * if no parameter required, still send "{}"
             this.leoBridge.action("getSelectedNode", "{}")
                 .then((p_answer: LeoBridgePackage) => {
-                    console.log('Test got Back from getSelectedNode, now revealing :', p_answer.node.headline);
-                    return Promise.resolve(this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true }));
-                }); */
+                    console.log('Test got Back from getSelectedNode, now revealing :', p_answer.node.headline, p_answer.node.childIndex);
+                    // this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                    // this._lastOperationChangedTree = true;
+                    // this.outlineRefreshCount = this.outlineRefreshCount + 1;
+                    // return Promise.resolve(this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true }));
+                    this.reveal(this.apToLeoNode(p_answer.node), { select: false, focus: false }).then(() => {
+                        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                        this._showLeoCommands(); // lol
+                    });
+                });
 
             // .then(() => {
             //     console.log("...now testing documentManager ");

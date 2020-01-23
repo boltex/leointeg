@@ -514,7 +514,7 @@ class leoBridgeIntegController:
 def main():
     '''python script for leo integration via leoBridge'''
     global wsHost, wsPort
-
+    print("Starting LeoBridge... (Launch with -h for help)")
     # replace default host address and port if provided as arguments
 
     try:

@@ -407,7 +407,7 @@ if __name__ == '__main__':
 <t tx="felix.20191126232435.1">def main():
     '''python script for leo integration via leoBridge'''
     global wsHost, wsPort
-
+    print("Starting LeoBridge... (Launch with -h for help)")
     # replace default host address and port if provided as arguments
 
     try:
