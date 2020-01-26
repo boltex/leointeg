@@ -192,9 +192,11 @@ export class LeoIntegration {
 
         // * Start server and / or connect to it (as specified in settings)
         this.startNetworkServices(); // TODO : Maybe start from extension.ts instead
+
     }
 
     public startNetworkServices(): void {
+        this.setTreeViewTitle("NOT CONNECTED");
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
         if (this.config.startServerAutomatically) {
             this.startServer();
@@ -232,6 +234,7 @@ export class LeoIntegration {
             } else {
                 this.leoBridgeReady = true;
                 vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
+                this.setTreeViewTitle("CONNECTED");
                 if (!this.config.connectToServerAutomatically) {
                     vscode.window.showInformationMessage(`Connected`);
                 }
@@ -251,6 +254,7 @@ export class LeoIntegration {
         } else {
             vscode.window.showInformationMessage(p_message ? p_message : "Disconnected");
         }
+        this.setTreeViewTitle("NOT CONNECTED");
 
         vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.TREE_OPENED, false);
         this.fileOpenedReady = false;
@@ -350,14 +354,18 @@ export class LeoIntegration {
 
     private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
         if (p_event.visible && this._lastSelectedLeoNode) {
+            this._lastOperationChangedTree = true;
             this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // TODO: test if really needed, along with timeout (0) "getSelectedNode"
-            setTimeout(() => {
-                this.leoBridge.action("getSelectedNode", "{}").then(
-                    (p_answer: LeoBridgePackage) => {
-                        this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true });
-                    }
-                );
-            }, 0);
+            // setTimeout(() => {
+            this.leoBridge.action("getSelectedNode", "{}").then(
+                (p_answer: LeoBridgePackage) => {
+                    const w_node = this.apToLeoNode(p_answer.node);
+                    this.reveal(w_node, { select: false, focus: false }).then(() => {
+                        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                    });
+                }
+            );
+            // }, 0);
         }
     }
 
@@ -390,13 +398,63 @@ export class LeoIntegration {
                 return;
             }
             // * Reveal in outline tree if needed
-            const w_node: LeoNode | undefined = this._leoTextDocumentNodesRef[w_editorGnx].node;
+            const w_node: LeoNode | undefined = this._leoTextDocumentNodesRef[w_editorGnx] ? this._leoTextDocumentNodesRef[w_editorGnx].node : undefined;
+            console.log('w_node', w_node);
+
             if (w_node && this._lastSelectedLeoNode && (this._lastSelectedLeoNode.gnx !== w_node.gnx)) {
                 // * setSelectedNode will also try to find by gnx if node doesn't exit and returns what it could select
+                console.log('trying to setSelectedNode');
                 this.leoBridge.action("setSelectedNode", w_node.apJson).then((p_answer: LeoBridgePackage) => {
+                    console.log('trying to reveal');
+
                     const p_selectedNode = this.apToLeoNode(p_answer.node);
+                    // console.log('p_selectedNode', p_selectedNode);
+
+                    // this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                    // this.reveal(p_selectedNode, { select: false, focus: false }).then(() => {
+                    //     this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                    // });
+
+                    // this.leoBridge.action("getSelectedNode", "{}").then(
+                    //     (p_getAnswer: LeoBridgePackage) => {
+                    //         const w_node = this.apToLeoNode(p_getAnswer.node);
+                    //         this._lastSelectedLeoNode = w_node;
+                    //         this.reveal(w_node, { select: false, focus: false }).then(() => {
+                    //             this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                    //         });
+                    //     }
+                    // );
+
+
+
+                    // this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // TODO: test if really needed, along with timeout (0) "getSelectedNode"
+                    // this.leoBridge.action("getSelectedNode", "{}").then(
+                    //     (p_getAnswer: LeoBridgePackage) => {
+                    //         const w_node = this.apToLeoNode(p_getAnswer.node);
+                    //         this.reveal(w_node, { select: false, focus: false }).then(() => {
+                    //             this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                    //         });
+                    //     }
+                    // );
+
+
+                    // this.leoBridge.action("getSelectedNode", "{}").then(
+                    //     (p_answer: LeoBridgePackage) => {
+                    //         const w_node = this.apToLeoNode(p_answer.node);
+                    //         this.reveal(w_node, { select: false, focus: false }).then(() => {
+                    //             this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                    //         });
+                    //     }
+                    // );
+
+                    this.reveal(p_selectedNode, { select: false, focus: false }).then(() => {
+                        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                    });
+
+
+                    // const p_selectedNode = this.apToLeoNode(p_answer.node);
                     this._lastSelectedLeoNode = p_selectedNode;
-                    this.reveal(p_selectedNode, { select: true, focus: false });
+                    // this.reveal(p_selectedNode, { select: true, focus: false });
                 });
             }
         }
@@ -574,13 +632,13 @@ export class LeoIntegration {
         // * keep leoTextDocumentNodesRef up to date
         if (this._leoTextDocumentNodesRef[w_leoNode.gnx]) {
             if (p_ap.selected) {
-                console.log('got selected');
+                // console.log('got selected');
                 this._leoTextDocumentNodesRef[w_leoNode.gnx].node = w_leoNode;
                 this._leoTextDocumentNodesRef[w_leoNode.gnx].refreshCount = this.outlineRefreshCount;
             } else if (this._lastOperationChangedTree && this._leoTextDocumentNodesRef[w_leoNode.gnx].refreshCount < this.outlineRefreshCount) {
                 this._leoTextDocumentNodesRef[w_leoNode.gnx].node = w_leoNode;
             } else {
-                console.log('prevented');
+                // console.log('prevented');
             }
         }
         return w_leoNode;
@@ -776,6 +834,9 @@ export class LeoIntegration {
         }
         // Trigger event to save previous document just in in case (if timer to save is already started for another document)
         this._triggerBodySave();
+        if (!this._leoTextDocumentNodesRef[p_node.gnx]) {
+            this._leoTextDocumentNodesRef[p_node.gnx] = { node: p_node, refreshCount: this.outlineRefreshCount };
+        }
         return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
             if (!this.config.treeKeepFocusWhenAside) {
                 this.leoBridge.action("setSelectedNode", p_node.apJson).then((p_answer: LeoBridgePackage) => {
@@ -1090,6 +1151,7 @@ export class LeoIntegration {
     public closeLeoFile(): void {
         if (this.fileOpenedReady) {
             vscode.window.showInformationMessage(`TODO: close leo file`); // temp placeholder
+            // this.setTreeViewTitle("CONNECTED");
         } else {
             console.log('Error: Cannot close. No Files Opened.');
         }
@@ -1104,11 +1166,10 @@ export class LeoIntegration {
             .then(p_chosenLeoFile => {
                 return this.leoBridge.action("openFile", '"' + p_chosenLeoFile + '"');
             }, p_reason => {
-                // console.log('canceled', p_reason); // File Open is Canceled - Ignore
                 return Promise.reject(p_reason);
             })
-            .then((p_result: LeoBridgePackage) => {
-                // TODO : Validate p_result
+            .then((p_openFileResult: LeoBridgePackage) => {
+                const p_selectedLeoNode = this.apToLeoNode(p_openFileResult.node);
                 // * Start body pane system
                 this._context.subscriptions.push(vscode.workspace.registerFileSystemProvider(Constants.LEO_URI_SCHEME, this.leoFileSystem, { isCaseSensitive: true }));
                 // * Startup flag
@@ -1116,7 +1177,9 @@ export class LeoIntegration {
                 // * First valid redraw of tree
                 this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // p_revealSelection flag set
                 // * set body URI for body filesystem
-                this._bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_result.node.gnx);
+                this._bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_selectedLeoNode.gnx);
+                // * set up first gnx<->leoNode reference
+                this._leoTextDocumentNodesRef[p_selectedLeoNode.gnx] = { node: p_selectedLeoNode, refreshCount: this.outlineRefreshCount };
                 // * First StatusBar appearance
                 this._updateStatusBar();
                 this.leoStatusBarItem.show();
@@ -1126,9 +1189,10 @@ export class LeoIntegration {
                 return this.leoFileSystem.refreshPossibleGnxList();
             })
             .then(p_list => {
+                this.setTreeViewTitle("OUTLINE");
                 return vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.TREE_OPENED, true);
             })
-            .then(p_result => {
+            .then(p_setContextResult => {
                 return this.showSelectedBodyDocument();
             });
     }
@@ -1165,10 +1229,13 @@ export class LeoIntegration {
     }
 
     public setTreeViewTitle(p_title: string): void {
-        // TODO - Available soon, see enable-proposed-api https://code.visualstudio.com/updates/v1_39#_treeview-message-api
-        // * Set/Change outline pane title e.g. "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
-        // this.leoTreeView.title = p_title;
-        // this.leoTreeExplorerView.title = p_title; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
+        // * Set/Change outline pane title e.g. "NOT CONNECTED", "CONNECTED", "OUTLINE"
+        if (this.leoTreeView) {
+            this.leoTreeView.title = p_title;
+        }
+        if (this.leoTreeExplorerView) {
+            this.leoTreeExplorerView.title = "LEO " + p_title; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
+        }
     }
 
     public test(): void {

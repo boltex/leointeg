@@ -13,7 +13,7 @@
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.39.0"
+    "vscode": "^1.41.0"
   },
   "keywords": [
     "leo",
@@ -920,29 +920,29 @@
   "devDependencies": {
     "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.6",
-    "@types/node": "^10.12.21",
-    "@types/vscode": "^1.38.0",
+    "@types/node": "^10.17.13",
+    "@types/vscode": "^1.41.0",
     "@types/which": "^1.3.2",
-    "@types/ws": "^6.0.0",
+    "@types/ws": "^6.0.4",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^3.0.4",
-    "css-loader": "^3.2.0",
-    "eslint": "^6.6.0",
-    "fork-ts-checker-webpack-plugin": "^3.0.1",
-    "glob": "^7.1.4",
+    "css-loader": "^3.4.2",
+    "eslint": "^6.8.0",
+    "fork-ts-checker-webpack-plugin": "^3.1.1",
+    "glob": "^7.1.6",
     "html-loader": "^0.5.5",
     "html-webpack-exclude-assets-plugin": "0.0.7",
     "html-webpack-plugin": "^3.2.0",
     "imagemin-webpack-plugin": "^2.4.2",
-    "mini-css-extract-plugin": "^0.8.0",
-    "mocha": "^6.1.4",
-    "node-sass": "^4.13.0",
-    "sass-loader": "^8.0.0",
+    "mini-css-extract-plugin": "^0.8.2",
+    "mocha": "^6.2.2",
+    "node-sass": "^4.13.1",
+    "sass-loader": "^8.0.2",
     "ts-loader": "^6.2.1",
-    "tslint": "^5.12.1",
-    "typescript": "^3.3.1",
-    "vscode-test": "^1.0.2",
-    "webpack": "^4.41.2",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.5",
+    "vscode-test": "^1.3.0",
+    "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {

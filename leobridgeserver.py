@@ -436,7 +436,6 @@ class leoBridgeIntegController:
 
     def create_gnx_to_vnode(self):
         '''Make the first gnx_to_vnode array with all unique nodes'''
-
         t1 = time.process_time()
         self.gnx_to_vnode = {v.gnx: v for v in self.commander.all_unique_nodes()}
         # This is likely the only data that ever will be needed.

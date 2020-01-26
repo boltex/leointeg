@@ -10,7 +10,6 @@
 		"skipLibCheck": true
 	},
 	"include": [
-		"src/config.ts",
 		"src/webviews/apps/**/*"
 	],
 	"exclude": [
