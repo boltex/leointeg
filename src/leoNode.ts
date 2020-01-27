@@ -9,10 +9,11 @@ export class LeoNode extends vscode.TreeItem {
     public contextValue: string;
 
     constructor(
-        public label: string, // Tree node header
+        public label: string, // Node headline
         public gnx: string,
         public collapsibleState: vscode.TreeItemCollapsibleState, // Computed in receiver/creator
         public apJson: string, // Key for leo/python side of things
+        public childIndex: number, // For debugging purposes
         public cloned: boolean,
         public dirty: boolean,
         public marked: boolean,
@@ -37,6 +38,7 @@ export class LeoNode extends vscode.TreeItem {
         this.gnx = p_node.gnx;
         this.collapsibleState = p_node.collapsibleState;
         this.apJson = p_node.apJson;
+        this.childIndex = p_node.childIndex;
         this.cloned = p_node.cloned;
         this.dirty = p_node.dirty;
         this.marked = p_node.marked;

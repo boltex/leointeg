@@ -399,64 +399,23 @@ export class LeoIntegration {
             }
             // * Reveal in outline tree if needed
             const w_node: LeoNode | undefined = this._leoTextDocumentNodesRef[w_editorGnx] ? this._leoTextDocumentNodesRef[w_editorGnx].node : undefined;
-            console.log('w_node', w_node);
 
             if (w_node && this._lastSelectedLeoNode && (this._lastSelectedLeoNode.gnx !== w_node.gnx)) {
                 // * setSelectedNode will also try to find by gnx if node doesn't exit and returns what it could select
-                console.log('trying to setSelectedNode');
+
                 this.leoBridge.action("setSelectedNode", w_node.apJson).then((p_answer: LeoBridgePackage) => {
-                    console.log('trying to reveal');
-
                     const p_selectedNode = this.apToLeoNode(p_answer.node);
-                    // console.log('p_selectedNode', p_selectedNode);
-
-                    // this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-                    // this.reveal(p_selectedNode, { select: false, focus: false }).then(() => {
-                    //     this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-                    // });
-
-                    // this.leoBridge.action("getSelectedNode", "{}").then(
-                    //     (p_getAnswer: LeoBridgePackage) => {
-                    //         const w_node = this.apToLeoNode(p_getAnswer.node);
-                    //         this._lastSelectedLeoNode = w_node;
-                    //         this.reveal(w_node, { select: false, focus: false }).then(() => {
-                    //             this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-                    //         });
-                    //     }
-                    // );
-
-
-
-                    // this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // TODO: test if really needed, along with timeout (0) "getSelectedNode"
-                    // this.leoBridge.action("getSelectedNode", "{}").then(
-                    //     (p_getAnswer: LeoBridgePackage) => {
-                    //         const w_node = this.apToLeoNode(p_getAnswer.node);
-                    //         this.reveal(w_node, { select: false, focus: false }).then(() => {
-                    //             this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-                    //         });
-                    //     }
-                    // );
-
-
-                    // this.leoBridge.action("getSelectedNode", "{}").then(
-                    //     (p_answer: LeoBridgePackage) => {
-                    //         const w_node = this.apToLeoNode(p_answer.node);
-                    //         this.reveal(w_node, { select: false, focus: false }).then(() => {
-                    //             this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-                    //         });
-                    //     }
-                    // );
 
                     this.reveal(p_selectedNode, { select: false, focus: false }).then(() => {
                         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
                     });
 
-
-                    // const p_selectedNode = this.apToLeoNode(p_answer.node);
                     this._lastSelectedLeoNode = p_selectedNode;
-                    // this.reveal(p_selectedNode, { select: true, focus: false });
+
                 });
             }
+        } else {
+            this._closeExpiredActiveEditors();
         }
         // * Status flag check
         if (vscode.window.activeTextEditor) {
@@ -627,7 +586,7 @@ export class LeoIntegration {
             w_collapse = p_ap.expanded ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed;
         }
         const w_leoNode = new LeoNode(
-            p_ap.headline, p_ap.gnx, w_collapse, JSON.stringify(p_ap), !!p_ap.cloned, !!p_ap.dirty, !!p_ap.marked, !!p_ap.hasBody, this
+            p_ap.headline, p_ap.gnx, w_collapse, JSON.stringify(p_ap), p_ap.childIndex, !!p_ap.cloned, !!p_ap.dirty, !!p_ap.marked, !!p_ap.hasBody, this
         );
         // * keep leoTextDocumentNodesRef up to date
         if (this._leoTextDocumentNodesRef[w_leoNode.gnx]) {
@@ -888,8 +847,28 @@ export class LeoIntegration {
         }
     }
 
+    private _closeExpiredActiveEditors(): Thenable<boolean> {
+        // * Cycle visible editors to close any that are expired
+        let w_hasClosed: boolean = false;
+        if (vscode.window.visibleTextEditors.length) {
+            vscode.window.visibleTextEditors.forEach(p_visibleEditor => {
+                if (p_visibleEditor.document.uri.scheme === Constants.LEO_URI_SCHEME) {
+                    const w_editorGnx: string = p_visibleEditor.document.uri.fsPath.substr(1);
+                    if (!this.leoFileSystem.gnxValid(w_editorGnx)) {
+                        w_hasClosed = true;
+                        p_visibleEditor.hide(); // ! Might be deprecated on next vscode's major revision
+                        // vscode.commands.executeCommand('workbench.action.closeActiveEditor')
+                        //     .then(() => {
+                        //         console.log('got back from "closeActiveEditor" EDITOR HAD CHANGED TO A DELETED GNX!');
+                        //     });
+                    }
+                }
+            });
+        }
+        return Promise.resolve(w_hasClosed);
+    }
+
     public leoBridgeAction(p_action: string, p_node?: LeoNode): Promise<LeoBridgePackage> {
-        //
         // * For actions that need no refreshes at all
         if (!p_node && this._lastSelectedLeoNode) {
             p_node = this._lastSelectedLeoNode;
@@ -950,7 +929,8 @@ export class LeoIntegration {
                             vscode.workspace.fs.delete(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_expiredGnx));
                         });
                         // console.log('done calling delete on all expired gnx still opened');
-                        return this._documentManager.closeExpired(p_expiredList);
+                        // return this._documentManager.closeExpired(p_expiredList);
+                        return this._closeExpiredActiveEditors();
                     })
                     .then(p_docResult => {
                         // console.log('Back from doc manager', p_docResult);
