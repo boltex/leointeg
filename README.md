@@ -19,8 +19,6 @@ See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.
 
 ## Development version installation
 
-### This development version is in its 'body and outline edition' testing phase, so the 'save' and 'derive' files functions are lacking
-
 Make sure you have Node.js and Git installed along with the above general requirements, then:
 
 1. Get this repository: `git clone https://github.com/boltex/leointeg.git`
@@ -40,7 +38,7 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 - A welcome screen for easy access to this expansion's settings.
 - Outline edition with an actual leo outline below the explorer view, or in its own panel.
 - Support for multiple, simultaneous edition of body panes.
-- Multiple commands: _Accessible either through context menus, outline-node hover icons, keyboard shortcuts, or the command palette_
+- Commands accessible either through context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
   - Open body panes to the side
   - Outline edition commands
   - Clipboard operations
@@ -63,15 +61,13 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 | `Ctrl + L`                 | or  | `Shift + Alt + Left`  | Move Outline Left  |
 | `Ctrl + R`                 | or  | `Shift + Alt + Right` | Move Outline Right |
 
-### _Status Bar Indicator_
+## _Status Bar Indicator_
 
-A 'Literate' Keyboard status bar indicator is shown when this extension is activated. It will turn orange to show when leo's keyboard shortcuts are active: This occurs when a body pane has focus.
+A 'Literate' Keyboard status bar indicator is shown when this extension is activated. It will turn orange to show when leo's **keyboard shortcuts** are active: This occurs when an outline node or a body pane has focus:
 
 ![Statusbar](resources/statusbar.gif)
 
 ## Issues
-
-Deleting a node that had opened body panes will cycle through your opened editors to search and close them. There is no current API command in vscode to close a particular editor so this cycling happens because 'next tab' and 'close active editor' commands are performed as a trick to close them. An appropriate command from the vscode api to fix this issue is on the way.
 
 For most users, **`Ctrl+D`** is often already assigned to some useful command. To help with this conflict, move commands will only trigger at an additional condition of having no selection in the text. So select at least one character to use the usual **`Ctrl+D`** vscode command in body panes.
 
@@ -90,7 +86,7 @@ For most users, **`Ctrl+D`** is often already assigned to some useful command. T
 
 ## Intended Features
 
-- Provide more of Leo's core functionality
+- Provide most of Leo's core functionality
 - Derived file 'goto' capabilities to find specific line(s) in outline nodes (For error lookup, breakpoints cycling, etc.)
 - Show line number from the derived file instead of the body-pane's line number
 - Color-syntaxing
