@@ -19,6 +19,8 @@ See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.
 
 ## Development version installation
 
+### This development version is in its 'body and outline edition' testing phase, so the 'save' and 'derive' files functions are lacking
+
 Make sure you have Node.js and Git installed along with the above general requirements, then:
 
 1. Get this repository: `git clone https://github.com/boltex/leointeg.git`
@@ -35,31 +37,31 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 
 ### _Features done so far_
 
-- A welcome screen that also gives easy access to this expansion's configuration settings.
-- A treeview implementation of an actual leo outline. It can be integrated below the files in the explorer's view, or it can be used in its own panel.
-- Support for multiple, simultaneous body panes.
-- Multiple commands: _Accessible either through context menus, on-hover icons, keyboard shortcuts, or the command palette_
-  - Open body panes to the side.
-  - Outline edition commands.
+- A welcome screen for easy access to this expansion's settings.
+- Outline edition with an actual leo outline below the explorer view, or in its own panel.
+- Support for multiple, simultaneous edition of body panes.
+- Multiple commands: _Accessible either through context menus, outline-node hover icons, keyboard shortcuts, or the command palette_
+  - Open body panes to the side
+  - Outline edition commands
   - Clipboard operations
-  - Undo operation.
+  - Undo operation
 
 ![Menu](resources/context-hover-menus.png)
 
-| Keybinding                 |      |                       | Command            |
-| :------------------------- | :--- | :-------------------- | :----------------- |
-| `Ctrl + I`                 |      |                       | Insert Node        |
-| `Ctrl + H`                 |      |                       | Edit Headline      |
-| `Ctrl + Shift + C`         |      |                       | Copy Node          |
-| `Ctrl + Shift + X`         |      |                       | Cut Node           |
-| `Ctrl + Shift + V`         |      |                       | Paste Node         |
-| `Ctrl + Shift + Backspace` |      |                       | Delete Node        |
-| `Ctrl + M`                 |      |                       | Mark / Unmark      |
-| `Ctrl + {`                 |      | `Ctrl + }`            | Promote / Demote   |
-| `Ctrl + U`                 | or   | `Shift + Alt + Up`    | Move Outline Up    |
-| `Ctrl + D`                 | or   | `Shift + Alt + Down`  | Move Outline Down  |
-| `Ctrl + L`                 | or   | `Shift + Alt + Left`  | Move Outline Left  |
-| `Ctrl + R`                 | or   | `Shift + Alt + Right` | Move Outline Right |
+| Keybinding                 |     |                       | Command            |
+| :------------------------- | :-- | :-------------------- | :----------------- |
+| `Ctrl + I`                 |     |                       | Insert Node        |
+| `Ctrl + H`                 |     |                       | Edit Headline      |
+| `Ctrl + Shift + C`         |     |                       | Copy Node          |
+| `Ctrl + Shift + X`         |     |                       | Cut Node           |
+| `Ctrl + Shift + V`         |     |                       | Paste Node         |
+| `Ctrl + Shift + Backspace` |     |                       | Delete Node        |
+| `Ctrl + M`                 |     |                       | Mark / Unmark      |
+| `Ctrl + {`                 |     | `Ctrl + }`            | Promote / Demote   |
+| `Ctrl + U`                 | or  | `Shift + Alt + Up`    | Move Outline Up    |
+| `Ctrl + D`                 | or  | `Shift + Alt + Down`  | Move Outline Down  |
+| `Ctrl + L`                 | or  | `Shift + Alt + Left`  | Move Outline Left  |
+| `Ctrl + R`                 | or  | `Shift + Alt + Right` | Move Outline Right |
 
 ### _Status Bar Indicator_
 
@@ -88,9 +90,11 @@ For most users, **`Ctrl+D`** is often already assigned to some useful command. T
 
 ## Intended Features
 
-- 2 way synchronization of leo's output files and vscode's explorer.
-- Error lookup, or breakpoints cycling with automatic go-to line in generated file's nodes and body position.
-- File generating 'at' nodes that show their derived line number instead of the body-pane's line number along with color-syntaxing.
+- Provide more of Leo's core functionality
+- Derived file 'goto' capabilities to find specific line(s) in outline nodes (For error lookup, breakpoints cycling, etc.)
+- Show line number from the derived file instead of the body-pane's line number
+- Color-syntaxing
+- Run scripts, and more...
 
 ## How it works
 
@@ -103,7 +107,7 @@ The outline pane is made by implementing a TreeDataProvider for vscode's TreeVie
 ### _Thanks to_
 
 - [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
-- [Eric Amodio](https://github.com/eamodio) for the [tab-cycling hack](https://github.com/eamodio/vscode-restore-editors/blob/master/src/documentManager.ts#L54) and the [welcome screen template](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
+- [Eric Amodio](https://github.com/eamodio) for the [welcome screen template](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
 - [Vitalije](https://github.com/vitalije) for his contributions and support
 
 ---

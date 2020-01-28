@@ -77,11 +77,12 @@
 </v>
 </vnodes>
 <tnodes>
-<t tx="felix.20190922171916.2">I should have started self documentation here from the start in august! 
+<t tx="felix.20190922171916.2">@doc
+I should have started self documentation here from the start in august! 
 
-    # TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
-    # TODO : ('Real Clipboard') Use globals.gui.clipboard and the real clipboard with g.app.gui.getTextFromClipboard()
-    # TODO : ('Real Clipboard') For pasting, use g.app.gui.replaceClipboardWith(p_realClipboard)</t>
+    # TODO : Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
+    # Note : ('Real Clipboard') Use globals.gui.clipboard and the real clipboard with g.app.gui.getTextFromClipboard()
+    # Note : ('Real Clipboard') For pasting, use g.app.gui.replaceClipboardWith(p_realClipboard)</t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
         return self.sendLeoBridgePackage("node", self.p_to_ap(p_node))  # Single node, singular

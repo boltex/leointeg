@@ -8,7 +8,6 @@ import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyProvider } from "./leoBody";
 import { LeoBridge } from "./leoBridge";
 import { Config } from "./config.interface";
-import { DocumentManager } from "./eamodioEditorManager/documentManager";
 import { ServerService } from "./serverService";
 
 export class LeoIntegration {
@@ -23,8 +22,8 @@ export class LeoIntegration {
 
     // * Control Flags
     private _leoCyclingBodies: boolean = false; // Used when closing removed bodies: onActiveEditorChanged, onChangeEditorSelection
-    private _lastOperationChangedTree: boolean = true; // Refresh helper: Structure may have changed, as opposed to selecting, opening aside, expanding and collapsing
-    private _lastOperationSelectedBody: boolean = false; // Refresh helper : An already opened body has been selected, structure is unchanged
+    private _lastOperationChangedTree: boolean = true; // Refresh helper : (maybe unneeded) Structure may have changed, as opposed to selecting, opening aside, expanding and collapsing
+    private _lastOperationSelectedBody: boolean = false; // Refresh helper : (maybe unneeded) An already opened body has been selected, structure is unchanged
 
     // * Configuration Settings
     private _isSettingConfig: boolean = false;
@@ -74,14 +73,12 @@ export class LeoIntegration {
     public leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
     private _bodyUri: vscode.Uri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER);
     private _bodyTextDocument: vscode.TextDocument | undefined;
-    private _documentManager: DocumentManager;
 
     private _bodyTextDocumentSameUri: boolean = false; // Flag used when checking if clicking a node requires opening a body pane text editor
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined;
     private _forceBodyFocus: boolean = false; // Flag used to force focus in body when next 'showing' of this body occurs (after edit headline if already selected)
 
     // * Body pane dictionary of GNX linking to leoNodes, used when showing a body pane to force selection in outline
-    // private leoTextDocumentNodesRef: { [gnx: string]: LeoNode } = {}; // Kept updated in the apToLeoNode function
     private _leoTextDocumentNodesRef: { [gnx: string]: { node: LeoNode; refreshCount: number; } } = {}; // Kept updated in the apToLeoNode function
 
     // * Log Pane
@@ -159,11 +156,7 @@ export class LeoIntegration {
         this._bodyMainSelectionColumn = 1;
         // set workbench.editor.closeOnFileDelete to true
 
-        // * DocumentManager
-        this._documentManager = new DocumentManager(_context);
-
-        // * Status bar
-        // Keyboard Shortcut "Reminder/Flag" to signify keyboard shortcuts are altered in leo mode
+        // * Status bar: Show keyboard-Shortcut-Flag to signify Leo keyboard shortcuts are active
         this.leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
         this.leoStatusBarItem.color = Constants.LEO_STATUSBAR_COLOR;
         this.leoStatusBarItem.command = "leointeg.test"; // just call test function for now
@@ -265,7 +258,7 @@ export class LeoIntegration {
         this.leoIsConnecting = false;
         this._leoBridgeReadyPromise = undefined;
         this.leoObjectSelected = false;
-        this._updateStatusBar();
+        this._updateLeoObjectSelected();
 
         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
     }
@@ -354,27 +347,23 @@ export class LeoIntegration {
 
     private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
         if (p_event.visible && this._lastSelectedLeoNode) {
-            this._lastOperationChangedTree = true;
+            this._lastOperationChangedTree = false;
             this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // TODO: test if really needed, along with timeout (0) "getSelectedNode"
-            // setTimeout(() => {
-            this.leoBridge.action("getSelectedNode", "{}").then(
-                (p_answer: LeoBridgePackage) => {
-                    const w_node = this.apToLeoNode(p_answer.node);
-                    this.reveal(w_node, { select: false, focus: false }).then(() => {
-                        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-                    });
-                }
-            );
-            // }, 0);
+            setTimeout(() => {
+                this.leoBridge.action("getSelectedNode", "{}").then(
+                    (p_answer: LeoBridgePackage) => {
+                        const w_node = this.apToLeoNode(p_answer.node);
+                        this.reveal(w_node, { select: false, focus: false }).then(() => {
+                            this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                        });
+                    }
+                );
+            }, 0);
         }
     }
 
     private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
         // * Active editor should be reflected in the outline if it's a leo body pane
-        if (this._leoCyclingBodies && !p_internalCall) {
-            // Active Editor might change during 'delete expired gnx'
-            return;
-        }
         if (!p_internalCall) {
             this._triggerBodySave(); // Save in case edits were pending
         }
@@ -387,7 +376,7 @@ export class LeoIntegration {
             return;
         }
         // * Close and return if deleted
-        if (p_event && p_event.document.uri.scheme === Constants.LEO_URI_SCHEME) {
+        if (!this._leoCyclingBodies && p_event && p_event.document.uri.scheme === Constants.LEO_URI_SCHEME) {
             const w_editorGnx: string = p_event.document.uri.fsPath.substr(1);
             // If already deleted and not closed: just close it and return!
             if (!this.leoFileSystem.gnxValid(w_editorGnx)) {
@@ -415,7 +404,10 @@ export class LeoIntegration {
                 });
             }
         } else {
-            this._closeExpiredActiveEditors();
+            // Delayed
+            setTimeout(() => {
+                this._closeExpiredActiveEditors();
+            }, 0);
         }
         // * Status flag check
         if (vscode.window.activeTextEditor) {
@@ -423,14 +415,14 @@ export class LeoIntegration {
                 if (!this.leoObjectSelected) {
                     // console.log("editor changed to : leo! SET STATUS!");
                     this.leoObjectSelected = true;
-                    this._updateStatusBar();
+                    this._updateLeoObjectSelected();
                     return;
                 }
             } else {
                 // console.log("editor changed to : other, no status!");
                 if (this.leoObjectSelected) {
                     this.leoObjectSelected = false;
-                    this._updateStatusBar();
+                    this._updateLeoObjectSelected();
                     return;
                 }
             }
@@ -449,13 +441,13 @@ export class LeoIntegration {
             if (p_event.textEditor.document.uri.scheme === Constants.LEO_URI_SCHEME && vscode.window.activeTextEditor.document.uri.scheme === Constants.LEO_URI_SCHEME) {
                 if (!this.leoObjectSelected) {
                     this.leoObjectSelected = true;
-                    this._updateStatusBarDebounced();
+                    this._updateLeoObjectSelectedDebounced();
                     return;
                 }
             } else {
                 if (this.leoObjectSelected) {
                     this.leoObjectSelected = false;
-                    this._updateStatusBarDebounced();
+                    this._updateLeoObjectSelectedDebounced();
                     return;
                 }
             }
@@ -572,11 +564,26 @@ export class LeoIntegration {
             this._bodyChangeTimeoutSkipped = false;
             return this.leoBridge.action("setBody", JSON.stringify(w_param)).then(p_result => {
                 // console.log('Back from setBody to leo');
-                return p_document.save();
-                // return Promise.resolve(true);
+                // return p_document.save(); // ! This trims trailing spaces!
+                return Promise.resolve(p_document.isDirty);
             });
         } else {
             return Promise.resolve(false);
+        }
+    }
+
+    private _setLeoTextDocumentNodesRef(p_gnx: string, p_leoNode: LeoNode, p_isSelected: boolean): void {
+        if (this._leoTextDocumentNodesRef[p_gnx]) {
+            if (p_isSelected) {
+                // console.log('got selected');
+                this._leoTextDocumentNodesRef[p_gnx].node = p_leoNode;
+                this._leoTextDocumentNodesRef[p_gnx].refreshCount = this.outlineRefreshCount;
+            } else if (this._lastOperationChangedTree && this._leoTextDocumentNodesRef[p_gnx].refreshCount < this.outlineRefreshCount) {
+                // * keep original outlineRefreshCount
+                this._leoTextDocumentNodesRef[p_gnx].node = p_leoNode;
+            } else {
+                // console.log('prevented');
+            }
         }
     }
 
@@ -586,20 +593,19 @@ export class LeoIntegration {
             w_collapse = p_ap.expanded ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed;
         }
         const w_leoNode = new LeoNode(
-            p_ap.headline, p_ap.gnx, w_collapse, JSON.stringify(p_ap), p_ap.childIndex, !!p_ap.cloned, !!p_ap.dirty, !!p_ap.marked, !!p_ap.hasBody, this
+            p_ap.headline,          // label-headline
+            p_ap.gnx,               // gnx
+            w_collapse,             // collapsibleState
+            JSON.stringify(p_ap),   // string key for leo/python side of things
+            p_ap.childIndex,        // childIndex
+            !!p_ap.cloned,          // cloned
+            !!p_ap.dirty,           // dirty
+            !!p_ap.marked,          // marked
+            !!p_ap.hasBody,         // hasBody
+            this                    // _leoIntegration pointer
         );
-        // * keep leoTextDocumentNodesRef up to date
-        if (this._leoTextDocumentNodesRef[w_leoNode.gnx]) {
-            if (p_ap.selected) {
-                // console.log('got selected');
-                this._leoTextDocumentNodesRef[w_leoNode.gnx].node = w_leoNode;
-                this._leoTextDocumentNodesRef[w_leoNode.gnx].refreshCount = this.outlineRefreshCount;
-            } else if (this._lastOperationChangedTree && this._leoTextDocumentNodesRef[w_leoNode.gnx].refreshCount < this.outlineRefreshCount) {
-                this._leoTextDocumentNodesRef[w_leoNode.gnx].node = w_leoNode;
-            } else {
-                // console.log('prevented');
-            }
-        }
+        // * keep leoTextDocumentNodesRef up to date while converting any node
+        this._setLeoTextDocumentNodesRef(w_leoNode.gnx, w_leoNode, p_ap.selected);
         return w_leoNode;
     }
 
@@ -669,19 +675,20 @@ export class LeoIntegration {
         if (!p_internalCall) {
             this._lastOperationChangedTree = false;
             this._lastOperationSelectedBody = true;
-            if (!this._leoTextDocumentNodesRef[p_node.gnx]) {
-                this._leoTextDocumentNodesRef[p_node.gnx] = { node: p_node, refreshCount: this.outlineRefreshCount };
-            }
+            // if (!this._leoTextDocumentNodesRef[p_node.gnx]) {
+            this._leoTextDocumentNodesRef[p_node.gnx] = {
+                "node": p_node,
+                "refreshCount": this.outlineRefreshCount
+            };
+            // }
+            this.leoObjectSelected = true; // Just Selected a node
+            this._updateLeoObjectSelected();
+            // this._updateStatusBarDebounced();
         }
 
         let w_apJsonString: string = "";
         w_apJsonString = w_apJsonString + p_node.apJson + " ";
         w_apJsonString = w_apJsonString.trim();
-        // console.log("Clicked on : ", p_node.label, w_apJsonString);
-
-        // TODO / FIX THIS : WHY TF DOES THIS MAKE THE STATUS BAR INDICATOR FLASH BACK WHITE?
-        // ! this.leoObjectSelected = true;
-        // ! this.updateStatusBar();
 
         // TODO : Save and restore selection, along with cursor position, from selection object saved in each node (or gnx array)
 
@@ -755,7 +762,10 @@ export class LeoIntegration {
                         this._leoTextDocumentNodesRef[p_document.uri.fsPath.substr(1)].node = this._lastSelectedLeoNode;
                     }
                 } else {
-                    this._leoTextDocumentNodesRef[p_document.uri.fsPath.substr(1)] = { node: this._lastSelectedLeoNode, refreshCount: this.outlineRefreshCount };
+                    this._leoTextDocumentNodesRef[p_document.uri.fsPath.substr(1)] = {
+                        node: this._lastSelectedLeoNode,
+                        refreshCount: this.outlineRefreshCount
+                    };
                 }
             }
             this._bodyTextDocument = p_document;
@@ -793,9 +803,7 @@ export class LeoIntegration {
         }
         // Trigger event to save previous document just in in case (if timer to save is already started for another document)
         this._triggerBodySave();
-        if (!this._leoTextDocumentNodesRef[p_node.gnx]) {
-            this._leoTextDocumentNodesRef[p_node.gnx] = { node: p_node, refreshCount: this.outlineRefreshCount };
-        }
+        this._leoTextDocumentNodesRef[p_node.gnx] = { node: p_node, refreshCount: this.outlineRefreshCount };
         return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
             if (!this.config.treeKeepFocusWhenAside) {
                 this.leoBridge.action("setSelectedNode", p_node.apJson).then((p_answer: LeoBridgePackage) => {
@@ -806,7 +814,6 @@ export class LeoIntegration {
                     } else {
                         this._leoTextDocumentNodesRef[p_node.gnx] = { node: p_selectedNode, refreshCount: this.outlineRefreshCount };
                     }
-
                     this.reveal(p_selectedNode, { select: true, focus: false });
                 });
             }
@@ -934,6 +941,7 @@ export class LeoIntegration {
                     })
                     .then(p_docResult => {
                         // console.log('Back from doc manager', p_docResult);
+                        this._leoCyclingBodies = false;
                         // With any remaining opened text editors watched:
                         return this.leoFileSystem.getRemainingWatchedGnxList();
                     })
@@ -953,7 +961,7 @@ export class LeoIntegration {
                     .then(p_locatedResult => {
                         // console.log('Back from locate (false if not found):', p_locatedResult);
                         // * If this.lastSelectedLeoNode is undefined it will be set by arrayToLeoNodesArray when refreshing tree root
-                        this._leoCyclingBodies = false;
+
                         this._leoBridgeActionBusy = false;
                         this._lastOperationChangedTree = true;
                         this._lastOperationSelectedBody = false;
@@ -1003,8 +1011,7 @@ export class LeoIntegration {
                             }
                             this._leoBridgeActionBusy = false;
                         }
-                    }
-                    );
+                    });
             }
         }
     }
@@ -1076,7 +1083,7 @@ export class LeoIntegration {
                     });
 
                 /*
-                * Old way of doing inserts tried to mimic Leo by showing you it created a new node in the outline, while allowing you to edit its headline
+                * Old way of doing inserts: Tried to mimic Leo by showing you it created a new node in the outline, while allowing you to edit its headline
                 this.leoBridge.action("insertPNode", p_node.apJson)
                     .then(p_package => {
                         this.leoFileSystem.addGnx(p_package.node.gnx);
@@ -1161,10 +1168,10 @@ export class LeoIntegration {
                 // * set up first gnx<->leoNode reference
                 this._leoTextDocumentNodesRef[p_selectedLeoNode.gnx] = { node: p_selectedLeoNode, refreshCount: this.outlineRefreshCount };
                 // * First StatusBar appearance
-                this._updateStatusBar();
+                this._updateLeoObjectSelected();
                 this.leoStatusBarItem.show();
                 // * Show leo log pane
-                this.leoLogPane.show(true);
+                // this.leoLogPane.show(true); // TODO : Intercept log pane entries
                 // * First Body appearance
                 return this.leoFileSystem.refreshPossibleGnxList();
             })
@@ -1177,16 +1184,16 @@ export class LeoIntegration {
             });
     }
 
-    private _updateStatusBarDebounced(): void {
+    private _updateLeoObjectSelectedDebounced(): void {
         if (this._updateStatusBarTimeout) {
             clearTimeout(this._updateStatusBarTimeout);
         }
         this._updateStatusBarTimeout = setTimeout(() => {
-            this._updateStatusBar();
+            this._updateLeoObjectSelected();
         }, 200);
     }
 
-    private _updateStatusBar(): void {
+    private _updateLeoObjectSelected(): void {
         if (this._updateStatusBarTimeout) { // Can be called directly, so clear timer if any
             clearTimeout(this._updateStatusBarTimeout);
         }
