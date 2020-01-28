@@ -78,7 +78,7 @@ export class LeoSettingsWebview {
                     this._context.subscriptions
                 );
                 this._panel.onDidDispose(() => {
-                    console.log('disposed');
+                    // console.log('disposed');
                     this._panel = undefined;
                 },
                     null,

@@ -69,7 +69,7 @@ A 'Literate' Keyboard status bar indicator is shown when this extension is activ
 
 ## Issues
 
-For most users, **`Ctrl+D`** is often already assigned to some useful command. To help with this conflict, move commands will only trigger at an additional condition of having no selection in the text. So select at least one character to use the usual **`Ctrl+D`** vscode command in body panes.
+For most users, **`Ctrl+D`** is often already assigned to some useful command. To help with this conflict, move commands will only trigger at an additional condition of having no text selection in the editor. So select at least one character to use the usual **`Ctrl+D`** vscode command in body panes.
 
 ## Extension Settings
 
