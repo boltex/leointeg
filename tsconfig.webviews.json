@@ -1,0 +1,19 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"lib": [
+			"dom",
+			"dom.iterable",
+			"es2018"
+		],
+		"outDir": "dist/webviews",
+		"skipLibCheck": true
+	},
+	"include": [
+		"src/webviews/apps/**/*"
+	],
+	"exclude": [
+		"node_modules",
+		"test"
+	]
+}
