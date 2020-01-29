@@ -110,6 +110,7 @@ export function activate(context: vscode.ExtensionContext) {
         // ["leointeg.deHoist", () => leoIntegration.deHoist())); // deHo],
 
         ["leointeg.undo", () => leoIntegration.undo()],
+        ["leointeg.redo", () => leoIntegration.redo()],
         ["leointeg.executeScript", () => leoIntegration.executeScript()],
         ["leointeg.saveLeoFile", () => leoIntegration.saveLeoFile()],
     ];

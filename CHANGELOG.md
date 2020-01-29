@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.1.9 _Planned Features:_
+
+- Redo operation
+- Clone Command keyboard shortcut for all 3 platforms platforms
+- Fix sluggish Refresh/Reveal node after selecting a body pane or switching views
+
 ## 0.1.8
 
 - Extension now built with webpack. [As recommended by vsCode's extension guidelines](https://code.visualstudio.com/api/working-with-extensions/bundling-extension#using-webpack)

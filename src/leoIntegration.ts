@@ -961,7 +961,6 @@ export class LeoIntegration {
                     .then(p_locatedResult => {
                         // console.log('Back from locate (false if not found):', p_locatedResult);
                         // * If this.lastSelectedLeoNode is undefined it will be set by arrayToLeoNodesArray when refreshing tree root
-
                         this._leoBridgeActionBusy = false;
                         this._lastOperationChangedTree = true;
                         this._lastOperationSelectedBody = false;
@@ -1118,12 +1117,20 @@ export class LeoIntegration {
     // * Critical Leo Bridge Actions
     public undo(): void {
         if (this._leoBridgeActionBusy) {
-            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
             console.log('Too fast! undo');
             return;
         }
         if (this._lastSelectedLeoNode) {
             this.leoBridgeActionAndFullRefresh("undo", this._lastSelectedLeoNode, true);
+        }
+    }
+    public redo(): void {
+        if (this._leoBridgeActionBusy) {
+            console.log('Too fast! redo');
+            return;
+        }
+        if (this._lastSelectedLeoNode) {
+            this.leoBridgeActionAndFullRefresh("redo", this._lastSelectedLeoNode, true);
         }
     }
 

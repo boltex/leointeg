@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "author": {
     "name": "Félix"
   },
@@ -470,6 +470,15 @@
         }
       },
       {
+        "command": "leointeg.redo",
+        "category": "Leo",
+        "title": "Redo",
+        "icon": {
+          "light": "resources/light/redo.svg",
+          "dark": "resources/dark/redo.svg"
+        }
+      },
+      {
         "command": "leointeg.executeScript",
         "category": "Leo",
         "title": "Execute Script"
@@ -578,6 +587,10 @@
           "when": "leoObjectSelected==true"
         },
         {
+          "command": "leointeg.redo",
+          "when": "leoObjectSelected==true"
+        },
+        {
           "command": "leointeg.editHeadline",
           "when": "false"
         },
@@ -658,22 +671,27 @@
         {
           "command": "leointeg.connectToServer",
           "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected",
-          "group": "navigation"
+          "group": "navigation@1"
         },
         {
           "command": "leointeg.openLeoFile",
           "when": "leoBridgeReady==true && !leoTreeOpened",
-          "group": "navigation"
+          "group": "navigation@1"
         },
         {
           "command": "leointeg.saveLeoFile",
           "when": "leoTreeOpened==true",
-          "group": "navigation"
+          "group": "navigation@2"
         },
         {
           "command": "leointeg.undo",
           "when": "leoTreeOpened==true",
-          "group": "navigation"
+          "group": "navigation@3"
+        },
+        {
+          "command": "leointeg.redo",
+          "when": "leoTreeOpened==true",
+          "group": "navigation@4"
         }
       ],
       "view/item/context": [
