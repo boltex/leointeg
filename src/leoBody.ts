@@ -28,7 +28,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             // console.log('refresh body:', p_bodyGnx);
             this._onDidChangeFileEmitter.fire([{
                 type: vscode.FileChangeType.Changed,
-                uri: vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_bodyGnx)
+                uri: vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_bodyGnx)
             } as vscode.FileChangeEvent]);
         });
     }
@@ -47,7 +47,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public refreshPossibleGnxList(): Thenable<string[]> {
         // * Get updated list of possible gnx
-        return this.leoIntegration.leoBridge.action("getAllGnx", "{}").then((p_result) => {
+        return this.leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_ALL_GNX).then((p_result) => {
             if (p_result.allGnx) {
                 this.possibleGnxList = p_result.allGnx;
             } else {
@@ -97,7 +97,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public fireDeleteExpiredGnx(p_gnxList: string[]): void {
         // console.log('fireDeletedEvent for total # of gnx: ', p_gnxList.length);
         p_gnxList.forEach(p_gnx => {
-            const w_uri: vscode.Uri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_gnx);
+            const w_uri: vscode.Uri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_gnx);
             this._fireSoon({ uri: w_uri, type: vscode.FileChangeType.Deleted });
         });
     }
@@ -115,7 +115,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     // console.log("hey! Not in list! stat missing refreshes??");
                     throw vscode.FileSystemError.FileNotFound();
                 } else {
-                    return this.leoIntegration.leoBridge.action("getBodyLength", '"' + w_gnx + '"')
+                    return this.leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_BODY_LENGTH, '"' + w_gnx + '"')
                         .then((p_result) => {
                             if (p_result.bodyLength) {
                                 return Promise.resolve(
@@ -173,7 +173,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     // console.log("hey! Not in list! readFile missing refreshes??");
                     throw vscode.FileSystemError.FileNotFound();
                 } else {
-                    return this.leoIntegration.leoBridge.action("getBody", '"' + w_gnx + '"')
+                    return this.leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_BODY, '"' + w_gnx + '"')
                         .then((p_result) => {
                             this._lastGnx = w_gnx;
                             if (p_result.bodyData) {

@@ -12,7 +12,7 @@ export class LeoBridge {
     private _leoBridgeSerialId: number = 0;
     private _callStack: LeoAction[] = [];
     private _readyPromise: Promise<LeoBridgePackage> | undefined;
-    private _hasbin = require('hasbin'); // TODO : Check to see if this can help with anaconda/miniconda issues
+    // private _hasbin = require('hasbin'); // TODO : Check to see if this can help with anaconda/miniconda issues
     private _websocket: WebSocket | null = null;
 
     constructor(
@@ -20,7 +20,8 @@ export class LeoBridge {
         private _leoIntegration: LeoIntegration
     ) { }
 
-    public action(p_action: string, p_jsonParam: string, p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
+    public action(p_action: string, p_jsonParam?: string, p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
+        p_jsonParam = p_jsonParam || "null"; // "null" as a string is a valid JSON object for using as parameter if its not required
         // * Places an action to be made by leoBridge.py on top of a stack, to be resolved from the bottom
         return new Promise((resolve, reject) => {
             const w_action: LeoAction = {
@@ -102,7 +103,7 @@ export class LeoBridge {
 
     public initLeoProcess(): Promise<LeoBridgePackage> {
         // * Spawn a websocket
-        this._websocket = new WebSocket(Constants.LEO_TCPIP_DEFAULT_PROTOCOL +
+        this._websocket = new WebSocket(Constants.TCPIP_DEFAULT_PROTOCOL +
             this._leoIntegration.config.connectionAddress +
             ":" + this._leoIntegration.config.connectionPort);
         // * Capture the python process output

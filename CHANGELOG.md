@@ -2,9 +2,10 @@
 
 ## 0.1.9 _Planned Features:_
 
-- Redo operation
-- Clone Command keyboard shortcut for all 3 platforms platforms
+- Redo operation, along with many other core leo commands and operations
+- Clone Command keyboard shortcut for all 3 platforms
 - Fix sluggish Refresh/Reveal node after selecting a body pane or switching views
+- Support async output from leoBridge from log pane and other events
 
 ## 0.1.8
 

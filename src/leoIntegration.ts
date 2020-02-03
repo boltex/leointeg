@@ -32,6 +32,7 @@ export class LeoIntegration {
         treeKeepFocusWhenAside: false,
         treeInExplorer: true,
         showOpenAside: true,
+        statusBarString: "",
         showArrowsOnNodes: false,
         showAddOnNodes: false,
         showMarkOnNodes: false,
@@ -42,8 +43,8 @@ export class LeoIntegration {
         leoPythonCommand: "",
         startServerAutomatically: true,
         connectToServerAutomatically: true,
-        connectionAddress: Constants.LEO_TCPIP_DEFAULT_ADDRESS,
-        connectionPort: Constants.LEO_TCPIP_DEFAULT_PORT
+        connectionAddress: Constants.TCPIP_DEFAULT_ADDRESS,
+        connectionPort: Constants.TCPIP_DEFAULT_PORT
     };
 
     // * Icon Paths
@@ -71,7 +72,7 @@ export class LeoIntegration {
 
     // * Body Pane
     public leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
-    private _bodyUri: vscode.Uri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER);
+    private _bodyUri: vscode.Uri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER);
     private _bodyTextDocument: vscode.TextDocument | undefined;
 
     private _bodyTextDocumentSameUri: boolean = false; // Flag used when checking if clicking a node requires opening a body pane text editor
@@ -158,9 +159,9 @@ export class LeoIntegration {
 
         // * Status bar: Show keyboard-Shortcut-Flag to signify Leo keyboard shortcuts are active
         this.leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
-        this.leoStatusBarItem.color = Constants.LEO_STATUSBAR_COLOR;
+        this.leoStatusBarItem.color = Constants.STATUSBAR_COLOR;
         this.leoStatusBarItem.command = "leointeg.test"; // just call test function for now
-        this.leoStatusBarItem.text = Constants.LEO_STATUSBAR_STRING; // `$(keyboard) Literate`;
+        this.leoStatusBarItem.text = Constants.STATUSBAR_STRING; // `$(keyboard) Literate`;
         this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
         _context.subscriptions.push(this.leoStatusBarItem);
         this.leoStatusBarItem.hide();
@@ -309,8 +310,8 @@ export class LeoIntegration {
             this.config.leoPythonCommand = vscode.workspace.getConfiguration('leoIntegration').get('leoPythonCommand', "");
             this.config.startServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('startServerAutomatically', true);
             this.config.connectToServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('connectToServerAutomatically', true);
-            this.config.connectionAddress = vscode.workspace.getConfiguration('leoIntegration').get('connectionAddress', Constants.LEO_TCPIP_DEFAULT_ADDRESS); // 'ws://'
-            this.config.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', Constants.LEO_TCPIP_DEFAULT_PORT); // 32125
+            this.config.connectionAddress = vscode.workspace.getConfiguration('leoIntegration').get('connectionAddress', Constants.TCPIP_DEFAULT_ADDRESS); // 'ws://'
+            this.config.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', Constants.TCPIP_DEFAULT_PORT); // 32125
             // * Set context for tree items visibility that are based on config options
             vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.TREE_IN_EXPLORER, this.config.treeInExplorer);
             vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SHOW_OPEN_ASIDE, this.config.showOpenAside);
@@ -376,7 +377,7 @@ export class LeoIntegration {
             return;
         }
         // * Close and return if deleted
-        if (!this._leoCyclingBodies && p_event && p_event.document.uri.scheme === Constants.LEO_URI_SCHEME) {
+        if (!this._leoCyclingBodies && p_event && p_event.document.uri.scheme === Constants.URI_SCHEME) {
             const w_editorGnx: string = p_event.document.uri.fsPath.substr(1);
             // If already deleted and not closed: just close it and return!
             if (!this.leoFileSystem.gnxValid(w_editorGnx)) {
@@ -411,7 +412,7 @@ export class LeoIntegration {
         }
         // * Status flag check
         if (vscode.window.activeTextEditor) {
-            if (vscode.window.activeTextEditor.document.uri.scheme === Constants.LEO_URI_SCHEME) {
+            if (vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_SCHEME) {
                 if (!this.leoObjectSelected) {
                     // console.log("editor changed to : leo! SET STATUS!");
                     this.leoObjectSelected = true;
@@ -438,7 +439,7 @@ export class LeoIntegration {
         // * Status flag check
         if (vscode.window.activeTextEditor) {
             // Yes an editor is active, just check if its leo scheme
-            if (p_event.textEditor.document.uri.scheme === Constants.LEO_URI_SCHEME && vscode.window.activeTextEditor.document.uri.scheme === Constants.LEO_URI_SCHEME) {
+            if (p_event.textEditor.document.uri.scheme === Constants.URI_SCHEME && vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_SCHEME) {
                 if (!this.leoObjectSelected) {
                     this.leoObjectSelected = true;
                     this._updateLeoObjectSelectedDebounced();
@@ -482,7 +483,7 @@ export class LeoIntegration {
 
     private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
         // * Edited the document: ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
-        if (p_event.document.uri.scheme === Constants.LEO_URI_SCHEME && p_event.contentChanges.length) {
+        if (p_event.document.uri.scheme === Constants.URI_SCHEME && p_event.contentChanges.length) {
 
             if (this._bodyLastChangedDocument && (p_event.document.uri.fsPath !== this._bodyLastChangedDocument.uri.fsPath)) {
                 // console.log('Switched Node while waiting edit debounce!');
@@ -721,19 +722,19 @@ export class LeoIntegration {
                 if (this._bodyTextDocument) { // have to re-test inside .then, oh well
 
                     if (this._bodyTextDocumentSameUri) {
-                        this._bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx);
+                        this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx);
                         return this.showSelectedBodyDocument(); // already opened in a column so just tell vscode to show it
                     } else {
                         return this._bodyTextDocument.save().then((p_result) => {
                             const w_edit = new vscode.WorkspaceEdit();
                             w_edit.renameFile(
                                 this._bodyUri,
-                                vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx),
+                                vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx),
                                 { overwrite: true, ignoreIfExists: true }
                             );
                             // * Rename file operation to clear undo buffer
                             return vscode.workspace.applyEdit(w_edit).then(p_result => {
-                                this._bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx);
+                                this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx);
                                 return this.showSelectedBodyDocument();
                             });
                         });
@@ -746,7 +747,7 @@ export class LeoIntegration {
             });
 
         } else {
-            this._bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx);
+            this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx);
             return this.showSelectedBodyDocument();
         }
     }
@@ -804,7 +805,7 @@ export class LeoIntegration {
         // Trigger event to save previous document just in in case (if timer to save is already started for another document)
         this._triggerBodySave();
         this._leoTextDocumentNodesRef[p_node.gnx] = { node: p_node, refreshCount: this.outlineRefreshCount };
-        return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
+        return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
             if (!this.config.treeKeepFocusWhenAside) {
                 this.leoBridge.action("setSelectedNode", p_node.apJson).then((p_answer: LeoBridgePackage) => {
                     const p_selectedNode = this.apToLeoNode(p_answer.node);
@@ -859,7 +860,7 @@ export class LeoIntegration {
         let w_hasClosed: boolean = false;
         if (vscode.window.visibleTextEditors.length) {
             vscode.window.visibleTextEditors.forEach(p_visibleEditor => {
-                if (p_visibleEditor.document.uri.scheme === Constants.LEO_URI_SCHEME) {
+                if (p_visibleEditor.document.uri.scheme === Constants.URI_SCHEME) {
                     const w_editorGnx: string = p_visibleEditor.document.uri.fsPath.substr(1);
                     if (!this.leoFileSystem.gnxValid(w_editorGnx)) {
                         w_hasClosed = true;
@@ -933,7 +934,7 @@ export class LeoIntegration {
                     .then(p_expiredList => {
                         p_expiredList.forEach(p_expiredGnx => {
                             // console.log('expired list item gnx: ', p_expiredGnx);
-                            vscode.workspace.fs.delete(vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_expiredGnx));
+                            vscode.workspace.fs.delete(vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_expiredGnx));
                         });
                         // console.log('done calling delete on all expired gnx still opened');
                         // return this._documentManager.closeExpired(p_expiredList);
@@ -1165,13 +1166,13 @@ export class LeoIntegration {
             .then((p_openFileResult: LeoBridgePackage) => {
                 const p_selectedLeoNode = this.apToLeoNode(p_openFileResult.node);
                 // * Start body pane system
-                this._context.subscriptions.push(vscode.workspace.registerFileSystemProvider(Constants.LEO_URI_SCHEME, this.leoFileSystem, { isCaseSensitive: true }));
+                this._context.subscriptions.push(vscode.workspace.registerFileSystemProvider(Constants.URI_SCHEME, this.leoFileSystem, { isCaseSensitive: true }));
                 // * Startup flag
                 this.fileOpenedReady = true;
                 // * First valid redraw of tree
                 this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // p_revealSelection flag set
                 // * set body URI for body filesystem
-                this._bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_selectedLeoNode.gnx);
+                this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_selectedLeoNode.gnx);
                 // * set up first gnx<->leoNode reference
                 this._leoTextDocumentNodesRef[p_selectedLeoNode.gnx] = { node: p_selectedLeoNode, refreshCount: this.outlineRefreshCount };
                 // * First StatusBar appearance
@@ -1206,7 +1207,7 @@ export class LeoIntegration {
         }
         vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.leoObjectSelected);
         if (this.leoObjectSelected && this.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
-            this.leoStatusBarItem.color = Constants.LEO_STATUSBAR_COLOR;
+            this.leoStatusBarItem.color = Constants.STATUSBAR_COLOR;
             this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
             // this.leoStatusBarItem.text = Constants.LEO_STATUSBAR_STRING; // `$(keyboard) Literate `;
             // this.leoStatusBarItem.show();

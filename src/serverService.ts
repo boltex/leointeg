@@ -15,7 +15,7 @@ export class ServerService {
     public startServer(p_serverProcess: child.ChildProcess | undefined, p_leoPythonCommand: string): Promise<any> {
         // * Get command from settings or best command for the current OS
         let w_pythonPath = "";
-        const w_serverScriptPath = this._context.extensionPath + Constants.LEO_BRIDGE_SERVER_PATH;
+        const w_serverScriptPath = this._context.extensionPath + Constants.SERVER_PATH;
         const w_platform: string = os.platform();
         if (p_leoPythonCommand && p_leoPythonCommand.length) {
             // Start by running command (see executeCommand for multiple useful snippets)
@@ -23,10 +23,10 @@ export class ServerService {
             // Set path
             w_pythonPath = p_leoPythonCommand;
         } else {
-            w_pythonPath = Constants.LEO_DEFAULT_PYTHON;
+            w_pythonPath = Constants.DEFAULT_PYTHON;
 
             if (w_platform === "win32") {
-                w_pythonPath = Constants.LEO_WIN32_PYTHON;
+                w_pythonPath = Constants.WIN32_PYTHON;
             }
             console.log('Launch with default command : ' +
                 w_pythonPath + ((w_platform === "win32" && w_pythonPath === "py") ? " -3 " : "") +

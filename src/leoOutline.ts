@@ -3,6 +3,8 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { ProviderResult } from "vscode";
 import { RevealType } from "./types";
+import { Constants } from "./constants";
+
 
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     // * Leo outline implemented as a tree view with this TreeDataProvider implementation
@@ -29,7 +31,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     public getTreeItem(element: LeoNode): Thenable<LeoNode> | LeoNode {
         if (this._leoIntegration.refreshSingleNodeFlag) {
             this._leoIntegration.refreshSingleNodeFlag = false;
-            return this._leoIntegration.leoBridge.action("getPNode", element.apJson)
+            return this._leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_PNODE, element.apJson)
                 .then((p_result) => {
                     const w_node = this._leoIntegration.apToLeoNode(p_result.node);
                     return element.copyProperties(w_node);
@@ -41,7 +43,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     public getParent(element: LeoNode): ProviderResult<LeoNode> | null {
         if (this._leoIntegration.fileOpenedReady) {
-            return this._leoIntegration.leoBridge.action("getParent", element ? element.apJson : "null").then((p_result) => {
+            return this._leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_PARENT, element ? element.apJson : "null").then((p_result) => {
                 if (p_result.node === null) {
                     return null;
                 } else {
@@ -55,7 +57,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     public getChildren(element?: LeoNode): Thenable<LeoNode[]> {
         if (this._leoIntegration.fileOpenedReady) {
-            return this._leoIntegration.leoBridge.action("getChildren", element ? element.apJson : "null").then((p_result) => {
+            return this._leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_CHILDREN, element ? element.apJson : "null").then((p_result) => {
                 return this._leoIntegration.arrayToLeoNodesArray(p_result.nodes);
             });
         } else {

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
-import * as path from "path"; // TODO: Use this library to have reliable support for window-vs-linux file-paths
+// import * as path from "path"; // TODO: Use this library to have reliable support for window-vs-linux file-paths
 
 export class LeoFiles {
     // * Handles opening of file browser for choosing leo files to open
@@ -32,19 +32,18 @@ export class LeoFiles {
         return w_openedFileEnvUri;
     }
 
-    // TODO : Use 'path' library to have reliable support for Windows
     public getLeoFileUrl(): Promise<string> {
         if (this._fileBrowserOpen) {
             return Promise.resolve("");
         }
         return new Promise((resolve, reject) => {
+            const w_filters: { [name: string]: string[] } = {};
+            w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [Constants.FILE_TYPE_EXTENSION];
             vscode.window
                 .showOpenDialog({
                     canSelectMany: false,
                     defaultUri: this._getBestOpenFolderUri(),
-                    filters: {
-                        "Leo Files": [Constants.LEO_FILE_TYPE_EXTENSION]
-                    }
+                    filters: w_filters
                 })
                 .then(p_chosenLeoFile => {
                     this._fileBrowserOpen = false;

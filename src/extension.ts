@@ -6,6 +6,7 @@ import { LeoNode } from "./leoNode";
 import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 
 /*
+
 TODO : React to file changes and other events: see https://github.com/leo-editor/leo-editor/issues/1281
 
 TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
@@ -35,84 +36,87 @@ TODO : 'Clone-marked' commands that move clones of all marked nodes under an org
 - cfam clone-find-marked
 - cffm clone-find-flattened-marked
 
+TODO : hoist, de-hoist & other leo commands
+- Hoist, Hoist selection, dehoist
+
 */
 
 export function activate(context: vscode.ExtensionContext) {
     const start = process.hrtime(); // For calculating total startup time duration
 
-    const leoInteg = vscode.extensions.getExtension("boltex.leoInteg")!;
+    const leoInteg = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
+
     const leoIntegVersion = leoInteg.packageJSON.version;
-    const previousVersion = context.globalState.get<string>("leoIntegVersion");
+
+    const previousVersion = context.globalState.get<string>(Constants.VERSION_STATE_KEY);
 
     const leoIntegration: LeoIntegration = new LeoIntegration(context);
     const leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(context, leoIntegration);
 
     // * Reset Extension context flags (used in 'when' clauses in package.json)
-    vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // connected to a leobridge server?
-    vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
+    vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // connected to a leobridge server?
+    vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
 
+    const w_cmdPrefix = Constants.NAME + ".";
     const w_commands: [string, (...args: any[]) => any][] = [
-        ["leointeg.showWelcomePage", () => leoSettingsWebview.openWebview()],
-        ["leointeg.showSettingsPage", () => leoSettingsWebview.openWebview()],
 
-        ["leointeg.test", () => leoIntegration.test()],
+        [w_cmdPrefix + "test", () => leoIntegration.test()], // * Test function useful when debugging
 
-        ["leointeg.startServer", () => leoIntegration.startServer()],
-        ["leointeg.connectToServer", () => leoIntegration.connect()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SHOW_WELCOME, () => leoSettingsWebview.openWebview()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SHOW_SETTINGS, () => leoSettingsWebview.openWebview()],
 
-        ["leointeg.openLeoFile", () => leoIntegration.openLeoFile()],
-        ["leointeg.closeLeoFile", () => leoIntegration.closeLeoFile()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.START_SERVER, () => leoIntegration.startServer()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CONNECT, () => leoIntegration.connect()],
 
-        ["leointeg.selectTreeNode", (p_node: LeoNode) => leoIntegration.selectTreeNode(p_node)],
-        ["leointeg.openAside", (p_node: LeoNode) => leoIntegration.showBodyDocumentAside(p_node)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.OPEN_FILE, () => leoIntegration.openLeoFile()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLOSE_FILE, () => leoIntegration.closeLeoFile()],
 
-        ["leointeg.mark", (p_node: LeoNode) => leoIntegration.mark(p_node)],
-        ["leointeg.unmark", (p_node: LeoNode) => leoIntegration.unmark(p_node)],
-        ["leointeg.markSelection", () => leoIntegration.mark()],
-        ["leointeg.unmarkSelection", () => leoIntegration.unmark()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SELECT_NODE, (p_node: LeoNode) => leoIntegration.selectTreeNode(p_node)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.OPEN_ASIDE, (p_node: LeoNode) => leoIntegration.showBodyDocumentAside(p_node)],
 
-        ["leointeg.copyNode", (p_node: LeoNode) => leoIntegration.leoBridgeAction("copyPNode", p_node)],
-        ["leointeg.cutNode", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndFullRefresh("cutPNode", p_node)],
-        ["leointeg.pasteNode", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndFullRefresh("pastePNode", p_node)],
-        ["leointeg.pasteNodeAsClone", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndFullRefresh("pasteAsClonePNode", p_node)],
-        ["leointeg.delete", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndFullRefresh("deletePNode", p_node)],
-        ["leointeg.copyNodeSelection", () => leoIntegration.leoBridgeAction("copyPNode")],
-        ["leointeg.cutNodeSelection", () => leoIntegration.leoBridgeActionAndFullRefresh("cutPNode")],
-        ["leointeg.pasteNodeAtSelection", () => leoIntegration.leoBridgeActionAndFullRefresh("pastePNode")],
-        ["leointeg.pasteNodeAsCloneAtSelection", () => leoIntegration.leoBridgeActionAndFullRefresh("pasteAsClonePNode")],
-        ["leointeg.deleteSelection", () => leoIntegration.leoBridgeActionAndFullRefresh("deletePNode")],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MARK, (p_node: LeoNode) => leoIntegration.mark(p_node)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.UNMARK, (p_node: LeoNode) => leoIntegration.unmark(p_node)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MARK_SELECTION, () => leoIntegration.mark()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.UNMARK_SELECTION, () => leoIntegration.unmark()],
 
-        ["leointeg.editHeadline", (p_node: LeoNode) => leoIntegration.editHeadline(p_node)],
-        ["leointeg.editSelectedHeadline", () => leoIntegration.editHeadline()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.COPY, (p_node: LeoNode) => leoIntegration.leoBridgeAction(Constants.LEOBRIDGE_ACTIONS.COPY_PNODE, p_node)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CUT, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.CUT_PNODE, p_node)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.PASTE, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.PASTE_PNODE, p_node)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.PASTE_CLONE, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.PASTE_CLONE_PNODE, p_node)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DELETE, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.DELETE_PNODE, p_node)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.COPY_SELECTION, () => leoIntegration.leoBridgeAction(Constants.LEOBRIDGE_ACTIONS.COPY_PNODE)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CUT_SELECTION, () => leoIntegration.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.CUT_PNODE)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.PASTE_SELECTION, () => leoIntegration.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.PASTE_PNODE)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.PASTE_CLONE_SELECTION, () => leoIntegration.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.PASTE_CLONE_PNODE)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DELETE_SELECTION, () => leoIntegration.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.DELETE_PNODE)],
 
-        ["leointeg.moveOutlineDown", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("movePNodeDown", p_node, RevealType.RevealSelectFocusShowBody)],
-        ["leointeg.moveOutlineLeft", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("movePNodeLeft", p_node, RevealType.RevealSelectFocusShowBody)],
-        ["leointeg.moveOutlineRight", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("movePNodeRight", p_node, RevealType.RevealSelectFocusShowBody)],
-        ["leointeg.moveOutlineUp", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("movePNodeUp", p_node, RevealType.RevealSelectFocusShowBody)],
-        ["leointeg.insertNode", (p_node: LeoNode) => leoIntegration.insertNode(p_node)],
-        ["leointeg.cloneNode", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("clonePNode", p_node)],
-        ["leointeg.promote", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("promotePNode", p_node, RevealType.RevealSelectFocusShowBody)],
-        ["leointeg.demote", (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh("demotePNode", p_node, RevealType.RevealSelectFocusShowBody)],
-        ["leointeg.moveOutlineDownSelection", () => leoIntegration.leoBridgeActionAndRefresh("movePNodeDown", undefined, RevealType.RevealSelectFocusShowBody)],
-        ["leointeg.moveOutlineLeftSelection", () => leoIntegration.leoBridgeActionAndRefresh("movePNodeLeft", undefined, RevealType.RevealSelectFocusShowBody)],
-        ["leointeg.moveOutlineRightSelection", () => leoIntegration.leoBridgeActionAndRefresh("movePNodeRight", undefined, RevealType.RevealSelectFocusShowBody)],
-        ["leointeg.moveOutlineUpSelection", () => leoIntegration.leoBridgeActionAndRefresh("movePNodeUp", undefined, RevealType.RevealSelectFocusShowBody)],
-        ["leointeg.insertNodeSelection", () => leoIntegration.insertNode()],
-        ["leointeg.cloneNodeSelection", () => leoIntegration.leoBridgeActionAndRefresh("clonePNode", undefined, RevealType.RevealSelectFocusShowBody)],
-        ["leointeg.promoteSelection", () => leoIntegration.leoBridgeActionAndRefresh("promotePNode", undefined, RevealType.RevealSelectFocusShowBody)],
-        ["leointeg.demoteSelection", () => leoIntegration.leoBridgeActionAndRefresh("demotePNode", undefined, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.HEADLINE, (p_node: LeoNode) => leoIntegration.editHeadline(p_node)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.HEADLINE_SELECTION, () => leoIntegration.editHeadline()],
 
-        ["leointeg.sortChildrenSelection", () => leoIntegration.leoBridgeActionAndRefresh("sortChildrenPNode", undefined, RevealType.RevealSelectFocusShowBody)],
-        ["leointeg.sortSiblingsSelection", () => leoIntegration.leoBridgeActionAndRefresh("sortSiblingsPNode", undefined, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_DOWN, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_DOWN, p_node, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_LEFT, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_LEFT, p_node, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_RIGHT, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_RIGHT, p_node, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_UP, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_UP, p_node, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.INSERT, (p_node: LeoNode) => leoIntegration.insertNode(p_node)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLONE, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.CLONE_PNODE, p_node)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.PROMOTE, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.PROMOTE_PNODE, p_node, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DEMOTE, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.DEMOTE_PNODE, p_node, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_DOWN_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_DOWN, undefined, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_LEFT_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_LEFT, undefined, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_RIGHT_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_RIGHT, undefined, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_UP_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_UP, undefined, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.INSERT_SELECTION, () => leoIntegration.insertNode()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLONE_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.CLONE_PNODE, undefined, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.PROMOTE_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.PROMOTE_PNODE, undefined, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DEMOTE_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.DEMOTE_PNODE, undefined, RevealType.RevealSelectFocusShowBody)],
 
-        // TODO : hoist, de-hoist & other leo commands
-        // ["leointeg.hoistSelection", () => leoIntegration.hoistSelection())); // hoistPN],
-        // ["leointeg.deHoist", () => leoIntegration.deHoist())); // deHo],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SORT_CHILDREN, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.SORT_CHILDREN, undefined, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SORT_SIBLING, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.SORT_SIBLINGS, undefined, RevealType.RevealSelectFocusShowBody)],
 
-        ["leointeg.undo", () => leoIntegration.undo()],
-        ["leointeg.redo", () => leoIntegration.redo()],
-        ["leointeg.executeScript", () => leoIntegration.executeScript()],
-        ["leointeg.saveLeoFile", () => leoIntegration.saveLeoFile()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.UNDO, () => leoIntegration.undo()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.REDO, () => leoIntegration.redo()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.EXECUTE, () => leoIntegration.executeScript()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SAVE_FILE, () => leoIntegration.saveLeoFile()],
     ];
 
     w_commands.map(function (p_command) { context.subscriptions.push(vscode.commands.registerCommand(...p_command)); });
@@ -120,7 +124,7 @@ export function activate(context: vscode.ExtensionContext) {
     // Show Welcome / settings screen if the version is newer than last time leointeg started
     void showWelcome(leoIntegVersion, previousVersion);
 
-    context.globalState.update("leoIntegVersion", leoIntegVersion);
+    context.globalState.update(Constants.VERSION_STATE_KEY, leoIntegVersion);
 
     console.log('leoInteg startup launched in ', getDurationMilliseconds(start), 'ms');
 }
@@ -132,7 +136,7 @@ export function deactivate() {
 async function showWelcome(version: string, previousVersion: string | undefined) {
     if (previousVersion === undefined) {
         console.log('leoInteg first-time install');
-        await vscode.commands.executeCommand("leointeg.showWelcomePage");
+        await vscode.commands.executeCommand(Constants.NAME + "." + Constants.LEOINTEG_COMMANDS.SHOW_WELCOME);
         return;
     }
 
@@ -152,7 +156,7 @@ async function showWelcome(version: string, previousVersion: string | undefined)
     }
     // Will show on major or minor upgrade, Formated as 'Major.Minor.Revision' eg. 1.2.3
     if (major !== prevMajor || (major === prevMajor && minor > prevMinor)) {
-        await vscode.commands.executeCommand("leointeg.showWelcomePage");
+        await vscode.commands.executeCommand(Constants.NAME + "." + Constants.LEOINTEG_COMMANDS.SHOW_WELCOME);
     }
 }
 

@@ -5,6 +5,7 @@ export interface Config {
     treeKeepFocusWhenAside: boolean;
     treeInExplorer: boolean;
     showOpenAside: boolean;
+    statusBarString: string;
     showArrowsOnNodes: boolean;
     showAddOnNodes: boolean;
     showMarkOnNodes: boolean;
