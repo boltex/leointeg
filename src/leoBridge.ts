@@ -20,12 +20,11 @@ export class LeoBridge {
         private _leoIntegration: LeoIntegration
     ) { }
 
-    public action(p_action: string, p_jsonParam?: string, p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
-        p_jsonParam = p_jsonParam || "null"; // "null" as a string is a valid JSON object for using as parameter if its not required
+    public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
         // * Places an action to be made by leoBridge.py on top of a stack, to be resolved from the bottom
         return new Promise((resolve, reject) => {
             const w_action: LeoAction = {
-                parameter: "{\"id\":" + (++this._leoBridgeSerialId) + ", \"action\": \"" + p_action + "\", \"param\":" + p_jsonParam + "}",
+                parameter: this._buildActionParameter(p_action, p_jsonParam),
                 deferredPayload: p_deferredPayload ? p_deferredPayload : undefined,
                 resolveFn: resolve,
                 rejectFn: reject
@@ -36,6 +35,14 @@ export class LeoBridge {
                 this._callAction();
             }
         });
+    }
+
+    private _buildActionParameter(p_action: string, p_jsonParam?: string): string {
+        // * Build JSON string for action parameter to the leoBridge
+        return "{\"id\":" + (++this._leoBridgeSerialId) + // no quotes, serial id is a number
+            ", \"action\": \"" + p_action +  // action is string so surround with quotes
+            "\", \"param\":" + p_jsonParam +  // param is already json, no need for added quotes
+            "}";
     }
 
     private _resolveBridgeReady(p_object: string) {

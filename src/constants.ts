@@ -1,6 +1,5 @@
 export class Constants {
     // * Strings and other constants
-
     public static PUBLISHER: string = "boltex";
     public static NAME: string = "leointeg";
 
@@ -36,30 +35,27 @@ export class Constants {
         SHOW_CLONE: "showCloneOnNodes",
         SHOW_COPY: "showCopyOnNodes",
         LEO_SELECTED: "leoObjectSelected",
-        SELECTED_MARKED: "leoNodeMarked"
+        SELECTED_MARKED: "leoNodeMarked",
+        SELECTED_UNMARKED: "leoNode"
     };
 
     public static LEOBRIDGE_ACTIONS = {
-
         GET_ALL_GNX: "getAllGnx",
         GET_BODY_LENGTH: "getBodyLength",
         GET_BODY: "getBody",
-
         GET_PNODE: "getPNode",
         GET_PARENT: "getParent",
         GET_CHILDREN: "getChildren",
-
+        // * Leo Operations
         COPY_PNODE: "copyPNode",
         CUT_PNODE: "cutPNode",
         PASTE_PNODE: "pastePNode",
         PASTE_CLONE_PNODE: "pasteAsClonePNode",
         DELETE_PNODE: "deletePNode",
-
         MOVE_PNODE_DOWN: "movePNodeDown",
         MOVE_PNODE_LEFT: "movePNodeLeft",
         MOVE_PNODE_RIGHT: "movePNodeRight",
         MOVE_PNODE_UP: "movePNodeUp",
-
         INSERT_PNODE: "",
         CLONE_PNODE: "clonePNode",
         PROMOTE_PNODE: "promotePNode",
@@ -78,22 +74,21 @@ export class Constants {
     public static LEOINTEG_COMMANDS = {
         SHOW_WELCOME: "showWelcomePage",
         SHOW_SETTINGS: "showSettingsPage",
-
+        // * LeoBridge
         START_SERVER: "startServer",
         CONNECT: "connectToServer",
         OPEN_FILE: "openLeoFile",
         CLOSE_FILE: "closeLeoFile",
-
+        // * Outline selection
         SELECT_NODE: "selectTreeNode",
         OPEN_ASIDE: "openAside",
-
+        // * Leo Operations
         UNDO: "undo",
         REDO: "redo",
         EXECUTE: "executeScript",
         SAVE_FILE: "saveLeoFile",
         SORT_CHILDREN: "sortChildrenSelection",
         SORT_SIBLING: "sortSiblingsSelection",
-
         MARK: "mark",
         UNMARK: "unmark",
         COPY: "copyNode",
@@ -110,7 +105,6 @@ export class Constants {
         CLONE: "cloneNode",
         PROMOTE: "promote",
         DEMOTE: "demote",
-
         MARK_SELECTION: "markSelection",
         UNMARK_SELECTION: "unmarkSelection",
         COPY_SELECTION: "copyNodeSelection",

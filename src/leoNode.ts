@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 import { ArchivedPosition } from "./types"; // Kept in case we need to log from 'ap' sub objects
 
@@ -22,12 +23,13 @@ export class LeoNode extends vscode.TreeItem {
     ) {
         super(label, collapsibleState);
         if (marked) {
-            this.contextValue = "leoNodeMarked"; // For use in package.json
+            // * For use in package.json
+            this.contextValue = Constants.CONTEXT_FLAGS.SELECTED_MARKED; // 'leoNodeMarked'
         } else {
-            this.contextValue = "leoNode"; // For use in package.json
+            this.contextValue = Constants.CONTEXT_FLAGS.SELECTED_UNMARKED; // 'leoNode'
         }
         this.command = {
-            command: 'leointeg.selectTreeNode',
+            command: Constants.LEOINTEG_COMMANDS.SELECT_NODE,
             title: '',
             arguments: [this]
         };
