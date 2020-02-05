@@ -1,7 +1,10 @@
 export class Constants {
     // * Strings and other constants
     public static PUBLISHER: string = "boltex";
+
     public static NAME: string = "leointeg";
+
+    public static CONFIGURATION_SECTION_NAME = "leoIntegration";
 
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
@@ -10,7 +13,8 @@ export class Constants {
     public static URI_SCHEME_HEADER: string = "leo:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
 
-    public static STATUSBAR_COLOR: string = "#fb7c47"; // TODO : Status bar color and text should be user settings
+    public static STATUSBAR_COLOR: string = "#fb7c47";
+    public static STATUSBAR_STRING: string = "$(keyboard)"; // 🦁 Lion Face Icon ?
 
     public static DEFAULT_PYTHON: string = "python3";
     public static WIN32_PYTHON: string = "py";
@@ -19,8 +23,6 @@ export class Constants {
     public static TCPIP_DEFAULT_PORT: number = 32125;
     public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
     public static TCPIP_DEFAULT_ADDRESS: string = "localhost";
-
-    public static STATUSBAR_STRING: string = "$(keyboard)"; // 🦁 Lion Face Icon ?
 
     public static CONTEXT_FLAGS = {
         BRIDGE_READY: "leoBridgeReady",
@@ -46,6 +48,9 @@ export class Constants {
         GET_PNODE: "getPNode",
         GET_PARENT: "getParent",
         GET_CHILDREN: "getChildren",
+        GET_SELECTED_NODE: "getSelectedNode",
+        EXPAND_NODE: "expandNode",
+        COLLAPSE_NODE: "collapseNode",
         // * Leo Operations
         COPY_PNODE: "copyPNode",
         CUT_PNODE: "cutPNode",

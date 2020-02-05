@@ -7,6 +7,8 @@ import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 
 /*
 
+TODO : Status bar color and text should be user settings
+
 TODO : React to file changes and other events: see https://github.com/leo-editor/leo-editor/issues/1281
 
 TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -

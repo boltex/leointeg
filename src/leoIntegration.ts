@@ -324,7 +324,7 @@ export class LeoIntegration {
     }
 
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
-        if (p_event.affectsConfiguration('leoIntegration')) {
+        if (p_event.affectsConfiguration(Constants.CONFIGURATION_SECTION_NAME)) {
             // console.log('Detected Change of vscode config in leoIntegration !');
             this._getLeoIntegSettings();
         }
@@ -336,12 +336,12 @@ export class LeoIntegration {
     }
     private onTreeViewExpandedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
         // * May reveal nodes, but this event occurs *after* the getChildren event from the tree provider, so not useful to interfere in it.
-        this.leoBridge.action("expandNode", p_event.element.apJson).then(() => {
+        this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE, p_event.element.apJson).then(() => {
             // console.log('back from expand');
         });
     }
     private _onTreeViewCollapsedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
-        this.leoBridge.action("collapseNode", p_event.element.apJson).then(() => {
+        this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson).then(() => {
             // console.log('back from collapse');
         });
     }
@@ -351,7 +351,7 @@ export class LeoIntegration {
             this._lastOperationChangedTree = false;
             this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // TODO: test if really needed, along with timeout (0) "getSelectedNode"
             setTimeout(() => {
-                this.leoBridge.action("getSelectedNode", "{}").then(
+                this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_SELECTED_NODE).then(
                     (p_answer: LeoBridgePackage) => {
                         const w_node = this.apToLeoNode(p_answer.node);
                         this.reveal(w_node, { select: false, focus: false }).then(() => {
