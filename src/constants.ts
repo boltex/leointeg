@@ -24,6 +24,12 @@ export class Constants {
     public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
     public static TCPIP_DEFAULT_ADDRESS: string = "localhost";
 
+    public static INTERFACE = {
+        STATUSBAR_LITERATE: "",
+        STATUSBAR_TOOLTIP_ON: "",
+        STATUSBAR_TOOLTIP_OFF: ""
+    }
+
     public static CONTEXT_FLAGS = {
         BRIDGE_READY: "leoBridgeReady",
         TREE_OPENED: "leoTreeOpened",
@@ -49,9 +55,14 @@ export class Constants {
         GET_PARENT: "getParent",
         GET_CHILDREN: "getChildren",
         GET_SELECTED_NODE: "getSelectedNode",
+        SET_SELECTED_NODE: "setSelectedNode",
+        SET_BODY: "setBody",
         EXPAND_NODE: "expandNode",
         COLLAPSE_NODE: "collapseNode",
+        OPEN_FILE: "openFile",
         // * Leo Operations
+        MARK_PNODE: "markPNode",
+        UNMARK_PNODE: "unmarkPNode",
         COPY_PNODE: "copyPNode",
         CUT_PNODE: "cutPNode",
         PASTE_PNODE: "pastePNode",
@@ -61,19 +72,21 @@ export class Constants {
         MOVE_PNODE_LEFT: "movePNodeLeft",
         MOVE_PNODE_RIGHT: "movePNodeRight",
         MOVE_PNODE_UP: "movePNodeUp",
-        INSERT_PNODE: "",
+        INSERT_PNODE: "insertPNode",
+        INSERT_NAMED_PNODE: "insertNamedPNode",
         CLONE_PNODE: "clonePNode",
         PROMOTE_PNODE: "promotePNode",
         DEMOTE_PNODE: "demotePNode",
         HEADLINE_PNODE: "",
-        UNDO: "",
-        REDO: "",
+        UNDO: "undo",
+        REDO: "redo",
         SORT_CHILDREN: "sortChildrenPNode",
         SORT_SIBLINGS: "sortSiblingsPNode",
     };
 
     public static VSCODE_COMMANDS = {
-        SET_CONTEXT: "setContext"
+        SET_CONTEXT: "setContext",
+        CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor"
     };
 
     public static LEOINTEG_COMMANDS = {
