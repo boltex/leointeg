@@ -88,7 +88,7 @@ export class LeoIntegration {
     // * Status Bar
     public leoStatusBarItem: vscode.StatusBarItem;
     public leoObjectSelected: boolean = false; // represents having focus on a leo body, as opposed to anything else
-    public statusbarNormalColor = new vscode.ThemeColor("statusBar.foreground");  // "statusBar.foreground"
+    public statusbarNormalColor = new vscode.ThemeColor(Constants.INTERFACE.THEME_STATUSBAR);  // "statusBar.foreground"
     private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
 
     // * Edit Headline Input Box
@@ -96,14 +96,14 @@ export class LeoIntegration {
         ignoreFocusOut: false, // clicking outside cancels the headline change
         value: "", // will be replaced live upon showing from the node's text
         valueSelection: undefined,
-        prompt: 'Edit Headline'
+        prompt: Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE
     };
     // * Insert Node Headline Input Box
     private _newHeadlineInputOptions: vscode.InputBoxOptions = {
         ignoreFocusOut: false, // clicking outside cancels the headline change
-        value: "New Headline", // will be replaced live upon showing from the node's text
+        value: Constants.USER_MESSAGES.DEFAULT_HEADLINE, // will be replaced live upon showing from the node's text
         valueSelection: undefined,
-        prompt: 'Insert Node'
+        prompt: Constants.USER_MESSAGES.PROMPT_INSERT_NODE
     };
 
     // * Automatic server start service
@@ -124,6 +124,7 @@ export class LeoIntegration {
             .fill("")
             .map((_, p_index) => {
                 return {
+                    // TODO : Extract as a function and loop through strings 'light, dark and high contrast'
                     light: _context.asAbsolutePath('resources/light/box' + ("0" + p_index).slice(-2) + '.svg'),
                     dark: _context.asAbsolutePath('resources/dark/box' + ("0" + p_index).slice(-2) + '.svg')
                 };
@@ -139,14 +140,14 @@ export class LeoIntegration {
         this.leoTreeDataProvider = new LeoOutlineProvider(this);
 
         // * Leo view outline panes
-        this.leoTreeView = vscode.window.createTreeView("leoIntegration", { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
+        this.leoTreeView = vscode.window.createTreeView(Constants.TREEVIEW_ID, { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
         this.leoTreeView.onDidChangeSelection((p_event => this._onTreeViewChangedSelection(p_event)));
         this.leoTreeView.onDidExpandElement((p_event => this.onTreeViewExpandedElement(p_event)));
         this.leoTreeView.onDidCollapseElement((p_event => this._onTreeViewCollapsedElement(p_event)));
         this.leoTreeView.onDidChangeVisibility((p_event => this._onTreeViewVisibilityChanged(p_event, false))); // * Trigger 'show tree in Leo's view'
 
         // * Explorer view outline pane
-        this.leoTreeExplorerView = vscode.window.createTreeView("leoIntegrationExplorer", { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
+        this.leoTreeExplorerView = vscode.window.createTreeView(Constants.TREEVIEW_EXPLORER_ID, { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
         this.leoTreeExplorerView.onDidChangeSelection((p_event => this._onTreeViewChangedSelection(p_event)));
         this.leoTreeExplorerView.onDidExpandElement((p_event => this.onTreeViewExpandedElement(p_event)));
         this.leoTreeExplorerView.onDidCollapseElement((p_event => this._onTreeViewCollapsedElement(p_event)));
@@ -155,14 +156,14 @@ export class LeoIntegration {
         // * Body Pane
         this.leoFileSystem = new LeoBodyProvider(this);
         this._bodyMainSelectionColumn = 1;
-        // set workbench.editor.closeOnFileDelete to true
+        // TODO : set workbench.editor.closeOnFileDelete to true
 
         // * Status bar: Show keyboard-Shortcut-Flag to signify Leo keyboard shortcuts are active
         this.leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
-        this.leoStatusBarItem.color = Constants.STATUSBAR_COLOR;
-        this.leoStatusBarItem.command = "leointeg.test"; // just call test function for now
-        this.leoStatusBarItem.text = Constants.STATUSBAR_STRING; // `$(keyboard) Literate`;
-        this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
+        this.leoStatusBarItem.color = Constants.INTERFACE.STATUSBAR_COLOR;
+        this.leoStatusBarItem.command = "leointeg.test"; // just call test function for now to help debugging
+        this.leoStatusBarItem.text = Constants.INTERFACE.STATUSBAR_STRING;
+        this.leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
         _context.subscriptions.push(this.leoStatusBarItem);
         this.leoStatusBarItem.hide();
 
@@ -187,10 +188,12 @@ export class LeoIntegration {
         // * Start server and / or connect to it (as specified in settings)
         this.startNetworkServices(); // TODO : Maybe start from extension.ts instead
 
+        console.log('Constants:', Constants.CONTEXT_FLAGS);
+
     }
 
     public startNetworkServices(): void {
-        this.setTreeViewTitle("NOT CONNECTED");
+        this.setTreeViewTitle(Constants.INTERFACE.TREEVIEW_TITLE_NOT_CONNECTED);
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
         if (this.config.startServerAutomatically) {
             this.startServer();
@@ -210,7 +213,7 @@ export class LeoIntegration {
                     this.connect();
                 }
             }, (p_reason) => {
-                vscode.window.showErrorMessage('Error - Cannot start Server: ' + p_reason);
+                vscode.window.showErrorMessage(Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason);
             });
     }
 
@@ -224,13 +227,13 @@ export class LeoIntegration {
         this._leoBridgeReadyPromise.then((p_package) => {
             this.leoIsConnecting = false;
             if (p_package.id !== 1) {
-                this.cancelConnect("Leo Bridge Connection Error: Incorrect id");
+                this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
             } else {
                 this.leoBridgeReady = true;
                 vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
-                this.setTreeViewTitle("CONNECTED");
+                this.setTreeViewTitle(Constants.INTERFACE.TREEVIEW_TITLE_CONNECTED);
                 if (!this.config.connectToServerAutomatically) {
-                    vscode.window.showInformationMessage(`Connected`);
+                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                 }
             }
         },
@@ -243,12 +246,12 @@ export class LeoIntegration {
         // * Also called from leoBridge.ts when its websocket reports disconnection
         if (this.leoBridgeReady) {
             // * Real disconnect error versus a simple 'failed to connect'
-            vscode.window.showErrorMessage(p_message ? p_message : "Disconnected");
+            vscode.window.showErrorMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
             vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.DISCONNECTED, true);
         } else {
-            vscode.window.showInformationMessage(p_message ? p_message : "Disconnected");
+            vscode.window.showInformationMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
         }
-        this.setTreeViewTitle("NOT CONNECTED");
+        this.setTreeViewTitle(Constants.INTERFACE.TREEVIEW_TITLE_NOT_CONNECTED);
 
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, false);
         this.fileOpenedReady = false;
@@ -268,7 +271,7 @@ export class LeoIntegration {
         // also returns as a promise in case additional procedures need to be run on completion
         this._isSettingConfig = true;
         const w_promises: Thenable<void>[] = [];
-        const w_vscodeConfig = vscode.workspace.getConfiguration('leoIntegration');
+        const w_vscodeConfig = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION);
 
         p_changes.forEach(change => {
             if (w_vscodeConfig.inspect(change.code)!.defaultValue === change.value) {
@@ -293,25 +296,25 @@ export class LeoIntegration {
             return; // * Currently setting config, wait until its done all, and this will be called automatically
         } else {
             // * Graphic and theme settings
-            this.config.invertNodeContrast = vscode.workspace.getConfiguration('leoIntegration').get('invertNodeContrast', false);
+            this.config.invertNodeContrast = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.INVERT_NODES, false);
             // * Interface elements visibility
-            this.config.treeInExplorer = vscode.workspace.getConfiguration('leoIntegration').get('treeInExplorer', true);
-            this.config.showOpenAside = vscode.workspace.getConfiguration('leoIntegration').get('showOpenAside', true);
-            this.config.showArrowsOnNodes = vscode.workspace.getConfiguration('leoIntegration').get('showArrowsOnNodes', false);
-            this.config.showAddOnNodes = vscode.workspace.getConfiguration('leoIntegration').get('showAddOnNodes', false);
-            this.config.showMarkOnNodes = vscode.workspace.getConfiguration('leoIntegration').get('showMarkOnNodes', false);
-            this.config.showCloneOnNodes = vscode.workspace.getConfiguration('leoIntegration').get('showCloneOnNodes', false);
-            this.config.showCopyOnNodes = vscode.workspace.getConfiguration('leoIntegration').get('showCopyOnNodes', false);
+            this.config.treeInExplorer = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.TREE_IN_EXPLORER, true);
+            this.config.showOpenAside = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_OPEN_ASIDE, true);
+            this.config.showArrowsOnNodes = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_ARROWS, false);
+            this.config.showAddOnNodes = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_ADD, false);
+            this.config.showMarkOnNodes = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_MARK, false);
+            this.config.showCloneOnNodes = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_CLONE, false);
+            this.config.showCopyOnNodes = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_COPY, false);
             // * Interface settings
-            this.config.treeKeepFocus = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocus', true);
-            this.config.treeKeepFocusWhenAside = vscode.workspace.getConfiguration('leoIntegration').get('treeKeepFocusWhenAside', false);
-            this.config.bodyEditDelay = vscode.workspace.getConfiguration('leoIntegration').get('bodyEditDelay', 500);
+            this.config.treeKeepFocus = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.TREE_KEEP_FOCUS, true);
+            this.config.treeKeepFocusWhenAside = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.TREE_KEEP_FOCUS_WHEN_ASIDE, false);
+            this.config.bodyEditDelay = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.BODY_EDIT_DELAY, 500);
             // * Server and connection automation
-            this.config.leoPythonCommand = vscode.workspace.getConfiguration('leoIntegration').get('leoPythonCommand', "");
-            this.config.startServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('startServerAutomatically', true);
-            this.config.connectToServerAutomatically = vscode.workspace.getConfiguration('leoIntegration').get('connectToServerAutomatically', true);
-            this.config.connectionAddress = vscode.workspace.getConfiguration('leoIntegration').get('connectionAddress', Constants.TCPIP_DEFAULT_ADDRESS); // 'ws://'
-            this.config.connectionPort = vscode.workspace.getConfiguration('leoIntegration').get('connectionPort', Constants.TCPIP_DEFAULT_PORT); // 32125
+            this.config.leoPythonCommand = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.LEO_PYTHON_COMMAND, "");
+            this.config.startServerAutomatically = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.AUTO_START_SERVER, true);
+            this.config.connectToServerAutomatically = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.AUTO_CONNECT, true);
+            this.config.connectionAddress = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.IP_ADDRESS, Constants.TCPIP_DEFAULT_ADDRESS); // 'ws://'
+            this.config.connectionPort = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.IP_PORT, Constants.TCPIP_DEFAULT_PORT); // 32125
             // * Set context for tree items visibility that are based on config options
             vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_IN_EXPLORER, this.config.treeInExplorer);
             vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_OPEN_ASIDE, this.config.showOpenAside);
@@ -324,7 +327,7 @@ export class LeoIntegration {
     }
 
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
-        if (p_event.affectsConfiguration(Constants.CONFIGURATION_SECTION_NAME)) {
+        if (p_event.affectsConfiguration(Constants.CONFIGURATION_SECTION)) {
             // console.log('Detected Change of vscode config in leoIntegration !');
             this._getLeoIntegSettings();
         }
@@ -671,6 +674,8 @@ export class LeoIntegration {
     }
 
     public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean | undefined): Thenable<boolean> {
+        console.log('SELECT');
+
         // * User has selected a node via mouse click or 'enter' keypress in the outline
         // otherwise flag p_internalCall if used internally
         if (!p_internalCall) {
@@ -1081,36 +1086,6 @@ export class LeoIntegration {
                                 this._leoBridgeActionBusy = false;
                             });
                     });
-
-                /*
-                * Old way of doing inserts: Tried to mimic Leo by showing you it created a new node in the outline, while allowing you to edit its headline
-                this.leoBridge.action("insertPNode", p_node.apJson)
-                    .then(p_package => {
-                        this.leoFileSystem.addGnx(p_package.node.gnx);
-                        this._lastOperationChangedTree = true;
-                        this._lastOperationSelectedBody = false;
-                        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectShowBody); // refresh all, needed to get clones to refresh too!
-
-                        this._newHeadlineInputOptions.value = p_package.node.headline; // preset input pop up
-                        this._leoBridgeActionBusy = false;
-                        vscode.window.showInputBox(this._newHeadlineInputOptions)
-                            .then(p_newHeadline => {
-                                if (p_newHeadline) {
-                                    // ! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
-                                    p_node!.label = p_newHeadline;
-                                    this.leoBridge.action("setNewHeadline", "{\"node\":" + JSON.stringify(p_package.node) + ", \"headline\": \"" + p_newHeadline + "\"}")
-                                        .then((p_answer: LeoBridgePackage) => {
-                                            this._forceBodyFocus = true;
-                                            // ! p_revealSelection flag needed because we voluntarily refreshed the automatic ID
-                                            this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // refresh all, needed to get clones to refresh too!
-                                        });
-                                } else {
-                                    this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // refresh all, needed to get clones to refresh too!
-                                    this.focusBodyIfVisible(p_node!.gnx);
-                                }
-                            });
-                    });
-                */
             }
         }
     }
@@ -1154,7 +1129,7 @@ export class LeoIntegration {
 
     public openLeoFile(): void {
         if (this.fileOpenedReady) {
-            vscode.window.showInformationMessage("leo file already opened!");
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_ALREADY_OPENED);
             return;
         }
         this._leoFilesBrowser.getLeoFileUrl()
@@ -1184,7 +1159,7 @@ export class LeoIntegration {
                 return this.leoFileSystem.refreshPossibleGnxList();
             })
             .then(p_list => {
-                this.setTreeViewTitle("OUTLINE");
+                this.setTreeViewTitle(Constants.INTERFACE.TREEVIEW_TITLE);
                 return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, true);
             })
             .then(p_setContextResult => {
@@ -1207,20 +1182,20 @@ export class LeoIntegration {
         }
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.leoObjectSelected);
         if (this.leoObjectSelected && this.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
-            this.leoStatusBarItem.color = Constants.STATUSBAR_COLOR;
-            this.leoStatusBarItem.tooltip = "Leo Key Bindings are in effect";
+            this.leoStatusBarItem.color = Constants.INTERFACE.STATUSBAR_COLOR;
+            this.leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
             // this.leoStatusBarItem.text = Constants.LEO_STATUSBAR_STRING; // `$(keyboard) Literate `;
             // this.leoStatusBarItem.show();
         } else {
             this.leoStatusBarItem.color = this.statusbarNormalColor;
-            this.leoStatusBarItem.tooltip = "Leo Key Bindings off";
+            this.leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_OFF;
             // this.leoStatusBarItem.hide();
         }
     }
 
     private _showLeoCommands(): void {
         // * Status bar indicator clicked: Offer all leo commands in the command palette
-        vscode.commands.executeCommand('workbench.action.quickOpen', '>leo: ');
+        vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.QUICK_OPEN, Constants.INTERFACE.QUICK_OPEN_LEO_COMMANDS);
     }
 
     public setTreeViewTitle(p_title: string): void {
@@ -1229,12 +1204,14 @@ export class LeoIntegration {
             this.leoTreeView.title = p_title;
         }
         if (this.leoTreeExplorerView) {
-            this.leoTreeExplorerView.title = "LEO " + p_title; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
+            this.leoTreeExplorerView.title = Constants.INTERFACE.EXPLORER_TREEVIEW_PREFIX + p_title; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
         }
     }
 
     public test(): void {
         if (this.fileOpenedReady) {
+            console.log('Constants:', Constants.CONTEXT_FLAGS);
+
             // this._showLeoCommands();
             // console.log("sending test 'getSelectedNode'");
             // * if no parameter required, still send "{}"

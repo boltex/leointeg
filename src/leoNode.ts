@@ -29,7 +29,7 @@ export class LeoNode extends vscode.TreeItem {
             this.contextValue = Constants.CONTEXT_FLAGS.SELECTED_UNMARKED; // 'leoNode'
         }
         this.command = {
-            command: Constants.LEOINTEG_COMMANDS.SELECT_NODE,
+            command: Constants.NAME + "." + Constants.LEOINTEG_COMMANDS.SELECT_NODE,
             title: '',
             arguments: [this]
         };

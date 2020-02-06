@@ -1,20 +1,15 @@
 export class Constants {
-    // * Strings and other constants
     public static PUBLISHER: string = "boltex";
-
     public static NAME: string = "leointeg";
-
-    public static CONFIGURATION_SECTION_NAME = "leoIntegration";
-
+    public static CONFIGURATION_SECTION = "leoIntegration";
+    public static TREEVIEW_ID: string = Constants.CONFIGURATION_SECTION;
+    public static TREEVIEW_EXPLORER_ID: string = Constants.CONFIGURATION_SECTION + "Explorer";
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_TYPE_EXTENSION: string = "leo";
     public static URI_SCHEME: string = "leo";
     public static URI_SCHEME_HEADER: string = "leo:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
-
-    public static STATUSBAR_COLOR: string = "#fb7c47";
-    public static STATUSBAR_STRING: string = "$(keyboard)"; // 🦁 Lion Face Icon ?
 
     public static DEFAULT_PYTHON: string = "python3";
     public static WIN32_PYTHON: string = "py";
@@ -25,16 +20,31 @@ export class Constants {
     public static TCPIP_DEFAULT_ADDRESS: string = "localhost";
 
     public static INTERFACE = {
-        STATUSBAR_LITERATE: "",
-        STATUSBAR_TOOLTIP_ON: "",
-        STATUSBAR_TOOLTIP_OFF: ""
-    }
+        STATUSBAR_COLOR: "#fb7c47",
+        STATUSBAR_STRING: "$(keyboard)", // $(keyboard), Literate, or 🦁 Lion Face Icon
+        QUICK_OPEN_LEO_COMMANDS: ">leo: ",
+        EXPLORER_TREEVIEW_PREFIX: "LEO ",
+        TREEVIEW_TITLE: "OUTLINE",
+        TREEVIEW_TITLE_NOT_CONNECTED: "NOT CONNECTED",
+        TREEVIEW_TITLE_CONNECTED: "CONNECTED",
+        THEME_STATUSBAR: "statusBar.foreground"
+    };
 
-    public static CONTEXT_FLAGS = {
-        BRIDGE_READY: "leoBridgeReady",
-        TREE_OPENED: "leoTreeOpened",
-        SERVER_STARTED: "leoServerStarted",
-        DISCONNECTED: "leoDisconnected",
+    public static USER_MESSAGES = {
+        FILE_ALREADY_OPENED: "Leo file already opened",
+        STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect",
+        STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off",
+        PROMPT_EDIT_HEADLINE: "Edit Headline",
+        PROMPT_INSERT_NODE: "Insert Node",
+        DEFAULT_HEADLINE: "New Headline",
+        START_SERVER_ERROR: "Error - Cannot start Server: ",
+        CONNECT_ERROR: "Leo Bridge Connection Error: Incorrect id",
+        CONNECTED: "Connected",
+        DISCONNECTED: "Disconnected"
+    };
+
+    public static CONFIGURATION = {
+        INVERT_NODES: "invertNodeContrast",
         TREE_IN_EXPLORER: "treeInExplorer",
         SHOW_OPEN_ASIDE: "showOpenAside",
         SHOW_ARROWS: "showArrowsOnNodes",
@@ -42,6 +52,28 @@ export class Constants {
         SHOW_MARK: "showMarkOnNodes",
         SHOW_CLONE: "showCloneOnNodes",
         SHOW_COPY: "showCopyOnNodes",
+        TREE_KEEP_FOCUS: "treeKeepFocus",
+        TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
+        BODY_EDIT_DELAY: "bodyEditDelay",
+        LEO_PYTHON_COMMAND: "leoPythonCommand",
+        AUTO_START_SERVER: "startServerAutomatically",
+        AUTO_CONNECT: "connectToServerAutomatically",
+        IP_ADDRESS: "connectionAddress",
+        IP_PORT: "connectionPort",
+    };
+
+    public static CONTEXT_FLAGS = {
+        BRIDGE_READY: "leoBridgeReady",
+        TREE_OPENED: "leoTreeOpened",
+        SERVER_STARTED: "leoServerStarted",
+        DISCONNECTED: "leoDisconnected",
+        TREE_IN_EXPLORER: Constants.CONFIGURATION.TREE_IN_EXPLORER,
+        SHOW_OPEN_ASIDE: Constants.CONFIGURATION.SHOW_OPEN_ASIDE,
+        SHOW_ARROWS: Constants.CONFIGURATION.SHOW_ARROWS,
+        SHOW_ADD: Constants.CONFIGURATION.SHOW_ADD,
+        SHOW_MARK: Constants.CONFIGURATION.SHOW_MARK,
+        SHOW_CLONE: Constants.CONFIGURATION.SHOW_CLONE,
+        SHOW_COPY: Constants.CONFIGURATION.SHOW_COPY,
         LEO_SELECTED: "leoObjectSelected",
         SELECTED_MARKED: "leoNodeMarked",
         SELECTED_UNMARKED: "leoNode"
@@ -86,7 +118,8 @@ export class Constants {
 
     public static VSCODE_COMMANDS = {
         SET_CONTEXT: "setContext",
-        CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor"
+        CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
+        QUICK_OPEN: "workbench.action.quickOpen"
     };
 
     public static LEOINTEG_COMMANDS = {
