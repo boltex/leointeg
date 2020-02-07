@@ -83,7 +83,7 @@ export class LeoIntegration {
     private _leoTextDocumentNodesRef: { [gnx: string]: { node: LeoNode; refreshCount: number; } } = {}; // Kept updated in the apToLeoNode function
 
     // * Log Pane
-    public leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel("Leo Log Window"); // Copy-pasted from leo's log pane
+    public leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(Constants.INTERFACE.LOG_PANE_TITLE); // Copy-pasted from leo's log pane
 
     // * Status Bar
     public leoStatusBarItem: vscode.StatusBarItem;
@@ -187,9 +187,6 @@ export class LeoIntegration {
 
         // * Start server and / or connect to it (as specified in settings)
         this.startNetworkServices(); // TODO : Maybe start from extension.ts instead
-
-        console.log('Constants:', Constants.CONTEXT_FLAGS);
-
     }
 
     public startNetworkServices(): void {
@@ -219,7 +216,7 @@ export class LeoIntegration {
 
     public connect(): void {
         if (this.leoBridgeReady || this.leoIsConnecting) {
-            console.log('Already connected');
+            console.warn('Already connected');
             return;
         }
         this.leoIsConnecting = true;
@@ -674,8 +671,6 @@ export class LeoIntegration {
     }
 
     public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean | undefined): Thenable<boolean> {
-        console.log('SELECT');
-
         // * User has selected a node via mouse click or 'enter' keypress in the outline
         // otherwise flag p_internalCall if used internally
         if (!p_internalCall) {
@@ -683,8 +678,8 @@ export class LeoIntegration {
             this._lastOperationSelectedBody = true;
             // if (!this._leoTextDocumentNodesRef[p_node.gnx]) {
             this._leoTextDocumentNodesRef[p_node.gnx] = { // TODO : CENTRALIZE in leoOutline.ts
-                "node": p_node,
-                "refreshCount": this.outlineRefreshCount
+                node: p_node,
+                refreshCount: this.outlineRefreshCount
             };
             // }
             this.leoObjectSelected = true; // Just Selected a node
@@ -809,7 +804,10 @@ export class LeoIntegration {
         }
         // Trigger event to save previous document just in in case (if timer to save is already started for another document)
         this._triggerBodySave();
-        this._leoTextDocumentNodesRef[p_node.gnx] = { node: p_node, refreshCount: this.outlineRefreshCount };
+        this._leoTextDocumentNodesRef[p_node.gnx] = {
+            node: p_node,
+            refreshCount: this.outlineRefreshCount
+        };
         return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
             if (!this.config.treeKeepFocusWhenAside) {
                 this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, p_node.apJson).then((p_answer: LeoBridgePackage) => {
@@ -818,7 +816,10 @@ export class LeoIntegration {
                     if (this._leoTextDocumentNodesRef[p_node.gnx]) {
                         this._leoTextDocumentNodesRef[p_node.gnx].node = p_selectedNode;
                     } else {
-                        this._leoTextDocumentNodesRef[p_node.gnx] = { node: p_selectedNode, refreshCount: this.outlineRefreshCount };
+                        this._leoTextDocumentNodesRef[p_node.gnx] = {
+                            node: p_selectedNode,
+                            refreshCount: this.outlineRefreshCount
+                        };
                     }
                     this.reveal(p_selectedNode, { select: true, focus: false });
                 });
@@ -1149,7 +1150,10 @@ export class LeoIntegration {
                 // * set body URI for body filesystem
                 this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_selectedLeoNode.gnx);
                 // * set up first gnx<->leoNode reference
-                this._leoTextDocumentNodesRef[p_selectedLeoNode.gnx] = { node: p_selectedLeoNode, refreshCount: this.outlineRefreshCount };
+                this._leoTextDocumentNodesRef[p_selectedLeoNode.gnx] = {
+                    node: p_selectedLeoNode,
+                    refreshCount: this.outlineRefreshCount
+                };
                 // * First StatusBar appearance
                 this._updateLeoObjectSelected();
                 this.leoStatusBarItem.show();
@@ -1210,8 +1214,6 @@ export class LeoIntegration {
 
     public test(): void {
         if (this.fileOpenedReady) {
-            console.log('Constants:', Constants.CONTEXT_FLAGS);
-
             // this._showLeoCommands();
             // console.log("sending test 'getSelectedNode'");
             // * if no parameter required, still send "{}"

@@ -1,7 +1,9 @@
 export class Constants {
+
     public static PUBLISHER: string = "boltex";
     public static NAME: string = "leointeg";
     public static CONFIGURATION_SECTION = "leoIntegration";
+
     public static TREEVIEW_ID: string = Constants.CONFIGURATION_SECTION;
     public static TREEVIEW_EXPLORER_ID: string = Constants.CONFIGURATION_SECTION + "Explorer";
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
@@ -27,6 +29,7 @@ export class Constants {
         TREEVIEW_TITLE: "OUTLINE",
         TREEVIEW_TITLE_NOT_CONNECTED: "NOT CONNECTED",
         TREEVIEW_TITLE_CONNECTED: "CONNECTED",
+        LOG_PANE_TITLE: "Leo Log Window",
         THEME_STATUSBAR: "statusBar.foreground"
     };
 

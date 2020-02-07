@@ -7,18 +7,6 @@ import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 
 /*
 
-TODO : Status bar color and text should be user settings
-
-TODO : React to file changes and other events: see https://github.com/leo-editor/leo-editor/issues/1281
-
-TODO - Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
-TODO : ('Real Clipboard') Use globals.gui.clipboard and the real clipboard with g.app.gui.getTextFromClipboard()
-TODO : ('Real Clipboard') For pasting, use g.app.gui.replaceClipboardWith(p_realClipboard)
-
-TODO : Commands that create nodes from selected text
-- Extract
-- Extract-Names
-
 TODO : Commands that use the 'marked' property of nodes
 - copy-marked _Copies all marked nodes as children of a new node._
 - diff-marked-nodes
