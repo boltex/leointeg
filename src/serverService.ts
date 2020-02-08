@@ -6,37 +6,39 @@ import * as os from 'os';
 
 export class ServerService {
     // * Provides automatic leo bridge server startup service
-
     // TODO : Issue https://github.com/boltex/leointeg/issues/10
     // See https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts#L196
 
-    constructor(private _context: vscode.ExtensionContext) { }
+    private _platform: string;
+    private _isWin32: boolean;
+
+    constructor(private _context: vscode.ExtensionContext) {
+        this._platform = os.platform();
+        this._isWin32 = this._platform === "win32";
+    }
 
     public startServer(p_serverProcess: child.ChildProcess | undefined, p_leoPythonCommand: string): Promise<any> {
         // * Get command from settings or best command for the current OS
         let w_pythonPath = "";
         const w_serverScriptPath = this._context.extensionPath + Constants.SERVER_PATH;
-        const w_platform: string = os.platform();
         if (p_leoPythonCommand && p_leoPythonCommand.length) {
             // Start by running command (see executeCommand for multiple useful snippets)
+            w_pythonPath = p_leoPythonCommand; // Set path
             console.log('Starting server with command: ' + p_leoPythonCommand);
-            // Set path
-            w_pythonPath = p_leoPythonCommand;
         } else {
             w_pythonPath = Constants.DEFAULT_PYTHON;
-
-            if (w_platform === "win32") {
+            if (this._isWin32) {
                 w_pythonPath = Constants.WIN32_PYTHON;
             }
-            console.log('Launch with default command : ' +
-                w_pythonPath + ((w_platform === "win32" && w_pythonPath === "py") ? " -3 " : "") +
+            console.log('Starting server with command : ' +
+                w_pythonPath + ((this._isWin32 && w_pythonPath === "py") ? " -3 " : "") +
                 " " + w_serverScriptPath);
         }
 
         const w_serverStartPromise = new Promise((resolve, reject) => {
             // * Spawn a python child process for a leoBridge server
             let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
-            if (os.platform() === "win32" && w_pythonPath === "py") {
+            if (this._isWin32 && w_pythonPath === "py") {
                 w_args.push("-3");
             }
             w_args.push(w_serverScriptPath);
