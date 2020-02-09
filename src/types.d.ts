@@ -37,3 +37,8 @@ export interface LeoBridgePackage { // TODO : Document
     id: number;
     [key: string]: any;
 }
+
+export interface Icon {
+    light: string;
+    dark: string;
+}

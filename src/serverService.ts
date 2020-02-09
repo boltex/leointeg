@@ -48,7 +48,7 @@ export class ServerService {
                 data.toString().split("\n").forEach(p_line => {
                     p_line = p_line.trim();
                     if (p_line) { // * std out process line by line: json shouldn't have line breaks
-                        if (p_line.startsWith('LeoBridge started')) {
+                        if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
                             resolve(p_line); // * Server confirmed started
                         }
                         console.log("leoBridge: ", p_line); // Output message anyways
@@ -58,13 +58,13 @@ export class ServerService {
             // * Capture other python process outputs
             p_serverProcess.stderr.on("data", (data: string) => {
                 console.log(`stderr: ${data}`);
-                vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+                vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                 p_serverProcess = undefined;
                 reject(`stderr: ${data}`);
             });
             p_serverProcess.on("close", (code: any) => {
                 console.log(`leoBridge exited with code ${code}`);
-                vscode.commands.executeCommand('setContext', Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+                vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                 p_serverProcess = undefined;
                 reject(`leoBridge exited with code ${code}`);
             });

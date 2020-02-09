@@ -16,12 +16,16 @@ export class Constants {
     public static DEFAULT_PYTHON: string = "python3";
     public static WIN32_PYTHON: string = "py";
     public static SERVER_PATH: string = "/leobridgeserver.py";
+    public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
 
     public static TCPIP_DEFAULT_PORT: number = 32125;
     public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
     public static TCPIP_DEFAULT_ADDRESS: string = "localhost";
 
     public static INTERFACE = {
+        ICON_LIGHT_PATH: "resources/light/box",
+        ICON_DARK_PATH: "resources/dark/box",
+        ICON_FILE_EXT: ".svg",
         STATUSBAR_COLOR: "#fb7c47",
         STATUSBAR_STRING: "$(keyboard)", // $(keyboard), Literate, or 🦁 Lion Face Icon
         QUICK_OPEN_LEO_COMMANDS: ">leo: ",
@@ -41,9 +45,12 @@ export class Constants {
         PROMPT_INSERT_NODE: "Insert Node",
         DEFAULT_HEADLINE: "New Headline",
         START_SERVER_ERROR: "Error - Cannot start Server: ",
+        CONNECT_FAILED: "Leo Bridge Connection Failed",
         CONNECT_ERROR: "Leo Bridge Connection Error: Incorrect id",
         CONNECTED: "Connected",
-        DISCONNECTED: "Disconnected"
+        ALREADY_CONNECTED: "Already Connected",
+        DISCONNECTED: "Disconnected",
+        CLOSE_ERROR: "Cannot close. No Files Opened."
     };
 
     public static CONFIGURATION = {
@@ -92,6 +99,7 @@ export class Constants {
         GET_SELECTED_NODE: "getSelectedNode",
         SET_SELECTED_NODE: "setSelectedNode",
         SET_BODY: "setBody",
+        SET_HEADLINE: "setNewHeadline",
         EXPAND_NODE: "expandNode",
         COLLAPSE_NODE: "collapseNode",
         OPEN_FILE: "openFile",
