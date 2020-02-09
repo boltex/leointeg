@@ -79,6 +79,8 @@ export class LeoNode extends vscode.TreeItem {
 
     // * some smaller grayed-out text accompanying the main label
     // get description(): string {
+    //   const w_ap: ArchivedPosition = JSON.parse(this.apJson);
+    //   return "child:" + w_ap.childIndex + " gnx:" + w_ap.gnx + " lvl:" + w_ap.level;
     //   return "here's a description";
     // }
 }
