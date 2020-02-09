@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import * as child from 'child_process';
 import { Constants } from "./constants";
 import { LeoBridgePackage, RevealType, ArchivedPosition, Icon } from "./types";
+import { Utils } from "./utils";
 import { LeoFiles } from "./leoFiles";
 import { LeoNode } from "./leoNode";
 import { LeoOutlineProvider } from "./leoOutline";
@@ -11,7 +12,7 @@ import { Config } from "./config.interface";
 import { ServerService } from "./serverService";
 
 export class LeoIntegration {
-    // * Leo Editor Integration with Visual Studio Code
+    private _utils: Utils; // String and other structures construction helper-functions
 
     // * Status Flags
     public fileOpenedReady: boolean = false;
@@ -115,11 +116,13 @@ export class LeoIntegration {
     private _bodyLastChangedDocument: vscode.TextDocument | undefined;
 
     constructor(private _context: vscode.ExtensionContext) {
+        this._utils = new Utils();
+
         // * Get configuration settings
         this._getLeoIntegSettings();
 
         // * Build Icon filename paths
-        this.icons = this._buildIconPaths();
+        this.icons = this._utils.buildIconPaths(_context);
 
         // * File Browser
         this._leoFilesBrowser = new LeoFiles(_context);
@@ -178,19 +181,6 @@ export class LeoIntegration {
 
         // * Start server and / or connect to it (as specified in settings)
         this.startNetworkServices(); // TODO : Maybe start from extension.ts instead
-    }
-
-    private _padNumber(p_number: number): string {
-        return ("0" + p_number).slice(-2);
-    }
-
-    private _buildIconPaths(): Icon[] {
-        return Array(16).fill("").map((p_val, p_index) => {
-            return {
-                light: this._context.asAbsolutePath(Constants.INTERFACE.ICON_LIGHT_PATH + this._padNumber(p_index) + Constants.INTERFACE.ICON_FILE_EXT),
-                dark: this._context.asAbsolutePath(Constants.INTERFACE.ICON_DARK_PATH + this._padNumber(p_index) + Constants.INTERFACE.ICON_FILE_EXT)
-            };
-        });
     }
 
     public startNetworkServices(): void {
@@ -253,18 +243,14 @@ export class LeoIntegration {
             vscode.window.showInformationMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
         }
         this.setTreeViewTitle(Constants.INTERFACE.TREEVIEW_TITLE_NOT_CONNECTED);
-
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, false);
         this.fileOpenedReady = false;
-
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, false);
         this.leoBridgeReady = false;
-
         this.leoIsConnecting = false;
         this._leoBridgeReadyPromise = undefined;
         this.leoObjectSelected = false;
         this._updateLeoObjectSelected();
-
         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
     }
 
@@ -976,12 +962,6 @@ export class LeoIntegration {
         }
     }
 
-    private _buildHeadlineJson(p_nodeJson: string, p_headline: string): string {
-        return "{\"node\":" + p_nodeJson +
-            ", \"headline\": \"" + p_headline +
-            "\"}";
-    }
-
     public editHeadline(p_node?: LeoNode, p_isSelectedNode?: boolean) {
         if (this._leoBridgeActionBusy) {
             // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
@@ -1000,7 +980,7 @@ export class LeoIntegration {
                     .then(p_newHeadline => {
                         if (p_newHeadline) {
                             p_node!.label = p_newHeadline; // ! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
-                            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_HEADLINE, this._buildHeadlineJson(p_node!.apJson, p_newHeadline))
+                            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_HEADLINE, this._utils.buildHeadlineJson(p_node!.apJson, p_newHeadline))
                                 .then((p_answer: LeoBridgePackage) => {
                                     if (p_isSelectedNode) {
                                         this._forceBodyFocus = true;
@@ -1079,7 +1059,7 @@ export class LeoIntegration {
                 vscode.window.showInputBox(this._newHeadlineInputOptions)
                     .then(p_newHeadline => {
                         const w_action = p_newHeadline ? Constants.LEOBRIDGE_ACTIONS.INSERT_NAMED_PNODE : Constants.LEOBRIDGE_ACTIONS.INSERT_PNODE;
-                        const w_para = p_newHeadline ? this._buildHeadlineJson(w_node!.apJson, p_newHeadline) : w_node.apJson;
+                        const w_para = p_newHeadline ? this._utils.buildHeadlineJson(w_node!.apJson, p_newHeadline) : w_node.apJson;
                         this.leoBridge.action(w_action, w_para)
                             .then(p_package => {
                                 this.leoFileSystem.addGnx(p_package.node.gnx);
