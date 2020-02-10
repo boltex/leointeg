@@ -3,13 +3,13 @@ import * as child from 'child_process';
 import { Constants } from "./constants";
 import { LeoBridgePackage, RevealType, ArchivedPosition, Icon } from "./types";
 import { Utils } from "./utils";
+import { Config } from "./config";
 import { LeoFiles } from "./leoFiles";
 import { LeoNode } from "./leoNode";
 import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyProvider } from "./leoBody";
 import { LeoBridge } from "./leoBridge";
-import { Config } from "./config.interface";
-import { ServerService } from "./serverService";
+import { ServerService } from "./serverManager";
 
 export class LeoIntegration {
     private _utils: Utils; // String and other structures construction helper-functions
@@ -26,26 +26,7 @@ export class LeoIntegration {
     private _lastOperationChangedTree: boolean = true; // Refresh helper : (maybe unneeded) Structure may have changed, as opposed to selecting, opening aside, expanding and collapsing
 
     // * Configuration Settings
-    private _isSettingConfig: boolean = false;
-    public config: Config = {
-        treeKeepFocus: true,
-        treeKeepFocusWhenAside: false,
-        treeInExplorer: true,
-        showOpenAside: true,
-        statusBarString: "",
-        showArrowsOnNodes: false,
-        showAddOnNodes: false,
-        showMarkOnNodes: false,
-        showCloneOnNodes: false,
-        showCopyOnNodes: false,
-        invertNodeContrast: false,
-        bodyEditDelay: 500,
-        leoPythonCommand: "",
-        startServerAutomatically: true,
-        connectToServerAutomatically: true,
-        connectionAddress: Constants.TCPIP_DEFAULT_ADDRESS,
-        connectionPort: Constants.TCPIP_DEFAULT_PORT
-    };
+    public config: Config;
 
     // * Icon Paths
     public icons: Icon[] = [];
@@ -119,7 +100,8 @@ export class LeoIntegration {
         this._utils = new Utils();
 
         // * Get configuration settings
-        this._getLeoIntegSettings();
+        this.config = new Config(_context);
+        this.config.getLeoIntegSettings();
 
         // * Build Icon filename paths
         this.icons = this._utils.buildIconPaths(_context);
@@ -254,69 +236,10 @@ export class LeoIntegration {
         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
     }
 
-    public setLeoIntegSettings(p_changes: { code: string, value: any }[]): Promise<void> {
-        // also returns as a promise in case additional procedures need to be run on completion
-        this._isSettingConfig = true;
-        const w_promises: Thenable<void>[] = [];
-        const w_vscodeConfig = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION);
-
-        p_changes.forEach(change => {
-            if (w_vscodeConfig.inspect(change.code)!.defaultValue === change.value) {
-                // set as undefined - same as default
-                w_promises.push(w_vscodeConfig.update(change.code, undefined, true));
-                // console.log("clearing ", change.code, "to undefined");
-            } else {
-                // set as value which is not default
-                w_promises.push(w_vscodeConfig.update(change.code, change.value, true));
-                // console.log("setting ", change.code, "to ", change.value);
-            }
-        });
-
-        return Promise.all(w_promises).then(() => {
-            this._isSettingConfig = false;
-            this._getLeoIntegSettings();
-        });
-    }
-
-    private _getLeoIntegSettings(): void {
-        if (this._isSettingConfig) {
-            return; // * Currently setting config, wait until its done all, and this will be called automatically
-        } else {
-            // * Graphic and theme settings
-            this.config.invertNodeContrast = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.INVERT_NODES, false);
-            // * Interface elements visibility
-            this.config.treeInExplorer = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.TREE_IN_EXPLORER, true);
-            this.config.showOpenAside = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_OPEN_ASIDE, true);
-            this.config.showArrowsOnNodes = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_ARROWS, false);
-            this.config.showAddOnNodes = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_ADD, false);
-            this.config.showMarkOnNodes = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_MARK, false);
-            this.config.showCloneOnNodes = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_CLONE, false);
-            this.config.showCopyOnNodes = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_COPY, false);
-            // * Interface settings
-            this.config.treeKeepFocus = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.TREE_KEEP_FOCUS, true);
-            this.config.treeKeepFocusWhenAside = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.TREE_KEEP_FOCUS_WHEN_ASIDE, false);
-            this.config.bodyEditDelay = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.BODY_EDIT_DELAY, 500);
-            // * Server and connection automation
-            this.config.leoPythonCommand = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.LEO_PYTHON_COMMAND, "");
-            this.config.startServerAutomatically = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.AUTO_START_SERVER, true);
-            this.config.connectToServerAutomatically = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.AUTO_CONNECT, true);
-            this.config.connectionAddress = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.IP_ADDRESS, Constants.TCPIP_DEFAULT_ADDRESS); // 'ws://'
-            this.config.connectionPort = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.IP_PORT, Constants.TCPIP_DEFAULT_PORT); // 32125
-            // * Set context for tree items visibility that are based on config options
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_IN_EXPLORER, this.config.treeInExplorer);
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_OPEN_ASIDE, this.config.showOpenAside);
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_ARROWS, this.config.showArrowsOnNodes);
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_ADD, this.config.showAddOnNodes);
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_MARK, this.config.showMarkOnNodes);
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_CLONE, this.config.showCloneOnNodes);
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_COPY, this.config.showCopyOnNodes);
-        }
-    }
-
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
         if (p_event.affectsConfiguration(Constants.CONFIGURATION_SECTION)) {
             // console.log('Detected Change of vscode config in leoIntegration !');
-            this._getLeoIntegSettings();
+            this.config.getLeoIntegSettings();
         }
     }
 
@@ -452,34 +375,28 @@ export class LeoIntegration {
         }
     }
 
-    private _onChangeEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void {
-        // * This trigger when shifting editors through closing/inserting editors or closing columns
-        // * No effect when dragging editor tabs: it just closes and reopens in other column, see 'onChangeVisibleEditors'
-    }
+    // * This trigger when shifting editors through closing/inserting editors or closing columns
+    // * No effect when dragging editor tabs: it just closes and reopens in other column, see 'onChangeVisibleEditors'
+    private _onChangeEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void { }
 
-    private _onChangeVisibleEditors(p_event: vscode.TextEditor[]): void {
-        // * Triggers when a different text editor in any column, either tab or body, is focused
-        // * This is also what triggers after drag and drop, see onChangeEditorViewColumn
-        // console.log('onDidChangeVisibleTextEditors:', p_event.length);
-    }
+    // * Triggers when a different text editor in any column, either tab or body, is focused
+    // * This is also what triggers after drag and drop, see onChangeEditorViewColumn
+    private _onChangeVisibleEditors(p_event: vscode.TextEditor[]): void { }
 
-    private _onChangeWindowState(p_event: vscode.WindowState): void {
-        // * Triggers when a vscode window have gained or lost focus
-    }
+    // * Triggers when a vscode window have gained or lost focus
+    private _onChangeWindowState(p_event: vscode.WindowState): void { }
 
-    private _onDocumentSaved(p_event: vscode.TextDocument): void {
-        // * Edited and saved the document, does it on any document in editor
-    }
+    // * Edited and saved the document, does it on any document in editor
+    private _onDocumentSaved(p_event: vscode.TextDocument): void { }
 
     private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
         // * Edited the document: ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
-        if (p_event.document.uri.scheme === Constants.URI_SCHEME && p_event.contentChanges.length) {
-
+        if ((p_event.document.uri.scheme === Constants.URI_SCHEME) && p_event.contentChanges.length) {
+            // * check if there's a document already pending changes, and if it's a different one: 'force save' it!
             if (this._bodyLastChangedDocument && (p_event.document.uri.fsPath !== this._bodyLastChangedDocument.uri.fsPath)) {
                 // console.log('Switched Node while waiting edit debounce!');
                 this._triggerBodySave(true); //Set p_forcedRefresh flag, this will also have cleared timeout
             }
-
             // * Instant tree node refresh trick: If icon should change then do it now, but only if there was no document edits pending
             if (!this._bodyChangeTimeout && !this._bodyChangeTimeoutSkipped) {
                 if (this._lastSelectedLeoNode && p_event.document.uri.fsPath.substr(1) === this._lastSelectedLeoNode.gnx) {
@@ -491,7 +408,6 @@ export class LeoIntegration {
                     }
                 }
             }
-
             this._bodyChangeTimeoutSkipped = false;
             let w_delay = this.config.bodyEditDelay; // debounce by restarting the timeout
             if (this._bodyChangeTimeout) {
@@ -1171,12 +1087,9 @@ export class LeoIntegration {
         if (this.leoObjectSelected && this.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
             this.leoStatusBarItem.color = Constants.INTERFACE.STATUSBAR_COLOR;
             this.leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
-            // this.leoStatusBarItem.text = Constants.LEO_STATUSBAR_STRING; // `$(keyboard) Literate `;
-            // this.leoStatusBarItem.show();
         } else {
             this.leoStatusBarItem.color = this.statusbarNormalColor;
             this.leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_OFF;
-            // this.leoStatusBarItem.hide();
         }
     }
 
@@ -1197,9 +1110,6 @@ export class LeoIntegration {
 
     public test(): void {
         if (this.fileOpenedReady) {
-            // this._showLeoCommands();
-            // console.log("sending test 'getSelectedNode'");
-            // * if no parameter required, still send "{}"
             this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_SELECTED_NODE)
                 .then((p_answer: LeoBridgePackage) => {
                     console.log("Test got Back from getSelectedNode, now revealing :", p_answer.node.headline, p_answer.node.childIndex);
@@ -1212,14 +1122,6 @@ export class LeoIntegration {
                         this._showLeoCommands(); // lol
                     });
                 });
-
-            // .then(() => {
-            //     console.log("...now testing documentManager ");
-            //     return this.documentManager.countOpen();
-            // })
-            // .then(p_docResult => {
-            //     console.log("Back from doc manager", p_docResult);
-            // });
         } else {
             vscode.window.showInformationMessage("Click the folder icon on the Leo Outline sidebar to open a Leo file");
         }

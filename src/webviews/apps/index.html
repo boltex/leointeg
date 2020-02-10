@@ -267,14 +267,27 @@
             </div>
             <div class="setting">
               <div class="setting__input">
+                <label for="statusBarString">Message for Status Bar Indicator</label>
                 <input id="statusBarString"
                        name="statusBarString"
                        type="text"
                        maxlength="8"
+                       placeholder="Status text"
                        data-setting />
-                <label for="statusBarString">Message for Status Bar Indicator</label>
               </div>
-              <span class="setting__hint">'Literate' indicator message</span>
+              <span class="setting__hint">Keybindings 'on' indicator message</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <label for="statusBarColor">Color Code for Status Bar Indicator</label>
+                <input id="statusBarColor"
+                       name="statusBarColor"
+                       type="text"
+                       maxlength="6"
+                       placeholder="RrGgBb"
+                       data-setting />
+              </div>
+              <span class="setting__hint">Keybindings 'on' indicator color</span>
             </div>
           </div>
         </div>

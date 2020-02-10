@@ -1,3 +1,24 @@
+export interface ConfigMembers {
+    treeKeepFocus: boolean;
+    treeKeepFocusWhenAside: boolean;
+    statusBarString: string;
+    statusBarColor: string;
+    treeInExplorer: boolean;
+    showOpenAside: boolean;
+    showArrowsOnNodes: boolean;
+    showAddOnNodes: boolean;
+    showMarkOnNodes: boolean;
+    showCloneOnNodes: boolean;
+    showCopyOnNodes: boolean;
+    invertNodeContrast: boolean;
+    bodyEditDelay: number;
+    leoPythonCommand: string;
+    startServerAutomatically: boolean;
+    connectToServerAutomatically: boolean;
+    connectionAddress: string;
+    connectionPort: number;
+}
+
 export const enum RevealType { // TODO : Document
     NoReveal = 0,
     Reveal,

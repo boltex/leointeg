@@ -26,8 +26,8 @@ export class Constants {
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
-        STATUSBAR_COLOR: "#fb7c47",
-        STATUSBAR_STRING: "$(keyboard)", // $(keyboard), Literate, or 🦁 Lion Face Icon
+        STATUSBAR_COLOR: "#fb7c47", // TODO : maybe get from config instead
+        STATUSBAR_STRING: "$(keyboard)🦁", // TODO : maybe rename or get from config instead
         QUICK_OPEN_LEO_COMMANDS: ">leo: ",
         EXPLORER_TREEVIEW_PREFIX: "LEO ",
         TREEVIEW_TITLE: "OUTLINE",
@@ -39,8 +39,8 @@ export class Constants {
 
     public static USER_MESSAGES = {
         FILE_ALREADY_OPENED: "Leo file already opened",
-        STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect",
-        STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off",
+        STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect", // TODO : Add description of what happens if clicked
+        STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
         PROMPT_EDIT_HEADLINE: "Edit Headline",
         PROMPT_INSERT_NODE: "Insert Node",
         DEFAULT_HEADLINE: "New Headline",
@@ -54,7 +54,10 @@ export class Constants {
     };
 
     public static CONFIGURATION = {
-        INVERT_NODES: "invertNodeContrast",
+        TREE_KEEP_FOCUS: "treeKeepFocus",
+        TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
+        STATUSBAR_STRING: "statusBarString",
+        STATUSBAR_COLOR: "statusBarColor",
         TREE_IN_EXPLORER: "treeInExplorer",
         SHOW_OPEN_ASIDE: "showOpenAside",
         SHOW_ARROWS: "showArrowsOnNodes",
@@ -62,8 +65,7 @@ export class Constants {
         SHOW_MARK: "showMarkOnNodes",
         SHOW_CLONE: "showCloneOnNodes",
         SHOW_COPY: "showCopyOnNodes",
-        TREE_KEEP_FOCUS: "treeKeepFocus",
-        TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
+        INVERT_NODES: "invertNodeContrast",
         BODY_EDIT_DELAY: "bodyEditDelay",
         LEO_PYTHON_COMMAND: "leoPythonCommand",
         AUTO_START_SERVER: "startServerAutomatically",

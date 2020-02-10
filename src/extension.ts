@@ -5,32 +5,6 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 
-/*
-
-TODO : Commands that use the 'marked' property of nodes
-- copy-marked _Copies all marked nodes as children of a new node._
-- diff-marked-nodes
-- goto-next-marked
-- mark-changed-items
-- mark-subheads
-- unmark-all
-- clone-marked-nodes
-- delete-marked-nodes
-- move-marked-nodes
-
-TODO : Commands that move clones of all nodes matching the search pattern under a single organizer node, created as the last top-level node.
-- cfa clone-find-all
-- cff clone-find-all-flattened (Flattened searches put all nodes as direct children of the organizer node)
-
-TODO : 'Clone-marked' commands that move clones of all marked nodes under an organizer node.
-- cfam clone-find-marked
-- cffm clone-find-flattened-marked
-
-TODO : hoist, de-hoist & other leo commands
-- Hoist, Hoist selection, dehoist
-
-*/
-
 export function activate(context: vscode.ExtensionContext) {
     const start = process.hrtime(); // For calculating total startup time duration
 

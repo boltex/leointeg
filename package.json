@@ -51,6 +51,18 @@
           "type": "boolean",
           "description": "Specifies whether to keep focus in the outline when opening a body pane on the side"
         },
+        "leoIntegration.statusBarString": {
+          "scope": "application",
+          "default": "Literate",
+          "type": "string",
+          "description": "Sets the message string of the Status Bar Indicator"
+        },
+        "leoIntegration.statusBarColor": {
+          "scope": "application",
+          "default": "fb7c47",
+          "type": "string",
+          "description": "Specifies the hexadecimal color string for the Status Bar Indicator"
+        },
         "leoIntegration.treeInExplorer": {
           "scope": "application",
           "default": true,

@@ -67,7 +67,7 @@ export class LeoSettingsWebview {
                                 break;
                             case 'config':
                                 this._waitingForUpdate = true;
-                                this._leoIntegration.setLeoIntegSettings(message.changes).then(() => {
+                                this._leoIntegration.config.setLeoIntegSettings(message.changes).then(() => {
                                     this._panel!.webview.postMessage({ command: 'vscodeConfig', config: this._leoIntegration.config });
                                     this._waitingForUpdate = false;
                                 });
