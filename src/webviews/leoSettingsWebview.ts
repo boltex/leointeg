@@ -21,7 +21,7 @@ export class LeoSettingsWebview {
 
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
         if (this._panel && !this._waitingForUpdate) {
-            this._panel.webview.postMessage({ command: 'config', config: this._leoIntegration.config });
+            this._panel.webview.postMessage({ command: 'config', config: this._leoIntegration.config.getConfig() });
         }
     }
 
@@ -51,7 +51,7 @@ export class LeoSettingsWebview {
                 ).replace(
                     /#{endOfBody}/g,
                     `<script type="text/javascript" nonce="Z2l0bGV1cy1ib290c3RyYXA=">window.leoConfig = ${JSON.stringify(
-                        this._leoIntegration.config
+                        this._leoIntegration.config.getConfig()
                     )};</script>`
                 );
                 this._panel.webview.onDidReceiveMessage(
@@ -62,13 +62,13 @@ export class LeoSettingsWebview {
                                 break;
                             case 'getNewConfig':
                                 if (this._panel && !this._waitingForUpdate) {
-                                    this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config });
+                                    this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
                                 }
                                 break;
                             case 'config':
                                 this._waitingForUpdate = true;
                                 this._leoIntegration.config.setLeoIntegSettings(message.changes).then(() => {
-                                    this._panel!.webview.postMessage({ command: 'vscodeConfig', config: this._leoIntegration.config });
+                                    this._panel!.webview.postMessage({ command: 'vscodeConfig', config: this._leoIntegration.config.getConfig() });
                                     this._waitingForUpdate = false;
                                 });
                                 break;

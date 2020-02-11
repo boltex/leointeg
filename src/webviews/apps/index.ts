@@ -103,7 +103,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
         } else if (element.type === 'number' && (Number(element.value) > Number(element.max) || Number(element.value) < Number(element.min))) {
             // make red
             element.classList.add("is-invalid");
-        } else if (element.type === 'text' && element.value.length < element.maxLength) {
+        } else if (element.type === 'text' && element.value.length <= element.maxLength) {
             frontConfig[element.id] = element.value;
         }
         applyChanges();

@@ -27,6 +27,29 @@ export class Config implements ConfigMembers {
 
     constructor(private _context: vscode.ExtensionContext) { }
 
+    public getConfig(): ConfigMembers {
+        return {
+            treeKeepFocus: this.treeKeepFocus,
+            treeKeepFocusWhenAside: this.treeKeepFocusWhenAside,
+            treeInExplorer: this.treeInExplorer,
+            showOpenAside: this.showOpenAside,
+            statusBarString: this.statusBarString,
+            statusBarColor: this.statusBarColor,
+            showArrowsOnNodes: this.showArrowsOnNodes,
+            showAddOnNodes: this.showAddOnNodes,
+            showMarkOnNodes: this.showMarkOnNodes,
+            showCloneOnNodes: this.showCloneOnNodes,
+            showCopyOnNodes: this.showCopyOnNodes,
+            invertNodeContrast: this.invertNodeContrast,
+            bodyEditDelay: this.bodyEditDelay,
+            leoPythonCommand: this.leoPythonCommand,
+            startServerAutomatically: this.startServerAutomatically,
+            connectToServerAutomatically: this.connectToServerAutomatically,
+            connectionAddress: this.connectionAddress,
+            connectionPort: this.connectionPort,
+        };
+    }
+
     public setLeoIntegSettings(p_changes: { code: string, value: any }[]): Promise<void> {
         // also returns as a promise in case additional procedures need to be run on completion
         this._isSettingConfig = true;
@@ -57,6 +80,8 @@ export class Config implements ConfigMembers {
         } else {
             // * Graphic and theme settings
             this.invertNodeContrast = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.INVERT_NODES, false);
+            this.statusBarString = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.STATUSBAR_STRING, Constants.INTERFACE.STATUSBAR_STRING);
+            this.statusBarColor = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.STATUSBAR_COLOR, Constants.INTERFACE.STATUSBAR_COLOR);
             // * Interface elements visibility
             this.treeInExplorer = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.TREE_IN_EXPLORER, true);
             this.showOpenAside = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_OPEN_ASIDE, true);
