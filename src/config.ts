@@ -1,6 +1,8 @@
 import * as vscode from "vscode";
 import { ConfigMembers } from "./types";
 import { Constants } from "./constants";
+import { Utils } from "./utils";
+
 
 export class Config implements ConfigMembers {
 
@@ -25,7 +27,10 @@ export class Config implements ConfigMembers {
 
     private _isSettingConfig: boolean = false;
 
-    constructor(private _context: vscode.ExtensionContext) { }
+    constructor(
+        private _context: vscode.ExtensionContext,
+        private _utils: Utils) {
+    }
 
     public getConfig(): ConfigMembers {
         return {
@@ -80,8 +85,14 @@ export class Config implements ConfigMembers {
         } else {
             // * Graphic and theme settings
             this.invertNodeContrast = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.INVERT_NODES, false);
-            this.statusBarString = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.STATUSBAR_STRING, Constants.INTERFACE.STATUSBAR_STRING);
-            this.statusBarColor = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.STATUSBAR_COLOR, Constants.INTERFACE.STATUSBAR_COLOR);
+            this.statusBarString = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.STATUSBAR_STRING, Constants.INTERFACE.STATUSBAR_DEFAULT_STRING);
+            if (this.statusBarString.length > 8) {
+                this.statusBarString = Constants.INTERFACE.STATUSBAR_DEFAULT_STRING;
+            }
+            this.statusBarColor = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.STATUSBAR_COLOR, Constants.INTERFACE.STATUSBAR_DEFAULT_COLOR);
+            if (!this._utils.isHexColor(this.statusBarColor)) {
+                this.statusBarColor = Constants.INTERFACE.STATUSBAR_DEFAULT_COLOR;
+            }
             // * Interface elements visibility
             this.treeInExplorer = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.TREE_IN_EXPLORER, true);
             this.showOpenAside = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_OPEN_ASIDE, true);

@@ -26,8 +26,9 @@ export class Constants {
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
-        STATUSBAR_COLOR: "#fb7c47", // TODO : maybe get from config instead
-        STATUSBAR_STRING: "$(keyboard)🦁", // TODO : maybe rename or get from config instead
+        STATUSBAR_DEFAULT_COLOR: "fb7c47",
+        STATUSBAR_DEFAULT_STRING: "Literate", // 🦁
+        STATUSBAR_INDICATOR: "$(keyboard) ",
         QUICK_OPEN_LEO_COMMANDS: ">leo: ",
         EXPLORER_TREEVIEW_PREFIX: "LEO ",
         TREEVIEW_TITLE: "OUTLINE",

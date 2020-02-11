@@ -100,7 +100,7 @@ export class LeoIntegration {
         this._utils = new Utils();
 
         // * Get configuration settings
-        this.config = new Config(_context);
+        this.config = new Config(_context, this._utils);
         this.config.getLeoIntegSettings();
 
         // * Build Icon filename paths
@@ -136,9 +136,9 @@ export class LeoIntegration {
 
         // * Status bar: Show keyboard-Shortcut-Flag to signify Leo keyboard shortcuts are active
         this.leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
-        this.leoStatusBarItem.color = Constants.INTERFACE.STATUSBAR_COLOR;
+        this.leoStatusBarItem.color = this.config.statusBarColor;
         this.leoStatusBarItem.command = "leointeg.test"; // just call test function for now to help debugging
-        this.leoStatusBarItem.text = Constants.INTERFACE.STATUSBAR_STRING;
+        this.leoStatusBarItem.text = Constants.INTERFACE.STATUSBAR_INDICATOR + this.config.statusBarString;
         this.leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
         _context.subscriptions.push(this.leoStatusBarItem);
         this.leoStatusBarItem.hide();
@@ -1084,8 +1084,9 @@ export class LeoIntegration {
             clearTimeout(this._updateStatusBarTimeout);
         }
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.leoObjectSelected);
+        this.leoStatusBarItem.text = Constants.INTERFACE.STATUSBAR_INDICATOR + this.config.statusBarString;
         if (this.leoObjectSelected && this.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
-            this.leoStatusBarItem.color = Constants.INTERFACE.STATUSBAR_COLOR;
+            this.leoStatusBarItem.color = "#" + this.config.statusBarColor;
             this.leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
         } else {
             this.leoStatusBarItem.color = this.statusbarNormalColor;

@@ -24,4 +24,10 @@ export class Utils {
             "\"}";
     }
 
+    public isHexColor(hex: string): boolean {
+        return typeof hex === 'string'
+            && hex.length === 6
+            && !isNaN(Number('0x' + hex));
+    }
+
 }
