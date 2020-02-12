@@ -10,6 +10,7 @@
 <v t="felix.20191126232434.2"><vh>@clean leobridgeserver.py</vh>
 <v t="felix.20191128002414.1"><vh>Imports</vh></v>
 <v t="felix.20191128002417.1"><vh>Constants</vh></v>
+<v t="felix.20200211192548.1"><vh>testPrint</vh></v>
 <v t="felix.20191126232434.4"><vh>class leoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
 <v t="felix.20191126232434.12"><vh>test</vh></v>
@@ -431,6 +432,12 @@ if __name__ == '__main__':
     # start Server
 
     integController = leoBridgeIntegController()
+    asyncTest = ""
+
+    async def asyncInterval(timeout):
+        while True:
+            await asyncio.sleep(timeout)
+            print('Aaaa')
 
     # TODO : This is a basic test loop, fix it with 2 way async comm and error checking
     async def leoBridgeServer(websocket, path):
@@ -456,6 +463,7 @@ if __name__ == '__main__':
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
 
     asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().create_task(asyncInterval(3))
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     asyncio.get_event_loop().run_forever()
     print("Stopping leobridge server")
@@ -729,5 +737,9 @@ wsPort = 32125
         return self.outputError("Error in insertNamedPNode no param w_ap")
 
 </t>
+<t tx="felix.20200211192548.1">def testPrint():
+    print('hello from the test procedure!')
+    
+    </t>
 </tnodes>
 </leo_file>

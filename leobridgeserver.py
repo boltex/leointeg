@@ -14,6 +14,10 @@ wsHost = "localhost"
 wsPort = 32125
 
 
+def testPrint():
+    print('hello from the test procedure!')
+    
+    
 class leoBridgeIntegController:
     '''Leo Bridge Controller'''
 
@@ -537,6 +541,12 @@ def main():
     # start Server
 
     integController = leoBridgeIntegController()
+    asyncTest = ""
+
+    async def asyncInterval(timeout):
+        while True:
+            await asyncio.sleep(timeout)
+            print('Aaaa')
 
     # TODO : This is a basic test loop, fix it with 2 way async comm and error checking
     async def leoBridgeServer(websocket, path):
@@ -562,6 +572,7 @@ def main():
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
 
     asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().create_task(asyncInterval(3))
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     asyncio.get_event_loop().run_forever()
     print("Stopping leobridge server")
