@@ -14,10 +14,6 @@ wsHost = "localhost"
 wsPort = 32125
 
 
-def testPrint():
-    print('hello from the test procedure!')
-    
-    
 class leoBridgeIntegController:
     '''Leo Bridge Controller'''
 
@@ -30,11 +26,22 @@ class leoBridgeIntegController:
                                            verbose=False)     # True: prints messages that would be sent to the log pane.
         self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
         # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
+        self.webSocket = None
 
     def test(self, p_param):
         '''Emit a test'''
         print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param, separators=(',', ':')))
         return self.sendLeoBridgePackage("package", "test string from the response package")
+
+    async def testAsync(self):
+        if(self.webSocket):
+            print("test async websocket")
+            await self.webSocket.send("{\"test\":\"asyncjson\",\"patate\":\"bacon\"}")
+        else:
+            print("not ready yet")
+
+    def initConnection(self, p_webSocket):
+        self.webSocket = p_webSocket
 
     def openFile(self, p_file):
         '''Open a leo file via leoBridge controller'''
@@ -61,6 +68,7 @@ class leoBridgeIntegController:
         if p_key:
             w_package[p_key] = p_any  # add [key]?:any
         return(json.dumps(w_package, separators=(',', ':')))  # send as json
+        # await self.webSocket.send(json.dumps(w_package, separators=(',', ':')))  # send as json
 
     def outputError(self, p_message="Unknown Error"):
         print("ERROR: " + p_message)  # Output to this server's running console
@@ -541,16 +549,18 @@ def main():
     # start Server
 
     integController = leoBridgeIntegController()
-    asyncTest = ""
 
     async def asyncInterval(timeout):
+        strTimeout = str(timeout) + ' sec interval'
         while True:
             await asyncio.sleep(timeout)
-            print('Aaaa')
+            await integController.testAsync() 
+            print(strTimeout)
 
     # TODO : This is a basic test loop, fix it with 2 way async comm and error checking
     async def leoBridgeServer(websocket, path):
         try:
+            integController.initConnection(websocket)
             await websocket.send(integController.sendLeoBridgePackage())  # * Start by sending empty as 'ok'
             async for w_message in websocket:
                 w_param = json.loads(w_message)
@@ -562,7 +572,8 @@ def main():
                     # ! See : getSelectedNode and getAllGnx
                     answer = getattr(integController, w_param['action'])(w_param['param'])
                 else:
-                    print("Error in processCommand")
+                    answer = "Error in processCommand"
+                    print(answer)
                 await websocket.send(answer)
         except:
             print("Caught Websocket Disconnect Event")

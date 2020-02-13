@@ -100,11 +100,15 @@ export class LeoBridge {
     private _processAnswer(p_data: string): void {
         // * Process data that came out of leoBridge.py process stdout
         const w_parsedData = this._tryParseJSON(p_data);
-        if (w_parsedData) {
+        if (w_parsedData && w_parsedData.id) {
             this._resolveBridgeReady(w_parsedData);
             this._callAction();
         } else { // unprocessed/unknown python output
-            console.log("from python", p_data);
+            if (w_parsedData) {
+                console.log('ASYNC : ', w_parsedData);
+            } else {
+                console.log("from python", p_data);
+            }
         }
     }
 

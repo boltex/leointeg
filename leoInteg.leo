@@ -10,10 +10,11 @@
 <v t="felix.20191126232434.2"><vh>@clean leobridgeserver.py</vh>
 <v t="felix.20191128002414.1"><vh>Imports</vh></v>
 <v t="felix.20191128002417.1"><vh>Constants</vh></v>
-<v t="felix.20200211192548.1"><vh>testPrint</vh></v>
 <v t="felix.20191126232434.4"><vh>class leoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
 <v t="felix.20191126232434.12"><vh>test</vh></v>
+<v t="felix.20200212215202.1"><vh>testAsync</vh></v>
+<v t="felix.20200211202929.1"><vh>initConnection</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
 <v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
@@ -385,6 +386,7 @@ if __name__ == '__main__':
                                        verbose=False)     # True: prints messages that would be sent to the log pane.
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
     # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
+    self.webSocket = None
 
 </t>
 <t tx="felix.20191126232434.7">def sendLeoBridgePackage(self, p_key=False, p_any=None):
@@ -392,6 +394,7 @@ if __name__ == '__main__':
     if p_key:
         w_package[p_key] = p_any  # add [key]?:any
     return(json.dumps(w_package, separators=(',', ':')))  # send as json
+    # await self.webSocket.send(json.dumps(w_package, separators=(',', ':')))  # send as json
 
 </t>
 <t tx="felix.20191126232434.8">def outputError(self, p_message="Unknown Error"):
@@ -432,16 +435,18 @@ if __name__ == '__main__':
     # start Server
 
     integController = leoBridgeIntegController()
-    asyncTest = ""
 
     async def asyncInterval(timeout):
+        strTimeout = str(timeout) + ' sec interval'
         while True:
             await asyncio.sleep(timeout)
-            print('Aaaa')
+            await integController.testAsync() 
+            print(strTimeout)
 
     # TODO : This is a basic test loop, fix it with 2 way async comm and error checking
     async def leoBridgeServer(websocket, path):
         try:
+            integController.initConnection(websocket)
             await websocket.send(integController.sendLeoBridgePackage())  # * Start by sending empty as 'ok'
             async for w_message in websocket:
                 w_param = json.loads(w_message)
@@ -453,7 +458,8 @@ if __name__ == '__main__':
                     # ! See : getSelectedNode and getAllGnx
                     answer = getattr(integController, w_param['action'])(w_param['param'])
                 else:
-                    print("Error in processCommand")
+                    answer = "Error in processCommand"
+                    print(answer)
                 await websocket.send(answer)
         except:
             print("Caught Websocket Disconnect Event")
@@ -737,9 +743,17 @@ wsPort = 32125
         return self.outputError("Error in insertNamedPNode no param w_ap")
 
 </t>
-<t tx="felix.20200211192548.1">def testPrint():
-    print('hello from the test procedure!')
-    
-    </t>
+<t tx="felix.20200211202929.1">def initConnection(self, p_webSocket):
+    self.webSocket = p_webSocket
+
+</t>
+<t tx="felix.20200212215202.1">async def testAsync(self):
+    if(self.webSocket):
+        print("test async websocket")
+        await self.webSocket.send("{\"test\":\"asyncjson\",\"patate\":\"bacon\"}")
+    else:
+        print("not ready yet")
+
+</t>
 </tnodes>
 </leo_file>
