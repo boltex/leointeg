@@ -13,12 +13,12 @@
 <v t="felix.20191126232434.4"><vh>class leoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
 <v t="felix.20191126232434.12"><vh>test</vh></v>
-<v t="felix.20200212215202.1"><vh>testAsync</vh></v>
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
 <v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
 <v t="felix.20191128004456.1"><vh>setActionId</vh></v>
+<v t="felix.20200213195413.1"><vh>asyncOutput</vh></v>
 <v t="felix.20191126232434.7"><vh>sendLeoBridgePackage</vh></v>
 <v t="felix.20191126232434.8"><vh>outputError</vh></v>
 <v t="felix.20191126232434.9"><vh>outputBodyData</vh></v>
@@ -101,8 +101,10 @@ I should have started self documentation here from the start in august!
 </t>
 <t tx="felix.20191126232434.12">def test(self, p_param):
     '''Emit a test'''
+    self.loop.create_task(self.asyncOutput(
+        "{\"asyncOutput\":\"Here's your ASYNC text string payload that you ordered!\"}"))
     print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param, separators=(',', ':')))
-    return self.sendLeoBridgePackage("package", "test string from the response package")
+    return self.sendLeoBridgePackage("package", "test string from the dummy standard response package")
 
 </t>
 <t tx="felix.20191126232434.13">def openFile(self, p_file):
@@ -111,6 +113,7 @@ I should have started self documentation here from the start in august!
     self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
     if(self.commander):
         self.create_gnx_to_vnode()
+        # * setup leoBackground to get messages from leo
         return self.outputPNode(self.commander.p)
     else:
         return self.outputError('Error in openFile')
@@ -387,6 +390,7 @@ if __name__ == '__main__':
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
     # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
     self.webSocket = None
+    self.loop = None
 
 </t>
 <t tx="felix.20191126232434.7">def sendLeoBridgePackage(self, p_key=False, p_any=None):
@@ -433,14 +437,13 @@ if __name__ == '__main__':
             wsPort = arg
 
     # start Server
-
     integController = leoBridgeIntegController()
 
     async def asyncInterval(timeout):
         strTimeout = str(timeout) + ' sec interval'
         while True:
             await asyncio.sleep(timeout)
-            await integController.testAsync() 
+            await integController.asyncOutput("{\"interval\":" + str(timeout) + "}")  # as number
             print(strTimeout)
 
     # TODO : This is a basic test loop, fix it with 2 way async comm and error checking
@@ -745,12 +748,13 @@ wsPort = 32125
 </t>
 <t tx="felix.20200211202929.1">def initConnection(self, p_webSocket):
     self.webSocket = p_webSocket
+    self.loop = asyncio.get_event_loop()
 
 </t>
-<t tx="felix.20200212215202.1">async def testAsync(self):
+<t tx="felix.20200213195413.1">async def asyncOutput(self, p_json):
+    '''Output json string to the websocket'''
     if(self.webSocket):
-        print("test async websocket")
-        await self.webSocket.send("{\"test\":\"asyncjson\",\"patate\":\"bacon\"}")
+        await self.webSocket.send(p_json)
     else:
         print("not ready yet")
 
