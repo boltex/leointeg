@@ -40,6 +40,12 @@ export class LeoIntegration {
     // * LeoBridge
     public leoBridge: LeoBridge;
 
+    // * User action stack for non-tree-dependant commands fast entry
+    private _commandStack: string[] = [];
+    //
+    // if command is non-tree-dependant, add it to the array's top and try to resolve bottom command.
+    // if command is tree dependant: add to array and resolve only if empty. Otherwise show info message "Command already running"
+
     // * Outline Pane
     public leoTreeDataProvider: LeoOutlineProvider;
     public leoTreeView: vscode.TreeView<LeoNode>;
@@ -61,6 +67,7 @@ export class LeoIntegration {
     private _forceBodyFocus: boolean = false; // Flag used to force focus in body when next 'showing' of this body occurs (after edit headline if already selected)
 
     // * Body pane dictionary of GNX linking to leoNodes, used when showing a body pane to force selection in outline
+    // TODO : FIX THIS -> MOVE IT TO LEO_OUTLINE _ OR REMOVE IT AND GO SINGLE GNX BODIES
     private _leoTextDocumentNodesRef: { [gnx: string]: { node: LeoNode; refreshCount: number; } } = {}; // Kept updated in the apToLeoNode function
 
     // * Log Pane
