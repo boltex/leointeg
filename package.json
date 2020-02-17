@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.10",
+  "version": "0.1.9",
   "author": {
     "name": "Félix"
   },
@@ -491,9 +491,14 @@
         }
       },
       {
-        "command": "leointeg.executeScript",
+        "command": "leointeg.executeScriptSelection",
         "category": "Leo",
         "title": "Execute Script"
+      },
+      {
+        "command": "leointeg.showLogPane",
+        "category": "Leo",
+        "title": "Show Log Pane"
       }
     ],
     "menus": {
@@ -509,6 +514,10 @@
         {
           "command": "leointeg.openLeoFile",
           "when": "leoBridgeReady==true && !leoTreeOpened"
+        },
+        {
+          "command": "leointeg.showLogPane",
+          "when": "leoBridgeReady==true"
         },
         {
           "command": "leointeg.closeLeoFile",
@@ -591,7 +600,7 @@
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leointeg.executeScript",
+          "command": "leointeg.executeScriptSelection",
           "when": "leoObjectSelected==true"
         },
         {

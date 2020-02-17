@@ -6,6 +6,13 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "Python: leoBridge Server",
+			"type": "python",
+			"request": "launch",
+			"program": "${workspaceFolder}/leobridgeserver.py",
+			"console": "integratedTerminal"
+		},
+		{
 			"name": "Run Extension",
 			"type": "extensionHost",
 			"request": "launch",

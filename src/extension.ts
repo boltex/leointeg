@@ -80,6 +80,7 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.UNDO, () => leoIntegration.undo()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.REDO, () => leoIntegration.redo()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.EXECUTE, () => leoIntegration.executeScript()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SHOW_LOG, () => leoIntegration.showLogPane()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SAVE_FILE, () => leoIntegration.saveLeoFile()],
     ];
 

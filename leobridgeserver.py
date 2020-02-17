@@ -24,6 +24,8 @@ class leoBridgeIntegController:
                                            readSettings=True,  # True: read standard settings files.
                                            silent=True,      # True: don't print signon messages.
                                            verbose=False)     # True: prints messages that would be sent to the log pane.
+        self.g = self.bridge.globals()
+        # print(dir(self.g))
         self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
         # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
         self.webSocket = None
@@ -44,9 +46,13 @@ class leoBridgeIntegController:
         '''Open a leo file via leoBridge controller'''
         print("Trying to open file: "+p_file)
         self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+
         if(self.commander):
             self.create_gnx_to_vnode()
             # * setup leoBackground to get messages from leo
+            # print(dir(self.commander))
+            # print(str(self.commander.app))
+            # --
             return self.outputPNode(self.commander.p)
         else:
             return self.outputError('Error in openFile')
@@ -57,6 +63,10 @@ class leoBridgeIntegController:
         if(self.commander):
             self.commander.close()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+    def saveFile(self):
+        pass
+        #
 
     def setActionId(self, p_id):
         self.currentActionId = p_id
@@ -282,7 +292,7 @@ class leoBridgeIntegController:
             self.commander.undoer.redo()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
-    def run(self, p_ap):
+    def executeScript(self, p_ap):
         '''Select a node and run its script'''
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
@@ -591,6 +601,9 @@ def main():
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     asyncio.get_event_loop().run_forever()
     print("Stopping leobridge server")
+
+    # from leoApp.py :  g.app.backgroundProcessManager = leoBackground.BackgroundProcessManager()
+    # app.log.put(s)
 
 
 if __name__ == '__main__':

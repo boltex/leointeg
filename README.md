@@ -86,11 +86,9 @@ For most users, **`Ctrl+D`** is often already assigned to some useful command. T
 
 ## Intended Features
 
-- Provide most of Leo's core functionality
-- Derived file 'goto' capabilities to find specific line(s) in outline nodes (For error lookup, breakpoints cycling, etc.)
+- Provide most of Leo's core functionality, outline, body & log panes, color-syntaxing, shortcuts, etc.
+- Find specific line(s) from derived files in tree nodes (For error lookup, breakpoints cycling, etc.)
 - Show line number from the derived file instead of the body-pane's line number
-- Color-syntaxing
-- Run scripts, and more...
 
 ## How it works
 

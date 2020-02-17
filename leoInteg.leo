@@ -16,6 +16,7 @@
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
+<v t="felix.20200216160305.1"><vh>saveFile</vh></v>
 <v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
 <v t="felix.20191128004456.1"><vh>setActionId</vh></v>
 <v t="felix.20200213195413.1"><vh>asyncOutput</vh></v>
@@ -51,7 +52,7 @@
 <v t="felix.20200105173826.1"><vh>outlineCommand</vh></v>
 <v t="felix.20191231203711.1"><vh>undo</vh></v>
 <v t="felix.20200103204811.1"><vh>redo</vh></v>
-<v t="felix.20191231214801.1"><vh>run</vh></v>
+<v t="felix.20191231214801.1"><vh>executeScript</vh></v>
 <v t="felix.20191126232434.15"><vh>getPNode</vh></v>
 <v t="felix.20191126232434.16"><vh>getChildren</vh></v>
 <v t="felix.20191126232434.17"><vh>getParent</vh></v>
@@ -111,9 +112,13 @@ I should have started self documentation here from the start in august!
     '''Open a leo file via leoBridge controller'''
     print("Trying to open file: "+p_file)
     self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+
     if(self.commander):
         self.create_gnx_to_vnode()
         # * setup leoBackground to get messages from leo
+        # print(dir(self.commander))
+        # print(str(self.commander.app))
+        # --
         return self.outputPNode(self.commander.p)
     else:
         return self.outputError('Error in openFile')
@@ -387,6 +392,8 @@ if __name__ == '__main__':
                                        readSettings=True,  # True: read standard settings files.
                                        silent=True,      # True: don't print signon messages.
                                        verbose=False)     # True: prints messages that would be sent to the log pane.
+    self.g = self.bridge.globals()
+    # print(dir(self.g))
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
     # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
     self.webSocket = None
@@ -476,6 +483,9 @@ if __name__ == '__main__':
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     asyncio.get_event_loop().run_forever()
     print("Stopping leobridge server")
+
+    # from leoApp.py :  g.app.backgroundProcessManager = leoBackground.BackgroundProcessManager()
+    # app.log.put(s)
 
 
 </t>
@@ -683,7 +693,7 @@ wsPort = 32125
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20191231214801.1">def run(self, p_ap):
+<t tx="felix.20191231214801.1">def executeScript(self, p_ap):
     '''Select a node and run its script'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
@@ -757,6 +767,11 @@ wsPort = 32125
         await self.webSocket.send(p_json)
     else:
         print("not ready yet")
+
+</t>
+<t tx="felix.20200216160305.1">def saveFile(self):
+    pass
+    #
 
 </t>
 </tnodes>

@@ -1017,8 +1017,19 @@ export class LeoIntegration {
         }
     }
 
+    public showLogPane(): void {
+        this.leoLogPane.show(true); // TODO : Intercept log pane entries
+    }
+
     public executeScript(): void {
-        vscode.window.showInformationMessage("TODO: executeScript"); // temp placeholder
+        // vscode.window.showInformationMessage("TODO: executeScript"); // temp placeholder
+        if (this._leoBridgeActionBusy) {
+            console.log('Too fast! executeScript');
+            return;
+        }
+        if (this._lastSelectedLeoNode) {
+            this.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.EXECUTE_SCRIPT, this._lastSelectedLeoNode, true);
+        }
     }
 
     public saveLeoFile(): void {
@@ -1064,7 +1075,7 @@ export class LeoIntegration {
                 this._updateLeoObjectSelected();
                 this.leoStatusBarItem.show();
                 // * Show leo log pane
-                // this.leoLogPane.show(true); // TODO : Intercept log pane entries
+                this.showLogPane();
                 // * First Body appearance
                 return this.leoFileSystem.refreshPossibleGnxList();
             })

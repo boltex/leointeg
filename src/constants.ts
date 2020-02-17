@@ -128,6 +128,7 @@ export class Constants {
         REDO: "redo",
         SORT_CHILDREN: "sortChildrenPNode",
         SORT_SIBLINGS: "sortSiblingsPNode",
+        EXECUTE_SCRIPT: "executeScript"
     };
 
     public static VSCODE_COMMANDS = {
@@ -150,7 +151,8 @@ export class Constants {
         // * Leo Operations
         UNDO: "undo",
         REDO: "redo",
-        EXECUTE: "executeScript",
+        EXECUTE: "executeScriptSelection",
+        SHOW_LOG: "showLogPane",
         SAVE_FILE: "saveLeoFile",
         SORT_CHILDREN: "sortChildrenSelection",
         SORT_SIBLING: "sortSiblingsSelection",
