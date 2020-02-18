@@ -13,6 +13,7 @@
 <v t="felix.20191126232434.4"><vh>class leoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
 <v t="felix.20191126232434.12"><vh>test</vh></v>
+<v t="felix.20200216215349.1"><vh>put</vh></v>
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
@@ -110,14 +111,16 @@ I should have started self documentation here from the start in august!
 </t>
 <t tx="felix.20191126232434.13">def openFile(self, p_file):
     '''Open a leo file via leoBridge controller'''
-    print("Trying to open file: "+p_file)
+    print("Trying to open file: " + p_file)
     self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
 
     if(self.commander):
         self.create_gnx_to_vnode()
         # * setup leoBackground to get messages from leo
+
         # print(dir(self.commander))
         # print(str(self.commander.app))
+        self.g.app.log.put("test put")
         # --
         return self.outputPNode(self.commander.p)
     else:
@@ -393,6 +396,8 @@ if __name__ == '__main__':
                                        silent=True,      # True: don't print signon messages.
                                        verbose=False)     # True: prints messages that would be sent to the log pane.
     self.g = self.bridge.globals()
+    self.g.app.log.put = self.put
+    self.g.es = self.put
     # print(dir(self.g))
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
     # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
@@ -770,8 +775,16 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200216160305.1">def saveFile(self):
-    pass
-    #
+    '''Saves the leo file. New or dirty derived files are rewritten'''
+    print("Trying to close opened file")
+    if(self.commander):
+        self.commander.save()
+    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+</t>
+<t tx="felix.20200216215349.1">def put(self, s, color=None, tabName='Log', from_redirect=False, nodeLink=None):
+    print('from log! ')
+    print(s)
 
 </t>
 </tnodes>

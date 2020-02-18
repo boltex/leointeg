@@ -1032,6 +1032,62 @@ export class LeoIntegration {
         }
     }
 
+    public hoistNode(): void {
+        vscode.window.showInformationMessage("TODO: hoistNode command"); // temp placeholder
+    }
+    public hoistSelection(): void {
+        vscode.window.showInformationMessage("TODO: hoistSelection command"); // temp placeholder
+    }
+    public deHoist(): void {
+        vscode.window.showInformationMessage("TODO: deHoist command"); // temp placeholder
+    }
+    public cloneFindAll(): void {
+        vscode.window.showInformationMessage("TODO: cloneFindAll command"); // temp placeholder
+    }
+    public cloneFindAllFlattened(): void {
+        vscode.window.showInformationMessage("TODO: cloneFindAllFlattened command"); // temp placeholder
+    }
+    public cloneFindMarked(): void {
+        vscode.window.showInformationMessage("TODO: cloneFindMarked command"); // temp placeholder
+    }
+    public cloneFindFlattenedMarked(): void {
+        vscode.window.showInformationMessage("TODO: cloneFindFlattenedMarked command"); // temp placeholder
+    }
+    public extract(): void {
+        vscode.window.showInformationMessage("TODO: extract command"); // temp placeholder
+    }
+    public extractNames(): void {
+        vscode.window.showInformationMessage("TODO: extractNames command"); // temp placeholder
+    }
+    public copyMarked(): void {
+        vscode.window.showInformationMessage("TODO: copyMarked command"); // temp placeholder
+    }
+    public diffMarkedNodes(): void {
+        vscode.window.showInformationMessage("TODO: diffMarkedNodes command"); // temp placeholder
+    }
+    public gotoNextMarked(): void {
+        vscode.window.showInformationMessage("TODO: gotoNextMarked command"); // temp placeholder
+    }
+    public markChangedItems(): void {
+        vscode.window.showInformationMessage("TODO: markChangedItems command"); // temp placeholder
+    }
+    public markSubheads(): void {
+        vscode.window.showInformationMessage("TODO: markSubheads command"); // temp placeholder
+    }
+    public unmarkAll(): void {
+        vscode.window.showInformationMessage("TODO: unmarkAll command"); // temp placeholder
+    }
+    public cloneMarkedNodes(): void {
+        vscode.window.showInformationMessage("TODO: cloneMarkedNodes command"); // temp placeholder
+    }
+    public deleteMarkedNodes(): void {
+        vscode.window.showInformationMessage("TODO: deleteMarkedNodes command"); // temp placeholder
+    }
+    public moveMarkedNode(): void {
+        vscode.window.showInformationMessage("TODO: moveMarkedNode command"); // temp placeholder
+    }
+
+
     public saveLeoFile(): void {
         vscode.window.showInformationMessage("TODO: saveLeoFile : Try to save Leo File"); // temp placeholder
     }

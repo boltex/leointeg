@@ -82,6 +82,27 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.EXECUTE, () => leoIntegration.executeScript()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SHOW_LOG, () => leoIntegration.showLogPane()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SAVE_FILE, () => leoIntegration.saveLeoFile()],
+
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.HOIST, () => leoIntegration.hoistNode()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.HOIST_SELECTION, () => leoIntegration.hoistSelection()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DEHOIST, () => leoIntegration.deHoist()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLONE_FIND_ALL, () => leoIntegration.cloneFindAll()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLONE_FIND_ALL_FLATTENED, () => leoIntegration.cloneFindAllFlattened()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLONE_FIND_MARKED, () => leoIntegration.cloneFindMarked()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLONE_FIND_FLATTENED_MARKED, () => leoIntegration.cloneFindFlattenedMarked()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.EXTRACT, () => leoIntegration.extract()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.EXTRACT_NAMES, () => leoIntegration.extractNames()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.COPY_MARKED, () => leoIntegration.copyMarked()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DIFF_MARKED_NODES, () => leoIntegration.diffMarkedNodes()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.GOTO_NEXT_MARKED, () => leoIntegration.gotoNextMarked()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MARK_CHANGED_ITEMS, () => leoIntegration.markChangedItems()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MARK_SUBHEADS, () => leoIntegration.markSubheads()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.UNMARK_ALL, () => leoIntegration.unmarkAll()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLONE_MARKED_NODES, () => leoIntegration.cloneMarkedNodes()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DELETE_MARKED_NODES, () => leoIntegration.deleteMarkedNodes()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_MARKED_NODES, () => leoIntegration.moveMarkedNode()],
+
+
     ];
 
     w_commands.map(function (p_command) { context.subscriptions.push(vscode.commands.registerCommand(...p_command)); });

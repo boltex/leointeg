@@ -106,6 +106,7 @@ export class Constants {
         EXPAND_NODE: "expandNode",
         COLLAPSE_NODE: "collapseNode",
         OPEN_FILE: "openFile",
+        SAVE_FILE: "saveFile",
         // * Leo Operations
         MARK_PNODE: "markPNode",
         UNMARK_PNODE: "unmarkPNode",
@@ -128,7 +129,25 @@ export class Constants {
         REDO: "redo",
         SORT_CHILDREN: "sortChildrenPNode",
         SORT_SIBLINGS: "sortSiblingsPNode",
-        EXECUTE_SCRIPT: "executeScript"
+        EXECUTE_SCRIPT: "executeScript",
+        // * ---------------
+        HOIST_PNODE: "hoistPNode",
+        DEHOIST: "deHoist",
+        CLONE_FIND_ALL: "cloneFindAll",
+        CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened",
+        CLONE_FIND_MARKED: "cloneFindMarked",
+        CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked",
+        EXTRACT: "extract",
+        EXTRACT_NAMES: "extractNames",
+        COPY_MARKED: "copyMarked",
+        DIFF_MARKED_NODES: "diffMarkedNodes",
+        GOTO_NEXT_MARKED: "gotoNextMarked",
+        MARK_CHANGED_ITEMS: "markChangedItems",
+        MARK_SUBHEADS: "markSubheads",
+        UNMARK_ALL: "unmarkAll",
+        CLONE_MARKED_NODES: "cloneMarkedNodes",
+        DELETE_MARKED_NODES: "deleteMarkedNodes",
+        MOVE_MARKED_NODES: "moveMarkedNodes"
     };
 
     public static VSCODE_COMMANDS = {
@@ -187,6 +206,25 @@ export class Constants {
         INSERT_SELECTION: "insertNodeSelection",
         CLONE_SELECTION: "cloneNodeSelection",
         PROMOTE_SELECTION: "promoteSelection",
-        DEMOTE_SELECTION: "demoteSelection"
+        DEMOTE_SELECTION: "demoteSelection",
+        // * ---------------
+        HOIST: "hoistNode",
+        HOIST_SELECTION: "hoistSelection",
+        DEHOIST: "deHoist",
+        CLONE_FIND_ALL: "cloneFindAll",
+        CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened",
+        CLONE_FIND_MARKED: "cloneFindMarked",
+        CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked",
+        EXTRACT: "extract",
+        EXTRACT_NAMES: "extractNames",
+        COPY_MARKED: "copyMarked",
+        DIFF_MARKED_NODES: "diffMarkedNodes",
+        GOTO_NEXT_MARKED: "gotoNextMarked",
+        MARK_CHANGED_ITEMS: "markChangedItems",
+        MARK_SUBHEADS: "markSubheads",
+        UNMARK_ALL: "unmarkAll",
+        CLONE_MARKED_NODES: "cloneMarkedNodes",
+        DELETE_MARKED_NODES: "deleteMarkedNodes",
+        MOVE_MARKED_NODES: "moveMarkedNodes"
     };
 }

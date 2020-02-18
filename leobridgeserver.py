@@ -25,6 +25,8 @@ class leoBridgeIntegController:
                                            silent=True,      # True: don't print signon messages.
                                            verbose=False)     # True: prints messages that would be sent to the log pane.
         self.g = self.bridge.globals()
+        self.g.app.log.put = self.put
+        self.g.es = self.put
         # print(dir(self.g))
         self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
         # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
@@ -38,20 +40,26 @@ class leoBridgeIntegController:
         print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param, separators=(',', ':')))
         return self.sendLeoBridgePackage("package", "test string from the dummy standard response package")
 
+    def put(self, s, color=None, tabName='Log', from_redirect=False, nodeLink=None):
+        print('from log! ')
+        print(s)
+
     def initConnection(self, p_webSocket):
         self.webSocket = p_webSocket
         self.loop = asyncio.get_event_loop()
 
     def openFile(self, p_file):
         '''Open a leo file via leoBridge controller'''
-        print("Trying to open file: "+p_file)
+        print("Trying to open file: " + p_file)
         self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
 
         if(self.commander):
             self.create_gnx_to_vnode()
             # * setup leoBackground to get messages from leo
+
             # print(dir(self.commander))
             # print(str(self.commander.app))
+            self.g.app.log.put("test put")
             # --
             return self.outputPNode(self.commander.p)
         else:
@@ -65,8 +73,11 @@ class leoBridgeIntegController:
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def saveFile(self):
-        pass
-        #
+        '''Saves the leo file. New or dirty derived files are rewritten'''
+        print("Trying to close opened file")
+        if(self.commander):
+            self.commander.save()
+        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def setActionId(self, p_id):
         self.currentActionId = p_id
