@@ -700,63 +700,63 @@
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.cloneFindAll",
+          "command": "leointeg.cloneFindAll",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.cloneFindAllFlattened",
+          "command": "leointeg.cloneFindAllFlattened",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.cloneFindMarked",
+          "command": "leointeg.cloneFindMarked",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.cloneFindFlattenedMarked",
+          "command": "leointeg.cloneFindFlattenedMarked",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.extract",
+          "command": "leointeg.extract",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.extractNames",
+          "command": "leointeg.extractNames",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.copyMarked",
+          "command": "leointeg.copyMarked",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.diffMarkedNodes",
+          "command": "leointeg.diffMarkedNodes",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.gotoNextMarked",
+          "command": "leointeg.gotoNextMarked",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.markChangedItems",
+          "command": "leointeg.markChangedItems",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.markSubheads",
+          "command": "leointeg.markSubheads",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.unmarkAll",
+          "command": "leointeg.unmarkAll",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.cloneMarkedNodes",
+          "command": "leointeg.cloneMarkedNodes",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.deleteMarkedNodes",
+          "command": "leointeg.deleteMarkedNodes",
           "when": "leoObjectSelected==true"
         },
         {
-          "command": "leoInteg.moveMarkedNodes",
+          "command": "leointeg.moveMarkedNodes",
           "when": "leoObjectSelected==true"
         },
         {
@@ -828,7 +828,7 @@
           "when": "false"
         },
         {
-          "command": "leoInteg.hoistNode",
+          "command": "leointeg.hoistNode",
           "when": "false"
         }
       ],
