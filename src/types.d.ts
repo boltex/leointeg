@@ -35,6 +35,11 @@ export interface LeoAction { // pushed and resolved as a stack
     rejectFn: (reason: any) => void; // call if problem is encountered
 }
 
+export interface LeoLogEntry {
+    log: string;
+}
+
+
 export interface ArchivedPosition { // * from Leo's leoflexx.py
     hasBody: boolean;     // bool(p.b),
     hasChildren: boolean; // p.hasChildren()

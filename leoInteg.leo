@@ -127,7 +127,7 @@ I should have started self documentation here from the start in august!
         return self.outputError('Error in openFile')
 
 </t>
-<t tx="felix.20191126232434.14">def closeFile(self):
+<t tx="felix.20191126232434.14">def closeFile(self, p_paramUnused):
     '''Closes a leo file. A file can then be opened with "openFile"'''
     print("Trying to close opened file")
     if(self.commander):
@@ -396,7 +396,8 @@ if __name__ == '__main__':
                                        silent=True,      # True: don't print signon messages.
                                        verbose=False)     # True: prints messages that would be sent to the log pane.
     self.g = self.bridge.globals()
-    self.g.app.log.put = self.put
+    # * Intercept Log Pane output
+    self.g.app.log.put = self.put 
     self.g.es = self.put
     # print(dir(self.g))
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
@@ -771,20 +772,21 @@ wsPort = 32125
     if(self.webSocket):
         await self.webSocket.send(p_json)
     else:
-        print("not ready yet")
+        print("websocket not ready yet")
 
 </t>
-<t tx="felix.20200216160305.1">def saveFile(self):
+<t tx="felix.20200216160305.1">def saveFile(self, p_paramUnused):
     '''Saves the leo file. New or dirty derived files are rewritten'''
-    print("Trying to close opened file")
     if(self.commander):
         self.commander.save()
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
 <t tx="felix.20200216215349.1">def put(self, s, color=None, tabName='Log', from_redirect=False, nodeLink=None):
-    print('from log! ')
-    print(s)
+    '''Output to the Log Pane'''
+    print('from log : ' + s)
+    w_package = {"log": s}
+    self.asyncOutput( json.dumps(w_package, separators=(',', ':')) )
 
 </t>
 </tnodes>

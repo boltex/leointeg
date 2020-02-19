@@ -85,13 +85,13 @@ export class Config implements ConfigMembers {
         } else {
             // * Graphic and theme settings
             this.invertNodeContrast = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.INVERT_NODES, false);
-            this.statusBarString = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.STATUSBAR_STRING, Constants.INTERFACE.STATUSBAR_DEFAULT_STRING);
+            this.statusBarString = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.STATUSBAR_STRING, Constants.GUI.STATUSBAR_DEFAULT_STRING);
             if (this.statusBarString.length > 8) {
-                this.statusBarString = Constants.INTERFACE.STATUSBAR_DEFAULT_STRING;
+                this.statusBarString = Constants.GUI.STATUSBAR_DEFAULT_STRING;
             }
-            this.statusBarColor = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.STATUSBAR_COLOR, Constants.INTERFACE.STATUSBAR_DEFAULT_COLOR);
+            this.statusBarColor = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.STATUSBAR_COLOR, Constants.GUI.STATUSBAR_DEFAULT_COLOR);
             if (!this._utils.isHexColor(this.statusBarColor)) {
-                this.statusBarColor = Constants.INTERFACE.STATUSBAR_DEFAULT_COLOR;
+                this.statusBarColor = Constants.GUI.STATUSBAR_DEFAULT_COLOR;
             }
             // * Interface elements visibility
             this.treeInExplorer = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.TREE_IN_EXPLORER, true);

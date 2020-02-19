@@ -12,8 +12,8 @@ export class Utils {
     public buildIconPaths(p_context: vscode.ExtensionContext): Icon[] {
         return Array(16).fill("").map((p_val, p_index) => {
             return {
-                light: p_context.asAbsolutePath(Constants.INTERFACE.ICON_LIGHT_PATH + this.padNumber(p_index) + Constants.INTERFACE.ICON_FILE_EXT),
-                dark: p_context.asAbsolutePath(Constants.INTERFACE.ICON_DARK_PATH + this.padNumber(p_index) + Constants.INTERFACE.ICON_FILE_EXT)
+                light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_PATH + this.padNumber(p_index) + Constants.GUI.ICON_FILE_EXT),
+                dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_PATH + this.padNumber(p_index) + Constants.GUI.ICON_FILE_EXT)
             };
         });
     }

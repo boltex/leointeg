@@ -71,12 +71,12 @@ export class LeoIntegration {
     private _leoTextDocumentNodesRef: { [gnx: string]: { node: LeoNode; refreshCount: number; } } = {}; // Kept updated in the apToLeoNode function
 
     // * Log Pane
-    public leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(Constants.INTERFACE.LOG_PANE_TITLE); // Copy-pasted from leo's log pane
+    public leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(Constants.GUI.LOG_PANE_TITLE); // Copy-pasted from leo's log pane
 
     // * Status Bar
     public leoStatusBarItem: vscode.StatusBarItem;
     public leoObjectSelected: boolean = false; // represents having focus on a leo body, as opposed to anything else
-    public statusbarNormalColor = new vscode.ThemeColor(Constants.INTERFACE.THEME_STATUSBAR);  // "statusBar.foreground"
+    public statusbarNormalColor = new vscode.ThemeColor(Constants.GUI.THEME_STATUSBAR);  // "statusBar.foreground"
     private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
 
     // * Edit Headline Input Box
@@ -145,7 +145,7 @@ export class LeoIntegration {
         this.leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
         this.leoStatusBarItem.color = this.config.statusBarColor;
         this.leoStatusBarItem.command = "leointeg.test"; // just call test function for now to help debugging
-        this.leoStatusBarItem.text = Constants.INTERFACE.STATUSBAR_INDICATOR + this.config.statusBarString;
+        this.leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this.config.statusBarString;
         this.leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
         _context.subscriptions.push(this.leoStatusBarItem);
         this.leoStatusBarItem.hide();
@@ -173,7 +173,7 @@ export class LeoIntegration {
     }
 
     public startNetworkServices(): void {
-        this.setTreeViewTitle(Constants.INTERFACE.TREEVIEW_TITLE_NOT_CONNECTED);
+        this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED);
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
         if (this.config.startServerAutomatically) {
             this.startServer();
@@ -211,7 +211,7 @@ export class LeoIntegration {
             } else {
                 this.leoBridgeReady = true;
                 vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
-                this.setTreeViewTitle(Constants.INTERFACE.TREEVIEW_TITLE_CONNECTED);
+                this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_CONNECTED);
                 if (!this.config.connectToServerAutomatically) {
                     vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                 }
@@ -231,7 +231,7 @@ export class LeoIntegration {
         } else {
             vscode.window.showInformationMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
         }
-        this.setTreeViewTitle(Constants.INTERFACE.TREEVIEW_TITLE_NOT_CONNECTED);
+        this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED);
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, false);
         this.fileOpenedReady = false;
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, false);
@@ -1089,7 +1089,18 @@ export class LeoIntegration {
 
 
     public saveLeoFile(): void {
-        vscode.window.showInformationMessage("TODO: saveLeoFile : Try to save Leo File"); // temp placeholder
+        //  vscode.window.showInformationMessage("TODO: saveLeoFile : Try to save Leo File"); // temp placeholder
+        if (this._leoBridgeActionBusy) {
+            console.log('Too fast! executeScript');
+            return;
+        }
+        if (this._lastSelectedLeoNode) {
+            this._leoBridgeActionBusy = true;
+            this.leoBridgeAction(Constants.LEOBRIDGE_ACTIONS.SAVE_FILE)
+                .then(() => {
+                    this._leoBridgeActionBusy = false;
+                });
+        }
     }
 
     public closeLeoFile(): void {
@@ -1136,7 +1147,7 @@ export class LeoIntegration {
                 return this.leoFileSystem.refreshPossibleGnxList();
             })
             .then(p_list => {
-                this.setTreeViewTitle(Constants.INTERFACE.TREEVIEW_TITLE);
+                this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE);
                 return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, true);
             })
             .then(p_setContextResult => {
@@ -1158,7 +1169,7 @@ export class LeoIntegration {
             clearTimeout(this._updateStatusBarTimeout);
         }
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.leoObjectSelected);
-        this.leoStatusBarItem.text = Constants.INTERFACE.STATUSBAR_INDICATOR + this.config.statusBarString;
+        this.leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this.config.statusBarString;
         if (this.leoObjectSelected && this.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
             this.leoStatusBarItem.color = "#" + this.config.statusBarColor;
             this.leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
@@ -1170,7 +1181,7 @@ export class LeoIntegration {
 
     private _showLeoCommands(): void {
         // * Status bar indicator clicked: Offer all leo commands in the command palette
-        vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.QUICK_OPEN, Constants.INTERFACE.QUICK_OPEN_LEO_COMMANDS);
+        vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.QUICK_OPEN, Constants.GUI.QUICK_OPEN_LEO_COMMANDS);
     }
 
     public setTreeViewTitle(p_title: string): void {
@@ -1179,7 +1190,7 @@ export class LeoIntegration {
             this.leoTreeView.title = p_title;
         }
         if (this.leoTreeExplorerView) {
-            this.leoTreeExplorerView.title = Constants.INTERFACE.EXPLORER_TREEVIEW_PREFIX + p_title; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
+            this.leoTreeExplorerView.title = Constants.GUI.EXPLORER_TREEVIEW_PREFIX + p_title; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
         }
     }
 

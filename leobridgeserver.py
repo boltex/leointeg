@@ -25,6 +25,7 @@ class leoBridgeIntegController:
                                            silent=True,      # True: don't print signon messages.
                                            verbose=False)     # True: prints messages that would be sent to the log pane.
         self.g = self.bridge.globals()
+        # * Intercept Log Pane output
         self.g.app.log.put = self.put
         self.g.es = self.put
         # print(dir(self.g))
@@ -41,8 +42,12 @@ class leoBridgeIntegController:
         return self.sendLeoBridgePackage("package", "test string from the dummy standard response package")
 
     def put(self, s, color=None, tabName='Log', from_redirect=False, nodeLink=None):
-        print('from log! ')
-        print(s)
+        '''Output to the Log Pane'''
+        w_package = {"log": s}
+        if self.loop:
+            self.loop.create_task(self.asyncOutput(json.dumps(w_package, separators=(',', ':'))))
+        else:
+            print('no loop!' + json.dumps(w_package, separators=(',', ':')))
 
     def initConnection(self, p_webSocket):
         self.webSocket = p_webSocket
@@ -60,21 +65,33 @@ class leoBridgeIntegController:
             # print(dir(self.commander))
             # print(str(self.commander.app))
             self.g.app.log.put("test put")
+            print('trying to some signon at all !')
+            try:
+                print(str(dir(self.g.app.log)))
+            except:
+                print("An exception occurred")
+            # if self.g.app.log.signon:
+            #     print('trying to send signon')
+            # print(str(self.g.app.log.signon))
+            #     self.g.app.log.put(self.g.app.log.signon)
+            # if self.g.app.log.signon1:
+            #     self.g.app.log.put(self.g.app.log.signon1)
+            # if self.g.app.log.signon2:
+            #     self.g.app.log.put(self.g.app.log.signon2)
             # --
             return self.outputPNode(self.commander.p)
         else:
             return self.outputError('Error in openFile')
 
-    def closeFile(self):
+    def closeFile(self, p_paramUnused):
         '''Closes a leo file. A file can then be opened with "openFile"'''
         print("Trying to close opened file")
         if(self.commander):
             self.commander.close()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
-    def saveFile(self):
+    def saveFile(self, p_paramUnused):
         '''Saves the leo file. New or dirty derived files are rewritten'''
-        print("Trying to close opened file")
         if(self.commander):
             self.commander.save()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
@@ -87,7 +104,7 @@ class leoBridgeIntegController:
         if(self.webSocket):
             await self.webSocket.send(p_json)
         else:
-            print("not ready yet")
+            print("websocket not ready yet")
 
     def sendLeoBridgePackage(self, p_key=False, p_any=None):
         w_package = {"id": self.currentActionId}

@@ -104,8 +104,10 @@ export class LeoBridge {
             this._resolveBridgeReady(w_parsedData);
             this._callAction();
         } else { // unprocessed/unknown python output
-            if (w_parsedData) {
-                console.log('ASYNC : ', w_parsedData);
+            if (w_parsedData && w_parsedData.log) {
+                console.log('Got Log! : ', w_parsedData.log);
+
+                this._leoIntegration.leoLogPane.appendLine(w_parsedData.log);
             } else {
                 console.log("from python", p_data);
             }

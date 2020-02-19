@@ -22,7 +22,7 @@ export class Constants {
     public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
     public static TCPIP_DEFAULT_ADDRESS: string = "localhost";
 
-    public static INTERFACE = {
+    public static GUI = {
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
