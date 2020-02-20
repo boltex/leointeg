@@ -26,8 +26,7 @@ class leoBridgeIntegController:
                                            verbose=False)     # True: prints messages that would be sent to the log pane.
         self.g = self.bridge.globals()
         # * Intercept Log Pane output
-        self.g.app.log.put = self.put
-        self.g.es = self.put
+        self.g.es = self.es
         # print(dir(self.g))
         self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
         # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
@@ -41,7 +40,15 @@ class leoBridgeIntegController:
         print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param, separators=(',', ':')))
         return self.sendLeoBridgePackage("package", "test string from the dummy standard response package")
 
-    def put(self, s, color=None, tabName='Log', from_redirect=False, nodeLink=None):
+    def logSignon(self):
+        if self.loop:
+            self.g.app.computeSignon()
+            self.g.es(str(self.g.app.signon))
+            self.g.es(str(self.g.app.signon1))
+        else:
+            print('no loop in logSignon')
+
+    def es(self, s, color=None, tabName='Log', from_redirect=False, nodeLink=None):
         '''Output to the Log Pane'''
         w_package = {"log": s}
         if self.loop:
@@ -61,24 +68,6 @@ class leoBridgeIntegController:
         if(self.commander):
             self.create_gnx_to_vnode()
             # * setup leoBackground to get messages from leo
-
-            # print(dir(self.commander))
-            # print(str(self.commander.app))
-            self.g.app.log.put("test put")
-            print('trying to some signon at all !')
-            try:
-                print(str(dir(self.g.app.log)))
-            except:
-                print("An exception occurred")
-            # if self.g.app.log.signon:
-            #     print('trying to send signon')
-            # print(str(self.g.app.log.signon))
-            #     self.g.app.log.put(self.g.app.log.signon)
-            # if self.g.app.log.signon1:
-            #     self.g.app.log.put(self.g.app.log.signon1)
-            # if self.g.app.log.signon2:
-            #     self.g.app.log.put(self.g.app.log.signon2)
-            # --
             return self.outputPNode(self.commander.p)
         else:
             return self.outputError('Error in openFile')
@@ -593,6 +582,7 @@ def main():
     integController = leoBridgeIntegController()
 
     async def asyncInterval(timeout):
+        # Test for async messages back to vsCode
         strTimeout = str(timeout) + ' sec interval'
         while True:
             await asyncio.sleep(timeout)
@@ -604,6 +594,7 @@ def main():
         try:
             integController.initConnection(websocket)
             await websocket.send(integController.sendLeoBridgePackage())  # * Start by sending empty as 'ok'
+            integController.logSignon()
             async for w_message in websocket:
                 w_param = json.loads(w_message)
                 if w_param and w_param['action']:
@@ -625,14 +616,13 @@ def main():
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
 
     asyncio.get_event_loop().run_until_complete(start_server)
-    asyncio.get_event_loop().create_task(asyncInterval(3))
+    # asyncio.get_event_loop().create_task(asyncInterval(3))
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     asyncio.get_event_loop().run_forever()
     print("Stopping leobridge server")
 
     # from leoApp.py :  g.app.backgroundProcessManager = leoBackground.BackgroundProcessManager()
-    # app.log.put(s)
-
+   
 
 if __name__ == '__main__':
     # Startup

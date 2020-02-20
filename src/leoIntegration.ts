@@ -212,6 +212,7 @@ export class LeoIntegration {
                 this.leoBridgeReady = true;
                 vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
                 this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_CONNECTED);
+                this.showLogPane();
                 if (!this.config.connectToServerAutomatically) {
                     vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                 }
@@ -284,6 +285,8 @@ export class LeoIntegration {
     }
 
     private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
+        console.log('active editor: ', p_event);
+
         // * Active editor should be reflected in the outline if it's a leo body pane
         if (!p_internalCall) {
             this._triggerBodySave(); // Save in case edits were pending
@@ -391,7 +394,10 @@ export class LeoIntegration {
     private _onChangeVisibleEditors(p_event: vscode.TextEditor[]): void { }
 
     // * Triggers when a vscode window have gained or lost focus
-    private _onChangeWindowState(p_event: vscode.WindowState): void { }
+    private _onChangeWindowState(p_event: vscode.WindowState): void {
+        console.log('window state changed', p_event);
+
+    }
 
     // * Edited and saved the document, does it on any document in editor
     private _onDocumentSaved(p_event: vscode.TextDocument): void { }

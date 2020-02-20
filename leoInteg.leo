@@ -13,7 +13,8 @@
 <v t="felix.20191126232434.4"><vh>class leoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
 <v t="felix.20191126232434.12"><vh>test</vh></v>
-<v t="felix.20200216215349.1"><vh>put</vh></v>
+<v t="felix.20200219224515.1"><vh>logSignon</vh></v>
+<v t="felix.20200219222712.1"><vh>es</vh></v>
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
@@ -117,11 +118,6 @@ I should have started self documentation here from the start in august!
     if(self.commander):
         self.create_gnx_to_vnode()
         # * setup leoBackground to get messages from leo
-
-        # print(dir(self.commander))
-        # print(str(self.commander.app))
-        self.g.app.log.put("test put")
-        # --
         return self.outputPNode(self.commander.p)
     else:
         return self.outputError('Error in openFile')
@@ -397,8 +393,7 @@ if __name__ == '__main__':
                                        verbose=False)     # True: prints messages that would be sent to the log pane.
     self.g = self.bridge.globals()
     # * Intercept Log Pane output
-    self.g.app.log.put = self.put 
-    self.g.es = self.put
+    self.g.es = self.es
     # print(dir(self.g))
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
     # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
@@ -453,6 +448,7 @@ if __name__ == '__main__':
     integController = leoBridgeIntegController()
 
     async def asyncInterval(timeout):
+        # Test for async messages back to vsCode
         strTimeout = str(timeout) + ' sec interval'
         while True:
             await asyncio.sleep(timeout)
@@ -464,6 +460,7 @@ if __name__ == '__main__':
         try:
             integController.initConnection(websocket)
             await websocket.send(integController.sendLeoBridgePackage())  # * Start by sending empty as 'ok'
+            integController.logSignon()
             async for w_message in websocket:
                 w_param = json.loads(w_message)
                 if w_param and w_param['action']:
@@ -485,14 +482,13 @@ if __name__ == '__main__':
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
 
     asyncio.get_event_loop().run_until_complete(start_server)
-    asyncio.get_event_loop().create_task(asyncInterval(3))
+    # asyncio.get_event_loop().create_task(asyncInterval(3))
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     asyncio.get_event_loop().run_forever()
     print("Stopping leobridge server")
 
     # from leoApp.py :  g.app.backgroundProcessManager = leoBackground.BackgroundProcessManager()
-    # app.log.put(s)
-
+   
 
 </t>
 <t tx="felix.20191127000344.1">def movePNodeDown(self, p_ap):
@@ -782,11 +778,22 @@ wsPort = 32125
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20200216215349.1">def put(self, s, color=None, tabName='Log', from_redirect=False, nodeLink=None):
+<t tx="felix.20200219222712.1">def es(self, s, color=None, tabName='Log', from_redirect=False, nodeLink=None):
     '''Output to the Log Pane'''
-    print('from log : ' + s)
     w_package = {"log": s}
-    self.asyncOutput( json.dumps(w_package, separators=(',', ':')) )
+    if self.loop:
+        self.loop.create_task(self.asyncOutput(json.dumps(w_package, separators=(',', ':'))))
+    else:
+        print('no loop!' + json.dumps(w_package, separators=(',', ':')))
+
+</t>
+<t tx="felix.20200219224515.1">def logSignon(self):
+    if self.loop:
+        self.g.app.computeSignon()
+        self.g.es(str(self.g.app.signon))
+        self.g.es(str(self.g.app.signon1))
+    else:
+        print('no loop in logSignon')
 
 </t>
 </tnodes>
