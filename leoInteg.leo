@@ -112,7 +112,6 @@ I should have started self documentation here from the start in august!
 </t>
 <t tx="felix.20191126232434.13">def openFile(self, p_file):
     '''Open a leo file via leoBridge controller'''
-    print("Trying to open file: " + p_file)
     self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
 
     if(self.commander):
@@ -400,6 +399,10 @@ if __name__ == '__main__':
     self.webSocket = None
     self.loop = None
 
+    # g.app.idleTimeManager = IdleTimeManager()
+    # g.app.backgroundProcessManager = leoBackground.BackgroundProcessManager()
+    # g.app.externalFilesController = leoExternalFiles.ExternalFilesController()
+
 </t>
 <t tx="felix.20191126232434.7">def sendLeoBridgePackage(self, p_key=False, p_any=None):
     w_package = {"id": self.currentActionId}
@@ -488,7 +491,7 @@ if __name__ == '__main__':
     print("Stopping leobridge server")
 
     # from leoApp.py :  g.app.backgroundProcessManager = leoBackground.BackgroundProcessManager()
-   
+    # g.app.idleTimeManager.start() after loading leo file
 
 </t>
 <t tx="felix.20191127000344.1">def movePNodeDown(self, p_ap):
@@ -604,6 +607,7 @@ if __name__ == '__main__':
 <t tx="felix.20191128001054.1">@others
 </t>
 <t tx="felix.20191128002414.1">import leo.core.leoBridge as leoBridge
+import leo.core.leoBackground as leoBackground
 import leo.core.leoNodes as leoNodes
 import asyncio
 import websockets

@@ -1,5 +1,6 @@
 #! python3
 import leo.core.leoBridge as leoBridge
+import leo.core.leoBackground as leoBackground
 import leo.core.leoNodes as leoNodes
 import asyncio
 import websockets
@@ -33,6 +34,10 @@ class leoBridgeIntegController:
         self.webSocket = None
         self.loop = None
 
+        # g.app.idleTimeManager = IdleTimeManager()
+        # g.app.backgroundProcessManager = leoBackground.BackgroundProcessManager()
+        # g.app.externalFilesController = leoExternalFiles.ExternalFilesController()
+
     def test(self, p_param):
         '''Emit a test'''
         self.loop.create_task(self.asyncOutput(
@@ -62,7 +67,6 @@ class leoBridgeIntegController:
 
     def openFile(self, p_file):
         '''Open a leo file via leoBridge controller'''
-        print("Trying to open file: " + p_file)
         self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
 
         if(self.commander):
@@ -622,7 +626,7 @@ def main():
     print("Stopping leobridge server")
 
     # from leoApp.py :  g.app.backgroundProcessManager = leoBackground.BackgroundProcessManager()
-   
+    # g.app.idleTimeManager.start() after loading leo file
 
 if __name__ == '__main__':
     # Startup
