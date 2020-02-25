@@ -107,6 +107,8 @@ export class LeoBridge {
             // * Check for async messages such as log pane entries or other
             if (w_parsedData && w_parsedData.log) {
                 this._leoIntegration.leoLogPane.appendLine(w_parsedData.log);
+            } else if (w_parsedData && w_parsedData.ask) {
+                this._leoIntegration.ask(w_parsedData);
             } else {
                 // unprocessed/unknown python output
                 console.log("from python", p_data);

@@ -40,5 +40,16 @@
 		// 	],
 		// 	"preLaunchTask": "npm: test-compile"
 		// }
+	],
+	"compounds": [
+		{
+			"name": "Server and Extension",
+			"configurations": [
+				"Run Extension",
+				"Python: leoBridge Server"
+			]
+			// ,
+			// "preLaunchTask": "${defaultBuildTask}"
+		}
 	]
 }

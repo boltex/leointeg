@@ -93,6 +93,12 @@ export class LeoIntegration {
         valueSelection: undefined,
         prompt: Constants.USER_MESSAGES.PROMPT_INSERT_NODE
     };
+    // * Ask to refresh derived file that changed
+    private _askRefreshOptions: vscode.QuickPickOptions = {
+        ignoreFocusOut: false, // clicking outside cancels the headline change
+        placeHolder: 'Derived file was modified'
+    };
+    private currentAskRefreshQuickPick: vscode.QuickInput | undefined;
 
     // * Automatic server start service
     private _serverService: ServerService;
@@ -285,8 +291,6 @@ export class LeoIntegration {
     }
 
     private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
-        console.log('active editor: ', p_event);
-
         // * Active editor should be reflected in the outline if it's a leo body pane
         if (!p_internalCall) {
             this._triggerBodySave(); // Save in case edits were pending
@@ -394,10 +398,7 @@ export class LeoIntegration {
     private _onChangeVisibleEditors(p_event: vscode.TextEditor[]): void { }
 
     // * Triggers when a vscode window have gained or lost focus
-    private _onChangeWindowState(p_event: vscode.WindowState): void {
-        console.log('window state changed', p_event);
-
-    }
+    private _onChangeWindowState(p_event: vscode.WindowState): void { }
 
     // * Edited and saved the document, does it on any document in editor
     private _onDocumentSaved(p_event: vscode.TextDocument): void { }
@@ -1093,6 +1094,35 @@ export class LeoIntegration {
         vscode.window.showInformationMessage("TODO: moveMarkedNode command"); // temp placeholder
     }
 
+    public ask(p_askArg: { "ask": string; "message": string; "yes_all": boolean; "no_all": boolean; }): void {
+        console.log('Ask Arg: ', p_askArg);
+        // w_package = {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
+
+        const lastLine = p_askArg.message.substr(p_askArg.message.lastIndexOf("\n") + 1);
+
+        const w_items: vscode.QuickPickItem[] = [
+            { label: "$(refresh) " + lastLine, alwaysShow: true },
+            { label: "$(x) Ignore", alwaysShow: true }
+        ];
+
+        const askRefreshQuickPick: vscode.QuickPick<vscode.QuickPickItem> = vscode.window.createQuickPick();
+
+        askRefreshQuickPick.title = p_askArg.message; // take first line
+        askRefreshQuickPick.placeholder = p_askArg.ask; // take last line of message
+        askRefreshQuickPick.items = w_items;
+        askRefreshQuickPick.onDidAccept(() => {
+            if (askRefreshQuickPick.selectedItems[0].label !== "$(x) Ignore") {
+                console.log('REFRESH DERIVED FILES');
+            }
+            askRefreshQuickPick.hide();
+        });
+
+        if (this.currentAskRefreshQuickPick) {
+            this.currentAskRefreshQuickPick.dispose(); // always keep only the last one created
+        }
+        this.currentAskRefreshQuickPick = askRefreshQuickPick;
+        this.currentAskRefreshQuickPick.show();
+    }
 
     public saveLeoFile(): void {
         //  vscode.window.showInformationMessage("TODO: saveLeoFile : Try to save Leo File"); // temp placeholder
