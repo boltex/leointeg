@@ -13,7 +13,7 @@ export class Constants {
     public static URI_SCHEME_HEADER: string = "leo:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
 
-    public static DEFAULT_PYTHON: string = "python3";
+    public static DEFAULT_PYTHON: string = "python3.7";
     public static WIN32_PYTHON: string = "py";
     public static SERVER_PATH: string = "/leobridgeserver.py";
     public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
@@ -93,6 +93,7 @@ export class Constants {
     };
 
     public static LEOBRIDGE_ACTIONS = {
+        ASK_RESULT: "askResult",
         GET_ALL_GNX: "getAllGnx",
         GET_BODY_LENGTH: "getBodyLength",
         GET_BODY: "getBody",

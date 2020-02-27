@@ -18,7 +18,11 @@
 <v t="felix.20191126232434.4"><vh>class leoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
 <v t="felix.20191126232434.12"><vh>test</vh></v>
+<v t="felix.20200226215524.1"><vh>synchronous_property</vh></v>
+<v t="felix.20200226215807.1"><vh>asynchronous</vh></v>
 <v t="felix.20200219224515.1"><vh>logSignon</vh></v>
+<v t="felix.20200225222645.1"><vh>asyncWaitAskResult</vh></v>
+<v t="felix.20200225203618.1"><vh>askResult</vh></v>
 <v t="felix.20200223223408.1"><vh>runAskYesNoDialog</vh></v>
 <v t="felix.20200223232920.1"><vh>commanders</vh></v>
 <v t="felix.20200223223228.1"><vh>asyncIdleLoop</vh></v>
@@ -413,14 +417,17 @@ if __name__ == '__main__':
     # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
     self.webSocket = None
     self.loop = None
+    self.ask_task = None
+    self.ask_result = ""  # a string like "yes", "no", "yes-all" or "no-all"
+    self.pool = concurrent.futures.ThreadPoolExecutor()
 
-    self.g.IdleTime = self.idleTime  # pointer - not a function call
-    self.g.app.idleTimeManager = IdleTimeManager(self.g)
+    self.g.IdleTime = self.idleTime  # custom method pointer - not a function call
+    self.g.app.idleTimeManager = IdleTimeManager(self.g)  # a custom async class to set intervals for callbacks
     self.g.app.backgroundProcessManager = leoBackground.BackgroundProcessManager()
     self.g.app.externalFilesController = leoExternalFiles.ExternalFilesController()
-    self.g.app.gui.runAskYesNoDialog = self.runAskYesNoDialog  # pointer - not a function call
-    self.g.app.gui.runAskOkDialog = self.runAskYesNoDialog  # SAME FOR NOW pointer - not a function call
-    self.g.app.commanders = self.commanders  # pointer - not a function call
+    self.g.app.gui.runAskYesNoDialog = self.runAskYesNoDialog  # custom method pointer - not a function call
+    self.g.app.gui.runAskOkDialog = self.runAskYesNoDialog  # same as "yes no" pointer - not a function call
+    self.g.app.commanders = self.commanders  # custom method  pointer - not a function call
 
 </t>
 <t tx="felix.20191126232434.7">def sendLeoBridgePackage(self, p_key=False, p_any=None):
@@ -470,6 +477,12 @@ if __name__ == '__main__':
     integController = leoBridgeIntegController()
 
     # TODO : This is a basic test loop, fix it with 2 way async comm and error checking
+    async def asyncInterval(timeout):
+        strTimeout = str(timeout) + ' sec interval'
+        while True:
+            await asyncio.sleep(timeout)
+            await integController.asyncOutput("{\"interval\":" + str(timeout) + "}")  # as number
+            print(strTimeout)
 
     async def leoBridgeServer(websocket, path):
         try:
@@ -497,6 +510,7 @@ if __name__ == '__main__':
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
 
     asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().create_task(asyncInterval(3))
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     asyncio.get_event_loop().run_forever()
     print("Stopping leobridge server")
@@ -623,6 +637,7 @@ import leo.core.leoBackground as leoBackground
 import leo.core.leoExternalFiles as leoExternalFiles
 import leo.core.leoNodes as leoNodes
 import asyncio
+import concurrent.futures
 import websockets
 import sys
 import getopt
@@ -778,6 +793,8 @@ wsPort = 32125
 <t tx="felix.20200211202929.1">def initConnection(self, p_webSocket):
     self.webSocket = p_webSocket
     self.loop = asyncio.get_event_loop()
+    self.ask_task = asyncio.Event()
+    self.pool = concurrent.futures.ThreadPoolExecutor()
 
 </t>
 <t tx="felix.20200213195413.1">async def asyncOutput(self, p_json):
@@ -795,8 +812,18 @@ wsPort = 32125
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20200219222712.1">def es(self, s, color=None, tabName='Log', from_redirect=False, nodeLink=None):
+<t tx="felix.20200219222712.1">def es(self, * args, **keys):
     '''Output to the Log Pane'''
+    d = {
+        'color': None,
+        'commas': False,
+        'newline': True,
+        'spaces': True,
+        'tabName': 'Log',
+        'nodeLink': None,
+    }
+    d = self.g.doKeywordArgs(keys, d)
+    s = self.g.translateArgs(args, d)
     w_package = {"log": s}
     if self.loop:
         self.loop.create_task(self.asyncOutput(json.dumps(w_package, separators=(',', ':'))))
@@ -805,6 +832,7 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200219224515.1">def logSignon(self):
+    '''Simulate the Initial Leo Log Entry'''
     if self.loop:
         self.g.app.computeSignon()
         self.g.es(str(self.g.app.signon))
@@ -821,6 +849,8 @@ wsPort = 32125
     Any code can call g.app.idleTimeManager.add_callback(callback) to cause
     the callback to be called at idle time forever.
     """
+    #  1- So I wonder if I should make 'g' global?
+    #  2- In relation to the first point, I also wonder if/how I can import IdleTimeManager from the leoApp python file and use a global 'g' instead of copying it with 'self.g' instead of 'g' ?
 
     def __init__(self, g):
         """Ctor for IdleTimeManager class."""
@@ -862,10 +892,9 @@ wsPort = 32125
 </t>
 <t tx="felix.20200223210154.4">def start(self):
     """Start the idle-time timer."""
-    print("starting log")
     self.timer = self.g.IdleTime(
         self.on_idle,
-        delay=1500,
+        delay=500,
         tag='IdleTimeManager.on_idle')
     if self.timer:
         self.timer.start()
@@ -873,7 +902,6 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200223223219.1">def idleTime(self, fn, delay, tag):
-    print("Creating IdleTime loop for tag" + tag)
     asyncio.get_event_loop().create_task(self.asyncIdleLoop(delay/1000, fn))
 
 </t>
@@ -884,19 +912,58 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200223223408.1">def runAskYesNoDialog(self, c, title, message=None, yes_all=False, no_all=False):
-    """Create and run an askYesNo dialog."""
-    print("in run ask!")
+    '''Create and run an askYesNo dialog.'''
     w_package = {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
     if self.loop:
         self.loop.create_task(self.asyncOutput(json.dumps(w_package, separators=(',', ':'))))
+
+        print("before, ask_result is" + self.ask_result)
+        # * Wait for response from vscode
+        self.ask_task.clear()
+
+        # self.loop.run_until_complete(self.asyncWaitAskResult())
+        # future = asyncio.run_coroutine_threadsafe(self.asyncWaitAskResult(), self.loop)
+        # result = future.result()
+        result = self.pool.submit(asyncio.run, self.asynchronous()).result()
+        print("after, ask_result is" + str(result))
+        return "no"
+
+        # print("after, ask_result is"+ self.ask_result)
+        # return self.ask_result
+
     else:
         print('no loop!' + json.dumps(w_package, separators=(',', ':')))
 
 </t>
 <t tx="felix.20200223232920.1">def commanders(self):
-    """ Return list of currently active controllers """
+    ''' Return list of currently active controllers '''
     # return [f.c for f in g.app.windowList]
     return [self.commander]
+
+</t>
+<t tx="felix.20200225203618.1">def askResult(self, p_result):
+    '''Got the result to an asked question from vscode'''
+    print("got result: " + str(p_result))
+    self.ask_result = str(p_result)
+    self.ask_task.set()  # Signal as ready
+
+</t>
+<t tx="felix.20200225222645.1">async def asyncWaitAskResult(self):
+    await self.ask_task.wait()  # await until event would be .set()
+    print("Finally, the task is done")
+
+</t>
+<t tx="felix.20200226215524.1">def synchronous_property(self):
+    print('entering synchronous_property')
+    result = self.pool.submit(asyncio.run, self.asynchronous()).result()
+    print('exiting synchronous_property', result)
+
+</t>
+<t tx="felix.20200226215807.1">async def asynchronous(self):
+    print('entering asynchronous')
+    await asyncio.sleep(1)
+    print('exiting asynchronous')
+    return 42
 
 </t>
 </tnodes>

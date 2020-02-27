@@ -99,6 +99,7 @@ export class LeoIntegration {
         placeHolder: 'Derived file was modified'
     };
     private currentAskRefreshQuickPick: vscode.QuickInput | undefined;
+    private _askResult: string = "";
 
     // * Automatic server start service
     private _serverService: ServerService;
@@ -1098,6 +1099,13 @@ export class LeoIntegration {
         console.log('Ask Arg: ', p_askArg);
         // w_package = {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
 
+        this._askResult = "no";
+
+        // TODO also implement the yes to all / no to all from this python code :
+        // if result and "-all" in result.lower():
+        // self.yesno_all_time = time.time()
+        // self.yesno_all_answer = result.lower()
+
         const lastLine = p_askArg.message.substr(p_askArg.message.lastIndexOf("\n") + 1);
 
         const w_items: vscode.QuickPickItem[] = [
@@ -1113,8 +1121,16 @@ export class LeoIntegration {
         askRefreshQuickPick.onDidAccept(() => {
             if (askRefreshQuickPick.selectedItems[0].label !== "$(x) Ignore") {
                 console.log('REFRESH DERIVED FILES');
+                this._askResult = "yes";
+
             }
             askRefreshQuickPick.hide();
+        });
+        askRefreshQuickPick.onDidHide(() => {
+            console.log('Hide ask panel, using LEOBRIDGE_ACTIONS.ASK_RESULT to send this string: ' + this._askResult);
+            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
+                console.log('Back from ASK_RESULT');
+            });
         });
 
         if (this.currentAskRefreshQuickPick) {
@@ -1125,7 +1141,7 @@ export class LeoIntegration {
     }
 
     public saveLeoFile(): void {
-        //  vscode.window.showInformationMessage("TODO: saveLeoFile : Try to save Leo File"); // temp placeholder
+        // vscode.window.showInformationMessage("TODO: saveLeoFile : Try to save Leo File"); // temp placeholder
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! executeScript');
             return;

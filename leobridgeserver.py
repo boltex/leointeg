@@ -4,6 +4,7 @@ import leo.core.leoBackground as leoBackground
 import leo.core.leoExternalFiles as leoExternalFiles
 import leo.core.leoNodes as leoNodes
 import asyncio
+import concurrent.futures
 import websockets
 import sys
 import getopt
@@ -90,6 +91,9 @@ class leoBridgeIntegController:
         # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
         self.webSocket = None
         self.loop = None
+        self.ask_task = None
+        self.ask_result = ""  # a string like "yes", "no", "yes-all" or "no-all"
+        self.pool = concurrent.futures.ThreadPoolExecutor()
 
         self.g.IdleTime = self.idleTime  # custom method pointer - not a function call
         self.g.app.idleTimeManager = IdleTimeManager(self.g)  # a custom async class to set intervals for callbacks
@@ -106,7 +110,19 @@ class leoBridgeIntegController:
         print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param, separators=(',', ':')))
         return self.sendLeoBridgePackage("package", "test string from the dummy standard response package")
 
+    def synchronous_property(self):
+        print('entering synchronous_property')
+        result = self.pool.submit(asyncio.run, self.asynchronous()).result()
+        print('exiting synchronous_property', result)
+
+    async def asynchronous(self):
+        print('entering asynchronous')
+        await asyncio.sleep(1)
+        print('exiting asynchronous')
+        return 42
+
     def logSignon(self):
+        '''Simulate the Initial Leo Log Entry'''
         if self.loop:
             self.g.app.computeSignon()
             self.g.es(str(self.g.app.signon))
@@ -114,16 +130,41 @@ class leoBridgeIntegController:
         else:
             print('no loop in logSignon')
 
+    async def asyncWaitAskResult(self):
+        await self.ask_task.wait()  # await until event would be .set()
+        print("Finally, the task is done")
+
+    def askResult(self, p_result):
+        '''Got the result to an asked question from vscode'''
+        print("got result: " + str(p_result))
+        self.ask_result = str(p_result)
+        self.ask_task.set()  # Signal as ready
+
     def runAskYesNoDialog(self, c, title, message=None, yes_all=False, no_all=False):
-        """Create and run an askYesNo dialog."""
+        '''Create and run an askYesNo dialog.'''
         w_package = {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
         if self.loop:
             self.loop.create_task(self.asyncOutput(json.dumps(w_package, separators=(',', ':'))))
+
+            print("before, ask_result is" + self.ask_result)
+            # * Wait for response from vscode
+            self.ask_task.clear()
+
+            # self.loop.run_until_complete(self.asyncWaitAskResult())
+            # future = asyncio.run_coroutine_threadsafe(self.asyncWaitAskResult(), self.loop)
+            # result = future.result()
+            result = self.pool.submit(asyncio.run, self.asynchronous()).result()
+            print("after, ask_result is" + str(result))
+            return "no"
+
+            # print("after, ask_result is"+ self.ask_result)
+            # return self.ask_result
+
         else:
             print('no loop!' + json.dumps(w_package, separators=(',', ':')))
 
     def commanders(self):
-        """ Return list of currently active controllers """
+        ''' Return list of currently active controllers '''
         # return [f.c for f in g.app.windowList]
         return [self.commander]
 
@@ -135,8 +176,18 @@ class leoBridgeIntegController:
     def idleTime(self, fn, delay, tag):
         asyncio.get_event_loop().create_task(self.asyncIdleLoop(delay/1000, fn))
 
-    def es(self, s, color=None, tabName='Log', from_redirect=False, nodeLink=None):
+    def es(self, * args, **keys):
         '''Output to the Log Pane'''
+        d = {
+            'color': None,
+            'commas': False,
+            'newline': True,
+            'spaces': True,
+            'tabName': 'Log',
+            'nodeLink': None,
+        }
+        d = self.g.doKeywordArgs(keys, d)
+        s = self.g.translateArgs(args, d)
         w_package = {"log": s}
         if self.loop:
             self.loop.create_task(self.asyncOutput(json.dumps(w_package, separators=(',', ':'))))
@@ -146,6 +197,8 @@ class leoBridgeIntegController:
     def initConnection(self, p_webSocket):
         self.webSocket = p_webSocket
         self.loop = asyncio.get_event_loop()
+        self.ask_task = asyncio.Event()
+        self.pool = concurrent.futures.ThreadPoolExecutor()
 
     def openFile(self, p_file):
         '''Open a leo file via leoBridge controller'''
@@ -673,6 +726,12 @@ def main():
     integController = leoBridgeIntegController()
 
     # TODO : This is a basic test loop, fix it with 2 way async comm and error checking
+    async def asyncInterval(timeout):
+        strTimeout = str(timeout) + ' sec interval'
+        while True:
+            await asyncio.sleep(timeout)
+            await integController.asyncOutput("{\"interval\":" + str(timeout) + "}")  # as number
+            print(strTimeout)
 
     async def leoBridgeServer(websocket, path):
         try:
@@ -700,6 +759,7 @@ def main():
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
 
     asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().create_task(asyncInterval(3))
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     asyncio.get_event_loop().run_forever()
     print("Stopping leobridge server")
