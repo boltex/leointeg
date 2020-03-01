@@ -93,7 +93,6 @@ export class Constants {
     };
 
     public static LEOBRIDGE_ACTIONS = {
-        ASK_RESULT: "askResult",
         GET_ALL_GNX: "getAllGnx",
         GET_BODY_LENGTH: "getBodyLength",
         GET_BODY: "getBody",

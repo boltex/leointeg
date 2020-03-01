@@ -1,10 +1,7 @@
 #! python3
 import leo.core.leoBridge as leoBridge
-import leo.core.leoBackground as leoBackground
-import leo.core.leoExternalFiles as leoExternalFiles
 import leo.core.leoNodes as leoNodes
 import asyncio
-import concurrent.futures
 import threading
 import websockets
 import sys
@@ -18,61 +15,6 @@ wsHost = "localhost"
 wsPort = 32125
 
 
-class IdleTimeManager:
-    """
-    A singleton class to manage idle-time handling. This class handles all
-    details of running code at idle time, including running 'idle' hooks.
-
-    Any code can call g.app.idleTimeManager.add_callback(callback) to cause
-    the callback to be called at idle time forever.
-    """
-    #  1- So I wonder if I should make 'g' global?
-    #  2- In relation to the first point, I also wonder if/how I can import IdleTimeManager from the leoApp python file and use a global 'g' instead of copying it with 'self.g' instead of 'g' ?
-
-    def __init__(self, g):
-        """Ctor for IdleTimeManager class."""
-        self.g = g
-        self.callback_list = []
-        self.timer = None
-        self.on_idle_count = 0
-
-    def add_callback(self, callback):
-        """Add a callback to be called at every idle time."""
-        self.callback_list.append(callback)
-
-    def on_idle(self, timer):
-        """IdleTimeManager: Run all idle-time callbacks."""
-        if not self.g.app:
-            return
-        if self.g.app.killed:
-            return
-        if not self.g.app.pluginsController:
-            self.g.trace('No g.app.pluginsController', self.g.callers())
-            timer.stop()
-            return  # For debugger.
-        self.on_idle_count += 1
-        # Handle the registered callbacks.
-        # print("list length : ", len(self.callback_list))
-        for callback in self.callback_list:
-            try:
-                callback()
-            except Exception:
-                self.g.es_exception()
-                self.g.es_print(f"removing callback: {callback}")
-                self.callback_list.remove(callback)
-        # Handle idle-time hooks.
-        self.g.app.pluginsController.on_idle()
-
-    def start(self):
-        """Start the idle-time timer."""
-        self.timer = self.g.IdleTime(
-            self.on_idle,
-            delay=500,
-            tag='IdleTimeManager.on_idle')
-        if self.timer:
-            self.timer.start()
-
-
 class leoBridgeIntegController:
     '''Leo Bridge Controller'''
 
@@ -84,43 +26,18 @@ class leoBridgeIntegController:
                                            silent=True,      # True: don't print signon messages.
                                            verbose=False)     # True: prints messages that would be sent to the log pane.
         self.g = self.bridge.globals()
-        self.g.trace('test trace')
-        # * Intercept Log Pane output
+
+        # * Trace outputs to pythons stdout, also prints the function call stack
+        # self.g.trace('test trace') 
+
+        # * Intercept Log Pane output: Sends to vsCode's log pane
         self.g.es = self.es  # pointer - not a function call
+        
         # print(dir(self.g))
         self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
         # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
         self.webSocket = None
         self.loop = None
-        self.ask_task = None
-        self.ask_result = ""  # a string like "yes", "no", "yes-all" or "no-all"
-        self.pool = concurrent.futures.ThreadPoolExecutor()
-
-        self.g.IdleTime = self.idleTime  # custom method pointer - not a function call
-        self.g.app.idleTimeManager = IdleTimeManager(self.g)  # a custom async class to set intervals for callbacks
-        self.g.app.backgroundProcessManager = leoBackground.BackgroundProcessManager()
-        self.g.app.externalFilesController = leoExternalFiles.ExternalFilesController()
-        self.g.app.gui.runAskYesNoDialog = self.runAskYesNoDialog  # custom method pointer - not a function call
-        self.g.app.gui.runAskOkDialog = self.runAskYesNoDialog  # same as "yes no" pointer - not a function call
-        self.g.app.commanders = self.commanders  # custom method  pointer - not a function call
-
-    def test(self, p_param):
-        '''Emit a test'''
-        self.loop.create_task(self.asyncOutput(
-            "{\"asyncOutput\":\"Here's your ASYNC text string payload that you ordered!\"}"))
-        print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param, separators=(',', ':')))
-        return self.sendLeoBridgePackage("package", "test string from the dummy standard response package")
-
-    def synchronous_property(self):
-        print('entering synchronous_property')
-        result = self.pool.submit(asyncio.run, self.asynchronous()).result()
-        print('exiting synchronous_property', result)
-
-    async def asynchronous(self):
-        print('entering asynchronous')
-        await asyncio.sleep(10)
-        print('exiting asynchronous')
-        return 42
 
     def logSignon(self):
         '''Simulate the Initial Leo Log Entry'''
@@ -130,58 +47,6 @@ class leoBridgeIntegController:
             self.g.es(str(self.g.app.signon1))
         else:
             print('no loop in logSignon')
-
-    async def asyncWaitAskResult(self):
-        print('entering asyncWaitAskResult')
-        await self.ask_task.wait()  # await until event would be .set()
-        print("Finally, the task is done")
-
-    def askResult(self, p_result):
-        '''Got the result to an asked question from vscode'''
-        print("got result: " + str(p_result))
-        self.ask_result = str(p_result)
-        self.ask_task.set()  # Signal as ready
-
-    def runAskYesNoDialog(self, c, title, message=None, yes_all=False, no_all=False):
-        '''Create and run an askYesNo dialog.'''
-        w_package = {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
-        if self.loop:
-            # DONT USE THIS LOOP!! 
-            # MAKE ANOTHER THREAD AND USE THE SPECIAL THREAD SAFE STUFF AND THREADSAFE EVENT.SET EVENT.WAIT
-            # self.loop.create_task(self.asyncOutput(json.dumps(w_package, separators=(',', ':'))))
-            self.pool.submit(asyncio.run, self.asyncOutput(json.dumps(w_package, separators=(',', ':')))).result()
-            print("before, ask_result is" + self.ask_result)
-            # * Wait for response from vscode
-            # self.ask_task = asyncio.Event()
-            # self.ask_task.clear()
-
-            # self.loop.run_until_complete(self.asyncWaitAskResult())
-            # future = asyncio.run_coroutine_threadsafe(self.asyncWaitAskResult(), self.loop)
-            # result = future.result()
-
-            result = self.pool.submit(asyncio.run, self.asynchronous()).result()
-            print("after, ask_result is" + str(result))
-            return "no"
-
-            #self.pool.submit(asyncio.run, self.asyncWaitAskResult()).result()
-            #print("after, ask_result is" + self.ask_result)
-            # return self.ask_result
-
-        else:
-            print('no loop!' + json.dumps(w_package, separators=(',', ':')))
-
-    def commanders(self):
-        ''' Return list of currently active controllers '''
-        # return [f.c for f in g.app.windowList]
-        return [self.commander]
-
-    async def asyncIdleLoop(self, p_seconds, p_fn):
-        while True:
-            await asyncio.sleep(p_seconds)
-            p_fn(self)
-
-    def idleTime(self, fn, delay, tag):
-        asyncio.get_event_loop().create_task(self.asyncIdleLoop(delay/1000, fn))
 
     def es(self, * args, **keys):
         '''Output to the Log Pane'''
@@ -203,23 +68,17 @@ class leoBridgeIntegController:
 
     def initConnection(self, p_webSocket):
         self.webSocket = p_webSocket
-        # self.loop = asyncio.get_event_loop()
-
-    def setLoop(self, p_loop):
-        self.loop = p_loop
+        self.loop = asyncio.get_event_loop()
 
     def openFile(self, p_file):
         '''Open a leo file via leoBridge controller'''
         self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
 
-        try:
-            self.g.app.idleTimeManager.start()  # To catch derived file changes
-        except:
-            print('ERROR with idleTimeManager')
+        # * setup leoBackground to get messages from leo
+        print('TODO : Start EFM')
 
         if(self.commander):
             self.create_gnx_to_vnode()
-            # * setup leoBackground to get messages from leo
             return self.outputPNode(self.commander.p)
         else:
             return self.outputError('Error in openFile')
@@ -739,7 +598,7 @@ def main():
         strTimeout = str(timeout) + ' sec interval'
         while True:
             await asyncio.sleep(timeout)
-            dummyCounter=dummyCounter+1
+            dummyCounter = dummyCounter+1
             await integController.asyncOutput("{\"interval\":" + str(timeout+dummyCounter) + "}")  # as number
             print(strTimeout)
 
@@ -765,25 +624,14 @@ def main():
             print("Caught Websocket Disconnect Event")
         finally:
             asyncio.get_event_loop().stop()
-    
-    def loopInThread(p_loop):
-        asyncio.set_event_loop(p_loop)
-        integController.setLoop(p_loop)
-        p_loop.run_until_complete(start_server)
-        p_loop.create_task(asyncInterval(3))
-        p_loop.run_forever()
-        print("Stopping leobridge server")
-        
+
     localLoop = asyncio.get_event_loop()
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
+    localLoop.create_task(asyncInterval(3))
+    localLoop.run_until_complete(start_server)
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
-    
-    t = threading.Thread(target=loopInThread, args=(localLoop,))
-    t.start()
-    print("Finished Main")
-
-    # from leoApp.py :  g.app.backgroundProcessManager = leoBackground.BackgroundProcessManager()
-    # g.app.idleTimeManager.start() after loading leo file
+    localLoop.run_forever()
+    print("Stopping leobridge server")
 
 
 if __name__ == '__main__':

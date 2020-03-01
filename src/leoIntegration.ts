@@ -94,10 +94,6 @@ export class LeoIntegration {
         prompt: Constants.USER_MESSAGES.PROMPT_INSERT_NODE
     };
     // * Ask to refresh derived file that changed
-    private _askRefreshOptions: vscode.QuickPickOptions = {
-        ignoreFocusOut: false, // clicking outside cancels the headline change
-        placeHolder: 'Derived file was modified'
-    };
     private currentAskRefreshQuickPick: vscode.QuickInput | undefined;
     private _askResult: string = "";
 
@@ -1120,7 +1116,7 @@ export class LeoIntegration {
         askRefreshQuickPick.items = w_items;
         askRefreshQuickPick.onDidAccept(() => {
             if (askRefreshQuickPick.selectedItems[0].label !== "$(x) Ignore") {
-                console.log('REFRESH DERIVED FILES');
+                // console.log('REFRESH DERIVED FILES');
                 this._askResult = "yes";
 
             }
@@ -1128,9 +1124,9 @@ export class LeoIntegration {
         });
         askRefreshQuickPick.onDidHide(() => {
             console.log('Hide ask panel, using LEOBRIDGE_ACTIONS.ASK_RESULT to send this string: ' + this._askResult);
-            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
-                console.log('Back from ASK_RESULT');
-            });
+            // this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
+            //     console.log('Back from ASK_RESULT');
+            // });
         });
 
         if (this.currentAskRefreshQuickPick) {
