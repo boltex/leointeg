@@ -29,6 +29,7 @@
 <v t="felix.20200223223219.1"><vh>idleTime</vh></v>
 <v t="felix.20200219222712.1"><vh>es</vh></v>
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
+<v t="felix.20200227211523.1"><vh>setLoop</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
 <v t="felix.20200216160305.1"><vh>saveFile</vh></v>
@@ -478,10 +479,12 @@ if __name__ == '__main__':
 
     # TODO : This is a basic test loop, fix it with 2 way async comm and error checking
     async def asyncInterval(timeout):
+        dummyCounter = 0
         strTimeout = str(timeout) + ' sec interval'
         while True:
             await asyncio.sleep(timeout)
-            await integController.asyncOutput("{\"interval\":" + str(timeout) + "}")  # as number
+            dummyCounter=dummyCounter+1
+            await integController.asyncOutput("{\"interval\":" + str(timeout+dummyCounter) + "}")  # as number
             print(strTimeout)
 
     async def leoBridgeServer(websocket, path):
@@ -506,14 +509,22 @@ if __name__ == '__main__':
             print("Caught Websocket Disconnect Event")
         finally:
             asyncio.get_event_loop().stop()
-
+    
+    def loopInThread(p_loop):
+        asyncio.set_event_loop(p_loop)
+        integController.setLoop(p_loop)
+        p_loop.run_until_complete(start_server)
+        p_loop.create_task(asyncInterval(3))
+        p_loop.run_forever()
+        print("Stopping leobridge server")
+        
+    localLoop = asyncio.get_event_loop()
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
-
-    asyncio.get_event_loop().run_until_complete(start_server)
-    asyncio.get_event_loop().create_task(asyncInterval(3))
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
-    asyncio.get_event_loop().run_forever()
-    print("Stopping leobridge server")
+    
+    t = threading.Thread(target=loopInThread, args=(localLoop,))
+    t.start()
+    print("Finished Main")
 
     # from leoApp.py :  g.app.backgroundProcessManager = leoBackground.BackgroundProcessManager()
     # g.app.idleTimeManager.start() after loading leo file
@@ -638,6 +649,7 @@ import leo.core.leoExternalFiles as leoExternalFiles
 import leo.core.leoNodes as leoNodes
 import asyncio
 import concurrent.futures
+import threading
 import websockets
 import sys
 import getopt
@@ -792,9 +804,7 @@ wsPort = 32125
 </t>
 <t tx="felix.20200211202929.1">def initConnection(self, p_webSocket):
     self.webSocket = p_webSocket
-    self.loop = asyncio.get_event_loop()
-    self.ask_task = asyncio.Event()
-    self.pool = concurrent.futures.ThreadPoolExecutor()
+    # self.loop = asyncio.get_event_loop()
 
 </t>
 <t tx="felix.20200213195413.1">async def asyncOutput(self, p_json):
@@ -915,20 +925,25 @@ wsPort = 32125
     '''Create and run an askYesNo dialog.'''
     w_package = {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
     if self.loop:
-        self.loop.create_task(self.asyncOutput(json.dumps(w_package, separators=(',', ':'))))
-
+        # DONT USE THIS LOOP!! 
+        # MAKE ANOTHER THREAD AND USE THE SPECIAL THREAD SAFE STUFF AND THREADSAFE EVENT.SET EVENT.WAIT
+        # self.loop.create_task(self.asyncOutput(json.dumps(w_package, separators=(',', ':'))))
+        self.pool.submit(asyncio.run, self.asyncOutput(json.dumps(w_package, separators=(',', ':')))).result()
         print("before, ask_result is" + self.ask_result)
         # * Wait for response from vscode
-        self.ask_task.clear()
+        # self.ask_task = asyncio.Event()
+        # self.ask_task.clear()
 
         # self.loop.run_until_complete(self.asyncWaitAskResult())
         # future = asyncio.run_coroutine_threadsafe(self.asyncWaitAskResult(), self.loop)
         # result = future.result()
+
         result = self.pool.submit(asyncio.run, self.asynchronous()).result()
         print("after, ask_result is" + str(result))
         return "no"
 
-        # print("after, ask_result is"+ self.ask_result)
+        #self.pool.submit(asyncio.run, self.asyncWaitAskResult()).result()
+        #print("after, ask_result is" + self.ask_result)
         # return self.ask_result
 
     else:
@@ -949,6 +964,7 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200225222645.1">async def asyncWaitAskResult(self):
+    print('entering asyncWaitAskResult')
     await self.ask_task.wait()  # await until event would be .set()
     print("Finally, the task is done")
 
@@ -961,9 +977,13 @@ wsPort = 32125
 </t>
 <t tx="felix.20200226215807.1">async def asynchronous(self):
     print('entering asynchronous')
-    await asyncio.sleep(1)
+    await asyncio.sleep(10)
     print('exiting asynchronous')
     return 42
+
+</t>
+<t tx="felix.20200227211523.1">def setLoop(self, p_loop):
+    self.loop = p_loop
 
 </t>
 </tnodes>
