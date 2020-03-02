@@ -519,6 +519,7 @@ export class LeoIntegration {
             !!p_ap.cloned,          // cloned
             !!p_ap.dirty,           // dirty
             !!p_ap.marked,          // marked
+            !!p_ap.atFile,          // atFile
             !!p_ap.hasBody,         // hasBody
             this                    // _leoIntegration pointer
         );
@@ -1036,6 +1037,9 @@ export class LeoIntegration {
         }
     }
 
+    public refreshFromDiskNode(): void {
+        vscode.window.showInformationMessage("TODO: refreshFromDiskNode command"); // temp placeholder
+    }
     public hoistNode(): void {
         vscode.window.showInformationMessage("TODO: hoistNode command"); // temp placeholder
     }

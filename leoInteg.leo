@@ -53,6 +53,7 @@
 <v t="felix.20200105173826.1"><vh>outlineCommand</vh></v>
 <v t="felix.20191231203711.1"><vh>undo</vh></v>
 <v t="felix.20200103204811.1"><vh>redo</vh></v>
+<v t="felix.20200301235235.1"><vh>refreshFromDiskPNode</vh></v>
 <v t="felix.20191231214801.1"><vh>executeScript</vh></v>
 <v t="felix.20191126232434.15"><vh>getPNode</vh></v>
 <v t="felix.20191126232434.16"><vh>getChildren</vh></v>
@@ -365,6 +366,8 @@ if __name__ == '__main__':
         w_ap['expanded'] = True
     if p.isMarked():
         w_ap['marked'] = True
+    if p.isAnyAtFileNode():
+        w_ap['atFile'] = True
     if p == self.commander.p:
         w_ap['selected'] = True
     return w_ap
@@ -386,11 +389,11 @@ if __name__ == '__main__':
     self.g = self.bridge.globals()
 
     # * Trace outputs to pythons stdout, also prints the function call stack
-    # self.g.trace('test trace') 
+    # self.g.trace('test trace')
 
     # * Intercept Log Pane output: Sends to vsCode's log pane
     self.g.es = self.es  # pointer - not a function call
-    
+
     # print(dir(self.g))
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
     # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
@@ -724,7 +727,7 @@ wsPort = 32125
                 # print("already on selection")
                 w_func()
             else:
-                # print("not on selection")
+                # print("not on selection") 
                 oldPosition = self.commander.p  # not same node, save position to possibly return to
                 self.commander.selectPosition(w_p)
                 w_func()
@@ -802,6 +805,11 @@ wsPort = 32125
         self.g.es(str(self.g.app.signon1))
     else:
         print('no loop in logSignon')
+
+</t>
+<t tx="felix.20200301235235.1">def refreshFromDiskPNode(self, p_ap):
+    '''Refresh from Disk, don't select it if possible'''
+    return self.outlineCommand("refreshFromDisk", p_ap, True)
 
 </t>
 </tnodes>

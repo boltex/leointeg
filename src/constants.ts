@@ -89,7 +89,8 @@ export class Constants {
         SHOW_COPY: Constants.CONFIGURATION.SHOW_COPY,
         LEO_SELECTED: "leoObjectSelected",
         SELECTED_MARKED: "leoNodeMarked",
-        SELECTED_UNMARKED: "leoNode"
+        SELECTED_UNMARKED: "leoNodeUnmarked",
+        SELECTED_ATFILE: "leoNodeAtFile"
     };
 
     public static LEOBRIDGE_ACTIONS = {
@@ -124,6 +125,7 @@ export class Constants {
         CLONE_PNODE: "clonePNode",
         PROMOTE_PNODE: "promotePNode",
         DEMOTE_PNODE: "demotePNode",
+        REFRESH_FROM_DISK_PNODE: "refreshFromDiskPNode",
         HEADLINE_PNODE: "",
         UNDO: "undo",
         REDO: "redo",
@@ -191,6 +193,7 @@ export class Constants {
         CLONE: "cloneNode",
         PROMOTE: "promote",
         DEMOTE: "demote",
+        REFRESH_FROM_DISK: "refreshFromDisk",
         MARK_SELECTION: "markSelection",
         UNMARK_SELECTION: "unmarkSelection",
         COPY_SELECTION: "copyNodeSelection",
@@ -207,6 +210,7 @@ export class Constants {
         CLONE_SELECTION: "cloneNodeSelection",
         PROMOTE_SELECTION: "promoteSelection",
         DEMOTE_SELECTION: "demoteSelection",
+        REFRESH_FROM_DISK_SELECTION: "refreshFromDiskSelection",
         // * ---------------
         HOIST: "hoistNode",
         HOIST_SELECTION: "hoistSelection",

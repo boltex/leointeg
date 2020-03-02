@@ -205,7 +205,7 @@
       },
       {
         "command": "leointeg.connectToServer",
-        "title": "Connect to Leo Bridge server",
+        "title": "Connect to Leo Bridge Server",
         "category": "Leo",
         "icon": {
           "light": "resources/light/connect.svg",
@@ -579,6 +579,16 @@
         "command": "leointeg.moveMarkedNodes",
         "category": "Leo",
         "title": "Move Marked Nodes"
+      },
+      {
+        "command": "leointeg.refreshFromDisk",
+        "category": "Leo",
+        "title": "Refresh from Disk"
+      },
+      {
+        "command": "leointeg.refreshFromDiskSelection",
+        "category": "Leo",
+        "title": "Refresh from Disk"
       }
     ],
     "menus": {
@@ -681,6 +691,10 @@
         },
         {
           "command": "leointeg.executeScriptSelection",
+          "when": "leoObjectSelected==true"
+        },
+        {
+          "command": "leointeg.refreshFromDiskSelection",
           "when": "leoObjectSelected==true"
         },
         {
@@ -812,6 +826,10 @@
           "when": "false"
         },
         {
+          "command": "leointeg.refreshFromDisk",
+          "when": "false"
+        },
+        {
           "command": "leointeg.insertNode",
           "when": "false"
         },
@@ -902,12 +920,12 @@
         },
         {
           "command": "leointeg.mark",
-          "when": "showMarkOnNodes == true && viewItem == leoNode",
+          "when": "showMarkOnNodes == true && viewItem =~ /leoNodeUnmarked/",
           "group": "inline@5"
         },
         {
           "command": "leointeg.unmark",
-          "when": "showMarkOnNodes == true && viewItem == leoNodeMarked",
+          "when": "showMarkOnNodes == true && viewItem =~ /leoNodeMarked/",
           "group": "inline@5"
         },
         {
@@ -916,13 +934,18 @@
           "group": "leoNodeContext1@1"
         },
         {
+          "command": "leointeg.refreshFromDisk",
+          "when": "viewItem =~ /leoNodeAtFile/",
+          "group": "leoNodeContext1@1"
+        },
+        {
           "command": "leointeg.mark",
-          "when": "viewItem == leoNode",
+          "when": "viewItem =~ /leoNodeUnmarked/",
           "group": "leoNodeContext2@1"
         },
         {
           "command": "leointeg.unmark",
-          "when": "viewItem == leoNodeMarked",
+          "when": "viewItem =~ /leoNodeMarked/",
           "group": "leoNodeContext2@2"
         },
         {

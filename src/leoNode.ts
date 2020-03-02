@@ -7,7 +7,7 @@ export class LeoNode extends vscode.TreeItem {
     // * Implementation of tree nodes for usage in a TreeDataProvider
 
     public cursorSelection: any; // TODO : Keep body's cursor and selection position from vscode to get it back
-    public contextValue: string;
+    public contextValue: string; // * Context string is checked in package.json with 'when' clauses
 
     constructor(
         public label: string, // Node headline
@@ -18,21 +18,28 @@ export class LeoNode extends vscode.TreeItem {
         public cloned: boolean,
         public dirty: boolean,
         public marked: boolean,
+        public atFile: boolean,
         public hasBody: boolean,
         private _leoIntegration: LeoIntegration
     ) {
         super(label, collapsibleState);
-        if (marked) {
-            // * For use in package.json
-            this.contextValue = Constants.CONTEXT_FLAGS.SELECTED_MARKED; // 'leoNodeMarked'
-        } else {
-            this.contextValue = Constants.CONTEXT_FLAGS.SELECTED_UNMARKED; // 'leoNode'
-        }
+        this.contextValue = this._getContextValue(marked, atFile);
         this.command = {
             command: Constants.NAME + "." + Constants.LEOINTEG_COMMANDS.SELECT_NODE,
             title: '',
             arguments: [this]
         };
+    }
+
+    private _getContextValue(p_marked: boolean, p_atFile: boolean): string {
+        let w_contextValue = Constants.CONTEXT_FLAGS.SELECTED_UNMARKED; // * Start it with 'leoNodeMarked' or 'leoNodeUnmarked'
+        if (p_marked) {
+            w_contextValue = Constants.CONTEXT_FLAGS.SELECTED_MARKED;
+        }
+        if (p_atFile) {
+            w_contextValue += Constants.CONTEXT_FLAGS.SELECTED_ATFILE; // * then append 'leoNodeAtFile' to existing if needed
+        }
+        return w_contextValue;
     }
 
     public copyProperties(p_node: LeoNode): LeoNode {
@@ -44,8 +51,9 @@ export class LeoNode extends vscode.TreeItem {
         this.cloned = p_node.cloned;
         this.dirty = p_node.dirty;
         this.marked = p_node.marked;
+        this.atFile = p_node.atFile;
         this.hasBody = p_node.hasBody;
-        this.contextValue = p_node.contextValue;
+        this.contextValue = this._getContextValue(p_node.marked, p_node.atFile);
         return this;
     }
 
@@ -58,7 +66,6 @@ export class LeoNode extends vscode.TreeItem {
             (+this.cloned << 2) |
             (+this.marked << 1) |
             +this.hasBody;
-
         return this._leoIntegration.icons[w_icon];
     }
 

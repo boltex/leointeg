@@ -28,11 +28,11 @@ class leoBridgeIntegController:
         self.g = self.bridge.globals()
 
         # * Trace outputs to pythons stdout, also prints the function call stack
-        # self.g.trace('test trace') 
+        # self.g.trace('test trace')
 
         # * Intercept Log Pane output: Sends to vsCode's log pane
         self.g.es = self.es  # pointer - not a function call
-        
+
         # print(dir(self.g))
         self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
         # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
@@ -296,7 +296,7 @@ class leoBridgeIntegController:
                     # print("already on selection")
                     w_func()
                 else:
-                    # print("not on selection")
+                    # print("not on selection") 
                     oldPosition = self.commander.p  # not same node, save position to possibly return to
                     self.commander.selectPosition(w_p)
                     w_func()
@@ -319,6 +319,10 @@ class leoBridgeIntegController:
         if(self.commander.undoer.canRedo()):
             self.commander.undoer.redo()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+    def refreshFromDiskPNode(self, p_ap):
+        '''Refresh from Disk, don't select it if possible'''
+        return self.outlineCommand("refreshFromDisk", p_ap, True)
 
     def executeScript(self, p_ap):
         '''Select a node and run its script'''
@@ -560,6 +564,8 @@ class leoBridgeIntegController:
             w_ap['expanded'] = True
         if p.isMarked():
             w_ap['marked'] = True
+        if p.isAnyAtFileNode():
+            w_ap['atFile'] = True
         if p == self.commander.p:
             w_ap['selected'] = True
         return w_ap

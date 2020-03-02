@@ -41,22 +41,23 @@ export interface LeoLogEntry {
 
 
 export interface ArchivedPosition { // * from Leo's leoflexx.py
-    hasBody: boolean;     // bool(p.b),
-    hasChildren: boolean; // p.hasChildren()
-    childIndex: number;   // p._childIndex
-    cloned: boolean;      // p.isCloned()
-    dirty: boolean;       // p.isDirty()
-    expanded: boolean;    // p.isExpanded()
-    gnx: string;          // p.v.gnx
-    level: number;        // p.level()
-    headline: string;     // p.h
-    marked: boolean;      // p.isMarked()
-    selected: boolean;    // p == commander.p
+    hasBody: boolean;       // bool(p.b),
+    hasChildren: boolean;   // p.hasChildren()
+    childIndex: number;     // p._childIndex
+    cloned: boolean;        // p.isCloned()
+    dirty: boolean;         // p.isDirty()
+    expanded: boolean;      // p.isExpanded()
+    gnx: string;            // p.v.gnx
+    level: number;          // p.level()
+    headline: string;       // p.h
+    marked: boolean;        // p.isMarked()
+    atFile: boolean         // p.isAnyAtFileNode():
+    selected: boolean;      // p == commander.p
     stack: {
         gnx: string;        // stack_v.gnx
         childIndex: number; // stack_childIndex
         headline: string;   // stack_v.h
-    }[];                  // for (stack_v, stack_childIndex) in p.stack]
+    }[];                    // for (stack_v, stack_childIndex) in p.stack]
 }
 
 export interface LeoBridgePackage { // TODO : Document
