@@ -1037,9 +1037,19 @@ export class LeoIntegration {
         }
     }
 
-    public refreshFromDiskNode(): void {
-        vscode.window.showInformationMessage("TODO: refreshFromDiskNode command"); // temp placeholder
+    public refreshFromDiskNode(p_node?: LeoNode): void {
+        // vscode.window.showInformationMessage("TODO: refreshFromDiskNode command"); // temp placeholder
+        if (this._leoBridgeActionBusy) {
+            console.log('Too fast! refreshFromDiskNode ');
+        } else {
+            this._leoBridgeActionBusy = true;
+            this.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.REFRESH_FROM_DISK_PNODE, p_node, RevealType.RevealSelectFocusShowBody).then(() => {
+                this.leoFileSystem.fireRefreshFiles();
+                this._leoBridgeActionBusy = false;
+            });
+        }
     }
+
     public hoistNode(): void {
         vscode.window.showInformationMessage("TODO: hoistNode command"); // temp placeholder
     }

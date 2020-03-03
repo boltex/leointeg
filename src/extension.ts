@@ -65,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLONE, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.CLONE_PNODE, p_node)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.PROMOTE, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.PROMOTE_PNODE, p_node, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DEMOTE, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.DEMOTE_PNODE, p_node, RevealType.RevealSelectFocusShowBody)],
-        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.REFRESH_FROM_DISK, (p_node: LeoNode) => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.REFRESH_FROM_DISK_PNODE, p_node, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.REFRESH_FROM_DISK, (p_node: LeoNode) => leoIntegration.refreshFromDiskNode(p_node)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_DOWN_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_DOWN, undefined, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_LEFT_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_LEFT, undefined, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_RIGHT_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_RIGHT, undefined, RevealType.RevealSelectFocusShowBody)],
@@ -74,7 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLONE_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.CLONE_PNODE, undefined, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.PROMOTE_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.PROMOTE_PNODE, undefined, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DEMOTE_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.DEMOTE_PNODE, undefined, RevealType.RevealSelectFocusShowBody)],
-        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.REFRESH_FROM_DISK_SELECTION, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.REFRESH_FROM_DISK_PNODE, undefined, RevealType.RevealSelectFocusShowBody)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.REFRESH_FROM_DISK_SELECTION, () => leoIntegration.refreshFromDiskNode(undefined)],
 
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SORT_CHILDREN, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.SORT_CHILDREN, undefined, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SORT_SIBLING, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.SORT_SIBLINGS, undefined, RevealType.RevealSelectFocusShowBody)],
@@ -142,7 +142,7 @@ async function showWelcome(version: string, previousVersion: string | undefined)
     ) {
         return;
     }
-    // Will show on major or minor upgrade, Formated as 'Major.Minor.Revision' eg. 1.2.3
+    // Will show on major or minor upgrade, Formatted as 'Major.Minor.Revision' eg. 1.2.3
     if (major !== prevMajor || (major === prevMajor && minor > prevMinor)) {
         await vscode.commands.executeCommand(Constants.NAME + "." + Constants.LEOINTEG_COMMANDS.SHOW_WELCOME);
     }
