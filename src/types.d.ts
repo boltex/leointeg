@@ -1,3 +1,5 @@
+import * as vscode from "vscode";
+
 export interface ConfigMembers {
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
@@ -68,4 +70,8 @@ export interface LeoBridgePackage { // TODO : Document
 export interface Icon {
     light: string;
     dark: string;
+}
+
+export interface AskPickItem extends vscode.QuickPickItem {
+    value: string;
 }

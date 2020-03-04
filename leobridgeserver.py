@@ -136,15 +136,6 @@ class ExternalFilesController:
         import hashlib
         return hashlib.md5(open(path, 'rb').read()).hexdigest()
 
-    def destroy_temp_file(self, ef):
-        '''Destroy the *temp* file corresponding to ef, an ExternalFile instance.'''
-        # Do not use g.trace here.
-        if ef.path and self.integController.g.os_path_exists(ef.path):
-            try:
-                os.remove(ef.path)
-            except Exception:
-                pass
-
     def get_mtime(self, path):
         '''Return the modification time for the path.'''
         return self.integController.g.os_path_getmtime(self.integController.g.os_path_realpath(path))
@@ -274,29 +265,29 @@ class IdleTimeManager:
     def on_idle(self, timer):
         """IdleTimeManager: Run all idle-time callbacks."""
         print("PRINTING IN IDLE LOOP")
-        self.g.es("EMITTING IN IDLE LOOP")
-        return
+        # self.g.es("EMITTING IN IDLE LOOP")
+        # return
 
-        # if not self.g.app:
-        #     return
-        # if self.g.app.killed:
-        #     return
-        # if not self.g.app.pluginsController:
-        #     self.g.trace('No g.app.pluginsController', self.g.callers())
-        #     timer.stop()
-        #     return  # For debugger.
-        # self.on_idle_count += 1
-        # # Handle the registered callbacks.
-        # # print("list length : ", len(self.callback_list))
-        # for callback in self.callback_list:
-        #     try:
-        #         callback()
-        #     except Exception:
-        #         self.g.es_exception()
-        #         self.g.es_print(f"removing callback: {callback}")
-        #         self.callback_list.remove(callback)
-        # # Handle idle-time hooks.
-        # self.g.app.pluginsController.on_idle()
+        if not self.g.app:
+            return
+        if self.g.app.killed:
+            return
+        if not self.g.app.pluginsController:
+            self.g.trace('No g.app.pluginsController', self.g.callers())
+            timer.stop()
+            return  # For debugger.
+        self.on_idle_count += 1
+        # Handle the registered callbacks.
+        # print("list length : ", len(self.callback_list))
+        for callback in self.callback_list:
+            try:
+                callback()
+            except Exception:
+                self.g.es_exception()
+                self.g.es_print(f"removing callback: {callback}")
+                self.callback_list.remove(callback)
+        # Handle idle-time hooks.
+        self.g.app.pluginsController.on_idle()
 
     def start(self):
         """Start the idle-time timer."""
@@ -350,7 +341,6 @@ class leoBridgeIntegController:
 
     def _idleTime(self, fn, delay, tag):
         asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
-        
 
     def logSignon(self):
         '''Simulate the Initial Leo Log Entry'''
@@ -914,7 +904,7 @@ def main():
     # start Server
     integController = leoBridgeIntegController()
 
-    # TODO : This is a basic test loop, fix it with 2 way async comm and error checking
+    # * This is a basic example loop
     async def asyncInterval(timeout):
         dummyCounter = 0
         strTimeout = str(timeout) + ' sec interval'

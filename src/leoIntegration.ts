@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as child from 'child_process';
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, AskPickItem } from "./types";
 import { Utils } from "./utils";
 import { Config } from "./config";
 import { LeoFiles } from "./leoFiles";
@@ -1111,36 +1111,34 @@ export class LeoIntegration {
 
         this._askResult = "no";
 
-        // TODO also implement the yes to all / no to all from this python code :
-        // if result and "-all" in result.lower():
-        // self.yesno_all_time = time.time()
-        // self.yesno_all_answer = result.lower()
-
         const lastLine = p_askArg.message.substr(p_askArg.message.lastIndexOf("\n") + 1);
 
-        const w_items: vscode.QuickPickItem[] = [
-            { label: "$(refresh) " + lastLine, alwaysShow: true },
-            { label: "$(x) Ignore", alwaysShow: true }
+        const w_items: AskPickItem[] = [
+            { label: "$(refresh) " + lastLine, alwaysShow: true, value: "yes" },
+            { label: "$(close) Ignore", alwaysShow: true, value: "no" }
         ];
 
-        const askRefreshQuickPick: vscode.QuickPick<vscode.QuickPickItem> = vscode.window.createQuickPick();
+        if (p_askArg.yes_all) {
+            w_items.push({ label: "$(refresh) Refresh all", alwaysShow: true, value: "yes_all" });
+        }
+        if (p_askArg.no_all) {
+            w_items.push({ label: "$(close) Ignore all", alwaysShow: true, value: "no_all" });
+        }
 
+        const askRefreshQuickPick: vscode.QuickPick<AskPickItem> = vscode.window.createQuickPick();
+        askRefreshQuickPick.ignoreFocusOut = false;
         askRefreshQuickPick.title = p_askArg.message; // take first line
         askRefreshQuickPick.placeholder = p_askArg.ask; // take last line of message
         askRefreshQuickPick.items = w_items;
         askRefreshQuickPick.onDidAccept(() => {
-            if (askRefreshQuickPick.selectedItems[0].label !== "$(x) Ignore") {
-                // console.log('REFRESH DERIVED FILES');
-                this._askResult = "yes";
-
-            }
+            this._askResult = askRefreshQuickPick.selectedItems[0].value;
             askRefreshQuickPick.hide();
         });
         askRefreshQuickPick.onDidHide(() => {
             console.log('Hide ask panel, using LEOBRIDGE_ACTIONS.ASK_RESULT to send this string: ' + this._askResult);
-            // this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
-            //     console.log('Back from ASK_RESULT');
-            // });
+            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
+                console.log('Back from ASK_RESULT');
+            });
         });
 
         if (this.currentAskRefreshQuickPick) {
@@ -1148,6 +1146,12 @@ export class LeoIntegration {
         }
         this.currentAskRefreshQuickPick = askRefreshQuickPick;
         this.currentAskRefreshQuickPick.show();
+    }
+
+    public warn(p_waitArg: any): void {
+        //
+        //
+        console.log('Wait Arg: ', p_waitArg);
     }
 
     public saveLeoFile(): void {
