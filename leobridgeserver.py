@@ -15,6 +15,299 @@ wsHost = "localhost"
 wsPort = 32125
 
 
+class ExternalFilesController:
+    '''Modified from Leo sources'''
+
+    def __init__(self, integController):
+        '''Ctor for ExternalFiles class.'''
+        self.on_idle_count = 0
+        self.integController = integController
+        self.checksum_d = {}
+        # Keys are full paths, values are file checksums.
+        self.enabled_d = {}
+        # For efc.on_idle.
+        # Keys are commanders.
+        # Values are cached @bool check-for-changed-external-file settings.
+        self.has_changed_d = {}
+        # Keys are commanders. Values are boolean.
+        # Used only to limit traces.
+        self.unchecked_commanders = []
+        # Copy of g.app.commanders()
+        self.unchecked_files = []
+        # Copy of self file. Only one files is checked at idle time.
+        self._time_d = {}
+        # Keys are full paths, values are modification times.
+        # DO NOT alter directly, use set_time(path) and
+        # get_time(path), see set_time() for notes.
+        self.yesno_all_time = 0  # previous yes/no to all answer, time of answer
+        self.yesno_all_answer = None  # answer, 'yes-all', or 'no-all'
+
+        self.integController.g.app.idleTimeManager.add_callback(self.on_idle)
+
+        print("Created ExternalFilesController")
+
+    def on_idle(self):
+        '''
+        Check for changed open-with files and all external files in commanders
+        for which @bool check_for_changed_external_file is True.
+        '''
+        if not self.integController.g.app or self.integController.g.app.killed:
+            return
+
+        self.on_idle_count += 1
+
+        if self.unchecked_commanders:
+            # Check the next commander for which
+            # @bool check_for_changed_external_file is True.
+            c = self.unchecked_commanders.pop()
+            self.idle_check_commander(c)
+        else:
+            # Add all commanders for which
+            # @bool check_for_changed_external_file is True.
+            self.unchecked_commanders = [
+                z for z in self.integController.g.app.commanders() if self.is_enabled(z)
+            ]
+
+    def idle_check_commander(self, c):
+        '''
+        Check all external files corresponding to @<file> nodes in c for
+        changes.
+        '''
+        # #1100: always scan the entire file for @<file> nodes.
+        # #1134: Nested @<file> nodes are no longer valid, but this will do no harm.
+        for p in c.all_unique_positions():
+            if p.isAnyAtFileNode():
+                self.idle_check_at_file_node(c, p)
+
+    def idle_check_at_file_node(self, c, p):
+        '''Check the @<file> node at p for external changes.'''
+        trace = False
+        # Matt, set this to True, but only for the file that interests you.\
+        # trace = p.h == '@file unregister-leo.leox'
+        path = self.integController.g.fullPath(c, p)
+        has_changed = self.has_changed(c, path)
+        if trace:
+            self.integController.g.trace('changed', has_changed, p.h)
+        if has_changed:
+            if p.isAtAsisFileNode() or p.isAtNoSentFileNode():
+                # Fix #1081: issue a warning.
+                self.warn(c, path, p=p)
+            elif self.ask(c, path, p=p):
+                c.redraw(p=p)
+                c.refreshFromDisk(p)
+                c.redraw()
+            # Always update the path & time to prevent future warnings.
+            self.set_time(path)
+            self.checksum_d[path] = self.checksum(path)
+
+    def ask(self, c, path, p=None):
+        '''
+        Ask user whether to overwrite an @<file> tree.
+        Return True if the user agrees.
+        '''
+        if self.yesno_all_time + 3 >= time.time() and self.yesno_all_answer:
+            self.yesno_all_time = time.time()  # Still reloading?  Extend time.
+            return bool('yes' in self.yesno_all_answer.lower())
+        if not p:
+            where = 'the outline node'
+        else:
+            where = p.h
+        _is_leo = path.endswith(('.leo', '.db'))
+        if _is_leo:
+            s = '\n'.join([
+                f'{self.integController.g.splitLongFileName(path)} has changed outside Leo.',
+                'Overwrite it?'
+            ])
+        else:
+            s = '\n'.join([
+                f'{self.integController.g.splitLongFileName(path)} has changed outside Leo.',
+                f"Reload {where} in Leo?",
+            ])
+        result = self.integController.g.app.gui.runAskYesNoDialog(c, 'Overwrite the version in Leo?', s,
+                                                                  yes_all=not _is_leo, no_all=not _is_leo)
+        if result and "-all" in result.lower():
+            self.yesno_all_time = time.time()
+            self.yesno_all_answer = result.lower()
+        return bool(result and 'yes' in result.lower())
+        # Careful: may be unit testing.
+
+    def checksum(self, path):
+        '''Return the checksum of the file at the given path.'''
+        import hashlib
+        return hashlib.md5(open(path, 'rb').read()).hexdigest()
+
+    def destroy_temp_file(self, ef):
+        '''Destroy the *temp* file corresponding to ef, an ExternalFile instance.'''
+        # Do not use g.trace here.
+        if ef.path and self.integController.g.os_path_exists(ef.path):
+            try:
+                os.remove(ef.path)
+            except Exception:
+                pass
+
+    def get_mtime(self, path):
+        '''Return the modification time for the path.'''
+        return self.integController.g.os_path_getmtime(self.integController.g.os_path_realpath(path))
+
+    def get_time(self, path):
+        '''
+        return timestamp for path
+
+        see set_time() for notes
+        '''
+        return self._time_d.get(self.integController.g.os_path_realpath(path))
+
+    def has_changed(self, c, path):
+        '''Return True if p's external file has changed outside of Leo.'''
+        if not self.integController.g.os_path_exists(path):
+            return False
+        if self.integController.g.os_path_isdir(path):
+            return False
+        #
+        # First, check the modification times.
+        old_time = self.get_time(path)
+        new_time = self.get_mtime(path)
+        if not old_time:
+            # Initialize.
+            self.set_time(path, new_time)
+            self.checksum_d[path] = self.checksum(path)
+            return False
+        if old_time == new_time:
+            return False
+        #
+        # Check the checksums *only* if the mod times don't match.
+        old_sum = self.checksum_d.get(path)
+        new_sum = self.checksum(path)
+        if new_sum == old_sum:
+            # The modtime changed, but it's contents didn't.
+            # Update the time, so we don't keep checking the checksums.
+            # Return False so we don't prompt the user for an update.
+            self.set_time(path, new_time)
+            return False
+        # The file has really changed.
+        assert old_time, path
+        # #208: external change overwrite protection only works once.
+        # If the Leo version is changed (dirtied) again,
+        # overwrite will occur without warning.
+        # self.set_time(path, new_time)
+        # self.checksum_d[path] = new_sum
+        return True
+
+    def is_enabled(self, c):
+        '''Return the cached @bool check_for_changed_external_file setting.'''
+        d = self.enabled_d
+        val = d.get(c)
+        if val is None:
+            val = c.config.getBool('check-for-changed-external-files', default=False)
+            d[c] = val
+        return val
+
+    def join(self, s1, s2):
+        '''Return s1 + ' ' + s2'''
+        return f"{s1} {s2}"
+
+    def set_time(self, path, new_time=None):
+        '''
+        Implements c.setTimeStamp.
+
+        Update the timestamp for path.
+
+        NOTE: file paths with symbolic links occur with and without those links
+        resolved depending on the code call path.  This inconsistency is
+        probably not Leo's fault but an underlying Python issue.
+        Hence the need to call realpath() here.
+        '''
+        t = new_time or self.get_mtime(path)
+        self._time_d[self.integController.g.os_path_realpath(path)] = t
+
+    def warn(self, c, path, p):
+        '''
+        Warn that an @asis or @nosent node has been changed externally.
+
+        There is *no way* to update the tree automatically.
+        '''
+        if self.integController.g.unitTesting or c not in self.integController.g.app.commanders():
+            return
+        if not p:
+            self.integController.g.trace('NO P')
+            return
+
+        self.integController.es('\n'.join([
+            '%s has changed outside Leo.\n' % self.integController.g.splitLongFileName(path),
+            'Leo can not update this file automatically.\n',
+            'This file was created from %s.\n' % p.h,
+            'Warning: refresh-from-disk will destroy all children.'
+        ]))
+
+        # self.integController.es(
+        #     c=c,
+        #     message='\n'.join([
+        #         '%s has changed outside Leo.\n' % self.integController.g.splitLongFileName(path),
+        #         'Leo can not update this file automatically.\n',
+        #         'This file was created from %s.\n' % p.h,
+        #         'Warning: refresh-from-disk will destroy all children.'
+        #     ]),
+        #     title='External file changed',
+        # )
+
+
+class IdleTimeManager:
+    """
+    A singleton class to manage idle-time handling. This class handles all
+    details of running code at idle time, including running 'idle' hooks.
+
+    Any code can call g.app.idleTimeManager.add_callback(callback) to cause
+    the callback to be called at idle time forever.
+    """
+
+    def __init__(self, g):
+        """Ctor for IdleTimeManager class."""
+        self.g = g
+        self.callback_list = []
+        self.timer = None
+        self.on_idle_count = 0
+
+    def add_callback(self, callback):
+        """Add a callback to be called at every idle time."""
+        self.callback_list.append(callback)
+
+    def on_idle(self, timer):
+        """IdleTimeManager: Run all idle-time callbacks."""
+        print("PRINTING IN IDLE LOOP")
+        self.g.es("EMITTING IN IDLE LOOP")
+        return
+
+        # if not self.g.app:
+        #     return
+        # if self.g.app.killed:
+        #     return
+        # if not self.g.app.pluginsController:
+        #     self.g.trace('No g.app.pluginsController', self.g.callers())
+        #     timer.stop()
+        #     return  # For debugger.
+        # self.on_idle_count += 1
+        # # Handle the registered callbacks.
+        # # print("list length : ", len(self.callback_list))
+        # for callback in self.callback_list:
+        #     try:
+        #         callback()
+        #     except Exception:
+        #         self.g.es_exception()
+        #         self.g.es_print(f"removing callback: {callback}")
+        #         self.callback_list.remove(callback)
+        # # Handle idle-time hooks.
+        # self.g.app.pluginsController.on_idle()
+
+    def start(self):
+        """Start the idle-time timer."""
+        self.timer = self.g.IdleTime(
+            self.on_idle,
+            delay=5000,
+            tag='IdleTimeManager.on_idle')
+        if self.timer:
+            self.timer.start()
+
+
 class leoBridgeIntegController:
     '''Leo Bridge Controller'''
 
@@ -38,6 +331,26 @@ class leoBridgeIntegController:
         # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
         self.webSocket = None
         self.loop = None
+
+        self.g.IdleTime = self._idleTime
+        self.g.app.idleTimeManager = IdleTimeManager(self.g)
+        self.g.app.commanders = self._commanders
+
+        self.efc = ExternalFilesController(self)
+
+    def _commanders(self):
+        ''' Return list of currently active controllers '''
+        # return [f.c for f in g.app.windowList]
+        return [self.commander]
+
+    async def _asyncIdleLoop(self, p_seconds, p_fn):
+        while True:
+            await asyncio.sleep(p_seconds)
+            p_fn(self)
+
+    def _idleTime(self, fn, delay, tag):
+        asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
+        
 
     def logSignon(self):
         '''Simulate the Initial Leo Log Entry'''
@@ -75,7 +388,10 @@ class leoBridgeIntegController:
         self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
 
         # * setup leoBackground to get messages from leo
-        print('TODO : Start EFM')
+        try:
+            self.g.app.idleTimeManager.start()  # To catch derived file changes
+        except:
+            print('ERROR with idleTimeManager')
 
         if(self.commander):
             self.create_gnx_to_vnode()
@@ -296,7 +612,7 @@ class leoBridgeIntegController:
                     # print("already on selection")
                     w_func()
                 else:
-                    # print("not on selection") 
+                    # print("not on selection")
                     oldPosition = self.commander.p  # not same node, save position to possibly return to
                     self.commander.selectPosition(w_p)
                     w_func()
