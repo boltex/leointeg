@@ -10,11 +10,17 @@
 <v t="felix.20191126232434.2"><vh>@clean leobridgeserver.py</vh>
 <v t="felix.20191128002414.1"><vh>Imports</vh></v>
 <v t="felix.20191128002417.1"><vh>Constants</vh></v>
+<v t="felix.20200302204251.1"><vh>class IdleTimeManager</vh>
+<v t="felix.20200302204251.2"><vh>itm.add_callback</vh></v>
+<v t="felix.20200302204251.3"><vh>itm.on_idle</vh></v>
+<v t="felix.20200302204251.4"><vh>itm.start</vh></v>
+</v>
 <v t="felix.20200302205810.1"><vh>class ExternalFilesController</vh>
 <v t="felix.20200302205810.2"><vh>efc.ctor</vh></v>
 <v t="felix.20200302205810.7"><vh>efc.on_idle</vh></v>
 <v t="felix.20200302205810.8"><vh>efc.idle_check_commander</vh></v>
 <v t="felix.20200302205810.9"><vh>efc.idle_check_at_file_node</vh></v>
+<v t="felix.20200304221925.1"><vh>efc.integResult</vh></v>
 <v t="felix.20200302205810.21"><vh>efc.utilities</vh>
 <v t="felix.20200302205810.22"><vh>efc.ask</vh></v>
 <v t="felix.20200302205810.23"><vh>efc.checksum</vh></v>
@@ -27,16 +33,13 @@
 <v t="felix.20200302205810.31"><vh>efc.warn</vh></v>
 </v>
 </v>
-<v t="felix.20200302204251.1"><vh>class IdleTimeManager</vh>
-<v t="felix.20200302204251.2"><vh>itm.add_callback</vh></v>
-<v t="felix.20200302204251.3"><vh>itm.on_idle</vh></v>
-<v t="felix.20200302204251.4"><vh>itm.start</vh></v>
-</v>
 <v t="felix.20191126232434.4"><vh>class leoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
 <v t="felix.20200303211848.1"><vh>_commanders</vh></v>
 <v t="felix.20200303214235.1"><vh>_asyncIdleLoop</vh></v>
 <v t="felix.20200303214255.1"><vh>_idleTime</vh></v>
+<v t="felix.20200304224909.1"><vh>sendAsyncOutput</vh></v>
+<v t="felix.20200304220844.1"><vh>askResult</vh></v>
 <v t="felix.20200219224515.1"><vh>logSignon</vh></v>
 <v t="felix.20200219222712.1"><vh>es</vh></v>
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
@@ -504,6 +507,7 @@ if __name__ == '__main__':
                     integController.setActionId(w_param['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
+                    # TODO : Block functions starting with underscore or reserved
                     answer = getattr(integController, w_param['action'])(w_param['param'])
                 else:
                     answer = "Error in processCommand"
@@ -854,6 +858,7 @@ wsPort = 32125
     Any code can call g.app.idleTimeManager.add_callback(callback) to cause
     the callback to be called at idle time forever.
     """
+    # TODO : REVISE/REPLACE WITH OWN SYSTEM
 
     def __init__(self, g):
         """Ctor for IdleTimeManager class."""
@@ -909,7 +914,8 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200302205810.1">class ExternalFilesController:
-    '''Modified from Leo sources'''
+    '''EFC Modified from Leo sources'''
+    # TODO : REVISE/REPLACE WITH OWN SYSTEM
 
     @others
 
@@ -939,6 +945,8 @@ wsPort = 32125
     self.yesno_all_answer = None  # answer, 'yes-all', or 'no-all'
 
     self.integController.g.app.idleTimeManager.add_callback(self.on_idle)
+    
+    self.lastPNode = None # last p node that was asked for if not set to "AllYes\AllNo"
 
     print("Created ExternalFilesController")
 
@@ -956,7 +964,9 @@ wsPort = 32125
         where = 'the outline node'
     else:
         where = p.h
+        
     _is_leo = path.endswith(('.leo', '.db'))
+    
     if _is_leo:
         s = '\n'.join([
             f'{self.integController.g.splitLongFileName(path)} has changed outside Leo.',
@@ -967,13 +977,20 @@ wsPort = 32125
             f'{self.integController.g.splitLongFileName(path)} has changed outside Leo.',
             f"Reload {where} in Leo?",
         ])
-    result = self.integController.g.app.gui.runAskYesNoDialog(c, 'Overwrite the version in Leo?', s,
-                                                              yes_all=not _is_leo, no_all=not _is_leo)
-    if result and "-all" in result.lower():
-        self.yesno_all_time = time.time()
-        self.yesno_all_answer = result.lower()
-    return bool(result and 'yes' in result.lower())
-    # Careful: may be unit testing.
+        
+    w_package = {"ask": 'Overwrite the version in Leo?', "message": s, "yes_all": not _is_leo, "no_all": not _is_leo}
+          
+    self.integController.sendAsyncOutput(w_package)
+    
+    # result = self.integController.g.app.gui.runAskYesNoDialog(c, 'Overwrite the version in Leo?', s,
+                                                              # yes_all=not _is_leo, no_all=not _is_leo)
+                                                              
+    # if result and "-all" in result.lower():
+        # self.yesno_all_time = time.time()
+        # self.yesno_all_answer = result.lower()
+        
+    # return bool(result and 'yes' in result.lower())
+    
 
 </t>
 <t tx="felix.20200302205810.23">def checksum(self, path):
@@ -1082,7 +1099,7 @@ wsPort = 32125
         'Warning: refresh-from-disk will destroy all children.'
     ]))
 
-    # self.integController.es(
+    # g.app.gui.runAskOkDialog(
     #     c=c,
     #     message='\n'.join([
     #         '%s has changed outside Leo.\n' % self.integController.g.splitLongFileName(path),
@@ -1100,6 +1117,9 @@ wsPort = 32125
     for which @bool check_for_changed_external_file is True.
     '''
     if not self.integController.g.app or self.integController.g.app.killed:
+        return
+
+    if self.lastPNode:
         return
 
     self.on_idle_count += 1
@@ -1125,6 +1145,8 @@ wsPort = 32125
     # #1100: always scan the entire file for @&lt;file&gt; nodes.
     # #1134: Nested @&lt;file&gt; nodes are no longer valid, but this will do no harm.
     for p in c.all_unique_positions():
+        if self.lastPNode:
+            break
         if p.isAnyAtFileNode():
             self.idle_check_at_file_node(c, p)
 
@@ -1139,6 +1161,8 @@ wsPort = 32125
     if trace:
         self.integController.g.trace('changed', has_changed, p.h)
     if has_changed:
+        if not self.lastPNode:
+            self.lastPNode = p
         if p.isAtAsisFileNode() or p.isAtNoSentFileNode():
             # Fix #1081: issue a warning.
             self.warn(c, path, p=p)
@@ -1146,6 +1170,7 @@ wsPort = 32125
             c.redraw(p=p)
             c.refreshFromDisk(p)
             c.redraw()
+            
         # Always update the path &amp; time to prevent future warnings.
         self.set_time(path)
         self.checksum_d[path] = self.checksum(path)
@@ -1153,6 +1178,7 @@ wsPort = 32125
 </t>
 <t tx="felix.20200303211848.1">def _commanders(self):
     ''' Return list of currently active controllers '''
+    # TODO : REVISE/REPLACE WITH OWN SYSTEM
     # return [f.c for f in g.app.windowList]
     return [self.commander]
 
@@ -1164,7 +1190,28 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200303214255.1">def _idleTime(self, fn, delay, tag):
+    # TODO : REVISE/REPLACE WITH OWN SYSTEM    
     asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
+
+</t>
+<t tx="felix.20200304220844.1">def askResult(self, p_result):
+    '''Got the result to an asked question/warning from vscode'''
+    print("got result: " + str(p_result))
+    this.efc.integResult(p_result)
+
+</t>
+<t tx="felix.20200304221925.1">def integResult(p_result):
+    # Got the result to an asked question/warning from vscode
+    pass
+    # check if p_resultwas from a warn or an ask yes/no/allyes/allno
+    # act accordingly
+</t>
+<t tx="felix.20200304224909.1">def sendAsyncOutput(p_package):
+    if self.loop:
+        self.loop.create_task(self.asyncOutput(json.dumps(p_package, separators=(',', ':'))))
+    else:
+        print('no loop!' + json.dumps(p_package, separators=(',', ':')))
+    
 
 </t>
 </tnodes>

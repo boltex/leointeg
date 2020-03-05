@@ -1105,6 +1105,13 @@ export class LeoIntegration {
         vscode.window.showInformationMessage("TODO: moveMarkedNode command"); // temp placeholder
     }
 
+
+    // runAskYesNoDialog // ask
+
+    // runAskOkDialog // warn
+
+
+
     public ask(p_askArg: { "ask": string; "message": string; "yes_all": boolean; "no_all": boolean; }): void {
         console.log('Ask Arg: ', p_askArg);
         // w_package = {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
