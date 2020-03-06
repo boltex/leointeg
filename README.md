@@ -37,7 +37,6 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 
 - A welcome screen for easy access to this expansion's settings.
 - Outline edition with an actual leo outline below the explorer view, or in its own panel.
-- Support for multiple, simultaneous edition of body panes.
 - Commands accessible either through context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
   - Open body panes to the side
   - Outline edition commands
@@ -89,6 +88,7 @@ For most users, **`Ctrl+D`** is often already assigned to some useful command. T
 - Provide most of Leo's core functionality, outline, body & log panes, color-syntaxing, shortcuts, etc.
 - Find specific line(s) from derived files in tree nodes (For error lookup, breakpoints cycling, etc.)
 - Show line number from the derived file instead of the body-pane's line number
+- Support for multiple, simultaneous body panes from different nodes.
 
 ## How it works
 

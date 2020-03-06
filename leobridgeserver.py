@@ -103,8 +103,10 @@ class ExternalFilesController:
 
         self.integController.g.app.idleTimeManager.add_callback(self.on_idle)
         
+        self.waitingForAnswer = False
         self.lastPNode = None # last p node that was asked for if not set to "AllYes\AllNo"
-
+        self.lastCommander = None
+        
         print("Created ExternalFilesController")
 
     def on_idle(self):
@@ -114,8 +116,7 @@ class ExternalFilesController:
         '''
         if not self.integController.g.app or self.integController.g.app.killed:
             return
-
-        if self.lastPNode:
+        if self.waitingForAnswer:
             return
 
         self.on_idle_count += 1
@@ -124,6 +125,7 @@ class ExternalFilesController:
             # Check the next commander for which
             # @bool check_for_changed_external_file is True.
             c = self.unchecked_commanders.pop()
+            self.lastCommander = c
             self.idle_check_commander(c)
         else:
             # Add all commanders for which
@@ -140,7 +142,7 @@ class ExternalFilesController:
         # #1100: always scan the entire file for @<file> nodes.
         # #1134: Nested @<file> nodes are no longer valid, but this will do no harm.
         for p in c.all_unique_positions():
-            if self.lastPNode:
+            if self.waitingForAnswer:
                 break
             if p.isAnyAtFileNode():
                 self.idle_check_at_file_node(c, p)
@@ -156,15 +158,17 @@ class ExternalFilesController:
             self.integController.g.trace('changed', has_changed, p.h)
         if has_changed:
             if not self.lastPNode:
-                self.lastPNode = p
+                self.lastPNode = p # can be set here because same for ask/wanr whatever
             if p.isAtAsisFileNode() or p.isAtNoSentFileNode():
                 # Fix #1081: issue a warning.
                 self.warn(c, path, p=p)
-            elif self.ask(c, path, p=p):
-                c.redraw(p=p)
-                c.refreshFromDisk(p)
-                c.redraw()
+            else:
+                self.ask(c, path, p=p)
                 
+            # c.redraw(p=p)
+            # c.refreshFromDisk(p)
+            # c.redraw()
+            
             # Always update the path & time to prevent future warnings.
             self.set_time(path)
             self.checksum_d[path] = self.checksum(path)
@@ -174,6 +178,16 @@ class ExternalFilesController:
         pass
         # check if p_resultwas from a warn or an ask yes/no/allyes/allno
         # act accordingly
+
+        path = self.integController.g.fullPath(c, p)
+        
+
+
+
+        # Always update the path & time to prevent future warnings.
+        self.set_time(path)
+        self.checksum_d[path] = self.checksum(path)
+
     def ask(self, c, path, p=None):
         '''
         Ask user whether to overwrite an @<file> tree.
@@ -203,7 +217,8 @@ class ExternalFilesController:
         w_package = {"ask": 'Overwrite the version in Leo?', "message": s, "yes_all": not _is_leo, "no_all": not _is_leo}
               
         self.integController.sendAsyncOutput(w_package)
-        
+        self.waitingForAnswer = True
+        return False
         # result = self.integController.g.app.gui.runAskYesNoDialog(c, 'Overwrite the version in Leo?', s,
                                                                   # yes_all=not _is_leo, no_all=not _is_leo)
                                                                   
@@ -306,24 +321,17 @@ class ExternalFilesController:
             self.integController.g.trace('NO P')
             return
 
-        self.integController.es('\n'.join([
+        s = '\n'.join([
             '%s has changed outside Leo.\n' % self.integController.g.splitLongFileName(path),
             'Leo can not update this file automatically.\n',
             'This file was created from %s.\n' % p.h,
             'Warning: refresh-from-disk will destroy all children.'
-        ]))
+        ])
 
-        # g.app.gui.runAskOkDialog(
-        #     c=c,
-        #     message='\n'.join([
-        #         '%s has changed outside Leo.\n' % self.integController.g.splitLongFileName(path),
-        #         'Leo can not update this file automatically.\n',
-        #         'This file was created from %s.\n' % p.h,
-        #         'Warning: refresh-from-disk will destroy all children.'
-        #     ]),
-        #     title='External file changed',
-        # )
-
+        w_package = {"warn": 'External file changed', "message": s}
+              
+        self.integController.sendAsyncOutput(w_package)
+        self.waitingForAnswer = True
 
 class leoBridgeIntegController:
     '''Leo Bridge Controller'''

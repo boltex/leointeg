@@ -1109,9 +1109,6 @@ export class LeoIntegration {
     // runAskYesNoDialog // ask
 
     // runAskOkDialog // warn
-
-
-
     public ask(p_askArg: { "ask": string; "message": string; "yes_all": boolean; "no_all": boolean; }): void {
         console.log('Ask Arg: ', p_askArg);
         // w_package = {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
@@ -1135,7 +1132,7 @@ export class LeoIntegration {
         const askRefreshQuickPick: vscode.QuickPick<AskPickItem> = vscode.window.createQuickPick();
         askRefreshQuickPick.ignoreFocusOut = false;
         askRefreshQuickPick.title = p_askArg.message; // take first line
-        askRefreshQuickPick.placeholder = p_askArg.ask; // take last line of message
+        askRefreshQuickPick.placeholder = p_askArg.ask;
         askRefreshQuickPick.items = w_items;
         askRefreshQuickPick.onDidAccept(() => {
             this._askResult = askRefreshQuickPick.selectedItems[0].value;
@@ -1156,9 +1153,38 @@ export class LeoIntegration {
     }
 
     public warn(p_waitArg: any): void {
-        //
-        //
         console.log('Wait Arg: ', p_waitArg);
+        this._askResult = "ok";
+
+        const lastLine = p_waitArg.message.substr(p_waitArg.message.lastIndexOf("\n") + 1);
+
+        const w_items: AskPickItem[] = [
+            { label: "$(check) OK", alwaysShow: true, value: "ok" }
+        ];
+
+        const askRefreshQuickPick: vscode.QuickPick<AskPickItem> = vscode.window.createQuickPick();
+        askRefreshQuickPick.ignoreFocusOut = false;
+        askRefreshQuickPick.title = p_waitArg.message; // take first line
+        askRefreshQuickPick.placeholder = p_waitArg.warn;
+        askRefreshQuickPick.items = w_items;
+        askRefreshQuickPick.onDidAccept(() => {
+            this._askResult = askRefreshQuickPick.selectedItems[0].value;
+            askRefreshQuickPick.hide();
+        });
+        askRefreshQuickPick.onDidHide(() => {
+            console.log('Hide warn panel, using LEOBRIDGE_ACTIONS.ASK_RESULT to send this string: ' + this._askResult);
+            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
+                console.log('Back from ASK_RESULT');
+            });
+        });
+
+        if (this.currentAskRefreshQuickPick) {
+            this.currentAskRefreshQuickPick.dispose(); // always keep only the last one created
+        }
+        this.currentAskRefreshQuickPick = askRefreshQuickPick;
+        this.currentAskRefreshQuickPick.show();
+
+
     }
 
     public saveLeoFile(): void {
