@@ -1105,13 +1105,20 @@ export class LeoIntegration {
         vscode.window.showInformationMessage("TODO: moveMarkedNode command"); // temp placeholder
     }
 
-
-    // runAskYesNoDialog // ask
-
-    // runAskOkDialog // warn
     public ask(p_askArg: { "ask": string; "message": string; "yes_all": boolean; "no_all": boolean; }): void {
         console.log('Ask Arg: ', p_askArg);
         // w_package = {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
+
+        // * Equivalent to runAskYesNoDialog from Leo's code at @file ../plugins/qt_gui.py
+        // Create and run an askYesNo dialog.
+        // Return one of ('yes','yes-all','no','no-all')
+
+        // :Parameters:
+        // - `c`: commander
+        // - `title`: dialog title
+        // - `message`: dialog message
+        // - `yes_all`: bool - show YesToAll button
+        // - `no_all`: bool - show NoToAll button
 
         this._askResult = "no";
 
@@ -1123,10 +1130,10 @@ export class LeoIntegration {
         ];
 
         if (p_askArg.yes_all) {
-            w_items.push({ label: "$(refresh) Refresh all", alwaysShow: true, value: "yes_all" });
+            w_items.push({ label: "$(refresh) Refresh all", alwaysShow: true, value: "yes-all" });
         }
         if (p_askArg.no_all) {
-            w_items.push({ label: "$(close) Ignore all", alwaysShow: true, value: "no_all" });
+            w_items.push({ label: "$(close) Ignore all", alwaysShow: true, value: "no-all" });
         }
 
         const askRefreshQuickPick: vscode.QuickPick<AskPickItem> = vscode.window.createQuickPick();
@@ -1139,9 +1146,9 @@ export class LeoIntegration {
             askRefreshQuickPick.hide();
         });
         askRefreshQuickPick.onDidHide(() => {
-            console.log('Hide ask panel, using LEOBRIDGE_ACTIONS.ASK_RESULT to send this string: ' + this._askResult);
             this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
-                console.log('Back from ASK_RESULT');
+                // Might have answered 'yes/yesAll' and refreshed and changed the body text
+                this.leoFileSystem.fireRefreshFiles();
             });
         });
 
@@ -1154,6 +1161,10 @@ export class LeoIntegration {
 
     public warn(p_waitArg: any): void {
         console.log('Wait Arg: ', p_waitArg);
+        // w_package = {"warn": "", "message": ""}
+
+        // * Equivalent to runAskOkDialog from Leo's code at @file ../plugins/qt_gui.py
+
         this._askResult = "ok";
 
         const lastLine = p_waitArg.message.substr(p_waitArg.message.lastIndexOf("\n") + 1);
@@ -1172,9 +1183,7 @@ export class LeoIntegration {
             askRefreshQuickPick.hide();
         });
         askRefreshQuickPick.onDidHide(() => {
-            console.log('Hide warn panel, using LEOBRIDGE_ACTIONS.ASK_RESULT to send this string: ' + this._askResult);
             this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
-                console.log('Back from ASK_RESULT');
             });
         });
 
@@ -1183,8 +1192,6 @@ export class LeoIntegration {
         }
         this.currentAskRefreshQuickPick = askRefreshQuickPick;
         this.currentAskRefreshQuickPick.show();
-
-
     }
 
     public saveLeoFile(): void {
