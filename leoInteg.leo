@@ -1177,7 +1177,8 @@ wsPort = 32125
             # Fix #1081: issue a warning.
             self.warn(c, path, p=p)
         elif self.ask(c, path, p=p):
-            c.refreshFromDisk(p)
+            self.lastCommander.selectPosition(self.lastPNode)
+            c.refreshFromDisk()
 
         # Always update the path &amp; time to prevent future warnings.
         self.set_time(path)
@@ -1234,7 +1235,8 @@ wsPort = 32125
     # 4- if yes, REFRESH self.lastPNode, and unblock 'ask'
     # 5- if yesAll,REFRESH self.lastPNode, set yesAll, and unblock 'ask'
     if bool(p_result and 'yes' in p_result.lower()):
-        self.lastCommander.refreshFromDisk(self.lastPNode)
+        self.lastCommander.selectPosition(self.lastPNode)
+        self.lastCommander.refreshFromDisk()
 
     # Always update the path &amp; time to prevent future warnings for this PNode.
     self.set_time(path)

@@ -1148,6 +1148,8 @@ export class LeoIntegration {
         askRefreshQuickPick.onDidHide(() => {
             this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
                 // Might have answered 'yes/yesAll' and refreshed and changed the body text
+                this._lastOperationChangedTree = true;
+                this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
                 this.leoFileSystem.fireRefreshFiles();
             });
         });
