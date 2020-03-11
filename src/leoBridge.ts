@@ -56,7 +56,7 @@ export class LeoBridge {
             }
             this.actionBusy = false;
         } else {
-            console.log("Error stack empty");
+            console.error("[leoBridge] Error stack empty");
         }
     }
 
@@ -92,7 +92,7 @@ export class LeoBridge {
             }
         }
         catch (e) {
-            console.log('json was invalid: ' + p_jsonStr);
+            console.error('[leoBridge] json was invalid: ' + p_jsonStr);
         }
         return false;
     }
@@ -103,16 +103,12 @@ export class LeoBridge {
         if (w_parsedData && w_parsedData.id) {
             this._resolveBridgeReady(w_parsedData);
             this._callAction();
-        } else {
+        } else if (w_parsedData && w_parsedData.async) {
             // * Check for async messages such as log pane entries or other
-            if (w_parsedData && w_parsedData.log) {
-                this._leoIntegration.leoLogPane.appendLine(w_parsedData.log);
-            } else if (w_parsedData && w_parsedData.ask) {
-                this._leoIntegration.ask(w_parsedData);
-            } else {
-                // unprocessed/unknown python output
-                console.log("from python", p_data);
-            }
+            this._leoIntegration.async(w_parsedData);
+        } else {
+            // unprocessed/unknown python output
+            console.error("[leoBridge] unprocessed/unknown json received: ", p_data);
         }
     }
 

@@ -1105,21 +1105,40 @@ export class LeoIntegration {
         vscode.window.showInformationMessage("TODO: moveMarkedNode command"); // temp placeholder
     }
 
+    public async(w_parsedData: any): void {
+        // TODO : Cleanup & use constants
+        if (w_parsedData && w_parsedData.async && (typeof w_parsedData.async === "string")) {
+            switch (w_parsedData.async) {
+                case "log": {
+                    this.leoLogPane.appendLine(w_parsedData.log);
+                    break;
+                }
+                case "ask": {
+                    this.ask(w_parsedData);
+                    break;
+                }
+                case "warn": {
+                    this.warn(w_parsedData);
+                    break;
+                }
+                case "interval": {
+                    console.log("interval ", w_parsedData);
+                    break;
+                }
+                default: {
+                    console.log("unknown async action ", w_parsedData);
+                    break;
+                }
+            }
+        } else {
+            console.error("[leoIntegration] Unknown async command from leoBridge");
+        }
+    }
+
     public ask(p_askArg: { "ask": string; "message": string; "yes_all": boolean; "no_all": boolean; }): void {
-        console.log('Ask Arg: ', p_askArg);
-        // w_package = {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
-
         // * Equivalent to runAskYesNoDialog from Leo's code at @file ../plugins/qt_gui.py
-        // Create and run an askYesNo dialog.
+        // from python {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
         // Return one of ('yes','yes-all','no','no-all')
-
-        // :Parameters:
-        // - `c`: commander
-        // - `title`: dialog title
-        // - `message`: dialog message
-        // - `yes_all`: bool - show YesToAll button
-        // - `no_all`: bool - show NoToAll button
-
         this._askResult = "no";
 
         const lastLine = p_askArg.message.substr(p_askArg.message.lastIndexOf("\n") + 1);
@@ -1130,7 +1149,7 @@ export class LeoIntegration {
         ];
 
         if (p_askArg.yes_all) {
-            w_items.push({ label: "$(refresh) Refresh all", alwaysShow: true, value: "yes-all" });
+            w_items.push({ label: "$(refresh) Reload all", alwaysShow: true, value: "yes-all" });
         }
         if (p_askArg.no_all) {
             w_items.push({ label: "$(close) Ignore all", alwaysShow: true, value: "no-all" });
@@ -1162,10 +1181,8 @@ export class LeoIntegration {
     }
 
     public warn(p_waitArg: any): void {
-        console.log('Wait Arg: ', p_waitArg);
-        // w_package = {"warn": "", "message": ""}
-
         // * Equivalent to runAskOkDialog from Leo's code at @file ../plugins/qt_gui.py
+        // from python {"warn": "", "message": ""}
 
         this._askResult = "ok";
 
@@ -1185,8 +1202,8 @@ export class LeoIntegration {
             askRefreshQuickPick.hide();
         });
         askRefreshQuickPick.onDidHide(() => {
-            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
-            });
+            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"');
+            //.then(() => { }); // * Nothing for warnings after sending askResult back
         });
 
         if (this.currentAskRefreshQuickPick) {

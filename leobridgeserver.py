@@ -226,7 +226,7 @@ class ExternalFilesController:
                 f"Reload {where} in Leo?",
             ])
 
-        w_package = {"ask": 'Overwrite the version in Leo?',
+        w_package = {"async": "ask", "ask": 'Overwrite the version in Leo?',
                      "message": s, "yes_all": not _is_leo, "no_all": not _is_leo}
 
         self.integController.sendAsyncOutput(w_package)
@@ -318,9 +318,9 @@ class ExternalFilesController:
         probably not Leo's fault but an underlying Python issue.
         Hence the need to call realpath() here.
         '''
-        
+
         # print("called set_time for " + str(path))
-        
+
         t = new_time or self.get_mtime(path)
         self._time_d[self.integController.g.os_path_realpath(path)] = t
 
@@ -343,13 +343,13 @@ class ExternalFilesController:
             'Warning: refresh-from-disk will destroy all children.'
         ])
 
-        w_package = {"warn": 'External file changed', "message": s}
+        w_package = {"async": "warn", "warn": 'External file changed', "message": s}
 
         self.integController.sendAsyncOutput(w_package)
         self.waitingForAnswer = True
 
     # Some methods are called in the usual (non-leoBridge without 'efc') save process.
-    # Those may called by the 'save' function, like check_overwrite, 
+    # Those may called by the 'save' function, like check_overwrite,
     # or by any other functions from the instance of leo.core.leoBridge that's running.
 
     def open_with(self, c, d):
@@ -398,7 +398,6 @@ class leoBridgeIntegController:
 
         # attach instance to g.app for calls to set_time, etc.
         self.g.app.externalFilesController = self.efc
-        
 
     def _commanders(self):
         ''' Return list of currently active controllers '''
@@ -416,10 +415,13 @@ class leoBridgeIntegController:
         asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
 
     def sendAsyncOutput(self, p_package):
+        if "async" not in p_package:
+            print('[sendAsyncOutput] Error async member missing in package parameter' + json.dumps(p_package, separators=(',', ':')))
+            return
         if self.loop:
             self.loop.create_task(self.asyncOutput(json.dumps(p_package, separators=(',', ':'))))
         else:
-            print('no loop!' + json.dumps(p_package, separators=(',', ':')))
+            print('[sendAsyncOutput] Error loop not ready' + json.dumps(p_package, separators=(',', ':')))
 
     def askResult(self, p_result):
         '''Got the result to an asked question/warning from vscode'''
@@ -447,11 +449,8 @@ class leoBridgeIntegController:
         }
         d = self.g.doKeywordArgs(keys, d)
         s = self.g.translateArgs(args, d)
-        w_package = {"log": s}
-        if self.loop:
-            self.loop.create_task(self.asyncOutput(json.dumps(w_package, separators=(',', ':'))))
-        else:
-            print('no loop!' + json.dumps(w_package, separators=(',', ':')))
+        w_package = {"async": "log", "log": s}
+        self.sendAsyncOutput(w_package)
 
     def initConnection(self, p_webSocket):
         self.webSocket = p_webSocket
@@ -489,7 +488,7 @@ class leoBridgeIntegController:
                 self.g.trace('Error while saving')
                 print("Error while saving")
                 print(str(e))
-                
+
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def setActionId(self, p_id):
@@ -991,18 +990,18 @@ def main():
         elif opt in ("-p", "--port"):
             wsPort = arg
 
-    # start Server
+    # * start Server
     integController = leoBridgeIntegController()
 
     # * This is a basic example loop
-    async def asyncInterval(timeout):
-        dummyCounter = 0
-        strTimeout = str(timeout) + ' sec interval'
-        while True:
-            await asyncio.sleep(timeout)
-            dummyCounter = dummyCounter+1
-            await integController.asyncOutput("{\"interval\":" + str(timeout+dummyCounter) + "}")  # as number
-            print(strTimeout)
+    # async def asyncInterval(timeout):
+    #     dummyCounter = 0
+    #     strTimeout = str(timeout) + ' sec interval'
+    #     while True:
+    #         await asyncio.sleep(timeout)
+    #         dummyCounter = dummyCounter+1
+    #         await integController.asyncOutput("{\"interval\":" + str(timeout+dummyCounter) + "}")  # as number
+    #         print(strTimeout)
 
     async def leoBridgeServer(websocket, path):
         try:
@@ -1030,7 +1029,7 @@ def main():
 
     localLoop = asyncio.get_event_loop()
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
-    localLoop.create_task(asyncInterval(5))
+    # localLoop.create_task(asyncInterval(5)) # Starts a test loop of async communication
     localLoop.run_until_complete(start_server)
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     localLoop.run_forever()
