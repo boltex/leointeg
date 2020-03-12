@@ -39,6 +39,22 @@
     "configuration": {
       "title": "Leo Integration",
       "properties": {
+        "leoIntegration.defaultReloadIgnore": {
+          "scope": "application",
+          "default": "none",
+          "type": "string",
+          "description": "Set default for derived files to always reload, or ignore detected changes",
+          "enum": [
+            "none",
+            "yes-all",
+            "no-all"
+          ],
+          "enumDescriptions": [
+            "Choose each time",
+            "Reload All",
+            "Ignore All"
+          ]
+        },
         "leoIntegration.treeKeepFocus": {
           "scope": "application",
           "default": true,

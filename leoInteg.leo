@@ -652,7 +652,6 @@ if __name__ == '__main__':
 <t tx="felix.20191128002414.1">import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
 import asyncio
-import threading
 import websockets
 import sys
 import getopt

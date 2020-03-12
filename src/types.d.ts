@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 export interface ConfigMembers {
+    defaultReloadIgnore: string;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
     statusBarString: string;

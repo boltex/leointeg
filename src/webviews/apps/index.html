@@ -244,7 +244,24 @@
               Interface Behavior
             </h2>
           </div>
+
           <div class="settings">
+
+            <div class="setting">
+              <div class="setting__input">
+                <label for="defaultReloadIgnore">Have derived files default to always reload or ignore changes</label>
+                <select id="defaultReloadIgnore"
+                        name="defaultReloadIgnore"
+                        data-setting>
+                  <option value="none">Choose each time</option>
+                  <option value="yes-all">Reload All</option>
+                  <option value="no-all">Ignore All</option>
+                </select>
+
+              </div>
+              <span class="setting__hint">Choose yourself, or set default to reload or ignore</span>
+            </div>
+
             <div class="setting">
               <div class="setting__input">
                 <input id="treeKeepFocus"

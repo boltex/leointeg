@@ -1321,17 +1321,6 @@ export class LeoIntegration {
 
     public test(): void {
         if (this.fileOpenedReady) {
-            this.leoBridge.action("test")
-                .then((p_answer: LeoBridgePackage) => {
-                    console.log("Test got Back from test", p_answer);
-                });
-        } else {
-            vscode.window.showInformationMessage("Click the folder icon on the Leo Outline sidebar to open a Leo file");
-        }
-    }
-
-    public test2(): void {
-        if (this.fileOpenedReady) {
             this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_SELECTED_NODE)
                 .then((p_answer: LeoBridgePackage) => {
                     console.log("Test got Back from getSelectedNode, now revealing :", p_answer.node.headline, p_answer.node.childIndex);

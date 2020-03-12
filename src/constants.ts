@@ -55,6 +55,7 @@ export class Constants {
     };
 
     public static CONFIGURATION = {
+        DEFAULT_RELOAD_IGNORE: "defaultReloadIgnore",
         TREE_KEEP_FOCUS: "treeKeepFocus",
         TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
         STATUSBAR_STRING: "statusBarString",

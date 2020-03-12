@@ -6,6 +6,7 @@ import { Utils } from "./utils";
 
 export class Config implements ConfigMembers {
 
+    public defaultReloadIgnore: string = "none";
     public treeKeepFocus: boolean = true;
     public treeKeepFocusWhenAside: boolean = false;
     public treeInExplorer: boolean = true;
@@ -34,6 +35,7 @@ export class Config implements ConfigMembers {
 
     public getConfig(): ConfigMembers {
         return {
+            defaultReloadIgnore: this.defaultReloadIgnore,
             treeKeepFocus: this.treeKeepFocus,
             treeKeepFocusWhenAside: this.treeKeepFocusWhenAside,
             treeInExplorer: this.treeInExplorer,
@@ -94,6 +96,7 @@ export class Config implements ConfigMembers {
                 this.statusBarColor = Constants.GUI.STATUSBAR_DEFAULT_COLOR;
             }
             // * Interface elements visibility
+            this.defaultReloadIgnore = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.DEFAULT_RELOAD_IGNORE, "none");
             this.treeInExplorer = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.TREE_IN_EXPLORER, true);
             this.showOpenAside = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_OPEN_ASIDE, true);
             this.showArrowsOnNodes = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_ARROWS, false);

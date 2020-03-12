@@ -2,7 +2,6 @@
 import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
 import asyncio
-import threading
 import websockets
 import sys
 import getopt

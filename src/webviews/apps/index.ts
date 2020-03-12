@@ -83,6 +83,17 @@ declare function acquireVsCodeApi(): VsCodeApi;
         ) {
             return onInputChanged(this);
         });
+        listenAll('select[data-setting]', 'change', function (this: HTMLSelectElement) {
+            return onInputSelected(this);
+        });
+    }
+
+    function onInputSelected(element: HTMLSelectElement) {
+        if (element) {
+            const w_value = element.options[element.selectedIndex].value;
+            frontConfig[element.id] = w_value;
+        }
+        applyChanges();
     }
 
     function onInputChecked(element: HTMLInputElement) {
