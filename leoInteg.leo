@@ -46,6 +46,7 @@
 <v t="felix.20200303214255.1"><vh>_idleTime</vh></v>
 <v t="felix.20200304224909.1"><vh>sendAsyncOutput</vh></v>
 <v t="felix.20200304220844.1"><vh>askResult</vh></v>
+<v t="felix.20200312231358.1"><vh>applyConfig</vh></v>
 <v t="felix.20200219224515.1"><vh>logSignon</vh></v>
 <v t="felix.20200219222712.1"><vh>es</vh></v>
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
@@ -1271,6 +1272,12 @@ wsPort = 32125
 </t>
 <t tx="felix.20200308150856.1">def open_with(self, c, d):
     return
+
+</t>
+<t tx="felix.20200312231358.1">def applyConfig(self, p_config):
+    pass
+    pass
+    #
 
 </t>
 </tnodes>

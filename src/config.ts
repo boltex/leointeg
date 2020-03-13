@@ -1,8 +1,7 @@
 import * as vscode from "vscode";
 import { ConfigMembers } from "./types";
 import { Constants } from "./constants";
-import { Utils } from "./utils";
-
+import * as utils from "./utils";
 
 export class Config implements ConfigMembers {
 
@@ -29,8 +28,7 @@ export class Config implements ConfigMembers {
     private _isSettingConfig: boolean = false;
 
     constructor(
-        private _context: vscode.ExtensionContext,
-        private _utils: Utils) {
+        private _context: vscode.ExtensionContext) {
     }
 
     public getConfig(): ConfigMembers {
@@ -92,7 +90,7 @@ export class Config implements ConfigMembers {
                 this.statusBarString = Constants.GUI.STATUSBAR_DEFAULT_STRING;
             }
             this.statusBarColor = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.STATUSBAR_COLOR, Constants.GUI.STATUSBAR_DEFAULT_COLOR);
-            if (!this._utils.isHexColor(this.statusBarColor)) {
+            if (!utils.isHexColor(this.statusBarColor)) {
                 this.statusBarColor = Constants.GUI.STATUSBAR_DEFAULT_COLOR;
             }
             // * Interface elements visibility

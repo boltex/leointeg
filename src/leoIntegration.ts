@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import * as child from 'child_process';
+import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, AskPickItem } from "./types";
-import { Utils } from "./utils";
 import { Config } from "./config";
 import { LeoFiles } from "./leoFiles";
 import { LeoNode } from "./leoNode";
@@ -12,8 +12,6 @@ import { LeoBridge } from "./leoBridge";
 import { ServerService } from "./serverManager";
 
 export class LeoIntegration {
-    private _utils: Utils; // String and other structures construction helper-functions
-
     // * Status Flags
     public fileOpenedReady: boolean = false;
     public leoBridgeReady: boolean = false;
@@ -107,14 +105,12 @@ export class LeoIntegration {
     private _bodyLastChangedDocument: vscode.TextDocument | undefined;
 
     constructor(private _context: vscode.ExtensionContext) {
-        this._utils = new Utils();
-
         // * Get configuration settings
-        this.config = new Config(_context, this._utils);
+        this.config = new Config(_context);
         this.config.getLeoIntegSettings();
 
         // * Build Icon filename paths
-        this.icons = this._utils.buildIconPaths(_context);
+        this.icons = utils.buildIconPaths(_context);
 
         // * File Browser
         this._leoFilesBrowser = new LeoFiles(_context);
@@ -908,7 +904,7 @@ export class LeoIntegration {
                     .then(p_newHeadline => {
                         if (p_newHeadline) {
                             p_node!.label = p_newHeadline; // ! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
-                            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_HEADLINE, this._utils.buildHeadlineJson(p_node!.apJson, p_newHeadline))
+                            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_HEADLINE, utils.buildHeadlineJson(p_node!.apJson, p_newHeadline))
                                 .then((p_answer: LeoBridgePackage) => {
                                     if (p_isSelectedNode) {
                                         this._forceBodyFocus = true;
@@ -987,7 +983,7 @@ export class LeoIntegration {
                 vscode.window.showInputBox(this._newHeadlineInputOptions)
                     .then(p_newHeadline => {
                         const w_action = p_newHeadline ? Constants.LEOBRIDGE_ACTIONS.INSERT_NAMED_PNODE : Constants.LEOBRIDGE_ACTIONS.INSERT_PNODE;
-                        const w_para = p_newHeadline ? this._utils.buildHeadlineJson(w_node!.apJson, p_newHeadline) : w_node.apJson;
+                        const w_para = p_newHeadline ? utils.buildHeadlineJson(w_node!.apJson, p_newHeadline) : w_node.apJson;
                         this.leoBridge.action(w_action, w_para)
                             .then(p_package => {
                                 this.leoFileSystem.addGnx(p_package.node.gnx);

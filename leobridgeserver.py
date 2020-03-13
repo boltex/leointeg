@@ -427,6 +427,11 @@ class leoBridgeIntegController:
         self.efc.integResult(p_result)
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
+    def applyConfig(self, p_config):
+        pass
+        pass
+        #
+
     def logSignon(self):
         '''Simulate the Initial Leo Log Entry'''
         if self.loop:
