@@ -659,7 +659,7 @@ import getopt
 import os
 import time
 import json
-
+ 
 </t>
 <t tx="felix.20191128002417.1"># server defaults
 wsHost = "localhost"
@@ -1275,7 +1275,8 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200312231358.1">def applyConfig(self, p_config):
-    pass
+    print("got config in python")
+    print(str(p_config))
     pass
     #
 

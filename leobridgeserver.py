@@ -428,8 +428,9 @@ class leoBridgeIntegController:
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def applyConfig(self, p_config):
-        pass
-        pass
+        print("got config in python")
+        print(str(p_config))
+        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
         #
 
     def logSignon(self):

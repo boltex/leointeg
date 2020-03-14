@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as child from 'child_process';
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, AskPickItem } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, AskPickItem, ConfigMembers } from "./types";
 import { Config } from "./config";
 import { LeoFiles } from "./leoFiles";
 import { LeoNode } from "./leoNode";
@@ -106,7 +106,7 @@ export class LeoIntegration {
 
     constructor(private _context: vscode.ExtensionContext) {
         // * Get configuration settings
-        this.config = new Config(_context);
+        this.config = new Config(_context, this);
         this.config.getLeoIntegSettings();
 
         // * Build Icon filename paths
@@ -169,6 +169,15 @@ export class LeoIntegration {
 
         // * Start server and / or connect to it (as specified in settings)
         this.startNetworkServices(); // TODO : Maybe start from extension.ts instead
+    }
+
+
+    public applyConfig(p_config: ConfigMembers): void {
+        if (this.fileOpenedReady) {
+            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package => {
+                console.log("back from apply config");
+            });
+        }
     }
 
     public startNetworkServices(): void {
@@ -1272,7 +1281,9 @@ export class LeoIntegration {
                 return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, true);
             })
             .then(p_setContextResult => {
+                this.applyConfig(this.config.getConfig());
                 return this.showSelectedBodyDocument();
+
             });
     }
 
