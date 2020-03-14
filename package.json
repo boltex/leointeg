@@ -39,11 +39,27 @@
     "configuration": {
       "title": "Leo Integration",
       "properties": {
+        "leoIntegration.checkForChangeExternalFiles": {
+          "scope": "application",
+          "default": "none",
+          "type": "string",
+          "description": "Set default for checking changes to external files",
+          "enum": [
+            "none",
+            "force-check",
+            "force-ignore"
+          ],
+          "enumDescriptions": [
+            "Default from Leo's config",
+            "Check for changes",
+            "Ignore all changes"
+          ]
+        },
         "leoIntegration.defaultReloadIgnore": {
           "scope": "application",
           "default": "none",
           "type": "string",
-          "description": "Set default for derived files to always reload, or ignore detected changes",
+          "description": "Set default for derived files to always reload, or always ignore, when changes are detected",
           "enum": [
             "none",
             "yes-all",

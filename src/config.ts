@@ -6,6 +6,7 @@ import { LeoIntegration } from "./leoIntegration";
 
 export class Config implements ConfigMembers {
 
+    public checkForChangeExternalFiles: string = "none";
     public defaultReloadIgnore: string = "none";
     public treeKeepFocus: boolean = true;
     public treeKeepFocusWhenAside: boolean = false;
@@ -36,6 +37,7 @@ export class Config implements ConfigMembers {
 
     public getConfig(): ConfigMembers {
         return {
+            checkForChangeExternalFiles: this.checkForChangeExternalFiles,
             defaultReloadIgnore: this.defaultReloadIgnore,
             treeKeepFocus: this.treeKeepFocus,
             treeKeepFocusWhenAside: this.treeKeepFocusWhenAside,
@@ -97,6 +99,7 @@ export class Config implements ConfigMembers {
                 this.statusBarColor = Constants.GUI.STATUSBAR_DEFAULT_COLOR;
             }
             // * Interface elements visibility
+            this.checkForChangeExternalFiles = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.CHECK_FOR_CHANGE_EXTERNAL_FILES, "none");
             this.defaultReloadIgnore = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.DEFAULT_RELOAD_IGNORE, "none");
             this.treeInExplorer = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.TREE_IN_EXPLORER, true);
             this.showOpenAside = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.SHOW_OPEN_ASIDE, true);

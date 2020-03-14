@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 export interface ConfigMembers {
+    checkForChangeExternalFiles: string;
     defaultReloadIgnore: string;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;

@@ -249,6 +249,20 @@
 
             <div class="setting">
               <div class="setting__input">
+                <label for="checkForChangeExternalFiles">Set default for checking changes to external files</label>
+                <select id="checkForChangeExternalFiles"
+                        name="checkForChangeExternalFiles"
+                        data-setting>
+                  <option value="none">Default from Leo's config</option>
+                  <option value="force-check">Check for changes</option>
+                  <option value="force-ignore">Ignore all changes</option>
+                </select>
+              </div>
+              <span class="setting__hint">Use your default from Leo, or force either to check or not</span>
+            </div>
+
+            <div class="setting">
+              <div class="setting__input">
                 <label for="defaultReloadIgnore">Have derived files default to always reload or ignore changes</label>
                 <select id="defaultReloadIgnore"
                         name="defaultReloadIgnore"
@@ -257,7 +271,6 @@
                   <option value="yes-all">Reload All</option>
                   <option value="no-all">Ignore All</option>
                 </select>
-
               </div>
               <span class="setting__hint">Choose yourself, or set default to reload or ignore</span>
             </div>
