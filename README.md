@@ -2,7 +2,7 @@
 
 ## Literate programming
 
-Program by using directed acyclic graphs, section-references, clones, '@other' and the Mulder/Ream update algorithm to derive your files, or parse them back into an outline!
+Program by using directed acyclic graphs, section-references, clones, '@other' and the Mulder/Ream update algorithm to derive files, or parse them back into an outline!
 
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/) or on [github.com/leo-editor](https://github.com/leo-editor/leo-editor)
 

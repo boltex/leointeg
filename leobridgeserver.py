@@ -204,6 +204,19 @@ class ExternalFilesController:
         Ask user whether to overwrite an @<file> tree.
         Return True if the user agrees.
         '''
+        # check with leoInteg's config first
+        if self.integController.leoIntegConfig:
+            w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
+
+            print("ask checking config" + w_check_config)
+
+            if not bool('none' in w_check_config):
+                if bool('yes' in w_check_config):
+                    return True
+                else:
+                    return False
+        # let original function resolve
+
         if self.yesno_all_time + 3 >= time.time() and self.yesno_all_answer:
             self.yesno_all_time = time.time()  # Still reloading?  Extend time.
             return bool('yes' in self.yesno_all_answer.lower())
@@ -295,6 +308,17 @@ class ExternalFilesController:
 
     def is_enabled(self, c):
         '''Return the cached @bool check_for_changed_external_file setting.'''
+        # check with leoInteg's config first
+        if self.integController.leoIntegConfig:
+            w_check_config = self.integController.leoIntegConfig["checkForChangeExternalFiles"].lower()
+
+            print("is_enabled checking config" + w_check_config)
+
+            if bool('check' in w_check_config):
+                return True
+            if bool('ignore' in w_check_config):
+                return False
+        # let original function resolve
         d = self.enabled_d
         val = d.get(c)
         if val is None:
@@ -329,6 +353,17 @@ class ExternalFilesController:
 
         There is *no way* to update the tree automatically.
         '''
+        # check with leoInteg's config first
+        if self.integController.leoIntegConfig:
+            w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
+
+            print("warn checking config" + w_check_config)
+
+            if w_check_config != "none":
+                # if not 'none' then do not warn
+                return
+
+        # let original function resolve
         if self.integController.g.unitTesting or c not in self.integController.g.app.commanders():
             return
         if not p:
@@ -386,6 +421,7 @@ class leoBridgeIntegController:
         # print(dir(self.g))
         self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
         # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
+        self.leoIntegConfig = None
         self.webSocket = None
         self.loop = None
 
@@ -428,10 +464,9 @@ class leoBridgeIntegController:
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def applyConfig(self, p_config):
-        print("got config in python")
-        print(str(p_config))
+        '''Got leoInteg's config from vscode'''
+        self.leoIntegConfig = p_config
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-        #
 
     def logSignon(self):
         '''Simulate the Initial Leo Log Entry'''
