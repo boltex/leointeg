@@ -951,7 +951,10 @@ wsPort = 32125
     # get_time(path), see set_time() for notes.
     self.yesno_all_time = 0  # previous yes/no to all answer, time of answer
     self.yesno_all_answer = None  # answer, 'yes-all', or 'no-all'
-
+    
+    self.infoMessage = None # if yesAll/noAll forced, then just show info message after idle_check_commander 
+    # False or "detected", "refreshed" or "ignored"
+    
     self.integController.g.app.idleTimeManager.add_callback(self.on_idle)
 
     self.waitingForAnswer = False
@@ -970,19 +973,24 @@ wsPort = 32125
     # check with leoInteg's config first
     if self.integController.leoIntegConfig:
         w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
-        
+
         print("ask checking config" + w_check_config)
 
         if not bool('none' in w_check_config):
             if bool('yes' in w_check_config):
+                self.infoMessage = "refreshed"
                 return True
             else:
+                self.infoMessage = "ignored"
                 return False
-    # let original function resolve 
-    
+    # let original function resolve
+
     if self.yesno_all_time + 3 &gt;= time.time() and self.yesno_all_answer:
         self.yesno_all_time = time.time()  # Still reloading?  Extend time.
-        return bool('yes' in self.yesno_all_answer.lower())
+        # if yesAll/noAll forced, then just show info message
+        w_yesno_all_bool = bool('yes' in self.yesno_all_answer.lower())
+        
+        return w_yesno_all_bool
     if not p:
         where = 'the outline node'
     else:
@@ -1079,14 +1087,14 @@ wsPort = 32125
     # check with leoInteg's config first
     if self.integController.leoIntegConfig:
         w_check_config = self.integController.leoIntegConfig["checkForChangeExternalFiles"].lower()
-        
+
         print("is_enabled checking config" + w_check_config)
-        
+
         if bool('check' in w_check_config):
             return True
         if bool('ignore' in w_check_config):
             return False
-    # let original function resolve    
+    # let original function resolve
     d = self.enabled_d
     val = d.get(c)
     if val is None:
@@ -1127,14 +1135,16 @@ wsPort = 32125
     # check with leoInteg's config first
     if self.integController.leoIntegConfig:
         w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
-        
+
         print("warn checking config" + w_check_config)
-        
-        if w_check_config!="none":
-            # if not 'none' then do not warn
+
+        if w_check_config != "none":
+            # if not 'none' then do not warn, just infoMessage 'warn' at most
+            if not self.infoMessage:
+                self.infoMessage = "warn"
             return
-            
-    # let original function resolve     
+
+    # let original function resolve
     if self.integController.g.unitTesting or c not in self.integController.g.app.commanders():
         return
     if not p:
@@ -1187,11 +1197,24 @@ wsPort = 32125
     '''
     # #1100: always scan the entire file for @&lt;file&gt; nodes.
     # #1134: Nested @&lt;file&gt; nodes are no longer valid, but this will do no harm.
+    
+    self.infoMessage = None # reset infoMessage 
+    # False or "detected", "refreshed" or "ignored"
+    
+    
+    
     for p in c.all_unique_positions():
         if self.waitingForAnswer:
             break
         if p.isAnyAtFileNode():
             self.idle_check_at_file_node(c, p)
+
+    # if yesAll/noAll forced, then just show info message
+    if self.infoMessage:
+        print("Need to show info message!")
+        w_package = {"async": "info", "message": self.infoMessage}
+            
+        self.integController.sendAsyncOutput(w_package)
 
 </t>
 <t tx="felix.20200302205810.9">def idle_check_at_file_node(self, c, p):

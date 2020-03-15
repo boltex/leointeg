@@ -94,7 +94,10 @@ class ExternalFilesController:
         # get_time(path), see set_time() for notes.
         self.yesno_all_time = 0  # previous yes/no to all answer, time of answer
         self.yesno_all_answer = None  # answer, 'yes-all', or 'no-all'
-
+        
+        self.infoMessage = None # if yesAll/noAll forced, then just show info message after idle_check_commander 
+        # False or "detected", "refreshed" or "ignored"
+        
         self.integController.g.app.idleTimeManager.add_callback(self.on_idle)
 
         self.waitingForAnswer = False
@@ -135,11 +138,24 @@ class ExternalFilesController:
         '''
         # #1100: always scan the entire file for @<file> nodes.
         # #1134: Nested @<file> nodes are no longer valid, but this will do no harm.
+        
+        self.infoMessage = None # reset infoMessage 
+        # False or "detected", "refreshed" or "ignored"
+        
+        
+        
         for p in c.all_unique_positions():
             if self.waitingForAnswer:
                 break
             if p.isAnyAtFileNode():
                 self.idle_check_at_file_node(c, p)
+
+        # if yesAll/noAll forced, then just show info message
+        if self.infoMessage:
+            print("Need to show info message!")
+            w_package = {"async": "info", "message": self.infoMessage}
+                
+            self.integController.sendAsyncOutput(w_package)
 
     def idle_check_at_file_node(self, c, p):
         '''Check the @<file> node at p for external changes.'''
@@ -212,14 +228,19 @@ class ExternalFilesController:
 
             if not bool('none' in w_check_config):
                 if bool('yes' in w_check_config):
+                    self.infoMessage = "refreshed"
                     return True
                 else:
+                    self.infoMessage = "ignored"
                     return False
         # let original function resolve
 
         if self.yesno_all_time + 3 >= time.time() and self.yesno_all_answer:
             self.yesno_all_time = time.time()  # Still reloading?  Extend time.
-            return bool('yes' in self.yesno_all_answer.lower())
+            # if yesAll/noAll forced, then just show info message
+            w_yesno_all_bool = bool('yes' in self.yesno_all_answer.lower())
+            
+            return w_yesno_all_bool
         if not p:
             where = 'the outline node'
         else:
@@ -360,7 +381,9 @@ class ExternalFilesController:
             print("warn checking config" + w_check_config)
 
             if w_check_config != "none":
-                # if not 'none' then do not warn
+                # if not 'none' then do not warn, just infoMessage 'warn' at most
+                if not self.infoMessage:
+                    self.infoMessage = "warn"
                 return
 
         # let original function resolve

@@ -1126,6 +1126,10 @@ export class LeoIntegration {
                     this.warn(w_parsedData);
                     break;
                 }
+                case "info": {
+                    this.info(w_parsedData);
+                    break;
+                }
                 case "interval": {
                     console.log("interval ", w_parsedData);
                     break;
@@ -1173,7 +1177,7 @@ export class LeoIntegration {
             this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
                 // Might have answered 'yes/yesAll' and refreshed and changed the body text
                 this._lastOperationChangedTree = true;
-                this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocusShowBody);
                 this.leoFileSystem.fireRefreshFiles();
             });
         });
@@ -1216,6 +1220,25 @@ export class LeoIntegration {
         }
         this.currentAskRefreshQuickPick = askRefreshQuickPick;
         this.currentAskRefreshQuickPick.show();
+    }
+
+    public info(p_infoArg: { "message": string; }): void {
+        let w_message = "Changes to external files were detected.";
+        switch (p_infoArg.message) {
+            case "refreshed":
+                w_message = w_message + " Nodes were refreshed from file.";
+                // * refresh
+                this._lastOperationChangedTree = true;
+                this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocusShowBody);
+                this.leoFileSystem.fireRefreshFiles();
+                break;
+            case "ignored":
+                w_message = w_message + " They were ignored.";
+                break;
+            default:
+                break;
+        }
+        vscode.window.showInformationMessage(w_message);
     }
 
     public saveLeoFile(): void {
