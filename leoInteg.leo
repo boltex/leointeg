@@ -961,8 +961,6 @@ wsPort = 32125
     self.lastPNode = None  # last p node that was asked for if not set to "AllYes\AllNo"
     self.lastCommander = None
 
-    print("Created ExternalFilesController")
-
 </t>
 <t tx="felix.20200302205810.21"></t>
 <t tx="felix.20200302205810.22">def ask(self, c, path, p=None):
@@ -973,9 +971,6 @@ wsPort = 32125
     # check with leoInteg's config first
     if self.integController.leoIntegConfig:
         w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
-
-        print("ask checking config" + w_check_config)
-
         if not bool('none' in w_check_config):
             if bool('yes' in w_check_config):
                 self.infoMessage = "refreshed"
@@ -1087,9 +1082,6 @@ wsPort = 32125
     # check with leoInteg's config first
     if self.integController.leoIntegConfig:
         w_check_config = self.integController.leoIntegConfig["checkForChangeExternalFiles"].lower()
-
-        print("is_enabled checking config" + w_check_config)
-
         if bool('check' in w_check_config):
             return True
         if bool('ignore' in w_check_config):
@@ -1135,8 +1127,6 @@ wsPort = 32125
     # check with leoInteg's config first
     if self.integController.leoIntegConfig:
         w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
-
-        print("warn checking config" + w_check_config)
 
         if w_check_config != "none":
             # if not 'none' then do not warn, just infoMessage 'warn' at most
@@ -1201,8 +1191,6 @@ wsPort = 32125
     self.infoMessage = None # reset infoMessage 
     # False or "detected", "refreshed" or "ignored"
     
-    
-    
     for p in c.all_unique_positions():
         if self.waitingForAnswer:
             break
@@ -1211,9 +1199,7 @@ wsPort = 32125
 
     # if yesAll/noAll forced, then just show info message
     if self.infoMessage:
-        print("Need to show info message!")
         w_package = {"async": "info", "message": self.infoMessage}
-            
         self.integController.sendAsyncOutput(w_package)
 
 </t>
@@ -1266,8 +1252,6 @@ wsPort = 32125
 </t>
 <t tx="felix.20200304221925.1">def integResult(self, p_result):
     '''Received result from vsCode'''
-    print("Got result from vscode in integResult: " + str(p_result))
-
     # Got the result to an asked question/warning from vscode
     if not self.waitingForAnswer:
         print("ERROR: Received Result but no Asked Dialog")

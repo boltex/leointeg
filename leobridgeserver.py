@@ -104,8 +104,6 @@ class ExternalFilesController:
         self.lastPNode = None  # last p node that was asked for if not set to "AllYes\AllNo"
         self.lastCommander = None
 
-        print("Created ExternalFilesController")
-
     def on_idle(self):
         '''
         Check for changed open-with files and all external files in commanders
@@ -142,8 +140,6 @@ class ExternalFilesController:
         self.infoMessage = None # reset infoMessage 
         # False or "detected", "refreshed" or "ignored"
         
-        
-        
         for p in c.all_unique_positions():
             if self.waitingForAnswer:
                 break
@@ -152,9 +148,7 @@ class ExternalFilesController:
 
         # if yesAll/noAll forced, then just show info message
         if self.infoMessage:
-            print("Need to show info message!")
             w_package = {"async": "info", "message": self.infoMessage}
-                
             self.integController.sendAsyncOutput(w_package)
 
     def idle_check_at_file_node(self, c, p):
@@ -181,8 +175,6 @@ class ExternalFilesController:
 
     def integResult(self, p_result):
         '''Received result from vsCode'''
-        print("Got result from vscode in integResult: " + str(p_result))
-
         # Got the result to an asked question/warning from vscode
         if not self.waitingForAnswer:
             print("ERROR: Received Result but no Asked Dialog")
@@ -223,9 +215,6 @@ class ExternalFilesController:
         # check with leoInteg's config first
         if self.integController.leoIntegConfig:
             w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
-
-            print("ask checking config" + w_check_config)
-
             if not bool('none' in w_check_config):
                 if bool('yes' in w_check_config):
                     self.infoMessage = "refreshed"
@@ -332,9 +321,6 @@ class ExternalFilesController:
         # check with leoInteg's config first
         if self.integController.leoIntegConfig:
             w_check_config = self.integController.leoIntegConfig["checkForChangeExternalFiles"].lower()
-
-            print("is_enabled checking config" + w_check_config)
-
             if bool('check' in w_check_config):
                 return True
             if bool('ignore' in w_check_config):
@@ -377,8 +363,6 @@ class ExternalFilesController:
         # check with leoInteg's config first
         if self.integController.leoIntegConfig:
             w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
-
-            print("warn checking config" + w_check_config)
 
             if w_check_config != "none":
                 # if not 'none' then do not warn, just infoMessage 'warn' at most

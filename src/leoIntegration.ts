@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as child from 'child_process';
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, AskPickItem, ConfigMembers } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, AskPickItem, ConfigMembers, AskMessageItem } from "./types";
 import { Config } from "./config";
 import { LeoFiles } from "./leoFiles";
 import { LeoNode } from "./leoNode";
@@ -1152,41 +1152,70 @@ export class LeoIntegration {
 
         const lastLine = p_askArg.message.substr(p_askArg.message.lastIndexOf("\n") + 1);
 
-        const w_items: AskPickItem[] = [
-            { label: "$(refresh) " + lastLine, alwaysShow: true, value: "yes" },
-            { label: "$(close) Ignore", alwaysShow: true, value: "no" }
+        const w_items: AskMessageItem[] = [
+            { title: "Yes", value: "yes", isCloseAffordance: false },
+            { title: "No", value: "no", isCloseAffordance: true }
         ];
 
+        // const w_items: AskPickItem[] = [
+        //     { label: "$(refresh) " + lastLine, alwaysShow: true, value: "yes" },
+        //     { label: "$(close) Ignore", alwaysShow: true, value: "no" }
+        // ];
+
         if (p_askArg.yes_all) {
-            w_items.push({ label: "$(refresh) Reload all", alwaysShow: true, value: "yes-all" });
+            // w_items.push({ label: "$(refresh) Reload all", alwaysShow: true, value: "yes-all" });
+            w_items.push({ title: "Yes to all", value: "yes-all", isCloseAffordance: false });
         }
         if (p_askArg.no_all) {
-            w_items.push({ label: "$(close) Ignore all", alwaysShow: true, value: "no-all" });
+            // w_items.push({ label: "$(close) Ignore all", alwaysShow: true, value: "no-all" });
+            w_items.push({ title: "No to all", value: "no-all", isCloseAffordance: false });
         }
 
-        const askRefreshQuickPick: vscode.QuickPick<AskPickItem> = vscode.window.createQuickPick();
-        askRefreshQuickPick.ignoreFocusOut = false;
-        askRefreshQuickPick.title = p_askArg.message; // take first line
-        askRefreshQuickPick.placeholder = p_askArg.ask;
-        askRefreshQuickPick.items = w_items;
-        askRefreshQuickPick.onDidAccept(() => {
-            this._askResult = askRefreshQuickPick.selectedItems[0].value;
-            askRefreshQuickPick.hide();
-        });
-        askRefreshQuickPick.onDidHide(() => {
-            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
-                // Might have answered 'yes/yesAll' and refreshed and changed the body text
-                this._lastOperationChangedTree = true;
-                this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocusShowBody);
-                this.leoFileSystem.fireRefreshFiles();
-            });
+        const askRefreshInfoMessage: Thenable<AskMessageItem | undefined> = vscode.window.showInformationMessage(
+            p_askArg.message,
+            { modal: true },
+            ...w_items
+        );
+
+        askRefreshInfoMessage.then((p_result: AskMessageItem | undefined) => {
+            if (p_result) {
+                this._askResult = p_result.value;
+            }
+            const w_sendResultPromise = this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"');
+            if (this._askResult.includes("yes")) {
+                w_sendResultPromise.then(() => {
+                    // Might have answered 'yes/yesAll' and refreshed and changed the body text
+                    this._lastOperationChangedTree = true;
+                    this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocusShowBody);
+                    this.leoFileSystem.fireRefreshFiles();
+                });
+            }
+
         });
 
-        if (this.currentAskRefreshQuickPick) {
-            this.currentAskRefreshQuickPick.dispose(); // always keep only the last one created
-        }
-        this.currentAskRefreshQuickPick = askRefreshQuickPick;
-        this.currentAskRefreshQuickPick.show();
+        // const askRefreshQuickPick: vscode.QuickPick<AskPickItem> = vscode.window.createQuickPick();
+        // askRefreshQuickPick.ignoreFocusOut = false;
+        // askRefreshQuickPick.title = p_askArg.message; // take first line
+        // askRefreshQuickPick.placeholder = p_askArg.ask;
+        // askRefreshQuickPick.items = w_items;
+        // askRefreshQuickPick.onDidAccept(() => {
+        //     this._askResult = askRefreshQuickPick.selectedItems[0].value;
+        //     askRefreshQuickPick.hide();
+        // });
+        // askRefreshQuickPick.onDidHide(() => {
+        //     this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
+        //         // Might have answered 'yes/yesAll' and refreshed and changed the body text
+        //         this._lastOperationChangedTree = true;
+        //         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocusShowBody);
+        //         this.leoFileSystem.fireRefreshFiles();
+        //     });
+        // });
+
+        // if (this.currentAskRefreshQuickPick) {
+        //     this.currentAskRefreshQuickPick.dispose(); // always keep only the last one created
+        // }
+        // this.currentAskRefreshQuickPick = askRefreshQuickPick;
+        // this.currentAskRefreshQuickPick.show();
     }
 
     public warn(p_waitArg: any): void {
@@ -1195,34 +1224,44 @@ export class LeoIntegration {
 
         this._askResult = "ok";
 
-        const lastLine = p_waitArg.message.substr(p_waitArg.message.lastIndexOf("\n") + 1);
+        // const lastLine = p_waitArg.message.substr(p_waitArg.message.lastIndexOf("\n") + 1);
 
-        const w_items: AskPickItem[] = [
-            { label: "$(check) OK", alwaysShow: true, value: "ok" }
-        ];
+        // const w_items: AskPickItem[] = [
+        //     { label: "$(check) OK", alwaysShow: true, value: "ok" }
+        // ];
 
-        const askRefreshQuickPick: vscode.QuickPick<AskPickItem> = vscode.window.createQuickPick();
-        askRefreshQuickPick.ignoreFocusOut = false;
-        askRefreshQuickPick.title = p_waitArg.message; // take first line
-        askRefreshQuickPick.placeholder = p_waitArg.warn;
-        askRefreshQuickPick.items = w_items;
-        askRefreshQuickPick.onDidAccept(() => {
-            this._askResult = askRefreshQuickPick.selectedItems[0].value;
-            askRefreshQuickPick.hide();
-        });
-        askRefreshQuickPick.onDidHide(() => {
+        const warnInfoMessage = vscode.window.showInformationMessage(
+            p_waitArg.message,
+            { modal: true }
+            // { title: "OK", isCloseAffordance: true }
+        );
+        warnInfoMessage.then(() => {
             this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"');
-            //.then(() => { }); // * Nothing for warnings after sending askResult back
         });
 
-        if (this.currentAskRefreshQuickPick) {
-            this.currentAskRefreshQuickPick.dispose(); // always keep only the last one created
-        }
-        this.currentAskRefreshQuickPick = askRefreshQuickPick;
-        this.currentAskRefreshQuickPick.show();
+        // const askRefreshQuickPick: vscode.QuickPick<AskPickItem> = vscode.window.createQuickPick();
+        // askRefreshQuickPick.ignoreFocusOut = false;
+        // askRefreshQuickPick.title = p_waitArg.message; // take first line
+        // askRefreshQuickPick.placeholder = p_waitArg.warn;
+        // askRefreshQuickPick.items = w_items;
+        // askRefreshQuickPick.onDidAccept(() => {
+        //     this._askResult = askRefreshQuickPick.selectedItems[0].value;
+        //     askRefreshQuickPick.hide();
+        // });
+        // askRefreshQuickPick.onDidHide(() => {
+        //     this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"');
+        //     //.then(() => { }); // * Nothing for warnings after sending askResult back
+        // });
+
+        // if (this.currentAskRefreshQuickPick) {
+        //     this.currentAskRefreshQuickPick.dispose(); // always keep only the last one created
+        // }
+        // this.currentAskRefreshQuickPick = askRefreshQuickPick;
+        // this.currentAskRefreshQuickPick.show();
     }
 
     public info(p_infoArg: { "message": string; }): void {
+        // TODO : Message pre-built elsewhere, and flags for refresh in independent event/call
         let w_message = "Changes to external files were detected.";
         switch (p_infoArg.message) {
             case "refreshed":

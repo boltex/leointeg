@@ -77,3 +77,7 @@ export interface Icon {
 export interface AskPickItem extends vscode.QuickPickItem {
     value: string;
 }
+
+export interface AskMessageItem extends vscode.MessageItem {
+    value: string;
+}
