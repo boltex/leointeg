@@ -35,10 +35,10 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 
 ### _Features done so far_
 
-- A welcome screen for easy access to this expansion's settings.
-- Derived files automatic writing and refreshing
-- Leo outline below the explorer view, or in its own panel.
-- Access Leo commands via context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
+- A welcome screen providing easy access to the configuration settings.
+- Derived files change detection with automatic writing and refreshing.
+- Leo outline available below the explorer view, or in its own panel.
+- Access Leo commands with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
   - Open body panes to the side
   - Outline edition commands
   - Clipboard operations

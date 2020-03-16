@@ -4,9 +4,8 @@
 
 - Added new compilation configuration (server, extension, or both) to help debugging
 - Support async output from leoBridge from log pane and other events
+- External file change detection with modal dialogs matching Leo's gui dialogs
 - Redo operation, along with many other core leo commands and operations
-- Clone Command keyboard shortcut for all 3 platforms
-- (TODO) Fix sluggish Refresh/Reveal node after selecting a body pane or switching views
 
 ## 0.1.8
 
