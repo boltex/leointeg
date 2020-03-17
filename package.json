@@ -651,159 +651,159 @@
         },
         {
           "command": "leointeg.editSelectedHeadline",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.markSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.unmarkSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.copyNodeSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.cutNodeSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.pasteNodeAtSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.pasteNodeAsCloneAtSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.deleteSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.moveOutlineDownSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.moveOutlineLeftSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.moveOutlineRightSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.moveOutlineUpSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.insertNodeSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.cloneNodeSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.promoteSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.demoteSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.sortChildrenSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.sortSiblingsSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.executeScriptSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.refreshFromDiskSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.undo",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.redo",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.hoistSelection",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.deHoist",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.cloneFindAll",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.cloneFindAllFlattened",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.cloneFindMarked",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.cloneFindFlattenedMarked",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.extract",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.extractNames",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.copyMarked",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.diffMarkedNodes",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.gotoNextMarked",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.markChangedItems",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.markSubheads",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.unmarkAll",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.cloneMarkedNodes",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.deleteMarkedNodes",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.moveMarkedNodes",
-          "when": "leoObjectSelected==true"
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.editHeadline",
@@ -1032,31 +1032,31 @@
         "command": "leointeg.editSelectedHeadline",
         "key": "ctrl+h",
         "mac": "cmd+h",
-        "when": "leoTreeOpened && leoObjectSelected"
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
       },
       {
         "command": "leointeg.markSelection",
         "key": "ctrl+m",
         "mac": "cmd+m",
-        "when": "leoTreeOpened && leoObjectSelected && !leoNodeMarked"
+        "when": "leoTreeOpened && leoObjectSelected && !leoNodeMarked && !editorHasSelection"
       },
       {
         "command": "leointeg.unmarkSelection",
         "key": "ctrl+m",
         "mac": "cmd+m",
-        "when": "leoTreeOpened && leoObjectSelected && leoNodeMarked"
+        "when": "leoTreeOpened && leoObjectSelected && leoNodeMarked && !editorHasSelection"
       },
       {
         "command": "leointeg.promoteSelection",
         "key": "ctrl+[BracketLeft]",
         "mac": "cmd+[BracketLeft]",
-        "when": "leoTreeOpened && leoObjectSelected"
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
       },
       {
         "command": "leointeg.demoteSelection",
         "key": "ctrl+[BracketRight]",
         "mac": "cmd+[BracketRight]",
-        "when": "leoTreeOpened && leoObjectSelected"
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
       },
       {
         "command": "leointeg.moveOutlineDownSelection",
@@ -1134,7 +1134,7 @@
         "command": "leointeg.deleteSelection",
         "key": "ctrl+shift+backspace",
         "mac": "cmd+shift+backspace",
-        "when": "leoTreeOpened && leoObjectSelected"
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
       }
     ],
     "resourceLabelFormatters": [
