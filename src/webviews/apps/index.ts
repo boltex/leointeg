@@ -38,22 +38,27 @@ declare function acquireVsCodeApi(): VsCodeApi;
     // Handle messages sent from the extension to the webview
     window.addEventListener("message", event => {
         const message = event.data; // The json data that the extension sent
-        switch (message.command) {
-            case "test":
-                console.log("got test message");
-                break;
-            case "newConfig":
-                vscodeConfig = message.config;
-                frontConfig = JSON.parse(JSON.stringify(message.config));
-                setControls();
-                break;
-            case "vscodeConfig":
-                toast!.className = "show";
-                setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
-                vscodeConfig = message.config; // next changes will be confronted to those settings
-                break;
-            default:
-                console.log("got message: ", message.command);
+        if (message.command) {
+            switch (message.command) {
+                case "test":
+                    console.log("got test message");
+                    break;
+                case "newConfig":
+                    vscodeConfig = message.config;
+                    frontConfig = JSON.parse(JSON.stringify(message.config));
+                    setControls();
+                    break;
+                case "vscodeConfig":
+                    toast!.className = "show";
+                    setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
+                    vscodeConfig = message.config; // next changes will be confronted to those settings
+                    break;
+                default:
+                    console.log("got message: ", message.command);
+                    break;
+            }
+        } else {
+            console.log('got object:', message);
         }
     });
 

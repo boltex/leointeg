@@ -21,7 +21,7 @@ export class LeoSettingsWebview {
 
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
         if (this._panel && !this._waitingForUpdate) {
-            this._panel.webview.postMessage({ command: 'config', config: this._leoIntegration.config.getConfig() });
+            this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
         }
     }
 
