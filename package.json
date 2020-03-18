@@ -277,6 +277,15 @@
         }
       },
       {
+        "command": "leointeg.contractAll",
+        "category": "Leo",
+        "title": "Contract All",
+        "icon": {
+          "light": "resources/light/collapse.svg",
+          "dark": "resources/dark/collapse.svg"
+        }
+      },
+      {
         "command": "leointeg.editHeadline",
         "category": "Leo",
         "title": "Edit Headline",
@@ -647,6 +656,10 @@
         },
         {
           "command": "leointeg.saveLeoFile",
+          "when": "leoTreeOpened==true"
+        },
+        {
+          "command": "leointeg.contractAll",
           "when": "leoTreeOpened==true"
         },
         {
@@ -1028,6 +1041,12 @@
       ]
     },
     "keybindings": [
+      {
+        "command": "leointeg.contractAll",
+        "key": "alt+-",
+        "mac": "alt+-",
+        "when": "leoTreeOpened && leoObjectSelected && !editorHasSelection"
+      },
       {
         "command": "leointeg.editSelectedHeadline",
         "key": "ctrl+h",

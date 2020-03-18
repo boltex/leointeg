@@ -85,6 +85,7 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SHOW_LOG, () => leoIntegration.showLogPane()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SAVE_FILE, () => leoIntegration.saveLeoFile()],
 
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CONTRACT_ALL, () => leoIntegration.contractAll()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.HOIST, () => leoIntegration.hoistNode()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.HOIST_SELECTION, () => leoIntegration.hoistSelection()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DEHOIST, () => leoIntegration.deHoist()],

@@ -1055,6 +1055,9 @@ export class LeoIntegration {
         }
     }
 
+    public contractAll(): void {
+        vscode.window.showInformationMessage("TODO: contractAll command"); // temp placeholder
+    }
     public hoistNode(): void {
         vscode.window.showInformationMessage("TODO: hoistNode command"); // temp placeholder
     }

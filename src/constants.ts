@@ -181,6 +181,7 @@ export class Constants {
         SAVE_FILE: "saveLeoFile",
         SORT_CHILDREN: "sortChildrenSelection",
         SORT_SIBLING: "sortSiblingsSelection",
+        CONTRACT_ALL: "contractAll",
         MARK: "mark",
         UNMARK: "unmark",
         COPY: "copyNode",
