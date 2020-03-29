@@ -102,15 +102,17 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         });
     }
 
-    public stat(uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
+    public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
+        console.log('Called stat on', p_uri.fsPath);
+
         if (this.leoIntegration.fileOpenedReady) {
-            if (uri.fsPath === '/') {
+            if (p_uri.fsPath === '/') {
                 console.log('called stat on root : "/" ! ');
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-            } else if (uri.fsPath === '/' + this._lastGnx) {
+            } else if (p_uri.fsPath === '/' + this._lastGnx) {
                 return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: this._lastGnxBodyLength };
             } else {
-                const w_gnx = uri.fsPath.substr(1);
+                const w_gnx = p_uri.fsPath.substr(1);
                 if (!this.possibleGnxList.includes(w_gnx)) {
                     // console.log("hey! Not in list! stat missing refreshes??");
                     throw vscode.FileSystemError.FileNotFound();
@@ -142,9 +144,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         }
     }
 
-    public readDirectory(uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
+    public readDirectory(p_uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
         // console.log('called readDirectory', uri.fsPath);
-        if (uri.fsPath === '/') {
+        if (p_uri.fsPath === '/') {
             return this.refreshPossibleGnxList().then((p_result) => {
                 // console.log('FROM readDirectory - got back from getAllGnx:', p_result);
                 const w_directory: [string, vscode.FileType][] = [];
@@ -158,17 +160,18 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         }
     }
 
-    public createDirectory(uri: vscode.Uri): void {
+    public createDirectory(p_uri: vscode.Uri): void {
         console.log('called createDirectory'); // should not happen
         throw vscode.FileSystemError.NoPermissions();
     }
 
-    public readFile(uri: vscode.Uri): Thenable<Uint8Array> {
+    public readFile(p_uri: vscode.Uri): Thenable<Uint8Array> {
+        console.log('Called readFile on', p_uri.fsPath);
         if (this.leoIntegration.fileOpenedReady) {
-            if (uri.fsPath === '/') {
+            if (p_uri.fsPath === '/') {
                 throw vscode.FileSystemError.FileIsADirectory();
             } else {
-                const w_gnx = uri.fsPath.substr(1);
+                const w_gnx = p_uri.fsPath.substr(1);
                 if (!this.possibleGnxList.includes(w_gnx)) {
                     // console.log("hey! Not in list! readFile missing refreshes??");
                     throw vscode.FileSystemError.FileNotFound();
@@ -194,12 +197,12 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         }
     }
 
-    public writeFile(uri: vscode.Uri, content: Uint8Array, options: { create: boolean, overwrite: boolean }): void {
-        // console.log('called writeFile!', uri.fsPath);
+    public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
+        console.log('called writeFile!', p_uri.fsPath);
     }
 
-    public rename(oldUri: vscode.Uri, newUri: vscode.Uri, options: { overwrite: boolean }): void {
-        // console.log('called rename');
+    public rename(p_oldUri: vscode.Uri, p_newUri: vscode.Uri, p_options: { overwrite: boolean }): void {
+        console.log('called rename');
         // throw vscode.FileSystemError.NoPermissions();
     }
 
@@ -208,7 +211,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         // throw vscode.FileSystemError.NoPermissions();
     }
 
-    public copy(uri: vscode.Uri): void {
+    public copy(p_uri: vscode.Uri): void {
         console.log('called copy'); // should not happen
         throw vscode.FileSystemError.NoPermissions();
     }
@@ -219,8 +222,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     private _bufferedEvents: vscode.FileChangeEvent[] = [];
     private _fireSoonHandle?: NodeJS.Timer;
 
-    private _fireSoon(...events: vscode.FileChangeEvent[]): void {
-        this._bufferedEvents.push(...events);
+    private _fireSoon(...p_events: vscode.FileChangeEvent[]): void {
+        this._bufferedEvents.push(...p_events);
 
         if (this._fireSoonHandle) {
             clearTimeout(this._fireSoonHandle);

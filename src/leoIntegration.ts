@@ -265,11 +265,19 @@ export class LeoIntegration {
     }
     private onTreeViewExpandedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
         // * May reveal nodes, but this event occurs *after* the getChildren event from the tree provider, so not useful to interfere in it.
+
+        // TODO : MIMIC LEO
+        // TODO : SELECT NODE
+
         this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE, p_event.element.apJson).then(() => {
             // console.log('back from expand');
         });
     }
     private _onTreeViewCollapsedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
+
+        // TODO : MIMIC LEO
+        // TODO : SELECT NODE
+
         this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson).then(() => {
             // console.log('back from collapse');
         });
@@ -279,6 +287,10 @@ export class LeoIntegration {
         if (p_event.visible && this._lastSelectedLeoNode) {
             this._lastOperationChangedTree = false;
             this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // TODO: test if really needed, along with timeout (0) "getSelectedNode"
+
+            // TODO : MIMIC LEO
+            // TODO : FIX REFRESH CYCLE
+
             setTimeout(() => {
                 this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_SELECTED_NODE).then(
                     (p_answer: LeoBridgePackage) => {
@@ -305,6 +317,10 @@ export class LeoIntegration {
             // this._updateStatusBarDebounced();
             return;
         }
+
+        // TODO : MIMIC LEO
+        // TODO : FIX UNUSED CYCLING
+
         // * Close and return if deleted
         if (!this._leoCyclingBodies && p_event && p_event.document.uri.scheme === Constants.URI_SCHEME) {
             const w_editorGnx: string = p_event.document.uri.fsPath.substr(1);
@@ -361,6 +377,10 @@ export class LeoIntegration {
 
     private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
         // * Changed the selection in a text editor - just refresh the statusBar for now
+
+        // TODO : MIMIC LEO
+        // TODO : FIX UNUSED CYCLING
+
         if (this._leoCyclingBodies) {
             // Active Editor might change during 'delete expired gnx'
             return;
@@ -406,6 +426,10 @@ export class LeoIntegration {
     private _onDocumentSaved(p_event: vscode.TextDocument): void { }
 
     private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
+
+        // TODO : MIMIC LEO
+        // TODO : SAVE ONLY IF NECESSARY BEFORE ACTIONS OR SELECTED NODE CHANGES OR BODY CLOSES/HIDDEN.
+
         // * Edited the document: ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
         if ((p_event.document.uri.scheme === Constants.URI_SCHEME) && p_event.contentChanges.length) {
             // * check if there's a document already pending changes, and if it's a different one: 'force save' it!
@@ -456,6 +480,10 @@ export class LeoIntegration {
     }
 
     public bodySaveDocument(p_document: vscode.TextDocument, p_forceRefreshTree?: boolean): Thenable<boolean> {
+
+        // TODO : MIMIC LEO
+        // TODO : FIX SAVE ON WINDOWS WHEN CHANGING/SETTING SELECTED NODE
+
         // * Sets new body text of currently selected node on leo's side (test: ALSO SAVE leo scheme file)
         if (p_document && (p_document.isDirty || p_forceRefreshTree)) {
             // * Fetch gnx and document's body text first, to be reused more than once in this method
@@ -496,6 +524,10 @@ export class LeoIntegration {
     }
 
     private _setLeoTextDocumentNodesRef(p_gnx: string, p_leoNode: LeoNode, p_isSelected: boolean): void {
+
+        // TODO : MIMIC LEO
+        // TODO : MAY BE UNUSED IF ONLY ONE GNX AT A TIME
+
         if (this._leoTextDocumentNodesRef[p_gnx]) {
             if (p_isSelected) {
                 // console.log('got selected');
@@ -568,6 +600,10 @@ export class LeoIntegration {
     }
 
     private _locateOpenedBody(p_gnx: string): boolean {
+
+        // TODO : MIMIC LEO
+        // TODO : MAY BE UNUSED IF ONLY ONE GNX AT A TIME
+
         this._bodyTextDocumentSameUri = false;
         // * Only gets to visible editors, not every tab per editor
         // TODO : fix with newer vscode API or eamodio's hack
@@ -677,6 +713,10 @@ export class LeoIntegration {
     public showSelectedBodyDocument(): Thenable<boolean> {
         // * Make sure not to open unnecessary TextEditors
         return vscode.workspace.openTextDocument(this._bodyUri).then(p_document => {
+
+            // TODO : MIMIC LEO
+            // TODO : FIX IF ONLY ONE GNX AT A TIME
+
             if (this._lastSelectedLeoNode) {
                 // set entry of leoNodes Ref : leoTextDocumentNodesRef
                 // (used when showing a body text, to force selection of node when editor tabs are switched)
@@ -723,6 +763,15 @@ export class LeoIntegration {
         if (!p_internalCall) {
             this._lastOperationChangedTree = false;
         }
+
+
+        // TODO : MIMIC LEO
+        // TODO : FIX IF ONLY ONE GNX AT A TIME
+
+        // TODO : MIMIC LEO
+        // TODO : ALSO SELECT THE NODE!
+
+
         // Trigger event to save previous document just in in case (if timer to save is already started for another document)
         this._triggerBodySave();
         this._leoTextDocumentNodesRef[p_node.gnx] = {
@@ -784,6 +833,11 @@ export class LeoIntegration {
 
     private _closeExpiredActiveEditors(): Thenable<boolean> {
         // * Cycle visible editors to close any that are expired
+
+        // TODO : MIMIC LEO
+        // TODO : MAY BE UNUSED IF ONLY ONE GNX AT A TIME
+
+
         let w_hasClosed: boolean = false;
         if (vscode.window.visibleTextEditors.length) {
             vscode.window.visibleTextEditors.forEach(p_visibleEditor => {
@@ -1056,8 +1110,19 @@ export class LeoIntegration {
     }
 
     public contractAll(): void {
-        vscode.window.showInformationMessage("TODO: contractAll command"); // temp placeholder
+        // vscode.window.showInformationMessage("TODO: contractAll command"); // temp placeholder
+        if (this._leoBridgeActionBusy) {
+            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
+            console.log('Too fast! contractAll');
+        } else {
+            this._leoBridgeActionBusy = true;
+            this.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.CONTRACT_ALL)
+                .then(() => {
+                    this._leoBridgeActionBusy = false;
+                });
+        }
     }
+
     public hoistNode(): void {
         vscode.window.showInformationMessage("TODO: hoistNode command"); // temp placeholder
     }

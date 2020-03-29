@@ -23,7 +23,7 @@ Make sure you have Node.js and Git installed along with the above general requir
 
 1. Get this repository: `git clone https://github.com/boltex/leointeg.git`
 2. Right-click it -> open with vscode (or from a vscode window, File-> Open Folder...)
-3. Run `npm install` in terminal before the first run to install dependencies.
+3. Run `npm install` in terminal before the first run to install dependencies. (You may have to run `npm rebuild node-sass` before building too when updating vsCode itself)
 4. Press F5 (the 'Run Extension' shortcut)
 
 After compiling, a new vscode window will be running with leoInteg.
