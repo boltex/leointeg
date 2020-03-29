@@ -1110,7 +1110,7 @@ export class LeoIntegration {
     }
 
     public contractAll(): void {
-        // vscode.window.showInformationMessage("TODO: contractAll command"); // temp placeholder
+        vscode.window.showInformationMessage("TODO: contractAll command"); // temp placeholder
         if (this._leoBridgeActionBusy) {
             // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
             console.log('Too fast! contractAll');
@@ -1118,6 +1118,8 @@ export class LeoIntegration {
             this._leoBridgeActionBusy = true;
             this.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.CONTRACT_ALL)
                 .then(() => {
+                    console.log('back from contract all ');
+
                     this._leoBridgeActionBusy = false;
                 });
         }

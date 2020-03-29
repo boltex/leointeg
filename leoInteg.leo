@@ -103,6 +103,7 @@
 <v t="felix.20191126232434.24"><vh>setSelectedNode</vh></v>
 <v t="felix.20191126232434.25"><vh>expandNode</vh></v>
 <v t="felix.20191126232434.26"><vh>collapseNode</vh></v>
+<v t="felix.20200329000454.1"><vh>contractAll</vh></v>
 <v t="felix.20191126232434.29"><vh>yieldAllRootChildren</vh></v>
 <v t="felix.20191216195906.1"><vh>findPNodeFromGnx</vh></v>
 </v>
@@ -951,10 +952,10 @@ wsPort = 32125
     # get_time(path), see set_time() for notes.
     self.yesno_all_time = 0  # previous yes/no to all answer, time of answer
     self.yesno_all_answer = None  # answer, 'yes-all', or 'no-all'
-    
-    self.infoMessage = None # if yesAll/noAll forced, then just show info message after idle_check_commander 
+
+    self.infoMessage = None  # if yesAll/noAll forced, then just show info message after idle_check_commander
     # False or "detected", "refreshed" or "ignored"
-    
+
     self.integController.g.app.idleTimeManager.add_callback(self.on_idle)
 
     self.waitingForAnswer = False
@@ -984,7 +985,7 @@ wsPort = 32125
         self.yesno_all_time = time.time()  # Still reloading?  Extend time.
         # if yesAll/noAll forced, then just show info message
         w_yesno_all_bool = bool('yes' in self.yesno_all_answer.lower())
-        
+
         return w_yesno_all_bool
     if not p:
         where = 'the outline node'
@@ -1187,10 +1188,10 @@ wsPort = 32125
     '''
     # #1100: always scan the entire file for @&lt;file&gt; nodes.
     # #1134: Nested @&lt;file&gt; nodes are no longer valid, but this will do no harm.
-    
-    self.infoMessage = None # reset infoMessage 
+
+    self.infoMessage = None  # reset infoMessage
     # False or "detected", "refreshed" or "ignored"
-    
+
     for p in c.all_unique_positions():
         if self.waitingForAnswer:
             break
@@ -1320,6 +1321,12 @@ wsPort = 32125
 <t tx="felix.20200312231358.1">def applyConfig(self, p_config):
     '''Got leoInteg's config from vscode'''
     self.leoIntegConfig = p_config
+    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+</t>
+<t tx="felix.20200329000454.1">def contractAll(self, p_paramUnused):
+    '''(Collapse) Contract All'''
+    self.commander.contractAllHeadlines()
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>

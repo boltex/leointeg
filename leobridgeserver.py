@@ -94,10 +94,10 @@ class ExternalFilesController:
         # get_time(path), see set_time() for notes.
         self.yesno_all_time = 0  # previous yes/no to all answer, time of answer
         self.yesno_all_answer = None  # answer, 'yes-all', or 'no-all'
-        
-        self.infoMessage = None # if yesAll/noAll forced, then just show info message after idle_check_commander 
+
+        self.infoMessage = None  # if yesAll/noAll forced, then just show info message after idle_check_commander
         # False or "detected", "refreshed" or "ignored"
-        
+
         self.integController.g.app.idleTimeManager.add_callback(self.on_idle)
 
         self.waitingForAnswer = False
@@ -136,10 +136,10 @@ class ExternalFilesController:
         '''
         # #1100: always scan the entire file for @<file> nodes.
         # #1134: Nested @<file> nodes are no longer valid, but this will do no harm.
-        
-        self.infoMessage = None # reset infoMessage 
+
+        self.infoMessage = None  # reset infoMessage
         # False or "detected", "refreshed" or "ignored"
-        
+
         for p in c.all_unique_positions():
             if self.waitingForAnswer:
                 break
@@ -228,7 +228,7 @@ class ExternalFilesController:
             self.yesno_all_time = time.time()  # Still reloading?  Extend time.
             # if yesAll/noAll forced, then just show info message
             w_yesno_all_bool = bool('yes' in self.yesno_all_answer.lower())
-            
+
             return w_yesno_all_bool
         if not p:
             where = 'the outline node'
@@ -919,6 +919,11 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_p.contract()
+        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+    def contractAll(self, p_paramUnused):
+        '''(Collapse) Contract All'''
+        self.commander.contractAllHeadlines()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def yieldAllRootChildren(self):
