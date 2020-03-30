@@ -50,6 +50,7 @@ export class LeoIntegration {
     public leoTreeExplorerView: vscode.TreeView<LeoNode>;
     private _lastSelectedLeoNode: LeoNode | undefined; // last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
     public outlineRefreshCount: number = 0; // Used when refreshing leoTextDocumentNodesRef to protect the selected node - which may be a selected clone
+    public nextNodeId: number = 1; // Used to generate id's for new treeNodes : NEW IDS MEAN NEW COLLAPSE STATE
 
     // * Outline Pane redraw/refresh 'helper flags'
     public refreshSingleNodeFlag: boolean = false; // read/cleared by leoOutline, so getTreeItem should refresh or return as-is
@@ -284,9 +285,16 @@ export class LeoIntegration {
     }
 
     private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
+        if (p_explorerView) {
+            // (Facultative) Do something different if explorerView vs standalone outline pane
+        }
         if (p_event.visible && this._lastSelectedLeoNode) {
             this._lastOperationChangedTree = false;
-            this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // TODO: test if really needed, along with timeout (0) "getSelectedNode"
+
+            // ! NO REVEAL NOT GOOD IF USING DIFFERENT IDS - WILL NOT KEEP SELECTION/COLLAPSE STATE
+            this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal);
+
+            // TODO: test if really needed, along with timeout (0) "getSelectedNode"
 
             // TODO : MIMIC LEO
             // TODO : FIX REFRESH CYCLE
@@ -509,7 +517,10 @@ export class LeoIntegration {
             if (p_forceRefreshTree || (w_needsRefresh && this._lastSelectedLeoNode)) {
                 // console.log(p_forceRefreshTree ? 'force refresh' : 'needed refresh');
                 // * Refresh root because of need to dirty parent if in derived file
+
+                // ! NO REVEAL NOT GOOD IF USING DIFFERENT IDS - WILL NOT KEEP SELECTION/COLLAPSE STATE
                 this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal); // No focus this.leoTreeDataProvider.refreshTreeRoot
+
                 this._lastBodyChangedRootRefreshedGnx = w_param.gnx;
             }
             this._bodyChangeTimeoutSkipped = false;
