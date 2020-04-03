@@ -37,7 +37,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         this.possibleGnxList.push(p_gnx);
     }
 
-    public gnxValid(p_gnx: string): boolean {
+    public isGnxValid(p_gnx: string): boolean {
         if (this.possibleGnxList.includes(p_gnx)) {
             return true;
         } else {

@@ -20,7 +20,6 @@ export class LeoIntegration {
     private _leoBridgeActionBusy: boolean = false;
 
     // * Control Flags
-    private _leoCyclingBodies: boolean = false; // Used when closing removed bodies: onActiveEditorChanged, onChangeEditorSelection
     private _lastOperationChangedTree: boolean = true; // Refresh helper : (maybe unneeded) Structure may have changed, as opposed to selecting, opening aside, expanding and collapsing
 
     // * Configuration Settings
@@ -39,7 +38,7 @@ export class LeoIntegration {
     public leoBridge: LeoBridge;
 
     // * User action stack for non-tree-dependant commands fast entry
-    private _commandStack: string[] = [];
+    private _commandStack: string[] = []; // TODO : use a command stack to chain up user's rapid commands
     //
     // if command is non-tree-dependant, add it to the array's top and try to resolve bottom command.
     // if command is tree dependant: add to array and resolve only if empty. Otherwise show info message "Command already running"
@@ -320,9 +319,6 @@ export class LeoIntegration {
         // selecting another editor of the same window by the tab
         // * Status flag check
         if (!p_event && this.leoObjectSelected) {
-            // console.log('status flag check');
-            // this.leoObjectSelected = false; // no editor!
-            // this._updateStatusBarDebounced();
             return;
         }
 
@@ -330,10 +326,10 @@ export class LeoIntegration {
         // TODO : FIX UNUSED CYCLING
 
         // * Close and return if deleted
-        if (!this._leoCyclingBodies && p_event && p_event.document.uri.scheme === Constants.URI_SCHEME) {
+        if (p_event && p_event.document.uri.scheme === Constants.URI_SCHEME) {
             const w_editorGnx: string = p_event.document.uri.fsPath.substr(1);
             // If already deleted and not closed: just close it and return!
-            if (!this.leoFileSystem.gnxValid(w_editorGnx)) {
+            if (!this.leoFileSystem.isGnxValid(w_editorGnx)) {
                 vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.CLOSE_ACTIVE_EDITOR)
                     .then(() => {
                         console.log('got back from "closeActiveEditor" EDITOR HAD CHANGED TO A DELETED GNX!');
@@ -389,10 +385,6 @@ export class LeoIntegration {
         // TODO : MIMIC LEO
         // TODO : FIX UNUSED CYCLING
 
-        if (this._leoCyclingBodies) {
-            // Active Editor might change during 'delete expired gnx'
-            return;
-        }
         // * Status flag check
         if (vscode.window.activeTextEditor) {
             // Yes an editor is active, just check if its leo scheme
@@ -409,13 +401,6 @@ export class LeoIntegration {
                     return;
                 }
             }
-        } else {
-            // No editor even active
-            // if (this.leoObjectSelected) {
-            //     this.leoObjectSelected = false;
-            //     this._updateStatusBarDebounced();
-            //     return;
-            // }
         }
     }
 
@@ -641,24 +626,17 @@ export class LeoIntegration {
     }
 
     public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean | undefined): Thenable<boolean> {
-        // * User has selected a node via mouse click or 'enter' keypress in the outline
-        // otherwise flag p_internalCall if used internally
+
+        // * User has selected a node via mouse click or 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
         if (!p_internalCall) {
             this._lastOperationChangedTree = false;
-            // if (!this._leoTextDocumentNodesRef[p_node.gnx]) {
             this._leoTextDocumentNodesRef[p_node.gnx] = { // TODO : CENTRALIZE in leoOutline.ts
                 node: p_node,
                 refreshCount: this.outlineRefreshCount
             };
-            // }
             this.leoObjectSelected = true; // Just Selected a node
             this._updateLeoObjectSelected();
-            // this._updateStatusBarDebounced();
         }
-
-        let w_apJsonString: string = "";
-        w_apJsonString = w_apJsonString + p_node.apJson + " ";
-        w_apJsonString = w_apJsonString.trim();
 
         // TODO : Save and restore selection, along with cursor position, from selection object saved in each node (or gnx array)
 
@@ -669,11 +647,8 @@ export class LeoIntegration {
             return this.showSelectedBodyDocument();
         }
 
-        // * Get a promise to set selected node in Leo via leoBridge
-        this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, p_node.apJson).then(() => {
-            // console.log('Back from setSelectedNode in Leo');
-            // Place other functionality pending upon node selection here if needed
-        });
+        // * Set selected node in Leo via leoBridge
+        this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, p_node.apJson);
 
         // * don't wait for promise to resolve a selection because there's no tree structure change
         this._triggerBodySave(); // trigger event to save previous document if timer to save if already started for another document
@@ -686,6 +661,7 @@ export class LeoIntegration {
             // locateOpenedBody checks if already opened and visible,
             // locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
             this._locateOpenedBody(p_node.gnx);
+
             // * Save body to leo for the bodyTextDocument, then check if already opened, if not save and rename to clear undo buffer
             return this.bodySaveDocument(this._bodyTextDocument).then(p_result => {
                 if (this._bodyTextDocument) { // have to re-test inside .then, oh well
@@ -854,7 +830,7 @@ export class LeoIntegration {
             vscode.window.visibleTextEditors.forEach(p_visibleEditor => {
                 if (p_visibleEditor.document.uri.scheme === Constants.URI_SCHEME) {
                     const w_editorGnx: string = p_visibleEditor.document.uri.fsPath.substr(1);
-                    if (!this.leoFileSystem.gnxValid(w_editorGnx)) {
+                    if (!this.leoFileSystem.isGnxValid(w_editorGnx)) {
                         w_hasClosed = true;
                         p_visibleEditor.hide(); // ! Might be deprecated on next vscode's major revision
                         // vscode.commands.executeCommand('workbench.action.closeActiveEditor')
@@ -911,7 +887,6 @@ export class LeoIntegration {
             }
             if (p_node) {
                 this._leoBridgeActionBusy = true;
-                this._leoCyclingBodies = true;
                 // start by finishing any pending edits by triggering body save
                 this._triggerBodySave()
                     .then(p_saveResult => {
@@ -932,7 +907,6 @@ export class LeoIntegration {
                     })
                     .then(p_docResult => {
                         // console.log('Back from doc manager', p_docResult);
-                        this._leoCyclingBodies = false;
                         // With any remaining opened text editors watched:
                         return this.leoFileSystem.getRemainingWatchedGnxList();
                     })
@@ -1238,17 +1212,10 @@ export class LeoIntegration {
             { title: "No", value: "no", isCloseAffordance: true }
         ];
 
-        // const w_items: AskPickItem[] = [
-        //     { label: "$(refresh) " + lastLine, alwaysShow: true, value: "yes" },
-        //     { label: "$(close) Ignore", alwaysShow: true, value: "no" }
-        // ];
-
         if (p_askArg.yes_all) {
-            // w_items.push({ label: "$(refresh) Reload all", alwaysShow: true, value: "yes-all" });
             w_items.push({ title: "Yes to all", value: "yes-all", isCloseAffordance: false });
         }
         if (p_askArg.no_all) {
-            // w_items.push({ label: "$(close) Ignore all", alwaysShow: true, value: "no-all" });
             w_items.push({ title: "No to all", value: "no-all", isCloseAffordance: false });
         }
 
@@ -1273,30 +1240,6 @@ export class LeoIntegration {
             }
 
         });
-
-        // const askRefreshQuickPick: vscode.QuickPick<AskPickItem> = vscode.window.createQuickPick();
-        // askRefreshQuickPick.ignoreFocusOut = false;
-        // askRefreshQuickPick.title = p_askArg.message; // take first line
-        // askRefreshQuickPick.placeholder = p_askArg.ask;
-        // askRefreshQuickPick.items = w_items;
-        // askRefreshQuickPick.onDidAccept(() => {
-        //     this._askResult = askRefreshQuickPick.selectedItems[0].value;
-        //     askRefreshQuickPick.hide();
-        // });
-        // askRefreshQuickPick.onDidHide(() => {
-        //     this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"').then(() => {
-        //         // Might have answered 'yes/yesAll' and refreshed and changed the body text
-        //         this._lastOperationChangedTree = true;
-        //         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocusShowBody);
-        //         this.leoFileSystem.fireRefreshFiles();
-        //     });
-        // });
-
-        // if (this.currentAskRefreshQuickPick) {
-        //     this.currentAskRefreshQuickPick.dispose(); // always keep only the last one created
-        // }
-        // this.currentAskRefreshQuickPick = askRefreshQuickPick;
-        // this.currentAskRefreshQuickPick.show();
     }
 
     public warn(p_waitArg: any): void {
@@ -1304,12 +1247,6 @@ export class LeoIntegration {
         // from python {"warn": "", "message": ""}
 
         this._askResult = "ok";
-
-        // const lastLine = p_waitArg.message.substr(p_waitArg.message.lastIndexOf("\n") + 1);
-
-        // const w_items: AskPickItem[] = [
-        //     { label: "$(check) OK", alwaysShow: true, value: "ok" }
-        // ];
 
         const warnInfoMessage = vscode.window.showInformationMessage(
             p_waitArg.message,
@@ -1319,26 +1256,6 @@ export class LeoIntegration {
         warnInfoMessage.then(() => {
             this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"');
         });
-
-        // const askRefreshQuickPick: vscode.QuickPick<AskPickItem> = vscode.window.createQuickPick();
-        // askRefreshQuickPick.ignoreFocusOut = false;
-        // askRefreshQuickPick.title = p_waitArg.message; // take first line
-        // askRefreshQuickPick.placeholder = p_waitArg.warn;
-        // askRefreshQuickPick.items = w_items;
-        // askRefreshQuickPick.onDidAccept(() => {
-        //     this._askResult = askRefreshQuickPick.selectedItems[0].value;
-        //     askRefreshQuickPick.hide();
-        // });
-        // askRefreshQuickPick.onDidHide(() => {
-        //     this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"');
-        //     //.then(() => { }); // * Nothing for warnings after sending askResult back
-        // });
-
-        // if (this.currentAskRefreshQuickPick) {
-        //     this.currentAskRefreshQuickPick.dispose(); // always keep only the last one created
-        // }
-        // this.currentAskRefreshQuickPick = askRefreshQuickPick;
-        // this.currentAskRefreshQuickPick.show();
     }
 
     public info(p_infoArg: { "message": string; }): void {

@@ -105,12 +105,11 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DELETE_MARKED_NODES, () => leoIntegration.deleteMarkedNodes()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_MARKED_NODES, () => leoIntegration.moveMarkedNode()],
 
-
     ];
 
     w_commands.map(function (p_command) { context.subscriptions.push(vscode.commands.registerCommand(...p_command)); });
 
-    // Show Welcome / settings screen if the version is newer than last time leointeg started
+    // * Show Welcome / settings screen if the version is newer than last time leointeg started
     void showWelcome(leoIntegVersion, previousVersion);
 
     context.globalState.update(Constants.VERSION_STATE_KEY, leoIntegVersion);
