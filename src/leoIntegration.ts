@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as child from 'child_process';
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, AskPickItem, ConfigMembers, AskMessageItem } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, AskMessageItem } from "./types";
 import { Config } from "./config";
 import { LeoFiles } from "./leoFiles";
 import { LeoNode } from "./leoNode";
@@ -268,6 +268,7 @@ export class LeoIntegration {
 
         // TODO : MIMIC LEO
         // TODO : SELECT NODE
+        this.selectTreeNode(p_event.element, true);
 
         this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE, p_event.element.apJson).then(() => {
             // console.log('back from expand');
@@ -277,6 +278,7 @@ export class LeoIntegration {
 
         // TODO : MIMIC LEO
         // TODO : SELECT NODE
+        this.selectTreeNode(p_event.element, true);
 
         this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson).then(() => {
             // console.log('back from collapse');
@@ -751,13 +753,11 @@ export class LeoIntegration {
             this._lastOperationChangedTree = false;
         }
 
-
         // TODO : MIMIC LEO
         // TODO : FIX IF ONLY ONE GNX AT A TIME
 
         // TODO : MIMIC LEO
         // TODO : ALSO SELECT THE NODE!
-
 
         // Trigger event to save previous document just in in case (if timer to save is already started for another document)
         this._triggerBodySave();
@@ -823,7 +823,6 @@ export class LeoIntegration {
 
         // TODO : MIMIC LEO
         // TODO : MAY BE UNUSED IF ONLY ONE GNX AT A TIME
-
 
         let w_hasClosed: boolean = false;
         if (vscode.window.visibleTextEditors.length) {
