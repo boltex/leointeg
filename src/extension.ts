@@ -6,6 +6,7 @@ import { LeoNode } from "./leoNode";
 import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 
 export function activate(context: vscode.ExtensionContext) {
+    // * Called when extension is activated
     const start = process.hrtime(); // For calculating total startup time duration
 
     const leoInteg = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
@@ -109,46 +110,52 @@ export function activate(context: vscode.ExtensionContext) {
 
     w_commands.map(function (p_command) { context.subscriptions.push(vscode.commands.registerCommand(...p_command)); });
 
-    // * Show Welcome / settings screen if the version is newer than last time leointeg started
-    void showWelcome(leoIntegVersion, previousVersion);
-
-    context.globalState.update(Constants.VERSION_STATE_KEY, leoIntegVersion);
-
-    console.log('leoInteg startup launched in ', getDurationMilliseconds(start), 'ms');
+    // * Show Welcome / settings screen if the version is newer than last time, then start automatic server and connection
+    showWelcome(leoIntegVersion, previousVersion).then(() => {
+        // * Start server and / or connect to it (as specified in settings)
+        leoIntegration.startNetworkServices();
+        context.globalState.update(Constants.VERSION_STATE_KEY, leoIntegVersion);
+        console.log('leoInteg startup launched in ', getDurationMilliseconds(start), 'ms');
+    });
 }
 
 export function deactivate() {
+    // * Called when extension is deactivated
     console.log('deactivate called for extension "leointeg"');
 }
 
-async function showWelcome(version: string, previousVersion: string | undefined) {
+async function showWelcome(version: string, previousVersion: string | undefined): Promise<unknown> {
+    // * Show welcome screen if needed, based on last version executed
+    let w_showWelcomeScreen: boolean = false;
     if (previousVersion === undefined) {
         console.log('leoInteg first-time install');
-        await vscode.commands.executeCommand(Constants.NAME + "." + Constants.LEOINTEG_COMMANDS.SHOW_WELCOME);
-        return;
+        w_showWelcomeScreen = true;
+    } else {
+        if (previousVersion !== version) {
+            console.log(`leoInteg upgraded from v${previousVersion} to v${version}`);
+        }
+        const [major, minor] = version.split('.').map(v => parseInt(v, 10));
+        const [prevMajor, prevMinor] = previousVersion.split('.').map(v => parseInt(v, 10));
+        if (
+            (major === prevMajor && minor === prevMinor) ||
+            // Don't notify on downgrades
+            (major < prevMajor || (major === prevMajor && minor < prevMinor))
+        ) {
+            w_showWelcomeScreen = false;
+        } else if (major !== prevMajor || (major === prevMajor && minor > prevMinor)) {
+            // Will show on major or minor upgrade, Formatted as 'Major.Minor.Revision' eg. 1.2.3
+            w_showWelcomeScreen = true;
+        }
     }
-
-    if (previousVersion !== version) {
-        console.log(`leoInteg upgraded from v${previousVersion} to v${version}`);
-    }
-
-    const [major, minor] = version.split('.').map(v => parseInt(v, 10));
-    const [prevMajor, prevMinor] = previousVersion.split('.').map(v => parseInt(v, 10));
-
-    if (
-        (major === prevMajor && minor === prevMinor) ||
-        // Don't notify on downgrades
-        (major < prevMajor || (major === prevMajor && minor < prevMinor))
-    ) {
-        return;
-    }
-    // Will show on major or minor upgrade, Formatted as 'Major.Minor.Revision' eg. 1.2.3
-    if (major !== prevMajor || (major === prevMajor && minor > prevMinor)) {
-        await vscode.commands.executeCommand(Constants.NAME + "." + Constants.LEOINTEG_COMMANDS.SHOW_WELCOME);
+    if (w_showWelcomeScreen) {
+        return vscode.commands.executeCommand(Constants.NAME + "." + Constants.LEOINTEG_COMMANDS.SHOW_WELCOME);
+    } else {
+        return Promise.resolve();
     }
 }
 
-function getDurationMilliseconds(start: [number, number]) {
+function getDurationMilliseconds(start: [number, number]): number {
+    // *
     const [secs, nanosecs] = process.hrtime(start);
     return secs * 1000 + Math.floor(nanosecs / 1000000);
 }

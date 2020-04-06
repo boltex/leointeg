@@ -84,6 +84,7 @@ export class LeoIntegration {
         valueSelection: undefined,
         prompt: Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE
     };
+
     // * Insert Node Headline Input Box
     private _newHeadlineInputOptions: vscode.InputBoxOptions = {
         ignoreFocusOut: false, // clicking outside cancels the headline change
@@ -91,8 +92,8 @@ export class LeoIntegration {
         valueSelection: undefined,
         prompt: Constants.USER_MESSAGES.PROMPT_INSERT_NODE
     };
-    // * Ask to refresh derived file that changed
-    private currentAskRefreshQuickPick: vscode.QuickInput | undefined;
+
+    // * Used in showAskModalDialog: Holds result when leobridge asks what to do when derived file has changed
     private _askResult: string = "";
 
     // * Automatic server start service
@@ -166,11 +167,7 @@ export class LeoIntegration {
 
         // * React to configuration settings events
         vscode.workspace.onDidChangeConfiguration(p_event => this._onChangeConfiguration(p_event));
-
-        // * Start server and / or connect to it (as specified in settings)
-        this.startNetworkServices(); // TODO : Maybe start from extension.ts instead
     }
-
 
     public startNetworkServices(): void {
         // * leoIntegration starting entry point: Start leoBridge server and connect to it based on configuration flags
@@ -1114,6 +1111,7 @@ export class LeoIntegration {
         }
     }
 
+    // TODO : Functionality to implement
     public hoistNode(): void {
         vscode.window.showInformationMessage("TODO: hoistNode command"); // temp placeholder
     }
@@ -1215,13 +1213,11 @@ export class LeoIntegration {
     public showWarnModalMessage(p_waitArg: any): void {
         // * Equivalent to runAskOkDialog from Leo's code at @file ../plugins/qt_gui.py
         // from leobridge async package {"warn": "", "message": ""}
-        this._askResult = "ok";
-        const warnInfoMessage = vscode.window.showInformationMessage(
+        vscode.window.showInformationMessage(
             p_waitArg.message,
             { modal: true }
-        );
-        warnInfoMessage.then(() => {
-            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"');
+        ).then(() => {
+            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"ok"');
         });
     }
 
@@ -1328,6 +1324,7 @@ export class LeoIntegration {
     }
 
     private _updateLeoObjectSelectedDebounced(): void {
+        // * Update the status bar visual control flag in a debounced manner
         if (this._updateStatusBarTimeout) {
             clearTimeout(this._updateStatusBarTimeout);
         }
@@ -1337,6 +1334,7 @@ export class LeoIntegration {
     }
 
     private _updateLeoObjectSelected(): void {
+        // * Update the status bar visual control flag directly
         if (this._updateStatusBarTimeout) { // Can be called directly, so clear timer if any
             clearTimeout(this._updateStatusBarTimeout);
         }
@@ -1367,6 +1365,7 @@ export class LeoIntegration {
     }
 
     public test(): void {
+        // * Debugging utility function
         if (this.fileOpenedReady) {
             this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_SELECTED_NODE)
                 .then((p_answer: LeoBridgePackage) => {
