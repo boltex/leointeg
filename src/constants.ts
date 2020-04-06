@@ -23,6 +23,7 @@ export class Constants {
     public static TCPIP_DEFAULT_ADDRESS: string = "localhost";
 
     public static GUI = {
+        // * Strings needed to build the interface itself
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
@@ -39,6 +40,7 @@ export class Constants {
     };
 
     public static USER_MESSAGES = {
+        // * Basic user messages strings for messages and dialogs
         FILE_ALREADY_OPENED: "Leo file already opened",
         STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect", // TODO : Add description of what happens if clicked
         STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
@@ -51,10 +53,17 @@ export class Constants {
         CONNECTED: "Connected",
         ALREADY_CONNECTED: "Already Connected",
         DISCONNECTED: "Disconnected",
-        CLOSE_ERROR: "Cannot close. No Files Opened."
+        CLOSE_ERROR: "Cannot close. No Files Opened.",
+        YES: "Yes",
+        NO: "No",
+        YES_ALL: "Yes to all",
+        NO_ALL: "No to all",
+        REFRESHED: " Nodes were refreshed from file.",
+        IGNORED: " They were ignored."
     };
 
     public static CONFIGURATION = {
+        // * String for JSON configuration keys
         CHECK_FOR_CHANGE_EXTERNAL_FILES: "checkForChangeExternalFiles",
         DEFAULT_RELOAD_IGNORE: "defaultReloadIgnore",
         TREE_KEEP_FOCUS: "treeKeepFocus",
@@ -78,6 +87,7 @@ export class Constants {
     };
 
     public static CONTEXT_FLAGS = {
+        // * Used in 'when' clauses, set with vscode.commands.executeCommand("setContext",...)
         BRIDGE_READY: "leoBridgeReady",
         TREE_OPENED: "leoTreeOpened",
         SERVER_STARTED: "leoServerStarted",
@@ -95,7 +105,22 @@ export class Constants {
         SELECTED_ATFILE: "leoNodeAtFile"
     };
 
+    public static ASYNC_ACTIONS = {
+        // * Actions that can be invoked by Leo via leobridge
+        ASYNC_LOG: "log",
+        ASYNC_ASK: "ask",
+        ASYNC_WARN: "warn",
+        ASYNC_INFO: "info",
+        ASYNC_INTERVAL: "interval"
+    };
+    public static ASYNC_INFO_MESSAGE_CODES = {
+        // * When async action was ASYNC_INFO
+        ASYNC_REFRESHED: "refreshed",
+        ASYNC_IGNORED: "ignored"
+    };
+
     public static LEOBRIDGE_ACTIONS = {
+        // * Commands for leobridgeserver.py
         APPLY_CONFIG: "applyConfig",
         ASK_RESULT: "askResult",
         GET_ALL_GNX: "getAllGnx",
@@ -131,7 +156,7 @@ export class Constants {
         DEMOTE_PNODE: "demotePNode",
         REFRESH_FROM_DISK_PNODE: "refreshFromDiskPNode",
         CONTRACT_ALL: "contractAll",
-        // HEADLINE_PNODE: "",
+        // HEADLINE_PNODE: "", // ? maybe rename set_headline
         UNDO: "undo",
         REDO: "redo",
         SORT_CHILDREN: "sortChildrenPNode",
@@ -158,12 +183,14 @@ export class Constants {
     };
 
     public static VSCODE_COMMANDS = {
+        // * Command strings to be used with vscode.commands.executeCommand
         SET_CONTEXT: "setContext",
         CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
         QUICK_OPEN: "workbench.action.quickOpen"
     };
 
     public static LEOINTEG_COMMANDS = {
+        // * All commands this expansion exposes
         SHOW_WELCOME: "showWelcomePage",
         SHOW_SETTINGS: "showSettingsPage",
         // * LeoBridge

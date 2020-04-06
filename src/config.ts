@@ -119,7 +119,7 @@ export class Config implements ConfigMembers {
             this.connectionAddress = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.IP_ADDRESS, Constants.TCPIP_DEFAULT_ADDRESS); // 'ws://'
             this.connectionPort = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.IP_PORT, Constants.TCPIP_DEFAULT_PORT); // 32125
             // * Set context for tree items visibility that are based on config options
-            this._leoIntegration.applyConfig(this.getConfig());
+            this._leoIntegration.sendConfigToServer(this.getConfig());
             vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
             vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
             vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);

@@ -12,7 +12,7 @@ export class LeoBridge {
     private _leoBridgeSerialId: number = 0;
     private _callStack: LeoAction[] = [];
     private _readyPromise: Promise<LeoBridgePackage> | undefined;
-    // private _hasbin = require('hasbin'); // TODO : Check to see if this can help with anaconda/miniconda issues
+    // private _hasbin = require('hasbin'); // TODO : See if this can help with anaconda/miniconda issues
     private _websocket: WebSocket | null = null;
 
     constructor(
@@ -35,6 +35,40 @@ export class LeoBridge {
                 this._callAction();
             }
         });
+    }
+
+    private _asyncAction(w_parsedData: any): void {
+        // * actions invoked by Leo that can be called asynchronously at any time
+        if (w_parsedData && w_parsedData.async && (typeof w_parsedData.async === "string")) {
+            switch (w_parsedData.async) {
+                case Constants.ASYNC_ACTIONS.ASYNC_LOG: {
+                    this._leoIntegration.log(w_parsedData.log);
+                    break;
+                }
+                case Constants.ASYNC_ACTIONS.ASYNC_ASK: {
+                    this._leoIntegration.showAskModalDialog(w_parsedData);
+                    break;
+                }
+                case Constants.ASYNC_ACTIONS.ASYNC_WARN: {
+                    this._leoIntegration.showWarnModalMessage(w_parsedData);
+                    break;
+                }
+                case Constants.ASYNC_ACTIONS.ASYNC_INFO: {
+                    this._leoIntegration.showChangesDetectedInfoMessage(w_parsedData);
+                    break;
+                }
+                case Constants.ASYNC_ACTIONS.ASYNC_INTERVAL: {
+                    console.log("interval ", w_parsedData); // 'ping' interval for debugging
+                    break;
+                }
+                default: {
+                    console.error("[leoIntegration] Unknown async action ", w_parsedData);
+                    break;
+                }
+            }
+        } else {
+            console.error("[leoIntegration] Unknown async command from leoBridge");
+        }
     }
 
     private _buildActionParameter(p_action: string, p_jsonParam?: string): string {
@@ -84,6 +118,7 @@ export class LeoBridge {
     }
 
     private _tryParseJSON(p_jsonStr: string): boolean | any {
+        // * JSON.parse encased in a Try/Catch block
         try {
             var w_object = JSON.parse(p_jsonStr);
             // JSON.parse(null) returns null, and typeof null === "object", null is falsy, so this suffices:
@@ -105,7 +140,8 @@ export class LeoBridge {
             this._callAction();
         } else if (w_parsedData && w_parsedData.async) {
             // * Check for async messages such as log pane entries or other
-            this._leoIntegration.async(w_parsedData);
+            this._asyncAction(w_parsedData);
+            // this._leoIntegration.async(w_parsedData);
         } else {
             // unprocessed/unknown python output
             console.error("[leoBridge] unprocessed/unknown json received: ", p_data);

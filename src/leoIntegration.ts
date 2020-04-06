@@ -172,15 +172,8 @@ export class LeoIntegration {
     }
 
 
-    public applyConfig(p_config: ConfigMembers): void {
-        if (this.fileOpenedReady) {
-            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package => {
-                console.log("back from apply config");
-            });
-        }
-    }
-
     public startNetworkServices(): void {
+        // * leoIntegration starting entry point: Start leoBridge server and connect to it based on configuration flags
         this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED);
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
         if (this.config.startServerAutomatically) {
@@ -194,6 +187,7 @@ export class LeoIntegration {
     }
 
     public startServer(): void {
+        // * Starts an instance of a leoBridge server and connect to it if needed based on configuration flags
         this._serverService.startServer(this._serverProcess, this.config.leoPythonCommand)
             .then((p_message) => {
                 vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
@@ -206,27 +200,30 @@ export class LeoIntegration {
     }
 
     public connect(): void {
+        // * Initiate a connection to the python server, then complete the setup of leo integration (tree, log, leoBridgeReady)
         if (this.leoBridgeReady || this.leoIsConnecting) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
             return;
         }
         this.leoIsConnecting = true;
         this._leoBridgeReadyPromise = this.leoBridge.initLeoProcess();
-        this._leoBridgeReadyPromise.then((p_package) => {
-            this.leoIsConnecting = false;
-            if (p_package.id !== 1) {
-                this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
-            } else {
-                this.leoBridgeReady = true;
-                vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
-                this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_CONNECTED);
-                this.showLogPane();
-                if (!this.config.connectToServerAutomatically) {
-                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
+        this._leoBridgeReadyPromise.then(
+            (p_package) => {
+                this.leoIsConnecting = false;
+                if (p_package.id !== 1) {
+                    this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
+                } else {
+                    this.leoBridgeReady = true;
+                    vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
+                    this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_CONNECTED);
+                    this.showLogPane();
+                    if (!this.config.connectToServerAutomatically) {
+                        vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
+                    }
                 }
-            }
-        },
+            },
             (p_reason) => {
+                this.leoIsConnecting = false;
                 this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED);
             });
     }
@@ -245,7 +242,6 @@ export class LeoIntegration {
         this.fileOpenedReady = false;
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, false);
         this.leoBridgeReady = false;
-        this.leoIsConnecting = false;
         this._leoBridgeReadyPromise = undefined;
         this.leoObjectSelected = false;
         this._updateLeoObjectSelected();
@@ -253,6 +249,7 @@ export class LeoIntegration {
     }
 
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
+        // * vscode.workspace.onDidChangeConfiguration trigger handling
         if (p_event.affectsConfiguration(Constants.CONFIGURATION_SECTION)) {
             // console.log('Detected Change of vscode config in leoIntegration !');
             this.config.getLeoIntegSettings();
@@ -260,15 +257,15 @@ export class LeoIntegration {
     }
 
     private _onTreeViewChangedSelection(p_event: vscode.TreeViewSelectionChangeEvent<LeoNode>): void {
-        // * We capture and act upon the the 'select node' command, so this event is redundant for now
+        // * treeView onDidChangeSelection trigger handling
+        // ! We capture and act upon the the 'select node' command, so this event may be redundant for now
         // console.log("treeViewChangedSelection, selection length:", p_event.selection.length);
     }
     private onTreeViewExpandedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
         // * May reveal nodes, but this event occurs *after* the getChildren event from the tree provider, so not useful to interfere in it.
 
         // TODO : MIMIC LEO
-        // TODO : SELECT NODE
-        this.selectTreeNode(p_event.element, true);
+        this.selectTreeNode(p_event.element, true); // * select node when expanding to mimic Leo
 
         this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE, p_event.element.apJson).then(() => {
             // console.log('back from expand');
@@ -277,8 +274,7 @@ export class LeoIntegration {
     private _onTreeViewCollapsedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
 
         // TODO : MIMIC LEO
-        // TODO : SELECT NODE
-        this.selectTreeNode(p_event.element, true);
+        this.selectTreeNode(p_event.element, true); // * select node when expanding to mimic Leo
 
         this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson).then(() => {
             // console.log('back from collapse');
@@ -541,6 +537,7 @@ export class LeoIntegration {
     }
 
     public apToLeoNode(p_ap: ArchivedPosition): LeoNode {
+        // * Converts an archived position object to a LeoNode instance
         let w_collapse: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
         if (p_ap.hasChildren) {
             w_collapse = p_ap.expanded ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed;
@@ -563,35 +560,43 @@ export class LeoIntegration {
         return w_leoNode;
     }
 
-    private _revealConvertedNode(p_leoNode: LeoNode, p_selected: boolean): void {
-        if (this.revealSelectedNode && p_selected) { // * revealSelectedNode flag: Reveal, select and focus or even show body pane!
-            const w_selectFlag = this.revealSelectedNode >= RevealType.RevealSelect; // at least RevealSelect
-            let w_focusFlag = this.revealSelectedNode >= RevealType.RevealSelectFocus;  // at least RevealSelectFocus
-            if (this.revealSelectedNode === RevealType.RevealSelectShowBody) {
-                w_focusFlag = false;
-            }
-            const w_showBodyFlag = this.revealSelectedNode >= RevealType.RevealSelectFocusShowBody; // at least RevealSelectFocusShowBody
-            this.revealSelectedNode = RevealType.NoReveal; // ok reset
-            if (!this._lastSelectedLeoNode && this.revealSelectedNode < RevealType.RevealSelectFocusShowBody) { // very first time
-                this._lastSelectedLeoNode = p_leoNode;
-            }
-            setTimeout(() => {
-                // don't use this.treeKeepFocus
-                this.reveal(p_leoNode, { select: w_selectFlag, focus: w_focusFlag })
-                    .then(() => {
-                        if (w_showBodyFlag) {
-                            this.selectTreeNode(p_leoNode, true);
-                        }
-                    });
-            }, 0);
+    private _revealConvertedNode(p_leoNode: LeoNode): void {
+        // * Reveals a node in the outline. Select and focus if needed.
+
+        // First setup flags for selecting and focusing based on the current reveal type needed
+        const w_selectFlag = this.revealSelectedNode >= RevealType.RevealSelect; // at least RevealSelect
+        let w_focusFlag = this.revealSelectedNode >= RevealType.RevealSelectFocus;  // at least RevealSelectFocus
+        if (this.revealSelectedNode === RevealType.RevealSelectShowBody) {
+            w_focusFlag = false;
         }
+        const w_showBodyFlag = this.revealSelectedNode >= RevealType.RevealSelectFocusShowBody; // at least RevealSelectFocusShowBody
+
+        // Flags are setup so now reveal, select and / or focus as needed
+        this.revealSelectedNode = RevealType.NoReveal; // ok reset
+        if (!this._lastSelectedLeoNode && this.revealSelectedNode < RevealType.RevealSelectFocusShowBody) { // very first time
+            this._lastSelectedLeoNode = p_leoNode;
+        }
+        setTimeout(() => {
+            // don't use this.treeKeepFocus
+            this.reveal(p_leoNode, { select: w_selectFlag, focus: w_focusFlag })
+                .then(() => {
+                    if (w_showBodyFlag) {
+                        this.selectTreeNode(p_leoNode, true);
+                    }
+                });
+        }, 0);
     }
 
     public arrayToLeoNodesArray(p_array: ArchivedPosition[]): LeoNode[] {
+        // * Converts an array of 'ap' to an array of leoNodes
+        // * This is used in 'getChildren' of leoOutline.ts
         const w_leoNodesArray: LeoNode[] = [];
         for (let w_apData of p_array) {
             const w_leoNode = this.apToLeoNode(w_apData);
-            this._revealConvertedNode(w_leoNode, w_apData.selected);
+            if (this.revealSelectedNode && w_apData.selected) {
+                this._revealConvertedNode(w_leoNode);
+            }
+            // this._revealConvertedNode(w_leoNode, w_apData.selected);
             w_leoNodesArray.push(w_leoNode);
         }
         return w_leoNodesArray;
@@ -1164,66 +1169,33 @@ export class LeoIntegration {
         vscode.window.showInformationMessage("TODO: moveMarkedNode command"); // temp placeholder
     }
 
-    public async(w_parsedData: any): void {
-        // TODO : Cleanup & use constants
-        if (w_parsedData && w_parsedData.async && (typeof w_parsedData.async === "string")) {
-            switch (w_parsedData.async) {
-                case "log": {
-                    this.leoLogPane.appendLine(w_parsedData.log);
-                    break;
-                }
-                case "ask": {
-                    this.ask(w_parsedData);
-                    break;
-                }
-                case "warn": {
-                    this.warn(w_parsedData);
-                    break;
-                }
-                case "info": {
-                    this.info(w_parsedData);
-                    break;
-                }
-                case "interval": {
-                    console.log("interval ", w_parsedData);
-                    break;
-                }
-                default: {
-                    console.log("unknown async action ", w_parsedData);
-                    break;
-                }
-            }
-        } else {
-            console.error("[leoIntegration] Unknown async command from leoBridge");
-        }
+    public log(p_message: string): void {
+        // * Adds message string to leoInteg's log pane
+        this.leoLogPane.appendLine(p_message);
     }
 
-    public ask(p_askArg: { "ask": string; "message": string; "yes_all": boolean; "no_all": boolean; }): void {
+    public showAskModalDialog(p_askArg: { "ask": string; "message": string; "yes_all": boolean; "no_all": boolean; }): void {
         // * Equivalent to runAskYesNoDialog from Leo's code at @file ../plugins/qt_gui.py
-        // from python {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
-        // Return one of ('yes','yes-all','no','no-all')
+        // from leobridge async package {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
+
+        // * Setup modal dialog to return one of ('yes','yes-all','no','no-all') through action ASK_RESULT
         this._askResult = "no";
-
-        const lastLine = p_askArg.message.substr(p_askArg.message.lastIndexOf("\n") + 1);
-
+        // const lastLine = p_askArg.message.substr(p_askArg.message.lastIndexOf("\n") + 1); // ? last line could be used in the message
         const w_items: AskMessageItem[] = [
-            { title: "Yes", value: "yes", isCloseAffordance: false },
-            { title: "No", value: "no", isCloseAffordance: true }
+            { title: Constants.USER_MESSAGES.YES, value: "yes", isCloseAffordance: false },
+            { title: Constants.USER_MESSAGES.NO, value: "no", isCloseAffordance: true }
         ];
-
         if (p_askArg.yes_all) {
-            w_items.push({ title: "Yes to all", value: "yes-all", isCloseAffordance: false });
+            w_items.push({ title: Constants.USER_MESSAGES.YES_ALL, value: "yes-all", isCloseAffordance: false });
         }
         if (p_askArg.no_all) {
-            w_items.push({ title: "No to all", value: "no-all", isCloseAffordance: false });
+            w_items.push({ title: Constants.USER_MESSAGES.NO_ALL, value: "no-all", isCloseAffordance: false });
         }
-
         const askRefreshInfoMessage: Thenable<AskMessageItem | undefined> = vscode.window.showInformationMessage(
             p_askArg.message,
             { modal: true },
             ...w_items
         );
-
         askRefreshInfoMessage.then((p_result: AskMessageItem | undefined) => {
             if (p_result) {
                 this._askResult = p_result.value;
@@ -1237,39 +1209,36 @@ export class LeoIntegration {
                     this.leoFileSystem.fireRefreshFiles();
                 });
             }
-
         });
     }
 
-    public warn(p_waitArg: any): void {
+    public showWarnModalMessage(p_waitArg: any): void {
         // * Equivalent to runAskOkDialog from Leo's code at @file ../plugins/qt_gui.py
-        // from python {"warn": "", "message": ""}
-
+        // from leobridge async package {"warn": "", "message": ""}
         this._askResult = "ok";
-
         const warnInfoMessage = vscode.window.showInformationMessage(
             p_waitArg.message,
             { modal: true }
-            // { title: "OK", isCloseAffordance: true }
         );
         warnInfoMessage.then(() => {
             this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"');
         });
     }
 
-    public info(p_infoArg: { "message": string; }): void {
+    public showChangesDetectedInfoMessage(p_infoArg: { "message": string; }): void {
+        // * Show non-blocking info message about detected file changes
         // TODO : Message pre-built elsewhere, and flags for refresh in independent event/call
         let w_message = "Changes to external files were detected.";
         switch (p_infoArg.message) {
-            case "refreshed":
-                w_message = w_message + " Nodes were refreshed from file.";
+            case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_REFRESHED:
+                w_message = w_message + Constants.USER_MESSAGES.REFRESHED;
                 // * refresh
                 this._lastOperationChangedTree = true;
                 this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocusShowBody);
                 this.leoFileSystem.fireRefreshFiles();
                 break;
-            case "ignored":
-                w_message = w_message + " They were ignored.";
+            case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_IGNORED:
+                w_message = w_message + Constants.USER_MESSAGES.IGNORED;
                 break;
             default:
                 break;
@@ -1278,7 +1247,8 @@ export class LeoIntegration {
     }
 
     public saveLeoFile(): void {
-        // vscode.window.showInformationMessage("TODO: saveLeoFile : Try to save Leo File"); // temp placeholder
+        // * Invokes self.commander.save() in leobridgeserver.py
+        // TODO : Specify which file when supporting multiple simultaneous opened Leo files
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! executeScript');
             return;
@@ -1293,6 +1263,7 @@ export class LeoIntegration {
     }
 
     public closeLeoFile(): void {
+        // TODO : Support multiple simultaneous opened Leo files
         if (this.fileOpenedReady) {
             vscode.window.showInformationMessage("TODO: close leo file"); // temp placeholder
             // this.setTreeViewTitle("CONNECTED");
@@ -1301,7 +1272,17 @@ export class LeoIntegration {
         }
     }
 
+    public sendConfigToServer(p_config: ConfigMembers): void {
+        // * Send configuration through leoBridge to the python script, mostly used for checking / refreshing derived files
+        if (this.fileOpenedReady) {
+            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package => {
+                // console.log("back from apply config");
+            });
+        }
+    }
+
     public openLeoFile(): void {
+        // TODO : Support multiple simultaneous opened Leo files
         if (this.fileOpenedReady) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_ALREADY_OPENED);
             return;
@@ -1340,7 +1321,7 @@ export class LeoIntegration {
                 return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, true);
             })
             .then(p_setContextResult => {
-                this.applyConfig(this.config.getConfig());
+                this.sendConfigToServer(this.config.getConfig());
                 return this.showSelectedBodyDocument();
 
             });
