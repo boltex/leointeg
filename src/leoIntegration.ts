@@ -123,14 +123,14 @@ export class LeoIntegration {
         this.leoTreeDataProvider = new LeoOutlineProvider(this);
 
         // * Leo view outline panes
-        this.leoTreeView = vscode.window.createTreeView(Constants.TREEVIEW_ID, { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
+        this.leoTreeView = vscode.window.createTreeView(Constants.TREEVIEW_ID, { showCollapseAll: false, treeDataProvider: this.leoTreeDataProvider });
         this.leoTreeView.onDidChangeSelection((p_event => this._onTreeViewChangedSelection(p_event)));
         this.leoTreeView.onDidExpandElement((p_event => this.onTreeViewExpandedElement(p_event)));
         this.leoTreeView.onDidCollapseElement((p_event => this._onTreeViewCollapsedElement(p_event)));
         this.leoTreeView.onDidChangeVisibility((p_event => this._onTreeViewVisibilityChanged(p_event, false))); // * Trigger 'show tree in Leo's view'
 
         // * Explorer view outline pane
-        this.leoTreeExplorerView = vscode.window.createTreeView(Constants.TREEVIEW_EXPLORER_ID, { showCollapseAll: true, treeDataProvider: this.leoTreeDataProvider });
+        this.leoTreeExplorerView = vscode.window.createTreeView(Constants.TREEVIEW_EXPLORER_ID, { showCollapseAll: false, treeDataProvider: this.leoTreeDataProvider });
         this.leoTreeExplorerView.onDidChangeSelection((p_event => this._onTreeViewChangedSelection(p_event)));
         this.leoTreeExplorerView.onDidExpandElement((p_event => this.onTreeViewExpandedElement(p_event)));
         this.leoTreeExplorerView.onDidCollapseElement((p_event => this._onTreeViewCollapsedElement(p_event)));
@@ -260,22 +260,18 @@ export class LeoIntegration {
     }
     private onTreeViewExpandedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
         // * May reveal nodes, but this event occurs *after* the getChildren event from the tree provider, so not useful to interfere in it.
-
-        // TODO : MIMIC LEO
         this.selectTreeNode(p_event.element, true); // * select node when expanding to mimic Leo
-
-        this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE, p_event.element.apJson).then(() => {
-            // console.log('back from expand');
-        });
+        this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE, p_event.element.apJson);
+        // don't wait
+        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
     }
     private _onTreeViewCollapsedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
+        console.log('collapsed', p_event.element.id, p_event.element.label);
 
-        // TODO : MIMIC LEO
         this.selectTreeNode(p_event.element, true); // * select node when expanding to mimic Leo
-
-        this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson).then(() => {
-            // console.log('back from collapse');
-        });
+        this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson);
+        // don't wait
+        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
     }
 
     private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
@@ -294,14 +290,17 @@ export class LeoIntegration {
             // TODO : FIX REFRESH CYCLE
 
             setTimeout(() => {
-                this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_SELECTED_NODE).then(
-                    (p_answer: LeoBridgePackage) => {
-                        const w_node = this.apToLeoNode(p_answer.node);
-                        this.reveal(w_node, { select: false, focus: false }).then(() => {
-                            this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-                        });
-                    }
-                );
+                this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+
+                // this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_SELECTED_NODE).then(
+                //     (p_answer: LeoBridgePackage) => {
+                //         const w_node = this.apToLeoNode(p_answer.node);
+                //         this.reveal(w_node, { select: false, focus: false }).then(() => {
+                //             this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                //         });
+                //     }
+                // );
+
             }, 0);
         }
     }
@@ -340,9 +339,10 @@ export class LeoIntegration {
                 this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, w_node.apJson).then((p_answer: LeoBridgePackage) => {
                     const p_selectedNode = this.apToLeoNode(p_answer.node);
 
-                    this.reveal(p_selectedNode, { select: false, focus: false }).then(() => {
-                        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-                    });
+                    this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                    // this.reveal(p_selectedNode, { select: false, focus: false }).then(() => {
+                    //     this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+                    // });
 
                     this._lastSelectedLeoNode = p_selectedNode;
 
@@ -577,6 +577,8 @@ export class LeoIntegration {
             // don't use this.treeKeepFocus
             this.reveal(p_leoNode, { select: w_selectFlag, focus: w_focusFlag })
                 .then(() => {
+                    console.log('did this ask for parent?'); // ! debug
+
                     if (w_showBodyFlag) {
                         this.selectTreeNode(p_leoNode, true);
                     }
@@ -1369,7 +1371,7 @@ export class LeoIntegration {
         if (this.fileOpenedReady) {
 
             this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-            this._showLeoCommands(); // lol
+            // this._showLeoCommands(); // lol
 
             // this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_SELECTED_NODE)
             //     .then((p_answer: LeoBridgePackage) => {

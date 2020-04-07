@@ -898,28 +898,33 @@
       "view/title": [
         {
           "command": "leointeg.connectToServer",
-          "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected",
+          "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened && !leoDisconnected",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.openLeoFile",
-          "when": "leoBridgeReady==true && !leoTreeOpened",
+          "when": "view =~ /leoIntegration/ && leoBridgeReady==true && !leoTreeOpened",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.saveLeoFile",
-          "when": "leoTreeOpened==true",
+          "when": "view =~ /leoIntegration/ && leoTreeOpened==true",
           "group": "navigation@2"
         },
         {
           "command": "leointeg.undo",
-          "when": "leoTreeOpened==true",
+          "when": "view =~ /leoIntegration/ && leoTreeOpened==true",
           "group": "navigation@3"
         },
         {
           "command": "leointeg.redo",
-          "when": "leoTreeOpened==true",
+          "when": "view =~ /leoIntegration/ && leoTreeOpened==true",
           "group": "navigation@4"
+        },
+        {
+          "command": "leointeg.contractAll",
+          "when": "view =~ /leoIntegration/ && leoTreeOpened==true",
+          "group": "navigation@5"
         }
       ],
       "view/item/context": [
