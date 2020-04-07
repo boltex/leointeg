@@ -1367,18 +1367,23 @@ export class LeoIntegration {
     public test(): void {
         // * Debugging utility function
         if (this.fileOpenedReady) {
-            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_SELECTED_NODE)
-                .then((p_answer: LeoBridgePackage) => {
-                    console.log("Test got Back from getSelectedNode, now revealing :", p_answer.node.headline, p_answer.node.childIndex);
-                    // this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-                    // this._lastOperationChangedTree = true;
-                    // this.outlineRefreshCount = this.outlineRefreshCount + 1;
-                    // return Promise.resolve(this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true }));
-                    this.reveal(this.apToLeoNode(p_answer.node), { select: false, focus: false }).then(() => {
-                        this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-                        this._showLeoCommands(); // lol
-                    });
-                });
+
+            this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+            this._showLeoCommands(); // lol
+
+            // this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_SELECTED_NODE)
+            //     .then((p_answer: LeoBridgePackage) => {
+            //         console.log("Test got Back from getSelectedNode, now revealing :", p_answer.node.headline, p_answer.node.childIndex);
+            //         // this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+            //         // this._lastOperationChangedTree = true;
+            //         // this.outlineRefreshCount = this.outlineRefreshCount + 1;
+            //         // return Promise.resolve(this.reveal(this.apToLeoNode(p_answer.node), { select: true, focus: true }));
+
+            //         // this.reveal(this.apToLeoNode(p_answer.node), { select: false, focus: false }).then(() => {
+            //         //     this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+            //         //     this._showLeoCommands(); // lol
+            //         // });
+            //     });
         } else {
             vscode.window.showInformationMessage("Click the folder icon on the Leo Outline sidebar to open a Leo file");
         }
