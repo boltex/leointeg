@@ -20,7 +20,8 @@ export class LeoIntegration {
     private _leoBridgeActionBusy: boolean = false;
 
     // * Control Flags
-    private _lastOperationChangedTree: boolean = true; // Refresh helper : (maybe unneeded) Structure may have changed, as opposed to selecting, opening aside, expanding and collapsing
+    // ? Refresh helper - maybe unneeded : Structure may have changed, as opposed to selecting, opening aside, expanding and collapsing
+    private _lastOperationChangedTree: boolean = true;
 
     // * Configuration Settings
     public config: Config;
@@ -266,8 +267,6 @@ export class LeoIntegration {
         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
     }
     private _onTreeViewCollapsedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
-        console.log('collapsed', p_event.element.id, p_event.element.label);
-
         this.selectTreeNode(p_event.element, true); // * select node when expanding to mimic Leo
         this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson);
         // don't wait
@@ -755,6 +754,10 @@ export class LeoIntegration {
         // otherwise flag p_internalCall if used internally
         if (!p_internalCall) {
             this._lastOperationChangedTree = false;
+            // TODO
+            // ! FIX THIS
+            // this.selectTreeNode(p_node, true); // * select node when expanding to mimic Leo
+            // this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
         }
 
         // TODO : MIMIC LEO
@@ -769,6 +772,7 @@ export class LeoIntegration {
             node: p_node,
             refreshCount: this.outlineRefreshCount
         };
+
         return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
             if (!this.config.treeKeepFocusWhenAside) {
                 this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, p_node.apJson).then((p_answer: LeoBridgePackage) => {
