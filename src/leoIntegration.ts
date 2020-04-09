@@ -630,8 +630,7 @@ export class LeoIntegration {
         return Promise.resolve();
     }
 
-    public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean | undefined): Thenable<boolean> {
-
+    public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable<boolean> {
         // * User has selected a node via mouse click or 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
         if (!p_internalCall) {
             this._lastOperationChangedTree = false;
@@ -649,7 +648,7 @@ export class LeoIntegration {
         if (p_node === this._lastSelectedLeoNode) {
             // same so just find and reopen
             this._locateOpenedBody(p_node.gnx);
-            return this.showSelectedBodyDocument();
+            return this._showSelectedBodyDocument(p_aside);
         }
 
         // * Set selected node in Leo via leoBridge
@@ -673,7 +672,7 @@ export class LeoIntegration {
 
                     if (this._bodyTextDocumentSameUri) {
                         this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx);
-                        return this.showSelectedBodyDocument(); // already opened in a column so just tell vscode to show it
+                        return this._showSelectedBodyDocument(p_aside); // already opened in a column so just tell vscode to show it
                     } else {
                         return this._bodyTextDocument.save().then((p_result) => {
                             const w_edit = new vscode.WorkspaceEdit();
@@ -685,7 +684,7 @@ export class LeoIntegration {
                             // * Rename file operation to clear undo buffer
                             return vscode.workspace.applyEdit(w_edit).then(p_result => {
                                 this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx);
-                                return this.showSelectedBodyDocument();
+                                return this._showSelectedBodyDocument(p_aside);
                             });
                         });
                     }
@@ -698,11 +697,11 @@ export class LeoIntegration {
 
         } else {
             this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx);
-            return this.showSelectedBodyDocument();
+            return this._showSelectedBodyDocument(p_aside);
         }
     }
 
-    public showSelectedBodyDocument(): Thenable<boolean> {
+    private _showSelectedBodyDocument(p_aside: boolean | undefined): Thenable<boolean> {
         // * Make sure not to open unnecessary TextEditors
         return vscode.workspace.openTextDocument(this._bodyUri).then(p_document => {
 
@@ -736,20 +735,34 @@ export class LeoIntegration {
             if (this._forceBodyFocus) {
                 this._forceBodyFocus = false; // Reset this single-use flag
             }
-            return vscode.window.showTextDocument(this._bodyTextDocument, {
-                viewColumn: this._bodyMainSelectionColumn ? this._bodyMainSelectionColumn : 1,
-                preserveFocus: w_keepFocus, // an optional flag that when true will stop the editor from taking focus
-                preview: false // should text document be in preview only? set false for fully opened
-                // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
-            }).then(w_bodyEditor => {
-                // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
-                // other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
-                return Promise.resolve(true);
-            });
+            if (p_aside) {
+                return vscode.window.showTextDocument(this._bodyTextDocument, {
+                    viewColumn: vscode.ViewColumn.Beside,
+                    preserveFocus: this.config.treeKeepFocusWhenAside, // an optional flag that when true will stop the editor from taking focus
+                    preview: true // should text document be in preview only? set false for fully opened
+                    // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
+                }).then(w_bodyEditor => {
+                    // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
+                    // other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
+                    return Promise.resolve(true);
+                });
+            } else {
+                return vscode.window.showTextDocument(this._bodyTextDocument, {
+                    viewColumn: this._bodyMainSelectionColumn ? this._bodyMainSelectionColumn : 1,
+                    preserveFocus: w_keepFocus, // an optional flag that when true will stop the editor from taking focus
+                    preview: false // should text document be in preview only? set false for fully opened
+                    // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
+                }).then(w_bodyEditor => {
+                    // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
+                    // other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
+                    return Promise.resolve(true);
+                });
+            }
         });
     }
 
     public showBodyDocumentAside(p_node: LeoNode, p_internalCall?: boolean | undefined): Thenable<boolean> {
+        // ! Unused - replaced by new parameter p_aside in selectTreeNode
         // * User has right-clicked a node and chosen 'open aside' in the context menu
         // otherwise flag p_internalCall if used internally
         if (!p_internalCall) {
@@ -759,12 +772,6 @@ export class LeoIntegration {
             // this.selectTreeNode(p_node, true); // * select node when expanding to mimic Leo
             // this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
         }
-
-        // TODO : MIMIC LEO
-        // TODO : FIX IF ONLY ONE GNX AT A TIME
-
-        // TODO : MIMIC LEO
-        // TODO : ALSO SELECT THE NODE!
 
         // Trigger event to save previous document just in in case (if timer to save is already started for another document)
         this._triggerBodySave();
@@ -1324,8 +1331,7 @@ export class LeoIntegration {
             })
             .then(p_setContextResult => {
                 this.sendConfigToServer(this.config.getConfig());
-                return this.showSelectedBodyDocument();
-
+                return this._showSelectedBodyDocument(false);
             });
     }
 
