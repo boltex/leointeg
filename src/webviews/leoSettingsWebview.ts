@@ -88,13 +88,15 @@ export class LeoSettingsWebview {
     }
 
     private async _getBaseHtml(): Promise<string> {
-        const filename = this._context.asAbsolutePath(path.join('dist/webviews/', 'settings.html'));
+        if (this._html !== undefined) {
+            return this._html;
+        } else {
+            const filename = this._context.asAbsolutePath(path.join('dist/webviews/', 'settings.html'));
+            const doc = await vscode.workspace.openTextDocument(filename);
 
-        if (this._html !== undefined) { return this._html; }
+            this._html = doc.getText();
 
-        const doc = await vscode.workspace.openTextDocument(filename);
-        this._html = doc.getText();
-
-        return this._html;
+            return this._html;
+        }
     }
 }

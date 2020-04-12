@@ -9,8 +9,8 @@ import { Constants } from "./constants";
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     // * Leo outline implemented as a tree view with this TreeDataProvider implementation
 
-    private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> =
-        new vscode.EventEmitter<LeoNode | undefined>();
+    private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> = new vscode.EventEmitter<LeoNode | undefined>();
+
     readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
 
     constructor(private _leoIntegration: LeoIntegration) { }
@@ -42,6 +42,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     }
 
     public getParent(element: LeoNode): ProviderResult<LeoNode> | null {
+        console.log('Get Parent called! on: ', element.label);
+
         if (this._leoIntegration.fileOpenedReady) {
             return this._leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_PARENT, element ? element.apJson : "null").then((p_result) => {
                 if (p_result.node === null) {

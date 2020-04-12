@@ -126,14 +126,14 @@ export class LeoIntegration {
         // * Leo view outline panes
         this.leoTreeView = vscode.window.createTreeView(Constants.TREEVIEW_ID, { showCollapseAll: false, treeDataProvider: this.leoTreeDataProvider });
         this.leoTreeView.onDidChangeSelection((p_event => this._onTreeViewChangedSelection(p_event)));
-        this.leoTreeView.onDidExpandElement((p_event => this.onTreeViewExpandedElement(p_event)));
+        this.leoTreeView.onDidExpandElement((p_event => this._onTreeViewExpandedElement(p_event)));
         this.leoTreeView.onDidCollapseElement((p_event => this._onTreeViewCollapsedElement(p_event)));
         this.leoTreeView.onDidChangeVisibility((p_event => this._onTreeViewVisibilityChanged(p_event, false))); // * Trigger 'show tree in Leo's view'
 
         // * Explorer view outline pane
         this.leoTreeExplorerView = vscode.window.createTreeView(Constants.TREEVIEW_EXPLORER_ID, { showCollapseAll: false, treeDataProvider: this.leoTreeDataProvider });
         this.leoTreeExplorerView.onDidChangeSelection((p_event => this._onTreeViewChangedSelection(p_event)));
-        this.leoTreeExplorerView.onDidExpandElement((p_event => this.onTreeViewExpandedElement(p_event)));
+        this.leoTreeExplorerView.onDidExpandElement((p_event => this._onTreeViewExpandedElement(p_event)));
         this.leoTreeExplorerView.onDidCollapseElement((p_event => this._onTreeViewCollapsedElement(p_event)));
         this.leoTreeExplorerView.onDidChangeVisibility((p_event => this._onTreeViewVisibilityChanged(p_event, true))); // * Trigger 'show tree in explorer view'
 
@@ -171,7 +171,7 @@ export class LeoIntegration {
     }
 
     public startNetworkServices(): void {
-        // * leoIntegration starting entry point: Start leoBridge server and connect to it based on configuration flags
+        // * leoIntegration starting entry point: Start a leoBridge server and connect to it based on configuration flags
         this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED);
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
         if (this.config.startServerAutomatically) {
@@ -198,7 +198,7 @@ export class LeoIntegration {
     }
 
     public connect(): void {
-        // * Initiate a connection to the python server, then complete the setup of leo integration (tree, log, leoBridgeReady)
+        // * Initiate a connection to the leoBridge server, then show appropriate view title, the log pane, and set 'bridge ready' flags
         if (this.leoBridgeReady || this.leoIsConnecting) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
             return;
@@ -242,8 +242,17 @@ export class LeoIntegration {
         this.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
         this.leoObjectSelected = false;
-        this._updateLeoObjectSelected();
+        this._updateLeoObjectIndicator();
         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
+    }
+
+    public sendConfigToServer(p_config: ConfigMembers): void {
+        // * Send configuration through leoBridge to the server script, mostly used when checking if refreshing derived files is optional
+        if (this.fileOpenedReady) {
+            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package => {
+                // console.log("back from applying configuration to leobridgeserver.py");
+            });
+        }
     }
 
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
@@ -259,7 +268,7 @@ export class LeoIntegration {
         // ! We capture and act upon the the 'select node' command, so this event may be redundant for now
         // console.log("treeViewChangedSelection, selection length:", p_event.selection.length);
     }
-    private onTreeViewExpandedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
+    private _onTreeViewExpandedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
         // * May reveal nodes, but this event occurs *after* the getChildren event from the tree provider, so not useful to interfere in it.
         this.selectTreeNode(p_event.element, true); // * select node when expanding to mimic Leo
         this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE, p_event.element.apJson);
@@ -274,6 +283,7 @@ export class LeoIntegration {
     }
 
     private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
+        // *
         if (p_explorerView) {
             // (Facultative) Do something different if explorerView vs standalone outline pane
         }
@@ -359,14 +369,14 @@ export class LeoIntegration {
                 if (!this.leoObjectSelected) {
                     // console.log("editor changed to : leo! SET STATUS!");
                     this.leoObjectSelected = true;
-                    this._updateLeoObjectSelected();
+                    this._updateLeoObjectIndicator();
                     return;
                 }
             } else {
                 // console.log("editor changed to : other, no status!");
                 if (this.leoObjectSelected) {
                     this.leoObjectSelected = false;
-                    this._updateLeoObjectSelected();
+                    this._updateLeoObjectIndicator();
                     return;
                 }
             }
@@ -385,13 +395,13 @@ export class LeoIntegration {
             if (p_event.textEditor.document.uri.scheme === Constants.URI_SCHEME && vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_SCHEME) {
                 if (!this.leoObjectSelected) {
                     this.leoObjectSelected = true;
-                    this._updateLeoObjectSelectedDebounced();
+                    this._updateLeoObjectIndicatorDebounced();
                     return;
                 }
             } else {
                 if (this.leoObjectSelected) {
                     this.leoObjectSelected = false;
-                    this._updateLeoObjectSelectedDebounced();
+                    this._updateLeoObjectIndicatorDebounced();
                     return;
                 }
             }
@@ -639,7 +649,7 @@ export class LeoIntegration {
                 refreshCount: this.outlineRefreshCount
             };
             this.leoObjectSelected = true; // Just Selected a node
-            this._updateLeoObjectSelected();
+            this._updateLeoObjectIndicator();
         }
 
         // TODO : Save and restore selection, along with cursor position, from selection object saved in each node (or gnx array)
@@ -893,7 +903,6 @@ export class LeoIntegration {
         // * For actions that may delete or add nodes so that bodies gnx list need refreshing
         // * Perform action on node and close bodies of removed nodes, if any
         if (this._leoBridgeActionBusy) {
-            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
             console.log('Too fast! leoBridgeActionAndFullRefresh: ' + p_action);
         } else {
             if (!p_node && this._lastSelectedLeoNode) {
@@ -950,7 +959,6 @@ export class LeoIntegration {
 
     public editHeadline(p_node?: LeoNode, p_isSelectedNode?: boolean) {
         if (this._leoBridgeActionBusy) {
-            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
             console.log('Too fast! editHeadline');
         } else {
             if (!p_node && this._lastSelectedLeoNode) {
@@ -994,7 +1002,6 @@ export class LeoIntegration {
 
     public mark(p_node?: LeoNode): void {
         if (this._leoBridgeActionBusy) {
-            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
             console.log('Too fast! mark');
         } else {
             if (!p_node && this._lastSelectedLeoNode) {
@@ -1013,7 +1020,6 @@ export class LeoIntegration {
 
     public unmark(p_node?: LeoNode): void {
         if (this._leoBridgeActionBusy) {
-            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
             console.log('Too fast! unmark');
         } else {
             if (!p_node && this._lastSelectedLeoNode) {
@@ -1032,7 +1038,6 @@ export class LeoIntegration {
 
     public insertNode(p_node?: LeoNode): void {
         if (this._leoBridgeActionBusy) {
-            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
             console.log('Too fast! insert');
         } else {
             if (!p_node && this._lastSelectedLeoNode) {
@@ -1060,7 +1065,6 @@ export class LeoIntegration {
         }
     }
 
-    // * Critical Leo Bridge Actions
     public undo(): void {
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! undo');
@@ -1081,11 +1085,10 @@ export class LeoIntegration {
     }
 
     public showLogPane(): void {
-        this.leoLogPane.show(true); // TODO : Intercept log pane entries
+        this.leoLogPane.show(true);
     }
 
     public executeScript(): void {
-        // vscode.window.showInformationMessage("TODO: executeScript"); // temp placeholder
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! executeScript');
             return;
@@ -1096,7 +1099,6 @@ export class LeoIntegration {
     }
 
     public refreshFromDiskNode(p_node?: LeoNode): void {
-        // vscode.window.showInformationMessage("TODO: refreshFromDiskNode command"); // temp placeholder
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! refreshFromDiskNode ');
         } else {
@@ -1109,9 +1111,7 @@ export class LeoIntegration {
     }
 
     public contractAll(): void {
-        vscode.window.showInformationMessage("TODO: contractAll command"); // temp placeholder
         if (this._leoBridgeActionBusy) {
-            // * Debounce by waiting for command to resolve, and also initiate refresh, before accepting other 'leo commands'
             console.log('Too fast! contractAll');
         } else {
             this._leoBridgeActionBusy = true;
@@ -1124,74 +1124,39 @@ export class LeoIntegration {
         }
     }
 
-    // TODO : Functionality to implement
-    public hoistNode(): void {
-        vscode.window.showInformationMessage("TODO: hoistNode command"); // temp placeholder
-    }
-    public hoistSelection(): void {
-        vscode.window.showInformationMessage("TODO: hoistSelection command"); // temp placeholder
-    }
-    public deHoist(): void {
-        vscode.window.showInformationMessage("TODO: deHoist command"); // temp placeholder
-    }
-    public cloneFindAll(): void {
-        vscode.window.showInformationMessage("TODO: cloneFindAll command"); // temp placeholder
-    }
-    public cloneFindAllFlattened(): void {
-        vscode.window.showInformationMessage("TODO: cloneFindAllFlattened command"); // temp placeholder
-    }
-    public cloneFindMarked(): void {
-        vscode.window.showInformationMessage("TODO: cloneFindMarked command"); // temp placeholder
-    }
-    public cloneFindFlattenedMarked(): void {
-        vscode.window.showInformationMessage("TODO: cloneFindFlattenedMarked command"); // temp placeholder
-    }
-    public extract(): void {
-        vscode.window.showInformationMessage("TODO: extract command"); // temp placeholder
-    }
-    public extractNames(): void {
-        vscode.window.showInformationMessage("TODO: extractNames command"); // temp placeholder
-    }
-    public copyMarked(): void {
-        vscode.window.showInformationMessage("TODO: copyMarked command"); // temp placeholder
-    }
-    public diffMarkedNodes(): void {
-        vscode.window.showInformationMessage("TODO: diffMarkedNodes command"); // temp placeholder
-    }
-    public gotoNextMarked(): void {
-        vscode.window.showInformationMessage("TODO: gotoNextMarked command"); // temp placeholder
-    }
-    public markChangedItems(): void {
-        vscode.window.showInformationMessage("TODO: markChangedItems command"); // temp placeholder
-    }
-    public markSubheads(): void {
-        vscode.window.showInformationMessage("TODO: markSubheads command"); // temp placeholder
-    }
-    public unmarkAll(): void {
-        vscode.window.showInformationMessage("TODO: unmarkAll command"); // temp placeholder
-    }
-    public cloneMarkedNodes(): void {
-        vscode.window.showInformationMessage("TODO: cloneMarkedNodes command"); // temp placeholder
-    }
-    public deleteMarkedNodes(): void {
-        vscode.window.showInformationMessage("TODO: deleteMarkedNodes command"); // temp placeholder
-    }
-    public moveMarkedNode(): void {
-        vscode.window.showInformationMessage("TODO: moveMarkedNode command"); // temp placeholder
-    }
+    // TODO : More commands to implement
+    public hoistNode(): void { vscode.window.showInformationMessage("TODO: hoistNode command"); }
+    public hoistSelection(): void { vscode.window.showInformationMessage("TODO: hoistSelection command"); }
+    public deHoist(): void { vscode.window.showInformationMessage("TODO: deHoist command"); }
+    public cloneFindAll(): void { vscode.window.showInformationMessage("TODO: cloneFindAll command"); }
+    public cloneFindAllFlattened(): void { vscode.window.showInformationMessage("TODO: cloneFindAllFlattened command"); }
+    public cloneFindMarked(): void { vscode.window.showInformationMessage("TODO: cloneFindMarked command"); }
+    public cloneFindFlattenedMarked(): void { vscode.window.showInformationMessage("TODO: cloneFindFlattenedMarked command"); }
+    public extract(): void { vscode.window.showInformationMessage("TODO: extract command"); }
+    public extractNames(): void { vscode.window.showInformationMessage("TODO: extractNames command"); }
+    public copyMarked(): void { vscode.window.showInformationMessage("TODO: copyMarked command"); }
+    public diffMarkedNodes(): void { vscode.window.showInformationMessage("TODO: diffMarkedNodes command"); }
+    public gotoNextMarked(): void { vscode.window.showInformationMessage("TODO: gotoNextMarked command"); }
+    public markChangedItems(): void { vscode.window.showInformationMessage("TODO: markChangedItems command"); }
+    public markSubheads(): void { vscode.window.showInformationMessage("TODO: markSubheads command"); }
+    public unmarkAll(): void { vscode.window.showInformationMessage("TODO: unmarkAll command"); }
+    public cloneMarkedNodes(): void { vscode.window.showInformationMessage("TODO: cloneMarkedNodes command"); }
+    public deleteMarkedNodes(): void { vscode.window.showInformationMessage("TODO: deleteMarkedNodes command"); }
+    public moveMarkedNode(): void { vscode.window.showInformationMessage("TODO: moveMarkedNode command"); }
 
     public log(p_message: string): void {
-        // * Adds message string to leoInteg's log pane
+        // * Adds message string to leoInteg's log pane, used when leoBridge gets an async 'log' command
         this.leoLogPane.appendLine(p_message);
     }
 
     public showAskModalDialog(p_askArg: { "ask": string; "message": string; "yes_all": boolean; "no_all": boolean; }): void {
-        // * Equivalent to runAskYesNoDialog from Leo's code at @file ../plugins/qt_gui.py
-        // from leobridge async package {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
+        // * Equivalent to runAskYesNoDialog from Leo's qt_gui.py, used when leoBridge gets an async 'ask' command
+        // async package {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
 
-        // * Setup modal dialog to return one of ('yes','yes-all','no','no-all') through action ASK_RESULT
-        this._askResult = "no";
-        // const lastLine = p_askArg.message.substr(p_askArg.message.lastIndexOf("\n") + 1); // ? last line could be used in the message
+        // Setup modal dialog to return one of 'yes', 'yes-all', 'no' or 'no-all', to be sent back with the leoBridge 'ASK_RESULT' action
+        this._askResult = "no"; // defaults to not doing anything, matches isCloseAffordance just to be safe
+
+        // const lastLine = p_askArg.message.substr(p_askArg.message.lastIndexOf("\n") + 1); // last line could be used in the message
         const w_items: AskMessageItem[] = [
             { title: Constants.USER_MESSAGES.YES, value: "yes", isCloseAffordance: false },
             { title: Constants.USER_MESSAGES.NO, value: "no", isCloseAffordance: true }
@@ -1224,8 +1189,8 @@ export class LeoIntegration {
     }
 
     public showWarnModalMessage(p_waitArg: any): void {
-        // * Equivalent to runAskOkDialog from Leo's code at @file ../plugins/qt_gui.py
-        // from leobridge async package {"warn": "", "message": ""}
+        // * Equivalent to runAskOkDialog from Leo's qt_gui.py, used when leoBridge gets an async 'warn' command
+        // async package {"warn": "", "message": ""}
         vscode.window.showInformationMessage(
             p_waitArg.message,
             { modal: true }
@@ -1235,7 +1200,7 @@ export class LeoIntegration {
     }
 
     public showChangesDetectedInfoMessage(p_infoArg: { "message": string; }): void {
-        // * Show non-blocking info message about detected file changes
+        // * Show non-blocking info message about detected file changes, used when leoBridge gets an async 'info' command
         // TODO : Message pre-built elsewhere, and flags for refresh in independent event/call
         let w_message = "Changes to external files were detected.";
         switch (p_infoArg.message) {
@@ -1256,7 +1221,7 @@ export class LeoIntegration {
     }
 
     public saveLeoFile(): void {
-        // * Invokes self.commander.save() in leobridgeserver.py
+        // * Invokes the self.commander.save() Leo command
         // TODO : Specify which file when supporting multiple simultaneous opened Leo files
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! executeScript');
@@ -1272,6 +1237,7 @@ export class LeoIntegration {
     }
 
     public closeLeoFile(): void {
+        // * Close an opened Leo file
         // TODO : Support multiple simultaneous opened Leo files
         if (this.fileOpenedReady) {
             vscode.window.showInformationMessage("TODO: close leo file"); // temp placeholder
@@ -1281,16 +1247,8 @@ export class LeoIntegration {
         }
     }
 
-    public sendConfigToServer(p_config: ConfigMembers): void {
-        // * Send configuration through leoBridge to the python script, mostly used for checking / refreshing derived files
-        if (this.fileOpenedReady) {
-            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package => {
-                // console.log("back from apply config");
-            });
-        }
-    }
-
     public openLeoFile(): void {
+        // * Shows an 'Open Leo File' dialog window, opens the chosen file via leoBridge along with showing the tree, body and log panes
         // TODO : Support multiple simultaneous opened Leo files
         if (this.fileOpenedReady) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_ALREADY_OPENED);
@@ -1305,7 +1263,9 @@ export class LeoIntegration {
             .then((p_openFileResult: LeoBridgePackage) => {
                 const p_selectedLeoNode = this.apToLeoNode(p_openFileResult.node);
                 // * Start body pane system
-                this._context.subscriptions.push(vscode.workspace.registerFileSystemProvider(Constants.URI_SCHEME, this.leoFileSystem, { isCaseSensitive: true }));
+                this._context.subscriptions.push(
+                    vscode.workspace.registerFileSystemProvider(Constants.URI_SCHEME, this.leoFileSystem, { isCaseSensitive: true })
+                );
                 // * Startup flag
                 this.fileOpenedReady = true;
                 // * First valid redraw of tree
@@ -1318,7 +1278,7 @@ export class LeoIntegration {
                     refreshCount: this.outlineRefreshCount
                 };
                 // * First StatusBar appearance
-                this._updateLeoObjectSelected();
+                this._updateLeoObjectIndicator();
                 this.leoStatusBarItem.show();
                 // * Show leo log pane
                 this.showLogPane();
@@ -1335,18 +1295,18 @@ export class LeoIntegration {
             });
     }
 
-    private _updateLeoObjectSelectedDebounced(): void {
-        // * Update the status bar visual control flag in a debounced manner
+    private _updateLeoObjectIndicatorDebounced(): void {
+        // * Update the status bar visual indicator flag in a debounced manner
         if (this._updateStatusBarTimeout) {
             clearTimeout(this._updateStatusBarTimeout);
         }
         this._updateStatusBarTimeout = setTimeout(() => {
-            this._updateLeoObjectSelected();
+            this._updateLeoObjectIndicator();
         }, 200);
     }
 
-    private _updateLeoObjectSelected(): void {
-        // * Update the status bar visual control flag directly
+    private _updateLeoObjectIndicator(): void {
+        // * Update the status bar visual indicator flag directly
         if (this._updateStatusBarTimeout) { // Can be called directly, so clear timer if any
             clearTimeout(this._updateStatusBarTimeout);
         }
@@ -1361,13 +1321,14 @@ export class LeoIntegration {
         }
     }
 
-    private _showLeoCommands(): void {
-        // * Status bar indicator clicked: Offer all leo commands in the command palette
+    public showLeoCommands(): void {
+        // * Offer all leo commands in the command palette (This opens the palette with string '>leo:' already typed)
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.QUICK_OPEN, Constants.GUI.QUICK_OPEN_LEO_COMMANDS);
     }
 
     public setTreeViewTitle(p_title: string): void {
         // * Set/Change outline pane title e.g. "NOT CONNECTED", "CONNECTED", "OUTLINE"
+        // TODO : Use the new 'welcome Content' API, see https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content
         if (this.leoTreeView) {
             this.leoTreeView.title = p_title;
         }
