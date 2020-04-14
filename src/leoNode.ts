@@ -8,7 +8,12 @@ export class LeoNode extends vscode.TreeItem {
 
     public cursorSelection: any; // TODO : Keep body's cursor and selection position from vscode to get it back
     public contextValue: string; // * Context string is checked in package.json with 'when' clauses
-    private _id: string;
+
+    private _id: string; // * For getter function get id()
+    // Optional id for the tree item that has to be unique across tree.
+    // The id is used to preserve the selection and expansion state of the tree item.
+    // If not provided, an id is generated using the tree item's label.
+    // Note that when labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
 
     constructor(
         public label: string, // Node headline
@@ -21,11 +26,11 @@ export class LeoNode extends vscode.TreeItem {
         public marked: boolean,
         public atFile: boolean,
         public hasBody: boolean,
-        private _leoIntegration: LeoIntegration
-
+        private _leoIntegration: LeoIntegration,
+        p_id?: string | undefined
     ) {
         super(label, collapsibleState);
-        this._id = (++_leoIntegration.nextNodeId).toString(); // New id to set collapsed state each time
+        this._id = p_id || (++_leoIntegration.nextNodeId).toString(); // New id to set collapsed state each time
         this.contextValue = this._getContextValue(marked, atFile);
         this.command = {
             command: Constants.NAME + "." + Constants.LEOINTEG_COMMANDS.SELECT_NODE,
@@ -35,10 +40,16 @@ export class LeoNode extends vscode.TreeItem {
     }
 
     // * TO HELP DEBUG
+
     // get description(): string {
     //   // * some smaller grayed-out text accompanying the main label
     //   const w_ap: ArchivedPosition = JSON.parse(this.apJson);
     //   return "child:" + w_ap.childIndex + " gnx:" + w_ap.gnx + " lvl:" + w_ap.level;
+    // }
+
+    // get description(): string {
+    //     // * some smaller grayed-out text accompanying the main label
+    //     return "id:" + this.id;
     // }
 
     public copyProperties(p_node: LeoNode): LeoNode {
