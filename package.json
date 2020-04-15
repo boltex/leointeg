@@ -13,7 +13,7 @@
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.43.0"
+    "vscode": "^1.44.0"
   },
   "keywords": [
     "leo",
@@ -630,6 +630,28 @@
         "command": "leointeg.refreshFromDiskSelection",
         "category": "Leo",
         "title": "Refresh from Disk"
+      }
+    ],
+    "viewsWelcome": [
+      {
+        "view": "leoIntegration",
+        "contents": "Not Connected [learn more](https://github.com/boltex/leointeg#how-it-works).\n[Connect to Server](command:leointeg.connectToServer)",
+        "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Not Connected [learn more](https://github.com/boltex/leointeg#how-it-works).\n[Connect to Server](command:leointeg.connectToServer)",
+        "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
+      },
+      {
+        "view": "leoIntegration",
+        "contents": "Connected to Leo [learn more](https://github.com/boltex/leointeg#how-it-works).\n[Open Leo File](command:leointeg.openLeoFile)",
+        "when": "leoBridgeReady==true && !leoTreeOpened"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Connected to Leo [learn more](https://github.com/boltex/leointeg#how-it-works).\n[Open Leo File](command:leointeg.openLeoFile)",
+        "when": "leoBridgeReady==true && !leoTreeOpened"
       }
     ],
     "menus": {
