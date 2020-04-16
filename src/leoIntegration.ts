@@ -172,7 +172,8 @@ export class LeoIntegration {
 
     public startNetworkServices(): void {
         // * leoIntegration starting entry point: Start a leoBridge server and connect to it based on configuration flags
-        this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED);
+        // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED);
+        this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
         if (this.config.startServerAutomatically) {
             this.startServer();
@@ -213,7 +214,8 @@ export class LeoIntegration {
                 } else {
                     this.leoBridgeReady = true;
                     vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
-                    this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_CONNECTED);
+                    // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_CONNECTED);
+                    this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
                     this.showLogPane();
                     if (!this.config.connectToServerAutomatically) {
                         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
@@ -235,7 +237,8 @@ export class LeoIntegration {
         } else {
             vscode.window.showInformationMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
         }
-        this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED);
+        // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED);
+        this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, false);
         this.fileOpenedReady = false;
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, false);
@@ -1283,7 +1286,7 @@ export class LeoIntegration {
                 return this.leoFileSystem.refreshPossibleGnxList();
             })
             .then(p_list => {
-                this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE);
+                this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Maybe unused when used with welcome content
                 return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, true);
             })
             .then(p_setContextResult => {
