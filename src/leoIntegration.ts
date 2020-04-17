@@ -586,7 +586,7 @@ export class LeoIntegration {
             // don't use this.treeKeepFocus
             this.reveal(p_leoNode, { select: w_selectFlag, focus: w_focusFlag })
                 .then(() => {
-                    console.log('did this ask for parent?'); // ! debug
+                    console.log('did this ask for parent?', p_leoNode.id, p_leoNode.label); // ! debug
 
                     if (w_showBodyFlag) {
                         this.selectTreeNode(p_leoNode, true);
@@ -947,11 +947,11 @@ export class LeoIntegration {
                         return Promise.resolve(w_located);
                     })
                     .then(p_locatedResult => {
-                        // console.log('Back from locate (false if not found):', p_locatedResult);
+                        console.log('Back from locate (false if not found):', p_locatedResult);
                         // * If this.lastSelectedLeoNode is undefined it will be set by arrayToLeoNodesArray when refreshing tree root
-                        this._leoBridgeActionBusy = false;
                         this._lastOperationChangedTree = true;
                         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelectFocusShowBody); // ! finish by refreshing the tree and selecting the node
+                        this._leoBridgeActionBusy = false;
                     });
             }
         }
