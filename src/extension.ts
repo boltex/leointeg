@@ -32,12 +32,14 @@ export function activate(context: vscode.ExtensionContext) {
 
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.START_SERVER, () => leoIntegration.startServer()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CONNECT, () => leoIntegration.connect()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SHOW_LOG, () => leoIntegration.showLogPane()],
 
-        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.OPEN_FILE, () => leoIntegration.openLeoFile()],
-        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLOSE_FILE, () => leoIntegration.closeLeoFile()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.OPEN_FILE, () => leoIntegration.openLeoFile()], // TODO : Support multiple simultaneous opened files
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLOSE_FILE, () => leoIntegration.closeLeoFile()], // TODO : Implement & support multiple simultaneous files
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SAVE_FILE, () => leoIntegration.saveLeoFile()], // TODO : Specify which file when supporting multiple simultaneous files
 
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CONTRACT_ALL, () => leoIntegration.contractAll()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SELECT_NODE, (p_node: LeoNode) => leoIntegration.selectTreeNode(p_node, false)],
-        // [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.OPEN_ASIDE, (p_node: LeoNode) => leoIntegration.showBodyDocumentAside(p_node)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.OPEN_ASIDE, (p_node: LeoNode) => leoIntegration.selectTreeNode(p_node, false, true)],
 
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MARK, (p_node: LeoNode) => leoIntegration.mark(p_node)],
@@ -81,13 +83,11 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SORT_CHILDREN, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.SORT_CHILDREN, undefined, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SORT_SIBLING, () => leoIntegration.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.SORT_SIBLINGS, undefined, RevealType.RevealSelectFocusShowBody)],
 
-        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.UNDO, () => leoIntegration.undo()],
-        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.REDO, () => leoIntegration.redo()],
-        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.EXECUTE, () => leoIntegration.executeScript()],
-        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SHOW_LOG, () => leoIntegration.showLogPane()],
-        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SAVE_FILE, () => leoIntegration.saveLeoFile()],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.UNDO, () => leoIntegration.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.UNDO, undefined, true)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.REDO, () => leoIntegration.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.REDO, undefined, true)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.EXECUTE, () => leoIntegration.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.EXECUTE_SCRIPT, undefined, true)],
 
-        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CONTRACT_ALL, () => leoIntegration.contractAll()],
+        // TODO : More commands to implement
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.HOIST, () => leoIntegration.hoistNode()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.HOIST_SELECTION, () => leoIntegration.hoistSelection()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DEHOIST, () => leoIntegration.deHoist()],
@@ -106,7 +106,6 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLONE_MARKED_NODES, () => leoIntegration.cloneMarkedNodes()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DELETE_MARKED_NODES, () => leoIntegration.deleteMarkedNodes()],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_MARKED_NODES, () => leoIntegration.moveMarkedNode()],
-
     ];
 
     w_commands.map(function (p_command) { context.subscriptions.push(vscode.commands.registerCommand(...p_command)); });

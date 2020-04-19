@@ -106,7 +106,7 @@ export class Constants {
     };
 
     public static ASYNC_ACTIONS = {
-        // * Actions that can be invoked by Leo via leobridge
+        // * Actions that can be invoked by Leo through leobridge
         ASYNC_LOG: "log",
         ASYNC_ASK: "ask",
         ASYNC_WARN: "warn",
@@ -135,8 +135,10 @@ export class Constants {
         SET_HEADLINE: "setNewHeadline",
         EXPAND_NODE: "expandNode",
         COLLAPSE_NODE: "collapseNode",
-        OPEN_FILE: "openFile",
-        SAVE_FILE: "saveFile",
+        CONTRACT_ALL: "contractAll",
+        OPEN_FILE: "openFile", // TODO : Support multiple simultaneous opened files
+        CLOSE_FILE: "closeFile", // TODO : Implement & support multiple simultaneous files
+        SAVE_FILE: "saveFile", // TODO : Specify which file when supporting multiple simultaneous files
         // * Leo Operations
         MARK_PNODE: "markPNode",
         UNMARK_PNODE: "unmarkPNode",
@@ -155,14 +157,12 @@ export class Constants {
         PROMOTE_PNODE: "promotePNode",
         DEMOTE_PNODE: "demotePNode",
         REFRESH_FROM_DISK_PNODE: "refreshFromDiskPNode",
-        CONTRACT_ALL: "contractAll",
-        // HEADLINE_PNODE: "", // ? maybe rename set_headline
-        UNDO: "undo",
-        REDO: "redo",
         SORT_CHILDREN: "sortChildrenPNode",
         SORT_SIBLINGS: "sortSiblingsPNode",
+        UNDO: "undo",
+        REDO: "redo",
         EXECUTE_SCRIPT: "executeScript",
-        // * ---------------
+        // TODO : More commands to implement
         HOIST_PNODE: "hoistPNode",
         DEHOIST: "deHoist",
         CLONE_FIND_ALL: "cloneFindAll",
@@ -205,6 +205,7 @@ export class Constants {
         UNDO: "undo",
         REDO: "redo",
         EXECUTE: "executeScriptSelection",
+        SHOW_BODY: "showBody",
         SHOW_LOG: "showLogPane",
         SAVE_FILE: "saveLeoFile",
         SORT_CHILDREN: "sortChildrenSelection",

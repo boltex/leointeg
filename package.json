@@ -245,6 +245,11 @@
         }
       },
       {
+        "command": "leointeg.showBody",
+        "category": "Leo",
+        "title": "Show Body Pane"
+      },
+      {
         "command": "leointeg.showLogPane",
         "category": "Leo",
         "title": "Show Log Pane"
@@ -635,22 +640,22 @@
     "viewsWelcome": [
       {
         "view": "leoIntegration",
-        "contents": "Not Connected [learn more](https://github.com/boltex/leointeg#how-it-works).\n[Connect to Server](command:leointeg.connectToServer)",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nleoInteg [Settings](command:leointeg.showSettingsPage)",
         "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "Not Connected [learn more](https://github.com/boltex/leointeg#how-it-works).\n[Connect to Server](command:leointeg.connectToServer)",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nleoInteg [Settings](command:leointeg.showSettingsPage)",
         "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
       },
       {
         "view": "leoIntegration",
-        "contents": "Connected to Leo [learn more](https://github.com/boltex/leointeg#how-it-works).\n[Open Leo File](command:leointeg.openLeoFile)",
+        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nleoInteg [Settings](command:leointeg.showSettingsPage)",
         "when": "leoBridgeReady==true && !leoTreeOpened"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "Connected to Leo [learn more](https://github.com/boltex/leointeg#how-it-works).\n[Open Leo File](command:leointeg.openLeoFile)",
+        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nleoInteg [Settings](command:leointeg.showSettingsPage)",
         "when": "leoBridgeReady==true && !leoTreeOpened"
       }
     ],
@@ -667,6 +672,10 @@
         {
           "command": "leointeg.openLeoFile",
           "when": "leoBridgeReady==true && !leoTreeOpened"
+        },
+        {
+          "command": "leointeg.showBody",
+          "when": "leoTreeOpened==true"
         },
         {
           "command": "leointeg.showLogPane",

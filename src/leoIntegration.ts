@@ -658,7 +658,7 @@ export class LeoIntegration {
         if (p_node === this._lastSelectedLeoNode) {
             // same so just find and reopen
             this._locateOpenedBody(p_node.gnx);
-            return this._showSelectedBodyDocument(p_aside);
+            return this.showBody(p_aside);
         }
 
         // * Set selected node in Leo via leoBridge
@@ -682,7 +682,7 @@ export class LeoIntegration {
 
                     if (this._bodyTextDocumentSameUri) {
                         this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx);
-                        return this._showSelectedBodyDocument(p_aside); // already opened in a column so just tell vscode to show it
+                        return this.showBody(p_aside); // already opened in a column so just tell vscode to show it
                     } else {
                         return this._bodyTextDocument.save().then((p_result) => {
                             const w_edit = new vscode.WorkspaceEdit();
@@ -694,7 +694,7 @@ export class LeoIntegration {
                             // * Rename file operation to clear undo buffer
                             return vscode.workspace.applyEdit(w_edit).then(p_result => {
                                 this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx);
-                                return this._showSelectedBodyDocument(p_aside);
+                                return this.showBody(p_aside);
                             });
                         });
                     }
@@ -707,11 +707,11 @@ export class LeoIntegration {
 
         } else {
             this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx);
-            return this._showSelectedBodyDocument(p_aside);
+            return this.showBody(p_aside);
         }
     }
 
-    private _showSelectedBodyDocument(p_aside: boolean | undefined): Thenable<boolean> {
+    public showBody(p_aside: boolean | undefined): Thenable<boolean> {
         // * Make sure not to open unnecessary TextEditors
         return vscode.workspace.openTextDocument(this._bodyUri).then(p_document => {
 
@@ -902,6 +902,7 @@ export class LeoIntegration {
     public leoBridgeActionAndFullRefresh(p_action: string, p_node?: LeoNode, p_refreshBodyContent?: boolean): void {
         // * For actions that may delete or add nodes so that bodies gnx list need refreshing
         // * Perform action on node and close bodies of removed nodes, if any
+        // TODO : REDO COMPLETELY : NO MORE DELETE NODES / JUST SAVE & RENAME LIKE A SELECT IF NEW SELECTION
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! leoBridgeActionAndFullRefresh: ' + p_action);
         } else {
@@ -987,8 +988,7 @@ export class LeoIntegration {
                                     //     this.focusBodyIfVisible(p_node.gnx);
                                     // }
                                     this._leoBridgeActionBusy = false;
-                                }
-                                );
+                                });
                         } else {
                             if (p_isSelectedNode) {
                                 this.focusBodyIfVisible(p_node!.gnx);
@@ -1004,17 +1004,12 @@ export class LeoIntegration {
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! mark');
         } else {
-            if (!p_node && this._lastSelectedLeoNode) {
-                p_node = this._lastSelectedLeoNode;
-            }
-            if (p_node) {
-                this._leoBridgeActionBusy = true;
-                this.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MARK_PNODE, p_node)
-                    .then(() => {
-                        this._leoBridgeActionBusy = false;
-                    });
-                vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SELECTED_MARKED, true);
-            }
+            this._leoBridgeActionBusy = true;
+            this.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MARK_PNODE, p_node)
+                .then(() => {
+                    this._leoBridgeActionBusy = false;
+                });
+            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SELECTED_MARKED, true);
         }
     }
 
@@ -1022,17 +1017,12 @@ export class LeoIntegration {
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! unmark');
         } else {
-            if (!p_node && this._lastSelectedLeoNode) {
-                p_node = this._lastSelectedLeoNode;
-            }
-            if (p_node) {
-                this._leoBridgeActionBusy = true;
-                this.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.UNMARK_PNODE, p_node)
-                    .then(() => {
-                        this._leoBridgeActionBusy = false;
-                    });
-                vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SELECTED_MARKED, false);
-            }
+            this._leoBridgeActionBusy = true;
+            this.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.UNMARK_PNODE, p_node)
+                .then(() => {
+                    this._leoBridgeActionBusy = false;
+                });
+            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SELECTED_MARKED, false);
         }
     }
 
@@ -1065,37 +1055,8 @@ export class LeoIntegration {
         }
     }
 
-    public undo(): void {
-        if (this._leoBridgeActionBusy) {
-            console.log('Too fast! undo');
-            return;
-        }
-        if (this._lastSelectedLeoNode) {
-            this.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.UNDO, this._lastSelectedLeoNode, true);
-        }
-    }
-    public redo(): void {
-        if (this._leoBridgeActionBusy) {
-            console.log('Too fast! redo');
-            return;
-        }
-        if (this._lastSelectedLeoNode) {
-            this.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.REDO, this._lastSelectedLeoNode, true);
-        }
-    }
-
     public showLogPane(): void {
         this.leoLogPane.show(true);
-    }
-
-    public executeScript(): void {
-        if (this._leoBridgeActionBusy) {
-            console.log('Too fast! executeScript');
-            return;
-        }
-        if (this._lastSelectedLeoNode) {
-            this.leoBridgeActionAndFullRefresh(Constants.LEOBRIDGE_ACTIONS.EXECUTE_SCRIPT, this._lastSelectedLeoNode, true);
-        }
     }
 
     public refreshFromDiskNode(p_node?: LeoNode): void {
@@ -1115,10 +1076,8 @@ export class LeoIntegration {
             console.log('Too fast! contractAll');
         } else {
             this._leoBridgeActionBusy = true;
-            this.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.CONTRACT_ALL)
+            this.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.CONTRACT_ALL, undefined, RevealType.RevealSelect)
                 .then(() => {
-                    console.log('back from contract all ');
-
                     this._leoBridgeActionBusy = false;
                 });
         }
@@ -1238,7 +1197,7 @@ export class LeoIntegration {
 
     public closeLeoFile(): void {
         // * Close an opened Leo file
-        // TODO : Support multiple simultaneous opened Leo files
+        // TODO : Implement & support multiple simultaneous files
         if (this.fileOpenedReady) {
             vscode.window.showInformationMessage("TODO: close leo file"); // temp placeholder
             // this.setTreeViewTitle("CONNECTED");
@@ -1249,7 +1208,7 @@ export class LeoIntegration {
 
     public openLeoFile(): void {
         // * Shows an 'Open Leo File' dialog window, opens the chosen file via leoBridge along with showing the tree, body and log panes
-        // TODO : Support multiple simultaneous opened Leo files
+        // TODO : Support multiple simultaneous opened files
         if (this.fileOpenedReady) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_ALREADY_OPENED);
             return;
@@ -1291,7 +1250,7 @@ export class LeoIntegration {
             })
             .then(p_setContextResult => {
                 this.sendConfigToServer(this.config.getConfig());
-                return this._showSelectedBodyDocument(false);
+                return this.showBody(false);
             });
     }
 
