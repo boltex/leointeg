@@ -640,6 +640,17 @@ export class LeoIntegration {
         return Promise.resolve();
     }
 
+    /*
+    _.d8888b.  8888888888 888      8888888888 .d8888b. 88888888888       .d8888b.            .d8888b.  888    888  .d88888b.  888       888
+    d88P  Y88b 888        888      888       d88P  Y88b    888          d88P  "88b          d88P  Y88b 888    888 d88P" "Y88b 888   o   888
+    Y88b.      888        888      888       888    888    888          Y88b. d88P          Y88b.      888    888 888     888 888  d8b  888
+    '"Y888b.   8888888    888      8888888   888           888           "Y8888P"            "Y888b.   8888888888 888     888 888 d888b 888
+        "Y88b. 888        888      888       888           888          .d88P88K.d88P           "Y88b. 888    888 888     888 888d88888b888
+        ''"888 888        888      888       888    888    888          888"  Y888P"              "888 888    888 888     888 88888P Y88888
+    Y88b  d88P 888        888      888       Y88b  d88P    888          Y88b .d8888b        Y88b  d88P 888    888 Y88b. .d88P 8888P   Y8888
+    '"Y8888P"  8888888888 88888888 8888888888 "Y8888P"     888           "Y8888P" Y88b       "Y8888P"  888    888  "Y88888P"  888P     Y888
+    */
+
     public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable<boolean> {
         // * User has selected a node via mouse click or 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
         if (!p_internalCall) {
@@ -868,8 +879,25 @@ export class LeoIntegration {
         return Promise.resolve(w_hasClosed);
     }
 
+    /*
+    ..d8888b.   .d88888b.  888b     d888 888b     d888        d8888 888b    888 8888888b.   .d8888b.
+    d88P  Y88b d88P" "Y88b 8888b   d8888 8888b   d8888       d88888 8888b   888 888  "Y88b d88P  Y88b
+    888    888 888     888 88888b.d88888 88888b.d88888      d88P888 88888b  888 888    888 Y88b.
+    888        888     888 888Y88888P888 888Y88888P888     d88P 888 888Y88b 888 888    888  "Y888b.
+    888        888     888 888 Y888P 888 888 Y888P 888    d88P  888 888 Y88b888 888    888     "Y88b.
+    888    888 888     888 888  Y8P  888 888  Y8P  888   d88P   888 888  Y88888 888    888       "888
+    Y88b  d88P Y88b. .d88P 888   "   888 888   "   888  d8888888888 888   Y8888 888  .d88P Y88b  d88P
+    '"Y8888P"   "Y88888P"  888       888 888       888 d88P     888 888    Y888 8888888P"   "Y8888P"
+    */
+
+    // * Standalone:
+    // - editHeadline, insertNode
+
+
     public leoBridgeAction(p_action: string, p_node?: LeoNode): Promise<LeoBridgePackage> {
-        // * For actions that need no refreshes at all
+        // * For actions that need no tree/body refreshes at all
+        // - saveLeoFile, copyNode, copyNodeSelection
+
         if (!p_node && this._lastSelectedLeoNode) {
             p_node = this._lastSelectedLeoNode;
         }
@@ -885,6 +913,11 @@ export class LeoIntegration {
 
     public leoBridgeActionAndRefresh(p_action: string, p_node?: LeoNode, p_revealType?: RevealType | undefined): Promise<LeoBridgePackage> {
         // * For actions that do not need full bodies gnx list to refresh (moving, renaming nodes)
+
+        // - mark, unmark, refreshFromDiskNode, contractAll
+        // - move, clone, promote, demote
+        // - sortChildren, sortSibling
+
         if (!p_node && this._lastSelectedLeoNode) {
             p_node = this._lastSelectedLeoNode;
         }
@@ -902,6 +935,10 @@ export class LeoIntegration {
     public leoBridgeActionAndFullRefresh(p_action: string, p_node?: LeoNode, p_refreshBodyContent?: boolean): void {
         // * For actions that may delete or add nodes so that bodies gnx list need refreshing
         // * Perform action on node and close bodies of removed nodes, if any
+
+        // - cut, paste, pasteClone, delete
+        // - undo, redo, execute
+
         // TODO : REDO COMPLETELY : NO MORE DELETE NODES / JUST SAVE & RENAME LIKE A SELECT IF NEW SELECTION
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! leoBridgeActionAndFullRefresh: ' + p_action);
@@ -1102,6 +1139,17 @@ export class LeoIntegration {
     public cloneMarkedNodes(): void { vscode.window.showInformationMessage("TODO: cloneMarkedNodes command"); }
     public deleteMarkedNodes(): void { vscode.window.showInformationMessage("TODO: deleteMarkedNodes command"); }
     public moveMarkedNode(): void { vscode.window.showInformationMessage("TODO: moveMarkedNode command"); }
+
+    /*
+    ..d88888b. 88888888888 888    888 8888888888 8888888b.
+    d88P" "Y88b    888     888    888 888        888   Y88b
+    888     888    888     888    888 888        888    888
+    888     888    888     8888888888 8888888    888   d88P
+    888     888    888     888    888 888        8888888P"
+    888     888    888     888    888 888        888 T88b
+    Y88b. .d88P    888     888    888 888        888  T88b
+    '"Y88888P"     888     888    888 8888888888 888   T88b
+    */
 
     public log(p_message: string): void {
         // * Adds message string to leoInteg's log pane, used when leoBridge gets an async 'log' command
