@@ -893,11 +893,9 @@ export class LeoIntegration {
     // * Standalone:
     // - editHeadline, insertNode
 
-
-    public leoBridgeAction(p_action: string, p_node?: LeoNode): Promise<LeoBridgePackage> {
+    public nodeAction(p_action: string, p_node?: LeoNode): Promise<LeoBridgePackage> {
         // * For actions that need no tree/body refreshes at all
         // - saveLeoFile, copyNode, copyNodeSelection
-
         if (!p_node && this._lastSelectedLeoNode) {
             p_node = this._lastSelectedLeoNode;
         }
@@ -911,34 +909,26 @@ export class LeoIntegration {
         }
     }
 
-    public leoBridgeActionAndRefresh(p_action: string, p_node?: LeoNode, p_revealType?: RevealType | undefined): Promise<LeoBridgePackage> {
+    public nodeActionRefresh(p_action: string, p_node?: LeoNode, p_revealType?: RevealType | undefined): Promise<LeoBridgePackage> {
         // * For actions that do not need full bodies gnx list to refresh (moving, renaming nodes)
-
         // - mark, unmark, refreshFromDiskNode, contractAll
         // - move, clone, promote, demote
         // - sortChildren, sortSibling
-
-        if (!p_node && this._lastSelectedLeoNode) {
-            p_node = this._lastSelectedLeoNode;
-        }
-        if (p_node) {
-            return this.leoBridge.action(p_action, p_node.apJson).then(p_package => {
-                this._lastOperationChangedTree = true;
-                this.leoTreeDataProvider.refreshTreeRoot(p_revealType); // refresh all, needed to get clones to refresh too!
+        return this.nodeAction(p_action, p_node)
+            .then((p_package: LeoBridgePackage) => {
+                if (p_package.id > 0) {
+                    this._lastOperationChangedTree = true;
+                    this.leoTreeDataProvider.refreshTreeRoot(p_revealType); // refresh all, needed to get clones to refresh too!
+                }
                 return Promise.resolve(p_package);
             });
-        } else {
-            return Promise.resolve({ id: 0 });
-        }
     }
 
     public leoBridgeActionAndFullRefresh(p_action: string, p_node?: LeoNode, p_refreshBodyContent?: boolean): void {
         // * For actions that may delete or add nodes so that bodies gnx list need refreshing
         // * Perform action on node and close bodies of removed nodes, if any
-
         // - cut, paste, pasteClone, delete
         // - undo, redo, execute
-
         // TODO : REDO COMPLETELY : NO MORE DELETE NODES / JUST SAVE & RENAME LIKE A SELECT IF NEW SELECTION
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! leoBridgeActionAndFullRefresh: ' + p_action);
@@ -1037,29 +1027,16 @@ export class LeoIntegration {
         }
     }
 
-    public mark(p_node?: LeoNode): void {
+    public changeMark(p_isMark: boolean, p_node?: LeoNode): void {
         if (this._leoBridgeActionBusy) {
-            console.log('Too fast! mark');
+            console.log('Too fast! changeMark');
         } else {
             this._leoBridgeActionBusy = true;
-            this.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.MARK_PNODE, p_node)
+            this.nodeActionRefresh(p_isMark ? Constants.LEOBRIDGE_ACTIONS.MARK_PNODE : Constants.LEOBRIDGE_ACTIONS.UNMARK_PNODE, p_node)
                 .then(() => {
                     this._leoBridgeActionBusy = false;
                 });
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SELECTED_MARKED, true);
-        }
-    }
-
-    public unmark(p_node?: LeoNode): void {
-        if (this._leoBridgeActionBusy) {
-            console.log('Too fast! unmark');
-        } else {
-            this._leoBridgeActionBusy = true;
-            this.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.UNMARK_PNODE, p_node)
-                .then(() => {
-                    this._leoBridgeActionBusy = false;
-                });
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SELECTED_MARKED, false);
+            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_isMark);
         }
     }
 
@@ -1101,7 +1078,7 @@ export class LeoIntegration {
             console.log('Too fast! refreshFromDiskNode ');
         } else {
             this._leoBridgeActionBusy = true;
-            this.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.REFRESH_FROM_DISK_PNODE, p_node, RevealType.RevealSelectFocusShowBody).then(() => {
+            this.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.REFRESH_FROM_DISK_PNODE, p_node, RevealType.RevealSelectFocusShowBody).then(() => {
                 this.leoFileSystem.fireRefreshFiles();
                 this._leoBridgeActionBusy = false;
             });
@@ -1113,7 +1090,7 @@ export class LeoIntegration {
             console.log('Too fast! contractAll');
         } else {
             this._leoBridgeActionBusy = true;
-            this.leoBridgeActionAndRefresh(Constants.LEOBRIDGE_ACTIONS.CONTRACT_ALL, undefined, RevealType.RevealSelect)
+            this.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.CONTRACT_ALL, undefined, RevealType.RevealSelect)
                 .then(() => {
                     this._leoBridgeActionBusy = false;
                 });
@@ -1236,7 +1213,7 @@ export class LeoIntegration {
         }
         if (this._lastSelectedLeoNode) {
             this._leoBridgeActionBusy = true;
-            this.leoBridgeAction(Constants.LEOBRIDGE_ACTIONS.SAVE_FILE)
+            this.nodeAction(Constants.LEOBRIDGE_ACTIONS.SAVE_FILE)
                 .then(() => {
                     this._leoBridgeActionBusy = false;
                 });
