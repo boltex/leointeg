@@ -13,24 +13,22 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
 
+    private _refreshSingleNodeFlag: boolean = false; // used in leoOutline.ts to check if getTreeItem(element: LeoNode) should fetch from Leo, or return as-is
+
     constructor(private _leoIntegration: LeoIntegration) { }
 
     public refreshTreeNode(p_node: LeoNode): void {
-        this._leoIntegration.refreshSingleNodeFlag = true; // Of course we want to do a real refresh!
+        this._refreshSingleNodeFlag = true; // Of course we want to do a real refresh!
         this._onDidChangeTreeData.fire(p_node);
     }
 
-    public refreshTreeRoot(p_revealType?: RevealType): void {
-        this._leoIntegration.outlineRefreshCount += 1;
-        if (p_revealType) { // To check if selected node should self-select while redrawing whole tree
-            this._leoIntegration.revealSelectedNode = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
-        }
+    public refreshTreeRoot(): void {
         this._onDidChangeTreeData.fire();
     }
 
     public getTreeItem(element: LeoNode): Thenable<LeoNode> | LeoNode {
-        if (this._leoIntegration.refreshSingleNodeFlag) {
-            this._leoIntegration.refreshSingleNodeFlag = false;
+        if (this._refreshSingleNodeFlag) {
+            this._refreshSingleNodeFlag = false;
             return this._leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_PNODE, element.apJson)
                 .then((p_result) => {
                     const w_node = this._leoIntegration.apToLeoNode(p_result.node);

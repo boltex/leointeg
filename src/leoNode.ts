@@ -9,12 +9,6 @@ export class LeoNode extends vscode.TreeItem {
     public cursorSelection: any; // TODO : Keep body's cursor and selection position from vscode to get it back
     public contextValue: string; // * Context string is checked in package.json with 'when' clauses
 
-    private _id: string; // * For getter function get id()
-    // Optional id for the tree item that has to be unique across tree.
-    // The id is used to preserve the selection and expansion state of the tree item.
-    // If not provided, an id is generated using the tree item's label.
-    // Note that when labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
-
     constructor(
         public label: string, // Node headline
         public gnx: string,
@@ -27,10 +21,9 @@ export class LeoNode extends vscode.TreeItem {
         public atFile: boolean,
         public hasBody: boolean,
         private _leoIntegration: LeoIntegration,
-        p_id?: string | undefined
+        private _id: string
     ) {
         super(label, collapsibleState);
-        this._id = p_id || (++_leoIntegration.nextNodeId).toString(); // New id to set collapsed state each time
         this.contextValue = this._getContextValue(marked, atFile);
         this.command = {
             command: Constants.NAME + "." + Constants.LEOINTEG_COMMANDS.SELECT_NODE,
@@ -79,6 +72,10 @@ export class LeoNode extends vscode.TreeItem {
         return this._leoIntegration.icons[w_icon];
     }
 
+    // Optional id for the tree item that has to be unique across tree.
+    // The id is used to preserve the selection and expansion state of the tree item.
+    // If not provided, an id is generated using the tree item's label.
+    // Note that when labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
     public get id(): string { return this._id; }
 
     public get tooltip(): string { return this.label; } // * Whole headline as tooltip
