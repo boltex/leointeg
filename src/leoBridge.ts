@@ -22,7 +22,7 @@ export class LeoBridge {
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
     ) {
-        this._leoAsync = new LeoAsync(_context, _leoIntegration, this);
+        this._leoAsync = new LeoAsync(_context, _leoIntegration);
     }
 
     public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {

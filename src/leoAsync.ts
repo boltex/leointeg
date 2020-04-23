@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { AskMessageItem } from "./types";
 import { LeoIntegration } from "./leoIntegration";
-import { LeoBridge } from "./leoBridge";
 
 export class LeoAsync {
     // * Functions called by Leo through leoBridge such as adding a log pane entry, runAskYesNoDialog for file changes, etc.
@@ -11,8 +10,7 @@ export class LeoAsync {
 
     constructor(
         private _context: vscode.ExtensionContext,
-        private _leoIntegration: LeoIntegration,
-        private _leoBridge: LeoBridge
+        private _leoIntegration: LeoIntegration
     ) { }
 
     public log(p_message: string): void {
@@ -47,7 +45,7 @@ export class LeoAsync {
             if (p_result) {
                 this._askResult = p_result.value;
             }
-            const w_sendResultPromise = this._leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"');
+            const w_sendResultPromise = this._leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"');
             if (this._askResult.includes("yes")) {
                 w_sendResultPromise.then(() => {
                     // Might have answered 'yes/yesAll' and refreshed and changed the body text
@@ -64,7 +62,7 @@ export class LeoAsync {
             p_waitArg.message,
             { modal: true }
         ).then(() => {
-            this._leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"ok"');
+            this._leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"ok"');
         });
     }
 

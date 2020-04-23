@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import * as child from 'child_process';
 import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers } from "./types";
@@ -10,6 +9,7 @@ import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyProvider } from "./leoBody";
 import { LeoBridge } from "./leoBridge";
 import { ServerService } from "./serverManager";
+import { LeoStatusBar } from "./leoStatusBar";
 
 export class LeoIntegration {
 
@@ -51,7 +51,7 @@ export class LeoIntegration {
     private _leoFilesBrowser: LeoFiles; // Dialog service singleton used in the openLeoFile method
 
     // * LeoBridge
-    public leoBridge: LeoBridge; // Singleton service to access leobridgeserver, also used in leoOutline and leoBody
+    public leoBridge: LeoBridge; // Singleton service to access leobridgeserver, also used in LeoAsync, leoOutline and leoBody
 
     // * Outline Pane
     private _leoTreeDataProvider: LeoOutlineProvider; // TreeDataProvider single instance
@@ -77,10 +77,7 @@ export class LeoIntegration {
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(Constants.GUI.LOG_PANE_TITLE); // Copy-pasted from leo's log pane
 
     // * Status Bar
-    private _leoStatusBarItem: vscode.StatusBarItem;
-    private _leoObjectSelected: boolean = false; // Represents having focus on a leo body
-    private _statusbarNormalColor = new vscode.ThemeColor(Constants.GUI.THEME_STATUSBAR);  // "statusBar.foreground"
-    private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
+    private _leoStatusBar: LeoStatusBar;
 
     // * Edit/Insert Headline Input Box options instance, setup so clicking outside cancels the headline change
     private _headlineInputOptions: vscode.InputBoxOptions = { ignoreFocusOut: false, value: "", valueSelection: undefined, prompt: "" };
@@ -131,13 +128,7 @@ export class LeoIntegration {
         // TODO : set workbench.editor.closeOnFileDelete to true
 
         // * Status bar: Show keyboard-Shortcut-Flag to signify Leo keyboard shortcuts are active
-        this._leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
-        this._leoStatusBarItem.color = this.config.statusBarColor;
-        this._leoStatusBarItem.command = "leointeg.test"; // just call test function for now to help debugging
-        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this.config.statusBarString;
-        this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
-        _context.subscriptions.push(this._leoStatusBarItem);
-        this._leoStatusBarItem.hide();
+        this._leoStatusBar = new LeoStatusBar(_context, this);
 
         // * Automatic server start service
         this._serverService = new ServerService(_context);
@@ -230,8 +221,7 @@ export class LeoIntegration {
         this.fileOpenedReady = false;
         this.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
-        this._leoObjectSelected = false;
-        this._updateLeoObjectIndicator();
+        this._leoStatusBar.update(false);
         this._refreshOutline(RevealType.RevealSelect);
     }
 
@@ -308,7 +298,7 @@ export class LeoIntegration {
         }
         // selecting another editor of the same window by the tab
         // * Status flag check
-        if (!p_event && this._leoObjectSelected) {
+        if (!p_event && this._leoStatusBar.leoObjectSelected) {
             return;
         }
 
@@ -352,21 +342,7 @@ export class LeoIntegration {
         }
         // * Status flag check
         if (vscode.window.activeTextEditor) {
-            if (vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_SCHEME) {
-                if (!this._leoObjectSelected) {
-                    // console.log("editor changed to : leo! SET STATUS!");
-                    this._leoObjectSelected = true;
-                    this._updateLeoObjectIndicator();
-                    return;
-                }
-            } else {
-                // console.log("editor changed to : other, no status!");
-                if (this._leoObjectSelected) {
-                    this._leoObjectSelected = false;
-                    this._updateLeoObjectIndicator();
-                    return;
-                }
-            }
+            this._leoStatusBar.update(vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_SCHEME);
         }
     }
 
@@ -379,19 +355,10 @@ export class LeoIntegration {
         // * Status flag check
         if (vscode.window.activeTextEditor) {
             // Yes an editor is active, just check if its leo scheme
-            if (p_event.textEditor.document.uri.scheme === Constants.URI_SCHEME && vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_SCHEME) {
-                if (!this._leoObjectSelected) {
-                    this._leoObjectSelected = true;
-                    this._updateLeoObjectIndicatorDebounced();
-                    return;
-                }
-            } else {
-                if (this._leoObjectSelected) {
-                    this._leoObjectSelected = false;
-                    this._updateLeoObjectIndicatorDebounced();
-                    return;
-                }
-            }
+            this._leoStatusBar.update(
+                (p_event.textEditor.document.uri.scheme === Constants.URI_SCHEME) && (vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_SCHEME),
+                200
+            );
         }
     }
 
@@ -637,8 +604,7 @@ export class LeoIntegration {
     public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable<boolean> {
         // * User has selected a node via mouse click or 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
         if (!p_internalCall) {
-            this._leoObjectSelected = true; // Just Selected a node
-            this._updateLeoObjectIndicator();
+            this._leoStatusBar.update(true); // Just selected a node
         }
 
         // TODO : Save and restore selection, along with cursor position, from selection object saved in each node (or gnx array)
@@ -1146,8 +1112,7 @@ export class LeoIntegration {
                 // * set body URI for body filesystem
                 this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_selectedLeoNode.gnx);
                 // * First StatusBar appearance
-                this._updateLeoObjectIndicator();
-                this._leoStatusBarItem.show();
+                this._leoStatusBar.show(); // Just selected a node
                 // * Show leo log pane
                 this.showLogPane();
                 // * First Body appearance
@@ -1158,32 +1123,6 @@ export class LeoIntegration {
                 this.sendConfigToServer(this.config.getConfig());
                 return this.showBody(false);
             });
-    }
-
-    private _updateLeoObjectIndicatorDebounced(): void {
-        // * Update the status bar visual indicator flag in a debounced manner
-        if (this._updateStatusBarTimeout) {
-            clearTimeout(this._updateStatusBarTimeout);
-        }
-        this._updateStatusBarTimeout = setTimeout(() => {
-            this._updateLeoObjectIndicator();
-        }, 200);
-    }
-
-    private _updateLeoObjectIndicator(): void {
-        // * Update the status bar visual indicator flag directly
-        if (this._updateStatusBarTimeout) { // Can be called directly, so clear timer if any
-            clearTimeout(this._updateStatusBarTimeout);
-        }
-        vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this._leoObjectSelected);
-        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this.config.statusBarString;
-        if (this._leoObjectSelected && this.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
-            this._leoStatusBarItem.color = "#" + this.config.statusBarColor;
-            this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
-        } else {
-            this._leoStatusBarItem.color = this._statusbarNormalColor;
-            this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_OFF;
-        }
     }
 
     private _setTreeViewTitle(p_title: string): void {
