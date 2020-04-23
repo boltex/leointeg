@@ -3,6 +3,7 @@ import * as WebSocket from 'ws';
 import { Constants } from "./constants";
 import { LeoBridgePackage, LeoAction } from "./types";
 import { LeoIntegration } from "./leoIntegration";
+import { LeoAsync } from "./leoAsync";
 
 export class LeoBridge {
     // * Handles communication with the leobridgeserver.py python script via websockets
@@ -12,13 +13,17 @@ export class LeoBridge {
     private _leoBridgeSerialId: number = 0;
     private _callStack: LeoAction[] = [];
     private _readyPromise: Promise<LeoBridgePackage> | undefined;
+
     // private _hasbin = require('hasbin'); // TODO : See if this can help with anaconda/miniconda issues
     private _websocket: WebSocket | null = null;
+    private _leoAsync: LeoAsync;
 
     constructor(
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
-    ) { }
+    ) {
+        this._leoAsync = new LeoAsync(_context, _leoIntegration, this);
+    }
 
     public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
         // * Places an action to be made by leoBridge.py on top of a stack, to be resolved from the bottom
@@ -42,19 +47,19 @@ export class LeoBridge {
         if (w_parsedData && w_parsedData.async && (typeof w_parsedData.async === "string")) {
             switch (w_parsedData.async) {
                 case Constants.ASYNC_ACTIONS.ASYNC_LOG: {
-                    this._leoIntegration.log(w_parsedData.log);
+                    this._leoAsync.log(w_parsedData.log);
                     break;
                 }
                 case Constants.ASYNC_ACTIONS.ASYNC_ASK: {
-                    this._leoIntegration.showAskModalDialog(w_parsedData);
+                    this._leoAsync.showAskModalDialog(w_parsedData);
                     break;
                 }
                 case Constants.ASYNC_ACTIONS.ASYNC_WARN: {
-                    this._leoIntegration.showWarnModalMessage(w_parsedData);
+                    this._leoAsync.showWarnModalMessage(w_parsedData);
                     break;
                 }
                 case Constants.ASYNC_ACTIONS.ASYNC_INFO: {
-                    this._leoIntegration.showChangesDetectedInfoMessage(w_parsedData);
+                    this._leoAsync.showChangesDetectedInfoMessage(w_parsedData);
                     break;
                 }
                 case Constants.ASYNC_ACTIONS.ASYNC_INTERVAL: {

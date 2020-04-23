@@ -1,4 +1,5 @@
 export class Constants {
+    // * All text and numeric constants used throughout leoInteg
 
     public static PUBLISHER: string = "boltex";
     public static NAME: string = "leointeg";

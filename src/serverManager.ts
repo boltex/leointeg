@@ -12,12 +12,15 @@ export class ServerService {
     private _platform: string;
     private _isWin32: boolean;
 
+    // * Leo Bridge Server Process
+    private _serverProcess: child.ChildProcess | undefined;
+
     constructor(private _context: vscode.ExtensionContext) {
         this._platform = os.platform();
         this._isWin32 = this._platform === "win32";
     }
 
-    public startServer(p_serverProcess: child.ChildProcess | undefined, p_leoPythonCommand: string): Promise<any> {
+    public startServer(p_leoPythonCommand: string): Promise<any> {
         // * Get command from settings or best command for the current OS
         let w_pythonPath = "";
         const w_serverScriptPath = this._context.extensionPath + Constants.SERVER_PATH;
@@ -42,9 +45,9 @@ export class ServerService {
                 w_args.push("-3");
             }
             w_args.push(w_serverScriptPath);
-            p_serverProcess = child.spawn(w_pythonPath, w_args);
+            this._serverProcess = child.spawn(w_pythonPath, w_args);
             // * Capture the python process output
-            p_serverProcess.stdout.on("data", (data: string) => {
+            this._serverProcess.stdout.on("data", (data: string) => {
                 data.toString().split("\n").forEach(p_line => {
                     p_line = p_line.trim();
                     if (p_line) { // * std out process line by line: json shouldn't have line breaks
@@ -56,16 +59,16 @@ export class ServerService {
                 });
             });
             // * Capture other python process outputs
-            p_serverProcess.stderr.on("data", (data: string) => {
+            this._serverProcess.stderr.on("data", (data: string) => {
                 console.log(`stderr: ${data}`);
                 vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
-                p_serverProcess = undefined;
+                this._serverProcess = undefined;
                 reject(`stderr: ${data}`);
             });
-            p_serverProcess.on("close", (code: any) => {
+            this._serverProcess.on("close", (code: any) => {
                 console.log(`leoBridge exited with code ${code}`);
                 vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
-                p_serverProcess = undefined;
+                this._serverProcess = undefined;
                 reject(`leoBridge exited with code ${code}`);
             });
         });

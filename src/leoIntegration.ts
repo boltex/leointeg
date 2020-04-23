@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as child from 'child_process';
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, AskMessageItem } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers } from "./types";
 import { Config } from "./config";
 import { LeoFiles } from "./leoFiles";
 import { LeoNode } from "./leoNode";
@@ -12,43 +12,56 @@ import { LeoBridge } from "./leoBridge";
 import { ServerService } from "./serverManager";
 
 export class LeoIntegration {
+
     // * Status Flags
-    public leoBridgeReady: boolean = false;
-    public fileOpenedReady: boolean = false;
+    private _leoBridgeReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.BRIDGE_READY
+    get leoBridgeReady(): boolean {
+        return this._leoBridgeReady;
+    }
+    set leoBridgeReady(p_value: boolean) {
+        this._leoBridgeReady = p_value;
+        vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, p_value);
+    }
 
-    private _leoIsConnecting: boolean = false;
+    private _fileOpenedReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.TREE_OPENED
+    get fileOpenedReady(): boolean {
+        return this._fileOpenedReady;
+    }
+    set fileOpenedReady(p_value: boolean) {
+        this._fileOpenedReady = p_value;
+        vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, p_value);
+    }
+
+    private _leoIsConnecting: boolean = false; // Used in connect method to prevent other attempts while already trying to connect
     private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Set when leoBridge has a leo controller ready
-    private _leoBridgeActionBusy: boolean = false;
-
-    // * leoInteg Configuration Settings
-    public config: Config;
-
-    // * Icon Paths
-    public icons: Icon[] = [];
-
-    // * Leo Bridge Server Process
-    private _serverProcess: child.ChildProcess | undefined;
-
-    // * File Browser
-    private _leoFilesBrowser: LeoFiles;
-
-    // * LeoBridge
-    public leoBridge: LeoBridge;
 
     // * User action stack for non-tree-dependant commands fast entry
-    private _commandStack: string[] = []; // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
+    private _commandStack: string[] = [];          // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
+    private _leoBridgeActionBusy: boolean = false; // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
     // if command is non-tree-dependant, add it to the array's top and try to resolve bottom command.
     // if command is tree dependant: add to array and resolve only if empty. Otherwise show info message "Command already running"
 
+    // * leoInteg Configuration Settings Service
+    public config: Config; // Configuration service singleton also used in leoBridge, leoNode and leoSettingsWebview
+
+    // * Icon Paths
+    public icons: Icon[] = []; // Singleton static array of all icon paths used in leoNodes
+
+    // * File Browser
+    private _leoFilesBrowser: LeoFiles; // Dialog service singleton used in the openLeoFile method
+
+    // * LeoBridge
+    public leoBridge: LeoBridge; // Singleton service to access leobridgeserver, also used in leoOutline and leoBody
+
     // * Outline Pane
-    private _leoTreeDataProvider: LeoOutlineProvider;
-    private _leoTreeStandaloneView: vscode.TreeView<LeoNode>;
-    private _leoTreeExplorerView: vscode.TreeView<LeoNode>;
+    private _leoTreeDataProvider: LeoOutlineProvider; // TreeDataProvider single instance
+    private _leoTreeStandaloneView: vscode.TreeView<LeoNode>; // Outline tree view added to the Tree View Container with an Activity Bar icon
+    private _leoTreeExplorerView: vscode.TreeView<LeoNode>; // Outline tree view added to the Explorer Sidebar
 
     private _lastSelectedNode: LeoNode | undefined; // last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
-    private _nextNodeId: number = 1; // Used to generate id's for new treeNodes : NEW IDS MEAN NEW COLLAPSE STATE
+    private _nextNodeId: number = 1; // Used to generate id's for new treeNodes: The id is used to preserve or set the selection and expansion states
 
-    // * Outline Pane redraw/refresh 'helper flags'. Also set when calling refreshTreeRoot
+    // * Outline Pane redraw/refresh flag. Also set when calling refreshTreeRoot
     private _revealSelectedNode: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
 
     // * Body Pane
@@ -65,30 +78,14 @@ export class LeoIntegration {
 
     // * Status Bar
     private _leoStatusBarItem: vscode.StatusBarItem;
-    private _leoObjectSelected: boolean = false; // represents having focus on a leo body, as opposed to anything else
+    private _leoObjectSelected: boolean = false; // Represents having focus on a leo body
     private _statusbarNormalColor = new vscode.ThemeColor(Constants.GUI.THEME_STATUSBAR);  // "statusBar.foreground"
     private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
 
-    // * Edit Headline Input Box
-    private _editHeadlineInputOptions: vscode.InputBoxOptions = {
-        ignoreFocusOut: false, // clicking outside cancels the headline change
-        value: "", // will be replaced live upon showing from the node's text
-        valueSelection: undefined,
-        prompt: Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE
-    };
+    // * Edit/Insert Headline Input Box options instance, setup so clicking outside cancels the headline change
+    private _headlineInputOptions: vscode.InputBoxOptions = { ignoreFocusOut: false, value: "", valueSelection: undefined, prompt: "" };
 
-    // * Insert Node Headline Input Box
-    private _newHeadlineInputOptions: vscode.InputBoxOptions = {
-        ignoreFocusOut: false, // clicking outside cancels the headline change
-        value: Constants.USER_MESSAGES.DEFAULT_HEADLINE, // will be replaced live upon showing from the node's text
-        valueSelection: undefined,
-        prompt: Constants.USER_MESSAGES.PROMPT_INSERT_NODE
-    };
-
-    // * Used in showAskModalDialog: Holds result when leobridge asks what to do when derived file(s) have changed
-    private _askResult: string = "";
-
-    // * Automatic server start service
+    // * Automatic leobridgeserver startup management service
     private _serverService: ServerService;
 
     // * Timing
@@ -164,7 +161,7 @@ export class LeoIntegration {
     public startNetworkServices(): void {
         // * leoIntegration starting entry point: Start a leoBridge server and connect to it based on configuration flags
         // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED);
-        this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
+        this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
         if (this.config.startServerAutomatically) {
             this.startServer();
@@ -178,7 +175,7 @@ export class LeoIntegration {
 
     public startServer(): void {
         // * Starts an instance of a leoBridge server and connect to it if needed based on configuration flags
-        this._serverService.startServer(this._serverProcess, this.config.leoPythonCommand)
+        this._serverService.startServer(this.config.leoPythonCommand)
             .then((p_message) => {
                 vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                 if (this.config.connectToServerAutomatically) {
@@ -206,7 +203,7 @@ export class LeoIntegration {
                     this.leoBridgeReady = true;
                     vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
                     // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_CONNECTED);
-                    this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
+                    this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
                     this.showLogPane();
                     if (!this.config.connectToServerAutomatically) {
                         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
@@ -229,10 +226,8 @@ export class LeoIntegration {
             vscode.window.showInformationMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
         }
         // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED);
-        this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
-        vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, false);
+        this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
         this.fileOpenedReady = false;
-        vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, false);
         this.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
         this._leoObjectSelected = false;
@@ -862,6 +857,12 @@ export class LeoIntegration {
         return Promise.resolve(w_hasClosed);
     }
 
+    public refreshOutlineAndBody(): void {
+        // TODO : Fix this process ! Same as test ?
+        this._refreshOutline(RevealType.RevealSelectFocusShowBody);
+        this._leoFileSystem.fireRefreshFiles();
+    }
+
     // * Standalone Commands:
     // - editHeadline, insertNode
 
@@ -888,7 +889,7 @@ export class LeoIntegration {
         return this.nodeAction(p_action, p_node)
             .then((p_package: LeoBridgePackage) => {
                 if (p_package.id > 0) {
-                    this._refreshOutline(p_revealType); // refresh all, needed to get clones to refresh too!
+                    this._refreshOutline(p_revealType); // refresh all outline, needed to get clones to refresh too!
                 }
                 return Promise.resolve(p_package);
             });
@@ -966,8 +967,9 @@ export class LeoIntegration {
                     p_isSelectedNode = true;
                 }
                 this._leoBridgeActionBusy = true;
-                this._editHeadlineInputOptions.value = p_node.label; // preset input pop up
-                vscode.window.showInputBox(this._editHeadlineInputOptions)
+                this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE;
+                this._headlineInputOptions.value = p_node.label; // preset input pop up
+                vscode.window.showInputBox(this._headlineInputOptions)
                     .then(p_newHeadline => {
                         if (p_newHeadline) {
                             p_node!.label = p_newHeadline; // ! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
@@ -1019,7 +1021,9 @@ export class LeoIntegration {
                 const w_node = p_node; // ref for .then
                 // * New way of doing inserts: Show the input headline box, then either create the new node with the input, or with "New Headline" if canceled
                 this._leoBridgeActionBusy = true;
-                vscode.window.showInputBox(this._newHeadlineInputOptions)
+                this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_NODE;
+                this._headlineInputOptions.value = Constants.USER_MESSAGES.DEFAULT_HEADLINE;
+                vscode.window.showInputBox(this._headlineInputOptions)
                     .then(p_newHeadline => {
                         const w_action = p_newHeadline ? Constants.LEOBRIDGE_ACTIONS.INSERT_NAMED_PNODE : Constants.LEOBRIDGE_ACTIONS.INSERT_PNODE;
                         const w_para = p_newHeadline ? utils.buildHeadlineJson(w_node!.apJson, p_newHeadline) : w_node.apJson;
@@ -1084,78 +1088,9 @@ export class LeoIntegration {
     public deleteMarkedNodes(): void { vscode.window.showInformationMessage("TODO: deleteMarkedNodes command"); }
     public moveMarkedNode(): void { vscode.window.showInformationMessage("TODO: moveMarkedNode command"); }
 
-    public log(p_message: string): void {
+    public addLogPaneEntry(p_message: string): void {
         // * Adds message string to leoInteg's log pane, used when leoBridge gets an async 'log' command
         this._leoLogPane.appendLine(p_message);
-    }
-
-    public showAskModalDialog(p_askArg: { "ask": string; "message": string; "yes_all": boolean; "no_all": boolean; }): void {
-        // * Equivalent to runAskYesNoDialog from Leo's qt_gui.py, used when leoBridge gets an async 'ask' command
-        // async package {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
-
-        // Setup modal dialog to return one of 'yes', 'yes-all', 'no' or 'no-all', to be sent back with the leoBridge 'ASK_RESULT' action
-        this._askResult = "no"; // defaults to not doing anything, matches isCloseAffordance just to be safe
-
-        // const lastLine = p_askArg.message.substr(p_askArg.message.lastIndexOf("\n") + 1); // last line could be used in the message
-        const w_items: AskMessageItem[] = [
-            { title: Constants.USER_MESSAGES.YES, value: "yes", isCloseAffordance: false },
-            { title: Constants.USER_MESSAGES.NO, value: "no", isCloseAffordance: true }
-        ];
-        if (p_askArg.yes_all) {
-            w_items.push({ title: Constants.USER_MESSAGES.YES_ALL, value: "yes-all", isCloseAffordance: false });
-        }
-        if (p_askArg.no_all) {
-            w_items.push({ title: Constants.USER_MESSAGES.NO_ALL, value: "no-all", isCloseAffordance: false });
-        }
-        const askRefreshInfoMessage: Thenable<AskMessageItem | undefined> = vscode.window.showInformationMessage(
-            p_askArg.message,
-            { modal: true },
-            ...w_items
-        );
-        askRefreshInfoMessage.then((p_result: AskMessageItem | undefined) => {
-            if (p_result) {
-                this._askResult = p_result.value;
-            }
-            const w_sendResultPromise = this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"');
-            if (this._askResult.includes("yes")) {
-                w_sendResultPromise.then(() => {
-                    // Might have answered 'yes/yesAll' and refreshed and changed the body text
-                    this._refreshOutline(RevealType.RevealSelectFocusShowBody);
-                    this._leoFileSystem.fireRefreshFiles();
-                });
-            }
-        });
-    }
-
-    public showWarnModalMessage(p_waitArg: any): void {
-        // * Equivalent to runAskOkDialog from Leo's qt_gui.py, used when leoBridge gets an async 'warn' command
-        // async package {"warn": "", "message": ""}
-        vscode.window.showInformationMessage(
-            p_waitArg.message,
-            { modal: true }
-        ).then(() => {
-            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"ok"');
-        });
-    }
-
-    public showChangesDetectedInfoMessage(p_infoArg: { "message": string; }): void {
-        // * Show non-blocking info message about detected file changes, used when leoBridge gets an async 'info' command
-        // TODO : Message pre-built elsewhere, and flags for refresh in independent event/call
-        let w_message = "Changes to external files were detected.";
-        switch (p_infoArg.message) {
-            case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_REFRESHED:
-                w_message = w_message + Constants.USER_MESSAGES.REFRESHED;
-                // * refresh
-                this._refreshOutline(RevealType.RevealSelectFocusShowBody);
-                this._leoFileSystem.fireRefreshFiles();
-                break;
-            case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_IGNORED:
-                w_message = w_message + Constants.USER_MESSAGES.IGNORED;
-                break;
-            default:
-                break;
-        }
-        vscode.window.showInformationMessage(w_message);
     }
 
     public saveLeoFile(): void {
@@ -1216,13 +1151,10 @@ export class LeoIntegration {
                 // * Show leo log pane
                 this.showLogPane();
                 // * First Body appearance
-                return this._leoFileSystem.refreshPossibleGnxList();
+                return this._leoFileSystem.refreshPossibleGnxList(); // ? Maybe unused if single gnx only
             })
             .then(p_list => {
-                this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Maybe unused when used with welcome content
-                return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, true);
-            })
-            .then(p_setContextResult => {
+                this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Maybe unused when used with welcome content
                 this.sendConfigToServer(this.config.getConfig());
                 return this.showBody(false);
             });
@@ -1254,12 +1186,7 @@ export class LeoIntegration {
         }
     }
 
-    public showLeoCommands(): void {
-        // * Offer all leo commands in the command palette (This opens the palette with string '>leo:' already typed)
-        vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.QUICK_OPEN, Constants.GUI.QUICK_OPEN_LEO_COMMANDS);
-    }
-
-    public setTreeViewTitle(p_title: string): void {
+    private _setTreeViewTitle(p_title: string): void {
         // * Set/Change outline pane title e.g. "NOT CONNECTED", "CONNECTED", "OUTLINE"
         // TODO : Use the new 'welcome Content' API, see https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content
         if (this._leoTreeStandaloneView) {
@@ -1268,6 +1195,11 @@ export class LeoIntegration {
         if (this._leoTreeExplorerView) {
             this._leoTreeExplorerView.title = Constants.GUI.EXPLORER_TREEVIEW_PREFIX + p_title; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
         }
+    }
+
+    public showLeoCommands(): void {
+        // * Offer all leo commands in the command palette (This opens the palette with string '>leo:' already typed)
+        vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.QUICK_OPEN, Constants.GUI.QUICK_OPEN_LEO_COMMANDS);
     }
 
     public test(): void {

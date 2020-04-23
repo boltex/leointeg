@@ -21,7 +21,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     private _onDidChangeFileEmitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
     readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> = this._onDidChangeFileEmitter.event;
 
-    constructor(private leoIntegration: LeoIntegration) { }
+    constructor(private _leoIntegration: LeoIntegration) { }
 
     public fireRefreshFiles(): void {
         this.openedBodiesGnx.forEach(p_bodyGnx => {
@@ -47,7 +47,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public refreshPossibleGnxList(): Thenable<string[]> {
         // * Get updated list of possible gnx
-        return this.leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_ALL_GNX).then((p_result) => {
+        return this._leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_ALL_GNX).then((p_result) => {
             if (p_result.allGnx) {
                 this.possibleGnxList = p_result.allGnx;
             } else {
@@ -105,7 +105,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
         console.log('Called stat on', p_uri.fsPath);
 
-        if (this.leoIntegration.fileOpenedReady) {
+        if (this._leoIntegration.fileOpenedReady) {
             if (p_uri.fsPath === '/') {
                 console.log('called stat on root : "/" ! ');
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
@@ -117,7 +117,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     // console.log("hey! Not in list! stat missing refreshes??");
                     throw vscode.FileSystemError.FileNotFound();
                 } else {
-                    return this.leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_BODY_LENGTH, '"' + w_gnx + '"')
+                    return this._leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_BODY_LENGTH, '"' + w_gnx + '"')
                         .then((p_result) => {
                             if (p_result.bodyLength) {
                                 return Promise.resolve(
@@ -167,7 +167,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public readFile(p_uri: vscode.Uri): Thenable<Uint8Array> {
         console.log('Called readFile on', p_uri.fsPath);
-        if (this.leoIntegration.fileOpenedReady) {
+        if (this._leoIntegration.fileOpenedReady) {
             if (p_uri.fsPath === '/') {
                 throw vscode.FileSystemError.FileIsADirectory();
             } else {
@@ -176,7 +176,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     // console.log("hey! Not in list! readFile missing refreshes??");
                     throw vscode.FileSystemError.FileNotFound();
                 } else {
-                    return this.leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_BODY, '"' + w_gnx + '"')
+                    return this._leoIntegration.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_BODY, '"' + w_gnx + '"')
                         .then((p_result) => {
                             this._lastGnx = w_gnx;
                             if (p_result.bodyData) {
