@@ -28,3 +28,8 @@ export function isHexColor(hex: string): boolean {
         && hex.length === 6
         && !isNaN(Number('0x' + hex));
 }
+
+export function uriToGnx(p_uri: vscode.Uri): string {
+    // * For now, just remove the '/' before the path string
+    return p_uri.fsPath.substr(1); // TODO : Use length of a given constant
+}

@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
+import * as utils from "./utils";
 
 export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * Body panes implemented as a file system with this FileSystemProvider implementation (using "leo" as a scheme identifier)
@@ -8,8 +9,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     // ! Saving and renaming prevents flickering and prevents undos to 'traverse through' nodes, see leoIntegration.ts
 
     // * Last file read data with the readFile method
-    private _lastGnx = ""; // gnx of last file read
-    private _lastGnxBodyLength = 0; // length of last file read
+    private _lastGnx: string = ""; // gnx of last file read
+    private _lastGnxBodyLength: number = 0; // length of last file read
 
     // * list of currently opened body panes gnx (from 'watch' & 'dispose' methods)
     public openedBodiesGnx: string[] = [];
@@ -83,11 +84,12 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public watch(p_resource: vscode.Uri): vscode.Disposable {
-        if (!this.openedBodiesGnx.includes(p_resource.fsPath.substr(1))) {
-            this.openedBodiesGnx.push(p_resource.fsPath.substr(1)); // add gnx
+        const w_gnx = utils.uriToGnx(p_resource);
+        if (!this.openedBodiesGnx.includes(w_gnx)) {
+            this.openedBodiesGnx.push(w_gnx); // add gnx
         }
         return new vscode.Disposable(() => {
-            const w_position = this.openedBodiesGnx.indexOf(p_resource.fsPath.substr(1)); // find and remove it
+            const w_position = this.openedBodiesGnx.indexOf(w_gnx); // find and remove it
             if (w_position > -1) {
                 this.openedBodiesGnx.splice(w_position, 1);
             }
@@ -112,7 +114,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             } else if (p_uri.fsPath === '/' + this._lastGnx) {
                 return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: this._lastGnxBodyLength };
             } else {
-                const w_gnx = p_uri.fsPath.substr(1);
+                const w_gnx = utils.uriToGnx(p_uri);
                 if (!this.possibleGnxList.includes(w_gnx)) {
                     // console.log("hey! Not in list! stat missing refreshes??");
                     throw vscode.FileSystemError.FileNotFound();
@@ -171,7 +173,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             if (p_uri.fsPath === '/') {
                 throw vscode.FileSystemError.FileIsADirectory();
             } else {
-                const w_gnx = p_uri.fsPath.substr(1);
+                const w_gnx = utils.uriToGnx(p_uri);
                 if (!this.possibleGnxList.includes(w_gnx)) {
                     // console.log("hey! Not in list! readFile missing refreshes??");
                     throw vscode.FileSystemError.FileNotFound();

@@ -10,7 +10,7 @@ export class LeoBridge {
 
     private _actionBusy: boolean = false; // An action was started from the bottom and has not yet resolved
 
-    private _leoBridgeSerialId: number = 0;
+    private _leoBridgeSerialId: number = 0; // TODO : When doing error checking, see if this should be Constants.STARTING_PACKAGE_ID or 0 or 2... ?
     private _callStack: LeoAction[] = [];
     private _readyPromise: Promise<LeoBridgePackage> | undefined;
 
@@ -78,7 +78,7 @@ export class LeoBridge {
 
     private _buildActionParameter(p_action: string, p_jsonParam?: string): string {
         // * Build JSON string for action parameter to the leoBridge
-        return "{\"id\":" + (++this._leoBridgeSerialId) + // no quotes, serial id is a number
+        return "{\"id\":" + (++this._leoBridgeSerialId) + // no quotes, serial id is a number, pre incremented
             ", \"action\": \"" + p_action +  // action is string so surround with quotes
             "\", \"param\":" + p_jsonParam +  // param is already json, no need for added quotes
             "}";
@@ -178,7 +178,7 @@ export class LeoBridge {
         };
 
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
-        this._readyPromise = this.action("", "", { id: 1 }, true);
+        this._readyPromise = this.action("", "", { id: Constants.STARTING_PACKAGE_ID }, true);
         return this._readyPromise; // This promise will resolve when the started python process starts
     }
 

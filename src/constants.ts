@@ -23,6 +23,11 @@ export class Constants {
     public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
     public static TCPIP_DEFAULT_ADDRESS: string = "localhost";
 
+    public static ERROR_PACKAGE_ID: number = 0;
+    public static STARTING_PACKAGE_ID: number = 1;
+
+    public static STATUSBAR_DEBOUNCE_DELAY: number = 50;
+
     public static GUI = {
         // * Strings needed to build the interface itself
         ICON_LIGHT_PATH: "resources/light/box",

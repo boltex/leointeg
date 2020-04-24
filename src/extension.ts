@@ -155,7 +155,7 @@ async function showWelcome(version: string, previousVersion: string | undefined)
 }
 
 function getDurationMilliseconds(start: [number, number]): number {
-    // *
+    // * Returns the milliseconds between a given starting process.hrtime tuple and the current call to process.hrtime
     const [secs, nanosecs] = process.hrtime(start);
     return secs * 1000 + Math.floor(nanosecs / 1000000);
 }

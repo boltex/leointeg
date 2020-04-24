@@ -43,7 +43,6 @@ export interface LeoLogEntry {
     log: string;
 }
 
-
 export interface ArchivedPosition { // * from Leo's leoflexx.py
     hasBody: boolean;       // bool(p.b),
     hasChildren: boolean;   // p.hasChildren()
