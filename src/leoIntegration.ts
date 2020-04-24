@@ -41,24 +41,24 @@ export class LeoIntegration {
     // if command is non-tree-dependant, add it to the array's top and try to resolve bottom command.
     // if command is tree dependant: add to array and resolve only if empty. Otherwise show info message "Command already running"
 
-    // * leoInteg Configuration Settings Service
-    public config: Config; // Configuration service singleton also used in leoBridge, leoNode and leoSettingsWebview
+    // * Configuration Settings Service
+    public config: Config; // Public configuration service singleton, used in leoSettingsWebview, leoBridge, and leoNode for inverted contrast
 
     // * Icon Paths
-    public icons: Icon[] = []; // Singleton static array of all icon paths used in leoNodes
+    public icons: Icon[] = []; // Singleton static array of all icon paths used in leoNodes for rendering in treeview
 
     // * File Browser
     private _leoFilesBrowser: LeoFiles; // Dialog service singleton used in the openLeoFile method
 
     // * LeoBridge
-    public leoBridge: LeoBridge; // Singleton service to access leobridgeserver, also used in LeoAsync, leoOutline and leoBody
+    private _leoBridge: LeoBridge; // Singleton service to access leobridgeserver
 
     // * Outline Pane
     private _leoTreeDataProvider: LeoOutlineProvider; // TreeDataProvider single instance
     private _leoTreeStandaloneView: vscode.TreeView<LeoNode>; // Outline tree view added to the Tree View Container with an Activity Bar icon
     private _leoTreeExplorerView: vscode.TreeView<LeoNode>; // Outline tree view added to the Explorer Sidebar
 
-    private _lastSelectedNode: LeoNode | undefined; // last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
+    private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
     private _nextNodeId: number = 1; // Used to generate id's for new treeNodes: The id is used to preserve or set the selection and expansion states
 
     // * Outline Pane redraw/refresh flag. Also set when calling refreshTreeRoot
@@ -103,7 +103,7 @@ export class LeoIntegration {
         this._leoFilesBrowser = new LeoFiles(_context);
 
         // * Setup leoBridge
-        this.leoBridge = new LeoBridge(_context, this);
+        this._leoBridge = new LeoBridge(_context, this);
 
         // * Same data provider for both outline trees, Leo view and Explorer view
         this._leoTreeDataProvider = new LeoOutlineProvider(this);
@@ -142,7 +142,7 @@ export class LeoIntegration {
         vscode.window.onDidChangeWindowState(p_event => this._onChangeWindowState(p_event));
 
         // * React when typing and changing body pane
-        vscode.workspace.onDidSaveTextDocument(p_event => this._onDocumentSaved(p_event)); // not used for now
+        vscode.workspace.onDidSaveTextDocument(p_event => this._onDocumentSaved(p_event)); // Not used for now
         vscode.workspace.onDidChangeTextDocument(p_event => this._onDocumentChanged(p_event)); // * Detect when user types in body pane here
 
         // * React to configuration settings events
@@ -184,7 +184,7 @@ export class LeoIntegration {
             return;
         }
         this._leoIsConnecting = true;
-        this._leoBridgeReadyPromise = this.leoBridge.initLeoProcess();
+        this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess();
         this._leoBridgeReadyPromise.then(
             (p_package) => {
                 this._leoIsConnecting = false;
@@ -225,10 +225,15 @@ export class LeoIntegration {
         this._refreshOutline(RevealType.RevealSelect);
     }
 
+    public sendAction(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
+        // * Sends an action to Leo, used in LeoAsync, leoOutline and leoBody
+        return this._leoBridge.action(p_action, p_jsonParam, p_deferredPayload, p_preventCall);
+    }
+
     public sendConfigToServer(p_config: ConfigMembers): void {
         // * Send configuration through leoBridge to the server script, mostly used when checking if refreshing derived files is optional
         if (this.fileOpenedReady) {
-            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package => {
+            this.sendAction(Constants.LEOBRIDGE_ACTIONS.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package => {
                 // console.log("back from applying configuration to leobridgeserver.py");
             });
         }
@@ -250,14 +255,14 @@ export class LeoIntegration {
     private _onTreeViewExpandedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
         // * May reveal nodes, but this event occurs *after* the getChildren event from the tree provider, so not useful to interfere in it.
         this.selectTreeNode(p_event.element, true); // * select node when expanding to mimic Leo
-        this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE, p_event.element.apJson);
+        this.sendAction(Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE, p_event.element.apJson);
         // don't wait
         // this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
         this._refreshNode(p_event.element);
     }
     private _onTreeViewCollapsedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
         this.selectTreeNode(p_event.element, true); // * select node when expanding to mimic Leo
-        this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson);
+        this.sendAction(Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson);
         // don't wait
         // this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
         this._refreshNode(p_event.element);
@@ -270,15 +275,13 @@ export class LeoIntegration {
             // pass
         }
         if (p_event.visible && this._lastSelectedNode) {
-
             // ! NO REVEAL NOT GOOD IF USING DIFFERENT IDS - WILL NOT KEEP SELECTION/COLLAPSE STATE
             // this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal);
             this._refreshOutline(RevealType.RevealSelect);
-
             /*  setTimeout(() => {
                     this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
 
-                    // this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.GET_SELECTED_NODE).then(
+                    // this.sendAction(Constants.LEOBRIDGE_ACTIONS.GET_SELECTED_NODE).then(
                     //     (p_answer: LeoBridgePackage) => {
                     //         const w_node = this.apToLeoNode(p_answer.node);
                     //         this.reveal(w_node, { select: false, focus: false }).then(() => {
@@ -322,7 +325,7 @@ export class LeoIntegration {
             // if (w_node && this._lastSelectedLeoNode && (this._lastSelectedLeoNode.gnx !== w_node.gnx)) {
             //     // * setSelectedNode will also try to find by gnx if node doesn't exit and returns what it could select
 
-            //     this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, w_node.apJson).then((p_answer: LeoBridgePackage) => {
+            //     this.sendAction(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, w_node.apJson).then((p_answer: LeoBridgePackage) => {
             //         const p_selectedNode = this.apToLeoNode(p_answer.node);
 
             //         this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
@@ -464,7 +467,7 @@ export class LeoIntegration {
                 this._lastBodyChangedRootRefreshedGnx = w_param.gnx;
             }
             this._bodyChangeTimeoutSkipped = false;
-            return this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_BODY, JSON.stringify(w_param)).then(p_result => {
+            return this.sendAction(Constants.LEOBRIDGE_ACTIONS.SET_BODY, JSON.stringify(w_param)).then(p_result => {
                 // console.log('Back from setBody to leo');
                 // return p_document.save(); // ! This trims trailing spaces!
                 return Promise.resolve(p_document.isDirty);
@@ -617,7 +620,7 @@ export class LeoIntegration {
         }
 
         // * Set selected node in Leo via leoBridge
-        this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, p_node.apJson);
+        this.sendAction(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, p_node.apJson);
 
         // * don't wait for promise to resolve a selection because there's no tree structure change
         this._triggerBodySave(); // trigger event to save previous document if timer to save if already started for another document
@@ -747,7 +750,7 @@ export class LeoIntegration {
 
             return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
                 if (!this.config.treeKeepFocusWhenAside) {
-                    this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, p_node.apJson).then((p_answer: LeoBridgePackage) => {
+                    this.sendAction(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, p_node.apJson).then((p_answer: LeoBridgePackage) => {
                         const p_selectedNode = this.apToLeoNode(p_answer.node);
 
                         if (this._leoTextDocumentNodesRef[p_node.gnx]) {
@@ -839,7 +842,7 @@ export class LeoIntegration {
             p_node = this._lastSelectedNode;
         }
         if (p_node) {
-            return this.leoBridge.action(p_action, p_node.apJson).then(p_package => {
+            return this.sendAction(p_action, p_node.apJson).then(p_package => {
                 return Promise.resolve(p_package);
             });
         } else {
@@ -868,7 +871,7 @@ export class LeoIntegration {
         // - undo, redo, execute
         // TODO : REDO COMPLETELY : NO MORE DELETE NODES / JUST SAVE & RENAME LIKE A SELECT IF NEW SELECTION
         if (this._leoBridgeActionBusy) {
-            console.log('Too fast! leoBridgeActionAndFullRefresh: ' + p_action);
+            console.log('Too fast! leoBridgeActionAndFullRefresh: ' + p_action); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
         } else {
             if (!p_node && this._lastSelectedNode) {
                 p_node = this._lastSelectedNode;
@@ -878,7 +881,7 @@ export class LeoIntegration {
                 // start by finishing any pending edits by triggering body save
                 this._triggerBodySave()
                     .then(p_saveResult => {
-                        return this.leoBridge.action(p_action, p_node!.apJson); // p_node was just checked
+                        return this.sendAction(p_action, p_node!.apJson); // p_node was just checked
                     })
                     .then(p_package => {
                         // this.bodyUri = vscode.Uri.parse(Constants.LEO_URI_SCHEME_HEADER + p_package.node.gnx); // ! don't showSelectedBodyDocument yet
@@ -923,7 +926,7 @@ export class LeoIntegration {
 
     public editHeadline(p_node?: LeoNode, p_isSelectedNode?: boolean) {
         if (this._leoBridgeActionBusy) {
-            console.log('Too fast! editHeadline');
+            console.log('Too fast! editHeadline'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
         } else {
             if (!p_node && this._lastSelectedNode) {
                 p_node = this._lastSelectedNode;
@@ -939,7 +942,7 @@ export class LeoIntegration {
                     .then(p_newHeadline => {
                         if (p_newHeadline) {
                             p_node!.label = p_newHeadline; // ! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
-                            this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.SET_HEADLINE, utils.buildHeadlineJson(p_node!.apJson, p_newHeadline))
+                            this.sendAction(Constants.LEOBRIDGE_ACTIONS.SET_HEADLINE, utils.buildHeadlineJson(p_node!.apJson, p_newHeadline))
                                 .then((p_answer: LeoBridgePackage) => {
                                     if (p_isSelectedNode) {
                                         this._forceBodyFocus = true;
@@ -965,7 +968,7 @@ export class LeoIntegration {
 
     public changeMark(p_isMark: boolean, p_node?: LeoNode): void {
         if (this._leoBridgeActionBusy) {
-            console.log('Too fast! changeMark');
+            console.log('Too fast! changeMark'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
         } else {
             this._leoBridgeActionBusy = true;
             this.nodeActionRefresh(p_isMark ? Constants.LEOBRIDGE_ACTIONS.MARK_PNODE : Constants.LEOBRIDGE_ACTIONS.UNMARK_PNODE, p_node)
@@ -993,7 +996,7 @@ export class LeoIntegration {
                     .then(p_newHeadline => {
                         const w_action = p_newHeadline ? Constants.LEOBRIDGE_ACTIONS.INSERT_NAMED_PNODE : Constants.LEOBRIDGE_ACTIONS.INSERT_PNODE;
                         const w_para = p_newHeadline ? utils.buildHeadlineJson(w_node!.apJson, p_newHeadline) : w_node.apJson;
-                        this.leoBridge.action(w_action, w_para)
+                        this.sendAction(w_action, w_para)
                             .then(p_package => {
                                 this._leoFileSystem.addGnx(p_package.node.gnx);
                                 this._forceBodyFocus = true;
@@ -1012,7 +1015,7 @@ export class LeoIntegration {
 
     public refreshFromDiskNode(p_node?: LeoNode): void {
         if (this._leoBridgeActionBusy) {
-            console.log('Too fast! refreshFromDiskNode ');
+            console.log('Too fast! refreshFromDiskNode'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
         } else {
             this._leoBridgeActionBusy = true;
             this.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.REFRESH_FROM_DISK_PNODE, p_node, RevealType.RevealSelectFocusShowBody).then(() => {
@@ -1024,7 +1027,7 @@ export class LeoIntegration {
 
     public contractAll(): void {
         if (this._leoBridgeActionBusy) {
-            console.log('Too fast! contractAll');
+            console.log('Too fast! contractAll'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
         } else {
             this._leoBridgeActionBusy = true;
             this.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.CONTRACT_ALL, undefined, RevealType.RevealSelect)
@@ -1063,7 +1066,7 @@ export class LeoIntegration {
         // * Invokes the self.commander.save() Leo command
         // TODO : Specify which file when supporting multiple simultaneous opened Leo files
         if (this._leoBridgeActionBusy) {
-            console.log('Too fast! executeScript');
+            console.log('Too fast! executeScript'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
             return;
         }
         if (this._lastSelectedNode) {
@@ -1095,7 +1098,7 @@ export class LeoIntegration {
         }
         this._leoFilesBrowser.getLeoFileUrl()
             .then(p_chosenLeoFile => {
-                return this.leoBridge.action(Constants.LEOBRIDGE_ACTIONS.OPEN_FILE, '"' + p_chosenLeoFile + '"');
+                return this.sendAction(Constants.LEOBRIDGE_ACTIONS.OPEN_FILE, '"' + p_chosenLeoFile + '"');
             }, p_reason => {
                 return Promise.reject(p_reason);
             })

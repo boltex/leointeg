@@ -8,7 +8,7 @@ import { LeoAsync } from "./leoAsync";
 export class LeoBridge {
     // * Handles communication with the leobridgeserver.py python script via websockets
 
-    public actionBusy: boolean = false;
+    private _actionBusy: boolean = false; // An action was started from the bottom and has not yet resolved
 
     private _leoBridgeSerialId: number = 0;
     private _callStack: LeoAction[] = [];
@@ -93,7 +93,7 @@ export class LeoBridge {
             } else {
                 w_bottomAction.resolveFn(p_object);
             }
-            this.actionBusy = false;
+            this._actionBusy = false;
         } else {
             console.error("[leoBridge] Error stack empty");
         }
@@ -115,8 +115,8 @@ export class LeoBridge {
 
     private _callAction(): void {
         // * Sends an action from the bottom of the stack to leoBridge.py process stdin
-        if (this._callStack.length && !this.actionBusy) {
-            this.actionBusy = true; // launch / resolve bottom one
+        if (this._callStack.length && !this._actionBusy) {
+            this._actionBusy = true; // launch / resolve bottom one
             const w_action = this._callStack[0];
             this._send(w_action.parameter + "\n");
         }
