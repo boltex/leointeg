@@ -275,9 +275,13 @@ export class LeoIntegration {
             // pass
         }
         if (p_event.visible && this._lastSelectedNode) {
+
             // ! NO REVEAL NOT GOOD IF USING DIFFERENT IDS - WILL NOT KEEP SELECTION/COLLAPSE STATE
             // this.leoTreeDataProvider.refreshTreeRoot(RevealType.NoReveal);
+
+            this._lastSelectedNode = undefined; // Its a new node in a new tree so refresh _lastSelectedNode too
             this._refreshOutline(RevealType.RevealSelect);
+
             /*  setTimeout(() => {
                     this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
 
@@ -543,7 +547,8 @@ export class LeoIntegration {
 
         // Flags are setup so now reveal, select and / or focus as needed
         this._revealSelectedNode = RevealType.NoReveal; // ok reset
-        if (!this._lastSelectedNode && this._revealSelectedNode < RevealType.RevealSelectFocusShowBody) { // very first time
+        // If first time or when treeview switched
+        if (!this._lastSelectedNode) {
             this._lastSelectedNode = p_leoNode;
         }
         setTimeout(() => {
