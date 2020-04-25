@@ -111,15 +111,15 @@ export class LeoIntegration {
         // * Leo view outline panes
         this._leoTreeStandaloneView = vscode.window.createTreeView(Constants.TREEVIEW_ID, { showCollapseAll: false, treeDataProvider: this._leoTreeDataProvider });
         this._leoTreeStandaloneView.onDidChangeSelection((p_event => this._onTreeViewChangedSelection(p_event)));
-        this._leoTreeStandaloneView.onDidExpandElement((p_event => this._onTreeViewExpandedElement(p_event)));
-        this._leoTreeStandaloneView.onDidCollapseElement((p_event => this._onTreeViewCollapsedElement(p_event)));
+        this._leoTreeStandaloneView.onDidExpandElement((p_event => this._changeCollapsedState(p_event, true)));
+        this._leoTreeStandaloneView.onDidCollapseElement((p_event => this._changeCollapsedState(p_event, false)));
         this._leoTreeStandaloneView.onDidChangeVisibility((p_event => this._onTreeViewVisibilityChanged(p_event, false))); // * Trigger 'show tree in Leo's view'
 
         // * Explorer view outline pane
         this._leoTreeExplorerView = vscode.window.createTreeView(Constants.TREEVIEW_EXPLORER_ID, { showCollapseAll: false, treeDataProvider: this._leoTreeDataProvider });
         this._leoTreeExplorerView.onDidChangeSelection((p_event => this._onTreeViewChangedSelection(p_event)));
-        this._leoTreeExplorerView.onDidExpandElement((p_event => this._onTreeViewExpandedElement(p_event)));
-        this._leoTreeExplorerView.onDidCollapseElement((p_event => this._onTreeViewCollapsedElement(p_event)));
+        this._leoTreeExplorerView.onDidExpandElement((p_event => this._changeCollapsedState(p_event, true)));
+        this._leoTreeExplorerView.onDidCollapseElement((p_event => this._changeCollapsedState(p_event, false)));
         this._leoTreeExplorerView.onDidChangeVisibility((p_event => this._onTreeViewVisibilityChanged(p_event, true))); // * Trigger 'show tree in explorer view'
 
         // * Body Pane
@@ -252,20 +252,12 @@ export class LeoIntegration {
         // ! We capture and act upon the the 'select node' command, so this event may be redundant for now
         // console.log("treeViewChangedSelection, selection length:", p_event.selection.length);
     }
-    private _onTreeViewExpandedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
-        // * May reveal nodes, but this event occurs *after* the getChildren event from the tree provider, so not useful to interfere in it.
-        this.selectTreeNode(p_event.element, true); // * select node when expanding to mimic Leo
-        this.sendAction(Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE, p_event.element.apJson);
-        // don't wait
-        // this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-        this._refreshNode(p_event.element);
-    }
-    private _onTreeViewCollapsedElement(p_event: vscode.TreeViewExpansionEvent<LeoNode>): void {
-        this.selectTreeNode(p_event.element, true); // * select node when expanding to mimic Leo
-        this.sendAction(Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson);
-        // don't wait
-        // this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-        this._refreshNode(p_event.element);
+
+    private _changeCollapsedState(p_event: vscode.TreeViewExpansionEvent<LeoNode>, p_expand: boolean): void {
+        // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
+        this.selectTreeNode(p_event.element, true);
+        this.sendAction(p_expand ? Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE : Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson);
+        this._refreshNode(p_event.element); // don't wait
     }
 
     private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
