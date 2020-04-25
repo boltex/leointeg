@@ -62,7 +62,7 @@ export class LeoIntegration {
     private _nextNodeId: number = Constants.STARTING_PACKAGE_ID; // Used to generate id's for new treeNodes: The id is used to preserve or set the selection and expansion states
 
     // * Outline Pane redraw/refresh flag. Also set when calling refreshTreeRoot
-    private _revealSelectedNode: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
+    private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
 
     // * Body Pane
     private _leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
@@ -503,15 +503,16 @@ export class LeoIntegration {
 
     private _refreshOutline(p_revealType?: RevealType): void {
         if (p_revealType) { // To check if selected node should self-select while redrawing whole tree
-            this._revealSelectedNode = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
+            this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
         }
         this._leoTreeDataProvider.refreshTreeRoot();
     }
     private _refreshNode(p_node: LeoNode): void {
+        this._revealType = RevealType.RevealSelect; // When asking for single node refresh will apply selection as needed
         this._leoTreeDataProvider.refreshTreeNode(p_node);
     }
 
-    public apToLeoNode(p_ap: ArchivedPosition): LeoNode {
+    public apToLeoNode(p_ap: ArchivedPosition, p_revealSelected?: boolean, p_specificNode?: LeoNode): LeoNode {
         // * Converts an archived position object to a LeoNode instance
         let w_collapse: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
         if (p_ap.hasChildren) {
@@ -530,8 +531,15 @@ export class LeoIntegration {
             !!p_ap.hasBody,         // hasBody
             this,                   //  _leoIntegration pointer
             // If there's no reveal and its the selected node re-use the old id
-            (!this._revealSelectedNode && p_ap.selected && this._lastSelectedNode) ? this._lastSelectedNode.id : (++this._nextNodeId).toString()
+            (!this._revealType && p_ap.selected && this._lastSelectedNode) ? this._lastSelectedNode.id : (++this._nextNodeId).toString()
         );
+        if (p_revealSelected && this._revealType && p_ap.selected) {
+            if (p_specificNode) {
+                this._revealConvertedNode(p_specificNode);
+            } else {
+                this._revealConvertedNode(w_leoNode);
+            }
+        }
         return w_leoNode;
     }
 
@@ -539,15 +547,15 @@ export class LeoIntegration {
         // * Reveals a node in the outline. Select and focus if needed.
 
         // First setup flags for selecting and focusing based on the current reveal type needed
-        const w_selectFlag = this._revealSelectedNode >= RevealType.RevealSelect; // at least RevealSelect
-        let w_focusFlag = this._revealSelectedNode >= RevealType.RevealSelectFocus;  // at least RevealSelectFocus
-        if (this._revealSelectedNode === RevealType.RevealSelectShowBody) {
+        const w_selectFlag = this._revealType >= RevealType.RevealSelect; // at least RevealSelect
+        let w_focusFlag = this._revealType >= RevealType.RevealSelectFocus;  // at least RevealSelectFocus
+        if (this._revealType === RevealType.RevealSelectShowBody) {
             w_focusFlag = false;
         }
-        const w_showBodyFlag = this._revealSelectedNode >= RevealType.RevealSelectFocusShowBody; // at least RevealSelectFocusShowBody
+        const w_showBodyFlag = this._revealType >= RevealType.RevealSelectFocusShowBody; // at least RevealSelectFocusShowBody
 
         // Flags are setup so now reveal, select and / or focus as needed
-        this._revealSelectedNode = RevealType.NoReveal; // ok reset
+        this._revealType = RevealType.NoReveal; // ok reset
         // If first time or when treeview switched
         if (!this._lastSelectedNode) {
             this._lastSelectedNode = p_leoNode;
@@ -570,10 +578,7 @@ export class LeoIntegration {
         // * This is used in 'getChildren' of leoOutline.ts
         const w_leoNodesArray: LeoNode[] = [];
         for (let w_apData of p_array) {
-            const w_leoNode = this.apToLeoNode(w_apData);
-            if (this._revealSelectedNode && w_apData.selected) {
-                this._revealConvertedNode(w_leoNode);
-            }
+            const w_leoNode = this.apToLeoNode(w_apData, true);
             // this._revealConvertedNode(w_leoNode, w_apData.selected);
             w_leoNodesArray.push(w_leoNode);
         }
@@ -1108,7 +1113,7 @@ export class LeoIntegration {
                 return Promise.reject(p_reason);
             })
             .then((p_openFileResult: LeoBridgePackage) => {
-                const p_selectedLeoNode = this.apToLeoNode(p_openFileResult.node);
+                const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node); // Just to get gnx for the body's fist appearance
                 // * Start body pane system
                 this._context.subscriptions.push(
                     vscode.workspace.registerFileSystemProvider(Constants.URI_SCHEME, this._leoFileSystem, { isCaseSensitive: true })
@@ -1118,7 +1123,7 @@ export class LeoIntegration {
                 // * First valid redraw of tree
                 this._refreshOutline(RevealType.RevealSelect); // p_revealSelection flag set
                 // * set body URI for body filesystem
-                this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_selectedLeoNode.gnx);
+                this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + w_selectedLeoNode.gnx);
                 // * First StatusBar appearance
                 this._leoStatusBar.show(); // Just selected a node
                 // * Show leo log pane
