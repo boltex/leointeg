@@ -474,31 +474,13 @@ export class LeoIntegration {
         }
     }
 
-    // private _setLeoTextDocumentNodesRef(p_gnx: string, p_leoNode: LeoNode, p_isSelected: boolean): void {
-
-    //     // TODO : MIMIC LEO
-    //     // TODO : MAY BE UNUSED IF ONLY ONE GNX AT A TIME
-
-    //     if (this._leoTextDocumentNodesRef[p_gnx]) {
-    //         if (p_isSelected) {
-    //             // console.log('got selected');
-    //             this._leoTextDocumentNodesRef[p_gnx].node = p_leoNode;
-    //             this._leoTextDocumentNodesRef[p_gnx].refreshCount = this.outlineRefreshCount;
-    //         } else if (this._lastOperationChangedTree && this._leoTextDocumentNodesRef[p_gnx].refreshCount < this.outlineRefreshCount) {
-    //             // * keep original outlineRefreshCount
-    //             this._leoTextDocumentNodesRef[p_gnx].node = p_leoNode;
-    //         } else {
-    //             // console.log('prevented');
-    //         }
-    //     }
-    // }
-
     private _refreshOutline(p_revealType?: RevealType): void {
         if (p_revealType) { // To check if selected node should self-select while redrawing whole tree
             this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
         }
         this._leoTreeDataProvider.refreshTreeRoot();
     }
+
     private _refreshNode(p_node: LeoNode): void {
         this._revealType = RevealType.RevealSelect; // When asking for single node refresh will apply selection as needed
         this._leoTreeDataProvider.refreshTreeNode(p_node);
@@ -526,16 +508,12 @@ export class LeoIntegration {
             (!this._revealType && p_ap.selected && this._lastSelectedNode) ? this._lastSelectedNode.id : (++this._nextNodeId).toString()
         );
         if (p_revealSelected && this._revealType && p_ap.selected) {
-            if (p_specificNode) {
-                this._revealConvertedNode(p_specificNode);
-            } else {
-                this._revealConvertedNode(w_leoNode);
-            }
+            this._apToLeoNodeConvertReveal(p_specificNode ? p_specificNode : w_leoNode);
         }
         return w_leoNode;
     }
 
-    private _revealConvertedNode(p_leoNode: LeoNode): void {
+    private _apToLeoNodeConvertReveal(p_leoNode: LeoNode): void {
         // * Reveals a node in the outline. Select and focus if needed.
 
         // First setup flags for selecting and focusing based on the current reveal type needed
@@ -554,7 +532,7 @@ export class LeoIntegration {
         }
         setTimeout(() => {
             // don't use this.treeKeepFocus
-            this.reveal(p_leoNode, { select: w_selectFlag, focus: w_focusFlag })
+            this._revealTreeViewNode(p_leoNode, { select: w_selectFlag, focus: w_focusFlag })
                 .then(() => {
                     console.log('did this ask for parent?', p_leoNode.id, p_leoNode.label); // ! debug
 
@@ -577,6 +555,18 @@ export class LeoIntegration {
         return w_leoNodesArray;
     }
 
+    private _revealTreeViewNode(p_leoNode: LeoNode, p_options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): Thenable<void> {
+        //* 'TreeView.reveal' for any opened leo outline
+        if (this._leoTreeStandaloneView.visible) {
+            return this._leoTreeStandaloneView.reveal(p_leoNode, p_options);
+        }
+        if (this._leoTreeExplorerView.visible && this.config.treeInExplorer) {
+            return this._leoTreeExplorerView.reveal(p_leoNode, p_options);
+        }
+        // * Defaults to resolving even if both are hidden
+        return Promise.resolve();
+    }
+
     private _locateOpenedBody(p_gnx: string): boolean {
 
         // TODO : MIMIC LEO
@@ -595,27 +585,17 @@ export class LeoIntegration {
         return this._bodyTextDocumentSameUri;
     }
 
-    public reveal(p_leoNode: LeoNode, p_options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): Thenable<void> {
-        //* 'TreeView.reveal' for any opened leo outline
-        if (this._leoTreeStandaloneView.visible) {
-            return this._leoTreeStandaloneView.reveal(p_leoNode, p_options);
-        }
-        if (this._leoTreeExplorerView.visible && this.config.treeInExplorer) {
-            return this._leoTreeExplorerView.reveal(p_leoNode, p_options);
-        }
-        // * Defaults to resolving even if both are hidden
-        return Promise.resolve();
-    }
-
-    public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable<boolean> {
+    public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable<vscode.TextEditor> {
         // * User has selected a node via mouse click or 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
         if (!p_internalCall) {
-            this._leoStatusBar.update(true); // Just selected a node
+            // If internal-call flag is set // ? necessary ?
         }
 
         // TODO : Save and restore selection, along with cursor position, from selection object saved in each node (or gnx array)
 
-        // * First check if having already this exact node selected
+        this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
+
+        // * First check if having already this exact node selected and show itself if needed (tree position - not just same gnx)
         if (p_node === this._lastSelectedNode) {
             // same so just find and reopen
             this._locateOpenedBody(p_node.gnx);
@@ -628,42 +608,38 @@ export class LeoIntegration {
         // * don't wait for promise to resolve a selection because there's no tree structure change
         this._triggerBodySave(); // trigger event to save previous document if timer to save if already started for another document
 
+        // * Set the 'lastSelectedNode' and make the body pane switch and show itself if needed
         this._lastSelectedNode = p_node; // kept mostly in order to do refreshes if it changes, as opposed to a full tree refresh
-        vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SELECTED_MARKED, this._lastSelectedNode.marked);
+        vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_node.marked);
 
         if (this._bodyTextDocument && !this._bodyTextDocument.isClosed) {
 
             // locateOpenedBody checks if already opened and visible,
             // locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
-            this._locateOpenedBody(p_node.gnx);
+            this._locateOpenedBody(p_node.gnx); // * This sets _bodyTextDocumentSameUri
 
             // * Save body to leo for the bodyTextDocument, then check if already opened, if not save and rename to clear undo buffer
             return this.bodySaveDocument(this._bodyTextDocument).then(p_result => {
-                if (this._bodyTextDocument) { // have to re-test inside .then, oh well
-
-                    if (this._bodyTextDocumentSameUri) {
-                        this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx);
-                        return this.showBody(p_aside); // already opened in a column so just tell vscode to show it
-                    } else {
-                        return this._bodyTextDocument.save().then((p_result) => {
-                            const w_edit = new vscode.WorkspaceEdit();
-                            w_edit.renameFile(
-                                this._bodyUri,
-                                vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx),
-                                { overwrite: true, ignoreIfExists: true }
-                            );
-                            // * Rename file operation to clear undo buffer
-                            return vscode.workspace.applyEdit(w_edit).then(p_result => {
-                                this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx);
-                                return this.showBody(p_aside);
-                            });
-                        });
-                    }
-
+                if (this._bodyTextDocumentSameUri) {
+                    // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, so just show it
+                    this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx);
+                    return this.showBody(p_aside); // already opened in a column so just tell vscode to show it
                 } else {
-                    return Promise.resolve(true);
+                    // * Otherwise do the "save & rename" hack to block redos
+                    return this._bodyTextDocument!.save().then((p_result) => { // We assert _bodyTextDocument, its already tested for above
+                        const w_edit = new vscode.WorkspaceEdit();
+                        w_edit.renameFile(
+                            this._bodyUri, // Old URI from last node
+                            vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx), // New URI from selected node
+                            { overwrite: true, ignoreIfExists: true }
+                        );
+                        // * Rename file operation to clear undo buffer
+                        return vscode.workspace.applyEdit(w_edit).then(p_result => {
+                            this._bodyUri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx); // Old is now set to new to finish
+                            return this.showBody(p_aside); // Also finish by showing it if not already visible
+                        });
+                    });
                 }
-
             });
 
         } else {
@@ -672,26 +648,10 @@ export class LeoIntegration {
         }
     }
 
-    public showBody(p_aside: boolean | undefined): Thenable<boolean> {
+    public showBody(p_aside: boolean | undefined): Thenable<vscode.TextEditor> {
         // * Make sure not to open unnecessary TextEditors
         return vscode.workspace.openTextDocument(this._bodyUri).then(p_document => {
 
-            // TODO : MIMIC LEO
-            // TODO : FIX IF ONLY ONE GNX AT A TIME
-            // if (this._lastSelectedLeoNode) {
-            //     // set entry of leoNodes Ref : leoTextDocumentNodesRef
-            //     // (used when showing a body text, to force selection of node when editor tabs are switched)
-            //     if (this._leoTextDocumentNodesRef[utils.uriToGnx(p_document.uri)]) {
-            //         if (this._leoTextDocumentNodesRef[utils.uriToGnx(p_document.uri)].refreshCount < this.outlineRefreshCount) {
-            //             this._leoTextDocumentNodesRef[utils.uriToGnx(p_document.uri)].node = this._lastSelectedLeoNode;
-            //         }
-            //     } else {
-            //         this._leoTextDocumentNodesRef[utils.uriToGnx(p_document.uri)] = {
-            //             node: this._lastSelectedLeoNode,
-            //             refreshCount: this.outlineRefreshCount
-            //         };
-            //     }
-            // }
             this._bodyTextDocument = p_document;
 
             vscode.window.visibleTextEditors.forEach(p_textEditor => {
@@ -705,79 +665,25 @@ export class LeoIntegration {
             if (this._forceBodyFocus) {
                 this._forceBodyFocus = false; // Reset this single-use flag
             }
-            if (p_aside) {
-                return vscode.window.showTextDocument(this._bodyTextDocument, {
+            const w_showOptions: vscode.TextDocumentShowOptions = p_aside ?
+                {
                     viewColumn: vscode.ViewColumn.Beside,
                     preserveFocus: this.config.treeKeepFocusWhenAside, // an optional flag that when true will stop the editor from taking focus
                     preview: true // should text document be in preview only? set false for fully opened
                     // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
-                }).then(w_bodyEditor => {
-                    // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
-                    // other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
-                    return Promise.resolve(true);
-                });
-            } else {
-                return vscode.window.showTextDocument(this._bodyTextDocument, {
+                } : {
                     viewColumn: this._bodyMainSelectionColumn ? this._bodyMainSelectionColumn : 1, // view column in which the editor should be shown
                     preserveFocus: w_keepFocus, // an optional flag that when true will stop the editor from taking focus
                     preview: false // should text document be in preview only? set false for fully opened
                     // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
-                }).then(w_bodyEditor => {
-                    // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
-                    // other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
-                    return Promise.resolve(true);
-                });
-            }
+                };
+            return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor => {
+                // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
+                // other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
+                return Promise.resolve(w_bodyEditor);
+            });
         });
     }
-
-    /*     public showBodyDocumentAside(p_node: LeoNode, p_internalCall?: boolean | undefined): Thenable<boolean> {
-            // ! Unused - replaced by new parameter p_aside in selectTreeNode
-            // * User has right-clicked a node and chosen 'open aside' in the context menu
-            // otherwise flag p_internalCall if used internally
-            if (!p_internalCall) {
-                this._lastOperationChangedTree = false;
-                // TODO
-                // ! FIX THIS
-                // this.selectTreeNode(p_node, true); // * select node when expanding to mimic Leo
-                // this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect);
-            }
-
-            // Trigger event to save previous document just in in case (if timer to save is already started for another document)
-            this._triggerBodySave();
-            this._leoTextDocumentNodesRef[p_node.gnx] = {
-                node: p_node,
-                refreshCount: this.outlineRefreshCount
-            };
-
-            return vscode.workspace.openTextDocument(vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_node.gnx)).then(p_document => {
-                if (!this.config.treeKeepFocusWhenAside) {
-                    this.sendAction(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, p_node.apJson).then((p_answer: LeoBridgePackage) => {
-                        const p_selectedNode = this.apToLeoNode(p_answer.node);
-
-                        if (this._leoTextDocumentNodesRef[p_node.gnx]) {
-                            this._leoTextDocumentNodesRef[p_node.gnx].node = p_selectedNode;
-                        } else {
-                            this._leoTextDocumentNodesRef[p_node.gnx] = {
-                                node: p_selectedNode,
-                                refreshCount: this.outlineRefreshCount
-                            };
-                        }
-                        this.reveal(p_selectedNode, { select: true, focus: false });
-                    });
-                }
-                return vscode.window.showTextDocument(p_document, {
-                    viewColumn: vscode.ViewColumn.Beside,
-                    preserveFocus: this.config.treeKeepFocusWhenAside, // an optional flag that when true will stop the editor from taking focus
-                    preview: true // should text document be in preview only? set false for fully opened
-                    // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
-                }).then(w_bodyEditor => {
-                    // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
-                    // other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
-                    return Promise.resolve(true);
-                });
-            });
-        } */
 
     public focusBodyIfVisible(p_gnx: string): Thenable<boolean> {
         let w_found: undefined | vscode.TextEditor;
