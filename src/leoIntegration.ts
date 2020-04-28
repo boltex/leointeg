@@ -254,6 +254,8 @@ export class LeoIntegration {
 
     private _changeCollapsedState(p_event: vscode.TreeViewExpansionEvent<LeoNode>, p_expand: boolean): void {
         // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
+
+        this._revealTreeViewNode(p_event.element, { select: true, focus: false });
         this.selectTreeNode(p_event.element, true);
         this.sendAction(p_expand ? Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE : Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson);
         this._refreshNode(p_event.element); // don't wait
