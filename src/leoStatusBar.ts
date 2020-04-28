@@ -1,9 +1,11 @@
 import * as vscode from "vscode";
+import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
 export class LeoStatusBar {
     // * Statusbar indicator behavior service
+
     private _leoStatusBarItem: vscode.StatusBarItem;
     private _statusbarNormalColor = new vscode.ThemeColor(Constants.GUI.THEME_STATUSBAR);  // "statusBar.foreground"
     private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
@@ -63,7 +65,7 @@ export class LeoStatusBar {
         if (this._updateStatusBarTimeout) { // Can be called directly, so clear timer if any
             clearTimeout(this._updateStatusBarTimeout);
         }
-        vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.leoObjectSelected);
+        utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.leoObjectSelected);
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this._leoIntegration.config.statusBarString;
         if (this.leoObjectSelected && this._leoIntegration.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
             this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;

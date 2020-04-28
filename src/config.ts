@@ -1,10 +1,11 @@
 import * as vscode from "vscode";
+import * as utils from "./utils";
 import { ConfigMembers } from "./types";
 import { Constants } from "./constants";
-import * as utils from "./utils";
 import { LeoIntegration } from "./leoIntegration";
 
 export class Config implements ConfigMembers {
+    // * Configuration Settings Service
 
     public checkForChangeExternalFiles: string = "none";
     public defaultReloadIgnore: string = "none";
@@ -120,13 +121,13 @@ export class Config implements ConfigMembers {
             this.connectionPort = vscode.workspace.getConfiguration(Constants.CONFIGURATION_SECTION).get(Constants.CONFIGURATION.IP_PORT, Constants.TCPIP_DEFAULT_PORT); // 32125
             // * Set context for tree items visibility that are based on config options
             this._leoIntegration.sendConfigToServer(this.getConfig());
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_ADD, this.showAddOnNodes);
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_MARK, this.showMarkOnNodes);
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_CLONE, this.showCloneOnNodes);
-            vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SHOW_COPY, this.showCopyOnNodes);
+            utils.setContext(Constants.CONTEXT_FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
+            utils.setContext(Constants.CONTEXT_FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
+            utils.setContext(Constants.CONTEXT_FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);
+            utils.setContext(Constants.CONTEXT_FLAGS.SHOW_ADD, this.showAddOnNodes);
+            utils.setContext(Constants.CONTEXT_FLAGS.SHOW_MARK, this.showMarkOnNodes);
+            utils.setContext(Constants.CONTEXT_FLAGS.SHOW_CLONE, this.showCloneOnNodes);
+            utils.setContext(Constants.CONTEXT_FLAGS.SHOW_COPY, this.showCopyOnNodes);
         }
     }
 }

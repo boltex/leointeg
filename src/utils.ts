@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { Icon } from "./types";
 
-// * String and other structures construction helper-functions
+// * String and other structures construction helper-functions along with common vscode API calls
 
 export function padNumber(p_number: number): string {
     return ("0" + p_number).slice(-2);
@@ -29,7 +29,18 @@ export function isHexColor(hex: string): boolean {
         && !isNaN(Number('0x' + hex));
 }
 
+export function gnxToUri(p_gnx: string): vscode.Uri {
+    // * Builds a 'Leo Scheme' vscode.Uri from a gnx
+    return vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_gnx);
+}
+
 export function uriToGnx(p_uri: vscode.Uri): string {
-    // * For now, just remove the '/' before the path string
-    return p_uri.fsPath.substr(1); // TODO : Use length of a given constant
+    // * Gets the gnx from a vscode.Uri object
+    // TODO : For now, just remove the '/' before the path string
+    // TODO : Use length of a constant or something other than 'fsPath'
+    return p_uri.fsPath.substr(1);
+}
+
+export function setContext(p_key: string, p_value: any): Thenable<unknown> {
+    return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, p_key, p_value);
 }

@@ -6,6 +6,7 @@
 - Support async output from leoBridge from log pane and other events
 - External file change detection with modal dialogs matching Leo's gui dialogs
 - Redo operation, along with many other core leo commands and operations
+- Rollback feature to disallow multiple different body panes opened simultaneously
 
 ## 0.1.8
 

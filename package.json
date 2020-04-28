@@ -640,22 +640,22 @@
     "viewsWelcome": [
       {
         "view": "leoIntegration",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nleoInteg [Settings](command:leointeg.showSettingsPage)",
+        "contents": "[Connect to Server](command:leointeg.connectToServer)",
         "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nleoInteg [Settings](command:leointeg.showSettingsPage)",
+        "contents": "[Connect to Server](command:leointeg.connectToServer)",
         "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
       },
       {
         "view": "leoIntegration",
-        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nleoInteg [Settings](command:leointeg.showSettingsPage)",
+        "contents": "[Open Leo File](command:leointeg.openLeoFile)",
         "when": "leoBridgeReady==true && !leoTreeOpened"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nleoInteg [Settings](command:leointeg.showSettingsPage)",
+        "contents": "[Open Leo File](command:leointeg.openLeoFile)",
         "when": "leoBridgeReady==true && !leoTreeOpened"
       }
     ],

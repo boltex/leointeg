@@ -1,8 +1,9 @@
-import * as vscode from "vscode";
-import { Constants } from "./constants";
+import * as os from 'os';
 import * as child from 'child_process';
 import * as path from "path"; // TODO: Use this library to have reliable support for window-vs-linux file-paths
-import * as os from 'os';
+import * as vscode from "vscode";
+import * as utils from "./utils";
+import { Constants } from "./constants";
 
 export class ServerService {
     // * Provides automatic leo bridge server startup service
@@ -61,13 +62,13 @@ export class ServerService {
             // * Capture other python process outputs
             this._serverProcess.stderr.on("data", (data: string) => {
                 console.log(`stderr: ${data}`);
-                vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+                utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                 this._serverProcess = undefined;
                 reject(`stderr: ${data}`);
             });
             this._serverProcess.on("close", (code: any) => {
                 console.log(`leoBridge exited with code ${code}`);
-                vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+                utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                 this._serverProcess = undefined;
                 reject(`leoBridge exited with code ${code}`);
             });

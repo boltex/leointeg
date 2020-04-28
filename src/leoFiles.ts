@@ -10,11 +10,10 @@ export class LeoFiles {
     constructor(private _context: vscode.ExtensionContext) { }
 
     private _getBestOpenFolderUri(): vscode.Uri {
-        // Find a folder to propose when opening the browse-for-leo-file chooser
+        // * Find a folder to propose when opening the browse-for-leo-file chooser
         let w_openedFileEnvUri: vscode.Uri | boolean = false;
         let w_activeUri: vscode.Uri | undefined = undefined;
 
-        // let w_activeUri: Uri | undefined = vscode.window.activeTextEditor?vscode.window.activeTextEditor.document.uri:undefined;
         if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]) {
             w_activeUri = vscode.workspace.workspaceFolders[0].uri;
         }

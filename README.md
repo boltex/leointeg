@@ -1,6 +1,6 @@
 # ![LeoEditor](resources/leoapp.png) Leo Editor Integration with Visual Studio Code
 
-## Literate Programming with Directed Acyclic Graphs
+## Literate Programming with _Directed Acyclic Graphs_
 
 ### Break your code down into sections, structured as an outline, to derive files or parse them back into an outline
 
@@ -10,8 +10,7 @@ Leo is a fundamentally different way of using and organizing data, programs and 
 
 ## Requirements
 
-- Leo installed
-- Leo's path made available in \$PYTHONPATH environment variable\
+- Leo installed with its path made available in the \$PYTHONPATH environment variable\
   (See **Adding Leo to Your Path** in [github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT](https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT#L126))
 - Websocket Python Library installed\
   _Install with :_ `pip install websockets`\

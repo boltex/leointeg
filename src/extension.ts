@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import * as utils from "./utils";
 import { Constants } from "./constants";
 import { RevealType } from "./types";
 import { LeoIntegration } from "./leoIntegration";
@@ -19,8 +20,8 @@ export function activate(context: vscode.ExtensionContext) {
     const leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(context, leoIntegration);
 
     // * Reset Extension context flags (used in 'when' clauses in package.json)
-    vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // connected to a leobridge server?
-    vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
+    utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // connected to a leobridge server?
+    utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
 
     const w_cmdPrefix = Constants.NAME + ".";
     const w_commands: [string, (...args: any[]) => any][] = [

@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
+import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
-import * as utils from "./utils";
 
 export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * Body panes implemented as a file system with this FileSystemProvider implementation (using "leo" as a scheme identifier)
@@ -29,7 +29,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             // console.log('refresh body:', p_bodyGnx);
             this._onDidChangeFileEmitter.fire([{
                 type: vscode.FileChangeType.Changed,
-                uri: vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_bodyGnx)
+                uri: utils.gnxToUri(p_bodyGnx)
             } as vscode.FileChangeEvent]);
         });
     }
@@ -99,7 +99,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public fireDeleteExpiredGnx(p_gnxList: string[]): void {
         // console.log('fireDeletedEvent for total # of gnx: ', p_gnxList.length);
         p_gnxList.forEach(p_gnx => {
-            const w_uri: vscode.Uri = vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_gnx);
+            const w_uri: vscode.Uri = utils.gnxToUri(p_gnx);
             this._fireSoon({ uri: w_uri, type: vscode.FileChangeType.Deleted });
         });
     }
