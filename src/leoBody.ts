@@ -14,6 +14,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     // * list of currently opened body panes gnx (from 'watch' & 'dispose' methods)
     public openedBodiesGnx: string[] = [];
+
     // * list of all possible vNodes gnx in the currently opened leo file (since last refresh/tree operation)
     public possibleGnxList: string[] = [];
 
@@ -24,13 +25,16 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     constructor(private _leoIntegration: LeoIntegration) { }
 
+    public fireRefreshFile(p_gnx: string): void {
+        this._onDidChangeFileEmitter.fire([{
+            type: vscode.FileChangeType.Changed,
+            uri: utils.gnxToUri(p_gnx)
+        } as vscode.FileChangeEvent]);
+    }
+
     public fireRefreshFiles(): void {
         this.openedBodiesGnx.forEach(p_bodyGnx => {
-            // console.log('refresh body:', p_bodyGnx);
-            this._onDidChangeFileEmitter.fire([{
-                type: vscode.FileChangeType.Changed,
-                uri: utils.gnxToUri(p_bodyGnx)
-            } as vscode.FileChangeEvent]);
+            this.fireRefreshFile(p_bodyGnx);
         });
     }
 
@@ -84,11 +88,15 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public watch(p_resource: vscode.Uri): vscode.Disposable {
+        console.log('Watch ', p_resource.fsPath);
+
         const w_gnx = utils.uriToGnx(p_resource);
         if (!this.openedBodiesGnx.includes(w_gnx)) {
             this.openedBodiesGnx.push(w_gnx); // add gnx
         }
         return new vscode.Disposable(() => {
+            console.log('Dispose of Watch ', w_gnx);
+
             const w_position = this.openedBodiesGnx.indexOf(w_gnx); // find and remove it
             if (w_position > -1) {
                 this.openedBodiesGnx.splice(w_position, 1);
@@ -102,6 +110,48 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             const w_uri: vscode.Uri = utils.gnxToUri(p_gnx);
             this._fireSoon({ uri: w_uri, type: vscode.FileChangeType.Deleted });
         });
+    }
+
+    public newStat(p_uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
+        console.log('Called stat on', p_uri.fsPath);
+
+        if (this._leoIntegration.fileOpenedReady) {
+            if (p_uri.fsPath === '/') {
+                console.log('called stat on root : "/" ! ');
+                return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
+            } else if (p_uri.fsPath === '/' + this._lastGnx) {
+                return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: this._lastGnxBodyLength };
+            } else {
+                const w_gnx = utils.uriToGnx(p_uri);
+                if (!this.possibleGnxList.includes(w_gnx)) {
+                    // console.log("hey! Not in list! stat missing refreshes??");
+                    throw vscode.FileSystemError.FileNotFound();
+                } else {
+                    return this._leoIntegration.sendAction(Constants.LEOBRIDGE_ACTIONS.GET_BODY_LENGTH, '"' + w_gnx + '"')
+                        .then((p_result) => {
+                            if (p_result.bodyLength) {
+                                return Promise.resolve(
+                                    {
+                                        type: vscode.FileType.File,
+                                        ctime: 0,
+                                        mtime: Date.now(),
+                                        size: p_result.bodyLength // this.leoIntegration.bodyText.length
+                                    }
+                                );
+                            } else {
+                                return Promise.resolve({
+                                    type: vscode.FileType.File,
+                                    ctime: 0,
+                                    mtime: Date.now(),
+                                    size: 0 // this.leoIntegration.bodyText.length
+                                });
+                            }
+                        });
+                }
+            }
+        } else {
+            throw vscode.FileSystemError.FileNotFound(); // console.log("not ready");
+        }
     }
 
     public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
