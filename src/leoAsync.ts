@@ -5,6 +5,7 @@ import { LeoIntegration } from "./leoIntegration";
 
 export class LeoAsync {
     // * Functions called by Leo through leoBridge such as adding a log pane entry, runAskYesNoDialog for file changes, etc.
+    // * Some config settings affect this behavior, such as defaultReloadIgnore and checkForChangeExternalFiles
 
     private _askResult: string = "";
 

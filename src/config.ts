@@ -6,9 +6,10 @@ import { LeoIntegration } from "./leoIntegration";
 
 export class Config implements ConfigMembers {
     // * Configuration Settings Service
+    // Some config settings are used in leobridgeserver.py such as defaultReloadIgnore and checkForChangeExternalFiles
 
-    public checkForChangeExternalFiles: string = "none";
-    public defaultReloadIgnore: string = "none";
+    public checkForChangeExternalFiles: string = "none";  // Used in leoBridge script
+    public defaultReloadIgnore: string = "none"; // Used in leoBridge script
     public treeKeepFocus: boolean = true;
     public treeKeepFocusWhenAside: boolean = false;
     public treeInExplorer: boolean = true;
@@ -38,8 +39,8 @@ export class Config implements ConfigMembers {
 
     public getConfig(): ConfigMembers {
         return {
-            checkForChangeExternalFiles: this.checkForChangeExternalFiles,
-            defaultReloadIgnore: this.defaultReloadIgnore,
+            checkForChangeExternalFiles: this.checkForChangeExternalFiles,  // Used in leoBridge script
+            defaultReloadIgnore: this.defaultReloadIgnore,  // Used in leoBridge script
             treeKeepFocus: this.treeKeepFocus,
             treeKeepFocusWhenAside: this.treeKeepFocusWhenAside,
             treeInExplorer: this.treeInExplorer,

@@ -53,6 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.PASTE, (p_node: LeoNode) => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE_ACTIONS.PASTE_PNODE, p_node)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.PASTE_CLONE, (p_node: LeoNode) => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE_ACTIONS.PASTE_CLONE_PNODE, p_node)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DELETE, (p_node: LeoNode) => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE_ACTIONS.DELETE_PNODE, p_node)],
+
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.COPY_SELECTION, () => leoIntegration.nodeAction(Constants.LEOBRIDGE_ACTIONS.COPY_PNODE)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CUT_SELECTION, () => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE_ACTIONS.CUT_PNODE)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.PASTE_SELECTION, () => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE_ACTIONS.PASTE_PNODE)],
@@ -70,7 +71,8 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLONE, (p_node: LeoNode) => leoIntegration.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.CLONE_PNODE, p_node, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.PROMOTE, (p_node: LeoNode) => leoIntegration.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.PROMOTE_PNODE, p_node, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DEMOTE, (p_node: LeoNode) => leoIntegration.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.DEMOTE_PNODE, p_node, RevealType.RevealSelectFocusShowBody)],
-        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.REFRESH_FROM_DISK, (p_node: LeoNode) => leoIntegration.refreshFromDiskNode(p_node)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.REFRESH_FROM_DISK, (p_node: LeoNode) => leoIntegration.nodeActionFullRefreshBuffered(Constants.LEOBRIDGE_ACTIONS.REFRESH_FROM_DISK_PNODE, p_node)],
+
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_DOWN_SELECTION, () => leoIntegration.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_DOWN, undefined, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_LEFT_SELECTION, () => leoIntegration.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_LEFT, undefined, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.MOVE_RIGHT_SELECTION, () => leoIntegration.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.MOVE_PNODE_RIGHT, undefined, RevealType.RevealSelectFocusShowBody)],
@@ -79,7 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.CLONE_SELECTION, () => leoIntegration.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.CLONE_PNODE, undefined, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.PROMOTE_SELECTION, () => leoIntegration.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.PROMOTE_PNODE, undefined, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.DEMOTE_SELECTION, () => leoIntegration.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.DEMOTE_PNODE, undefined, RevealType.RevealSelectFocusShowBody)],
-        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.REFRESH_FROM_DISK_SELECTION, () => leoIntegration.refreshFromDiskNode(undefined)],
+        [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.REFRESH_FROM_DISK_SELECTION, () => leoIntegration.nodeActionFullRefreshBuffered(Constants.LEOBRIDGE_ACTIONS.REFRESH_FROM_DISK_PNODE, undefined)],
 
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SORT_CHILDREN, () => leoIntegration.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.SORT_CHILDREN, undefined, RevealType.RevealSelectFocusShowBody)],
         [w_cmdPrefix + Constants.LEOINTEG_COMMANDS.SORT_SIBLING, () => leoIntegration.nodeActionRefresh(Constants.LEOBRIDGE_ACTIONS.SORT_SIBLINGS, undefined, RevealType.RevealSelectFocusShowBody)],
