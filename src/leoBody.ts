@@ -6,7 +6,7 @@ import { LeoIntegration } from "./leoIntegration";
 export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * Body panes implemented as a file system with this FileSystemProvider implementation (using "leo" as a scheme identifier)
 
-    // ! Saving and renaming prevents flickering and prevents undos to 'traverse through' nodes, see leoIntegration.ts
+    // ! Saving and renaming prevents flickering and prevents undos to 'traverse through' nodes
 
     // to keep mtime of selected body
     private _selectedBody: {
@@ -50,28 +50,32 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         };
     }
 
-
-
     public setBodyUri(p_uri: vscode.Uri): void {
-        if (this._selectedBody.gnx === this._renameBody.gnx) {
-            console.log('same!');
-        } else {
-            console.log('was different!');
-        }
+        console.log('called setBodyUri for gnx: ', utils.uriToGnx(p_uri));
+
         // save selected gnx and set its mtime to 'now'
+        if (this._selectedBody.gnx === this._renameBody.gnx) {
+            console.log('set to rename time', this._renameBody.mtime);
+        }
         this._selectedBody = {
             gnx: utils.uriToGnx(p_uri),
             ctime: 0,
             mtime: this._selectedBody.gnx === this._renameBody.gnx ? this._renameBody.mtime : Date.now(),
         };
+        console.log('finished setBodyUri, time st to', this._selectedBody.mtime);
+
     }
 
     public setRenameGnx(p_gnx: string): void {
+        console.log('called setRenameGnx for gnx: ', p_gnx);
+
+        // Need to keep track of it separately from regular bodyUri because of save-rename hack
         this._renameBody = {
             gnx: p_gnx,
             ctime: 0,
             mtime: Date.now(),
         };
+        console.log('finished setRenameGnx, time st to', this._renameBody.mtime);
     }
 
     public fireRefreshFile(p_gnx: string): void {
@@ -164,9 +168,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
         console.log('Called stat on', p_uri.fsPath);
-        console.log('this._selectedBody', this._selectedBody);
-        console.log('this._renameBody', this._renameBody);
-
 
         if (this._leoIntegration.fileOpenedReady) {
             if (p_uri.fsPath === '/') {
@@ -188,11 +189,13 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE_ACTIONS.GET_BODY_LENGTH, '"' + w_gnx + '"')
                         .then((p_result) => {
                             let w_mtime: number = 0;
-                            if (this._renameBody.gnx !== w_gnx) {
+                            if (this._renameBody.gnx === w_gnx) {
                                 w_mtime = this._renameBody.mtime;
                             } else {
                                 w_mtime = this._selectedBody.mtime;
                             }
+                            console.log('stat given with mtime', w_mtime);
+
                             return Promise.resolve(
                                 {
                                     type: vscode.FileType.File,
@@ -211,8 +214,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public readFile(p_uri: vscode.Uri): Thenable<Uint8Array> {
         console.log('Called readFile on', p_uri.fsPath);
-        console.log('this._selectedBody', this._selectedBody);
-        console.log('this._renameBody', this._renameBody);
 
         if (this._leoIntegration.fileOpenedReady) {
             if (p_uri.fsPath === '/') {
@@ -268,6 +269,14 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
         console.log('called writeFile!', p_uri.fsPath);
+        const w_gnx = utils.uriToGnx(p_uri);
+        // if (!this._possibleGnxList.includes(w_gnx)) {
+        if (this._selectedBody.gnx === w_gnx) {
+            this._selectedBody.mtime = Date.now();
+        }
+        if (this._renameBody.gnx === w_gnx) {
+            this._renameBody.mtime = Date.now();
+        }
     }
 
     public rename(p_oldUri: vscode.Uri, p_newUri: vscode.Uri, p_options: { overwrite: boolean }): void {
