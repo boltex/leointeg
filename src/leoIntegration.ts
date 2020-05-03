@@ -864,7 +864,7 @@ export class LeoIntegration {
                         const w_para = p_newHeadline ? utils.buildHeadlineJson(w_node!.apJson, p_newHeadline) : w_node.apJson;
                         this.sendAction(w_action, w_para)
                             .then(p_package => {
-                                this._leoFileSystem.addGnx(p_package.node.gnx);
+                                // this._leoFileSystem.addGnx(p_package.node.gnx);
                                 this._forceBodyFocus = true;
                                 this._refreshOutline(RevealType.RevealSelectShowBody); // refresh all, needed to get clones to refresh too!
                                 // this.focusBodyIfVisible(p_package.node.gnx);

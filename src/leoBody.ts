@@ -5,8 +5,7 @@ import { LeoIntegration } from "./leoIntegration";
 
 export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * Body panes implemented as a file system with this FileSystemProvider implementation (using "leo" as a scheme identifier)
-
-    // ! Saving and renaming prevents flickering and prevents undos to 'traverse through' nodes
+    // * Note: Saving and renaming prevents flickering and prevents undos to 'traverse through' nodes
 
     // TEST STRUCTURE to keep mtime of selected body
     private _selectedBody: {
@@ -59,10 +58,11 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         // if (this._renameBody.gnx && this._selectedBody.gnx === this._renameBody.gnx) {
         //     console.log('set to rename time', this._renameBody.mtime);
         // }
+        const w_gnx = utils.uriToGnx(p_uri);
         this._selectedBody = {
-            gnx: utils.uriToGnx(p_uri),
+            gnx: w_gnx,
             ctime: 0,
-            mtime: (this._renameBody.gnx && this._selectedBody.gnx === this._renameBody.gnx) ? this._renameBody.mtime : Date.now(),
+            mtime: (w_gnx === this._renameBody.gnx && this._selectedBody.gnx === this._renameBody.gnx) ? this._renameBody.mtime : Date.now(),
         };
         // console.log('finished setBodyUri, time st to', this._selectedBody.mtime);
 
@@ -179,7 +179,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 return {
                     type: vscode.FileType.File,
                     ctime: 0,
-                    mtime: this._selectedBody.mtime,
+                    mtime: 0, // this._selectedBody.mtime, // IF this._selectedBody.mtime we get file changed on disk error!!
                     size: this._lastGnxBodyLength
                 };
             } else {
@@ -251,14 +251,17 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public readDirectory(p_uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
         // console.log('called readDirectory', uri.fsPath);
         if (p_uri.fsPath === '/') {
-            return this.refreshPossibleGnxList().then((p_result) => {
-                // console.log('FROM readDirectory - got back from getAllGnx:', p_result);
-                const w_directory: [string, vscode.FileType][] = [];
-                p_result.forEach((p_gnx: string) => {
-                    w_directory.push([p_gnx, vscode.FileType.File]);
-                });
-                return Promise.resolve(w_directory);
-            });
+            // return this.refreshPossibleGnxList().then((p_result) => {
+            //     // console.log('FROM readDirectory - got back from getAllGnx:', p_result);
+            //     const w_directory: [string, vscode.FileType][] = [];
+            //     p_result.forEach((p_gnx: string) => {
+            //         w_directory.push([p_gnx, vscode.FileType.File]);
+            //     });
+            //     return Promise.resolve(w_directory);
+            // });
+            const w_directory: [string, vscode.FileType][] = [];
+            w_directory.push([this._selectedBody.gnx, vscode.FileType.File]);
+            return Promise.resolve(w_directory);
         } else {
             throw vscode.FileSystemError.FileNotFound();
         }
