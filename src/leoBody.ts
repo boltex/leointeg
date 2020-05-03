@@ -8,14 +8,14 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     // ! Saving and renaming prevents flickering and prevents undos to 'traverse through' nodes
 
-    // to keep mtime of selected body
+    // TEST STRUCTURE to keep mtime of selected body
     private _selectedBody: {
         gnx: string;
         ctime: number;
         mtime: number;
     };
 
-    // renamed body will become selected body in rename-save hack to prevent undo/redos
+    // TEST STRUCTURE  renamed body will become selected body in rename-save hack to prevent undo/redos
     private _renameBody: {
         gnx: string;
         ctime: number;
@@ -38,6 +38,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> = this._onDidChangeFileEmitter.event;
 
     constructor(private _leoIntegration: LeoIntegration) {
+        // TEST STRUCTURES
         this._selectedBody = {
             gnx: "",
             ctime: 0,
@@ -51,31 +52,32 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public setBodyUri(p_uri: vscode.Uri): void {
-        console.log('called setBodyUri for gnx: ', utils.uriToGnx(p_uri));
-
         // save selected gnx and set its mtime to 'now'
-        if (this._selectedBody.gnx === this._renameBody.gnx) {
-            console.log('set to rename time', this._renameBody.mtime);
-        }
+
+        //console.log('called setBodyUri for gnx: ', utils.uriToGnx(p_uri));
+
+        // if (this._renameBody.gnx && this._selectedBody.gnx === this._renameBody.gnx) {
+        //     console.log('set to rename time', this._renameBody.mtime);
+        // }
         this._selectedBody = {
             gnx: utils.uriToGnx(p_uri),
             ctime: 0,
-            mtime: this._selectedBody.gnx === this._renameBody.gnx ? this._renameBody.mtime : Date.now(),
+            mtime: (this._renameBody.gnx && this._selectedBody.gnx === this._renameBody.gnx) ? this._renameBody.mtime : Date.now(),
         };
-        console.log('finished setBodyUri, time st to', this._selectedBody.mtime);
+        // console.log('finished setBodyUri, time st to', this._selectedBody.mtime);
 
     }
 
     public setRenameGnx(p_gnx: string): void {
-        console.log('called setRenameGnx for gnx: ', p_gnx);
-
         // Need to keep track of it separately from regular bodyUri because of save-rename hack
+
+        // console.log('called setRenameGnx for gnx: ', p_gnx);
         this._renameBody = {
             gnx: p_gnx,
             ctime: 0,
             mtime: Date.now(),
         };
-        console.log('finished setRenameGnx, time st to', this._renameBody.mtime);
+        // console.log('finished setRenameGnx, time st to', this._renameBody.mtime);
     }
 
     public fireRefreshFile(p_gnx: string): void {
@@ -281,6 +283,13 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public rename(p_oldUri: vscode.Uri, p_newUri: vscode.Uri, p_options: { overwrite: boolean }): void {
         console.log('called rename');
+        const w_gnx = utils.uriToGnx(p_newUri);
+        if (this._selectedBody.gnx === w_gnx) {
+            this._selectedBody.mtime = Date.now();
+        }
+        if (this._renameBody.gnx === w_gnx) {
+            this._renameBody.mtime = Date.now();
+        }
         // throw vscode.FileSystemError.NoPermissions();
     }
 

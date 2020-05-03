@@ -275,6 +275,7 @@ export class LeoIntegration {
 
     private _changeCollapsedState(p_event: vscode.TreeViewExpansionEvent<LeoNode>, p_expand: boolean, p_treeView: vscode.TreeView<LeoNode>): void {
         // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
+        this._triggerBodySave();
         if (p_treeView.selection[0] && p_treeView.selection[0] === p_event.element) {
             this.sendAction(p_expand ? Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE : Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson);
         } else {
@@ -341,43 +342,59 @@ export class LeoIntegration {
 
     private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
         // * Edited the document: ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
-        if ((p_event.document.uri.scheme === Constants.URI_SCHEME) && p_event.contentChanges.length) {
-            // * First, check if there's a document already pending changes, and if it's a different one: 'force save' it!
-            if (this._bodyLastChangedDocument && (p_event.document.uri.fsPath !== this._bodyLastChangedDocument.uri.fsPath)) {
-                // console.log('Switched Node while waiting edit debounce!');
-                this._triggerBodySave(true); //Set p_forcedRefresh flag, this will also have cleared timeout
-            }
+        if (p_event.contentChanges.length && (p_event.document.uri.scheme === Constants.URI_SCHEME)) {
+
+            // // * First, check if there's a document already pending changes, and if it's a different one: 'force save' it!
+            // if (this._bodyLastChangedDocument && (p_event.document.uri.fsPath !== this._bodyLastChangedDocument.uri.fsPath)) {
+            //     // console.log('Switched Node while waiting edit debounce!');
+            //     this._triggerBodySave(true); //Set p_forcedRefresh flag, this will also have cleared timeout
+            // }
+
+            console.log('edited with ', p_event.contentChanges);
+
+
             // * Second, the 'Instant tree node refresh trick' : If icon should change then do it now (if there's no document edit pending)
             if (!this._bodyChangeTimeout && !this._bodyChangeTimeoutSkipped) {
                 if (this._lastSelectedNode && utils.uriToGnx(p_event.document.uri) === this._lastSelectedNode.gnx) {
                     if (!this._lastSelectedNode.dirty || (this._lastSelectedNode.hasBody === !p_event.document.getText().length)) {
                         // console.log('NO WAIT');
                         this._bodyChangeTimeoutSkipped = true;
+                        console.log('instant save!');
+
                         this.bodySaveDocument(p_event.document, true);
                         return; // * Don't continue
                     }
                 }
             }
-            // * Third, finally, if still not exited this function, setup a 500ms debounced _triggerBodySave / bodySaveDocument
-            // TODO : FIX SAVE ON WINDOWS WHEN CHANGING/SETTING SELECTED NODE
+
+            console.log('marked to save!');
+
             this._bodyChangeTimeoutSkipped = false;
-            let w_delay = this.config.bodyEditDelay; // debounce by restarting the timeout
-            if (this._bodyChangeTimeout) {
-                clearTimeout(this._bodyChangeTimeout);
-            }
-            this._bodyLastChangedDocument = p_event.document; // setup trigger
-            this._bodyChangeTimeout = setTimeout(() => {
-                this._triggerBodySave(); // no .then for clearing timer, done in trigger instead
-            }, w_delay);
+            this._bodyLastChangedDocument = p_event.document;
+
+            // // * Third, finally, if still not exited this function, setup a 500ms debounced _triggerBodySave / bodySaveDocument
+            // // TODO : FIX SAVE ON WINDOWS WHEN CHANGING/SETTING SELECTED NODE
+            // this._bodyChangeTimeoutSkipped = false;
+            // let w_delay = this.config.bodyEditDelay; // debounce by restarting the timeout
+            // if (this._bodyChangeTimeout) {
+            //     clearTimeout(this._bodyChangeTimeout);
+            // }
+            // this._bodyLastChangedDocument = p_event.document; // setup trigger
+            // this._bodyChangeTimeout = setTimeout(() => {
+            //     this._triggerBodySave(); // no .then for clearing timer, done in trigger instead
+            // }, w_delay);
+
+
         }
     }
 
     private _triggerBodySave(p_forcedRefresh?: boolean): Thenable<boolean> {
-        // * Clear possible timeout if triggered by event from other than 'onDocumentChanged'
-        if (this._bodyChangeTimeout) {
-            clearTimeout(this._bodyChangeTimeout);
-        }
-        this._bodyChangeTimeout = undefined; // make falsy
+        // // * Clear possible timeout if triggered by event from other than 'onDocumentChanged'
+        // if (this._bodyChangeTimeout) {
+        //     clearTimeout(this._bodyChangeTimeout);
+        // }
+        // this._bodyChangeTimeout = undefined; // make falsy
+
         // * Send body to Leo
         if (this._bodyLastChangedDocument) {
             const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
@@ -387,6 +404,7 @@ export class LeoIntegration {
             }
             return this.bodySaveDocument(w_document, p_forcedRefresh);
         } else {
+            this._bodyChangeTimeoutSkipped = false;
             return Promise.resolve(true);
         }
     }
@@ -394,7 +412,7 @@ export class LeoIntegration {
     // TODO : Should be private ?
     public bodySaveDocument(p_document: vscode.TextDocument, p_forceRefreshTree?: boolean): Thenable<boolean> {
         // * Sets new body text of currently selected node on leo's side (test: ALSO SAVE leo scheme file)
-        if (p_document && (p_document.isDirty || p_forceRefreshTree)) {
+        if (p_document) {
             // * Fetch gnx and document's body text first, to be reused more than once in this method
             const w_param = {
                 gnx: utils.uriToGnx(p_document.uri),
@@ -404,7 +422,7 @@ export class LeoIntegration {
             let w_needsRefresh = false;
             if (this._lastSelectedNode && (w_param.gnx === this._lastSelectedNode.gnx)) {
                 if (!this._lastSelectedNode.dirty || (this._lastSelectedNode.hasBody === !w_param.body.length)) {
-                    w_needsRefresh = true;
+                    // w_needsRefresh = true; // Disable in here because instant save already covers this
                     this._lastSelectedNode.dirty = true;
                     this._lastSelectedNode.hasBody = !!w_param.body.length;
                 }
@@ -420,6 +438,7 @@ export class LeoIntegration {
             if (p_forceRefreshTree || (w_needsRefresh && this._lastSelectedNode)) {
                 // console.log(p_forceRefreshTree ? 'force refresh' : 'needed refresh');
                 // * Refresh root because of need to dirty parent if in derived file or a clone
+                console.log('HAD THE WEIRD REFRESH CALLED!');
 
                 // ! NO REVEAL NOT GOOD IF USING DIFFERENT IDS - WILL NOT KEEP SELECTION/COLLAPSE STATE
                 // this.leoTreeDataProvider.refreshTreeRoot(RevealType.RevealSelect); // No focus this.leoTreeDataProvider.refreshTreeRoot
@@ -428,9 +447,15 @@ export class LeoIntegration {
                 this._lastBodyChangedRootRefreshedGnx = w_param.gnx;
             }
             this._bodyChangeTimeoutSkipped = false;
+
+            console.log('Sending SAVE to Leo body: ', w_param);
+
+
             return this.sendAction(Constants.LEOBRIDGE_ACTIONS.SET_BODY, JSON.stringify(w_param)).then(p_result => {
                 // console.log('Back from setBody to leo');
-                // return p_document.save(); // ! This trims trailing spaces!
+                if (p_forceRefreshTree) {
+                    return p_document.save(); // ! This trims trailing spaces!
+                }
                 return Promise.resolve(p_document.isDirty);
             });
         } else {
@@ -585,42 +610,44 @@ export class LeoIntegration {
 
             // locateOpenedBody checks if already opened and visible,
             // locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
+
             this._locateOpenedBody(p_node.gnx); // * This sets _bodyTextDocumentSameUri
+            // ! THIS MESSES UP SAVE ! make sure save last selected not newly selected !!!
 
             // * Save body to leo for the bodyTextDocument, then check if already opened, if not save and rename to clear undo buffer
-            return this.bodySaveDocument(this._bodyTextDocument).then(p_result => {
-                if (this._bodyTextDocumentSameUri) {
-                    // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, so just show it
-                    this.bodyUri = utils.gnxToUri(p_node.gnx);
-                    if (w_needsFilesystemRefresh) {
-                        console.log('We were resolving a command that could change body content 1 ');
-                        // We were resolving a command that could change body content such as undo/redo/execute
-                        this._leoFileSystem.fireRefreshFile(p_node.gnx);
-                    }
-                    return this.showBody(p_aside); // already opened in a column so just tell vscode to show it
-                } else {
-                    // * So far, _bodyTextDocument is still opened and different from new selection: so "save & rename" to block undo/redos
-                    return this._bodyTextDocument!.save().then((p_result) => { // We assert _bodyTextDocument, its already tested for above
-                        const w_edit = new vscode.WorkspaceEdit();
-                        this._leoFileSystem.setRenameGnx(p_node.gnx);
-                        w_edit.renameFile(
-                            this.bodyUri, // Old URI from last node
-                            utils.gnxToUri(p_node.gnx), // New URI from selected node
-                            { overwrite: true, ignoreIfExists: true }
-                        );
-                        // * Rename file operation to clear undo buffer
-                        return vscode.workspace.applyEdit(w_edit).then(p_result => {
-                            this.bodyUri = utils.gnxToUri(p_node.gnx); // Old is now set to new to finish
-                            if (w_needsFilesystemRefresh) {
-                                console.log('We were resolving a command that could change body content 2 ');
-                                // We were resolving a command that could change body content such as undo/redo/execute
-                                this._leoFileSystem.fireRefreshFile(p_node.gnx);
-                            }
-                            return this.showBody(p_aside); // Also finish by showing it if not already visible
-                        });
-                    });
+            //return this.bodySaveDocument(this._bodyTextDocument).then(p_result => {
+            if (this._bodyTextDocumentSameUri) {
+                // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, so just show it
+                this.bodyUri = utils.gnxToUri(p_node.gnx);
+                if (w_needsFilesystemRefresh) {
+                    console.log('We were resolving a command that could change body content 1 ');
+                    // We were resolving a command that could change body content such as undo/redo/execute
+                    this._leoFileSystem.fireRefreshFile(p_node.gnx);
                 }
-            });
+                return this.showBody(p_aside); // already opened in a column so just tell vscode to show it
+            } else {
+                // * So far, _bodyTextDocument is still opened and different from new selection: so "save & rename" to block undo/redos
+                return this._bodyTextDocument!.save().then((p_result) => { // We assert _bodyTextDocument, its already tested for above
+                    const w_edit = new vscode.WorkspaceEdit();
+                    this._leoFileSystem.setRenameGnx(p_node.gnx);
+                    w_edit.renameFile(
+                        this.bodyUri, // Old URI from last node
+                        utils.gnxToUri(p_node.gnx), // New URI from selected node
+                        { overwrite: true, ignoreIfExists: true }
+                    );
+                    // * Rename file operation to clear undo buffer
+                    return vscode.workspace.applyEdit(w_edit).then(p_result => {
+                        this.bodyUri = utils.gnxToUri(p_node.gnx); // Old is now set to new to finish
+                        if (w_needsFilesystemRefresh) {
+                            console.log('We were resolving a command that could change body content 2 ');
+                            // We were resolving a command that could change body content such as undo/redo/execute
+                            this._leoFileSystem.fireRefreshFile(p_node.gnx);
+                        }
+                        return this.showBody(p_aside); // Also finish by showing it if not already visible
+                    });
+                });
+            }
+            //});
 
         } else {
             // * Is the last opened body is closed so just open the newly selected one
@@ -719,6 +746,7 @@ export class LeoIntegration {
         // - mark, unmark
         // - move, clone, promote, demote
         // - sortChildren, sortSibling
+        this._triggerBodySave();
         return this.nodeAction(p_action, p_node)
             .then((p_package: LeoBridgePackage) => {
                 if (p_package.id > Constants.ERROR_PACKAGE_ID) { // greater than 0
@@ -763,6 +791,7 @@ export class LeoIntegration {
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! editHeadline'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
         } else {
+            this._triggerBodySave();
             if (!p_node && this._lastSelectedNode) {
                 p_node = this._lastSelectedNode;
             }
@@ -805,6 +834,7 @@ export class LeoIntegration {
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! changeMark'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
         } else {
+            this._triggerBodySave();
             this._leoBridgeActionBusy = true;
             this.nodeActionRefresh(p_isMark ? Constants.LEOBRIDGE_ACTIONS.MARK_PNODE : Constants.LEOBRIDGE_ACTIONS.UNMARK_PNODE, p_node)
                 .then(() => {
@@ -818,6 +848,7 @@ export class LeoIntegration {
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! insert');
         } else {
+            this._triggerBodySave();
             if (!p_node && this._lastSelectedNode) {
                 p_node = this._lastSelectedNode;
             }
@@ -872,6 +903,7 @@ export class LeoIntegration {
             return;
         }
         if (this._lastSelectedNode) {
+            this._triggerBodySave();
             this._leoBridgeActionBusy = true;
             this.nodeAction(Constants.LEOBRIDGE_ACTIONS.SAVE_FILE)
                 .then(() => {
