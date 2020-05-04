@@ -40,10 +40,10 @@ export class LeoNode extends vscode.TreeItem {
     //     return "child:" + w_ap.childIndex + " lvl:" + w_ap.level + " gnx:" + w_ap.gnx;
     // }
 
-    get description(): string {
-        // * some smaller grayed-out text accompanying the main label
-        return "id:" + this.id;
-    }
+    // get description(): string {
+    //     // * some smaller grayed-out text accompanying the main label
+    //     return "id:" + this.id;
+    // }
 
     public copyProperties(p_node: LeoNode): LeoNode {
         this.label = p_node.label;

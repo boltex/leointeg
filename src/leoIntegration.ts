@@ -344,14 +344,7 @@ export class LeoIntegration {
         // * Edited the document: ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
         if (p_event.contentChanges.length && (p_event.document.uri.scheme === Constants.URI_SCHEME)) {
 
-            // // * First, check if there's a document already pending changes, and if it's a different one: 'force save' it!
-            // if (this._bodyLastChangedDocument && (p_event.document.uri.fsPath !== this._bodyLastChangedDocument.uri.fsPath)) {
-            //     // console.log('Switched Node while waiting edit debounce!');
-            //     this._triggerBodySave(true); //Set p_forcedRefresh flag, this will also have cleared timeout
-            // }
-
             console.log('edited with ', p_event.contentChanges);
-
 
             // * Second, the 'Instant tree node refresh trick' : If icon should change then do it now (if there's no document edit pending)
             if (!this._bodyChangeTimeout && !this._bodyChangeTimeoutSkipped) {
@@ -361,7 +354,7 @@ export class LeoIntegration {
                         this._bodyChangeTimeoutSkipped = true;
                         console.log('instant save!');
 
-                        this.bodySaveDocument(p_event.document, true);
+                        this._bodySaveDocument(p_event.document, true);
                         return; // * Don't continue
                     }
                 }
@@ -372,29 +365,10 @@ export class LeoIntegration {
             this._bodyChangeTimeoutSkipped = false;
             this._bodyLastChangedDocument = p_event.document;
 
-            // // * Third, finally, if still not exited this function, setup a 500ms debounced _triggerBodySave / bodySaveDocument
-            // // TODO : FIX SAVE ON WINDOWS WHEN CHANGING/SETTING SELECTED NODE
-            // this._bodyChangeTimeoutSkipped = false;
-            // let w_delay = this.config.bodyEditDelay; // debounce by restarting the timeout
-            // if (this._bodyChangeTimeout) {
-            //     clearTimeout(this._bodyChangeTimeout);
-            // }
-            // this._bodyLastChangedDocument = p_event.document; // setup trigger
-            // this._bodyChangeTimeout = setTimeout(() => {
-            //     this._triggerBodySave(); // no .then for clearing timer, done in trigger instead
-            // }, w_delay);
-
-
         }
     }
 
     private _triggerBodySave(p_forcedRefresh?: boolean): Thenable<boolean> {
-        // // * Clear possible timeout if triggered by event from other than 'onDocumentChanged'
-        // if (this._bodyChangeTimeout) {
-        //     clearTimeout(this._bodyChangeTimeout);
-        // }
-        // this._bodyChangeTimeout = undefined; // make falsy
-
         // * Send body to Leo
         if (this._bodyLastChangedDocument) {
             const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
@@ -402,16 +376,15 @@ export class LeoIntegration {
             if (this._lastBodyChangedRootRefreshedGnx !== utils.uriToGnx(w_document.uri)) {
                 p_forcedRefresh = true;
             }
-            return this.bodySaveDocument(w_document, p_forcedRefresh);
+            return this._bodySaveDocument(w_document, p_forcedRefresh);
         } else {
             this._bodyChangeTimeoutSkipped = false;
             return Promise.resolve(true);
         }
     }
 
-    // TODO : Should be private ?
-    public bodySaveDocument(p_document: vscode.TextDocument, p_forceRefreshTree?: boolean): Thenable<boolean> {
-        // * Sets new body text of currently selected node on leo's side (test: ALSO SAVE leo scheme file)
+    private _bodySaveDocument(p_document: vscode.TextDocument, p_forceRefreshTree?: boolean): Thenable<boolean> {
+        // * Sets new body text of currently selected node on leo's side
         if (p_document) {
             // * Fetch gnx and document's body text first, to be reused more than once in this method
             const w_param = {
@@ -427,12 +400,6 @@ export class LeoIntegration {
                     this._lastSelectedNode.hasBody = !!w_param.body.length;
                 }
             }
-            // * Maybe it was an 'aside' body pane, if so, force a full refresh
-            // ! no longer true if single body opened at a time
-            // if (this._lastSelectedLeoNode && (w_param.gnx !== this._lastSelectedLeoNode.gnx)) {
-            //     w_needsRefresh = true;
-            // }
-
             // * Perform refresh if needed
             // TODO : CHECK IF REFRESH IS APPROPRIATE
             if (p_forceRefreshTree || (w_needsRefresh && this._lastSelectedNode)) {
@@ -450,7 +417,6 @@ export class LeoIntegration {
 
             console.log('Sending SAVE to Leo body: ', w_param);
 
-
             return this.sendAction(Constants.LEOBRIDGE_ACTIONS.SET_BODY, JSON.stringify(w_param)).then(p_result => {
                 // console.log('Back from setBody to leo');
                 if (p_forceRefreshTree) {
@@ -461,6 +427,12 @@ export class LeoIntegration {
         } else {
             return Promise.resolve(false);
         }
+    }
+
+    public checkWriteFile(): void {
+        // TODO : Maybe distinguish between "body save" triggered by vscode regular save, such as ctrl+s.
+        // * For now, just trigger "body save"
+        this._triggerBodySave();
     }
 
     private _refreshOutline(p_revealType?: RevealType): void {
@@ -538,7 +510,6 @@ export class LeoIntegration {
         const w_leoNodesArray: LeoNode[] = [];
         for (let w_apData of p_array) {
             const w_leoNode = this.apToLeoNode(w_apData, true);
-            // this._revealConvertedNode(w_leoNode, w_apData.selected);
             w_leoNodesArray.push(w_leoNode);
         }
         return w_leoNodesArray;
@@ -557,10 +528,9 @@ export class LeoIntegration {
     }
 
     private _locateOpenedBody(p_gnx: string): boolean {
-
+        // TODO : Document this!!!
         this._bodyTextDocumentSameUri = false;
         // * Only gets to visible editors, not every tab per editor
-        // TODO : fix with newer vscode API or eamodio's hack
         vscode.window.visibleTextEditors.forEach(p_textEditor => {
             if (utils.uriToGnx(p_textEditor.document.uri) === p_gnx) {
                 this._bodyTextDocumentSameUri = true;
@@ -598,8 +568,8 @@ export class LeoIntegration {
         // * Set selected node in Leo via leoBridge
         this.sendAction(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, p_node.apJson);
 
-        // * don't wait for promise to resolve a selection because there's no tree structure change
-        this._triggerBodySave(); // trigger event to save previous document if timer to save if already started for another document
+        // * don't wait for promise to resolve a selection, save body to leo for the bodyTextDocument, then check if already opened
+        this._triggerBodySave();
 
         // * Set the 'lastSelectedNode' and make the body pane switch and show itself if needed
         this._lastSelectedNode = p_node; // kept mostly in order to do refreshes if it changes, as opposed to a full tree refresh
@@ -608,21 +578,18 @@ export class LeoIntegration {
         // * Is the last opened body still opened?
         if (this._bodyTextDocument && !this._bodyTextDocument.isClosed) {
 
-            // locateOpenedBody checks if already opened and visible,
-            // locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
+            // * Checks if already opened and visible, also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
+            this._locateOpenedBody(p_node.gnx);
 
-            this._locateOpenedBody(p_node.gnx); // * This sets _bodyTextDocumentSameUri
-            // ! THIS MESSES UP SAVE ! make sure save last selected not newly selected !!!
-
-            // * Save body to leo for the bodyTextDocument, then check if already opened, if not save and rename to clear undo buffer
-            //return this.bodySaveDocument(this._bodyTextDocument).then(p_result => {
             if (this._bodyTextDocumentSameUri) {
                 // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, so just show it
                 this.bodyUri = utils.gnxToUri(p_node.gnx);
                 if (w_needsFilesystemRefresh) {
                     console.log('We were resolving a command that could change body content 1 ');
                     // We were resolving a command that could change body content such as undo/redo/execute
-                    this._leoFileSystem.fireRefreshFile(p_node.gnx);
+                    setTimeout(() => {
+                        this._leoFileSystem.fireRefreshFile(p_node.gnx);
+                    }, 0);
                 }
                 return this.showBody(p_aside); // already opened in a column so just tell vscode to show it
             } else {
@@ -647,7 +614,6 @@ export class LeoIntegration {
                     });
                 });
             }
-            //});
 
         } else {
             // * Is the last opened body is closed so just open the newly selected one
@@ -723,7 +689,6 @@ export class LeoIntegration {
     }
 
     public refreshOutlineAndBody(): void {
-        // TODO : Assert this process really covers both tree and body refresh! is it the same as test command?
         this._refreshOutline(RevealType.RevealSelectFocusShowBody);
         this._leoFileSystem.fireRefreshFiles();
     }
@@ -977,10 +942,7 @@ export class LeoIntegration {
     public test(): void {
         // * Debugging utility function
         if (this.fileOpenedReady) {
-
-            this._refreshOutline(RevealType.RevealSelect);
-            // this._showLeoCommands();
-
+            this.refreshOutlineAndBody();
         } else {
             vscode.window.showInformationMessage("File not ready");
         }

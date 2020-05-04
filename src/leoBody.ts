@@ -81,6 +81,16 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public fireRefreshFile(p_gnx: string): void {
+
+
+        console.log('FIRING REFRESH on ', p_gnx);
+
+        this._selectedBody = {
+            gnx: p_gnx,
+            ctime: 0,
+            mtime: Date.now(),
+        };
+
         this._onDidChangeFileEmitter.fire([{
             type: vscode.FileChangeType.Changed,
             uri: utils.gnxToUri(p_gnx)
@@ -249,16 +259,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public readDirectory(p_uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
-        // console.log('called readDirectory', uri.fsPath);
+
         if (p_uri.fsPath === '/') {
-            // return this.refreshPossibleGnxList().then((p_result) => {
-            //     // console.log('FROM readDirectory - got back from getAllGnx:', p_result);
-            //     const w_directory: [string, vscode.FileType][] = [];
-            //     p_result.forEach((p_gnx: string) => {
-            //         w_directory.push([p_gnx, vscode.FileType.File]);
-            //     });
-            //     return Promise.resolve(w_directory);
-            // });
             const w_directory: [string, vscode.FileType][] = [];
             w_directory.push([this._selectedBody.gnx, vscode.FileType.File]);
             return Promise.resolve(w_directory);
@@ -274,6 +276,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
         console.log('called writeFile!', p_uri.fsPath);
+        this._leoIntegration.checkWriteFile();
         const w_gnx = utils.uriToGnx(p_uri);
         // if (!this._possibleGnxList.includes(w_gnx)) {
         if (this._selectedBody.gnx === w_gnx) {
