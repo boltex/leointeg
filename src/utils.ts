@@ -29,13 +29,13 @@ export function isHexColor(hex: string): boolean {
         && !isNaN(Number('0x' + hex));
 }
 
-export function gnxToUri(p_gnx: string): vscode.Uri {
-    // * Builds a 'Leo Scheme' vscode.Uri from a gnx
-    return vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_gnx);
+export function strToUri(p_str: string): vscode.Uri {
+    // * Builds a 'Leo Scheme' vscode.Uri from a gnx or another string like 'LEO BODY'
+    return vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_str);
 }
 
-export function uriToGnx(p_uri: vscode.Uri): string {
-    // * Gets the gnx from a vscode.Uri object
+export function uriToStr(p_uri: vscode.Uri): string {
+    // * Gets the gnx, or another string like 'LEO BODY', from a vscode.Uri object
     // TODO : For now, just remove the '/' before the path string
     // TODO : Use length of a constant or something other than 'fsPath'
     return p_uri.fsPath.substr(1);

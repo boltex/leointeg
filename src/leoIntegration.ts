@@ -67,7 +67,7 @@ export class LeoIntegration {
     // * Body Pane
     private _leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
 
-    private _bodyUri: vscode.Uri = utils.gnxToUri("");
+    private _bodyUri: vscode.Uri = utils.strToUri("");
     get bodyUri(): vscode.Uri {
         return this._bodyUri;
     }
@@ -349,7 +349,7 @@ export class LeoIntegration {
 
             // * Second, the 'Instant tree node refresh trick' : If icon should change then do it now (if there's no document edit pending)
             if (!this._bodyChangeTimeout && !this._bodyChangeTimeoutSkipped) {
-                if (this._lastSelectedNode && utils.uriToGnx(p_event.document.uri) === this._lastSelectedNode.gnx) {
+                if (this._lastSelectedNode && utils.uriToStr(p_event.document.uri) === this._lastSelectedNode.gnx) {
                     if (!this._lastSelectedNode.dirty || (this._lastSelectedNode.hasBody === !p_event.document.getText().length)) {
                         // console.log('NO WAIT');
                         this._bodyChangeTimeoutSkipped = true;
@@ -374,7 +374,7 @@ export class LeoIntegration {
         if (this._bodyLastChangedDocument) {
             const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
             this._bodyLastChangedDocument = undefined; // reset to make falsy
-            if (this._lastBodyChangedRootRefreshedGnx !== utils.uriToGnx(w_document.uri)) {
+            if (this._lastBodyChangedRootRefreshedGnx !== utils.uriToStr(w_document.uri)) {
                 p_forcedRefresh = true;
             }
             return this._bodySaveDocument(w_document, p_forcedRefresh);
@@ -389,7 +389,7 @@ export class LeoIntegration {
         if (p_document) {
             // * Fetch gnx and document's body text first, to be reused more than once in this method
             const w_param = {
-                gnx: utils.uriToGnx(p_document.uri),
+                gnx: utils.uriToStr(p_document.uri),
                 body: p_document.getText()
             };
             // * Setup refresh if dirtied or filled/emptied
@@ -533,7 +533,7 @@ export class LeoIntegration {
         this._bodyTextDocumentSameUri = false;
         // * Only gets to visible editors, not every tab per editor
         vscode.window.visibleTextEditors.forEach(p_textEditor => {
-            if (utils.uriToGnx(p_textEditor.document.uri) === p_gnx) {
+            if (utils.uriToStr(p_textEditor.document.uri) === p_gnx) {
                 this._bodyTextDocumentSameUri = true;
                 this._bodyMainSelectionColumn = p_textEditor.viewColumn;
                 this._bodyTextDocument = p_textEditor.document;
@@ -590,7 +590,7 @@ export class LeoIntegration {
 
             if (this._bodyTextDocumentSameUri) {
                 // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
-                this.bodyUri = utils.gnxToUri(p_node.gnx);
+                this.bodyUri = utils.strToUri(p_node.gnx);
                 if (w_needsFilesystemRefresh) {
                     console.log('We were resolving a command that could change body content 1 ');
                     // We were resolving a command that could change body content such as undo/redo/execute
@@ -606,12 +606,12 @@ export class LeoIntegration {
                     this._leoFileSystem.setRenameTime(p_node.gnx);
                     w_edit.renameFile(
                         this.bodyUri, // Old URI from last node
-                        utils.gnxToUri(p_node.gnx), // New URI from selected node
+                        utils.strToUri(p_node.gnx), // New URI from selected node
                         { overwrite: true, ignoreIfExists: true }
                     );
                     // * Rename file operation to clear undo buffer
                     return vscode.workspace.applyEdit(w_edit).then(p_result => {
-                        this.bodyUri = utils.gnxToUri(p_node.gnx); // Old is now set to new to finish
+                        this.bodyUri = utils.strToUri(p_node.gnx); // Old is now set to new to finish
                         if (w_needsFilesystemRefresh) {
                             console.log('We were resolving a command that could change body content 2 '); // maybe not necessary but maybe so if hidden pane not located
                             // We were resolving a command that could change body content such as undo/redo/execute
@@ -624,7 +624,7 @@ export class LeoIntegration {
 
         } else {
             // * Is the last opened body is closed so just open the newly selected one
-            this.bodyUri = utils.gnxToUri(p_node.gnx);
+            this.bodyUri = utils.strToUri(p_node.gnx);
             if (w_needsFilesystemRefresh) {
                 console.log('We were resolving a command that could change body content 3');
                 // We were resolving a command that could change body content such as undo/redo/execute
@@ -681,7 +681,7 @@ export class LeoIntegration {
     public focusBodyIfVisible(p_gnx: string): Thenable<boolean> {
         let w_found: undefined | vscode.TextEditor;
         vscode.window.visibleTextEditors.forEach(p_textEditor => {
-            if (!w_found && (utils.uriToGnx(p_textEditor.document.uri) === p_gnx)) {
+            if (!w_found && (utils.uriToStr(p_textEditor.document.uri) === p_gnx)) {
                 w_found = p_textEditor;
             }
         });
@@ -911,7 +911,7 @@ export class LeoIntegration {
             })
             .then((p_openFileResult: LeoBridgePackage) => {
                 const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node); // Just to get gnx for the body's fist appearance
-                this.bodyUri = utils.gnxToUri(w_selectedLeoNode.gnx);
+                this.bodyUri = utils.strToUri(w_selectedLeoNode.gnx);
                 // * Start body pane system
                 this._context.subscriptions.push(
                     vscode.workspace.registerFileSystemProvider(Constants.URI_SCHEME, this._leoFileSystem, { isCaseSensitive: true })
