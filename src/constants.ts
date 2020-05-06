@@ -41,6 +41,7 @@ export class Constants {
         TREEVIEW_TITLE: "OUTLINE",
         TREEVIEW_TITLE_NOT_CONNECTED: "NOT CONNECTED",
         TREEVIEW_TITLE_CONNECTED: "CONNECTED",
+        BODY_TITLE: "LEO BODY",
         LOG_PANE_TITLE: "Leo Log Window",
         THEME_STATUSBAR: "statusBar.foreground"
     };
@@ -53,19 +54,19 @@ export class Constants {
         PROMPT_EDIT_HEADLINE: "Edit Headline",
         PROMPT_INSERT_NODE: "Insert Node",
         DEFAULT_HEADLINE: "New Headline",
-        START_SERVER_ERROR: "Error - Cannot start Server: ",
+        START_SERVER_ERROR: "Error - Cannot start server: ",
         CONNECT_FAILED: "Leo Bridge Connection Failed",
         CONNECT_ERROR: "Leo Bridge Connection Error: Incorrect id",
         CONNECTED: "Connected",
-        ALREADY_CONNECTED: "Already Connected",
+        ALREADY_CONNECTED: "Already connected",
         DISCONNECTED: "Disconnected",
-        CLOSE_ERROR: "Cannot close. No Files Opened.",
+        CLOSE_ERROR: "Cannot close: No files opened.",
         YES: "Yes",
         NO: "No",
         YES_ALL: "Yes to all",
         NO_ALL: "No to all",
-        REFRESHED: " Nodes were refreshed from file.",
-        IGNORED: " They were ignored."
+        REFRESHED: " Nodes were refreshed from file.", // with leading space
+        IGNORED: " They were ignored." // with leading space
     };
 
     public static CONFIGURATION = {

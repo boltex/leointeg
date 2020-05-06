@@ -72,7 +72,7 @@ export class LeoIntegration {
         return this._bodyUri;
     }
     set bodyUri(p_uri: vscode.Uri) {
-        this._leoFileSystem.setBodyUri(p_uri);
+        this._leoFileSystem.setBodyTime(p_uri);
         this._bodyUri = p_uri;
     }
 
@@ -280,8 +280,9 @@ export class LeoIntegration {
             this.sendAction(p_expand ? Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE : Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson);
         } else {
             // * This part only happens if the user clicked on the arrow without trying to select the node
+            // TODO : Should select and expand/collapsed be merged in a custom command?
             this._revealTreeViewNode(p_event.element, { select: true, focus: false }); // Force-select the node to mimic Leo
-            this.selectTreeNode(p_event.element, true); // TODO : Should select and expand/collapsed be merged in a custom command?
+            this.selectTreeNode(p_event.element, true);
             this.sendAction(p_expand ? Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE : Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson);
             this._refreshNode(p_event.element); // don't wait for action to finish
         }
@@ -541,6 +542,12 @@ export class LeoIntegration {
         return this._bodyTextDocumentSameUri;
     }
 
+    public refreshOutlineAndBody(): void {
+        this._refreshOutline(RevealType.RevealSelectFocusShowBody);
+        // TODO : Maybe call _switchBody instead?
+        this._leoFileSystem.fireRefreshFiles();
+    }
+
     public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable<vscode.TextEditor> {
         // * User has selected a node via mouse click or 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
 
@@ -559,7 +566,7 @@ export class LeoIntegration {
         this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
 
         // * First check if having already this exact node selected and show itself if needed (tree position - not just same gnx)
-        if (p_node === this._lastSelectedNode) {
+        if (!w_needsFilesystemRefresh && (p_node === this._lastSelectedNode)) {
             // same so just find and reopen
             this._locateOpenedBody(p_node.gnx);
             return this.showBody(p_aside);
@@ -579,10 +586,10 @@ export class LeoIntegration {
         if (this._bodyTextDocument && !this._bodyTextDocument.isClosed) {
 
             // * Checks if already opened and visible, also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
-            this._locateOpenedBody(p_node.gnx);
+            this._locateOpenedBody(p_node.gnx); // Maybe just use it to set
 
             if (this._bodyTextDocumentSameUri) {
-                // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, so just show it
+                // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
                 this.bodyUri = utils.gnxToUri(p_node.gnx);
                 if (w_needsFilesystemRefresh) {
                     console.log('We were resolving a command that could change body content 1 ');
@@ -596,7 +603,7 @@ export class LeoIntegration {
                 // * So far, _bodyTextDocument is still opened and different from new selection: so "save & rename" to block undo/redos
                 return this._bodyTextDocument!.save().then((p_result) => { // We assert _bodyTextDocument, its already tested for above
                     const w_edit = new vscode.WorkspaceEdit();
-                    this._leoFileSystem.setRenameGnx(p_node.gnx);
+                    this._leoFileSystem.setRenameTime(p_node.gnx);
                     w_edit.renameFile(
                         this.bodyUri, // Old URI from last node
                         utils.gnxToUri(p_node.gnx), // New URI from selected node
@@ -606,7 +613,7 @@ export class LeoIntegration {
                     return vscode.workspace.applyEdit(w_edit).then(p_result => {
                         this.bodyUri = utils.gnxToUri(p_node.gnx); // Old is now set to new to finish
                         if (w_needsFilesystemRefresh) {
-                            console.log('We were resolving a command that could change body content 2 ');
+                            console.log('We were resolving a command that could change body content 2 '); // maybe not necessary but maybe so if hidden pane not located
                             // We were resolving a command that could change body content such as undo/redo/execute
                             this._leoFileSystem.fireRefreshFile(p_node.gnx);
                         }
@@ -625,6 +632,13 @@ export class LeoIntegration {
             }
             return this.showBody(p_aside);
         }
+    }
+
+    private _switchBody(): Thenable<boolean> {
+        // * Save and rename to force a reload of the body content without flickering and also block 'undos' from continuing past this point
+
+
+        return Promise.resolve(true);
     }
 
     public showBody(p_aside: boolean | undefined): Thenable<vscode.TextEditor> {
@@ -686,11 +700,6 @@ export class LeoIntegration {
         } else {
             return Promise.resolve(false);
         }
-    }
-
-    public refreshOutlineAndBody(): void {
-        this._refreshOutline(RevealType.RevealSelectFocusShowBody);
-        this._leoFileSystem.fireRefreshFiles();
     }
 
     public nodeAction(p_action: string, p_node?: LeoNode): Promise<LeoBridgePackage> {
@@ -829,7 +838,6 @@ export class LeoIntegration {
                         const w_para = p_newHeadline ? utils.buildHeadlineJson(w_node!.apJson, p_newHeadline) : w_node.apJson;
                         this.sendAction(w_action, w_para)
                             .then(p_package => {
-                                // this._leoFileSystem.addGnx(p_package.node.gnx);
                                 this._forceBodyFocus = true;
                                 this._refreshOutline(RevealType.RevealSelectShowBody); // refresh all, needed to get clones to refresh too!
                                 // this.focusBodyIfVisible(p_package.node.gnx);
