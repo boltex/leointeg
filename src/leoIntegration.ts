@@ -275,7 +275,7 @@ export class LeoIntegration {
 
     private _changeCollapsedState(p_event: vscode.TreeViewExpansionEvent<LeoNode>, p_expand: boolean, p_treeView: vscode.TreeView<LeoNode>): void {
         // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
-        this._triggerBodySave();
+        this._triggerBodySave(false, true);
         if (p_treeView.selection[0] && p_treeView.selection[0] === p_event.element) {
             this.sendAction(p_expand ? Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE : Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson);
         } else {
@@ -303,7 +303,7 @@ export class LeoIntegration {
     private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
         // * Active editor should be reflected in the outline if it's a leo body pane
         if (!p_internalCall) {
-            this._triggerBodySave(); // Save in case edits were pending
+            this._triggerBodySave(false, true);// Save in case edits were pending
         }
         // selecting another editor of the same window by the tab
         // * Status flag check
@@ -369,22 +369,24 @@ export class LeoIntegration {
         }
     }
 
-    private _triggerBodySave(p_forcedRefresh?: boolean): Thenable<boolean> {
+    private _triggerBodySave(p_forcedRefresh?: boolean, p_forcedVsCodeSave?: boolean): Thenable<boolean> {
         // * Send body to Leo
         if (this._bodyLastChangedDocument) {
+
             const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
             this._bodyLastChangedDocument = undefined; // reset to make falsy
             if (this._lastBodyChangedRootRefreshedGnx !== utils.uriToStr(w_document.uri)) {
                 p_forcedRefresh = true;
             }
-            return this._bodySaveDocument(w_document, p_forcedRefresh);
+            return this._bodySaveDocument(w_document, p_forcedRefresh, p_forcedVsCodeSave);
         } else {
+
             this._bodyChangeTimeoutSkipped = false;
             return Promise.resolve(true);
         }
     }
 
-    private _bodySaveDocument(p_document: vscode.TextDocument, p_forceRefreshTree?: boolean): Thenable<boolean> {
+    private _bodySaveDocument(p_document: vscode.TextDocument, p_forceRefreshTree?: boolean, p_forcedVsCodeSave?: boolean): Thenable<boolean> {
         // * Sets new body text of currently selected node on leo's side
         if (p_document) {
             // * Fetch gnx and document's body text first, to be reused more than once in this method
@@ -420,7 +422,7 @@ export class LeoIntegration {
 
             return this.sendAction(Constants.LEOBRIDGE_ACTIONS.SET_BODY, JSON.stringify(w_param)).then(p_result => {
                 // console.log('Back from setBody to leo');
-                if (p_forceRefreshTree) {
+                if (p_forceRefreshTree || p_forcedVsCodeSave) {
                     return p_document.save(); // ! This trims trailing spaces!
                 }
                 return Promise.resolve(p_document.isDirty);
@@ -433,7 +435,7 @@ export class LeoIntegration {
     public checkWriteFile(): void {
         // TODO : Maybe distinguish between "body save" triggered by vscode regular save, such as ctrl+s.
         // * For now, just trigger "body save"
-        this._triggerBodySave();
+        this._triggerBodySave(false, true);
     }
 
     private _refreshOutline(p_revealType?: RevealType): void {
@@ -499,6 +501,7 @@ export class LeoIntegration {
                     console.log('did this ask for parent?', p_leoNode.id, p_leoNode.label); // ! debug
 
                     if (w_showBodyFlag) {
+                        // TODO : use a new "showBody" function
                         this.selectTreeNode(p_leoNode, true);
                     }
                 });
@@ -543,13 +546,25 @@ export class LeoIntegration {
     }
 
     public refreshOutlineAndBody(): void {
+
+        // this._needRefreshBody = true;
+        //     this.nodeActionRefresh(p_action, p_node, RevealType.RevealSelectFocusShowBody)
+        //         .then(() => {
+        //             this._leoBridgeActionBusy = false;
+        //         });
+        this._triggerBodySave(false, true);
+        this._needRefreshBody = true;
+
         this._refreshOutline(RevealType.RevealSelectFocusShowBody);
         // TODO : Maybe call _switchBody instead?
-        this._leoFileSystem.fireRefreshFiles();
+        // this._leoFileSystem.fireRefreshFiles();
     }
 
     public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable<vscode.TextEditor> {
         // * User has selected a node via mouse click or 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
+        // ! FIX THIS: Should NOT be used if we know for sure that the node is already selected in Leo. i.e. not when refreshing the tree
+
+        console.log('SELECT TREE NODE');
 
         let w_needsFilesystemRefresh: boolean = false;
         if (p_internalCall && this._needRefreshBody) {
@@ -598,7 +613,7 @@ export class LeoIntegration {
                         this._leoFileSystem.fireRefreshFile(p_node.gnx);
                     }, 0);
                 }
-                return this.showBody(p_aside); // already opened in a column so just tell vscode to show it
+                return this.showBody(p_aside); // already opened in a column so just tell vscode to show it // TODO : NOT ANYMORE WITH NEW SYSTEM
             } else {
                 // * So far, _bodyTextDocument is still opened and different from new selection: so "save & rename" to block undo/redos
                 return this._bodyTextDocument!.save().then((p_result) => { // We assert _bodyTextDocument, its already tested for above
@@ -634,8 +649,8 @@ export class LeoIntegration {
         }
     }
 
-    private _switchBody(): Thenable<boolean> {
-        // * Save and rename to force a reload of the body content without flickering and also block 'undos' from continuing past this point
+    private _switchBody(p_oldGnx: string, p_newGnx: string): Thenable<boolean> {
+        // * Save and rename to force a reload of the body content without flickering and block 'undos' from crossing over
 
 
         return Promise.resolve(true);
@@ -720,7 +735,7 @@ export class LeoIntegration {
         // - mark, unmark
         // - move, clone, promote, demote
         // - sortChildren, sortSibling
-        this._triggerBodySave();
+        this._triggerBodySave(false, true);
         return this.nodeAction(p_action, p_node)
             .then((p_package: LeoBridgePackage) => {
                 if (p_package.id > Constants.ERROR_PACKAGE_ID) { // greater than 0
@@ -765,7 +780,7 @@ export class LeoIntegration {
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! editHeadline'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
         } else {
-            this._triggerBodySave();
+            this._triggerBodySave(false, true);
             if (!p_node && this._lastSelectedNode) {
                 p_node = this._lastSelectedNode;
             }
@@ -808,7 +823,7 @@ export class LeoIntegration {
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! changeMark'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
         } else {
-            this._triggerBodySave();
+            this._triggerBodySave(false, true);
             this._leoBridgeActionBusy = true;
             this.nodeActionRefresh(p_isMark ? Constants.LEOBRIDGE_ACTIONS.MARK_PNODE : Constants.LEOBRIDGE_ACTIONS.UNMARK_PNODE, p_node)
                 .then(() => {
@@ -822,7 +837,7 @@ export class LeoIntegration {
         if (this._leoBridgeActionBusy) {
             console.log('Too fast! insert');
         } else {
-            this._triggerBodySave();
+            this._triggerBodySave(false, true);
             if (!p_node && this._lastSelectedNode) {
                 p_node = this._lastSelectedNode;
             }
@@ -876,7 +891,7 @@ export class LeoIntegration {
             return;
         }
         if (this._lastSelectedNode) {
-            this._triggerBodySave();
+            this._triggerBodySave(false, true);
             this._leoBridgeActionBusy = true;
             this.nodeAction(Constants.LEOBRIDGE_ACTIONS.SAVE_FILE)
                 .then(() => {
