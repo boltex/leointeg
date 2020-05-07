@@ -120,6 +120,7 @@ export class Constants {
         ASYNC_INFO: "info",
         ASYNC_INTERVAL: "interval"
     };
+
     public static ASYNC_INFO_MESSAGE_CODES = {
         // * When async action was ASYNC_INFO
         ASYNC_REFRESHED: "refreshed",

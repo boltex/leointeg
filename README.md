@@ -1,10 +1,10 @@
 # ![LeoEditor](resources/leoapp.png) Leo Editor Integration with Visual Studio Code
 
-## Literate Programming with _Directed Acyclic Graphs_
+## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
-### Break your code down into sections, structured as an outline, to derive files or parse them back into an outline
+### Break your code down into sections, structured as an outline, to derive files or parse them back in!
 
-Leo is a fundamentally different way of using and organizing data, programs and scripts. See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/) or on [github.com/leo-editor](https://github.com/leo-editor/leo-editor)
+Leo is a fundamentally different way of using and organizing data, programs and scripts. See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/) or on [github.com/leo-editor](https://github.com/leo-editor/leo-editor).
 
 ![Screenshot](resources/animated-screenshot.gif)
 
@@ -87,7 +87,7 @@ For most users, **`Ctrl+D`** is often already assigned to some useful command. T
 
 - Provide most of Leo's core functionality, outline, body & log panes, color-syntaxing, shortcuts, etc.
 - Find specific line(s) from derived files in tree nodes (For error lookup, breakpoints cycling, etc.)
-- Show line number from the derived file instead of the body-pane's line number
+- Show line number from the derived file instead of the body-pane's line number.
 - Support for multiple, simultaneous body panes from different nodes.
 
 ## How it works
