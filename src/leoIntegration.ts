@@ -345,7 +345,7 @@ export class LeoIntegration {
         // * Edited the document: ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
         if (p_event.contentChanges.length && (p_event.document.uri.scheme === Constants.URI_SCHEME)) {
 
-            console.log('edited with ', p_event.contentChanges);
+            console.log('_onDocumentChanged ');
             this._bodyLastChangedDocument = p_event.document;
 
             // * Second, the 'Instant tree node refresh trick' : If icon should change then do it now (if there's no document edit pending)
@@ -357,6 +357,12 @@ export class LeoIntegration {
                         console.log('instant save!');
                         this._bodySendOnly(p_event.document)
                             .then(() => {
+                                const w_hasBody = !!(p_event.document.getText().length);
+                                if (!this._lastSelectedNode!.dirty || (this._lastSelectedNode!.hasBody === !w_hasBody)) {
+                                    // w_needsRefresh = true; // Disable in here because instant save already covers this
+                                    this._lastSelectedNode!.dirty = true;
+                                    this._lastSelectedNode!.hasBody = w_hasBody;
+                                }
                                 this._refreshOutline(RevealType.RevealSelect);
                             });
                         // this._bodySaveDocument(p_event.document, true);
@@ -456,7 +462,8 @@ export class LeoIntegration {
     }
 
     private _refreshOutline(p_revealType?: RevealType): void {
-        if (p_revealType !== undefined) { // To check if selected node should self-select while redrawing whole tree
+        //    if (p_revealType !== undefined) { // To check if selected node should self-select while redrawing whole tree
+        if (p_revealType) { // Only if not 0
             this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
         }
         this._leoTreeDataProvider.refreshTreeRoot();
@@ -667,6 +674,7 @@ export class LeoIntegration {
     }
 
     private _switchBody(p_oldGnx: string, p_newGnx: string): Thenable<boolean> {
+        // TODO
         // * Save and rename to force a reload of the body content without flickering and block 'undos' from crossing over
 
 
@@ -764,6 +772,7 @@ export class LeoIntegration {
 
     public nodeActionRefreshBuffered(p_action: string, p_node?: LeoNode): void {
         // * For actions that can change the tree and current selection, but not text content of any node
+        // TODO : See why nodeActionRefreshBuffered is not enough for 'Save leo file' to reselect node properly!
         // paste, pasteClone, contractAll
         // cut, delete
         if (this._leoBridgeActionBusy) {
@@ -780,7 +789,8 @@ export class LeoIntegration {
 
     public nodeActionFullRefreshBuffered(p_action: string, p_node?: LeoNode): void {
         // * For actions that can even change the tree and/or selected body text content
-        // - undo, redo, execute, refreshFromDiskNode
+        // TODO : See why nodeActionRefreshBuffered is not enough for 'Save leo file' to reselect node properly!
+        // - undo, redo, execute, refreshFromDiskNode, Save Leo File
         if (this._leoBridgeActionBusy) {
             console.log('Too fast in nodeActionFullRefreshBuffered! for: ' + p_action); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
         } else {
@@ -880,30 +890,30 @@ export class LeoIntegration {
         }
     }
 
-    // TODO : More commands to implement
-    public hoistNode(): void { vscode.window.showInformationMessage("TODO: hoistNode command"); }
-    public hoistSelection(): void { vscode.window.showInformationMessage("TODO: hoistSelection command"); }
-    public deHoist(): void { vscode.window.showInformationMessage("TODO: deHoist command"); }
-    public cloneFindAll(): void { vscode.window.showInformationMessage("TODO: cloneFindAll command"); }
-    public cloneFindAllFlattened(): void { vscode.window.showInformationMessage("TODO: cloneFindAllFlattened command"); }
-    public cloneFindMarked(): void { vscode.window.showInformationMessage("TODO: cloneFindMarked command"); }
-    public cloneFindFlattenedMarked(): void { vscode.window.showInformationMessage("TODO: cloneFindFlattenedMarked command"); }
-    public extract(): void { vscode.window.showInformationMessage("TODO: extract command"); }
-    public extractNames(): void { vscode.window.showInformationMessage("TODO: extractNames command"); }
-    public copyMarked(): void { vscode.window.showInformationMessage("TODO: copyMarked command"); }
-    public diffMarkedNodes(): void { vscode.window.showInformationMessage("TODO: diffMarkedNodes command"); }
-    public gotoNextMarked(): void { vscode.window.showInformationMessage("TODO: gotoNextMarked command"); }
-    public markChangedItems(): void { vscode.window.showInformationMessage("TODO: markChangedItems command"); }
-    public markSubheads(): void { vscode.window.showInformationMessage("TODO: markSubheads command"); }
-    public unmarkAll(): void { vscode.window.showInformationMessage("TODO: unmarkAll command"); }
-    public cloneMarkedNodes(): void { vscode.window.showInformationMessage("TODO: cloneMarkedNodes command"); }
-    public deleteMarkedNodes(): void { vscode.window.showInformationMessage("TODO: deleteMarkedNodes command"); }
-    public moveMarkedNode(): void { vscode.window.showInformationMessage("TODO: moveMarkedNode command"); }
-
     public saveLeoFile(): void {
         // * Invokes the self.commander.save() Leo command
         // TODO : Specify which file when supporting multiple simultaneous opened Leo files
-        this.nodeActionFullRefreshBuffered(Constants.LEOBRIDGE.SAVE_FILE);
+        if (this._leoBridgeActionBusy) {
+            console.log('Too fast! executeScript'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
+            return;
+        }
+        if (this._lastSelectedNode) {
+            this._leoBridgeActionBusy = true;
+            this._triggerBodySave(false, true)
+                .then(() => {
+                    console.log('-saveLeoFile-  Back from BODY SAVE');
+
+                    this.nodeAction(Constants.LEOBRIDGE.SAVE_FILE)
+                        .then(() => {
+                            console.log('-saveLeoFile-  Back from NODE ACTION');
+
+                            this.refreshOutlineAndBody();
+                            // this._refreshOutline(RevealType.RevealSelect);
+
+                            this._leoBridgeActionBusy = false;
+                        });
+                });
+        }
     }
 
     public closeLeoFile(): void {
