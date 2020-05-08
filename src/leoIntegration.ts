@@ -254,7 +254,7 @@ export class LeoIntegration {
     public sendConfigToServer(p_config: ConfigMembers): void {
         // * Send configuration through leoBridge to the server script, mostly used when checking if refreshing derived files is optional
         if (this.fileOpenedReady) {
-            this.sendAction(Constants.LEOBRIDGE_ACTIONS.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package => {
+            this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package => {
                 // console.log("back from applying configuration to leobridgeserver.py");
             });
         }
@@ -262,7 +262,7 @@ export class LeoIntegration {
 
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
         // * vscode.workspace.onDidChangeConfiguration trigger handling
-        if (p_event.affectsConfiguration(Constants.CONFIGURATION_SECTION)) {
+        if (p_event.affectsConfiguration(Constants.CONFIG_SECTION)) {
             // console.log('Detected Change of vscode config in leoIntegration !');
             this.config.getLeoIntegSettings();
         }
@@ -277,13 +277,13 @@ export class LeoIntegration {
         // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
         this._triggerBodySave(false, true);
         if (p_treeView.selection[0] && p_treeView.selection[0] === p_event.element) {
-            this.sendAction(p_expand ? Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE : Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson);
+            this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson);
         } else {
             // * This part only happens if the user clicked on the arrow without trying to select the node
             // TODO : Should select and expand/collapsed be merged in a custom command?
             this._revealTreeViewNode(p_event.element, { select: true, focus: false }); // Force-select the node to mimic Leo
             this.selectTreeNode(p_event.element, true);
-            this.sendAction(p_expand ? Constants.LEOBRIDGE_ACTIONS.EXPAND_NODE : Constants.LEOBRIDGE_ACTIONS.COLLAPSE_NODE, p_event.element.apJson);
+            this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson);
             this._refreshNode(p_event.element); // don't wait for action to finish
         }
     }
@@ -346,6 +346,7 @@ export class LeoIntegration {
         if (p_event.contentChanges.length && (p_event.document.uri.scheme === Constants.URI_SCHEME)) {
 
             console.log('edited with ', p_event.contentChanges);
+            this._bodyLastChangedDocument = p_event.document;
 
             // * Second, the 'Instant tree node refresh trick' : If icon should change then do it now (if there's no document edit pending)
             if (!this._bodyChangeTimeout && !this._bodyChangeTimeoutSkipped) {
@@ -354,17 +355,18 @@ export class LeoIntegration {
                         // console.log('NO WAIT');
                         this._bodyChangeTimeoutSkipped = true;
                         console.log('instant save!');
-
-                        this._bodySaveDocument(p_event.document, true);
+                        this._bodySendOnly(p_event.document)
+                            .then(() => {
+                                this._refreshOutline(RevealType.RevealSelect);
+                            });
+                        // this._bodySaveDocument(p_event.document, true);
                         return; // * Don't continue
                     }
                 }
             }
 
             console.log('marked to save!');
-
             this._bodyChangeTimeoutSkipped = false;
-            this._bodyLastChangedDocument = p_event.document;
 
         }
     }
@@ -383,6 +385,21 @@ export class LeoIntegration {
 
             this._bodyChangeTimeoutSkipped = false;
             return Promise.resolve(true);
+        }
+    }
+
+    private _bodySendOnly(p_document: vscode.TextDocument): Thenable<boolean> {
+        // * Send body content to Leo without saving in vsCode
+        if (p_document) {
+            const w_param = {
+                gnx: utils.uriToStr(p_document.uri),
+                body: p_document.getText()
+            };
+            return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)).then(p_result => {
+                return Promise.resolve(p_document.isDirty);
+            });
+        } else {
+            return Promise.resolve(false);
         }
     }
 
@@ -418,9 +435,9 @@ export class LeoIntegration {
             }
             this._bodyChangeTimeoutSkipped = false;
 
-            console.log('Sending SAVE to Leo body: ', w_param);
+            console.log('Sending SAVE to Leo body');
 
-            return this.sendAction(Constants.LEOBRIDGE_ACTIONS.SET_BODY, JSON.stringify(w_param)).then(p_result => {
+            return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)).then(p_result => {
                 // console.log('Back from setBody to leo');
                 if (p_forceRefreshTree || p_forcedVsCodeSave) {
                     return p_document.save(); // ! This trims trailing spaces!
@@ -439,7 +456,7 @@ export class LeoIntegration {
     }
 
     private _refreshOutline(p_revealType?: RevealType): void {
-        if (p_revealType) { // To check if selected node should self-select while redrawing whole tree
+        if (p_revealType !== undefined) { // To check if selected node should self-select while redrawing whole tree
             this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
         }
         this._leoTreeDataProvider.refreshTreeRoot();
@@ -588,7 +605,7 @@ export class LeoIntegration {
         }
 
         // * Set selected node in Leo via leoBridge
-        this.sendAction(Constants.LEOBRIDGE_ACTIONS.SET_SELECTED_NODE, p_node.apJson);
+        this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson);
 
         // * don't wait for promise to resolve a selection, save body to leo for the bodyTextDocument, then check if already opened
         this._triggerBodySave();
@@ -795,7 +812,7 @@ export class LeoIntegration {
                     .then(p_newHeadline => {
                         if (p_newHeadline) {
                             p_node!.label = p_newHeadline; // ! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
-                            this.sendAction(Constants.LEOBRIDGE_ACTIONS.SET_HEADLINE, utils.buildHeadlineJson(p_node!.apJson, p_newHeadline))
+                            this.sendAction(Constants.LEOBRIDGE.SET_HEADLINE, utils.buildHeadlineJson(p_node!.apJson, p_newHeadline))
                                 .then((p_answer: LeoBridgePackage) => {
                                     if (p_isSelectedNode) {
                                         this._forceBodyFocus = true;
@@ -825,7 +842,7 @@ export class LeoIntegration {
         } else {
             this._triggerBodySave(false, true);
             this._leoBridgeActionBusy = true;
-            this.nodeActionRefresh(p_isMark ? Constants.LEOBRIDGE_ACTIONS.MARK_PNODE : Constants.LEOBRIDGE_ACTIONS.UNMARK_PNODE, p_node)
+            this.nodeActionRefresh(p_isMark ? Constants.LEOBRIDGE.MARK_PNODE : Constants.LEOBRIDGE.UNMARK_PNODE, p_node)
                 .then(() => {
                     this._leoBridgeActionBusy = false;
                 });
@@ -849,7 +866,7 @@ export class LeoIntegration {
                 this._headlineInputOptions.value = Constants.USER_MESSAGES.DEFAULT_HEADLINE;
                 vscode.window.showInputBox(this._headlineInputOptions)
                     .then(p_newHeadline => {
-                        const w_action = p_newHeadline ? Constants.LEOBRIDGE_ACTIONS.INSERT_NAMED_PNODE : Constants.LEOBRIDGE_ACTIONS.INSERT_PNODE;
+                        const w_action = p_newHeadline ? Constants.LEOBRIDGE.INSERT_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_PNODE;
                         const w_para = p_newHeadline ? utils.buildHeadlineJson(w_node!.apJson, p_newHeadline) : w_node.apJson;
                         this.sendAction(w_action, w_para)
                             .then(p_package => {
@@ -893,7 +910,7 @@ export class LeoIntegration {
         if (this._lastSelectedNode) {
             this._triggerBodySave(false, true);
             this._leoBridgeActionBusy = true;
-            this.nodeAction(Constants.LEOBRIDGE_ACTIONS.SAVE_FILE)
+            this.nodeActionRefresh(Constants.LEOBRIDGE.SAVE_FILE, undefined, RevealType.RevealSelect)
                 .then(() => {
                     this._leoBridgeActionBusy = false;
                 });
@@ -920,7 +937,7 @@ export class LeoIntegration {
         }
         this._leoFilesBrowser.getLeoFileUrl()
             .then(p_chosenLeoFile => {
-                return this.sendAction(Constants.LEOBRIDGE_ACTIONS.OPEN_FILE, '"' + p_chosenLeoFile + '"');
+                return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
             }, p_reason => {
                 return Promise.reject(p_reason);
             })

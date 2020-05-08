@@ -37,7 +37,7 @@ export class LeoFiles {
         }
         return new Promise((resolve, reject) => {
             const w_filters: { [name: string]: string[] } = {};
-            w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [Constants.FILE_TYPE_EXTENSION];
+            w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [Constants.FILE_EXTENSION];
             vscode.window
                 .showOpenDialog({
                     canSelectMany: false,

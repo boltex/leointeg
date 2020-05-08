@@ -27,7 +27,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     public getTreeItem(element: LeoNode): Thenable<LeoNode> | LeoNode {
         if (this._refreshSingleNodeFlag) {
             this._refreshSingleNodeFlag = false;
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE_ACTIONS.GET_PNODE, element.apJson)
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PNODE, element.apJson)
                 .then((p_result) => {
                     const w_node = this._leoIntegration.apToLeoNode(p_result.node, true, element);
                     return element.copyProperties(w_node);
@@ -39,7 +39,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     public getChildren(element?: LeoNode): Thenable<LeoNode[]> {
         if (this._leoIntegration.fileOpenedReady) {
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE_ACTIONS.GET_CHILDREN, element ? element.apJson : "null").then((p_result) => {
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element ? element.apJson : "null").then((p_result) => {
                 return this._leoIntegration.arrayToLeoNodesArray(p_result.nodes);
             });
         } else {
@@ -54,7 +54,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         console.log('OH NO! GET PARENT CALLED! on: ', element.label);
 
         if (this._leoIntegration.fileOpenedReady) {
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE_ACTIONS.GET_PARENT, element ? element.apJson : "null").then((p_result) => {
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PARENT, element ? element.apJson : "null").then((p_result) => {
                 if (p_result.node === null) {
                     return null;
                 } else {

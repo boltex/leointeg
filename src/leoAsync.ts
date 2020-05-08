@@ -46,7 +46,7 @@ export class LeoAsync {
             if (p_result) {
                 this._askResult = p_result.value;
             }
-            const w_sendResultPromise = this._leoIntegration.sendAction(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"' + this._askResult + '"');
+            const w_sendResultPromise = this._leoIntegration.sendAction(Constants.LEOBRIDGE.ASK_RESULT, '"' + this._askResult + '"');
             if (this._askResult.includes("yes")) {
                 w_sendResultPromise.then(() => {
                     // Might have answered 'yes/yesAll' and refreshed and changed the body text
@@ -63,7 +63,7 @@ export class LeoAsync {
             p_waitArg.message,
             { modal: true }
         ).then(() => {
-            this._leoIntegration.sendAction(Constants.LEOBRIDGE_ACTIONS.ASK_RESULT, '"ok"');
+            this._leoIntegration.sendAction(Constants.LEOBRIDGE.ASK_RESULT, '"ok"');
         });
     }
 

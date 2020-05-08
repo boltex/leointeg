@@ -3,13 +3,13 @@ export class Constants {
 
     public static PUBLISHER: string = "boltex";
     public static NAME: string = "leointeg";
-    public static CONFIGURATION_SECTION = "leoIntegration";
+    public static CONFIG_SECTION = "leoIntegration";
 
-    public static TREEVIEW_ID: string = Constants.CONFIGURATION_SECTION;
-    public static TREEVIEW_EXPLORER_ID: string = Constants.CONFIGURATION_SECTION + "Explorer";
+    public static TREEVIEW_ID: string = Constants.CONFIG_SECTION;
+    public static TREEVIEW_EXPLORER_ID: string = Constants.CONFIG_SECTION + "Explorer";
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
-    public static FILE_TYPE_EXTENSION: string = "leo";
+    public static FILE_EXTENSION: string = "leo";
     public static URI_SCHEME: string = "leo";
     public static URI_SCHEME_HEADER: string = "leo:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
@@ -127,7 +127,7 @@ export class Constants {
         ASYNC_IGNORED: "ignored"
     };
 
-    public static LEOBRIDGE_ACTIONS = {
+    public static LEOBRIDGE = {
         // * Commands for leobridgeserver.py
         APPLY_CONFIG: "applyConfig",
         ASK_RESULT: "askResult",
@@ -197,7 +197,7 @@ export class Constants {
         QUICK_OPEN: "workbench.action.quickOpen"
     };
 
-    public static LEOINTEG_COMMANDS = {
+    public static COMMANDS = {
         // * All commands this expansion exposes
         SHOW_WELCOME: "showWelcomePage",
         SHOW_SETTINGS: "showSettingsPage",

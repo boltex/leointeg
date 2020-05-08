@@ -125,7 +125,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public refreshPossibleGnxList(): Thenable<string[]> {
         // * Get updated list of possible gnx
-        return this._leoIntegration.sendAction(Constants.LEOBRIDGE_ACTIONS.GET_ALL_GNX).then((p_result) => {
+        return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_ALL_GNX).then((p_result) => {
             if (p_result.allGnx) {
                 this._possibleGnxList = p_result.allGnx;
             } else {
@@ -213,7 +213,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     console.log("stat: hey! Not in list! stat missing refreshes??");
                     throw vscode.FileSystemError.FileNotFound();
                 } else {
-                    return this._leoIntegration.sendAction(Constants.LEOBRIDGE_ACTIONS.GET_BODY_LENGTH, '"' + w_gnx + '"')
+                    return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY_LENGTH, '"' + w_gnx + '"')
                         .then((p_result) => {
                             let w_mtime: number = 0;
                             if (this._renameBody.gnx === w_gnx) {
@@ -255,7 +255,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     console.log("readFile: hey! Not in list! readFile missing refreshes??");
                     throw vscode.FileSystemError.FileNotFound();
                 } else {
-                    return this._leoIntegration.sendAction(Constants.LEOBRIDGE_ACTIONS.GET_BODY, '"' + w_gnx + '"')
+                    return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY, '"' + w_gnx + '"')
                         .then((p_result) => {
                             this._lastGnx = w_gnx;
                             if (p_result.bodyData) {
