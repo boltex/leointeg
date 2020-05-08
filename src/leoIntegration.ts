@@ -903,18 +903,7 @@ export class LeoIntegration {
     public saveLeoFile(): void {
         // * Invokes the self.commander.save() Leo command
         // TODO : Specify which file when supporting multiple simultaneous opened Leo files
-        if (this._leoBridgeActionBusy) {
-            console.log('Too fast! executeScript'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
-            return;
-        }
-        if (this._lastSelectedNode) {
-            this._triggerBodySave(false, true);
-            this._leoBridgeActionBusy = true;
-            this.nodeActionRefresh(Constants.LEOBRIDGE.SAVE_FILE, undefined, RevealType.RevealSelect)
-                .then(() => {
-                    this._leoBridgeActionBusy = false;
-                });
-        }
+        this.nodeActionFullRefreshBuffered(Constants.LEOBRIDGE.SAVE_FILE);
     }
 
     public closeLeoFile(): void {
