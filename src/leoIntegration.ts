@@ -283,7 +283,7 @@ export class LeoIntegration {
             this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson);
         } else {
             // * This part only happens if the user clicked on the arrow without trying to select the node
-            this._revealTreeViewNode(p_event.element, { select: true, focus: false }); // Force-select the node to mimic Leo
+            this._revealTreeViewNode(p_event.element, { select: true, focus: true }); // Force-select the node to mimic Leo
             this.selectTreeNode(p_event.element, true); // TODO : Should select and expand/collapsed be merged in a custom command?
             this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson);
             this._refreshNode(p_event.element); // don't wait for action to finish
@@ -425,7 +425,6 @@ export class LeoIntegration {
     }
 
     private _refreshNode(p_node: LeoNode): void {
-        // this._revealType = RevealType.RevealSelect; // When asking for single node refresh will apply selection as needed
         this._revealType = RevealType.NoReveal; // Keep id because only called by expand/collapse
         this._leoTreeDataProvider.refreshTreeNode(p_node);
     }
@@ -546,7 +545,7 @@ export class LeoIntegration {
 
         // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
         if (p_aside && p_node !== this._lastSelectedNode) {
-            this._revealTreeViewNode(p_node, { select: true, focus: false });
+            this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
         }
 
         // TODO : Save and restore selection, along with cursor position, from selection state saved in each node (or gnx array)
