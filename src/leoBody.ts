@@ -316,10 +316,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
         // TODO : Should be just rename from a uri to the next but instead use "LEO BODY" with or without decorator
 
-        if (p_options) {
-            console.log('rename had options: ', p_options); // placeholder
-        }
-
         console.log('called rename', p_oldUri.fsPath, p_newUri.fsPath);
         const w_gnx = utils.uriToStr(p_newUri);
         if (this._selectedBody.gnx === w_gnx) {

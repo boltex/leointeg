@@ -1,8 +1,9 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { Icon } from "./types";
+import { LeoNode } from "./leoNode";
 
-// * String and other structures construction helper-functions along with common vscode API calls
+// * String and other types/structures helper functions, along with common vscode API calls
 
 export function padNumber(p_number: number): string {
     return ("0" + p_number).slice(-2);
@@ -21,6 +22,13 @@ export function buildHeadlineJson(p_nodeJson: string, p_headline: string): strin
     return "{\"node\":" + p_nodeJson +
         ", \"headline\": \"" + p_headline +
         "\"}";
+}
+
+export function isIconChangedByEdit(p_node: LeoNode, p_newHasBody: boolean): boolean {
+    if (!p_node.dirty || (p_node.hasBody === !p_newHasBody)) {
+        return true;
+    }
+    return false;
 }
 
 export function isHexColor(hex: string): boolean {

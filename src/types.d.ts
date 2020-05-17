@@ -23,13 +23,29 @@ export interface ConfigMembers {
     connectionPort: number;
 }
 
-export const enum RevealType { // TODO : Document
-    NoReveal = 0,
+export const enum RevealType {
+    // * When refreshing the outline and getting to Leo's selected node
+    NoReveal = 0, // In apToLeoNode conversion, If if the global revealType is "NoReveal" and its the selected node, re-use the old id
     Reveal,
     RevealSelect,
     RevealSelectFocus,
-    RevealSelectFocusShowBody,
-    RevealSelectShowBody
+    RevealSelectFocusShowBody, // TODO : Should not be part of outline-node's reveal types
+    RevealSelectShowBody // TODO : Should not be part of outline-node's reveal types
+}
+
+export const enum RefreshType {
+    // * Front command refresh type for when coming back from executing the command
+    NoRefresh = 0, // only for 'copy-node' so far
+    RefreshNode,   // expanding, collapsing and the ike only require its own node to refresh
+    RefreshTree,   // many commands can impact the tree structure and the current selection
+    RefreshTreeAndBody // undo, redo, execute and others can also modify the current body
+}
+
+export interface FrontCommand {
+    // * Command parameter for when 'stacking' front end commands
+    action: string;
+    fromOutline: boolean;
+    refreshType: RefreshType;
 }
 
 export interface LeoAction { // pushed and resolved as a stack
@@ -43,7 +59,8 @@ export interface LeoLogEntry {
     log: string;
 }
 
-export interface ArchivedPosition { // * from Leo's leoflexx.py
+export interface ArchivedPosition {
+    // * from Leo's leoflexx.py
     hasBody: boolean;       // bool(p.b),
     hasChildren: boolean;   // p.hasChildren()
     childIndex: number;     // p._childIndex
@@ -69,6 +86,7 @@ export interface LeoBridgePackage { // TODO : Document
 }
 
 export interface Icon {
+    // * Icon path names used in leoNodes for rendering in treeview
     light: string;
     dark: string;
 }

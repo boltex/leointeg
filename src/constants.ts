@@ -106,7 +106,7 @@ export class Constants {
         SHOW_MARK: Constants.CONFIGURATION.SHOW_MARK,
         SHOW_CLONE: Constants.CONFIGURATION.SHOW_CLONE,
         SHOW_COPY: Constants.CONFIGURATION.SHOW_COPY,
-        LEO_SELECTED: "leoObjectSelected",
+        LEO_SELECTED: "leoObjectSelected", // TODO : Maybe unneeded if 'xxxFromOutline' commands are used
         SELECTED_MARKED: "leoNodeMarked",
         SELECTED_UNMARKED: "leoNodeUnmarked",
         SELECTED_ATFILE: "leoNodeAtFile"
@@ -198,27 +198,30 @@ export class Constants {
     };
 
     public static COMMANDS = {
-        // * All commands this expansion exposes
-        SHOW_WELCOME: "showWelcomePage",
-        SHOW_SETTINGS: "showSettingsPage",
+        // * All commands this expansion exposes (in package.json, contributes > commands)
+        SHOW_WELCOME: "showWelcomePage", // Always available: not in the commandPalette section of package.json
+        SHOW_SETTINGS: "showSettingsPage", // Always available: not in the commandPalette section of package.json
         // * LeoBridge
         START_SERVER: "startServer",
         CONNECT: "connectToServer",
-        OPEN_FILE: "openLeoFile",
-        CLOSE_FILE: "closeLeoFile",
+        OPEN_FILE: "openLeoFile", // sets focus on BODY
         // * Outline selection
         SELECT_NODE: "selectTreeNode",
         OPEN_ASIDE: "openAside",
         // * Leo Operations
-        UNDO: "undo",
-        REDO: "redo",
-        EXECUTE: "executeScriptSelection",
+        UNDO: "undo", // From command Palette
+        UNDO_FO: "undoFromOutline", // from button, return focus on OUTLINE
+        REDO: "redo", // From command Palette
+        REDO_FO: "redoFromOutline", // from button, return focus on OUTLINE
+        EXECUTE: "executeScriptSelection", // TODO : detect focused panel for command-palette to return focus where appropriate
         SHOW_BODY: "showBody",
         SHOW_LOG: "showLogPane",
-        SAVE_FILE: "saveLeoFile",
-        SORT_CHILDREN: "sortChildrenSelection",
-        SORT_SIBLING: "sortSiblingsSelection",
-        CONTRACT_ALL: "contractAll",
+        SAVE_FILE: "saveLeoFile",  // TODO : detect focused panel for command-palette to return focus where appropriate
+        SORT_CHILDREN: "sortChildrenSelection",  // TODO : detect focused panel for command-palette to return focus where appropriate
+        SORT_SIBLING: "sortSiblingsSelection",  // TODO : detect focused panel for command-palette to return focus where appropriate
+        CONTRACT_ALL: "contractAll", // From command Palette
+        CONTRACT_ALL_FO: "contractAllFromOutline", // from button, return focus on OUTLINE
+        // * Commands from tree panel buttons or context: focus on OUTLINE
         MARK: "mark",
         UNMARK: "unmark",
         COPY: "copyNode",
@@ -236,9 +239,11 @@ export class Constants {
         PROMOTE: "promote",
         DEMOTE: "demote",
         REFRESH_FROM_DISK: "refreshFromDisk",
+        // * Commands from keyboard, while focus on BODY (command-palette returns to BODY for now)
+        // TODO : detect focused panel for command-palette to return to outline when appropriate
         MARK_SELECTION: "markSelection",
         UNMARK_SELECTION: "unmarkSelection",
-        COPY_SELECTION: "copyNodeSelection",
+        COPY_SELECTION: "copyNodeSelection", // Nothing to refresh/focus so no "FO" version
         CUT_SELECTION: "cutNodeSelection",
         PASTE_SELECTION: "pasteNodeAtSelection",
         PASTE_CLONE_SELECTION: "pasteNodeAsCloneAtSelection",
@@ -253,7 +258,27 @@ export class Constants {
         PROMOTE_SELECTION: "promoteSelection",
         DEMOTE_SELECTION: "demoteSelection",
         REFRESH_FROM_DISK_SELECTION: "refreshFromDiskSelection",
-        // * ---------------
+        // * Commands from keyboard, while focus on OUTLINE
+        // TODO : detect focused panel for command-palette to return to outline when appropriate
+        MARK_SELECTION_FO: "markSelectionFromOutline",
+        UNMARK_SELECTION_FO: "unmarkSelectionFromOutline",
+        // COPY_SELECTION Nothing to refresh/focus for "copy a node" so no entry here
+        CUT_SELECTION_FO: "cutNodeSelectionFromOutline",
+        PASTE_SELECTION_FO: "pasteNodeAtSelectionFromOutline",
+        PASTE_CLONE_SELECTION_FO: "pasteNodeAsCloneAtSelectionFromOutline",
+        DELETE_SELECTION_FO: "deleteSelectionFromOutline",
+        HEADLINE_SELECTION_FO: "editSelectedHeadlineFromOutline",
+        MOVE_DOWN_SELECTION_FO: "moveOutlineDownSelectionFromOutline",
+        MOVE_LEFT_SELECTION_FO: "moveOutlineLeftSelectionFromOutline",
+        MOVE_RIGHT_SELECTION_FO: "moveOutlineRightSelectionFromOutline",
+        MOVE_UP_SELECTION_FO: "moveOutlineUpSelectionFromOutline",
+        INSERT_SELECTION_FO: "insertNodeSelectionFromOutline",
+        CLONE_SELECTION_FO: "cloneNodeSelectionFromOutline",
+        PROMOTE_SELECTION_FO: "promoteSelectionFromOutline",
+        DEMOTE_SELECTION_FO: "demoteSelectionFromOutline",
+        REFRESH_FROM_DISK_SELECTION_FO: "refreshFromDiskSelectionFromOutline",
+        // * - - - - - - - - - - - - - - - not implemented yet
+        CLOSE_FILE: "closeLeoFile",
         HOIST: "hoistNode",
         HOIST_SELECTION: "hoistSelection",
         DEHOIST: "deHoist",
