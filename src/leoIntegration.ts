@@ -283,10 +283,9 @@ export class LeoIntegration {
             this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson);
         } else {
             // * This part only happens if the user clicked on the arrow without trying to select the node
-            this._revealTreeViewNode(p_event.element, { select: true, focus: true }); // Force-select the node to mimic Leo
-            this.selectTreeNode(p_event.element, true); // TODO : Should select and expand/collapsed be merged in a custom command?
+            this._revealTreeViewNode(p_event.element, { select: true, focus: false }); // No force focus : it breaks collapse/expand when direct parent
+            this.selectTreeNode(p_event.element, true);  // not waiting for a .then(...) so not to add any lag
             this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson);
-            this._refreshNode(p_event.element); // don't wait for action to finish
         }
     }
 
@@ -297,7 +296,7 @@ export class LeoIntegration {
         }
         if (p_event.visible && this._lastSelectedNode) {
             this._lastSelectedNode = undefined; // Its a new node in a new tree so refresh _lastSelectedNode too
-            this._refreshOutline(RevealType.RevealSelect);
+            this._refreshOutline(RevealType.RevealSelectFocus); // Set focus on outline
         }
     }
 
@@ -919,7 +918,7 @@ export class LeoIntegration {
                 // * Startup flag
                 this.fileOpenedReady = true;
                 // * First valid redraw of tree along with the selected node and its body
-                this._refreshOutline(RevealType.RevealSelect); // p_revealSelection flag set
+                this._refreshOutline(RevealType.RevealSelectFocus); // p_revealSelection flag set
                 this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // ? Maybe unused when used with welcome content
                 // * First StatusBar appearance
                 this._leoStatusBar.show(); // Just selected a node

@@ -335,8 +335,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public delete(uri: vscode.Uri): void {
         console.log('called delete ', uri.fsPath);
 
-        let dirname = uri.with({ path: path.posix.dirname(uri.path) });
-        console.log('dirname ', dirname.fsPath);
+        let dirname = uri.with({ path: path.posix.dirname(uri.path) }); // dirname is just a slash "/"
 
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri: dirname }, { uri, type: vscode.FileChangeType.Deleted });
 

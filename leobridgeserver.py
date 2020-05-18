@@ -582,7 +582,7 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_p.setMarked()
-                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                return self.outputPNode(self.commander.p)  # return selected node when done (not w_p)
             else:
                 return self.outputError("Error in markPNode no w_p node found")
         else:
@@ -594,7 +594,7 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_p.clearMarked()
-                return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                return self.outputPNode(self.commander.p)  # return selected node when done (not w_p)
             else:
                 return self.outputError("Error in unmarkPNode no w_p node found")
         else:
@@ -754,13 +754,13 @@ class leoBridgeIntegController:
         '''Undo last un-doable operation'''
         if(self.commander.undoer.canUndo()):
             self.commander.undoer.undo()
-        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+        return self.outputPNode(self.commander.p)  # return selected node when done
 
     def redo(self, p_paramUnused):
         '''Undo last un-doable operation'''
         if(self.commander.undoer.canRedo()):
             self.commander.undoer.redo()
-        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+        return self.outputPNode(self.commander.p)  # return selected node when done
 
     def refreshFromDiskPNode(self, p_ap):
         '''Refresh from Disk, don't select it if possible'''
@@ -924,7 +924,7 @@ class leoBridgeIntegController:
     def contractAll(self, p_paramUnused):
         '''(Collapse) Contract All'''
         self.commander.contractAllHeadlines()
-        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+        return self.outputPNode(self.commander.p)  # return selected node when done
 
     def yieldAllRootChildren(self):
         '''Return all root children P nodes'''

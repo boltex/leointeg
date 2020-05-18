@@ -628,7 +628,7 @@ if __name__ == '__main__':
         w_p = self.ap_to_p(p_ap)
         if w_p:
             w_p.setMarked()
-            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+            return self.outputPNode(self.commander.p)  # return selected node when done (not w_p)
         else:
             return self.outputError("Error in markPNode no w_p node found")
     else:
@@ -641,7 +641,7 @@ if __name__ == '__main__':
         w_p = self.ap_to_p(p_ap)
         if w_p:
             w_p.clearMarked()
-            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+            return self.outputPNode(self.commander.p)  # return selected node when done (not w_p)
         else:
             return self.outputError("Error in unmarkPNode no w_p node found")
     else:
@@ -741,7 +741,7 @@ wsPort = 32125
     '''Undo last un-doable operation'''
     if(self.commander.undoer.canUndo()):
         self.commander.undoer.undo()
-    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+    return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 <t tx="felix.20191231214801.1">def executeScript(self, p_ap):
@@ -763,7 +763,7 @@ wsPort = 32125
     '''Undo last un-doable operation'''
     if(self.commander.undoer.canRedo()):
         self.commander.undoer.redo()
-    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+    return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 <t tx="felix.20200105173826.1">def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
@@ -1327,7 +1327,7 @@ wsPort = 32125
 <t tx="felix.20200329000454.1">def contractAll(self, p_paramUnused):
     '''(Collapse) Contract All'''
     self.commander.contractAllHeadlines()
-    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+    return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 </tnodes>
