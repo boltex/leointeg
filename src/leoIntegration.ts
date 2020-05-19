@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, FrontCommand, RefreshType } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, UserCommand, RefreshType } from "./types";
 import { Config } from "./config";
-import { LeoFiles } from "./leoFiles";
+import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
 import { LeoOutlineProvider } from "./leoOutline";
 import { LeoBodyProvider } from "./leoBody";
@@ -37,7 +37,7 @@ export class LeoIntegration {
 
     // * User action stack for non-tree-dependant commands fast entry
     private _leoBridgeActionBusy: boolean = false; // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
-    private _commandStack: FrontCommand[] = [];          // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
+    private _commandStack: UserCommand[] = [];          // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
     // if command is non-tree-dependant, add it to the array's top and try to resolve bottom command.
     // if command is tree dependant: resolve only if stack is empty. Otherwise show info message "Command already running"
 
@@ -48,7 +48,7 @@ export class LeoIntegration {
     public icons: Icon[] = []; // Singleton static array of all icon paths used in leoNodes for rendering in treeview
 
     // * File Browser
-    private _leoFilesBrowser: LeoFiles; // Dialog service singleton used in the openLeoFile method
+    private _leoFilesBrowser: LeoFilesBrowser; // Dialog service singleton used in the openLeoFile method
 
     // * LeoBridge
     private _leoBridge: LeoBridge; // Singleton service to access leobridgeserver
@@ -115,7 +115,7 @@ export class LeoIntegration {
         this.icons = utils.buildIconPaths(_context);
 
         // * File Browser
-        this._leoFilesBrowser = new LeoFiles(_context);
+        this._leoFilesBrowser = new LeoFilesBrowser(_context);
 
         // * Setup leoBridge
         this._leoBridge = new LeoBridge(_context, this);

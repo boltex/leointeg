@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { LeoNode } from "./leoNode";
 
 export interface ConfigMembers {
     checkForChangeExternalFiles: string;
@@ -36,15 +37,16 @@ export const enum RevealType {
 export const enum RefreshType {
     // * Front command refresh type for when coming back from executing the command
     NoRefresh = 0, // only for 'copy-node' so far
-    RefreshNode,   // expanding, collapsing and the ike only require its own node to refresh
-    RefreshTree,   // many commands can impact the tree structure and the current selection
+    // RefreshNode NOT USED : expand, collapse, select and open aside do not
+    RefreshTree,   // Open body if not already opened but no need to refresh if already opened
     RefreshTreeAndBody // undo, redo, execute and others can also modify the current body
 }
 
-export interface FrontCommand {
+export interface UserCommand {
     // * Command parameter for when 'stacking' front end commands
     action: string;
     fromOutline: boolean;
+    node: LeoNode | undefined;  // We can START a stack with a targeted command,
     refreshType: RefreshType;
 }
 
