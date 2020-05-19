@@ -40,6 +40,8 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.SELECT_NODE, (p_node: LeoNode) => leoIntegration.selectTreeNode(p_node, false, false)], // Called by nodes in tree when selected
         [w_cmdPrefix + Constants.COMMANDS.OPEN_ASIDE, (p_node: LeoNode) => leoIntegration.selectTreeNode(p_node, false, true)],
 
+        // [w_cmdPrefix + Constants.COMMANDS.CONTRACT_ALL, () => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE.CONTRACT_ALL)],
+        // [w_cmdPrefix + Constants.COMMANDS.CONTRACT_ALL_FO, () => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE.CONTRACT_ALL)],
         [w_cmdPrefix + Constants.COMMANDS.CONTRACT_ALL, () => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE.CONTRACT_ALL)],
         [w_cmdPrefix + Constants.COMMANDS.CONTRACT_ALL_FO, () => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE.CONTRACT_ALL)],
 
@@ -50,13 +52,13 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.MARK_SELECTION_FO, () => leoIntegration.changeMark(true)],
         [w_cmdPrefix + Constants.COMMANDS.UNMARK_SELECTION_FO, () => leoIntegration.changeMark(false)],
 
-        [w_cmdPrefix + Constants.COMMANDS.COPY, (p_node: LeoNode) => leoIntegration.nodeAction(Constants.LEOBRIDGE.COPY_PNODE, p_node)],
+        [w_cmdPrefix + Constants.COMMANDS.COPY, (p_node: LeoNode) => leoIntegration.nodeAction(Constants.LEOBRIDGE.COPY_PNODE, p_node)], // TODO : Make it buffered!
         [w_cmdPrefix + Constants.COMMANDS.CUT, (p_node: LeoNode) => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE.CUT_PNODE, p_node)],
         [w_cmdPrefix + Constants.COMMANDS.PASTE, (p_node: LeoNode) => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE.PASTE_PNODE, p_node)],
         [w_cmdPrefix + Constants.COMMANDS.PASTE_CLONE, (p_node: LeoNode) => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE.PASTE_CLONE_PNODE, p_node)],
         [w_cmdPrefix + Constants.COMMANDS.DELETE, (p_node: LeoNode) => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE.DELETE_PNODE, p_node)],
 
-        [w_cmdPrefix + Constants.COMMANDS.COPY_SELECTION, () => leoIntegration.nodeAction(Constants.LEOBRIDGE.COPY_PNODE)],
+        [w_cmdPrefix + Constants.COMMANDS.COPY_SELECTION, () => leoIntegration.nodeAction(Constants.LEOBRIDGE.COPY_PNODE)], // TODO : Make it buffered!
         [w_cmdPrefix + Constants.COMMANDS.CUT_SELECTION, () => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE.CUT_PNODE)],
         [w_cmdPrefix + Constants.COMMANDS.CUT_SELECTION_FO, () => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE.CUT_PNODE)],
         [w_cmdPrefix + Constants.COMMANDS.PASTE_SELECTION, () => leoIntegration.nodeActionRefreshBuffered(Constants.LEOBRIDGE.PASTE_PNODE)],

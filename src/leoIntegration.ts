@@ -10,6 +10,7 @@ import { LeoBodyProvider } from "./leoBody";
 import { LeoBridge } from "./leoBridge";
 import { ServerService } from "./serverManager";
 import { LeoStatusBar } from "./leoStatusBar";
+import { CommandStack } from "./commandStack";
 
 export class LeoIntegration {
 
@@ -37,7 +38,7 @@ export class LeoIntegration {
 
     // * User action stack for non-tree-dependant commands fast entry
     private _leoBridgeActionBusy: boolean = false; // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
-    private _commandStack: UserCommand[] = [];          // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
+    private _commandStack: CommandStack;          // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
     // if command is non-tree-dependant, add it to the array's top and try to resolve bottom command.
     // if command is tree dependant: resolve only if stack is empty. Otherwise show info message "Command already running"
 
@@ -119,6 +120,8 @@ export class LeoIntegration {
 
         // * Setup leoBridge
         this._leoBridge = new LeoBridge(_context, this);
+
+        this._commandStack = new CommandStack(_context, this);
 
         // * Same data provider for both outline trees, Leo view and Explorer view
         this._leoTreeDataProvider = new LeoOutlineProvider(this);
@@ -703,6 +706,16 @@ export class LeoIntegration {
         } else {
             return Promise.resolve(false);
         }
+    }
+
+    public nodeCommand(p_action: string, p_node?: LeoNode, p_refreshType?: RefreshType, p_fromOutline?: boolean): boolean {
+        // * Add to stack of commands to be resolved if possible, return false otherwise
+        return this._commandStack.add({
+            action: p_action,
+            node: p_node,  // We can START a stack with a targeted command,
+            refreshType: p_refreshType ? p_refreshType : RefreshType.NoRefresh,
+            fromOutline: !!p_fromOutline // force boolean
+        });
     }
 
     public nodeAction(p_action: string, p_node?: LeoNode): Promise<LeoBridgePackage> {

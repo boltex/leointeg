@@ -45,9 +45,9 @@ export const enum RefreshType {
 export interface UserCommand {
     // * Command parameter for when 'stacking' front end commands
     action: string;
-    fromOutline: boolean;
     node: LeoNode | undefined;  // We can START a stack with a targeted command,
     refreshType: RefreshType;
+    fromOutline: boolean;
 }
 
 export interface LeoAction { // pushed and resolved as a stack

@@ -8,11 +8,24 @@ import { LeoIntegration } from "./leoIntegration";
 export class CommandStack {
 
     private _stack: UserCommand[] = [];
-    private _finalFromOutline: boolean = false; // Set focus on outline instead of body? (Keep from last one pushed)
+    private _busy: boolean = false;
+
     private _finalRefreshType: RefreshType = RefreshType.NoRefresh; // Refresh type after last command is done. (Keep only if higher)
+    private _finalFromOutline: boolean = false; // Set focus on outline instead of body? (Keep from last one pushed)
+
+    constructor(
+        private _context: vscode.ExtensionContext,
+        private _leoIntegration: LeoIntegration
+    ) {
+
+    }
 
     public size(): number {
         return this._stack.length;
+    }
+
+    public isBusy(): boolean {
+        return this._busy;
     }
 
     public add(p_command: UserCommand): boolean {
