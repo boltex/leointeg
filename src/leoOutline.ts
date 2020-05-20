@@ -30,8 +30,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         if (this._refreshSingleNodeFlag) {
             this._refreshSingleNodeFlag = false;
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PNODE, element.apJson)
-                .then((p_result) => {
-                    const w_node = this._leoIntegration.apToLeoNode(p_result.node, true, element);
+                .then((p_package) => {
+                    const w_node = this._leoIntegration.apToLeoNode(p_package.node, true, element);
                     return element.copyProperties(w_node);
                 });
         } else {
@@ -41,8 +41,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     public getChildren(element?: LeoNode): Thenable<LeoNode[]> {
         if (this._leoIntegration.fileOpenedReady) {
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element ? element.apJson : "null").then((p_result) => {
-                return this._leoIntegration.arrayToLeoNodesArray(p_result.nodes);
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element ? element.apJson : "null").then((p_package) => {
+                return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes);
             });
         } else {
             return Promise.resolve([]); // Defaults to an empty list of children
@@ -56,11 +56,11 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         console.log('OH NO! GET PARENT CALLED! on: ', element.label);
 
         if (this._leoIntegration.fileOpenedReady) {
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PARENT, element ? element.apJson : "null").then((p_result) => {
-                if (p_result.node === null) {
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PARENT, element ? element.apJson : "null").then((p_package) => {
+                if (p_package.node === null) {
                     return null;
                 } else {
-                    return this._leoIntegration.apToLeoNode(p_result.node);
+                    return this._leoIntegration.apToLeoNode(p_package.node);
                 }
             });
         } else {

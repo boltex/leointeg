@@ -7,6 +7,8 @@ export class LeoAsync {
     // * Functions called by Leo through leoBridge such as adding a log pane entry, runAskYesNoDialog for file changes, etc.
     // * Some config settings affect this behavior, such as defaultReloadIgnore and checkForChangeExternalFiles
 
+    // TODO : CLEANUP THIS CLASS! -> Many strings should be moved to constants.ts
+
     private _askResult: string = "";
 
     constructor(

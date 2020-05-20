@@ -45,7 +45,8 @@ export const enum RefreshType {
 export interface UserCommand {
     // * Command parameter for when 'stacking' front end commands
     action: string;
-    node: LeoNode | undefined;  // We can START a stack with a targeted command,
+    node?: LeoNode | undefined;  // We can START a stack with a targeted command
+    providedHeadline?: string | undefined;
     refreshType: RefreshType;
     fromOutline: boolean;
 }
@@ -84,7 +85,7 @@ export interface ArchivedPosition {
 
 export interface LeoBridgePackage { // TODO : Document
     id: number;
-    [key: string]: any;
+    [key: string]: any; // TODO ADD ALL POSSIBLE (FACULTATIVE) KEYS FROM leobridgeserver.py
 }
 
 export interface Icon {

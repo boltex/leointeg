@@ -36,11 +36,10 @@ export class LeoIntegration {
     private _leoIsConnecting: boolean = false; // Used in connect method to prevent other attempts while already trying to connect
     private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Set when leoBridge has a leo controller ready
 
-    // * User action stack for non-tree-dependant commands fast entry
-    private _leoBridgeActionBusy: boolean = false; // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
-    private _commandStack: CommandStack;          // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
-    // if command is non-tree-dependant, add it to the array's top and try to resolve bottom command.
-    // if command is tree dependant: resolve only if stack is empty. Otherwise show info message "Command already running"
+    // * User command stack (to allow rapid entry of commands with tree-dependant parameter)
+    private _commandStack: CommandStack;
+
+    private _leoBridgeActionBusy: boolean = false; // TODO : Still Relevant with command stack?
 
     // * Configuration Settings Service
     public config: Config; // Public configuration service singleton, used in leoSettingsWebview, leoBridge, and leoNode for inverted contrast
@@ -61,6 +60,12 @@ export class LeoIntegration {
     private _nextNodeId: number = Constants.STARTING_PACKAGE_ID; // Used to generate id's for new treeNodes: The id is used to preserve or set the selection and expansion states
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
+    get lastSelectedNode(): LeoNode | undefined { // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
+        return this._lastSelectedNode;
+    }
+    set lastSelectedNode(p_leoNode: LeoNode | undefined) {  // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
+        this._lastSelectedNode = p_leoNode;
+    }
 
     // * Outline Pane redraw/refresh flag. Also set when calling refreshTreeRoot
     // ! temp public test
@@ -84,12 +89,12 @@ export class LeoIntegration {
     // TODO : use _needRefreshBody in 'setTreeViewSelection' back from commands instead
     private _needRefreshBody: boolean = false; // Flag for commands that might change current body, this is global for the 'select' after it finishes
 
-    // TODO : May be unused if only one BODY gnx at a time
-    private _bodyTextDocumentSameUri: boolean = false; // Flag used when checking if clicking a node requires opening a body pane text editor
-    private _bodyMainSelectionColumn: vscode.ViewColumn | undefined;
-
     // TODO : Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
     private _forceBodyFocus: boolean = false; // Flag used to force focus in body when next 'showing' of this body occurs (after edit headline if already selected)
+
+    // TODO : May be unused if only one BODY gnx at a time
+    private _bodyTextDocumentSameUri: boolean = false; // Flag used when checking if clicking a node requires opening a body pane text editor
+    private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // TODO : THIS IS REDUNDANT BECAUSE OF _bodyTextDocument is always direct base object
 
     // * Log Pane
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(Constants.GUI.LOG_PANE_TITLE); // Copy-pasted from leo's log pane
@@ -104,7 +109,7 @@ export class LeoIntegration {
     private _serverService: ServerService;
 
     // * Timing
-    private _lastBodyChangedRootRefreshedGnx: string = "";
+    private _needLastSelectedRefresh = false;
     private _bodyLastChangedDocument: vscode.TextDocument | undefined;
 
     constructor(private _context: vscode.ExtensionContext) {
@@ -297,8 +302,8 @@ export class LeoIntegration {
         if (p_explorerView) {
             // (Facultative) Do something different if explorerView is used, instead of the standalone outline pane
         }
-        if (p_event.visible && this._lastSelectedNode) {
-            this._lastSelectedNode = undefined; // Its a new node in a new tree so refresh _lastSelectedNode too
+        if (p_event.visible && this.lastSelectedNode) {
+            this._needLastSelectedRefresh = true; // Its a new node in a new tree so refresh lastSelectedNode too
             this._refreshOutline(RevealType.RevealSelectFocus); // Set focus on outline
         }
     }
@@ -353,14 +358,14 @@ export class LeoIntegration {
             this._bodyLastChangedDocument = p_event.document;
 
             // * If icon should change then do it now (if there's no document edit pending)
-            if (this._lastSelectedNode && utils.uriToStr(p_event.document.uri) === this._lastSelectedNode.gnx) {
+            if (this.lastSelectedNode && utils.uriToStr(p_event.document.uri) === this.lastSelectedNode.gnx) {
                 const w_hasBody = !!(p_event.document.getText().length);
-                if (utils.isIconChangedByEdit(this._lastSelectedNode, w_hasBody)) {
+                if (utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody)) {
                     console.log('instant save!');
                     this._bodySaveDocument(p_event.document)
                         .then(() => {
-                            this._lastSelectedNode!.dirty = true;
-                            this._lastSelectedNode!.hasBody = w_hasBody;
+                            this.lastSelectedNode!.dirty = true;
+                            this.lastSelectedNode!.hasBody = w_hasBody;
                             this._refreshOutline(RevealType.NoReveal); // NoReveal for keeping the same id and selection
                         });
                     return; // * Don't continue
@@ -389,9 +394,9 @@ export class LeoIntegration {
                 gnx: utils.uriToStr(p_document.uri),
                 body: p_document.getText()
             };
-            return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)).then(p_result => {
+            return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)).then(() => {
                 if (p_forcedVsCodeSave) {
-                    return p_document.save(); // ! USE INTENTIONALLY: This trims trailing spaces!
+                    return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
                 }
                 return Promise.resolve(p_document.isDirty);
             });
@@ -451,7 +456,7 @@ export class LeoIntegration {
             !!p_ap.hasBody,         // hasBody
             this,                   //  _leoIntegration pointer
             // If there's no reveal and its the selected node re-use the old id
-            (!this._revealType && p_ap.selected && this._lastSelectedNode) ? this._lastSelectedNode.id : (++this._nextNodeId).toString()
+            (!this._revealType && p_ap.selected && this.lastSelectedNode) ? this.lastSelectedNode.id : (++this._nextNodeId).toString()
         );
         if (p_revealSelected && this._revealType && p_ap.selected) {
             this._apToLeoNodeConvertReveal(p_specificNode ? p_specificNode : w_leoNode);
@@ -470,9 +475,10 @@ export class LeoIntegration {
         const w_showBodyFlag = this._revealType >= RevealType.RevealSelectFocusShowBody; // at least RevealSelectFocusShowBody
         // Flags are setup so now reveal, select and / or focus as needed
         this._revealType = RevealType.NoReveal; // ok reset
-        // If first time, or when treeview switched, _lastSelectedNode will be undefined
-        if (!this._lastSelectedNode) {
-            this._lastSelectedNode = p_leoNode; // special case only: _lastSelectedNode should be set in selectTreeNode
+        // If first time, or when treeview switched, lastSelectedNode will be undefined
+        if (!this.lastSelectedNode || this._needLastSelectedRefresh) {
+            this._needLastSelectedRefresh = false;
+            this.lastSelectedNode = p_leoNode; // special case only: lastSelectedNode should be set in selectTreeNode
         }
         setTimeout(() => {
             // don't use the treeKeepFocus config option
@@ -546,7 +552,7 @@ export class LeoIntegration {
         // TODO : If command stack not empty/still running commands exit this method & let end of commands (re)set selected node
 
         // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
-        if (p_aside && p_node !== this._lastSelectedNode) {
+        if (p_aside && p_node !== this.lastSelectedNode) {
             this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
         }
 
@@ -555,7 +561,7 @@ export class LeoIntegration {
         this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
 
         // * Check if having already this exact node position selected : Just show the body and exit!
-        if (!w_needsFilesystemRefresh && (p_node === this._lastSelectedNode)) {
+        if (!w_needsFilesystemRefresh && (p_node === this.lastSelectedNode)) {
             this._locateOpenedBody(p_node.gnx);
             return this.showBody(p_aside); // voluntary exit
         }
@@ -567,7 +573,7 @@ export class LeoIntegration {
         this._triggerBodySave();
 
         // * Set the 'lastSelectedNode' and make the body pane switch and show itself if needed
-        this._lastSelectedNode = p_node; // kept mostly in order to do refreshes if it changes, as opposed to a full tree refresh
+        this.lastSelectedNode = p_node; // kept mostly in order to do refreshes if it changes, as opposed to a full tree refresh
         utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_node.marked);
 
         // * Is the last opened body still opened?
@@ -708,22 +714,32 @@ export class LeoIntegration {
         }
     }
 
-    public nodeCommand(p_action: string, p_node?: LeoNode, p_refreshType?: RefreshType, p_fromOutline?: boolean): boolean {
+    public nodeCommand(p_action: string, p_node?: LeoNode, p_refreshType?: RefreshType, p_fromOutline?: boolean, p_providedHeadline?: string): boolean {
         // * Add to stack of commands to be resolved if possible, return false otherwise
-        return this._commandStack.add({
+        if (this._commandStack.add({
             action: p_action,
-            node: p_node,  // We can START a stack with a targeted command,
+            node: p_node,  // Will return false for sure if already started and this is not undefined
+            providedHeadline: p_providedHeadline ? p_providedHeadline : undefined,
             refreshType: p_refreshType ? p_refreshType : RefreshType.NoRefresh,
-            fromOutline: !!p_fromOutline // force boolean
-        });
+            fromOutline: !!p_fromOutline, // force boolean
+        })) {
+            return true;
+        } else {
+            vscode.window.showInformationMessage("Too Fast: " + p_action); // TODO : Use cleanup message string CONSTANT instead
+            return false;
+        }
     }
 
+    // ------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
     public nodeAction(p_action: string, p_node?: LeoNode): Promise<LeoBridgePackage> {
         // * For actions that need no tree/body refreshes at all
+        // TODO : MOVE ACTION LOGIC TO COMMAND STACK
         // - saveLeoFile, copyNode, copyNodeSelection
         let w_node = p_node;
-        if (!w_node && this._lastSelectedNode) {
-            w_node = this._lastSelectedNode;
+        if (!w_node && this.lastSelectedNode) {
+            w_node = this.lastSelectedNode;
         }
         if (w_node) {
             return this.sendAction(p_action, w_node.apJson);
@@ -734,6 +750,7 @@ export class LeoIntegration {
 
     public nodeActionRefresh(p_action: string, p_node?: LeoNode, p_revealType?: RevealType | undefined): Promise<LeoBridgePackage> {
         // * For actions that do not need full bodies gnx list to refresh (moving, renaming nodes)
+        // TODO : MOVE ACTION LOGIC TO COMMAND STACK
         // - mark, unmark
         // - move, clone, promote, demote
         // - sortChildren, sortSibling
@@ -750,6 +767,7 @@ export class LeoIntegration {
     public nodeActionRefreshBuffered(p_action: string, p_node?: LeoNode): void {
         // * For actions that can change the tree and current selection, but not text content of any node
         // TODO : See why nodeActionRefreshBuffered is not enough for 'Save leo file' to reselect node properly!
+        // TODO : MOVE ACTION LOGIC TO COMMAND STACK
         // paste, pasteClone, contractAll
         // cut, delete
         if (this._leoBridgeActionBusy) {
@@ -767,6 +785,7 @@ export class LeoIntegration {
     public nodeActionFullRefreshBuffered(p_action: string, p_node?: LeoNode): void {
         // * For actions that can even change the tree and/or selected body text content
         // TODO : See why nodeActionRefreshBuffered is not enough for 'Save leo file' to reselect node properly!
+        // TODO : MOVE ACTION LOGIC TO COMMAND STACK
         // - undo, redo, execute, refreshFromDiskNode, Save Leo File
         if (this._leoBridgeActionBusy) {
             console.log('Too fast in nodeActionFullRefreshBuffered! for: ' + p_action); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
@@ -779,119 +798,68 @@ export class LeoIntegration {
                 });
         }
     }
+    // ------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------------------------------------
 
-    public editHeadline(p_node?: LeoNode, p_isSelectedNode?: boolean) {
-        if (this._leoBridgeActionBusy) {
-            console.log('Too fast! editHeadline'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
-        } else {
-            this._triggerBodySave(true);
-            if (!p_node && this._lastSelectedNode) {
-                p_node = this._lastSelectedNode;
-            }
-            if (p_node) {
-                if (!p_isSelectedNode && p_node === this._lastSelectedNode) {
-                    p_isSelectedNode = true;
-                }
-                this._leoBridgeActionBusy = true;
-                this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE;
-                this._headlineInputOptions.value = p_node.label; // preset input pop up
-                vscode.window.showInputBox(this._headlineInputOptions)
-                    .then(p_newHeadline => {
-                        if (p_newHeadline) {
-                            p_node!.label = p_newHeadline; // ! When labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
-                            this.sendAction(Constants.LEOBRIDGE.SET_HEADLINE, utils.buildHeadlineJson(p_node!.apJson, p_newHeadline))
-                                .then((p_answer: LeoBridgePackage) => {
-                                    if (p_isSelectedNode) {
-                                        this._forceBodyFocus = true;
-                                    }
-                                    // ! p_revealSelection flag needed because we voluntarily refreshed the automatic ID
-                                    this._refreshOutline(p_isSelectedNode ? RevealType.RevealSelect : RevealType.RevealSelectFocus); // refresh all, needed to get clones to refresh too!
-                                    // focus on body pane
-                                    // if (p_isSelectedNode) {
-                                    //     this.focusBodyIfVisible(p_node.gnx);
-                                    // }
-                                    this._leoBridgeActionBusy = false;
-                                });
-                        } else {
-                            if (p_isSelectedNode) {
-                                // TODO : maybe focus was on outline before the call?
-                                this.focusBodyIfVisible(p_node!.gnx);
-                            }
-                            this._leoBridgeActionBusy = false;
-                        }
-                    });
-            }
-        }
-    }
-
-    public changeMark(p_isMark: boolean, p_node?: LeoNode): void {
-        if (this._leoBridgeActionBusy) {
-            console.log('Too fast! changeMark'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
-        } else {
-            this._triggerBodySave(true);
-            this._leoBridgeActionBusy = true;
-            this.nodeActionRefresh(p_isMark ? Constants.LEOBRIDGE.MARK_PNODE : Constants.LEOBRIDGE.UNMARK_PNODE, p_node)
-                .then(() => {
-                    this._leoBridgeActionBusy = false;
-                });
-            if (!p_node || p_node === this._lastSelectedNode) {
+    public changeMark(p_isMark: boolean, p_node?: LeoNode, p_fromOutline?: boolean): void {
+        if (this.nodeCommand(p_isMark ? Constants.LEOBRIDGE.MARK_PNODE : Constants.LEOBRIDGE.UNMARK_PNODE, p_node, RefreshType.RefreshTree, p_fromOutline)) {
+            if (!p_node || p_node === this.lastSelectedNode) {
                 utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_isMark);
             }
         }
     }
 
-    public insertNode(p_node?: LeoNode): void {
-        if (this._leoBridgeActionBusy) {
-            console.log('Too fast! insert');
-        } else {
+    public editHeadline(p_node?: LeoNode, p_fromOutline?: boolean) {
+        if (!this._commandStack.size()) {
+            // * Only if no commands are waiting to finish because we need the exact label to show in the edit control for now, see TODO below
             this._triggerBodySave(true);
-            if (!p_node && this._lastSelectedNode) {
-                p_node = this._lastSelectedNode;
+            if (!p_node && this.lastSelectedNode) {
+                p_node = this.lastSelectedNode; // Gets last selected node if called via keyboard shortcut or command palette (not set in command stack class)
             }
             if (p_node) {
-                const w_node = p_node; // ref for .then
-                // * New way of doing inserts: Show the input headline box, then either create the new node with the input, or with "New Headline" if canceled
-                this._leoBridgeActionBusy = true;
-                this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_NODE;
-                this._headlineInputOptions.value = Constants.USER_MESSAGES.DEFAULT_HEADLINE;
+                this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE;
+                this._headlineInputOptions.value = p_node.label; // preset input pop up
                 vscode.window.showInputBox(this._headlineInputOptions)
                     .then(p_newHeadline => {
-                        const w_action = p_newHeadline ? Constants.LEOBRIDGE.INSERT_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_PNODE;
-                        const w_para = p_newHeadline ? utils.buildHeadlineJson(w_node!.apJson, p_newHeadline) : w_node.apJson;
-                        this.sendAction(w_action, w_para)
-                            .then(p_package => {
-                                this._forceBodyFocus = true;
-                                this._refreshOutline(RevealType.RevealSelectShowBody); // refresh all, needed to get clones to refresh too!
-                                // this.focusBodyIfVisible(p_package.node.gnx);
-                                this._leoBridgeActionBusy = false;
-                            });
+                        if (p_newHeadline) {
+                            p_node!.label = p_newHeadline; // ! When labels change, ids will change and its selection and expansion states cannot be kept stable anymore.
+                            this.nodeCommand(Constants.LEOBRIDGE.SET_HEADLINE, p_node, RefreshType.RefreshTree, p_fromOutline, p_newHeadline);
+                        } else {
+                            // TODO : Make sure focus is set back properly to either outline or body if this is canceled (Maybe unnecessary?)
+                        }
                     });
             }
+        } else {
+            // TODO : DELAY THIS IF NO PARAMETER NODES, TO USE THE AVAILABLE LAST SELECTED NODE WHEN LAST COMMAND IS DONE FOR RAPID EDIT
+            vscode.window.showInformationMessage("Too Fast: Edit Headline"); // TODO : Use cleanup message string CONSTANT instead
         }
     }
 
-    public saveLeoFile(): void {
+    public insertNode(p_node?: LeoNode, p_fromOutline?: boolean): void {
+        if (!p_node || !this._commandStack.size()) {
+            // * Only if no parameters or no stack at all
+            this._triggerBodySave(true);
+            this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_NODE;
+            this._headlineInputOptions.value = Constants.USER_MESSAGES.DEFAULT_HEADLINE;
+            vscode.window.showInputBox(this._headlineInputOptions)
+                .then(p_newHeadline => {
+                    const w_action = p_newHeadline ? Constants.LEOBRIDGE.INSERT_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_PNODE;
+                    this.nodeCommand(w_action, p_node, RefreshType.RefreshTree, p_fromOutline, p_newHeadline); // p_node and p_newHeadline can be undefined
+                });
+
+        } else {
+            vscode.window.showInformationMessage("Too Fast: Insert Node"); // TODO : Use cleanup message string CONSTANT instead
+        }
+    }
+
+    public saveLeoFile(p_fromOutline?: boolean): void {
         // * Invokes the self.commander.save() Leo command
         // TODO : Specify which file when supporting multiple simultaneous opened Leo files
-        if (this._leoBridgeActionBusy) {
-            console.log('Too fast! executeScript'); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
-            return;
-        }
-        if (this._lastSelectedNode) {
-            this._leoBridgeActionBusy = true;
+        if (this.lastSelectedNode) {
             this._triggerBodySave(true)
                 .then(() => {
-                    console.log('-saveLeoFile-  Back from BODY SAVE');
-
-                    this.nodeAction(Constants.LEOBRIDGE.SAVE_FILE)
-                        .then(() => {
-                            console.log('-saveLeoFile-  Back from NODE ACTION');
-
-                            this.refreshOutlineAndBody();
-                            // this._refreshOutline(RevealType.RevealSelect);
-
-                            this._leoBridgeActionBusy = false;
-                        });
+                    this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline); // p_node and p_newHeadline can be undefined
                 });
         }
     }
