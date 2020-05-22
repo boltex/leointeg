@@ -35,8 +35,7 @@ export class Config implements ConfigMembers {
     constructor(
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
-    ) {
-    }
+    ) { }
 
     /**
      * * Get Leointeg Configuration

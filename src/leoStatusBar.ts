@@ -3,8 +3,10 @@ import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
+/**
+ * * Statusbar indicator controller object
+ */
 export class LeoStatusBar {
-    // * Statusbar indicator behavior service
 
     private _leoStatusBarItem: vscode.StatusBarItem;
     private _statusbarNormalColor = new vscode.ThemeColor(Constants.GUI.THEME_STATUSBAR);  // "statusBar.foreground"
@@ -31,14 +33,25 @@ export class LeoStatusBar {
         this._leoStatusBarItem.hide();
     }
 
+    /**
+     * * Makes the statusbar indicator visible
+     */
     public show(): void {
         this._leoStatusBarItem.show();
     }
 
+    /**
+     * * Hides the statusbar indicator
+     */
     public hide(): void {
         this._leoStatusBarItem.hide();
     }
 
+    /**
+     * * Updates the status bar visual indicator visual indicator with optional debouncing delay
+     * @param p_state True/False flag for On or Off status
+     * @param p_debounceDelay Optional, in milliseconds
+     */
     public update(p_state: boolean, p_debounceDelay?: number): void {
         if (p_state !== this.leoObjectSelected) {
             this.leoObjectSelected = p_state;
@@ -50,8 +63,11 @@ export class LeoStatusBar {
         }
     }
 
+    /**
+     * * Updates the status bar visual indicator flag in a debounced manner
+     * @param p_delay in milliseconds
+     */
     private _updateLeoObjectIndicatorDebounced(p_delay: number): void {
-        // * Update the status bar visual indicator flag in a debounced manner
         if (this._updateStatusBarTimeout) {
             clearTimeout(this._updateStatusBarTimeout);
         }
@@ -60,8 +76,10 @@ export class LeoStatusBar {
         }, p_delay);
     }
 
+    /**
+     * * Updates the status bar visual indicator flag directly
+     */
     private _updateLeoObjectIndicator(): void {
-        // * Update the status bar visual indicator flag directly
         if (this._updateStatusBarTimeout) { // Can be called directly, so clear timer if any
             clearTimeout(this._updateStatusBarTimeout);
         }

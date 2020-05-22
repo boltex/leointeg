@@ -4,8 +4,10 @@ import { LeoNode } from "./leoNode";
 import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
 
+/**
+ * * Leo outline implemented as a tree view with this TreeDataProvider implementation
+ */
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
-    // * Leo outline implemented as a tree view with this TreeDataProvider implementation
 
     private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> = new vscode.EventEmitter<LeoNode | undefined>();
 
@@ -15,11 +17,17 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     constructor(private _leoIntegration: LeoIntegration) { }
 
+    /**
+     * * Refresh a single node
+     */
     public refreshTreeNode(p_node: LeoNode): void {
-        this._refreshSingleNodeFlag = true; // Of course we want to do a real refresh!
+        this._refreshSingleNodeFlag = true; // We want to do a real refresh, not just giving back the same we've got as input in getTreeItem
         this._onDidChangeTreeData.fire(p_node);
     }
 
+    /**
+     * * Refresh the whole outline
+     */
     public refreshTreeRoot(): void {
         this._onDidChangeTreeData.fire();
     }
@@ -49,8 +57,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     public getParent(element: LeoNode): ProviderResult<LeoNode> | null {
         // * This method should be implemented in order to access reveal API.
+        // ! But it should NOT have to be called because we will only try to 'select' already revealed nodes
 
-        // ! This should NOT have to be called because we will only try to 'select' already revealed nodes
         console.log('OH NO! GET PARENT CALLED! on: ', element.label);
 
         if (this._leoIntegration.fileOpenedReady) {

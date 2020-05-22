@@ -1,12 +1,14 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
-import { ArchivedPosition } from "./types"; // * TO HELP DEBUG logging
+import { ArchivedPosition } from "./types"; // * TO HELP DEBUG
 
+/**
+ * * Implementation of tree nodes for usage in a TreeDataProvider
+ */
 export class LeoNode extends vscode.TreeItem {
-    // * Implementation of tree nodes for usage in a TreeDataProvider
 
-    public cursorSelection: any; // TODO : Keep body's cursor and selection position from vscode to get it back
+    public cursorSelection: any; // TODO : #39 @boltex Keep body's cursor and selection position from vscode to get it back
     public contextValue: string; // * Context string is checked in package.json with 'when' clauses
 
     constructor(
@@ -40,11 +42,16 @@ export class LeoNode extends vscode.TreeItem {
     //     return "child:" + w_ap.childIndex + " lvl:" + w_ap.level + " gnx:" + w_ap.gnx;
     // }
 
-    get description(): string {
-        // * some smaller grayed-out text accompanying the main label
-        return "id:" + this.id;
-    }
+    // get description(): string {
+    //     // * some smaller grayed-out text accompanying the main label
+    //     return "id:" + this.id;
+    // }
 
+    /**
+     * * Sets this node properties (dirty, marked, etc.) by copying from a given node.
+     * * This is needed by the outline provider when refreshing a single node.
+     * @param p_node Node to copy properties from
+     */
     public copyProperties(p_node: LeoNode): LeoNode {
         this.label = p_node.label;
         this.gnx = p_node.gnx;

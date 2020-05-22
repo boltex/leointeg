@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { RevealType, RefreshType } from "./types";
+import { RefreshType } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";

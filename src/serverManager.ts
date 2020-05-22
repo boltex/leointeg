@@ -5,15 +5,19 @@ import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
 
+/**
+ * * Provides simple automatic leo bridge server startup
+ */
 export class ServerService {
-    // * Provides automatic leo bridge server startup service
-    // TODO : Issue https://github.com/boltex/leointeg/issues/10
+    // TODO : See #10 @boltex Problem starting the leo-bridge server automatically with anaconda/miniconda on windows
     // See https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts#L196
 
     private _platform: string;
     private _isWin32: boolean;
 
-    // * Leo Bridge Server Process
+    /**
+     * * Leo Bridge Server Process
+     */
     private _serverProcess: child.ChildProcess | undefined;
 
     constructor(private _context: vscode.ExtensionContext) {
@@ -21,8 +25,10 @@ export class ServerService {
         this._isWin32 = this._platform === "win32";
     }
 
+    /**
+     * * Get command from settings or best command for the current OS
+     */
     public startServer(p_leoPythonCommand: string): Promise<any> {
-        // * Get command from settings or best command for the current OS
         let w_pythonPath = "";
         const w_serverScriptPath = this._context.extensionPath + Constants.SERVER_PATH;
         if (p_leoPythonCommand && p_leoPythonCommand.length) {

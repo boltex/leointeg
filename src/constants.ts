@@ -74,8 +74,10 @@ export class Constants {
         IGNORED: " They were ignored." // with leading space
     };
 
+    /**
+     * * String for JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
+     */
     public static CONFIGURATION = {
-        // * String for JSON configuration keys
         CHECK_FOR_CHANGE_EXTERNAL_FILES: "checkForChangeExternalFiles",
         DEFAULT_RELOAD_IGNORE: "defaultReloadIgnore",
         TREE_KEEP_FOCUS: "treeKeepFocus",
@@ -98,8 +100,10 @@ export class Constants {
         IP_PORT: "connectionPort",
     };
 
+    /**
+     * * Used in 'when' clauses, set with vscode.commands.executeCommand("setContext",...)
+     */
     public static CONTEXT_FLAGS = {
-        // * Used in 'when' clauses, set with vscode.commands.executeCommand("setContext",...)
         BRIDGE_READY: "leoBridgeReady",
         TREE_OPENED: "leoTreeOpened",
         SERVER_STARTED: "leoServerStarted",
@@ -117,8 +121,10 @@ export class Constants {
         SELECTED_ATFILE: "leoNodeAtFile"
     };
 
+    /**
+     * * Actions that can be invoked by Leo through leobridge
+     */
     public static ASYNC_ACTIONS = {
-        // * Actions that can be invoked by Leo through leobridge
         ASYNC_LOG: "log",
         ASYNC_ASK: "ask",
         ASYNC_WARN: "warn",
@@ -126,14 +132,18 @@ export class Constants {
         ASYNC_INTERVAL: "interval"
     };
 
+    /**
+     * * When async action was ASYNC_INFO
+     */
     public static ASYNC_INFO_MESSAGE_CODES = {
-        // * When async action was ASYNC_INFO
         ASYNC_REFRESHED: "refreshed",
         ASYNC_IGNORED: "ignored"
     };
 
+    /**
+     * * Commands for leobridgeserver.py
+     */
     public static LEOBRIDGE = {
-        // * Commands for leobridgeserver.py
         APPLY_CONFIG: "applyConfig",
         ASK_RESULT: "askResult",
         GET_ALL_GNX: "getAllGnx",
@@ -195,15 +205,19 @@ export class Constants {
         MOVE_MARKED_NODES: "moveMarkedNodes"
     };
 
+    /**
+     * * Command strings to be used with vscode.commands.executeCommand
+     */
     public static VSCODE_COMMANDS = {
-        // * Command strings to be used with vscode.commands.executeCommand
         SET_CONTEXT: "setContext",
         CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
         QUICK_OPEN: "workbench.action.quickOpen"
     };
 
+    /**
+     * * All commands this expansion exposes (in package.json, contributes > commands)
+     */
     public static COMMANDS = {
-        // * All commands this expansion exposes (in package.json, contributes > commands)
         SHOW_WELCOME: "showWelcomePage", // Always available: not in the commandPalette section of package.json
         SHOW_SETTINGS: "showSettingsPage", // Always available: not in the commandPalette section of package.json
         // * LeoBridge

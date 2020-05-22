@@ -4,7 +4,7 @@ import { UserCommand, RefreshType, LeoBridgePackage } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
- * * Front-facing, user command stack of actions. Can be added once started resolving if action only requires generic selected node as param.
+ * * Front-facing, user command stack of actions. Actions can also be added once started resolving.
  */
 export class CommandStack {
 
@@ -43,6 +43,7 @@ export class CommandStack {
      */
     public add(p_command: UserCommand): boolean {
         if (this.size() && p_command.node) {
+            // If already started we only if if action requires generic selected node as param
             return false;
         } else {
             this._stack.push(p_command);

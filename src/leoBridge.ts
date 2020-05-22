@@ -5,8 +5,10 @@ import { LeoBridgePackage, LeoAction } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoAsync } from "./leoAsync";
 
+/**
+ * * Handles communication with the leobridgeserver.py python script via websockets
+ */
 export class LeoBridge {
-    // * Handles communication with the leobridgeserver.py python script via websockets
 
     private _actionBusy: boolean = false; // An action was started from the bottom and has not yet resolved
 
@@ -25,8 +27,10 @@ export class LeoBridge {
         this._leoAsync = new LeoAsync(_context, _leoIntegration);
     }
 
+    /**
+     * * Places an action to be made by leoBridge.py on top of a stack, to be resolved from the bottom
+     */
     public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
-        // * Places an action to be made by leoBridge.py on top of a stack, to be resolved from the bottom
         return new Promise((resolve, reject) => {
             const w_action: LeoAction = {
                 parameter: this._buildActionParameter(p_action, p_jsonParam),
@@ -42,8 +46,10 @@ export class LeoBridge {
         });
     }
 
+    /**
+     * * actions invoked by Leo that can be called asynchronously at any time
+     */
     private _asyncAction(w_parsedData: any): void {
-        // * actions invoked by Leo that can be called asynchronously at any time
         if (w_parsedData && w_parsedData.async && (typeof w_parsedData.async === "string")) {
             switch (w_parsedData.async) {
                 case Constants.ASYNC_ACTIONS.ASYNC_LOG: {
@@ -76,16 +82,20 @@ export class LeoBridge {
         }
     }
 
+    /**
+     * * Build JSON string for action parameter to the leoBridge
+     */
     private _buildActionParameter(p_action: string, p_jsonParam?: string): string {
-        // * Build JSON string for action parameter to the leoBridge
         return "{\"id\":" + (++this._leoBridgeSerialId) + // no quotes, serial id is a number, pre incremented
             ", \"action\": \"" + p_action +  // action is string so surround with quotes
             "\", \"param\":" + p_jsonParam +  // param is already json, no need for added quotes
             "}";
     }
 
+    /**
+     * * Resolves promises with the answers from an action that was done by leoBridge.py
+     */
     private _resolveBridgeReady(p_object: string) {
-        // * Resolves promises with the answers from an action that was done by leoBridge.py
         let w_bottomAction = this._callStack.shift();
         if (w_bottomAction) {
             if (w_bottomAction.deferredPayload) { // Used when the action already has a return value ready but is also waiting for python's side
@@ -99,16 +109,20 @@ export class LeoBridge {
         }
     }
 
+    /**
+     * * Rejects an action from the bottom of the stack
+     */
     private _rejectAction(p_reason: string): void {
-        // * Rejects an action from the bottom of the stack
         const w_bottomAction = this._callStack.shift();
         if (w_bottomAction) {
             w_bottomAction.rejectFn(p_reason);
         }
     }
 
+    /**
+     * * Sends an action from the bottom of the stack to leoBridge.py process stdin
+     */
     private _callAction(): void {
-        // * Sends an action from the bottom of the stack to leoBridge.py process stdin
         if (this._callStack.length && !this._actionBusy) {
             this._actionBusy = true; // launch / resolve bottom one
             const w_action = this._callStack[0];
@@ -116,8 +130,10 @@ export class LeoBridge {
         }
     }
 
+    /**
+     * * JSON.parse encased in a Try/Catch block
+     */
     private _tryParseJSON(p_jsonStr: string): boolean | any {
-        // * JSON.parse encased in a Try/Catch block
         try {
             var w_object = JSON.parse(p_jsonStr);
             // JSON.parse(null) returns null, and typeof null === "object", null is falsy, so this suffices:
@@ -131,8 +147,10 @@ export class LeoBridge {
         return false;
     }
 
+    /**
+     * * Process data that came out of leoBridge.py process stdout
+     */
     private _processAnswer(p_data: string): void {
-        // * Process data that came out of leoBridge.py process stdout
         const w_parsedData = this._tryParseJSON(p_data);
         if (w_parsedData && w_parsedData.id) {
             this._resolveBridgeReady(w_parsedData);
@@ -146,8 +164,10 @@ export class LeoBridge {
         }
     }
 
+    /**
+     * * Spawn a websocket
+     */
     public initLeoProcess(): Promise<LeoBridgePackage> {
-        // * Spawn a websocket
         this._websocket = new WebSocket(Constants.TCPIP_DEFAULT_PROTOCOL +
             this._leoIntegration.config.connectionAddress +
             ":" + this._leoIntegration.config.connectionPort);
@@ -174,8 +194,10 @@ export class LeoBridge {
         return this._readyPromise; // This promise will resolve when the started python process starts
     }
 
+    /**
+     * * Send into the python process input
+     */
     private _send(p_message: string): any {
-        // * Send into the python process input
         if (this._readyPromise) {
             this._readyPromise.then(() => { // using '.then' that was surely resolved already: to be buffered in case process isn't ready.
                 if (this._websocket && this._websocket.OPEN) {

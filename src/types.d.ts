@@ -1,6 +1,9 @@
 import * as vscode from "vscode";
 import { LeoNode } from "./leoNode";
 
+/**
+ * * Types of the various JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
+ */
 export interface ConfigMembers {
     checkForChangeExternalFiles: string;
     defaultReloadIgnore: string;
@@ -24,8 +27,10 @@ export interface ConfigMembers {
     connectionPort: number;
 }
 
+/**
+ * * When refreshing the outline and getting to Leo's selected node
+ */
 export const enum RevealType {
-    // * When refreshing the outline and getting to Leo's selected node
     NoReveal = 0, // In apToLeoNode conversion, If if the global revealType is "NoReveal" and its the selected node, re-use the old id
     Reveal,
     RevealSelect,
@@ -34,16 +39,20 @@ export const enum RevealType {
     RevealSelectShowBody // TODO : Should not be part of outline-node's reveal types
 }
 
+/**
+ * * User command's refresh-type for when coming back from executing the command
+ */
 export const enum RefreshType {
-    // * User command's refresh-type for when coming back from executing the command
     NoRefresh = 0, // only for 'copy-node' so far
     RefreshTree,   // Refresh tree and show body pane if not already opened, but no need to refresh it
     RefreshTreeAndBody // undo, redo, execute and others can also modify the current body, so refresh the filesystem gnx too
     // RefreshNodeOnly NOT USED : expand, collapse, select and open aside do not
 }
 
+/**
+ * * Command parameter for when 'stacking' front end commands
+ */
 export interface UserCommand {
-    // * Command parameter for when 'stacking' front end commands
     action: string;
     node?: LeoNode | undefined;  // We can START a stack with a targeted command
     providedHeadline?: string | undefined;
@@ -51,19 +60,27 @@ export interface UserCommand {
     fromOutline: boolean;
 }
 
-export interface LeoAction { // pushed and resolved as a stack
+/**
+ * * Actions to be performed by Leo, pushed and resolved as a stack
+ */
+export interface LeoAction {
     parameter: string; // to pass along with action to python's side
     deferredPayload?: any | undefined; // Used when the action already has a return value ready but is also waiting for python's side
     resolveFn: (result: any) => void; // call that with an answer from python's (or other) side
     rejectFn: (reason: any) => void; // call if problem is encountered
 }
 
+/**
+ * * Simple 'string log entry' package format
+ */
 export interface LeoLogEntry {
     log: string;
 }
 
+/**
+ * * ArchivedPosition format package from Leo's leoflexx.py
+ */
 export interface ArchivedPosition {
-    // * from Leo's leoflexx.py
     hasBody: boolean;       // bool(p.b),
     hasChildren: boolean;   // p.hasChildren()
     childIndex: number;     // p._childIndex
@@ -83,13 +100,18 @@ export interface ArchivedPosition {
     }[];                    // for (stack_v, stack_childIndex) in p.stack]
 }
 
-export interface LeoBridgePackage { // TODO : Document
+/**
+ * * Main JSON information package format used between leointeg and Leo
+ */
+export interface LeoBridgePackage {
     id: number;
     [key: string]: any; // TODO ADD ALL POSSIBLE (FACULTATIVE) KEYS FROM leobridgeserver.py
 }
 
+/**
+ * * Icon path names used in leoNodes for rendering in treeview
+ */
 export interface Icon {
-    // * Icon path names used in leoNodes for rendering in treeview
     light: string;
     dark: string;
 }

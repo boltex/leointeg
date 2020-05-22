@@ -3,10 +3,11 @@ import { Constants } from "./constants";
 import { AskMessageItem } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
+/**
+ * * Handles the functions called by Leo through leoBridge such as adding a log pane entry, runAskYesNoDialog for file changes, etc.
+ * * Some config settings affect this behavior, such as defaultReloadIgnore and checkForChangeExternalFiles
+ */
 export class LeoAsync {
-    // * Functions called by Leo through leoBridge such as adding a log pane entry, runAskYesNoDialog for file changes, etc.
-    // * Some config settings affect this behavior, such as defaultReloadIgnore and checkForChangeExternalFiles
-
     // TODO : CLEANUP THIS CLASS! -> Many strings should be moved to constants.ts
 
     private _askResult: string = "";
@@ -16,16 +17,20 @@ export class LeoAsync {
         private _leoIntegration: LeoIntegration
     ) { }
 
+    /**
+     * * Adds message string to leoInteg's log pane, used when leoBridge gets an async 'log' command
+     */
     public log(p_message: string): void {
-        // * Adds message string to leoInteg's log pane, used when leoBridge gets an async 'log' command
+        //
         this._leoIntegration.addLogPaneEntry(p_message);
     }
 
+    /**
+     * * Equivalent to runAskYesNoDialog from Leo's qt_gui.py, used when leoBridge gets an async 'ask' command
+     * * Opens a modal dialog to return one of 'yes', 'yes-all', 'no' or 'no-all' to be sent back with the leoBridge 'ASK_RESULT' action
+     * @param p_askArg an async package object {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
+     */
     public showAskModalDialog(p_askArg: { "ask": string; "message": string; "yes_all": boolean; "no_all": boolean; }): void {
-        // * Equivalent to runAskYesNoDialog from Leo's qt_gui.py, used when leoBridge gets an async 'ask' command
-        // async package {"ask": title, "message": message, "yes_all": yes_all, "no_all": no_all}
-
-        // Setup modal dialog to return one of 'yes', 'yes-all', 'no' or 'no-all', to be sent back with the leoBridge 'ASK_RESULT' action
         this._askResult = "no"; // defaults to not doing anything, matches isCloseAffordance just to be safe
 
         // const lastLine = p_askArg.message.substr(p_askArg.message.lastIndexOf("\n") + 1); // last line could be used in the message
@@ -58,9 +63,11 @@ export class LeoAsync {
         });
     }
 
+    /**
+     * * Equivalent to runAskOkDialog from Leo's qt_gui.py, used when leoBridge gets an async 'warn' command
+     * @param p_waitArg an async package object {"warn": "", "message": ""}
+     */
     public showWarnModalMessage(p_waitArg: any): void {
-        // * Equivalent to runAskOkDialog from Leo's qt_gui.py, used when leoBridge gets an async 'warn' command
-        // async package {"warn": "", "message": ""}
         vscode.window.showInformationMessage(
             p_waitArg.message,
             { modal: true }
@@ -69,9 +76,12 @@ export class LeoAsync {
         });
     }
 
+    /**
+     * * Show non-blocking info message about detected file changes, used when leoBridge gets an async 'info' command
+     * @param p_infoArg an async package object { "message": string; }
+     */
     public showChangesDetectedInfoMessage(p_infoArg: { "message": string; }): void {
-        // * Show non-blocking info message about detected file changes, used when leoBridge gets an async 'info' command
-        // TODO : Message pre-built elsewhere, and flags for refresh in independent event/call
+        // TODO : Message made from CONSTANT pre-built elsewhere, and flags for refresh in independent event/call
         let w_message = "Changes to external files were detected.";
         switch (p_infoArg.message) {
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_REFRESHED:
