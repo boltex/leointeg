@@ -55,7 +55,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public setBodyTime(p_uri: vscode.Uri): void {
 
-        // TODO : Maybe revise structure if only going to be "LEO BODY" with or without decorator
+        // TODO : Maybe revise structure if filename only going to be a fixed string with or without decorator
 
         // save selected gnx and set its mtime to 'now'
 
@@ -75,7 +75,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public setRenameTime(p_gnx: string): void {
-        // TODO : Maybe revise structure if only going to be "LEO BODY" with or without decorator
+        // TODO : Maybe revise structure if only going to be a fixed string with or without decorator
 
         // Need to keep track of it separately from regular bodyUri because of save-rename hack
 

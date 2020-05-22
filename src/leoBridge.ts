@@ -99,12 +99,6 @@ export class LeoBridge {
         }
     }
 
-    private _rejectActions(p_reason: string): void {
-        // * Rejects all actions from the the stack
-        while (this._callStack.length) {
-            this._rejectAction(p_reason);
-        }
-    }
     private _rejectAction(p_reason: string): void {
         // * Rejects an action from the bottom of the stack
         const w_bottomAction = this._callStack.shift();
@@ -146,7 +140,6 @@ export class LeoBridge {
         } else if (w_parsedData && w_parsedData.async) {
             // * Check for async messages such as log pane entries or other
             this._asyncAction(w_parsedData);
-            // this._leoIntegration.async(w_parsedData);
         } else {
             // unprocessed/unknown python output
             console.error("[leoBridge] unprocessed/unknown json received: ", p_data);
@@ -176,7 +169,6 @@ export class LeoBridge {
                 this._leoIntegration.cancelConnect(`websocket closed, code: ${p_event.code}`);
             }
         };
-
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
         this._readyPromise = this.action("", "", { id: Constants.STARTING_PACKAGE_ID }, true);
         return this._readyPromise; // This promise will resolve when the started python process starts

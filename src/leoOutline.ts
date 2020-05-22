@@ -21,8 +21,6 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     }
 
     public refreshTreeRoot(): void {
-        console.log('RUNNING refreshTreeRoot, revealType is: ' + this._leoIntegration._revealType);
-
         this._onDidChangeTreeData.fire();
     }
 

@@ -1,5 +1,7 @@
+/**
+ * * Text and numeric constants used throughout leoInteg
+ */
 export class Constants {
-    // * All text and numeric constants used throughout leoInteg
 
     public static PUBLISHER: string = "boltex";
     public static NAME: string = "leointeg";
@@ -25,11 +27,12 @@ export class Constants {
 
     public static ERROR_PACKAGE_ID: number = 0;
     public static STARTING_PACKAGE_ID: number = 1;
-
     public static STATUSBAR_DEBOUNCE_DELAY: number = 50;
 
+    /**
+     * * Strings used in the interface itself
+     */
     public static GUI = {
-        // * Strings needed to build the interface itself
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
@@ -46,8 +49,10 @@ export class Constants {
         THEME_STATUSBAR: "statusBar.foreground"
     };
 
+    /**
+     * * Basic user messages strings for messages and dialogs
+     */
     public static USER_MESSAGES = {
-        // * Basic user messages strings for messages and dialogs
         FILE_ALREADY_OPENED: "Leo file already opened",
         STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect", // TODO : Add description of what happens if clicked
         STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked

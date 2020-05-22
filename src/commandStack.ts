@@ -1,10 +1,11 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { UserCommand, RefreshType, LeoBridgePackage } from "./types";
-import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
-
+/**
+ * * Front-facing, user command stack of actions. Can be added once started resolving if action only requires generic selected node as param.
+ */
 export class CommandStack {
 
     private _stack: UserCommand[] = [];
@@ -17,9 +18,7 @@ export class CommandStack {
     constructor(
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
-    ) {
-
-    }
+    ) { }
 
     /**
      * * Get command stack size
@@ -47,6 +46,8 @@ export class CommandStack {
             return false;
         } else {
             this._stack.push(p_command);
+            // This flag is set on command entered, not when finally executed because a rapid type in editor can override focus
+            this._finalFromOutline = p_command.fromOutline; // use the last _finalFromOutline regardless of previous so change now
             this.tryStart();
             return true;
         }
@@ -65,7 +66,7 @@ export class CommandStack {
     }
 
     /**
-     * * Do run the command at the index 0, (bottom) of the stack
+     * * Run the command at the index 0, the bottom of the stack
      */
     private _runStackCommand(): Promise<LeoBridgePackage> {
         const w_command = this._stack[0]; // Reference from bottom of stack, don't remove yet
@@ -91,24 +92,35 @@ export class CommandStack {
 
         // Setup _finalRefreshType, if higher than the one setup so far
         this._finalRefreshType = w_command.refreshType > this._finalRefreshType ? w_command.refreshType : this._finalRefreshType;
-        this._finalFromOutline = w_command.fromOutline; // and _finalFromOutline regardless of previous
 
         // Submit this action to Leo and return a promise of its packaged answer
         return this._leoIntegration.sendAction(w_command.action, w_jsonParam);
     }
 
+    /**
+     * * Handle the result from the command that has finished, and either launch the next one refresh accordingly
+     * @param p_package is the json return 'package' that was just received back from Leo
+     */
     private _resolveResult(p_package: LeoBridgePackage): void {
+        this._stack.shift();
+        // If last is done then do refresh outline and focus on outline, or body
+        if (!this.size()) {
+            // Reset 'received' selected node so that lastSelectedNode is used instead
+            this._receivedSelection = "";
+            this._busy = false;
+            if (this._finalRefreshType) {
+                // At least some type of refresh
+                this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline);
+            }
+            // Reset refresh type and focus flag nonetheless
+            this._finalRefreshType = RefreshType.NoRefresh;
+            this._finalFromOutline = false;
 
-        this._receivedSelection = p_package.node;
-
-
-        // Resolve until last
-
-        // IF LAST IS DONE THEN DO REFRESH OUTLINE AND FOCUS ON OUTLINE, OR BODY,
-
-        // BODY MAY NEED TO BE FORCED REFRESHED IF ALREADY VISIBLE WHEN STACK FINISHES LAST ACTION
-
-
+        } else {
+            // size > 0, so call _runStackCommand again, keep _busy set to true
+            this._receivedSelection = p_package.node;
+            this._runStackCommand();
+        }
 
     }
 }

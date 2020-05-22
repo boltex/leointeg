@@ -34,6 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.START_SERVER, () => leoIntegration.startServer()],
         [w_cmdPrefix + Constants.COMMANDS.CONNECT, () => leoIntegration.connect()],
         [w_cmdPrefix + Constants.COMMANDS.SHOW_LOG, () => leoIntegration.showLogPane()],
+        [w_cmdPrefix + Constants.COMMANDS.SHOW_BODY, () => leoIntegration.showBody(false)], // TODO : Consider removing this from menus (redundant/unnecessary)
         [w_cmdPrefix + Constants.COMMANDS.OPEN_FILE, () => leoIntegration.openLeoFile()], // TODO : Support multiple simultaneous opened files
         [w_cmdPrefix + Constants.COMMANDS.SAVE_FILE, () => leoIntegration.saveLeoFile()], // TODO : Specify which file when supporting multiple simultaneous files
 

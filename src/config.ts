@@ -4,10 +4,11 @@ import { ConfigMembers } from "./types";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
+/**
+ * * Configuration Settings Service
+ */
 export class Config implements ConfigMembers {
-    // * Configuration Settings Service
     // Some config settings are used in leobridgeserver.py such as defaultReloadIgnore and checkForChangeExternalFiles
-
     public checkForChangeExternalFiles: string = "none";  // Used in leoBridge script
     public defaultReloadIgnore: string = "none"; // Used in leoBridge script
     public treeKeepFocus: boolean = true;
@@ -37,6 +38,10 @@ export class Config implements ConfigMembers {
     ) {
     }
 
+    /**
+     * * Get Leointeg Configuration
+     * @returns An object with all 'live' config settings members such as treeKeepFocus, defaultReloadIgnore, etc.
+     */
     public getConfig(): ConfigMembers {
         return {
             checkForChangeExternalFiles: this.checkForChangeExternalFiles,  // Used in leoBridge script
@@ -62,8 +67,12 @@ export class Config implements ConfigMembers {
         };
     }
 
+    /**
+     * * Make changes to the expansion config settings, the updated configuration values are persisted
+     * @param p_changes an array of key/values to change in the expansion settings
+     * @returns a promise in case additional procedures need to be run upon completion
+     */
     public setLeoIntegSettings(p_changes: { code: string, value: any }[]): Promise<void> {
-        // also returns as a promise in case additional procedures need to be run on completion
         this._isSettingConfig = true;
         const w_promises: Thenable<void>[] = [];
         const w_vscodeConfig = vscode.workspace.getConfiguration(Constants.CONFIG_SECTION);
@@ -79,16 +88,19 @@ export class Config implements ConfigMembers {
                 // console.log("setting ", change.code, "to ", change.value);
             }
         });
-
         return Promise.all(w_promises).then(() => {
             this._isSettingConfig = false;
-            this.getLeoIntegSettings();
+            this.buildFromSavedSettings();
         });
     }
 
-    public getLeoIntegSettings(): void {
+    /**
+     * * Build config from settings from vscode's saved config settings
+     */
+    public buildFromSavedSettings(): void {
         if (this._isSettingConfig) {
-            return; // * Currently setting config, wait until its done all, and this will be called automatically
+            // * Currently setting config, wait until its done all, and this will be called automatically
+            return;
         } else {
             // * Graphic and theme settings
             this.invertNodeContrast = vscode.workspace.getConfiguration(Constants.CONFIG_SECTION).get(Constants.CONFIGURATION.INVERT_NODES, false);

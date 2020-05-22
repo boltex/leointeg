@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, UserCommand, RefreshType } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -67,13 +67,18 @@ export class LeoIntegration {
         this._lastSelectedNode = p_leoNode;
     }
 
-    // * Outline Pane redraw/refresh flag. Also set when calling refreshTreeRoot
-    // ! temp public test
+    // * Outline Pane redraw/refresh flags. Also set when calling refreshTreeRoot
     // If there's no reveal and its the selected node re-use the old id
-    public _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
+    private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
+    // * end of commands stack resolution "refresh flags"
+    private _needRefreshBody: boolean = false; // Flag for commands that might change current body
+    private _fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
+
 
     // * Body Pane
     private _leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
+    private _bodyTextDocument: vscode.TextDocument | undefined; // Source 'textDocument' from last body 'textEditor' found
+    private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
 
     private _bodyUri: vscode.Uri = utils.strToUri("");
     get bodyUri(): vscode.Uri {
@@ -84,17 +89,6 @@ export class LeoIntegration {
         this._bodyUri = p_uri;
     }
 
-    private _bodyTextDocument: vscode.TextDocument | undefined;
-
-    // TODO : use _needRefreshBody in 'setTreeViewSelection' back from commands instead
-    private _needRefreshBody: boolean = false; // Flag for commands that might change current body, this is global for the 'select' after it finishes
-
-    // TODO : Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
-    private _forceBodyFocus: boolean = false; // Flag used to force focus in body when next 'showing' of this body occurs (after edit headline if already selected)
-
-    // TODO : May be unused if only one BODY gnx at a time
-    private _bodyTextDocumentSameUri: boolean = false; // Flag used when checking if clicking a node requires opening a body pane text editor
-    private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // TODO : THIS IS REDUNDANT BECAUSE OF _bodyTextDocument is always direct base object
 
     // * Log Pane
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(Constants.GUI.LOG_PANE_TITLE); // Copy-pasted from leo's log pane
@@ -115,7 +109,7 @@ export class LeoIntegration {
     constructor(private _context: vscode.ExtensionContext) {
         // * Get configuration settings
         this.config = new Config(_context, this);
-        this.config.getLeoIntegSettings();
+        this.config.buildFromSavedSettings();
 
         // * Build Icon filename paths
         this.icons = utils.buildIconPaths(_context);
@@ -274,7 +268,7 @@ export class LeoIntegration {
         // * vscode.workspace.onDidChangeConfiguration trigger handling
         if (p_event.affectsConfiguration(Constants.CONFIG_SECTION)) {
             // console.log('Detected Change of vscode config in leoIntegration !');
-            this.config.getLeoIntegSettings();
+            this.config.buildFromSavedSettings();
         }
     }
 
@@ -294,6 +288,7 @@ export class LeoIntegration {
             this._revealTreeViewNode(p_event.element, { select: true, focus: false }); // No force focus : it breaks collapse/expand when direct parent
             this.selectTreeNode(p_event.element, true);  // not waiting for a .then(...) so not to add any lag
             this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson);
+            // this._refreshNode(p_event.element); // don't wait for action to finish // TODO: MAYBE UNNEEDED IF ENGINE REFRESHES ON UNFOLD
         }
     }
 
@@ -350,12 +345,13 @@ export class LeoIntegration {
     private _onDocumentSaved(p_event: vscode.TextDocument): void { }
 
     private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
-        // * Edited the document: ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
+        // * Typing detected in a document. ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
         if (p_event.contentChanges.length && (p_event.document.uri.scheme === Constants.URI_SCHEME)) {
-            console.log('_onDocumentChanged ');
+            console.log('_onDocumentChanged : This should only happen via TYPING!');
 
             // * There was an actual change on a Leo Body by the user
             this._bodyLastChangedDocument = p_event.document;
+            this._fromOutline = false; // Focus is on body pane
 
             // * If icon should change then do it now (if there's no document edit pending)
             if (this.lastSelectedNode && utils.uriToStr(p_event.document.uri) === this.lastSelectedNode.gnx) {
@@ -432,6 +428,7 @@ export class LeoIntegration {
     }
 
     private _refreshNode(p_node: LeoNode): void {
+        // TODO: MAYBE UNNEEDED IF ENGINE REFRESHES ON UNFOLD
         this._revealType = RevealType.NoReveal; // Keep id because only called by expand/collapse
         this._leoTreeDataProvider.refreshTreeNode(p_node);
     }
@@ -489,7 +486,7 @@ export class LeoIntegration {
                     // Check if OPENING THE BODY WAS REQUIRED? // TODO : DOES THIS BLOCK GO REALLY HERE??!?
                     if (w_showBodyFlag) {
                         // TODO : use a new "Show Body" function such as _setBody (that would mirror _gotSelection but for the body) ?
-                        this.selectTreeNode(p_leoNode, true);
+                        this._gotSelection(p_leoNode);
                     }
                 });
         });
@@ -507,7 +504,7 @@ export class LeoIntegration {
     }
 
     private _revealTreeViewNode(p_leoNode: LeoNode, p_options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): Thenable<void> {
-        //* 'TreeView.reveal' for any opened leo outline
+        // * 'TreeView.reveal' for any opened leo outline that is currently visible
         if (this._leoTreeStandaloneView.visible) {
             return this._leoTreeStandaloneView.reveal(p_leoNode, p_options);
         }
@@ -518,7 +515,14 @@ export class LeoIntegration {
         return Promise.resolve();
     }
 
-    private _gotSelection(): Thenable<boolean> {
+    public launchRefresh(p_refreshType: RefreshType, p_fromOutline: boolean): void {
+        // * Launch the tree root, and optionally body, refresh processes, leading to _gotSelection upon reaching the selected node
+        // TODO : This should replace refreshOutlineAndBody
+
+
+    }
+
+    private _gotSelection(p_leoNode: LeoNode): Thenable<boolean> {
         // * While converting received ap_nodes to LeoNodes, the selected node was reached
 
         console.log('GOT SELECTED NODE WHILE REFRESHING TREEVIEW');
@@ -530,7 +534,7 @@ export class LeoIntegration {
             w_needsFilesystemRefresh = true;
         }
 
-
+        // TODO : Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
 
 
 
@@ -543,27 +547,21 @@ export class LeoIntegration {
 
         console.log('SELECT TREE NODE');
 
-        let w_needsFilesystemRefresh: boolean = false; // TODO : This block in _gotSelection or other "Back from Command" method
-        if (p_internalCall && this._needRefreshBody) {
-            this._needRefreshBody = false;
-            w_needsFilesystemRefresh = true;
-        }
-
-        // TODO : If command stack not empty/still running commands exit this method & let end of commands (re)set selected node
-
         // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
         if (p_aside && p_node !== this.lastSelectedNode) {
             this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
         }
 
-        // TODO : Save and restore selection, along with cursor position, from selection state saved in each node (or gnx array)
+        // TODO : #39 @boltex Save and restore selection, along with cursor position, from selection state saved in each node (or gnx array)
 
         this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
 
+        const w_showBodyKeepFocus = p_aside ? this.config.treeKeepFocusWhenAside : this.config.treeKeepFocus;
+
         // * Check if having already this exact node position selected : Just show the body and exit!
-        if (!w_needsFilesystemRefresh && (p_node === this.lastSelectedNode)) {
+        if (p_node === this.lastSelectedNode) {
             this._locateOpenedBody(p_node.gnx);
-            return this.showBody(p_aside); // voluntary exit
+            return this.showBody(!!p_aside, w_showBodyKeepFocus); // voluntary exit
         }
 
         // * Set selected node in Leo via leoBridge
@@ -579,41 +577,22 @@ export class LeoIntegration {
         // * Is the last opened body still opened?
         if (this._bodyTextDocument && !this._bodyTextDocument.isClosed) {
 
-            // * Checks if already opened and visible, also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
-            this._locateOpenedBody(p_node.gnx); // Maybe just use it to set
-
-            if (this._bodyTextDocumentSameUri) {
+            // * Check if already opened and visible, _locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
+            if (this._locateOpenedBody(p_node.gnx)) {
                 // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
                 this.bodyUri = utils.strToUri(p_node.gnx);
-                if (w_needsFilesystemRefresh) {
-                    console.log('We were resolving a command that could change body content 1 ');
-                    // TODO: We were resolving a command that could change body content such as undo/redo/execute THIS SHOULD BE ELSEWHERE
-                    setTimeout(() => {
-                        this._leoFileSystem.fireRefreshFile(p_node.gnx);
-                    }, 0);
-                }
-                return this.showBody(p_aside); // already opened in a column so just tell vscode to show it // TODO : NOT ANYMORE WITH NEW SYSTEM
+                return this.showBody(!!p_aside, w_showBodyKeepFocus); // already opened in a column so just tell vscode to show it // TODO : NOT ANYMORE WITH NEW SYSTEM
             } else {
                 // * So far, _bodyTextDocument is still opened and different from new selection: so "save & rename" to block undo/redos
                 return this._switchBody(p_node.gnx)
                     .then(() => {
-                        if (w_needsFilesystemRefresh) { // TODO : Move this part to setTreeViewSelection
-                            console.log('We were resolving a command that could change body content 2 '); // maybe not necessary but maybe so if hidden pane not located
-                            // We were resolving a command that could change body content such as undo/redo/execute
-                            this._leoFileSystem.fireRefreshFile(p_node.gnx);
-                        }
-                        return this.showBody(p_aside); // Also finish by showing it if not already visible
+                        return this.showBody(!!p_aside, w_showBodyKeepFocus); // Also finish by showing it if not already visible
                     });
             }
         } else {
             // * Is the last opened body is closed so just open the newly selected one
             this.bodyUri = utils.strToUri(p_node.gnx);
-            if (w_needsFilesystemRefresh) {
-                console.log('We were resolving a command that could change body content 3');
-                // We were resolving a command that could change body content such as undo/redo/execute
-                this._leoFileSystem.fireRefreshFile(p_node.gnx);
-            }
-            return this.showBody(p_aside);
+            return this.showBody(!!p_aside, w_showBodyKeepFocus);
         }
     }
 
@@ -640,48 +619,54 @@ export class LeoIntegration {
 
     private _locateOpenedBody(p_gnx: string): boolean {
         // * Sets globals if the current body is found opened in an editor panel for a particular gnx
-        this._bodyTextDocumentSameUri = false;
+        let w_found = false;
         // * Only gets to visible editors, not every tab per editor
         vscode.window.visibleTextEditors.forEach(p_textEditor => {
             if (utils.uriToStr(p_textEditor.document.uri) === p_gnx) {
-                this._bodyTextDocumentSameUri = true; // TODO : May be unused if only one BODY gnx at a time
-                this._bodyMainSelectionColumn = p_textEditor.viewColumn;
+                w_found = true;
                 this._bodyTextDocument = p_textEditor.document;
+                this._bodyMainSelectionColumn = p_textEditor.viewColumn;
             }
         });
-        return this._bodyTextDocumentSameUri;
+        return w_found;
     }
 
-    public showBody(p_aside: boolean | undefined): Thenable<vscode.TextEditor> {
+    public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable<vscode.TextEditor> {
         // * Shows an editor for the currently selected node: this.bodyUri, if already opened just 'shows' it
+        // first setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
+        if (this._needRefreshBody) {
+            this._needRefreshBody = false;
+            // TODO : CHECK IF TIMEOUT NECESSARY!
+            setTimeout(() => {
+                this._leoFileSystem.fireRefreshFile(utils.uriToStr(this.bodyUri));
+            }, 0);
+        }
         return vscode.workspace.openTextDocument(this.bodyUri).then(p_document => {
 
             this._bodyTextDocument = p_document;
 
-            // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
             vscode.window.visibleTextEditors.forEach(p_textEditor => {
                 if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
-                    console.log('new selection found last second!: ', p_textEditor.viewColumn);
+                    // console.log('new selection found at last second!: ', p_textEditor.viewColumn);
                     this._bodyMainSelectionColumn = p_textEditor.viewColumn;
                     this._bodyTextDocument = p_textEditor.document;
                 }
             });
-            const w_keepFocus = this._forceBodyFocus ? false : this.config.treeKeepFocus;
-            if (this._forceBodyFocus) {
-                this._forceBodyFocus = false; // Reset this single-use flag
-            }
+
             const w_showOptions: vscode.TextDocumentShowOptions = p_aside ?
                 {
                     viewColumn: vscode.ViewColumn.Beside,
-                    preserveFocus: this.config.treeKeepFocusWhenAside, // an optional flag that when true will stop the editor from taking focus
+                    preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
                     preview: true // should text document be in preview only? set false for fully opened
                     // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top otherwise
                 } : {
                     viewColumn: this._bodyMainSelectionColumn ? this._bodyMainSelectionColumn : 1, // view column in which the editor should be shown
-                    preserveFocus: w_keepFocus, // an optional flag that when true will stop the editor from taking focus
+                    preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
                     preview: false // should text document be in preview only? set false for fully opened
                     // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top otherwise
                 };
+
+            // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
             return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor => {
                 // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
                 // other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
@@ -691,6 +676,7 @@ export class LeoIntegration {
     }
 
     public focusBodyIfVisible(p_gnx: string): Thenable<boolean> {
+        // TODO : REPLACED BY SHOW BODY? UNUSED ?
         let w_found: undefined | vscode.TextEditor;
         vscode.window.visibleTextEditors.forEach(p_textEditor => {
             if (!w_found && (utils.uriToStr(p_textEditor.document.uri) === p_gnx)) {
@@ -704,7 +690,6 @@ export class LeoIntegration {
                 preview: false // should text document be in preview only? set false for fully opened
                 // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top
             }).then(w_bodyEditor => {
-                // console.log('focusBodyIfVisible in column: ', w_bodyEditor.viewColumn);
                 // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
                 // other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
                 return Promise.resolve(true);
@@ -936,8 +921,6 @@ export class LeoIntegration {
                 vscode.window.showInformationMessage("Called from Body");
             }
             console.log('tree selection is: ', this._leoTreeExplorerView.selection);
-
-            // this.refreshOutlineAndBody(); // Test: refresh some stuff
         } else {
             vscode.window.showInformationMessage("File not ready");
         }

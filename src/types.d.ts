@@ -35,11 +35,11 @@ export const enum RevealType {
 }
 
 export const enum RefreshType {
-    // * Front command refresh type for when coming back from executing the command
+    // * User command's refresh-type for when coming back from executing the command
     NoRefresh = 0, // only for 'copy-node' so far
-    // RefreshNode NOT USED : expand, collapse, select and open aside do not
-    RefreshTree,   // Open body if not already opened but no need to refresh if already opened
-    RefreshTreeAndBody // undo, redo, execute and others can also modify the current body
+    RefreshTree,   // Refresh tree and show body pane if not already opened, but no need to refresh it
+    RefreshTreeAndBody // undo, redo, execute and others can also modify the current body, so refresh the filesystem gnx too
+    // RefreshNodeOnly NOT USED : expand, collapse, select and open aside do not
 }
 
 export interface UserCommand {
