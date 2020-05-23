@@ -15,6 +15,9 @@ import { CommandStack } from "./commandStack";
 export class LeoIntegration {
 
     // * Status Flags
+    private _leoIsConnecting: boolean = false; // Used in connect method to prevent other attempts while trying
+    private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Set when leoBridge has a leo controller ready
+
     private _leoBridgeReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.BRIDGE_READY
     get leoBridgeReady(): boolean {
         return this._leoBridgeReady;
@@ -33,13 +36,8 @@ export class LeoIntegration {
         utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, p_value);
     }
 
-    private _leoIsConnecting: boolean = false; // Used in connect method to prevent other attempts while already trying to connect
-    private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Set when leoBridge has a leo controller ready
-
-    // * User command stack (to allow rapid entry of commands with tree-dependant parameter)
+    // * Frontend command stack
     private _commandStack: CommandStack;
-
-    private _leoBridgeActionBusy: boolean = false; // TODO : Still Relevant with command stack?
 
     // * Configuration Settings Service
     public config: Config; // Public configuration service singleton, used in leoSettingsWebview, leoBridge, and leoNode for inverted contrast
@@ -92,7 +90,6 @@ export class LeoIntegration {
         this._bodyUri = p_uri;
     }
 
-
     // * Log Pane
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(Constants.GUI.LOG_PANE_TITLE); // Copy-pasted from leo's log pane
 
@@ -123,6 +120,7 @@ export class LeoIntegration {
         // * Setup leoBridge
         this._leoBridge = new LeoBridge(_context, this);
 
+        // * Setup frontend command stack
         this._commandStack = new CommandStack(_context, this);
 
         // * Same data provider for both outline trees, Leo view and Explorer view
