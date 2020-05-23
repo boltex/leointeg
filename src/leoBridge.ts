@@ -28,7 +28,12 @@ export class LeoBridge {
     }
 
     /**
-     * * Places an action to be made by leoBridge.py on top of a stack, to be resolved from the bottom
+     * * Places an action on top of a stack, to be resolved from the bottom
+     * @param p_action Command string to be performed by Leo via leobridgeserver.py
+     * @param p_jsonParam Optional JSON parameter for the specified action
+     * @param p_deferredPayload Used to build this._readyPromise that resolves itself at startup
+     * @param p_preventCall Flag for special action used to build this._readyPromise that resolves itself at startup
+     * @returns a Promise that will contain the JSON package answered back
      */
     public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
         return new Promise((resolve, reject) => {
@@ -47,7 +52,8 @@ export class LeoBridge {
     }
 
     /**
-     * * actions invoked by Leo that can be called asynchronously at any time
+     * * Actions invoked by Leo that can be called asynchronously at any time
+     * @param w_parsedData Object that contains an 'async' string member that was parsed from a _websocket.onmessage JSON package
      */
     private _asyncAction(w_parsedData: any): void {
         if (w_parsedData && w_parsedData.async && (typeof w_parsedData.async === "string")) {
@@ -84,6 +90,8 @@ export class LeoBridge {
 
     /**
      * * Build JSON string for action parameter to the leoBridge
+     * @param p_action Action string to be invoked as command by Leo in the leobridgeserver.py script
+     * @param p_jsonParam Optional JSON string to be added as a 'param' to the action sent to Leo
      */
     private _buildActionParameter(p_action: string, p_jsonParam?: string): string {
         return "{\"id\":" + (++this._leoBridgeSerialId) + // no quotes, serial id is a number, pre incremented
@@ -93,7 +101,8 @@ export class LeoBridge {
     }
 
     /**
-     * * Resolves promises with the answers from an action that was done by leoBridge.py
+     * * Resolves promises with the answers from an action that was finished
+     * @param p_object Parsed data that was given as the answer by the Leo command that finished
      */
     private _resolveBridgeReady(p_object: string) {
         let w_bottomAction = this._callStack.shift();
@@ -111,6 +120,7 @@ export class LeoBridge {
 
     /**
      * * Rejects an action from the bottom of the stack
+     * @param p_reason Given rejection 'reason'
      */
     private _rejectAction(p_reason: string): void {
         const w_bottomAction = this._callStack.shift();
@@ -120,7 +130,7 @@ export class LeoBridge {
     }
 
     /**
-     * * Sends an action from the bottom of the stack to leoBridge.py process stdin
+     * * Sends an action from the bottom of the stack
      */
     private _callAction(): void {
         if (this._callStack.length && !this._actionBusy) {
@@ -132,6 +142,8 @@ export class LeoBridge {
 
     /**
      * * JSON.parse encased in a Try/Catch block
+     * @param p_jsonStr The JSON string to be parsed
+     * @returns The resulting object or 'false' if unsuccessful
      */
     private _tryParseJSON(p_jsonStr: string): boolean | any {
         try {
@@ -148,7 +160,8 @@ export class LeoBridge {
     }
 
     /**
-     * * Process data that came out of leoBridge.py process stdout
+     * * Process data that came from the Leo process
+     * @param p_data given JSON data
      */
     private _processAnswer(p_data: string): void {
         const w_parsedData = this._tryParseJSON(p_data);
@@ -166,6 +179,7 @@ export class LeoBridge {
 
     /**
      * * Spawn a websocket
+     * @returns A promise for a LeoBridgePackage object containing only an 'id' member of 1 that will resolve when the 'leoBridge' is established
      */
     public initLeoProcess(): Promise<LeoBridgePackage> {
         this._websocket = new WebSocket(Constants.TCPIP_DEFAULT_PROTOCOL +
@@ -196,12 +210,13 @@ export class LeoBridge {
 
     /**
      * * Send into the python process input
+     * @param p_data JSON Message string to be sent to leobridgeserver.py
      */
-    private _send(p_message: string): any {
+    private _send(p_data: string): any {
         if (this._readyPromise) {
             this._readyPromise.then(() => { // using '.then' that was surely resolved already: to be buffered in case process isn't ready.
                 if (this._websocket && this._websocket.OPEN) {
-                    this._websocket.send(p_message); // p_message should be json
+                    this._websocket.send(p_data); // p_message should be json
                 }
             });
         }

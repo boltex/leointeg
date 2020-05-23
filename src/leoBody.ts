@@ -4,6 +4,7 @@ import * as path from 'path';
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
+// TODO : NEEDS CLEANUP
 export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * Body panes implemented as a file system with this FileSystemProvider implementation (using "leo" as a scheme identifier)
     // * Note: Saving and renaming prevents flickering and prevents undos to 'traverse through' nodes

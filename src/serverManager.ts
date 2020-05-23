@@ -1,6 +1,6 @@
 import * as os from 'os';
 import * as child from 'child_process';
-import * as path from "path"; // TODO: Use this library to have reliable support for window-vs-linux file-paths
+import * as path from "path"; // TODO : Use this library to have reliable support for window-vs-linux file-paths
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
@@ -27,6 +27,8 @@ export class ServerService {
 
     /**
      * * Get command from settings or best command for the current OS
+     * @param p_leoPythonCommand String command to start python on this computer
+     * @returns A promise that resolves when the server is started, or that is rejected in case of problem while starting
      */
     public startServer(p_leoPythonCommand: string): Promise<any> {
         let w_pythonPath = "";

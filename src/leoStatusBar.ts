@@ -65,7 +65,7 @@ export class LeoStatusBar {
 
     /**
      * * Updates the status bar visual indicator flag in a debounced manner
-     * @param p_delay in milliseconds
+     * @param p_delay number of milliseconds
      */
     private _updateLeoObjectIndicatorDebounced(p_delay: number): void {
         if (this._updateStatusBarTimeout) {

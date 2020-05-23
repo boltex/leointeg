@@ -49,7 +49,7 @@ export class CommandStack {
             this._stack.push(p_command);
             // This flag is set on command entered, not when finally executed because a rapid type in editor can override focus
             this._finalFromOutline = p_command.fromOutline; // use the last _finalFromOutline regardless of previous so change now
-            this.tryStart();
+            this._tryStart();
             return true;
         }
     }
@@ -57,12 +57,16 @@ export class CommandStack {
     /**
      * * Try to launch commands that were added on the stack if any
      */
-    public tryStart(): void {
+    private _tryStart(): void {
         if (this.size() && !this._busy) {
             // actions have beed added and command stack instance is not busy, so set the busy flag and start from the bottom
             this._busy = true; // Cleared when the last command has returned (and the stack is empty)
             this._receivedSelection = ""; // RESET last received selection so that lastSelectedNode is used instead if no node parameter
-            this._runStackCommand().then(this._resolveResult);
+
+            // TODO : Try to simplify like this .then(this._resolveResult);
+            this._runStackCommand().then((p_package: LeoBridgePackage) => {
+                this._resolveResult(p_package);
+            });
         }
     }
 

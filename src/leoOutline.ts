@@ -19,6 +19,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     /**
      * * Refresh a single node
+     * @param p_node The outline's node itself as a LeoNode instance
      */
     public refreshTreeNode(p_node: LeoNode): void {
         this._refreshSingleNodeFlag = true; // We want to do a real refresh, not just giving back the same we've got as input in getTreeItem
