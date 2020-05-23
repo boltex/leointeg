@@ -65,6 +65,9 @@ export class LeoIntegration {
     }
     set lastSelectedNode(p_leoNode: LeoNode | undefined) {  // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
         this._lastSelectedNode = p_leoNode;
+        if (p_leoNode) {
+            utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_leoNode.marked); // Global context to 'flag' the selected node's marked state
+        }
     }
 
     // * Outline Pane redraw/refresh flags. Also set when calling refreshTreeRoot
@@ -529,7 +532,7 @@ export class LeoIntegration {
         this._refreshOutline(w_revealType);
     }
 
-    private _gotSelection(p_leoNode: LeoNode): Thenable<boolean> {
+    private _gotSelection(p_node: LeoNode): Thenable<vscode.TextEditor> {
         // * While converting received ap_nodes to LeoNodes, the selected node was reached
 
         console.log('GOT SELECTED NODE WHILE REFRESHING TREEVIEW');
@@ -542,11 +545,35 @@ export class LeoIntegration {
         }
 
         // TODO : Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
+        const w_showBodyKeepFocus: boolean = this._fromOutline; // Will preserve focus where it is without forcing into the body pane if true
 
+        // * Tree is refreshing and we're about to (re)show the body and refresh it so make sure its not dirty
+        this._triggerBodySave();
 
+        // * Set the 'lastSelectedNode' and make the body pane switch and show itself if needed, this will also set the 'marked' node context
+        this.lastSelectedNode = p_node; // kept mostly in order to do refreshes if it changes, as opposed to a full tree refresh
 
+        // * Is the last opened body still opened?
+        if (this._bodyTextDocument && !this._bodyTextDocument.isClosed) {
 
-        return Promise.resolve(true);
+            // * Check if already opened and visible, _locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
+            if (this._locateOpenedBody(p_node.gnx)) {
+                // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
+                this.bodyUri = utils.strToUri(p_node.gnx);
+                return this.showBody(false, w_showBodyKeepFocus); // already opened in a column so just tell vscode to show it // TODO : NOT ANYMORE WITH NEW SYSTEM
+            } else {
+                // * So far, _bodyTextDocument is still opened and different from new selection: so "save & rename" to block undo/redos
+                return this._switchBody(p_node.gnx)
+                    .then(() => {
+                        return this.showBody(false, w_showBodyKeepFocus); // Also finish by showing it if not already visible
+                    });
+            }
+        } else {
+            // * Is the last opened body is closed so just open the newly selected one
+            this.bodyUri = utils.strToUri(p_node.gnx);
+            return this.showBody(false, w_showBodyKeepFocus);
+        }
+
     }
 
     public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable<vscode.TextEditor> {
@@ -577,9 +604,8 @@ export class LeoIntegration {
         // * don't wait for promise to resolve a selection, save body to leo for the bodyTextDocument, then check if already opened
         this._triggerBodySave();
 
-        // * Set the 'lastSelectedNode' and make the body pane switch and show itself if needed
+        // * Set the 'lastSelectedNode' and make the body pane switch and show itself if needed, this will also set the 'marked' node context
         this.lastSelectedNode = p_node; // kept mostly in order to do refreshes if it changes, as opposed to a full tree refresh
-        utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_node.marked);
 
         // * Is the last opened body still opened?
         if (this._bodyTextDocument && !this._bodyTextDocument.isClosed) {
