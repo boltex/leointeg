@@ -409,15 +409,6 @@ export class LeoIntegration {
         this._triggerBodySave(true);
     }
 
-    public refreshOutlineAndBody(): void {
-        this._triggerBodySave(true);
-        this._needRefreshBody = true;
-
-        this._refreshOutline(RevealType.RevealSelectFocusShowBody);
-        // TODO : Maybe call _switchBody instead?
-        // this._leoFileSystem.fireRefreshFiles();
-    }
-
     private _refreshOutline(p_revealType?: RevealType): void {
         if (p_revealType !== undefined) { // To check if selected node should self-select while redrawing whole tree
             // if (p_revealType) { // Only if not 0, to let higher calls finish undisturbed
@@ -517,9 +508,25 @@ export class LeoIntegration {
 
     public launchRefresh(p_refreshType: RefreshType, p_fromOutline: boolean): void {
         // * Launch the tree root, and optionally body, refresh processes, leading to _gotSelection upon reaching the selected node
-        // TODO : This should replace refreshOutlineAndBody
-
-
+        // Set w_revealType, it will ultimately set this._revealType. Used when finding the OUTLINE's selected node and setting or preventing focus into it
+        // Set this._fromOutline. Used when finding the selected node and showing the BODY to set or prevent focus in it
+        // Set this._needRefreshBody. Used when finding the selected node and showing the BODY to trigger a 'fireRefreshFile'
+        // * Rules not specified with ternary operator(s) for clarity
+        let w_revealType: RevealType = RevealType.NoReveal;
+        if (p_fromOutline) {
+            this._fromOutline = true;
+            w_revealType = RevealType.RevealSelectFocus;
+        } else {
+            this._fromOutline = false;
+            w_revealType = RevealType.RevealSelect;
+        }
+        if (p_refreshType === RefreshType.RefreshTreeAndBody) {
+            this._needRefreshBody = true;
+        } else {
+            this._needRefreshBody = false;
+        }
+        // * Launch Outline's Root Refresh Cycle
+        this._refreshOutline(w_revealType);
     }
 
     private _gotSelection(p_leoNode: LeoNode): Thenable<boolean> {
@@ -635,7 +642,7 @@ export class LeoIntegration {
         // * Shows an editor for the currently selected node: this.bodyUri, if already opened just 'shows' it
         // first setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
         if (this._needRefreshBody) {
-            this._needRefreshBody = false;
+            this._needRefreshBody = false; // Flag has triggered a body refresh so we clear it
             // TODO : CHECK IF TIMEOUT NECESSARY!
             setTimeout(() => {
                 this._leoFileSystem.fireRefreshFile(utils.uriToStr(this.bodyUri));
@@ -647,12 +654,12 @@ export class LeoIntegration {
 
             vscode.window.visibleTextEditors.forEach(p_textEditor => {
                 if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
-                    // console.log('new selection found at last second!: ', p_textEditor.viewColumn);
+                    // console.log('found a visible body pane in column: ', p_textEditor.viewColumn);
                     this._bodyMainSelectionColumn = p_textEditor.viewColumn;
                     this._bodyTextDocument = p_textEditor.document;
                 }
             });
-
+            // Setup options for the preview state of the opened editor, and to choose which column it should appear
             const w_showOptions: vscode.TextDocumentShowOptions = p_aside ?
                 {
                     viewColumn: vscode.ViewColumn.Beside,
@@ -700,7 +707,7 @@ export class LeoIntegration {
     }
 
     public nodeCommand(p_action: string, p_node?: LeoNode, p_refreshType?: RefreshType, p_fromOutline?: boolean, p_providedHeadline?: string): boolean {
-        // * Add to stack of commands to be resolved if possible, return false otherwise
+        // * Add to stack of commands to be resolved, returns true if possible upon stack state and rules, false otherwise
         if (this._commandStack.add({
             action: p_action,
             node: p_node,  // Will return false for sure if already started and this is not undefined
@@ -714,78 +721,6 @@ export class LeoIntegration {
             return false;
         }
     }
-
-    // ------------------------------------------------------------------------------------------------------------
-    // ------------------------------------------------------------------------------------------------------------
-    // ------------------------------------------------------------------------------------------------------------
-    public nodeAction(p_action: string, p_node?: LeoNode): Promise<LeoBridgePackage> {
-        // * For actions that need no tree/body refreshes at all
-        // TODO : MOVE ACTION LOGIC TO COMMAND STACK
-        // - saveLeoFile, copyNode, copyNodeSelection
-        let w_node = p_node;
-        if (!w_node && this.lastSelectedNode) {
-            w_node = this.lastSelectedNode;
-        }
-        if (w_node) {
-            return this.sendAction(p_action, w_node.apJson);
-        } else {
-            return Promise.resolve({ id: Constants.ERROR_PACKAGE_ID }); // 0 is error id
-        }
-    }
-
-    public nodeActionRefresh(p_action: string, p_node?: LeoNode, p_revealType?: RevealType | undefined): Promise<LeoBridgePackage> {
-        // * For actions that do not need full bodies gnx list to refresh (moving, renaming nodes)
-        // TODO : MOVE ACTION LOGIC TO COMMAND STACK
-        // - mark, unmark
-        // - move, clone, promote, demote
-        // - sortChildren, sortSibling
-        this._triggerBodySave(true);
-        return this.nodeAction(p_action, p_node)
-            .then((p_package: LeoBridgePackage) => {
-                if (p_package.id > Constants.ERROR_PACKAGE_ID) { // greater than 0
-                    this._refreshOutline(p_revealType); // refresh all outline, needed to get clones to refresh too!
-                }
-                return Promise.resolve(p_package);
-            });
-    }
-
-    public nodeActionRefreshBuffered(p_action: string, p_node?: LeoNode): void {
-        // * For actions that can change the tree and current selection, but not text content of any node
-        // TODO : See why nodeActionRefreshBuffered is not enough for 'Save leo file' to reselect node properly!
-        // TODO : MOVE ACTION LOGIC TO COMMAND STACK
-        // paste, pasteClone, contractAll
-        // cut, delete
-        if (this._leoBridgeActionBusy) {
-            console.log('Too fast in nodeActionRefreshBuffered! for: ' + p_action); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
-        } else {
-            this._leoBridgeActionBusy = true;
-            this.nodeActionRefresh(p_action, p_node, RevealType.RevealSelectShowBody)
-                .then(() => {
-                    this._leoBridgeActionBusy = false;
-                });
-        }
-
-    }
-
-    public nodeActionFullRefreshBuffered(p_action: string, p_node?: LeoNode): void {
-        // * For actions that can even change the tree and/or selected body text content
-        // TODO : See why nodeActionRefreshBuffered is not enough for 'Save leo file' to reselect node properly!
-        // TODO : MOVE ACTION LOGIC TO COMMAND STACK
-        // - undo, redo, execute, refreshFromDiskNode, Save Leo File
-        if (this._leoBridgeActionBusy) {
-            console.log('Too fast in nodeActionFullRefreshBuffered! for: ' + p_action); // TODO : USE A COMMAND STACK TO CHAIN UP USER'S RAPID COMMANDS
-        } else {
-            this._leoBridgeActionBusy = true;
-            this._needRefreshBody = true;
-            this.nodeActionRefresh(p_action, p_node, RevealType.RevealSelectFocusShowBody)
-                .then(() => {
-                    this._leoBridgeActionBusy = false;
-                });
-        }
-    }
-    // ------------------------------------------------------------------------------------------------------------
-    // ------------------------------------------------------------------------------------------------------------
-    // ------------------------------------------------------------------------------------------------------------
 
     public changeMark(p_isMark: boolean, p_node?: LeoNode, p_fromOutline?: boolean): void {
         if (this.nodeCommand(p_isMark ? Constants.LEOBRIDGE.MARK_PNODE : Constants.LEOBRIDGE.UNMARK_PNODE, p_node, RefreshType.RefreshTree, p_fromOutline)) {

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
-import { AskMessageItem } from "./types";
+import { AskMessageItem, RefreshType } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
@@ -57,7 +57,7 @@ export class LeoAsync {
             if (this._askResult.includes("yes")) {
                 w_sendResultPromise.then(() => {
                     // Might have answered 'yes/yesAll' and refreshed and changed the body text
-                    this._leoIntegration.refreshOutlineAndBody();
+                    this._leoIntegration.launchRefresh(RefreshType.RefreshTreeAndBody, false); // TODO : Deal with focus placement
                 });
             }
         });
@@ -87,7 +87,7 @@ export class LeoAsync {
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_REFRESHED:
                 w_message = w_message + Constants.USER_MESSAGES.REFRESHED;
                 // * refresh
-                this._leoIntegration.refreshOutlineAndBody();
+                this._leoIntegration.launchRefresh(RefreshType.RefreshTreeAndBody, false); // TODO : Deal with focus placement
                 break;
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_IGNORED:
                 w_message = w_message + Constants.USER_MESSAGES.IGNORED;
