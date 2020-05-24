@@ -36,6 +36,9 @@ export class LeoBridge {
      * @returns a Promise that will contain the JSON package answered back
      */
     public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
+        if (p_action === Constants.LEOBRIDGE.SET_SELECTED_NODE) {
+            console.log('SENDING SELECT A NODE!');
+        }
         return new Promise((resolve, reject) => {
             const w_action: LeoAction = {
                 parameter: this._buildActionParameter(p_action, p_jsonParam),

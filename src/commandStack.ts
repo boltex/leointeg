@@ -59,6 +59,8 @@ export class CommandStack {
      */
     private _tryStart(): void {
         if (this.size() && !this._busy) {
+            console.log('Starting a stack!');
+
             // actions have beed added and command stack instance is not busy, so set the busy flag and start from the bottom
             this._busy = true; // Cleared when the last command has returned (and the stack is empty)
             this._receivedSelection = ""; // RESET last received selection so that lastSelectedNode is used instead if no node parameter
@@ -87,7 +89,14 @@ export class CommandStack {
             w_nodeJson = w_command.node.apJson; // Was node specific, so we are starting from a new stack of commands
         } else {
             // Use received "selected node" unless first, then use last selected node
-            w_nodeJson = this._receivedSelection ? this._receivedSelection : this._leoIntegration.lastSelectedNode!.apJson;
+            if (this._receivedSelection) {
+                w_nodeJson = this._receivedSelection;
+            } else {
+                w_nodeJson = this._leoIntegration.lastSelectedNode!.apJson;
+            }
+            if (!w_nodeJson) {
+                console.log('ERROR NO ARCHIVED POSITION JSON');
+            }
         }
         if (w_providedHeadline) {
             w_jsonParam = utils.buildHeadlineJson(w_nodeJson, w_providedHeadline); // 'Insert Named Node' or 'Edit Headline'

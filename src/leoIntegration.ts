@@ -63,6 +63,9 @@ export class LeoIntegration {
     }
     set lastSelectedNode(p_leoNode: LeoNode | undefined) {  // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
         this._lastSelectedNode = p_leoNode;
+
+        console.log(`Setting Last Selected Node:${p_leoNode!.label}, with id: ${p_leoNode!.id}`);
+
         if (p_leoNode) {
             utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_leoNode.marked); // Global context to 'flag' the selected node's marked state
         }
@@ -458,9 +461,6 @@ export class LeoIntegration {
         // First setup flags for selecting and focusing based on the current reveal type needed
         const w_selectFlag = this._revealType >= RevealType.RevealSelect; // at least RevealSelect
         let w_focusFlag = this._revealType >= RevealType.RevealSelectFocus;  // at least RevealSelectFocus
-        if (this._revealType === RevealType.RevealSelectShowBody) {
-            w_focusFlag = false;
-        }
         const w_showBodyFlag = this._revealType >= RevealType.RevealSelectFocusShowBody; // at least RevealSelectFocusShowBody
         // Flags are setup so now reveal, select and / or focus as needed
         this._revealType = RevealType.NoReveal; // ok reset
@@ -470,14 +470,11 @@ export class LeoIntegration {
             this.lastSelectedNode = p_leoNode; // special case only: lastSelectedNode should be set in selectTreeNode
         }
         setTimeout(() => {
-            // don't use the treeKeepFocus config option
+            // TODO : MAKE SURE TIMEOUT IS REALLY REQUIRED
             this._revealTreeViewNode(p_leoNode, { select: w_selectFlag, focus: w_focusFlag })
                 .then(() => {
                     console.log('did this ask for parent?', p_leoNode.id, p_leoNode.label); // ! debug
-
-                    // Check if OPENING THE BODY WAS REQUIRED? // TODO : DOES THIS BLOCK GO REALLY HERE??!?
-                    if (w_showBodyFlag) {
-                        // TODO : use a new "Show Body" function such as _setBody (that would mirror _gotSelection but for the body) ?
+                    if (w_selectFlag) {
                         this._gotSelection(p_leoNode);
                     }
                 });
