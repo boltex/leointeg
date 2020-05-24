@@ -64,7 +64,7 @@ export class LeoIntegration {
     set lastSelectedNode(p_leoNode: LeoNode | undefined) {  // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
         this._lastSelectedNode = p_leoNode;
 
-        console.log(`Setting Last Selected Node:${p_leoNode!.label}, with id: ${p_leoNode!.id}`);
+        // console.log(`Setting Last Selected Node:${p_leoNode!.label}, with id: ${p_leoNode!.id}`);
 
         if (p_leoNode) {
             utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_leoNode.marked); // Global context to 'flag' the selected node's marked state
@@ -351,7 +351,7 @@ export class LeoIntegration {
     private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
         // * Typing detected in a document. ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
         if (p_event.contentChanges.length && (p_event.document.uri.scheme === Constants.URI_SCHEME)) {
-            console.log('_onDocumentChanged : This should only happen via TYPING!');
+            // console.log('_onDocumentChanged : This should only happen via TYPING!');
 
             // * There was an actual change on a Leo Body by the user
             this._bodyLastChangedDocument = p_event.document;
@@ -361,7 +361,7 @@ export class LeoIntegration {
             if (this.lastSelectedNode && utils.uriToStr(p_event.document.uri) === this.lastSelectedNode.gnx) {
                 const w_hasBody = !!(p_event.document.getText().length);
                 if (utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody)) {
-                    console.log('instant save!');
+                    // console.log('instant save!');
                     this._bodySaveDocument(p_event.document)
                         .then(() => {
                             this.lastSelectedNode!.dirty = true;
@@ -371,7 +371,7 @@ export class LeoIntegration {
                     return; // * Don't continue
                 }
             }
-            console.log('marked to save!');
+            // console.log('marked to save!');
         }
     }
 
@@ -473,7 +473,7 @@ export class LeoIntegration {
             // TODO : MAKE SURE TIMEOUT IS REALLY REQUIRED
             this._revealTreeViewNode(p_leoNode, { select: w_selectFlag, focus: w_focusFlag })
                 .then(() => {
-                    console.log('did this ask for parent?', p_leoNode.id, p_leoNode.label); // ! debug
+                    // console.log('did this ask for parent?', p_leoNode.id, p_leoNode.label); // ! debug
                     if (w_selectFlag) {
                         this._gotSelection(p_leoNode);
                     }
@@ -530,7 +530,7 @@ export class LeoIntegration {
     private _gotSelection(p_node: LeoNode): Thenable<vscode.TextEditor> {
         // * While converting received ap_nodes to LeoNodes, the selected node was reached
 
-        console.log('GOT SELECTED NODE WHILE REFRESHING TREEVIEW');
+        // console.log('GOT SELECTED NODE WHILE REFRESHING TREEVIEW');
 
         // *Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
         const w_showBodyKeepFocus: boolean = this._fromOutline; // Will preserve focus where it is without forcing into the body pane if true
@@ -541,7 +541,7 @@ export class LeoIntegration {
     public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable<vscode.TextEditor> {
         // * User has selected a node via mouse click or via 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
 
-        console.log('SELECT TREE NODE');
+        // console.log('SELECT TREE NODE');
 
         // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
         if (p_aside && p_node !== this.lastSelectedNode) {
@@ -571,6 +571,7 @@ export class LeoIntegration {
 
         this._triggerBodySave(); // Tree is refreshing and we're about to (re)show the body and refresh it so make sure its not dirty
         this.lastSelectedNode = p_node; // Set the 'lastSelectedNode'  this will also set the 'marked' node context
+        this._commandStack.newSelection();
 
         // * Is the last opened body still opened? If not the new gnx then make the body pane switch and show itself if needed,
         if (this._bodyTextDocument && !this._bodyTextDocument.isClosed) {
@@ -842,11 +843,11 @@ export class LeoIntegration {
         // * Debugging utility function
         if (this.fileOpenedReady) {
             if (p_fromOutline) {
-                vscode.window.showInformationMessage('Called from Outline');
+                vscode.window.showInformationMessage('Called TEST from Outline');
             } else {
-                vscode.window.showInformationMessage("Called from Body");
+                vscode.window.showInformationMessage("Called TEST from Body");
             }
-            console.log('tree selection is: ', this._leoTreeExplorerView.selection);
+            console.log('_leoTreeExplorerView.selection is: ', this._leoTreeExplorerView.selection);
         } else {
             vscode.window.showInformationMessage("File not ready");
         }

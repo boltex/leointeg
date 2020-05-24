@@ -58,7 +58,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
                     break;
             }
         } else {
-            console.log('got object:', message);
+            console.log('got object without command:', message);
         }
     });
 
@@ -134,7 +134,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
                 } else if (w_element) {
                     (w_element as HTMLInputElement).value = frontConfig[key];
                 } else {
-                    console.log('WHAT ? w_element', key, ' is ', w_element);
+                    console.log('ERROR : w_element', key, ' is ', w_element);
                 }
             }
         }

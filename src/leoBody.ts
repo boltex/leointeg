@@ -91,7 +91,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public fireRefreshFile(p_gnx: string): void {
 
-        console.log('FIRING REFRESH on ', p_gnx);
+        // console.log('FIRING REFRESH on ', p_gnx);
 
         this._selectedBody = {
             gnx: p_gnx,
@@ -167,14 +167,14 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
         // TODO : Probably just replace with dummy function if only going to be
 
-        console.log('Watch ', p_resource.fsPath);
+        // console.log('Watch ', p_resource.fsPath);
 
         const w_gnx = utils.uriToStr(p_resource);
         if (!this._openedBodiesGnx.includes(w_gnx)) {
             this._openedBodiesGnx.push(w_gnx); // add gnx
         }
         return new vscode.Disposable(() => {
-            console.log('Dispose of Watch ', w_gnx);
+            // console.log('Dispose of Watch ', w_gnx);
 
             const w_position = this._openedBodiesGnx.indexOf(w_gnx); // find and remove it
             if (w_position > -1) {
@@ -195,7 +195,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
         // TODO : Call with uri for either "LEO BODY" with or without decorator to fake name change
 
-        console.log('Called stat on', p_uri.fsPath);
+        // console.log('Called stat on', p_uri.fsPath);
 
         if (this._leoIntegration.fileOpenedReady) {
             if (p_uri.fsPath === '/') {
@@ -211,7 +211,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             } else {
                 const w_gnx = utils.uriToStr(p_uri);
                 if (this._selectedBody.gnx !== w_gnx && this._renameBody.gnx !== w_gnx) {
-                    console.log("stat: hey! Not in list! stat missing refreshes??");
+                    console.log("stat: ERROR File not in list! stat missing refreshes?");
                     throw vscode.FileSystemError.FileNotFound();
                 } else {
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY_LENGTH, '"' + w_gnx + '"')
@@ -222,7 +222,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                             } else {
                                 w_mtime = this._selectedBody.mtime;
                             }
-                            console.log('stat given with mtime', w_mtime);
+                            // console.log('stat given with mtime', w_mtime);
 
                             return Promise.resolve(
                                 {
@@ -244,7 +244,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
         // TODO : Call with uri for either "LEO BODY" with or without decorator to fake name change
 
-        console.log('Called readFile on', p_uri.fsPath);
+        // console.log('Called readFile on', p_uri.fsPath);
 
         if (this._leoIntegration.fileOpenedReady) {
             if (p_uri.fsPath === '/') {
@@ -253,7 +253,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 const w_gnx = utils.uriToStr(p_uri);
                 // if (!this._possibleGnxList.includes(w_gnx)) {
                 if (this._selectedBody.gnx !== w_gnx && this._renameBody.gnx !== w_gnx) {
-                    console.log("readFile: hey! Not in list! readFile missing refreshes??");
+                    console.log("readFile: ERROR File not in list! readFile missing refreshes?");
                     throw vscode.FileSystemError.FileNotFound();
                 } else {
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY, '"' + w_gnx + '"')
@@ -299,7 +299,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
         // TODO : Convert uri "LEO BODY" with or without decorator into its GNX for server script to fetch
 
-        console.log('called writeFile!', p_uri.fsPath);
+        // console.log('called writeFile!', p_uri.fsPath);
         this._leoIntegration.checkWriteFile();
         const w_gnx = utils.uriToStr(p_uri);
         // if (!this._possibleGnxList.includes(w_gnx)) {
@@ -317,7 +317,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
         // TODO : Should be just rename from a uri to the next but instead use "LEO BODY" with or without decorator
 
-        console.log('called rename', p_oldUri.fsPath, p_newUri.fsPath);
+        // console.log('called rename', p_oldUri.fsPath, p_newUri.fsPath);
         const w_gnx = utils.uriToStr(p_newUri);
         if (this._selectedBody.gnx === w_gnx) {
             this._selectedBody.mtime = Date.now();
@@ -334,10 +334,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public delete(uri: vscode.Uri): void {
-        console.log('called delete ', uri.fsPath);
+        // console.log('called delete ', uri.fsPath);
 
         let dirname = uri.with({ path: path.posix.dirname(uri.path) }); // dirname is just a slash "/"
-
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri: dirname }, { uri, type: vscode.FileChangeType.Deleted });
 
         // throw vscode.FileSystemError.NoPermissions();
