@@ -2,7 +2,7 @@
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
-### Break your code down into sections, structured as an outline, to derive files or parse them back in!
+### Break your code down into sections structured as an outline, to derive, or parse back source files!
 
 Leo is a fundamentally different way of using and organizing data, programs and scripts. See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/) or on [github.com/leo-editor](https://github.com/leo-editor/leo-editor).
 

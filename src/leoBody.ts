@@ -299,15 +299,19 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
         // TODO : Convert uri "LEO BODY" with or without decorator into its GNX for server script to fetch
 
-        // console.log('called writeFile!', p_uri.fsPath);
+        console.log('called writeFile!', p_uri.fsPath);
         this._leoIntegration.checkWriteFile();
         const w_gnx = utils.uriToStr(p_uri);
+        const w_now = Date.now();
         // if (!this._possibleGnxList.includes(w_gnx)) {
         if (this._selectedBody.gnx === w_gnx) {
-            this._selectedBody.mtime = Date.now();
+            console.log('Setting selected body time');
+
+            this._selectedBody.mtime = w_now;
         }
         if (this._renameBody.gnx === w_gnx) {
-            this._renameBody.mtime = Date.now();
+            console.log('Setting renamed body time');
+            this._renameBody.mtime = w_now;
         }
         this._fireSoon({ type: vscode.FileChangeType.Changed, uri: p_uri });
 

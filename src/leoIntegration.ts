@@ -62,10 +62,8 @@ export class LeoIntegration {
         return this._lastSelectedNode;
     }
     set lastSelectedNode(p_leoNode: LeoNode | undefined) {  // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
-        this._lastSelectedNode = p_leoNode;
-
         // console.log(`Setting Last Selected Node:${p_leoNode!.label}, with id: ${p_leoNode!.id}`);
-
+        this._lastSelectedNode = p_leoNode;
         if (p_leoNode) {
             utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_leoNode.marked); // Global context to 'flag' the selected node's marked state
         }
@@ -377,11 +375,12 @@ export class LeoIntegration {
 
     private _triggerBodySave(p_forcedVsCodeSave?: boolean): Thenable<boolean> {
         // * Save body to Leo if a change has been made to the body 'document' so far
-        if (this._bodyLastChangedDocument) {
+        if (this._bodyLastChangedDocument && this._bodyLastChangedDocument.isDirty) {
             const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
             this._bodyLastChangedDocument = undefined; // reset to make falsy
             return this._bodySaveDocument(w_document, p_forcedVsCodeSave);
         } else {
+            this._bodyLastChangedDocument = undefined;
             return Promise.resolve(true);
         }
     }
