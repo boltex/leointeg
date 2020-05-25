@@ -519,6 +519,10 @@ export class LeoIntegration {
         // Set this._needRefreshBody. Used when finding the selected node and showing the BODY to trigger a 'fireRefreshFile'
         if (p_refreshType === RefreshType.RefreshTreeAndBody) {
             this._needRefreshBody = true;
+            // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
+            if (this._bodyLastChangedDocument && this._bodyLastChangedDocument.isDirty) {
+                this._bodyLastChangedDocument.save(); // ! Voluntarily save to 'clean' any pending body (lose trailing whitespace)
+            }
         } else {
             this._needRefreshBody = false;
         }
@@ -568,7 +572,10 @@ export class LeoIntegration {
     private applyNodeSelectionToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean): Thenable<vscode.TextEditor> {
         // * Makes sure the body now reflects the selected node. This is called after 'selectTreeNode', or after '_gotSelection' when refreshing.
 
+        // Check first if body needs refresh: if so we will voluntarily throw out any pending edits on body
+
         this._triggerBodySave(); // Tree is refreshing and we're about to (re)show the body and refresh it so make sure its not dirty
+
         this.lastSelectedNode = p_node; // Set the 'lastSelectedNode'  this will also set the 'marked' node context
         this._commandStack.newSelection();
 
@@ -699,6 +706,7 @@ export class LeoIntegration {
 
     public nodeCommand(p_action: string, p_node?: LeoNode, p_refreshType?: RefreshType, p_fromOutline?: boolean, p_providedHeadline?: string): boolean {
         // * Add to stack of commands to be resolved, returns true if possible upon stack state and rules, false otherwise
+        this._triggerBodySave(); // No forced vscode save
         if (this._commandStack.add({
             action: p_action,
             node: p_node,  // Will return false for sure if already started and this is not undefined
