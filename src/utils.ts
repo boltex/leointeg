@@ -79,7 +79,7 @@ export function strToUri(p_str: string): vscode.Uri {
  * @returns The string source that was used to build this Uri
  */
 export function uriToStr(p_uri: vscode.Uri): string {
-    // TODO : For now, just remove the '/' before the path string
+    // TODO : For now, just remove the '/' (or backslash on Windows) before the path string
     // TODO : Use length of a constant or something other than 'fsPath'
     return p_uri.fsPath.substr(1);
 }

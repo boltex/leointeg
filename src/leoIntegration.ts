@@ -72,10 +72,11 @@ export class LeoIntegration {
     // * Outline Pane redraw/refresh flags. Also set when calling refreshTreeRoot
     // If there's no reveal and its the selected node re-use the old id
     private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
+
     // * end of commands stack resolution "refresh flags"
     private _needRefreshBody: boolean = false; // Flag for commands that might change current body
     private _fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
-
+    private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
 
     // * Body Pane
     private _leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
@@ -334,17 +335,23 @@ export class LeoIntegration {
 
     // * The view column of an editor has changed (when shifting editors through closing/inserting editors or closing columns)
     // * No effect when dragging editor tabs: it just closes and reopens in other column, see '_onChangeVisibleEditors'
-    private _onChangeEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void { }
+    private _onChangeEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void {
+        this._triggerBodySave(); // In case user is about to modify a derived file, we want to send possible edited body text to Leo
+    }
 
     // * Triggers when a different text editor in any column, either tab or body, is focused
     // * This is also what triggers after drag and drop, see '_onChangeEditorViewColumn'
-    private _onChangeVisibleEditors(p_event: vscode.TextEditor[]): void { }
+    private _onChangeVisibleEditors(p_event: vscode.TextEditor[]): void {
+        this._triggerBodySave(); // In case user is about to modify a derived file, we want to send possible edited body text to Leo
+    }
 
     // * Triggers when a vscode window have gained or lost focus
-    private _onChangeWindowState(p_event: vscode.WindowState): void { }
+    private _onChangeWindowState(p_event: vscode.WindowState): void {
+        this._triggerBodySave(); // In case user is about to modify a derived file, we want to send possible edited body text to Leo
+    }
 
     // * Edited and saved the document, does it on any document in editor
-    private _onDocumentSaved(p_event: vscode.TextDocument): void { }
+    private _onDocumentSaved(p_event: vscode.TextDocument): void { } // Nothing so far
 
     private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
         // * Typing detected in a document. ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
@@ -526,18 +533,25 @@ export class LeoIntegration {
         } else {
             this._needRefreshBody = false;
         }
+        // * _focusInterrupt Override
+        if (this._focusInterrupt) {
+            // this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
+            w_revealType = RevealType.RevealSelect;
+
+        }
         // * Launch Outline's Root Refresh Cycle
         this._refreshOutline(w_revealType);
     }
 
     private _gotSelection(p_node: LeoNode): Thenable<vscode.TextEditor> {
         // * While converting received ap_nodes to LeoNodes, the selected node was reached
-
         // console.log('GOT SELECTED NODE WHILE REFRESHING TREEVIEW');
-
         // *Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
-        const w_showBodyKeepFocus: boolean = this._fromOutline; // Will preserve focus where it is without forcing into the body pane if true
-
+        let w_showBodyKeepFocus: boolean = this._fromOutline; // Will preserve focus where it is without forcing into the body pane if true
+        if (this._focusInterrupt) {
+            this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
+            w_showBodyKeepFocus = true;
+        }
         return this.applyNodeSelectionToBody(p_node, false, w_showBodyKeepFocus);
     }
 
@@ -574,7 +588,7 @@ export class LeoIntegration {
 
         // Check first if body needs refresh: if so we will voluntarily throw out any pending edits on body
 
-        this._triggerBodySave(); // Tree is refreshing and we're about to (re)show the body and refresh it so make sure its not dirty
+        this._triggerBodySave(); // Send body to Leo because we're about to (re)show a body of possibly different gnx
 
         this.lastSelectedNode = p_node; // Set the 'lastSelectedNode'  this will also set the 'marked' node context
         this._commandStack.newSelection();
@@ -755,7 +769,12 @@ export class LeoIntegration {
         }
     }
 
-    public insertNode(p_node?: LeoNode, p_fromOutline?: boolean): void {
+    public insertNode(p_node?: LeoNode, p_fromOutline?: boolean, p_interrupt?: boolean): void {
+        let w_fromOutline: boolean = !!p_fromOutline; // Use w_fromOutline for where we intend to leave focus when done with the insert
+        if (p_interrupt) {
+            this._focusInterrupt = true;
+            w_fromOutline = this._fromOutline; // Going to use last state // TODO : MAKE SURE ITS STILL AVAILABLE AND VALID
+        }
         if (!p_node || !this._commandStack.size()) {
             // * Only if no parameters or no stack at all
             this._triggerBodySave(true);
@@ -764,7 +783,7 @@ export class LeoIntegration {
             vscode.window.showInputBox(this._headlineInputOptions)
                 .then(p_newHeadline => {
                     const w_action = p_newHeadline ? Constants.LEOBRIDGE.INSERT_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_PNODE;
-                    this.nodeCommand(w_action, p_node, RefreshType.RefreshTree, p_fromOutline, p_newHeadline); // p_node and p_newHeadline can be undefined
+                    this.nodeCommand(w_action, p_node, RefreshType.RefreshTree, w_fromOutline, p_newHeadline); // p_node and p_newHeadline can be undefined
                 });
 
         } else {
@@ -854,7 +873,18 @@ export class LeoIntegration {
             } else {
                 vscode.window.showInformationMessage("Called TEST from Body");
             }
-            console.log('_leoTreeExplorerView.selection is: ', this._leoTreeExplorerView.selection);
+            // if (!p_fromOutline) {
+            //     vscode.window.showInputBox({ ignoreFocusOut: false, value: "", valueSelection: undefined, prompt: "Just a test input dialog" })
+            //         .then(p_testResult => {
+            //             console.log(p_testResult);
+            //         });
+            // }
+            if (this._leoTreeExplorerView.selection[0]) {
+                console.log('_leoTreeExplorerView.selection 0 is: ', this._leoTreeExplorerView.selection[0].label);
+            }
+            if (this._leoTreeExplorerView.selection[1]) {
+                console.log('_leoTreeExplorerView.selection 1 is: ', this._leoTreeExplorerView.selection[0].label);
+            }
         } else {
             vscode.window.showInformationMessage("File not ready");
         }

@@ -273,6 +273,7 @@ export class Constants {
         MOVE_RIGHT_SELECTION: "moveOutlineRightSelection",
         MOVE_UP_SELECTION: "moveOutlineUpSelection",
         INSERT_SELECTION: "insertNodeSelection",
+        INSERT_SELECTION_INTERRUPT: "insertNodeSelectionInterrupt", // Headline input box can be interrupted with another insert
         CLONE_SELECTION: "cloneNodeSelection",
         PROMOTE_SELECTION: "promoteSelection",
         DEMOTE_SELECTION: "demoteSelection",

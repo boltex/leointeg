@@ -23,12 +23,13 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(p_context, w_leoIntegration);
 
     // * Reset Extension context flags (used in 'when' clauses in package.json)
-    utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // connected to a leobridge server?
+    utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
     utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
 
     const w_cmdPrefix = Constants.NAME + ".";
     const w_commands: [string, (...args: any[]) => any][] = [
 
+        // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
         [w_cmdPrefix + "test", () => w_leoIntegration.test()], // * Test function useful when debugging
         [w_cmdPrefix + "testFromOutline", () => w_leoIntegration.test(true)], // * Test function useful when debugging
 
@@ -94,6 +95,9 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.MOVE_UP_SELECTION_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, true)],
         [w_cmdPrefix + Constants.COMMANDS.INSERT_SELECTION, () => w_leoIntegration.insertNode(undefined, false)],
         [w_cmdPrefix + Constants.COMMANDS.INSERT_SELECTION_FO, () => w_leoIntegration.insertNode(undefined, true)],
+
+        [w_cmdPrefix + Constants.COMMANDS.INSERT_SELECTION_INTERRUPT, () => w_leoIntegration.insertNode(undefined, undefined, true)],
+
         [w_cmdPrefix + Constants.COMMANDS.CLONE_SELECTION, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
         [w_cmdPrefix + Constants.COMMANDS.CLONE_SELECTION_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
         [w_cmdPrefix + Constants.COMMANDS.PROMOTE_SELECTION, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],

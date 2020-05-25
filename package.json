@@ -553,6 +553,15 @@
         }
       },
       {
+        "command": "leointeg.insertNodeSelectionInterrupt",
+        "category": "Leo",
+        "title": "Insert Node",
+        "icon": {
+          "light": "resources/light/plus.svg",
+          "dark": "resources/dark/plus.svg"
+        }
+      },
+      {
         "command": "leointeg.cloneNode",
         "category": "Leo",
         "title": "Clone Node",
@@ -1099,6 +1108,10 @@
           "when": "false"
         },
         {
+          "command": "leointeg.insertNodeSelectionInterrupt",
+          "when": "false"
+        },
+        {
           "command": "leointeg.cloneNode",
           "when": "false"
         },
@@ -1469,6 +1482,12 @@
         "key": "ctrl+i",
         "mac": "cmd+i",
         "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.insertNodeSelectionInterrupt",
+        "key": "ctrl+i",
+        "mac": "cmd+i",
+        "when": "leoTreeOpened && !editorHasSelection && !sideBarFocus && !editorTextFocus"
       },
       {
         "command": "leointeg.cloneNodeSelection",
