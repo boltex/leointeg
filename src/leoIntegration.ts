@@ -155,13 +155,13 @@ export class LeoIntegration {
         // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
         vscode.window.onDidChangeActiveTextEditor(p_event => this._onActiveEditorChanged(p_event)); // TODO : handle deleted bodies
         // * other events
-        vscode.window.onDidChangeTextEditorSelection(p_event => this._onChangeEditorSelection(p_event));
+        // vscode.window.onDidChangeTextEditorSelection(p_event => this._onChangeEditorSelection(p_event)); // Not used for now
         vscode.window.onDidChangeTextEditorViewColumn(p_event => this._onChangeEditorViewColumn(p_event)); // TODO : handle deleted bodies
         vscode.window.onDidChangeVisibleTextEditors(p_event => this._onChangeVisibleEditors(p_event)); // TODO : handle deleted bodies
         vscode.window.onDidChangeWindowState(p_event => this._onChangeWindowState(p_event));
 
         // * React when typing and changing body pane
-        vscode.workspace.onDidSaveTextDocument(p_event => this._onDocumentSaved(p_event)); // Not used for now
+        // vscode.workspace.onDidSaveTextDocument(p_event => this._onDocumentSaved(p_event)); // Not used for now
         vscode.workspace.onDidChangeTextDocument(p_event => this._onDocumentChanged(p_event)); // * Detect when user types in body pane here
 
         // * React to configuration settings events
@@ -322,16 +322,8 @@ export class LeoIntegration {
         }
     }
 
-    private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
-        // * The selection in an editor has changed. - just refresh the statusBar for now
-        if (vscode.window.activeTextEditor) {
-            // Yes an editor is active, just check if its leo scheme
-            this._leoStatusBar.update(
-                (p_event.textEditor.document.uri.scheme === Constants.URI_SCHEME) && (vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_SCHEME),
-                Constants.STATUSBAR_DEBOUNCE_DELAY // Debounced
-            );
-        }
-    }
+    // * The selection in an output panel or any other editor has changed
+    // private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void { } // Nothing so far
 
     // * The view column of an editor has changed (when shifting editors through closing/inserting editors or closing columns)
     // * No effect when dragging editor tabs: it just closes and reopens in other column, see '_onChangeVisibleEditors'
@@ -351,7 +343,7 @@ export class LeoIntegration {
     }
 
     // * Edited and saved the document, does it on any document in editor
-    private _onDocumentSaved(p_event: vscode.TextDocument): void { } // Nothing so far
+    // private _onDocumentSaved(p_event: vscode.TextDocument): void { } // Nothing so far
 
     private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
         // * Typing detected in a document. ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
