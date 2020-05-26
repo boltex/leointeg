@@ -37,7 +37,7 @@ export class Constants {
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
         STATUSBAR_DEFAULT_COLOR: "fb7c47",
-        STATUSBAR_DEFAULT_STRING: "Literate", // 🦁
+        STATUSBAR_DEFAULT_STRING: "", // TODO: Maybe other strings as default: 🦁, "Literate", "Leo" ?
         STATUSBAR_INDICATOR: "$(keyboard) ",
         QUICK_OPEN_LEO_COMMANDS: ">leo: ",
         EXPLORER_TREEVIEW_PREFIX: "LEO ",

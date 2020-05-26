@@ -30,7 +30,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
-        this._onDidChangeTreeData.fire();
+        this._onDidChangeTreeData.fire(undefined);
     }
 
     public getTreeItem(element: LeoNode): Thenable<LeoNode> | LeoNode {

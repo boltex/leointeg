@@ -2,11 +2,14 @@
 
 ## 0.1.9
 
-- Added new compilation configuration (server, extension, or both) to help debugging
-- Support async output from leoBridge from log pane and other events
-- External file change detection with modal dialogs matching Leo's gui dialogs
-- Redo operation, along with many other core leo commands and operations
-- Rollback feature to disallow multiple different body panes opened simultaneously
+- Added new compilation configuration (server, extension, or both) to help debugging.
+- Support async output from leoBridge, for log pane and other events.
+- External file change detection with modal dialogs matching Leo's gui dialogs.
+- Added config options to bypass derived files change detection dialogs with defaults, allowing automatic synchronization of derived files in both directions.
+- Added support for redo, refresh from disk and many any other core Leo commands and operations.
+- Added support for rapid outline edition command entry, including 'insert node' command **`Ctrl+I`** and for replacing focus on relevant elements to mimic actual Leo interface workflow.
+- Added [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree to help with connecting and opening
+- _REMOVED FEATURE_ Rolled back 'multi-body' feature for simultaneous body panes from different gnx. Body panes from the same gnx are still available.
 
 ## 0.1.8
 
