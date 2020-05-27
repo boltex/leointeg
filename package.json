@@ -231,11 +231,6 @@
         "title": "Test Leo Integration"
       },
       {
-        "command": "leointeg.testFromOutline",
-        "category": "Leo",
-        "title": "Test Leo Integration"
-      },
-      {
         "command": "leointeg.startServer",
         "category": "Leo",
         "title": "Start Leo Bridge Server"
@@ -804,10 +799,6 @@
           "when": "leoBridgeReady && !leoTreeOpened"
         },
         {
-          "command": "leointeg.showBody",
-          "when": "leoTreeOpened"
-        },
-        {
           "command": "leointeg.showLogPane",
           "when": "leoBridgeReady"
         },
@@ -980,11 +971,19 @@
           "when": "leoTreeOpened"
         },
         {
+          "command": "leointeg.test",
+          "when": "false"
+        },
+        {
           "command": "leointeg.selectTreeNode",
           "when": "false"
         },
         {
           "command": "leointeg.openAside",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.showBody",
           "when": "false"
         },
         {
@@ -1291,18 +1290,6 @@
       ]
     },
     "keybindings": [
-      {
-        "command": "leointeg.test",
-        "key": "alt+i",
-        "mac": "alt+i",
-        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
-      },
-      {
-        "command": "leointeg.testFromOutline",
-        "key": "alt+i",
-        "mac": "alt+i",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
-      },
       {
         "command": "leointeg.contractAll",
         "key": "alt+-",
