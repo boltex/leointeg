@@ -38,9 +38,9 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.START_SERVER, () => w_leoIntegration.startServer()],
         [w_cmdPrefix + Constants.COMMANDS.CONNECT, () => w_leoIntegration.connect()],
         [w_cmdPrefix + Constants.COMMANDS.SHOW_LOG, () => w_leoIntegration.showLogPane()],
-        [w_cmdPrefix + Constants.COMMANDS.SHOW_BODY, () => w_leoIntegration.showBody(false)], // TODO : Consider removing this from menus (redundant/unnecessary)
-        [w_cmdPrefix + Constants.COMMANDS.OPEN_FILE, () => w_leoIntegration.openLeoFile()], // TODO : Support multiple simultaneous opened files
-        [w_cmdPrefix + Constants.COMMANDS.SAVE_FILE, () => w_leoIntegration.saveLeoFile()], // TODO : Specify which file when supporting multiple simultaneous files
+        [w_cmdPrefix + Constants.COMMANDS.SHOW_BODY, () => w_leoIntegration.showBody(false)], // Expose to other expansions only, (not in menus for minimal footprint)
+        [w_cmdPrefix + Constants.COMMANDS.OPEN_FILE, () => w_leoIntegration.openLeoFile()], // TODO : #13 @boltex  Support multiple simultaneous opened files
+        [w_cmdPrefix + Constants.COMMANDS.SAVE_FILE, () => w_leoIntegration.saveLeoFile()], // TODO : #13 @boltex  Specify which file when supporting multiple simultaneous files
 
         [w_cmdPrefix + Constants.COMMANDS.SELECT_NODE, (p_node: LeoNode) => w_leoIntegration.selectTreeNode(p_node, false, false)], // Called by nodes in tree when selected
         [w_cmdPrefix + Constants.COMMANDS.OPEN_ASIDE, (p_node: LeoNode) => w_leoIntegration.selectTreeNode(p_node, false, true)],
@@ -117,8 +117,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.REDO_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, true)],
         [w_cmdPrefix + Constants.COMMANDS.EXECUTE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.EXECUTE_SCRIPT, undefined, RefreshType.RefreshTreeAndBody, false)],
 
-        // TODO : More commands to implement
-        [w_cmdPrefix + Constants.COMMANDS.CLOSE_FILE, () => w_leoIntegration.closeLeoFile()], // TODO : Implement & support multiple simultaneous files
+        // TODO : More commands to implement #15, #23, #24, #25 @boltex
+        [w_cmdPrefix + Constants.COMMANDS.CLOSE_FILE, () => w_leoIntegration.closeLeoFile()], // TODO : #13 @boltex Implement & support multiple simultaneous files
         [w_cmdPrefix + Constants.COMMANDS.HOIST, () => vscode.window.showInformationMessage("TODO: hoistNode command")],
         [w_cmdPrefix + Constants.COMMANDS.HOIST_SELECTION, () => vscode.window.showInformationMessage("TODO: hoistSelection command")],
         [w_cmdPrefix + Constants.COMMANDS.DEHOIST, () => vscode.window.showInformationMessage("TODO: deHoist command")],
@@ -172,15 +172,15 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
         if (p_previousVersion !== p_version) {
             console.log(`leoInteg upgraded from v${p_previousVersion} to v${p_version}`);
         }
-        const [major, minor] = p_version.split('.').map(v => parseInt(v, 10));
-        const [prevMajor, prevMinor] = p_previousVersion.split('.').map(v => parseInt(v, 10));
+        const [w_major, w_minor] = p_version.split('.').map(p_stringVal => parseInt(p_stringVal, 10));
+        const [w_prevMajor, w_prevMinor] = p_previousVersion.split('.').map(p_stringVal => parseInt(p_stringVal, 10));
         if (
-            (major === prevMajor && minor === prevMinor) ||
+            (w_major === w_prevMajor && w_minor === w_prevMinor) ||
             // Don't notify on downgrades
-            (major < prevMajor || (major === prevMajor && minor < prevMinor))
+            (w_major < w_prevMajor || (w_major === w_prevMajor && w_minor < w_prevMinor))
         ) {
             w_showWelcomeScreen = false;
-        } else if (major !== prevMajor || (major === prevMajor && minor > prevMinor)) {
+        } else if (w_major !== w_prevMajor || (w_major === w_prevMajor && w_minor > w_prevMinor)) {
             // Will show on major or minor upgrade, Formatted as 'Major.Minor.Revision' eg. 1.2.3
             w_showWelcomeScreen = true;
         }

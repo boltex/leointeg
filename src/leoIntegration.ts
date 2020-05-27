@@ -459,7 +459,6 @@ export class LeoIntegration {
         // First setup flags for selecting and focusing based on the current reveal type needed
         const w_selectFlag = this._revealType >= RevealType.RevealSelect; // at least RevealSelect
         let w_focusFlag = this._revealType >= RevealType.RevealSelectFocus;  // at least RevealSelectFocus
-        const w_showBodyFlag = this._revealType >= RevealType.RevealSelectFocusShowBody; // at least RevealSelectFocusShowBody
         // Flags are setup so now reveal, select and / or focus as needed
         this._revealType = RevealType.NoReveal; // ok reset
         // If first time, or when treeview switched, lastSelectedNode will be undefined

@@ -14,8 +14,9 @@ export class CommandStack {
     private _finalRefreshType: RefreshType = RefreshType.NoRefresh; // Refresh type after last command is done. (Keep only if higher)
     private _finalFromOutline: boolean = false; // Set focus on outline instead of body? (Keep from last one pushed)
 
-    // TODO : DEBUG AND DOCUMENT _receivedSelection type json/string ?
-    private _receivedSelection: string = ""; // Selected node that was received from last command from a running stack
+    // * Received selection from the last command that finished.
+    // * Note: JSON string representation of a node, will be re-sent as node to leo instead of lastSelectedNode
+    private _receivedSelection: string = ""; // Selected node that was received from last command from a running stack. Empty string is used as 'false'.
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -37,7 +38,6 @@ export class CommandStack {
      */
     public newSelection(): void {
         if (!this._busy) {
-            // console.log('Clearing _receivedSelection');
             this._receivedSelection = "";
         }
     }
@@ -64,15 +64,11 @@ export class CommandStack {
      * * Try to launch commands that were added on the stack if any
      */
     private _tryStart(): void {
-        // console.log(`try start a stack, busy is :${this._busy}`);
         if (this.size() && !this._busy) {
-            // console.log(`Starting a stack, busy is :${this._busy}`);
 
             // actions have beed added and command stack instance is not busy, so set the busy flag and start from the bottom
             this._busy = true; // Cleared when the last command has returned (and the stack is empty)
-            // this._receivedSelection = ""; // RESET last received selection so that lastSelectedNode is used instead if no node parameter
 
-            // TODO : Try to simplify like this .then(this._resolveResult);
             this._runStackCommand().then((p_package: LeoBridgePackage) => {
                 this._resolveResult(p_package);
             });
@@ -133,9 +129,6 @@ export class CommandStack {
      * @param p_package is the json return 'package' that was just received back from Leo
      */
     private _resolveResult(p_package: LeoBridgePackage): void {
-        // TODO : DEBUG THIS LOGIC !
-        // console.log(`RESOLVING, busy is ${this._busy} from a stack of ${this._stack.length}`);
-
         this._stack.shift();
         // If last is done then do refresh outline and focus on outline, or body
         // console.log('p_package :', p_package);

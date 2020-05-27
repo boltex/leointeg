@@ -30,14 +30,14 @@ export class Constants {
     public static STATUSBAR_DEBOUNCE_DELAY: number = 50;
 
     /**
-     * * Strings used in the interface itself
+     * * Strings used in the workbench interface panels (not for messages or dialogs)
      */
     public static GUI = {
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
         STATUSBAR_DEFAULT_COLOR: "fb7c47",
-        STATUSBAR_DEFAULT_STRING: "", // TODO: Maybe other strings as default: 🦁, "Literate", "Leo" ?
+        STATUSBAR_DEFAULT_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: 🦁
         STATUSBAR_INDICATOR: "$(keyboard) ",
         QUICK_OPEN_LEO_COMMANDS: ">leo: ",
         EXPLORER_TREEVIEW_PREFIX: "LEO ",
@@ -70,6 +70,7 @@ export class Constants {
         NO: "No",
         YES_ALL: "Yes to all",
         NO_ALL: "No to all",
+        CHANGES_DETECTED: "Changes to external files were detected.",
         REFRESHED: " Nodes were refreshed from file.", // with leading space
         IGNORED: " They were ignored." // with leading space
     };
@@ -115,7 +116,7 @@ export class Constants {
         SHOW_MARK: Constants.CONFIGURATION.SHOW_MARK,
         SHOW_CLONE: Constants.CONFIGURATION.SHOW_CLONE,
         SHOW_COPY: Constants.CONFIGURATION.SHOW_COPY,
-        LEO_SELECTED: "leoObjectSelected", // TODO : Maybe unneeded if 'xxxFromOutline' commands are used
+        LEO_SELECTED: "leoObjectSelected",
         SELECTED_MARKED: "leoNodeMarked",
         SELECTED_UNMARKED: "leoNodeUnmarked",
         SELECTED_ATFILE: "leoNodeAtFile"
@@ -141,6 +142,17 @@ export class Constants {
     };
 
     /**
+     * * runAskYesNoDialog or runAskOkDialog result codes, used when async action requires a response
+     */
+    public static ASYNC_ASK_RETURN_CODES = {
+        YES: "yes",
+        NO: "no",
+        YES_ALL: "yes-all",
+        NO_ALL: "no-all",
+        OK: '"ok"' // Quotes in string as a 'JSON parameter'
+    };
+
+    /**
      * * Commands for leobridgeserver.py
      */
     public static LEOBRIDGE = {
@@ -159,9 +171,9 @@ export class Constants {
         EXPAND_NODE: "expandNode",
         COLLAPSE_NODE: "collapseNode",
         CONTRACT_ALL: "contractAll",
-        OPEN_FILE: "openFile", // TODO : Support multiple simultaneous opened files
-        CLOSE_FILE: "closeFile", // TODO : Implement & support multiple simultaneous files
-        SAVE_FILE: "saveFile", // TODO : Specify which file when supporting multiple simultaneous files
+        OPEN_FILE: "openFile", // TODO : #13 @boltex Support multiple simultaneous opened files
+        CLOSE_FILE: "closeFile", // TODO : #13 @boltex Implement & support multiple simultaneous files
+        SAVE_FILE: "saveFile", // TODO : #13 @boltex Specify which file when supporting multiple simultaneous files
         // * Leo Operations
         MARK_PNODE: "markPNode",
         UNMARK_PNODE: "unmarkPNode",
@@ -185,24 +197,24 @@ export class Constants {
         UNDO: "undo",
         REDO: "redo",
         EXECUTE_SCRIPT: "executeScript",
-        // TODO : More commands to implement
-        HOIST_PNODE: "hoistPNode",
-        DEHOIST: "deHoist",
-        CLONE_FIND_ALL: "cloneFindAll",
-        CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened",
-        CLONE_FIND_MARKED: "cloneFindMarked",
-        CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked",
-        EXTRACT: "extract",
-        EXTRACT_NAMES: "extractNames",
-        COPY_MARKED: "copyMarked",
-        DIFF_MARKED_NODES: "diffMarkedNodes",
-        GOTO_NEXT_MARKED: "gotoNextMarked",
-        MARK_CHANGED_ITEMS: "markChangedItems",
-        MARK_SUBHEADS: "markSubheads",
-        UNMARK_ALL: "unmarkAll",
-        CLONE_MARKED_NODES: "cloneMarkedNodes",
-        DELETE_MARKED_NODES: "deleteMarkedNodes",
-        MOVE_MARKED_NODES: "moveMarkedNodes"
+        // TODO : More commands to implement #15, #23, #24, #25 @boltex
+        HOIST_PNODE: "hoistPNode", // #25 @boltex
+        DEHOIST: "deHoist", // #25 @boltex
+        CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
+        CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
+        CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex
+        CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // #24 @boltex
+        EXTRACT: "extract", // #15 @boltex
+        EXTRACT_NAMES: "extractNames", // #15 @boltex
+        COPY_MARKED: "copyMarked", // #23 @boltex
+        DIFF_MARKED_NODES: "diffMarkedNodes", // #23 @boltex
+        GOTO_NEXT_MARKED: "gotoNextMarked", // #23 @boltex
+        MARK_CHANGED_ITEMS: "markChangedItems", // #23 @boltex
+        MARK_SUBHEADS: "markSubheads", // #23 @boltex
+        UNMARK_ALL: "unmarkAll", // #23 @boltex
+        CLONE_MARKED_NODES: "cloneMarkedNodes", // #23 @boltex
+        DELETE_MARKED_NODES: "deleteMarkedNodes", // #23 @boltex
+        MOVE_MARKED_NODES: "moveMarkedNodes" // #23 @boltex
     };
 
     /**
@@ -232,12 +244,12 @@ export class Constants {
         UNDO_FO: "undoFromOutline", // from button, return focus on OUTLINE
         REDO: "redo", // From command Palette
         REDO_FO: "redoFromOutline", // from button, return focus on OUTLINE
-        EXECUTE: "executeScriptSelection", // TODO : detect focused panel for command-palette to return focus where appropriate
+        EXECUTE: "executeScriptSelection", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
         SHOW_BODY: "showBody",
         SHOW_LOG: "showLogPane",
-        SAVE_FILE: "saveLeoFile",  // TODO : detect focused panel for command-palette to return focus where appropriate
-        SORT_CHILDREN: "sortChildrenSelection",  // TODO : detect focused panel for command-palette to return focus where appropriate
-        SORT_SIBLING: "sortSiblingsSelection",  // TODO : detect focused panel for command-palette to return focus where appropriate
+        SAVE_FILE: "saveLeoFile", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SORT_CHILDREN: "sortChildrenSelection", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SORT_SIBLING: "sortSiblingsSelection", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
         CONTRACT_ALL: "contractAll", // From command Palette
         CONTRACT_ALL_FO: "contractAllFromOutline", // from button, return focus on OUTLINE
         // * Commands from tree panel buttons or context: focus on OUTLINE
@@ -259,7 +271,6 @@ export class Constants {
         DEMOTE: "demote",
         REFRESH_FROM_DISK: "refreshFromDisk",
         // * Commands from keyboard, while focus on BODY (command-palette returns to BODY for now)
-        // TODO : detect focused panel for command-palette to return to outline when appropriate
         MARK_SELECTION: "markSelection",
         UNMARK_SELECTION: "unmarkSelection",
         COPY_SELECTION: "copyNodeSelection", // Nothing to refresh/focus so no "FO" version
@@ -279,7 +290,6 @@ export class Constants {
         DEMOTE_SELECTION: "demoteSelection",
         REFRESH_FROM_DISK_SELECTION: "refreshFromDiskSelection",
         // * Commands from keyboard, while focus on OUTLINE
-        // TODO : detect focused panel for command-palette to return to outline when appropriate
         MARK_SELECTION_FO: "markSelectionFromOutline",
         UNMARK_SELECTION_FO: "unmarkSelectionFromOutline",
         // COPY_SELECTION Nothing to refresh/focus for "copy a node" so no entry here

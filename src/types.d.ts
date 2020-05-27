@@ -34,9 +34,7 @@ export const enum RevealType {
     NoReveal = 0, // In apToLeoNode conversion, If if the global revealType is "NoReveal" and its the selected node, re-use the old id
     Reveal,
     RevealSelect,
-    RevealSelectFocus,
-    RevealSelectFocusShowBody, // TODO : Should not be part of outline-node's reveal types
-    RevealSelectShowBody // TODO : Should not be part of outline-node's reveal types
+    RevealSelectFocus
 }
 
 /**
@@ -46,7 +44,6 @@ export const enum RefreshType {
     NoRefresh = 0, // only for 'copy-node' so far
     RefreshTree,   // Refresh tree and show body pane if not already opened, but no need to refresh it
     RefreshTreeAndBody // undo, redo, execute and others can also modify the current body, so refresh the filesystem gnx too
-    // RefreshNodeOnly NOT USED : expand, collapse, select and open aside do not
 }
 
 /**
@@ -105,7 +102,8 @@ export interface ArchivedPosition {
  */
 export interface LeoBridgePackage {
     id: number;
-    [key: string]: any; // TODO ADD ALL POSSIBLE (FACULTATIVE) KEYS FROM leobridgeserver.py
+    // TODO : ADD ALL POSSIBLE (FACULTATIVE) KEYS FROM leobridgeserver.py (should be in constants.ts)
+    [key: string]: any;
 }
 
 /**
@@ -116,10 +114,43 @@ export interface Icon {
     dark: string;
 }
 
-export interface AskPickItem extends vscode.QuickPickItem {
-    value: string;
+/**
+ * * LeoBody virtual file time information object
+ */
+export interface BodyTimeInfo {
+    gnx: string;
+    ctime: number;
+    mtime: number;
 }
 
+/**
+ * * Parameter structure used in the 'runAskYesNoDialog' equivalent when asking user input
+ */
+export interface runAskYesNoDialogParameters {
+    "ask": string;
+    "message": string;
+    "yes_all": boolean;
+    "no_all": boolean;
+}
+
+/**
+ * * Parameter structure used in the 'runAskOkDialog' equivalent when showing a warning
+ */
+export interface runWarnMessageDialogParameters {
+    "warn": string;
+    "message": string;
+}
+
+/**
+ * * Parameter structure for non-blocking info message about detected file changes
+ */
+export interface runInfoMessageDialogParameters {
+    "message": string;
+}
+
+/**
+ * * Used in showAskModalDialog to get answer from user interaction
+ */
 export interface AskMessageItem extends vscode.MessageItem {
     value: string;
 }

@@ -67,6 +67,25 @@ export class LeoNode extends vscode.TreeItem {
         return this;
     }
 
+    private _getContextValue(p_marked: boolean, p_atFile: boolean): string {
+        let w_contextValue = Constants.CONTEXT_FLAGS.SELECTED_UNMARKED; // * Start it with 'leoNodeMarked' or 'leoNodeUnmarked'
+        if (p_marked) {
+            w_contextValue = Constants.CONTEXT_FLAGS.SELECTED_MARKED;
+        }
+        if (p_atFile) {
+            w_contextValue += Constants.CONTEXT_FLAGS.SELECTED_ATFILE; // * then append 'leoNodeAtFile' to existing if needed
+        }
+        return w_contextValue;
+    }
+
+    public getCursorSelection(): any {
+        return this.cursorSelection;
+    }
+
+    public setCursorSelection(p_cursorSelection: any): void {
+        this.cursorSelection = p_cursorSelection;
+    }
+
     public get iconPath(): { light: string; dark: string } {
         // From Leo's leoNodes.py computeIcon function
         // 1=has Body, 2=marked, 4=cloned, 8=dirty
@@ -86,23 +105,4 @@ export class LeoNode extends vscode.TreeItem {
     public get id(): string { return this._id; }
 
     public get tooltip(): string { return this.label; } // * Whole headline as tooltip
-
-    public getCursorSelection(): any {
-        return this.cursorSelection;
-    }
-
-    public setCursorSelection(p_cursorSelection: any): void {
-        this.cursorSelection = p_cursorSelection;
-    }
-
-    private _getContextValue(p_marked: boolean, p_atFile: boolean): string {
-        let w_contextValue = Constants.CONTEXT_FLAGS.SELECTED_UNMARKED; // * Start it with 'leoNodeMarked' or 'leoNodeUnmarked'
-        if (p_marked) {
-            w_contextValue = Constants.CONTEXT_FLAGS.SELECTED_MARKED;
-        }
-        if (p_atFile) {
-            w_contextValue += Constants.CONTEXT_FLAGS.SELECTED_ATFILE; // * then append 'leoNodeAtFile' to existing if needed
-        }
-        return w_contextValue;
-    }
 }

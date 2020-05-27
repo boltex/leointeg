@@ -47,7 +47,7 @@ export class ServerService {
                 " " + w_serverScriptPath);
         }
 
-        const w_serverStartPromise = new Promise((resolve, reject) => {
+        const w_serverStartPromise = new Promise((p_resolve, w_reject) => {
             // * Spawn a python child process for a leoBridge server
             let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
             if (this._isWin32 && w_pythonPath === "py") {
@@ -56,29 +56,29 @@ export class ServerService {
             w_args.push(w_serverScriptPath);
             this._serverProcess = child.spawn(w_pythonPath, w_args);
             // * Capture the python process output
-            this._serverProcess.stdout.on("data", (data: string) => {
-                data.toString().split("\n").forEach(p_line => {
+            this._serverProcess.stdout.on("data", (p_data: string) => {
+                p_data.toString().split("\n").forEach(p_line => {
                     p_line = p_line.trim();
                     if (p_line) { // * std out process line by line: json shouldn't have line breaks
                         if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
-                            resolve(p_line); // * Server confirmed started
+                            p_resolve(p_line); // * Server confirmed started
                         }
                         console.log("leoBridge: ", p_line); // Output message anyways
                     }
                 });
             });
             // * Capture other python process outputs
-            this._serverProcess.stderr.on("data", (data: string) => {
-                console.log(`stderr: ${data}`);
+            this._serverProcess.stderr.on("data", (p_data: string) => {
+                console.log(`stderr: ${p_data}`);
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                 this._serverProcess = undefined;
-                reject(`stderr: ${data}`);
+                w_reject(`stderr: ${p_data}`);
             });
-            this._serverProcess.on("close", (code: any) => {
-                console.log(`leoBridge exited with code ${code}`);
+            this._serverProcess.on("close", (p_code: any) => {
+                console.log(`leoBridge exited with code ${p_code}`);
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                 this._serverProcess = undefined;
-                reject(`leoBridge exited with code ${code}`);
+                w_reject(`leoBridge exited with code ${p_code}`);
             });
         });
         return w_serverStartPromise;

@@ -10,13 +10,13 @@ import { LeoAsync } from "./leoAsync";
  */
 export class LeoBridge {
 
-    private _actionBusy: boolean = false; // An action was started from the bottom and has not yet resolved
+    private _actionBusy: boolean = false; // A busy state meaning an action was started from the bottom but has yet to resolve
 
     private _leoBridgeSerialId: number = 0; // TODO : When doing error checking, see if this should be Constants.STARTING_PACKAGE_ID or 0 or 2... ?
     private _callStack: LeoAction[] = [];
     private _readyPromise: Promise<LeoBridgePackage> | undefined;
 
-    // private _hasbin = require('hasbin'); // TODO : See if this can help with anaconda/miniconda issues
+    // private _hasbin = require('hasbin'); // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
     private _websocket: WebSocket | null = null;
     private _leoAsync: LeoAsync;
 
@@ -36,9 +36,6 @@ export class LeoBridge {
      * @returns a Promise that will contain the JSON package answered back
      */
     public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
-        // if (p_action === Constants.LEOBRIDGE.SET_SELECTED_NODE) {
-        //     console.log('SENDING SELECT A NODE!');
-        // }
         return new Promise((resolve, reject) => {
             const w_action: LeoAction = {
                 parameter: this._buildActionParameter(p_action, p_jsonParam),
@@ -110,7 +107,8 @@ export class LeoBridge {
     private _resolveBridgeReady(p_object: string) {
         let w_bottomAction = this._callStack.shift();
         if (w_bottomAction) {
-            if (w_bottomAction.deferredPayload) { // Used when the action already has a return value ready but is also waiting for python's side
+            if (w_bottomAction.deferredPayload) {
+                // Used when the action already has a return value ready but is also waiting for python's side
                 w_bottomAction.resolveFn(w_bottomAction.deferredPayload); // given back 'as is'
             } else {
                 w_bottomAction.resolveFn(p_object);
@@ -157,7 +155,7 @@ export class LeoBridge {
             }
         }
         catch (e) {
-            console.error('[leoBridge] json was invalid: ' + p_jsonStr);
+            console.error('[leoBridge] JSON was invalid: ' + p_jsonStr);
         }
         return false;
     }
@@ -176,7 +174,7 @@ export class LeoBridge {
             this._asyncAction(w_parsedData);
         } else {
             // unprocessed/unknown python output
-            console.error("[leoBridge] unprocessed/unknown json received: ", p_data);
+            console.error("[leoBridge] Unprocessed or unknown JSON received: ", p_data);
         }
     }
 
@@ -195,15 +193,15 @@ export class LeoBridge {
             }
         };
         this._websocket.onerror = (p_event: WebSocket.ErrorEvent) => {
-            console.log(`websocket error: ${p_event.message}`);
+            console.error(`Websocket error: ${p_event.message}`);
         };
         this._websocket.onclose = (p_event: WebSocket.CloseEvent) => {
             // * Disconnected from server
-            console.log(`websocket closed, code: ${p_event.code}`);
-            this._rejectAction(`websocket closed, code: ${p_event.code}`);
+            console.log(`Websocket closed, code: ${p_event.code}`);
+            this._rejectAction(`Websocket closed, code: ${p_event.code}`);
             // TODO : Implement a better connection error handling
             if (this._leoIntegration.leoBridgeReady) {
-                this._leoIntegration.cancelConnect(`websocket closed, code: ${p_event.code}`);
+                this._leoIntegration.cancelConnect(`Websocket closed, code: ${p_event.code}`);
             }
         };
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'

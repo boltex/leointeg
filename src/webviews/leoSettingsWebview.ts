@@ -41,13 +41,13 @@ export class LeoSettingsWebview {
                         enableScripts: true
                     }
                 );
-                let baseUri = this._panel.webview.asWebviewUri(vscode.Uri.file(
+                let w_baseUri = this._panel.webview.asWebviewUri(vscode.Uri.file(
                     path.join(this._extensionPath)
                 ));
                 this._panel.iconPath = vscode.Uri.file(this._context.asAbsolutePath('resources/leoapp128px.png'));
                 this._panel.webview.html = p_baseHtml.replace(
                     /#{root}/g,
-                    baseUri.toString()
+                    w_baseUri.toString()
                 ).replace(
                     /#{endOfBody}/g,
                     `<script type="text/javascript" nonce="Z2l0bGV1cy1ib290c3RyYXA=">window.leoConfig = ${JSON.stringify(
@@ -91,10 +91,10 @@ export class LeoSettingsWebview {
         if (this._html !== undefined) {
             return this._html;
         } else {
-            const filename = this._context.asAbsolutePath(path.join('dist/webviews/', 'settings.html'));
-            const doc = await vscode.workspace.openTextDocument(filename);
+            const w_filename = this._context.asAbsolutePath(path.join('dist/webviews/', 'settings.html'));
+            const w_doc = await vscode.workspace.openTextDocument(w_filename);
 
-            this._html = doc.getText();
+            this._html = w_doc.getText();
 
             return this._html;
         }
