@@ -1470,14 +1470,18 @@
       },
       {
         "command": "leointeg.cloneNodeSelection",
-        "key": "ctrl+[Backquote]",
+        "win": "ctrl+oem_7",
+        "linux": "cmd+[Backquote]",
         "mac": "cmd+[Backquote]",
+        "key": "ctrl+[Backquote]",
         "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.cloneNodeSelectionFromOutline",
+        "win": "ctrl+oem_7",
+        "linux": "cmd+[Backquote]",
+        "mac": "cmd+[Backquote]",
         "key": "ctrl+[Backquote]",
-        "mac": "cmd+",
         "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {

@@ -2,17 +2,17 @@
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
-### Break your code down into sections structured as an outline, to derive, or parse back source files!
+### Break your code down into sections structured as an outline, to derive, or parse back source files
 
-Leo is a fundamentally different way of using and organizing data, programs and scripts. See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/) or on [github.com/leo-editor](https://github.com/leo-editor/leo-editor).
+Leo is a fundamentally different way of using and organizing data, programs and scripts. See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/) or on [github](https://github.com/leo-editor/leo-editor).
 
 ![Screenshot](resources/animated-screenshot.gif)
 
 ## Requirements
 
-- Leo installed with its path made available in the \$PYTHONPATH environment variable\
+- Having Leo installed with its path made available in the \$PYTHONPATH environment variable\
   (See **Adding Leo to Your Path** in [github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT](https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT#L126))
-- Websocket Python Library installed\
+- Having the Websocket Python Library installed\
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
 
@@ -27,15 +27,17 @@ Make sure you have Node.js and Git installed along with the above general requir
 5. Press F5 to run the extension in its own vscode debug instance.
 
 After compiling, a new vscode window will be running with leoInteg.
-The plugin will be activated if the workspace of this new window contains a leo file, or it can also be manually activated by going to the Leo view.
+
+The plugin will be activated if the workspace of this new window contains a leo file, it can also be manually activated by going to the Leo view.
 
 Once activated, it will start a bridge and connect to it automatically by default. The 'Open Leo File' icon will then be available.
 
 ## Features
 
-- A welcome screen providing easy access to the configuration settings.
-- Derived files change detection. (Set the **'Force reload or ignore changes'** option to **Reload All** to automate synchronization)
-- Leo outline available below the explorer view, or in its own panel.
+- Leo outline below the explorer view, or in its own panel.
+- A welcome screen that also provides access to the configuration settings.
+- Derived files change detection.\
+  (Set the **'Force reload or ignore changes'** option to **'Reload All'** to automate synchronization)
 - Access Leo commands with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
   - Open body panes to the side
   - Outline edition commands
@@ -63,38 +65,40 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 
 ### _Status Bar Indicator_
 
-A 'Literate' Keyboard status bar indicator is shown when this extension is activated. It will turn orange to show when leo's **keyboard shortcuts** are active: This occurs when an outline node or a body pane has focus:
+A customizable keyboard status bar indicator is shown when this extension is activated. It will turn orange, or your own choice of text and color, to show when leo's **keyboard shortcuts** are active: This occurs when an outline node or a body pane has focus:
 
 ![Statusbar](resources/statusbar-keyboard.gif)
-
-## Issues
-
-For most users, **`Ctrl+D`** is often already assigned to some useful command. To help with this conflict, move commands will only trigger at an additional condition of having no text selection in the editor. So select at least one character to use the usual **`Ctrl+D`** vscode command in body panes.
 
 ## Extension Settings
 
 ### _Open the command palette and start typing_ `leo settings`
 
 - Control the visibility of the outline pane in the explorer view.
-- Decide how and when to refresh and synchronize when derived (external) file are modified.
+- Decide how and when to refresh and synchronize content when derived (external) file are modified.
 - Show additional icons on tree nodes (Move, delete, mark, copy, paste...)
 - Choose to either focus on the body pane, or keep focus in the outline when a tree node is selected.
-- Show the "Open on the side" command in the context menu to open a node beside the active editor
+- Hide or show the "Open on the side" command in the context menu to open a node beside the active editor
 - Set preferences for setting the address and port, and for automatically starting, and/or connecting, to a Leo Bridge server.
 
 ![Settings](resources/welcome-settings.gif)
 
+## Issues
+
+For most users, the **`Ctrl+D`** keyboard shortcut is often already assigned. To help with this conflict, outline-move keyboard commands will only trigger with the additional condition of having no text selection in the editor. So select at least one character to use the usual **`Ctrl+D`** command in body panes.
+
 ## Intended Features
 
-- Color-syntaxing duplication from Leo to leoInteg's body panes
-- Finding specific line(s) from derived files in tree nodes (For error lookup, breakpoints cycling, etc.)
-- Optionally displaying line numbers in relation to a derived file instead of the standard editor line numbering when possible.
+- Support for multiple simultaneous opened Leo files.
+- Support multiple connections to the leoBridge server, allowing multi-user live edition of the same Leo file.
+- Syntax-highlighting for body panes that matches Leo's syntax-highlighting.
+- Finding and 'go-to' specific line(s) from derived files in tree nodes (For error lookup, breakpoints, etc.)
+- Optionally display line numbers in relation to derived files instead of the standard editor line numbering when applicable.
 
 ## How it works
 
-Integration is done by starting a python server script and connecting to it via a websocket to exchange JSON data. That python script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
+Integration is done by starting a python server script and connecting to it via a websocket to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
 
-The outline pane is made by implementing a TreeDataProvider for vscode's TreeView API, while the body panes are made by defining a 'leo' filesystem scheme with vscode's FileSystemProvider API, and using the node's gnx as identifiers.
+The outline pane is made by implementing a TreeDataProvider for vscode's TreeView API, while the body panes are made by implementing a filesystem provider and using the node's gnx as identifiers.
 
 ## Acknowledgments
 
