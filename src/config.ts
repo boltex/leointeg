@@ -23,7 +23,6 @@ export class Config implements ConfigMembers {
     public showCloneOnNodes: boolean = false;
     public showCopyOnNodes: boolean = false;
     public invertNodeContrast: boolean = false;
-    public bodyEditDelay: number = 500;
     public leoPythonCommand: string = "";
     public startServerAutomatically: boolean = true;
     public connectToServerAutomatically: boolean = true;
@@ -57,7 +56,6 @@ export class Config implements ConfigMembers {
             showCloneOnNodes: this.showCloneOnNodes,
             showCopyOnNodes: this.showCopyOnNodes,
             invertNodeContrast: this.invertNodeContrast,
-            bodyEditDelay: this.bodyEditDelay,
             leoPythonCommand: this.leoPythonCommand,
             startServerAutomatically: this.startServerAutomatically,
             connectToServerAutomatically: this.connectToServerAutomatically,
@@ -124,7 +122,6 @@ export class Config implements ConfigMembers {
             // * Interface settings
             this.treeKeepFocus = vscode.workspace.getConfiguration(Constants.CONFIG_SECTION).get(Constants.CONFIGURATION.TREE_KEEP_FOCUS, true);
             this.treeKeepFocusWhenAside = vscode.workspace.getConfiguration(Constants.CONFIG_SECTION).get(Constants.CONFIGURATION.TREE_KEEP_FOCUS_WHEN_ASIDE, false);
-            this.bodyEditDelay = vscode.workspace.getConfiguration(Constants.CONFIG_SECTION).get(Constants.CONFIGURATION.BODY_EDIT_DELAY, 500);
             // * Server and connection automation
             this.leoPythonCommand = vscode.workspace.getConfiguration(Constants.CONFIG_SECTION).get(Constants.CONFIGURATION.LEO_PYTHON_COMMAND, "");
             this.startServerAutomatically = vscode.workspace.getConfiguration(Constants.CONFIG_SECTION).get(Constants.CONFIGURATION.AUTO_START_SERVER, true);

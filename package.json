@@ -143,14 +143,6 @@
           "type": "boolean",
           "description": "Inverts the contrast of the dirty/clean border aspect of tree nodes"
         },
-        "leoIntegration.bodyEditDelay": {
-          "scope": "application",
-          "type": "number",
-          "default": 500,
-          "minimum": 250,
-          "maximum": 1000,
-          "description": "Specifies delay time for edits to be sent to Leo, in milliseconds"
-        },
         "leoIntegration.leoPythonCommand": {
           "scope": "application",
           "default": "",

@@ -93,7 +93,6 @@ export class Constants {
         SHOW_CLONE: "showCloneOnNodes",
         SHOW_COPY: "showCopyOnNodes",
         INVERT_NODES: "invertNodeContrast",
-        BODY_EDIT_DELAY: "bodyEditDelay",
         LEO_PYTHON_COMMAND: "leoPythonCommand",
         AUTO_START_SERVER: "startServerAutomatically",
         AUTO_CONNECT: "connectToServerAutomatically",

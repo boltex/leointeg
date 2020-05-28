@@ -32,8 +32,6 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 
 ## Features
 
-### _Features done so far_
-
 - A welcome screen providing easy access to the configuration settings.
 - Derived files change detection with automatic writing and refreshing.
 - Leo outline available below the explorer view, or in its own panel.
@@ -60,7 +58,7 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 | `Ctrl + L`                 | or  | `Shift + Alt + Left`  | Move Outline Left  |
 | `Ctrl + R`                 | or  | `Shift + Alt + Right` | Move Outline Right |
 
-## _Status Bar Indicator_
+### _Status Bar Indicator_
 
 A 'Literate' Keyboard status bar indicator is shown when this extension is activated. It will turn orange to show when leo's **keyboard shortcuts** are active: This occurs when an outline node or a body pane has focus:
 
@@ -75,20 +73,19 @@ For most users, **`Ctrl+D`** is often already assigned to some useful command. T
 ### _Open the command palette and start typing_ `leo settings`
 
 - Control the visibility of the outline pane in the explorer view.
-- Choose to either focus on the body pane, or keep focus in the outline when a tree node is selected.
+- Decide how and when to refresh and synchronize when derived (external) file are modified.
 - Show additional icons on tree nodes (Move, delete, mark, copy, paste...)
+- Choose to either focus on the body pane, or keep focus in the outline when a tree node is selected.
 - Show "Open on the side" in the context menu for a tree node's body to open beside the current body pane.
-- Set the number of milliseconds to wait when debouncing after body text modifications are detected. (for performance tuning)
-- Set preferences for setting the address and port, and for automatically starting, and connecting to a Leo Bridge server.
+- Set preferences for setting the address and port, and for automatically starting, and/or connecting, to a Leo Bridge server.
 
 ![Settings](resources/welcome-settings.gif)
 
 ## Intended Features
 
-- Provide most of Leo's core functionality, outline, body & log panes, color-syntaxing, shortcuts, etc.
-- Find specific line(s) from derived files in tree nodes (For error lookup, breakpoints cycling, etc.)
-- Show line number from the derived file instead of the body-pane's line number.
-- Support for multiple, simultaneous body panes from different nodes.
+- Color-syntaxing duplication from Leo to leoInteg's body panes
+- Finding specific line(s) from derived files in tree nodes (For error lookup, breakpoints cycling, etc.)
+- Optionally displaying line numbers relative to a derived file instead of the body-pane's line number when possible.
 
 ## How it works
 
@@ -101,7 +98,7 @@ The outline pane is made by implementing a TreeDataProvider for vscode's TreeVie
 ### _Thanks to_
 
 - [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
-- [Eric Amodio](https://github.com/eamodio) for the [welcome screen template](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
+- [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
 - [Vitalije](https://github.com/vitalije) for his contributions and support
 
 ---

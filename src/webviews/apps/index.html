@@ -11,7 +11,7 @@
     <header>
       <a class="header__link"
          title="Learn more about Leo Integration"
-         href="https://github.com/boltex/leointeg#readme">
+         href="https://github.com/boltex/leointeg#literate-programming">
         <div class="header__logo">
           <img class="image__logo"
                src="#{root}/resources/leoapp128px.png" />
@@ -31,7 +31,7 @@
       <p>
         <a class="bold"
            title="Learn more about LeoInteg"
-           href="https://github.com/boltex/leointeg#readme">LeoInteg</a>
+           href="https://github.com/boltex/leointeg#-leo-editor-integration-with-visual-studio-code">LeoInteg</a>
         is an open-source extension created by
         <a class="bold"
            title="My github user page"
@@ -63,9 +63,93 @@
             in LeoInteg 0.1.8</a>
         </div> -->
         <p class="blurb ml-0 mr-0">
-          Do you find icons in the outline to be intrusive or the current cursor behavior distracting &mdash;
-          no problem, quickly turn them off or change how they behave using the options below.
+          LeoInteg's interface is designed to <b>mimic Leo's behavior</b> in the most intuitive way possible.
+          (See <a class="bold"
+             title="LeoInteg' Features"
+             href="https://github.com/boltex/leointeg#features">Features</a>)
+          It is also highly <b>customizable:</b> Do you find the outline's icons to be intrusive or the current
+          cursor behavior distracting? &mdash;
+          No problem. Quickly turn them off, or change how they behave using the options below.
         </p>
+      </section>
+
+      <section id="interface-behavior"
+               class="section--settings">
+        <div class="section__content">
+          <div class="section__header">
+            <h2>
+              Interface Behavior
+            </h2>
+          </div>
+
+          <div class="settings">
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="treeKeepFocus"
+                       name="treeKeepFocus"
+                       type="checkbox"
+                       data-setting />
+                <label for="treeKeepFocus">Keep focus on Outline</label>
+              </div>
+              <span class="setting__hint">Keep focus in the outline when selecting a node</span>
+            </div>
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="treeKeepFocusWhenAside"
+                       name="treeKeepFocusWhenAside"
+                       type="checkbox"
+                       data-setting />
+                <label for="treeKeepFocusWhenAside">Keep focus when opening on the side</label>
+              </div>
+              <span class="setting__hint">Keep focus in the outline when opening a body pane on the side</span>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <section id="external-files"
+               class="section--settings">
+        <div class="section__content">
+          <div class="section__header">
+            <h2>
+              External Files Change Detection
+            </h2>
+          </div>
+          <div class="settings">
+
+            <div class="setting">
+              <div class="setting__input">
+                <label for="checkForChangeExternalFiles">Check changes to external files</label>
+                <select id="checkForChangeExternalFiles"
+                        name="checkForChangeExternalFiles"
+                        data-setting>
+                  <option value="none">Default from Leo's config</option>
+                  <option value="force-check">Check for changes</option>
+                  <option value="force-ignore">Ignore all changes</option>
+                </select>
+              </div>
+              <span class="setting__hint">Use Leo's defaults, or force either to check changes or not</span>
+            </div>
+
+            <div class="setting">
+              <div class="setting__input">
+                <label for="defaultReloadIgnore">Force reload or ignore changes</label>
+                <select id="defaultReloadIgnore"
+                        name="defaultReloadIgnore"
+                        data-setting>
+                  <option value="none">Choose each time</option>
+                  <option value="yes-all">Reload All</option>
+                  <option value="no-all">Ignore All</option>
+                </select>
+              </div>
+              <span class="setting__hint">Choose yourself, or set default to reload or ignore changes</span>
+            </div>
+
+          </div>
+        </div>
       </section>
 
       <section id="tree-in-explorer"
@@ -236,65 +320,15 @@
         </div>
       </section>
 
-      <section id="interface-behavior"
+      <section id="statusbar-indicator"
                class="section--settings">
         <div class="section__content">
           <div class="section__header">
             <h2>
-              Interface Behavior
+              Statusbar Indicator
             </h2>
           </div>
-
           <div class="settings">
-
-            <div class="setting">
-              <div class="setting__input">
-                <label for="checkForChangeExternalFiles">Check changes to external files</label>
-                <select id="checkForChangeExternalFiles"
-                        name="checkForChangeExternalFiles"
-                        data-setting>
-                  <option value="none">Default from Leo's config</option>
-                  <option value="force-check">Check for changes</option>
-                  <option value="force-ignore">Ignore all changes</option>
-                </select>
-              </div>
-              <span class="setting__hint">Use Leo's defaults, or force either to check changes or not</span>
-            </div>
-
-            <div class="setting">
-              <div class="setting__input">
-                <label for="defaultReloadIgnore">Force reload or ignore changes</label>
-                <select id="defaultReloadIgnore"
-                        name="defaultReloadIgnore"
-                        data-setting>
-                  <option value="none">Choose each time</option>
-                  <option value="yes-all">Reload All</option>
-                  <option value="no-all">Ignore All</option>
-                </select>
-              </div>
-              <span class="setting__hint">Choose yourself, or set default to reload or ignore changes</span>
-            </div>
-
-            <div class="setting">
-              <div class="setting__input">
-                <input id="treeKeepFocus"
-                       name="treeKeepFocus"
-                       type="checkbox"
-                       data-setting />
-                <label for="treeKeepFocus">Keep focus on Outline</label>
-              </div>
-              <span class="setting__hint">Keep focus in the outline when selecting a node</span>
-            </div>
-            <div class="setting">
-              <div class="setting__input">
-                <input id="treeKeepFocusWhenAside"
-                       name="treeKeepFocusWhenAside"
-                       type="checkbox"
-                       data-setting />
-                <label for="treeKeepFocusWhenAside">Keep focus when opening on the side</label>
-              </div>
-              <span class="setting__hint">Keep focus in the outline when opening a body pane on the side</span>
-            </div>
             <div class="setting">
               <div class="setting__input">
                 <label for="statusBarString">Status Bar Keyboard indicator</label>
@@ -334,21 +368,6 @@
           <div class="settings">
             <div class="setting">
               <div class="setting__input">
-                <label for="bodyEditDelay">Edit&nbsp;Delay</label>
-                <input id="bodyEditDelay"
-                       name="bodyEditDelay"
-                       type="number"
-                       min="250"
-                       max="1000"
-                       max-length="4"
-                       placeholder="milliseconds"
-                       data-setting />
-              </div>
-              <span class="setting__hint">Specifies delay time for edits to be sent to Leo, from 250 to
-                1000 ms</span>
-            </div>
-            <div class="setting">
-              <div class="setting__input">
                 <label for="leoPythonCommand">Python&nbsp;Command</label>
                 <input id="leoPythonCommand"
                        name="leoPythonCommand"
@@ -357,7 +376,7 @@
                        placeholder="Empty for default"
                        data-setting />
               </div>
-              <span class="setting__hint">Command used to start python (Leaving empty defaults to 'py' on windows, and
+              <span class="setting__hint">Command for starting python (Defaults to 'py' on windows, or
                 'python3' otherwise)</span>
             </div>
             <div class="setting">
@@ -369,7 +388,7 @@
                 <label for="startServerAutomatically">Start&nbsp;Server</label>
               </div>
               <span class="setting__hint">Starts a LeoBridge server automatically, by running the leobridgeserver.py
-                python script</span>
+                script</span>
             </div>
             <div class="setting">
               <div class="setting__input">
@@ -379,8 +398,7 @@
                        data-setting />
                 <label for="connectToServerAutomatically">Connect&nbsp;to&nbsp;Server</label>
               </div>
-              <span class="setting__hint">Connects automatically to a Leo server upon activation of this
-                extension</span>
+              <span class="setting__hint">Connects automatically to a LeoBridge server</span>
             </div>
             <div class="setting">
               <div class="setting__input">
@@ -429,6 +447,12 @@
         <h2>Configuration</h2>
         <ul>
           <li>
+            <a href="#interface-behavior">Interface Behavior</a>
+          </li>
+          <li>
+            <a href="#external-files">External Files</a>
+          </li>
+          <li>
             <a href="#tree-in-explorer">Outline in Explorer</a>
           </li>
           <li>
@@ -441,14 +465,13 @@
             <a href="#node-commands">Node Hover Commands</a>
           </li>
           <li>
-            <a href="#interface-behavior">Interface Behavior</a>
+            <a href="#statusbar-indicator">Statusbar Indicator</a>
           </li>
           <li>
             <a href="#leobridge-options">LeoBridge Options</a>
           </li>
         </ul>
       </div>
-
 
       <!-- <div class="sidebar__group">
         <h2>Help</h2>

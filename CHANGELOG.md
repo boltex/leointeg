@@ -9,6 +9,7 @@
 - Added support for redo, refresh from disk and many any other core Leo commands and operations.
 - Added support for rapid outline edition command entry, including 'insert node' command **`Ctrl+I`** and for replacing focus on relevant elements to mimic actual Leo interface workflow.
 - Added [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree to help with connecting and opening
+- Replaced body-editor content transfer logic and removed the related option in the expansion's settings. The body is sent to Leo when appropriate without need of a timed delay.
 - _REMOVED FEATURE_ Rolled back 'multi-body' feature for simultaneous body panes from different gnx. Body panes from the same gnx are still available.
 
 ## 0.1.8
