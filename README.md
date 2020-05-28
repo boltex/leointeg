@@ -22,8 +22,9 @@ Make sure you have Node.js and Git installed along with the above general requir
 
 1. Get this repository: `git clone https://github.com/boltex/leointeg.git`
 2. Right-click it -> open with vscode (or from a vscode window, File-> Open Folder...)
-3. Run `npm install` in terminal before the first run to install dependencies. (You may have to run `npm rebuild node-sass` before building too when updating vsCode itself)
-4. Press F5 (the 'Run Extension' shortcut)
+3. Run `npm install` in terminal before the first run to install dependencies.
+4. Open vscode's 'Run/Debug' panel to choose a debugging profile (server, extension, or usually both)
+5. Press F5 to run the extension in its own vscode debug instance.
 
 After compiling, a new vscode window will be running with leoInteg.
 The plugin will be activated if the workspace of this new window contains a leo file, or it can also be manually activated by going to the Leo view.
@@ -33,20 +34,22 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 ## Features
 
 - A welcome screen providing easy access to the configuration settings.
-- Derived files change detection with automatic writing and refreshing.
+- Derived files change detection. (Set the **'Force reload or ignore changes'** option to **Reload All** to automate synchronization)
 - Leo outline available below the explorer view, or in its own panel.
 - Access Leo commands with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
   - Open body panes to the side
   - Outline edition commands
   - Clipboard operations
-  - Undo operation
+  - Undo operations
 
 ![Menu](resources/context-hover-menus.png)
 
 | Keybinding                 |     |                       | Command            |
 | :------------------------- | :-- | :-------------------- | :----------------- |
+| `Alt + -`                  |     |                       | Contract All       |
 | `Ctrl + I`                 |     |                       | Insert Node        |
 | `Ctrl + H`                 |     |                       | Edit Headline      |
+| `Ctrl + Backquote`         |     |                       | Clone Node         |
 | `Ctrl + Shift + C`         |     |                       | Copy Node          |
 | `Ctrl + Shift + X`         |     |                       | Cut Node           |
 | `Ctrl + Shift + V`         |     |                       | Paste Node         |
@@ -62,7 +65,7 @@ Once activated, it will start a bridge and connect to it automatically by defaul
 
 A 'Literate' Keyboard status bar indicator is shown when this extension is activated. It will turn orange to show when leo's **keyboard shortcuts** are active: This occurs when an outline node or a body pane has focus:
 
-![Statusbar](resources/statusbar.gif)
+![Statusbar](resources/statusbar-keyboard.gif)
 
 ## Issues
 
@@ -76,7 +79,7 @@ For most users, **`Ctrl+D`** is often already assigned to some useful command. T
 - Decide how and when to refresh and synchronize when derived (external) file are modified.
 - Show additional icons on tree nodes (Move, delete, mark, copy, paste...)
 - Choose to either focus on the body pane, or keep focus in the outline when a tree node is selected.
-- Show "Open on the side" in the context menu for a tree node's body to open beside the current body pane.
+- Show the "Open on the side" command in the context menu to open a node beside the active editor
 - Set preferences for setting the address and port, and for automatically starting, and/or connecting, to a Leo Bridge server.
 
 ![Settings](resources/welcome-settings.gif)
@@ -85,7 +88,7 @@ For most users, **`Ctrl+D`** is often already assigned to some useful command. T
 
 - Color-syntaxing duplication from Leo to leoInteg's body panes
 - Finding specific line(s) from derived files in tree nodes (For error lookup, breakpoints cycling, etc.)
-- Optionally displaying line numbers relative to a derived file instead of the body-pane's line number when possible.
+- Optionally displaying line numbers in relation to a derived file instead of the standard editor line numbering when possible.
 
 ## How it works
 
