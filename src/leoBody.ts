@@ -128,11 +128,11 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
         // TODO : Fix extraneous stat(...) call(s)
         if (this._leoIntegration.fileOpenedReady) {
-            if (p_uri.fsPath === '/' || p_uri.fsPath === '\\') {
+            if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
                 // console.log('called stat on root');
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-            } else if (p_uri.fsPath === '/' + this._lastGnx || (p_uri.fsPath === '\\' + this._lastGnx)) {
-                // Watchout for backslash vs slash in different OSes
+            } else if (p_uri.fsPath.substring(1) === this._lastGnx) {
+                // Tested by removing first character to check GNX - Starts with backslash vs slash in different OSes
                 // If same as last checked, sending back time at absolute past
                 return {
                     type: vscode.FileType.File,
@@ -172,7 +172,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public readFile(p_uri: vscode.Uri): Thenable<Uint8Array> {
         if (this._leoIntegration.fileOpenedReady) {
-            if (p_uri.fsPath === '/' || p_uri.fsPath === '\\') {
+            if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
                 throw vscode.FileSystemError.FileIsADirectory();
             } else {
                 const w_gnx = utils.uriToStr(p_uri);
@@ -203,7 +203,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public readDirectory(p_uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
-        if (p_uri.fsPath === '/' || p_uri.fsPath === '\\') {
+        if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
             const w_directory: [string, vscode.FileType][] = [];
             w_directory.push([this._selectedBody.gnx, vscode.FileType.File]);
             return Promise.resolve(w_directory);
