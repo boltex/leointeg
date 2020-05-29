@@ -1333,24 +1333,32 @@
       {
         "command": "leointeg.promoteSelection",
         "key": "ctrl+[BracketLeft]",
+        "win": "ctrl+oem_4",
+        "linux": "ctrl+[BracketLeft]",
         "mac": "cmd+[BracketLeft]",
         "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.promoteSelectionFromOutline",
         "key": "ctrl+[BracketLeft]",
+        "win": "ctrl+oem_4",
+        "linux": "ctrl+[BracketLeft]",
         "mac": "cmd+[BracketLeft]",
         "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {
         "command": "leointeg.demoteSelection",
         "key": "ctrl+[BracketRight]",
+        "win": "ctrl+oem_6",
+        "linux": "ctrl+[BracketRight]",
         "mac": "cmd+[BracketRight]",
         "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.demoteSelectionFromOutline",
         "key": "ctrl+[BracketRight]",
+        "win": "ctrl+oem_6",
+        "linux": "ctrl+[BracketRight]",
         "mac": "cmd+[BracketRight]",
         "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
       },
