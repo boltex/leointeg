@@ -55,25 +55,33 @@ export class ServerService {
             }
             w_args.push(w_serverScriptPath);
             this._serverProcess = child.spawn(w_pythonPath, w_args);
-            // * Capture the python process output
-            this._serverProcess.stdout.on("data", (p_data: string) => {
-                p_data.toString().split("\n").forEach(p_line => {
-                    p_line = p_line.trim();
-                    if (p_line) { // * std out process line by line: json shouldn't have line breaks
-                        if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
-                            p_resolve(p_line); // * Server confirmed started
+            if (this._serverProcess && this._serverProcess.stdout) {
+                // * Capture the python process output
+                this._serverProcess.stdout.on("data", (p_data: string) => {
+                    p_data.toString().split("\n").forEach(p_line => {
+                        p_line = p_line.trim();
+                        if (p_line) { // * std out process line by line: json shouldn't have line breaks
+                            if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
+                                p_resolve(p_line); // * Server confirmed started
+                            }
+                            console.log("leoBridge: ", p_line); // Output message anyways
                         }
-                        console.log("leoBridge: ", p_line); // Output message anyways
-                    }
+                    });
                 });
-            });
-            // * Capture other python process outputs
-            this._serverProcess.stderr.on("data", (p_data: string) => {
-                console.log(`stderr: ${p_data}`);
-                utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
-                this._serverProcess = undefined;
-                w_reject(`stderr: ${p_data}`);
-            });
+            } else {
+                console.error("No stdout");
+            }
+            if (this._serverProcess && this._serverProcess.stderr) {
+                // * Capture other python process outputs
+                this._serverProcess.stderr.on("data", (p_data: string) => {
+                    console.log(`stderr: ${p_data}`);
+                    utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+                    this._serverProcess = undefined;
+                    w_reject(`stderr: ${p_data}`);
+                });
+            } else {
+                console.error("No stderr");
+            }
             this._serverProcess.on("close", (p_code: any) => {
                 console.log(`leoBridge exited with code ${p_code}`);
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
