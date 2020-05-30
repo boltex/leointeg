@@ -2,9 +2,9 @@
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
-### Break your code down into sections structured as an outline, to derive, or parse back source files
+### Break your code down into sections structured as an outline, to derive or parse back your files
 
-Leo is a fundamentally different way of using and organizing data, programs and scripts.
+Leo is a fundamentally different way of using and organizing data, programs and scripts.\
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
 or on [github](https://github.com/leo-editor/leo-editor).
 
@@ -12,16 +12,20 @@ or on [github](https://github.com/leo-editor/leo-editor).
 
 ## Requirements
 
-- Having Leo installed with its path made available in the \$PYTHONPATH environment variable\
+- Having Leo installed with its path made available in the \$PYTHONPATH environment variable.\
   (See **Adding Leo to Your Path** in
   [github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT](https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT#L126))
-- Having the Websocket Python Library installed\
+- Having the Websocket Python Library installed.
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
 
 ## Development version installation
 
-Make sure you have Node.js and Git installed along with the above general requirements, then:
+As you can see from this simple
+['Hello-world' expansion example](https://github.com/Microsoft/vscode-extension-samples/tree/master/helloworld-sample#running-the-sample),
+cloning and running an expansion from source is quite easy:
+
+Make sure you have Node.js and Git installed, then:
 
 1. Get this repository: `git clone https://github.com/boltex/leointeg.git`
 2. Right-click it -> open with vscode (or from a vscode window, File-> Open Folder...)
@@ -35,7 +39,7 @@ The plugin will be activated if the workspace of this new window contains a leo 
 it can also be manually activated by going to the Leo view in the activity bar.
 
 Once activated, it will start a bridge and connect to it automatically by default.
-The 'Open Leo File' icon will then be available.
+The 'Open Leo File' button will then be available.
 
 ## Features
 
