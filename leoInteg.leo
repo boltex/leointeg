@@ -10,13 +10,52 @@
 <v t="felix.20191126232434.2"><vh>@clean leobridgeserver.py</vh>
 <v t="felix.20191128002414.1"><vh>Imports</vh></v>
 <v t="felix.20191128002417.1"><vh>Constants</vh></v>
+<v t="felix.20200302204251.1"><vh>class IdleTimeManager</vh>
+<v t="felix.20200302204251.2"><vh>itm.add_callback</vh></v>
+<v t="felix.20200302204251.3"><vh>itm.on_idle</vh></v>
+<v t="felix.20200302204251.4"><vh>itm.start</vh></v>
+</v>
+<v t="felix.20200302205810.1"><vh>class ExternalFilesController</vh>
+<v t="felix.20200302205810.2"><vh>efc.ctor</vh></v>
+<v t="felix.20200302205810.7"><vh>efc.on_idle</vh></v>
+<v t="felix.20200302205810.8"><vh>efc.idle_check_commander</vh></v>
+<v t="felix.20200302205810.9"><vh>efc.idle_check_at_file_node</vh></v>
+<v t="felix.20200304221925.1"><vh>efc.integResult</vh></v>
+<v t="felix.20200302205810.21"><vh>efc.utilities</vh>
+<v t="felix.20200302205810.22"><vh>efc.ask</vh></v>
+<v t="felix.20200302205810.23"><vh>efc.checksum</vh></v>
+<v t="felix.20200302205810.25"><vh>efc.get_mtime</vh></v>
+<v t="felix.20200302205810.26"><vh>efc.get_time</vh></v>
+<v t="felix.20200302205810.27"><vh>efc.has_changed</vh></v>
+<v t="felix.20200302205810.28"><vh>efc.is_enabled</vh></v>
+<v t="felix.20200302205810.29"><vh>efc.join</vh></v>
+<v t="felix.20200302205810.30"><vh>efc.set_time</vh></v>
+<v t="felix.20200302205810.31"><vh>efc.warn</vh></v>
+</v>
+<v t="felix.20200308145948.1"><vh>other called methods</vh>
+<v t="felix.20200308150856.1"><vh>open_with</vh></v>
+<v t="felix.20200308150848.1"><vh>check_overwrite</vh></v>
+<v t="felix.20200308150821.1"><vh>shut_down</vh></v>
+<v t="felix.20200308150842.1"><vh>destroy_frame</vh></v>
+</v>
+</v>
 <v t="felix.20191126232434.4"><vh>class leoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
-<v t="felix.20191126232434.12"><vh>test</vh></v>
+<v t="felix.20200303211848.1"><vh>_commanders</vh></v>
+<v t="felix.20200303214235.1"><vh>_asyncIdleLoop</vh></v>
+<v t="felix.20200303214255.1"><vh>_idleTime</vh></v>
+<v t="felix.20200304224909.1"><vh>sendAsyncOutput</vh></v>
+<v t="felix.20200304220844.1"><vh>askResult</vh></v>
+<v t="felix.20200312231358.1"><vh>applyConfig</vh></v>
+<v t="felix.20200219224515.1"><vh>logSignon</vh></v>
+<v t="felix.20200219222712.1"><vh>es</vh></v>
+<v t="felix.20200211202929.1"><vh>initConnection</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
+<v t="felix.20200216160305.1"><vh>saveFile</vh></v>
 <v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
 <v t="felix.20191128004456.1"><vh>setActionId</vh></v>
+<v t="felix.20200213195413.1"><vh>asyncOutput</vh></v>
 <v t="felix.20191126232434.7"><vh>sendLeoBridgePackage</vh></v>
 <v t="felix.20191126232434.8"><vh>outputError</vh></v>
 <v t="felix.20191126232434.9"><vh>outputBodyData</vh></v>
@@ -49,7 +88,8 @@
 <v t="felix.20200105173826.1"><vh>outlineCommand</vh></v>
 <v t="felix.20191231203711.1"><vh>undo</vh></v>
 <v t="felix.20200103204811.1"><vh>redo</vh></v>
-<v t="felix.20191231214801.1"><vh>run</vh></v>
+<v t="felix.20200301235235.1"><vh>refreshFromDiskPNode</vh></v>
+<v t="felix.20191231214801.1"><vh>executeScript</vh></v>
 <v t="felix.20191126232434.15"><vh>getPNode</vh></v>
 <v t="felix.20191126232434.16"><vh>getChildren</vh></v>
 <v t="felix.20191126232434.17"><vh>getParent</vh></v>
@@ -63,6 +103,7 @@
 <v t="felix.20191126232434.24"><vh>setSelectedNode</vh></v>
 <v t="felix.20191126232434.25"><vh>expandNode</vh></v>
 <v t="felix.20191126232434.26"><vh>collapseNode</vh></v>
+<v t="felix.20200329000454.1"><vh>contractAll</vh></v>
 <v t="felix.20191126232434.29"><vh>yieldAllRootChildren</vh></v>
 <v t="felix.20191216195906.1"><vh>findPNodeFromGnx</vh></v>
 </v>
@@ -97,16 +138,16 @@ I should have started self documentation here from the start in august!
     return self.sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
 
 </t>
-<t tx="felix.20191126232434.12">def test(self, p_param):
-    '''Emit a test'''
-    print('vsCode called test. Hello from leoBridge! your param was: ' + json.dumps(p_param, separators=(',', ':')))
-    return self.sendLeoBridgePackage("package", "test string from the response package")
-
-</t>
 <t tx="felix.20191126232434.13">def openFile(self, p_file):
     '''Open a leo file via leoBridge controller'''
-    print("Trying to open file: "+p_file)
     self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+
+    # * setup leoBackground to get messages from leo
+    try:
+        self.g.app.idleTimeManager.start()  # To catch derived file changes
+    except:
+        print('ERROR with idleTimeManager')
+
     if(self.commander):
         self.create_gnx_to_vnode()
         return self.outputPNode(self.commander.p)
@@ -114,7 +155,7 @@ I should have started self documentation here from the start in august!
         return self.outputError('Error in openFile')
 
 </t>
-<t tx="felix.20191126232434.14">def closeFile(self):
+<t tx="felix.20191126232434.14">def closeFile(self, p_paramUnused):
     '''Closes a leo file. A file can then be opened with "openFile"'''
     print("Trying to close opened file")
     if(self.commander):
@@ -364,6 +405,8 @@ if __name__ == '__main__':
         w_ap['expanded'] = True
     if p.isMarked():
         w_ap['marked'] = True
+    if p.isAnyAtFileNode():
+        w_ap['atFile'] = True
     if p == self.commander.p:
         w_ap['selected'] = True
     return w_ap
@@ -382,8 +425,29 @@ if __name__ == '__main__':
                                        readSettings=True,  # True: read standard settings files.
                                        silent=True,      # True: don't print signon messages.
                                        verbose=False)     # True: prints messages that would be sent to the log pane.
+    self.g = self.bridge.globals()
+
+    # * Trace outputs to pythons stdout, also prints the function call stack
+    # self.g.trace('test trace')
+
+    # * Intercept Log Pane output: Sends to vsCode's log pane
+    self.g.es = self.es  # pointer - not a function call
+
+    # print(dir(self.g))
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
     # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
+    self.leoIntegConfig = None
+    self.webSocket = None
+    self.loop = None
+
+    self.g.IdleTime = self._idleTime
+    self.g.app.idleTimeManager = IdleTimeManager(self.g)
+    self.g.app.commanders = self._commanders
+
+    self.efc = ExternalFilesController(self)
+
+    # attach instance to g.app for calls to set_time, etc.
+    self.g.app.externalFilesController = self.efc
 
 </t>
 <t tx="felix.20191126232434.7">def sendLeoBridgePackage(self, p_key=False, p_any=None):
@@ -391,6 +455,7 @@ if __name__ == '__main__':
     if p_key:
         w_package[p_key] = p_any  # add [key]?:any
     return(json.dumps(w_package, separators=(',', ':')))  # send as json
+    # await self.webSocket.send(json.dumps(w_package, separators=(',', ':')))  # send as json
 
 </t>
 <t tx="felix.20191126232434.8">def outputError(self, p_message="Unknown Error"):
@@ -428,14 +493,24 @@ if __name__ == '__main__':
         elif opt in ("-p", "--port"):
             wsPort = arg
 
-    # start Server
-
+    # * start Server
     integController = leoBridgeIntegController()
 
-    # TODO : This is a basic test loop, fix it with 2 way async comm and error checking
+    # * This is a basic example loop
+    # async def asyncInterval(timeout):
+    #     dummyCounter = 0
+    #     strTimeout = str(timeout) + ' sec interval'
+    #     while True:
+    #         await asyncio.sleep(timeout)
+    #         dummyCounter = dummyCounter+1
+    #         await integController.asyncOutput("{\"interval\":" + str(timeout+dummyCounter) + "}")  # as number
+    #         print(strTimeout)
+
     async def leoBridgeServer(websocket, path):
         try:
+            integController.initConnection(websocket)
             await websocket.send(integController.sendLeoBridgePackage())  # * Start by sending empty as 'ok'
+            integController.logSignon()
             async for w_message in websocket:
                 w_param = json.loads(w_message)
                 if w_param and w_param['action']:
@@ -444,20 +519,23 @@ if __name__ == '__main__':
                     integController.setActionId(w_param['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
+                    # TODO : Block functions starting with underscore or reserved
                     answer = getattr(integController, w_param['action'])(w_param['param'])
                 else:
-                    print("Error in processCommand")
+                    answer = "Error in processCommand"
+                    print(answer)
                 await websocket.send(answer)
         except:
             print("Caught Websocket Disconnect Event")
         finally:
             asyncio.get_event_loop().stop()
 
+    localLoop = asyncio.get_event_loop()
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
-
-    asyncio.get_event_loop().run_until_complete(start_server)
+    # localLoop.create_task(asyncInterval(5)) # Starts a test loop of async communication
+    localLoop.run_until_complete(start_server)
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
-    asyncio.get_event_loop().run_forever()
+    localLoop.run_forever()
     print("Stopping leobridge server")
 
 
@@ -550,7 +628,7 @@ if __name__ == '__main__':
         w_p = self.ap_to_p(p_ap)
         if w_p:
             w_p.setMarked()
-            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+            return self.outputPNode(self.commander.p)  # return selected node when done (not w_p)
         else:
             return self.outputError("Error in markPNode no w_p node found")
     else:
@@ -563,7 +641,7 @@ if __name__ == '__main__':
         w_p = self.ap_to_p(p_ap)
         if w_p:
             w_p.clearMarked()
-            return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+            return self.outputPNode(self.commander.p)  # return selected node when done (not w_p)
         else:
             return self.outputError("Error in unmarkPNode no w_p node found")
     else:
@@ -663,10 +741,10 @@ wsPort = 32125
     '''Undo last un-doable operation'''
     if(self.commander.undoer.canUndo()):
         self.commander.undoer.undo()
-    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+    return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
-<t tx="felix.20191231214801.1">def run(self, p_ap):
+<t tx="felix.20191231214801.1">def executeScript(self, p_ap):
     '''Select a node and run its script'''
     if(p_ap):
         w_p = self.ap_to_p(p_ap)
@@ -685,7 +763,7 @@ wsPort = 32125
     '''Undo last un-doable operation'''
     if(self.commander.undoer.canRedo()):
         self.commander.undoer.redo()
-    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+    return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 <t tx="felix.20200105173826.1">def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
@@ -727,6 +805,529 @@ wsPort = 32125
             return self.outputError("Error in insertNamedPNode no w_p node found")  # default empty
     else:
         return self.outputError("Error in insertNamedPNode no param w_ap")
+
+</t>
+<t tx="felix.20200211202929.1">def initConnection(self, p_webSocket):
+    self.webSocket = p_webSocket
+    self.loop = asyncio.get_event_loop()
+
+</t>
+<t tx="felix.20200213195413.1">async def asyncOutput(self, p_json):
+    '''Output json string to the websocket'''
+    if(self.webSocket):
+        await self.webSocket.send(p_json)
+    else:
+        print("websocket not ready yet")
+
+</t>
+<t tx="felix.20200216160305.1">def saveFile(self, p_paramUnused):
+    '''Saves the leo file. New or dirty derived files are rewritten'''
+    if(self.commander):
+        try:
+            self.commander.save()
+        except Exception as e:
+            self.g.trace('Error while saving')
+            print("Error while saving")
+            print(str(e))
+
+    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+</t>
+<t tx="felix.20200219222712.1">def es(self, * args, **keys):
+    '''Output to the Log Pane'''
+    d = {
+        'color': None,
+        'commas': False,
+        'newline': True,
+        'spaces': True,
+        'tabName': 'Log',
+        'nodeLink': None,
+    }
+    d = self.g.doKeywordArgs(keys, d)
+    s = self.g.translateArgs(args, d)
+    w_package = {"async": "log", "log": s}
+    self.sendAsyncOutput(w_package)
+
+</t>
+<t tx="felix.20200219224515.1">def logSignon(self):
+    '''Simulate the Initial Leo Log Entry'''
+    if self.loop:
+        self.g.app.computeSignon()
+        self.g.es(str(self.g.app.signon))
+        self.g.es(str(self.g.app.signon1))
+    else:
+        print('no loop in logSignon')
+
+</t>
+<t tx="felix.20200301235235.1">def refreshFromDiskPNode(self, p_ap):
+    '''Refresh from Disk, don't select it if possible'''
+    return self.outlineCommand("refreshFromDisk", p_ap, True)
+
+</t>
+<t tx="felix.20200302204251.1">class IdleTimeManager:
+    """
+    A singleton class to manage idle-time handling. This class handles all
+    details of running code at idle time, including running 'idle' hooks.
+
+    Any code can call g.app.idleTimeManager.add_callback(callback) to cause
+    the callback to be called at idle time forever.
+    """
+    # TODO : REVISE/REPLACE WITH OWN SYSTEM
+
+    def __init__(self, g):
+        """Ctor for IdleTimeManager class."""
+        self.g = g
+        self.callback_list = []
+        self.timer = None
+        self.on_idle_count = 0
+
+    @others
+
+</t>
+<t tx="felix.20200302204251.2">def add_callback(self, callback):
+    """Add a callback to be called at every idle time."""
+    self.callback_list.append(callback)
+
+</t>
+<t tx="felix.20200302204251.3">def on_idle(self, timer):
+    """IdleTimeManager: Run all idle-time callbacks."""
+    if not self.g.app:
+        return
+    if self.g.app.killed:
+        return
+    if not self.g.app.pluginsController:
+        self.g.trace('No g.app.pluginsController', self.g.callers())
+        timer.stop()
+        return  # For debugger.
+    self.on_idle_count += 1
+    # Handle the registered callbacks.
+    # print("list length : ", len(self.callback_list))
+    for callback in self.callback_list:
+        try:
+            callback()
+        except Exception:
+            self.g.es_exception()
+            self.g.es_print(f"removing callback: {callback}")
+            self.callback_list.remove(callback)
+    # Handle idle-time hooks.
+    self.g.app.pluginsController.on_idle()
+
+</t>
+<t tx="felix.20200302204251.4">def start(self):
+    """Start the idle-time timer."""
+    self.timer = self.g.IdleTime(
+        self.on_idle,
+        delay=500,  # Milliseconds
+        tag='IdleTimeManager.on_idle')
+    if self.timer:
+        self.timer.start()
+
+</t>
+<t tx="felix.20200302205810.1">class ExternalFilesController:
+    '''EFC Modified from Leo's sources'''
+
+    @others
+
+</t>
+<t tx="felix.20200302205810.2">def __init__(self, integController):
+    '''Ctor for ExternalFiles class.'''
+    self.on_idle_count = 0
+    self.integController = integController
+    self.checksum_d = {}
+    # Keys are full paths, values are file checksums.
+    self.enabled_d = {}
+    # For efc.on_idle.
+    # Keys are commanders.
+    # Values are cached @bool check-for-changed-external-file settings.
+    self.has_changed_d = {}
+    # Keys are commanders. Values are boolean.
+    # Used only to limit traces.
+    self.unchecked_commanders = []
+    # Copy of g.app.commanders()
+    self.unchecked_files = []
+    # Copy of self file. Only one files is checked at idle time.
+    self._time_d = {}
+    # Keys are full paths, values are modification times.
+    # DO NOT alter directly, use set_time(path) and
+    # get_time(path), see set_time() for notes.
+    self.yesno_all_time = 0  # previous yes/no to all answer, time of answer
+    self.yesno_all_answer = None  # answer, 'yes-all', or 'no-all'
+
+    self.infoMessage = None  # if yesAll/noAll forced, then just show info message after idle_check_commander
+    # False or "detected", "refreshed" or "ignored"
+
+    self.integController.g.app.idleTimeManager.add_callback(self.on_idle)
+
+    self.waitingForAnswer = False
+    self.lastPNode = None  # last p node that was asked for if not set to "AllYes\AllNo"
+    self.lastCommander = None
+
+</t>
+<t tx="felix.20200302205810.21"></t>
+<t tx="felix.20200302205810.22">def ask(self, c, path, p=None):
+    '''
+    Ask user whether to overwrite an @&lt;file&gt; tree.
+    Return True if the user agrees.
+    '''
+    # check with leoInteg's config first
+    if self.integController.leoIntegConfig:
+        w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
+        if not bool('none' in w_check_config):
+            if bool('yes' in w_check_config):
+                self.infoMessage = "refreshed"
+                return True
+            else:
+                self.infoMessage = "ignored"
+                return False
+    # let original function resolve
+
+    if self.yesno_all_time + 3 &gt;= time.time() and self.yesno_all_answer:
+        self.yesno_all_time = time.time()  # Still reloading?  Extend time.
+        # if yesAll/noAll forced, then just show info message
+        w_yesno_all_bool = bool('yes' in self.yesno_all_answer.lower())
+
+        return w_yesno_all_bool
+    if not p:
+        where = 'the outline node'
+    else:
+        where = p.h
+
+    _is_leo = path.endswith(('.leo', '.db'))
+
+    if _is_leo:
+        s = '\n'.join([
+            f'{self.integController.g.splitLongFileName(path)} has changed outside Leo.',
+            'Overwrite it?'
+        ])
+    else:
+        s = '\n'.join([
+            f'{self.integController.g.splitLongFileName(path)} has changed outside Leo.',
+            f"Reload {where} in Leo?",
+        ])
+
+    w_package = {"async": "ask", "ask": 'Overwrite the version in Leo?',
+                 "message": s, "yes_all": not _is_leo, "no_all": not _is_leo}
+
+    self.integController.sendAsyncOutput(w_package)
+    self.waitingForAnswer = True
+    return False
+    # result = self.integController.g.app.gui.runAskYesNoDialog(c, 'Overwrite the version in Leo?', s,
+    # yes_all=not _is_leo, no_all=not _is_leo)
+
+    # if result and "-all" in result.lower():
+    # self.yesno_all_time = time.time()
+    # self.yesno_all_answer = result.lower()
+
+    # return bool(result and 'yes' in result.lower())
+
+</t>
+<t tx="felix.20200302205810.23">def checksum(self, path):
+    '''Return the checksum of the file at the given path.'''
+    import hashlib
+    return hashlib.md5(open(path, 'rb').read()).hexdigest()
+
+</t>
+<t tx="felix.20200302205810.25">def get_mtime(self, path):
+    '''Return the modification time for the path.'''
+    return self.integController.g.os_path_getmtime(self.integController.g.os_path_realpath(path))
+
+</t>
+<t tx="felix.20200302205810.26">def get_time(self, path):
+    '''
+    return timestamp for path
+
+    see set_time() for notes
+    '''
+    return self._time_d.get(self.integController.g.os_path_realpath(path))
+
+</t>
+<t tx="felix.20200302205810.27">def has_changed(self, c, path):
+    '''Return True if p's external file has changed outside of Leo.'''
+    if not self.integController.g.os_path_exists(path):
+        return False
+    if self.integController.g.os_path_isdir(path):
+        return False
+    #
+    # First, check the modification times.
+    old_time = self.get_time(path)
+    new_time = self.get_mtime(path)
+    if not old_time:
+        # Initialize.
+        self.set_time(path, new_time)
+        self.checksum_d[path] = self.checksum(path)
+        return False
+    if old_time == new_time:
+        return False
+    #
+    # Check the checksums *only* if the mod times don't match.
+    old_sum = self.checksum_d.get(path)
+    new_sum = self.checksum(path)
+    if new_sum == old_sum:
+        # The modtime changed, but it's contents didn't.
+        # Update the time, so we don't keep checking the checksums.
+        # Return False so we don't prompt the user for an update.
+        self.set_time(path, new_time)
+        return False
+    # The file has really changed.
+    assert old_time, path
+    # #208: external change overwrite protection only works once.
+    # If the Leo version is changed (dirtied) again,
+    # overwrite will occur without warning.
+    # self.set_time(path, new_time)
+    # self.checksum_d[path] = new_sum
+    return True
+
+</t>
+<t tx="felix.20200302205810.28">def is_enabled(self, c):
+    '''Return the cached @bool check_for_changed_external_file setting.'''
+    # check with leoInteg's config first
+    if self.integController.leoIntegConfig:
+        w_check_config = self.integController.leoIntegConfig["checkForChangeExternalFiles"].lower()
+        if bool('check' in w_check_config):
+            return True
+        if bool('ignore' in w_check_config):
+            return False
+    # let original function resolve
+    d = self.enabled_d
+    val = d.get(c)
+    if val is None:
+        val = c.config.getBool('check-for-changed-external-files', default=False)
+        d[c] = val
+    return val
+
+</t>
+<t tx="felix.20200302205810.29">def join(self, s1, s2):
+    '''Return s1 + ' ' + s2'''
+    return f"{s1} {s2}"
+
+</t>
+<t tx="felix.20200302205810.30">def set_time(self, path, new_time=None):
+    '''
+    Implements c.setTimeStamp.
+
+    Update the timestamp for path.
+
+    NOTE: file paths with symbolic links occur with and without those links
+    resolved depending on the code call path.  This inconsistency is
+    probably not Leo's fault but an underlying Python issue.
+    Hence the need to call realpath() here.
+    '''
+
+    # print("called set_time for " + str(path))
+
+    t = new_time or self.get_mtime(path)
+    self._time_d[self.integController.g.os_path_realpath(path)] = t
+
+</t>
+<t tx="felix.20200302205810.31">def warn(self, c, path, p):
+    '''
+    Warn that an @asis or @nosent node has been changed externally.
+
+    There is *no way* to update the tree automatically.
+    '''
+    # check with leoInteg's config first
+    if self.integController.leoIntegConfig:
+        w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
+
+        if w_check_config != "none":
+            # if not 'none' then do not warn, just infoMessage 'warn' at most
+            if not self.infoMessage:
+                self.infoMessage = "warn"
+            return
+
+    # let original function resolve
+    if self.integController.g.unitTesting or c not in self.integController.g.app.commanders():
+        return
+    if not p:
+        self.integController.g.trace('NO P')
+        return
+
+    s = '\n'.join([
+        '%s has changed outside Leo.\n' % self.integController.g.splitLongFileName(path),
+        'Leo can not update this file automatically.\n',
+        'This file was created from %s.\n' % p.h,
+        'Warning: refresh-from-disk will destroy all children.'
+    ])
+
+    w_package = {"async": "warn", "warn": 'External file changed', "message": s}
+
+    self.integController.sendAsyncOutput(w_package)
+    self.waitingForAnswer = True
+
+</t>
+<t tx="felix.20200302205810.7">def on_idle(self):
+    '''
+    Check for changed open-with files and all external files in commanders
+    for which @bool check_for_changed_external_file is True.
+    '''
+    if not self.integController.g.app or self.integController.g.app.killed:
+        return
+    if self.waitingForAnswer:
+        return
+
+    self.on_idle_count += 1
+
+    if self.unchecked_commanders:
+        # Check the next commander for which
+        # @bool check_for_changed_external_file is True.
+        c = self.unchecked_commanders.pop()
+        self.lastCommander = c
+        self.idle_check_commander(c)
+    else:
+        # Add all commanders for which
+        # @bool check_for_changed_external_file is True.
+        self.unchecked_commanders = [
+            z for z in self.integController.g.app.commanders() if self.is_enabled(z)
+        ]
+
+</t>
+<t tx="felix.20200302205810.8">def idle_check_commander(self, c):
+    '''
+    Check all external files corresponding to @&lt;file&gt; nodes in c for
+    changes.
+    '''
+    # #1100: always scan the entire file for @&lt;file&gt; nodes.
+    # #1134: Nested @&lt;file&gt; nodes are no longer valid, but this will do no harm.
+
+    self.infoMessage = None  # reset infoMessage
+    # False or "detected", "refreshed" or "ignored"
+
+    for p in c.all_unique_positions():
+        if self.waitingForAnswer:
+            break
+        if p.isAnyAtFileNode():
+            self.idle_check_at_file_node(c, p)
+
+    # if yesAll/noAll forced, then just show info message
+    if self.infoMessage:
+        w_package = {"async": "info", "message": self.infoMessage}
+        self.integController.sendAsyncOutput(w_package)
+
+</t>
+<t tx="felix.20200302205810.9">def idle_check_at_file_node(self, c, p):
+    '''Check the @&lt;file&gt; node at p for external changes.'''
+    trace = False
+    # Matt, set this to True, but only for the file that interests you.\
+    # trace = p.h == '@file unregister-leo.leox'
+    path = self.integController.g.fullPath(c, p)
+    has_changed = self.has_changed(c, path)
+    if trace:
+        self.integController.g.trace('changed', has_changed, p.h)
+    if has_changed:
+        self.lastPNode = p  # can be set here because its the same process for ask/warn
+        if p.isAtAsisFileNode() or p.isAtNoSentFileNode():
+            # Fix #1081: issue a warning.
+            self.warn(c, path, p=p)
+        elif self.ask(c, path, p=p):
+            self.lastCommander.selectPosition(self.lastPNode)
+            c.refreshFromDisk()
+
+        # Always update the path &amp; time to prevent future warnings.
+        self.set_time(path)
+        self.checksum_d[path] = self.checksum(path)
+
+</t>
+<t tx="felix.20200303211848.1">def _commanders(self):
+    ''' Return list of currently active controllers '''
+    # TODO : REVISE/REPLACE WITH OWN SYSTEM
+    # return [f.c for f in g.app.windowList]
+    return [self.commander]
+
+</t>
+<t tx="felix.20200303214235.1">async def _asyncIdleLoop(self, p_seconds, p_fn):
+    while True:
+        await asyncio.sleep(p_seconds)
+        p_fn(self)
+
+</t>
+<t tx="felix.20200303214255.1">def _idleTime(self, fn, delay, tag):
+    # TODO : REVISE/REPLACE WITH OWN SYSTEM
+    asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
+
+</t>
+<t tx="felix.20200304220844.1">def askResult(self, p_result):
+    '''Got the result to an asked question/warning from vscode'''
+    self.efc.integResult(p_result)
+    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+</t>
+<t tx="felix.20200304221925.1">def integResult(self, p_result):
+    '''Received result from vsCode'''
+    # Got the result to an asked question/warning from vscode
+    if not self.waitingForAnswer:
+        print("ERROR: Received Result but no Asked Dialog")
+        return
+    # check if p_resultwas from a warn (ok) or an ask ('yes','yes-all','no','no-all')
+    # act accordingly
+
+    path = self.integController.g.fullPath(self.lastCommander, self.lastPNode)
+
+    # 1- if ok, unblock 'warn'
+    # 2- if no, unblock 'ask'
+    # ------------------------------------------ Nothing special to do
+
+    # 3- if noAll, set noAll, and unblock 'ask'
+    if p_result and "-all" in p_result.lower():
+        self.yesno_all_time = time.time()
+        self.yesno_all_answer = p_result.lower()
+    # ------------------------------------------ Also covers setting yesAll in #5
+
+    # 4- if yes, REFRESH self.lastPNode, and unblock 'ask'
+    # 5- if yesAll,REFRESH self.lastPNode, set yesAll, and unblock 'ask'
+    if bool(p_result and 'yes' in p_result.lower()):
+        self.lastCommander.selectPosition(self.lastPNode)
+        self.lastCommander.refreshFromDisk()
+
+    # Always update the path &amp; time to prevent future warnings for this PNode.
+    self.set_time(path)
+    self.checksum_d[path] = self.checksum(path)
+
+    self.waitingForAnswer = False  # unblock
+    self.idle_check_commander(self.lastCommander)  # unblock: run the loop as if timer had hit
+
+</t>
+<t tx="felix.20200304224909.1">def sendAsyncOutput(self, p_package):
+    if "async" not in p_package:
+        print('[sendAsyncOutput] Error async member missing in package parameter' + json.dumps(p_package, separators=(',', ':')))
+        return
+    if self.loop:
+        self.loop.create_task(self.asyncOutput(json.dumps(p_package, separators=(',', ':'))))
+    else:
+        print('[sendAsyncOutput] Error loop not ready' + json.dumps(p_package, separators=(',', ':')))
+
+</t>
+<t tx="felix.20200308145948.1"># Some methods are called in the usual (non-leoBridge without 'efc') save process.
+# Those may called by the 'save' function, like check_overwrite,
+# or by any other functions from the instance of leo.core.leoBridge that's running.
+
+</t>
+<t tx="felix.20200308150821.1">def shut_down(self):
+    return
+
+</t>
+<t tx="felix.20200308150842.1">def destroy_frame(self, f):
+    return
+
+</t>
+<t tx="felix.20200308150848.1">def check_overwrite(self, c, fn):
+    # print("check_overwrite!! ")
+    return True
+
+</t>
+<t tx="felix.20200308150856.1">def open_with(self, c, d):
+    return
+
+</t>
+<t tx="felix.20200312231358.1">def applyConfig(self, p_config):
+    '''Got leoInteg's config from vscode'''
+    self.leoIntegConfig = p_config
+    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+</t>
+<t tx="felix.20200329000454.1">def contractAll(self, p_paramUnused):
+    '''(Collapse) Contract All'''
+    self.commander.contractAllHeadlines()
+    return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 </tnodes>

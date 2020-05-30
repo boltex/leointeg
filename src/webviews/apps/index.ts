@@ -38,22 +38,27 @@ declare function acquireVsCodeApi(): VsCodeApi;
     // Handle messages sent from the extension to the webview
     window.addEventListener("message", event => {
         const message = event.data; // The json data that the extension sent
-        switch (message.command) {
-            case "test":
-                console.log("got test message");
-                break;
-            case "newConfig":
-                vscodeConfig = message.config;
-                frontConfig = JSON.parse(JSON.stringify(message.config));
-                setControls();
-                break;
-            case "vscodeConfig":
-                toast!.className = "show";
-                setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
-                vscodeConfig = message.config; // next changes will be confronted to those settings
-                break;
-            default:
-                console.log("got message: ", message.command);
+        if (message.command) {
+            switch (message.command) {
+                case "test":
+                    console.log("got test message");
+                    break;
+                case "newConfig":
+                    vscodeConfig = message.config;
+                    frontConfig = JSON.parse(JSON.stringify(message.config));
+                    setControls();
+                    break;
+                case "vscodeConfig":
+                    toast!.className = "show";
+                    setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
+                    vscodeConfig = message.config; // next changes will be confronted to those settings
+                    break;
+                default:
+                    console.log("got message: ", message.command);
+                    break;
+            }
+        } else {
+            console.log('got object without command:', message);
         }
     });
 
@@ -83,6 +88,17 @@ declare function acquireVsCodeApi(): VsCodeApi;
         ) {
             return onInputChanged(this);
         });
+        listenAll('select[data-setting]', 'change', function (this: HTMLSelectElement) {
+            return onInputSelected(this);
+        });
+    }
+
+    function onInputSelected(element: HTMLSelectElement) {
+        if (element) {
+            const w_value = element.options[element.selectedIndex].value;
+            frontConfig[element.id] = w_value;
+        }
+        applyChanges();
     }
 
     function onInputChecked(element: HTMLInputElement) {
@@ -103,7 +119,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
         } else if (element.type === 'number' && (Number(element.value) > Number(element.max) || Number(element.value) < Number(element.min))) {
             // make red
             element.classList.add("is-invalid");
-        } else if (element.type === 'text' && element.value.length < element.maxLength) {
+        } else if (element.type === 'text' && element.value.length <= element.maxLength) {
             frontConfig[element.id] = element.value;
         }
         applyChanges();
@@ -118,7 +134,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
                 } else if (w_element) {
                     (w_element as HTMLInputElement).value = frontConfig[key];
                 } else {
-                    console.log('WHAT ? w_element', key, ' is ', w_element);
+                    console.log('ERROR : w_element', key, ' is ', w_element);
                 }
             }
         }

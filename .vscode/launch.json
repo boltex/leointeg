@@ -19,18 +19,37 @@
 			"preLaunchTask": "npm: webpack"
 		},
 		{
-			"name": "Extension Tests",
-			"type": "extensionHost",
+			"name": "Python: leoBridge Server",
+			"type": "python",
 			"request": "launch",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
-			],
-			"outFiles": [
-				"${workspaceFolder}/out/test/**/*.js"
-			],
-			"preLaunchTask": "npm: test-compile"
+			"program": "${workspaceFolder}/leobridgeserver.py",
+			"console": "integratedTerminal"
+		}
+		// ,
+		// {
+		// 	"name": "Extension Tests",
+		// 	"type": "extensionHost",
+		// 	"request": "launch",
+		// 	"runtimeExecutable": "${execPath}",
+		// 	"args": [
+		// 		"--extensionDevelopmentPath=${workspaceFolder}",
+		// 		"--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+		// 	],
+		// 	"outFiles": [
+		// 		"${workspaceFolder}/out/test/**/*.js"
+		// 	],
+		// 	"preLaunchTask": "npm: test-compile"
+		// }
+	],
+	"compounds": [
+		{
+			"name": "Server and Extension",
+			"configurations": [
+				"Run Extension",
+				"Python: leoBridge Server"
+			]
+			// ,
+			// "preLaunchTask": "${defaultBuildTask}"
 		}
 	]
 }

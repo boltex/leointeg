@@ -1,20 +1,24 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
-import * as path from "path"; // TODO: Use this library to have reliable support for window-vs-linux file-paths
+import * as path from "path"; // TODO : Use this library to have reliable support for window-vs-linux file-paths
 
-export class LeoFiles {
-    // * Handles opening of file browser for choosing leo files to open
+/**
+ * * Handles opening of file browser when choosing which Leo file to open
+ */
+export class LeoFilesBrowser {
 
     private _fileBrowserOpen: boolean = false;
 
     constructor(private _context: vscode.ExtensionContext) { }
 
+    /**
+     * * Find a folder to propose when opening the browse-for-leo-file chooser
+     * @returns An Uri for path to a folder for initial opening
+     */
     private _getBestOpenFolderUri(): vscode.Uri {
-        // Find a folder to propose when opening the browse-for-leo-file chooser
         let w_openedFileEnvUri: vscode.Uri | boolean = false;
         let w_activeUri: vscode.Uri | undefined = undefined;
 
-        // let w_activeUri: Uri | undefined = vscode.window.activeTextEditor?vscode.window.activeTextEditor.document.uri:undefined;
         if (vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]) {
             w_activeUri = vscode.workspace.workspaceFolders[0].uri;
         }
@@ -32,19 +36,22 @@ export class LeoFiles {
         return w_openedFileEnvUri;
     }
 
-    // TODO : Use 'path' library to have reliable support for Windows
+    /**
+     * * Open a file browser and let the user choose a Leo file or cancel the operation
+     * @returns a promise resolving to a chosen path string, or rejected with an empty string if cancelled
+     */
     public getLeoFileUrl(): Promise<string> {
         if (this._fileBrowserOpen) {
             return Promise.resolve("");
         }
         return new Promise((resolve, reject) => {
+            const w_filters: { [name: string]: string[] } = {};
+            w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [Constants.FILE_EXTENSION];
             vscode.window
                 .showOpenDialog({
                     canSelectMany: false,
                     defaultUri: this._getBestOpenFolderUri(),
-                    filters: {
-                        "Leo Files": [Constants.LEO_FILE_TYPE_EXTENSION]
-                    }
+                    filters: w_filters
                 })
                 .then(p_chosenLeoFile => {
                     this._fileBrowserOpen = false;

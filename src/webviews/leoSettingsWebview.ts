@@ -21,7 +21,7 @@ export class LeoSettingsWebview {
 
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
         if (this._panel && !this._waitingForUpdate) {
-            this._panel.webview.postMessage({ command: 'config', config: this._leoIntegration.config });
+            this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
         }
     }
 
@@ -41,17 +41,17 @@ export class LeoSettingsWebview {
                         enableScripts: true
                     }
                 );
-                let baseUri = this._panel.webview.asWebviewUri(vscode.Uri.file(
+                let w_baseUri = this._panel.webview.asWebviewUri(vscode.Uri.file(
                     path.join(this._extensionPath)
                 ));
                 this._panel.iconPath = vscode.Uri.file(this._context.asAbsolutePath('resources/leoapp128px.png'));
                 this._panel.webview.html = p_baseHtml.replace(
                     /#{root}/g,
-                    baseUri.toString()
+                    w_baseUri.toString()
                 ).replace(
                     /#{endOfBody}/g,
                     `<script type="text/javascript" nonce="Z2l0bGV1cy1ib290c3RyYXA=">window.leoConfig = ${JSON.stringify(
-                        this._leoIntegration.config
+                        this._leoIntegration.config.getConfig()
                     )};</script>`
                 );
                 this._panel.webview.onDidReceiveMessage(
@@ -62,13 +62,13 @@ export class LeoSettingsWebview {
                                 break;
                             case 'getNewConfig':
                                 if (this._panel && !this._waitingForUpdate) {
-                                    this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config });
+                                    this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
                                 }
                                 break;
                             case 'config':
                                 this._waitingForUpdate = true;
-                                this._leoIntegration.setLeoIntegSettings(message.changes).then(() => {
-                                    this._panel!.webview.postMessage({ command: 'vscodeConfig', config: this._leoIntegration.config });
+                                this._leoIntegration.config.setLeoIntegSettings(message.changes).then(() => {
+                                    this._panel!.webview.postMessage({ command: 'vscodeConfig', config: this._leoIntegration.config.getConfig() });
                                     this._waitingForUpdate = false;
                                 });
                                 break;
@@ -88,13 +88,15 @@ export class LeoSettingsWebview {
     }
 
     private async _getBaseHtml(): Promise<string> {
-        const filename = this._context.asAbsolutePath(path.join('dist/webviews/', 'settings.html'));
+        if (this._html !== undefined) {
+            return this._html;
+        } else {
+            const w_filename = this._context.asAbsolutePath(path.join('dist/webviews/', 'settings.html'));
+            const w_doc = await vscode.workspace.openTextDocument(w_filename);
 
-        if (this._html !== undefined) { return this._html; }
+            this._html = w_doc.getText();
 
-        const doc = await vscode.workspace.openTextDocument(filename);
-        this._html = doc.getText();
-
-        return this._html;
+            return this._html;
+        }
     }
 }
