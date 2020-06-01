@@ -4,7 +4,8 @@
 
 ### Break your code down into sections structured as an outline, to derive or parse back your files
 
-Leo is a fundamentally different way of using and organizing data, programs and scripts.\
+> Leo is a fundamentally different way of using and organizing data, programs and scripts.
+
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
 or on [github](https://github.com/leo-editor/leo-editor).
 
@@ -82,7 +83,7 @@ This occurs when an outline node or a body pane has focus:
 
 ## Extension Settings
 
-### _Open the command palette and start typing_ `leo settings`
+### Open the command palette and start typing `leo settings` to access LeoInteg's welcome/settings screen. _(changes are saved automatically)_
 
 - Control the visibility of the outline pane in the explorer view.
 - Decide how and when to refresh and synchronize content when derived (external) file are modified.
@@ -108,6 +109,8 @@ For some users, the **`Ctrl+D`** keybinding is already assigned.
 To help with this conflict, outline-move keyboard commands will only trigger
 with the additional condition of having no text selection in the editor.
 So select at least one character to use the previously assigned **`Ctrl+D`** command in body panes.
+
+> This extension is still in development, so please refer to its [issue tracker for known issues](https://github.com/boltex/leointeg/issues), and please contribute with additional information if you encounter other issues yourself.
 
 ## Intended Features
 
