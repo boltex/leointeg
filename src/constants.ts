@@ -44,6 +44,7 @@ export class Constants {
         TREEVIEW_TITLE: "OUTLINE",
         TREEVIEW_TITLE_NOT_CONNECTED: "NOT CONNECTED",
         TREEVIEW_TITLE_CONNECTED: "CONNECTED",
+        TREEVIEW_TITLE_INTEGRATION: "INTEGRATION",
         BODY_TITLE: "LEO BODY",
         LOG_PANE_TITLE: "Leo Log Window",
         THEME_STATUSBAR: "statusBar.foreground"

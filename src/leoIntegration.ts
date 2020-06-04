@@ -34,6 +34,9 @@ export class LeoIntegration {
     set fileOpenedReady(p_value: boolean) {
         this._fileOpenedReady = p_value;
         utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, p_value);
+        this._setTreeViewTitle(
+            p_value ? Constants.GUI.TREEVIEW_TITLE : Constants.GUI.TREEVIEW_TITLE_INTEGRATION
+        );
     }
 
     // * Frontend command stack
@@ -176,7 +179,7 @@ export class LeoIntegration {
     public startNetworkServices(): void {
         // * leoIntegration starting entry point: Start a leoBridge server and connect to it based on configuration flags
         // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED);
-        this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
+        // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_INTEGRATION); // Vanilla title for use with welcome content
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
         if (this.config.startServerAutomatically) {
             this.startServer();
@@ -217,8 +220,8 @@ export class LeoIntegration {
                 } else {
                     this.leoBridgeReady = true;
                     utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
-                    // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_CONNECTED);
-                    this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
+                    // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_INTEGRATION);
+                    // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
                     this.showLogPane();
                     if (!this.config.connectToServerAutomatically) {
                         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
@@ -239,7 +242,8 @@ export class LeoIntegration {
         } else {
             vscode.window.showInformationMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
         }
-        this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Generic title instead of Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED
+        // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Generic title instead of Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED
+        // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_INTEGRATION);
         this.fileOpenedReady = false;
         this.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
@@ -828,7 +832,7 @@ export class LeoIntegration {
                 this.fileOpenedReady = true;
                 // * First valid redraw of tree along with the selected node and its body
                 this._refreshOutline(RevealType.RevealSelectFocus); // p_revealSelection flag set
-                this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // ? Maybe unused when used with welcome content
+                // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // ? Maybe unused when used with welcome content
                 // * First StatusBar appearance
                 this._leoStatusBar.show(); // Just selected a node
                 // * Show leo log pane
