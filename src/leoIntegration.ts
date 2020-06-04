@@ -236,7 +236,6 @@ export class LeoIntegration {
         if (this.leoBridgeReady) {
             // * Real disconnect error versus a simple 'failed to connect'
             vscode.window.showErrorMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
-            utils.setContext(Constants.CONTEXT_FLAGS.DISCONNECTED, true);
         } else {
             vscode.window.showInformationMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
         }

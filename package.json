@@ -191,14 +191,13 @@
         {
           "id": "leoIntegrationExplorer",
           "name": "Leo Outline",
-          "when": "treeInExplorer && !leoDisconnected"
+          "when": "treeInExplorer"
         }
       ],
       "leoIntegrationView": [
         {
           "id": "leoIntegration",
-          "name": "Outline",
-          "when": "!leoDisconnected"
+          "name": "Outline"
         }
       ]
     },
@@ -756,23 +755,58 @@
     ],
     "viewsWelcome": [
       {
+        "//": "NOT READY: 3 buttons: [start], [connect] and [settings]",
         "view": "leoIntegration",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)",
-        "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nStart a local server\n[Start Server](command:leointeg.startServer)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nServer startup and connection can be automated in option settings\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "when": "!leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)",
-        "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nStart a local server\n[Start Server](command:leointeg.startServer)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nServer startup and connection can be automated in option settings\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "when": "!leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
       },
       {
+        "//": "NOT READY - JUST STARTED SERVER: 2 buttons: [connect] and [settings]",
         "view": "leoIntegration",
-        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nServer startup and connection can be automated in option settings\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "when": "!leoBridgeReady && leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nServer startup and connection can be automated in option settings\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "when": "!leoBridgeReady && leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
+      },
+      {
+        "//": "NOT READY - SERVER STARTS ITSELF: 2 buttons: [connect] and [settings]",
+        "view": "leoIntegration",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nServer startup and connection can be automated in option settings\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "when": "!leoBridgeReady && !leoTreeOpened && startServerAutomatically && !connectToServerAutomatically"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nServer startup and connection can be automated in option settings\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "when": "!leoBridgeReady && !leoTreeOpened && startServerAutomatically && !connectToServerAutomatically"
+      },
+      {
+        "//": "NOT READY - CONNECTING: 1 button: [settings]",
+        "view": "leoIntegration",
+        "contents": "Connecting...\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "when": "!leoBridgeReady && !leoTreeOpened && connectToServerAutomatically"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Connecting...\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "when": "!leoBridgeReady && !leoTreeOpened && connectToServerAutomatically"
+      },
+      {
+        "//": "READY: 2 buttons: [open] and [settings]",
+        "view": "leoIntegration",
+        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nView [readme](https://github.com/boltex/leointeg#readme)",
         "when": "leoBridgeReady && !leoTreeOpened"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)",
+        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nView [readme](https://github.com/boltex/leointeg#readme)",
         "when": "leoBridgeReady && !leoTreeOpened"
       }
     ],
@@ -784,7 +818,7 @@
         },
         {
           "command": "leointeg.connectToServer",
-          "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
+          "when": "!leoBridgeReady && !leoTreeOpened"
         },
         {
           "command": "leointeg.openLeoFile",
@@ -1134,7 +1168,7 @@
       "view/title": [
         {
           "command": "leointeg.connectToServer",
-          "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened && !leoDisconnected",
+          "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened",
           "group": "navigation@1"
         },
         {
