@@ -151,13 +151,13 @@
         },
         "leoIntegration.startServerAutomatically": {
           "scope": "application",
-          "default": true,
+          "default": false,
           "type": "boolean",
           "description": "Starts a LeoBridge server automatically, by running the leobridgeserver.py python script"
         },
         "leoIntegration.connectToServerAutomatically": {
           "scope": "application",
-          "default": true,
+          "default": false,
           "type": "boolean",
           "description": "Connect automatically to a Leo server on specified 'Connection Port' upon activation of this extension"
         },
@@ -190,14 +190,14 @@
       "explorer": [
         {
           "id": "leoIntegrationExplorer",
-          "name": "Leo Outline",
+          "name": "Leo Integration",
           "when": "treeInExplorer"
         }
       ],
       "leoIntegrationView": [
         {
           "id": "leoIntegration",
-          "name": "Outline"
+          "name": "Integration"
         }
       ]
     },
