@@ -2,8 +2,8 @@
 
 ## 0.1.10
 
-- Added more [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree for starting a server, connecting to it, and added content to help with automation  settings.
-- Added new markdown file for running the development version of the leoInteg extension.
+- Added more [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree for starting a server, connecting to it, and added content to help with automation settings.
+- Added new CONTRIBUTING.md markdown file for running the development version of the leoInteg extension.
 
 ## 0.1.9
 

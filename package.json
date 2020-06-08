@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "author": {
     "name": "Félix"
   },
@@ -18,9 +18,9 @@
   "keywords": [
     "leo",
     "literate",
+    "editor",
     "outline",
-    "programming",
-    "editor"
+    "programming"
   ],
   "categories": [
     "Other"
