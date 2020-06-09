@@ -757,56 +757,56 @@
       {
         "//": "NOT READY: 3 buttons: [start], [connect] and [settings]",
         "view": "leoIntegration",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nStart a local server\n[Start Server](command:leointeg.startServer)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nServer startup and connection can be automated in option settings\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nStart a local server\n[Start Server](command:leointeg.startServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "!leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nStart a local server\n[Start Server](command:leointeg.startServer)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nServer startup and connection can be automated in option settings\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nStart a local server\n[Start Server](command:leointeg.startServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "!leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
       },
       {
         "//": "NOT READY - JUST STARTED SERVER: 2 buttons: [connect] and [settings]",
         "view": "leoIntegration",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nServer startup and connection can be automated in option settings\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "!leoBridgeReady && leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nServer startup and connection can be automated in option settings\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "!leoBridgeReady && leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
       },
       {
         "//": "NOT READY - SERVER STARTS ITSELF: 2 buttons: [connect] and [settings]",
         "view": "leoIntegration",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nServer startup and connection can be automated in option settings\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "!leoBridgeReady && !leoTreeOpened && startServerAutomatically && !connectToServerAutomatically"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nServer startup and connection can be automated in option settings\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "!leoBridgeReady && !leoTreeOpened && startServerAutomatically && !connectToServerAutomatically"
       },
       {
-        "//": "NOT READY - CONNECTING: 1 button: [settings]",
+        "//": "NOT READY - CONNECTING",
         "view": "leoIntegration",
-        "contents": "Connecting...\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "contents": "Connecting...",
         "when": "!leoBridgeReady && !leoTreeOpened && connectToServerAutomatically"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "Connecting...\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "contents": "Connecting...",
         "when": "!leoBridgeReady && !leoTreeOpened && connectToServerAutomatically"
       },
       {
         "//": "READY: 2 buttons: [open] and [settings]",
         "view": "leoIntegration",
-        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "leoBridgeReady && !leoTreeOpened"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nLeoInteg options\n[Open Settings](command:leointeg.showSettingsPage)\nView [readme](https://github.com/boltex/leointeg#readme)",
+        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "leoBridgeReady && !leoTreeOpened"
       }
     ],
