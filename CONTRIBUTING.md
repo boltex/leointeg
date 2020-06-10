@@ -12,31 +12,19 @@ If you're having problems with the procedures below, try [running this sample ex
 
 ## Development requirements
 
-- Make sure you have Node.js and Git installed. Also check your Node.js and vscode versions by opening the 'about' dialog from the help menu in vscode. You should at least match or exceed the versions below.
+- Make sure you have Node.js and Git installed.
 
-![about](resources/vscode-about.png)
+- Check your node.js version by typing `node -v ` in a terminal. [The latest lts version is 12.18.0](https://nodejs.org/en/download/).
+
+- Also check your vscode version by opening the 'about' dialog from the help menu. You should at least match or exceed the version below.
 
 On Windows:
 
-> Version: 1.45.1\
-> Commit: 5763d909d5f12fe19f215cbfdd29a91c0fa9208a\
-> Date: 2020-05-14T08:27:35.169Z\
-> Electron: 7.2.4\
-> Chrome: 78.0.3904.130\
-> Node.js: 12.8.1\
-> V8: 7.8.279.23-electron.0\
-> OS: Windows_NT x64 10.0.17763
+![about](resources/vscode-about-win.png)
 
 On Linux:
 
-> Version: 1.45.1\
-> Commit: 5763d909d5f12fe19f215cbfdd29a91c0fa9208a\
-> Date: 2020-05-14T08:27:22.494Z\
-> Electron: 7.2.4\
-> Chrome: 78.0.3904.130\
-> Node.js: 12.8.1\
-> V8: 7.8.279.23-electron.0\
-> OS: Linux x64 5.5.5-050505-generic
+![about](resources/vscode-about.png)
 
 ## Getting the source and its development dependencies
 
@@ -86,11 +74,11 @@ On Linux:
 
 - This extension needs the **`leobridgeserver.py`** script to be running. That is where the two extra extension requirements come into play: Having [Leo's path made available in the \$PYTHONPATH environment variable](https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT#L126), and having the [Websocket Python Library installed](https://websockets.readthedocs.io/en/stable/intro.html)
 
-### How to start the server script
+### 3 ways to start the server script
 
-- You can have LeoInteg try to start a server script instance itself via the **Start Leo Bridge Server** command or button. It will use the 'py' command on Windows and 'python3' command on other OSes by default. _You can automate this process via leoInteg's configuration settings._
-- You can have vscode's **Debug View** start it as a debug session starts by choosing a debug profile that includes the server script. It's then possible to step in, inspect and debug the python server script. _The [python development extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) may be required._
-- You can also start it yourself manually, by running the leobridgeserver.py script from a command prompt.
+1. You can have LeoInteg try to start a server script instance itself via the **Start Leo Bridge Server** command or button. It will use the 'py' command on Windows and 'python3' command on other OSes by default. _You can automate this process via leoInteg's configuration settings._
+2. You can have vscode's **Debug View** start it as a debug session starts by choosing a debug profile that includes the server script. It's then possible to step in, inspect and debug the python server script. _The [python development extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) may be required._
+3. You can also start it yourself manually, by running the leobridgeserver.py script from a command prompt.
 
 ### Using Anaconda or other custom python installations
 
