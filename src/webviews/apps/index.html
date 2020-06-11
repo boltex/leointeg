@@ -22,8 +22,8 @@
         </div>
       </a>
       <p class="header__blurb">
-        Use <b>Leo</b> to program with <b>directed acyclic graphs</b> along with section-references, clones,
-        file derivation and the Mulder/Ream update algorithm.
+        Use <b>Leo</b> to program with <b>directed acyclic graphs</b> along with
+        section-references, clones, file derivation and the Mulder/Ream update algorithm.
       </p>
     </header>
 
@@ -55,55 +55,96 @@
       <section id="welcome"
                class="section--full mb-0">
         <h2 class="section__title section__title--primary">
-          Welcome to <span class="highlight">LeoInteg 0.1.9</span>
+          Welcome to <span class="highlight">LeoInteg 0.1.10</span>
         </h2>
         <div class="center mt-1">
           <a class="button button--flat"
              title="LeoInteg's Features"
-             href="https://github.com/boltex/leointeg#features">See What's New
-            in LeoInteg 0.1.9</a>
+             href="https://github.com/boltex/leointeg#features">
+            See What's New in LeoInteg 0.1.10
+          </a>
         </div>
-        <p class="blurb ml-0 mr-0">
-          LeoInteg while being designed to <b>mimic Leo's behavior</b>,
-          is also highly <b>customizable</b> to meet your needs. Do you find
-          the outline's icons to be intrusive or the current cursor behavior distracting? &mdash;
-          No problem. Quickly turn them off, or change how they behave using the options below.
+        <p class="blurb center ml-0 mr-0">
+          LeoInteg is designed to <b>mimic Leo's behavior</b>
+          and can be <b>customized</b> to meet your needs.
+        </p>
+        <h2 class="section__title section__title--break"></h2>
+        <p class="section__hint mt-0 center">
+          Automate the <a href="#leobridge-options">leoBridge startup</a>,
+          auto-refresh when <a href="#external-files">external files change</a>,
+          or choose which <a href="#node-commands">node icons</a>
+          are shown and more with the options below.
         </p>
       </section>
 
-      <section id="interface-behavior"
+      <section id="leobridge-options"
                class="section--settings">
         <div class="section__content">
           <div class="section__header">
             <h2>
-              Interface Behavior
+              Leo Bridge Options
             </h2>
           </div>
-
           <div class="settings">
-
             <div class="setting">
               <div class="setting__input">
-                <input id="treeKeepFocus"
-                       name="treeKeepFocus"
+                <input id="startServerAutomatically"
+                       name="startServerAutomatically"
                        type="checkbox"
                        data-setting />
-                <label for="treeKeepFocus">Keep focus on Outline</label>
+                <label for="startServerAutomatically">Start&nbsp;Server</label>
               </div>
-              <span class="setting__hint">Keep focus in the outline when selecting a node</span>
+              <span class="setting__hint">Run the leobridgeserver.py server script at startup</span>
             </div>
-
             <div class="setting">
               <div class="setting__input">
-                <input id="treeKeepFocusWhenAside"
-                       name="treeKeepFocusWhenAside"
+                <input id="connectToServerAutomatically"
+                       name="connectToServerAutomatically"
                        type="checkbox"
                        data-setting />
-                <label for="treeKeepFocusWhenAside">Keep focus when opening on the side</label>
+                <label for="connectToServerAutomatically">Connect&nbsp;to&nbsp;Server</label>
               </div>
-              <span class="setting__hint">Keep focus in the outline when opening a body pane on the side</span>
+              <span class="setting__hint">Connects automatically to a LeoBridge server</span>
             </div>
-
+            <div class="setting">
+              <div class="setting__input">
+                <label for="leoPythonCommand">Python&nbsp;Command&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <input id="leoPythonCommand"
+                       name="leoPythonCommand"
+                       type="text"
+                       maxlength="256"
+                       placeholder="Empty for default"
+                       data-setting />
+              </div>
+              <span class="setting__hint">Command for starting python (Defaults to 'py' on windows, or
+                'python3' otherwise)</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <label for="connectionAddress">Connection&nbsp;Address</label>
+                <input id="connectionAddress"
+                       name="connectionAddress"
+                       type="text"
+                       maxlength="256"
+                       placeholder="Host Name, IP Address or localhost"
+                       data-setting />
+              </div>
+              <span class="setting__hint">Connection host</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <label for="connectionPort">Connection&nbsp;Port</label>
+                <input id="connectionPort"
+                       name="connectionPort"
+                       type="number"
+                       min="0"
+                       max="65535"
+                       max-length="5"
+                       placeholder="Port Number"
+                       data-setting />
+              </div>
+              <span class="setting__hint">Connection host port number</span>
+            </div>
           </div>
         </div>
       </section>
@@ -149,6 +190,44 @@
           </div>
         </div>
       </section>
+
+      <section id="interface-behavior"
+               class="section--settings">
+        <div class="section__content">
+          <div class="section__header">
+            <h2>
+              Interface Behavior
+            </h2>
+          </div>
+
+          <div class="settings">
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="treeKeepFocus"
+                       name="treeKeepFocus"
+                       type="checkbox"
+                       data-setting />
+                <label for="treeKeepFocus">Keep focus on Outline</label>
+              </div>
+              <span class="setting__hint">Keep focus in the outline when selecting a node</span>
+            </div>
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="treeKeepFocusWhenAside"
+                       name="treeKeepFocusWhenAside"
+                       type="checkbox"
+                       data-setting />
+                <label for="treeKeepFocusWhenAside">Keep focus when opening on the side</label>
+              </div>
+              <span class="setting__hint">Keep focus in the outline when opening a body pane on the side</span>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
 
       <section id="tree-in-explorer"
                class="section--settings">
@@ -301,7 +380,7 @@
                        data-setting />
                 <label for="showArrowsOnNodes">Move&nbsp;arrow&nbsp;commands</label>
               </div>
-              <span class="setting__hint">Shows 'Move Node' arrows on hover</span>
+              <span class="setting__hint">Shows 'Move' arrows on hover</span>
             </div>
             <div class="setting">
               <div class="setting__input">
@@ -364,80 +443,7 @@
         </div>
       </section>
 
-      <section id="leobridge-options"
-               class="section--settings">
-        <div class="section__content">
-          <div class="section__header">
-            <h2>
-              Leo Bridge Options
-            </h2>
-          </div>
-          <div class="settings">
-            <div class="setting">
-              <div class="setting__input">
-                <label for="leoPythonCommand">Python&nbsp;Command</label>
-                <input id="leoPythonCommand"
-                       name="leoPythonCommand"
-                       type="text"
-                       maxlength="256"
-                       placeholder="Empty for default"
-                       data-setting />
-              </div>
-              <span class="setting__hint">Command for starting python (Defaults to 'py' on windows, or
-                'python3' otherwise)</span>
-            </div>
-            <div class="setting">
-              <div class="setting__input">
-                <input id="startServerAutomatically"
-                       name="startServerAutomatically"
-                       type="checkbox"
-                       data-setting />
-                <label for="startServerAutomatically">Start&nbsp;Server</label>
-              </div>
-              <span class="setting__hint">Starts a LeoBridge server automatically, by running the leobridgeserver.py
-                script</span>
-            </div>
-            <div class="setting">
-              <div class="setting__input">
-                <input id="connectToServerAutomatically"
-                       name="connectToServerAutomatically"
-                       type="checkbox"
-                       data-setting />
-                <label for="connectToServerAutomatically">Connect&nbsp;to&nbsp;Server</label>
-              </div>
-              <span class="setting__hint">Connects automatically to a LeoBridge server</span>
-            </div>
-            <div class="setting">
-              <div class="setting__input">
-                <label for="connectionAddress">Connection&nbsp;Address</label>
-                <input id="connectionAddress"
-                       name="connectionAddress"
-                       type="text"
-                       maxlength="256"
-                       placeholder="Host Name, IP Address or localhost"
-                       data-setting />
-              </div>
-              <span class="setting__hint">Connection host</span>
-            </div>
-            <div class="setting">
-              <div class="setting__input">
-                <label for="connectionPort">Connection&nbsp;Port</label>
-                <input id="connectionPort"
-                       name="connectionPort"
-                       type="number"
-                       min="0"
-                       max="65535"
-                       max-length="5"
-                       placeholder="Port Number"
-                       data-setting />
-              </div>
-              <span class="setting__hint">Connection host port number</span>
-            </div>
 
-          </div>
-
-        </div>
-      </section>
     </div>
 
     <div class="sidebar">
@@ -454,10 +460,13 @@
         <h2>Configuration</h2>
         <ul>
           <li>
-            <a href="#interface-behavior">Interface Behavior</a>
+            <a href="#leobridge-options">LeoBridge Options</a>
           </li>
           <li>
             <a href="#external-files">External Files</a>
+          </li>
+          <li>
+            <a href="#interface-behavior">Interface Behavior</a>
           </li>
           <li>
             <a href="#tree-in-explorer">Outline in Explorer</a>
@@ -474,9 +483,7 @@
           <li>
             <a href="#statusbar-indicator">Statusbar Indicator</a>
           </li>
-          <li>
-            <a href="#leobridge-options">LeoBridge Options</a>
-          </li>
+
         </ul>
       </div>
 

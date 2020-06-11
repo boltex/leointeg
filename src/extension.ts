@@ -181,7 +181,7 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
         ) {
             w_showWelcomeScreen = false;
         } else if (w_major !== w_prevMajor || (w_major === w_prevMajor && w_minor > w_prevMinor)) {
-            // Will show on major or minor upgrade, Formatted as 'Major.Minor.Revision' eg. 1.2.3
+            // Will show on major or minor upgrade (Formatted as 'Major.Minor.Revision' eg. 1.2.3)
             w_showWelcomeScreen = true;
         }
     }

@@ -17,6 +17,7 @@ export class LeoIntegration {
     // * Status Flags
     private _leoIsConnecting: boolean = false; // Used in connect method to prevent other attempts while trying
     private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Set when leoBridge has a leo controller ready
+    private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Title has to be kept because it might need to be set (again) when either tree is first shown when switching visibility
 
     private _leoBridgeReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.BRIDGE_READY
     get leoBridgeReady(): boolean {
@@ -34,6 +35,9 @@ export class LeoIntegration {
     set fileOpenedReady(p_value: boolean) {
         this._fileOpenedReady = p_value;
         utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, p_value);
+        this._setTreeViewTitle(
+            p_value ? Constants.GUI.TREEVIEW_TITLE : Constants.GUI.TREEVIEW_TITLE_INTEGRATION
+        );
     }
 
     // * Frontend command stack
@@ -176,7 +180,7 @@ export class LeoIntegration {
     public startNetworkServices(): void {
         // * leoIntegration starting entry point: Start a leoBridge server and connect to it based on configuration flags
         // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED);
-        this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
+        // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_INTEGRATION); // Vanilla title for use with welcome content
         // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
         if (this.config.startServerAutomatically) {
             this.startServer();
@@ -217,8 +221,8 @@ export class LeoIntegration {
                 } else {
                     this.leoBridgeReady = true;
                     utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
-                    // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_CONNECTED);
-                    this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
+                    // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_INTEGRATION);
+                    // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
                     this.showLogPane();
                     if (!this.config.connectToServerAutomatically) {
                         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
@@ -236,11 +240,11 @@ export class LeoIntegration {
         if (this.leoBridgeReady) {
             // * Real disconnect error versus a simple 'failed to connect'
             vscode.window.showErrorMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
-            utils.setContext(Constants.CONTEXT_FLAGS.DISCONNECTED, true);
         } else {
             vscode.window.showInformationMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
         }
-        this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Generic title instead of Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED
+        // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Generic title instead of Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED
+        // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_INTEGRATION);
         this.fileOpenedReady = false;
         this.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
@@ -301,6 +305,7 @@ export class LeoIntegration {
             // (Facultative) Do something different if explorerView is used, instead of the standalone outline pane
         }
         if (p_event.visible && this.lastSelectedNode) {
+            this._setTreeViewTitle();
             this._needLastSelectedRefresh = true; // Its a new node in a new tree so refresh lastSelectedNode too
             this._refreshOutline(RevealType.RevealSelectFocus); // Set focus on outline
         }
@@ -829,7 +834,7 @@ export class LeoIntegration {
                 this.fileOpenedReady = true;
                 // * First valid redraw of tree along with the selected node and its body
                 this._refreshOutline(RevealType.RevealSelectFocus); // p_revealSelection flag set
-                this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // ? Maybe unused when used with welcome content
+                // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // ? Maybe unused when used with welcome content
                 // * First StatusBar appearance
                 this._leoStatusBar.show(); // Just selected a node
                 // * Show leo log pane
@@ -841,13 +846,16 @@ export class LeoIntegration {
             });
     }
 
-    private _setTreeViewTitle(p_title: string): void {
-        // * Set/Change outline pane title e.g. "NOT CONNECTED", "CONNECTED", "OUTLINE"
+    private _setTreeViewTitle(p_title?: string): void {
+        if (p_title) {
+            this._currentOutlineTitle = p_title;
+        }
+        // * Set/Change outline pane title e.g. "INTEGRATION", "OUTLINE"
         if (this._leoTreeStandaloneView) {
-            this._leoTreeStandaloneView.title = p_title;
+            this._leoTreeStandaloneView.title = this._currentOutlineTitle;
         }
         if (this._leoTreeExplorerView) {
-            this._leoTreeExplorerView.title = Constants.GUI.EXPLORER_TREEVIEW_PREFIX + p_title; // "NOT CONNECTED", "CONNECTED", "LEO: OUTLINE"
+            this._leoTreeExplorerView.title = Constants.GUI.EXPLORER_TREEVIEW_PREFIX + this._currentOutlineTitle;
         }
     }
 
