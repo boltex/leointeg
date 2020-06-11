@@ -4,9 +4,10 @@
 
 ### Break your code down into sections structured as an outline, to derive or parse back your files
 
-Leo is a fundamentally different way of using and organizing data, programs and scripts.\
+> Leo is a fundamentally different way of using and organizing data, programs and scripts.
+
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
-or on [github](https://github.com/leo-editor/leo-editor).
+or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.visualstudio.com](https://code.visualstudio.com/).
 
 ![Screenshot](resources/animated-screenshot.gif)
 
@@ -21,39 +22,30 @@ or on [github](https://github.com/leo-editor/leo-editor).
 
 ## Development version installation
 
-As you can see from this simple
-['Hello-world' expansion example](https://github.com/Microsoft/vscode-extension-samples/tree/master/helloworld-sample#running-the-sample),
-cloning and running an expansion from source is quite easy:
+In addition to the above requirements, make sure you have Node.js and Git installed, then clone the sources and run `npm install` in a terminal to install the remaining development dependencies.
 
-Make sure you have Node.js and Git installed, then:
+![run extension](/resources/run-extension.png)
 
-1. Get this repository: `git clone https://github.com/boltex/leointeg.git`
-2. Right-click it -> open with vscode (or from a vscode window, File-> Open Folder...)
-3. Run `npm install` in terminal before the first run to install dependencies.
-4. _(Optional)_ Open vscode's 'Run/Debug' panel to choose a debugging profile (extension, server, or both)
-5. Press F5 to run the extension in its own vscode debug instance. (It will try to start its own server by default)
+You can then run the **Run Extension** target, as shown above, in the **Debug View**.
 
-After compiling, a new vscode window will be running with leoInteg.
-
-The plugin will be activated if the workspace of this new window contains a leo file,
-it can also be manually activated by going to the Leo view in the activity bar.
-
-Once activated, it will start a bridge and connect to it automatically by default.
-The 'Open Leo File' button will then be available.
+> See [CONTRIBUTING.md](CONTRIBUTING.md) for complete details on how to install and run this extension.
 
 ## Features
 
-- A Leo Outline in the explorer view, or in its own panel via the activity bar.
-- A welcome screen that also provides access to the configuration settings.
-- Derived files change detection.\
-  (Set the **'Force reload or ignore changes'** option to **'Reload All'** to automate synchronization)
-- Access Leo commands with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
+- A **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes** and **Log Window**.
+- A **welcome screen** that also gives access to this extension's **settings**.
+- **Derived files change detection**. See [External Files](#derive-external-files) below for more details
+- Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
   - Open body panes to the side
   - Outline edition commands
   - Clipboard operations
   - Undo/Redo commands
 
 ![Menu](resources/context-hover-menus.png)
+
+## Keybindings
+
+> _More commands are available by opening the **Command Palette** and typing 'Leo'_
 
 | Keybinding                 |     |                       | Command            |
 | :------------------------- | :-- | :-------------------- | :----------------- |
@@ -72,7 +64,21 @@ The 'Open Leo File' button will then be available.
 | `Ctrl + L`                 | or  | `Shift + Alt + Left`  | Move Outline Left  |
 | `Ctrl + R`                 | or  | `Shift + Alt + Right` | Move Outline Right |
 
-### _Status Bar Indicator_
+## Derive External Files
+
+Use the **Save Leo File** command to derive external files.
+
+Leo will detect derived file changes and will ask to either **refresh from disk** or **ignore the changes**.
+
+![derive files](resources/derived-file.gif)
+
+## Automate Synchronization
+
+The **change detection** process can be automated to always refresh, or ignore file changes: A **notification** will inform you of the action taken instead.
+
+![auto sync](resources/auto-sync.gif)
+
+## Status Bar Indicator
 
 A customizable keyboard status bar indicator is shown when this extension is activated.
 It will turn orange (or your choice of text and color), when leo's **keyboard shortcuts** are active.
@@ -82,7 +88,9 @@ This occurs when an outline node or a body pane has focus:
 
 ## Extension Settings
 
-### _Open the command palette and start typing_ `leo settings`
+### Open the command palette `CTRL+SHIFT+P` and start typing `leo settings` to access LeoInteg's welcome/settings screen
+
+> _(Changes are auto-saved to the user's profile after 0.5 seconds)_
 
 - Control the visibility of the outline pane in the explorer view.
 - Decide how and when to refresh and synchronize content when derived (external) file are modified.
@@ -95,11 +103,13 @@ This occurs when an outline node or a body pane has focus:
 
 ## Issues
 
+Main issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
+
 ### Linux Keybindings
 
 If you're experiencing trouble with the keyboard shortcuts for
 the 'Clone Node' or the 'Promote' and 'Demote' commands,
-use **"keyboard.dispatch": "keyCode"** in your settings and restart VS Code.
+use **"keyboard.dispatch": "keyCode"** in your settings and restart vscode.
 See [Troubleshoot Linux Keybindings](https://github.com/microsoft/vscode/wiki/Keybinding-Issues#troubleshoot-linux-keybindings) for more information.
 
 ### Move outline keyboard commands
@@ -109,13 +119,14 @@ To help with this conflict, outline-move keyboard commands will only trigger
 with the additional condition of having no text selection in the editor.
 So select at least one character to use the previously assigned **`Ctrl+D`** command in body panes.
 
+> This extension is still in development, so please refer to its [issue tracker for known issues](https://github.com/boltex/leointeg/issues), and please contribute with additional information if you encounter other issues yourself.
+
 ## Intended Features
 
 - Support for multiple simultaneous opened Leo files.
-- Support multiple connections to the leoBridge server, allowing multi-user live edition of the same Leo file.
+- Support multiple connections to the leoBridge server.
 - Syntax-highlighting for body panes that matches Leo's syntax-highlighting.
-- Finding and 'go-to' specific line(s) from derived files in outline nodes (For error lookup, breakpoints, etc.)
-- Optionally display line numbers in relation to derived files instead of the standard editor line numbering when applicable.
+- Display line numbers in relation to derived files, along with 'go-to' specific line functionality for error lookups and breakpoints.
 
 ## How it works
 

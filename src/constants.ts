@@ -44,6 +44,7 @@ export class Constants {
         TREEVIEW_TITLE: "OUTLINE",
         TREEVIEW_TITLE_NOT_CONNECTED: "NOT CONNECTED",
         TREEVIEW_TITLE_CONNECTED: "CONNECTED",
+        TREEVIEW_TITLE_INTEGRATION: "INTEGRATION",
         BODY_TITLE: "LEO BODY",
         LOG_PANE_TITLE: "Leo Log Window",
         THEME_STATUSBAR: "statusBar.foreground"
@@ -104,21 +105,24 @@ export class Constants {
      * * Used in 'when' clauses, set with vscode.commands.executeCommand("setContext",...)
      */
     public static CONTEXT_FLAGS = {
-        BRIDGE_READY: "leoBridgeReady",
-        TREE_OPENED: "leoTreeOpened",
-        SERVER_STARTED: "leoServerStarted",
-        DISCONNECTED: "leoDisconnected",
-        TREE_IN_EXPLORER: Constants.CONFIGURATION.TREE_IN_EXPLORER,
-        SHOW_OPEN_ASIDE: Constants.CONFIGURATION.SHOW_OPEN_ASIDE,
-        SHOW_ARROWS: Constants.CONFIGURATION.SHOW_ARROWS,
-        SHOW_ADD: Constants.CONFIGURATION.SHOW_ADD,
-        SHOW_MARK: Constants.CONFIGURATION.SHOW_MARK,
-        SHOW_CLONE: Constants.CONFIGURATION.SHOW_CLONE,
-        SHOW_COPY: Constants.CONFIGURATION.SHOW_COPY,
-        LEO_SELECTED: "leoObjectSelected",
-        SELECTED_MARKED: "leoNodeMarked",
-        SELECTED_UNMARKED: "leoNodeUnmarked",
-        SELECTED_ATFILE: "leoNodeAtFile"
+        BRIDGE_READY: "leoBridgeReady", // Connected to leoBridge
+        TREE_OPENED: "leoTreeOpened", // At least one Leo file opened
+        SERVER_STARTED: "leoServerStarted", // Auto_start or manually started
+        // Flags about current selection
+        LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
+        SELECTED_MARKED: "leoNodeMarked",  // Selected node is marked
+        SELECTED_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked
+        SELECTED_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
+        // Flags that match specific LeoInteg config settings
+        TREE_IN_EXPLORER: Constants.CONFIGURATION.TREE_IN_EXPLORER, // Leo outline also in the explorer view
+        SHOW_OPEN_ASIDE: Constants.CONFIGURATION.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
+        SHOW_ARROWS: Constants.CONFIGURATION.SHOW_ARROWS,           // Hover Icons on outline nodes
+        SHOW_ADD: Constants.CONFIGURATION.SHOW_ADD,                 // Hover Icons on outline nodes
+        SHOW_MARK: Constants.CONFIGURATION.SHOW_MARK,               // Hover Icons on outline nodes
+        SHOW_CLONE: Constants.CONFIGURATION.SHOW_CLONE,             // Hover Icons on outline nodes
+        SHOW_COPY: Constants.CONFIGURATION.SHOW_COPY,               // Hover Icons on outline nodes
+        AUTO_START_SERVER: Constants.CONFIGURATION.AUTO_START_SERVER,   // Used at startup
+        AUTO_CONNECT: Constants.CONFIGURATION.AUTO_CONNECT              // Used at startup
     };
 
     /**

@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "author": {
     "name": "Félix"
   },
@@ -18,9 +18,9 @@
   "keywords": [
     "leo",
     "literate",
+    "editor",
     "outline",
-    "programming",
-    "editor"
+    "programming"
   ],
   "categories": [
     "Other"
@@ -151,13 +151,13 @@
         },
         "leoIntegration.startServerAutomatically": {
           "scope": "application",
-          "default": true,
+          "default": false,
           "type": "boolean",
           "description": "Starts a LeoBridge server automatically, by running the leobridgeserver.py python script"
         },
         "leoIntegration.connectToServerAutomatically": {
           "scope": "application",
-          "default": true,
+          "default": false,
           "type": "boolean",
           "description": "Connect automatically to a Leo server on specified 'Connection Port' upon activation of this extension"
         },
@@ -190,15 +190,14 @@
       "explorer": [
         {
           "id": "leoIntegrationExplorer",
-          "name": "Leo Outline",
-          "when": "treeInExplorer && !leoDisconnected"
+          "name": "Leo Integration",
+          "when": "treeInExplorer"
         }
       ],
       "leoIntegrationView": [
         {
           "id": "leoIntegration",
-          "name": "Outline",
-          "when": "!leoDisconnected"
+          "name": "Integration"
         }
       ]
     },
@@ -756,23 +755,58 @@
     ],
     "viewsWelcome": [
       {
+        "//": "NOT READY: 3 buttons: [start], [connect] and [settings]",
         "view": "leoIntegration",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)",
-        "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nStart a local server\n[Start Server](command:leointeg.startServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "!leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)",
-        "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nStart a local server\n[Start Server](command:leointeg.startServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "!leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
       },
       {
+        "//": "NOT READY - JUST STARTED SERVER: 2 buttons: [connect] and [settings]",
         "view": "leoIntegration",
-        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "!leoBridgeReady && leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "!leoBridgeReady && leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
+      },
+      {
+        "//": "NOT READY - SERVER STARTS ITSELF: 2 buttons: [connect] and [settings]",
+        "view": "leoIntegration",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "!leoBridgeReady && !leoTreeOpened && startServerAutomatically && !connectToServerAutomatically"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "when": "!leoBridgeReady && !leoTreeOpened && startServerAutomatically && !connectToServerAutomatically"
+      },
+      {
+        "//": "NOT READY - CONNECTING",
+        "view": "leoIntegration",
+        "contents": "Connecting...",
+        "when": "!leoBridgeReady && !leoTreeOpened && connectToServerAutomatically"
+      },
+      {
+        "view": "leoIntegrationExplorer",
+        "contents": "Connecting...",
+        "when": "!leoBridgeReady && !leoTreeOpened && connectToServerAutomatically"
+      },
+      {
+        "//": "READY: 2 buttons: [open] and [settings]",
+        "view": "leoIntegration",
+        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "leoBridgeReady && !leoTreeOpened"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)",
+        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "leoBridgeReady && !leoTreeOpened"
       }
     ],
@@ -784,7 +818,7 @@
         },
         {
           "command": "leointeg.connectToServer",
-          "when": "!leoBridgeReady && !leoTreeOpened && !leoDisconnected"
+          "when": "!leoBridgeReady && !leoTreeOpened"
         },
         {
           "command": "leointeg.openLeoFile",
@@ -1134,7 +1168,7 @@
       "view/title": [
         {
           "command": "leointeg.connectToServer",
-          "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened && !leoDisconnected",
+          "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened",
           "group": "navigation@1"
         },
         {
