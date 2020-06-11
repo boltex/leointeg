@@ -12,7 +12,7 @@ If you're having problems with the procedures below, try [running this sample ex
 
 ## Development requirements
 
-- Make sure you have Node.js and Git installed.
+- Make sure you have [Node.js](https://nodejs.org/en/download/) and [Git](https://git-scm.com/downloads) installed.
 
 - Check your node.js version by typing `node -v` in a terminal. [The latest lts version is 12.18.0](https://nodejs.org/en/download/).
 
@@ -32,7 +32,7 @@ On Linux:
 
 ![clone](resources/git-clone.png)
 
-- Although you could 'cd' into the leoInteg folder and run some commands from the same terminal, let's instead use the terminal from within vscode. So open the leoInteg folder with vscode instead:
+- Although you could 'cd' into the leoInteg folder and run some commands from the same terminal, let's instead use the terminal from within vscode. So open the leoInteg folder with vscode instead, either with the context menu as shown below, or by choosing "Open Folder..." from within vscode:
 
 ![open with vscode](resources/open-with-vscode.png)
 
@@ -72,7 +72,9 @@ On Linux:
 
 ## The python server script
 
-- This extension needs the **`leobridgeserver.py`** script to be running. That is where the two extra extension requirements come into play: Having [Leo's path made available in the \$PYTHONPATH environment variable](https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT#L126), and having the [Websocket Python Library installed](https://websockets.readthedocs.io/en/stable/intro.html)
+- This extension needs the **`leobridgeserver.py`** script to be running. That is where the two extra extension requirements come into play:
+  - Having [Leo's path made available in the \$PYTHONPATH environment variable](https://docs.python.org/2/using/windows.html#excursus-setting-environment-variables) ([More info](https://docs.python.org/2/using/cmdline.html#environment-variables))
+  - Having the [Websocket Python Library installed](https://websockets.readthedocs.io/en/stable/intro.html)
 
 ### 3 ways to start the server script
 

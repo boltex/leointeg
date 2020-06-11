@@ -13,9 +13,8 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 
 ## Requirements
 
-- Having Leo installed with its path made available in the \$PYTHONPATH environment variable.\
-  (See **Adding Leo to Your Path** in
-  [github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT](https://github.com/leo-editor/leo-editor/blob/master/INSTALL.TXT#L126))
+- Having [Leo's path made available in the \$PYTHONPATH environment variable](https://docs.python.org/2/using/windows.html#excursus-setting-environment-variables)\
+  ([More info](https://docs.python.org/2/using/cmdline.html#environment-variables))
 - Having the Websocket Python Library installed.
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
