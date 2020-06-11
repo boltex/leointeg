@@ -73,8 +73,8 @@ On Linux:
 ## The python server script
 
 - This extension needs the **`leobridgeserver.py`** script to be running. That is where the two extra extension requirements come into play:
-    - Having [Leo's path made available in the \$PYTHONPATH environment variable](https://docs.python.org/2/using/windows.html#excursus-setting-environment-variables) ([More info](https://docs.python.org/2/using/cmdline.html#environment-variables))
-    - Having the [Websocket Python Library installed](https://websockets.readthedocs.io/en/stable/intro.html)
+  - Having [Leo's path made available in the \$PYTHONPATH environment variable](https://docs.python.org/2/using/windows.html#excursus-setting-environment-variables) ([More info](https://docs.python.org/2/using/cmdline.html#environment-variables))
+  - Having the [Websocket Python Library installed](https://websockets.readthedocs.io/en/stable/intro.html)
 
 ### 3 ways to start the server script
 
