@@ -14,7 +14,7 @@ If you're having problems with the procedures below, try [running this sample ex
 
 - Make sure you have Node.js and Git installed.
 
-- Check your node.js version by typing `node -v ` in a terminal. [The latest lts version is 12.18.0](https://nodejs.org/en/download/).
+- Check your node.js version by typing `node -v` in a terminal. [The latest lts version is 12.18.0](https://nodejs.org/en/download/).
 
 - Also check your vscode version by opening the 'about' dialog from the help menu. You should at least match or exceed the version below.
 
