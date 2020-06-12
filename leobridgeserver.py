@@ -678,7 +678,10 @@ class leoBridgeIntegController:
         if(p_ap):
             w_p = self.ap_to_p(p_ap)
             if w_p:
+                w_bunch = self.commander.undoer.beforeInsertNode(w_p)
                 w_newNode = w_p.insertAfter()
+                w_newNode.setDirty()
+                self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_bunch)
                 self.commander.selectPosition(w_newNode)
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
@@ -693,10 +696,13 @@ class leoBridgeIntegController:
         if(w_ap):
             w_p = self.ap_to_p(w_ap)
             if w_p:
+                w_u = self.commander.undoer.beforeInsertNode(w_p)
                 w_newNode = w_p.insertAfter()
-                self.commander.selectPosition(w_newNode)
                 # set this node's new headline
                 w_newNode.h = w_newHeadline
+                w_newNode.setDirty()
+                self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_u)
+                self.commander.selectPosition(w_newNode)
                 return self.outputPNode(self.commander.p)  # in any case, return selected node
             else:
                 return self.outputError("Error in insertNamedPNode no w_p node found")  # default empty
@@ -880,7 +886,9 @@ class leoBridgeIntegController:
             w_p = self.ap_to_p(w_ap)
             if w_p:
                 # set this node's new headline
+                w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)
                 w_p.h = w_newHeadline
+                self.commander.undoer.afterChangeNodeContents(w_p,'Change Headline', w_bunch)
                 return self.outputPNode(w_p)
         else:
             return self.outputError("Error in setNewHeadline")
