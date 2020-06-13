@@ -1,0 +1,34 @@
+{
+    "scopeName": "leo",
+    "patterns": [
+        {
+            "begin": "^\\b(d|\\@doc|doc)\\b",
+            "end": "^\\b(c|code)\\b",
+            "name": "comment"
+        },
+        {
+            "match": "^\\s\\b(@others|@all|@encoding|@ignore|@lineending|@path)\\b",
+            "name": "support.other"
+        },
+        {
+            "match": "^\\s\\b(@pagewidth|@tabwidth)\\b",
+            "name": "support.other"
+        },
+        {
+            "match": "^\\s\\b(@first|@last)\\b",
+            "name": "support.other"
+        },
+        {
+            "match": "^\\s\\b(@wrap|@nowrap)\\b",
+            "name": "support.other"
+        },
+        {
+            "match": "\\s@language",
+            "name": "support.other"
+        },
+        {
+            "match": "\\btest\\b",
+            "name": "support"
+        }
+    ]
+}

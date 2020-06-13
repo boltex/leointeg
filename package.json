@@ -201,6 +201,21 @@
         }
       ]
     },
+    "languages": [
+      {
+        "id": "LeoBody",
+        "aliases": [
+          "Leo"
+        ]
+      }
+    ],
+    "grammars": [
+      {
+        "language": "LeoBody",
+        "scopeName": "leo",
+        "path": "./leo-syntax.json"
+      }
+    ],
     "commands": [
       {
         "command": "leointeg.showSettingsPage",
