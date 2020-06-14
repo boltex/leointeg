@@ -119,11 +119,15 @@
 </vnodes>
 <tnodes>
 <t tx="felix.20190922171916.2">@doc
-I should have started self documentation here from the start in august! 
+I should have started self documentation here from the start in august!
 
-    # TODO : Offer 'Real Clipboard' operations, instead of leo's 'internal' clipboard behavior -
-    # Note : ('Real Clipboard') Use globals.gui.clipboard and the real clipboard with g.app.gui.getTextFromClipboard()
-    # Note : ('Real Clipboard') For pasting, use g.app.gui.replaceClipboardWith(p_realClipboard)</t>
+This Leo file will contain all of the source for the Visual Studio Code Leo Integration Extension
+
+For now, it contains the 'Leo bridge server' script, as the first leonine source of this project.
+
+To contribute, see the official issues page for current list of 'TODO's at https://github.com/boltex/leointeg/issues
+
+</t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
         return self.sendLeoBridgePackage("node", self.p_to_ap(p_node))  # Single node, singular
@@ -250,6 +254,8 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191126232434.21">def setNewBody(self, p_body):
     '''Change Body of selected node'''
+    # TODO : This method is unused for now? Remove if unnecessary.
+    # TODO : Does this support 'Undo'?
     if(self.commander.p):
         self.commander.p.b = p_body['body']
         return self.outputPNode(self.commander.p)
@@ -261,9 +267,9 @@ if __name__ == '__main__':
     '''Change Body text of a node'''
     for w_p in self.commander.all_positions():
         if w_p.v.gnx == p_package['gnx']:  # found
-            b = self.commander.undoer.beforeChangeNodeContents(w_p, oldYScroll=0)  # setup undoable operation
+            w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
             w_p.v.setBodyString(p_package['body'])
-            self.commander.undoer.afterChangeNodeContents(w_p, command="set-body", bunch=b, dirtyVnodeList=[w_p.v])
+            self.commander.undoer.afterChangeNodeContents(w_p, "Body Text", w_bunch)
             if not w_p.v.isDirty():
                 w_p.setDirty()
             break
@@ -280,7 +286,7 @@ if __name__ == '__main__':
             # set this node's new headline
             w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)
             w_p.h = w_newHeadline
-            self.commander.undoer.afterChangeNodeContents(w_p,'Change Headline', w_bunch)
+            self.commander.undoer.afterChangeNodeContents(w_p, 'Change Headline', w_bunch)
             return self.outputPNode(w_p)
     else:
         return self.outputError("Error in setNewHeadline")
@@ -522,7 +528,7 @@ if __name__ == '__main__':
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block functions starting with underscore or reserved
-                    answer = getattr(integController, w_param['action'])(w_param['param'])
+                    answer = getattr(integController, w_param['action'])(w_param['param']) # Crux
                 else:
                     answer = "Error in processCommand"
                     print(answer)
