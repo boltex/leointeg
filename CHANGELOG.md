@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.1.11
+
+- Fixed undo operation for the _insert_ and _rename_ commands (Some other commands may still need fixes to their 'undo' support)
+- Fixed crashing but when editing body pane under Leo 6.2
+
 ## 0.1.10
 
 - Added more [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree for starting a server, connecting to it, and added content to help with automation settings.
