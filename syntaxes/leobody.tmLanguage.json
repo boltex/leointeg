@@ -9,6 +9,9 @@
 			"include": "#raw"
 		},
 		{
+			"include": "#sectionref"
+		},
+		{
 			"include": "#keywords"
 		},
 		{
@@ -51,6 +54,24 @@
 						}
 					},
 					"name": "markup.inline.raw"
+				}
+			]
+		},
+		"sectionref": {
+			"patterns": [
+				{
+					"match": "(<<)([\\sa-zA-Z0-9_\\-]+)(>>)",
+					"captures": {
+						"1": {
+							"name": "punctuation.section.embedded"
+						},
+						"2": {
+							"name": "markup.underline"
+						},
+						"3": {
+							"name": "punctuation.section.embedded"
+						}
+					}
 				}
 			]
 		},
