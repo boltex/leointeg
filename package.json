@@ -201,6 +201,26 @@
         }
       ]
     },
+    "languages": [
+      {
+        "id": "leobody",
+        "aliases": [
+          "Leo Body",
+          "leobody"
+        ],
+        "extensions": [
+          ""
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "leobody",
+        "scopeName": "source.leobody",
+        "path": "./syntaxes/leobody.tmLanguage.json"
+      }
+    ],
     "commands": [
       {
         "command": "leointeg.showSettingsPage",
