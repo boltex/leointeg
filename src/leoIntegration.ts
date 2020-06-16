@@ -792,6 +792,27 @@ export class LeoIntegration {
         }
     }
 
+
+    public newLeoFile(): void {
+        // * Creates a new untitled Leo document
+        // TODO : Implement & support multiple simultaneous files
+        if (!this.fileOpenedReady) {
+            vscode.window.showInformationMessage("TODO: new leo file"); // temp placeholder
+        } else {
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_ALREADY_OPENED);
+        }
+    }
+
+    public saveAsLeoFile(): void {
+        // * Asks for file name and path, then saves the Leo file
+        // TODO : Implement & support multiple simultaneous files
+        if (this.fileOpenedReady) {
+            vscode.window.showInformationMessage("TODO: save-as leo file"); // temp placeholder
+        } else {
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+        }
+    }
+
     public saveLeoFile(p_fromOutline?: boolean): void {
         // * Invokes the self.commander.save() Leo command
         // TODO : Specify which file when supporting multiple simultaneous opened Leo files

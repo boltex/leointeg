@@ -64,6 +64,7 @@ export class Constants {
      */
     public static USER_MESSAGES = {
         FILE_ALREADY_OPENED: "Leo file already opened",
+        FILE_NOT_OPENED: "No files opened.",
         STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect", // TODO : Add description of what happens if clicked
         STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
         PROMPT_EDIT_HEADLINE: "Edit Headline",
@@ -248,6 +249,10 @@ export class Constants {
         START_SERVER: "startServer",
         CONNECT: "connectToServer",
         OPEN_FILE: "openLeoFile", // sets focus on BODY
+        NEW_FILE: "newLeoFile",
+        SAVE_FILE: "saveLeoFile", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SAVE_AS_FILE: "saveAsLeoFile",
+        CLOSE_FILE: "closeLeoFile",
         // * Outline selection
         SELECT_NODE: "selectTreeNode",
         OPEN_ASIDE: "openAside",
@@ -259,7 +264,6 @@ export class Constants {
         EXECUTE: "executeScriptSelection", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
         SHOW_BODY: "showBody",
         SHOW_LOG: "showLogPane",
-        SAVE_FILE: "saveLeoFile", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
         SORT_CHILDREN: "sortChildrenSelection", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
         SORT_SIBLING: "sortSiblingsSelection", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
         CONTRACT_ALL: "contractAll", // From command Palette
@@ -320,7 +324,6 @@ export class Constants {
         DEMOTE_SELECTION_FO: "demoteSelectionFromOutline",
         REFRESH_FROM_DISK_SELECTION_FO: "refreshFromDiskSelectionFromOutline",
         // * - - - - - - - - - - - - - - - not implemented yet
-        CLOSE_FILE: "closeLeoFile",
         HOIST: "hoistNode",
         HOIST_SELECTION: "hoistSelection",
         DEHOIST: "deHoist",
