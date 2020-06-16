@@ -29,6 +29,15 @@ export class Constants {
     public static STARTING_PACKAGE_ID: number = 1;
     public static STATUSBAR_DEBOUNCE_DELAY: number = 50;
 
+
+    /**
+     * * Strings used as language id (default is "leobody")
+     * TODO : Add more languages strings for when directives such as @language are used throughout body panes
+     */
+    public static BODY_LANGUAGES = {
+        default: "leobody"
+    };
+
     /**
      * * Strings used in the workbench interface panels (not for messages or dialogs)
      */

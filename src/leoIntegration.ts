@@ -659,7 +659,11 @@ export class LeoIntegration {
         return vscode.workspace.openTextDocument(this.bodyUri).then(p_document => {
 
             this._bodyTextDocument = p_document;
-            vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, "leobody");
+
+            // TODO : Should get original @language effective value for specific 'top of document' body that is shown
+            if (this._bodyTextDocument.languageId !== Constants.BODY_LANGUAGES.default) {
+                vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, Constants.BODY_LANGUAGES.default);
+            }
 
             vscode.window.visibleTextEditors.forEach(p_textEditor => {
                 if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {

@@ -275,6 +275,15 @@
         }
       },
       {
+        "command": "leointeg.newLeoFile",
+        "title": "New Leo File",
+        "category": "Leo",
+        "icon": {
+          "light": "resources/light/folder.svg",
+          "dark": "resources/dark/folder.svg"
+        }
+      },
+      {
         "command": "leointeg.closeLeoFile",
         "title": "Close Leo File",
         "category": "Leo",
@@ -287,6 +296,15 @@
         "command": "leointeg.saveLeoFile",
         "category": "Leo",
         "title": "Save Leo File",
+        "icon": {
+          "light": "resources/light/save.svg",
+          "dark": "resources/dark/save.svg"
+        }
+      },
+      {
+        "command": "leointeg.saveAsLeoFile",
+        "category": "Leo",
+        "title": "Save Leo File as...",
         "icon": {
           "light": "resources/light/save.svg",
           "dark": "resources/dark/save.svg"
