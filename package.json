@@ -1368,6 +1368,18 @@
     },
     "keybindings": [
       {
+        "command": "leointeg.executeScriptSelection",
+        "key": "ctrl+b",
+        "mac": "ctrl+b",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.executeScriptSelection",
+        "key": "ctrl+b",
+        "mac": "ctrl+b",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
         "command": "leointeg.contractAll",
         "key": "alt+-",
         "mac": "alt+-",
