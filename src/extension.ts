@@ -118,7 +118,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.UNDO_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.UNDO, undefined, RefreshType.RefreshTreeAndBody, true)],
         [w_cmdPrefix + Constants.COMMANDS.REDO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, false)],
         [w_cmdPrefix + Constants.COMMANDS.REDO_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [w_cmdPrefix + Constants.COMMANDS.EXECUTE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.EXECUTE_SCRIPT, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [w_cmdPrefix + Constants.COMMANDS.EXECUTE, () => w_leoIntegration.executeScript()],
 
         // TODO : More commands to implement #15, #23, #24, #25 @boltex
         [w_cmdPrefix + Constants.COMMANDS.HOIST, () => vscode.window.showInformationMessage("TODO: hoistNode command")],

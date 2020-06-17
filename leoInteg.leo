@@ -755,13 +755,26 @@ wsPort = 32125
     return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
-<t tx="felix.20191231214801.1">def executeScript(self, p_ap):
+<t tx="felix.20191231214801.1">def executeScript(self, p_package):
     '''Select a node and run its script'''
-    if(p_ap):
-        w_p = self.ap_to_p(p_ap)
+    if p_package.node:
+        w_ap = p_package.node
+        w_p = self.ap_to_p(w_ap)
         if w_p:
             self.commander.selectPosition(w_p)
-            self.commander.executeScript()
+            if p_package.headline and p_package.headline.trim():
+                # * Mimic getScript !!
+                print("Had script! "+ p_package.headline)
+                w_script = p_package.headline
+                # Remove extra leading whitespace so the user may execute indented code.
+                w_script = g.removeExtraLws(w_script, self.commander.tab_width)
+                w_script = g.extractExecutableString(self.commander, w_p, w_script)
+                w_validScript = g.composeScript(self.commander, w_p, w_script,
+                            forcePythonSentinels=True,
+                            useSentinels=True)
+                self.commander.executeScript(script = w_validScript)
+            else:
+                self.commander.executeScript()
             # print("finally returning node" + self.commander.p.v.headString())
             return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:

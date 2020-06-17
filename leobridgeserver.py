@@ -772,13 +772,29 @@ class leoBridgeIntegController:
         '''Refresh from Disk, don't select it if possible'''
         return self.outlineCommand("refreshFromDisk", p_ap, True)
 
-    def executeScript(self, p_ap):
+    def executeScript(self, p_package):
         '''Select a node and run its script'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
+        if p_package['node']:
+            w_ap = p_package['node']
+            w_p = self.ap_to_p(w_ap)
             if w_p:
                 self.commander.selectPosition(w_p)
-                self.commander.executeScript()
+                w_script = str(p_package['headline'])
+                if not w_script.isspace():
+                    # * Mimic getScript !!
+                    try:
+                        # Remove extra leading whitespace so the user may execute indented code.
+                        w_script = self.g.removeExtraLws(w_script, self.commander.tab_width)
+                        w_script = self.g.extractExecutableString(self.commander, w_p, w_script)
+                        w_validScript = self.g.composeScript(self.commander, w_p, w_script,
+                                                             forcePythonSentinels=True,
+                                                             useSentinels=True)
+                        self.commander.executeScript(script=w_validScript)
+                    except Exception:
+                        print("Error")
+
+                else:
+                    self.commander.executeScript()
                 # print("finally returning node" + self.commander.p.v.headString())
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
@@ -1079,7 +1095,7 @@ def main():
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block functions starting with underscore or reserved
-                    answer = getattr(integController, w_param['action'])(w_param['param']) # Crux
+                    answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
                 else:
                     answer = "Error in processCommand"
                     print(answer)

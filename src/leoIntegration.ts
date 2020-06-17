@@ -307,7 +307,7 @@ export class LeoIntegration {
         if (p_event.visible && this.lastSelectedNode) {
             this._setTreeViewTitle();
             this._needLastSelectedRefresh = true; // Its a new node in a new tree so refresh lastSelectedNode too
-            this._refreshOutline(RevealType.RevealSelectFocus); // Set focus on outline
+            this._refreshOutline(RevealType.RevealSelect); // TODO : Check if focus (with RevealSelectFocus) is needed or wanted
         }
     }
 
@@ -734,6 +734,27 @@ export class LeoIntegration {
             vscode.window.showInformationMessage("Too Fast: " + p_action); // TODO : Use cleanup message string CONSTANT instead
             return false;
         }
+    }
+
+    public executeScript(): boolean {
+        // * Check if selected string in the focused leo body
+        if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_SCHEME) {
+            // was active tet editor leoBody, check if selection length
+            if (vscode.window.activeTextEditor.selections.length === 1 && !vscode.window.activeTextEditor.selection.isEmpty) {
+                // Exactly one selection range, and is not empty, so try "executing" only the selected content.
+                let w_selection = vscode.window.activeTextEditor.selection;
+                let w_script = vscode.window.activeTextEditor.document.getText(w_selection);
+
+                console.log("test script: ", w_script);
+                if (w_script.length) {
+                    return this.nodeCommand(Constants.LEOBRIDGE.EXECUTE_SCRIPT, undefined, RefreshType.RefreshTreeAndBody, false, w_script);
+                }
+            }
+
+        }
+        // * Catch all call: execute selected node outline
+        // ! single space test for 'no script'
+        return this.nodeCommand(Constants.LEOBRIDGE.EXECUTE_SCRIPT, undefined, RefreshType.RefreshTreeAndBody, false, " ");
     }
 
     public changeMark(p_isMark: boolean, p_node?: LeoNode, p_fromOutline?: boolean): void {

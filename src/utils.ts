@@ -36,8 +36,9 @@ export function buildIconPaths(p_context: vscode.ExtensionContext): Icon[] {
  */
 export function buildHeadlineJson(p_nodeJson: string, p_headline: string): string {
     return "{\"node\":" + p_nodeJson +
-        ", \"headline\": \"" + p_headline +
-        "\"}";
+        // ", \"headline\": \"" + p_headline.replace(/"/g, '\\"') +
+        ", \"headline\": " + JSON.stringify(p_headline) +
+        "}";
 }
 
 /**
