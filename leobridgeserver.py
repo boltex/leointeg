@@ -5,7 +5,6 @@ import asyncio
 import websockets
 import sys
 import getopt
-import os
 import time
 import json
 
@@ -513,7 +512,7 @@ class leoBridgeIntegController:
         except:
             print('ERROR with idleTimeManager')
 
-        if(self.commander):
+        if self.commander:
             self.create_gnx_to_vnode()
             return self.outputPNode(self.commander.p)
         else:
@@ -522,13 +521,13 @@ class leoBridgeIntegController:
     def closeFile(self, p_paramUnused):
         '''Closes a leo file. A file can then be opened with "openFile"'''
         print("Trying to close opened file")
-        if(self.commander):
+        if self.commander:
             self.commander.close()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def saveFile(self, p_paramUnused):
         '''Saves the leo file. New or dirty derived files are rewritten'''
-        if(self.commander):
+        if self.commander:
             try:
                 self.commander.save()
             except Exception as e:
@@ -543,7 +542,7 @@ class leoBridgeIntegController:
 
     async def asyncOutput(self, p_json):
         '''Output json string to the websocket'''
-        if(self.webSocket):
+        if self.webSocket:
             await self.webSocket.send(p_json)
         else:
             print("websocket not ready yet")
@@ -578,7 +577,7 @@ class leoBridgeIntegController:
 
     def markPNode(self, p_ap):
         '''Mark a node, don't select it'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_p.setMarked()
@@ -590,7 +589,7 @@ class leoBridgeIntegController:
 
     def unmarkPNode(self, p_ap):
         '''Unmark a node, don't select it'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_p.clearMarked()
@@ -602,7 +601,7 @@ class leoBridgeIntegController:
 
     def clonePNode(self, p_ap):
         '''Clone a node, return it if it was also the current selection, otherwise try not to select it'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 if w_p == self.commander.p:
@@ -632,7 +631,7 @@ class leoBridgeIntegController:
 
     def deletePNode(self, p_ap):
         '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 if w_p == self.commander.p:
@@ -675,7 +674,7 @@ class leoBridgeIntegController:
 
     def insertPNode(self, p_ap):
         '''Insert a node at given node, then select it once created, and finally return it'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_bunch = self.commander.undoer.beforeInsertNode(w_p)
@@ -693,7 +692,7 @@ class leoBridgeIntegController:
         '''Insert a node at given node, set its headline, select it and finally return it'''
         w_newHeadline = p_apHeadline['headline']
         w_ap = p_apHeadline['node']
-        if(w_ap):
+        if w_ap:
             w_p = self.ap_to_p(w_ap)
             if w_p:
                 w_u = self.commander.undoer.beforeInsertNode(w_p)
@@ -736,7 +735,7 @@ class leoBridgeIntegController:
 
     def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
         '''Generic call to an outline operation (p_command) for specific p-node (p_ap), with possibility of trying to preserve the current selection (p_keepSelection)'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_func = getattr(self.commander, p_command)
@@ -758,13 +757,13 @@ class leoBridgeIntegController:
 
     def undo(self, p_paramUnused):
         '''Undo last un-doable operation'''
-        if(self.commander.undoer.canUndo()):
+        if self.commander.undoer.canUndo():
             self.commander.undoer.undo()
         return self.outputPNode(self.commander.p)  # return selected node when done
 
     def redo(self, p_paramUnused):
         '''Undo last un-doable operation'''
-        if(self.commander.undoer.canRedo()):
+        if self.commander.undoer.canRedo():
             self.commander.undoer.redo()
         return self.outputPNode(self.commander.p)  # return selected node when done
 
@@ -804,7 +803,7 @@ class leoBridgeIntegController:
 
     def getPNode(self, p_ap):
         '''EMIT OUT a node, don't select it'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 return self.outputPNode(w_p)
@@ -815,7 +814,7 @@ class leoBridgeIntegController:
 
     def getChildren(self, p_ap):
         '''EMIT OUT list of children of a node'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             # print('Get children for ' + w_p.h)
             if w_p and w_p.hasChildren():
@@ -827,7 +826,7 @@ class leoBridgeIntegController:
 
     def getParent(self, p_ap):
         '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p and w_p.hasParent():
                 return self.outputPNode(w_p.getParent())
@@ -838,7 +837,7 @@ class leoBridgeIntegController:
 
     def getSelectedNode(self, p_paramUnused):
         '''EMIT OUT Selected Position as an array, even if unique'''
-        if(self.commander.p):
+        if self.commander.p:
             return self.outputPNode(self.commander.p)
         else:
             return self.outputPNode()
@@ -850,7 +849,7 @@ class leoBridgeIntegController:
 
     def getBody(self, p_gnx):
         '''EMIT OUT body of a node'''
-        if(p_gnx):
+        if p_gnx:
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
             if w_v:
                 if w_v.b:
@@ -864,7 +863,7 @@ class leoBridgeIntegController:
 
     def getBodyLength(self, p_gnx):
         '''EMIT OUT body string length of a node'''
-        if(p_gnx):
+        if p_gnx:
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
             if w_v and len(w_v.b):
                 return self.sendLeoBridgePackage("bodyLength", len(w_v.b))
@@ -878,7 +877,7 @@ class leoBridgeIntegController:
         '''Change Body of selected node'''
         # TODO : This method is unused for now? Remove if unnecessary.
         # TODO : Does this support 'Undo'?
-        if(self.commander.p):
+        if self.commander.p:
             self.commander.p.b = p_body['body']
             return self.outputPNode(self.commander.p)
         else:
@@ -900,7 +899,7 @@ class leoBridgeIntegController:
         '''Change Headline of a node'''
         w_newHeadline = p_apHeadline['headline']
         w_ap = p_apHeadline['node']
-        if(w_ap):
+        if w_ap:
             w_p = self.ap_to_p(w_ap)
             if w_p:
                 # set this node's new headline
@@ -913,7 +912,7 @@ class leoBridgeIntegController:
 
     def setSelectedNode(self, p_ap):
         '''Select a node, or the first one found with its GNX'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 if self.commander.positionExists(w_p):
@@ -926,14 +925,14 @@ class leoBridgeIntegController:
                     else:
                         print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
         # * return the finally selected node
-        if(self.commander.p):
+        if self.commander.p:
             return self.outputPNode(self.commander.p)
         else:
             return self.outputPNode()
 
     def expandNode(self, p_ap):
         '''Expand a node'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_p.expand()
@@ -941,7 +940,7 @@ class leoBridgeIntegController:
 
     def collapseNode(self, p_ap):
         '''Collapse a node'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_p.contract()

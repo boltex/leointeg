@@ -307,7 +307,7 @@ export class LeoIntegration {
         if (p_event.visible && this.lastSelectedNode) {
             this._setTreeViewTitle();
             this._needLastSelectedRefresh = true; // Its a new node in a new tree so refresh lastSelectedNode too
-            this._refreshOutline(RevealType.RevealSelect); // TODO : Check if focus (with RevealSelectFocus) is needed or wanted
+            this._refreshOutline(RevealType.RevealSelect);
         }
     }
 
@@ -548,7 +548,7 @@ export class LeoIntegration {
             this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
             w_showBodyKeepFocus = true;
         }
-        return this.applyNodeSelectionToBody(p_node, false, w_showBodyKeepFocus);
+        return this._applyNodeSelectionToBody(p_node, false, w_showBodyKeepFocus);
     }
 
     public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable<vscode.TextEditor> {
@@ -576,10 +576,10 @@ export class LeoIntegration {
         // * Set selected node in Leo via leoBridge
         this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson);
 
-        return this.applyNodeSelectionToBody(p_node, !!p_aside, w_showBodyKeepFocus);
+        return this._applyNodeSelectionToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
     }
 
-    private applyNodeSelectionToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean): Thenable<vscode.TextEditor> {
+    private _applyNodeSelectionToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable<vscode.TextEditor> {
         // * Makes sure the body now reflects the selected node. This is called after 'selectTreeNode', or after '_gotSelection' when refreshing.
 
         // Check first if body needs refresh: if so we will voluntarily throw out any pending edits on body
@@ -596,18 +596,27 @@ export class LeoIntegration {
             if (this._locateOpenedBody(p_node.gnx)) {
                 // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
                 this.bodyUri = utils.strToUri(p_node.gnx);
-                return this.showBody(p_aside, p_showBodyKeepFocus); // already opened in a column so just tell vscode to show it // TODO : NOT ANYMORE WITH NEW SYSTEM
+                return this._showBodyIfRequired(p_aside, p_showBodyKeepFocus, p_force_open); // already opened in a column so just tell vscode to show it // TODO : NOT ANYMORE WITH NEW SYSTEM
             } else {
                 // * So far, _bodyTextDocument is still opened and different from new selection: so "save & rename" to block undo/redos
                 return this._switchBody(p_node.gnx)
                     .then(() => {
-                        return this.showBody(p_aside, p_showBodyKeepFocus); // Also finish by showing it if not already visible
+                        return this._showBodyIfRequired(p_aside, p_showBodyKeepFocus, p_force_open); // Also finish by showing it if not already visible
                     });
             }
         } else {
             // * Is the last opened body is closed so just open the newly selected one
             this.bodyUri = utils.strToUri(p_node.gnx);
+            return this._showBodyIfRequired(p_aside, p_showBodyKeepFocus, p_force_open);
+        }
+    }
+
+    private _showBodyIfRequired(p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable<vscode.TextEditor> {
+        // * This function tries to prevent opening the body editor unnecessarily when hiding and re(showing) the outline pane
+        if (p_force_open || this._leoTreeStandaloneView.visible) {
             return this.showBody(p_aside, p_showBodyKeepFocus);
+        } else {
+            return Promise.resolve(vscode.window.activeTextEditor!);
         }
     }
 

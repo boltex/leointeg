@@ -152,7 +152,7 @@ To contribute, see the official issues page for current list of 'TODO's at https
     except:
         print('ERROR with idleTimeManager')
 
-    if(self.commander):
+    if self.commander:
         self.create_gnx_to_vnode()
         return self.outputPNode(self.commander.p)
     else:
@@ -162,14 +162,14 @@ To contribute, see the official issues page for current list of 'TODO's at https
 <t tx="felix.20191126232434.14">def closeFile(self, p_paramUnused):
     '''Closes a leo file. A file can then be opened with "openFile"'''
     print("Trying to close opened file")
-    if(self.commander):
+    if self.commander:
         self.commander.close()
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
 <t tx="felix.20191126232434.15">def getPNode(self, p_ap):
     '''EMIT OUT a node, don't select it'''
-    if(p_ap):
+    if p_ap:
         w_p = self.ap_to_p(p_ap)
         if w_p:
             return self.outputPNode(w_p)
@@ -181,7 +181,7 @@ To contribute, see the official issues page for current list of 'TODO's at https
 </t>
 <t tx="felix.20191126232434.16">def getChildren(self, p_ap):
     '''EMIT OUT list of children of a node'''
-    if(p_ap):
+    if p_ap:
         w_p = self.ap_to_p(p_ap)
         # print('Get children for ' + w_p.h)
         if w_p and w_p.hasChildren():
@@ -194,7 +194,7 @@ To contribute, see the official issues page for current list of 'TODO's at https
 </t>
 <t tx="felix.20191126232434.17">def getParent(self, p_ap):
     '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
-    if(p_ap):
+    if p_ap:
         w_p = self.ap_to_p(p_ap)
         if w_p and w_p.hasParent():
             return self.outputPNode(w_p.getParent())
@@ -206,7 +206,7 @@ To contribute, see the official issues page for current list of 'TODO's at https
 </t>
 <t tx="felix.20191126232434.18">def getSelectedNode(self, p_paramUnused):
     '''EMIT OUT Selected Position as an array, even if unique'''
-    if(self.commander.p):
+    if self.commander.p:
         return self.outputPNode(self.commander.p)
     else:
         return self.outputPNode()
@@ -214,7 +214,7 @@ To contribute, see the official issues page for current list of 'TODO's at https
 </t>
 <t tx="felix.20191126232434.19">def getBody(self, p_gnx):
     '''EMIT OUT body of a node'''
-    if(p_gnx):
+    if p_gnx:
         w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
         if w_v:
             if w_v.b:
@@ -241,7 +241,7 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191126232434.20">def getBodyLength(self, p_gnx):
     '''EMIT OUT body string length of a node'''
-    if(p_gnx):
+    if p_gnx:
         w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
         if w_v and len(w_v.b):
             return self.sendLeoBridgePackage("bodyLength", len(w_v.b))
@@ -256,7 +256,7 @@ if __name__ == '__main__':
     '''Change Body of selected node'''
     # TODO : This method is unused for now? Remove if unnecessary.
     # TODO : Does this support 'Undo'?
-    if(self.commander.p):
+    if self.commander.p:
         self.commander.p.b = p_body['body']
         return self.outputPNode(self.commander.p)
     else:
@@ -280,7 +280,7 @@ if __name__ == '__main__':
     '''Change Headline of a node'''
     w_newHeadline = p_apHeadline['headline']
     w_ap = p_apHeadline['node']
-    if(w_ap):
+    if w_ap:
         w_p = self.ap_to_p(w_ap)
         if w_p:
             # set this node's new headline
@@ -294,7 +294,7 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191126232434.24">def setSelectedNode(self, p_ap):
     '''Select a node, or the first one found with its GNX'''
-    if(p_ap):
+    if p_ap:
         w_p = self.ap_to_p(p_ap)
         if w_p:
             if self.commander.positionExists(w_p):
@@ -307,7 +307,7 @@ if __name__ == '__main__':
                 else:
                     print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
     # * return the finally selected node
-    if(self.commander.p):
+    if self.commander.p:
         return self.outputPNode(self.commander.p)
     else:
         return self.outputPNode()
@@ -315,7 +315,7 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191126232434.25">def expandNode(self, p_ap):
     '''Expand a node'''
-    if(p_ap):
+    if p_ap:
         w_p = self.ap_to_p(p_ap)
         if w_p:
             w_p.expand()
@@ -324,7 +324,7 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191126232434.26">def collapseNode(self, p_ap):
     '''Collapse a node'''
-    if(p_ap):
+    if p_ap:
         w_p = self.ap_to_p(p_ap)
         if w_p:
             w_p.contract()
@@ -528,7 +528,7 @@ if __name__ == '__main__':
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block functions starting with underscore or reserved
-                    answer = getattr(integController, w_param['action'])(w_param['param']) # Crux
+                    answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
                 else:
                     answer = "Error in processCommand"
                     print(answer)
@@ -570,7 +570,7 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191127001506.1">def insertPNode(self, p_ap):
     '''Insert a node at given node, then select it once created, and finally return it'''
-    if(p_ap):
+    if p_ap:
         w_p = self.ap_to_p(p_ap)
         if w_p:
             w_bunch = self.commander.undoer.beforeInsertNode(w_p)
@@ -597,7 +597,7 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191127002548.1">def deletePNode(self, p_ap):
     '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
-    if(p_ap):
+    if p_ap:
         w_p = self.ap_to_p(p_ap)
         if w_p:
             if w_p == self.commander.p:
@@ -635,7 +635,7 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191127004621.1">def markPNode(self, p_ap):
     '''Mark a node, don't select it'''
-    if(p_ap):
+    if p_ap:
         w_p = self.ap_to_p(p_ap)
         if w_p:
             w_p.setMarked()
@@ -648,7 +648,7 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191127235913.1">def unmarkPNode(self, p_ap):
     '''Unmark a node, don't select it'''
-    if(p_ap):
+    if p_ap:
         w_p = self.ap_to_p(p_ap)
         if w_p:
             w_p.clearMarked()
@@ -669,7 +669,6 @@ import asyncio
 import websockets
 import sys
 import getopt
-import os
 import time
 import json
 
@@ -735,7 +734,7 @@ wsPort = 32125
 </t>
 <t tx="felix.20191231203545.1">def clonePNode(self, p_ap):
     '''Clone a node, return it if it was also the current selection, otherwise try not to select it'''
-    if(p_ap):
+    if p_ap:
         w_p = self.ap_to_p(p_ap)
         if w_p:
             if w_p == self.commander.p:
@@ -750,29 +749,32 @@ wsPort = 32125
 </t>
 <t tx="felix.20191231203711.1">def undo(self, p_paramUnused):
     '''Undo last un-doable operation'''
-    if(self.commander.undoer.canUndo()):
+    if self.commander.undoer.canUndo():
         self.commander.undoer.undo()
     return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 <t tx="felix.20191231214801.1">def executeScript(self, p_package):
     '''Select a node and run its script'''
-    if p_package.node:
-        w_ap = p_package.node
+    if p_package['node']:
+        w_ap = p_package['node']
         w_p = self.ap_to_p(w_ap)
         if w_p:
             self.commander.selectPosition(w_p)
-            if p_package.headline and p_package.headline.trim():
+            w_script = str(p_package['headline'])
+            if not w_script.isspace():
                 # * Mimic getScript !!
-                print("Had script! "+ p_package.headline)
-                w_script = p_package.headline
-                # Remove extra leading whitespace so the user may execute indented code.
-                w_script = g.removeExtraLws(w_script, self.commander.tab_width)
-                w_script = g.extractExecutableString(self.commander, w_p, w_script)
-                w_validScript = g.composeScript(self.commander, w_p, w_script,
-                            forcePythonSentinels=True,
-                            useSentinels=True)
-                self.commander.executeScript(script = w_validScript)
+                try:
+                    # Remove extra leading whitespace so the user may execute indented code.
+                    w_script = self.g.removeExtraLws(w_script, self.commander.tab_width)
+                    w_script = self.g.extractExecutableString(self.commander, w_p, w_script)
+                    w_validScript = self.g.composeScript(self.commander, w_p, w_script,
+                                                         forcePythonSentinels=True,
+                                                         useSentinels=True)
+                    self.commander.executeScript(script=w_validScript)
+                except Exception:
+                    print("Error")
+
             else:
                 self.commander.executeScript()
             # print("finally returning node" + self.commander.p.v.headString())
@@ -785,14 +787,14 @@ wsPort = 32125
 </t>
 <t tx="felix.20200103204811.1">def redo(self, p_paramUnused):
     '''Undo last un-doable operation'''
-    if(self.commander.undoer.canRedo()):
+    if self.commander.undoer.canRedo():
         self.commander.undoer.redo()
     return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 <t tx="felix.20200105173826.1">def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
     '''Generic call to an outline operation (p_command) for specific p-node (p_ap), with possibility of trying to preserve the current selection (p_keepSelection)'''
-    if(p_ap):
+    if p_ap:
         w_p = self.ap_to_p(p_ap)
         if w_p:
             w_func = getattr(self.commander, p_command)
@@ -817,7 +819,7 @@ wsPort = 32125
     '''Insert a node at given node, set its headline, select it and finally return it'''
     w_newHeadline = p_apHeadline['headline']
     w_ap = p_apHeadline['node']
-    if(w_ap):
+    if w_ap:
         w_p = self.ap_to_p(w_ap)
         if w_p:
             w_u = self.commander.undoer.beforeInsertNode(w_p)
@@ -841,7 +843,7 @@ wsPort = 32125
 </t>
 <t tx="felix.20200213195413.1">async def asyncOutput(self, p_json):
     '''Output json string to the websocket'''
-    if(self.webSocket):
+    if self.webSocket:
         await self.webSocket.send(p_json)
     else:
         print("websocket not ready yet")
@@ -849,7 +851,7 @@ wsPort = 32125
 </t>
 <t tx="felix.20200216160305.1">def saveFile(self, p_paramUnused):
     '''Saves the leo file. New or dirty derived files are rewritten'''
-    if(self.commander):
+    if self.commander:
         try:
             self.commander.save()
         except Exception as e:
