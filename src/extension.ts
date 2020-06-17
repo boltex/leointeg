@@ -39,8 +39,11 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.CONNECT, () => w_leoIntegration.connect()],
         [w_cmdPrefix + Constants.COMMANDS.SHOW_LOG, () => w_leoIntegration.showLogPane()],
         [w_cmdPrefix + Constants.COMMANDS.SHOW_BODY, () => w_leoIntegration.showBody(false)], // Expose to other expansions only, (not in menus for minimal footprint)
+        [w_cmdPrefix + Constants.COMMANDS.NEW_FILE, () => w_leoIntegration.newLeoFile()], // TODO : #13 @boltex  Support multiple simultaneous opened files
         [w_cmdPrefix + Constants.COMMANDS.OPEN_FILE, () => w_leoIntegration.openLeoFile()], // TODO : #13 @boltex  Support multiple simultaneous opened files
+        [w_cmdPrefix + Constants.COMMANDS.SAVE_AS_FILE, () => w_leoIntegration.saveAsLeoFile()], // TODO : #13 @boltex  Specify which file when supporting multiple simultaneous files
         [w_cmdPrefix + Constants.COMMANDS.SAVE_FILE, () => w_leoIntegration.saveLeoFile()], // TODO : #13 @boltex  Specify which file when supporting multiple simultaneous files
+        [w_cmdPrefix + Constants.COMMANDS.CLOSE_FILE, () => w_leoIntegration.closeLeoFile()], // TODO : #13 @boltex Implement & support multiple simultaneous files
 
         [w_cmdPrefix + Constants.COMMANDS.SELECT_NODE, (p_node: LeoNode) => w_leoIntegration.selectTreeNode(p_node, false, false)], // Called by nodes in tree when selected
         [w_cmdPrefix + Constants.COMMANDS.OPEN_ASIDE, (p_node: LeoNode) => w_leoIntegration.selectTreeNode(p_node, false, true)],
@@ -115,10 +118,9 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.UNDO_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.UNDO, undefined, RefreshType.RefreshTreeAndBody, true)],
         [w_cmdPrefix + Constants.COMMANDS.REDO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, false)],
         [w_cmdPrefix + Constants.COMMANDS.REDO_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [w_cmdPrefix + Constants.COMMANDS.EXECUTE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.EXECUTE_SCRIPT, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [w_cmdPrefix + Constants.COMMANDS.EXECUTE, () => w_leoIntegration.executeScript()],
 
         // TODO : More commands to implement #15, #23, #24, #25 @boltex
-        [w_cmdPrefix + Constants.COMMANDS.CLOSE_FILE, () => w_leoIntegration.closeLeoFile()], // TODO : #13 @boltex Implement & support multiple simultaneous files
         [w_cmdPrefix + Constants.COMMANDS.HOIST, () => vscode.window.showInformationMessage("TODO: hoistNode command")],
         [w_cmdPrefix + Constants.COMMANDS.HOIST_SELECTION, () => vscode.window.showInformationMessage("TODO: hoistSelection command")],
         [w_cmdPrefix + Constants.COMMANDS.DEHOIST, () => vscode.window.showInformationMessage("TODO: deHoist command")],

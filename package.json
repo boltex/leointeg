@@ -279,8 +279,8 @@
         "title": "New Leo File",
         "category": "Leo",
         "icon": {
-          "light": "resources/light/folder.svg",
-          "dark": "resources/dark/folder.svg"
+          "light": "resources/light/new-file.svg",
+          "dark": "resources/dark/new-file.svg"
         }
       },
       {
@@ -306,8 +306,8 @@
         "category": "Leo",
         "title": "Save Leo File as...",
         "icon": {
-          "light": "resources/light/save.svg",
-          "dark": "resources/dark/save.svg"
+          "light": "resources/light/save-as.svg",
+          "dark": "resources/dark/save-as.svg"
         }
       },
       {
@@ -863,6 +863,10 @@
           "when": "leoBridgeReady && !leoTreeOpened"
         },
         {
+          "command": "leointeg.newLeoFile",
+          "when": "leoBridgeReady && !leoTreeOpened"
+        },
+        {
           "command": "leointeg.showLogPane",
           "when": "leoBridgeReady"
         },
@@ -872,6 +876,10 @@
         },
         {
           "command": "leointeg.saveLeoFile",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.saveAsLeoFile",
           "when": "leoTreeOpened"
         },
         {
@@ -1215,6 +1223,11 @@
           "group": "navigation@1"
         },
         {
+          "command": "leointeg.newLeoFile",
+          "when": "view =~ /leoIntegration/ && leoBridgeReady && !leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
           "command": "leointeg.saveLeoFile",
           "when": "view =~ /leoIntegration/ && leoTreeOpened",
           "group": "navigation@2"
@@ -1354,6 +1367,18 @@
       ]
     },
     "keybindings": [
+      {
+        "command": "leointeg.executeScriptSelection",
+        "key": "ctrl+b",
+        "mac": "ctrl+b",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.executeScriptSelection",
+        "key": "ctrl+b",
+        "mac": "ctrl+b",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
       {
         "command": "leointeg.contractAll",
         "key": "alt+-",
