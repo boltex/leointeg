@@ -753,8 +753,6 @@ export class LeoIntegration {
                 // Exactly one selection range, and is not empty, so try "executing" only the selected content.
                 let w_selection = vscode.window.activeTextEditor.selection;
                 let w_script = vscode.window.activeTextEditor.document.getText(w_selection);
-
-                console.log("test script: ", w_script);
                 if (w_script.length) {
                     return this.nodeCommand(Constants.LEOBRIDGE.EXECUTE_SCRIPT, undefined, RefreshType.RefreshTreeAndBody, false, w_script);
                 }

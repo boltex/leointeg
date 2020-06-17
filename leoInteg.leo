@@ -39,7 +39,7 @@
 <v t="felix.20200308150842.1"><vh>destroy_frame</vh></v>
 </v>
 </v>
-<v t="felix.20191126232434.4"><vh>class leoBridgeIntegController</vh>
+<v t="felix.20191126232434.4"><vh>class LeoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
 <v t="felix.20200303211848.1"><vh>_commanders</vh></v>
 <v t="felix.20200303214235.1"><vh>_asyncIdleLoop</vh></v>
@@ -119,7 +119,6 @@
 </vnodes>
 <tnodes>
 <t tx="felix.20190922171916.2">@doc
-I should have started self documentation here from the start in august!
 
 This Leo file will contain all of the source for the Visual Studio Code Leo Integration Extension
 
@@ -421,7 +420,7 @@ if __name__ == '__main__':
 
 
 </t>
-<t tx="felix.20191126232434.4">class leoBridgeIntegController:
+<t tx="felix.20191126232434.4">class LeoBridgeIntegController:
     '''Leo Bridge Controller'''
 
     @others
@@ -502,7 +501,7 @@ if __name__ == '__main__':
             wsPort = arg
 
     # * start Server
-    integController = leoBridgeIntegController()
+    integController = LeoBridgeIntegController()
 
     # * This is a basic example loop
     # async def asyncInterval(timeout):
@@ -659,10 +658,8 @@ if __name__ == '__main__':
         return self.outputError("Error in unmarkPNode no param p_ap")
 
 </t>
-<t tx="felix.20191128000818.1">@others
-</t>
-<t tx="felix.20191128001054.1">@others
-</t>
+<t tx="felix.20191128000818.1"></t>
+<t tx="felix.20191128001054.1"></t>
 <t tx="felix.20191128002414.1">import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
 import asyncio
@@ -679,10 +676,8 @@ wsPort = 32125
 
 
 </t>
-<t tx="felix.20191128003151.1">@others
-</t>
-<t tx="felix.20191128003648.1">@others
-</t>
+<t tx="felix.20191128003151.1"></t>
+<t tx="felix.20191128003648.1"></t>
 <t tx="felix.20191128004456.1">def setActionId(self, p_id):
     self.currentActionId = p_id
 

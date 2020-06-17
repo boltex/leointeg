@@ -406,7 +406,7 @@ class ExternalFilesController:
         return
 
 
-class leoBridgeIntegController:
+class LeoBridgeIntegController:
     '''Leo Bridge Controller'''
 
     def __init__(self):
@@ -1068,7 +1068,7 @@ def main():
             wsPort = arg
 
     # * start Server
-    integController = leoBridgeIntegController()
+    integController = LeoBridgeIntegController()
 
     # * This is a basic example loop
     # async def asyncInterval(timeout):
