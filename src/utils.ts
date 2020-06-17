@@ -29,15 +29,14 @@ export function buildIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 }
 
 /**
- * *  Builds and returns a JSON string with 'node' and 'headline' members
+ * *  Builds and returns a JSON string with 'node' and 'text' members
  * @param p_nodeJson Targeted tree node in the proper JSON format
- * @param p_headline Desired headline label
+ * @param p_text Desired text sent along with node in the parameters of the action to be 'called'
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
-export function buildHeadlineJson(p_nodeJson: string, p_headline: string): string {
+export function buildNodeAndTextJson(p_nodeJson: string, p_text: string): string {
     return "{\"node\":" + p_nodeJson +
-        // ", \"headline\": \"" + p_headline.replace(/"/g, '\\"') +
-        ", \"headline\": " + JSON.stringify(p_headline) +
+        ", \"text\": " + JSON.stringify(p_text) +
         "}";
 }
 

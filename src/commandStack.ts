@@ -112,7 +112,7 @@ export class CommandStack {
             }
         }
         if (w_providedHeadline) {
-            w_jsonParam = utils.buildHeadlineJson(w_nodeJson, w_providedHeadline); // 'Insert Named Node' or 'Edit Headline'
+            w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_providedHeadline); // 'Insert Named Node' or 'Edit Headline'
         } else {
             w_jsonParam = w_nodeJson; // 'Insert Unnamed Node' or regular command
         }

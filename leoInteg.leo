@@ -275,10 +275,10 @@ if __name__ == '__main__':
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20191126232434.23">def setNewHeadline(self, p_apHeadline):
+<t tx="felix.20191126232434.23">def setNewHeadline(self, p_package):
     '''Change Headline of a node'''
-    w_newHeadline = p_apHeadline['headline']
-    w_ap = p_apHeadline['node']
+    w_newHeadline = p_package['text']
+    w_ap = p_package['node']
     if w_ap:
         w_p = self.ap_to_p(w_ap)
         if w_p:
@@ -756,7 +756,7 @@ wsPort = 32125
         w_p = self.ap_to_p(w_ap)
         if w_p:
             self.commander.selectPosition(w_p)
-            w_script = str(p_package['headline'])
+            w_script = str(p_package['text'])
             if not w_script.isspace():
                 # * Mimic getScript !!
                 try:
@@ -810,10 +810,10 @@ wsPort = 32125
         return self.outputError("Error in " + p_command + " no param p_ap")
 
 </t>
-<t tx="felix.20200120224033.1">def insertNamedPNode(self, p_apHeadline):
+<t tx="felix.20200120224033.1">def insertNamedPNode(self, p_package):
     '''Insert a node at given node, set its headline, select it and finally return it'''
-    w_newHeadline = p_apHeadline['headline']
-    w_ap = p_apHeadline['node']
+    w_newHeadline = p_package['text']
+    w_ap = p_package['node']
     if w_ap:
         w_p = self.ap_to_p(w_ap)
         if w_p:
