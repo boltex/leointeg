@@ -613,8 +613,9 @@ export class LeoIntegration {
 
     private _showBodyIfRequired(p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable<vscode.TextEditor> {
         // * This function tries to prevent opening the body editor unnecessarily when hiding and re(showing) the outline pane
-        if (p_force_open || this._leoTreeStandaloneView.visible) {
-            return this.showBody(p_aside, p_showBodyKeepFocus);
+        // TODO : Find Better Conditions! Always true for now...
+        if (true || p_force_open || this._leoTreeStandaloneView.visible) {
+            return this.showBody(p_aside, p_showBodyKeepFocus); // ! Always true for now to stabilize refreshes after derived files refreshes and others.
         } else {
             return Promise.resolve(vscode.window.activeTextEditor!);
         }
