@@ -143,6 +143,7 @@ export class Constants {
         ASYNC_ASK: "ask",
         ASYNC_WARN: "warn",
         ASYNC_INFO: "info",
+        // ASYNC_CHOOSE_SAVE: "saveFileDialog", // TODO : Example for reproducing UI calls (see TODO in leoAsync.ts)
         ASYNC_INTERVAL: "interval"
     };
 

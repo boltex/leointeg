@@ -503,7 +503,7 @@ class LeoBridgeIntegController:
         self.loop = asyncio.get_event_loop()
 
     def openFile(self, p_file):
-        '''Open a leo file via leoBridge controller'''
+        '''Open a leo file via leoBridge controller, or create a new document if empty string'''
         self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
 
         # * setup leoBackground to get messages from leo
@@ -520,16 +520,24 @@ class LeoBridgeIntegController:
 
     def closeFile(self, p_paramUnused):
         '''Closes a leo file. A file can then be opened with "openFile"'''
+        # TODO : Specify which file to support multiple opened files
         print("Trying to close opened file")
         if self.commander:
             self.commander.close()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
-    def saveFile(self, p_paramUnused):
+    def saveFile(self, p_package):
         '''Saves the leo file. New or dirty derived files are rewritten'''
+        # TODO : use parameter for file path+name string a 'save as' toggle
         if self.commander:
             try:
-                self.commander.save()
+                if "text" in p_package:
+                    print("WAS SAVE AS! ")
+                    print(p_package['text'])
+                    self.commander.save(fileName=p_package['text'])
+                else:
+                    print("WAS REGULAR " + str(p_package))
+                    self.commander.save()
             except Exception as e:
                 self.g.trace('Error while saving')
                 print("Error while saving")

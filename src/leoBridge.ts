@@ -62,6 +62,10 @@ export class LeoBridge {
                     this._leoAsync.log(w_parsedData.log);
                     break;
                 }
+                // case Constants.ASYNC_ACTIONS.ASYNC_CHOOSE_SAVE: {
+                //     this._leoAsync.showSaveAsDialog(w_parsedData);
+                //     break;
+                // }
                 case Constants.ASYNC_ACTIONS.ASYNC_ASK: {
                     this._leoAsync.showAskModalDialog(w_parsedData);
                     break;

@@ -7,7 +7,7 @@ import * as path from "path"; // TODO : Use this library to have reliable suppor
  */
 export class LeoFilesBrowser {
 
-    private _fileBrowserOpen: boolean = false;
+    private _fileBrowserActive: boolean = false;
 
     constructor(private _context: vscode.ExtensionContext) { }
 
@@ -38,29 +38,51 @@ export class LeoFilesBrowser {
 
     /**
      * * Open a file browser and let the user choose a Leo file or cancel the operation
+     * @param p_saveAsFlag Optional, a flag that will ask for a 'save' path+filename.
      * @returns a promise resolving to a chosen path string, or rejected with an empty string if cancelled
      */
-    public getLeoFileUrl(): Promise<string> {
-        if (this._fileBrowserOpen) {
+    public getLeoFileUrl(p_saveAsFlag?: boolean): Promise<string> {
+        if (this._fileBrowserActive) {
             return Promise.resolve("");
         }
+        this._fileBrowserActive = true;
         return new Promise((resolve, reject) => {
             const w_filters: { [name: string]: string[] } = {};
             w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [Constants.FILE_EXTENSION];
-            vscode.window
-                .showOpenDialog({
-                    canSelectMany: false,
+
+            if (p_saveAsFlag) {
+                // Choose file
+                vscode.window.showSaveDialog({
+                    saveLabel: "Save Leo File",
                     defaultUri: this._getBestOpenFolderUri(),
-                    filters: w_filters
+                    filters: { 'Leo File': ['leo'] }
                 })
-                .then(p_chosenLeoFile => {
-                    this._fileBrowserOpen = false;
-                    if (p_chosenLeoFile) {
-                        resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
-                    } else {
-                        reject("");
-                    }
-                });
+                    .then(p_chosenLeoFile => {
+                        this._fileBrowserActive = false;
+                        if (p_chosenLeoFile) {
+                            // single string
+                            resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                        } else {
+                            reject("");
+                        }
+                    });
+            } else {
+                vscode.window
+                    .showOpenDialog({
+                        canSelectMany: false,
+                        defaultUri: this._getBestOpenFolderUri(),
+                        filters: w_filters
+                    })
+                    .then(p_chosenLeoFile => {
+                        this._fileBrowserActive = false;
+                        if (p_chosenLeoFile) {
+                            // array instead of single string
+                            resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                        } else {
+                            reject("");
+                        }
+                    });
+            }
         });
     }
 }

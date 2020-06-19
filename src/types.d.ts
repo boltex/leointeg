@@ -123,6 +123,18 @@ export interface BodyTimeInfo {
 }
 
 /**
+ * * Parameter structure used in the 'runSaveFileDialog' equivalent when asking user input
+ */
+export interface showSaveAsDialogParameters {
+    // See TODO in leoAsync.ts
+    "initialFile": string;
+    "title": string;
+    "message": string;
+    "filetypes": string[];
+    "defaultExtension": string;
+}
+
+/**
  * * Parameter structure used in the 'runAskYesNoDialog' equivalent when asking user input
  */
 export interface runAskYesNoDialogParameters {

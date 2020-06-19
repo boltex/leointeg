@@ -55,6 +55,10 @@ export class LeoIntegration {
     // * LeoBridge
     private _leoBridge: LeoBridge; // Singleton service to access leobridgeserver
 
+    // * Path + Filename string array of opened Leo documents in LeoBridge: Use empty string for new untitled documents.
+    // TODO : Support multiple documents
+    private _openedLeoDocuments: string[] = []; // Array of zero, or single element for now
+
     // * Outline Pane
     private _leoTreeDataProvider: LeoOutlineProvider; // TreeDataProvider single instance
     private _leoTreeStandaloneView: vscode.TreeView<LeoNode>; // Outline tree view added to the Tree View Container with an Activity Bar icon
@@ -269,6 +273,35 @@ export class LeoIntegration {
                 // console.log("back from applying configuration to leobridgeserver.py");
             });
         }
+    }
+
+    private _isCurrentFileNamed(): boolean {
+        console.log("Is current file named: ", !!this._openedLeoDocuments[0].length);
+
+        return !!this._openedLeoDocuments[0].length;
+    }
+
+    private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackage): Thenable<vscode.TextEditor> {
+        // *
+        const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
+        this.bodyUri = utils.strToUri(w_selectedLeoNode.gnx);
+        // * Start body pane system
+        this._context.subscriptions.push(
+            vscode.workspace.registerFileSystemProvider(Constants.URI_SCHEME, this._leoFileSystem, { isCaseSensitive: true })
+        );
+        // * Startup flag
+        this.fileOpenedReady = true;
+        // * First valid redraw of tree along with the selected node and its body
+        this._refreshOutline(RevealType.RevealSelectFocus); // p_revealSelection flag set
+        // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // ? Maybe unused when used with welcome content
+        // * First StatusBar appearance
+        this._leoStatusBar.show(); // Just selected a node
+        // * Show leo log pane
+        this.showLogPane();
+        // * Send config to python's side (for settings such as defaultReloadIgnore and checkForChangeExternalFiles)
+        this.sendConfigToServer(this.config.getConfig());
+        // * First Body appearance
+        return this.showBody(false);
     }
 
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
@@ -826,17 +859,35 @@ export class LeoIntegration {
         // * Creates a new untitled Leo document
         // TODO : Implement & support multiple simultaneous files
         if (!this.fileOpenedReady) {
-            vscode.window.showInformationMessage("TODO: new leo file"); // temp placeholder
+
+            this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '""')
+                .then((p_openFileResult: LeoBridgePackage) => {
+                    this._openedLeoDocuments.push("");
+                    return this._setupOpenedLeoDocument(p_openFileResult);
+                });
+
         } else {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_ALREADY_OPENED);
         }
     }
 
-    public saveAsLeoFile(): void {
+    public saveAsLeoFile(p_fromOutline?: boolean): void {
         // * Asks for file name and path, then saves the Leo file
         // TODO : Implement & support multiple simultaneous files
         if (this.fileOpenedReady) {
-            vscode.window.showInformationMessage("TODO: save-as leo file"); // temp placeholder
+            // vscode.window.showInformationMessage("TODO: save-as leo file"); // temp placeholder
+            if (this.lastSelectedNode) {
+                this._triggerBodySave(true)
+                    .then(() => {
+                        return this._leoFilesBrowser.getLeoFileUrl(true);
+                    })
+                    .then(p_chosenLeoFile => {
+                        if (p_chosenLeoFile.trim()) {
+                            console.log('Got save path+filename: ', p_chosenLeoFile);
+                            this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, p_chosenLeoFile); // p_node and p_newHeadline can be undefined
+                        }
+                    });
+            }
         } else {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
         }
@@ -845,12 +896,19 @@ export class LeoIntegration {
     public saveLeoFile(p_fromOutline?: boolean): void {
         // * Invokes the self.commander.save() Leo command
         // TODO : Specify which file when supporting multiple simultaneous opened Leo files
-        if (this.lastSelectedNode) {
-            this._triggerBodySave(true)
-                .then(() => {
-                    this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline); // p_node and p_newHeadline can be undefined
-                });
+        if (this.fileOpenedReady) {
+            if (this.lastSelectedNode && this._isCurrentFileNamed()) {
+                this._triggerBodySave(true)
+                    .then(() => {
+                        this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, ""); // p_node and p_newHeadline can be undefined
+                    });
+            } else {
+                this.saveAsLeoFile(p_fromOutline); // Override this command call if file is unnamed!
+            }
+        } else {
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
         }
+
     }
 
     public closeLeoFile(): void {
@@ -858,6 +916,11 @@ export class LeoIntegration {
         // TODO : Implement & support multiple simultaneous files
         if (this.fileOpenedReady) {
             vscode.window.showInformationMessage("TODO: close leo file"); // temp placeholder
+
+            // 1 - check if dirty
+            // 2 - if dirty: Dialog Save or Cancel
+            // 3 -
+
             // this.setTreeViewTitle("CONNECTED");
         } else {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLOSE_ERROR);
@@ -874,30 +937,16 @@ export class LeoIntegration {
         }
         this._leoFilesBrowser.getLeoFileUrl()
             .then(p_chosenLeoFile => {
+                this._openedLeoDocuments.push(p_chosenLeoFile);
                 return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
-            }, p_reason => {
-                return Promise.reject(p_reason);
+            }, p_errorGetFile => {
+                return Promise.reject(p_errorGetFile);
             })
             .then((p_openFileResult: LeoBridgePackage) => {
-                const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
-                this.bodyUri = utils.strToUri(w_selectedLeoNode.gnx);
-                // * Start body pane system
-                this._context.subscriptions.push(
-                    vscode.workspace.registerFileSystemProvider(Constants.URI_SCHEME, this._leoFileSystem, { isCaseSensitive: true })
-                );
-                // * Startup flag
-                this.fileOpenedReady = true;
-                // * First valid redraw of tree along with the selected node and its body
-                this._refreshOutline(RevealType.RevealSelectFocus); // p_revealSelection flag set
-                // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // ? Maybe unused when used with welcome content
-                // * First StatusBar appearance
-                this._leoStatusBar.show(); // Just selected a node
-                // * Show leo log pane
-                this.showLogPane();
-                // * Send config to python's side (for settings such as defaultReloadIgnore and checkForChangeExternalFiles)
-                this.sendConfigToServer(this.config.getConfig());
-                // * First Body appearance
-                return this.showBody(false);
+                return this._setupOpenedLeoDocument(p_openFileResult);
+            }, p_errorOpen => {
+                this._openedLeoDocuments.pop();
+                return Promise.reject(p_errorOpen);
             });
     }
 

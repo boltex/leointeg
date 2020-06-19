@@ -62,7 +62,7 @@
 <v t="felix.20191126232434.10"><vh>outputPNode</vh></v>
 <v t="felix.20191126232434.11"><vh>outputPNodes</vh></v>
 </v>
-<v t="felix.20191128000818.1"><vh>Outline Edition Commands</vh>
+<v t="felix.20191128000818.1"><vh>Outline Editing Commands</vh>
 <v t="felix.20191127004621.1"><vh>markPNode</vh></v>
 <v t="felix.20191127235913.1"><vh>unmarkPNode</vh></v>
 <v t="felix.20191231203545.1"><vh>clonePNode</vh></v>
@@ -142,7 +142,7 @@ To contribute, see the official issues page for current list of 'TODO's at https
 
 </t>
 <t tx="felix.20191126232434.13">def openFile(self, p_file):
-    '''Open a leo file via leoBridge controller'''
+    '''Open a leo file via leoBridge controller, or create a new document if empty string'''
     self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
 
     # * setup leoBackground to get messages from leo
@@ -160,6 +160,7 @@ To contribute, see the official issues page for current list of 'TODO's at https
 </t>
 <t tx="felix.20191126232434.14">def closeFile(self, p_paramUnused):
     '''Closes a leo file. A file can then be opened with "openFile"'''
+    # TODO : Specify which file to support multiple opened files
     print("Trying to close opened file")
     if self.commander:
         self.commander.close()
@@ -844,11 +845,17 @@ wsPort = 32125
         print("websocket not ready yet")
 
 </t>
-<t tx="felix.20200216160305.1">def saveFile(self, p_paramUnused):
+<t tx="felix.20200216160305.1">def saveFile(self, p_package):
     '''Saves the leo file. New or dirty derived files are rewritten'''
+    # TODO : use parameter for file path+name string a 'save as' toggle
     if self.commander:
         try:
-            self.commander.save()
+            if p_package and hasattr(p_package, 'text'):
+                print("WAS SAVE AS! ")
+                print(p_package['text'])
+                self.commander.save(fileName=p_package['text'])
+            else:
+                self.commander.save()
         except Exception as e:
             self.g.trace('Error while saving')
             print("Error while saving")
