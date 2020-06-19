@@ -528,15 +528,11 @@ class LeoBridgeIntegController:
 
     def saveFile(self, p_package):
         '''Saves the leo file. New or dirty derived files are rewritten'''
-        # TODO : use parameter for file path+name string a 'save as' toggle
         if self.commander:
             try:
                 if "text" in p_package:
-                    print("WAS SAVE AS! ")
-                    print(p_package['text'])
                     self.commander.save(fileName=p_package['text'])
                 else:
-                    print("WAS REGULAR " + str(p_package))
                     self.commander.save()
             except Exception as e:
                 self.g.trace('Error while saving')
@@ -781,13 +777,15 @@ class LeoBridgeIntegController:
 
     def executeScript(self, p_package):
         '''Select a node and run its script'''
-        if p_package['node']:
+        if 'node' in p_package:
             w_ap = p_package['node']
             w_p = self.ap_to_p(w_ap)
             if w_p:
                 self.commander.selectPosition(w_p)
-                w_script = str(p_package['text'])
-                if not w_script.isspace():
+                w_script = ""
+                if 'text' in p_package:
+                    w_script = str(p_package['text'])
+                if w_script and not w_script.isspace():
                     # * Mimic getScript !!
                     try:
                         # Remove extra leading whitespace so the user may execute indented code.
@@ -799,10 +797,8 @@ class LeoBridgeIntegController:
                         self.commander.executeScript(script=w_validScript)
                     except Exception:
                         print("Error")
-
                 else:
                     self.commander.executeScript()
-                # print("finally returning node" + self.commander.p.v.headString())
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
                 return self.outputError("Error in run no w_p node found")  # default empty

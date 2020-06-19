@@ -793,8 +793,7 @@ export class LeoIntegration {
             }
 
         }
-        // * Catch all call: execute selected node outline
-        // ! single space test for 'no script'
+        // * Catch all call: execute selected node outline with a single space as script
         return this.nodeCommand(Constants.LEOBRIDGE.EXECUTE_SCRIPT, undefined, RefreshType.RefreshTreeAndBody, false, " ");
     }
 
