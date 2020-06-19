@@ -276,7 +276,8 @@ export class LeoIntegration {
     }
 
     private _isCurrentFileNamed(): boolean {
-        console.log("Is current file named: ", !!this._openedLeoDocuments[0].length);
+        // TODO : For multiple Leo Files Support
+        // console.log("Is current file named: ", !!this._openedLeoDocuments[0].length);
 
         return !!this._openedLeoDocuments[0].length;
     }
@@ -874,7 +875,6 @@ export class LeoIntegration {
         // * Asks for file name and path, then saves the Leo file
         // TODO : Implement & support multiple simultaneous files
         if (this.fileOpenedReady) {
-            // vscode.window.showInformationMessage("TODO: save-as leo file"); // temp placeholder
             if (this.lastSelectedNode) {
                 this._triggerBodySave(true)
                     .then(() => {
@@ -882,7 +882,6 @@ export class LeoIntegration {
                     })
                     .then(p_chosenLeoFile => {
                         if (p_chosenLeoFile.trim()) {
-                            console.log('Got save path+filename: ', p_chosenLeoFile);
                             this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, p_chosenLeoFile); // p_node and p_newHeadline can be undefined
                         }
                     });
@@ -917,8 +916,8 @@ export class LeoIntegration {
             vscode.window.showInformationMessage("TODO: close leo file"); // temp placeholder
 
             // 1 - check if dirty
-            // 2 - if dirty: Dialog Save or Cancel
-            // 3 -
+            // 2 - if dirty: Dialog : Save, force close, or Cancel
+            // 3 - ...
 
             // this.setTreeViewTitle("CONNECTED");
         } else {
