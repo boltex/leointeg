@@ -53,6 +53,7 @@
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
 <v t="felix.20200216160305.1"><vh>saveFile</vh></v>
+<v t="felix.20200619165641.1"><vh>getStates</vh></v>
 <v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
 <v t="felix.20191128004456.1"><vh>setActionId</vh></v>
 <v t="felix.20200213195413.1"><vh>asyncOutput</vh></v>
@@ -161,9 +162,13 @@ To contribute, see the official issues page for current list of 'TODO's at https
 <t tx="felix.20191126232434.14">def closeFile(self, p_paramUnused):
     '''Closes a leo file. A file can then be opened with "openFile"'''
     # TODO : Specify which file to support multiple opened files
-    print("Trying to close opened file")
+    print("Trying to close opened file "+ str(self.commander.changed))
     if self.commander:
-        self.commander.close()
+        if self.commander.changed:
+            return self.sendLeoBridgePackage('closed', False)
+        else:
+            self.commander.close()
+            return self.sendLeoBridgePackage('closed', True)
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
@@ -267,9 +272,12 @@ if __name__ == '__main__':
     '''Change Body text of a node'''
     for w_p in self.commander.all_positions():
         if w_p.v.gnx == p_package['gnx']:  # found
+            # TODO : Before setting undo and trying to set body, first check if different than existing body
             w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
             w_p.v.setBodyString(p_package['body'])
             self.commander.undoer.afterChangeNodeContents(w_p, "Body Text", w_bunch)
+            if not self.commander.isChanged():
+                self.commander.setChanged()
             if not w_p.v.isDirty():
                 w_p.setDirty()
             break
@@ -770,8 +778,10 @@ wsPort = 32125
                                                          forcePythonSentinels=True,
                                                          useSentinels=True)
                     self.commander.executeScript(script=w_validScript)
-                except Exception:
-                    print("Error")
+                except Exception as e:
+                    self.g.trace('Error while executing script')
+                    print('Error while executing script')
+                    print(str(e))
             else:
                 self.commander.executeScript()
             return self.outputPNode(self.commander.p)  # in both cases, return selected node
@@ -1356,6 +1366,19 @@ wsPort = 32125
     '''(Collapse) Contract All'''
     self.commander.contractAllHeadlines()
     return self.outputPNode(self.commander.p)  # return selected node when done
+
+</t>
+<t tx="felix.20200619165641.1">def getStates(self, p_package):
+    '''Gets the currently opened file's general states for UI enabled/disabled states'''
+    if self.commander:
+        try:
+            w_states = {'changed': self.commander.changed} # Init response object with 'dirty/changed' member
+        except Exception as e:
+            self.g.trace('Error while getting states')
+            print("Error while getting states")
+            print(str(e))
+
+    return self.sendLeoBridgePackage()  # Just send empty as 'did nothing'
 
 </t>
 </tnodes>

@@ -56,8 +56,9 @@ export class LeoIntegration {
     private _leoBridge: LeoBridge; // Singleton service to access leobridgeserver
 
     // * Path + Filename string array of opened Leo documents in LeoBridge: Use empty string for new untitled documents.
-    // TODO : Support multiple documents
+    // TODO : Support multiple documents #
     private _openedLeoDocuments: string[] = []; // Array of zero, or single element for now
+    private _leoOpenedFilesIndex: number = 0; // Currently selected Leo Document
 
     // * Outline Pane
     private _leoTreeDataProvider: LeoOutlineProvider; // TreeDataProvider single instance
@@ -276,14 +277,17 @@ export class LeoIntegration {
     }
 
     private _isCurrentFileNamed(): boolean {
-        // TODO : For multiple Leo Files Support
-        // console.log("Is current file named: ", !!this._openedLeoDocuments[0].length);
+        return !!this._openedLeoDocuments[this._leoOpenedFilesIndex].length;
+    }
 
-        return !!this._openedLeoDocuments[0].length;
+    private _setupFilesAllClosed(): void {
+        // * The last opened Leo file was closed so setup leoInteg's UI accordingly.
+
     }
 
     private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackage): Thenable<vscode.TextEditor> {
-        // *
+        // * A Leo file was opened so setup leoInteg's UI accordingly.
+        // TODO : (Multiple files support: Could be the first opened)
         const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
         this.bodyUri = utils.strToUri(w_selectedLeoNode.gnx);
         // * Start body pane system
@@ -862,6 +866,7 @@ export class LeoIntegration {
 
             this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '""')
                 .then((p_openFileResult: LeoBridgePackage) => {
+                    this._leoOpenedFilesIndex = this._openedLeoDocuments.length; // set it before pushing!
                     this._openedLeoDocuments.push("");
                     return this._setupOpenedLeoDocument(p_openFileResult);
                 });
@@ -913,13 +918,59 @@ export class LeoIntegration {
         // * Close an opened Leo file
         // TODO : Implement & support multiple simultaneous files
         if (this.fileOpenedReady) {
-            vscode.window.showInformationMessage("TODO: close leo file"); // temp placeholder
 
-            // 1 - check if dirty
+            // 1 - Leo Closes file if not dirty.
             // 2 - if dirty: Dialog : Save, force close, or Cancel
             // 3 - ...
 
             // this.setTreeViewTitle("CONNECTED");
+            this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE)
+                .then((p_package => {
+                    console.log('Back from close. Response is: ', p_package);
+                    if (p_package.closed) {
+                        console.log('Closed! ');
+                        this._openedLeoDocuments.splice(this._leoOpenedFilesIndex, 1);
+                        this._leoOpenedFilesIndex--;
+                        if (this._leoOpenedFilesIndex < 0) {
+                            this._leoOpenedFilesIndex = 0;
+                        }
+                        if (!this._openedLeoDocuments.length) {
+                            // * Empty, so revert context flags
+
+                        }
+
+                    } else if (p_package.closed === false) {
+                        // Explicitly false and not just undefined
+
+                        // ! below copied from async to see how to modal dialog for user input
+                        // if (p_askArg.no_all) {
+                        //     w_items.push({
+                        //         title: Constants.USER_MESSAGES.NO_ALL,
+                        //         value: Constants.ASYNC_ASK_RETURN_CODES.NO_ALL,
+                        //         isCloseAffordance: false
+                        //     });
+                        // }
+                        // const w_askRefreshInfoMessage: Thenable<AskMessageItem | undefined> = vscode.window.showInformationMessage(
+                        //     p_askArg.message,
+                        //     { modal: true },
+                        //     ...w_items
+                        // );
+                        // w_askRefreshInfoMessage.then((p_result: AskMessageItem | undefined) => {
+                        //     if (p_result) {
+                        //         this._askResult = p_result.value;
+                        //     }
+                        //     const w_sendResultPromise = this._leoIntegration.sendAction(Constants.LEOBRIDGE.ASK_RESULT, '"' + this._askResult + '"'); // Quotes in string as a 'JSON parameter'
+                        //     if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
+                        //         w_sendResultPromise.then(() => {
+                        //             // Might have answered 'yes/yesAll' and refreshed and changed the body text
+                        //             this._leoIntegration.launchRefresh(RefreshType.RefreshTreeAndBody, false); // TODO : #34 @boltex Deal with focus placement
+                        //         });
+                        //     }
+                        // });
+
+                    }
+                    // else don't do anything
+                }));
         } else {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLOSE_ERROR);
         }
@@ -935,15 +986,16 @@ export class LeoIntegration {
         }
         this._leoFilesBrowser.getLeoFileUrl()
             .then(p_chosenLeoFile => {
-                this._openedLeoDocuments.push(p_chosenLeoFile);
+                this._openedLeoDocuments.push(p_chosenLeoFile); // added on success but index still pending on result
                 return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
             }, p_errorGetFile => {
                 return Promise.reject(p_errorGetFile);
             })
             .then((p_openFileResult: LeoBridgePackage) => {
+                this._leoOpenedFilesIndex = this._openedLeoDocuments.length - 1; // set it AFTER so -1
                 return this._setupOpenedLeoDocument(p_openFileResult);
             }, p_errorOpen => {
-                this._openedLeoDocuments.pop();
+                this._openedLeoDocuments.pop(); // No need to restore index, it was only set if stack untouched
                 return Promise.reject(p_errorOpen);
             });
     }

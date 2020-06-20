@@ -410,6 +410,7 @@ class LeoBridgeIntegController:
     '''Leo Bridge Controller'''
 
     def __init__(self):
+        # TODO : need gnx_to_vnode for each opened file/commander
         self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
         self.bridge = leoBridge.controller(gui='nullGui',
                                            loadPlugins=False,  # True: attempt to load plugins.
@@ -521,9 +522,13 @@ class LeoBridgeIntegController:
     def closeFile(self, p_paramUnused):
         '''Closes a leo file. A file can then be opened with "openFile"'''
         # TODO : Specify which file to support multiple opened files
-        print("Trying to close opened file")
+        print("Trying to close opened file " + str(self.commander.changed))
         if self.commander:
-            self.commander.close()
+            if self.commander.changed:
+                return self.sendLeoBridgePackage('closed', False)
+            else:
+                self.commander.close()
+                return self.sendLeoBridgePackage('closed', True)
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def saveFile(self, p_package):
@@ -540,6 +545,18 @@ class LeoBridgeIntegController:
                 print(str(e))
 
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+    def getStates(self, p_package):
+        '''Gets the currently opened file's general states for UI enabled/disabled states'''
+        if self.commander:
+            try:
+                w_states = {'changed': self.commander.changed}  # Init response object with 'dirty/changed' member
+            except Exception as e:
+                self.g.trace('Error while getting states')
+                print("Error while getting states")
+                print(str(e))
+
+        return self.sendLeoBridgePackage()  # Just send empty as 'did nothing'
 
     def setActionId(self, p_id):
         self.currentActionId = p_id
@@ -795,8 +812,10 @@ class LeoBridgeIntegController:
                                                              forcePythonSentinels=True,
                                                              useSentinels=True)
                         self.commander.executeScript(script=w_validScript)
-                    except Exception:
-                        print("Error")
+                    except Exception as e:
+                        self.g.trace('Error while executing script')
+                        print('Error while executing script')
+                        print(str(e))
                 else:
                     self.commander.executeScript()
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
@@ -891,9 +910,12 @@ class LeoBridgeIntegController:
         '''Change Body text of a node'''
         for w_p in self.commander.all_positions():
             if w_p.v.gnx == p_package['gnx']:  # found
+                # TODO : Before setting undo and trying to set body, first check if different than existing body
                 w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
                 w_p.v.setBodyString(p_package['body'])
                 self.commander.undoer.afterChangeNodeContents(w_p, "Body Text", w_bunch)
+                if not self.commander.isChanged():
+                    self.commander.setChanged()
                 if not w_p.v.isDirty():
                     w_p.setDirty()
                 break

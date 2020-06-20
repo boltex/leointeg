@@ -211,6 +211,7 @@ export class Constants {
         UNDO: "undo",
         REDO: "redo",
         EXECUTE_SCRIPT: "executeScript",
+        GET_STATES: "getStates", // #18 @boltex
         // TODO : More commands to implement #15, #23, #24, #25 @boltex
         HOIST_PNODE: "hoistPNode", // #25 @boltex
         DEHOIST: "deHoist", // #25 @boltex
