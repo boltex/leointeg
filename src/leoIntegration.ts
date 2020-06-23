@@ -88,6 +88,7 @@ export class LeoIntegration {
     private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
 
     // * Body Pane
+    private _bodyFileSystemStarted: boolean = false;
     private _leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
     private _bodyTextDocument: vscode.TextDocument | undefined; // Source 'textDocument' from last body 'textEditor' found
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
@@ -177,8 +178,14 @@ export class LeoIntegration {
         vscode.workspace.onDidChangeConfiguration(p_event => this._onChangeConfiguration(p_event));
     }
 
+    /**
+     * *  Sends an action to Leo, used in LeoAsync, leoOutline and leoBody
+     * @param p_action is a string constant from Constants.LEOBRIDGE
+     * @param p_jsonParam (optional, defaults to "null") a JSON string to be given to the python side, often built with JSON.stringify(object)
+     * @param p_deferredPayload (optional) a pre-made package that will be given back as the response, instead of package coming back from python
+     * @param p_preventCall (optional) Flag for special action used at startup
+     */
     public sendAction(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
-        // * Sends an action to Leo, used in LeoAsync, leoOutline and leoBody
         return this._leoBridge.action(p_action, p_jsonParam, p_deferredPayload, p_preventCall);
     }
 
@@ -276,13 +283,32 @@ export class LeoIntegration {
         }
     }
 
+    private _isBusy(): boolean {
+        if (this._commandStack.size()) {
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.TOO_FAST);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     private _isCurrentFileNamed(): boolean {
         return !!this._openedLeoDocuments[this._leoOpenedFilesIndex].length;
     }
 
-    private _setupFilesAllClosed(): void {
-        // * The last opened Leo file was closed so setup leoInteg's UI accordingly.
+    private _checkFilesAllClosed(): void {
+        // * Check if the last opened Leo file was closed & setup leoInteg's UI accordingly.
+        if (!this._openedLeoDocuments.length) {
+            this.fileOpenedReady = false; // Empty, so revert the context flag
+        }
+    }
 
+    private _switchLeoDocument(p_index: number) {
+        // * Switch to another opened Leo document through leoBridge to browse and edit, then force a refresh of the ui.
+        console.log('SWITCH TO LEO DOCUMENT, index:', p_index);
+        console.log('Documents Array: ', this._openedLeoDocuments);
+        // ACTION : switch
+        // TODO : Finish this!
     }
 
     private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackage): Thenable<vscode.TextEditor> {
@@ -291,9 +317,12 @@ export class LeoIntegration {
         const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
         this.bodyUri = utils.strToUri(w_selectedLeoNode.gnx);
         // * Start body pane system
-        this._context.subscriptions.push(
-            vscode.workspace.registerFileSystemProvider(Constants.URI_SCHEME, this._leoFileSystem, { isCaseSensitive: true })
-        );
+        if (!this._bodyFileSystemStarted) {
+            this._context.subscriptions.push(
+                vscode.workspace.registerFileSystemProvider(Constants.URI_SCHEME, this._leoFileSystem, { isCaseSensitive: true })
+            );
+            this._bodyFileSystemStarted = true;
+        }
         // * Startup flag
         this.fileOpenedReady = true;
         // * First valid redraw of tree along with the selected node and its body
@@ -779,7 +808,7 @@ export class LeoIntegration {
         })) {
             return true;
         } else {
-            vscode.window.showInformationMessage("Too Fast: " + p_action); // TODO : Use cleanup message string CONSTANT instead
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.TOO_FAST + p_action); // TODO : Use cleanup message string CONSTANT instead
             return false;
         }
     }
@@ -811,28 +840,24 @@ export class LeoIntegration {
     }
 
     public editHeadline(p_node?: LeoNode, p_fromOutline?: boolean) {
-        if (!this._commandStack.size()) {
-            // * Only if no commands are waiting to finish because we need the exact label to show in the edit control for now, see TODO below
-            this._triggerBodySave(true);
-            if (!p_node && this.lastSelectedNode) {
-                p_node = this.lastSelectedNode; // Gets last selected node if called via keyboard shortcut or command palette (not set in command stack class)
-            }
-            if (p_node) {
-                this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE;
-                this._headlineInputOptions.value = p_node.label; // preset input pop up
-                vscode.window.showInputBox(this._headlineInputOptions)
-                    .then(p_newHeadline => {
-                        if (p_newHeadline) {
-                            p_node!.label = p_newHeadline; // ! When labels change, ids will change and its selection and expansion states cannot be kept stable anymore.
-                            this.nodeCommand(Constants.LEOBRIDGE.SET_HEADLINE, p_node, RefreshType.RefreshTree, p_fromOutline, p_newHeadline);
-                        } else {
-                            // TODO : Make sure focus is set back properly to either outline or body if this is canceled (Maybe unnecessary?)
-                        }
-                    });
-            }
-        } else {
-            // TODO : DELAY THIS IF NO PARAMETER NODES, TO USE THE AVAILABLE LAST SELECTED NODE WHEN LAST COMMAND IS DONE FOR RAPID EDIT
-            vscode.window.showInformationMessage("Too Fast: Edit Headline"); // TODO : Use cleanup message string CONSTANT instead
+        // * Only if no commands are waiting to finish because we need the exact label to show in the edit control for now, see TODO below
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        this._triggerBodySave(true);
+        if (!p_node && this.lastSelectedNode) {
+            p_node = this.lastSelectedNode; // Gets last selected node if called via keyboard shortcut or command palette (not set in command stack class)
+        }
+        if (p_node) {
+            this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE;
+            this._headlineInputOptions.value = p_node.label; // preset input pop up
+            vscode.window.showInputBox(this._headlineInputOptions)
+                .then(p_newHeadline => {
+                    if (p_newHeadline) {
+                        p_node!.label = p_newHeadline; // ! When labels change, ids will change and its selection and expansion states cannot be kept stable anymore.
+                        this.nodeCommand(Constants.LEOBRIDGE.SET_HEADLINE, p_node, RefreshType.RefreshTree, p_fromOutline, p_newHeadline);
+                    } else {
+                        // TODO : Make sure focus is set back properly to either outline or body if this is canceled (Maybe unnecessary?)
+                    }
+                });
         }
     }
 
@@ -842,7 +867,7 @@ export class LeoIntegration {
             this._focusInterrupt = true;
             w_fromOutline = this._fromOutline; // Going to use last state // TODO : MAKE SURE ITS STILL AVAILABLE AND VALID
         }
-        if (!p_node || !this._commandStack.size()) {
+        if (!p_node || !this._isBusy()) {
             // * Only if no parameters or no stack at all
             this._triggerBodySave(true);
             this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_NODE;
@@ -852,16 +877,26 @@ export class LeoIntegration {
                     const w_action = p_newHeadline ? Constants.LEOBRIDGE.INSERT_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_PNODE;
                     this.nodeCommand(w_action, p_node, RefreshType.RefreshTree, w_fromOutline, p_newHeadline); // p_node and p_newHeadline can be undefined
                 });
-
-        } else {
-            vscode.window.showInformationMessage("Too Fast: Insert Node"); // TODO : Use cleanup message string CONSTANT instead
         }
     }
 
+    public switchLeoFile(): void {
+        // * Show switch document dialog to the user, or just return if no files are opened.
+        if (this._openedLeoDocuments.length) {
+            // get list and show dialog to user, even if there's only one...but at least one!
+            this._leoBridge.action(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package => {
+                console.log('TODO: got this list, now show it:', p_package.files);
+
+
+
+            });
+        }
+    }
 
     public newLeoFile(): void {
         // * Creates a new untitled Leo document
         // TODO : Implement & support multiple simultaneous files
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
         if (!this.fileOpenedReady) {
 
             this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '""')
@@ -878,6 +913,7 @@ export class LeoIntegration {
 
     public saveAsLeoFile(p_fromOutline?: boolean): void {
         // * Asks for file name and path, then saves the Leo file
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
         // TODO : Implement & support multiple simultaneous files
         if (this.fileOpenedReady) {
             if (this.lastSelectedNode) {
@@ -898,6 +934,7 @@ export class LeoIntegration {
 
     public saveLeoFile(p_fromOutline?: boolean): void {
         // * Invokes the self.commander.save() Leo command
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
         // TODO : Specify which file when supporting multiple simultaneous opened Leo files
         if (this.fileOpenedReady) {
             if (this.lastSelectedNode && this._isCurrentFileNamed()) {
@@ -916,14 +953,10 @@ export class LeoIntegration {
 
     public closeLeoFile(): void {
         // * Close an opened Leo file
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
         // TODO : Implement & support multiple simultaneous files
         if (this.fileOpenedReady) {
 
-            // 1 - Leo Closes file if not dirty.
-            // 2 - if dirty: Dialog : Save, force close, or Cancel
-            // 3 - ...
-
-            // this.setTreeViewTitle("CONNECTED");
             this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE)
                 .then((p_package => {
                     console.log('Back from close. Response is: ', p_package);
@@ -934,40 +967,47 @@ export class LeoIntegration {
                         if (this._leoOpenedFilesIndex < 0) {
                             this._leoOpenedFilesIndex = 0;
                         }
-                        if (!this._openedLeoDocuments.length) {
-                            // * Empty, so revert context flags
+                        this._checkFilesAllClosed();
 
-                        }
 
                     } else if (p_package.closed === false) {
                         // Explicitly false and not just undefined
+                        const w_items: vscode.MessageItem[] = [
+                            {
+                                title: Constants.USER_MESSAGES.YES,
+                                isCloseAffordance: false
+                            },
+                            {
+                                title: Constants.USER_MESSAGES.NO,
+                                isCloseAffordance: false
+                            },
+                            {
+                                title: Constants.USER_MESSAGES.CANCEL,
+                                isCloseAffordance: true
+                            }
+                        ];
+                        const w_askArg = Constants.USER_MESSAGES.SAVE_CHANGES + ' ' +
+                            this._openedLeoDocuments[this._leoOpenedFilesIndex] + ' ' +
+                            Constants.USER_MESSAGES.BEFORE_CLOSING;
 
-                        // ! below copied from async to see how to modal dialog for user input
-                        // if (p_askArg.no_all) {
-                        //     w_items.push({
-                        //         title: Constants.USER_MESSAGES.NO_ALL,
-                        //         value: Constants.ASYNC_ASK_RETURN_CODES.NO_ALL,
-                        //         isCloseAffordance: false
-                        //     });
-                        // }
-                        // const w_askRefreshInfoMessage: Thenable<AskMessageItem | undefined> = vscode.window.showInformationMessage(
-                        //     p_askArg.message,
-                        //     { modal: true },
-                        //     ...w_items
-                        // );
-                        // w_askRefreshInfoMessage.then((p_result: AskMessageItem | undefined) => {
-                        //     if (p_result) {
-                        //         this._askResult = p_result.value;
-                        //     }
-                        //     const w_sendResultPromise = this._leoIntegration.sendAction(Constants.LEOBRIDGE.ASK_RESULT, '"' + this._askResult + '"'); // Quotes in string as a 'JSON parameter'
-                        //     if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
-                        //         w_sendResultPromise.then(() => {
-                        //             // Might have answered 'yes/yesAll' and refreshed and changed the body text
-                        //             this._leoIntegration.launchRefresh(RefreshType.RefreshTreeAndBody, false); // TODO : #34 @boltex Deal with focus placement
-                        //         });
-                        //     }
-                        // });
-
+                        const w_askRefreshInfoMessage: Thenable<vscode.MessageItem | undefined> = vscode.window.showInformationMessage(
+                            w_askArg,
+                            { modal: true },
+                            ...w_items
+                        );
+                        w_askRefreshInfoMessage.then((p_result: vscode.MessageItem | undefined) => {
+                            if (p_result) {
+                                console.log('Got result! : ', p_result.title);
+                                if (p_result.title === Constants.USER_MESSAGES.YES) {
+                                    // save and close
+                                    return this.sendAction(Constants.LEOBRIDGE.SAVE_CLOSE_FILE);
+                                } else if (p_result.title === Constants.USER_MESSAGES.NO) {
+                                    return this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE, JSON.stringify({ forced: true }));
+                                }
+                            }
+                        }).then(() => {
+                            this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+                        });
                     }
                     // else don't do anything
                 }));
@@ -979,6 +1019,7 @@ export class LeoIntegration {
     public openLeoFile(): void {
         // ! Leaves focus in outline !
         // * Shows an 'Open Leo File' dialog window, opens the chosen file via leoBridge along with showing the tree, body and log panes
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
         // TODO : Support multiple simultaneous opened files
         if (this.fileOpenedReady) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_ALREADY_OPENED);
@@ -986,19 +1027,32 @@ export class LeoIntegration {
         }
         this._leoFilesBrowser.getLeoFileUrl()
             .then(p_chosenLeoFile => {
-                this._openedLeoDocuments.push(p_chosenLeoFile); // added on success but index still pending on result
-                return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
+                // TODO : IF ALREADY OPENED - SWITCH TO IT !
+                const w_foundDocument: number = this._openedLeoDocuments.indexOf(p_chosenLeoFile);
+                if (w_foundDocument > -1) {
+                    this._switchLeoDocument(w_foundDocument);
+                    console.log('reject because blank');
+                    return Promise.reject();
+                } else {
+                    this._openedLeoDocuments.push(p_chosenLeoFile); // added on success but index still pending on result
+                    console.log('Opening:', p_chosenLeoFile);
+                    return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
+                }
             }, p_errorGetFile => {
                 return Promise.reject(p_errorGetFile);
             })
             .then((p_openFileResult: LeoBridgePackage) => {
+                console.log('in .then ok really opened');
+
                 this._leoOpenedFilesIndex = this._openedLeoDocuments.length - 1; // set it AFTER so -1
                 return this._setupOpenedLeoDocument(p_openFileResult);
             }, p_errorOpen => {
+                console.log('in .then not opened or already opened');
                 this._openedLeoDocuments.pop(); // No need to restore index, it was only set if stack untouched
                 return Promise.reject(p_errorOpen);
             });
     }
+
 
     private _setTreeViewTitle(p_title?: string): void {
         if (p_title) {
@@ -1021,23 +1075,17 @@ export class LeoIntegration {
     public test(p_fromOutline?: boolean): void {
         // * Debugging utility function
         if (this.fileOpenedReady) {
-            if (p_fromOutline) {
-                vscode.window.showInformationMessage('Called TEST from Outline');
+            // * Test status bar command as a 'switch' or 'Show leo commands'
+            if (this._openedLeoDocuments.length) {
+                this.switchLeoFile();
             } else {
-                vscode.window.showInformationMessage("Called TEST from Body");
+                this.showLeoCommands();
             }
-            // if (!p_fromOutline) {
-            //     vscode.window.showInputBox({ ignoreFocusOut: false, value: "", valueSelection: undefined, prompt: "Just a test input dialog" })
-            //         .then(p_testResult => {
-            //             console.log(p_testResult);
-            //         });
+            // if (p_fromOutline) {
+            //     vscode.window.showInformationMessage('Called TEST from Outline');
+            // } else {
+            //     vscode.window.showInformationMessage("Called TEST from Body");
             // }
-            if (this._leoTreeExplorerView.selection[0]) {
-                console.log('_leoTreeExplorerView.selection 0 is: ', this._leoTreeExplorerView.selection[0].label);
-            }
-            if (this._leoTreeExplorerView.selection[1]) {
-                console.log('_leoTreeExplorerView.selection 1 is: ', this._leoTreeExplorerView.selection[0].label);
-            }
         } else {
             vscode.window.showInformationMessage("File not ready");
         }

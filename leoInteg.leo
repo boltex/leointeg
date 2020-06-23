@@ -146,6 +146,9 @@ To contribute, see the official issues page for current list of 'TODO's at https
     '''Open a leo file via leoBridge controller, or create a new document if empty string'''
     self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
 
+    # did this add ato existing array of g.app.commanders() ?
+    print(str(self.g.app.commanders()))  # test
+
     # * setup leoBackground to get messages from leo
     try:
         self.g.app.idleTimeManager.start()  # To catch derived file changes
@@ -159,11 +162,15 @@ To contribute, see the official issues page for current list of 'TODO's at https
         return self.outputError('Error in openFile')
 
 </t>
-<t tx="felix.20191126232434.14">def closeFile(self, p_paramUnused):
+<t tx="felix.20191126232434.14">def closeFile(self, p_package):
     '''Closes a leo file. A file can then be opened with "openFile"'''
     # TODO : Specify which file to support multiple opened files
-    print("Trying to close opened file "+ str(self.commander.changed))
+    print("Trying to close opened file " + str(self.commander.changed))
     if self.commander:
+        if "forced" in p_package:
+            if p_package["forced"]:
+                print('TODO : FORCED CLOSE!')
+                return self.sendLeoBridgePackage('closed', False)
         if self.commander.changed:
             return self.sendLeoBridgePackage('closed', False)
         else:
@@ -435,6 +442,7 @@ if __name__ == '__main__':
     @others
 </t>
 <t tx="felix.20191126232434.5">def __init__(self):
+    # TODO : need gnx_to_vnode for each opened file/commander
     self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
     self.bridge = leoBridge.controller(gui='nullGui',
                                        loadPlugins=False,  # True: attempt to load plugins.
@@ -1372,7 +1380,7 @@ wsPort = 32125
     '''Gets the currently opened file's general states for UI enabled/disabled states'''
     if self.commander:
         try:
-            w_states = {'changed': self.commander.changed} # Init response object with 'dirty/changed' member
+            w_states = {'changed': self.commander.changed}  # Init response object with 'dirty/changed' member
         except Exception as e:
             self.g.trace('Error while getting states')
             print("Error while getting states")

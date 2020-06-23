@@ -11,6 +11,7 @@ export class LeoStatusBar {
     private _leoStatusBarItem: vscode.StatusBarItem;
     private _statusbarNormalColor = new vscode.ThemeColor(Constants.GUI.THEME_STATUSBAR);  // "statusBar.foreground"
     private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
+    private _string: string = ""; // Use this string with indicator, using this will replace the default from config
 
     private _leoObjectSelected: boolean = false; // Represents having focus on a leo body
     set leoObjectSelected(p_value: boolean) {
@@ -45,6 +46,14 @@ export class LeoStatusBar {
      */
     public hide(): void {
         this._leoStatusBarItem.hide();
+    }
+
+    /**
+     * * Sets string to replace default from config & refresh it
+     */
+    public setString(p_string: string): void {
+        this._string = p_string;
+        this._updateLeoObjectIndicator();
     }
 
     /**
@@ -84,7 +93,7 @@ export class LeoStatusBar {
             clearTimeout(this._updateStatusBarTimeout);
         }
         utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.leoObjectSelected);
-        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this._leoIntegration.config.statusBarString;
+        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + (this._string ? this._string : this._leoIntegration.config.statusBarString);
         if (this.leoObjectSelected && this._leoIntegration.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
             this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
             this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;

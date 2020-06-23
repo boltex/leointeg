@@ -63,6 +63,9 @@ export class Constants {
      * * Basic user messages strings for messages and dialogs
      */
     public static USER_MESSAGES = {
+        SAVE_CHANGES: "Save changes to",
+        BEFORE_CLOSING: "before closing?",
+        CANCEL: "Cancel",
         FILE_ALREADY_OPENED: "Leo file already opened",
         FILE_NOT_OPENED: "No files opened.",
         STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect", // TODO : Add description of what happens if clicked
@@ -82,8 +85,9 @@ export class Constants {
         YES_ALL: "Yes to all",
         NO_ALL: "No to all",
         CHANGES_DETECTED: "Changes to external files were detected.",
-        REFRESHED: " Nodes were refreshed from file.", // with leading space
-        IGNORED: " They were ignored." // with leading space
+        REFRESHED: " Nodes were refreshed from file.", // with voluntary leading space
+        IGNORED: " They were ignored.", // with voluntary leading space
+        TOO_FAST: "leoInteg is busy! " // with voluntary trailing space
     };
 
     /**
@@ -185,9 +189,12 @@ export class Constants {
         EXPAND_NODE: "expandNode",
         COLLAPSE_NODE: "collapseNode",
         CONTRACT_ALL: "contractAll",
+        GET_OPENED_FILES: "getOpenedFiles", //  #13 @boltex
         OPEN_FILE: "openFile", // TODO : #13 @boltex Support multiple simultaneous opened files
+        SWITCH_FILE: "switchFile", // Pass index ? name to validate / error check, only index when stable
         CLOSE_FILE: "closeFile", // TODO : #13 @boltex Implement & support multiple simultaneous files
         SAVE_FILE: "saveFile", // TODO : #13 @boltex Specify which file when supporting multiple simultaneous files
+        SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
         // * Leo Operations
         MARK_PNODE: "markPNode",
         UNMARK_PNODE: "unmarkPNode",
@@ -251,6 +258,7 @@ export class Constants {
         START_SERVER: "startServer",
         CONNECT: "connectToServer",
         OPEN_FILE: "openLeoFile", // sets focus on BODY
+        SWITCH_FILE: "switchLeoFile",
         NEW_FILE: "newLeoFile",
         SAVE_FILE: "saveLeoFile", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
         SAVE_AS_FILE: "saveAsLeoFile",

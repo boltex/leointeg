@@ -507,6 +507,9 @@ class LeoBridgeIntegController:
         '''Open a leo file via leoBridge controller, or create a new document if empty string'''
         self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
 
+        # did this add ato existing array of g.app.commanders() ?
+        print(str(self.g.app.commanders()))  # test
+
         # * setup leoBackground to get messages from leo
         try:
             self.g.app.idleTimeManager.start()  # To catch derived file changes
@@ -519,11 +522,15 @@ class LeoBridgeIntegController:
         else:
             return self.outputError('Error in openFile')
 
-    def closeFile(self, p_paramUnused):
+    def closeFile(self, p_package):
         '''Closes a leo file. A file can then be opened with "openFile"'''
         # TODO : Specify which file to support multiple opened files
         print("Trying to close opened file " + str(self.commander.changed))
         if self.commander:
+            if "forced" in p_package:
+                if p_package["forced"]:
+                    print('TODO : FORCED CLOSE!')
+                    return self.sendLeoBridgePackage('closed', False)
             if self.commander.changed:
                 return self.sendLeoBridgePackage('closed', False)
             else:

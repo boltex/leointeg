@@ -275,6 +275,11 @@
         }
       },
       {
+        "command": "leointeg.switchLeoFile",
+        "title": "Switch Leo File",
+        "category": "Leo"
+      },
+      {
         "command": "leointeg.newLeoFile",
         "title": "New Leo File",
         "category": "Leo",
@@ -860,6 +865,10 @@
         },
         {
           "command": "leointeg.openLeoFile",
+          "when": "leoBridgeReady && !leoTreeOpened"
+        },
+        {
+          "command": "leointeg.switchLeoFile",
           "when": "leoBridgeReady && !leoTreeOpened"
         },
         {
