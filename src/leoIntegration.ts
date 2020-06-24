@@ -329,11 +329,24 @@ export class LeoIntegration {
     //     // TODO : Finish this!
     // }
 
+    private _setupNoOpenedLeoDocument(): void {
+        this.fileOpenedReady = false;
+        this.closeBody();
+    }
+
     private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackage): Thenable<vscode.TextEditor> {
         // * A Leo file was opened so setup leoInteg's UI accordingly.
-        // TODO : (Multiple files support: Could be the first opened)
+
         const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
-        this.bodyUri = utils.strToUri(w_selectedLeoNode.gnx);
+
+        // * Could be already opened, so perform 'rename hack' as if another node was selected
+        if (this._bodyTextDocument && this.bodyUri) {
+            console.log('TRYING SWITCH BODY');
+            this._switchBody(w_selectedLeoNode.gnx);
+        } else {
+            this.bodyUri = utils.strToUri(w_selectedLeoNode.gnx);
+        }
+
         // * Start body pane system
         if (!this._bodyFileSystemStarted) {
             this._context.subscriptions.push(
@@ -741,6 +754,17 @@ export class LeoIntegration {
         return w_found;
     }
 
+    public closeBody(): void {
+        // TODO : Try to close body pane(s)
+        vscode.window.visibleTextEditors.forEach(p_textEditor => {
+            if (p_textEditor.document.uri.scheme === Constants.URI_SCHEME) {
+                if (p_textEditor.hide) {
+                    p_textEditor.hide();
+                }
+            }
+        });
+    }
+
     public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable<vscode.TextEditor> {
         // * Shows an editor for the currently selected node: this.bodyUri, if already opened just 'shows' it
         // first setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
@@ -960,6 +984,11 @@ export class LeoIntegration {
                     console.log('Back from close. Response is: ', p_package);
                     if (p_package.closed) {
                         console.log('Closed! ');
+                        if (p_package.closed.total === 0) {
+                            this._setupNoOpenedLeoDocument();
+                        }
+
+
                         // this._openedLeoDocuments.splice(this._leoOpenedFilesIndex, 1);
                         // this._leoOpenedFilesIndex--;
                         // if (this._leoOpenedFilesIndex < 0) {
