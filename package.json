@@ -865,15 +865,15 @@
         },
         {
           "command": "leointeg.openLeoFile",
-          "when": "leoBridgeReady && !leoTreeOpened"
+          "when": "leoBridgeReady"
         },
         {
           "command": "leointeg.switchLeoFile",
-          "when": "leoBridgeReady && !leoTreeOpened"
+          "when": "leoBridgeReady && leoTreeOpened"
         },
         {
           "command": "leointeg.newLeoFile",
-          "when": "leoBridgeReady && !leoTreeOpened"
+          "when": "leoBridgeReady"
         },
         {
           "command": "leointeg.showLogPane",
@@ -1228,12 +1228,12 @@
         },
         {
           "command": "leointeg.openLeoFile",
-          "when": "view =~ /leoIntegration/ && leoBridgeReady && !leoTreeOpened",
+          "when": "view =~ /leoIntegration/ && leoBridgeReady",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.newLeoFile",
-          "when": "view =~ /leoIntegration/ && leoBridgeReady && !leoTreeOpened",
+          "when": "view =~ /leoIntegration/ && leoBridgeReady",
           "group": "navigation@1"
         },
         {

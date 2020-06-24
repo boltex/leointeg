@@ -427,25 +427,25 @@ class LeoBridgeIntegController:
 
         # print(dir(self.g))
         self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
-        # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
+
+        # * Currently Selected Commander (opened from leo.core.leoBridge or chosen via the g.app.windowList frame list)
+        self.commander = None
+
         self.leoIntegConfig = None
         self.webSocket = None
         self.loop = None
 
+        # * Three Replacement instances to Leo's codebase : IdleTime, idleTimeManager and externalFilesController
         self.g.IdleTime = self._idleTime
         self.g.app.idleTimeManager = IdleTimeManager(self.g)
-        self.g.app.commanders = self._commanders
-
-        self.efc = ExternalFilesController(self)
-
         # attach instance to g.app for calls to set_time, etc.
-        self.g.app.externalFilesController = self.efc
+        self.g.app.externalFilesController = ExternalFilesController(self)
 
-    def _commanders(self):
-        ''' Return list of currently active controllers '''
-        # TODO : REVISE/REPLACE WITH OWN SYSTEM
-        # return [f.c for f in g.app.windowList]
-        return [self.commander]
+        # * setup leoBackground to get messages from leo
+        try:
+            self.g.app.idleTimeManager.start()  # To catch derived file changes
+        except:
+            print('ERROR with idleTimeManager')
 
     async def _asyncIdleLoop(self, p_seconds, p_fn):
         while True:
@@ -455,6 +455,24 @@ class LeoBridgeIntegController:
     def _idleTime(self, fn, delay, tag):
         # TODO : REVISE/REPLACE WITH OWN SYSTEM
         asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
+
+    def _getTotalOpened(self):
+        '''Get total of opened commander (who have closed == false)'''
+        w_total = 0
+        for w_commander in self.g.app.commanders():
+            if w_commander.closed == False:
+                w_total = w_total + 1
+        print('outputting total opened '+str(w_total))
+        return w_total
+
+    def _getFirstOpenedCommander(self):
+        '''Get first opened commander, or False if there are none.'''
+        for w_commander in self.g.app.commanders():
+            if w_commander.closed == False:
+                print('found first '+str(w_commander.fileName()))
+                return w_commander
+
+        return False
 
     def sendAsyncOutput(self, p_package):
         if "async" not in p_package:
@@ -467,7 +485,7 @@ class LeoBridgeIntegController:
 
     def askResult(self, p_result):
         '''Got the result to an asked question/warning from vscode'''
-        self.efc.integResult(p_result)
+        self.g.app.externalFilesController.integResult(p_result)
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def applyConfig(self, p_config):
@@ -503,40 +521,78 @@ class LeoBridgeIntegController:
         self.webSocket = p_webSocket
         self.loop = asyncio.get_event_loop()
 
+    def getOpenedFiles(self, p_package):
+        '''Return array of opened file path/names to be used as openFile parameters to switch files'''
+        w_openedFiles = []
+        for w_commander in self.g.app.commanders():
+            if w_commander.closed == False:
+                w_openedFiles.append(w_commander.mFileName)
+        print('got openedFiles' + str(w_openedFiles))
+        return self.sendLeoBridgePackage('openedFiles', w_openedFiles)
+
     def openFile(self, p_file):
-        '''Open a leo file via leoBridge controller, or create a new document if empty string'''
-        self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+        """
+        Open a leo file via leoBridge controller, or create a new document if empty string.
+        Returns an object that contains a 'opened' member.
+        """
+        w_found = False
 
-        # did this add ato existing array of g.app.commanders() ?
-        print(str(self.g.app.commanders()))  # test
+        # If not empty string (asking for New file) then check if already opened
+        if p_file:
+            for w_commander in self.g.app.commanders():
+                if w_commander.fileName() == p_file:
+                    w_found = True
+                    print("same!")
+                    self.commander = w_commander
 
-        # * setup leoBackground to get messages from leo
-        try:
-            self.g.app.idleTimeManager.start()  # To catch derived file changes
-        except:
-            print('ERROR with idleTimeManager')
+        if not w_found:
+            self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+
+        # Leo at this point has done this too: g.app.windowList.append(c.frame)
+        # and so this now app.commanders() yields this: return [f.c for f in g.app.windowList]
+
+        # did this add to existing array of g.app.commanders() ?
+        # print(str(self.g.app.commanders()))  # test
+        print(*self.g.app.commanders(), sep='\n')
 
         if self.commander:
+            self.commander.closed = False
             self.create_gnx_to_vnode()
-            return self.outputPNode(self.commander.p)
+            w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                        "node": self.p_to_ap(self.commander.p)}
+            return self.sendLeoBridgePackage("opened", w_result)
         else:
             return self.outputError('Error in openFile')
 
     def closeFile(self, p_package):
-        '''Closes a leo file. A file can then be opened with "openFile"'''
+        """
+        Closes a leo file. A file can then be opened with "openFile"
+        Returns an object that contains a 'closed' member
+        """
         # TODO : Specify which file to support multiple opened files
         print("Trying to close opened file " + str(self.commander.changed))
         if self.commander:
-            if "forced" in p_package:
-                if p_package["forced"]:
-                    print('TODO : FORCED CLOSE!')
-                    return self.sendLeoBridgePackage('closed', False)
-            if self.commander.changed:
-                return self.sendLeoBridgePackage('closed', False)
-            else:
+            if p_package["forced"] or not self.commander.changed:
                 self.commander.close()
-                return self.sendLeoBridgePackage('closed', True)
-        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+                self.commander.closed = True
+            else:
+                return self.sendLeoBridgePackage('closed', False)  # Cannot close, ask to save, ignore or cancel
+
+        # Switch commanders to first available
+        w_total = self._getTotalOpened()
+        if w_total:
+            self.commander = self._getFirstOpenedCommander()
+        else:
+            self.commander = None
+
+        if self.commander:
+            self.create_gnx_to_vnode()
+            w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                        "node": self.p_to_ap(self.commander.p)}
+            return self.sendLeoBridgePackage("closed", w_result)
+        else:
+            w_result = {"total": 0}
+            return self.sendLeoBridgePackage("closed", w_result)
 
     def saveFile(self, p_package):
         '''Saves the leo file. New or dirty derived files are rewritten'''

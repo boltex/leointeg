@@ -56,9 +56,8 @@ export class LeoIntegration {
     private _leoBridge: LeoBridge; // Singleton service to access leobridgeserver
 
     // * Path + Filename string array of opened Leo documents in LeoBridge: Use empty string for new untitled documents.
-    // TODO : Support multiple documents #
-    private _openedLeoDocuments: string[] = []; // Array of zero, or single element for now
-    private _leoOpenedFilesIndex: number = 0; // Currently selected Leo Document
+    private _leoOpenedFilesTotal: number = 0; // Leo Documents currently opened. Shown as status bar indicator with current filename
+    private _leoOpenedFileName: string = ""; // Just the 'filename.leo' part, without path. Shown along total as status bar indicator
 
     // * Outline Pane
     private _leoTreeDataProvider: LeoOutlineProvider; // TreeDataProvider single instance
@@ -179,21 +178,21 @@ export class LeoIntegration {
     }
 
     /**
-     * *  Sends an action to Leo, used in LeoAsync, leoOutline and leoBody
-     * @param p_action is a string constant from Constants.LEOBRIDGE
-     * @param p_jsonParam (optional, defaults to "null") a JSON string to be given to the python side, often built with JSON.stringify(object)
+     * *  Sends an action for leobridgeserver.py to run with Leo. This is used mostly by LeoAsync, leoOutline and leoBody
+     * @param p_action is the action string constant, from Constants.LEOBRIDGE
+     * @param p_jsonParam (optional, defaults to "null", which translates to None in python) a JSON string to be given to the python side, often built with JSON.stringify(object)
      * @param p_deferredPayload (optional) a pre-made package that will be given back as the response, instead of package coming back from python
-     * @param p_preventCall (optional) Flag for special action used at startup
+     * @param p_preventCall (optional) Flag for special case, only used at startup
      */
     public sendAction(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
         return this._leoBridge.action(p_action, p_jsonParam, p_deferredPayload, p_preventCall);
     }
 
+    /**
+     * * leoInteg starting entry point: Start a leoBridge server, and/or establish a connection to a server, based on config settings
+     */
     public startNetworkServices(): void {
-        // * leoIntegration starting entry point: Start a leoBridge server and connect to it based on configuration flags
-        // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED);
-        // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_INTEGRATION); // Vanilla title for use with welcome content
-        // * (via settings) Start a server (and also connect automatically to a server upon extension activation)
+        // * Check settings and start a server accordingly
         if (this.config.startServerAutomatically) {
             this.startServer();
         } else {
@@ -204,8 +203,10 @@ export class LeoIntegration {
         }
     }
 
+    /**
+     * * Starts an instance of a leoBridge server, and may connect to it afterwards, based on configuration flags
+     */
     public startServer(): void {
-        // * Starts an instance of a leoBridge server and connect to it if needed based on configuration flags
         this._serverService.startServer(this.config.leoPythonCommand)
             .then((p_message) => {
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
@@ -217,8 +218,10 @@ export class LeoIntegration {
             });
     }
 
+    /**
+     * * Initiate a connection to the leoBridge server, then show appropriate view title, the log pane, and set 'bridge ready' flags
+     */
     public connect(): void {
-        // * Initiate a connection to the leoBridge server, then show appropriate view title, the log pane, and set 'bridge ready' flags
         if (this.leoBridgeReady || this._leoIsConnecting) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
             return;
@@ -233,8 +236,6 @@ export class LeoIntegration {
                 } else {
                     this.leoBridgeReady = true;
                     utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
-                    // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_INTEGRATION);
-                    // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Vanilla title for use with welcome content
                     this.showLogPane();
                     if (!this.config.connectToServerAutomatically) {
                         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
@@ -247,16 +248,17 @@ export class LeoIntegration {
             });
     }
 
+    /**
+     * * Cancels websocket connection and reverts context flags. Called from leoBridge.ts when its websocket reports disconnection
+     * @param p_message
+     */
     public cancelConnect(p_message?: string): void {
-        // * Also called from leoBridge.ts when its websocket reports disconnection
+        // 'disconnect error' versus 'failed to connect'
         if (this.leoBridgeReady) {
-            // * Real disconnect error versus a simple 'failed to connect'
             vscode.window.showErrorMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
         } else {
             vscode.window.showInformationMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
         }
-        // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // Generic title instead of Constants.GUI.TREEVIEW_TITLE_NOT_CONNECTED
-        // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE_INTEGRATION);
         this.fileOpenedReady = false;
         this.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
@@ -264,18 +266,26 @@ export class LeoIntegration {
         this._refreshOutline(RevealType.RevealSelect);
     }
 
+    /**
+     * * Shows the log pane.
+     */
     public showLogPane(): void {
-        // * Show log panel command (Front-end only - does not go through leoBridge)
         this._leoLogPane.show(true);
     }
 
+    /**
+     * * Adds a message string to leoInteg's log pane. Used when leoBridge receives an async 'log' command.
+     * @param p_message The string to be added in the log
+     */
     public addLogPaneEntry(p_message: string): void {
-        // * Adds message string to leoInteg's log pane, used when leoBridge receives an async 'log' command
         this._leoLogPane.appendLine(p_message);
     }
 
+    /**
+     * * Send configuration through leoBridge to the server script, mostly used when checking if refreshing derived files is optional
+     * @param p_config A config object containing all the configuration settings
+     */
     public sendConfigToServer(p_config: ConfigMembers): void {
-        // * Send configuration through leoBridge to the server script, mostly used when checking if refreshing derived files is optional
         if (this.fileOpenedReady) {
             this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package => {
                 // console.log("back from applying configuration to leobridgeserver.py");
@@ -283,6 +293,9 @@ export class LeoIntegration {
         }
     }
 
+    /**
+     * * Busy state of the front command stack. Used to check if 'ready' by special unstackable commands such as new, open, close, etc.
+     */
     private _isBusy(): boolean {
         if (this._commandStack.size()) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.TOO_FAST);
@@ -292,24 +305,29 @@ export class LeoIntegration {
         }
     }
 
+    /**
+     * * Returns true if the current opened Leo document's filename has some content (not a new unnamed file)
+     */
     private _isCurrentFileNamed(): boolean {
-        return !!this._openedLeoDocuments[this._leoOpenedFilesIndex].length;
+        return !!this._leoOpenedFileName.length;
     }
 
-    private _checkFilesAllClosed(): void {
-        // * Check if the last opened Leo file was closed & setup leoInteg's UI accordingly.
-        if (!this._openedLeoDocuments.length) {
-            this.fileOpenedReady = false; // Empty, so revert the context flag
-        }
-    }
+    // TODO : Use getlist from server
+    // private _checkFilesAllClosed(): void {
+    //     // * Check if the last opened Leo file was closed (no opened files) & setup leoInteg's UI accordingly.
+    //     if (!this._openedLeoDocuments.length) {
+    //         this.fileOpenedReady = false; // Empty, so revert the context flag
+    //     }
+    // }
 
-    private _switchLeoDocument(p_index: number) {
-        // * Switch to another opened Leo document through leoBridge to browse and edit, then force a refresh of the ui.
-        console.log('SWITCH TO LEO DOCUMENT, index:', p_index);
-        console.log('Documents Array: ', this._openedLeoDocuments);
-        // ACTION : switch
-        // TODO : Finish this!
-    }
+    // TODO : finish implementing USE OPENFILE INSTEAD LEO WILL SWITCH AUTOMATICALLY
+    // private _switchLeoDocument(p_index: number) {
+    //     // * Switch to another opened Leo document through leoBridge to browse and edit, then force a refresh of the ui.
+    //     console.log('SWITCH TO LEO DOCUMENT, index:', p_index);
+    //     // console.log('Documents Array: ', this._openedLeoDocuments);
+    //     // ACTION : switch
+    //     // TODO : Finish this!
+    // }
 
     private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackage): Thenable<vscode.TextEditor> {
         // * A Leo file was opened so setup leoInteg's UI accordingly.
@@ -882,33 +900,11 @@ export class LeoIntegration {
 
     public switchLeoFile(): void {
         // * Show switch document dialog to the user, or just return if no files are opened.
-        if (this._openedLeoDocuments.length) {
-            // get list and show dialog to user, even if there's only one...but at least one!
-            this._leoBridge.action(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package => {
-                console.log('TODO: got this list, now show it:', p_package.files);
+        // get list and show dialog to user, even if there's only one...but at least one!
+        this._leoBridge.action(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package => {
+            console.log('TODO: got this list, now show it:', p_package.files);
 
-
-
-            });
-        }
-    }
-
-    public newLeoFile(): void {
-        // * Creates a new untitled Leo document
-        // TODO : Implement & support multiple simultaneous files
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        if (!this.fileOpenedReady) {
-
-            this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '""')
-                .then((p_openFileResult: LeoBridgePackage) => {
-                    this._leoOpenedFilesIndex = this._openedLeoDocuments.length; // set it before pushing!
-                    this._openedLeoDocuments.push("");
-                    return this._setupOpenedLeoDocument(p_openFileResult);
-                });
-
-        } else {
-            vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_ALREADY_OPENED);
-        }
+        });
     }
 
     public saveAsLeoFile(p_fromOutline?: boolean): void {
@@ -956,21 +952,24 @@ export class LeoIntegration {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
         // TODO : Implement & support multiple simultaneous files
         if (this.fileOpenedReady) {
-
-            this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE)
+            this._triggerBodySave(true)
+                .then(() => {
+                    return this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE, JSON.stringify({ forced: false }));
+                })
                 .then((p_package => {
                     console.log('Back from close. Response is: ', p_package);
                     if (p_package.closed) {
                         console.log('Closed! ');
-                        this._openedLeoDocuments.splice(this._leoOpenedFilesIndex, 1);
-                        this._leoOpenedFilesIndex--;
-                        if (this._leoOpenedFilesIndex < 0) {
-                            this._leoOpenedFilesIndex = 0;
-                        }
-                        this._checkFilesAllClosed();
+                        // this._openedLeoDocuments.splice(this._leoOpenedFilesIndex, 1);
+                        // this._leoOpenedFilesIndex--;
+                        // if (this._leoOpenedFilesIndex < 0) {
+                        //     this._leoOpenedFilesIndex = 0;
+                        // }
+                        // this._checkFilesAllClosed();
 
 
                     } else if (p_package.closed === false) {
+
                         // Explicitly false and not just undefined
                         const w_items: vscode.MessageItem[] = [
                             {
@@ -987,7 +986,8 @@ export class LeoIntegration {
                             }
                         ];
                         const w_askArg = Constants.USER_MESSAGES.SAVE_CHANGES + ' ' +
-                            this._openedLeoDocuments[this._leoOpenedFilesIndex] + ' ' +
+                            this._leoOpenedFileName + ' ' +
+                            // this._openedLeoDocuments[this._leoOpenedFilesIndex] + ' ' +
                             Constants.USER_MESSAGES.BEFORE_CLOSING;
 
                         const w_askRefreshInfoMessage: Thenable<vscode.MessageItem | undefined> = vscode.window.showInformationMessage(
@@ -1000,12 +1000,16 @@ export class LeoIntegration {
                                 console.log('Got result! : ', p_result.title);
                                 if (p_result.title === Constants.USER_MESSAGES.YES) {
                                     // save and close
-                                    return this.sendAction(Constants.LEOBRIDGE.SAVE_CLOSE_FILE);
+                                    return this.sendAction(Constants.LEOBRIDGE.SAVE_FILE)
+                                        .then(() => {
+                                            return this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE, JSON.stringify({ forced: true }));
+                                        });
                                 } else if (p_result.title === Constants.USER_MESSAGES.NO) {
                                     return this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE, JSON.stringify({ forced: true }));
                                 }
                             }
-                        }).then(() => {
+                            return Promise.resolve();
+                        }).then((p_package: Promise<LeoBridgePackage | void>) => {
                             this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
                         });
                     }
@@ -1016,39 +1020,63 @@ export class LeoIntegration {
         }
     }
 
+    public newLeoFile(): void {
+        // * Creates a new untitled Leo document
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        this._triggerBodySave(true)
+            .then(() => {
+                return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '""');
+            })
+            .then((p_openFileResult: LeoBridgePackage) => {
+                // this._leoOpenedFilesIndex = this._openedLeoDocuments.length; // set it before pushing!
+                // this._openedLeoDocuments.push("");
+                console.log('got new file result: ', p_openFileResult);
+
+                if (p_openFileResult.opened) {
+                    return this._setupOpenedLeoDocument(p_openFileResult.opened);
+                } else {
+                    console.log('New Leo File Error');
+                }
+            });
+    }
+
     public openLeoFile(): void {
         // ! Leaves focus in outline !
         // * Shows an 'Open Leo File' dialog window, opens the chosen file via leoBridge along with showing the tree, body and log panes
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
         // TODO : Support multiple simultaneous opened files
-        if (this.fileOpenedReady) {
-            vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_ALREADY_OPENED);
-            return;
-        }
+        // if (this.fileOpenedReady) {
+        //     vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_ALREADY_OPENED);
+        //     return;
+        // }
         this._leoFilesBrowser.getLeoFileUrl()
             .then(p_chosenLeoFile => {
-                // TODO : IF ALREADY OPENED - SWITCH TO IT !
-                const w_foundDocument: number = this._openedLeoDocuments.indexOf(p_chosenLeoFile);
-                if (w_foundDocument > -1) {
-                    this._switchLeoDocument(w_foundDocument);
-                    console.log('reject because blank');
-                    return Promise.reject();
-                } else {
-                    this._openedLeoDocuments.push(p_chosenLeoFile); // added on success but index still pending on result
-                    console.log('Opening:', p_chosenLeoFile);
-                    return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
-                }
+                //this._openedLeoDocuments.push(p_chosenLeoFile); // added on success but index still pending on result
+                console.log('Opening:', p_chosenLeoFile);
+                return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
+
+                // // TODO : IF ALREADY OPENED - SWITCH TO IT !
+                // const w_foundDocument: number = this._openedLeoDocuments.indexOf(p_chosenLeoFile);
+                // if (w_foundDocument > -1) {
+                //     this._switchLeoDocument(w_foundDocument);
+                //     console.log('reject because blank');
+                //     return Promise.reject();
+                // } else {
+                //     this._openedLeoDocuments.push(p_chosenLeoFile); // added on success but index still pending on result
+                //     console.log('Opening:', p_chosenLeoFile);
+                //     return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
+                // }
             }, p_errorGetFile => {
                 return Promise.reject(p_errorGetFile);
             })
             .then((p_openFileResult: LeoBridgePackage) => {
                 console.log('in .then ok really opened');
 
-                this._leoOpenedFilesIndex = this._openedLeoDocuments.length - 1; // set it AFTER so -1
-                return this._setupOpenedLeoDocument(p_openFileResult);
+                //this._leoOpenedFilesIndex = this._openedLeoDocuments.length - 1; // set it AFTER so -1
+                return this._setupOpenedLeoDocument(p_openFileResult.opened);
             }, p_errorOpen => {
                 console.log('in .then not opened or already opened');
-                this._openedLeoDocuments.pop(); // No need to restore index, it was only set if stack untouched
+                //this._openedLeoDocuments.pop(); // No need to restore index, it was only set if stack untouched
                 return Promise.reject(p_errorOpen);
             });
     }
@@ -1075,19 +1103,14 @@ export class LeoIntegration {
     public test(p_fromOutline?: boolean): void {
         // * Debugging utility function
         if (this.fileOpenedReady) {
-            // * Test status bar command as a 'switch' or 'Show leo commands'
-            if (this._openedLeoDocuments.length) {
-                this.switchLeoFile();
-            } else {
-                this.showLeoCommands();
-            }
+            this.switchLeoFile();
             // if (p_fromOutline) {
             //     vscode.window.showInformationMessage('Called TEST from Outline');
             // } else {
             //     vscode.window.showInformationMessage("Called TEST from Body");
             // }
         } else {
-            vscode.window.showInformationMessage("File not ready");
+            this.showLeoCommands();
         }
     }
 }

@@ -41,15 +41,17 @@
 </v>
 <v t="felix.20191126232434.4"><vh>class LeoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
-<v t="felix.20200303211848.1"><vh>_commanders</vh></v>
 <v t="felix.20200303214235.1"><vh>_asyncIdleLoop</vh></v>
 <v t="felix.20200303214255.1"><vh>_idleTime</vh></v>
+<v t="felix.20200623201853.1"><vh>_getTotalOpened</vh></v>
+<v t="felix.20200623215904.1"><vh>_getFirstOpenedCommander</vh></v>
 <v t="felix.20200304224909.1"><vh>sendAsyncOutput</vh></v>
 <v t="felix.20200304220844.1"><vh>askResult</vh></v>
 <v t="felix.20200312231358.1"><vh>applyConfig</vh></v>
 <v t="felix.20200219224515.1"><vh>logSignon</vh></v>
 <v t="felix.20200219222712.1"><vh>es</vh></v>
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
+<v t="felix.20200622230608.1"><vh>getOpenedFiles</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
 <v t="felix.20200216160305.1"><vh>saveFile</vh></v>
@@ -143,40 +145,69 @@ To contribute, see the official issues page for current list of 'TODO's at https
 
 </t>
 <t tx="felix.20191126232434.13">def openFile(self, p_file):
-    '''Open a leo file via leoBridge controller, or create a new document if empty string'''
-    self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+    """
+    Open a leo file via leoBridge controller, or create a new document if empty string.
+    Returns an object that contains a 'opened' member.
+    """
+    w_found = False
 
-    # did this add ato existing array of g.app.commanders() ?
-    print(str(self.g.app.commanders()))  # test
+    # If not empty string (asking for New file) then check if already opened
+    if p_file:
+        for w_commander in self.g.app.commanders():
+            if w_commander.fileName() == p_file:
+                w_found = True
+                print("same!")
+                self.commander = w_commander
 
-    # * setup leoBackground to get messages from leo
-    try:
-        self.g.app.idleTimeManager.start()  # To catch derived file changes
-    except:
-        print('ERROR with idleTimeManager')
+    if not w_found:
+        self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+
+    # Leo at this point has done this too: g.app.windowList.append(c.frame)
+    # and so this now app.commanders() yields this: return [f.c for f in g.app.windowList]
+
+    # did this add to existing array of g.app.commanders() ?
+    # print(str(self.g.app.commanders()))  # test
+    print(*self.g.app.commanders(), sep='\n')
 
     if self.commander:
+        self.commander.closed = False
         self.create_gnx_to_vnode()
-        return self.outputPNode(self.commander.p)
+        w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                    "node": self.p_to_ap(self.commander.p)}
+        return self.sendLeoBridgePackage("opened", w_result)
     else:
         return self.outputError('Error in openFile')
 
 </t>
 <t tx="felix.20191126232434.14">def closeFile(self, p_package):
-    '''Closes a leo file. A file can then be opened with "openFile"'''
+    """
+    Closes a leo file. A file can then be opened with "openFile"
+    Returns an object that contains a 'closed' member
+    """
     # TODO : Specify which file to support multiple opened files
     print("Trying to close opened file " + str(self.commander.changed))
     if self.commander:
-        if "forced" in p_package:
-            if p_package["forced"]:
-                print('TODO : FORCED CLOSE!')
-                return self.sendLeoBridgePackage('closed', False)
-        if self.commander.changed:
-            return self.sendLeoBridgePackage('closed', False)
-        else:
+        if p_package["forced"] or not self.commander.changed:
             self.commander.close()
-            return self.sendLeoBridgePackage('closed', True)
-    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+            self.commander.closed = True
+        else:
+            return self.sendLeoBridgePackage('closed', False)  # Cannot close, ask to save, ignore or cancel
+
+    # Switch commanders to first available
+    w_total = self._getTotalOpened()
+    if w_total:
+        self.commander = self._getFirstOpenedCommander()
+    else:
+        self.commander = None
+
+    if self.commander:
+        self.create_gnx_to_vnode()
+        w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                    "node": self.p_to_ap(self.commander.p)}
+        return self.sendLeoBridgePackage("closed", w_result)
+    else:
+        w_result = {"total": 0}
+        return self.sendLeoBridgePackage("closed", w_result)
 
 </t>
 <t tx="felix.20191126232434.15">def getPNode(self, p_ap):
@@ -459,19 +490,25 @@ if __name__ == '__main__':
 
     # print(dir(self.g))
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
-    # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
+
+    # * Currently Selected Commander (opened from leo.core.leoBridge or chosen via the g.app.windowList frame list)
+    self.commander = None
+
     self.leoIntegConfig = None
     self.webSocket = None
     self.loop = None
 
+    # * Three Replacement instances to Leo's codebase : IdleTime, idleTimeManager and externalFilesController
     self.g.IdleTime = self._idleTime
     self.g.app.idleTimeManager = IdleTimeManager(self.g)
-    self.g.app.commanders = self._commanders
-
-    self.efc = ExternalFilesController(self)
-
     # attach instance to g.app for calls to set_time, etc.
-    self.g.app.externalFilesController = self.efc
+    self.g.app.externalFilesController = ExternalFilesController(self)
+
+    # * setup leoBackground to get messages from leo
+    try:
+        self.g.app.idleTimeManager.start()  # To catch derived file changes
+    except:
+        print('ERROR with idleTimeManager')
 
 </t>
 <t tx="felix.20191126232434.7">def sendLeoBridgePackage(self, p_key=False, p_any=None):
@@ -1273,13 +1310,6 @@ wsPort = 32125
         self.checksum_d[path] = self.checksum(path)
 
 </t>
-<t tx="felix.20200303211848.1">def _commanders(self):
-    ''' Return list of currently active controllers '''
-    # TODO : REVISE/REPLACE WITH OWN SYSTEM
-    # return [f.c for f in g.app.windowList]
-    return [self.commander]
-
-</t>
 <t tx="felix.20200303214235.1">async def _asyncIdleLoop(self, p_seconds, p_fn):
     while True:
         await asyncio.sleep(p_seconds)
@@ -1293,7 +1323,7 @@ wsPort = 32125
 </t>
 <t tx="felix.20200304220844.1">def askResult(self, p_result):
     '''Got the result to an asked question/warning from vscode'''
-    self.efc.integResult(p_result)
+    self.g.app.externalFilesController.integResult(p_result)
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
@@ -1387,6 +1417,36 @@ wsPort = 32125
             print(str(e))
 
     return self.sendLeoBridgePackage()  # Just send empty as 'did nothing'
+
+</t>
+<t tx="felix.20200622230608.1">def getOpenedFiles(self, p_package):
+    '''Return array of opened file path/names to be used as openFile parameters to switch files'''
+    w_openedFiles = []
+    for w_commander in self.g.app.commanders():
+        if w_commander.closed == False:
+            w_openedFiles.append(w_commander.mFileName)
+    print('got openedFiles' + str(w_openedFiles))
+    return self.sendLeoBridgePackage('openedFiles', w_openedFiles)
+
+</t>
+<t tx="felix.20200623201853.1">def _getTotalOpened(self):
+    '''Get total of opened commander (who have closed == false)'''
+    w_total = 0
+    for w_commander in self.g.app.commanders():
+        if w_commander.closed == False:
+            w_total = w_total + 1
+    print('outputting total opened '+str(w_total))
+    return w_total
+
+</t>
+<t tx="felix.20200623215904.1">def _getFirstOpenedCommander(self):
+    '''Get first opened commander, or False if there are none.'''
+    for w_commander in self.g.app.commanders():
+        if w_commander.closed == False:
+            print('found first '+str(w_commander.fileName()))
+            return w_commander
+
+    return False
 
 </t>
 </tnodes>
