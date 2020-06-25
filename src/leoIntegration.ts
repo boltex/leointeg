@@ -56,7 +56,6 @@ export class LeoIntegration {
     private _leoBridge: LeoBridge; // Singleton service to access leobridgeserver
 
     // * Path + Filename string array of opened Leo documents in LeoBridge: Use empty string for new untitled documents.
-    private _leoOpenedFilesTotal: number = 0; // Leo Documents currently opened. Shown as status bar indicator with current filename
     private _leoOpenedFileName: string = ""; // Just the 'filename.leo' part, without path. Shown along total as status bar indicator
 
     // * Outline Pane
@@ -309,7 +308,7 @@ export class LeoIntegration {
      * * Returns true if the current opened Leo document's filename has some content (not a new unnamed file)
      */
     private _isCurrentFileNamed(): boolean {
-        return !!this._leoOpenedFileName.length;
+        return !!this._leoOpenedFileName.length; // checks if it's an empty string
     }
 
     // TODO : Use getlist from server
