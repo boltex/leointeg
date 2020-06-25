@@ -52,6 +52,7 @@
 <v t="felix.20200219222712.1"><vh>es</vh></v>
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
 <v t="felix.20200622230608.1"><vh>getOpenedFiles</vh></v>
+<v t="felix.20200624172552.1"><vh>setOpenedFile</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
 <v t="felix.20200216160305.1"><vh>saveFile</vh></v>
@@ -1447,6 +1448,31 @@ wsPort = 32125
             return w_commander
 
     return False
+
+</t>
+<t tx="felix.20200624172552.1">def setOpenedFile(self, p_package):
+    '''Choose the new active commander from array of opened file path/names'''
+    print("got a setopenedfile call! package is: ")
+    print(str(p_package))
+    w_openedFiles = []
+    for w_commander in self.g.app.commanders():
+        if w_commander.closed == False:
+            w_openedFiles.append(w_commander.mFileName)
+    print('setting openedFiles' + str(w_openedFiles))
+    
+    #  w_fileName = p_package['fileName']
+    #  w_index = p_package['index']
+    if w_openedFiles[p_package['index']]:
+        self.commander = w_openedFiles[p_package['index']]
+     
+    if self.commander:
+        self.commander.closed = False
+        self.create_gnx_to_vnode()
+        w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                    "node": self.p_to_ap(self.commander.p)}
+        return self.sendLeoBridgePackage("setOpened", w_result)
+    else:
+        return self.outputError('Error in setOpenedFile')
 
 </t>
 </tnodes>

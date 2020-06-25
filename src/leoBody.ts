@@ -192,7 +192,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                                 return Promise.resolve(Buffer.from(""));
                             } else {
                                 console.error("ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?
-                                throw vscode.FileSystemError.FileNotFound();
+                                return Promise.resolve(Buffer.from(""));
+                                //  throw vscode.FileSystemError.FileNotFound();
                             }
                         });
                 }

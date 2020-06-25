@@ -530,6 +530,30 @@ class LeoBridgeIntegController:
         print('got openedFiles' + str(w_openedFiles))
         return self.sendLeoBridgePackage('openedFiles', w_openedFiles)
 
+    def setOpenedFile(self, p_package):
+        '''Choose the new active commander from array of opened file path/names'''
+        print("got a setopenedfile call! package is: ")
+        print(str(p_package))
+        w_openedCommanders = []
+        for w_commander in self.g.app.commanders():
+            if w_commander.closed == False:
+                w_openedCommanders.append(w_commander)
+        print('setting openedFiles' + str(w_openedCommanders))
+
+        #  w_fileName = p_package['fileName']
+        w_index = p_package['index']
+        if w_openedCommanders[w_index]:
+            self.commander = w_openedCommanders[w_index]
+
+        if self.commander:
+            self.commander.closed = False
+            self.create_gnx_to_vnode()
+            w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                        "node": self.p_to_ap(self.commander.p)}
+            return self.sendLeoBridgePackage("setOpened", w_result)
+        else:
+            return self.outputError('Error in setOpenedFile')
+
     def openFile(self, p_file):
         """
         Open a leo file via leoBridge controller, or create a new document if empty string.

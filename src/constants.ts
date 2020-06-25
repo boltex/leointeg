@@ -190,8 +190,8 @@ export class Constants {
         COLLAPSE_NODE: "collapseNode",
         CONTRACT_ALL: "contractAll",
         GET_OPENED_FILES: "getOpenedFiles", //  #13 @boltex
+        SET_OPENED_FILE: "setOpenedFile", // Pass index ? name to validate / error check, only index when stable
         OPEN_FILE: "openFile", // TODO : #13 @boltex Support multiple simultaneous opened files
-        SWITCH_FILE: "switchFile", // Pass index ? name to validate / error check, only index when stable
         CLOSE_FILE: "closeFile", // TODO : #13 @boltex Implement & support multiple simultaneous files
         SAVE_FILE: "saveFile", // TODO : #13 @boltex Specify which file when supporting multiple simultaneous files
         SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document

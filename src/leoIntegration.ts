@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -922,15 +922,6 @@ export class LeoIntegration {
         }
     }
 
-    public switchLeoFile(): void {
-        // * Show switch document dialog to the user, or just return if no files are opened.
-        // get list and show dialog to user, even if there's only one...but at least one!
-        this._leoBridge.action(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package => {
-            console.log('TODO: got this list, now show it:', p_package.files);
-
-        });
-    }
-
     public saveAsLeoFile(p_fromOutline?: boolean): void {
         // * Asks for file name and path, then saves the Leo file
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
@@ -971,6 +962,50 @@ export class LeoIntegration {
 
     }
 
+    public switchLeoFile(): void {
+        // * Show switch document dialog to the user, or just return if no files are opened.
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+
+        // get list and show dialog to user, even if there's only one...but at least one!
+        // TODO : p_package members names should be made into constants
+        this._triggerBodySave(true)
+            .then(() => {
+                return this._leoBridge.action(Constants.LEOBRIDGE.GET_OPENED_FILES);
+            })
+            .then(p_package => {
+                const w_entries: ChooseDocumentItem[] = [];
+                let w_index: number = 0;
+                if (p_package.openedFiles && p_package.openedFiles.length) {
+                    p_package.openedFiles.forEach(function (p_filePath: string) {
+                        console.log(p_filePath);
+                        if (p_filePath) {
+                            w_entries.push({ label: w_index.toString(), description: p_filePath, value: w_index });
+                        } else {
+                            w_entries.push({ label: w_index.toString(), description: "untitled", value: w_index });
+                        }
+                        w_index++;
+                    });
+                    // array ready
+                    vscode.window.showQuickPick(w_entries).then((p_chosenDocument) => {
+                        if (p_chosenDocument) {
+                            // Finish with a 'setOpenedFile'
+                            this._leoBridge.action(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_chosenDocument.value }))
+                                .then((p_openFileResult) => {
+                                    // Like we just opened or made a new file
+                                    if (p_openFileResult.setOpened) {
+                                        this._setupOpenedLeoDocument(p_openFileResult.setOpened);
+                                    } else {
+                                        console.log('New Leo File Error');
+                                    }
+                                });
+                        } // else : cancelled so no action taken
+                    });
+
+                    // done
+                }
+            });
+    }
+
     public closeLeoFile(): void {
         // * Close an opened Leo file
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
@@ -982,6 +1017,7 @@ export class LeoIntegration {
                 })
                 .then((p_package => {
                     console.log('Back from close. Response is: ', p_package);
+                    // TODO : p_package members names should be made into constants
                     if (p_package.closed) {
                         console.log('Closed! ');
                         if (p_package.closed.total === 0) {
@@ -1070,31 +1106,12 @@ export class LeoIntegration {
     }
 
     public openLeoFile(): void {
-        // ! Leaves focus in outline !
         // * Shows an 'Open Leo File' dialog window, opens the chosen file via leoBridge along with showing the tree, body and log panes
+        // ! Leaves focus in outline !
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        // TODO : Support multiple simultaneous opened files
-        // if (this.fileOpenedReady) {
-        //     vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_ALREADY_OPENED);
-        //     return;
-        // }
         this._leoFilesBrowser.getLeoFileUrl()
             .then(p_chosenLeoFile => {
-                //this._openedLeoDocuments.push(p_chosenLeoFile); // added on success but index still pending on result
-                console.log('Opening:', p_chosenLeoFile);
                 return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
-
-                // // TODO : IF ALREADY OPENED - SWITCH TO IT !
-                // const w_foundDocument: number = this._openedLeoDocuments.indexOf(p_chosenLeoFile);
-                // if (w_foundDocument > -1) {
-                //     this._switchLeoDocument(w_foundDocument);
-                //     console.log('reject because blank');
-                //     return Promise.reject();
-                // } else {
-                //     this._openedLeoDocuments.push(p_chosenLeoFile); // added on success but index still pending on result
-                //     console.log('Opening:', p_chosenLeoFile);
-                //     return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
-                // }
             }, p_errorGetFile => {
                 return Promise.reject(p_errorGetFile);
             })

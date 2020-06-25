@@ -165,3 +165,10 @@ export interface runInfoMessageDialogParameters {
 export interface AskMessageItem extends vscode.MessageItem {
     value: string;
 }
+
+/**
+ * * Used in switch Leo document to get answer from user interaction
+ */
+export interface ChooseDocumentItem extends vscode.QuickPickItem {
+    value: number;
+}

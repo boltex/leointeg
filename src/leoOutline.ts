@@ -9,6 +9,8 @@ import { Constants } from "./constants";
  */
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
+    // TODO : p_package members names should be made into constants
+
     private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> = new vscode.EventEmitter<LeoNode | undefined>();
 
     readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;

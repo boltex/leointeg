@@ -277,7 +277,11 @@
       {
         "command": "leointeg.switchLeoFile",
         "title": "Switch Leo File",
-        "category": "Leo"
+        "category": "Leo",
+        "icon": {
+          "light": "resources/light/switch.svg",
+          "dark": "resources/dark/switch.svg"
+        }
       },
       {
         "command": "leointeg.newLeoFile",
