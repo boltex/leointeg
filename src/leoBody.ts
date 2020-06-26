@@ -35,7 +35,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
      * @param p_uri URI of file for which to set made-up modified time
      */
     public setBodyTime(p_uri: vscode.Uri): void {
-        const w_gnx = utils.uriToStr(p_uri);
+        const w_gnx = utils.leoUriToStr(p_uri);
         this._selectedBody = {
             gnx: w_gnx,
             ctime: 0,
@@ -67,7 +67,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         };
         this._onDidChangeFileEmitter.fire([{
             type: vscode.FileChangeType.Changed,
-            uri: utils.strToUri(p_gnx)
+            uri: utils.strToLeoUri(p_gnx)
         } as vscode.FileChangeEvent]);
     }
 
@@ -106,7 +106,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public watch(p_resource: vscode.Uri): vscode.Disposable {
-        const w_gnx = utils.uriToStr(p_resource);
+        const w_gnx = utils.leoUriToStr(p_resource);
         if (!this._openedBodiesGnx.includes(w_gnx)) {
             this._openedBodiesGnx.push(w_gnx); // add gnx
         }
@@ -120,7 +120,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public fireDeleteExpiredGnx(p_gnxList: string[]): void {
         p_gnxList.forEach(p_gnx => {
-            const w_uri: vscode.Uri = utils.strToUri(p_gnx);
+            const w_uri: vscode.Uri = utils.strToLeoUri(p_gnx);
             this._fireSoon({ uri: w_uri, type: vscode.FileChangeType.Deleted });
         });
     }
@@ -141,7 +141,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     size: this._lastGnxBodyLength
                 };
             } else {
-                const w_gnx = utils.uriToStr(p_uri);
+                const w_gnx = utils.leoUriToStr(p_uri);
                 if (this._selectedBody.gnx !== w_gnx && this._renameBody.gnx !== w_gnx) {
                     console.log('ERROR File not in list selected: ' + this._selectedBody.gnx + " renamed: " + this._renameBody.gnx + " stat asked on w_gnx: " + w_gnx);
                     throw vscode.FileSystemError.FileNotFound();
@@ -175,7 +175,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
                 throw vscode.FileSystemError.FileIsADirectory();
             } else {
-                const w_gnx = utils.uriToStr(p_uri);
+                const w_gnx = utils.leoUriToStr(p_uri);
                 // if (!this._possibleGnxList.includes(w_gnx)) {
                 if (this._selectedBody.gnx !== w_gnx && this._renameBody.gnx !== w_gnx) {
                     console.error("readFile: ERROR File not in list! readFile missing refreshes?");
@@ -220,7 +220,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
         this._leoIntegration.checkWriteFile();
-        const w_gnx = utils.uriToStr(p_uri);
+        const w_gnx = utils.leoUriToStr(p_uri);
         const w_now = Date.now();
         if (this._selectedBody.gnx === w_gnx) {
             this._selectedBody.mtime = w_now;
@@ -232,7 +232,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public rename(p_oldUri: vscode.Uri, p_newUri: vscode.Uri, p_options: { overwrite: boolean }): void {
-        const w_gnx = utils.uriToStr(p_newUri);
+        const w_gnx = utils.leoUriToStr(p_newUri);
         if (this._selectedBody.gnx === w_gnx) {
             this._selectedBody.mtime = Date.now();
         }

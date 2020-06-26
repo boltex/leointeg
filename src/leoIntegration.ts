@@ -91,7 +91,7 @@ export class LeoIntegration {
     private _bodyTextDocument: vscode.TextDocument | undefined; // Source 'textDocument' from last body 'textEditor' found
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
 
-    private _bodyUri: vscode.Uri = utils.strToUri("");
+    private _bodyUri: vscode.Uri = utils.strToLeoUri("");
     get bodyUri(): vscode.Uri {
         return this._bodyUri;
     }
@@ -311,23 +311,6 @@ export class LeoIntegration {
         return !!this._leoOpenedFileName.length; // checks if it's an empty string
     }
 
-    // TODO : Use getlist from server
-    // private _checkFilesAllClosed(): void {
-    //     // * Check if the last opened Leo file was closed (no opened files) & setup leoInteg's UI accordingly.
-    //     if (!this._openedLeoDocuments.length) {
-    //         this.fileOpenedReady = false; // Empty, so revert the context flag
-    //     }
-    // }
-
-    // TODO : finish implementing USE OPENFILE INSTEAD LEO WILL SWITCH AUTOMATICALLY
-    // private _switchLeoDocument(p_index: number) {
-    //     // * Switch to another opened Leo document through leoBridge to browse and edit, then force a refresh of the ui.
-    //     console.log('SWITCH TO LEO DOCUMENT, index:', p_index);
-    //     // console.log('Documents Array: ', this._openedLeoDocuments);
-    //     // ACTION : switch
-    //     // TODO : Finish this!
-    // }
-
     private _setupNoOpenedLeoDocument(): void {
         this.fileOpenedReady = false;
         this.closeBody();
@@ -337,13 +320,14 @@ export class LeoIntegration {
         // * A Leo file was opened so setup leoInteg's UI accordingly.
 
         const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
+        this._leoOpenedFileName = p_openFileResult.filename;
 
         // * Could be already opened, so perform 'rename hack' as if another node was selected
         if (this._bodyTextDocument && this.bodyUri) {
             console.log('TRYING SWITCH BODY');
             this._switchBody(w_selectedLeoNode.gnx);
         } else {
-            this.bodyUri = utils.strToUri(w_selectedLeoNode.gnx);
+            this.bodyUri = utils.strToLeoUri(w_selectedLeoNode.gnx);
         }
 
         // * Start body pane system
@@ -457,7 +441,7 @@ export class LeoIntegration {
             this._fromOutline = false; // Focus is on body pane
 
             // * If icon should change then do it now (if there's no document edit pending)
-            if (this.lastSelectedNode && utils.uriToStr(p_event.document.uri) === this.lastSelectedNode.gnx) {
+            if (this.lastSelectedNode && utils.leoUriToStr(p_event.document.uri) === this.lastSelectedNode.gnx) {
                 const w_hasBody = !!(p_event.document.getText().length);
                 if (utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody)) {
                     // console.log('instant save!');
@@ -491,7 +475,7 @@ export class LeoIntegration {
         if (p_document) {
             // * Fetch gnx and document's body text first, to be reused more than once in this method
             const w_param = {
-                gnx: utils.uriToStr(p_document.uri),
+                gnx: utils.leoUriToStr(p_document.uri),
                 body: p_document.getText()
             };
             return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)).then(() => {
@@ -692,7 +676,7 @@ export class LeoIntegration {
             // * Check if already opened and visible, _locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
             if (this._locateOpenedBody(p_node.gnx)) {
                 // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
-                this.bodyUri = utils.strToUri(p_node.gnx);
+                this.bodyUri = utils.strToLeoUri(p_node.gnx);
                 return this._showBodyIfRequired(p_aside, p_showBodyKeepFocus, p_force_open); // already opened in a column so just tell vscode to show it // TODO : NOT ANYMORE WITH NEW SYSTEM
             } else {
                 // * So far, _bodyTextDocument is still opened and different from new selection: so "save & rename" to block undo/redos
@@ -703,7 +687,7 @@ export class LeoIntegration {
             }
         } else {
             // * Is the last opened body is closed so just open the newly selected one
-            this.bodyUri = utils.strToUri(p_node.gnx);
+            this.bodyUri = utils.strToLeoUri(p_node.gnx);
             return this._showBodyIfRequired(p_aside, p_showBodyKeepFocus, p_force_open);
         }
     }
@@ -726,11 +710,11 @@ export class LeoIntegration {
                 this._leoFileSystem.setRenameTime(p_newGnx);
                 w_edit.renameFile(
                     this.bodyUri, // Old URI from last node
-                    utils.strToUri(p_newGnx), // New URI from selected node
+                    utils.strToLeoUri(p_newGnx), // New URI from selected node
                     { overwrite: true, ignoreIfExists: true }
                 );
                 return vscode.workspace.applyEdit(w_edit).then(p_result => {
-                    this.bodyUri = utils.strToUri(p_newGnx); // Old is now set to new to finish
+                    this.bodyUri = utils.strToLeoUri(p_newGnx); // Old is now set to new to finish
                     return Promise.resolve(p_result); // Also finish by showing it if not already visible
                 });
             });
@@ -744,7 +728,7 @@ export class LeoIntegration {
         let w_found = false;
         // * Only gets to visible editors, not every tab per editor
         vscode.window.visibleTextEditors.forEach(p_textEditor => {
-            if (utils.uriToStr(p_textEditor.document.uri) === p_gnx) {
+            if (utils.leoUriToStr(p_textEditor.document.uri) === p_gnx) {
                 w_found = true;
                 this._bodyTextDocument = p_textEditor.document;
                 this._bodyMainSelectionColumn = p_textEditor.viewColumn;
@@ -771,7 +755,7 @@ export class LeoIntegration {
             this._needRefreshBody = false; // Flag has triggered a body refresh so we clear it
             // TODO : CHECK IF TIMEOUT NECESSARY!
             setTimeout(() => {
-                this._leoFileSystem.fireRefreshFile(utils.uriToStr(this.bodyUri));
+                this._leoFileSystem.fireRefreshFile(utils.leoUriToStr(this.bodyUri));
             }, 0);
         }
         return vscode.workspace.openTextDocument(this.bodyUri).then(p_document => {
@@ -817,7 +801,7 @@ export class LeoIntegration {
         // TODO : REPLACED BY SHOW BODY? UNUSED ?
         let w_found: undefined | vscode.TextEditor;
         vscode.window.visibleTextEditors.forEach(p_textEditor => {
-            if (!w_found && (utils.uriToStr(p_textEditor.document.uri) === p_gnx)) {
+            if (!w_found && (utils.leoUriToStr(p_textEditor.document.uri) === p_gnx)) {
                 w_found = p_textEditor;
             }
         });
@@ -973,19 +957,35 @@ export class LeoIntegration {
             })
             .then(p_package => {
                 const w_entries: ChooseDocumentItem[] = [];
+                const w_files: string[] = p_package.openedFiles.files;
+                const w_selectedIndex: number = p_package.openedFiles.index;
                 let w_index: number = 0;
-                if (p_package.openedFiles && p_package.openedFiles.length) {
-                    p_package.openedFiles.forEach(function (p_filePath: string) {
+                let w_currentlySelected = "";
+                let w_placeholder = "";
+                if (w_files && w_files.length) {
+                    w_files.forEach(function (p_filePath: string) {
                         console.log(p_filePath);
+                        if (w_index === w_selectedIndex) {
+                            w_currentlySelected = p_filePath;
+                        }
                         if (p_filePath) {
-                            w_entries.push({ label: w_index.toString(), description: p_filePath, value: w_index });
+                            w_entries.push({ label: w_index.toString(), description: p_filePath, value: w_index, alwaysShow: true });
                         } else {
-                            w_entries.push({ label: w_index.toString(), description: "untitled", value: w_index });
+                            w_entries.push({ label: w_index.toString(), description: "untitled", value: w_index, alwaysShow: true });
                         }
                         w_index++;
                     });
                     // array ready
-                    vscode.window.showQuickPick(w_entries).then((p_chosenDocument) => {
+                    if (w_currentlySelected) {
+                        const w_uri = vscode.Uri.file(w_currentlySelected);
+                    } else {
+                        w_placeholder = "untitled";
+                    }
+                    const w_pickOptions: vscode.QuickPickOptions = {
+                        matchOnDescription: true,
+                        placeHolder: w_placeholder
+                    };
+                    vscode.window.showQuickPick(w_entries, w_pickOptions).then((p_chosenDocument) => {
                         if (p_chosenDocument) {
                             // Finish with a 'setOpenedFile'
                             this._leoBridge.action(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_chosenDocument.value }))

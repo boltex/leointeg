@@ -1422,11 +1422,21 @@ wsPort = 32125
 </t>
 <t tx="felix.20200622230608.1">def getOpenedFiles(self, p_package):
     '''Return array of opened file path/names to be used as openFile parameters to switch files'''
-    w_openedFiles = []
+    w_files = []
+    w_index = 0
+    w_indexFound = 0
     for w_commander in self.g.app.commanders():
         if w_commander.closed == False:
-            w_openedFiles.append(w_commander.mFileName)
-    print('got openedFiles' + str(w_openedFiles))
+            w_files.append(w_commander.mFileName)
+            if self.commander == w_commander:
+                w_indexFound = w_index
+        w_index = w_index + 1
+
+    print('got Files' + str(w_files))
+    print('index is ' + str(w_indexFound))
+
+    w_openedFiles = {"files": w_files, "index": w_indexFound}
+
     return self.sendLeoBridgePackage('openedFiles', w_openedFiles)
 
 </t>
@@ -1454,17 +1464,17 @@ wsPort = 32125
     '''Choose the new active commander from array of opened file path/names'''
     print("got a setopenedfile call! package is: ")
     print(str(p_package))
-    w_openedFiles = []
+    w_openedCommanders = []
     for w_commander in self.g.app.commanders():
         if w_commander.closed == False:
-            w_openedFiles.append(w_commander.mFileName)
-    print('setting openedFiles' + str(w_openedFiles))
-    
+            w_openedCommanders.append(w_commander)
+    print('setting openedFiles' + str(w_openedCommanders))
+
     #  w_fileName = p_package['fileName']
-    #  w_index = p_package['index']
-    if w_openedFiles[p_package['index']]:
-        self.commander = w_openedFiles[p_package['index']]
-     
+    w_index = p_package['index']
+    if w_openedCommanders[w_index]:
+        self.commander = w_openedCommanders[w_index]
+
     if self.commander:
         self.commander.closed = False
         self.create_gnx_to_vnode()

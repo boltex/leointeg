@@ -69,7 +69,7 @@ export function isHexColor(p_hexString: string): boolean {
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */
-export function strToUri(p_str: string): vscode.Uri {
+export function strToLeoUri(p_str: string): vscode.Uri {
     return vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_str);
 }
 
@@ -78,7 +78,7 @@ export function strToUri(p_str: string): vscode.Uri {
  * @param p_uri Source uri to extract from
  * @returns The string source that was used to build this Uri
  */
-export function uriToStr(p_uri: vscode.Uri): string {
+export function leoUriToStr(p_uri: vscode.Uri): string {
     // TODO : Use length of a constant or something other than 'fsPath'
     // For now, just remove the '/' (or backslash on Windows) before the path string
     return p_uri.fsPath.substr(1);
