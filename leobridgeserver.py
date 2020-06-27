@@ -435,11 +435,13 @@ class LeoBridgeIntegController:
         self.webSocket = None
         self.loop = None
 
-        # * Three Replacement instances to Leo's codebase : IdleTime, idleTimeManager and externalFilesController
+        # * Replacement instances to Leo's codebase : IdleTime, idleTimeManager and externalFilesController
         self.g.IdleTime = self._idleTime
         self.g.app.idleTimeManager = IdleTimeManager(self.g)
         # attach instance to g.app for calls to set_time, etc.
         self.g.app.externalFilesController = ExternalFilesController(self)
+        # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
+        self.g.app.gui.runAskYesNoDialog = self._returnYes  # override for "revert to file" operation
 
         # * setup leoBackground to get messages from leo
         try:
@@ -451,6 +453,14 @@ class LeoBridgeIntegController:
         while True:
             await asyncio.sleep(p_seconds)
             p_fn(self)
+
+    def _returnNo(self, *arguments):
+        '''Used to override g.app.gui.ask[XXX] dialogs answers'''
+        return "no"
+
+    def _returnYes(self, *arguments):
+        '''Used to override g.app.gui.ask[XXX] dialogs answers'''
+        return "yes"
 
     def _idleTime(self, fn, delay, tag):
         # TODO : REVISE/REPLACE WITH OWN SYSTEM
@@ -606,9 +616,13 @@ class LeoBridgeIntegController:
         # TODO : Specify which file to support multiple opened files
         print("Trying to close opened file " + str(self.commander.changed))
         if self.commander:
+            if p_package["forced"] and self.commander.changed:
+                # return "no" g.app.gui.runAskYesNoDialog  and g.app.gui.runAskYesNoCancelDialog
+                print("self.commander.revert()")
+                self.commander.revert()
             if p_package["forced"] or not self.commander.changed:
-                self.commander.close()
                 self.commander.closed = True
+                self.commander.close()
             else:
                 return self.sendLeoBridgePackage('closed', False)  # Cannot close, ask to save, ignore or cancel
 

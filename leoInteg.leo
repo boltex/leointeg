@@ -42,6 +42,8 @@
 <v t="felix.20191126232434.4"><vh>class LeoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
 <v t="felix.20200303214235.1"><vh>_asyncIdleLoop</vh></v>
+<v t="felix.20200626012709.1"><vh>_returnNo</vh></v>
+<v t="felix.20200626030820.1"><vh>_returnYes</vh></v>
 <v t="felix.20200303214255.1"><vh>_idleTime</vh></v>
 <v t="felix.20200623201853.1"><vh>_getTotalOpened</vh></v>
 <v t="felix.20200623215904.1"><vh>_getFirstOpenedCommander</vh></v>
@@ -188,9 +190,13 @@ To contribute, see the official issues page for current list of 'TODO's at https
     # TODO : Specify which file to support multiple opened files
     print("Trying to close opened file " + str(self.commander.changed))
     if self.commander:
+        if p_package["forced"] and self.commander.changed:
+            # return "no" g.app.gui.runAskYesNoDialog  and g.app.gui.runAskYesNoCancelDialog
+            print("self.commander.revert()")
+            self.commander.revert()
         if p_package["forced"] or not self.commander.changed:
-            self.commander.close()
             self.commander.closed = True
+            self.commander.close()
         else:
             return self.sendLeoBridgePackage('closed', False)  # Cannot close, ask to save, ignore or cancel
 
@@ -499,11 +505,13 @@ if __name__ == '__main__':
     self.webSocket = None
     self.loop = None
 
-    # * Three Replacement instances to Leo's codebase : IdleTime, idleTimeManager and externalFilesController
+    # * Replacement instances to Leo's codebase : IdleTime, idleTimeManager and externalFilesController
     self.g.IdleTime = self._idleTime
     self.g.app.idleTimeManager = IdleTimeManager(self.g)
     # attach instance to g.app for calls to set_time, etc.
     self.g.app.externalFilesController = ExternalFilesController(self)
+    # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
+    self.g.app.gui.runAskYesNoDialog = self._returnYes  # override for "revert to file" operation
 
     # * setup leoBackground to get messages from leo
     try:
@@ -1483,6 +1491,16 @@ wsPort = 32125
         return self.sendLeoBridgePackage("setOpened", w_result)
     else:
         return self.outputError('Error in setOpenedFile')
+
+</t>
+<t tx="felix.20200626012709.1">def _returnNo(self, *arguments):
+    '''Used to override g.app.gui.ask[XXX] dialogs answers'''
+    return "no"
+
+</t>
+<t tx="felix.20200626030820.1">def _returnYes(self, *arguments):
+    '''Used to override g.app.gui.ask[XXX] dialogs answers'''
+    return "yes"
 
 </t>
 </tnodes>

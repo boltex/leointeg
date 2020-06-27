@@ -1,3 +1,5 @@
+import * as vscode from "vscode";
+
 /**
  * * Text and numeric constants used throughout leoInteg
  */
@@ -89,6 +91,24 @@ export class Constants {
         IGNORED: " They were ignored.", // with voluntary leading space
         TOO_FAST: "leoInteg is busy! " // with voluntary trailing space
     };
+
+    /**
+     * * Choices offered when about to lose current changes to a Leo Document
+     */
+    public static ASK_SAVE_CHANGES_BUTTONS: vscode.MessageItem[] = [
+        {
+            title: Constants.USER_MESSAGES.YES,
+            isCloseAffordance: false
+        },
+        {
+            title: Constants.USER_MESSAGES.NO,
+            isCloseAffordance: false
+        },
+        {
+            title: Constants.USER_MESSAGES.CANCEL,
+            isCloseAffordance: true
+        }
+    ];
 
     /**
      * * String for JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.

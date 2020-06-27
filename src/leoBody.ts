@@ -15,6 +15,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     // * Last file read data with the readFile method
     private _lastGnx: string = ""; // gnx of last file read
+    private _lastBodyData: string = ""; // body content of last file read
     private _lastGnxBodyLength: number = 0; // length of last file read
 
     // * List of currently opened body panes gnx (from 'watch' & 'dispose' methods)
@@ -131,8 +132,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
                 // console.log('called stat on root');
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-            } else if (p_uri.fsPath.substring(1) === this._lastGnx) {
-                // Tested by removing first character to check GNX - Starts with backslash vs slash in different OSes
+            } else if (utils.leoUriToStr(p_uri) === this._lastGnx) {
                 // If same as last checked, sending back time at absolute past
                 return {
                     type: vscode.FileType.File,
@@ -183,14 +183,23 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 } else {
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY, '"' + w_gnx + '"')
                         .then((p_result) => {
-                            this._lastGnx = w_gnx;
                             if (p_result.bodyData) {
+                                this._lastGnx = w_gnx;
+                                this._lastBodyData = p_result.bodyData;
                                 this._lastGnxBodyLength = p_result.bodyData.length;
                                 return Promise.resolve(Buffer.from(p_result.bodyData));
                             } else if (p_result.bodyData === "") {
+                                this._lastGnx = w_gnx;
                                 this._lastGnxBodyLength = 0;
+                                this._lastBodyData = "";
                                 return Promise.resolve(Buffer.from(""));
                             } else {
+                                if (this._lastGnx === w_gnx) {
+                                    // was last gnx of closed file about to be switched to new document selected
+                                    console.log('Passed in not found: ' + w_gnx);
+
+                                    return Promise.resolve(Buffer.from(this._lastBodyData));
+                                }
                                 console.error("ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?
                                 return Promise.resolve(Buffer.from(""));
                                 //  throw vscode.FileSystemError.FileNotFound();
