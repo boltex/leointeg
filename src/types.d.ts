@@ -123,6 +123,18 @@ export interface BodyTimeInfo {
 }
 
 /**
+ * * Parameter structure used in the 'runSaveFileDialog' equivalent when asking user input
+ */
+export interface showSaveAsDialogParameters {
+    // See TODO in leoAsync.ts
+    "initialFile": string;
+    "title": string;
+    "message": string;
+    "filetypes": string[];
+    "defaultExtension": string;
+}
+
+/**
  * * Parameter structure used in the 'runAskYesNoDialog' equivalent when asking user input
  */
 export interface runAskYesNoDialogParameters {
@@ -152,4 +164,11 @@ export interface runInfoMessageDialogParameters {
  */
 export interface AskMessageItem extends vscode.MessageItem {
     value: string;
+}
+
+/**
+ * * Used in switch Leo document to get answer from user interaction
+ */
+export interface ChooseDocumentItem extends vscode.QuickPickItem {
+    value: number;
 }

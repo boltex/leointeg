@@ -275,6 +275,15 @@
         }
       },
       {
+        "command": "leointeg.switchLeoFile",
+        "title": "Switch Leo File",
+        "category": "Leo",
+        "icon": {
+          "light": "resources/light/switch.svg",
+          "dark": "resources/dark/switch.svg"
+        }
+      },
+      {
         "command": "leointeg.newLeoFile",
         "title": "New Leo File",
         "category": "Leo",
@@ -860,11 +869,15 @@
         },
         {
           "command": "leointeg.openLeoFile",
-          "when": "leoBridgeReady && !leoTreeOpened"
+          "when": "leoBridgeReady"
+        },
+        {
+          "command": "leointeg.switchLeoFile",
+          "when": "leoBridgeReady && leoTreeOpened"
         },
         {
           "command": "leointeg.newLeoFile",
-          "when": "leoBridgeReady && !leoTreeOpened"
+          "when": "leoBridgeReady"
         },
         {
           "command": "leointeg.showLogPane",
@@ -1219,12 +1232,12 @@
         },
         {
           "command": "leointeg.openLeoFile",
-          "when": "view =~ /leoIntegration/ && leoBridgeReady && !leoTreeOpened",
+          "when": "view =~ /leoIntegration/ && leoBridgeReady",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.newLeoFile",
-          "when": "view =~ /leoIntegration/ && leoBridgeReady && !leoTreeOpened",
+          "when": "view =~ /leoIntegration/ && leoBridgeReady",
           "group": "navigation@1"
         },
         {

@@ -6,7 +6,7 @@ import { LeoNode } from "./leoNode";
 // * String and other types/structures helper functions, along with common vscode API calls
 
 /**
- * *  Build a string for representing a number that's 2 digits wide, padding with a zero if needed
+ * * Build a string for representing a number that's 2 digits wide, padding with a zero if needed
  * @param p_number Between 0 and 99
  * @returns a 2 digit wide string representation of the number, left padded with zeros as needed.
  */
@@ -15,7 +15,7 @@ export function padNumber2(p_number: number): string {
 }
 
 /**
- * *  Build all possible strings for icons graphic file paths
+ * * Build all possible strings for icons graphic file paths
  * @param p_context Needed to get to absolute paths on the system
  * @returns An array of the 16 vscode node icons used in this vscode expansion
  */
@@ -29,7 +29,7 @@ export function buildIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 }
 
 /**
- * *  Builds and returns a JSON string with 'node' and 'text' members
+ * * Builds and returns a JSON string with 'node' and 'text' members
  * @param p_nodeJson Targeted tree node in the proper JSON format
  * @param p_text Desired text sent along with node in the parameters of the action to be 'called'
  * @returns JSON string suitable for being a parameter of a leoBridge action
@@ -40,8 +40,18 @@ export function buildNodeAndTextJson(p_nodeJson: string, p_text: string): string
         "}";
 }
 
+
 /**
- * *  Checks if a node would become dirty if it were to now have body content at all
+ * * Extracts the file name from a full path
+ * @param p_path Full path such as "/var/drop/foo/boo/moo.js" or "C:\Documents and Settings\img\recycled log.jpg"
+ * @returns file name string
+ */
+export function getFileFromPath(p_path: string): string {
+    return p_path.replace(/^.*[\\\/]/, '');
+}
+
+/**
+ * * Checks if a node would become dirty if it were to now have body content at all
  * @param p_node LeoNode from vscode's outline
  * @param p_newHasBody Flag to signify presence of body content, to be compared with its current state
  * @returns True if it would change the icon with actual body content, false otherwise
@@ -54,7 +64,7 @@ export function isIconChangedByEdit(p_node: LeoNode, p_newHasBody: boolean): boo
 }
 
 /**
- * *  Checks if a string is formatted as a valid rrggbb color code.
+ * * Checks if a string is formatted as a valid rrggbb color code.
  * @param p_hexString hexadecimal 6 digits string, without leading '0x'
  * @returns True if the string is a valid representation of an hexadecimal 6 digit number
  */
@@ -65,27 +75,27 @@ export function isHexColor(p_hexString: string): boolean {
 }
 
 /**
- * *  Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
+ * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */
-export function strToUri(p_str: string): vscode.Uri {
+export function strToLeoUri(p_str: string): vscode.Uri {
     return vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_str);
 }
 
 /**
- * *  Gets the gnx, (or another string like 'LEO BODY' or other), from a vscode.Uri object
+ * * Gets the gnx, (or another string like 'LEO BODY' or other), from a vscode.Uri object
  * @param p_uri Source uri to extract from
  * @returns The string source that was used to build this Uri
  */
-export function uriToStr(p_uri: vscode.Uri): string {
+export function leoUriToStr(p_uri: vscode.Uri): string {
     // TODO : Use length of a constant or something other than 'fsPath'
     // For now, just remove the '/' (or backslash on Windows) before the path string
     return p_uri.fsPath.substr(1);
 }
 
 /**
- * *  Sets a vscode context variable with the 'vscode.commands.executeCommand' and 'setContext' method
+ * * Sets a vscode context variable with the 'vscode.commands.executeCommand' and 'setContext' method
  * @param p_key Key string name such as constants 'bridgeReady' or 'treeOpened', etc.
  * @param p_value Value to be assigned to the p_key 'key'
  * @returns A Thenable that was returned by the executeCommand call to set the context

@@ -133,6 +133,8 @@ export class CommandStack {
         // If last is done then do refresh outline and focus on outline, or body
         // console.log('p_package :', p_package);
 
+        // TODO : p_package members names should be made into constants
+
         this._receivedSelection = JSON.stringify(p_package.node); // ! Maybe set this._receivedSelection to the last one anyways ?
         if (!this.size()) {
             // Reset 'received' selected node so that lastSelectedNode is used instead

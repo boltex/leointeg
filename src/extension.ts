@@ -7,7 +7,7 @@ import { LeoNode } from "./leoNode";
 import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 
 /**
- * * Called when extension is activated
+ * * Called when extension is activated. It creates the leoIntegration and the 'welcome/Settings' webview instances
  */
 export function activate(p_context: vscode.ExtensionContext) {
 
@@ -40,6 +40,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.SHOW_LOG, () => w_leoIntegration.showLogPane()],
         [w_cmdPrefix + Constants.COMMANDS.SHOW_BODY, () => w_leoIntegration.showBody(false)], // Expose to other expansions only, (not in menus for minimal footprint)
         [w_cmdPrefix + Constants.COMMANDS.NEW_FILE, () => w_leoIntegration.newLeoFile()], // TODO : #13 @boltex  Support multiple simultaneous opened files
+        [w_cmdPrefix + Constants.COMMANDS.SWITCH_FILE, () => w_leoIntegration.switchLeoFile()], // TODO : #13 @boltex  Support multiple simultaneous opened files
+
         [w_cmdPrefix + Constants.COMMANDS.OPEN_FILE, () => w_leoIntegration.openLeoFile()], // TODO : #13 @boltex  Support multiple simultaneous opened files
         [w_cmdPrefix + Constants.COMMANDS.SAVE_AS_FILE, () => w_leoIntegration.saveAsLeoFile()], // TODO : #13 @boltex  Specify which file when supporting multiple simultaneous files
         [w_cmdPrefix + Constants.COMMANDS.SAVE_FILE, () => w_leoIntegration.saveLeoFile()], // TODO : #13 @boltex  Specify which file when supporting multiple simultaneous files

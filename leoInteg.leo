@@ -41,18 +41,24 @@
 </v>
 <v t="felix.20191126232434.4"><vh>class LeoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
-<v t="felix.20200303211848.1"><vh>_commanders</vh></v>
 <v t="felix.20200303214235.1"><vh>_asyncIdleLoop</vh></v>
+<v t="felix.20200626012709.1"><vh>_returnNo</vh></v>
+<v t="felix.20200626030820.1"><vh>_returnYes</vh></v>
 <v t="felix.20200303214255.1"><vh>_idleTime</vh></v>
+<v t="felix.20200623201853.1"><vh>_getTotalOpened</vh></v>
+<v t="felix.20200623215904.1"><vh>_getFirstOpenedCommander</vh></v>
 <v t="felix.20200304224909.1"><vh>sendAsyncOutput</vh></v>
 <v t="felix.20200304220844.1"><vh>askResult</vh></v>
 <v t="felix.20200312231358.1"><vh>applyConfig</vh></v>
 <v t="felix.20200219224515.1"><vh>logSignon</vh></v>
 <v t="felix.20200219222712.1"><vh>es</vh></v>
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
+<v t="felix.20200622230608.1"><vh>getOpenedFiles</vh></v>
+<v t="felix.20200624172552.1"><vh>setOpenedFile</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
 <v t="felix.20200216160305.1"><vh>saveFile</vh></v>
+<v t="felix.20200619165641.1"><vh>getStates</vh></v>
 <v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
 <v t="felix.20191128004456.1"><vh>setActionId</vh></v>
 <v t="felix.20200213195413.1"><vh>asyncOutput</vh></v>
@@ -62,7 +68,7 @@
 <v t="felix.20191126232434.10"><vh>outputPNode</vh></v>
 <v t="felix.20191126232434.11"><vh>outputPNodes</vh></v>
 </v>
-<v t="felix.20191128000818.1"><vh>Outline Edition Commands</vh>
+<v t="felix.20191128000818.1"><vh>Outline Editing Commands</vh>
 <v t="felix.20191127004621.1"><vh>markPNode</vh></v>
 <v t="felix.20191127235913.1"><vh>unmarkPNode</vh></v>
 <v t="felix.20191231203545.1"><vh>clonePNode</vh></v>
@@ -142,28 +148,73 @@ To contribute, see the official issues page for current list of 'TODO's at https
 
 </t>
 <t tx="felix.20191126232434.13">def openFile(self, p_file):
-    '''Open a leo file via leoBridge controller'''
-    self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+    """
+    Open a leo file via leoBridge controller, or create a new document if empty string.
+    Returns an object that contains a 'opened' member.
+    """
+    w_found = False
 
-    # * setup leoBackground to get messages from leo
-    try:
-        self.g.app.idleTimeManager.start()  # To catch derived file changes
-    except:
-        print('ERROR with idleTimeManager')
+    # If not empty string (asking for New file) then check if already opened
+    if p_file:
+        for w_commander in self.g.app.commanders():
+            if w_commander.fileName() == p_file:
+                w_found = True
+                print("same!")
+                self.commander = w_commander
+
+    if not w_found:
+        self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+
+    # Leo at this point has done this too: g.app.windowList.append(c.frame)
+    # and so this now app.commanders() yields this: return [f.c for f in g.app.windowList]
+
+    # did this add to existing array of g.app.commanders() ?
+    # print(str(self.g.app.commanders()))  # test
+    print(*self.g.app.commanders(), sep='\n')
 
     if self.commander:
+        self.commander.closed = False
         self.create_gnx_to_vnode()
-        return self.outputPNode(self.commander.p)
+        w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                    "node": self.p_to_ap(self.commander.p)}
+        return self.sendLeoBridgePackage("opened", w_result)
     else:
         return self.outputError('Error in openFile')
 
 </t>
-<t tx="felix.20191126232434.14">def closeFile(self, p_paramUnused):
-    '''Closes a leo file. A file can then be opened with "openFile"'''
-    print("Trying to close opened file")
+<t tx="felix.20191126232434.14">def closeFile(self, p_package):
+    """
+    Closes a leo file. A file can then be opened with "openFile"
+    Returns an object that contains a 'closed' member
+    """
+    # TODO : Specify which file to support multiple opened files
+    print("Trying to close opened file " + str(self.commander.changed))
     if self.commander:
-        self.commander.close()
-    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+        if p_package["forced"] and self.commander.changed:
+            # return "no" g.app.gui.runAskYesNoDialog  and g.app.gui.runAskYesNoCancelDialog
+            print("self.commander.revert()")
+            self.commander.revert()
+        if p_package["forced"] or not self.commander.changed:
+            self.commander.closed = True
+            self.commander.close()
+        else:
+            return self.sendLeoBridgePackage('closed', False)  # Cannot close, ask to save, ignore or cancel
+
+    # Switch commanders to first available
+    w_total = self._getTotalOpened()
+    if w_total:
+        self.commander = self._getFirstOpenedCommander()
+    else:
+        self.commander = None
+
+    if self.commander:
+        self.create_gnx_to_vnode()
+        w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                    "node": self.p_to_ap(self.commander.p)}
+        return self.sendLeoBridgePackage("closed", w_result)
+    else:
+        w_result = {"total": 0}
+        return self.sendLeoBridgePackage("closed", w_result)
 
 </t>
 <t tx="felix.20191126232434.15">def getPNode(self, p_ap):
@@ -266,9 +317,12 @@ if __name__ == '__main__':
     '''Change Body text of a node'''
     for w_p in self.commander.all_positions():
         if w_p.v.gnx == p_package['gnx']:  # found
+            # TODO : Before setting undo and trying to set body, first check if different than existing body
             w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
             w_p.v.setBodyString(p_package['body'])
             self.commander.undoer.afterChangeNodeContents(w_p, "Body Text", w_bunch)
+            if not self.commander.isChanged():
+                self.commander.setChanged()
             if not w_p.v.isDirty():
                 w_p.setDirty()
             break
@@ -426,6 +480,7 @@ if __name__ == '__main__':
     @others
 </t>
 <t tx="felix.20191126232434.5">def __init__(self):
+    # TODO : need gnx_to_vnode for each opened file/commander
     self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
     self.bridge = leoBridge.controller(gui='nullGui',
                                        loadPlugins=False,  # True: attempt to load plugins.
@@ -442,19 +497,27 @@ if __name__ == '__main__':
 
     # print(dir(self.g))
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
-    # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
+
+    # * Currently Selected Commander (opened from leo.core.leoBridge or chosen via the g.app.windowList frame list)
+    self.commander = None
+
     self.leoIntegConfig = None
     self.webSocket = None
     self.loop = None
 
+    # * Replacement instances to Leo's codebase : IdleTime, idleTimeManager and externalFilesController
     self.g.IdleTime = self._idleTime
     self.g.app.idleTimeManager = IdleTimeManager(self.g)
-    self.g.app.commanders = self._commanders
-
-    self.efc = ExternalFilesController(self)
-
     # attach instance to g.app for calls to set_time, etc.
-    self.g.app.externalFilesController = self.efc
+    self.g.app.externalFilesController = ExternalFilesController(self)
+    # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
+    self.g.app.gui.runAskYesNoDialog = self._returnYes  # override for "revert to file" operation
+
+    # * setup leoBackground to get messages from leo
+    try:
+        self.g.app.idleTimeManager.start()  # To catch derived file changes
+    except:
+        print('ERROR with idleTimeManager')
 
 </t>
 <t tx="felix.20191126232434.7">def sendLeoBridgePackage(self, p_key=False, p_any=None):
@@ -751,13 +814,15 @@ wsPort = 32125
 </t>
 <t tx="felix.20191231214801.1">def executeScript(self, p_package):
     '''Select a node and run its script'''
-    if p_package['node']:
+    if 'node' in p_package:
         w_ap = p_package['node']
         w_p = self.ap_to_p(w_ap)
         if w_p:
             self.commander.selectPosition(w_p)
-            w_script = str(p_package['text'])
-            if not w_script.isspace():
+            w_script = ""
+            if 'text' in p_package:
+                w_script = str(p_package['text'])
+            if w_script and not w_script.isspace():
                 # * Mimic getScript !!
                 try:
                     # Remove extra leading whitespace so the user may execute indented code.
@@ -767,12 +832,12 @@ wsPort = 32125
                                                          forcePythonSentinels=True,
                                                          useSentinels=True)
                     self.commander.executeScript(script=w_validScript)
-                except Exception:
-                    print("Error")
-
+                except Exception as e:
+                    self.g.trace('Error while executing script')
+                    print('Error while executing script')
+                    print(str(e))
             else:
                 self.commander.executeScript()
-            # print("finally returning node" + self.commander.p.v.headString())
             return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
             return self.outputError("Error in run no w_p node found")  # default empty
@@ -844,11 +909,14 @@ wsPort = 32125
         print("websocket not ready yet")
 
 </t>
-<t tx="felix.20200216160305.1">def saveFile(self, p_paramUnused):
+<t tx="felix.20200216160305.1">def saveFile(self, p_package):
     '''Saves the leo file. New or dirty derived files are rewritten'''
     if self.commander:
         try:
-            self.commander.save()
+            if "text" in p_package:
+                self.commander.save(fileName=p_package['text'])
+            else:
+                self.commander.save()
         except Exception as e:
             self.g.trace('Error while saving')
             print("Error while saving")
@@ -1251,13 +1319,6 @@ wsPort = 32125
         self.checksum_d[path] = self.checksum(path)
 
 </t>
-<t tx="felix.20200303211848.1">def _commanders(self):
-    ''' Return list of currently active controllers '''
-    # TODO : REVISE/REPLACE WITH OWN SYSTEM
-    # return [f.c for f in g.app.windowList]
-    return [self.commander]
-
-</t>
 <t tx="felix.20200303214235.1">async def _asyncIdleLoop(self, p_seconds, p_fn):
     while True:
         await asyncio.sleep(p_seconds)
@@ -1271,7 +1332,7 @@ wsPort = 32125
 </t>
 <t tx="felix.20200304220844.1">def askResult(self, p_result):
     '''Got the result to an asked question/warning from vscode'''
-    self.efc.integResult(p_result)
+    self.g.app.externalFilesController.integResult(p_result)
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
@@ -1352,6 +1413,94 @@ wsPort = 32125
     '''(Collapse) Contract All'''
     self.commander.contractAllHeadlines()
     return self.outputPNode(self.commander.p)  # return selected node when done
+
+</t>
+<t tx="felix.20200619165641.1">def getStates(self, p_package):
+    '''Gets the currently opened file's general states for UI enabled/disabled states'''
+    if self.commander:
+        try:
+            w_states = {'changed': self.commander.changed}  # Init response object with 'dirty/changed' member
+        except Exception as e:
+            self.g.trace('Error while getting states')
+            print("Error while getting states")
+            print(str(e))
+
+    return self.sendLeoBridgePackage()  # Just send empty as 'did nothing'
+
+</t>
+<t tx="felix.20200622230608.1">def getOpenedFiles(self, p_package):
+    '''Return array of opened file path/names to be used as openFile parameters to switch files'''
+    w_files = []
+    w_index = 0
+    w_indexFound = 0
+    for w_commander in self.g.app.commanders():
+        if w_commander.closed == False:
+            w_files.append(w_commander.mFileName)
+            if self.commander == w_commander:
+                w_indexFound = w_index
+        w_index = w_index + 1
+
+    print('got Files' + str(w_files))
+    print('index is ' + str(w_indexFound))
+
+    w_openedFiles = {"files": w_files, "index": w_indexFound}
+
+    return self.sendLeoBridgePackage('openedFiles', w_openedFiles)
+
+</t>
+<t tx="felix.20200623201853.1">def _getTotalOpened(self):
+    '''Get total of opened commander (who have closed == false)'''
+    w_total = 0
+    for w_commander in self.g.app.commanders():
+        if w_commander.closed == False:
+            w_total = w_total + 1
+    print('outputting total opened '+str(w_total))
+    return w_total
+
+</t>
+<t tx="felix.20200623215904.1">def _getFirstOpenedCommander(self):
+    '''Get first opened commander, or False if there are none.'''
+    for w_commander in self.g.app.commanders():
+        if w_commander.closed == False:
+            print('found first '+str(w_commander.fileName()))
+            return w_commander
+
+    return False
+
+</t>
+<t tx="felix.20200624172552.1">def setOpenedFile(self, p_package):
+    '''Choose the new active commander from array of opened file path/names'''
+    print("got a setopenedfile call! package is: ")
+    print(str(p_package))
+    w_openedCommanders = []
+    for w_commander in self.g.app.commanders():
+        if w_commander.closed == False:
+            w_openedCommanders.append(w_commander)
+    print('setting openedFiles' + str(w_openedCommanders))
+
+    #  w_fileName = p_package['fileName']
+    w_index = p_package['index']
+    if w_openedCommanders[w_index]:
+        self.commander = w_openedCommanders[w_index]
+
+    if self.commander:
+        self.commander.closed = False
+        self.create_gnx_to_vnode()
+        w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                    "node": self.p_to_ap(self.commander.p)}
+        return self.sendLeoBridgePackage("setOpened", w_result)
+    else:
+        return self.outputError('Error in setOpenedFile')
+
+</t>
+<t tx="felix.20200626012709.1">def _returnNo(self, *arguments):
+    '''Used to override g.app.gui.ask[XXX] dialogs answers'''
+    return "no"
+
+</t>
+<t tx="felix.20200626030820.1">def _returnYes(self, *arguments):
+    '''Used to override g.app.gui.ask[XXX] dialogs answers'''
+    return "yes"
 
 </t>
 </tnodes>

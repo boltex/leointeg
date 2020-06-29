@@ -33,7 +33,7 @@ export class LeoBridge {
      * @param p_jsonParam Optional JSON parameter for the specified action
      * @param p_deferredPayload Used to build this._readyPromise that resolves itself at startup
      * @param p_preventCall Flag for special action used to build this._readyPromise that resolves itself at startup
-     * @returns a Promise that will contain the JSON package answered back
+     * @returns a Promise that will contain the JSON package answered back by leobridgeserver.py
      */
     public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
         return new Promise((resolve, reject) => {
@@ -62,6 +62,10 @@ export class LeoBridge {
                     this._leoAsync.log(w_parsedData.log);
                     break;
                 }
+                // case Constants.ASYNC_ACTIONS.ASYNC_CHOOSE_SAVE: {
+                //     this._leoAsync.showSaveAsDialog(w_parsedData);
+                //     break;
+                // }
                 case Constants.ASYNC_ACTIONS.ASYNC_ASK: {
                     this._leoAsync.showAskModalDialog(w_parsedData);
                     break;
