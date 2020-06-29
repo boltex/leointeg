@@ -5,10 +5,9 @@ import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
 
 /**
- * * Leo outline implemented as a tree view with this TreeDataProvider implementation
+ * * Opened Leo documents shown as a list with this TreeDataProvider implementation
  */
-export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoDocumentNode> {
-
+export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocumentNode> {
 
     private _onDidChangeTreeData: vscode.EventEmitter<LeoDocumentNode | undefined> = new vscode.EventEmitter<LeoDocumentNode | undefined>();
 
@@ -28,10 +27,26 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoDocumentNo
     }
 
     public getChildren(element?: LeoDocumentNode): Thenable<LeoDocumentNode[]> {
-        return Promise.resolve([]);
+        if (element) {
+            return Promise.resolve([]);
+        } else {
+            // call action to get get list, and convert to LeoDocumentNode(s) array
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package => {
+                if (p_package && p_package) {
+
+
+
+                    return Promise.resolve([]);
+                } else {
+                    return Promise.resolve([]);
+
+                }
+            });
+
+        }
     }
 
     public getParent(element: LeoDocumentNode): ProviderResult<LeoDocumentNode> | null {
-        return null;
+        return null; // A list, as such, entries are always child of root, so return null
     }
 }

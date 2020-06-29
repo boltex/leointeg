@@ -5,10 +5,9 @@ import { Constants } from "./constants";
 export class LeoDocumentNode extends vscode.TreeItem {
 
     constructor(
-        public label: string, // Node headline
-        public collapsibleState: vscode.TreeItemCollapsibleState
+        public documentEntry: any
     ) {
-        super(label, collapsibleState);
+        super(documentEntry.name);
         // this.command = {        };
     }
 

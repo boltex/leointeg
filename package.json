@@ -192,12 +192,21 @@
           "id": "leoIntegrationExplorer",
           "name": "Leo Integration",
           "when": "treeInExplorer"
+        },
+        {
+          "id": "leoDocumentsExplorer",
+          "name": "Leo Documents",
+          "when": "treeInExplorer"
         }
       ],
       "leoIntegrationView": [
         {
           "id": "leoIntegration",
           "name": "Integration"
+        },
+        {
+          "id": "leoDocuments",
+          "name": "Documents"
         }
       ]
     },

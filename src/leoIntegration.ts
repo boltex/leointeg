@@ -83,6 +83,12 @@ export class LeoIntegration {
     // If there's no reveal and its the selected node, the old id will be re-used for the node. (see _id property in LeoNode)
     private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
 
+    // * Documents Pane
+    // leoDocumentsProvider
+    // leoDocumentsExplorer
+    // leoDocuments
+
+
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _needRefreshBody: boolean = false; // Flag for commands that might change current body
     private _fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
@@ -396,7 +402,6 @@ export class LeoIntegration {
      */
     private _onTreeViewChangedSelection(p_event: vscode.TreeViewSelectionChangeEvent<LeoNode>): void { }
 
-
     /**
      * * Handles the node expanding and collapsing interactions by the user in the treeview
      * @param p_event The event passed by vscode
@@ -416,7 +421,6 @@ export class LeoIntegration {
             this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson);
         }
     }
-
 
     /**
      * * Handle the change of visibility of either outline treeview and refresh it if its visible
@@ -749,7 +753,6 @@ export class LeoIntegration {
         }
     }
 
-
     /**
      * * Save and rename from this.bodyUri to p_newGnx: This changes the body content & blocks 'undos' from crossing over
      * @param p_newGnx New gnx body id to switch to
@@ -1014,15 +1017,13 @@ export class LeoIntegration {
         } else {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
         }
-
     }
 
     /**
-     * * Show switch document dialog to the user, or just return if no files are opened.
+     * * Show switch document 'QuickPick' dialog and switch file if selection is made, or just return if no files are opened.
      */
     public switchLeoFile(): void {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-
         // get list and show dialog to user, even if there's only one...but at least one!
         // TODO : p_package members names should be made into constants
         this.triggerBodySave(true)
@@ -1030,53 +1031,48 @@ export class LeoIntegration {
                 return this._leoBridge.action(Constants.LEOBRIDGE.GET_OPENED_FILES);
             })
             .then(p_package => {
-                const w_entries: ChooseDocumentItem[] = [];
+                const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
                 const w_files: string[] = p_package.openedFiles.files;
                 const w_selectedIndex: number = p_package.openedFiles.index;
                 let w_index: number = 0;
                 let w_currentlySelected = "";
-                let w_placeholder = "";
                 if (w_files && w_files.length) {
                     w_files.forEach(function (p_filePath: string) {
                         if (w_index === w_selectedIndex) {
                             w_currentlySelected = p_filePath;
                         }
-                        if (p_filePath) {
-                            w_entries.push({ label: w_index.toString(), description: p_filePath, value: w_index, alwaysShow: true });
-                        } else {
-                            w_entries.push({ label: w_index.toString(), description: "untitled", value: w_index, alwaysShow: true });
-                        }
+                        w_entries.push({ label: w_index.toString(), description: p_filePath ? p_filePath : "untitled", value: w_index, alwaysShow: true });
                         w_index++;
                     });
-                    // array ready
-                    if (w_currentlySelected) {
-                        const w_uri = vscode.Uri.file(w_currentlySelected);
-                    } else {
-                        w_placeholder = "untitled";
-                    }
                     const w_pickOptions: vscode.QuickPickOptions = {
                         matchOnDescription: true,
-                        placeHolder: w_placeholder
+                        placeHolder: Constants.USER_MESSAGES.CHOOSE_OPENED_FILE
                     };
                     vscode.window.showQuickPick(w_entries, w_pickOptions).then((p_chosenDocument) => {
                         if (p_chosenDocument) {
-                            // Finish with a 'setOpenedFile'
-                            this._leoBridge.action(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_chosenDocument.value }))
-                                .then((p_openFileResult) => {
-                                    // Like we just opened or made a new file
-                                    if (p_openFileResult.setOpened) {
-                                        this._setupOpenedLeoDocument(p_openFileResult.setOpened);
-                                    } else {
-                                        console.log('New Leo File Error');
-                                    }
-                                });
+                            this.selectOpenedLeoDocument(p_chosenDocument.value);
                         } // else : cancelled so no action taken
                     });
-
                     // done
                 }
             });
     }
+
+    /**
+     * * Switches Leo document directly by index number. Used by document treeview and switchLeoFile command.
+     */
+    public selectOpenedLeoDocument(p_index: number): void {
+        this._leoBridge.action(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_index }))
+            .then((p_openFileResult) => {
+                // Like we just opened or made a new file
+                if (p_openFileResult.setOpened) {
+                    this._setupOpenedLeoDocument(p_openFileResult.setOpened);
+                } else {
+                    console.log('Select Opened Leo File Error');
+                }
+            });
+    }
+
 
     /**
      * * Close an opened Leo file

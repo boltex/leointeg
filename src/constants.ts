@@ -69,6 +69,7 @@ export class Constants {
         BEFORE_CLOSING: "before closing?",
         CANCEL: "Cancel",
         FILE_ALREADY_OPENED: "Leo file already opened",
+        CHOOSE_OPENED_FILE: "Select an opened Leo File",
         FILE_NOT_OPENED: "No files opened.",
         STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect", // TODO : Add description of what happens if clicked
         STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
