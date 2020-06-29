@@ -228,7 +228,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
-        this._leoIntegration.checkWriteFile();
+        this._leoIntegration.triggerBodySave(true);
         const w_gnx = utils.leoUriToStr(p_uri);
         const w_now = Date.now();
         if (this._selectedBody.gnx === w_gnx) {

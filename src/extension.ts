@@ -7,7 +7,7 @@ import { LeoNode } from "./leoNode";
 import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 
 /**
- * * Called when extension is activated
+ * * Called when extension is activated. It creates the leoIntegration and the 'welcome/Settings' webview instances
  */
 export function activate(p_context: vscode.ExtensionContext) {
 
