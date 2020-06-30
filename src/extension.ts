@@ -33,6 +33,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + "test", () => w_leoIntegration.test()], // * Test function useful when debugging
         [w_cmdPrefix + "testFromOutline", () => w_leoIntegration.test(true)], // * Test function useful when debugging
 
+        [w_cmdPrefix + Constants.COMMANDS.SET_OPENED_FILE, (p_index: number) => w_leoIntegration.selectOpenedLeoDocument(p_index)], // also a test for undeclared commands
+
         [w_cmdPrefix + Constants.COMMANDS.SHOW_WELCOME, () => w_leoSettingsWebview.openWebview()],
         [w_cmdPrefix + Constants.COMMANDS.SHOW_SETTINGS, () => w_leoSettingsWebview.openWebview()], // Same as 'show welcome screen'
         [w_cmdPrefix + Constants.COMMANDS.START_SERVER, () => w_leoIntegration.startServer()],

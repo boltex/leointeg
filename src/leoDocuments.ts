@@ -27,22 +27,39 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
     }
 
     public getChildren(element?: LeoDocumentNode): Thenable<LeoDocumentNode[]> {
-        if (element) {
-            return Promise.resolve([]);
-        } else {
+
+        // if called with element, or not ready, give back empty array as there won't be any children
+        if (this._leoIntegration.fileOpenedReady && !element) {
+
             // call action to get get list, and convert to LeoDocumentNode(s) array
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package => {
                 if (p_package && p_package) {
+                    const w_list: LeoDocumentNode[] = [];
+                    const w_files: string[] = p_package.openedFiles.files;
+                    //const w_selectedIndex: number = p_package.openedFiles.index;
+
+                    let w_index: number = 0;
+
+                    if (w_files && w_files.length) {
+                        w_files.forEach((p_fileEntry: string) => {
+                            w_list.push(new LeoDocumentNode({
+                                name: p_fileEntry,
+                                index: w_index
+                            }, this._leoIntegration.leoDocumentsIcons));
+                            w_index++;
+                        });
+                    }
 
 
-
-                    return Promise.resolve([]);
+                    return Promise.resolve(w_list);
                 } else {
                     return Promise.resolve([]);
-
                 }
             });
 
+
+        } else {
+            return Promise.resolve([]); // Defaults to an empty list of children
         }
     }
 

@@ -106,6 +106,15 @@ export interface LeoBridgePackage {
 }
 
 /**
+ * * Leo document structure used in the 'Opened Leo Documents' tree view provider
+ */
+export interface LeoDocument {
+    name: string;
+    index: number; // may seem redundant because stored in an array, but used elsewhere individually
+    dirty?: boolean;
+}
+
+/**
  * * Icon path names used in leoNodes for rendering in treeview
  */
 export interface Icon {

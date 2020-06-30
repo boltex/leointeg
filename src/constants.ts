@@ -11,6 +11,10 @@ export class Constants {
 
     public static TREEVIEW_ID: string = Constants.CONFIG_SECTION;
     public static TREEVIEW_EXPLORER_ID: string = Constants.CONFIG_SECTION + "Explorer";
+
+    public static DOCUMENTS_ID: string = "leoDocuments";
+    public static DOCUMENTS_EXPLORER_ID: string = "leoDocumentsExplorer";
+
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";
@@ -44,6 +48,8 @@ export class Constants {
      * * Strings used in the workbench interface panels (not for messages or dialogs)
      */
     public static GUI = {
+        ICON_LIGHT_DOCUMENT: "resources/light/leo-document.svg",
+        ICON_DARK_DOCUMENT: "resources/dark/leo-document.svg",
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
@@ -278,6 +284,7 @@ export class Constants {
         // * LeoBridge
         START_SERVER: "startServer",
         CONNECT: "connectToServer",
+        SET_OPENED_FILE: "setOpenedFile",
         OPEN_FILE: "openLeoFile", // sets focus on BODY
         SWITCH_FILE: "switchLeoFile",
         NEW_FILE: "newLeoFile",

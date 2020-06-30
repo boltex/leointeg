@@ -11,6 +11,8 @@ import { LeoBridge } from "./leoBridge";
 import { ServerService } from "./serverManager";
 import { LeoStatusBar } from "./leoStatusBar";
 import { CommandStack } from "./commandStack";
+import { LeoDocumentsProvider } from "./leoDocuments";
+import { LeoDocumentNode } from "./leoDocumentNode";
 
 /**
  * Orchestrates Leo integration into vscode with treeview and file system providers
@@ -83,11 +85,11 @@ export class LeoIntegration {
     // If there's no reveal and its the selected node, the old id will be re-used for the node. (see _id property in LeoNode)
     private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
 
-    // * Documents Pane
-    // leoDocumentsProvider
-    // leoDocumentsExplorer
-    // leoDocuments
-
+    // * Documents Pane Tests
+    private _leoDocumentsProvider: LeoDocumentsProvider;
+    private _leoDocuments: vscode.TreeView<LeoDocumentNode>;
+    private _leoDocumentsExplorer: vscode.TreeView<LeoDocumentNode>;
+    public leoDocumentsIcons: Icon;
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _needRefreshBody: boolean = false; // Flag for commands that might change current body
@@ -145,19 +147,24 @@ export class LeoIntegration {
         // * Same data provider for both outline trees, Leo view and Explorer view
         this._leoTreeDataProvider = new LeoOutlineProvider(this);
 
-        // * Leo view outline panes
+        // * Leo view and Explorer view outline panes - Uses 'select node' command, so 'onDidChangeSelection' is not used
         this._leoTreeStandaloneView = vscode.window.createTreeView(Constants.TREEVIEW_ID, { showCollapseAll: false, treeDataProvider: this._leoTreeDataProvider });
-        this._leoTreeStandaloneView.onDidChangeSelection((p_event => this._onTreeViewChangedSelection(p_event)));
         this._leoTreeStandaloneView.onDidExpandElement((p_event => this._onChangeCollapsedState(p_event, true, this._leoTreeStandaloneView)));
         this._leoTreeStandaloneView.onDidCollapseElement((p_event => this._onChangeCollapsedState(p_event, false, this._leoTreeStandaloneView)));
         this._leoTreeStandaloneView.onDidChangeVisibility((p_event => this._onTreeViewVisibilityChanged(p_event, false))); // * Trigger 'show tree in Leo's view'
-
-        // * Explorer view outline pane
         this._leoTreeExplorerView = vscode.window.createTreeView(Constants.TREEVIEW_EXPLORER_ID, { showCollapseAll: false, treeDataProvider: this._leoTreeDataProvider });
-        this._leoTreeExplorerView.onDidChangeSelection((p_event => this._onTreeViewChangedSelection(p_event)));
         this._leoTreeExplorerView.onDidExpandElement((p_event => this._onChangeCollapsedState(p_event, true, this._leoTreeExplorerView)));
         this._leoTreeExplorerView.onDidCollapseElement((p_event => this._onChangeCollapsedState(p_event, false, this._leoTreeExplorerView)));
         this._leoTreeExplorerView.onDidChangeVisibility((p_event => this._onTreeViewVisibilityChanged(p_event, true))); // * Trigger 'show tree in explorer view'
+
+        // * Leo Opened Documents Treeview Providers and tree views
+        this._leoDocumentsProvider = new LeoDocumentsProvider(this);
+        this._leoDocuments = vscode.window.createTreeView(Constants.DOCUMENTS_ID, { showCollapseAll: false, treeDataProvider: this._leoDocumentsProvider });
+        this._leoDocumentsExplorer = vscode.window.createTreeView(Constants.DOCUMENTS_EXPLORER_ID, { showCollapseAll: false, treeDataProvider: this._leoDocumentsProvider });
+        this.leoDocumentsIcons = {
+            light: this._context.asAbsolutePath(Constants.GUI.ICON_LIGHT_DOCUMENT),
+            dark: this._context.asAbsolutePath(Constants.GUI.ICON_DARK_DOCUMENT)
+        };
 
         // * Body Pane
         this._leoFileSystem = new LeoBodyProvider(this);
@@ -381,6 +388,8 @@ export class LeoIntegration {
         this.showLogPane();
         // * Send config to python's side (for settings such as defaultReloadIgnore and checkForChangeExternalFiles)
         this.sendConfigToServer(this.config.getConfig());
+        // * Refresh Opened Documents View
+        this._leoDocumentsProvider.refreshTreeRoot();
         // * First Body appearance
         return this.showBody(false);
     }
@@ -394,13 +403,6 @@ export class LeoIntegration {
             this.config.buildFromSavedSettings();
         }
     }
-
-    /**
-     * * Handles the change of treeview selection: a onDidChangeSelection event triggered
-     * LeoInteg acts upon the the 'select node' command, so this event may be redundant
-     * @param p_event The treeview-selection-change event passed by vscode
-     */
-    private _onTreeViewChangedSelection(p_event: vscode.TreeViewSelectionChangeEvent<LeoNode>): void { }
 
     /**
      * * Handles the node expanding and collapsing interactions by the user in the treeview
@@ -1090,6 +1092,7 @@ export class LeoIntegration {
                         if (p_package.closed.total === 0) {
                             this._setupNoOpenedLeoDocument();
                         } else {
+                            this._leoDocumentsProvider.refreshTreeRoot();
                             this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
                         }
                     } else if (p_package.closed === false) {
@@ -1134,6 +1137,7 @@ export class LeoIntegration {
                             }
                         }).then((p_package: LeoBridgePackage | undefined) => {
                             // * back from CLOSE_FILE action, the last that can be performed (after saving if dirty or not)
+                            this._leoDocumentsProvider.refreshTreeRoot();
                             if (p_package && p_package.closed && p_package.closed.total === 0) {
                                 this._setupNoOpenedLeoDocument();
                             } else {
