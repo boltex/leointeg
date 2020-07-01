@@ -15,17 +15,35 @@ export function padNumber2(p_number: number): string {
 }
 
 /**
- * * Build all possible strings for icons graphic file paths
+ * * Build all possible strings for node icons graphic file paths
  * @param p_context Needed to get to absolute paths on the system
  * @returns An array of the 16 vscode node icons used in this vscode expansion
  */
-export function buildIconPaths(p_context: vscode.ExtensionContext): Icon[] {
+export function buildNodeIconPaths(p_context: vscode.ExtensionContext): Icon[] {
     return Array(16).fill("").map((p_val, p_index) => {
         return {
             light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_PATH + padNumber2(p_index) + Constants.GUI.ICON_FILE_EXT),
             dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_PATH + padNumber2(p_index) + Constants.GUI.ICON_FILE_EXT)
         };
     });
+}
+
+/**
+ * * Build all possible strings for documents icons graphic file paths
+ * @param p_context Needed to get to absolute paths on the system
+ * @returns An array containing icons for the documents tree view
+ */
+export function buildDocumentIconPaths(p_context: vscode.ExtensionContext): Icon[] {
+    return [
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_DOCUMENT),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_DOCUMENT)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_DOCUMENT_DIRTY),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_DOCUMENT_DIRTY)
+        }
+    ];
 }
 
 /**
@@ -40,11 +58,10 @@ export function buildNodeAndTextJson(p_nodeJson: string, p_text: string): string
         "}";
 }
 
-
 /**
- * * Extracts the file name from a full path
+ * * Extracts the file name from a full path, such as "foo.bar" from "/abc/def/foo.bar"
  * @param p_path Full path such as "/var/drop/foo/boo/moo.js" or "C:\Documents and Settings\img\recycled log.jpg"
- * @returns file name string
+ * @returns file name string such as "moo.js" or "recycled log.jpg""
  */
 export function getFileFromPath(p_path: string): string {
     return p_path.replace(/^.*[\\\/]/, '');

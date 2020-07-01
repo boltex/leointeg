@@ -3,6 +3,7 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoDocumentNode } from "./leoDocumentNode";
 import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
+import { LeoDocument } from "./types";
 
 /**
  * * Opened Leo documents shown as a list with this TreeDataProvider implementation
@@ -35,29 +36,22 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package => {
                 if (p_package && p_package) {
                     const w_list: LeoDocumentNode[] = [];
-                    const w_files: string[] = p_package.openedFiles.files;
-                    //const w_selectedIndex: number = p_package.openedFiles.index;
+                    const w_files: LeoDocument[] = p_package.openedFiles.files;
 
                     let w_index: number = 0;
 
                     if (w_files && w_files.length) {
-                        w_files.forEach((p_fileEntry: string) => {
-                            w_list.push(new LeoDocumentNode({
-                                name: p_fileEntry,
-                                index: w_index
-                            }, this._leoIntegration.leoDocumentsIcons));
+                        w_files.forEach((p_fileEntry: LeoDocument) => {
+                            w_list.push(new LeoDocumentNode(p_fileEntry, this._leoIntegration));
                             w_index++;
                         });
                     }
-
 
                     return Promise.resolve(w_list);
                 } else {
                     return Promise.resolve([]);
                 }
             });
-
-
         } else {
             return Promise.resolve([]); // Defaults to an empty list of children
         }

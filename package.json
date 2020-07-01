@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "author": {
     "name": "Félix"
   },
@@ -864,6 +864,26 @@
         "view": "leoIntegrationExplorer",
         "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "leoBridgeReady && !leoTreeOpened"
+      },
+      {
+        "view": "leoDocuments",
+        "contents": "LeoInteg is not connected",
+        "when": "!leoBridgeReady"
+      },
+      {
+        "view": "leoDocumentsExplorer",
+        "contents": "LeoInteg is not connected",
+        "when": "!leoBridgeReady"
+      },
+      {
+        "view": "leoDocuments",
+        "contents": "There are no Leo files currently opened",
+        "when": "leoBridgeReady && !leoTreeOpened"
+      },
+      {
+        "view": "leoDocumentsExplorer",
+        "contents": "There are no Leo files currently opened",
+        "when": "leoBridgeReady && !leoTreeOpened"
       }
     ],
     "menus": {
@@ -1271,6 +1291,11 @@
         }
       ],
       "view/item/context": [
+        {
+          "command": "leointeg.closeLeoFile",
+          "when": "viewItem =~ /leoDocumentSelected/",
+          "group": "inline@1"
+        },
         {
           "command": "leointeg.editHeadline",
           "when": "viewItem =~ /leoNode/",

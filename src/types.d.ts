@@ -106,12 +106,13 @@ export interface LeoBridgePackage {
 }
 
 /**
- * * Leo document structure used in the 'Opened Leo Documents' tree view provider
+ * * Leo document structure used in the 'Opened Leo Documents' tree view provider sent back by the server
  */
 export interface LeoDocument {
     name: string;
-    index: number; // may seem redundant because stored in an array, but used elsewhere individually
-    dirty?: boolean;
+    index: number,
+    changed: boolean;
+    selected: boolean
 }
 
 /**

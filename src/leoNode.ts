@@ -50,7 +50,8 @@ export class LeoNode extends vscode.TreeItem {
     /**
      * * Sets this node properties (dirty, marked, etc.) by copying from a given node.
      * * This is needed by the outline provider when refreshing a single node.
-     * @param p_node Node to copy properties from
+     * @param p_node Node to copy properties from.
+     * @returns Node itself with the new properties applied
      */
     public copyProperties(p_node: LeoNode): LeoNode {
         this.label = p_node.label;
@@ -95,7 +96,7 @@ export class LeoNode extends vscode.TreeItem {
             (+this.cloned << 2) |
             (+this.marked << 1) |
             +this.hasBody;
-        return this._leoIntegration.icons[w_icon];
+        return this._leoIntegration.nodeIcons[w_icon];
     }
 
     // Optional id for the tree item that has to be unique across tree.

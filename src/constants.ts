@@ -21,6 +21,7 @@ export class Constants {
     public static URI_SCHEME: string = "leo";
     public static URI_SCHEME_HEADER: string = "leo:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
+    public static UNTITLED_FILE_NAME: string = "untitled";
 
     public static DEFAULT_PYTHON: string = "python3.7";
     public static WIN32_PYTHON: string = "py";
@@ -48,8 +49,10 @@ export class Constants {
      * * Strings used in the workbench interface panels (not for messages or dialogs)
      */
     public static GUI = {
-        ICON_LIGHT_DOCUMENT: "resources/light/leo-document.svg",
-        ICON_DARK_DOCUMENT: "resources/dark/leo-document.svg",
+        ICON_LIGHT_DOCUMENT: "resources/light/document.svg",
+        ICON_DARK_DOCUMENT: "resources/dark/document.svg",
+        ICON_LIGHT_DOCUMENT_DIRTY: "resources/light/document-dirty.svg",
+        ICON_DARK_DOCUMENT_DIRTY: "resources/dark/document-dirty.svg",
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
@@ -154,6 +157,9 @@ export class Constants {
         SELECTED_MARKED: "leoNodeMarked",  // Selected node is marked
         SELECTED_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked
         SELECTED_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
+        // Flags for opened Leo documents
+        DOCUMENT_SELECTED: "leoDocumentSelected",
+        DOCUMENT: "leoDocument",
         // Flags that match specific LeoInteg config settings
         TREE_IN_EXPLORER: Constants.CONFIGURATION.TREE_IN_EXPLORER, // Leo outline also in the explorer view
         SHOW_OPEN_ASIDE: Constants.CONFIGURATION.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu

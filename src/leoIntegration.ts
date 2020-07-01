@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem, LeoDocument } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -52,7 +52,8 @@ export class LeoIntegration {
     public config: Config; // Public configuration service singleton, used in leoSettingsWebview, leoBridge, and leoNode for inverted contrast
 
     // * Icon Paths
-    public icons: Icon[] = []; // Singleton static array of all icon paths used in leoNodes for rendering in treeview
+    public nodeIcons: Icon[] = []; // Singleton static array of all icon paths used in leoNodes for rendering in treeview
+    public documentIcons: Icon[] = [];
 
     // * File Browser
     private _leoFilesBrowser: LeoFilesBrowser; // Dialog service singleton used in the openLeoFile method
@@ -67,6 +68,7 @@ export class LeoIntegration {
     private _leoTreeDataProvider: LeoOutlineProvider; // TreeDataProvider single instance
     private _leoTreeStandaloneView: vscode.TreeView<LeoNode>; // Outline tree view added to the Tree View Container with an Activity Bar icon
     private _leoTreeExplorerView: vscode.TreeView<LeoNode>; // Outline tree view added to the Explorer Sidebar
+    private _lastVisibleTreeView: vscode.TreeView<LeoNode>; // Outline tree view added to the Explorer Sidebar
     private _nextNodeId: number = Constants.STARTING_PACKAGE_ID; // Used to generate id's for new treeNodes: The id is used to preserve or set the selection and expansion states
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
@@ -85,11 +87,11 @@ export class LeoIntegration {
     // If there's no reveal and its the selected node, the old id will be re-used for the node. (see _id property in LeoNode)
     private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
 
-    // * Documents Pane Tests
+    // * Documents Pane
     private _leoDocumentsProvider: LeoDocumentsProvider;
     private _leoDocuments: vscode.TreeView<LeoDocumentNode>;
     private _leoDocumentsExplorer: vscode.TreeView<LeoDocumentNode>;
-    public leoDocumentsIcons: Icon;
+    private _currentDocumentChanged: boolean = false; // if clean and an edit is done: refresh opened documents view
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _needRefreshBody: boolean = false; // Flag for commands that might change current body
@@ -133,7 +135,8 @@ export class LeoIntegration {
         this.config.buildFromSavedSettings();
 
         // * Build Icon filename paths
-        this.icons = utils.buildIconPaths(_context);
+        this.nodeIcons = utils.buildNodeIconPaths(_context);
+        this.documentIcons = utils.buildDocumentIconPaths(_context);
 
         // * File Browser
         this._leoFilesBrowser = new LeoFilesBrowser(_context);
@@ -156,15 +159,14 @@ export class LeoIntegration {
         this._leoTreeExplorerView.onDidExpandElement((p_event => this._onChangeCollapsedState(p_event, true, this._leoTreeExplorerView)));
         this._leoTreeExplorerView.onDidCollapseElement((p_event => this._onChangeCollapsedState(p_event, false, this._leoTreeExplorerView)));
         this._leoTreeExplorerView.onDidChangeVisibility((p_event => this._onTreeViewVisibilityChanged(p_event, true))); // * Trigger 'show tree in explorer view'
+        this._lastVisibleTreeView = this.config.treeInExplorer ? this._leoTreeExplorerView : this._leoTreeStandaloneView;
 
         // * Leo Opened Documents Treeview Providers and tree views
         this._leoDocumentsProvider = new LeoDocumentsProvider(this);
         this._leoDocuments = vscode.window.createTreeView(Constants.DOCUMENTS_ID, { showCollapseAll: false, treeDataProvider: this._leoDocumentsProvider });
+        this._leoDocuments.onDidChangeVisibility((p_event => this._onDocTreeViewVisibilityChanged(p_event, false)));
         this._leoDocumentsExplorer = vscode.window.createTreeView(Constants.DOCUMENTS_EXPLORER_ID, { showCollapseAll: false, treeDataProvider: this._leoDocumentsProvider });
-        this.leoDocumentsIcons = {
-            light: this._context.asAbsolutePath(Constants.GUI.ICON_LIGHT_DOCUMENT),
-            dark: this._context.asAbsolutePath(Constants.GUI.ICON_DARK_DOCUMENT)
-        };
+        this._leoDocumentsExplorer.onDidChangeVisibility((p_event => this._onDocTreeViewVisibilityChanged(p_event, true)));
 
         // * Body Pane
         this._leoFileSystem = new LeoBodyProvider(this);
@@ -246,7 +248,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Initiate a connection to the leoBridge server, then show appropriate view title, the log pane, and set 'bridge ready' flags.
+     * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
      */
     public connect(): void {
         if (this.leoBridgeReady || this._leoIsConnecting) {
@@ -430,13 +432,25 @@ export class LeoIntegration {
      * @param p_explorerView Flag to signify that the treeview who triggered this event is the one in the explorer view
      */
     private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
-        if (p_explorerView) {
-            // (Facultative) Do something different if explorerView is used, instead of the standalone outline pane
-        }
         if (p_event.visible && this.lastSelectedNode) {
+            this._lastVisibleTreeView = p_explorerView ? this._leoTreeExplorerView : this._leoTreeStandaloneView;
             this._setTreeViewTitle();
             this._needLastSelectedRefresh = true; // Its a new node in a new tree so refresh lastSelectedNode too
             this._refreshOutline(RevealType.RevealSelect);
+        }
+    }
+
+    /**
+     * * Handle the change of visibility of either outline treeview and refresh it if its visible
+     * @param p_event The treeview-visibility-changed event passed by vscode
+     * @param p_explorerView Flag to signify that the treeview who triggered this event is the one in the explorer view
+     */
+    private _onDocTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
+        if (p_explorerView) {
+            // (Facultative/unused) Do something different if explorer view is used, instead of the standalone outline pane
+        }
+        if (p_event.visible) {
+            this._leoDocumentsProvider.refreshTreeRoot();
         }
     }
 
@@ -533,6 +547,33 @@ export class LeoIntegration {
     }
 
     /**
+     * * Places selection on the required node in a 'timeout'. Used after refreshing the opened Leo documents view.
+     * @param p_documentNode Document node instance in the Leo document view to be the 'selected' one.
+     */
+    public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
+        setTimeout(() => {
+            if (!this._leoDocuments.visible && !this._leoDocumentsExplorer.visible) {
+                return;
+            }
+            let w_trigger = false;
+            let w_docView: vscode.TreeView<LeoDocumentNode>;
+            if (this._leoDocuments.visible) {
+                w_docView = this._leoDocuments;
+            } else {
+                w_docView = this._leoDocumentsExplorer;
+            }
+            if (w_docView.selection.length && w_docView.selection[0] === p_documentNode) {
+                console.log('already selected!'); // ! test !
+            } else {
+                w_trigger = true;
+            }
+            if (w_trigger) {
+                w_docView.reveal(p_documentNode, { select: true, focus: false });
+            }
+        });
+    }
+
+    /**
      * * Refreshes the outline. A reveal type can be passed along to specify the reveal type for the selected node
      * @param p_revealType Facultative reveal type to specify type of reveal when the 'selected node' is encountered
      */
@@ -540,7 +581,13 @@ export class LeoIntegration {
         if (p_revealType !== undefined) { // To check if selected node should self-select while redrawing whole tree
             this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
         }
-        this._leoTreeDataProvider.refreshTreeRoot();
+        if (this._lastSelectedNode && !(this._leoTreeExplorerView.visible || this._leoTreeStandaloneView.visible)) {
+            this._lastVisibleTreeView.reveal(this._lastSelectedNode).then(() => {
+                this._leoTreeDataProvider.refreshTreeRoot();
+            });
+        } else {
+            this._leoTreeDataProvider.refreshTreeRoot();
+        }
     }
 
     /**
@@ -1028,22 +1075,28 @@ export class LeoIntegration {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
         // get list and show dialog to user, even if there's only one...but at least one!
         // TODO : p_package members names should be made into constants
+        // TODO : Fix / Cleanup opened body panes close before reopening when switching
         this.triggerBodySave(true)
             .then(() => {
                 return this._leoBridge.action(Constants.LEOBRIDGE.GET_OPENED_FILES);
             })
             .then(p_package => {
                 const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
-                const w_files: string[] = p_package.openedFiles.files;
+                const w_files: LeoDocument[] = p_package.openedFiles.files;
                 const w_selectedIndex: number = p_package.openedFiles.index;
                 let w_index: number = 0;
-                let w_currentlySelected = "";
+                let w_currentlySelected = "";  // ? not used elsewhere ?
                 if (w_files && w_files.length) {
-                    w_files.forEach(function (p_filePath: string) {
+                    w_files.forEach(function (p_filePath: LeoDocument) {
                         if (w_index === w_selectedIndex) {
-                            w_currentlySelected = p_filePath;
+                            w_currentlySelected = p_filePath.name; // ? not used elsewhere ?
                         }
-                        w_entries.push({ label: w_index.toString(), description: p_filePath ? p_filePath : "untitled", value: w_index, alwaysShow: true });
+                        w_entries.push({
+                            label: w_index.toString(),
+                            description: p_filePath.name ? p_filePath.name : Constants.UNTITLED_FILE_NAME,
+                            value: w_index,
+                            alwaysShow: true
+                        });
                         w_index++;
                     });
                     const w_pickOptions: vscode.QuickPickOptions = {
@@ -1089,10 +1142,10 @@ export class LeoIntegration {
                 .then((p_package => {
                     // TODO : p_package members names should be made into constants
                     if (p_package.closed) {
+                        this._leoDocumentsProvider.refreshTreeRoot();
                         if (p_package.closed.total === 0) {
                             this._setupNoOpenedLeoDocument();
                         } else {
-                            this._leoDocumentsProvider.refreshTreeRoot();
                             this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
                         }
                     } else if (p_package.closed === false) {
