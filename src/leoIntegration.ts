@@ -92,6 +92,7 @@ export class LeoIntegration {
     private _leoDocuments: vscode.TreeView<LeoDocumentNode>;
     private _leoDocumentsExplorer: vscode.TreeView<LeoDocumentNode>;
     private _currentDocumentChanged: boolean = false; // if clean and an edit is done: refresh opened documents view
+    private _lastActionWasSave: boolean = false;
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _needRefreshBody: boolean = false; // Flag for commands that might change current body
@@ -326,6 +327,14 @@ export class LeoIntegration {
         }
     }
 
+    public refreshOpenDocumentsViewIfClean(): void {
+
+        if (!this._currentDocumentChanged || this._lastActionWasSave) {
+            this._leoDocumentsProvider.refreshTreeRoot();
+            this._lastActionWasSave = false;
+        }
+    }
+
     /**
      * * Returns the 'busy' state flag of the command stack, while showing a message if it is.
      * Needed by special unstackable commands such as new, open,...
@@ -366,7 +375,6 @@ export class LeoIntegration {
 
         // * Could be already opened, so perform 'rename hack' as if another node was selected
         if (this._bodyTextDocument && this.bodyUri) {
-            console.log('TRYING SWITCH BODY');
             this._switchBody(w_selectedLeoNode.gnx);
         } else {
             this.bodyUri = utils.strToLeoUri(w_selectedLeoNode.gnx);
@@ -492,7 +500,7 @@ export class LeoIntegration {
             this._fromOutline = false; // Focus is on body pane
 
             // * If icon should change then do it now (if there's no document edit pending)
-            if (this.lastSelectedNode && utils.leoUriToStr(p_event.document.uri) === this.lastSelectedNode.gnx) {
+            if (this.lastSelectedNode && (!this._currentDocumentChanged || utils.leoUriToStr(p_event.document.uri) === this.lastSelectedNode.gnx)) {
                 const w_hasBody = !!(p_event.document.getText().length);
                 if (utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody)) {
                     this._bodySaveDocument(p_event.document)
@@ -500,6 +508,7 @@ export class LeoIntegration {
                             this.lastSelectedNode!.dirty = true;
                             this.lastSelectedNode!.hasBody = w_hasBody;
                             this._refreshOutline(RevealType.NoReveal); // NoReveal for keeping the same id and selection
+                            this._leoDocumentsProvider.refreshTreeRoot();
                         });
                     return; // * Don't continue
                 }
@@ -551,6 +560,7 @@ export class LeoIntegration {
      * @param p_documentNode Document node instance in the Leo document view to be the 'selected' one.
      */
     public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
+        this._currentDocumentChanged = p_documentNode.documentEntry.changed;
         setTimeout(() => {
             if (!this._leoDocuments.visible && !this._leoDocumentsExplorer.visible) {
                 return;
@@ -563,7 +573,7 @@ export class LeoIntegration {
                 w_docView = this._leoDocumentsExplorer;
             }
             if (w_docView.selection.length && w_docView.selection[0] === p_documentNode) {
-                console.log('already selected!'); // ! test !
+                // console.log('already selected!');
             } else {
                 w_trigger = true;
             }
@@ -714,6 +724,7 @@ export class LeoIntegration {
         }
         // * Launch Outline's Root Refresh Cycle
         this._refreshOutline(w_revealType);
+        this.refreshOpenDocumentsViewIfClean();
     }
 
     /**
@@ -1038,6 +1049,7 @@ export class LeoIntegration {
                     })
                     .then(p_chosenLeoFile => {
                         if (p_chosenLeoFile.trim()) {
+                            this._lastActionWasSave = true;
                             this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, p_chosenLeoFile); // p_node and p_newHeadline can be undefined
                         }
                     });
@@ -1058,6 +1070,7 @@ export class LeoIntegration {
             if (this.lastSelectedNode && this._isCurrentFileNamed()) {
                 this.triggerBodySave(true)
                     .then(() => {
+                        this._lastActionWasSave = true;
                         this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, ""); // p_node and p_newHeadline can be undefined
                     });
             } else {

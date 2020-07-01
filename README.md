@@ -56,6 +56,7 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 | `Ctrl + Shift + X`         |     |                       | Cut Node           |
 | `Ctrl + Shift + V`         |     |                       | Paste Node         |
 | `Ctrl + Shift + Backspace` |     |                       | Delete Node        |
+| `Ctrl + B`                 |     |                       | Execute Script     |
 | `Ctrl + M`                 |     |                       | Mark / Unmark      |
 | `Ctrl + {`                 |     | `Ctrl + }`            | Promote / Demote   |
 | `Ctrl + U`                 | or  | `Shift + Alt + Up`    | Move Outline Up    |
