@@ -11,12 +11,17 @@ export class Constants {
 
     public static TREEVIEW_ID: string = Constants.CONFIG_SECTION;
     public static TREEVIEW_EXPLORER_ID: string = Constants.CONFIG_SECTION + "Explorer";
+
+    public static DOCUMENTS_ID: string = "leoDocuments";
+    public static DOCUMENTS_EXPLORER_ID: string = "leoDocumentsExplorer";
+
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";
     public static URI_SCHEME: string = "leo";
     public static URI_SCHEME_HEADER: string = "leo:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
+    public static UNTITLED_FILE_NAME: string = "untitled";
 
     public static DEFAULT_PYTHON: string = "python3.7";
     public static WIN32_PYTHON: string = "py";
@@ -44,6 +49,10 @@ export class Constants {
      * * Strings used in the workbench interface panels (not for messages or dialogs)
      */
     public static GUI = {
+        ICON_LIGHT_DOCUMENT: "resources/light/document.svg",
+        ICON_DARK_DOCUMENT: "resources/dark/document.svg",
+        ICON_LIGHT_DOCUMENT_DIRTY: "resources/light/document-dirty.svg",
+        ICON_DARK_DOCUMENT_DIRTY: "resources/dark/document-dirty.svg",
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
@@ -69,6 +78,7 @@ export class Constants {
         BEFORE_CLOSING: "before closing?",
         CANCEL: "Cancel",
         FILE_ALREADY_OPENED: "Leo file already opened",
+        CHOOSE_OPENED_FILE: "Select an opened Leo File",
         FILE_NOT_OPENED: "No files opened.",
         STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect", // TODO : Add description of what happens if clicked
         STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
@@ -147,6 +157,9 @@ export class Constants {
         SELECTED_MARKED: "leoNodeMarked",  // Selected node is marked
         SELECTED_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked
         SELECTED_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
+        // Flags for opened Leo documents
+        DOCUMENT_SELECTED: "leoDocumentSelected",
+        DOCUMENT: "leoDocument",
         // Flags that match specific LeoInteg config settings
         TREE_IN_EXPLORER: Constants.CONFIGURATION.TREE_IN_EXPLORER, // Leo outline also in the explorer view
         SHOW_OPEN_ASIDE: Constants.CONFIGURATION.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
@@ -277,6 +290,7 @@ export class Constants {
         // * LeoBridge
         START_SERVER: "startServer",
         CONNECT: "connectToServer",
+        SET_OPENED_FILE: "setOpenedFile",
         OPEN_FILE: "openLeoFile", // sets focus on BODY
         SWITCH_FILE: "switchLeoFile",
         NEW_FILE: "newLeoFile",

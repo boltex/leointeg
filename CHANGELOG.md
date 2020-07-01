@@ -1,9 +1,15 @@
 # Change Log
 
+## 0.1.12
+
+- Added support for multiple opened files along with the 'new', 'Close', 'Save-As' commands.
+- Added basic leonine syntax coloring. (No specific \@languages yet)
+- Added selection support to the 'Execute-Script' command
+
 ## 0.1.11
 
 - Fixed undo operation for the _insert_ and _rename_ commands (Some other commands may still need fixes to their 'undo' support)
-- Fixed crashing but when editing body pane under Leo 6.2
+- Fixed crashing when editing body pane under Leo 6.2
 
 ## 0.1.10
 

@@ -159,7 +159,6 @@ To contribute, see the official issues page for current list of 'TODO's at https
         for w_commander in self.g.app.commanders():
             if w_commander.fileName() == p_file:
                 w_found = True
-                print("same!")
                 self.commander = w_commander
 
     if not w_found:
@@ -188,11 +187,9 @@ To contribute, see the official issues page for current list of 'TODO's at https
     Returns an object that contains a 'closed' member
     """
     # TODO : Specify which file to support multiple opened files
-    print("Trying to close opened file " + str(self.commander.changed))
     if self.commander:
         if p_package["forced"] and self.commander.changed:
             # return "no" g.app.gui.runAskYesNoDialog  and g.app.gui.runAskYesNoCancelDialog
-            print("self.commander.revert()")
             self.commander.revert()
         if p_package["forced"] or not self.commander.changed:
             self.commander.closed = True
@@ -233,7 +230,6 @@ To contribute, see the official issues page for current list of 'TODO's at https
     '''EMIT OUT list of children of a node'''
     if p_ap:
         w_p = self.ap_to_p(p_ap)
-        # print('Get children for ' + w_p.h)
         if w_p and w_p.hasChildren():
             return self.outputPNodes(w_p.children())
         else:
@@ -663,10 +659,8 @@ if __name__ == '__main__':
         w_p = self.ap_to_p(p_ap)
         if w_p:
             if w_p == self.commander.p:
-                # print("already on selection")
                 self.commander.deleteOutline()  # already on this node, so delete it
             else:
-                # print("not on selection")
                 oldPosition = self.commander.p  # not same node, save position to possibly return to
                 self.commander.selectPosition(w_p)
                 self.commander.deleteOutline()
@@ -677,7 +671,6 @@ if __name__ == '__main__':
                     # Try again with childIndex
                     if self.commander.positionExists(oldPosition):
                         self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
-            # print("finally returning node" + self.commander.p.v.headString())
             return self.outputPNode(self.commander.p)  # in both cases, return selected node
         else:
             return self.outputError("Error in deletePNode no w_p node found")  # default empty
@@ -859,10 +852,8 @@ wsPort = 32125
         if w_p:
             w_func = getattr(self.commander, p_command)
             if w_p == self.commander.p:
-                # print("already on selection")
                 w_func()
             else:
-                # print("not on selection")
                 oldPosition = self.commander.p  # not same node, save position to possibly return to
                 self.commander.selectPosition(w_p)
                 w_func()
@@ -1416,7 +1407,11 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200619165641.1">def getStates(self, p_package):
-    '''Gets the currently opened file's general states for UI enabled/disabled states'''
+    """
+    Gets the currently opened file's general states for UI enabled/disabled states
+    such as undo available, file changed/unchanged
+    TODO : Add More! #18 @boltex
+    """
     if self.commander:
         try:
             w_states = {'changed': self.commander.changed}  # Init response object with 'dirty/changed' member
@@ -1435,13 +1430,15 @@ wsPort = 32125
     w_indexFound = 0
     for w_commander in self.g.app.commanders():
         if w_commander.closed == False:
-            w_files.append(w_commander.mFileName)
+            w_isSelected = False
+            w_isChanged = w_commander.changed
             if self.commander == w_commander:
                 w_indexFound = w_index
-        w_index = w_index + 1
-
-    print('got Files' + str(w_files))
-    print('index is ' + str(w_indexFound))
+                w_isSelected = True
+            w_entry = {"name": w_commander.mFileName, "index": w_index,
+                       "changed": w_isChanged, "selected": w_isSelected}
+            w_files.append(w_entry)
+            w_index = w_index + 1
 
     w_openedFiles = {"files": w_files, "index": w_indexFound}
 
@@ -1454,7 +1451,6 @@ wsPort = 32125
     for w_commander in self.g.app.commanders():
         if w_commander.closed == False:
             w_total = w_total + 1
-    print('outputting total opened '+str(w_total))
     return w_total
 
 </t>
@@ -1462,24 +1458,20 @@ wsPort = 32125
     '''Get first opened commander, or False if there are none.'''
     for w_commander in self.g.app.commanders():
         if w_commander.closed == False:
-            print('found first '+str(w_commander.fileName()))
             return w_commander
-
     return False
 
 </t>
 <t tx="felix.20200624172552.1">def setOpenedFile(self, p_package):
-    '''Choose the new active commander from array of opened file path/names'''
-    print("got a setopenedfile call! package is: ")
-    print(str(p_package))
+    '''Choose the new active commander from array of opened file path/names by numeric index'''
     w_openedCommanders = []
+
     for w_commander in self.g.app.commanders():
         if w_commander.closed == False:
             w_openedCommanders.append(w_commander)
-    print('setting openedFiles' + str(w_openedCommanders))
 
-    #  w_fileName = p_package['fileName']
     w_index = p_package['index']
+
     if w_openedCommanders[w_index]:
         self.commander = w_openedCommanders[w_index]
 
