@@ -1410,17 +1410,28 @@ wsPort = 32125
     """
     Gets the currently opened file's general states for UI enabled/disabled states
     such as undo available, file changed/unchanged
-    TODO : Add More! #18 @boltex
     """
+    w_states = {}
     if self.commander:
         try:
-            w_states = {'changed': self.commander.changed}  # Init response object with 'dirty/changed' member
+            w_states["changed"] = self.commander.changed   # 'dirty/changed' member
+            w_states["canUndo"] = self.commander.canUndo()
+            w_states["canRedo"] = self.commander.canRedo()
+            w_states["canDemote"] = self.commander.canDemote()
+            w_states["canDehoist"] = self.commander.canDehoist()
+
         except Exception as e:
             self.g.trace('Error while getting states')
             print("Error while getting states")
             print(str(e))
+    else:
+        w_states["changed"] = False
+        w_states["canUndo"] = False
+        w_states["canRedo"] = False
+        w_states["canDemote"] = False
+        w_states["canDehoist"] = False
 
-    return self.sendLeoBridgePackage()  # Just send empty as 'did nothing'
+    return self.sendLeoBridgePackage("states", w_states)
 
 </t>
 <t tx="felix.20200622230608.1">def getOpenedFiles(self, p_package):
@@ -1442,7 +1453,7 @@ wsPort = 32125
 
     w_openedFiles = {"files": w_files, "index": w_indexFound}
 
-    return self.sendLeoBridgePackage('openedFiles', w_openedFiles)
+    return self.sendLeoBridgePackage("openedFiles", w_openedFiles)
 
 </t>
 <t tx="felix.20200623201853.1">def _getTotalOpened(self):

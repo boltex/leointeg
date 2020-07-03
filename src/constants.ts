@@ -7,10 +7,10 @@ export class Constants {
 
     public static PUBLISHER: string = "boltex";
     public static NAME: string = "leointeg";
-    public static CONFIG_SECTION = "leoIntegration";
+    public static CONFIG_NAME = "leoIntegration";
 
-    public static TREEVIEW_ID: string = Constants.CONFIG_SECTION;
-    public static TREEVIEW_EXPLORER_ID: string = Constants.CONFIG_SECTION + "Explorer";
+    public static TREEVIEW_ID: string = Constants.CONFIG_NAME;
+    public static TREEVIEW_EXPLORER_ID: string = Constants.CONFIG_NAME + "Explorer";
 
     public static DOCUMENTS_ID: string = "leoDocuments";
     public static DOCUMENTS_EXPLORER_ID: string = "leoDocumentsExplorer";
@@ -35,7 +35,7 @@ export class Constants {
     public static ERROR_PACKAGE_ID: number = 0;
     public static STARTING_PACKAGE_ID: number = 1;
     public static STATUSBAR_DEBOUNCE_DELAY: number = 50;
-
+    public static STATES_DEBOUNCE_DELAY: number = 200; // a fifth of a second after command stack completion
 
     /**
      * * Strings used as language id (default is "leobody")
@@ -123,7 +123,7 @@ export class Constants {
     /**
      * * String for JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
      */
-    public static CONFIGURATION = {
+    public static CONFIG = {
         CHECK_FOR_CHANGE_EXTERNAL_FILES: "checkForChangeExternalFiles",
         DEFAULT_RELOAD_IGNORE: "defaultReloadIgnore",
         TREE_KEEP_FOCUS: "treeKeepFocus",
@@ -149,27 +149,37 @@ export class Constants {
      * * Used in 'when' clauses, set with vscode.commands.executeCommand("setContext",...)
      */
     public static CONTEXT_FLAGS = {
+        // Main flags for connection and opened file
         BRIDGE_READY: "leoBridgeReady", // Connected to leoBridge
         TREE_OPENED: "leoTreeOpened", // At least one Leo file opened
-        SERVER_STARTED: "leoServerStarted", // Auto_start or manually started
-        // Flags about current selection
+        TREE_TITLED: "leoTreeTitled", // Tree is a Leo file and not a new untitled document
+        SERVER_STARTED: "leoServerStarted", // Auto-start or manually started
+        // 'states' flags for currently opened tree view
+        LEO_CHANGED: "leoChanged",
+        LEO_CAN_UNDO: "leoCanUndo",
+        LEO_CAN_REDO: "leoCanRedo",
+        LEO_CAN_DEMOTE: "leoCanDemote",
+        LEO_CAN_DEHOIST: "leoCanDehoist",
+        // Flags for current selection in outline tree view
         LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
         SELECTED_MARKED: "leoNodeMarked",  // Selected node is marked
         SELECTED_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked
         SELECTED_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
-        // Flags for opened Leo documents
-        DOCUMENT_SELECTED: "leoDocumentSelected",
-        DOCUMENT: "leoDocument",
+        // Flags for Leo documents tree view icons and hover node command buttons
+        DOCUMENT_SELECTED_TITLED: "leoDocumentSelectedTitled",
+        DOCUMENT_TITLED: "leoDocumentTitled",
+        DOCUMENT_SELECTED_UNTITLED: "leoDocumentSelectedUntitled",
+        DOCUMENT_UNTITLED: "leoDocumentUntitled",
         // Flags that match specific LeoInteg config settings
-        TREE_IN_EXPLORER: Constants.CONFIGURATION.TREE_IN_EXPLORER, // Leo outline also in the explorer view
-        SHOW_OPEN_ASIDE: Constants.CONFIGURATION.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
-        SHOW_ARROWS: Constants.CONFIGURATION.SHOW_ARROWS,           // Hover Icons on outline nodes
-        SHOW_ADD: Constants.CONFIGURATION.SHOW_ADD,                 // Hover Icons on outline nodes
-        SHOW_MARK: Constants.CONFIGURATION.SHOW_MARK,               // Hover Icons on outline nodes
-        SHOW_CLONE: Constants.CONFIGURATION.SHOW_CLONE,             // Hover Icons on outline nodes
-        SHOW_COPY: Constants.CONFIGURATION.SHOW_COPY,               // Hover Icons on outline nodes
-        AUTO_START_SERVER: Constants.CONFIGURATION.AUTO_START_SERVER,   // Used at startup
-        AUTO_CONNECT: Constants.CONFIGURATION.AUTO_CONNECT              // Used at startup
+        TREE_IN_EXPLORER: Constants.CONFIG.TREE_IN_EXPLORER, // Leo outline also in the explorer view
+        SHOW_OPEN_ASIDE: Constants.CONFIG.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
+        SHOW_ARROWS: Constants.CONFIG.SHOW_ARROWS,           // Hover Icons on outline nodes
+        SHOW_ADD: Constants.CONFIG.SHOW_ADD,                 // Hover Icons on outline nodes
+        SHOW_MARK: Constants.CONFIG.SHOW_MARK,               // Hover Icons on outline nodes
+        SHOW_CLONE: Constants.CONFIG.SHOW_CLONE,             // Hover Icons on outline nodes
+        SHOW_COPY: Constants.CONFIG.SHOW_COPY,               // Hover Icons on outline nodes
+        AUTO_START_SERVER: Constants.CONFIG.AUTO_START_SERVER,   // Used at startup
+        AUTO_CONNECT: Constants.CONFIG.AUTO_CONNECT              // Used at startup
     };
 
     /**
@@ -180,7 +190,6 @@ export class Constants {
         ASYNC_ASK: "ask",
         ASYNC_WARN: "warn",
         ASYNC_INFO: "info",
-        // ASYNC_CHOOSE_SAVE: "saveFileDialog", // TODO : Example for reproducing UI calls (see TODO in leoAsync.ts)
         ASYNC_INTERVAL: "interval"
     };
 

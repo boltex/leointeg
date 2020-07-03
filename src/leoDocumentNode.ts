@@ -17,8 +17,9 @@ export class LeoDocumentNode extends vscode.TreeItem {
     ) {
         super(documentEntry.name);
         // * Setup this instance
-        this.label = this.documentEntry.name ? utils.getFileFromPath(this.documentEntry.name) : Constants.UNTITLED_FILE_NAME;
-        this.tooltip = this.documentEntry.name ? this.documentEntry.name : Constants.UNTITLED_FILE_NAME;
+        const w_isNamed: boolean = !!this.documentEntry.name;
+        this.label = w_isNamed ? utils.getFileFromPath(this.documentEntry.name) : Constants.UNTITLED_FILE_NAME;
+        this.tooltip = w_isNamed ? this.documentEntry.name : Constants.UNTITLED_FILE_NAME;
         this.description = false;
         this.command = {
             command: Constants.NAME + "." + Constants.COMMANDS.SET_OPENED_FILE, // unexposed command test
@@ -28,9 +29,9 @@ export class LeoDocumentNode extends vscode.TreeItem {
         // If this was created as a selected node, make sure it's selected as we may have opened/closed document
         if (this.documentEntry.selected) {
             this._leoIntegration.setDocumentSelection(this);
-            this.contextValue = Constants.CONTEXT_FLAGS.DOCUMENT_SELECTED;
+            this.contextValue = w_isNamed ? Constants.CONTEXT_FLAGS.DOCUMENT_SELECTED_TITLED : Constants.CONTEXT_FLAGS.DOCUMENT_SELECTED_UNTITLED;
         } else {
-            this.contextValue = Constants.CONTEXT_FLAGS.DOCUMENT;
+            this.contextValue = w_isNamed ? Constants.CONTEXT_FLAGS.DOCUMENT_TITLED : Constants.CONTEXT_FLAGS.DOCUMENT_UNTITLED;
         }
     }
 

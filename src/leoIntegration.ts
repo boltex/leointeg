@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem, LeoDocument } from "./types";
@@ -45,6 +46,51 @@ export class LeoIntegration {
         );
     }
 
+    private _leoChanged: boolean = false;
+    get leoChanged(): boolean {
+        return this._leoChanged;
+    }
+    set leoChanged(p_value: boolean) {
+        this._leoChanged = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CHANGED, p_value);
+    }
+
+    private _leoCanUndo: boolean = false;
+    get leoCanUndo(): boolean {
+        return this._leoCanUndo;
+    }
+    set leoCanUndo(p_value: boolean) {
+        this._leoCanUndo = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_UNDO, p_value);
+    }
+
+    private _leoCanRedo: boolean = false;
+    get leoCanRedo(): boolean {
+        return this._leoCanRedo;
+    }
+    set leoCanRedo(p_value: boolean) {
+        this._leoCanRedo = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_REDO, p_value);
+    }
+
+    private _leoCanDemote: boolean = false;
+    get leoCanDemote(): boolean {
+        return this._leoCanDemote;
+    }
+    set leoCanDemote(p_value: boolean) {
+        this._leoCanDemote = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_DEMOTE, p_value);
+    }
+
+    private _leoCanDehoist: boolean = false;
+    get leoCanDehoist(): boolean {
+        return this._leoCanDehoist;
+    }
+    set leoCanDehoist(p_value: boolean) {
+        this._leoCanDehoist = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_DEHOIST, p_value);
+    }
+
     // * Frontend command stack
     private _commandStack: CommandStack;
 
@@ -63,6 +109,18 @@ export class LeoIntegration {
 
     // * Path + Filename string array of opened Leo documents in LeoBridge: Use empty string for new untitled documents.
     private _leoOpenedFileName: string = ""; // Just the 'filename.leo' part, without path. Shown along total as status bar indicator
+    get leoOpenedFileName(): string {
+        return this._leoOpenedFileName;
+    }
+    set leoOpenedFileName(p_name: string) {
+        if (p_name && p_name.length) {
+            this._leoOpenedFileName = p_name;
+            utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, true);
+        } else {
+            this._leoOpenedFileName = "";
+            utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, false);
+        }
+    }
 
     // * Outline Pane
     private _leoTreeDataProvider: LeoOutlineProvider; // TreeDataProvider single instance
@@ -129,6 +187,13 @@ export class LeoIntegration {
     // * Timing
     private _needLastSelectedRefresh = false;
     private _bodyLastChangedDocument: vscode.TextDocument | undefined; // Only set in _onDocumentChanged
+
+    // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
+    public getStates: (() => void) & {
+        clear(): void;
+    } & {
+        flush(): void;
+    };
 
     constructor(private _context: vscode.ExtensionContext) {
         // * Get configuration settings
@@ -204,6 +269,9 @@ export class LeoIntegration {
 
         // * React to configuration settings events
         vscode.workspace.onDidChangeConfiguration(p_event => this._onChangeConfiguration(p_event));
+
+        // * Debounced refresh state flags function
+        this.getStates = debounce(this._triggerGetStates, Constants.STATES_DEBOUNCE_DELAY);
     }
 
     /**
@@ -272,8 +340,8 @@ export class LeoIntegration {
                     }
                 }
 
-                // TODO : Finish Closing and possibly SAME FOR OPENING AND CONNECTING : COULD BE SOME FILES ALREADY OPENED OR NONE!
-
+                // TODO : Finish Closing and possibly SAME FOR OPENING AND CONNECTING
+                // TODO : #14 @boltex COULD BE SOME FILES ALREADY OPENED OR NONE!
 
             },
             (p_reason) => {
@@ -327,12 +395,34 @@ export class LeoIntegration {
         }
     }
 
-    public refreshOpenDocumentsViewIfClean(): void {
-
+    /**
+     * * Refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
+     */
+    public refreshOtherUI(): void {
+        // Start or Reset debounced timeout for 'changed' & 'can' flags
+        this.getStates();
+        // Refresh Opened Documents tree view
         if (!this._currentDocumentChanged || this._lastActionWasSave) {
-            this._leoDocumentsProvider.refreshTreeRoot();
+
             this._lastActionWasSave = false;
         }
+    }
+
+    /**
+     * * 'getStates' action for use in debounced method call
+     */
+    private _triggerGetStates(): void {
+        // Debounced timer has triggered so perform getStates action
+        this._leoDocumentsProvider.refreshTreeRoot();
+        this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) => {
+            if (p_package.states) {
+                this.leoChanged = p_package.states.changed;
+                this.leoCanUndo = p_package.states.canUndo;
+                this.leoCanRedo = p_package.states.canRedo;
+                this.leoCanDemote = p_package.states.canDemote;
+                this.leoCanDehoist = p_package.states.canDehoist;
+            }
+        });
     }
 
     /**
@@ -352,7 +442,7 @@ export class LeoIntegration {
      * * Returns true if the current opened Leo document's filename has some content. (not a new unnamed file)
      */
     private _isCurrentFileNamed(): boolean {
-        return !!this._leoOpenedFileName.length; // checks if it's an empty string
+        return !!this.leoOpenedFileName.length; // checks if it's an empty string
     }
 
     /**
@@ -369,9 +459,9 @@ export class LeoIntegration {
     /**
      * * A Leo file was opened: setup leoInteg's UI accordingly.
      */
-    private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackage): Thenable<vscode.TextEditor> {
+    private _setupOpenedLeoDocument(p_openFileResult: any): Thenable<vscode.TextEditor> {
         const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
-        this._leoOpenedFileName = p_openFileResult.filename;
+        this.leoOpenedFileName = p_openFileResult.filename;
 
         // * Could be already opened, so perform 'rename hack' as if another node was selected
         if (this._bodyTextDocument && this.bodyUri) {
@@ -409,7 +499,7 @@ export class LeoIntegration {
      * @param p_event The configuration-change event passed by vscode
      */
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
-        if (p_event.affectsConfiguration(Constants.CONFIG_SECTION)) {
+        if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
             this.config.buildFromSavedSettings();
         }
     }
@@ -508,7 +598,6 @@ export class LeoIntegration {
                             this.lastSelectedNode!.dirty = true;
                             this.lastSelectedNode!.hasBody = w_hasBody;
                             this._refreshOutline(RevealType.NoReveal); // NoReveal for keeping the same id and selection
-                            this._leoDocumentsProvider.refreshTreeRoot();
                         });
                     return; // * Don't continue
                 }
@@ -545,6 +634,7 @@ export class LeoIntegration {
                 body: p_document.getText()
             };
             return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)).then(() => {
+                this.refreshOtherUI();
                 if (p_forcedVsCodeSave) {
                     return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
                 }
@@ -724,7 +814,7 @@ export class LeoIntegration {
         }
         // * Launch Outline's Root Refresh Cycle
         this._refreshOutline(w_revealType);
-        this.refreshOpenDocumentsViewIfClean();
+        this.refreshOtherUI();
     }
 
     /**
@@ -893,7 +983,6 @@ export class LeoIntegration {
 
             vscode.window.visibleTextEditors.forEach(p_textEditor => {
                 if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
-                    // console.log('found a visible body pane in column: ', p_textEditor.viewColumn);
                     this._bodyMainSelectionColumn = p_textEditor.viewColumn;
                     this._bodyTextDocument = p_textEditor.document;
                 }
@@ -1039,7 +1128,7 @@ export class LeoIntegration {
      * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
      */
     public saveAsLeoFile(p_fromOutline?: boolean): void {
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        if (!this.fileOpenedReady || this._isBusy()) { return; } // Warn user to wait for end of busy state
         // TODO : Implement & support multiple simultaneous files
         if (this.fileOpenedReady) {
             if (this.lastSelectedNode) {
@@ -1064,7 +1153,7 @@ export class LeoIntegration {
      * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
      */
     public saveLeoFile(p_fromOutline?: boolean): void {
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        if (!this.fileOpenedReady || this._isBusy()) { return; } // Warn user to wait for end of busy state
         // TODO : Specify which file when supporting multiple simultaneous opened Leo files
         if (this.fileOpenedReady) {
             if (this.lastSelectedNode && this._isCurrentFileNamed()) {
@@ -1085,7 +1174,7 @@ export class LeoIntegration {
      * * Show switch document 'QuickPick' dialog and switch file if selection is made, or just return if no files are opened.
      */
     public switchLeoFile(): void {
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        if (!this.fileOpenedReady || this._isBusy()) { return; } // Warn user to wait for end of busy state
         // get list and show dialog to user, even if there's only one...but at least one!
         // TODO : p_package members names should be made into constants
         // TODO : Fix / Cleanup opened body panes close before reopening when switching
@@ -1095,8 +1184,8 @@ export class LeoIntegration {
             })
             .then(p_package => {
                 const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
-                const w_files: LeoDocument[] = p_package.openedFiles.files;
-                const w_selectedIndex: number = p_package.openedFiles.index;
+                const w_files: LeoDocument[] = p_package.openedFiles!.files;
+                const w_selectedIndex: number = p_package.openedFiles!.index;
                 let w_index: number = 0;
                 let w_currentlySelected = "";  // ? not used elsewhere ?
                 if (w_files && w_files.length) {
@@ -1121,7 +1210,6 @@ export class LeoIntegration {
                             this.selectOpenedLeoDocument(p_chosenDocument.value);
                         } // else : cancelled so no action taken
                     });
-                    // done
                 }
             });
     }
@@ -1131,7 +1219,7 @@ export class LeoIntegration {
      */
     public selectOpenedLeoDocument(p_index: number): void {
         this._leoBridge.action(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_index }))
-            .then((p_openFileResult) => {
+            .then((p_openFileResult: LeoBridgePackage) => {
                 // Like we just opened or made a new file
                 if (p_openFileResult.setOpened) {
                     this._setupOpenedLeoDocument(p_openFileResult.setOpened);
@@ -1140,7 +1228,6 @@ export class LeoIntegration {
                 }
             });
     }
-
 
     /**
      * * Close an opened Leo file
@@ -1164,7 +1251,7 @@ export class LeoIntegration {
                     } else if (p_package.closed === false) {
                         // Explicitly false and not just undefined
                         const w_askArg = Constants.USER_MESSAGES.SAVE_CHANGES + ' ' +
-                            this._leoOpenedFileName + ' ' +
+                            this.leoOpenedFileName + ' ' +
                             // this._openedLeoDocuments[this._leoOpenedFilesIndex] + ' ' +
                             Constants.USER_MESSAGES.BEFORE_CLOSING;
 
@@ -1281,11 +1368,19 @@ export class LeoIntegration {
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.QUICK_OPEN, Constants.GUI.QUICK_OPEN_LEO_COMMANDS);
     }
 
-    public test(p_fromOutline?: boolean): void {
+    /**
+     * * StatusBar click handler
+     */
+    public statusBarOnClick(): void {
         if (this.fileOpenedReady) {
             this.switchLeoFile();
         } else {
             this.showLeoCommands();
         }
+    }
+
+
+    public test(p_fromOutline?: boolean): void {
+        this.statusBarOnClick(); // placeholder / test
     }
 }

@@ -100,9 +100,44 @@ export interface ArchivedPosition {
  * * Main JSON information package format used between leointeg and Leo
  */
 export interface LeoBridgePackage {
-    id: number;
-    // TODO : ADD ALL POSSIBLE (FACULTATIVE) KEYS FROM leobridgeserver.py (should be in constants.ts)
-    [key: string]: any;
+    id: number; // TODO : Could be used for error checking
+    // * Each of those top level member is an answer from a Constants.LEOBRIDGE command
+    allGnx?: string[];
+    bodyLength?: number;
+    bodyData?: string;
+    node?: ArchivedPosition;
+    nodes?: ArchivedPosition[];
+    states?: {
+        changed: boolean;
+        canUndo: boolean;
+        canRedo: boolean;
+        canDemote: boolean;
+        canDehoist: boolean;
+    },
+    closed?: {
+        total: number;
+        filename?: string;
+        node?: ArchivedPosition;
+    },
+    opened?: {
+        total: number;
+        filename: string;
+        node: ArchivedPosition;
+    },
+    setOpened?: {
+        total: number;
+        filename: string;
+        node: ArchivedPosition
+    },
+    openedFiles?: {
+        index: number;
+        files: {
+            name: string;
+            index: number;
+            changed: boolean;
+            selected: boolean;
+        }[]
+    }
 }
 
 /**
