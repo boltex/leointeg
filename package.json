@@ -1010,7 +1010,7 @@
         },
         {
           "command": "leointeg.undo",
-          "when": "leoTreeOpened"
+          "when": "leoTreeOpened && leoCanUndo"
         },
         {
           "command": "leointeg.redo",
@@ -1255,6 +1255,16 @@
       ],
       "view/title": [
         {
+          "command": "leointeg.openLeoFile",
+          "when": "view =~ /leoDocuments/ && leoBridgeReady",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.newLeoFile",
+          "when": "view =~ /leoDocuments/ && leoBridgeReady",
+          "group": "navigation@1"
+        },
+        {
           "command": "leointeg.connectToServer",
           "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened",
           "group": "navigation@1"
@@ -1271,17 +1281,22 @@
         },
         {
           "command": "leointeg.saveLeoFile",
-          "when": "view =~ /leoIntegration/ && leoTreeOpened",
+          "when": "view =~ /leoIntegration/ && leoTreeOpened && leoTreeTitled && leoChanged",
+          "group": "navigation@2"
+        },
+        {
+          "command": "leointeg.saveAsLeoFile",
+          "when": "view =~ /leoIntegration/ && leoTreeOpened && !leoTreeTitled",
           "group": "navigation@2"
         },
         {
           "command": "leointeg.undoFromOutline",
-          "when": "view =~ /leoIntegration/ && leoTreeOpened",
+          "when": "view =~ /leoIntegration/ && leoTreeOpened && leoCanUndo",
           "group": "navigation@3"
         },
         {
           "command": "leointeg.redoFromOutline",
-          "when": "view =~ /leoIntegration/ && leoTreeOpened",
+          "when": "view =~ /leoIntegration/ && leoTreeOpened && leoCanRedo",
           "group": "navigation@4"
         },
         {
@@ -1292,9 +1307,19 @@
       ],
       "view/item/context": [
         {
+          "command": "leointeg.saveLeoFile",
+          "when": "viewItem =~ /leoDocumentSelectedTitled/ && leoChanged",
+          "group": "inline@1"
+        },
+        {
+          "command": "leointeg.saveAsLeoFile",
+          "when": "viewItem =~ /leoDocumentSelectedUntitled/",
+          "group": "inline@1"
+        },
+        {
           "command": "leointeg.closeLeoFile",
           "when": "viewItem =~ /leoDocumentSelected/",
-          "group": "inline@1"
+          "group": "inline@2"
         },
         {
           "command": "leointeg.editHeadline",
