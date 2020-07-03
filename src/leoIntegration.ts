@@ -150,7 +150,6 @@ export class LeoIntegration {
     private _leoDocuments: vscode.TreeView<LeoDocumentNode>;
     private _leoDocumentsExplorer: vscode.TreeView<LeoDocumentNode>;
     private _currentDocumentChanged: boolean = false; // if clean and an edit is done: refresh opened documents view
-    private _lastActionWasSave: boolean = false;
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _needRefreshBody: boolean = false; // Flag for commands that might change current body
@@ -270,7 +269,7 @@ export class LeoIntegration {
         // * React to configuration settings events
         vscode.workspace.onDidChangeConfiguration(p_event => this._onChangeConfiguration(p_event));
 
-        // * Debounced refresh state flags function
+        // * Debounced refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
         this.getStates = debounce(this._triggerGetStates, Constants.STATES_DEBOUNCE_DELAY);
     }
 
@@ -396,24 +395,12 @@ export class LeoIntegration {
     }
 
     /**
-     * * Refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
-     */
-    public refreshOtherUI(): void {
-        // Start or Reset debounced timeout for 'changed' & 'can' flags
-        this.getStates();
-        // Refresh Opened Documents tree view
-        if (!this._currentDocumentChanged || this._lastActionWasSave) {
-
-            this._lastActionWasSave = false;
-        }
-    }
-
-    /**
      * * 'getStates' action for use in debounced method call
      */
     private _triggerGetStates(): void {
         // Debounced timer has triggered so perform getStates action
         this._leoDocumentsProvider.refreshTreeRoot();
+
         this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) => {
             if (p_package.states) {
                 this.leoChanged = p_package.states.changed;
@@ -634,7 +621,7 @@ export class LeoIntegration {
                 body: p_document.getText()
             };
             return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)).then(() => {
-                this.refreshOtherUI();
+                this.getStates();
                 if (p_forcedVsCodeSave) {
                     return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
                 }
@@ -651,6 +638,7 @@ export class LeoIntegration {
      */
     public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
         this._currentDocumentChanged = p_documentNode.documentEntry.changed;
+        this.leoOpenedFileName = p_documentNode.documentEntry.name;
         setTimeout(() => {
             if (!this._leoDocuments.visible && !this._leoDocumentsExplorer.visible) {
                 return;
@@ -814,7 +802,7 @@ export class LeoIntegration {
         }
         // * Launch Outline's Root Refresh Cycle
         this._refreshOutline(w_revealType);
-        this.refreshOtherUI();
+        this.getStates();
     }
 
     /**
@@ -1138,7 +1126,6 @@ export class LeoIntegration {
                     })
                     .then(p_chosenLeoFile => {
                         if (p_chosenLeoFile.trim()) {
-                            this._lastActionWasSave = true;
                             this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, p_chosenLeoFile); // p_node and p_newHeadline can be undefined
                         }
                     });
@@ -1159,7 +1146,6 @@ export class LeoIntegration {
             if (this.lastSelectedNode && this._isCurrentFileNamed()) {
                 this.triggerBodySave(true)
                     .then(() => {
-                        this._lastActionWasSave = true;
                         this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, ""); // p_node and p_newHeadline can be undefined
                     });
             } else {
