@@ -112,7 +112,7 @@ export class CommandStack {
             }
         }
         if (w_providedHeadline) {
-            w_jsonParam = utils.buildHeadlineJson(w_nodeJson, w_providedHeadline); // 'Insert Named Node' or 'Edit Headline'
+            w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_providedHeadline); // 'Insert Named Node' or 'Edit Headline'
         } else {
             w_jsonParam = w_nodeJson; // 'Insert Unnamed Node' or regular command
         }
@@ -132,6 +132,8 @@ export class CommandStack {
         this._stack.shift();
         // If last is done then do refresh outline and focus on outline, or body
         // console.log('p_package :', p_package);
+
+        // TODO : p_package members names should be made into constants
 
         this._receivedSelection = JSON.stringify(p_package.node); // ! Maybe set this._receivedSelection to the last one anyways ?
         if (!this.size()) {
@@ -156,6 +158,5 @@ export class CommandStack {
                 this._resolveResult(p_package);
             });
         }
-
     }
 }

@@ -1,3 +1,5 @@
+import * as vscode from "vscode";
+
 /**
  * * Text and numeric constants used throughout leoInteg
  */
@@ -5,16 +7,21 @@ export class Constants {
 
     public static PUBLISHER: string = "boltex";
     public static NAME: string = "leointeg";
-    public static CONFIG_SECTION = "leoIntegration";
+    public static CONFIG_NAME = "leoIntegration";
 
-    public static TREEVIEW_ID: string = Constants.CONFIG_SECTION;
-    public static TREEVIEW_EXPLORER_ID: string = Constants.CONFIG_SECTION + "Explorer";
+    public static TREEVIEW_ID: string = Constants.CONFIG_NAME;
+    public static TREEVIEW_EXPLORER_ID: string = Constants.CONFIG_NAME + "Explorer";
+
+    public static DOCUMENTS_ID: string = "leoDocuments";
+    public static DOCUMENTS_EXPLORER_ID: string = "leoDocumentsExplorer";
+
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";
     public static URI_SCHEME: string = "leo";
     public static URI_SCHEME_HEADER: string = "leo:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
+    public static UNTITLED_FILE_NAME: string = "untitled";
 
     public static DEFAULT_PYTHON: string = "python3.7";
     public static WIN32_PYTHON: string = "py";
@@ -28,11 +35,24 @@ export class Constants {
     public static ERROR_PACKAGE_ID: number = 0;
     public static STARTING_PACKAGE_ID: number = 1;
     public static STATUSBAR_DEBOUNCE_DELAY: number = 50;
+    public static STATES_DEBOUNCE_DELAY: number = 200; // a fifth of a second after command stack completion
+
+    /**
+     * * Strings used as language id (default is "leobody")
+     * TODO : Add more languages strings for when directives such as @language are used throughout body panes
+     */
+    public static BODY_LANGUAGES = {
+        default: "leobody"
+    };
 
     /**
      * * Strings used in the workbench interface panels (not for messages or dialogs)
      */
     public static GUI = {
+        ICON_LIGHT_DOCUMENT: "resources/light/document.svg",
+        ICON_DARK_DOCUMENT: "resources/dark/document.svg",
+        ICON_LIGHT_DOCUMENT_DIRTY: "resources/light/document-dirty.svg",
+        ICON_DARK_DOCUMENT_DIRTY: "resources/dark/document-dirty.svg",
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
@@ -54,7 +74,12 @@ export class Constants {
      * * Basic user messages strings for messages and dialogs
      */
     public static USER_MESSAGES = {
+        SAVE_CHANGES: "Save changes to",
+        BEFORE_CLOSING: "before closing?",
+        CANCEL: "Cancel",
         FILE_ALREADY_OPENED: "Leo file already opened",
+        CHOOSE_OPENED_FILE: "Select an opened Leo File",
+        FILE_NOT_OPENED: "No files opened.",
         STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect", // TODO : Add description of what happens if clicked
         STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
         PROMPT_EDIT_HEADLINE: "Edit Headline",
@@ -72,14 +97,33 @@ export class Constants {
         YES_ALL: "Yes to all",
         NO_ALL: "No to all",
         CHANGES_DETECTED: "Changes to external files were detected.",
-        REFRESHED: " Nodes were refreshed from file.", // with leading space
-        IGNORED: " They were ignored." // with leading space
+        REFRESHED: " Nodes were refreshed from file.", // with voluntary leading space
+        IGNORED: " They were ignored.", // with voluntary leading space
+        TOO_FAST: "leoInteg is busy! " // with voluntary trailing space
     };
+
+    /**
+     * * Choices offered when about to lose current changes to a Leo Document
+     */
+    public static ASK_SAVE_CHANGES_BUTTONS: vscode.MessageItem[] = [
+        {
+            title: Constants.USER_MESSAGES.YES,
+            isCloseAffordance: false
+        },
+        {
+            title: Constants.USER_MESSAGES.NO,
+            isCloseAffordance: false
+        },
+        {
+            title: Constants.USER_MESSAGES.CANCEL,
+            isCloseAffordance: true
+        }
+    ];
 
     /**
      * * String for JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
      */
-    public static CONFIGURATION = {
+    public static CONFIG = {
         CHECK_FOR_CHANGE_EXTERNAL_FILES: "checkForChangeExternalFiles",
         DEFAULT_RELOAD_IGNORE: "defaultReloadIgnore",
         TREE_KEEP_FOCUS: "treeKeepFocus",
@@ -105,24 +149,37 @@ export class Constants {
      * * Used in 'when' clauses, set with vscode.commands.executeCommand("setContext",...)
      */
     public static CONTEXT_FLAGS = {
+        // Main flags for connection and opened file
         BRIDGE_READY: "leoBridgeReady", // Connected to leoBridge
         TREE_OPENED: "leoTreeOpened", // At least one Leo file opened
-        SERVER_STARTED: "leoServerStarted", // Auto_start or manually started
-        // Flags about current selection
+        TREE_TITLED: "leoTreeTitled", // Tree is a Leo file and not a new untitled document
+        SERVER_STARTED: "leoServerStarted", // Auto-start or manually started
+        // 'states' flags for currently opened tree view
+        LEO_CHANGED: "leoChanged",
+        LEO_CAN_UNDO: "leoCanUndo",
+        LEO_CAN_REDO: "leoCanRedo",
+        LEO_CAN_DEMOTE: "leoCanDemote",
+        LEO_CAN_DEHOIST: "leoCanDehoist",
+        // Flags for current selection in outline tree view
         LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
         SELECTED_MARKED: "leoNodeMarked",  // Selected node is marked
         SELECTED_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked
         SELECTED_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
+        // Flags for Leo documents tree view icons and hover node command buttons
+        DOCUMENT_SELECTED_TITLED: "leoDocumentSelectedTitled",
+        DOCUMENT_TITLED: "leoDocumentTitled",
+        DOCUMENT_SELECTED_UNTITLED: "leoDocumentSelectedUntitled",
+        DOCUMENT_UNTITLED: "leoDocumentUntitled",
         // Flags that match specific LeoInteg config settings
-        TREE_IN_EXPLORER: Constants.CONFIGURATION.TREE_IN_EXPLORER, // Leo outline also in the explorer view
-        SHOW_OPEN_ASIDE: Constants.CONFIGURATION.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
-        SHOW_ARROWS: Constants.CONFIGURATION.SHOW_ARROWS,           // Hover Icons on outline nodes
-        SHOW_ADD: Constants.CONFIGURATION.SHOW_ADD,                 // Hover Icons on outline nodes
-        SHOW_MARK: Constants.CONFIGURATION.SHOW_MARK,               // Hover Icons on outline nodes
-        SHOW_CLONE: Constants.CONFIGURATION.SHOW_CLONE,             // Hover Icons on outline nodes
-        SHOW_COPY: Constants.CONFIGURATION.SHOW_COPY,               // Hover Icons on outline nodes
-        AUTO_START_SERVER: Constants.CONFIGURATION.AUTO_START_SERVER,   // Used at startup
-        AUTO_CONNECT: Constants.CONFIGURATION.AUTO_CONNECT              // Used at startup
+        TREE_IN_EXPLORER: Constants.CONFIG.TREE_IN_EXPLORER, // Leo outline also in the explorer view
+        SHOW_OPEN_ASIDE: Constants.CONFIG.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
+        SHOW_ARROWS: Constants.CONFIG.SHOW_ARROWS,           // Hover Icons on outline nodes
+        SHOW_ADD: Constants.CONFIG.SHOW_ADD,                 // Hover Icons on outline nodes
+        SHOW_MARK: Constants.CONFIG.SHOW_MARK,               // Hover Icons on outline nodes
+        SHOW_CLONE: Constants.CONFIG.SHOW_CLONE,             // Hover Icons on outline nodes
+        SHOW_COPY: Constants.CONFIG.SHOW_COPY,               // Hover Icons on outline nodes
+        AUTO_START_SERVER: Constants.CONFIG.AUTO_START_SERVER,   // Used at startup
+        AUTO_CONNECT: Constants.CONFIG.AUTO_CONNECT              // Used at startup
     };
 
     /**
@@ -174,9 +231,12 @@ export class Constants {
         EXPAND_NODE: "expandNode",
         COLLAPSE_NODE: "collapseNode",
         CONTRACT_ALL: "contractAll",
-        OPEN_FILE: "openFile", // TODO : #13 @boltex Support multiple simultaneous opened files
-        CLOSE_FILE: "closeFile", // TODO : #13 @boltex Implement & support multiple simultaneous files
-        SAVE_FILE: "saveFile", // TODO : #13 @boltex Specify which file when supporting multiple simultaneous files
+        GET_OPENED_FILES: "getOpenedFiles",
+        SET_OPENED_FILE: "setOpenedFile", // Pass index ? name to validate / error check, only index when stable
+        OPEN_FILE: "openFile",
+        CLOSE_FILE: "closeFile",
+        SAVE_FILE: "saveFile",
+        SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
         // * Leo Operations
         MARK_PNODE: "markPNode",
         UNMARK_PNODE: "unmarkPNode",
@@ -200,6 +260,7 @@ export class Constants {
         UNDO: "undo",
         REDO: "redo",
         EXECUTE_SCRIPT: "executeScript",
+        GET_STATES: "getStates", // #18 @boltex
         // TODO : More commands to implement #15, #23, #24, #25 @boltex
         HOIST_PNODE: "hoistPNode", // #25 @boltex
         DEHOIST: "deHoist", // #25 @boltex
@@ -238,7 +299,13 @@ export class Constants {
         // * LeoBridge
         START_SERVER: "startServer",
         CONNECT: "connectToServer",
+        SET_OPENED_FILE: "setOpenedFile",
         OPEN_FILE: "openLeoFile", // sets focus on BODY
+        SWITCH_FILE: "switchLeoFile",
+        NEW_FILE: "newLeoFile",
+        SAVE_FILE: "saveLeoFile", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SAVE_AS_FILE: "saveAsLeoFile",
+        CLOSE_FILE: "closeLeoFile",
         // * Outline selection
         SELECT_NODE: "selectTreeNode",
         OPEN_ASIDE: "openAside",
@@ -247,12 +314,11 @@ export class Constants {
         UNDO_FO: "undoFromOutline", // from button, return focus on OUTLINE
         REDO: "redo", // From command Palette
         REDO_FO: "redoFromOutline", // from button, return focus on OUTLINE
-        EXECUTE: "executeScriptSelection", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        EXECUTE: "executeScriptSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
         SHOW_BODY: "showBody",
         SHOW_LOG: "showLogPane",
-        SAVE_FILE: "saveLeoFile", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
-        SORT_CHILDREN: "sortChildrenSelection", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
-        SORT_SIBLING: "sortSiblingsSelection", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SORT_CHILDREN: "sortChildrenSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SORT_SIBLING: "sortSiblingsSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
         CONTRACT_ALL: "contractAll", // From command Palette
         CONTRACT_ALL_FO: "contractAllFromOutline", // from button, return focus on OUTLINE
         // * Commands from tree panel buttons or context: focus on OUTLINE
@@ -311,7 +377,6 @@ export class Constants {
         DEMOTE_SELECTION_FO: "demoteSelectionFromOutline",
         REFRESH_FROM_DISK_SELECTION_FO: "refreshFromDiskSelectionFromOutline",
         // * - - - - - - - - - - - - - - - not implemented yet
-        CLOSE_FILE: "closeLeoFile",
         HOIST: "hoistNode",
         HOIST_SELECTION: "hoistSelection",
         DEHOIST: "deHoist",

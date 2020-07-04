@@ -5,7 +5,6 @@ import asyncio
 import websockets
 import sys
 import getopt
-import os
 import time
 import json
 
@@ -407,10 +406,11 @@ class ExternalFilesController:
         return
 
 
-class leoBridgeIntegController:
+class LeoBridgeIntegController:
     '''Leo Bridge Controller'''
 
     def __init__(self):
+        # TODO : need gnx_to_vnode for each opened file/commander
         self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
         self.bridge = leoBridge.controller(gui='nullGui',
                                            loadPlugins=False,  # True: attempt to load plugins.
@@ -427,34 +427,59 @@ class leoBridgeIntegController:
 
         # print(dir(self.g))
         self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
-        # self.commander = None  # going to store the leo file commander once its opened from leo.core.leoBridge
+
+        # * Currently Selected Commander (opened from leo.core.leoBridge or chosen via the g.app.windowList frame list)
+        self.commander = None
+
         self.leoIntegConfig = None
         self.webSocket = None
         self.loop = None
 
+        # * Replacement instances to Leo's codebase : IdleTime, idleTimeManager and externalFilesController
         self.g.IdleTime = self._idleTime
         self.g.app.idleTimeManager = IdleTimeManager(self.g)
-        self.g.app.commanders = self._commanders
-
-        self.efc = ExternalFilesController(self)
-
         # attach instance to g.app for calls to set_time, etc.
-        self.g.app.externalFilesController = self.efc
+        self.g.app.externalFilesController = ExternalFilesController(self)
+        # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
+        self.g.app.gui.runAskYesNoDialog = self._returnYes  # override for "revert to file" operation
 
-    def _commanders(self):
-        ''' Return list of currently active controllers '''
-        # TODO : REVISE/REPLACE WITH OWN SYSTEM
-        # return [f.c for f in g.app.windowList]
-        return [self.commander]
+        # * setup leoBackground to get messages from leo
+        try:
+            self.g.app.idleTimeManager.start()  # To catch derived file changes
+        except:
+            print('ERROR with idleTimeManager')
 
     async def _asyncIdleLoop(self, p_seconds, p_fn):
         while True:
             await asyncio.sleep(p_seconds)
             p_fn(self)
 
+    def _returnNo(self, *arguments):
+        '''Used to override g.app.gui.ask[XXX] dialogs answers'''
+        return "no"
+
+    def _returnYes(self, *arguments):
+        '''Used to override g.app.gui.ask[XXX] dialogs answers'''
+        return "yes"
+
     def _idleTime(self, fn, delay, tag):
         # TODO : REVISE/REPLACE WITH OWN SYSTEM
         asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
+
+    def _getTotalOpened(self):
+        '''Get total of opened commander (who have closed == false)'''
+        w_total = 0
+        for w_commander in self.g.app.commanders():
+            if w_commander.closed == False:
+                w_total = w_total + 1
+        return w_total
+
+    def _getFirstOpenedCommander(self):
+        '''Get first opened commander, or False if there are none.'''
+        for w_commander in self.g.app.commanders():
+            if w_commander.closed == False:
+                return w_commander
+        return False
 
     def sendAsyncOutput(self, p_package):
         if "async" not in p_package:
@@ -467,7 +492,7 @@ class leoBridgeIntegController:
 
     def askResult(self, p_result):
         '''Got the result to an asked question/warning from vscode'''
-        self.efc.integResult(p_result)
+        self.g.app.externalFilesController.integResult(p_result)
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def applyConfig(self, p_config):
@@ -503,34 +528,122 @@ class leoBridgeIntegController:
         self.webSocket = p_webSocket
         self.loop = asyncio.get_event_loop()
 
-    def openFile(self, p_file):
-        '''Open a leo file via leoBridge controller'''
-        self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+    def getOpenedFiles(self, p_package):
+        '''Return array of opened file path/names to be used as openFile parameters to switch files'''
+        w_files = []
+        w_index = 0
+        w_indexFound = 0
+        for w_commander in self.g.app.commanders():
+            if w_commander.closed == False:
+                w_isSelected = False
+                w_isChanged = w_commander.changed
+                if self.commander == w_commander:
+                    w_indexFound = w_index
+                    w_isSelected = True
+                w_entry = {"name": w_commander.mFileName, "index": w_index,
+                           "changed": w_isChanged, "selected": w_isSelected}
+                w_files.append(w_entry)
+                w_index = w_index + 1
 
-        # * setup leoBackground to get messages from leo
-        try:
-            self.g.app.idleTimeManager.start()  # To catch derived file changes
-        except:
-            print('ERROR with idleTimeManager')
+        w_openedFiles = {"files": w_files, "index": w_indexFound}
 
-        if(self.commander):
+        return self.sendLeoBridgePackage("openedFiles", w_openedFiles)
+
+    def setOpenedFile(self, p_package):
+        '''Choose the new active commander from array of opened file path/names by numeric index'''
+        w_openedCommanders = []
+
+        for w_commander in self.g.app.commanders():
+            if w_commander.closed == False:
+                w_openedCommanders.append(w_commander)
+
+        w_index = p_package['index']
+
+        if w_openedCommanders[w_index]:
+            self.commander = w_openedCommanders[w_index]
+
+        if self.commander:
+            self.commander.closed = False
             self.create_gnx_to_vnode()
-            return self.outputPNode(self.commander.p)
+            w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                        "node": self.p_to_ap(self.commander.p)}
+            return self.sendLeoBridgePackage("setOpened", w_result)
+        else:
+            return self.outputError('Error in setOpenedFile')
+
+    def openFile(self, p_file):
+        """
+        Open a leo file via leoBridge controller, or create a new document if empty string.
+        Returns an object that contains a 'opened' member.
+        """
+        w_found = False
+
+        # If not empty string (asking for New file) then check if already opened
+        if p_file:
+            for w_commander in self.g.app.commanders():
+                if w_commander.fileName() == p_file:
+                    w_found = True
+                    self.commander = w_commander
+
+        if not w_found:
+            self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+
+        # Leo at this point has done this too: g.app.windowList.append(c.frame)
+        # and so this now app.commanders() yields this: return [f.c for f in g.app.windowList]
+
+        # did this add to existing array of g.app.commanders() ?
+        # print(str(self.g.app.commanders()))  # test
+        print(*self.g.app.commanders(), sep='\n')
+
+        if self.commander:
+            self.commander.closed = False
+            self.create_gnx_to_vnode()
+            w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                        "node": self.p_to_ap(self.commander.p)}
+            return self.sendLeoBridgePackage("opened", w_result)
         else:
             return self.outputError('Error in openFile')
 
-    def closeFile(self, p_paramUnused):
-        '''Closes a leo file. A file can then be opened with "openFile"'''
-        print("Trying to close opened file")
-        if(self.commander):
-            self.commander.close()
-        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+    def closeFile(self, p_package):
+        """
+        Closes a leo file. A file can then be opened with "openFile"
+        Returns an object that contains a 'closed' member
+        """
+        # TODO : Specify which file to support multiple opened files
+        if self.commander:
+            if p_package["forced"] and self.commander.changed:
+                # return "no" g.app.gui.runAskYesNoDialog  and g.app.gui.runAskYesNoCancelDialog
+                self.commander.revert()
+            if p_package["forced"] or not self.commander.changed:
+                self.commander.closed = True
+                self.commander.close()
+            else:
+                return self.sendLeoBridgePackage('closed', False)  # Cannot close, ask to save, ignore or cancel
 
-    def saveFile(self, p_paramUnused):
+        # Switch commanders to first available
+        w_total = self._getTotalOpened()
+        if w_total:
+            self.commander = self._getFirstOpenedCommander()
+        else:
+            self.commander = None
+
+        if self.commander:
+            self.create_gnx_to_vnode()
+            w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                        "node": self.p_to_ap(self.commander.p)}
+            return self.sendLeoBridgePackage("closed", w_result)
+        else:
+            w_result = {"total": 0}
+            return self.sendLeoBridgePackage("closed", w_result)
+
+    def saveFile(self, p_package):
         '''Saves the leo file. New or dirty derived files are rewritten'''
-        if(self.commander):
+        if self.commander:
             try:
-                self.commander.save()
+                if "text" in p_package:
+                    self.commander.save(fileName=p_package['text'])
+                else:
+                    self.commander.save()
             except Exception as e:
                 self.g.trace('Error while saving')
                 print("Error while saving")
@@ -538,12 +651,39 @@ class leoBridgeIntegController:
 
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
+    def getStates(self, p_package):
+        """
+        Gets the currently opened file's general states for UI enabled/disabled states
+        such as undo available, file changed/unchanged
+        """
+        w_states = {}
+        if self.commander:
+            try:
+                w_states["changed"] = self.commander.changed   # 'dirty/changed' member
+                w_states["canUndo"] = self.commander.canUndo()
+                w_states["canRedo"] = self.commander.canRedo()
+                w_states["canDemote"] = self.commander.canDemote()
+                w_states["canDehoist"] = self.commander.canDehoist()
+
+            except Exception as e:
+                self.g.trace('Error while getting states')
+                print("Error while getting states")
+                print(str(e))
+        else:
+            w_states["changed"] = False
+            w_states["canUndo"] = False
+            w_states["canRedo"] = False
+            w_states["canDemote"] = False
+            w_states["canDehoist"] = False
+
+        return self.sendLeoBridgePackage("states", w_states)
+
     def setActionId(self, p_id):
         self.currentActionId = p_id
 
     async def asyncOutput(self, p_json):
         '''Output json string to the websocket'''
-        if(self.webSocket):
+        if self.webSocket:
             await self.webSocket.send(p_json)
         else:
             print("websocket not ready yet")
@@ -578,7 +718,7 @@ class leoBridgeIntegController:
 
     def markPNode(self, p_ap):
         '''Mark a node, don't select it'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_p.setMarked()
@@ -590,7 +730,7 @@ class leoBridgeIntegController:
 
     def unmarkPNode(self, p_ap):
         '''Unmark a node, don't select it'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_p.clearMarked()
@@ -602,7 +742,7 @@ class leoBridgeIntegController:
 
     def clonePNode(self, p_ap):
         '''Clone a node, return it if it was also the current selection, otherwise try not to select it'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 if w_p == self.commander.p:
@@ -632,14 +772,12 @@ class leoBridgeIntegController:
 
     def deletePNode(self, p_ap):
         '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 if w_p == self.commander.p:
-                    # print("already on selection")
                     self.commander.deleteOutline()  # already on this node, so delete it
                 else:
-                    # print("not on selection")
                     oldPosition = self.commander.p  # not same node, save position to possibly return to
                     self.commander.selectPosition(w_p)
                     self.commander.deleteOutline()
@@ -650,7 +788,6 @@ class leoBridgeIntegController:
                         # Try again with childIndex
                         if self.commander.positionExists(oldPosition):
                             self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
-                # print("finally returning node" + self.commander.p.v.headString())
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
                 return self.outputError("Error in deletePNode no w_p node found")  # default empty
@@ -675,7 +812,7 @@ class leoBridgeIntegController:
 
     def insertPNode(self, p_ap):
         '''Insert a node at given node, then select it once created, and finally return it'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_bunch = self.commander.undoer.beforeInsertNode(w_p)
@@ -689,11 +826,11 @@ class leoBridgeIntegController:
         else:
             return self.outputError("Error in insertPNode no param p_ap")
 
-    def insertNamedPNode(self, p_apHeadline):
+    def insertNamedPNode(self, p_package):
         '''Insert a node at given node, set its headline, select it and finally return it'''
-        w_newHeadline = p_apHeadline['headline']
-        w_ap = p_apHeadline['node']
-        if(w_ap):
+        w_newHeadline = p_package['text']
+        w_ap = p_package['node']
+        if w_ap:
             w_p = self.ap_to_p(w_ap)
             if w_p:
                 w_u = self.commander.undoer.beforeInsertNode(w_p)
@@ -736,15 +873,13 @@ class leoBridgeIntegController:
 
     def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
         '''Generic call to an outline operation (p_command) for specific p-node (p_ap), with possibility of trying to preserve the current selection (p_keepSelection)'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_func = getattr(self.commander, p_command)
                 if w_p == self.commander.p:
-                    # print("already on selection")
                     w_func()
                 else:
-                    # print("not on selection")
                     oldPosition = self.commander.p  # not same node, save position to possibly return to
                     self.commander.selectPosition(w_p)
                     w_func()
@@ -758,13 +893,13 @@ class leoBridgeIntegController:
 
     def undo(self, p_paramUnused):
         '''Undo last un-doable operation'''
-        if(self.commander.undoer.canUndo()):
+        if self.commander.undoer.canUndo():
             self.commander.undoer.undo()
         return self.outputPNode(self.commander.p)  # return selected node when done
 
     def redo(self, p_paramUnused):
         '''Undo last un-doable operation'''
-        if(self.commander.undoer.canRedo()):
+        if self.commander.undoer.canRedo():
             self.commander.undoer.redo()
         return self.outputPNode(self.commander.p)  # return selected node when done
 
@@ -772,14 +907,32 @@ class leoBridgeIntegController:
         '''Refresh from Disk, don't select it if possible'''
         return self.outlineCommand("refreshFromDisk", p_ap, True)
 
-    def executeScript(self, p_ap):
+    def executeScript(self, p_package):
         '''Select a node and run its script'''
-        if(p_ap):
-            w_p = self.ap_to_p(p_ap)
+        if 'node' in p_package:
+            w_ap = p_package['node']
+            w_p = self.ap_to_p(w_ap)
             if w_p:
                 self.commander.selectPosition(w_p)
-                self.commander.executeScript()
-                # print("finally returning node" + self.commander.p.v.headString())
+                w_script = ""
+                if 'text' in p_package:
+                    w_script = str(p_package['text'])
+                if w_script and not w_script.isspace():
+                    # * Mimic getScript !!
+                    try:
+                        # Remove extra leading whitespace so the user may execute indented code.
+                        w_script = self.g.removeExtraLws(w_script, self.commander.tab_width)
+                        w_script = self.g.extractExecutableString(self.commander, w_p, w_script)
+                        w_validScript = self.g.composeScript(self.commander, w_p, w_script,
+                                                             forcePythonSentinels=True,
+                                                             useSentinels=True)
+                        self.commander.executeScript(script=w_validScript)
+                    except Exception as e:
+                        self.g.trace('Error while executing script')
+                        print('Error while executing script')
+                        print(str(e))
+                else:
+                    self.commander.executeScript()
                 return self.outputPNode(self.commander.p)  # in both cases, return selected node
             else:
                 return self.outputError("Error in run no w_p node found")  # default empty
@@ -788,7 +941,7 @@ class leoBridgeIntegController:
 
     def getPNode(self, p_ap):
         '''EMIT OUT a node, don't select it'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 return self.outputPNode(w_p)
@@ -799,9 +952,8 @@ class leoBridgeIntegController:
 
     def getChildren(self, p_ap):
         '''EMIT OUT list of children of a node'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
-            # print('Get children for ' + w_p.h)
             if w_p and w_p.hasChildren():
                 return self.outputPNodes(w_p.children())
             else:
@@ -811,7 +963,7 @@ class leoBridgeIntegController:
 
     def getParent(self, p_ap):
         '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p and w_p.hasParent():
                 return self.outputPNode(w_p.getParent())
@@ -822,7 +974,7 @@ class leoBridgeIntegController:
 
     def getSelectedNode(self, p_paramUnused):
         '''EMIT OUT Selected Position as an array, even if unique'''
-        if(self.commander.p):
+        if self.commander.p:
             return self.outputPNode(self.commander.p)
         else:
             return self.outputPNode()
@@ -834,7 +986,7 @@ class leoBridgeIntegController:
 
     def getBody(self, p_gnx):
         '''EMIT OUT body of a node'''
-        if(p_gnx):
+        if p_gnx:
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
             if w_v:
                 if w_v.b:
@@ -848,7 +1000,7 @@ class leoBridgeIntegController:
 
     def getBodyLength(self, p_gnx):
         '''EMIT OUT body string length of a node'''
-        if(p_gnx):
+        if p_gnx:
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
             if w_v and len(w_v.b):
                 return self.sendLeoBridgePackage("bodyLength", len(w_v.b))
@@ -862,7 +1014,7 @@ class leoBridgeIntegController:
         '''Change Body of selected node'''
         # TODO : This method is unused for now? Remove if unnecessary.
         # TODO : Does this support 'Undo'?
-        if(self.commander.p):
+        if self.commander.p:
             self.commander.p.b = p_body['body']
             return self.outputPNode(self.commander.p)
         else:
@@ -872,19 +1024,22 @@ class leoBridgeIntegController:
         '''Change Body text of a node'''
         for w_p in self.commander.all_positions():
             if w_p.v.gnx == p_package['gnx']:  # found
+                # TODO : Before setting undo and trying to set body, first check if different than existing body
                 w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
                 w_p.v.setBodyString(p_package['body'])
                 self.commander.undoer.afterChangeNodeContents(w_p, "Body Text", w_bunch)
+                if not self.commander.isChanged():
+                    self.commander.setChanged()
                 if not w_p.v.isDirty():
                     w_p.setDirty()
                 break
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
-    def setNewHeadline(self, p_apHeadline):
+    def setNewHeadline(self, p_package):
         '''Change Headline of a node'''
-        w_newHeadline = p_apHeadline['headline']
-        w_ap = p_apHeadline['node']
-        if(w_ap):
+        w_newHeadline = p_package['text']
+        w_ap = p_package['node']
+        if w_ap:
             w_p = self.ap_to_p(w_ap)
             if w_p:
                 # set this node's new headline
@@ -897,7 +1052,7 @@ class leoBridgeIntegController:
 
     def setSelectedNode(self, p_ap):
         '''Select a node, or the first one found with its GNX'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 if self.commander.positionExists(w_p):
@@ -910,14 +1065,14 @@ class leoBridgeIntegController:
                     else:
                         print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
         # * return the finally selected node
-        if(self.commander.p):
+        if self.commander.p:
             return self.outputPNode(self.commander.p)
         else:
             return self.outputPNode()
 
     def expandNode(self, p_ap):
         '''Expand a node'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_p.expand()
@@ -925,7 +1080,7 @@ class leoBridgeIntegController:
 
     def collapseNode(self, p_ap):
         '''Collapse a node'''
-        if(p_ap):
+        if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_p.contract()
@@ -1053,7 +1208,7 @@ def main():
             wsPort = arg
 
     # * start Server
-    integController = leoBridgeIntegController()
+    integController = LeoBridgeIntegController()
 
     # * This is a basic example loop
     # async def asyncInterval(timeout):
@@ -1079,7 +1234,7 @@ def main():
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block functions starting with underscore or reserved
-                    answer = getattr(integController, w_param['action'])(w_param['param']) # Crux
+                    answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
                 else:
                     answer = "Error in processCommand"
                     print(answer)

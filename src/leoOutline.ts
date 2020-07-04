@@ -9,6 +9,8 @@ import { Constants } from "./constants";
  */
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
+    // TODO : p_package members names should be made into constants
+
     private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> = new vscode.EventEmitter<LeoNode | undefined>();
 
     readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
@@ -38,7 +40,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
             this._refreshSingleNodeFlag = false;
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PNODE, element.apJson)
                 .then((p_package) => {
-                    const w_node = this._leoIntegration.apToLeoNode(p_package.node, true, element);
+                    const w_node = this._leoIntegration.apToLeoNode(p_package.node!, true, element);
                     return element.copyProperties(w_node);
                 });
         } else {
@@ -49,7 +51,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     public getChildren(element?: LeoNode): Thenable<LeoNode[]> {
         if (this._leoIntegration.fileOpenedReady) {
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element ? element.apJson : "null").then((p_package) => {
-                return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes);
+                return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
             });
         } else {
             return Promise.resolve([]); // Defaults to an empty list of children
@@ -67,7 +69,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
                 if (p_package.node === null) {
                     return null;
                 } else {
-                    return this._leoIntegration.apToLeoNode(p_package.node);
+                    return this._leoIntegration.apToLeoNode(p_package.node!);
                 }
             });
         } else {

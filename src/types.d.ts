@@ -100,9 +100,54 @@ export interface ArchivedPosition {
  * * Main JSON information package format used between leointeg and Leo
  */
 export interface LeoBridgePackage {
-    id: number;
-    // TODO : ADD ALL POSSIBLE (FACULTATIVE) KEYS FROM leobridgeserver.py (should be in constants.ts)
-    [key: string]: any;
+    id: number; // TODO : Could be used for error checking
+    // * Each of those top level member is an answer from a Constants.LEOBRIDGE command
+    allGnx?: string[];
+    bodyLength?: number;
+    bodyData?: string;
+    node?: ArchivedPosition;
+    nodes?: ArchivedPosition[];
+    states?: {
+        changed: boolean;
+        canUndo: boolean;
+        canRedo: boolean;
+        canDemote: boolean;
+        canDehoist: boolean;
+    },
+    closed?: {
+        total: number;
+        filename?: string;
+        node?: ArchivedPosition;
+    },
+    opened?: {
+        total: number;
+        filename: string;
+        node: ArchivedPosition;
+    },
+    setOpened?: {
+        total: number;
+        filename: string;
+        node: ArchivedPosition
+    },
+    openedFiles?: {
+        index: number;
+        files: {
+            name: string;
+            index: number;
+            changed: boolean;
+            selected: boolean;
+        }[]
+    }
+}
+
+/**
+ * * Leo document structure used in the 'Opened Leo Documents' tree view provider sent back by the server
+ */
+export interface LeoDocument {
+    name: string;
+    index: number,
+    changed: boolean;
+    selected: boolean
 }
 
 /**
@@ -120,6 +165,18 @@ export interface BodyTimeInfo {
     gnx: string;
     ctime: number;
     mtime: number;
+}
+
+/**
+ * * Parameter structure used in the 'runSaveFileDialog' equivalent when asking user input
+ */
+export interface showSaveAsDialogParameters {
+    // See TODO in leoAsync.ts
+    "initialFile": string;
+    "title": string;
+    "message": string;
+    "filetypes": string[];
+    "defaultExtension": string;
 }
 
 /**
@@ -152,4 +209,11 @@ export interface runInfoMessageDialogParameters {
  */
 export interface AskMessageItem extends vscode.MessageItem {
     value: string;
+}
+
+/**
+ * * Used in switch Leo document to get answer from user interaction
+ */
+export interface ChooseDocumentItem extends vscode.QuickPickItem {
+    value: number;
 }
