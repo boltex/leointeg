@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
-import { LeoDocument } from "./types";
+import { LeoDocument, Icon } from "./types";
 import * as utils from "./utils";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -35,7 +35,7 @@ export class LeoDocumentNode extends vscode.TreeItem {
         }
     }
 
-    public get iconPath(): { light: string; dark: string } {
+    public get iconPath(): Icon {
         return this._leoIntegration.documentIcons[this.documentEntry.changed ? 1 : 0];
     }
 

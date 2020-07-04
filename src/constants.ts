@@ -231,11 +231,11 @@ export class Constants {
         EXPAND_NODE: "expandNode",
         COLLAPSE_NODE: "collapseNode",
         CONTRACT_ALL: "contractAll",
-        GET_OPENED_FILES: "getOpenedFiles", //  #13 @boltex
+        GET_OPENED_FILES: "getOpenedFiles",
         SET_OPENED_FILE: "setOpenedFile", // Pass index ? name to validate / error check, only index when stable
-        OPEN_FILE: "openFile", // TODO : #13 @boltex Support multiple simultaneous opened files
-        CLOSE_FILE: "closeFile", // TODO : #13 @boltex Implement & support multiple simultaneous files
-        SAVE_FILE: "saveFile", // TODO : #13 @boltex Specify which file when supporting multiple simultaneous files
+        OPEN_FILE: "openFile",
+        CLOSE_FILE: "closeFile",
+        SAVE_FILE: "saveFile",
         SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
         // * Leo Operations
         MARK_PNODE: "markPNode",
@@ -303,7 +303,7 @@ export class Constants {
         OPEN_FILE: "openLeoFile", // sets focus on BODY
         SWITCH_FILE: "switchLeoFile",
         NEW_FILE: "newLeoFile",
-        SAVE_FILE: "saveLeoFile", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SAVE_FILE: "saveLeoFile", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
         SAVE_AS_FILE: "saveAsLeoFile",
         CLOSE_FILE: "closeLeoFile",
         // * Outline selection
@@ -314,11 +314,11 @@ export class Constants {
         UNDO_FO: "undoFromOutline", // from button, return focus on OUTLINE
         REDO: "redo", // From command Palette
         REDO_FO: "redoFromOutline", // from button, return focus on OUTLINE
-        EXECUTE: "executeScriptSelection", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        EXECUTE: "executeScriptSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
         SHOW_BODY: "showBody",
         SHOW_LOG: "showLogPane",
-        SORT_CHILDREN: "sortChildrenSelection", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
-        SORT_SIBLING: "sortSiblingsSelection", // TODO : #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SORT_CHILDREN: "sortChildrenSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SORT_SIBLING: "sortSiblingsSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
         CONTRACT_ALL: "contractAll", // From command Palette
         CONTRACT_ALL_FO: "contractAllFromOutline", // from button, return focus on OUTLINE
         // * Commands from tree panel buttons or context: focus on OUTLINE

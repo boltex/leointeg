@@ -5,9 +5,11 @@ import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 import { BodyTimeInfo } from "./types";
 
+/**
+ * * Body panes implementation as a file system using "leo" as a scheme identifier
+ * * Saving and renaming prevents flickering and prevents undos to 'traverse through' different gnx
+ */
 export class LeoBodyProvider implements vscode.FileSystemProvider {
-    // * Body panes implemented as a file system with this FileSystemProvider implementation (using "leo" as a scheme identifier)
-    // * Note: Saving and renaming prevents flickering and prevents undos to 'traverse through' different gnx
 
     // * Simple structure to keep mtime of selected and renamed body virtual files
     private _selectedBody: BodyTimeInfo = { gnx: "", ctime: 0, mtime: 0 };
@@ -143,7 +145,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             } else {
                 const w_gnx = utils.leoUriToStr(p_uri);
                 if (this._selectedBody.gnx !== w_gnx && this._renameBody.gnx !== w_gnx) {
-                    console.log('ERROR File not in list selected: ' + this._selectedBody.gnx + " renamed: " + this._renameBody.gnx + " stat asked on w_gnx: " + w_gnx);
+                    console.log('ERROR File not in list selected: ' + this._selectedBody.gnx +
+                        " renamed: " + this._renameBody.gnx +
+                        " stat asked on w_gnx: " + w_gnx);
                     throw vscode.FileSystemError.FileNotFound();
                 } else {
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY_LENGTH, '"' + w_gnx + '"')
@@ -159,7 +163,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                                     type: vscode.FileType.File,
                                     ctime: 0,
                                     mtime: w_mtime,
-                                    size: p_result.bodyLength ? p_result.bodyLength : 0 // this.leoIntegration.bodyText.length
+                                    size: p_result.bodyLength ? p_result.bodyLength : 0
                                 }
                             );
                         });

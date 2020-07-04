@@ -158,6 +158,5 @@ export class CommandStack {
                 this._resolveResult(p_package);
             });
         }
-
     }
 }

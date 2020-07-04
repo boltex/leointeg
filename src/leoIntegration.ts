@@ -16,7 +16,7 @@ import { LeoDocumentsProvider } from "./leoDocuments";
 import { LeoDocumentNode } from "./leoDocumentNode";
 
 /**
- * Orchestrates Leo integration into vscode with treeview and file system providers
+ * * Orchestrates Leo integration into vscode with treeview and file system providers
  */
 export class LeoIntegration {
 
@@ -46,6 +46,7 @@ export class LeoIntegration {
         );
     }
 
+    // * States used in UI button visibility: changed, can undo/redo, can demote and can dehoist.
     private _leoChanged: boolean = false;
     get leoChanged(): boolean {
         return this._leoChanged;
@@ -247,7 +248,7 @@ export class LeoIntegration {
         vscode.window.onDidChangeActiveTextEditor(p_event => this._onActiveEditorChanged(p_event));
 
         // * The selection in an output panel or any other editor has changed
-        // vscode.window.onDidChangeTextEditorSelection(p_event => this._onChangeEditorSelection(p_event)); // Not used for now
+        // vscode.window.onDidChangeTextEditorSelection(p_event => this._onChangeEditorSelection(p_event)); // ! Not used for now
 
         // * The view column of an editor has changed (when shifting editors through closing/inserting editors or closing columns)
         // No effect when dragging editor tabs: it just closes and reopens in other column, see '_onChangeVisibleEditors'
@@ -261,7 +262,7 @@ export class LeoIntegration {
         vscode.window.onDidChangeWindowState(() => this.triggerBodySave());
 
         // * Edited and saved the document, does it on any document in editor
-        // vscode.workspace.onDidSaveTextDocument(p_event => this._onDocumentSaved(p_event)); // Not used for now
+        // vscode.workspace.onDidSaveTextDocument(p_event => this._onDocumentSaved(p_event)); // ! Not used for now
 
         // * React when typing and changing body pane
         vscode.workspace.onDidChangeTextDocument(p_event => this._onDocumentChanged(p_event)); // * Detect when user types in body pane here
@@ -559,7 +560,10 @@ export class LeoIntegration {
         }
     }
 
-    // * Triggers when a vscode window have gained or lost focus
+    /**
+     * * Triggers when a vscode window have gained or lost focus
+     * @param p_event WindowState (focussed or not) event passed by vscode
+     */
     private _onChangeWindowState(p_event: vscode.WindowState): void {
         this.triggerBodySave(); // In case user is about to modify a derived file, we want to send possible edited body text to Leo
     }
@@ -798,7 +802,6 @@ export class LeoIntegration {
         if (this._focusInterrupt) {
             // this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
             w_revealType = RevealType.RevealSelect;
-
         }
         // * Launch Outline's Root Refresh Cycle
         this._refreshOutline(w_revealType);
@@ -861,7 +864,7 @@ export class LeoIntegration {
             if (this._locateOpenedBody(p_node.gnx)) {
                 // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
                 this.bodyUri = utils.strToLeoUri(p_node.gnx);
-                return this._showBodyIfRequired(p_aside, p_showBodyKeepFocus, p_force_open); // already opened in a column so just tell vscode to show it // TODO : NOT ANYMORE WITH NEW SYSTEM
+                return this._showBodyIfRequired(p_aside, p_showBodyKeepFocus, p_force_open); // already opened in a column so just tell vscode to show it
             } else {
                 // * So far, _bodyTextDocument is still opened and different from new selection: so "save & rename" to block undo/redos
                 return this._switchBody(p_node.gnx)
@@ -1364,7 +1367,6 @@ export class LeoIntegration {
             this.showLeoCommands();
         }
     }
-
 
     public test(p_fromOutline?: boolean): void {
         this.statusBarOnClick(); // placeholder / test

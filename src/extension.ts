@@ -41,13 +41,13 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.CONNECT, () => w_leoIntegration.connect()],
         [w_cmdPrefix + Constants.COMMANDS.SHOW_LOG, () => w_leoIntegration.showLogPane()],
         [w_cmdPrefix + Constants.COMMANDS.SHOW_BODY, () => w_leoIntegration.showBody(false)], // Expose to other expansions only, (not in menus for minimal footprint)
-        [w_cmdPrefix + Constants.COMMANDS.NEW_FILE, () => w_leoIntegration.newLeoFile()], // TODO : #13 @boltex  Support multiple simultaneous opened files
-        [w_cmdPrefix + Constants.COMMANDS.SWITCH_FILE, () => w_leoIntegration.switchLeoFile()], // TODO : #13 @boltex  Support multiple simultaneous opened files
+        [w_cmdPrefix + Constants.COMMANDS.NEW_FILE, () => w_leoIntegration.newLeoFile()],
+        [w_cmdPrefix + Constants.COMMANDS.SWITCH_FILE, () => w_leoIntegration.switchLeoFile()],
 
-        [w_cmdPrefix + Constants.COMMANDS.OPEN_FILE, () => w_leoIntegration.openLeoFile()], // TODO : #13 @boltex  Support multiple simultaneous opened files
-        [w_cmdPrefix + Constants.COMMANDS.SAVE_AS_FILE, () => w_leoIntegration.saveAsLeoFile()], // TODO : #13 @boltex  Specify which file when supporting multiple simultaneous files
-        [w_cmdPrefix + Constants.COMMANDS.SAVE_FILE, () => w_leoIntegration.saveLeoFile()], // TODO : #13 @boltex  Specify which file when supporting multiple simultaneous files
-        [w_cmdPrefix + Constants.COMMANDS.CLOSE_FILE, () => w_leoIntegration.closeLeoFile()], // TODO : #13 @boltex Implement & support multiple simultaneous files
+        [w_cmdPrefix + Constants.COMMANDS.OPEN_FILE, () => w_leoIntegration.openLeoFile()],
+        [w_cmdPrefix + Constants.COMMANDS.SAVE_AS_FILE, () => w_leoIntegration.saveAsLeoFile()],
+        [w_cmdPrefix + Constants.COMMANDS.SAVE_FILE, () => w_leoIntegration.saveLeoFile()],
+        [w_cmdPrefix + Constants.COMMANDS.CLOSE_FILE, () => w_leoIntegration.closeLeoFile()],
 
         [w_cmdPrefix + Constants.COMMANDS.SELECT_NODE, (p_node: LeoNode) => w_leoIntegration.selectTreeNode(p_node, false, false)], // Called by nodes in tree when selected
         [w_cmdPrefix + Constants.COMMANDS.OPEN_ASIDE, (p_node: LeoNode) => w_leoIntegration.selectTreeNode(p_node, false, true)],
@@ -103,6 +103,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.INSERT_SELECTION, () => w_leoIntegration.insertNode(undefined, false)],
         [w_cmdPrefix + Constants.COMMANDS.INSERT_SELECTION_FO, () => w_leoIntegration.insertNode(undefined, true)],
 
+        // * Special command for when inserting rapidly more than one node without even specifying a headline label, such as spamming CTRL+I rapidly.
         [w_cmdPrefix + Constants.COMMANDS.INSERT_SELECTION_INTERRUPT, () => w_leoIntegration.insertNode(undefined, undefined, true)],
 
         [w_cmdPrefix + Constants.COMMANDS.CLONE_SELECTION, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],

@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
-import { ArchivedPosition } from "./types"; // * TO HELP DEBUG
+import { ArchivedPosition, Icon } from "./types"; // * TO HELP DEBUG
 
 /**
  * * Implementation of tree nodes for usage in a TreeDataProvider
@@ -87,7 +87,7 @@ export class LeoNode extends vscode.TreeItem {
         this.cursorSelection = p_cursorSelection;
     }
 
-    public get iconPath(): { light: string; dark: string } {
+    public get iconPath(): Icon {
         // From Leo's leoNodes.py computeIcon function
         // 1=has Body, 2=marked, 4=cloned, 8=dirty
         let w_dirty: boolean = this._leoIntegration.config.invertNodeContrast ? !this.dirty : this.dirty;

@@ -31,7 +31,7 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 ## Features
 
-- A **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes** and **Log Window**.
+- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes**, **opened documents selector** and **Log Window**.
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
@@ -119,20 +119,13 @@ To help with this conflict, outline-move keyboard commands will only trigger
 with the additional condition of having no text selection in the editor.
 So select at least one character to use the previously assigned **`Ctrl+D`** command in body panes.
 
-> This extension is still in development, so please refer to its [issue tracker for known issues](https://github.com/boltex/leointeg/issues), and please contribute with additional information if you encounter other issues yourself.
-
-## Intended Features
-
-- Support for multiple simultaneous opened Leo files.
-- Support multiple connections to the leoBridge server.
-- Syntax-highlighting for body panes that matches Leo's syntax-highlighting.
-- Display line numbers in relation to derived files, along with 'go-to' specific line functionality for error lookups and breakpoints.
+> This extension is still in development, so please refer to its [issue tracker](https://github.com/boltex/leointeg/issues) to learn more about its intended features, or to contribute with additional information if you encounter other issues yourself.
 
 ## How it works
 
-Integration is done by starting a python server script and connecting to it via a websocket to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
+Integration is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
 
-The outline pane is made by implementing a TreeDataProvider for vscode's TreeView API, while the body panes are made by implementing a filesystem provider and using the node's gnx as identifiers.
+The outline pane is made by implementing a [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics), while the body panes _virtual documents_ are made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api) and using the node's gnx as identifiers.
 
 ## Acknowledgments
 

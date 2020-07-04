@@ -63,7 +63,6 @@ def simulateDialog(self, key, defaultVal):
 
 */
 
-
 /**
  * * Handles the functions called by Leo through leoBridge such as adding a log pane entry, runAskYesNoDialog for file changes, etc.
  * * Some config settings affect this behavior, such as defaultReloadIgnore and checkForChangeExternalFiles
@@ -86,7 +85,6 @@ export class LeoAsync {
 
     /**
      * * Equivalent to runSaveFileDialog from Leo's qt_gui.py, used when leoBridge gets an async 'ask' command
-     * TODO : Should Reproduce those interactive controls that may be asked by Leo and redo a true UI bridge
      * @param p_saveAsArg
      */
     public showSaveAsDialog(p_saveAsArg: showSaveAsDialogParameters): void {
