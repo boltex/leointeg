@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.1.13
+
+- Added support for precise focus placement, focus switch between tree/body.
+- Added commands and keybindings for 'goto' operations and other commands.
+
 ## 0.1.12
 
 - Added support for multiple opened files along with the 'new', 'Close', 'Save-As' commands.

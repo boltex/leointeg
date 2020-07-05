@@ -55,13 +55,13 @@
       <section id="welcome"
                class="section--full mb-0">
         <h2 class="section__title section__title--primary">
-          Welcome to <span class="highlight">LeoInteg 0.1.12</span>
+          Welcome to <span class="highlight">LeoInteg 0.1.13</span>
         </h2>
         <div class="center mt-1">
           <a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features">
-            See What's New in LeoInteg 0.1.12
+            See What's New in LeoInteg 0.1.13
           </a>
         </div>
         <p class="blurb center ml-0 mr-0">
@@ -204,6 +204,17 @@
 
             <div class="setting">
               <div class="setting__input">
+                <input id="leoTreeBrowse"
+                       name="leoTreeBrowse"
+                       type="checkbox"
+                       data-setting />
+                <label for="leoTreeBrowse">Use Leo Tree Browsing</label>
+              </div>
+              <span class="setting__hint">Have arrow keys move selection instead of a cursor when focus is on the tree outline</span>
+            </div>
+
+            <div class="setting">
+              <div class="setting__input">
                 <input id="treeKeepFocus"
                        name="treeKeepFocus"
                        type="checkbox"
@@ -336,11 +347,22 @@
                    src="#{root}/resources/add.png"
                    data-visibility="showAddOnNodes" />
               <img class="image__preview--float"
-                   src="#{root}/resources/editHeadline.png" />
+                   src="#{root}/resources/editHeadline.png"
+                   data-visibility="showEditOnNodes" />
             </div>
           </div>
 
           <div class="settings">
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showEditOnNodes"
+                       name="showEditOnNodes"
+                       type="checkbox"
+                       data-setting />
+                <label for="showEditOnNodes">Edit&nbsp;Headline</label>
+              </div>
+              <span class="setting__hint">Shows 'Edit Headline' on hover</span>
+            </div>
             <div class="setting">
               <div class="setting__input">
                 <input id="showMarkOnNodes"

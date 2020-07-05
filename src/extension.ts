@@ -40,7 +40,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.START_SERVER, () => w_leoIntegration.startServer()],
         [w_cmdPrefix + Constants.COMMANDS.CONNECT, () => w_leoIntegration.connect()],
         [w_cmdPrefix + Constants.COMMANDS.SHOW_LOG, () => w_leoIntegration.showLogPane()],
-        [w_cmdPrefix + Constants.COMMANDS.SHOW_BODY, () => w_leoIntegration.showBody(false)], // Expose to other expansions only, (not in menus for minimal footprint)
+        [w_cmdPrefix + Constants.COMMANDS.SHOW_BODY, () => w_leoIntegration.showBody(false)], // Also focuses on body
+        [w_cmdPrefix + Constants.COMMANDS.SHOW_OUTLINE, () => w_leoIntegration.showOutline(true)], // Also focuses on outline
         [w_cmdPrefix + Constants.COMMANDS.NEW_FILE, () => w_leoIntegration.newLeoFile()],
         [w_cmdPrefix + Constants.COMMANDS.SWITCH_FILE, () => w_leoIntegration.switchLeoFile()],
 

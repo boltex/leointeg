@@ -592,8 +592,7 @@ class LeoBridgeIntegController:
         # and so this now app.commanders() yields this: return [f.c for f in g.app.windowList]
 
         # did this add to existing array of g.app.commanders() ?
-        # print(str(self.g.app.commanders()))  # test
-        print(*self.g.app.commanders(), sep='\n')
+        # print(*self.g.app.commanders(), sep='\n')
 
         if self.commander:
             self.commander.closed = False

@@ -7,12 +7,14 @@ import { LeoNode } from "./leoNode";
 export interface ConfigMembers {
     checkForChangeExternalFiles: string;
     defaultReloadIgnore: string;
+    leoTreeBrowse: boolean;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
     statusBarString: string;
     statusBarColor: string;
     treeInExplorer: boolean;
     showOpenAside: boolean;
+    showEditOnNodes: boolean;
     showArrowsOnNodes: boolean;
     showAddOnNodes: boolean;
     showMarkOnNodes: boolean;

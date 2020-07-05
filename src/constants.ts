@@ -126,12 +126,14 @@ export class Constants {
     public static CONFIG = {
         CHECK_FOR_CHANGE_EXTERNAL_FILES: "checkForChangeExternalFiles",
         DEFAULT_RELOAD_IGNORE: "defaultReloadIgnore",
+        LEO_TREE_BROWSE: "leoTreeBrowse",
         TREE_KEEP_FOCUS: "treeKeepFocus",
         TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
         STATUSBAR_STRING: "statusBarString",
         STATUSBAR_COLOR: "statusBarColor",
         TREE_IN_EXPLORER: "treeInExplorer",
         SHOW_OPEN_ASIDE: "showOpenAside",
+        SHOW_EDIT: "showEditOnNodes",
         SHOW_ARROWS: "showArrowsOnNodes",
         SHOW_ADD: "showAddOnNodes",
         SHOW_MARK: "showMarkOnNodes",
@@ -171,8 +173,10 @@ export class Constants {
         DOCUMENT_SELECTED_UNTITLED: "leoDocumentSelectedUntitled",
         DOCUMENT_UNTITLED: "leoDocumentUntitled",
         // Flags that match specific LeoInteg config settings
+        LEO_TREE_BROWSE: Constants.CONFIG.LEO_TREE_BROWSE, // Leo outline also in the explorer view
         TREE_IN_EXPLORER: Constants.CONFIG.TREE_IN_EXPLORER, // Leo outline also in the explorer view
         SHOW_OPEN_ASIDE: Constants.CONFIG.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
+        SHOW_EDIT: Constants.CONFIG.SHOW_EDIT,           // Hover Icons on outline nodes
         SHOW_ARROWS: Constants.CONFIG.SHOW_ARROWS,           // Hover Icons on outline nodes
         SHOW_ADD: Constants.CONFIG.SHOW_ADD,                 // Hover Icons on outline nodes
         SHOW_MARK: Constants.CONFIG.SHOW_MARK,               // Hover Icons on outline nodes
@@ -309,6 +313,9 @@ export class Constants {
         // * Outline selection
         SELECT_NODE: "selectTreeNode",
         OPEN_ASIDE: "openAside",
+        // * Goto operations
+
+
         // * Leo Operations
         UNDO: "undo", // From command Palette
         UNDO_FO: "undoFromOutline", // from button, return focus on OUTLINE
@@ -316,6 +323,7 @@ export class Constants {
         REDO_FO: "redoFromOutline", // from button, return focus on OUTLINE
         EXECUTE: "executeScriptSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
         SHOW_BODY: "showBody",
+        SHOW_OUTLINE: "showOutline",
         SHOW_LOG: "showLogPane",
         SORT_CHILDREN: "sortChildrenSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
         SORT_SIBLING: "sortSiblingsSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate

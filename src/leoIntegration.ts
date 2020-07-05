@@ -518,7 +518,7 @@ export class LeoIntegration {
      * @param p_explorerView Flag to signify that the treeview who triggered this event is the one in the explorer view
      */
     private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
-        if (p_event.visible && this.lastSelectedNode) {
+        if (p_event.visible) {
             this._lastVisibleTreeView = p_explorerView ? this._leoTreeExplorerView : this._leoTreeStandaloneView;
             this._setTreeViewTitle();
             this._needLastSelectedRefresh = true; // Its a new node in a new tree so refresh lastSelectedNode too
@@ -666,6 +666,21 @@ export class LeoIntegration {
     }
 
     /**
+     * * Show the outline, with Leo's selected node also selected, and optionally focussed
+     * @param p_focusOutline Flag for focus to be placed in outline
+     */
+    public showOutline(p_focusOutline: boolean): void {
+        if (this._lastSelectedNode) {
+            this._lastVisibleTreeView.reveal(this._lastSelectedNode, {
+                select: true,
+                focus: p_focusOutline
+            }).then(() => {
+                // console.log('done showing/revealing outline');
+            });
+        }
+    }
+
+    /**
      * * Refreshes the outline. A reveal type can be passed along to specify the reveal type for the selected node
      * @param p_revealType Facultative reveal type to specify type of reveal when the 'selected node' is encountered
      */
@@ -673,6 +688,7 @@ export class LeoIntegration {
         if (p_revealType !== undefined) { // To check if selected node should self-select while redrawing whole tree
             this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
         }
+        // Force showing last used Leo outline first
         if (this._lastSelectedNode && !(this._leoTreeExplorerView.visible || this._leoTreeStandaloneView.visible)) {
             this._lastVisibleTreeView.reveal(this._lastSelectedNode).then(() => {
                 this._leoTreeDataProvider.refreshTreeRoot();
