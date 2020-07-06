@@ -74,6 +74,7 @@
 <v t="felix.20200705201100.1"><vh>gotoLastSibling</vh></v>
 <v t="felix.20200705223536.1"><vh>gotoNextVisible</vh></v>
 <v t="felix.20200705223541.1"><vh>gotoPrevVisible</vh></v>
+<v t="felix.20200706030410.1"><vh>gotoNextMarked</vh></v>
 <v t="felix.20200705223430.1"><vh>contractOrGoLeft</vh></v>
 <v t="felix.20200705223521.1"><vh>expandAndGoRight</vh></v>
 </v>
@@ -1548,6 +1549,11 @@ wsPort = 32125
 <t tx="felix.20200705233325.1">def gotoLastVisible(self, p_ap):
     """Select the last visible node of selected chapter or hoist."""
     return self.outlineCommand("goToLastVisibleNode", p_ap)
+
+</t>
+<t tx="felix.20200706030410.1">def gotoNextMarked(self, p_ap):
+    """Select the next marked node."""
+    return self.outlineCommand("goToNextMarkedHeadline", p_ap)
 
 </t>
 </tnodes>

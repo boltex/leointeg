@@ -735,6 +735,10 @@ class LeoBridgeIntegController:
         """Select the visible node preceding the presently selected node."""
         return self.outlineCommand("selectVisBack", p_ap)
 
+    def gotoNextMarked(self, p_ap):
+        """Select the next marked node."""
+        return self.outlineCommand("goToNextMarkedHeadline", p_ap)
+
     def contractOrGoLeft(self, p_ap):
         """Simulate the left Arrow Key in folder of Windows Explorer."""
         return self.outlineCommand("contractNodeOrGoToParent", p_ap)

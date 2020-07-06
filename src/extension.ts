@@ -126,6 +126,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.GOTO_LAST_SIBLING, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_LAST_SIBLING, undefined, RefreshType.RefreshTreeAndBody, true)],
         [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_VISIBLE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
         [w_cmdPrefix + Constants.COMMANDS.GOTO_PREV_VISIBLE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_PREV_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_MARKED, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_MARKED, undefined, RefreshType.RefreshTreeAndBody, true)],
         [w_cmdPrefix + Constants.COMMANDS.CONTRACT_OR_GO_LEFT, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_OR_GO_LEFT, undefined, RefreshType.RefreshTreeAndBody, true)],
         [w_cmdPrefix + Constants.COMMANDS.EXPAND_AND_GO_RIGHT, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.EXPAND_AND_GO_RIGHT, undefined, RefreshType.RefreshTreeAndBody, true)],
 
@@ -147,7 +148,6 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.EXTRACT_NAMES, () => vscode.window.showInformationMessage("TODO: extractNames command")],
         [w_cmdPrefix + Constants.COMMANDS.COPY_MARKED, () => vscode.window.showInformationMessage("TODO: copyMarked command")],
         [w_cmdPrefix + Constants.COMMANDS.DIFF_MARKED_NODES, () => vscode.window.showInformationMessage("TODO: diffMarkedNodes command")],
-        [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_MARKED, () => vscode.window.showInformationMessage("TODO: gotoNextMarked command")],
         [w_cmdPrefix + Constants.COMMANDS.MARK_CHANGED_ITEMS, () => vscode.window.showInformationMessage("TODO: markChangedItems command")],
         [w_cmdPrefix + Constants.COMMANDS.MARK_SUBHEADS, () => vscode.window.showInformationMessage("TODO: markSubheads command")],
         [w_cmdPrefix + Constants.COMMANDS.UNMARK_ALL, () => vscode.window.showInformationMessage("TODO: unmarkAll command")],

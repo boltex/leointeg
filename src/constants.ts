@@ -247,6 +247,7 @@ export class Constants {
         GOTO_LAST_SIBLING: "gotoLastSibling",
         GOTO_NEXT_VISIBLE: "gotoNextVisible",
         GOTO_PREV_VISIBLE: "gotoPrevVisible",
+        GOTO_NEXT_MARKED: "gotoNextMarked", // #23 @boltex
         CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
         EXPAND_AND_GO_RIGHT: "expandAndGoRight",
         // * Leo Operations
@@ -284,7 +285,6 @@ export class Constants {
         EXTRACT_NAMES: "extractNames", // #15 @boltex
         COPY_MARKED: "copyMarked", // #23 @boltex
         DIFF_MARKED_NODES: "diffMarkedNodes", // #23 @boltex
-        GOTO_NEXT_MARKED: "gotoNextMarked", // #23 @boltex
         MARK_CHANGED_ITEMS: "markChangedItems", // #23 @boltex
         MARK_SUBHEADS: "markSubheads", // #23 @boltex
         UNMARK_ALL: "unmarkAll", // #23 @boltex
@@ -327,6 +327,7 @@ export class Constants {
         GOTO_LAST_SIBLING: "gotoLastSibling",
         GOTO_NEXT_VISIBLE: "gotoNextVisible",
         GOTO_PREV_VISIBLE: "gotoPrevVisible",
+        GOTO_NEXT_MARKED: "gotoNextMarked",
         CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
         EXPAND_AND_GO_RIGHT: "expandAndGoRight",
         // * Leo Operations
@@ -410,7 +411,6 @@ export class Constants {
         EXTRACT_NAMES: "extractNames",
         COPY_MARKED: "copyMarked",
         DIFF_MARKED_NODES: "diffMarkedNodes",
-        GOTO_NEXT_MARKED: "gotoNextMarked",
         MARK_CHANGED_ITEMS: "markChangedItems",
         MARK_SUBHEADS: "markSubheads",
         UNMARK_ALL: "unmarkAll",
