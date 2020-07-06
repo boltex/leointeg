@@ -680,6 +680,46 @@
         "title": "Sort Siblings"
       },
       {
+        "command": "leointeg.sortSiblingsSelectionFromOutline",
+        "category": "Leo",
+        "title": "Sort Siblings"
+      },
+      {
+        "command": "leointeg.gotoFirstVisible",
+        "category": "Leo",
+        "title": "Goto First Visible"
+      },
+      {
+        "command": "leointeg.gotoLastVisible",
+        "category": "Leo",
+        "title": "Goto Last Visible"
+      },
+      {
+        "command": "leointeg.gotoLastSibling",
+        "category": "Leo",
+        "title": "Goto Last Sibling"
+      },
+      {
+        "command": "leointeg.gotoNextVisible",
+        "category": "Leo",
+        "title": "Goto Next Visible"
+      },
+      {
+        "command": "leointeg.gotoPrevVisible",
+        "category": "Leo",
+        "title": "Goto Prev Visible"
+      },
+      {
+        "command": "leointeg.contractOrGoLeft",
+        "category": "Leo",
+        "title": "Contract Or Go Left"
+      },
+      {
+        "command": "leointeg.expandAndGoRight",
+        "category": "Leo",
+        "title": "Expand And Go Right"
+      },
+      {
         "command": "leointeg.hoistNode",
         "category": "Leo",
         "title": "Hoist"
@@ -1122,6 +1162,10 @@
           "when": "false"
         },
         {
+          "command": "leointeg.sortSiblingsSelectionFromOutline",
+          "when": "false"
+        },
+        {
           "command": "leointeg.refreshFromDiskSelectionFromOutline",
           "when": "false"
         },
@@ -1460,6 +1504,18 @@
       ]
     },
     "keybindings": [
+      {
+        "command": "leointeg.sortSiblingsSelection",
+        "key": "alt+a",
+        "mac": "alt+a",
+        "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.sortSiblingsSelectionFromOutline",
+        "key": "alt+a",
+        "mac": "alt+a",
+        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments/"
+      },
       {
         "command": "leointeg.showOutline",
         "key": "alt+t",

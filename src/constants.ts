@@ -39,7 +39,7 @@ export class Constants {
 
     /**
      * * Strings used as language id (default is "leobody")
-     * TODO : Add more languages strings for when directives such as @language are used throughout body panes
+     * TODO : #56 @boltex Add more languages strings for when directives such as @language are used throughout body panes
      */
     public static BODY_LANGUAGES = {
         default: "leobody"
@@ -241,6 +241,14 @@ export class Constants {
         CLOSE_FILE: "closeFile",
         SAVE_FILE: "saveFile",
         SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
+        // * Goto operations
+        GOTO_FIRST_VISIBLE: "gotoFirstVisible",
+        GOTO_LAST_VISIBLE: "gotoLastVisible",
+        GOTO_LAST_SIBLING: "gotoLastSibling",
+        GOTO_NEXT_VISIBLE: "gotoNextVisible",
+        GOTO_PREV_VISIBLE: "gotoPrevVisible",
+        CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
+        EXPAND_AND_GO_RIGHT: "expandAndGoRight",
         // * Leo Operations
         MARK_PNODE: "markPNode",
         UNMARK_PNODE: "unmarkPNode",
@@ -313,9 +321,14 @@ export class Constants {
         // * Outline selection
         SELECT_NODE: "selectTreeNode",
         OPEN_ASIDE: "openAside",
-        // * Goto operations
-
-
+        // * Goto operations that always finish with focus in outline
+        GOTO_FIRST_VISIBLE: "gotoFirstVisible",
+        GOTO_LAST_VISIBLE: "gotoLastVisible",
+        GOTO_LAST_SIBLING: "gotoLastSibling",
+        GOTO_NEXT_VISIBLE: "gotoNextVisible",
+        GOTO_PREV_VISIBLE: "gotoPrevVisible",
+        CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
+        EXPAND_AND_GO_RIGHT: "expandAndGoRight",
         // * Leo Operations
         UNDO: "undo", // From command Palette
         UNDO_FO: "undoFromOutline", // from button, return focus on OUTLINE
@@ -326,7 +339,8 @@ export class Constants {
         SHOW_OUTLINE: "showOutline",
         SHOW_LOG: "showLogPane",
         SORT_CHILDREN: "sortChildrenSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
-        SORT_SIBLING: "sortSiblingsSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SORT_SIBLING: "sortSiblingsSelection",
+        SORT_SIBLING_FO: "sortSiblingsSelectionFromOutline",
         CONTRACT_ALL: "contractAll", // From command Palette
         CONTRACT_ALL_FO: "contractAllFromOutline", // from button, return focus on OUTLINE
         // * Commands from tree panel buttons or context: focus on OUTLINE

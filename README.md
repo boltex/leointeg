@@ -114,10 +114,10 @@ See [Troubleshoot Linux Keybindings](https://github.com/microsoft/vscode/wiki/Ke
 
 ### Move outline keyboard commands
 
-For some users, the **`Ctrl+D`** keybinding is already assigned.
-To help with this conflict, outline-move keyboard commands will only trigger
+For some users, the **`Ctrl+D`** and **`Ctrl+T`** keybinding are already assigned.
+To help with this conflict, outline-move keyboard commands, and switch focus command will only trigger
 with the additional condition of having no text selection in the editor.
-So select at least one character to use the previously assigned **`Ctrl+D`** command in body panes.
+So select at least one character to use the previously assigned original keyboard commands while focus is in the body pane.
 
 > This extension is still in development, so please refer to its [issue tracker](https://github.com/boltex/leointeg/issues) to learn more about its intended features, or to contribute with additional information if you encounter other issues yourself.
 

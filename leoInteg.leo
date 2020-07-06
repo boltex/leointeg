@@ -68,6 +68,15 @@
 <v t="felix.20191126232434.10"><vh>outputPNode</vh></v>
 <v t="felix.20191126232434.11"><vh>outputPNodes</vh></v>
 </v>
+<v t="felix.20200705193918.1"><vh>Outline Goto Commands</vh>
+<v t="felix.20200705193927.1"><vh>gotoFirstVisible</vh></v>
+<v t="felix.20200705233325.1"><vh>gotoLastVisible</vh></v>
+<v t="felix.20200705201100.1"><vh>gotoLastSibling</vh></v>
+<v t="felix.20200705223536.1"><vh>gotoNextVisible</vh></v>
+<v t="felix.20200705223541.1"><vh>gotoPrevVisible</vh></v>
+<v t="felix.20200705223430.1"><vh>contractOrGoLeft</vh></v>
+<v t="felix.20200705223521.1"><vh>expandAndGoRight</vh></v>
+</v>
 <v t="felix.20191128000818.1"><vh>Outline Editing Commands</vh>
 <v t="felix.20191127004621.1"><vh>markPNode</vh></v>
 <v t="felix.20191127235913.1"><vh>unmarkPNode</vh></v>
@@ -1503,6 +1512,42 @@ wsPort = 32125
 <t tx="felix.20200626030820.1">def _returnYes(self, *arguments):
     '''Used to override g.app.gui.ask[XXX] dialogs answers'''
     return "yes"
+
+</t>
+<t tx="felix.20200705193918.1"></t>
+<t tx="felix.20200705193927.1">def gotoFirstVisible(self, p_ap):
+    """Select the first visible node of the selected chapter or hoist."""
+    return self.outlineCommand("goToFirstVisibleNode", p_ap)
+
+</t>
+<t tx="felix.20200705201100.1">def gotoLastSibling(self, p_ap):
+    """Select the last sibling of the selected node."""
+    return self.outlineCommand("goToLastSibling", p_ap)
+
+</t>
+<t tx="felix.20200705223430.1">def contractOrGoLeft(self, p_ap):
+    """Simulate the left Arrow Key in folder of Windows Explorer."""
+    return self.outlineCommand("contractNodeOrGoToParent", p_ap)
+
+</t>
+<t tx="felix.20200705223521.1">def expandAndGoRight(self, p_ap):
+    """If a node has children, expand it if needed and go to the first child."""
+    return self.outlineCommand("expandNodeAndGoToFirstChild", p_ap)
+
+</t>
+<t tx="felix.20200705223536.1">def gotoNextVisible(self, p_ap):
+    """Select the visible node following the presently selected node."""
+    return self.outlineCommand("selectVisNext", p_ap)
+
+</t>
+<t tx="felix.20200705223541.1">def gotoPrevVisible(self, p_ap):
+    """Select the visible node preceding the presently selected node."""
+    return self.outlineCommand("selectVisBack", p_ap)
+
+</t>
+<t tx="felix.20200705233325.1">def gotoLastVisible(self, p_ap):
+    """Select the last visible node of selected chapter or hoist."""
+    return self.outlineCommand("goToLastVisibleNode", p_ap)
 
 </t>
 </tnodes>

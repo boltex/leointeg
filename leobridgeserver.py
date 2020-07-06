@@ -715,6 +715,34 @@ class LeoBridgeIntegController:
             w_apList.append(self.p_to_ap(p))
         return self.sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
 
+    def gotoFirstVisible(self, p_ap):
+        """Select the first visible node of the selected chapter or hoist."""
+        return self.outlineCommand("goToFirstVisibleNode", p_ap)
+
+    def gotoLastVisible(self, p_ap):
+        """Select the last visible node of selected chapter or hoist."""
+        return self.outlineCommand("goToLastVisibleNode", p_ap)
+
+    def gotoLastSibling(self, p_ap):
+        """Select the last sibling of the selected node."""
+        return self.outlineCommand("goToLastSibling", p_ap)
+
+    def gotoNextVisible(self, p_ap):
+        """Select the visible node following the presently selected node."""
+        return self.outlineCommand("selectVisNext", p_ap)
+
+    def gotoPrevVisible(self, p_ap):
+        """Select the visible node preceding the presently selected node."""
+        return self.outlineCommand("selectVisBack", p_ap)
+
+    def contractOrGoLeft(self, p_ap):
+        """Simulate the left Arrow Key in folder of Windows Explorer."""
+        return self.outlineCommand("contractNodeOrGoToParent", p_ap)
+
+    def expandAndGoRight(self, p_ap):
+        """If a node has children, expand it if needed and go to the first child."""
+        return self.outlineCommand("expandNodeAndGoToFirstChild", p_ap)
+
     def markPNode(self, p_ap):
         '''Mark a node, don't select it'''
         if p_ap:
