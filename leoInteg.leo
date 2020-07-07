@@ -75,6 +75,7 @@
 <v t="felix.20200705223536.1"><vh>gotoNextVisible</vh></v>
 <v t="felix.20200705223541.1"><vh>gotoPrevVisible</vh></v>
 <v t="felix.20200706030410.1"><vh>gotoNextMarked</vh></v>
+<v t="felix.20200706202247.1"><vh>gotoNextClone</vh></v>
 <v t="felix.20200705223430.1"><vh>contractOrGoLeft</vh></v>
 <v t="felix.20200705223521.1"><vh>expandAndGoRight</vh></v>
 </v>
@@ -244,7 +245,14 @@ To contribute, see the official issues page for current list of 'TODO's at https
         else:
             return self.outputPNodes([])  # default empty array
     else:
-        return self.outputPNodes(self.yieldAllRootChildren())  # this outputs all Root Children
+        if self.commander.hoistStack:
+            w_p = self.commander.hoistStack[-1].p
+            if w_p:
+                return self.outputPNodes([w_p])
+            else:
+                return self.outputPNodes([])  # default empty array
+        else:
+            return self.outputPNodes(self.yieldAllRootChildren())  # this outputs all Root Children
 
 </t>
 <t tx="felix.20191126232434.17">def getParent(self, p_ap):
@@ -1554,6 +1562,14 @@ wsPort = 32125
 <t tx="felix.20200706030410.1">def gotoNextMarked(self, p_ap):
     """Select the next marked node."""
     return self.outlineCommand("goToNextMarkedHeadline", p_ap)
+
+</t>
+<t tx="felix.20200706202247.1">def gotoNextClone(self, p_ap):
+    """
+    Select the next node that is a clone of the selected node.
+    If the selected node is not a clone, do find-next-clone.
+    """
+    return self.outlineCommand("goToNextClone", p_ap)
 
 </t>
 </tnodes>

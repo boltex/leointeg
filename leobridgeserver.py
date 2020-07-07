@@ -739,6 +739,13 @@ class LeoBridgeIntegController:
         """Select the next marked node."""
         return self.outlineCommand("goToNextMarkedHeadline", p_ap)
 
+    def gotoNextClone(self, p_ap):
+        """
+        Select the next node that is a clone of the selected node.
+        If the selected node is not a clone, do find-next-clone.
+        """
+        return self.outlineCommand("goToNextClone", p_ap)
+
     def contractOrGoLeft(self, p_ap):
         """Simulate the left Arrow Key in folder of Windows Explorer."""
         return self.outlineCommand("contractNodeOrGoToParent", p_ap)
@@ -990,7 +997,10 @@ class LeoBridgeIntegController:
             else:
                 return self.outputPNodes([])  # default empty array
         else:
-            return self.outputPNodes(self.yieldAllRootChildren())  # this outputs all Root Children
+            if self.commander.hoistStack:
+                return self.outputPNodes([self.commander.hoistStack[-1].p])
+            else:
+                return self.outputPNodes(self.yieldAllRootChildren())  # this outputs all Root Children
 
     def getParent(self, p_ap):
         '''EMIT OUT the parent of a node, as an array, even if unique or empty'''

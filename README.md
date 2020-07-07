@@ -21,7 +21,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 
 ## Development version installation
 
-In addition to the above requirements, make sure you have Node.js and Git installed, then clone the sources and run `npm install` in a terminal to install the remaining development dependencies.
+In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's next release), make sure you have Node.js and Git installed, then clone the sources and run `npm install` in a terminal to install the remaining development dependencies.
 
 ![run extension](/resources/run-extension.png)
 
@@ -32,6 +32,7 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 ## Features
 
 - UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes**, **opened documents selector** and **Log Window**.
+- Keybindings that match those from Leo, and a **'Leo Tree Browsing'** switch that enables Leo-style arrow keys behavior, for outline keyboard navigation.
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
@@ -46,7 +47,7 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 > _More commands are available by opening the **Command Palette** and typing 'Leo'_
 
-| Keybinding                 |     |                       | Command            |
+| Commands Keybinding        |     |                       | Command            |
 | :------------------------- | :-- | :-------------------- | :----------------- |
 | `Alt + -`                  |     |                       | Contract All       |
 | `Ctrl + I`                 |     |                       | Insert Node        |
@@ -59,10 +60,22 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 | `Ctrl + B`                 |     |                       | Execute Script     |
 | `Ctrl + M`                 |     |                       | Mark / Unmark      |
 | `Ctrl + {`                 |     | `Ctrl + }`            | Promote / Demote   |
+| `Alt + A`                  |     |                       | Sort Siblings      |
 | `Ctrl + U`                 | or  | `Shift + Alt + Up`    | Move Outline Up    |
 | `Ctrl + D`                 | or  | `Shift + Alt + Down`  | Move Outline Down  |
 | `Ctrl + L`                 | or  | `Shift + Alt + Left`  | Move Outline Left  |
 | `Ctrl + R`                 | or  | `Shift + Alt + Right` | Move Outline Right |
+
+### Tree Browsing Keybindings
+
+| Tree Browsing Keybinding |     | With **'Leo Tree Browsing'** enabled | Command                  |
+| :----------------------- | :-- | :----------------------------------- | :----------------------- |
+| `Alt + Home`             |     |                                      | Go To First Visible Node |
+| `Alt + End`              |     |                                      | Go To Last Sibling       |
+| `Alt + N`                |     |                                      | Go To Next Clone         |
+| `Alt + Arrow Keys`       | or  | `Arrow Keys`                         | Browse Tree              |
+| `Ctrl + T`               |     |                                      | Switch Tree/Body Focus   |
+| `Tab`                    |     |                                      | Focus from Tree to Body  |
 
 ## Derive External Files
 
@@ -110,12 +123,13 @@ Main issues are listed below. See the repository's [Issues Page](https://github.
 If you're experiencing trouble with the keyboard shortcuts for
 the 'Clone Node' or the 'Promote' and 'Demote' commands,
 use **"keyboard.dispatch": "keyCode"** in your settings and restart vscode.
-See [Troubleshoot Linux Keybindings](https://github.com/microsoft/vscode/wiki/Keybinding-Issues#troubleshoot-linux-keybindings) for more information.
+See [Troubleshoot Linux Keybindings](https://github.com/microsoft/vscode/wiki/Keybinding-Issues#troubleshoot-linux-keybindings)
+for more information.
 
 ### Move outline keyboard commands
 
-For some users, the **`Ctrl+D`** and **`Ctrl+T`** keybinding are already assigned.
-To help with this conflict, outline-move keyboard commands, and switch focus command will only trigger
+For some users, the **`Alt+[Arrow Keys]`**, **`Ctrl+D`** and **`Ctrl+T`** keybinding are already assigned.
+To help with this conflict, tree-browsing, outline-move keyboard commands, and switch focus command will only trigger
 with the additional condition of having no text selection in the editor.
 So select at least one character to use the previously assigned original keyboard commands while focus is in the body pane.
 
@@ -134,6 +148,7 @@ The outline pane is made by implementing a [TreeDataProvider for vscode's TreeVi
 - [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
 - [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
 - [Vitalije](https://github.com/vitalije) for his contributions and support
+- [Arjan](https://github.com/ar-jan) for his suggestions and ideas
 
 ---
 

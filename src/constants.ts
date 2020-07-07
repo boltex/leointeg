@@ -247,7 +247,8 @@ export class Constants {
         GOTO_LAST_SIBLING: "gotoLastSibling",
         GOTO_NEXT_VISIBLE: "gotoNextVisible",
         GOTO_PREV_VISIBLE: "gotoPrevVisible",
-        GOTO_NEXT_MARKED: "gotoNextMarked", // #23 @boltex
+        GOTO_NEXT_MARKED: "gotoNextMarked",
+        GOTO_NEXT_CLONE: "gotoNextClone",
         CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
         EXPAND_AND_GO_RIGHT: "expandAndGoRight",
         // * Leo Operations
@@ -273,10 +274,10 @@ export class Constants {
         UNDO: "undo",
         REDO: "redo",
         EXECUTE_SCRIPT: "executeScript",
-        GET_STATES: "getStates", // #18 @boltex
-        // TODO : More commands to implement #15, #23, #24, #25 @boltex
-        HOIST_PNODE: "hoistPNode", // #25 @boltex
-        DEHOIST: "deHoist", // #25 @boltex
+        GET_STATES: "getStates",
+        HOIST_PNODE: "hoistPNode",
+        DEHOIST: "deHoist",
+        // TODO : @boltex More commands to implement #15, #23, #24
         CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
         CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
         CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex
@@ -328,6 +329,8 @@ export class Constants {
         GOTO_NEXT_VISIBLE: "gotoNextVisible",
         GOTO_PREV_VISIBLE: "gotoPrevVisible",
         GOTO_NEXT_MARKED: "gotoNextMarked",
+        GOTO_NEXT_CLONE: "gotoNextClone",
+        GOTO_NEXT_CLONE_FO: "gotoNextCloneFromOutline",
         CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
         EXPAND_AND_GO_RIGHT: "expandAndGoRight",
         // * Leo Operations
@@ -402,7 +405,9 @@ export class Constants {
         // * - - - - - - - - - - - - - - - not implemented yet
         HOIST: "hoistNode",
         HOIST_SELECTION: "hoistSelection",
+        HOIST_SELECTION_FO: "hoistSelectionFromOutline",
         DEHOIST: "deHoist",
+        DEHOIST_FO: "deHoistFromOutline",
         CLONE_FIND_ALL: "cloneFindAll",
         CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened",
         CLONE_FIND_MARKED: "cloneFindMarked",
