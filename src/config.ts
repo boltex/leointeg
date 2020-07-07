@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
-import { ConfigMembers } from "./types";
+import { ConfigMembers, RefreshType } from "./types";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -33,6 +33,7 @@ export class Config implements ConfigMembers {
     public connectionPort: number = Constants.TCPIP_DEFAULT_PORT;
 
     private _isSettingConfig: boolean = false;
+    private _needsTreeRefresh: boolean = false;
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -79,8 +80,11 @@ export class Config implements ConfigMembers {
         this._isSettingConfig = true;
         const w_promises: Thenable<void>[] = [];
         const w_vscodeConfig = vscode.workspace.getConfiguration(Constants.CONFIG_NAME);
-
         p_changes.forEach(i_change => {
+            if (i_change && i_change.code.includes(Constants.CONFIG_REFRESH_MATCH)) {
+                // Check if tree refresh is required for hover-icons to be displayed or hidden accordingly
+                this._needsTreeRefresh = true;
+            }
             if (w_vscodeConfig.inspect(i_change.code)!.defaultValue === i_change.value) {
                 // set as undefined - same as default
                 w_promises.push(w_vscodeConfig.update(i_change.code, undefined, true));
@@ -92,6 +96,12 @@ export class Config implements ConfigMembers {
             }
         });
         return Promise.all(w_promises).then(() => {
+            if (this._needsTreeRefresh) {
+                this._needsTreeRefresh = false;
+                setTimeout(() => {
+                    this._leoIntegration.configTreeRefresh();
+                }, 200);
+            }
             this._isSettingConfig = false;
             this.buildFromSavedSettings();
         });

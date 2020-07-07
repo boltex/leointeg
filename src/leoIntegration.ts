@@ -145,6 +145,7 @@ export class LeoIntegration {
     // * Outline Pane redraw/refresh flags. Also set when calling refreshTreeRoot
     // If there's no reveal and its the selected node, the old id will be re-used for the node. (see _id property in LeoNode)
     private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
+    private _preventShowBody = false; // Used when refreshing treeview from config: It requires not to open the body pane when refreshing.
 
     // * Documents Pane
     private _leoDocumentsProvider: LeoDocumentsProvider;
@@ -681,6 +682,17 @@ export class LeoIntegration {
     }
 
     /**
+     * * Refresh tree for node hover icons refresh only
+     */
+    public configTreeRefresh(): void {
+        if (this.fileOpenedReady && this.lastSelectedNode) {
+            this._revealType = RevealType.RevealSelect;
+            this._preventShowBody = true;
+            this._leoTreeDataProvider.refreshTreeRoot();
+        }
+    }
+
+    /**
      * * Refreshes the outline. A reveal type can be passed along to specify the reveal type for the selected node
      * @param p_revealType Facultative reveal type to specify type of reveal when the 'selected node' is encountered
      */
@@ -903,6 +915,10 @@ export class LeoIntegration {
      * @param p_force_open Forces opening the body pane editor
      */
     private _showBodyIfRequired(p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable<vscode.TextEditor> {
+        if (this._preventShowBody) {
+            this._preventShowBody = false;
+            return Promise.resolve(vscode.window.activeTextEditor!);
+        }
         if (true || p_force_open || this._leoTreeStandaloneView.visible) {
             return this.showBody(p_aside, p_showBodyKeepFocus); // ! Always true for now to stabilize refreshes after derived files refreshes and others.
         } else {

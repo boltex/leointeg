@@ -7,7 +7,8 @@ export class Constants {
 
     public static PUBLISHER: string = "boltex";
     public static NAME: string = "leointeg";
-    public static CONFIG_NAME = "leoIntegration";
+    public static CONFIG_NAME: string = "leoIntegration";
+    public static CONFIG_REFRESH_MATCH: string = "OnNodes";
 
     public static TREEVIEW_ID: string = Constants.CONFIG_NAME;
     public static TREEVIEW_EXPLORER_ID: string = Constants.CONFIG_NAME + "Explorer";

@@ -14,6 +14,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
     initializeAndWatchThemeColors();
 
     const toast = document.getElementById("saved-config-toast");
+    const dirty = document.getElementById("dirty-config-toast");
 
     // * TEST
     const oldState = vscode.getState();
@@ -49,6 +50,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
                     setControls();
                     break;
                 case "vscodeConfig":
+                    dirty!.className = dirty!.className.replace("show", "");
                     toast!.className = "show";
                     setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
                     vscodeConfig = message.config; // next changes will be confronted to those settings
@@ -104,6 +106,9 @@ declare function acquireVsCodeApi(): VsCodeApi;
     function onInputChecked(element: HTMLInputElement) {
         frontConfig[element.id] = element.checked;
         setVisibility(frontConfig);
+        dirty!.className = "show";
+        console.log('checked');
+
         applyChanges();
     }
     function onInputBlurred(element: HTMLInputElement) {
@@ -122,6 +127,9 @@ declare function acquireVsCodeApi(): VsCodeApi;
         } else if (element.type === 'text' && element.value.length <= element.maxLength) {
             frontConfig[element.id] = element.value;
         }
+        console.log('changed');
+
+        dirty!.className = "show";
         applyChanges();
     }
 

@@ -1402,6 +1402,11 @@
           "group": "navigation@1"
         },
         {
+          "command": "leointeg.showSettingsPage",
+          "when": "view =~ /leoIntegration/ && !leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
           "command": "leointeg.connectToServer",
           "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened",
           "group": "navigation@1"
@@ -1521,12 +1526,12 @@
         {
           "command": "leointeg.hoistNode",
           "when": "viewItem =~ /leoNode/",
-          "group": "leoNodeContext1@1"
+          "group": "leoNodeContext1@2"
         },
         {
           "command": "leointeg.refreshFromDisk",
           "when": "viewItem =~ /leoNodeAtFile/",
-          "group": "leoNodeContext1@1"
+          "group": "leoNodeContext1@3"
         },
         {
           "command": "leointeg.mark",
