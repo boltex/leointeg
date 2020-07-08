@@ -11,7 +11,7 @@ export class LeoNode extends vscode.TreeItem {
     public cursorSelection: any; // TODO : #39 @boltex Keep body's cursor and selection position from vscode to get it back
     public contextValue: string; // * Context string is checked in package.json with 'when' clauses
 
-    public isRoot: boolean = false;
+    public isRoot: boolean = false; // * for hoist/dehoist context flags purposes
 
     constructor(
         public label: string, // Node headline
@@ -72,7 +72,7 @@ export class LeoNode extends vscode.TreeItem {
     }
 
     /**
-     * * Set this node as the root not for context flags purposes
+     * * Set this node as the root for hoist/dehoist context flags purposes
      */
     public setRoot(): void {
         this.isRoot = true;

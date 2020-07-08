@@ -107,8 +107,6 @@ declare function acquireVsCodeApi(): VsCodeApi;
         frontConfig[element.id] = element.checked;
         setVisibility(frontConfig);
         dirty!.className = "show";
-        console.log('checked');
-
         applyChanges();
     }
     function onInputBlurred(element: HTMLInputElement) {
@@ -127,8 +125,6 @@ declare function acquireVsCodeApi(): VsCodeApi;
         } else if (element.type === 'text' && element.value.length <= element.maxLength) {
             frontConfig[element.id] = element.value;
         }
-        console.log('changed');
-
         dirty!.className = "show";
         applyChanges();
     }
