@@ -592,8 +592,7 @@ class LeoBridgeIntegController:
         # and so this now app.commanders() yields this: return [f.c for f in g.app.windowList]
 
         # did this add to existing array of g.app.commanders() ?
-        # print(str(self.g.app.commanders()))  # test
-        print(*self.g.app.commanders(), sep='\n')
+        # print(*self.g.app.commanders(), sep='\n')
 
         if self.commander:
             self.commander.closed = False
@@ -663,6 +662,7 @@ class LeoBridgeIntegController:
                 w_states["canUndo"] = self.commander.canUndo()
                 w_states["canRedo"] = self.commander.canRedo()
                 w_states["canDemote"] = self.commander.canDemote()
+                w_states["canPromote"] = self.commander.canPromote()
                 w_states["canDehoist"] = self.commander.canDehoist()
 
             except Exception as e:
@@ -674,6 +674,7 @@ class LeoBridgeIntegController:
             w_states["canUndo"] = False
             w_states["canRedo"] = False
             w_states["canDemote"] = False
+            w_states["canPromote"] = False
             w_states["canDehoist"] = False
 
         return self.sendLeoBridgePackage("states", w_states)
@@ -715,6 +716,45 @@ class LeoBridgeIntegController:
         for p in p_pList:
             w_apList.append(self.p_to_ap(p))
         return self.sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
+
+    def gotoFirstVisible(self, p_ap):
+        """Select the first visible node of the selected chapter or hoist."""
+        return self.outlineCommand("goToFirstVisibleNode", p_ap)
+
+    def gotoLastVisible(self, p_ap):
+        """Select the last visible node of selected chapter or hoist."""
+        return self.outlineCommand("goToLastVisibleNode", p_ap)
+
+    def gotoLastSibling(self, p_ap):
+        """Select the last sibling of the selected node."""
+        return self.outlineCommand("goToLastSibling", p_ap)
+
+    def gotoNextVisible(self, p_ap):
+        """Select the visible node following the presently selected node."""
+        return self.outlineCommand("selectVisNext", p_ap)
+
+    def gotoPrevVisible(self, p_ap):
+        """Select the visible node preceding the presently selected node."""
+        return self.outlineCommand("selectVisBack", p_ap)
+
+    def gotoNextMarked(self, p_ap):
+        """Select the next marked node."""
+        return self.outlineCommand("goToNextMarkedHeadline", p_ap)
+
+    def gotoNextClone(self, p_ap):
+        """
+        Select the next node that is a clone of the selected node.
+        If the selected node is not a clone, do find-next-clone.
+        """
+        return self.outlineCommand("goToNextClone", p_ap)
+
+    def contractOrGoLeft(self, p_ap):
+        """Simulate the left Arrow Key in folder of Windows Explorer."""
+        return self.outlineCommand("contractNodeOrGoToParent", p_ap)
+
+    def expandAndGoRight(self, p_ap):
+        """If a node has children, expand it if needed and go to the first child."""
+        return self.outlineCommand("expandNodeAndGoToFirstChild", p_ap)
 
     def markPNode(self, p_ap):
         '''Mark a node, don't select it'''
@@ -959,7 +999,10 @@ class LeoBridgeIntegController:
             else:
                 return self.outputPNodes([])  # default empty array
         else:
-            return self.outputPNodes(self.yieldAllRootChildren())  # this outputs all Root Children
+            if self.commander.hoistStack:
+                return self.outputPNodes([self.commander.hoistStack[-1].p])
+            else:
+                return self.outputPNodes(self.yieldAllRootChildren())  # this outputs all Root Children
 
     def getParent(self, p_ap):
         '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
@@ -1163,7 +1206,7 @@ class LeoBridgeIntegController:
                 'headline': stack_v.h,
             } for (stack_v, stack_childIndex) in p.stack],
         }
-        # TODO : (MAYBE) Convert all those booleans into an integer 'status' Flags
+        # TODO : Convert all those booleans into an 8 bit integer 'status' flag
         if bool(p.b):
             w_ap['hasBody'] = True
         if p.hasChildren():

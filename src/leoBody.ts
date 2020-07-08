@@ -130,7 +130,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable<vscode.FileStat> {
         // TODO : Fix extraneous stat(...) call(s)
-        if (this._leoIntegration.fileOpenedReady) {
+        if (this._leoIntegration.leoStates.fileOpenedReady) {
             if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
                 // console.log('called stat on root');
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
@@ -175,7 +175,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public readFile(p_uri: vscode.Uri): Thenable<Uint8Array> {
-        if (this._leoIntegration.fileOpenedReady) {
+        if (this._leoIntegration.leoStates.fileOpenedReady) {
             if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
                 throw vscode.FileSystemError.FileIsADirectory();
             } else {

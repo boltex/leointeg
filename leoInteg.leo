@@ -68,6 +68,17 @@
 <v t="felix.20191126232434.10"><vh>outputPNode</vh></v>
 <v t="felix.20191126232434.11"><vh>outputPNodes</vh></v>
 </v>
+<v t="felix.20200705193918.1"><vh>Outline Goto Commands</vh>
+<v t="felix.20200705193927.1"><vh>gotoFirstVisible</vh></v>
+<v t="felix.20200705233325.1"><vh>gotoLastVisible</vh></v>
+<v t="felix.20200705201100.1"><vh>gotoLastSibling</vh></v>
+<v t="felix.20200705223536.1"><vh>gotoNextVisible</vh></v>
+<v t="felix.20200705223541.1"><vh>gotoPrevVisible</vh></v>
+<v t="felix.20200706030410.1"><vh>gotoNextMarked</vh></v>
+<v t="felix.20200706202247.1"><vh>gotoNextClone</vh></v>
+<v t="felix.20200705223430.1"><vh>contractOrGoLeft</vh></v>
+<v t="felix.20200705223521.1"><vh>expandAndGoRight</vh></v>
+</v>
 <v t="felix.20191128000818.1"><vh>Outline Editing Commands</vh>
 <v t="felix.20191127004621.1"><vh>markPNode</vh></v>
 <v t="felix.20191127235913.1"><vh>unmarkPNode</vh></v>
@@ -168,8 +179,7 @@ To contribute, see the official issues page for current list of 'TODO's at https
     # and so this now app.commanders() yields this: return [f.c for f in g.app.windowList]
 
     # did this add to existing array of g.app.commanders() ?
-    # print(str(self.g.app.commanders()))  # test
-    print(*self.g.app.commanders(), sep='\n')
+    # print(*self.g.app.commanders(), sep='\n')
 
     if self.commander:
         self.commander.closed = False
@@ -235,7 +245,10 @@ To contribute, see the official issues page for current list of 'TODO's at https
         else:
             return self.outputPNodes([])  # default empty array
     else:
-        return self.outputPNodes(self.yieldAllRootChildren())  # this outputs all Root Children
+        if self.commander.hoistStack:
+            return self.outputPNodes([self.commander.hoistStack[-1].p])
+        else:
+            return self.outputPNodes(self.yieldAllRootChildren())  # this outputs all Root Children
 
 </t>
 <t tx="felix.20191126232434.17">def getParent(self, p_ap):
@@ -449,7 +462,7 @@ if __name__ == '__main__':
             'headline': stack_v.h,
         } for (stack_v, stack_childIndex) in p.stack],
     }
-    # TODO : (MAYBE) Convert all those booleans into an integer 'status' Flags
+    # TODO : Convert all those booleans into an 8 bit integer 'status' flag
     if bool(p.b):
         w_ap['hasBody'] = True
     if p.hasChildren():
@@ -1418,6 +1431,7 @@ wsPort = 32125
             w_states["canUndo"] = self.commander.canUndo()
             w_states["canRedo"] = self.commander.canRedo()
             w_states["canDemote"] = self.commander.canDemote()
+            w_states["canPromote"] = self.commander.canPromote()
             w_states["canDehoist"] = self.commander.canDehoist()
 
         except Exception as e:
@@ -1429,6 +1443,7 @@ wsPort = 32125
         w_states["canUndo"] = False
         w_states["canRedo"] = False
         w_states["canDemote"] = False
+        w_states["canPromote"] = False
         w_states["canDehoist"] = False
 
     return self.sendLeoBridgePackage("states", w_states)
@@ -1504,6 +1519,55 @@ wsPort = 32125
 <t tx="felix.20200626030820.1">def _returnYes(self, *arguments):
     '''Used to override g.app.gui.ask[XXX] dialogs answers'''
     return "yes"
+
+</t>
+<t tx="felix.20200705193918.1"></t>
+<t tx="felix.20200705193927.1">def gotoFirstVisible(self, p_ap):
+    """Select the first visible node of the selected chapter or hoist."""
+    return self.outlineCommand("goToFirstVisibleNode", p_ap)
+
+</t>
+<t tx="felix.20200705201100.1">def gotoLastSibling(self, p_ap):
+    """Select the last sibling of the selected node."""
+    return self.outlineCommand("goToLastSibling", p_ap)
+
+</t>
+<t tx="felix.20200705223430.1">def contractOrGoLeft(self, p_ap):
+    """Simulate the left Arrow Key in folder of Windows Explorer."""
+    return self.outlineCommand("contractNodeOrGoToParent", p_ap)
+
+</t>
+<t tx="felix.20200705223521.1">def expandAndGoRight(self, p_ap):
+    """If a node has children, expand it if needed and go to the first child."""
+    return self.outlineCommand("expandNodeAndGoToFirstChild", p_ap)
+
+</t>
+<t tx="felix.20200705223536.1">def gotoNextVisible(self, p_ap):
+    """Select the visible node following the presently selected node."""
+    return self.outlineCommand("selectVisNext", p_ap)
+
+</t>
+<t tx="felix.20200705223541.1">def gotoPrevVisible(self, p_ap):
+    """Select the visible node preceding the presently selected node."""
+    return self.outlineCommand("selectVisBack", p_ap)
+
+</t>
+<t tx="felix.20200705233325.1">def gotoLastVisible(self, p_ap):
+    """Select the last visible node of selected chapter or hoist."""
+    return self.outlineCommand("goToLastVisibleNode", p_ap)
+
+</t>
+<t tx="felix.20200706030410.1">def gotoNextMarked(self, p_ap):
+    """Select the next marked node."""
+    return self.outlineCommand("goToNextMarkedHeadline", p_ap)
+
+</t>
+<t tx="felix.20200706202247.1">def gotoNextClone(self, p_ap):
+    """
+    Select the next node that is a clone of the selected node.
+    If the selected node is not a clone, do find-next-clone.
+    """
+    return self.outlineCommand("goToNextClone", p_ap)
 
 </t>
 </tnodes>

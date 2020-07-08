@@ -12,6 +12,8 @@ If you're having problems with the procedures below, try [running this sample ex
 
 ## Development requirements
 
+- **use Leo's 'devel' branch** (This is temporary until Leo's next release)
+
 - Make sure you have [Node.js](https://nodejs.org/en/download/) and [Git](https://git-scm.com/downloads) installed.
 
 - Check your node.js version by typing `node -v` in a terminal. [The latest lts version is 12.18.0](https://nodejs.org/en/download/).

@@ -40,7 +40,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.START_SERVER, () => w_leoIntegration.startServer()],
         [w_cmdPrefix + Constants.COMMANDS.CONNECT, () => w_leoIntegration.connect()],
         [w_cmdPrefix + Constants.COMMANDS.SHOW_LOG, () => w_leoIntegration.showLogPane()],
-        [w_cmdPrefix + Constants.COMMANDS.SHOW_BODY, () => w_leoIntegration.showBody(false)], // Expose to other expansions only, (not in menus for minimal footprint)
+        [w_cmdPrefix + Constants.COMMANDS.SHOW_BODY, () => w_leoIntegration.showBody(false)], // Also focuses on body
+        [w_cmdPrefix + Constants.COMMANDS.SHOW_OUTLINE, () => w_leoIntegration.showOutline(true)], // Also focuses on outline
         [w_cmdPrefix + Constants.COMMANDS.NEW_FILE, () => w_leoIntegration.newLeoFile()],
         [w_cmdPrefix + Constants.COMMANDS.SWITCH_FILE, () => w_leoIntegration.switchLeoFile()],
 
@@ -118,6 +119,20 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         [w_cmdPrefix + Constants.COMMANDS.SORT_CHILDREN, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_CHILDREN, undefined, RefreshType.RefreshTree, false)],
         [w_cmdPrefix + Constants.COMMANDS.SORT_SIBLING, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, false)],
+        [w_cmdPrefix + Constants.COMMANDS.SORT_SIBLING_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, true)],
+
+        [w_cmdPrefix + Constants.COMMANDS.GOTO_FIRST_VISIBLE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_FIRST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [w_cmdPrefix + Constants.COMMANDS.GOTO_LAST_VISIBLE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_LAST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [w_cmdPrefix + Constants.COMMANDS.GOTO_LAST_SIBLING, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_LAST_SIBLING, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_CLONE, (p_node: LeoNode) => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, p_node, RefreshType.RefreshTreeAndBody, true)],
+        [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_CLONE_SELECTION, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_CLONE_SELECTION_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, true)],
+
+        [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_VISIBLE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [w_cmdPrefix + Constants.COMMANDS.GOTO_PREV_VISIBLE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_PREV_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_MARKED, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_MARKED, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [w_cmdPrefix + Constants.COMMANDS.CONTRACT_OR_GO_LEFT, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_OR_GO_LEFT, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [w_cmdPrefix + Constants.COMMANDS.EXPAND_AND_GO_RIGHT, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.EXPAND_AND_GO_RIGHT, undefined, RefreshType.RefreshTreeAndBody, true)],
 
         [w_cmdPrefix + Constants.COMMANDS.UNDO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.UNDO, undefined, RefreshType.RefreshTreeAndBody, false)],
         [w_cmdPrefix + Constants.COMMANDS.UNDO_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.UNDO, undefined, RefreshType.RefreshTreeAndBody, true)],
@@ -125,10 +140,13 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.REDO_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, true)],
         [w_cmdPrefix + Constants.COMMANDS.EXECUTE, () => w_leoIntegration.executeScript()],
 
-        // TODO : More commands to implement #15, #23, #24, #25 @boltex
-        [w_cmdPrefix + Constants.COMMANDS.HOIST, () => vscode.window.showInformationMessage("TODO: hoistNode command")],
-        [w_cmdPrefix + Constants.COMMANDS.HOIST_SELECTION, () => vscode.window.showInformationMessage("TODO: hoistSelection command")],
-        [w_cmdPrefix + Constants.COMMANDS.DEHOIST, () => vscode.window.showInformationMessage("TODO: deHoist command")],
+        [w_cmdPrefix + Constants.COMMANDS.HOIST, (p_node: LeoNode) => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, p_node, RefreshType.RefreshTreeAndBody, true)],
+        [w_cmdPrefix + Constants.COMMANDS.HOIST_SELECTION, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [w_cmdPrefix + Constants.COMMANDS.HOIST_SELECTION_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [w_cmdPrefix + Constants.COMMANDS.DEHOIST, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [w_cmdPrefix + Constants.COMMANDS.DEHOIST_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, true)],
+
+        // TODO : @boltex More commands to implement #15, #23, #24
         [w_cmdPrefix + Constants.COMMANDS.CLONE_FIND_ALL, () => vscode.window.showInformationMessage("TODO: cloneFindAll command")],
         [w_cmdPrefix + Constants.COMMANDS.CLONE_FIND_ALL_FLATTENED, () => vscode.window.showInformationMessage("TODO: cloneFindAllFlattened command")],
         [w_cmdPrefix + Constants.COMMANDS.CLONE_FIND_MARKED, () => vscode.window.showInformationMessage("TODO: cloneFindMarked command")],
@@ -137,7 +155,6 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.EXTRACT_NAMES, () => vscode.window.showInformationMessage("TODO: extractNames command")],
         [w_cmdPrefix + Constants.COMMANDS.COPY_MARKED, () => vscode.window.showInformationMessage("TODO: copyMarked command")],
         [w_cmdPrefix + Constants.COMMANDS.DIFF_MARKED_NODES, () => vscode.window.showInformationMessage("TODO: diffMarkedNodes command")],
-        [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_MARKED, () => vscode.window.showInformationMessage("TODO: gotoNextMarked command")],
         [w_cmdPrefix + Constants.COMMANDS.MARK_CHANGED_ITEMS, () => vscode.window.showInformationMessage("TODO: markChangedItems command")],
         [w_cmdPrefix + Constants.COMMANDS.MARK_SUBHEADS, () => vscode.window.showInformationMessage("TODO: markSubheads command")],
         [w_cmdPrefix + Constants.COMMANDS.UNMARK_ALL, () => vscode.window.showInformationMessage("TODO: unmarkAll command")],

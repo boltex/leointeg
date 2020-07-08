@@ -3,13 +3,12 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
+import { LeoBridgePackage } from "./types";
 
 /**
  * * Leo outline implemented as a tree view with this TreeDataProvider implementation
  */
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
-
-    // TODO : p_package members names should be made into constants
 
     private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> = new vscode.EventEmitter<LeoNode | undefined>();
 
@@ -39,7 +38,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         if (this._refreshSingleNodeFlag) {
             this._refreshSingleNodeFlag = false;
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PNODE, element.apJson)
-                .then((p_package) => {
+                .then((p_package: LeoBridgePackage) => {
                     const w_node = this._leoIntegration.apToLeoNode(p_package.node!, true, element);
                     return element.copyProperties(w_node);
                 });
@@ -49,14 +48,27 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     }
 
     public getChildren(element?: LeoNode): Thenable<LeoNode[]> {
-        if (this._leoIntegration.fileOpenedReady) {
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element ? element.apJson : "null").then((p_package) => {
-                return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
-            });
-        } else {
+        if (!this._leoIntegration.leoStates.fileOpenedReady) {
             return Promise.resolve([]); // Defaults to an empty list of children
         }
+        if (element) {
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element.apJson)
+                .then((p_package: LeoBridgePackage) => {
+                    return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+                });
+        } else {
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, "null")
+                .then((p_package: LeoBridgePackage) => {
+                    const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+
+                    if (w_nodes && w_nodes.length === 1) {
+                        w_nodes[0].setRoot();
+                    }
+                    return w_nodes;
+                });
+        }
     }
+
 
     public getParent(element: LeoNode): ProviderResult<LeoNode> | null {
         // * This method should be implemented in order to access reveal API.
@@ -64,14 +76,15 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
         console.log('ERROR! GET PARENT CALLED! on: ', element.label);
 
-        if (this._leoIntegration.fileOpenedReady) {
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PARENT, element ? element.apJson : "null").then((p_package) => {
-                if (p_package.node === null) {
-                    return null;
-                } else {
-                    return this._leoIntegration.apToLeoNode(p_package.node!);
-                }
-            });
+        if (this._leoIntegration.leoStates.fileOpenedReady) {
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PARENT, element ? element.apJson : "null")
+                .then((p_package: LeoBridgePackage) => {
+                    if (p_package.node === null) {
+                        return null;
+                    } else {
+                        return this._leoIntegration.apToLeoNode(p_package.node!);
+                    }
+                });
         } else {
             return null; // Default gives no parent
         }

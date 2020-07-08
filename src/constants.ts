@@ -7,7 +7,8 @@ export class Constants {
 
     public static PUBLISHER: string = "boltex";
     public static NAME: string = "leointeg";
-    public static CONFIG_NAME = "leoIntegration";
+    public static CONFIG_NAME: string = "leoIntegration";
+    public static CONFIG_REFRESH_MATCH: string = "OnNodes";
 
     public static TREEVIEW_ID: string = Constants.CONFIG_NAME;
     public static TREEVIEW_EXPLORER_ID: string = Constants.CONFIG_NAME + "Explorer";
@@ -39,7 +40,7 @@ export class Constants {
 
     /**
      * * Strings used as language id (default is "leobody")
-     * TODO : Add more languages strings for when directives such as @language are used throughout body panes
+     * TODO : #56 @boltex Add more languages strings for when directives such as @language are used throughout body panes
      */
     public static BODY_LANGUAGES = {
         default: "leobody"
@@ -126,12 +127,14 @@ export class Constants {
     public static CONFIG = {
         CHECK_FOR_CHANGE_EXTERNAL_FILES: "checkForChangeExternalFiles",
         DEFAULT_RELOAD_IGNORE: "defaultReloadIgnore",
+        LEO_TREE_BROWSE: "leoTreeBrowse",
         TREE_KEEP_FOCUS: "treeKeepFocus",
         TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
         STATUSBAR_STRING: "statusBarString",
         STATUSBAR_COLOR: "statusBarColor",
         TREE_IN_EXPLORER: "treeInExplorer",
         SHOW_OPEN_ASIDE: "showOpenAside",
+        SHOW_EDIT: "showEditOnNodes",
         SHOW_ARROWS: "showArrowsOnNodes",
         SHOW_ADD: "showAddOnNodes",
         SHOW_MARK: "showMarkOnNodes",
@@ -159,20 +162,34 @@ export class Constants {
         LEO_CAN_UNDO: "leoCanUndo",
         LEO_CAN_REDO: "leoCanRedo",
         LEO_CAN_DEMOTE: "leoCanDemote",
+        LEO_CAN_PROMOTE: "leoCanPromote",
         LEO_CAN_DEHOIST: "leoCanDehoist",
-        // Flags for current selection in outline tree view
+        // 'states' flags about current selection, for visibility and commands availability
+        SELECTED_MARKED: "leoMarked", // no need for unmarked here, use !leoMarked
+        SELECTED_CLONE: "leoCloned",
+        SELECTED_DIRTY: "leoDirty",
+        SELECTED_EMPTY: "leoEmpty",
+        SELECTED_CHILD: "leoChild", // Has children
+        SELECTED_ATFILE: "LeoAtFile", // Can be refreshed
+        // Statusbar Flag 'keybindings in effect'
         LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
-        SELECTED_MARKED: "leoNodeMarked",  // Selected node is marked
-        SELECTED_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked
-        SELECTED_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
+        // Context Flags for 'when' clauses, used concatenated, for each outline node
+        NODE_MARKED: "leoNodeMarked",  // Selected node is marked
+        NODE_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked (Needed for regexp)
+        NODE_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
+        NODE_CLONED: "leoNodeCloned",
+        NODE_ROOT: "leoNodeRoot",
+        NODE_NOT_ROOT: "leoNodeNotRoot",
         // Flags for Leo documents tree view icons and hover node command buttons
         DOCUMENT_SELECTED_TITLED: "leoDocumentSelectedTitled",
         DOCUMENT_TITLED: "leoDocumentTitled",
         DOCUMENT_SELECTED_UNTITLED: "leoDocumentSelectedUntitled",
         DOCUMENT_UNTITLED: "leoDocumentUntitled",
         // Flags that match specific LeoInteg config settings
+        LEO_TREE_BROWSE: Constants.CONFIG.LEO_TREE_BROWSE, // Leo outline also in the explorer view
         TREE_IN_EXPLORER: Constants.CONFIG.TREE_IN_EXPLORER, // Leo outline also in the explorer view
         SHOW_OPEN_ASIDE: Constants.CONFIG.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
+        SHOW_EDIT: Constants.CONFIG.SHOW_EDIT,              // Hover Icons on outline nodes
         SHOW_ARROWS: Constants.CONFIG.SHOW_ARROWS,           // Hover Icons on outline nodes
         SHOW_ADD: Constants.CONFIG.SHOW_ADD,                 // Hover Icons on outline nodes
         SHOW_MARK: Constants.CONFIG.SHOW_MARK,               // Hover Icons on outline nodes
@@ -237,6 +254,16 @@ export class Constants {
         CLOSE_FILE: "closeFile",
         SAVE_FILE: "saveFile",
         SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
+        // * Goto operations
+        GOTO_FIRST_VISIBLE: "gotoFirstVisible",
+        GOTO_LAST_VISIBLE: "gotoLastVisible",
+        GOTO_LAST_SIBLING: "gotoLastSibling",
+        GOTO_NEXT_VISIBLE: "gotoNextVisible",
+        GOTO_PREV_VISIBLE: "gotoPrevVisible",
+        GOTO_NEXT_MARKED: "gotoNextMarked",
+        GOTO_NEXT_CLONE: "gotoNextClone",
+        CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
+        EXPAND_AND_GO_RIGHT: "expandAndGoRight",
         // * Leo Operations
         MARK_PNODE: "markPNode",
         UNMARK_PNODE: "unmarkPNode",
@@ -260,10 +287,10 @@ export class Constants {
         UNDO: "undo",
         REDO: "redo",
         EXECUTE_SCRIPT: "executeScript",
-        GET_STATES: "getStates", // #18 @boltex
-        // TODO : More commands to implement #15, #23, #24, #25 @boltex
-        HOIST_PNODE: "hoistPNode", // #25 @boltex
-        DEHOIST: "deHoist", // #25 @boltex
+        GET_STATES: "getStates",
+        HOIST_PNODE: "hoistPNode",
+        DEHOIST: "deHoist",
+        // TODO : @boltex More commands to implement #15, #23, #24
         CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
         CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
         CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex
@@ -272,7 +299,6 @@ export class Constants {
         EXTRACT_NAMES: "extractNames", // #15 @boltex
         COPY_MARKED: "copyMarked", // #23 @boltex
         DIFF_MARKED_NODES: "diffMarkedNodes", // #23 @boltex
-        GOTO_NEXT_MARKED: "gotoNextMarked", // #23 @boltex
         MARK_CHANGED_ITEMS: "markChangedItems", // #23 @boltex
         MARK_SUBHEADS: "markSubheads", // #23 @boltex
         UNMARK_ALL: "unmarkAll", // #23 @boltex
@@ -309,6 +335,18 @@ export class Constants {
         // * Outline selection
         SELECT_NODE: "selectTreeNode",
         OPEN_ASIDE: "openAside",
+        // * Goto operations that always finish with focus in outline
+        GOTO_FIRST_VISIBLE: "gotoFirstVisible",
+        GOTO_LAST_VISIBLE: "gotoLastVisible",
+        GOTO_LAST_SIBLING: "gotoLastSibling",
+        GOTO_NEXT_VISIBLE: "gotoNextVisible",
+        GOTO_PREV_VISIBLE: "gotoPrevVisible",
+        GOTO_NEXT_MARKED: "gotoNextMarked",
+        GOTO_NEXT_CLONE: "gotoNextClone",
+        GOTO_NEXT_CLONE_SELECTION: "gotoNextCloneSelection",
+        GOTO_NEXT_CLONE_SELECTION_FO: "gotoNextCloneSelectionFromOutline",
+        CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
+        EXPAND_AND_GO_RIGHT: "expandAndGoRight",
         // * Leo Operations
         UNDO: "undo", // From command Palette
         UNDO_FO: "undoFromOutline", // from button, return focus on OUTLINE
@@ -316,9 +354,11 @@ export class Constants {
         REDO_FO: "redoFromOutline", // from button, return focus on OUTLINE
         EXECUTE: "executeScriptSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
         SHOW_BODY: "showBody",
+        SHOW_OUTLINE: "showOutline",
         SHOW_LOG: "showLogPane",
         SORT_CHILDREN: "sortChildrenSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
-        SORT_SIBLING: "sortSiblingsSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SORT_SIBLING: "sortSiblingsSelection",
+        SORT_SIBLING_FO: "sortSiblingsSelectionFromOutline",
         CONTRACT_ALL: "contractAll", // From command Palette
         CONTRACT_ALL_FO: "contractAllFromOutline", // from button, return focus on OUTLINE
         // * Commands from tree panel buttons or context: focus on OUTLINE
@@ -379,7 +419,9 @@ export class Constants {
         // * - - - - - - - - - - - - - - - not implemented yet
         HOIST: "hoistNode",
         HOIST_SELECTION: "hoistSelection",
+        HOIST_SELECTION_FO: "hoistSelectionFromOutline",
         DEHOIST: "deHoist",
+        DEHOIST_FO: "deHoistFromOutline",
         CLONE_FIND_ALL: "cloneFindAll",
         CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened",
         CLONE_FIND_MARKED: "cloneFindMarked",
@@ -388,7 +430,6 @@ export class Constants {
         EXTRACT_NAMES: "extractNames",
         COPY_MARKED: "copyMarked",
         DIFF_MARKED_NODES: "diffMarkedNodes",
-        GOTO_NEXT_MARKED: "gotoNextMarked",
         MARK_CHANGED_ITEMS: "markChangedItems",
         MARK_SUBHEADS: "markSubheads",
         UNMARK_ALL: "unmarkAll",

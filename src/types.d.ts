@@ -7,12 +7,14 @@ import { LeoNode } from "./leoNode";
 export interface ConfigMembers {
     checkForChangeExternalFiles: string;
     defaultReloadIgnore: string;
+    leoTreeBrowse: boolean;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
     statusBarString: string;
     statusBarColor: string;
     treeInExplorer: boolean;
     showOpenAside: boolean;
+    showEditOnNodes: boolean;
     showArrowsOnNodes: boolean;
     showAddOnNodes: boolean;
     showMarkOnNodes: boolean;
@@ -96,6 +98,15 @@ export interface ArchivedPosition {
     }[];                    // for (stack_v, stack_childIndex) in p.stack]
 }
 
+export interface LeoPackageStates {
+    changed: boolean;
+    canUndo: boolean;
+    canRedo: boolean;
+    canDemote: boolean;
+    canPromote: boolean;
+    canDehoist: boolean;
+}
+
 /**
  * * Main JSON information package format used between leointeg and Leo
  */
@@ -107,13 +118,7 @@ export interface LeoBridgePackage {
     bodyData?: string;
     node?: ArchivedPosition;
     nodes?: ArchivedPosition[];
-    states?: {
-        changed: boolean;
-        canUndo: boolean;
-        canRedo: boolean;
-        canDemote: boolean;
-        canDehoist: boolean;
-    },
+    states?: LeoPackageStates;
     closed?: {
         total: number;
         filename?: string;
