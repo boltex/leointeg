@@ -1542,7 +1542,7 @@
           "group": "leoNodeContext1@2"
         },
         {
-          "command": "leointeg.dehoist",
+          "command": "leointeg.deHoist",
           "when": "leoCanDehoist && viewItem =~ /leoNodeRoot/",
           "group": "leoNodeContext1@2"
         },
