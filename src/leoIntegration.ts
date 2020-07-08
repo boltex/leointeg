@@ -14,6 +14,7 @@ import { LeoStatusBar } from "./leoStatusBar";
 import { CommandStack } from "./commandStack";
 import { LeoDocumentsProvider } from "./leoDocuments";
 import { LeoDocumentNode } from "./leoDocumentNode";
+import { LeoStates } from "./leoStates";
 
 /**
  * * Orchestrates Leo integration into vscode with treeview and file system providers
@@ -25,72 +26,8 @@ export class LeoIntegration {
     private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Set when leoBridge has a leo controller ready
     private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Title has to be kept because it might need to be set (again) when either tree is first shown when switching visibility
 
-    private _leoBridgeReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.BRIDGE_READY
-    get leoBridgeReady(): boolean {
-        return this._leoBridgeReady;
-    }
-    set leoBridgeReady(p_value: boolean) {
-        this._leoBridgeReady = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, p_value);
-    }
-
-    private _fileOpenedReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.TREE_OPENED
-    get fileOpenedReady(): boolean {
-        return this._fileOpenedReady;
-    }
-    set fileOpenedReady(p_value: boolean) {
-        this._fileOpenedReady = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, p_value);
-        this._setTreeViewTitle(
-            p_value ? Constants.GUI.TREEVIEW_TITLE : Constants.GUI.TREEVIEW_TITLE_INTEGRATION
-        );
-    }
-
-    // * States used in UI button visibility: changed, can undo/redo, can demote and can dehoist.
-    private _leoChanged: boolean = false;
-    get leoChanged(): boolean {
-        return this._leoChanged;
-    }
-    set leoChanged(p_value: boolean) {
-        this._leoChanged = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CHANGED, p_value);
-    }
-
-    private _leoCanUndo: boolean = false;
-    get leoCanUndo(): boolean {
-        return this._leoCanUndo;
-    }
-    set leoCanUndo(p_value: boolean) {
-        this._leoCanUndo = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_UNDO, p_value);
-    }
-
-    private _leoCanRedo: boolean = false;
-    get leoCanRedo(): boolean {
-        return this._leoCanRedo;
-    }
-    set leoCanRedo(p_value: boolean) {
-        this._leoCanRedo = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_REDO, p_value);
-    }
-
-    private _leoCanDemote: boolean = false;
-    get leoCanDemote(): boolean {
-        return this._leoCanDemote;
-    }
-    set leoCanDemote(p_value: boolean) {
-        this._leoCanDemote = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_DEMOTE, p_value);
-    }
-
-    private _leoCanDehoist: boolean = false;
-    get leoCanDehoist(): boolean {
-        return this._leoCanDehoist;
-    }
-    set leoCanDehoist(p_value: boolean) {
-        this._leoCanDehoist = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_DEHOIST, p_value);
-    }
+    // * State flags
+    public leoStates: LeoStates;
 
     // * Frontend command stack
     private _commandStack: CommandStack;
@@ -197,6 +134,9 @@ export class LeoIntegration {
     };
 
     constructor(private _context: vscode.ExtensionContext) {
+        // * Setup States
+        this.leoStates = new LeoStates(_context, this);
+
         // * Get configuration settings
         this.config = new Config(_context, this);
         this.config.buildFromSavedSettings();
@@ -321,7 +261,7 @@ export class LeoIntegration {
      * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
      */
     public connect(): void {
-        if (this.leoBridgeReady || this._leoIsConnecting) {
+        if (this.leoStates.leoBridgeReady || this._leoIsConnecting) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
             return;
         }
@@ -333,7 +273,7 @@ export class LeoIntegration {
                 if (p_package.id !== 1) {
                     this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
                 } else {
-                    this.leoBridgeReady = true;
+                    this.leoStates.leoBridgeReady = true;
                     utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
                     this.showLogPane();
                     if (!this.config.connectToServerAutomatically) {
@@ -357,13 +297,13 @@ export class LeoIntegration {
      */
     public cancelConnect(p_message?: string): void {
         // 'disconnect error' versus 'failed to connect'
-        if (this.leoBridgeReady) {
+        if (this.leoStates.leoBridgeReady) {
             vscode.window.showErrorMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
         } else {
             vscode.window.showInformationMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
         }
-        this.fileOpenedReady = false;
-        this.leoBridgeReady = false;
+        this.leoStates.fileOpenedReady = false;
+        this.leoStates.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
         this._leoStatusBar.update(false);
         this._refreshOutline(RevealType.RevealSelect);
@@ -389,7 +329,7 @@ export class LeoIntegration {
      * @param p_config A config object containing all the configuration settings
      */
     public sendConfigToServer(p_config: ConfigMembers): void {
-        if (this.fileOpenedReady) {
+        if (this.leoStates.fileOpenedReady) {
             this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package => {
                 // Back from applying configuration to leobridgeserver.py
             });
@@ -402,14 +342,9 @@ export class LeoIntegration {
     private _triggerGetStates(): void {
         // Debounced timer has triggered so perform getStates action
         this._leoDocumentsProvider.refreshTreeRoot();
-
         this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) => {
             if (p_package.states) {
-                this.leoChanged = p_package.states.changed;
-                this.leoCanUndo = p_package.states.canUndo;
-                this.leoCanRedo = p_package.states.canRedo;
-                this.leoCanDemote = p_package.states.canDemote;
-                this.leoCanDehoist = p_package.states.canDehoist;
+                this.leoStates.leoStateFlags(p_package.states);
             }
         });
     }
@@ -438,7 +373,7 @@ export class LeoIntegration {
      * * Setup leoInteg's UI for having no opened Leo documents
      */
     private _setupNoOpenedLeoDocument(): void {
-        this.fileOpenedReady = false;
+        this.leoStates.fileOpenedReady = false;
         this._bodyTextDocument = undefined;
         this.lastSelectedNode = undefined;
         this._refreshOutline(RevealType.RevealSelectFocus);
@@ -467,10 +402,10 @@ export class LeoIntegration {
             this._bodyFileSystemStarted = true;
         }
         // * Startup flag
-        this.fileOpenedReady = true;
+        this.leoStates.fileOpenedReady = true;
         // * First valid redraw of tree along with the selected node and its body
         this._refreshOutline(RevealType.RevealSelectFocus); // p_revealSelection flag set
-        // this._setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // ? Maybe unused when used with welcome content
+        // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // ? Maybe unused when used with welcome content
         // * First StatusBar appearance
         this._leoStatusBar.show(); // Just selected a node
         // * Show leo log pane
@@ -521,7 +456,7 @@ export class LeoIntegration {
     private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
         if (p_event.visible) {
             this._lastVisibleTreeView = p_explorerView ? this._leoTreeExplorerView : this._leoTreeStandaloneView;
-            this._setTreeViewTitle();
+            this.setTreeViewTitle();
             this._needLastSelectedRefresh = true; // Its a new node in a new tree so refresh lastSelectedNode too
             this._refreshOutline(RevealType.RevealSelect);
         }
@@ -685,7 +620,7 @@ export class LeoIntegration {
      * * Refresh tree for node hover icons refresh only
      */
     public configTreeRefresh(): void {
-        if (this.fileOpenedReady && this.lastSelectedNode) {
+        if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
             this._revealType = RevealType.RevealSelect;
             this._preventShowBody = true;
             this._leoTreeDataProvider.refreshTreeRoot();
@@ -749,6 +684,7 @@ export class LeoIntegration {
      * @param p_leoNode The node that was detected as the selected node in Leo
      */
     private _apToLeoNodeConvertReveal(p_leoNode: LeoNode): void {
+        this.leoStates.selectedNodeFlags(p_leoNode);
         // First setup flags for selecting and focusing based on the current reveal type needed
         const w_selectFlag = this._revealType >= RevealType.RevealSelect; // at least RevealSelect
         let w_focusFlag = this._revealType >= RevealType.RevealSelectFocus;  // at least RevealSelectFocus
@@ -861,6 +797,7 @@ export class LeoIntegration {
         if (p_aside && p_node !== this.lastSelectedNode) {
             this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
         }
+        this.leoStates.selectedNodeFlags(p_node);
         // TODO : #39 @boltex Save and restore selection, along with cursor position, from selection state saved in each node (or gnx array)
         this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
         const w_showBodyKeepFocus = p_aside ? this.config.treeKeepFocusWhenAside : this.config.treeKeepFocus;
@@ -1151,9 +1088,9 @@ export class LeoIntegration {
      * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
      */
     public saveAsLeoFile(p_fromOutline?: boolean): void {
-        if (!this.fileOpenedReady || this._isBusy()) { return; } // Warn user to wait for end of busy state
+        if (!this.leoStates.fileOpenedReady || this._isBusy()) { return; } // Warn user to wait for end of busy state
         // TODO : Implement & support multiple simultaneous files
-        if (this.fileOpenedReady) {
+        if (this.leoStates.fileOpenedReady) {
             if (this.lastSelectedNode) {
                 this.triggerBodySave(true)
                     .then(() => {
@@ -1175,9 +1112,9 @@ export class LeoIntegration {
      * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
      */
     public saveLeoFile(p_fromOutline?: boolean): void {
-        if (!this.fileOpenedReady || this._isBusy()) { return; } // Warn user to wait for end of busy state
+        if (!this.leoStates.fileOpenedReady || this._isBusy()) { return; } // Warn user to wait for end of busy state
         // TODO : Specify which file when supporting multiple simultaneous opened Leo files
-        if (this.fileOpenedReady) {
+        if (this.leoStates.fileOpenedReady) {
             if (this.lastSelectedNode && this._isCurrentFileNamed()) {
                 this.triggerBodySave(true)
                     .then(() => {
@@ -1195,7 +1132,7 @@ export class LeoIntegration {
      * * Show switch document 'QuickPick' dialog and switch file if selection is made, or just return if no files are opened.
      */
     public switchLeoFile(): void {
-        if (!this.fileOpenedReady || this._isBusy()) { return; } // Warn user to wait for end of busy state
+        if (!this.leoStates.fileOpenedReady || this._isBusy()) { return; } // Warn user to wait for end of busy state
         // get list and show dialog to user, even if there's only one...but at least one!
         // TODO : p_package members names should be made into constants
         // TODO : Fix / Cleanup opened body panes close before reopening when switching
@@ -1255,7 +1192,7 @@ export class LeoIntegration {
      */
     public closeLeoFile(): void {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        if (this.fileOpenedReady) {
+        if (this.leoStates.fileOpenedReady) {
             this.triggerBodySave(true)
                 .then(() => {
                     return this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE, JSON.stringify({ forced: false }));
@@ -1369,7 +1306,7 @@ export class LeoIntegration {
      * * Set the outline pane top bar string message
      * @param p_title new string to replace the current title
      */
-    private _setTreeViewTitle(p_title?: string): void {
+    public setTreeViewTitle(p_title?: string): void {
         if (p_title) {
             this._currentOutlineTitle = p_title;
         }
@@ -1393,7 +1330,7 @@ export class LeoIntegration {
      * * StatusBar click handler
      */
     public statusBarOnClick(): void {
-        if (this.fileOpenedReady) {
+        if (this.leoStates.fileOpenedReady) {
             this.switchLeoFile();
         } else {
             this.showLeoCommands();

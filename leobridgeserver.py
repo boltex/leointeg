@@ -662,6 +662,7 @@ class LeoBridgeIntegController:
                 w_states["canUndo"] = self.commander.canUndo()
                 w_states["canRedo"] = self.commander.canRedo()
                 w_states["canDemote"] = self.commander.canDemote()
+                w_states["canPromote"] = self.commander.canPromote()
                 w_states["canDehoist"] = self.commander.canDehoist()
 
             except Exception as e:
@@ -673,6 +674,7 @@ class LeoBridgeIntegController:
             w_states["canUndo"] = False
             w_states["canRedo"] = False
             w_states["canDemote"] = False
+            w_states["canPromote"] = False
             w_states["canDehoist"] = False
 
         return self.sendLeoBridgePackage("states", w_states)
@@ -1204,7 +1206,7 @@ class LeoBridgeIntegController:
                 'headline': stack_v.h,
             } for (stack_v, stack_childIndex) in p.stack],
         }
-        # TODO : (MAYBE) Convert all those booleans into an integer 'status' Flags
+        # TODO : Convert all those booleans into an 8 bit integer 'status' flag
         if bool(p.b):
             w_ap['hasBody'] = True
         if p.hasChildren():

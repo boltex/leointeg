@@ -162,12 +162,24 @@ export class Constants {
         LEO_CAN_UNDO: "leoCanUndo",
         LEO_CAN_REDO: "leoCanRedo",
         LEO_CAN_DEMOTE: "leoCanDemote",
+        LEO_CAN_PROMOTE: "leoCanPromote",
         LEO_CAN_DEHOIST: "leoCanDehoist",
-        // Flags for current selection in outline tree view
+        // 'states' flags about current selection, for visibility and commands availability
+        SELECTED_MARKED: "leoMarked", // no need for unmarked here, use !leoMarked
+        SELECTED_CLONE: "leoCloned",
+        SELECTED_DIRTY: "leoDirty",
+        SELECTED_EMPTY: "leoEmpty",
+        SELECTED_CHILD: "leoChild", // Has children
+        SELECTED_ATFILE: "LeoAtFile", // Can be refreshed
+        // Statusbar Flag 'keybindings in effect'
         LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
-        SELECTED_MARKED: "leoNodeMarked",  // Selected node is marked
-        SELECTED_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked
-        SELECTED_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
+        // Context Flags for 'when' clauses, used concatenated, for each outline node
+        NODE_MARKED: "leoNodeMarked",  // Selected node is marked
+        NODE_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked (Needed for regexp)
+        NODE_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
+        NODE_CLONED: "leoNodeCloned",
+        NODE_ROOT: "leoNodeRoot",
+        NODE_NOT_ROOT: "leoNodeNotRoot",
         // Flags for Leo documents tree view icons and hover node command buttons
         DOCUMENT_SELECTED_TITLED: "leoDocumentSelectedTitled",
         DOCUMENT_TITLED: "leoDocumentTitled",
@@ -177,7 +189,7 @@ export class Constants {
         LEO_TREE_BROWSE: Constants.CONFIG.LEO_TREE_BROWSE, // Leo outline also in the explorer view
         TREE_IN_EXPLORER: Constants.CONFIG.TREE_IN_EXPLORER, // Leo outline also in the explorer view
         SHOW_OPEN_ASIDE: Constants.CONFIG.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
-        SHOW_EDIT: Constants.CONFIG.SHOW_EDIT,           // Hover Icons on outline nodes
+        SHOW_EDIT: Constants.CONFIG.SHOW_EDIT,              // Hover Icons on outline nodes
         SHOW_ARROWS: Constants.CONFIG.SHOW_ARROWS,           // Hover Icons on outline nodes
         SHOW_ADD: Constants.CONFIG.SHOW_ADD,                 // Hover Icons on outline nodes
         SHOW_MARK: Constants.CONFIG.SHOW_MARK,               // Hover Icons on outline nodes
@@ -331,7 +343,8 @@ export class Constants {
         GOTO_PREV_VISIBLE: "gotoPrevVisible",
         GOTO_NEXT_MARKED: "gotoNextMarked",
         GOTO_NEXT_CLONE: "gotoNextClone",
-        GOTO_NEXT_CLONE_FO: "gotoNextCloneFromOutline",
+        GOTO_NEXT_CLONE_SELECTION: "gotoNextCloneSelection",
+        GOTO_NEXT_CLONE_SELECTION_FO: "gotoNextCloneSelectionFromOutline",
         CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
         EXPAND_AND_GO_RIGHT: "expandAndGoRight",
         // * Leo Operations

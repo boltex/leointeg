@@ -13,7 +13,8 @@ export class LeoStatusBar {
     private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
     private _string: string = ""; // Use this string with indicator, using this will replace the default from config
 
-    private _leoObjectSelected: boolean = false; // Represents having focus on a leo body
+    // * Represents having focus on a leo tree, body or document panel to enable leo keybindings
+    private _leoObjectSelected: boolean = false;
     set leoObjectSelected(p_value: boolean) {
         this._leoObjectSelected = p_value;
     }
@@ -96,7 +97,7 @@ export class LeoStatusBar {
         }
         utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.leoObjectSelected);
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + (this._string ? this._string : this._leoIntegration.config.statusBarString);
-        if (this.leoObjectSelected && this._leoIntegration.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
+        if (this.leoObjectSelected && this._leoIntegration.leoStates.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
             this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
             this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
         } else {

@@ -124,8 +124,9 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.GOTO_FIRST_VISIBLE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_FIRST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
         [w_cmdPrefix + Constants.COMMANDS.GOTO_LAST_VISIBLE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_LAST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
         [w_cmdPrefix + Constants.COMMANDS.GOTO_LAST_SIBLING, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_LAST_SIBLING, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_CLONE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, false)],
-        [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_CLONE_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_CLONE, (p_node: LeoNode) => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, p_node, RefreshType.RefreshTreeAndBody, true)],
+        [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_CLONE_SELECTION, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_CLONE_SELECTION_FO, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, true)],
 
         [w_cmdPrefix + Constants.COMMANDS.GOTO_NEXT_VISIBLE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
         [w_cmdPrefix + Constants.COMMANDS.GOTO_PREV_VISIBLE, () => w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_PREV_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],

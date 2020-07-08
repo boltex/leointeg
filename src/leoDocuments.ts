@@ -30,7 +30,7 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
     public getChildren(element?: LeoDocumentNode): Thenable<LeoDocumentNode[]> {
 
         // if called with element, or not ready, give back empty array as there won't be any children
-        if (this._leoIntegration.fileOpenedReady && !element) {
+        if (this._leoIntegration.leoStates.fileOpenedReady && !element) {
 
             // call action to get get list, and convert to LeoDocumentNode(s) array
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package => {

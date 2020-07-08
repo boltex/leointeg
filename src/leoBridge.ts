@@ -200,7 +200,7 @@ export class LeoBridge {
             console.log(`Websocket closed, code: ${p_event.code}`);
             this._rejectAction(`Websocket closed, code: ${p_event.code}`);
             // TODO : Implement a better connection error handling
-            if (this._leoIntegration.leoBridgeReady) {
+            if (this._leoIntegration.leoStates.leoBridgeReady) {
                 this._leoIntegration.cancelConnect(`Websocket closed, code: ${p_event.code}`);
             }
         };

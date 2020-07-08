@@ -11,6 +11,8 @@ export class LeoNode extends vscode.TreeItem {
     public cursorSelection: any; // TODO : #39 @boltex Keep body's cursor and selection position from vscode to get it back
     public contextValue: string; // * Context string is checked in package.json with 'when' clauses
 
+    public isRoot: boolean = false;
+
     constructor(
         public label: string, // Node headline
         public gnx: string,
@@ -26,7 +28,7 @@ export class LeoNode extends vscode.TreeItem {
         private _id: string
     ) {
         super(label, collapsibleState);
-        this.contextValue = this._getContextValue(marked, atFile);
+        this.contextValue = this._getNodeContextValue();
         this.command = {
             command: Constants.NAME + "." + Constants.COMMANDS.SELECT_NODE,
             title: '',
@@ -64,17 +66,34 @@ export class LeoNode extends vscode.TreeItem {
         this.marked = p_node.marked;
         this.atFile = p_node.atFile;
         this.hasBody = p_node.hasBody;
-        this.contextValue = this._getContextValue(p_node.marked, p_node.atFile);
+        this.isRoot = p_node.isRoot;
+        this.contextValue = this._getNodeContextValue();
         return this;
     }
 
-    private _getContextValue(p_marked: boolean, p_atFile: boolean): string {
-        let w_contextValue = Constants.CONTEXT_FLAGS.SELECTED_UNMARKED; // * Start it with 'leoNodeMarked' or 'leoNodeUnmarked'
-        if (p_marked) {
-            w_contextValue = Constants.CONTEXT_FLAGS.SELECTED_MARKED;
+    /**
+     * * Set this node as the root not for context flags purposes
+     */
+    public setRoot(): void {
+        this.isRoot = true;
+        this.contextValue = this._getNodeContextValue();
+    }
+
+    private _getNodeContextValue(): string {
+        let w_contextValue = Constants.CONTEXT_FLAGS.NODE_UNMARKED; // * Start it with 'leoNodeMarked' or 'leoNodeUnmarked'
+        if (this.marked) {
+            w_contextValue = Constants.CONTEXT_FLAGS.NODE_MARKED;
         }
-        if (p_atFile) {
-            w_contextValue += Constants.CONTEXT_FLAGS.SELECTED_ATFILE; // * then append 'leoNodeAtFile' to existing if needed
+        if (this.atFile) {
+            w_contextValue += Constants.CONTEXT_FLAGS.NODE_ATFILE; // * then append 'leoNodeAtFile' to existing if needed
+        }
+        if (this.cloned) {
+            w_contextValue += Constants.CONTEXT_FLAGS.NODE_CLONED; // * then append 'leoNodeCloned' to existing if needed
+        }
+        if (this.isRoot) {
+            w_contextValue += Constants.CONTEXT_FLAGS.NODE_ROOT;
+        } else {
+            w_contextValue += Constants.CONTEXT_FLAGS.NODE_NOT_ROOT;
         }
         return w_contextValue;
     }

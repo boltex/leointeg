@@ -246,11 +246,7 @@ To contribute, see the official issues page for current list of 'TODO's at https
             return self.outputPNodes([])  # default empty array
     else:
         if self.commander.hoistStack:
-            w_p = self.commander.hoistStack[-1].p
-            if w_p:
-                return self.outputPNodes([w_p])
-            else:
-                return self.outputPNodes([])  # default empty array
+            return self.outputPNodes([self.commander.hoistStack[-1].p])
         else:
             return self.outputPNodes(self.yieldAllRootChildren())  # this outputs all Root Children
 
@@ -466,7 +462,7 @@ if __name__ == '__main__':
             'headline': stack_v.h,
         } for (stack_v, stack_childIndex) in p.stack],
     }
-    # TODO : (MAYBE) Convert all those booleans into an integer 'status' Flags
+    # TODO : Convert all those booleans into an 8 bit integer 'status' flag
     if bool(p.b):
         w_ap['hasBody'] = True
     if p.hasChildren():
@@ -1435,6 +1431,7 @@ wsPort = 32125
             w_states["canUndo"] = self.commander.canUndo()
             w_states["canRedo"] = self.commander.canRedo()
             w_states["canDemote"] = self.commander.canDemote()
+            w_states["canPromote"] = self.commander.canPromote()
             w_states["canDehoist"] = self.commander.canDehoist()
 
         except Exception as e:
@@ -1446,6 +1443,7 @@ wsPort = 32125
         w_states["canUndo"] = False
         w_states["canRedo"] = False
         w_states["canDemote"] = False
+        w_states["canPromote"] = False
         w_states["canDehoist"] = False
 
     return self.sendLeoBridgePackage("states", w_states)
