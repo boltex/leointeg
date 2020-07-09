@@ -337,6 +337,15 @@
         }
       },
       {
+        "command": "leointeg.saveLeoFileFromOutline",
+        "category": "Leo",
+        "title": "Save Leo File",
+        "icon": {
+          "light": "resources/light/save.svg",
+          "dark": "resources/dark/save.svg"
+        }
+      },
+      {
         "command": "leointeg.saveAsLeoFile",
         "category": "Leo",
         "title": "Save Leo File as...",
@@ -1401,6 +1410,10 @@
         {
           "command": "leointeg.expandAndGoRight",
           "when": "false"
+        },
+        {
+          "command": "leointeg.saveLeoFileFromOutline",
+          "when": "false"
         }
       ],
       "view/title": [
@@ -1435,7 +1448,7 @@
           "group": "navigation@1"
         },
         {
-          "command": "leointeg.saveLeoFile",
+          "command": "leointeg.saveLeoFileFromOutline",
           "when": "view =~ /leoIntegration/ && leoTreeOpened && leoTreeTitled && leoChanged",
           "group": "navigation@2"
         },
@@ -1467,7 +1480,7 @@
       ],
       "view/item/context": [
         {
-          "command": "leointeg.saveLeoFile",
+          "command": "leointeg.saveLeoFileFromOutline",
           "when": "viewItem =~ /leoDocumentSelectedTitled/ && leoChanged",
           "group": "inline@1"
         },
@@ -1613,6 +1626,18 @@
         "command": "leointeg.gotoLastSibling",
         "key": "alt+end",
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments/"
+      },
+      {
+        "command": "leointeg.saveLeoFileFromOutline",
+        "key": "ctrl+s",
+        "mac": "cmd+s",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments/"
+      },
+      {
+        "command": "leointeg.saveLeoFile",
+        "key": "ctrl+s",
+        "mac": "cmd+s",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.gotoNextCloneSelectionFromOutline",
