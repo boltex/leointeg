@@ -1117,7 +1117,7 @@
         },
         {
           "command": "leointeg.hoistSelection",
-          "when": "leoTreeOpened"
+          "when": "leoTreeOpened && !leoRoot"
         },
         {
           "command": "leointeg.deHoist",

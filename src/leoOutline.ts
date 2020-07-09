@@ -60,7 +60,6 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, "null")
                 .then((p_package: LeoBridgePackage) => {
                     const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
-
                     if (w_nodes && w_nodes.length === 1) {
                         w_nodes[0].setRoot();
                     }
@@ -68,7 +67,6 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
                 });
         }
     }
-
 
     public getParent(element: LeoNode): ProviderResult<LeoNode> | null {
         // * This method should be implemented in order to access reveal API.

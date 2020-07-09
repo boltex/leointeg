@@ -76,6 +76,7 @@ export class LeoNode extends vscode.TreeItem {
      */
     public setRoot(): void {
         this.isRoot = true;
+        this._leoIntegration.leoStates.leoRoot = true; // Set this special global 'selected node' flag
         this.contextValue = this._getNodeContextValue();
     }
 

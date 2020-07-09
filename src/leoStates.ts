@@ -141,12 +141,23 @@ export class LeoStates {
         utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_ATFILE, p_value);
     }
 
+    // * Special is-root 'state' flag about current selection, for visibility and commands availability
+    private _leoRoot: boolean = false;
+    get leoRoot(): boolean {
+        return this._leoRoot;
+    }
+    set leoRoot(p_value: boolean) {
+        this._leoRoot = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_ROOT, p_value);
+    }
+
     constructor(
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
     ) { }
 
     public selectedNodeFlags(p_node: LeoNode): void {
+        this.leoRoot = false; // * RESET the root flag : It is set by vscode instead right after getting list of children for root of outline
         this.leoMarked = p_node.marked;
         this.leoCloned = p_node.cloned;
         this.leoDirty = p_node.dirty;

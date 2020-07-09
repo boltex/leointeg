@@ -171,6 +171,7 @@ export class Constants {
         SELECTED_EMPTY: "leoEmpty",
         SELECTED_CHILD: "leoChild", // Has children
         SELECTED_ATFILE: "LeoAtFile", // Can be refreshed
+        SELECTED_ROOT: "leoRoot", // ! Not given by Leo: Computed by leoInteg/vscode instead
         // Statusbar Flag 'keybindings in effect'
         LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
         // Context Flags for 'when' clauses, used concatenated, for each outline node

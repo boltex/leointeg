@@ -14,12 +14,12 @@ export class LeoStatusBar {
     private _string: string = ""; // Use this string with indicator, using this will replace the default from config
 
     // * Represents having focus on a leo tree, body or document panel to enable leo keybindings
-    private _leoObjectSelected: boolean = false;
-    set leoObjectSelected(p_value: boolean) {
-        this._leoObjectSelected = p_value;
+    private _statusBarFlag: boolean = false;
+    set statusBarFlag(p_value: boolean) {
+        this._statusBarFlag = p_value;
     }
-    get leoObjectSelected(): boolean {
-        return this._leoObjectSelected;
+    get statusBarFlag(): boolean {
+        return this._statusBarFlag;
     }
 
     constructor(
@@ -65,8 +65,8 @@ export class LeoStatusBar {
      * @param p_debounceDelay Optional, in milliseconds
      */
     public update(p_state: boolean, p_debounceDelay?: number): void {
-        if (p_state !== this.leoObjectSelected) {
-            this.leoObjectSelected = p_state;
+        if (p_state !== this.statusBarFlag) {
+            this.statusBarFlag = p_state;
             if (p_debounceDelay) {
                 this._updateLeoObjectIndicatorDebounced(p_debounceDelay);
             } else {
@@ -95,9 +95,9 @@ export class LeoStatusBar {
         if (this._updateStatusBarTimeout) { // Can be called directly, so clear timer if any
             clearTimeout(this._updateStatusBarTimeout);
         }
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.leoObjectSelected);
+        utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + (this._string ? this._string : this._leoIntegration.config.statusBarString);
-        if (this.leoObjectSelected && this._leoIntegration.leoStates.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
+        if (this.statusBarFlag && this._leoIntegration.leoStates.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
             this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
             this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
         } else {

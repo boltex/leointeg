@@ -487,7 +487,7 @@ export class LeoIntegration {
             this.triggerBodySave(true);// Save in case edits were pending
         }
         // * Status flag check
-        if (!p_event && this._leoStatusBar.leoObjectSelected) {
+        if (!p_event && this._leoStatusBar.statusBarFlag) {
             return;
         }
         // * Status flag check
