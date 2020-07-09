@@ -330,6 +330,7 @@ export class Constants {
         SWITCH_FILE: "switchLeoFile",
         NEW_FILE: "newLeoFile",
         SAVE_FILE: "saveLeoFile", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SAVE_FILE_FO: "saveLeoFileFromOutline", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
         SAVE_AS_FILE: "saveAsLeoFile",
         CLOSE_FILE: "closeLeoFile",
         // * Outline selection
