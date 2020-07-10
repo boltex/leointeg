@@ -413,7 +413,7 @@ class LeoBridgeIntegController:
         # TODO : need gnx_to_vnode for each opened file/commander
         self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
         self.bridge = leoBridge.controller(gui='nullGui',
-                                           loadPlugins=False,  # True: attempt to load plugins.
+                                           loadPlugins=True,  # True: attempt to load plugins.
                                            readSettings=True,  # True: read standard settings files.
                                            silent=True,      # True: don't print signon messages.
                                            verbose=False)     # True: prints messages that would be sent to the log pane.
