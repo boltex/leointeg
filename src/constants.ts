@@ -255,6 +255,7 @@ export class Constants {
         CLOSE_FILE: "closeFile",
         SAVE_FILE: "saveFile",
         SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
+        GET_BUTTONS: "getButtons",
         // * Goto operations
         GOTO_FIRST_VISIBLE: "gotoFirstVisible",
         GOTO_LAST_VISIBLE: "gotoLastVisible",

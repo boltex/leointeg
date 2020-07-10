@@ -657,6 +657,12 @@ export class LeoIntegration {
         if (p_ap.hasChildren) {
             w_collapse = p_ap.expanded ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed;
         }
+        // * Unknown attributes are one-way read-only data, don't carry this in for string key for leo/python side of things
+        let w_u = false;
+        if (p_ap.u) {
+            w_u = p_ap.u;
+            delete p_ap.u;
+        }
         const w_leoNode = new LeoNode(
             p_ap.headline,          // label-headline
             p_ap.gnx,               // gnx
@@ -668,7 +674,8 @@ export class LeoIntegration {
             !!p_ap.marked,          // marked
             !!p_ap.atFile,          // atFile
             !!p_ap.hasBody,         // hasBody
-            this,                   //  _leoIntegration pointer
+            w_u,                    // unknownAttributes
+            this,                   // _leoIntegration pointer
             // If there's no reveal and its the selected node re-use the old id
             (!this._revealType && p_ap.selected && this.lastSelectedNode) ? this.lastSelectedNode.id : (++this._nextNodeId).toString()
         );

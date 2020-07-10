@@ -410,7 +410,7 @@ class LeoBridgeIntegController:
     '''Leo Bridge Controller'''
 
     def __init__(self):
-        # TODO : need gnx_to_vnode for each opened file/commander
+        # TODO : @boltex #74 need gnx_to_vnode for each opened file/commander
         self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
         self.bridge = leoBridge.controller(gui='nullGui',
                                            loadPlugins=True,  # True: attempt to load plugins.
@@ -678,6 +678,26 @@ class LeoBridgeIntegController:
             w_states["canDehoist"] = False
 
         return self.sendLeoBridgePackage("states", w_states)
+
+    def getButtons(self, p_package):
+        """
+        Gets the currently opened file's @buttons list
+        """
+        w_buttons = []
+        w_index = 0
+
+        w_entry = {"name": "button1", "index": w_index}
+        w_buttons.append(w_entry)
+        w_index = w_index + 1
+        w_entry = {"name": "button2", "index": w_index}
+        w_buttons.append(w_entry)
+        w_index = w_index + 1
+
+        return self.sendLeoBridgePackage("buttons", w_buttons)
+
+    def clickButton(self, p_package):
+        pass
+        # Clicked a button, index as param, execute it! 
 
     def setActionId(self, p_id):
         self.currentActionId = p_id
@@ -1207,6 +1227,8 @@ class LeoBridgeIntegController:
             } for (stack_v, stack_childIndex) in p.stack],
         }
         # TODO : Convert all those booleans into an 8 bit integer 'status' flag
+        if p.v.u:
+            w_ap['u'] = p.v.u
         if bool(p.b):
             w_ap['hasBody'] = True
         if p.hasChildren():
