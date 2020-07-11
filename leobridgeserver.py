@@ -684,20 +684,24 @@ class LeoBridgeIntegController:
         Gets the currently opened file's @buttons list
         """
         w_buttons = []
-        w_index = 0
+        w_dict = self.commander.theScriptingController.buttonsDict
 
-        w_entry = {"name": "button1", "index": w_index}
-        w_buttons.append(w_entry)
-        w_index = w_index + 1
-        w_entry = {"name": "button2", "index": w_index}
-        w_buttons.append(w_entry)
-        w_index = w_index + 1
+        for w_key in w_dict:
+            w_entry = {"name": w_dict[w_key], "index": str(w_key)}
+            w_buttons.append(w_entry)
 
         return self.sendLeoBridgePackage("buttons", w_buttons)
 
     def clickButton(self, p_package):
-        pass
-        # Clicked a button, index as param, execute it! 
+        w_index = p_package['index']
+        w_dict = self.commander.theScriptingController.buttonsDict
+        w_button = None
+        for w_key in w_dict:
+            if(str(w_key) == w_index):
+                w_button = w_key
+        w_button.command() # run clicked button command
+        return self.outputPNode(self.commander.p)  # return selected node when done
+
 
     def setActionId(self, p_id):
         self.currentActionId = p_id

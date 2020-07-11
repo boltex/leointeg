@@ -37,16 +37,11 @@ export class LeoButtonsProvider implements vscode.TreeDataProvider<LeoButtonNode
                 if (p_package && p_package) {
                     const w_list: LeoButtonNode[] = [];
                     const w_buttons: LeoButton[] = p_package.buttons!;
-
-                    let w_index: number = 0;
-
                     if (w_buttons && w_buttons.length) {
                         w_buttons.forEach((i_button: LeoButton) => {
                             w_list.push(new LeoButtonNode(i_button, this._leoIntegration));
-                            w_index++;
                         });
                     }
-
                     return Promise.resolve(w_list);
                 } else {
                     return Promise.resolve([]);

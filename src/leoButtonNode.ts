@@ -19,19 +19,11 @@ export class LeoButtonNode extends vscode.TreeItem {
     ) {
         super(button.name);
         // * Setup this instance
-        // this.description = false;
-        // this.command = {
-        //     command: Constants.NAME + "." + Constants.COMMANDS.,
-        //     title: '',
-        //     arguments: [this.documentEntry.index]
-        // };
-        // If this was created as a selected node, make sure it's selected as we may have opened/closed document
-        // if (this.documentEntry.selected) {
-        //     this._leoIntegration.setDocumentSelection(this);
-        //     this.contextValue = w_isNamed ? Constants.CONTEXT_FLAGS.DOCUMENT_SELECTED_TITLED : Constants.CONTEXT_FLAGS.DOCUMENT_SELECTED_UNTITLED;
-        // } else {
-        //     this.contextValue = w_isNamed ? Constants.CONTEXT_FLAGS.DOCUMENT_TITLED : Constants.CONTEXT_FLAGS.DOCUMENT_UNTITLED;
-        // }
+        this.command = {
+            command: Constants.NAME + "." + Constants.COMMANDS.CLICK_BUTTON,
+            title: '',
+            arguments: [this.button.index]
+        };
         this.contextValue = "leoButtonNode";
     }
 
@@ -44,7 +36,7 @@ export class LeoButtonNode extends vscode.TreeItem {
     }
 
     public get id(): string {
-        // Add prefix and suffix salt to numeric index prevent accidental duplicates
+        // Add prefix and suffix salt to index prevent accidental duplicates
         return "p" + this.button.index + "s" + this.button.name;
     }
 }

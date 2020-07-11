@@ -185,7 +185,9 @@ export class LeoIntegration {
         // * '@buttons' Treeview Providers and tree views
         this._leoButtonsProvider = new LeoButtonsProvider(this);
         this._leoButtons = vscode.window.createTreeView(Constants.BUTTONS_ID, { showCollapseAll: false, treeDataProvider: this._leoButtonsProvider });
+        this._leoButtons.onDidChangeVisibility((p_event => this._onButtonsTreeViewVisibilityChanged(p_event, false)));
         this._leoButtonsExplorer = vscode.window.createTreeView(Constants.BUTTONS_EXPLORER_ID, { showCollapseAll: false, treeDataProvider: this._leoButtonsProvider });
+        this._leoButtonsExplorer.onDidChangeVisibility((p_event => this._onButtonsTreeViewVisibilityChanged(p_event, true)));
 
         // * Body Pane
         this._leoFileSystem = new LeoBodyProvider(this);
@@ -354,6 +356,7 @@ export class LeoIntegration {
     private _triggerGetStates(): void {
         // Debounced timer has triggered so perform getStates action
         this._leoDocumentsProvider.refreshTreeRoot();
+        this._leoButtonsProvider.refreshTreeRoot();
         this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) => {
             if (p_package.states) {
                 this.leoStates.leoStateFlags(p_package.states);
@@ -424,8 +427,9 @@ export class LeoIntegration {
         this.showLogPane();
         // * Send config to python's side (for settings such as defaultReloadIgnore and checkForChangeExternalFiles)
         this.sendConfigToServer(this.config.getConfig());
-        // * Refresh Opened Documents View
+        // * Refresh Opened treeviews
         this._leoDocumentsProvider.refreshTreeRoot();
+        this._leoButtonsProvider.refreshTreeRoot();
         // * First Body appearance
         return this.showBody(false);
     }
@@ -485,6 +489,20 @@ export class LeoIntegration {
         }
         if (p_event.visible) {
             this._leoDocumentsProvider.refreshTreeRoot();
+        }
+    }
+
+    /**
+     * * Handle the change of visibility of either outline treeview and refresh it if its visible
+     * @param p_event The treeview-visibility-changed event passed by vscode
+     * @param p_explorerView Flag to signify that the treeview who triggered this event is the one in the explorer view
+     */
+    private _onButtonsTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
+        if (p_explorerView) {
+            // (Facultative/unused) Do something different if explorer view is used, instead of the standalone outline pane
+        }
+        if (p_event.visible) {
+            this._leoButtonsProvider.refreshTreeRoot();
         }
     }
 
@@ -1132,6 +1150,7 @@ export class LeoIntegration {
      */
     public saveLeoFile(p_fromOutline?: boolean): void {
         if (!this.leoStates.fileOpenedReady || this._isBusy()) { return; } // Warn user to wait for end of busy state
+
         // TODO : Specify which file when supporting multiple simultaneous opened Leo files
         if (this.leoStates.fileOpenedReady) {
             if (this.lastSelectedNode && this._isCurrentFileNamed()) {
@@ -1195,6 +1214,7 @@ export class LeoIntegration {
      * * Switches Leo document directly by index number. Used by document treeview and switchLeoFile command.
      */
     public selectOpenedLeoDocument(p_index: number): void {
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
         this._leoBridge.action(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_index }))
             .then((p_openFileResult: LeoBridgePackage) => {
                 // Like we just opened or made a new file
@@ -1203,6 +1223,18 @@ export class LeoIntegration {
                 } else {
                     console.log('Select Opened Leo File Error');
                 }
+            });
+    }
+
+    /**
+     * * Invoke an '@button' click directly by index number. Used by '@buttons' treeview.
+     */
+    public clickButton(p_index: number): void {
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        this._leoBridge.action(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_index }))
+            .then((p_clickButtonResult: LeoBridgePackage) => {
+                // console.log('Back from clickButton, package is: ', p_clickButtonResult);
+                this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
             });
     }
 
@@ -1220,6 +1252,7 @@ export class LeoIntegration {
                     // TODO : p_package members names should be made into constants
                     if (p_package.closed) {
                         this._leoDocumentsProvider.refreshTreeRoot();
+                        this._leoButtonsProvider.refreshTreeRoot();
                         if (p_package.closed.total === 0) {
                             this._setupNoOpenedLeoDocument();
                         } else {
@@ -1268,6 +1301,7 @@ export class LeoIntegration {
                         }).then((p_package: LeoBridgePackage | undefined) => {
                             // * back from CLOSE_FILE action, the last that can be performed (after saving if dirty or not)
                             this._leoDocumentsProvider.refreshTreeRoot();
+                            this._leoButtonsProvider.refreshTreeRoot();
                             if (p_package && p_package.closed && p_package.closed.total === 0) {
                                 this._setupNoOpenedLeoDocument();
                             } else {

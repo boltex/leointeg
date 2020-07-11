@@ -259,6 +259,7 @@ export class Constants {
         SAVE_FILE: "saveFile",
         SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
         GET_BUTTONS: "getButtons",
+        CLICK_BUTTON: "clickButton",
         // * Goto operations
         GOTO_FIRST_VISIBLE: "gotoFirstVisible",
         GOTO_LAST_VISIBLE: "gotoLastVisible",
@@ -338,6 +339,7 @@ export class Constants {
         SAVE_FILE_FO: "saveLeoFileFromOutline", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
         SAVE_AS_FILE: "saveAsLeoFile",
         CLOSE_FILE: "closeLeoFile",
+        CLICK_BUTTON: "clickButton",
         // * Outline selection
         SELECT_NODE: "selectTreeNode",
         OPEN_ASIDE: "openAside",

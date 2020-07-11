@@ -157,7 +157,7 @@ export interface LeoDocument {
  */
 export interface LeoButton {
     name: string;
-    index: number
+    index: string; // STRING KEY
 }
 
 /**
