@@ -209,6 +209,11 @@
           "id": "leoDocumentsExplorer",
           "name": "Leo Documents",
           "when": "treeInExplorer"
+        },
+        {
+          "id": "leoButtonsExplorer",
+          "name": "Leo Buttons",
+          "when": "treeInExplorer"
         }
       ],
       "leoIntegrationView": [
@@ -219,6 +224,10 @@
         {
           "id": "leoDocuments",
           "name": "Documents"
+        },
+        {
+          "id": "leoButtons",
+          "name": "Buttons"
         }
       ]
     },
@@ -981,6 +990,16 @@
       },
       {
         "view": "leoDocumentsExplorer",
+        "contents": "There are no Leo files currently opened",
+        "when": "leoBridgeReady && !leoTreeOpened"
+      },
+      {
+        "view": "leoButtons",
+        "contents": "There are no Leo files currently opened",
+        "when": "leoBridgeReady && !leoTreeOpened"
+      },
+      {
+        "view": "leoButtonsExplorer",
         "contents": "There are no Leo files currently opened",
         "when": "leoBridgeReady && !leoTreeOpened"
       }

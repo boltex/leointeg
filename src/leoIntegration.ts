@@ -15,6 +15,8 @@ import { CommandStack } from "./commandStack";
 import { LeoDocumentsProvider } from "./leoDocuments";
 import { LeoDocumentNode } from "./leoDocumentNode";
 import { LeoStates } from "./leoStates";
+import { LeoButtonsProvider } from "./leoButtons";
+import { LeoButtonNode } from "./leoButtonNode";
 
 /**
  * * Orchestrates Leo integration into vscode with treeview and file system providers
@@ -110,6 +112,11 @@ export class LeoIntegration {
         this._bodyUri = p_uri;
     }
 
+    // * '@button' pane
+    private _leoButtonsProvider: LeoButtonsProvider;
+    private _leoButtons: vscode.TreeView<LeoButtonNode>;
+    private _leoButtonsExplorer: vscode.TreeView<LeoButtonNode>;
+
     // * Log Pane
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(Constants.GUI.LOG_PANE_TITLE); // Copy-pasted from leo's log pane
 
@@ -174,6 +181,11 @@ export class LeoIntegration {
         this._leoDocuments.onDidChangeVisibility((p_event => this._onDocTreeViewVisibilityChanged(p_event, false)));
         this._leoDocumentsExplorer = vscode.window.createTreeView(Constants.DOCUMENTS_EXPLORER_ID, { showCollapseAll: false, treeDataProvider: this._leoDocumentsProvider });
         this._leoDocumentsExplorer.onDidChangeVisibility((p_event => this._onDocTreeViewVisibilityChanged(p_event, true)));
+
+        // * '@buttons' Treeview Providers and tree views
+        this._leoButtonsProvider = new LeoButtonsProvider(this);
+        this._leoButtons = vscode.window.createTreeView(Constants.BUTTONS_ID, { showCollapseAll: false, treeDataProvider: this._leoButtonsProvider });
+        this._leoButtonsExplorer = vscode.window.createTreeView(Constants.BUTTONS_EXPLORER_ID, { showCollapseAll: false, treeDataProvider: this._leoButtonsProvider });
 
         // * Body Pane
         this._leoFileSystem = new LeoBodyProvider(this);

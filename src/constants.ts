@@ -16,6 +16,9 @@ export class Constants {
     public static DOCUMENTS_ID: string = "leoDocuments";
     public static DOCUMENTS_EXPLORER_ID: string = "leoDocumentsExplorer";
 
+    public static BUTTONS_ID: string = "leoButtons";
+    public static BUTTONS_EXPLORER_ID: string = "leoButtonsExplorer";
+
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";
