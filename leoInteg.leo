@@ -59,6 +59,8 @@
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
 <v t="felix.20200216160305.1"><vh>saveFile</vh></v>
 <v t="felix.20200619165641.1"><vh>getStates</vh></v>
+<v t="felix.20200710014747.1"><vh>getButtons</vh></v>
+<v t="felix.20200710030614.1"><vh>clickButton</vh></v>
 <v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
 <v t="felix.20191128004456.1"><vh>setActionId</vh></v>
 <v t="felix.20200213195413.1"><vh>asyncOutput</vh></v>
@@ -463,6 +465,8 @@ if __name__ == '__main__':
         } for (stack_v, stack_childIndex) in p.stack],
     }
     # TODO : Convert all those booleans into an 8 bit integer 'status' flag
+    if p.v.u:
+        w_ap['u'] = p.v.u
     if bool(p.b):
         w_ap['hasBody'] = True
     if p.hasChildren():
@@ -489,7 +493,7 @@ if __name__ == '__main__':
     @others
 </t>
 <t tx="felix.20191126232434.5">def __init__(self):
-    # TODO : need gnx_to_vnode for each opened file/commander
+    # TODO : @boltex #74 need gnx_to_vnode for each opened file/commander
     self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
     self.bridge = leoBridge.controller(gui='nullGui',
                                        loadPlugins=True,  # True: attempt to load plugins.
@@ -1568,6 +1572,32 @@ wsPort = 32125
     If the selected node is not a clone, do find-next-clone.
     """
     return self.outlineCommand("goToNextClone", p_ap)
+
+</t>
+<t tx="felix.20200710014747.1">def getButtons(self, p_package):
+    """
+    Gets the currently opened file's @buttons list
+    """
+    w_buttons = []
+    w_dict = self.commander.theScriptingController.buttonsDict
+
+    for w_key in w_dict:
+        w_entry = {"name": w_dict[w_key], "index": str(w_key)}
+        w_buttons.append(w_entry)
+
+    return self.sendLeoBridgePackage("buttons", w_buttons)
+
+</t>
+<t tx="felix.20200710030614.1">def clickButton(self, p_package):
+    w_index = p_package['index']
+    w_dict = self.commander.theScriptingController.buttonsDict
+    w_button = None
+    for w_key in w_dict:
+        if(str(w_key) == w_index):
+            w_button = w_key
+    w_button.command() # run clicked button command
+    return self.outputPNode(self.commander.p)  # return selected node when done
+
 
 </t>
 </tnodes>

@@ -91,6 +91,7 @@ export interface ArchivedPosition {
     marked: boolean;        // p.isMarked()
     atFile: boolean         // p.isAnyAtFileNode():
     selected: boolean;      // p == commander.p
+    u?: any;               // User Attributes
     stack: {
         gnx: string;        // stack_v.gnx
         childIndex: number; // stack_childIndex
@@ -136,13 +137,9 @@ export interface LeoBridgePackage {
     },
     openedFiles?: {
         index: number;
-        files: {
-            name: string;
-            index: number;
-            changed: boolean;
-            selected: boolean;
-        }[]
+        files: LeoDocument[]
     }
+    buttons?: LeoButton[]
 }
 
 /**
@@ -150,9 +147,17 @@ export interface LeoBridgePackage {
  */
 export interface LeoDocument {
     name: string;
-    index: number,
+    index: number;
     changed: boolean;
-    selected: boolean
+    selected: boolean;
+}
+
+/**
+ * * Leo '@button' structure used in the '@buttons' tree view provider sent back by the server
+ */
+export interface LeoButton {
+    name: string;
+    index: string; // STRING KEY
 }
 
 /**

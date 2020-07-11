@@ -24,6 +24,7 @@ export class LeoNode extends vscode.TreeItem {
         public marked: boolean,
         public atFile: boolean,
         public hasBody: boolean,
+        public u: any,
         private _leoIntegration: LeoIntegration,
         private _id: string
     ) {
@@ -125,5 +126,22 @@ export class LeoNode extends vscode.TreeItem {
     // Note that when labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
     public get id(): string { return this._id; }
 
-    public get tooltip(): string { return this.label; } // * Whole headline as tooltip
+    public get description(): string {
+        // * some smaller grayed-out text accompanying the main label
+        if (this.u) {
+            return "📎 (" + Object.keys(this.u).length + ")";
+        } else {
+            return ""; // Falsy will not be shown
+        }
+    }
+
+    public get tooltip(): string {
+        if (this.u) {
+            //  "\ntotal keys is :" + Object.keys(this.u).length
+            return this.label + "\n" +
+                JSON.stringify(this.u, undefined, 2);
+        } else {
+            return this.label; // * Whole headline as tooltip
+        }
+    }
 }
