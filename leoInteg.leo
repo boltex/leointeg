@@ -72,7 +72,9 @@
 <v t="felix.20191126232434.11"><vh>outputPNodes</vh></v>
 </v>
 <v t="felix.20200705193918.1"><vh>Outline Goto Commands</vh>
-<v t="felix.20200705193927.1"><vh>gotoFirstVisible</vh></v>
+<v t="felix.20200705193927.1"><vh>pageUp</vh></v>
+<v t="felix.20200711210205.1"><vh>pageDown</vh></v>
+<v t="felix.20200711210205.2"><vh>gotoFirstVisible</vh></v>
 <v t="felix.20200705233325.1"><vh>gotoLastVisible</vh></v>
 <v t="felix.20200705201100.1"><vh>gotoLastSibling</vh></v>
 <v t="felix.20200705223536.1"><vh>gotoNextVisible</vh></v>
@@ -298,7 +300,7 @@ if __name__ == '__main__':
     try:
         main()
     except KeyboardInterrupt:
-        print("\nKeyboard Interupt: Stopping leobridge server")
+        print("\nKeyboard Interupt: Stopping leobridge server", flush=True)
         sys.exit()
 </t>
 <t tx="felix.20191126232434.20">def getBodyLength(self, p_gnx):
@@ -556,21 +558,21 @@ if __name__ == '__main__':
 <t tx="felix.20191126232435.1">def main():
     '''python script for leo integration via leoBridge'''
     global wsHost, wsPort
-    print("Starting LeoBridge... (Launch with -h for help)")
+    print("Starting LeoBridge... (Launch with -h for help)", flush=True)
     # replace default host address and port if provided as arguments
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], "ha:p:", ["help", "address=", "port="])
     except getopt.GetoptError:
         print('leobridgeserver.py -a &lt;address&gt; -p &lt;port&gt;')
-        print('defaults to localhost on port 32125')
+        print('defaults to localhost on port 32125', flush=True)
         if args:
-            print("unused args: " + str(args))
+            print("unused args: " + str(args), flush=True)
         sys.exit(2)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             print('leobridgeserver.py -a &lt;address&gt; -p &lt;port&gt;')
-            print('defaults to localhost on port 32125')
+            print('defaults to localhost on port 32125', flush=True)
             sys.exit()
         elif opt in ("-a", "--address"):
             wsHost = arg
@@ -603,14 +605,14 @@ if __name__ == '__main__':
                     integController.setActionId(w_param['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
-                    # TODO : Block functions starting with underscore or reserved
+                    # TODO : Block attempts to call functions starting with underscore or reserved
                     answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
                 else:
                     answer = "Error in processCommand"
-                    print(answer)
+                    print(answer, flush=True)
                 await websocket.send(answer)
         except:
-            print("Caught Websocket Disconnect Event")
+            print("Caught Websocket Disconnect Event", flush=True)
         finally:
             asyncio.get_event_loop().stop()
 
@@ -620,7 +622,7 @@ if __name__ == '__main__':
     localLoop.run_until_complete(start_server)
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     localLoop.run_forever()
-    print("Stopping leobridge server")
+    print("Stopping leobridge server", flush=True)
 
 
 </t>
@@ -1261,6 +1263,10 @@ wsPort = 32125
     Check for changed open-with files and all external files in commanders
     for which @bool check_for_changed_external_file is True.
     '''
+    # Fix for flushing the terminal console to traverse
+    # python through node.js when using start server in leoInteg
+    sys.stdout.flush()
+
     if not self.integController.g.app or self.integController.g.app.killed:
         return
     if self.waitingForAnswer:
@@ -1527,9 +1533,12 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200705193918.1"></t>
-<t tx="felix.20200705193927.1">def gotoFirstVisible(self, p_ap):
-    """Select the first visible node of the selected chapter or hoist."""
-    return self.outlineCommand("goToFirstVisibleNode", p_ap)
+<t tx="felix.20200705193927.1">def pageUp(self, p_ap):
+    """Selects a node a couple of steps up in the tree to simulate page up"""
+    self.commander.selectVisBack()
+    self.commander.selectVisBack()
+    self.commander.selectVisBack()
+    return self.outputPNode(self.commander.p)
 
 </t>
 <t tx="felix.20200705201100.1">def gotoLastSibling(self, p_ap):
@@ -1610,6 +1619,19 @@ wsPort = 32125
     if w_key:
         del(w_dict[w_key])  # delete object member
     return self.outputPNode(self.commander.p)  # return selected node when done
+
+</t>
+<t tx="felix.20200711210205.1">def pageDown(self, p_ap):
+    """Selects a node a couple of steps down in the tree to simulate page down"""
+    self.commander.selectVisNext()
+    self.commander.selectVisNext()
+    self.commander.selectVisNext()
+    return self.outputPNode(self.commander.p)
+
+</t>
+<t tx="felix.20200711210205.2">def gotoFirstVisible(self, p_ap):
+    """Select the first visible node of the selected chapter or hoist."""
+    return self.outlineCommand("goToFirstVisibleNode", p_ap)
 
 </t>
 </tnodes>

@@ -73,7 +73,7 @@
         },
         "leoIntegration.leoTreeBrowse": {
           "scope": "application",
-          "default": false,
+          "default": true,
           "type": "boolean",
           "description": "Specifies whether to use Leo's style of tree browsing with the arrow keys"
         },
@@ -81,7 +81,7 @@
           "scope": "application",
           "default": true,
           "type": "boolean",
-          "description": "Specifies whether to keep focus in the outline when selecting a node"
+          "description": "Specifies whether to keep focus in the outline when selecting a node - overridden by \"leoTreeBrowse\""
         },
         "leoIntegration.treeKeepFocusWhenAside": {
           "scope": "application",
@@ -1698,12 +1698,12 @@
       },
       {
         "command": "leointeg.pageUp",
-        "key": "PageUp",
+        "key": "pageup",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {
         "command": "leointeg.pageDown",
-        "key": "PageDown",
+        "key": "pagedown",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {
@@ -1736,7 +1736,7 @@
       {
         "command": "leointeg.gotoNextVisible",
         "key": "alt+down",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
       },
       {
         "command": "leointeg.gotoNextVisible",
@@ -1751,7 +1751,7 @@
       {
         "command": "leointeg.gotoPrevVisible",
         "key": "alt+up",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
       },
       {
         "command": "leointeg.gotoPrevVisible",
@@ -1766,7 +1766,7 @@
       {
         "command": "leointeg.contractOrGoLeft",
         "key": "alt+left",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
       },
       {
         "command": "leointeg.contractOrGoLeft",
@@ -1781,7 +1781,7 @@
       {
         "command": "leointeg.expandAndGoRight",
         "key": "alt+right",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
       },
       {
         "command": "leointeg.expandAndGoRight",
@@ -1813,17 +1813,22 @@
         "command": "leointeg.showBody",
         "key": "ctrl+t",
         "mac": "cmd+t",
-        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments/"
+        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
       },
       {
         "command": "leointeg.showBody",
         "key": "alt+d",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
       },
       {
         "command": "leointeg.showBody",
         "key": "tab",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
+      },
+      {
+        "command": "leointeg.showBody",
+        "key": "enter",
+        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {
         "command": "leointeg.executeScriptSelection",
@@ -1845,7 +1850,7 @@
       {
         "command": "leointeg.contractAllFromOutline",
         "key": "alt+-",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
       },
       {
         "command": "leointeg.editSelectedHeadline",

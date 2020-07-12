@@ -12,7 +12,7 @@ export class Config implements ConfigMembers {
     // TODO : Should use default values in a centralized way
     public checkForChangeExternalFiles: string = "none";  // Used in leoBridge script
     public defaultReloadIgnore: string = "none"; // Used in leoBridge script
-    public leoTreeBrowse: boolean = false;
+    public leoTreeBrowse: boolean = true;
     public treeKeepFocus: boolean = true;
     public treeKeepFocusWhenAside: boolean = false;
     public treeInExplorer: boolean = true;

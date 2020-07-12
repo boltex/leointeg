@@ -75,6 +75,7 @@ export class Constants {
         TREEVIEW_TITLE_INTEGRATION: "INTEGRATION",
         BODY_TITLE: "LEO BODY",
         LOG_PANE_TITLE: "Leo Log Window",
+        TERMINAL_PANE_TITLE: "LeoBridge Server",
         THEME_STATUSBAR: "statusBar.foreground"
     };
 
@@ -278,6 +279,8 @@ export class Constants {
         REMOVE_BUTTON: "removeButton",
         CLICK_BUTTON: "clickButton",
         // * Goto operations
+        PAGE_UP: "pageUp",
+        PAGE_DOWN: "pageDown",
         GOTO_FIRST_VISIBLE: "gotoFirstVisible",
         GOTO_LAST_VISIBLE: "gotoLastVisible",
         GOTO_LAST_SIBLING: "gotoLastSibling",
@@ -362,6 +365,8 @@ export class Constants {
         SELECT_NODE: "selectTreeNode",
         OPEN_ASIDE: "openAside",
         // * Goto operations that always finish with focus in outline
+        PAGE_UP: "pageUp",
+        PAGE_DOWN: "pageDown",
         GOTO_FIRST_VISIBLE: "gotoFirstVisible",
         GOTO_LAST_VISIBLE: "gotoLastVisible",
         GOTO_LAST_SIBLING: "gotoLastSibling",

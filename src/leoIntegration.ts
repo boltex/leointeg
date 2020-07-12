@@ -119,7 +119,10 @@ export class LeoIntegration {
     private _leoButtonsExplorer: vscode.TreeView<LeoButtonNode>;
 
     // * Log Pane
-    private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(Constants.GUI.LOG_PANE_TITLE); // Copy-pasted from leo's log pane
+    private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(Constants.GUI.LOG_PANE_TITLE);
+
+    // * Terminal Pane
+    private _leoTerminalPane: vscode.OutputChannel | undefined;
 
     // * Status Bar
     private _leoStatusBar: LeoStatusBar;
@@ -199,7 +202,7 @@ export class LeoIntegration {
         this._leoStatusBar = new LeoStatusBar(_context, this);
 
         // * Automatic server start service
-        this._serverService = new ServerService(_context);
+        this._serverService = new ServerService(_context, this);
 
         // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
         vscode.window.onDidChangeActiveTextEditor(p_event => this._onActiveEditorChanged(p_event));
@@ -262,6 +265,9 @@ export class LeoIntegration {
      * * Starts an instance of a leoBridge server, and may connect to it afterwards, based on configuration flags.
      */
     public startServer(): void {
+        if (!this._leoTerminalPane) {
+            this._leoTerminalPane = vscode.window.createOutputChannel(Constants.GUI.TERMINAL_PANE_TITLE);
+        }
         this._serverService.startServer(this.config.leoPythonCommand)
             .then((p_message) => {
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
@@ -326,10 +332,45 @@ export class LeoIntegration {
     }
 
     /**
+     * * Reveals the leoBridge server terminal output if not already visible
+     */
+    public showTerminalPane(): void {
+        if (this._leoTerminalPane) {
+            this._leoTerminalPane.show(true);
+        }
+    }
+
+    /**
+     * * Hides the leoBridge server terminal output
+     */
+    public hideTerminalPane(): void {
+        if (this._leoTerminalPane) {
+            this._leoTerminalPane.hide();
+        }
+    }
+
+    /**
+     * * Adds a message string to leoInteg's leoBridge server terminal output.
+     * @param p_message The string to be added in the log
+     */
+    public addTerminalPaneEntry(p_message: string): void {
+        if (this._leoTerminalPane) {
+            this._leoTerminalPane.appendLine(p_message);
+        }
+    }
+
+    /**
      * * Reveals the log pane if not already visible
      */
     public showLogPane(): void {
         this._leoLogPane.show(true);
+    }
+
+    /**
+     * * Hides the log pane
+     */
+    public hideLogPane(): void {
+        this._leoLogPane.hide();
     }
 
     /**

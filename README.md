@@ -31,10 +31,11 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 ## Features
 
-- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes**, **opened documents selector** and **Log Window**.
+- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes**, **opened documents selector** along with **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
 - Keybindings that match those from Leo, and a **'Leo Tree Browsing'** switch that enables Leo-style arrow keys behavior, for outline keyboard navigation.
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
+- **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
 - Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
   - Open body panes to the side
   - Outline edition commands
@@ -70,8 +71,9 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 | Tree Browsing Keybinding |     | With **'Leo Tree Browsing'** enabled | Command                  |
 | :----------------------- | :-- | :----------------------------------- | :----------------------- |
-| `Alt + Home`             |     |                                      | Go To First Visible Node |
-| `Alt + End`              |     |                                      | Go To Last Sibling       |
+| `Alt + Home`             |     | `Home`                               | Go To First Visible Node |
+| `Alt + End`              |     | `End`                                | Go To Last Sibling       |
+|                          |     | `End`                                | Go To Last Visible Node  |
 | `Alt + N`                |     |                                      | Go To Next Clone         |
 | `Alt + Arrow Keys`       | or  | `Arrow Keys`                         | Browse Tree              |
 | `Ctrl + T`               |     |                                      | Switch Tree/Body Focus   |
