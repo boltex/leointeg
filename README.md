@@ -69,10 +69,12 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 ### Tree Browsing Keybindings
 
+> _With the **'Leo Tree Browsing'** setting enabled, all arrows and numeric keypad keys change the outline's selection directly_
+
 | Tree Browsing Keybinding |     | With **'Leo Tree Browsing'** enabled | Command                  |
 | :----------------------- | :-- | :----------------------------------- | :----------------------- |
-| `Alt + Home`             |     | `Home`                               | Go To First Visible Node |
-| `Alt + End`              |     | `End`                                | Go To Last Sibling       |
+| `Alt + Home`             | or  | `Home`                               | Go To First Visible Node |
+| `Alt + End`              |     |                                      | Go To Last Sibling       |
 |                          |     | `End`                                | Go To Last Visible Node  |
 | `Alt + N`                |     |                                      | Go To Next Clone         |
 | `Alt + Arrow Keys`       | or  | `Arrow Keys`                         | Browse Tree              |
