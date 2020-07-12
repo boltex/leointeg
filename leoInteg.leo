@@ -61,6 +61,7 @@
 <v t="felix.20200619165641.1"><vh>getStates</vh></v>
 <v t="felix.20200710014747.1"><vh>getButtons</vh></v>
 <v t="felix.20200710030614.1"><vh>clickButton</vh></v>
+<v t="felix.20200711182907.1"><vh>removeButton</vh></v>
 <v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
 <v t="felix.20191128004456.1"><vh>setActionId</vh></v>
 <v t="felix.20200213195413.1"><vh>asyncOutput</vh></v>
@@ -1575,29 +1576,40 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200710014747.1">def getButtons(self, p_package):
-    """
-    Gets the currently opened file's @buttons list
-    """
+    '''Gets the currently opened file's @buttons list'''
     w_buttons = []
-    w_dict = self.commander.theScriptingController.buttonsDict
-
-    for w_key in w_dict:
-        w_entry = {"name": w_dict[w_key], "index": str(w_key)}
-        w_buttons.append(w_entry)
-
+    if self.commander.theScriptingController and self.commander.theScriptingController.buttonsDict:
+        w_dict = self.commander.theScriptingController.buttonsDict
+        for w_key in w_dict:
+            w_entry = {"name": w_dict[w_key], "index": str(w_key)}
+            w_buttons.append(w_entry)
     return self.sendLeoBridgePackage("buttons", w_buttons)
 
 </t>
 <t tx="felix.20200710030614.1">def clickButton(self, p_package):
+    '''Handles buttons clicked in vscode from the '@button' panel'''
     w_index = p_package['index']
     w_dict = self.commander.theScriptingController.buttonsDict
     w_button = None
-    for w_key in w_dict:
-        if(str(w_key) == w_index):
-            w_button = w_key
-    w_button.command() # run clicked button command
+    for i_key in w_dict:
+        if(str(i_key) == w_index):
+            w_button = i_key
+    if w_button:
+        w_button.command()  # run clicked button command
     return self.outputPNode(self.commander.p)  # return selected node when done
 
+</t>
+<t tx="felix.20200711182907.1">def removeButton(self, p_package):
+    '''Removes an entry from the buttonsDict by index string'''
+    w_index = p_package['index']
+    w_dict = self.commander.theScriptingController.buttonsDict
+    w_key = None
+    for i_key in w_dict:
+        if(str(i_key) == w_index):
+            w_key = i_key
+    if w_key:
+        del(w_dict[w_key])  # delete object member
+    return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 </tnodes>

@@ -57,6 +57,10 @@ export class Constants {
         ICON_DARK_DOCUMENT: "resources/dark/document.svg",
         ICON_LIGHT_DOCUMENT_DIRTY: "resources/light/document-dirty.svg",
         ICON_DARK_DOCUMENT_DIRTY: "resources/dark/document-dirty.svg",
+        ICON_LIGHT_BUTTON: "resources/light/button.svg",
+        ICON_DARK_BUTTON: "resources/dark/button.svg",
+        ICON_LIGHT_BUTTON_ADD: "resources/light/button-add.svg",
+        ICON_DARK_BUTTON_ADD: "resources/dark/button-add.svg",
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
@@ -78,6 +82,18 @@ export class Constants {
      * * Basic user messages strings for messages and dialogs
      */
     public static USER_MESSAGES = {
+        SCRIPT_BUTTON: "Creates a button from selected node's script",
+        SCRIPT_BUTTON_TOOLTIP:
+            "The 'Script Button' button creates a new button.\n" +
+            "Its name will be the headline of the presently selected node\n" +
+            "Hitting this newly created button executes the button's script.\n" +
+            "\n" +
+            "For example, to run a script on any part of an outline:\n" +
+            "\n" +
+            "1.  Select the node containing the script.\n" +
+            "2.  Press 'Script Button'. This will create a new button.\n" +
+            "3.  Select the node on which you want to run the script.\n" +
+            "4.  Press the *new* button.",
         SAVE_CHANGES: "Save changes to",
         BEFORE_CLOSING: "before closing?",
         CANCEL: "Cancel",
@@ -259,6 +275,7 @@ export class Constants {
         SAVE_FILE: "saveFile",
         SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
         GET_BUTTONS: "getButtons",
+        REMOVE_BUTTON: "removeButton",
         CLICK_BUTTON: "clickButton",
         // * Goto operations
         GOTO_FIRST_VISIBLE: "gotoFirstVisible",
@@ -340,6 +357,7 @@ export class Constants {
         SAVE_AS_FILE: "saveAsLeoFile",
         CLOSE_FILE: "closeLeoFile",
         CLICK_BUTTON: "clickButton",
+        REMOVE_BUTTON: "removeButton",
         // * Outline selection
         SELECT_NODE: "selectTreeNode",
         OPEN_ASIDE: "openAside",

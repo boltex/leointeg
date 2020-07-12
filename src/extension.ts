@@ -5,6 +5,7 @@ import { RefreshType } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
+import { LeoButtonNode } from "./leoButtonNode";
 
 /**
  * * Called when extension is activated. It creates the leoIntegration and the 'welcome/Settings' webview instances
@@ -33,8 +34,9 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + "test", () => w_leoIntegration.test()], // * Test function useful when debugging
         [w_cmdPrefix + "testFromOutline", () => w_leoIntegration.test(true)], // * Test function useful when debugging
 
-        [w_cmdPrefix + Constants.COMMANDS.SET_OPENED_FILE, (p_index: number) => w_leoIntegration.selectOpenedLeoDocument(p_index)], // also a test for undeclared commands VERDICT IT WORKS!
-        [w_cmdPrefix + Constants.COMMANDS.CLICK_BUTTON, (p_index: number) => w_leoIntegration.clickButton(p_index)], // also a test for undeclared commands VERDICT IT WORKS!
+        [w_cmdPrefix + Constants.COMMANDS.SET_OPENED_FILE, (p_index: number) => w_leoIntegration.selectOpenedLeoDocument(p_index)], // Test for undeclared commands VERDICT IT WORKS!
+        [w_cmdPrefix + Constants.COMMANDS.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leoIntegration.clickButton(p_node)], // Test for undeclared commands VERDICT IT WORKS!
+        [w_cmdPrefix + Constants.COMMANDS.REMOVE_BUTTON, (p_node: LeoButtonNode) => w_leoIntegration.removeButton(p_node)], // Cannot be undeclared because its referenced in package.json
 
         [w_cmdPrefix + Constants.COMMANDS.SHOW_WELCOME, () => w_leoSettingsWebview.openWebview()],
         [w_cmdPrefix + Constants.COMMANDS.SHOW_SETTINGS, () => w_leoSettingsWebview.openWebview()], // Same as 'show welcome screen'

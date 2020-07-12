@@ -47,6 +47,24 @@ export function buildDocumentIconPaths(p_context: vscode.ExtensionContext): Icon
 }
 
 /**
+ * * Build all possible strings for buttons icons graphic file paths
+ * @param p_context Needed to get to absolute paths on the system
+ * @returns An array containing icons for the documents tree view
+ */
+export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[] {
+    return [
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_ADD),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_ADD)
+        }
+    ];
+}
+
+/**
  * * Builds and returns a JSON string with 'node' and 'text' members
  * @param p_nodeJson Targeted tree node in the proper JSON format
  * @param p_text Desired text sent along with node in the parameters of the action to be 'called'

@@ -40,6 +40,7 @@ export class LeoIntegration {
     // * Icon Paths
     public nodeIcons: Icon[] = []; // Singleton static array of all icon paths used in leoNodes for rendering in treeview
     public documentIcons: Icon[] = [];
+    public buttonIcons: Icon[] = [];
 
     // * File Browser
     private _leoFilesBrowser: LeoFilesBrowser; // Dialog service singleton used in the openLeoFile method
@@ -151,6 +152,7 @@ export class LeoIntegration {
         // * Build Icon filename paths
         this.nodeIcons = utils.buildNodeIconPaths(_context);
         this.documentIcons = utils.buildDocumentIconPaths(_context);
+        this.buttonIcons = utils.buildButtonsIconPaths(_context);
 
         // * File Browser
         this._leoFilesBrowser = new LeoFilesBrowser(_context);
@@ -1227,13 +1229,25 @@ export class LeoIntegration {
     }
 
     /**
-     * * Invoke an '@button' click directly by index number. Used by '@buttons' treeview.
+     * * Invoke an '@button' click directly by index string. Used by '@buttons' treeview.
      */
-    public clickButton(p_index: number): void {
+    public clickButton(p_node: LeoButtonNode): void {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        this._leoBridge.action(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_index }))
+        this._leoBridge.action(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
             .then((p_clickButtonResult: LeoBridgePackage) => {
                 // console.log('Back from clickButton, package is: ', p_clickButtonResult);
+                this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+            });
+    }
+
+    /**
+     * * Removes an '@button' from Leo's button dict, directly by index string. Used by '@buttons' treeview.
+     */
+    public removeButton(p_node: LeoButtonNode): void {
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        this._leoBridge.action(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
+            .then((p_removeButtonResult: LeoBridgePackage) => {
+                // console.log('Back from removeButton, package is: ', p_removeButtonResult);
                 this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
             });
     }
