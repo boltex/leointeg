@@ -10,6 +10,7 @@ import { LeoPackageStates } from "./types";
  */
 export class LeoStates {
 
+    // * Connected to a Leo bridge server
     private _leoBridgeReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.BRIDGE_READY
     get leoBridgeReady(): boolean {
         return this._leoBridgeReady;
@@ -19,6 +20,7 @@ export class LeoStates {
         utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, p_value);
     }
 
+    // * A Leo file is opened
     private _fileOpenedReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.TREE_OPENED
     get fileOpenedReady(): boolean {
         return this._fileOpenedReady;
@@ -29,6 +31,21 @@ export class LeoStates {
         this._leoIntegration.setTreeViewTitle(
             p_value ? Constants.GUI.TREEVIEW_TITLE : Constants.GUI.TREEVIEW_TITLE_INTEGRATION
         );
+    }
+
+    // * Currently opened Leo file path and name, empty string if new unsaved file.
+    private _leoOpenedFileName: string = "";
+    get leoOpenedFileName(): string {
+        return this._leoOpenedFileName;
+    }
+    set leoOpenedFileName(p_name: string) {
+        if (p_name && p_name.length) {
+            this._leoOpenedFileName = p_name;
+            utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, true);
+        } else {
+            this._leoOpenedFileName = "";
+            utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, false);
+        }
     }
 
     // * 'states' flags for currently opened tree view

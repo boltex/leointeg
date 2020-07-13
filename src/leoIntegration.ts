@@ -43,25 +43,10 @@ export class LeoIntegration {
     public buttonIcons: Icon[] = [];
 
     // * File Browser
-    private _leoFilesBrowser: LeoFilesBrowser; // Dialog service singleton used in the openLeoFile method
+    private _leoFilesBrowser: LeoFilesBrowser; // Browsing dialog service singleton used in the openLeoFile and save-as methods
 
     // * LeoBridge
     private _leoBridge: LeoBridge; // Singleton service to access leobridgeserver
-
-    // * Path + Filename string array of opened Leo documents in LeoBridge: Use empty string for new untitled documents.
-    private _leoOpenedFileName: string = ""; // Just the 'filename.leo' part, without path. Shown along total as status bar indicator
-    get leoOpenedFileName(): string {
-        return this._leoOpenedFileName;
-    }
-    set leoOpenedFileName(p_name: string) {
-        if (p_name && p_name.length) {
-            this._leoOpenedFileName = p_name;
-            utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, true);
-        } else {
-            this._leoOpenedFileName = "";
-            utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, false);
-        }
-    }
 
     // * Outline Pane
     private _leoTreeDataProvider: LeoOutlineProvider; // TreeDataProvider single instance
@@ -424,7 +409,7 @@ export class LeoIntegration {
      * * Returns true if the current opened Leo document's filename has some content. (not a new unnamed file)
      */
     private _isCurrentFileNamed(): boolean {
-        return !!this.leoOpenedFileName.length; // checks if it's an empty string
+        return !!this.leoStates.leoOpenedFileName.length; // checks if it's an empty string
     }
 
     /**
@@ -443,7 +428,7 @@ export class LeoIntegration {
      */
     private _setupOpenedLeoDocument(p_openFileResult: any): Thenable<vscode.TextEditor> {
         const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
-        this.leoOpenedFileName = p_openFileResult.filename;
+        this.leoStates.leoOpenedFileName = p_openFileResult.filename;
 
         // * Could be already opened, so perform 'rename hack' as if another node was selected
         if (this._bodyTextDocument && this.bodyUri) {
@@ -461,19 +446,20 @@ export class LeoIntegration {
         }
         // * Startup flag
         this.leoStates.fileOpenedReady = true;
-        // * First valid redraw of tree along with the selected node and its body
+        // * Maybe first valid redraw of tree along with the selected node and its body
         this._refreshOutline(RevealType.RevealSelectFocus); // p_revealSelection flag set
         // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // ? Maybe unused when used with welcome content
-        // * First StatusBar appearance
+        // * Maybe first StatusBar appearance
+        this._leoStatusBar.update(true, 0, true);
         this._leoStatusBar.show(); // Just selected a node
         // * Show leo log pane
         this.showLogPane();
         // * Send config to python's side (for settings such as defaultReloadIgnore and checkForChangeExternalFiles)
         this.sendConfigToServer(this.config.getConfig());
-        // * Refresh Opened treeviews
+        // * Refresh Opened tree views
         this._leoDocumentsProvider.refreshTreeRoot();
         this._leoButtonsProvider.refreshTreeRoot();
-        // * First Body appearance
+        // * Maybe first Body appearance
         return this.showBody(false);
     }
 
@@ -651,7 +637,7 @@ export class LeoIntegration {
      */
     public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
         this._currentDocumentChanged = p_documentNode.documentEntry.changed;
-        this.leoOpenedFileName = p_documentNode.documentEntry.name;
+        this.leoStates.leoOpenedFileName = p_documentNode.documentEntry.name;
         setTimeout(() => {
             if (!this._leoDocuments.visible && !this._leoDocumentsExplorer.visible) {
                 return;
@@ -1316,7 +1302,7 @@ export class LeoIntegration {
                     } else if (p_package.closed === false) {
                         // Explicitly false and not just undefined
                         const w_askArg = Constants.USER_MESSAGES.SAVE_CHANGES + ' ' +
-                            this.leoOpenedFileName + ' ' +
+                            this.leoStates.leoOpenedFileName + ' ' +
                             // this._openedLeoDocuments[this._leoOpenedFilesIndex] + ' ' +
                             Constants.USER_MESSAGES.BEFORE_CLOSING;
 

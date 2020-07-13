@@ -144,7 +144,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 };
             } else {
                 const w_gnx = utils.leoUriToStr(p_uri);
-                if (this._selectedBody.gnx !== w_gnx && this._renameBody.gnx !== w_gnx) {
+                if (false && this._selectedBody.gnx !== w_gnx && this._renameBody.gnx !== w_gnx) {
+                    // ! TEST IF NEEDED !
                     console.log('ERROR File not in list selected: ' + this._selectedBody.gnx +
                         " renamed: " + this._renameBody.gnx +
                         " stat asked on w_gnx: " + w_gnx);

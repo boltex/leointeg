@@ -64,8 +64,8 @@ export class LeoStatusBar {
      * @param p_state True/False flag for On or Off status
      * @param p_debounceDelay Optional, in milliseconds
      */
-    public update(p_state: boolean, p_debounceDelay?: number): void {
-        if (p_state !== this.statusBarFlag) {
+    public update(p_state: boolean, p_debounceDelay?: number, p_forced?: boolean): void {
+        if (p_forced || (p_state !== this.statusBarFlag)) {
             this.statusBarFlag = p_state;
             if (p_debounceDelay) {
                 this._updateLeoObjectIndicatorDebounced(p_debounceDelay);
@@ -96,7 +96,9 @@ export class LeoStatusBar {
             clearTimeout(this._updateStatusBarTimeout);
         }
         utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
-        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + (this._string ? this._string : this._leoIntegration.config.statusBarString);
+        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
+            (this._string ? this._string : this._leoIntegration.config.statusBarString) + " " +
+            (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
         if (this.statusBarFlag && this._leoIntegration.leoStates.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
             this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
             this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;

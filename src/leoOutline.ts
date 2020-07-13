@@ -72,7 +72,9 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         // * This method should be implemented in order to access reveal API.
         // ! But it should NOT have to be called because we will only try to 'select' already revealed nodes
 
-        console.log('ERROR! GET PARENT CALLED! on: ', element.label);
+        // ! Might be called if nodes are revealed while in vscode's refresh process
+        // ! Parent asked for this way will go up till root and effectively refresh whole tree.
+        // console.log('ERROR! GET PARENT CALLED! on: ', element.label);
 
         if (this._leoIntegration.leoStates.fileOpenedReady) {
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PARENT, element ? element.apJson : "null")
