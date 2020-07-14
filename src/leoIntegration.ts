@@ -393,11 +393,11 @@ export class LeoIntegration {
     }
 
     /**
-     * * Returns the 'busy' state flag of the command stack, while showing a message if it is.
+     * * Returns the 'busy' state flag of the command stack, and leoBridge stack, while showing a message if it is.
      * Needed by special unstackable commands such as new, open,...
      */
-    private _isBusy(): boolean {
-        if (this._commandStack.size()) {
+    private _isBusy(p_all?: boolean): boolean {
+        if (this._commandStack.size() || (p_all && this._leoBridge.isBusy())) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.TOO_FAST);
             return true;
         } else {
@@ -1154,7 +1154,7 @@ export class LeoIntegration {
      * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
      */
     public saveAsLeoFile(p_fromOutline?: boolean): void {
-        if (!this.leoStates.fileOpenedReady || this._isBusy()) { return; } // Warn user to wait for end of busy state
+        if (!this.leoStates.fileOpenedReady || this._isBusy(true)) { return; } // Warn user to wait for end of busy state
         // TODO : Implement & support multiple simultaneous files
         if (this.leoStates.fileOpenedReady) {
             if (this.lastSelectedNode) {
@@ -1178,7 +1178,7 @@ export class LeoIntegration {
      * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
      */
     public saveLeoFile(p_fromOutline?: boolean): void {
-        if (!this.leoStates.fileOpenedReady || this._isBusy()) { return; } // Warn user to wait for end of busy state
+        if (!this.leoStates.fileOpenedReady || this._isBusy(true)) { return; } // Warn user to wait for end of busy state
 
         // TODO : Specify which file when supporting multiple simultaneous opened Leo files
         if (this.leoStates.fileOpenedReady) {
@@ -1243,7 +1243,7 @@ export class LeoIntegration {
      * * Switches Leo document directly by index number. Used by document treeview and switchLeoFile command.
      */
     public selectOpenedLeoDocument(p_index: number): void {
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        if (this._isBusy(true)) { return; } // Warn user to wait for end of busy state
         this._leoBridge.action(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_index }))
             .then((p_openFileResult: LeoBridgePackage) => {
                 // Like we just opened or made a new file
@@ -1283,7 +1283,7 @@ export class LeoIntegration {
      * * Close an opened Leo file
      */
     public closeLeoFile(): void {
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        if (this._isBusy(true)) { return; } // Warn user to wait for end of busy state
         if (this.leoStates.fileOpenedReady) {
             this.triggerBodySave(true)
                 .then(() => {
@@ -1362,7 +1362,7 @@ export class LeoIntegration {
      * * If not shown already, it also shows the outline, body and log panes along with leaving focus in the outline
      */
     public newLeoFile(): void {
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        if (this._isBusy(true)) { return; } // Warn user to wait for end of busy state
         this.triggerBodySave(true)
             .then(() => {
                 return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '""');
@@ -1380,8 +1380,19 @@ export class LeoIntegration {
      * * Shows an 'Open Leo File' dialog window and opens the chosen file
      * * If not shown already, it also shows the outline, body and log panes along with leaving focus in the outline
      */
-    public openLeoFile(): void {
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+    public openLeoFile(p_leoFileUrl?: string): void {
+        if (this._isBusy(true)) { return; } // Warn user to wait for end of busy state
+        if (p_leoFileUrl && p_leoFileUrl.trim()) {
+            this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_leoFileUrl + '"')
+                .then((p_openFileResult: LeoBridgePackage) => {
+                    return this._setupOpenedLeoDocument(p_openFileResult.opened);
+                }, p_errorOpen => {
+                    console.log('in .then not opened or already opened');
+                    return Promise.reject(p_errorOpen);
+                });
+        } else {
+
+        }
         this._leoFilesBrowser.getLeoFileUrl()
             .then(p_chosenLeoFile => {
                 return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
