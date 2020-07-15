@@ -60,8 +60,10 @@
 <v t="felix.20200216160305.1"><vh>saveFile</vh></v>
 <v t="felix.20200619165641.1"><vh>getStates</vh></v>
 <v t="felix.20200710014747.1"><vh>getButtons</vh></v>
-<v t="felix.20200710030614.1"><vh>clickButton</vh></v>
 <v t="felix.20200711182907.1"><vh>removeButton</vh></v>
+<v t="felix.20200710030614.1"><vh>clickButton</vh></v>
+<v t="felix.20200714222716.1"><vh>getCommands</vh></v>
+<v t="felix.20200714223713.1"><vh>runByName</vh></v>
 <v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
 <v t="felix.20191128004456.1"><vh>setActionId</vh></v>
 <v t="felix.20200213195413.1"><vh>asyncOutput</vh></v>
@@ -1632,6 +1634,37 @@ wsPort = 32125
 <t tx="felix.20200711210205.2">def gotoFirstVisible(self, p_ap):
     """Select the first visible node of the selected chapter or hoist."""
     return self.outlineCommand("goToFirstVisibleNode", p_ap)
+
+</t>
+<t tx="felix.20200714222716.1">def getCommands(self, p_package):
+    pass
+
+    print("get command list for string: ")
+
+    if "text" in p_package:
+        print(p_package['text'])
+    else:
+        print("no string given")
+
+    w_commands = []
+    w_commands.append("one")
+    w_commands.append("two")
+    w_commands.append("three")
+
+    return self.sendLeoBridgePackage("commands", w_commands)
+
+</t>
+<t tx="felix.20200714223713.1">def runByName(self, p_package):
+    pass
+
+    print("runByName for string:")
+
+    if "text" in p_package:
+        print(p_package['text'])
+    else:
+        print("no string given")
+
+    return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 </tnodes>

@@ -1280,6 +1280,19 @@ export class LeoIntegration {
     }
 
     /**
+     * * Open quickPick/inputBox minibuffer dialog
+     */
+    public minibuffer(): void {
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "a string" }))
+            .then((p_result: LeoBridgePackage) => {
+                console.log('Back from GET_COMMANDS, package is: ', p_result.commands);
+
+                this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+            });
+    }
+
+    /**
      * * Close an opened Leo file
      */
     public closeLeoFile(): void {
@@ -1380,10 +1393,10 @@ export class LeoIntegration {
      * * Shows an 'Open Leo File' dialog window and opens the chosen file
      * * If not shown already, it also shows the outline, body and log panes along with leaving focus in the outline
      */
-    public openLeoFile(p_leoFileUrl?: string): void {
+    public openLeoFile(p_leoFileUri?: vscode.Uri): void {
         if (this._isBusy(true)) { return; } // Warn user to wait for end of busy state
-        if (p_leoFileUrl && p_leoFileUrl.trim()) {
-            this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_leoFileUrl + '"')
+        if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
+            this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_leoFileUri.fsPath.replace(/\\/g, "/") + '"')
                 .then((p_openFileResult: LeoBridgePackage) => {
                     return this._setupOpenedLeoDocument(p_openFileResult.opened);
                 }, p_errorOpen => {
@@ -1391,20 +1404,19 @@ export class LeoIntegration {
                     return Promise.reject(p_errorOpen);
                 });
         } else {
-
+            this._leoFilesBrowser.getLeoFileUrl()
+                .then(p_chosenLeoFile => {
+                    return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
+                }, p_errorGetFile => {
+                    return Promise.reject(p_errorGetFile);
+                })
+                .then((p_openFileResult: LeoBridgePackage) => {
+                    return this._setupOpenedLeoDocument(p_openFileResult.opened);
+                }, p_errorOpen => {
+                    console.log('in .then not opened or already opened');
+                    return Promise.reject(p_errorOpen);
+                });
         }
-        this._leoFilesBrowser.getLeoFileUrl()
-            .then(p_chosenLeoFile => {
-                return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
-            }, p_errorGetFile => {
-                return Promise.reject(p_errorGetFile);
-            })
-            .then((p_openFileResult: LeoBridgePackage) => {
-                return this._setupOpenedLeoDocument(p_openFileResult.opened);
-            }, p_errorOpen => {
-                console.log('in .then not opened or already opened');
-                return Promise.reject(p_errorOpen);
-            });
     }
 
     /**

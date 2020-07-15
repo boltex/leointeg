@@ -16,6 +16,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     private _refreshSingleNodeFlag: boolean = false; // used in leoOutline.ts to check if getTreeItem(element: LeoNode) should fetch from Leo, or return as-is
 
+    private _debugId: number = 0;
+
     constructor(private _leoIntegration: LeoIntegration) { }
 
     /**
@@ -51,14 +53,23 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         if (!this._leoIntegration.leoStates.fileOpenedReady) {
             return Promise.resolve([]); // Defaults to an empty list of children
         }
+        this._debugId++;
         if (element) {
+            console.log('get id' + this._debugId + ', for :' + element.label);
+
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element.apJson)
                 .then((p_package: LeoBridgePackage) => {
+                    console.log('back at ' + this._debugId);
+
                     return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
                 });
         } else {
+            console.log('get id' + this._debugId + ', for ROOT');
+
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, "null")
                 .then((p_package: LeoBridgePackage) => {
+                    console.log('ROOT at ' + this._debugId);
+
                     const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
                     if (w_nodes && w_nodes.length === 1) {
                         w_nodes[0].setRoot();
@@ -74,7 +85,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
         // ! Might be called if nodes are revealed while in vscode's refresh process
         // ! Parent asked for this way will go up till root and effectively refresh whole tree.
-        // console.log('ERROR! GET PARENT CALLED! on: ', element.label);
+        console.log('ERROR! GET PARENT CALLED! on: ', element.label);
 
         if (this._leoIntegration.leoStates.fileOpenedReady) {
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PARENT, element ? element.apJson : "null")

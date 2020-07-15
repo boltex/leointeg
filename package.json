@@ -203,30 +203,36 @@
         {
           "id": "leoIntegrationExplorer",
           "name": "Leo Integration",
+          "contextualTitle": "Leo",
           "when": "treeInExplorer"
         },
         {
           "id": "leoDocumentsExplorer",
           "name": "Leo Documents",
+          "contextualTitle": "Leo",
           "when": "treeInExplorer"
         },
         {
           "id": "leoButtonsExplorer",
           "name": "Leo Buttons",
+          "contextualTitle": "Leo",
           "when": "treeInExplorer"
         }
       ],
       "leoIntegrationView": [
         {
           "id": "leoIntegration",
+          "contextualTitle": "Leo",
           "name": "Integration"
         },
         {
           "id": "leoDocuments",
+          "contextualTitle": "Leo",
           "name": "Documents"
         },
         {
           "id": "leoButtons",
+          "contextualTitle": "Leo",
           "name": "Buttons"
         }
       ]
@@ -284,6 +290,11 @@
           "light": "resources/light/connect.svg",
           "dark": "resources/dark/connect.svg"
         }
+      },
+      {
+        "command": "leointeg.minibuffer",
+        "category": "Leo",
+        "title": "Minibuffer"
       },
       {
         "command": "leointeg.removeButton",
@@ -1242,6 +1253,10 @@
           "when": "leoTreeOpened"
         },
         {
+          "command": "leointeg.minibuffer",
+          "when": "leoTreeOpened"
+        },
+        {
           "command": "leointeg.test",
           "when": "false"
         },
@@ -1470,6 +1485,13 @@
           "when": "false"
         }
       ],
+      "explorer/context": [
+        {
+          "command": "leointeg.openLeoFile",
+          "when": "resourceScheme == file && resourceExtname == .leo",
+          "group": "navigation@1"
+        }
+      ],
       "view/title": [
         {
           "command": "leointeg.openLeoFile",
@@ -1676,6 +1698,11 @@
       ]
     },
     "keybindings": [
+      {
+        "command": "leointeg.openLeoFile",
+        "key": "shift+enter",
+        "when": "leoBridgeReady && explorerViewletVisible && filesExplorerFocus && resourceExtname == .leo"
+      },
       {
         "command": "leointeg.gotoFirstVisible",
         "key": "alt+home",
@@ -2097,6 +2124,11 @@
         "key": "ctrl+shift+backspace",
         "mac": "cmd+shift+backspace",
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.minibuffer",
+        "key": "alt+x",
+        "when": "leoTreeOpened"
       }
     ],
     "resourceLabelFormatters": [

@@ -37,6 +37,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.SET_OPENED_FILE, (p_index: number) => w_leoIntegration.selectOpenedLeoDocument(p_index)], // Test for undeclared commands VERDICT IT WORKS!
         [w_cmdPrefix + Constants.COMMANDS.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leoIntegration.clickButton(p_node)], // Test for undeclared commands VERDICT IT WORKS!
         [w_cmdPrefix + Constants.COMMANDS.REMOVE_BUTTON, (p_node: LeoButtonNode) => w_leoIntegration.removeButton(p_node)], // Cannot be undeclared because its referenced in package.json
+        [w_cmdPrefix + Constants.COMMANDS.MINIBUFFER, () => w_leoIntegration.minibuffer()], // Cannot be undeclared because its referenced in package.json
+
 
         [w_cmdPrefix + Constants.COMMANDS.SHOW_WELCOME, () => w_leoSettingsWebview.openWebview()],
         [w_cmdPrefix + Constants.COMMANDS.SHOW_SETTINGS, () => w_leoSettingsWebview.openWebview()], // Same as 'show welcome screen'
@@ -48,7 +50,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [w_cmdPrefix + Constants.COMMANDS.NEW_FILE, () => w_leoIntegration.newLeoFile()],
         [w_cmdPrefix + Constants.COMMANDS.SWITCH_FILE, () => w_leoIntegration.switchLeoFile()],
 
-        [w_cmdPrefix + Constants.COMMANDS.OPEN_FILE, () => w_leoIntegration.openLeoFile()],
+        [w_cmdPrefix + Constants.COMMANDS.OPEN_FILE, (p_uri?: vscode.Uri) => w_leoIntegration.openLeoFile(p_uri)],
         [w_cmdPrefix + Constants.COMMANDS.SAVE_AS_FILE, () => w_leoIntegration.saveAsLeoFile()],
         [w_cmdPrefix + Constants.COMMANDS.SAVE_FILE, () => w_leoIntegration.saveLeoFile()],
         [w_cmdPrefix + Constants.COMMANDS.SAVE_FILE_FO, () => w_leoIntegration.saveLeoFile(true)],

@@ -278,6 +278,8 @@ export class Constants {
         GET_BUTTONS: "getButtons",
         REMOVE_BUTTON: "removeButton",
         CLICK_BUTTON: "clickButton",
+        GET_COMMANDS: "getCommands", // ask leoBridge for the list of known commands
+        RUN_BY_NAME: "runByName", // Run a command by its string name like in minibuffer
         // * Goto operations
         PAGE_UP: "pageUp",
         PAGE_DOWN: "pageDown",
@@ -361,6 +363,7 @@ export class Constants {
         CLOSE_FILE: "closeLeoFile",
         CLICK_BUTTON: "clickButton",
         REMOVE_BUTTON: "removeButton",
+        MINIBUFFER: "minibuffer",
         // * Outline selection
         SELECT_NODE: "selectTreeNode",
         OPEN_ASIDE: "openAside",

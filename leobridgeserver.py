@@ -693,6 +693,18 @@ class LeoBridgeIntegController:
                 w_buttons.append(w_entry)
         return self.sendLeoBridgePackage("buttons", w_buttons)
 
+    def removeButton(self, p_package):
+        '''Removes an entry from the buttonsDict by index string'''
+        w_index = p_package['index']
+        w_dict = self.commander.theScriptingController.buttonsDict
+        w_key = None
+        for i_key in w_dict:
+            if(str(i_key) == w_index):
+                w_key = i_key
+        if w_key:
+            del(w_dict[w_key])  # delete object member
+        return self.outputPNode(self.commander.p)  # return selected node when done
+
     def clickButton(self, p_package):
         '''Handles buttons clicked in vscode from the '@button' panel'''
         w_index = p_package['index']
@@ -705,16 +717,33 @@ class LeoBridgeIntegController:
             w_button.command()  # run clicked button command
         return self.outputPNode(self.commander.p)  # return selected node when done
 
-    def removeButton(self, p_package):
-        '''Removes an entry from the buttonsDict by index string'''
-        w_index = p_package['index']
-        w_dict = self.commander.theScriptingController.buttonsDict
-        w_key = None
-        for i_key in w_dict:
-            if(str(i_key) == w_index):
-                w_key = i_key
-        if w_key:
-            del(w_dict[w_key])  # delete object member
+    def getCommands(self, p_package):
+        pass
+
+        print("get command list for string: ")
+
+        if "text" in p_package:
+            print(p_package['text'])
+        else:
+            print("no string given")
+
+        w_commands = []
+        w_commands.append("one")
+        w_commands.append("two")
+        w_commands.append("three")
+
+        return self.sendLeoBridgePackage("commands", w_commands)
+
+    def runByName(self, p_package):
+        pass
+
+        print("runByName for string:")
+
+        if "text" in p_package:
+            print(p_package['text'])
+        else:
+            print("no string given")
+
         return self.outputPNode(self.commander.p)  # return selected node when done
 
     def setActionId(self, p_id):
