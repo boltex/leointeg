@@ -2610,49 +2610,43 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
         }
     ];
 }
-
-/**
+</t>
+<t tx="ekr.20200704142237.107">/**
  * * Builds and returns a JSON string with 'node' and 'text' members
  * @param p_nodeJson Targeted tree node in the proper JSON format
  * @param p_text Desired text sent along with node in the parameters of the action to be 'called'
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
-</t>
-<t tx="ekr.20200704142237.107">export function buildNodeAndTextJson(p_nodeJson: string, p_text: string): string {
+
+export function buildNodeAndTextJson(p_nodeJson: string, p_text: string): string {
     return "{\"node\":" + p_nodeJson +
         ", \"text\": " + JSON.stringify(p_text) +
         "}";
 }
-
-/**
+</t>
+<t tx="ekr.20200704142237.108">/**
  * * Extracts the file name from a full path, such as "foo.bar" from "/abc/def/foo.bar"
  * @param p_path Full path such as "/var/drop/foo/boo/moo.js" or "C:\Documents and Settings\img\recycled log.jpg"
  * @returns file name string such as "moo.js" or "recycled log.jpg""
  */
-</t>
-<t tx="ekr.20200704142237.108">export function getFileFromPath(p_path: string): string {
+
+export function getFileFromPath(p_path: string): string {
     return p_path.replace(/^.*[\\\/]/, '');
 }
-
-/**
+</t>
+<t tx="ekr.20200704142237.109">/**
  * * Checks if a node would become dirty if it were to now have body content at all
  * @param p_node LeoNode from vscode's outline
  * @param p_newHasBody Flag to signify presence of body content, to be compared with its current state
  * @returns True if it would change the icon with actual body content, false otherwise
  */
-</t>
-<t tx="ekr.20200704142237.109">export function isIconChangedByEdit(p_node: LeoNode, p_newHasBody: boolean): boolean {
+
+export function isIconChangedByEdit(p_node: LeoNode, p_newHasBody: boolean): boolean {
     if (!p_node.dirty || (p_node.hasBody === !p_newHasBody)) {
         return true;
     }
     return false;
 }
-
-/**
- * * Checks if a string is formatted as a valid rrggbb color code.
- * @param p_hexString hexadecimal 6 digits string, without leading '0x'
- * @returns True if the string is a valid representation of an hexadecimal 6 digit number
- */
 </t>
 <t tx="ekr.20200704142237.11">/**
  * * Send configuration through leoBridge to the server script, mostly used when checking if refreshing derived files is optional.
@@ -2667,42 +2661,48 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 }
 
 </t>
-<t tx="ekr.20200704142237.110">export function isHexColor(p_hexString: string): boolean {
+<t tx="ekr.20200704142237.110">/**
+ * * Checks if a string is formatted as a valid rrggbb color code.
+ * @param p_hexString hexadecimal 6 digits string, without leading '0x'
+ * @returns True if the string is a valid representation of an hexadecimal 6 digit number
+ */
+
+export function isHexColor(p_hexString: string): boolean {
     return typeof p_hexString === 'string'
         &amp;&amp; p_hexString.length === 6
         &amp;&amp; !isNaN(Number('0x' + p_hexString));
 }
-
-/**
+</t>
+<t tx="ekr.20200704142237.111">/**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */
-</t>
-<t tx="ekr.20200704142237.111">export function strToLeoUri(p_str: string): vscode.Uri {
+
+export function strToLeoUri(p_str: string): vscode.Uri {
     return vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_str);
 }
-
-/**
+</t>
+<t tx="ekr.20200704142237.112">/**
  * * Gets the gnx, (or another string like 'LEO BODY' or other), from a vscode.Uri object
  * @param p_uri Source uri to extract from
  * @returns The string source that was used to build this Uri
  */
-</t>
-<t tx="ekr.20200704142237.112">export function leoUriToStr(p_uri: vscode.Uri): string {
+
+export function leoUriToStr(p_uri: vscode.Uri): string {
     // TODO : Use length of a constant or something other than 'fsPath'
     // For now, just remove the '/' (or backslash on Windows) before the path string
     return p_uri.fsPath.substr(1);
 }
-
-/**
+</t>
+<t tx="ekr.20200704142237.113">/**
  * * Sets a vscode context variable with the 'vscode.commands.executeCommand' and 'setContext' method
  * @param p_key Key string name such as constants 'bridgeReady' or 'treeOpened', etc.
  * @param p_value Value to be assigned to the p_key 'key'
  * @returns A Thenable that was returned by the executeCommand call to set the context
  */
-</t>
-<t tx="ekr.20200704142237.113">export function setContext(p_key: string, p_value: any): Thenable&lt;unknown&gt; {
+
+export function setContext(p_key: string, p_value: any): Thenable&lt;unknown&gt; {
     return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, p_key, p_value);
 }
 </t>
