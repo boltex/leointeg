@@ -5245,35 +5245,24 @@ c.goToNextMarkedHeadline()
     ic = c.importCommands
     language = g.scanForAtLanguage(c, p)
     ext = '.' + g.app.language_extension_dict.get(language)
-    ### self.treeType = '@file'
     parser = ic.body_parser_for_ext(ext)
-    # Fix bug 151: parse-body creates "None declarations"
-        # if False: ### p.isAnyAtFileNode():
-            # fn = p.anyAtFileNodeName()
-            # ic.methodName, ic.fileType = g.os_path_splitext(fn)
-        # else:
-            # d = g.app.language_extension_dict
-            # fileType = d.get(language, 'py')
-            # ic.methodName, ic.fileType = p.h, fileType
-    if parser:
-        bunch = c.undoer.beforeChangeTree(p)
-        s = p.b
-        p.b = ''  # Required.
-        try:
-            parser(p, s)
-            n = p.numberOfChildren()
-            n_s = 'child' if n == 1 else 'children'
-            if n &gt; 1:
-                p.setMarked()
-                g.trace(f"  Split: {p.h}, {n} {n_s}")
-        except Exception:
-            g.es_exception()
-            raise
-        finally:
-            p.b = s
-            p.deleteAllChildren()
-    ### else: g.es_print(f"parse-body: no parser for @language {language or 'None'}")
-</t>
+    if not parser:
+        return
+    s = p.b
+    p.b = ''  # Required.
+    try:
+        parser(p, s)
+        n = p.numberOfChildren()
+        n_s = 'child' if n == 1 else 'children'
+        if n &gt; 1:
+            p.setMarked()
+            g.trace(f"  Split: {p.h}, {n} {n_s}")
+    except Exception:
+        g.es_exception()
+        raise
+    finally:
+        p.b = s
+        p.deleteAllChildren()</t>
 <t tx="ekr.20200716084530.1">private _getNodeContextValue(): string {
     let w_contextValue = Constants.CONTEXT_FLAGS.NODE_UNMARKED; // * Start it with 'leoNodeMarked' or 'leoNodeUnmarked'
     if (this.marked) {
