@@ -5227,7 +5227,6 @@ c.goToNextMarkedHeadline()
 </t>
 <t tx="ekr.20200716081737.1">def mark_tree(root):
     """Mark all nodes of an @clean tree that probably should change."""
-    g.trace(root.h)
     for p in root.subtree():
         mark_node(p)
     # Make sure we don't actually change any files.
