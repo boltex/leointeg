@@ -1699,11 +1699,6 @@
     },
     "keybindings": [
       {
-        "command": "leointeg.openLeoFile",
-        "key": "shift+enter",
-        "when": "leoBridgeReady && explorerViewletVisible && filesExplorerFocus && resourceExtname == .leo"
-      },
-      {
         "command": "leointeg.gotoFirstVisible",
         "key": "alt+home",
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
