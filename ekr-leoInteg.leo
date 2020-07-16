@@ -10,6 +10,10 @@
 <v t="ekr.20200624091440.1"><vh>@settings</vh>
 <v t="ekr.20200624091446.1"><vh>@data history-list</vh></v>
 <v t="ekr.20200715162627.1"><vh>@button backup</vh></v>
+<v t="ekr.20200716081515.1"><vh>@button mark-changed</vh>
+<v t="ekr.20200716081737.1"><vh>mark_tree</vh></v>
+<v t="ekr.20200716081901.1"><vh>mark_node</vh></v>
+</v>
 </v>
 <v t="ekr.20200704142009.1"><vh>Recursive import script</vh></v>
 </v>
@@ -406,6 +410,7 @@
 <v t="ekr.20200704142237.49"></v>
 <v t="ekr.20200704142237.50"></v>
 </v>
+<v t="ekr.20200716081515.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200624091412.1"></t>
@@ -5252,6 +5257,57 @@ public statusBarOnClick(): void {
 # found 8 nodes
 
 @language typescript</t>
+<t tx="ekr.20200716081515.1">"""Remove unused non-organizer nodes. Split nodes with parse-body"""
+
+@others
+
+for p in c.all_nodes():
+    if p.isAtCleanNode():
+        mark_tree(p)
+c.redraw()</t>
+<t tx="ekr.20200716081737.1">def mark_tree(root):
+    """Mark all nodes of an @clean tree that probably should change."""
+    g.trace(root.h)
+    for p in root.subtree():
+        mark_node(p)</t>
+<t tx="ekr.20200716081901.1">def mark_node(p):
+    """Mark node p if it should be deleted or split."""
+    if not p.hasChildren() and not p.b.strip():
+        p.setMarked()
+        return
+    if p.hasChildren():
+        return
+    # Similar to ic.parse_body.
+    ic = c.importCommands
+    language = g.scanForAtLanguage(c, p)
+    ext = '.' + g.app.language_extension_dict.get(language)
+    ### self.treeType = '@file'
+    parser = ic.body_parser_for_ext(ext)
+    # Fix bug 151: parse-body creates "None declarations"
+        # if False: ### p.isAnyAtFileNode():
+            # fn = p.anyAtFileNodeName()
+            # ic.methodName, ic.fileType = g.os_path_splitext(fn)
+        # else:
+            # d = g.app.language_extension_dict
+            # fileType = d.get(language, 'py')
+            # ic.methodName, ic.fileType = p.h, fileType
+    if parser:
+        bunch = c.undoer.beforeChangeTree(p)
+        s = p.b
+        ### p.b = ''
+        try:
+            parser(p, s)
+            # c.undoer.afterChangeTree(p, 'parse-body', bunch)
+            # p.expand()
+            # c.selectPosition(p)
+            # c.redraw()
+        except Exception:
+            g.es_exception()
+        finally:
+            p.b = s
+            p.deleteAllChildren()
+    ### else: g.es_print(f"parse-body: no parser for @language {language or 'None'}")
+</t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
         return self.sendLeoBridgePackage("node", self.p_to_ap(p_node))  # Single node, singular
