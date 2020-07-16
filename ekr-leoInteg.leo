@@ -415,7 +415,8 @@
 <tnodes>
 <t tx="ekr.20200624091412.1"></t>
 <t tx="ekr.20200624091440.1"></t>
-<t tx="ekr.20200624091446.1">move-lines-to-next-node</t>
+<t tx="ekr.20200624091446.1">move-lines-to-next-node
+goto-next-marked</t>
 <t tx="ekr.20200704142009.1">'''Recursively import all python files in a directory and clean the result.'''
 @tabwidth -4 # For a better match.
 
@@ -5261,10 +5262,13 @@ public statusBarOnClick(): void {
 
 @others
 
-for p in c.all_nodes():
+for p in c.all_positions():
     if p.isAtCleanNode():
         mark_tree(p)
-c.redraw()</t>
+c.redraw()
+c.selectPosition(c.rootPosition())
+c.goToNextMarkedHeadline()
+</t>
 <t tx="ekr.20200716081737.1">def mark_tree(root):
     """Mark all nodes of an @clean tree that probably should change."""
     g.trace(root.h)
@@ -5274,6 +5278,7 @@ c.redraw()</t>
     """Mark node p if it should be deleted or split."""
     if not p.hasChildren() and not p.b.strip():
         p.setMarked()
+        g.trace('  Delete:', p.h)
         return
     if p.hasChildren():
         return
@@ -5294,15 +5299,17 @@ c.redraw()</t>
     if parser:
         bunch = c.undoer.beforeChangeTree(p)
         s = p.b
-        ### p.b = ''
+        p.b = ''  # Required.
         try:
             parser(p, s)
-            # c.undoer.afterChangeTree(p, 'parse-body', bunch)
-            # p.expand()
-            # c.selectPosition(p)
-            # c.redraw()
+            n = p.numberOfChildren()
+            n_s = 'child' if n == 1 else 'children'
+            if n &gt; 1:
+                p.setMarked()
+                g.trace(f"  Split: {p.h}, {n} {n_s}")
         except Exception:
             g.es_exception()
+            raise
         finally:
             p.b = s
             p.deleteAllChildren()
