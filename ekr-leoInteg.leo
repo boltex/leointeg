@@ -199,7 +199,8 @@
 <v t="ekr.20200704142237.60"><vh>@clean leoNode.ts</vh>
 <v t="ekr.20200704142237.61"><vh>class LeoNode</vh>
 <v t="ekr.20200704142237.62"><vh>LeoNode.copyProperties</vh></v>
-<v t="ekr.20200704142237.63"><vh>LeoNode._getContextValue</vh></v>
+<v t="ekr.20200704142237.63"><vh>LeoNode.setRoot</vh></v>
+<v t="ekr.20200716084530.1"><vh>LeoNode._getNodeContextValue</vh></v>
 <v t="ekr.20200704142237.64"><vh>LeoNode.getCursorSelection</vh></v>
 <v t="ekr.20200704142237.65"><vh>LeoNode.setCursorSelection</vh></v>
 </v>
@@ -237,8 +238,10 @@
 <v t="ekr.20200704142237.90"><vh>LeoAction</vh></v>
 <v t="ekr.20200704142237.91"><vh>LeoLogEntry</vh></v>
 <v t="ekr.20200704142237.92"><vh>ArchivedPosition</vh></v>
+<v t="ekr.20200716084640.1"><vh>LeoPackageStates</vh></v>
 <v t="ekr.20200704142237.93"><vh>LeoBridgePackage</vh></v>
-<v t="ekr.20200704142237.94"><vh>LeoDocument</vh></v>
+<v t="ekr.20200716084817.1"><vh>LeoDocument</vh></v>
+<v t="ekr.20200716084817.2"><vh>LeoButton</vh></v>
 <v t="ekr.20200704142237.95"><vh>Icon</vh></v>
 <v t="ekr.20200704142237.96"><vh>BodyTimeInfo</vh></v>
 <v t="ekr.20200704142237.97"><vh>showSaveAsDialogParameters</vh></v>
@@ -2512,23 +2515,26 @@ public addLogPaneEntry(p_message: string): void {
 }
 
 </t>
-<t tx="ekr.20200704142237.100">export interface runInfoMessageDialogParameters {
+<t tx="ekr.20200704142237.100">/**
+ * * Parameter structure for non-blocking info message about detected file changes
+ */
+export interface runInfoMessageDialogParameters {
     "message": string;
 }
 
-/**
+</t>
+<t tx="ekr.20200704142237.101">/**
  * * Used in showAskModalDialog to get answer from user interaction
  */
-</t>
-<t tx="ekr.20200704142237.101">export interface AskMessageItem extends vscode.MessageItem {
+export interface AskMessageItem extends vscode.MessageItem {
     value: string;
 }
 
-/**
+</t>
+<t tx="ekr.20200704142237.102">/**
  * * Used in switch Leo document to get answer from user interaction
  */
-</t>
-<t tx="ekr.20200704142237.102">export interface ChooseDocumentItem extends vscode.QuickPickItem {
+export interface ChooseDocumentItem extends vscode.QuickPickItem {
     value: number;
 }
 </t>
@@ -3987,25 +3993,6 @@ public setRoot(): void {
     this.contextValue = this._getNodeContextValue();
 }
 
-private _getNodeContextValue(): string {
-    let w_contextValue = Constants.CONTEXT_FLAGS.NODE_UNMARKED; // * Start it with 'leoNodeMarked' or 'leoNodeUnmarked'
-    if (this.marked) {
-        w_contextValue = Constants.CONTEXT_FLAGS.NODE_MARKED;
-    }
-    if (this.atFile) {
-        w_contextValue += Constants.CONTEXT_FLAGS.NODE_ATFILE; // * then append 'leoNodeAtFile' to existing if needed
-    }
-    if (this.cloned) {
-        w_contextValue += Constants.CONTEXT_FLAGS.NODE_CLONED; // * then append 'leoNodeCloned' to existing if needed
-    }
-    if (this.isRoot) {
-        w_contextValue += Constants.CONTEXT_FLAGS.NODE_ROOT;
-    } else {
-        w_contextValue += Constants.CONTEXT_FLAGS.NODE_NOT_ROOT;
-    }
-    return w_contextValue;
-}
-
 </t>
 <t tx="ekr.20200704142237.64">public getCursorSelection(): any {
     return this.cursorSelection;
@@ -4585,20 +4572,11 @@ import { LeoNode } from "./leoNode";
     }[];                    // for (stack_v, stack_childIndex) in p.stack]
 }
 
-export interface LeoPackageStates {
-    changed: boolean;
-    canUndo: boolean;
-    canRedo: boolean;
-    canDemote: boolean;
-    canPromote: boolean;
-    canDehoist: boolean;
-}
-
-/**
+</t>
+<t tx="ekr.20200704142237.93">/**
  * * Main JSON information package format used between leointeg and Leo
  */
-</t>
-<t tx="ekr.20200704142237.93">export interface LeoBridgePackage {
+export interface LeoBridgePackage {
     id: number; // TODO : Could be used for error checking
     // * Each of those top level member is an answer from a Constants.LEOBRIDGE command
     allGnx?: string[];
@@ -4629,49 +4607,30 @@ export interface LeoPackageStates {
     buttons?: LeoButton[]
 }
 
-/**
- * * Leo document structure used in the 'Opened Leo Documents' tree view provider sent back by the server
- */
 </t>
-<t tx="ekr.20200704142237.94">export interface LeoDocument {
-    name: string;
-    index: number;
-    changed: boolean;
-    selected: boolean;
-}
-
-/**
- * * Leo '@button' structure used in the '@buttons' tree view provider sent back by the server
- */
-export interface LeoButton {
-    name: string;
-    index: string; // STRING KEY
-}
-
-/**
+<t tx="ekr.20200704142237.95">/**
  * * Icon path names used in leoNodes for rendering in treeview
  */
-</t>
-<t tx="ekr.20200704142237.95">export interface Icon {
+export interface Icon {
     light: string;
     dark: string;
 }
 
-/**
+</t>
+<t tx="ekr.20200704142237.96">/**
  * * LeoBody virtual file time information object
  */
-</t>
-<t tx="ekr.20200704142237.96">export interface BodyTimeInfo {
+export interface BodyTimeInfo {
     gnx: string;
     ctime: number;
     mtime: number;
 }
 
-/**
+</t>
+<t tx="ekr.20200704142237.97">/**
  * * Parameter structure used in the 'runSaveFileDialog' equivalent when asking user input
  */
-</t>
-<t tx="ekr.20200704142237.97">export interface showSaveAsDialogParameters {
+export interface showSaveAsDialogParameters {
     // See TODO in leoAsync.ts
     "initialFile": string;
     "title": string;
@@ -4680,29 +4639,26 @@ export interface LeoButton {
     "defaultExtension": string;
 }
 
-/**
+</t>
+<t tx="ekr.20200704142237.98">/**
  * * Parameter structure used in the 'runAskYesNoDialog' equivalent when asking user input
  */
-</t>
-<t tx="ekr.20200704142237.98">export interface runAskYesNoDialogParameters {
+export interface runAskYesNoDialogParameters {
     "ask": string;
     "message": string;
     "yes_all": boolean;
     "no_all": boolean;
 }
 
-/**
+</t>
+<t tx="ekr.20200704142237.99">/**
  * * Parameter structure used in the 'runAskOkDialog' equivalent when showing a warning
  */
-</t>
-<t tx="ekr.20200704142237.99">export interface runWarnMessageDialogParameters {
+export interface runWarnMessageDialogParameters {
     "warn": string;
     "message": string;
 }
 
-/**
- * * Parameter structure for non-blocking info message about detected file changes
- */
 </t>
 <t tx="ekr.20200712055600.63">@path C:/leo.repo/leointeg/src/
 
@@ -5317,6 +5273,56 @@ c.goToNextMarkedHeadline()
             p.b = s
             p.deleteAllChildren()
     ### else: g.es_print(f"parse-body: no parser for @language {language or 'None'}")
+</t>
+<t tx="ekr.20200716084530.1">private _getNodeContextValue(): string {
+    let w_contextValue = Constants.CONTEXT_FLAGS.NODE_UNMARKED; // * Start it with 'leoNodeMarked' or 'leoNodeUnmarked'
+    if (this.marked) {
+        w_contextValue = Constants.CONTEXT_FLAGS.NODE_MARKED;
+    }
+    if (this.atFile) {
+        w_contextValue += Constants.CONTEXT_FLAGS.NODE_ATFILE; // * then append 'leoNodeAtFile' to existing if needed
+    }
+    if (this.cloned) {
+        w_contextValue += Constants.CONTEXT_FLAGS.NODE_CLONED; // * then append 'leoNodeCloned' to existing if needed
+    }
+    if (this.isRoot) {
+        w_contextValue += Constants.CONTEXT_FLAGS.NODE_ROOT;
+    } else {
+        w_contextValue += Constants.CONTEXT_FLAGS.NODE_NOT_ROOT;
+    }
+    return w_contextValue;
+}
+
+</t>
+<t tx="ekr.20200716084640.1">export interface LeoPackageStates {
+    changed: boolean;
+    canUndo: boolean;
+    canRedo: boolean;
+    canDemote: boolean;
+    canPromote: boolean;
+    canDehoist: boolean;
+}
+
+</t>
+<t tx="ekr.20200716084817.1">/**
+ * * Leo document structure used in the 'Opened Leo Documents' tree view provider sent back by the server
+ */
+export interface LeoDocument {
+    name: string;
+    index: number;
+    changed: boolean;
+    selected: boolean;
+}
+
+</t>
+<t tx="ekr.20200716084817.2">/**
+ * * Leo '@button' structure used in the '@buttons' tree view provider sent back by the server
+ */
+export interface LeoButton {
+    name: string;
+    index: string; // STRING KEY
+}
+
 </t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
