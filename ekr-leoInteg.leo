@@ -255,6 +255,7 @@
 <v t="ekr.20200704142237.104"><vh>padNumber2</vh></v>
 <v t="ekr.20200704142237.105"><vh>buildNodeIconPaths</vh></v>
 <v t="ekr.20200704142237.106"><vh>buildDocumentIconPaths</vh></v>
+<v t="ekr.20200716085917.1"><vh>buildButtonsIconPaths</vh></v>
 <v t="ekr.20200704142237.107"><vh>buildNodeAndTextJson</vh></v>
 <v t="ekr.20200704142237.108"><vh>getFileFromPath</vh></v>
 <v t="ekr.20200704142237.109"><vh>isIconChangedByEdit</vh></v>
@@ -302,7 +303,9 @@
 <v t="felix.20200303214235.1"><vh>bc._asyncIdleLoop</vh></v>
 <v t="ekr.20200712063635.1"><vh>bc._returnNo</vh></v>
 <v t="ekr.20200712063636.1"><vh>bc._returnYes</vh></v>
-<v t="felix.20200303214255.1"><vh>bc._idleTime</vh></v>
+<v t="ekr.20200716085955.1"><vh>_idleTime</vh></v>
+<v t="ekr.20200716085955.2"><vh>_getTotalOpened</vh></v>
+<v t="ekr.20200716085955.3"><vh>_getFirstOpenedCommander</vh></v>
 <v t="felix.20200304224909.1"><vh>bc.sendAsyncOutput</vh></v>
 <v t="felix.20200304220844.1"><vh>bc.askResult</vh></v>
 <v t="felix.20200312231358.1"><vh>bc.applyConfig</vh></v>
@@ -2593,23 +2596,6 @@ import { LeoNode } from "./leoNode";
     ];
 }
 
-/**
- * * Build all possible strings for buttons icons graphic file paths
- * @param p_context Needed to get to absolute paths on the system
- * @returns An array containing icons for the documents tree view
- */
-export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[] {
-    return [
-        {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON)
-        },
-        {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_ADD),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_ADD)
-        }
-    ];
-}
 </t>
 <t tx="ekr.20200704142237.107">/**
  * * Builds and returns a JSON string with 'node' and 'text' members
@@ -2617,22 +2603,22 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
  * @param p_text Desired text sent along with node in the parameters of the action to be 'called'
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
-
 export function buildNodeAndTextJson(p_nodeJson: string, p_text: string): string {
     return "{\"node\":" + p_nodeJson +
         ", \"text\": " + JSON.stringify(p_text) +
         "}";
 }
+
 </t>
 <t tx="ekr.20200704142237.108">/**
  * * Extracts the file name from a full path, such as "foo.bar" from "/abc/def/foo.bar"
  * @param p_path Full path such as "/var/drop/foo/boo/moo.js" or "C:\Documents and Settings\img\recycled log.jpg"
  * @returns file name string such as "moo.js" or "recycled log.jpg""
  */
-
 export function getFileFromPath(p_path: string): string {
     return p_path.replace(/^.*[\\\/]/, '');
 }
+
 </t>
 <t tx="ekr.20200704142237.109">/**
  * * Checks if a node would become dirty if it were to now have body content at all
@@ -2640,13 +2626,13 @@ export function getFileFromPath(p_path: string): string {
  * @param p_newHasBody Flag to signify presence of body content, to be compared with its current state
  * @returns True if it would change the icon with actual body content, false otherwise
  */
-
 export function isIconChangedByEdit(p_node: LeoNode, p_newHasBody: boolean): boolean {
     if (!p_node.dirty || (p_node.hasBody === !p_newHasBody)) {
         return true;
     }
     return false;
 }
+
 </t>
 <t tx="ekr.20200704142237.11">/**
  * * Send configuration through leoBridge to the server script, mostly used when checking if refreshing derived files is optional.
@@ -2666,34 +2652,34 @@ public sendConfigToServer(p_config: ConfigMembers): void {
  * @param p_hexString hexadecimal 6 digits string, without leading '0x'
  * @returns True if the string is a valid representation of an hexadecimal 6 digit number
  */
-
 export function isHexColor(p_hexString: string): boolean {
     return typeof p_hexString === 'string'
         &amp;&amp; p_hexString.length === 6
         &amp;&amp; !isNaN(Number('0x' + p_hexString));
 }
+
 </t>
 <t tx="ekr.20200704142237.111">/**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */
-
 export function strToLeoUri(p_str: string): vscode.Uri {
     return vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_str);
 }
+
 </t>
 <t tx="ekr.20200704142237.112">/**
  * * Gets the gnx, (or another string like 'LEO BODY' or other), from a vscode.Uri object
  * @param p_uri Source uri to extract from
  * @returns The string source that was used to build this Uri
  */
-
 export function leoUriToStr(p_uri: vscode.Uri): string {
     // TODO : Use length of a constant or something other than 'fsPath'
     // For now, just remove the '/' (or backslash on Windows) before the path string
     return p_uri.fsPath.substr(1);
 }
+
 </t>
 <t tx="ekr.20200704142237.113">/**
  * * Sets a vscode context variable with the 'vscode.commands.executeCommand' and 'setContext' method
@@ -2701,7 +2687,6 @@ export function leoUriToStr(p_uri: vscode.Uri): string {
  * @param p_value Value to be assigned to the p_key 'key'
  * @returns A Thenable that was returned by the executeCommand call to set the context
  */
-
 export function setContext(p_key: string, p_value: any): Thenable&lt;unknown&gt; {
     return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, p_key, p_value);
 }
@@ -5312,6 +5297,47 @@ export interface LeoButton {
 }
 
 </t>
+<t tx="ekr.20200716085917.1">/**
+ * * Build all possible strings for buttons icons graphic file paths
+ * @param p_context Needed to get to absolute paths on the system
+ * @returns An array containing icons for the documents tree view
+ */
+export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[] {
+    return [
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_ADD),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_ADD)
+        }
+    ];
+}
+
+</t>
+<t tx="ekr.20200716085955.1">def _idleTime(self, fn, delay, tag):
+    # TODO : REVISE/REPLACE WITH OWN SYSTEM
+    asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
+
+</t>
+<t tx="ekr.20200716085955.2">def _getTotalOpened(self):
+    '''Get total of opened commander (who have closed == false)'''
+    w_total = 0
+    for w_commander in self.g.app.commanders():
+        if w_commander.closed == False:
+            w_total = w_total + 1
+    return w_total
+
+</t>
+<t tx="ekr.20200716085955.3">def _getFirstOpenedCommander(self):
+    '''Get first opened commander, or False if there are none.'''
+    for w_commander in self.g.app.commanders():
+        if w_commander.closed == False:
+            return w_commander
+    return False
+
+</t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
         return self.sendLeoBridgePackage("node", self.p_to_ap(p_node))  # Single node, singular
@@ -6504,26 +6530,6 @@ wsPort = 32125
     while True:
         await asyncio.sleep(p_seconds)
         p_fn(self)
-
-</t>
-<t tx="felix.20200303214255.1">def _idleTime(self, fn, delay, tag):
-    # TODO : REVISE/REPLACE WITH OWN SYSTEM
-    asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
-
-def _getTotalOpened(self):
-    '''Get total of opened commander (who have closed == false)'''
-    w_total = 0
-    for w_commander in self.g.app.commanders():
-        if w_commander.closed == False:
-            w_total = w_total + 1
-    return w_total
-
-def _getFirstOpenedCommander(self):
-    '''Get first opened commander, or False if there are none.'''
-    for w_commander in self.g.app.commanders():
-        if w_commander.closed == False:
-            return w_commander
-    return False
 
 </t>
 <t tx="felix.20200304220844.1">def askResult(self, p_result):
