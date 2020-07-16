@@ -22,7 +22,8 @@ export class Constants {
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";
-    public static URI_SCHEME: string = "leo";
+    public static URI_LEO_SCHEME: string = "leo";
+    public static URI_FILE_SCHEME: string = "file";
     public static URI_SCHEME_HEADER: string = "leo:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
     public static UNTITLED_FILE_NAME: string = "untitled";
@@ -98,6 +99,7 @@ export class Constants {
         SAVE_CHANGES: "Save changes to",
         BEFORE_CLOSING: "before closing?",
         CANCEL: "Cancel",
+        OPEN_WITH_LEOINTEG: "Open this Leo file with LeoInteg?",
         FILE_ALREADY_OPENED: "Leo file already opened",
         CHOOSE_OPENED_FILE: "Select an opened Leo File",
         FILE_NOT_OPENED: "No files opened.",

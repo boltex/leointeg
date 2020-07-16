@@ -215,6 +215,8 @@ export class LeoIntegration {
         // * React to configuration settings events
         vscode.workspace.onDidChangeConfiguration(p_event => this._onChangeConfiguration(p_event));
 
+        vscode.workspace.onDidOpenTextDocument(p_document => this._onDidOpenTextDocument(p_document));
+
         // * Debounced refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
         this.getStates = debounce(this._triggerGetStates, Constants.STATES_DEBOUNCE_DELAY);
     }
@@ -440,7 +442,7 @@ export class LeoIntegration {
         // * Start body pane system
         if (!this._bodyFileSystemStarted) {
             this._context.subscriptions.push(
-                vscode.workspace.registerFileSystemProvider(Constants.URI_SCHEME, this._leoFileSystem, { isCaseSensitive: true })
+                vscode.workspace.registerFileSystemProvider(Constants.URI_LEO_SCHEME, this._leoFileSystem, { isCaseSensitive: true })
             );
             this._bodyFileSystemStarted = true;
         }
@@ -470,6 +472,34 @@ export class LeoIntegration {
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
         if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
             this.config.buildFromSavedSettings();
+        }
+    }
+
+    private _openRecentFiles(): void { }
+
+    private _addRecentFile(): void { }
+
+    private _removeRecentFile(): void { }
+
+    /**
+     * * Handles the opening of a file in vscode, and check if it's a Leo file
+     * @param p_event The opened document event passed by vscode
+     */
+    private _onDidOpenTextDocument(p_document: vscode.TextDocument): void {
+        if (this.leoStates.leoBridgeReady && p_document.uri.scheme === Constants.URI_FILE_SCHEME && p_document.uri.fsPath.toLowerCase().endsWith(".leo")) {
+            vscode.window.showQuickPick([Constants.USER_MESSAGES.YES, Constants.USER_MESSAGES.NO], { placeHolder: Constants.USER_MESSAGES.OPEN_WITH_LEOINTEG })
+                .then(p_result => {
+                    if (p_result && p_result === Constants.USER_MESSAGES.YES) {
+                        const w_uri = p_document.uri;
+                        vscode.window.showTextDocument(p_document.uri, { preview: true, preserveFocus: false })
+                            .then(() => {
+                                return vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+                            })
+                            .then(() => {
+                                this.openLeoFile(w_uri);
+                            });
+                    }
+                });
         }
     }
 
@@ -551,7 +581,7 @@ export class LeoIntegration {
         }
         // * Status flag check
         if (vscode.window.activeTextEditor) {
-            this._leoStatusBar.update(vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_SCHEME);
+            this._leoStatusBar.update(vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME);
         }
     }
 
@@ -569,7 +599,7 @@ export class LeoIntegration {
      */
     private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
         // ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
-        if (p_event.contentChanges.length && (p_event.document.uri.scheme === Constants.URI_SCHEME)) {
+        if (p_event.contentChanges.length && (p_event.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
 
             // * There was an actual change on a Leo Body by the user
             this._bodyLastChangedDocument = p_event.document;
@@ -976,7 +1006,7 @@ export class LeoIntegration {
     public closeBody(): void {
         // TODO : Try to close body pane(s)
         vscode.window.visibleTextEditors.forEach(p_textEditor => {
-            if (p_textEditor.document.uri.scheme === Constants.URI_SCHEME) {
+            if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
                 if (p_textEditor.hide) {
                     p_textEditor.hide();
                 }
@@ -1067,7 +1097,7 @@ export class LeoIntegration {
      */
     public executeScript(): boolean {
         // * Check if selected string in the focused leo body
-        if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_SCHEME) {
+        if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
             // was active text editor leoBody, check if selection length
             if (vscode.window.activeTextEditor.selections.length === 1 && !vscode.window.activeTextEditor.selection.isEmpty) {
                 // Exactly one selection range, and is not empty, so try "executing" only the selected content.
