@@ -5273,7 +5273,10 @@ c.goToNextMarkedHeadline()
     """Mark all nodes of an @clean tree that probably should change."""
     g.trace(root.h)
     for p in root.subtree():
-        mark_node(p)</t>
+        mark_node(p)
+    # Make sure we don't actually change any files.
+    root.clearDirty()
+</t>
 <t tx="ekr.20200716081901.1">def mark_node(p):
     """Mark node p if it should be deleted or split."""
     if not p.hasChildren() and not p.b.strip():
