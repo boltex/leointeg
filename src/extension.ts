@@ -21,28 +21,28 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_previousVersion = p_context.globalState.get<string>(Constants.VERSION_STATE_KEY);
 
     const w_leoIntegration: LeoIntegration = new LeoIntegration(p_context);
+
     const w_leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(p_context, w_leoIntegration);
 
-    // * Reset Extension context flags (used in 'when' clauses in package.json)
-    utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
-    utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
-
     const w_cmdPrefix = Constants.NAME + ".";
-    
-    // EKR: temp abbreviations to shorten the lines.
+
+    // EKR: Move abbreviations to shorten the lines.
     const bridge = Constants.LEOBRIDGE;
     const cmd = Constants.COMMANDS;
     const li = w_leoIntegration;
-    const node_cmd = w_leoIntegration.nodeCommand
+    const node_cmd = w_leoIntegration.nodeCommand;
     const prefix = w_cmdPrefix;
     const refreshBoth = RefreshType.RefreshTreeAndBody;
     const refreshTree = RefreshType.RefreshTree;
     const showInfo = vscode.window.showInformationMessage;
     const u = undefined;
-    
-    // Existing code...
-    const w_commands: [string, (...args: any[]) => any][] = [
 
+    // * Reset Extension context flags (used in 'when' clauses in package.json)
+    utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
+    utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
+    
+    const w_commands: [string, (...args: any[]) => any][] = [
+    
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
         [prefix + "test", () => li.test()], // * Test function useful when debugging
         [prefix + "testFromOutline", () => li.test(true)], // * Test function useful when debugging
