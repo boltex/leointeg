@@ -42,12 +42,25 @@
 <v t="ekr.20200704142236.18"><vh>@clean extension.ts</vh>
 <v t="ekr.20200704142236.19"><vh>activate</vh>
 <v t="ekr.20200717102947.1"><vh>&lt;&lt; define constants &gt;&gt;</vh></v>
-<v t="ekr.20200717100408.1"><vh>&lt;&lt; file commands &gt;&gt;</vh></v>
-<v t="ekr.20200717100831.1"><vh>&lt;&lt; mark commands &gt;&gt;</vh></v>
-<v t="ekr.20200717100934.1"><vh>&lt;&lt; cut/paste commands &gt;&gt;</vh></v>
-<v t="ekr.20200717101025.1"><vh>&lt;&lt; node commands &gt;&gt;</vh></v>
-<v t="ekr.20200717102200.1"><vh>&lt;&lt; misc commands &gt;&gt;</vh></v>
-<v t="ekr.20200717102128.1"><vh>&lt;&lt; not implemented yet &gt;&gt;</vh></v>
+<v t="ekr.20200717102128.1"><vh> not implemented commands</vh></v>
+<v t="ekr.20200717123815.1"><vh>button commands</vh></v>
+<v t="ekr.20200717100408.1"><vh>file commands</vh></v>
+<v t="ekr.20200717122457.1"><vh>edit headline commands</vh></v>
+<v t="ekr.20200717101025.1"><vh>node commands...</vh>
+<v t="ekr.20200717100934.1"><vh>cut/copy/paste commands</vh></v>
+<v t="ekr.20200717124627.1"><vh>expand/contract commands</vh></v>
+<v t="ekr.20200717124628.1"><vh>goto commands</vh></v>
+<v t="ekr.20200717124627.2"><vh>hoist/dehoist commands</vh></v>
+<v t="ekr.20200717124624.1"><vh>insert/clone commands</vh></v>
+<v t="ekr.20200717100831.1"><vh>mark/unmark commands</vh></v>
+<v t="ekr.20200717124918.1"><vh>move commands</vh></v>
+<v t="ekr.20200717125131.1"><vh>page up/down commands</vh></v>
+<v t="ekr.20200717124627.3"><vh>promote/demote commands</vh></v>
+<v t="ekr.20200717125114.1"><vh>sort commands</vh></v>
+<v t="ekr.20200717123144.1"><vh>undo/redo commands</vh></v>
+</v>
+<v t="ekr.20200717123836.1"><vh>server commands</vh></v>
+<v t="ekr.20200717123731.1"><vh>select/show commands</vh></v>
 <v t="ekr.20200717103819.1"><vh>&lt;&lt; show welcome screen &gt;&gt;</vh></v>
 </v>
 <v t="ekr.20200704142236.21"><vh>deactivate</vh></v>
@@ -1171,21 +1184,16 @@ export function activate(p_context: vscode.ExtensionContext) {
     
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
         [prefix + "test", () =&gt; leo.test()], // Test function useful when debugging
-        [prefix + "testFromOutline", () =&gt; leo.test(true)], // Test function useful when debugging
+        [prefix + "testFromOutline", () =&gt; leo.test(true)], // Test function useful when debugging.
 
-        &lt;&lt; file commands &gt;&gt;
-        &lt;&lt; mark commands &gt;&gt;
-        &lt;&lt; cut/paste commands &gt;&gt;
-        &lt;&lt; node commands &gt;&gt;
+        // Define entries for all commands
         [prefix + cmd.EXECUTE, () =&gt; leo.executeScript()],
-        &lt;&lt; misc commands &gt;&gt;
-        &lt;&lt; not implemented yet &gt;&gt;
+        @others
     ];
 
     w_commands.map(function (p_command) {
         p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
     });
-
     &lt;&lt; show welcome screen &gt;&gt;
 }
 
@@ -5212,106 +5220,48 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 <t tx="ekr.20200717092150.1"></t>
 <t tx="ekr.20200717094106.1">Exception has occurred: Error: ENOENT: no such file or directory, stat 'c:\Users\edreamleo\AppData\Roaming\Code\logs\20200717T093611\exthost4\output_logging_20200717T093935'</t>
 <t tx="ekr.20200717095046.1"></t>
-<t tx="ekr.20200717100408.1">[prefix + cmd.NEW_FILE, () =&gt; leo.newLeoFile()],
-[prefix + cmd.SWITCH_FILE, () =&gt; leo.switchLeoFile()],
-
+<t tx="ekr.20200717100408.1">[prefix + cmd.CLOSE_FILE, () =&gt; leo.closeLeoFile()],
+[prefix + cmd.NEW_FILE, () =&gt; leo.newLeoFile()],
 [prefix + cmd.OPEN_FILE, () =&gt; leo.openLeoFile()],
 [prefix + cmd.SAVE_AS_FILE, () =&gt; leo.saveAsLeoFile()],
 [prefix + cmd.SAVE_FILE, () =&gt; leo.saveLeoFile()],
 [prefix + cmd.SAVE_FILE_FO, () =&gt; leo.saveLeoFile(true)],
-[prefix + cmd.CLOSE_FILE, () =&gt; leo.closeLeoFile()],
+[prefix + cmd.SWITCH_FILE, () =&gt; leo.switchLeoFile()],
+
+// Test for undeclared commands VERDICT IT WORKS!
+[prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; leo.selectOpenedLeoDocument(p_index)],
+
+[prefix + cmd.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; node_cmd(bridge.REFRESH_FROM_DISK_PNODE, p_node, refreshBoth, false)],
+[prefix + cmd.REFRESH_FROM_DISK_SELECTION, () =&gt; node_cmd(bridge.REFRESH_FROM_DISK_PNODE, u, refreshBoth, false)],
+[prefix + cmd.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; node_cmd(bridge.REFRESH_FROM_DISK_PNODE, u, refreshBoth, true)],
 </t>
 <t tx="ekr.20200717100831.1">[prefix + cmd.MARK, (p_node: LeoNode) =&gt; leo.changeMark(true, p_node, false)],
-[prefix + cmd.UNMARK, (p_node: LeoNode) =&gt; leo.changeMark(false, p_node, false)],
 [prefix + cmd.MARK_SELECTION, () =&gt; leo.changeMark(true, u, false)],
-[prefix + cmd.UNMARK_SELECTION, () =&gt; leo.changeMark(false, u, false)],
 [prefix + cmd.MARK_SELECTION_FO, () =&gt; leo.changeMark(true, u, true)],
+
+[prefix + cmd.UNMARK, (p_node: LeoNode) =&gt; leo.changeMark(false, p_node, false)],
+[prefix + cmd.UNMARK_SELECTION, () =&gt; leo.changeMark(false, u, false)],
 [prefix + cmd.UNMARK_SELECTION_FO, () =&gt; leo.changeMark(false, u, true)],
 </t>
-<t tx="ekr.20200717100934.1">[prefix + cmd.COPY, (p_node: LeoNode) =&gt; node_cmd(bridge.COPY_PNODE, p_node, noRefresh, false)],
+<t tx="ekr.20200717100934.1">// cut/copy/paste/delete given node.
+[prefix + cmd.COPY, (p_node: LeoNode) =&gt; node_cmd(bridge.COPY_PNODE, p_node, noRefresh, false)],
 [prefix + cmd.CUT, (p_node: LeoNode) =&gt; node_cmd(bridge.CUT_PNODE, p_node, refreshTree, false)],
+[prefix + cmd.DELETE, (p_node: LeoNode) =&gt; node_cmd(bridge.DELETE_PNODE, p_node, refreshTree, false)],
 [prefix + cmd.PASTE, (p_node: LeoNode) =&gt; node_cmd(bridge.PASTE_PNODE, p_node, refreshTree, false)],
 [prefix + cmd.PASTE_CLONE, (p_node: LeoNode) =&gt; node_cmd(bridge.PASTE_CLONE_PNODE, p_node, refreshTree, false)],
-[prefix + cmd.DELETE, (p_node: LeoNode) =&gt; node_cmd(bridge.DELETE_PNODE, p_node, refreshTree, false)],
 
+// cut/copy/paste/delete c.p..
 [prefix + cmd.COPY_SELECTION, () =&gt; node_cmd(bridge.COPY_PNODE, u, noRefresh, false)],
 [prefix + cmd.CUT_SELECTION, () =&gt; node_cmd(bridge.CUT_PNODE, u, refreshTree, false)],
 [prefix + cmd.CUT_SELECTION_FO, () =&gt; node_cmd(bridge.CUT_PNODE, u, refreshTree, true)],
-[prefix + cmd.PASTE_SELECTION, () =&gt; node_cmd(bridge.PASTE_PNODE, u, refreshTree, false)],
-[prefix + cmd.PASTE_SELECTION_FO, () =&gt; node_cmd(bridge.PASTE_PNODE, u, refreshTree, true)],
-[prefix + cmd.PASTE_CLONE_SELECTION, () =&gt; node_cmd(bridge.PASTE_CLONE_PNODE, u, refreshTree, false)],
-[prefix + cmd.PASTE_CLONE_SELECTION_FO, () =&gt; node_cmd(bridge.PASTE_CLONE_PNODE, u, refreshTree, true)],
 [prefix + cmd.DELETE_SELECTION, () =&gt; node_cmd(bridge.DELETE_PNODE, u, refreshTree, false)],
 [prefix + cmd.DELETE_SELECTION_FO, () =&gt; node_cmd(bridge.DELETE_PNODE, u, refreshTree, true)],
+[prefix + cmd.PASTE_CLONE_SELECTION, () =&gt; node_cmd(bridge.PASTE_CLONE_PNODE, u, refreshTree, false)],
+[prefix + cmd.PASTE_CLONE_SELECTION_FO, () =&gt; node_cmd(bridge.PASTE_CLONE_PNODE, u, refreshTree, true)],
+[prefix + cmd.PASTE_SELECTION, () =&gt; node_cmd(bridge.PASTE_PNODE, u, refreshTree, false)],
+[prefix + cmd.PASTE_SELECTION_FO, () =&gt; node_cmd(bridge.PASTE_PNODE, u, refreshTree, true)],
 </t>
-<t tx="ekr.20200717101025.1">[prefix + cmd.MOVE_DOWN, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_DOWN, p_node, refreshTree, false)],
-[prefix + cmd.MOVE_LEFT, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_LEFT, p_node, refreshTree, false)],
-[prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_RIGHT, p_node, refreshTree, false)],
-[prefix + cmd.MOVE_UP, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_UP, p_node, refreshTree, false)],
-[prefix + cmd.INSERT, (p_node: LeoNode) =&gt; leo.insertNode(p_node, false)],
-[prefix + cmd.CLONE, (p_node: LeoNode) =&gt; node_cmd(bridge.CLONE_PNODE, p_node, refreshTree, false)],
-[prefix + cmd.PROMOTE, (p_node: LeoNode) =&gt; node_cmd(bridge.PROMOTE_PNODE, p_node, refreshTree, false)],
-[prefix + cmd.DEMOTE, (p_node: LeoNode) =&gt; node_cmd(bridge.DEMOTE_PNODE, p_node, refreshTree, false)],
-[prefix + cmd.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; node_cmd(bridge.REFRESH_FROM_DISK_PNODE, p_node, refreshBoth, false)],
-
-[prefix + cmd.MOVE_DOWN_SELECTION, () =&gt; node_cmd(bridge.MOVE_PNODE_DOWN, u, refreshTree, false)],
-[prefix + cmd.MOVE_DOWN_SELECTION_FO, () =&gt; node_cmd(bridge.MOVE_PNODE_DOWN, u, refreshTree, true)],
-[prefix + cmd.MOVE_LEFT_SELECTION, () =&gt; node_cmd(bridge.MOVE_PNODE_LEFT, u, refreshTree, false)],
-[prefix + cmd.MOVE_LEFT_SELECTION_FO, () =&gt; node_cmd(bridge.MOVE_PNODE_LEFT, u, refreshTree, true)],
-[prefix + cmd.MOVE_RIGHT_SELECTION, () =&gt; node_cmd(bridge.MOVE_PNODE_RIGHT, u, refreshTree, false)],
-[prefix + cmd.MOVE_RIGHT_SELECTION_FO, () =&gt; node_cmd(bridge.MOVE_PNODE_RIGHT, u, refreshTree, true)],
-[prefix + cmd.MOVE_UP_SELECTION, () =&gt; node_cmd(bridge.MOVE_PNODE_UP, u, refreshTree, false)],
-[prefix + cmd.MOVE_UP_SELECTION_FO, () =&gt; node_cmd(bridge.MOVE_PNODE_UP, u, refreshTree, true)],
-
-[prefix + cmd.INSERT_SELECTION, () =&gt; leo.insertNode(u, false)],
-[prefix + cmd.INSERT_SELECTION_FO, () =&gt; leo.insertNode(u, true)],
-
-// * Special command for when inserting rapidly more than one node without even specifying a headline label, such as spamming CTRL+I rapidly.
-[prefix + cmd.INSERT_SELECTION_INTERRUPT, () =&gt; leo.insertNode(u, u, true)],
-
-[prefix + cmd.CLONE_SELECTION, () =&gt; node_cmd(bridge.CLONE_PNODE, u, refreshTree, false)],
-[prefix + cmd.CLONE_SELECTION_FO, () =&gt; node_cmd(bridge.CLONE_PNODE, u, refreshTree, true)],
-[prefix + cmd.PROMOTE_SELECTION, () =&gt; node_cmd(bridge.PROMOTE_PNODE, u, refreshTree, false)],
-[prefix + cmd.PROMOTE_SELECTION_FO, () =&gt; node_cmd(bridge.PROMOTE_PNODE, u, refreshTree, true)],
-[prefix + cmd.DEMOTE_SELECTION, () =&gt; node_cmd(bridge.DEMOTE_PNODE, u, refreshTree, false)],
-[prefix + cmd.DEMOTE_SELECTION_FO, () =&gt; node_cmd(bridge.DEMOTE_PNODE, u, refreshTree, true)],
-
-[prefix + cmd.REFRESH_FROM_DISK_SELECTION, () =&gt; node_cmd(bridge.REFRESH_FROM_DISK_PNODE, u, refreshBoth, false)],
-[prefix + cmd.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; node_cmd(bridge.REFRESH_FROM_DISK_PNODE, u, refreshBoth, true)],
-
-[prefix + cmd.SORT_CHILDREN, () =&gt; node_cmd(bridge.SORT_CHILDREN, u, refreshTree, false)],
-[prefix + cmd.SORT_SIBLING, () =&gt; node_cmd(bridge.SORT_SIBLINGS, u, refreshTree, false)],
-[prefix + cmd.SORT_SIBLING_FO, () =&gt; node_cmd(bridge.SORT_SIBLINGS, u, refreshTree, true)],
-
-[prefix + cmd.PAGE_UP, () =&gt; node_cmd(bridge.PAGE_UP, u, refreshBoth, true)],
-[prefix + cmd.PAGE_DOWN, () =&gt; node_cmd(bridge.PAGE_DOWN, u, refreshBoth, true)],
-[prefix + cmd.GOTO_FIRST_VISIBLE, () =&gt; node_cmd(bridge.GOTO_FIRST_VISIBLE, u, refreshBoth, true)],
-[prefix + cmd.GOTO_LAST_VISIBLE, () =&gt; node_cmd(bridge.GOTO_LAST_VISIBLE, u, refreshBoth, true)],
-[prefix + cmd.GOTO_LAST_SIBLING, () =&gt; node_cmd(bridge.GOTO_LAST_SIBLING, u, refreshBoth, true)],
-[prefix + cmd.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; node_cmd(bridge.GOTO_NEXT_CLONE, p_node, refreshBoth, true)],
-[prefix + cmd.GOTO_NEXT_CLONE_SELECTION, () =&gt; node_cmd(bridge.GOTO_NEXT_CLONE, u, refreshBoth, false)],
-[prefix + cmd.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; node_cmd(bridge.GOTO_NEXT_CLONE, u, refreshBoth, true)],
-
-[prefix + cmd.GOTO_NEXT_VISIBLE, () =&gt; node_cmd(bridge.GOTO_NEXT_VISIBLE, u, refreshBoth, true)],
-[prefix + cmd.GOTO_PREV_VISIBLE, () =&gt; node_cmd(bridge.GOTO_PREV_VISIBLE, u, refreshBoth, true)],
-[prefix + cmd.GOTO_NEXT_MARKED, () =&gt; node_cmd(bridge.GOTO_NEXT_MARKED, u, refreshBoth, true)],
-[prefix + cmd.CONTRACT_OR_GO_LEFT, () =&gt; node_cmd(bridge.CONTRACT_OR_GO_LEFT, u, refreshBoth, true)],
-[prefix + cmd.EXPAND_AND_GO_RIGHT, () =&gt; node_cmd(bridge.EXPAND_AND_GO_RIGHT, u, refreshBoth, true)],
-
-[prefix + cmd.UNDO, () =&gt; node_cmd(bridge.UNDO, u, refreshBoth, false)],
-[prefix + cmd.UNDO_FO, () =&gt; node_cmd(bridge.UNDO, u, refreshBoth, true)],
-[prefix + cmd.REDO, () =&gt; node_cmd(bridge.REDO, u, refreshBoth, false)],
-[prefix + cmd.REDO_FO, () =&gt; node_cmd(bridge.REDO, u, refreshBoth, true)],
-
-[prefix + cmd.HOIST, (p_node: LeoNode) =&gt; node_cmd(bridge.HOIST_PNODE, p_node, refreshBoth, true)],
-[prefix + cmd.HOIST_SELECTION, () =&gt; node_cmd(bridge.HOIST_PNODE, u, refreshBoth, false)],
-[prefix + cmd.HOIST_SELECTION_FO, () =&gt; node_cmd(bridge.HOIST_PNODE, u, refreshBoth, true)],
-[prefix + cmd.DEHOIST, () =&gt; node_cmd(bridge.DEHOIST, u, refreshBoth, false)],
-[prefix + cmd.DEHOIST_FO, () =&gt; node_cmd(bridge.DEHOIST, u, refreshBoth, true)],
-
-[prefix + cmd.CONTRACT_ALL, () =&gt; node_cmd(bridge.CONTRACT_ALL, u, refreshTree, false)],
-[prefix + cmd.CONTRACT_ALL_FO, () =&gt; node_cmd(bridge.CONTRACT_ALL, u, refreshTree, true)],
-</t>
+<t tx="ekr.20200717101025.1"></t>
 <t tx="ekr.20200717102128.1">// TODO : @boltex More commands to implement #15, #23, #24
 [prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
 [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
@@ -5326,34 +5276,9 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
 [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
 [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
-[prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")]
+[prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")],
 </t>
-<t tx="ekr.20200717102200.1">[prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; leo.selectOpenedLeoDocument(p_index)],
-    // Test for undeclared commands VERDICT IT WORKS!
-[prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; leo.clickButton(p_node)],
-    // Test for undeclared commands VERDICT IT WORKS!
-[prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; leo.removeButton(p_node)],
-    // Cannot be undeclared because its referenced in package.json
-[prefix + cmd.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
-[prefix + cmd.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()],
-    // Same as 'show welcome screen'
-[prefix + cmd.START_SERVER, () =&gt; leo.startServer()],
-[prefix + cmd.CONNECT, () =&gt; leo.connect()],
-[prefix + cmd.SHOW_LOG, () =&gt; leo.showLogPane()],
-[prefix + cmd.SHOW_BODY, () =&gt; leo.showBody(false)],
-    // Also focuses on body
-[prefix + cmd.SHOW_OUTLINE, () =&gt; leo.showOutline(true)],
-    // Also focuses on outline
-[prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; leo.selectTreeNode(p_node, false, false)],
-    // Called by nodes in tree when selected
-[prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) =&gt; leo.selectTreeNode(p_node, false, true)],
-
-[prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; leo.editHeadline(p_node, false)],
-[prefix + cmd.HEADLINE_SELECTION, () =&gt; leo.editHeadline(u, false)],
-[prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; leo.editHeadline(u, true)],
-</t>
-<t tx="ekr.20200717102947.1">const w_cmdPrefix = Constants.NAME + ".";
-const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
+<t tx="ekr.20200717102947.1">const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
 const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
 const w_leoIntegration: LeoIntegration = new LeoIntegration(p_context);
 const w_leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(p_context, w_leoIntegration);
@@ -5365,7 +5290,7 @@ const bridge = Constants.LEOBRIDGE;
 const cmd = Constants.COMMANDS;
 const leo = w_leoIntegration;
 const node_cmd = w_leoIntegration.nodeCommand;
-const prefix = w_cmdPrefix;
+const prefix = Constants.NAME + ".";
 const noRefresh = RefreshType.NoRefresh;
 const refreshBoth = RefreshType.RefreshTreeAndBody;
 const refreshTree = RefreshType.RefreshTree;
@@ -5383,6 +5308,110 @@ showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
     p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
     console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
 });
+</t>
+<t tx="ekr.20200717122457.1">[prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; leo.editHeadline(p_node, false)],
+[prefix + cmd.HEADLINE_SELECTION, () =&gt; leo.editHeadline(u, false)],
+[prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; leo.editHeadline(u, true)],
+</t>
+<t tx="ekr.20200717123144.1">[prefix + cmd.REDO, () =&gt; node_cmd(bridge.REDO, u, refreshBoth, false)],
+[prefix + cmd.REDO_FO, () =&gt; node_cmd(bridge.REDO, u, refreshBoth, true)],
+
+[prefix + cmd.UNDO, () =&gt; node_cmd(bridge.UNDO, u, refreshBoth, false)],
+[prefix + cmd.UNDO_FO, () =&gt; node_cmd(bridge.UNDO, u, refreshBoth, true)],
+</t>
+<t tx="ekr.20200717123731.1">[prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; leo.selectTreeNode(p_node, false, false)],
+    // Called by nodes in tree when selected
+[prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) =&gt; leo.selectTreeNode(p_node, false, true)],
+
+[prefix + cmd.SHOW_OUTLINE, () =&gt; leo.showOutline(true)],
+    // Also focuses on outline
+
+[prefix + cmd.SHOW_LOG, () =&gt; leo.showLogPane()],
+[prefix + cmd.SHOW_BODY, () =&gt; leo.showBody(false)],
+    // Also focuses on body
+
+[prefix + cmd.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
+[prefix + cmd.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()],
+    // Same as 'show welcome screen'
+    
+</t>
+<t tx="ekr.20200717123815.1">// Test for undeclared commands VERDICT IT WORKS!
+[prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; leo.clickButton(p_node)],
+
+// Cannot be undeclared because its referenced in package.json
+[prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; leo.removeButton(p_node)],
+</t>
+<t tx="ekr.20200717123836.1">[prefix + cmd.CONNECT, () =&gt; leo.connect()],
+[prefix + cmd.START_SERVER, () =&gt; leo.startServer()],
+</t>
+<t tx="ekr.20200717124624.1">[prefix + cmd.CLONE, (p_node: LeoNode) =&gt; node_cmd(bridge.CLONE_PNODE, p_node, refreshTree, false)],
+[prefix + cmd.CLONE_SELECTION, () =&gt; node_cmd(bridge.CLONE_PNODE, u, refreshTree, false)],
+[prefix + cmd.CLONE_SELECTION_FO, () =&gt; node_cmd(bridge.CLONE_PNODE, u, refreshTree, true)],
+
+[prefix + cmd.INSERT, (p_node: LeoNode) =&gt; leo.insertNode(p_node, false)],
+[prefix + cmd.INSERT_SELECTION, () =&gt; leo.insertNode(u, false)],
+[prefix + cmd.INSERT_SELECTION_FO, () =&gt; leo.insertNode(u, true)],
+
+// * Special command for when inserting rapidly more than one node without even specifying a headline label,
+// such as spamming CTRL+I rapidly.
+[prefix + cmd.INSERT_SELECTION_INTERRUPT, () =&gt; leo.insertNode(u, u, true)],
+</t>
+<t tx="ekr.20200717124627.1">[prefix + cmd.CONTRACT_ALL, () =&gt; node_cmd(bridge.CONTRACT_ALL, u, refreshTree, false)],
+[prefix + cmd.CONTRACT_ALL_FO, () =&gt; node_cmd(bridge.CONTRACT_ALL, u, refreshTree, true)],
+[prefix + cmd.CONTRACT_OR_GO_LEFT, () =&gt; node_cmd(bridge.CONTRACT_OR_GO_LEFT, u, refreshBoth, true)],
+
+[prefix + cmd.EXPAND_AND_GO_RIGHT, () =&gt; node_cmd(bridge.EXPAND_AND_GO_RIGHT, u, refreshBoth, true)],
+</t>
+<t tx="ekr.20200717124627.2">[prefix + cmd.DEHOIST, () =&gt; node_cmd(bridge.DEHOIST, u, refreshBoth, false)],
+[prefix + cmd.DEHOIST_FO, () =&gt; node_cmd(bridge.DEHOIST, u, refreshBoth, true)],
+
+[prefix + cmd.HOIST, (p_node: LeoNode) =&gt; node_cmd(bridge.HOIST_PNODE, p_node, refreshBoth, true)],
+[prefix + cmd.HOIST_SELECTION, () =&gt; node_cmd(bridge.HOIST_PNODE, u, refreshBoth, false)],
+[prefix + cmd.HOIST_SELECTION_FO, () =&gt; node_cmd(bridge.HOIST_PNODE, u, refreshBoth, true)],
+</t>
+<t tx="ekr.20200717124627.3">[prefix + cmd.DEMOTE, (p_node: LeoNode) =&gt; node_cmd(bridge.DEMOTE_PNODE, p_node, refreshTree, false)],
+[prefix + cmd.DEMOTE_SELECTION, () =&gt; node_cmd(bridge.DEMOTE_PNODE, u, refreshTree, false)],
+[prefix + cmd.DEMOTE_SELECTION_FO, () =&gt; node_cmd(bridge.DEMOTE_PNODE, u, refreshTree, true)],
+
+[prefix + cmd.PROMOTE, (p_node: LeoNode) =&gt; node_cmd(bridge.PROMOTE_PNODE, p_node, refreshTree, false)],
+[prefix + cmd.PROMOTE_SELECTION, () =&gt; node_cmd(bridge.PROMOTE_PNODE, u, refreshTree, false)],
+[prefix + cmd.PROMOTE_SELECTION_FO, () =&gt; node_cmd(bridge.PROMOTE_PNODE, u, refreshTree, true)],
+</t>
+<t tx="ekr.20200717124628.1">[prefix + cmd.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; node_cmd(bridge.GOTO_NEXT_CLONE, p_node, refreshBoth, true)],
+[prefix + cmd.GOTO_NEXT_CLONE_SELECTION, () =&gt; node_cmd(bridge.GOTO_NEXT_CLONE, u, refreshBoth, false)],
+[prefix + cmd.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; node_cmd(bridge.GOTO_NEXT_CLONE, u, refreshBoth, true)],
+
+[prefix + cmd.GOTO_NEXT_MARKED, () =&gt; node_cmd(bridge.GOTO_NEXT_MARKED, u, refreshBoth, true)],
+
+[prefix + cmd.GOTO_FIRST_VISIBLE, () =&gt; node_cmd(bridge.GOTO_FIRST_VISIBLE, u, refreshBoth, true)],
+[prefix + cmd.GOTO_LAST_SIBLING, () =&gt; node_cmd(bridge.GOTO_LAST_SIBLING, u, refreshBoth, true)],
+[prefix + cmd.GOTO_LAST_VISIBLE, () =&gt; node_cmd(bridge.GOTO_LAST_VISIBLE, u, refreshBoth, true)],
+[prefix + cmd.GOTO_NEXT_VISIBLE, () =&gt; node_cmd(bridge.GOTO_NEXT_VISIBLE, u, refreshBoth, true)],
+[prefix + cmd.GOTO_PREV_VISIBLE, () =&gt; node_cmd(bridge.GOTO_PREV_VISIBLE, u, refreshBoth, true)],
+
+</t>
+<t tx="ekr.20200717124918.1">[prefix + cmd.MOVE_DOWN, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_DOWN, p_node, refreshTree, false)],
+[prefix + cmd.MOVE_DOWN_SELECTION, () =&gt; node_cmd(bridge.MOVE_PNODE_DOWN, u, refreshTree, false)],
+[prefix + cmd.MOVE_DOWN_SELECTION_FO, () =&gt; node_cmd(bridge.MOVE_PNODE_DOWN, u, refreshTree, true)],
+
+[prefix + cmd.MOVE_LEFT, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_LEFT, p_node, refreshTree, false)],
+[prefix + cmd.MOVE_LEFT_SELECTION, () =&gt; node_cmd(bridge.MOVE_PNODE_LEFT, u, refreshTree, false)],
+[prefix + cmd.MOVE_LEFT_SELECTION_FO, () =&gt; node_cmd(bridge.MOVE_PNODE_LEFT, u, refreshTree, true)],
+
+[prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_RIGHT, p_node, refreshTree, false)],
+[prefix + cmd.MOVE_RIGHT_SELECTION, () =&gt; node_cmd(bridge.MOVE_PNODE_RIGHT, u, refreshTree, false)],
+[prefix + cmd.MOVE_RIGHT_SELECTION_FO, () =&gt; node_cmd(bridge.MOVE_PNODE_RIGHT, u, refreshTree, true)],
+
+[prefix + cmd.MOVE_UP, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_UP, p_node, refreshTree, false)],
+[prefix + cmd.MOVE_UP_SELECTION, () =&gt; node_cmd(bridge.MOVE_PNODE_UP, u, refreshTree, false)],
+[prefix + cmd.MOVE_UP_SELECTION_FO, () =&gt; node_cmd(bridge.MOVE_PNODE_UP, u, refreshTree, true)],
+</t>
+<t tx="ekr.20200717125114.1">[prefix + cmd.SORT_CHILDREN, () =&gt; node_cmd(bridge.SORT_CHILDREN, u, refreshTree, false)],
+[prefix + cmd.SORT_SIBLING, () =&gt; node_cmd(bridge.SORT_SIBLINGS, u, refreshTree, false)],
+[prefix + cmd.SORT_SIBLING_FO, () =&gt; node_cmd(bridge.SORT_SIBLINGS, u, refreshTree, true)],
+</t>
+<t tx="ekr.20200717125131.1">[prefix + cmd.PAGE_UP, () =&gt; node_cmd(bridge.PAGE_UP, u, refreshBoth, true)],
+[prefix + cmd.PAGE_DOWN, () =&gt; node_cmd(bridge.PAGE_DOWN, u, refreshBoth, true)],
 </t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
