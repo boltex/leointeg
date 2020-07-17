@@ -27,6 +27,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     const leo = w_leoIntegration;
     const node_cmd = w_leoIntegration.nodeCommand;
     const prefix = w_cmdPrefix;
+    const noRefresh = RefreshType.NoRefresh;
     const refreshBoth = RefreshType.RefreshTreeAndBody;
     const refreshTree = RefreshType.RefreshTree;
     const showInfo = vscode.window.showInformationMessage;
@@ -39,8 +40,8 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_commands: [string, (...args: any[]) => any][] = [
     
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        [prefix + "test", () => leo.test()], // * Test function useful when debugging
-        [prefix + "testFromOutline", () => leo.test(true)], // * Test function useful when debugging
+        [prefix + "test", () => leo.test()], // Test function useful when debugging
+        [prefix + "testFromOutline", () => leo.test(true)], // Test function useful when debugging
 
         [prefix + cmd.NEW_FILE, () => leo.newLeoFile()],
         [prefix + cmd.SWITCH_FILE, () => leo.switchLeoFile()],
@@ -56,16 +57,13 @@ export function activate(p_context: vscode.ExtensionContext) {
         [prefix + cmd.UNMARK_SELECTION, () => leo.changeMark(false, u, false)],
         [prefix + cmd.MARK_SELECTION_FO, () => leo.changeMark(true, u, true)],
         [prefix + cmd.UNMARK_SELECTION_FO, () => leo.changeMark(false, u, true)],
-
-        [prefix + cmd.COPY, (p_node: LeoNode) => node_cmd(bridge.COPY_PNODE, p_node, RefreshType.NoRefresh, false)],
-            // No refresh/focus
+        [prefix + cmd.COPY, (p_node: LeoNode) => node_cmd(bridge.COPY_PNODE, p_node, noRefresh, false)],
         [prefix + cmd.CUT, (p_node: LeoNode) => node_cmd(bridge.CUT_PNODE, p_node, refreshTree, false)],
         [prefix + cmd.PASTE, (p_node: LeoNode) => node_cmd(bridge.PASTE_PNODE, p_node, refreshTree, false)],
         [prefix + cmd.PASTE_CLONE, (p_node: LeoNode) => node_cmd(bridge.PASTE_CLONE_PNODE, p_node, refreshTree, false)],
         [prefix + cmd.DELETE, (p_node: LeoNode) => node_cmd(bridge.DELETE_PNODE, p_node, refreshTree, false)],
 
-        [prefix + cmd.COPY_SELECTION, () => node_cmd(bridge.COPY_PNODE, u, RefreshType.NoRefresh, false)],
-            // No refresh/focus
+        [prefix + cmd.COPY_SELECTION, () => node_cmd(bridge.COPY_PNODE, u, noRefresh, false)],
         [prefix + cmd.CUT_SELECTION, () => node_cmd(bridge.CUT_PNODE, u, refreshTree, false)],
         [prefix + cmd.CUT_SELECTION_FO, () => node_cmd(bridge.CUT_PNODE, u, refreshTree, true)],
         [prefix + cmd.PASTE_SELECTION, () => node_cmd(bridge.PASTE_PNODE, u, refreshTree, false)],

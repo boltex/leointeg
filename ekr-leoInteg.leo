@@ -1170,8 +1170,8 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
     
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        [prefix + "test", () =&gt; leo.test()], // * Test function useful when debugging
-        [prefix + "testFromOutline", () =&gt; leo.test(true)], // * Test function useful when debugging
+        [prefix + "test", () =&gt; leo.test()], // Test function useful when debugging
+        [prefix + "testFromOutline", () =&gt; leo.test(true)], // Test function useful when debugging
 
         &lt;&lt; file commands &gt;&gt;
         &lt;&lt; mark commands &gt;&gt;
@@ -5219,23 +5219,22 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [prefix + cmd.SAVE_AS_FILE, () =&gt; leo.saveAsLeoFile()],
 [prefix + cmd.SAVE_FILE, () =&gt; leo.saveLeoFile()],
 [prefix + cmd.SAVE_FILE_FO, () =&gt; leo.saveLeoFile(true)],
-[prefix + cmd.CLOSE_FILE, () =&gt; leo.closeLeoFile()],</t>
+[prefix + cmd.CLOSE_FILE, () =&gt; leo.closeLeoFile()],
+</t>
 <t tx="ekr.20200717100831.1">[prefix + cmd.MARK, (p_node: LeoNode) =&gt; leo.changeMark(true, p_node, false)],
 [prefix + cmd.UNMARK, (p_node: LeoNode) =&gt; leo.changeMark(false, p_node, false)],
 [prefix + cmd.MARK_SELECTION, () =&gt; leo.changeMark(true, u, false)],
 [prefix + cmd.UNMARK_SELECTION, () =&gt; leo.changeMark(false, u, false)],
 [prefix + cmd.MARK_SELECTION_FO, () =&gt; leo.changeMark(true, u, true)],
-[prefix + cmd.UNMARK_SELECTION_FO, () =&gt; leo.changeMark(false, u, true)],</t>
-<t tx="ekr.20200717100934.1">
-[prefix + cmd.COPY, (p_node: LeoNode) =&gt; node_cmd(bridge.COPY_PNODE, p_node, RefreshType.NoRefresh, false)],
-    // No refresh/focus
+[prefix + cmd.UNMARK_SELECTION_FO, () =&gt; leo.changeMark(false, u, true)],
+</t>
+<t tx="ekr.20200717100934.1">[prefix + cmd.COPY, (p_node: LeoNode) =&gt; node_cmd(bridge.COPY_PNODE, p_node, noRefresh, false)],
 [prefix + cmd.CUT, (p_node: LeoNode) =&gt; node_cmd(bridge.CUT_PNODE, p_node, refreshTree, false)],
 [prefix + cmd.PASTE, (p_node: LeoNode) =&gt; node_cmd(bridge.PASTE_PNODE, p_node, refreshTree, false)],
 [prefix + cmd.PASTE_CLONE, (p_node: LeoNode) =&gt; node_cmd(bridge.PASTE_CLONE_PNODE, p_node, refreshTree, false)],
 [prefix + cmd.DELETE, (p_node: LeoNode) =&gt; node_cmd(bridge.DELETE_PNODE, p_node, refreshTree, false)],
 
-[prefix + cmd.COPY_SELECTION, () =&gt; node_cmd(bridge.COPY_PNODE, u, RefreshType.NoRefresh, false)],
-    // No refresh/focus
+[prefix + cmd.COPY_SELECTION, () =&gt; node_cmd(bridge.COPY_PNODE, u, noRefresh, false)],
 [prefix + cmd.CUT_SELECTION, () =&gt; node_cmd(bridge.CUT_PNODE, u, refreshTree, false)],
 [prefix + cmd.CUT_SELECTION_FO, () =&gt; node_cmd(bridge.CUT_PNODE, u, refreshTree, true)],
 [prefix + cmd.PASTE_SELECTION, () =&gt; node_cmd(bridge.PASTE_PNODE, u, refreshTree, false)],
@@ -5243,7 +5242,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [prefix + cmd.PASTE_CLONE_SELECTION, () =&gt; node_cmd(bridge.PASTE_CLONE_PNODE, u, refreshTree, false)],
 [prefix + cmd.PASTE_CLONE_SELECTION_FO, () =&gt; node_cmd(bridge.PASTE_CLONE_PNODE, u, refreshTree, true)],
 [prefix + cmd.DELETE_SELECTION, () =&gt; node_cmd(bridge.DELETE_PNODE, u, refreshTree, false)],
-[prefix + cmd.DELETE_SELECTION_FO, () =&gt; node_cmd(bridge.DELETE_PNODE, u, refreshTree, true)],</t>
+[prefix + cmd.DELETE_SELECTION_FO, () =&gt; node_cmd(bridge.DELETE_PNODE, u, refreshTree, true)],
+</t>
 <t tx="ekr.20200717101025.1">[prefix + cmd.MOVE_DOWN, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_DOWN, p_node, refreshTree, false)],
 [prefix + cmd.MOVE_LEFT, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_LEFT, p_node, refreshTree, false)],
 [prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_RIGHT, p_node, refreshTree, false)],
@@ -5326,7 +5326,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
 [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
 [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
-[prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")]</t>
+[prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")]
+</t>
 <t tx="ekr.20200717102200.1">[prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; leo.selectOpenedLeoDocument(p_index)],
     // Test for undeclared commands VERDICT IT WORKS!
 [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; leo.clickButton(p_node)],
@@ -5365,6 +5366,7 @@ const cmd = Constants.COMMANDS;
 const leo = w_leoIntegration;
 const node_cmd = w_leoIntegration.nodeCommand;
 const prefix = w_cmdPrefix;
+const noRefresh = RefreshType.NoRefresh;
 const refreshBoth = RefreshType.RefreshTreeAndBody;
 const refreshTree = RefreshType.RefreshTree;
 const showInfo = vscode.window.showInformationMessage;
@@ -5372,14 +5374,16 @@ const u = undefined;
 
 // * Reset Extension context flags (used in 'when' clauses in package.json)
 utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
-utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?</t>
+utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
+</t>
 <t tx="ekr.20200717103819.1">// If the version is newer than last time, then start automatic server and connection
 showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
     // * Start server and / or connect to it (as specified in settings)
     leo.startNetworkServices();
     p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
     console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
-});</t>
+});
+</t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
         return self.sendLeoBridgePackage("node", self.p_to_ap(p_node))  # Single node, singular
