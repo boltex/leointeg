@@ -24,7 +24,6 @@ export function activate(p_context: vscode.ExtensionContext) {
     const bridge = Constants.LEOBRIDGE;
     const cmd = Constants.COMMANDS;
     const leo = w_leoIntegration;
-    // const node_cmd = w_leoIntegration.nodeCommand;
     const prefix = Constants.NAME + ".";
     const noRefresh = RefreshType.NoRefresh;
     const refreshBoth = RefreshType.RefreshTreeAndBody;

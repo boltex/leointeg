@@ -427,21 +427,8 @@
 </v>
 <v t="felix.20191126232434.4"></v>
 <v t="ekr.20200704142237.2"></v>
-<v t="ekr.20200717095046.1"><vh>----- git-diff command</vh>
+<v t="ekr.20200717095046.1"><vh>----- git-diff command</vh></v>
 <v t="ekr.20200712083036.1"></v>
-<v t="ekr.20200717094106.1"><vh>log</vh></v>
-</v>
-<v t="ekr.20200715170035.1"><vh>Found:nodeCommand</vh>
-<v t="ekr.20200704142236.19"></v>
-<v t="ekr.20200704142237.46"></v>
-<v t="ekr.20200704142237.47"></v>
-<v t="ekr.20200704142237.45"></v>
-<v t="ekr.20200704142237.48"></v>
-<v t="ekr.20200704142237.44"></v>
-<v t="ekr.20200704142237.49"></v>
-<v t="ekr.20200704142237.50"></v>
-</v>
-<v t="ekr.20200717092150.1"><vh>----- changed</vh></v>
 <v t="ekr.20200704142236.19"></v>
 </vnodes>
 <tnodes>
@@ -5071,13 +5058,6 @@ public statusBarOnClick(): void {
     this.statusBarOnClick(); // placeholder / test
 }
 </t>
-<t tx="ekr.20200715170035.1">@nosearch
-
-# flattened, word, ignore-case, head, body
-
-# found 8 nodes
-
-@language typescript</t>
 <t tx="ekr.20200716081515.1">"""Remove unused non-organizer nodes. Split nodes with parse-body"""
 
 @others
@@ -5217,8 +5197,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     return False
 
 </t>
-<t tx="ekr.20200717092150.1"></t>
-<t tx="ekr.20200717094106.1">Exception has occurred: Error: ENOENT: no such file or directory, stat 'c:\Users\edreamleo\AppData\Roaming\Code\logs\20200717T093611\exthost4\output_logging_20200717T093935'</t>
 <t tx="ekr.20200717095046.1"></t>
 <t tx="ekr.20200717100408.1">[prefix + cmd.CLOSE_FILE, () =&gt; leo.closeLeoFile()],
 [prefix + cmd.NEW_FILE, () =&gt; leo.newLeoFile()],
@@ -5289,7 +5267,6 @@ const w_start = process.hrtime(); // For calculating total startup time duration
 const bridge = Constants.LEOBRIDGE;
 const cmd = Constants.COMMANDS;
 const leo = w_leoIntegration;
-// const node_cmd = w_leoIntegration.nodeCommand;
 const prefix = Constants.NAME + ".";
 const noRefresh = RefreshType.NoRefresh;
 const refreshBoth = RefreshType.RefreshTreeAndBody;
