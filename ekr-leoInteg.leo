@@ -48,6 +48,7 @@
 <v t="ekr.20200717101025.1"><vh>&lt;&lt; node commands &gt;&gt;</vh></v>
 <v t="ekr.20200717102200.1"><vh>&lt;&lt; misc commands &gt;&gt;</vh></v>
 <v t="ekr.20200717102128.1"><vh>&lt;&lt; not implemented yet &gt;&gt;</vh></v>
+<v t="ekr.20200717103819.1"><vh>&lt;&lt; show welcome screen &gt;&gt;</vh></v>
 </v>
 <v t="ekr.20200704142236.21"><vh>deactivate</vh></v>
 <v t="ekr.20200704142236.22"><vh>showWelcomeIfNewer</vh></v>
@@ -1159,16 +1160,13 @@ import { LeoButtonNode } from "./leoButtonNode";
 </t>
 <t tx="ekr.20200704142236.19">@language typescript
 /**
- * * Called when extension is activated. It creates the leoIntegration and the 'welcome/Settings' webview instances
+ * * Called when extension is activated.
+ * * It creates the leoIntegration and the 'welcome/Settings' webview instances.
  */
 export function activate(p_context: vscode.ExtensionContext) {
 
     &lt;&lt; define constants &gt;&gt;
 
-    // * Reset Extension context flags (used in 'when' clauses in package.json)
-    utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
-    utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
-    
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
     
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
@@ -1184,15 +1182,11 @@ export function activate(p_context: vscode.ExtensionContext) {
         &lt;&lt; not implemented yet &gt;&gt;
     ];
 
-    w_commands.map(function (p_command) { p_context.subscriptions.push(vscode.commands.registerCommand(...p_command)); });
-
-    // * Show Welcome / settings screen if the version is newer than last time, then start automatic server and connection
-    showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
-        // * Start server and / or connect to it (as specified in settings)
-        li.startNetworkServices();
-        p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-        console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
+    w_commands.map(function (p_command) {
+        p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
     });
+
+    &lt;&lt; show welcome screen &gt;&gt;
 }
 
 </t>
@@ -5226,8 +5220,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [prefix + cmd.SAVE_FILE, () =&gt; li.saveLeoFile()],
 [prefix + cmd.SAVE_FILE_FO, () =&gt; li.saveLeoFile(true)],
 [prefix + cmd.CLOSE_FILE, () =&gt; li.closeLeoFile()],</t>
-<t tx="ekr.20200717100831.1">
-[prefix + cmd.MARK, (p_node: LeoNode) =&gt; li.changeMark(true, p_node, false)],
+<t tx="ekr.20200717100831.1">[prefix + cmd.MARK, (p_node: LeoNode) =&gt; li.changeMark(true, p_node, false)],
 [prefix + cmd.UNMARK, (p_node: LeoNode) =&gt; li.changeMark(false, p_node, false)],
 [prefix + cmd.MARK_SELECTION, () =&gt; li.changeMark(true, u, false)],
 [prefix + cmd.UNMARK_SELECTION, () =&gt; li.changeMark(false, u, false)],
@@ -5319,8 +5312,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [prefix + cmd.CONTRACT_ALL, () =&gt; node_cmd(bridge.CONTRACT_ALL, u, refreshTree, false)],
 [prefix + cmd.CONTRACT_ALL_FO, () =&gt; node_cmd(bridge.CONTRACT_ALL, u, refreshTree, true)],
 </t>
-<t tx="ekr.20200717102128.1">
-// TODO : @boltex More commands to implement #15, #23, #24
+<t tx="ekr.20200717102128.1">// TODO : @boltex More commands to implement #15, #23, #24
 [prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
 [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
 [prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
@@ -5359,19 +5351,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [prefix + cmd.HEADLINE_SELECTION, () =&gt; li.editHeadline(u, false)],
 [prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; li.editHeadline(u, true)],
 </t>
-<t tx="ekr.20200717102947.1">const w_start = process.hrtime(); // For calculating total startup time duration
-
+<t tx="ekr.20200717102947.1">const w_cmdPrefix = Constants.NAME + ".";
 const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
-
 const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
-
-const w_previousVersion = p_context.globalState.get&lt;string&gt;(Constants.VERSION_STATE_KEY);
-
 const w_leoIntegration: LeoIntegration = new LeoIntegration(p_context);
-
 const w_leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(p_context, w_leoIntegration);
-
-const w_cmdPrefix = Constants.NAME + ".";
+const w_previousVersion = p_context.globalState.get&lt;string&gt;(Constants.VERSION_STATE_KEY);
+const w_start = process.hrtime(); // For calculating total startup time duration
 
 // EKR: Move abbreviations to shorten the lines.
 const bridge = Constants.LEOBRIDGE;
@@ -5382,7 +5368,18 @@ const prefix = w_cmdPrefix;
 const refreshBoth = RefreshType.RefreshTreeAndBody;
 const refreshTree = RefreshType.RefreshTree;
 const showInfo = vscode.window.showInformationMessage;
-const u = undefined;</t>
+const u = undefined;
+
+// * Reset Extension context flags (used in 'when' clauses in package.json)
+utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
+utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?</t>
+<t tx="ekr.20200717103819.1">// If the version is newer than last time, then start automatic server and connection
+showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
+    // * Start server and / or connect to it (as specified in settings)
+    li.startNetworkServices();
+    p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
+    console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
+});</t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
         return self.sendLeoBridgePackage("node", self.p_to_ap(p_node))  # Single node, singular

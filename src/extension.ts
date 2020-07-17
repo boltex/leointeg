@@ -8,23 +8,18 @@ import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
 
 /**
- * * Called when extension is activated. It creates the leoIntegration and the 'welcome/Settings' webview instances
+ * * Called when extension is activated.
+ * * It creates the leoIntegration and the 'welcome/Settings' webview instances.
  */
 export function activate(p_context: vscode.ExtensionContext) {
 
-    const w_start = process.hrtime(); // For calculating total startup time duration
-
-    const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
-
-    const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
-
-    const w_previousVersion = p_context.globalState.get<string>(Constants.VERSION_STATE_KEY);
-
-    const w_leoIntegration: LeoIntegration = new LeoIntegration(p_context);
-
-    const w_leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(p_context, w_leoIntegration);
-
     const w_cmdPrefix = Constants.NAME + ".";
+    const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
+    const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
+    const w_leoIntegration: LeoIntegration = new LeoIntegration(p_context);
+    const w_leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(p_context, w_leoIntegration);
+    const w_previousVersion = p_context.globalState.get<string>(Constants.VERSION_STATE_KEY);
+    const w_start = process.hrtime(); // For calculating total startup time duration
 
     // EKR: Move abbreviations to shorten the lines.
     const bridge = Constants.LEOBRIDGE;
@@ -40,7 +35,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     // * Reset Extension context flags (used in 'when' clauses in package.json)
     utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
     utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
-    
+
     const w_commands: [string, (...args: any[]) => any][] = [
     
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
@@ -55,7 +50,6 @@ export function activate(p_context: vscode.ExtensionContext) {
         [prefix + cmd.SAVE_FILE, () => li.saveLeoFile()],
         [prefix + cmd.SAVE_FILE_FO, () => li.saveLeoFile(true)],
         [prefix + cmd.CLOSE_FILE, () => li.closeLeoFile()],
-
         [prefix + cmd.MARK, (p_node: LeoNode) => li.changeMark(true, p_node, false)],
         [prefix + cmd.UNMARK, (p_node: LeoNode) => li.changeMark(false, p_node, false)],
         [prefix + cmd.MARK_SELECTION, () => li.changeMark(true, u, false)],
@@ -171,7 +165,6 @@ export function activate(p_context: vscode.ExtensionContext) {
         [prefix + cmd.HEADLINE, (p_node: LeoNode) => li.editHeadline(p_node, false)],
         [prefix + cmd.HEADLINE_SELECTION, () => li.editHeadline(u, false)],
         [prefix + cmd.HEADLINE_SELECTION_FO, () => li.editHeadline(u, true)],
-
         // TODO : @boltex More commands to implement #15, #23, #24
         [prefix + cmd.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
         [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
@@ -189,9 +182,11 @@ export function activate(p_context: vscode.ExtensionContext) {
         [prefix + cmd.MOVE_MARKED_NODES, () => showInfo("TODO: moveMarkedNode command")]
     ];
 
-    w_commands.map(function (p_command) { p_context.subscriptions.push(vscode.commands.registerCommand(...p_command)); });
+    w_commands.map(function (p_command) {
+        p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
+    });
 
-    // * Show Welcome / settings screen if the version is newer than last time, then start automatic server and connection
+    // If the version is newer than last time, then start automatic server and connection
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() => {
         // * Start server and / or connect to it (as specified in settings)
         li.startNetworkServices();
