@@ -421,6 +421,16 @@
 </v>
 <v t="ekr.20200717092150.1"><vh>----- changed</vh></v>
 <v t="ekr.20200704142236.19"></v>
+<v t="ekr.20200717095942.1"><vh>git diff HEAD </vh>
+<v t="ekr.20200717095942.2"><vh>src/extension.ts</vh>
+<v t="ekr.20200717095942.17"><vh>Changed</vh>
+<v t="ekr.20200717095942.18"><vh>activate</vh>
+<v t="ekr.20200717095942.19"><vh>Old:activate</vh></v>
+<v t="ekr.20200704142236.19"></v>
+</v>
+</v>
+</v>
+</v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200624091412.1"></t>
@@ -1171,147 +1181,156 @@ export function activate(p_context: vscode.ExtensionContext) {
     utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
 
     const w_cmdPrefix = Constants.NAME + ".";
+    
+    // EKR: temp abbreviations to shorten the lines.
+    const c = Constants;
     const prefix = w_cmdPrefix;
     const cmd = Constants.COMMANDS;
+    const li = w_leoIntegration;
+    const bridge = Constants.LEOBRIDGE;
+    const showInfo = vscode.window.showInformationMessage;
+
+    
+    // Existing code...
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
 
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        [prefix + "test", () =&gt; w_leoIntegration.test()], // * Test function useful when debugging
-        [prefix + "testFromOutline", () =&gt; w_leoIntegration.test(true)], // * Test function useful when debugging
+        [prefix + "test", () =&gt; li.test()], // * Test function useful when debugging
+        [prefix + "testFromOutline", () =&gt; li.test(true)], // * Test function useful when debugging
 
-        [prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; w_leoIntegration.selectOpenedLeoDocument(p_index)], // Test for undeclared commands VERDICT IT WORKS!
-        [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leoIntegration.clickButton(p_node)], // Test for undeclared commands VERDICT IT WORKS!
-        [prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; w_leoIntegration.removeButton(p_node)], // Cannot be undeclared because its referenced in package.json
+        [prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; li.selectOpenedLeoDocument(p_index)], // Test for undeclared commands VERDICT IT WORKS!
+        [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; li.clickButton(p_node)], // Test for undeclared commands VERDICT IT WORKS!
+        [prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; li.removeButton(p_node)], // Cannot be undeclared because its referenced in package.json
 
         [prefix + cmd.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
         [prefix + cmd.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()], // Same as 'show welcome screen'
-        [prefix + cmd.START_SERVER, () =&gt; w_leoIntegration.startServer()],
-        [prefix + cmd.CONNECT, () =&gt; w_leoIntegration.connect()],
-        [prefix + cmd.SHOW_LOG, () =&gt; w_leoIntegration.showLogPane()],
-        [prefix + cmd.SHOW_BODY, () =&gt; w_leoIntegration.showBody(false)], // Also focuses on body
-        [prefix + cmd.SHOW_OUTLINE, () =&gt; w_leoIntegration.showOutline(true)], // Also focuses on outline
-        [prefix + cmd.NEW_FILE, () =&gt; w_leoIntegration.newLeoFile()],
-        [prefix + cmd.SWITCH_FILE, () =&gt; w_leoIntegration.switchLeoFile()],
+        [prefix + cmd.START_SERVER, () =&gt; li.startServer()],
+        [prefix + cmd.CONNECT, () =&gt; li.connect()],
+        [prefix + cmd.SHOW_LOG, () =&gt; li.showLogPane()],
+        [prefix + cmd.SHOW_BODY, () =&gt; li.showBody(false)], // Also focuses on body
+        [prefix + cmd.SHOW_OUTLINE, () =&gt; li.showOutline(true)], // Also focuses on outline
+        [prefix + cmd.NEW_FILE, () =&gt; li.newLeoFile()],
+        [prefix + cmd.SWITCH_FILE, () =&gt; li.switchLeoFile()],
 
-        [prefix + cmd.OPEN_FILE, () =&gt; w_leoIntegration.openLeoFile()],
-        [prefix + cmd.SAVE_AS_FILE, () =&gt; w_leoIntegration.saveAsLeoFile()],
-        [prefix + cmd.SAVE_FILE, () =&gt; w_leoIntegration.saveLeoFile()],
-        [prefix + cmd.SAVE_FILE_FO, () =&gt; w_leoIntegration.saveLeoFile(true)],
-        [prefix + cmd.CLOSE_FILE, () =&gt; w_leoIntegration.closeLeoFile()],
+        [prefix + cmd.OPEN_FILE, () =&gt; li.openLeoFile()],
+        [prefix + cmd.SAVE_AS_FILE, () =&gt; li.saveAsLeoFile()],
+        [prefix + cmd.SAVE_FILE, () =&gt; li.saveLeoFile()],
+        [prefix + cmd.SAVE_FILE_FO, () =&gt; li.saveLeoFile(true)],
+        [prefix + cmd.CLOSE_FILE, () =&gt; li.closeLeoFile()],
 
-        [prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; w_leoIntegration.selectTreeNode(p_node, false, false)], // Called by nodes in tree when selected
-        [prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) =&gt; w_leoIntegration.selectTreeNode(p_node, false, true)],
+        [prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; li.selectTreeNode(p_node, false, false)], // Called by nodes in tree when selected
+        [prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) =&gt; li.selectTreeNode(p_node, false, true)],
 
-        [prefix + cmd.CONTRACT_ALL, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_ALL, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.CONTRACT_ALL_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_ALL, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.CONTRACT_ALL, () =&gt; li.nodeCommand(bridge.CONTRACT_ALL, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.CONTRACT_ALL_FO, () =&gt; li.nodeCommand(bridge.CONTRACT_ALL, undefined, RefreshType.RefreshTree, true)],
 
-        [prefix + cmd.MARK, (p_node: LeoNode) =&gt; w_leoIntegration.changeMark(true, p_node, false)],
-        [prefix + cmd.UNMARK, (p_node: LeoNode) =&gt; w_leoIntegration.changeMark(false, p_node, false)],
-        [prefix + cmd.MARK_SELECTION, () =&gt; w_leoIntegration.changeMark(true, undefined, false)],
-        [prefix + cmd.UNMARK_SELECTION, () =&gt; w_leoIntegration.changeMark(false, undefined, false)],
-        [prefix + cmd.MARK_SELECTION_FO, () =&gt; w_leoIntegration.changeMark(true, undefined, true)],
-        [prefix + cmd.UNMARK_SELECTION_FO, () =&gt; w_leoIntegration.changeMark(false, undefined, true)],
+        [prefix + cmd.MARK, (p_node: LeoNode) =&gt; li.changeMark(true, p_node, false)],
+        [prefix + cmd.UNMARK, (p_node: LeoNode) =&gt; li.changeMark(false, p_node, false)],
+        [prefix + cmd.MARK_SELECTION, () =&gt; li.changeMark(true, undefined, false)],
+        [prefix + cmd.UNMARK_SELECTION, () =&gt; li.changeMark(false, undefined, false)],
+        [prefix + cmd.MARK_SELECTION_FO, () =&gt; li.changeMark(true, undefined, true)],
+        [prefix + cmd.UNMARK_SELECTION_FO, () =&gt; li.changeMark(false, undefined, true)],
 
-        [prefix + cmd.COPY, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.COPY_PNODE, p_node, RefreshType.NoRefresh, false)], // No refresh/focus
-        [prefix + cmd.CUT, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CUT_PNODE, p_node, RefreshType.RefreshTree, false)],
-        [prefix + cmd.PASTE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_PNODE, p_node, RefreshType.RefreshTree, false)],
-        [prefix + cmd.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
-        [prefix + cmd.DELETE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DELETE_PNODE, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.COPY, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.COPY_PNODE, p_node, RefreshType.NoRefresh, false)], // No refresh/focus
+        [prefix + cmd.CUT, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.CUT_PNODE, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.PASTE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.PASTE_PNODE, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.PASTE_CLONE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.PASTE_CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.DELETE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.DELETE_PNODE, p_node, RefreshType.RefreshTree, false)],
 
-        [prefix + cmd.COPY_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.COPY_PNODE, undefined, RefreshType.NoRefresh, false)], // No refresh/focus
-        [prefix + cmd.CUT_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CUT_PNODE, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.CUT_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CUT_PNODE, undefined, RefreshType.RefreshTree, true)],
-        [prefix + cmd.PASTE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_PNODE, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.PASTE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_PNODE, undefined, RefreshType.RefreshTree, true)],
-        [prefix + cmd.PASTE_CLONE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.PASTE_CLONE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
-        [prefix + cmd.DELETE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DELETE_PNODE, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.DELETE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DELETE_PNODE, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.COPY_SELECTION, () =&gt; li.nodeCommand(bridge.COPY_PNODE, undefined, RefreshType.NoRefresh, false)], // No refresh/focus
+        [prefix + cmd.CUT_SELECTION, () =&gt; li.nodeCommand(bridge.CUT_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.CUT_SELECTION_FO, () =&gt; li.nodeCommand(bridge.CUT_PNODE, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.PASTE_SELECTION, () =&gt; li.nodeCommand(bridge.PASTE_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.PASTE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.PASTE_PNODE, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.PASTE_CLONE_SELECTION, () =&gt; li.nodeCommand(bridge.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.PASTE_CLONE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.DELETE_SELECTION, () =&gt; li.nodeCommand(bridge.DELETE_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.DELETE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.DELETE_PNODE, undefined, RefreshType.RefreshTree, true)],
 
-        [prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; w_leoIntegration.editHeadline(p_node, false)],
-        [prefix + cmd.HEADLINE_SELECTION, () =&gt; w_leoIntegration.editHeadline(undefined, false)],
-        [prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; w_leoIntegration.editHeadline(undefined, true)],
+        [prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; li.editHeadline(p_node, false)],
+        [prefix + cmd.HEADLINE_SELECTION, () =&gt; li.editHeadline(undefined, false)],
+        [prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; li.editHeadline(undefined, true)],
 
-        [prefix + cmd.MOVE_DOWN, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_DOWN, p_node, RefreshType.RefreshTree, false)],
-        [prefix + cmd.MOVE_LEFT, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_LEFT, p_node, RefreshType.RefreshTree, false)],
-        [prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_RIGHT, p_node, RefreshType.RefreshTree, false)],
-        [prefix + cmd.MOVE_UP, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_UP, p_node, RefreshType.RefreshTree, false)],
-        [prefix + cmd.INSERT, (p_node: LeoNode) =&gt; w_leoIntegration.insertNode(p_node, false)],
-        [prefix + cmd.CLONE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
-        [prefix + cmd.PROMOTE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PROMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
-        [prefix + cmd.DEMOTE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
-        [prefix + cmd.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE, p_node, RefreshType.RefreshTreeAndBody, false)],
+        [prefix + cmd.MOVE_DOWN, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.MOVE_PNODE_DOWN, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_LEFT, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.MOVE_PNODE_LEFT, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.MOVE_PNODE_RIGHT, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_UP, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.MOVE_PNODE_UP, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.INSERT, (p_node: LeoNode) =&gt; li.insertNode(p_node, false)],
+        [prefix + cmd.CLONE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.PROMOTE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.PROMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.DEMOTE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.DEMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.REFRESH_FROM_DISK_PNODE, p_node, RefreshType.RefreshTreeAndBody, false)],
 
-        [prefix + cmd.MOVE_DOWN_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.MOVE_DOWN_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, true)],
-        [prefix + cmd.MOVE_LEFT_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.MOVE_LEFT_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, true)],
-        [prefix + cmd.MOVE_RIGHT_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.MOVE_RIGHT_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, true)],
-        [prefix + cmd.MOVE_UP_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.MOVE_UP_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, true)],
-        [prefix + cmd.INSERT_SELECTION, () =&gt; w_leoIntegration.insertNode(undefined, false)],
-        [prefix + cmd.INSERT_SELECTION_FO, () =&gt; w_leoIntegration.insertNode(undefined, true)],
+        [prefix + cmd.MOVE_DOWN_SELECTION, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_DOWN_SELECTION_FO, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.MOVE_LEFT_SELECTION, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_LEFT_SELECTION_FO, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.MOVE_RIGHT_SELECTION, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_RIGHT_SELECTION_FO, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.MOVE_UP_SELECTION, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_UP_SELECTION_FO, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.INSERT_SELECTION, () =&gt; li.insertNode(undefined, false)],
+        [prefix + cmd.INSERT_SELECTION_FO, () =&gt; li.insertNode(undefined, true)],
 
         // * Special command for when inserting rapidly more than one node without even specifying a headline label, such as spamming CTRL+I rapidly.
-        [prefix + cmd.INSERT_SELECTION_INTERRUPT, () =&gt; w_leoIntegration.insertNode(undefined, undefined, true)],
+        [prefix + cmd.INSERT_SELECTION_INTERRUPT, () =&gt; li.insertNode(undefined, undefined, true)],
 
-        [prefix + cmd.CLONE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.CLONE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
-        [prefix + cmd.PROMOTE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.PROMOTE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
-        [prefix + cmd.DEMOTE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.DEMOTE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.CLONE_SELECTION, () =&gt; li.nodeCommand(bridge.CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.CLONE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.PROMOTE_SELECTION, () =&gt; li.nodeCommand(bridge.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.PROMOTE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.DEMOTE_SELECTION, () =&gt; li.nodeCommand(bridge.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.DEMOTE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
 
-        [prefix + cmd.REFRESH_FROM_DISK_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
-        [prefix + cmd.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.REFRESH_FROM_DISK_SELECTION, () =&gt; li.nodeCommand(bridge.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [prefix + cmd.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; li.nodeCommand(bridge.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
 
-        [prefix + cmd.SORT_CHILDREN, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_CHILDREN, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.SORT_SIBLING, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, false)],
-        [prefix + cmd.SORT_SIBLING_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.SORT_CHILDREN, () =&gt; li.nodeCommand(bridge.SORT_CHILDREN, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.SORT_SIBLING, () =&gt; li.nodeCommand(bridge.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.SORT_SIBLING_FO, () =&gt; li.nodeCommand(bridge.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, true)],
 
-        [prefix + cmd.PAGE_UP, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PAGE_UP, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.PAGE_DOWN, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PAGE_DOWN, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.GOTO_FIRST_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_FIRST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.GOTO_LAST_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_LAST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.GOTO_LAST_SIBLING, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_LAST_SIBLING, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, p_node, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, false)],
-        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.PAGE_UP, () =&gt; li.nodeCommand(bridge.PAGE_UP, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.PAGE_DOWN, () =&gt; li.nodeCommand(bridge.PAGE_DOWN, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_FIRST_VISIBLE, () =&gt; li.nodeCommand(bridge.GOTO_FIRST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_LAST_VISIBLE, () =&gt; li.nodeCommand(bridge.GOTO_LAST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_LAST_SIBLING, () =&gt; li.nodeCommand(bridge.GOTO_LAST_SIBLING, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.GOTO_NEXT_CLONE, p_node, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION, () =&gt; li.nodeCommand(bridge.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, true)],
 
-        [prefix + cmd.GOTO_NEXT_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.GOTO_PREV_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_PREV_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.GOTO_NEXT_MARKED, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_MARKED, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.CONTRACT_OR_GO_LEFT, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_OR_GO_LEFT, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.EXPAND_AND_GO_RIGHT, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.EXPAND_AND_GO_RIGHT, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_NEXT_VISIBLE, () =&gt; li.nodeCommand(bridge.GOTO_NEXT_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_PREV_VISIBLE, () =&gt; li.nodeCommand(bridge.GOTO_PREV_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_NEXT_MARKED, () =&gt; li.nodeCommand(bridge.GOTO_NEXT_MARKED, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.CONTRACT_OR_GO_LEFT, () =&gt; li.nodeCommand(bridge.CONTRACT_OR_GO_LEFT, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.EXPAND_AND_GO_RIGHT, () =&gt; li.nodeCommand(bridge.EXPAND_AND_GO_RIGHT, undefined, RefreshType.RefreshTreeAndBody, true)],
 
-        [prefix + cmd.UNDO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.UNDO, undefined, RefreshType.RefreshTreeAndBody, false)],
-        [prefix + cmd.UNDO_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.UNDO, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.REDO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, false)],
-        [prefix + cmd.REDO_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.EXECUTE, () =&gt; w_leoIntegration.executeScript()],
+        [prefix + cmd.UNDO, () =&gt; li.nodeCommand(bridge.UNDO, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [prefix + cmd.UNDO_FO, () =&gt; li.nodeCommand(bridge.UNDO, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.REDO, () =&gt; li.nodeCommand(bridge.REDO, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [prefix + cmd.REDO_FO, () =&gt; li.nodeCommand(bridge.REDO, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.EXECUTE, () =&gt; li.executeScript()],
 
-        [prefix + cmd.HOIST, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, p_node, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.HOIST_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
-        [prefix + cmd.HOIST_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
-        [prefix + cmd.DEHOIST, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, false)],
-        [prefix + cmd.DEHOIST_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.HOIST, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.HOIST_PNODE, p_node, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.HOIST_SELECTION, () =&gt; li.nodeCommand(bridge.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [prefix + cmd.HOIST_SELECTION_FO, () =&gt; li.nodeCommand(bridge.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.DEHOIST, () =&gt; li.nodeCommand(bridge.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [prefix + cmd.DEHOIST_FO, () =&gt; li.nodeCommand(bridge.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, true)],
 
         // TODO : @boltex More commands to implement #15, #23, #24
-        [prefix + cmd.CLONE_FIND_ALL, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindAll command")],
-        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindAllFlattened command")],
-        [prefix + cmd.CLONE_FIND_MARKED, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindMarked command")],
-        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindFlattenedMarked command")],
-        [prefix + cmd.EXTRACT, () =&gt; vscode.window.showInformationMessage("TODO: extract command")],
-        [prefix + cmd.EXTRACT_NAMES, () =&gt; vscode.window.showInformationMessage("TODO: extractNames command")],
-        [prefix + cmd.COPY_MARKED, () =&gt; vscode.window.showInformationMessage("TODO: copyMarked command")],
-        [prefix + cmd.DIFF_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: diffMarkedNodes command")],
-        [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; vscode.window.showInformationMessage("TODO: markChangedItems command")],
-        [prefix + cmd.MARK_SUBHEADS, () =&gt; vscode.window.showInformationMessage("TODO: markSubheads command")],
-        [prefix + cmd.UNMARK_ALL, () =&gt; vscode.window.showInformationMessage("TODO: unmarkAll command")],
-        [prefix + cmd.CLONE_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: cloneMarkedNodes command")],
-        [prefix + cmd.DELETE_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: deleteMarkedNodes command")],
-        [prefix + cmd.MOVE_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: moveMarkedNode command")]
+        [prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
+        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
+        [prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
+        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
+        [prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
+        [prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
+        [prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
+        [prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
+        [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
+        [prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
+        [prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
+        [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
+        [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
+        [prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")]
     ];
 
     w_commands.map(function (p_command) { p_context.subscriptions.push(vscode.commands.registerCommand(...p_command)); });
@@ -1319,8 +1338,8 @@ export function activate(p_context: vscode.ExtensionContext) {
     // * Show Welcome / settings screen if the version is newer than last time, then start automatic server and connection
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
         // * Start server and / or connect to it (as specified in settings)
-        w_leoIntegration.startNetworkServices();
-        p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
+        li.startNetworkServices();
+        p_context.globalState.update(c.VERSION_STATE_KEY, w_leoIntegVersion);
         console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
     });
 }
@@ -5348,6 +5367,778 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 <t tx="ekr.20200717092150.1"></t>
 <t tx="ekr.20200717094106.1">Exception has occurred: Error: ENOENT: no such file or directory, stat 'c:\Users\edreamleo\AppData\Roaming\Code\logs\20200717T093611\exthost4\output_logging_20200717T093935'</t>
 <t tx="ekr.20200717095046.1"></t>
+<t tx="ekr.20200717095942.1">@ignore
+@nosearch
+HEAD=4659954</t>
+<t tx="ekr.20200717095942.17"></t>
+<t tx="ekr.20200717095942.18">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -20,147 +20,156 @@
+     utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
+ 
+     const w_cmdPrefix = Constants.NAME + ".";
++    
++    // EKR: temp abbreviations to shorten the lines.
++    const c = Constants;
+     const prefix = w_cmdPrefix;
+     const cmd = Constants.COMMANDS;
++    const li = w_leoIntegration;
++    const bridge = Constants.LEOBRIDGE
++    const showInfo = vscode.window.showInformationMessage;
++
++    
++    // Existing code...
+     const w_commands: [string, (...args: any[]) =&gt; any][] = [
+ 
+         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
+-        [prefix + "test", () =&gt; w_leoIntegration.test()], // * Test function useful when debugging
+-        [prefix + "testFromOutline", () =&gt; w_leoIntegration.test(true)], // * Test function useful when debugging
++        [prefix + "test", () =&gt; li.test()], // * Test function useful when debugging
++        [prefix + "testFromOutline", () =&gt; li.test(true)], // * Test function useful when debugging
+ 
+-        [prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; w_leoIntegration.selectOpenedLeoDocument(p_index)], // Test for undeclared commands VERDICT IT WORKS!
+-        [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leoIntegration.clickButton(p_node)], // Test for undeclared commands VERDICT IT WORKS!
+-        [prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; w_leoIntegration.removeButton(p_node)], // Cannot be undeclared because its referenced in package.json
++        [prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; li.selectOpenedLeoDocument(p_index)], // Test for undeclared commands VERDICT IT WORKS!
++        [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; li.clickButton(p_node)], // Test for undeclared commands VERDICT IT WORKS!
++        [prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; li.removeButton(p_node)], // Cannot be undeclared because its referenced in package.json
+ 
+         [prefix + cmd.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
+         [prefix + cmd.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()], // Same as 'show welcome screen'
+-        [prefix + cmd.START_SERVER, () =&gt; w_leoIntegration.startServer()],
+-        [prefix + cmd.CONNECT, () =&gt; w_leoIntegration.connect()],
+-        [prefix + cmd.SHOW_LOG, () =&gt; w_leoIntegration.showLogPane()],
+-        [prefix + cmd.SHOW_BODY, () =&gt; w_leoIntegration.showBody(false)], // Also focuses on body
+-        [prefix + cmd.SHOW_OUTLINE, () =&gt; w_leoIntegration.showOutline(true)], // Also focuses on outline
+-        [prefix + cmd.NEW_FILE, () =&gt; w_leoIntegration.newLeoFile()],
+-        [prefix + cmd.SWITCH_FILE, () =&gt; w_leoIntegration.switchLeoFile()],
++        [prefix + cmd.START_SERVER, () =&gt; li.startServer()],
++        [prefix + cmd.CONNECT, () =&gt; li.connect()],
++        [prefix + cmd.SHOW_LOG, () =&gt; li.showLogPane()],
++        [prefix + cmd.SHOW_BODY, () =&gt; li.showBody(false)], // Also focuses on body
++        [prefix + cmd.SHOW_OUTLINE, () =&gt; li.showOutline(true)], // Also focuses on outline
++        [prefix + cmd.NEW_FILE, () =&gt; li.newLeoFile()],
++        [prefix + cmd.SWITCH_FILE, () =&gt; li.switchLeoFile()],
+ 
+-        [prefix + cmd.OPEN_FILE, () =&gt; w_leoIntegration.openLeoFile()],
+-        [prefix + cmd.SAVE_AS_FILE, () =&gt; w_leoIntegration.saveAsLeoFile()],
+-        [prefix + cmd.SAVE_FILE, () =&gt; w_leoIntegration.saveLeoFile()],
+-        [prefix + cmd.SAVE_FILE_FO, () =&gt; w_leoIntegration.saveLeoFile(true)],
+-        [prefix + cmd.CLOSE_FILE, () =&gt; w_leoIntegration.closeLeoFile()],
++        [prefix + cmd.OPEN_FILE, () =&gt; li.openLeoFile()],
++        [prefix + cmd.SAVE_AS_FILE, () =&gt; li.saveAsLeoFile()],
++        [prefix + cmd.SAVE_FILE, () =&gt; li.saveLeoFile()],
++        [prefix + cmd.SAVE_FILE_FO, () =&gt; li.saveLeoFile(true)],
++        [prefix + cmd.CLOSE_FILE, () =&gt; li.closeLeoFile()],
+ 
+-        [prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; w_leoIntegration.selectTreeNode(p_node, false, false)], // Called by nodes in tree when selected
+-        [prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) =&gt; w_leoIntegration.selectTreeNode(p_node, false, true)],
++        [prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; li.selectTreeNode(p_node, false, false)], // Called by nodes in tree when selected
++        [prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) =&gt; li.selectTreeNode(p_node, false, true)],
+ 
+-        [prefix + cmd.CONTRACT_ALL, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_ALL, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.CONTRACT_ALL_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_ALL, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.CONTRACT_ALL, () =&gt; li.nodeCommand(bridge.CONTRACT_ALL, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.CONTRACT_ALL_FO, () =&gt; li.nodeCommand(bridge.CONTRACT_ALL, undefined, RefreshType.RefreshTree, true)],
+ 
+-        [prefix + cmd.MARK, (p_node: LeoNode) =&gt; w_leoIntegration.changeMark(true, p_node, false)],
+-        [prefix + cmd.UNMARK, (p_node: LeoNode) =&gt; w_leoIntegration.changeMark(false, p_node, false)],
+-        [prefix + cmd.MARK_SELECTION, () =&gt; w_leoIntegration.changeMark(true, undefined, false)],
+-        [prefix + cmd.UNMARK_SELECTION, () =&gt; w_leoIntegration.changeMark(false, undefined, false)],
+-        [prefix + cmd.MARK_SELECTION_FO, () =&gt; w_leoIntegration.changeMark(true, undefined, true)],
+-        [prefix + cmd.UNMARK_SELECTION_FO, () =&gt; w_leoIntegration.changeMark(false, undefined, true)],
++        [prefix + cmd.MARK, (p_node: LeoNode) =&gt; li.changeMark(true, p_node, false)],
++        [prefix + cmd.UNMARK, (p_node: LeoNode) =&gt; li.changeMark(false, p_node, false)],
++        [prefix + cmd.MARK_SELECTION, () =&gt; li.changeMark(true, undefined, false)],
++        [prefix + cmd.UNMARK_SELECTION, () =&gt; li.changeMark(false, undefined, false)],
++        [prefix + cmd.MARK_SELECTION_FO, () =&gt; li.changeMark(true, undefined, true)],
++        [prefix + cmd.UNMARK_SELECTION_FO, () =&gt; li.changeMark(false, undefined, true)],
+ 
+-        [prefix + cmd.COPY, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.COPY_PNODE, p_node, RefreshType.NoRefresh, false)], // No refresh/focus
+-        [prefix + cmd.CUT, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CUT_PNODE, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.PASTE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_PNODE, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.DELETE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DELETE_PNODE, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.COPY, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.COPY_PNODE, p_node, RefreshType.NoRefresh, false)], // No refresh/focus
++        [prefix + cmd.CUT, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.CUT_PNODE, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.PASTE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.PASTE_PNODE, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.PASTE_CLONE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.PASTE_CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.DELETE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.DELETE_PNODE, p_node, RefreshType.RefreshTree, false)],
+ 
+-        [prefix + cmd.COPY_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.COPY_PNODE, undefined, RefreshType.NoRefresh, false)], // No refresh/focus
+-        [prefix + cmd.CUT_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CUT_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.CUT_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CUT_PNODE, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.PASTE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.PASTE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_PNODE, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.PASTE_CLONE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.PASTE_CLONE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.DELETE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DELETE_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.DELETE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DELETE_PNODE, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.COPY_SELECTION, () =&gt; li.nodeCommand(bridge.COPY_PNODE, undefined, RefreshType.NoRefresh, false)], // No refresh/focus
++        [prefix + cmd.CUT_SELECTION, () =&gt; li.nodeCommand(bridge.CUT_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.CUT_SELECTION_FO, () =&gt; li.nodeCommand(bridge.CUT_PNODE, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.PASTE_SELECTION, () =&gt; li.nodeCommand(bridge.PASTE_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.PASTE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.PASTE_PNODE, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.PASTE_CLONE_SELECTION, () =&gt; li.nodeCommand(bridge.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.PASTE_CLONE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.DELETE_SELECTION, () =&gt; li.nodeCommand(bridge.DELETE_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.DELETE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.DELETE_PNODE, undefined, RefreshType.RefreshTree, true)],
+ 
+-        [prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; w_leoIntegration.editHeadline(p_node, false)],
+-        [prefix + cmd.HEADLINE_SELECTION, () =&gt; w_leoIntegration.editHeadline(undefined, false)],
+-        [prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; w_leoIntegration.editHeadline(undefined, true)],
++        [prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; li.editHeadline(p_node, false)],
++        [prefix + cmd.HEADLINE_SELECTION, () =&gt; li.editHeadline(undefined, false)],
++        [prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; li.editHeadline(undefined, true)],
+ 
+-        [prefix + cmd.MOVE_DOWN, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_DOWN, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_LEFT, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_LEFT, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_RIGHT, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_UP, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_UP, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.INSERT, (p_node: LeoNode) =&gt; w_leoIntegration.insertNode(p_node, false)],
+-        [prefix + cmd.CLONE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.PROMOTE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PROMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.DEMOTE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE, p_node, RefreshType.RefreshTreeAndBody, false)],
++        [prefix + cmd.MOVE_DOWN, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.MOVE_PNODE_DOWN, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_LEFT, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.MOVE_PNODE_LEFT, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.MOVE_PNODE_RIGHT, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_UP, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.MOVE_PNODE_UP, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.INSERT, (p_node: LeoNode) =&gt; li.insertNode(p_node, false)],
++        [prefix + cmd.CLONE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.PROMOTE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.PROMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.DEMOTE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.DEMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.REFRESH_FROM_DISK_PNODE, p_node, RefreshType.RefreshTreeAndBody, false)],
+ 
+-        [prefix + cmd.MOVE_DOWN_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_DOWN_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.MOVE_LEFT_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_LEFT_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.MOVE_RIGHT_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_RIGHT_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.MOVE_UP_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_UP_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.INSERT_SELECTION, () =&gt; w_leoIntegration.insertNode(undefined, false)],
+-        [prefix + cmd.INSERT_SELECTION_FO, () =&gt; w_leoIntegration.insertNode(undefined, true)],
++        [prefix + cmd.MOVE_DOWN_SELECTION, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_DOWN_SELECTION_FO, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.MOVE_LEFT_SELECTION, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_LEFT_SELECTION_FO, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.MOVE_RIGHT_SELECTION, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_RIGHT_SELECTION_FO, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.MOVE_UP_SELECTION, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_UP_SELECTION_FO, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.INSERT_SELECTION, () =&gt; li.insertNode(undefined, false)],
++        [prefix + cmd.INSERT_SELECTION_FO, () =&gt; li.insertNode(undefined, true)],
+ 
+         // * Special command for when inserting rapidly more than one node without even specifying a headline label, such as spamming CTRL+I rapidly.
+-        [prefix + cmd.INSERT_SELECTION_INTERRUPT, () =&gt; w_leoIntegration.insertNode(undefined, undefined, true)],
++        [prefix + cmd.INSERT_SELECTION_INTERRUPT, () =&gt; li.insertNode(undefined, undefined, true)],
+ 
+-        [prefix + cmd.CLONE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.CLONE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.PROMOTE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.PROMOTE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.DEMOTE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.DEMOTE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.CLONE_SELECTION, () =&gt; li.nodeCommand(bridge.CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.CLONE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.PROMOTE_SELECTION, () =&gt; li.nodeCommand(bridge.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.PROMOTE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.DEMOTE_SELECTION, () =&gt; li.nodeCommand(bridge.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.DEMOTE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
+ 
+-        [prefix + cmd.REFRESH_FROM_DISK_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
+-        [prefix + cmd.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.REFRESH_FROM_DISK_SELECTION, () =&gt; li.nodeCommand(bridge.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
++        [prefix + cmd.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; li.nodeCommand(bridge.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
+ 
+-        [prefix + cmd.SORT_CHILDREN, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_CHILDREN, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.SORT_SIBLING, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.SORT_SIBLING_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.SORT_CHILDREN, () =&gt; li.nodeCommand(bridge.SORT_CHILDREN, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.SORT_SIBLING, () =&gt; li.nodeCommand(bridge.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.SORT_SIBLING_FO, () =&gt; li.nodeCommand(bridge.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, true)],
+ 
+-        [prefix + cmd.PAGE_UP, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PAGE_UP, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.PAGE_DOWN, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PAGE_DOWN, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_FIRST_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_FIRST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_LAST_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_LAST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_LAST_SIBLING, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_LAST_SIBLING, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, p_node, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, false)],
+-        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.PAGE_UP, () =&gt; li.nodeCommand(bridge.PAGE_UP, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.PAGE_DOWN, () =&gt; li.nodeCommand(bridge.PAGE_DOWN, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_FIRST_VISIBLE, () =&gt; li.nodeCommand(bridge.GOTO_FIRST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_LAST_VISIBLE, () =&gt; li.nodeCommand(bridge.GOTO_LAST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_LAST_SIBLING, () =&gt; li.nodeCommand(bridge.GOTO_LAST_SIBLING, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.GOTO_NEXT_CLONE, p_node, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION, () =&gt; li.nodeCommand(bridge.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, false)],
++        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, true)],
+ 
+-        [prefix + cmd.GOTO_NEXT_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_PREV_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_PREV_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_NEXT_MARKED, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_MARKED, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.CONTRACT_OR_GO_LEFT, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_OR_GO_LEFT, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.EXPAND_AND_GO_RIGHT, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.EXPAND_AND_GO_RIGHT, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_NEXT_VISIBLE, () =&gt; li.nodeCommand(bridge.GOTO_NEXT_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_PREV_VISIBLE, () =&gt; li.nodeCommand(bridge.GOTO_PREV_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_NEXT_MARKED, () =&gt; li.nodeCommand(bridge.GOTO_NEXT_MARKED, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.CONTRACT_OR_GO_LEFT, () =&gt; li.nodeCommand(bridge.CONTRACT_OR_GO_LEFT, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.EXPAND_AND_GO_RIGHT, () =&gt; li.nodeCommand(bridge.EXPAND_AND_GO_RIGHT, undefined, RefreshType.RefreshTreeAndBody, true)],
+ 
+-        [prefix + cmd.UNDO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.UNDO, undefined, RefreshType.RefreshTreeAndBody, false)],
+-        [prefix + cmd.UNDO_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.UNDO, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.REDO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, false)],
+-        [prefix + cmd.REDO_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.EXECUTE, () =&gt; w_leoIntegration.executeScript()],
++        [prefix + cmd.UNDO, () =&gt; li.nodeCommand(bridge.UNDO, undefined, RefreshType.RefreshTreeAndBody, false)],
++        [prefix + cmd.UNDO_FO, () =&gt; li.nodeCommand(bridge.UNDO, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.REDO, () =&gt; li.nodeCommand(bridge.REDO, undefined, RefreshType.RefreshTreeAndBody, false)],
++        [prefix + cmd.REDO_FO, () =&gt; li.nodeCommand(bridge.REDO, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.EXECUTE, () =&gt; li.executeScript()],
+ 
+-        [prefix + cmd.HOIST, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, p_node, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.HOIST_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
+-        [prefix + cmd.HOIST_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.DEHOIST, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, false)],
+-        [prefix + cmd.DEHOIST_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.HOIST, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.HOIST_PNODE, p_node, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.HOIST_SELECTION, () =&gt; li.nodeCommand(bridge.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
++        [prefix + cmd.HOIST_SELECTION_FO, () =&gt; li.nodeCommand(bridge.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.DEHOIST, () =&gt; li.nodeCommand(bridge.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, false)],
++        [prefix + cmd.DEHOIST_FO, () =&gt; li.nodeCommand(bridge.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, true)],
+ 
+         // TODO : @boltex More commands to implement #15, #23, #24
+-        [prefix + cmd.CLONE_FIND_ALL, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindAll command")],
+-        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindAllFlattened command")],
+-        [prefix + cmd.CLONE_FIND_MARKED, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindMarked command")],
+-        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindFlattenedMarked command")],
+-        [prefix + cmd.EXTRACT, () =&gt; vscode.window.showInformationMessage("TODO: extract command")],
+-        [prefix + cmd.EXTRACT_NAMES, () =&gt; vscode.window.showInformationMessage("TODO: extractNames command")],
+-        [prefix + cmd.COPY_MARKED, () =&gt; vscode.window.showInformationMessage("TODO: copyMarked command")],
+-        [prefix + cmd.DIFF_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: diffMarkedNodes command")],
+-        [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; vscode.window.showInformationMessage("TODO: markChangedItems command")],
+-        [prefix + cmd.MARK_SUBHEADS, () =&gt; vscode.window.showInformationMessage("TODO: markSubheads command")],
+-        [prefix + cmd.UNMARK_ALL, () =&gt; vscode.window.showInformationMessage("TODO: unmarkAll command")],
+-        [prefix + cmd.CLONE_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: cloneMarkedNodes command")],
+-        [prefix + cmd.DELETE_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: deleteMarkedNodes command")],
+-        [prefix + cmd.MOVE_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: moveMarkedNode command")]
++        [prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
++        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
++        [prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
++        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
++        [prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
++        [prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
++        [prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
++        [prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
++        [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
++        [prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
++        [prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
++        [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
++        [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
++        [prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")]
+     ];
+ 
+     w_commands.map(function (p_command) { p_context.subscriptions.push(vscode.commands.registerCommand(...p_command)); });
+@@ -168,8 +177,8 @@
+     // * Show Welcome / settings screen if the version is newer than last time, then start automatic server and connection
+     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
+         // * Start server and / or connect to it (as specified in settings)
+-        w_leoIntegration.startNetworkServices();
+-        p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
++        li.startNetworkServices();
++        p_context.globalState.update(c.VERSION_STATE_KEY, w_leoIntegVersion);
+         console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
+     });
+ }
+@language python
+</t>
+<t tx="ekr.20200717095942.19">@language typescript
+/**
+ * * Called when extension is activated. It creates the leoIntegration and the 'welcome/Settings' webview instances
+ */
+export function activate(p_context: vscode.ExtensionContext) {
+
+    const w_start = process.hrtime(); // For calculating total startup time duration
+
+    const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
+
+    const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
+
+    const w_previousVersion = p_context.globalState.get&lt;string&gt;(Constants.VERSION_STATE_KEY);
+
+    const w_leoIntegration: LeoIntegration = new LeoIntegration(p_context);
+    const w_leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(p_context, w_leoIntegration);
+
+    // * Reset Extension context flags (used in 'when' clauses in package.json)
+    utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
+    utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
+
+    const w_cmdPrefix = Constants.NAME + ".";
+    const prefix = w_cmdPrefix;
+    const cmd = Constants.COMMANDS;
+    const w_commands: [string, (...args: any[]) =&gt; any][] = [
+
+        // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
+        [prefix + "test", () =&gt; w_leoIntegration.test()], // * Test function useful when debugging
+        [prefix + "testFromOutline", () =&gt; w_leoIntegration.test(true)], // * Test function useful when debugging
+
+        [prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; w_leoIntegration.selectOpenedLeoDocument(p_index)], // Test for undeclared commands VERDICT IT WORKS!
+        [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leoIntegration.clickButton(p_node)], // Test for undeclared commands VERDICT IT WORKS!
+        [prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; w_leoIntegration.removeButton(p_node)], // Cannot be undeclared because its referenced in package.json
+
+        [prefix + cmd.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
+        [prefix + cmd.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()], // Same as 'show welcome screen'
+        [prefix + cmd.START_SERVER, () =&gt; w_leoIntegration.startServer()],
+        [prefix + cmd.CONNECT, () =&gt; w_leoIntegration.connect()],
+        [prefix + cmd.SHOW_LOG, () =&gt; w_leoIntegration.showLogPane()],
+        [prefix + cmd.SHOW_BODY, () =&gt; w_leoIntegration.showBody(false)], // Also focuses on body
+        [prefix + cmd.SHOW_OUTLINE, () =&gt; w_leoIntegration.showOutline(true)], // Also focuses on outline
+        [prefix + cmd.NEW_FILE, () =&gt; w_leoIntegration.newLeoFile()],
+        [prefix + cmd.SWITCH_FILE, () =&gt; w_leoIntegration.switchLeoFile()],
+
+        [prefix + cmd.OPEN_FILE, () =&gt; w_leoIntegration.openLeoFile()],
+        [prefix + cmd.SAVE_AS_FILE, () =&gt; w_leoIntegration.saveAsLeoFile()],
+        [prefix + cmd.SAVE_FILE, () =&gt; w_leoIntegration.saveLeoFile()],
+        [prefix + cmd.SAVE_FILE_FO, () =&gt; w_leoIntegration.saveLeoFile(true)],
+        [prefix + cmd.CLOSE_FILE, () =&gt; w_leoIntegration.closeLeoFile()],
+
+        [prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; w_leoIntegration.selectTreeNode(p_node, false, false)], // Called by nodes in tree when selected
+        [prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) =&gt; w_leoIntegration.selectTreeNode(p_node, false, true)],
+
+        [prefix + cmd.CONTRACT_ALL, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_ALL, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.CONTRACT_ALL_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_ALL, undefined, RefreshType.RefreshTree, true)],
+
+        [prefix + cmd.MARK, (p_node: LeoNode) =&gt; w_leoIntegration.changeMark(true, p_node, false)],
+        [prefix + cmd.UNMARK, (p_node: LeoNode) =&gt; w_leoIntegration.changeMark(false, p_node, false)],
+        [prefix + cmd.MARK_SELECTION, () =&gt; w_leoIntegration.changeMark(true, undefined, false)],
+        [prefix + cmd.UNMARK_SELECTION, () =&gt; w_leoIntegration.changeMark(false, undefined, false)],
+        [prefix + cmd.MARK_SELECTION_FO, () =&gt; w_leoIntegration.changeMark(true, undefined, true)],
+        [prefix + cmd.UNMARK_SELECTION_FO, () =&gt; w_leoIntegration.changeMark(false, undefined, true)],
+
+        [prefix + cmd.COPY, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.COPY_PNODE, p_node, RefreshType.NoRefresh, false)], // No refresh/focus
+        [prefix + cmd.CUT, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CUT_PNODE, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.PASTE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_PNODE, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.DELETE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DELETE_PNODE, p_node, RefreshType.RefreshTree, false)],
+
+        [prefix + cmd.COPY_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.COPY_PNODE, undefined, RefreshType.NoRefresh, false)], // No refresh/focus
+        [prefix + cmd.CUT_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CUT_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.CUT_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CUT_PNODE, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.PASTE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.PASTE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_PNODE, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.PASTE_CLONE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.PASTE_CLONE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.DELETE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DELETE_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.DELETE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DELETE_PNODE, undefined, RefreshType.RefreshTree, true)],
+
+        [prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; w_leoIntegration.editHeadline(p_node, false)],
+        [prefix + cmd.HEADLINE_SELECTION, () =&gt; w_leoIntegration.editHeadline(undefined, false)],
+        [prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; w_leoIntegration.editHeadline(undefined, true)],
+
+        [prefix + cmd.MOVE_DOWN, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_DOWN, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_LEFT, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_LEFT, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_RIGHT, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_UP, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_UP, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.INSERT, (p_node: LeoNode) =&gt; w_leoIntegration.insertNode(p_node, false)],
+        [prefix + cmd.CLONE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.PROMOTE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PROMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.DEMOTE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
+        [prefix + cmd.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE, p_node, RefreshType.RefreshTreeAndBody, false)],
+
+        [prefix + cmd.MOVE_DOWN_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_DOWN_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.MOVE_LEFT_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_LEFT_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.MOVE_RIGHT_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_RIGHT_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.MOVE_UP_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.MOVE_UP_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.INSERT_SELECTION, () =&gt; w_leoIntegration.insertNode(undefined, false)],
+        [prefix + cmd.INSERT_SELECTION_FO, () =&gt; w_leoIntegration.insertNode(undefined, true)],
+
+        // * Special command for when inserting rapidly more than one node without even specifying a headline label, such as spamming CTRL+I rapidly.
+        [prefix + cmd.INSERT_SELECTION_INTERRUPT, () =&gt; w_leoIntegration.insertNode(undefined, undefined, true)],
+
+        [prefix + cmd.CLONE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.CLONE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.PROMOTE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.PROMOTE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
+        [prefix + cmd.DEMOTE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.DEMOTE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
+
+        [prefix + cmd.REFRESH_FROM_DISK_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [prefix + cmd.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
+
+        [prefix + cmd.SORT_CHILDREN, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_CHILDREN, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.SORT_SIBLING, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, false)],
+        [prefix + cmd.SORT_SIBLING_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, true)],
+
+        [prefix + cmd.PAGE_UP, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PAGE_UP, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.PAGE_DOWN, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PAGE_DOWN, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_FIRST_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_FIRST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_LAST_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_LAST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_LAST_SIBLING, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_LAST_SIBLING, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, p_node, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, true)],
+
+        [prefix + cmd.GOTO_NEXT_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_PREV_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_PREV_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.GOTO_NEXT_MARKED, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_MARKED, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.CONTRACT_OR_GO_LEFT, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_OR_GO_LEFT, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.EXPAND_AND_GO_RIGHT, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.EXPAND_AND_GO_RIGHT, undefined, RefreshType.RefreshTreeAndBody, true)],
+
+        [prefix + cmd.UNDO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.UNDO, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [prefix + cmd.UNDO_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.UNDO, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.REDO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [prefix + cmd.REDO_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.EXECUTE, () =&gt; w_leoIntegration.executeScript()],
+
+        [prefix + cmd.HOIST, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, p_node, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.HOIST_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [prefix + cmd.HOIST_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
+        [prefix + cmd.DEHOIST, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, false)],
+        [prefix + cmd.DEHOIST_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, true)],
+
+        // TODO : @boltex More commands to implement #15, #23, #24
+        [prefix + cmd.CLONE_FIND_ALL, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindAll command")],
+        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindAllFlattened command")],
+        [prefix + cmd.CLONE_FIND_MARKED, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindMarked command")],
+        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindFlattenedMarked command")],
+        [prefix + cmd.EXTRACT, () =&gt; vscode.window.showInformationMessage("TODO: extract command")],
+        [prefix + cmd.EXTRACT_NAMES, () =&gt; vscode.window.showInformationMessage("TODO: extractNames command")],
+        [prefix + cmd.COPY_MARKED, () =&gt; vscode.window.showInformationMessage("TODO: copyMarked command")],
+        [prefix + cmd.DIFF_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: diffMarkedNodes command")],
+        [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; vscode.window.showInformationMessage("TODO: markChangedItems command")],
+        [prefix + cmd.MARK_SUBHEADS, () =&gt; vscode.window.showInformationMessage("TODO: markSubheads command")],
+        [prefix + cmd.UNMARK_ALL, () =&gt; vscode.window.showInformationMessage("TODO: unmarkAll command")],
+        [prefix + cmd.CLONE_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: cloneMarkedNodes command")],
+        [prefix + cmd.DELETE_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: deleteMarkedNodes command")],
+        [prefix + cmd.MOVE_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: moveMarkedNode command")]
+    ];
+
+    w_commands.map(function (p_command) { p_context.subscriptions.push(vscode.commands.registerCommand(...p_command)); });
+
+    // * Show Welcome / settings screen if the version is newer than last time, then start automatic server and connection
+    showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
+        // * Start server and / or connect to it (as specified in settings)
+        w_leoIntegration.startNetworkServices();
+        p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
+        console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
+    });
+}
+
+</t>
+<t tx="ekr.20200717095942.2">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -28,147 +28,156 @@
+     utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
+ 
+     const w_cmdPrefix = Constants.NAME + ".";
++    
++    // EKR: temp abbreviations to shorten the lines.
++    const c = Constants;
+     const prefix = w_cmdPrefix;
+     const cmd = Constants.COMMANDS;
++    const li = w_leoIntegration;
++    const bridge = Constants.LEOBRIDGE
++    const showInfo = vscode.window.showInformationMessage;
++
++    
++    // Existing code...
+     const w_commands: [string, (...args: any[]) =&gt; any][] = [
+ 
+         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
+-        [prefix + "test", () =&gt; w_leoIntegration.test()], // * Test function useful when debugging
+-        [prefix + "testFromOutline", () =&gt; w_leoIntegration.test(true)], // * Test function useful when debugging
+-
+-        [prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; w_leoIntegration.selectOpenedLeoDocument(p_index)], // Test for undeclared commands VERDICT IT WORKS!
+-        [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leoIntegration.clickButton(p_node)], // Test for undeclared commands VERDICT IT WORKS!
+-        [prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; w_leoIntegration.removeButton(p_node)], // Cannot be undeclared because its referenced in package.json
++        [prefix + "test", () =&gt; li.test()], // * Test function useful when debugging
++        [prefix + "testFromOutline", () =&gt; li.test(true)], // * Test function useful when debugging
++
++        [prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; li.selectOpenedLeoDocument(p_index)], // Test for undeclared commands VERDICT IT WORKS!
++        [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; li.clickButton(p_node)], // Test for undeclared commands VERDICT IT WORKS!
++        [prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; li.removeButton(p_node)], // Cannot be undeclared because its referenced in package.json
+ 
+         [prefix + cmd.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
+         [prefix + cmd.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()], // Same as 'show welcome screen'
+-        [prefix + cmd.START_SERVER, () =&gt; w_leoIntegration.startServer()],
+-        [prefix + cmd.CONNECT, () =&gt; w_leoIntegration.connect()],
+-        [prefix + cmd.SHOW_LOG, () =&gt; w_leoIntegration.showLogPane()],
+-        [prefix + cmd.SHOW_BODY, () =&gt; w_leoIntegration.showBody(false)], // Also focuses on body
+-        [prefix + cmd.SHOW_OUTLINE, () =&gt; w_leoIntegration.showOutline(true)], // Also focuses on outline
+-        [prefix + cmd.NEW_FILE, () =&gt; w_leoIntegration.newLeoFile()],
+-        [prefix + cmd.SWITCH_FILE, () =&gt; w_leoIntegration.switchLeoFile()],
+-
+-        [prefix + cmd.OPEN_FILE, () =&gt; w_leoIntegration.openLeoFile()],
+-        [prefix + cmd.SAVE_AS_FILE, () =&gt; w_leoIntegration.saveAsLeoFile()],
+-        [prefix + cmd.SAVE_FILE, () =&gt; w_leoIntegration.saveLeoFile()],
+-        [prefix + cmd.SAVE_FILE_FO, () =&gt; w_leoIntegration.saveLeoFile(true)],
+-        [prefix + cmd.CLOSE_FILE, () =&gt; w_leoIntegration.closeLeoFile()],
+-
+-        [prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; w_leoIntegration.selectTreeNode(p_node, false, false)], // Called by nodes in tree when selected
+-        [prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) =&gt; w_leoIntegration.selectTreeNode(p_node, false, true)],
+-
+-        [prefix + cmd.CONTRACT_ALL, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_ALL, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.CONTRACT_ALL_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_ALL, undefined, RefreshType.RefreshTree, true)],
+-
+-        [prefix + cmd.MARK, (p_node: LeoNode) =&gt; w_leoIntegration.changeMark(true, p_node, false)],
+-        [prefix + cmd.UNMARK, (p_node: LeoNode) =&gt; w_leoIntegration.changeMark(false, p_node, false)],
+-        [prefix + cmd.MARK_SELECTION, () =&gt; w_leoIntegration.changeMark(true, undefined, false)],
+-        [prefix + cmd.UNMARK_SELECTION, () =&gt; w_leoIntegration.changeMark(false, undefined, false)],
+-        [prefix + cmd.MARK_SELECTION_FO, () =&gt; w_leoIntegration.changeMark(true, undefined, true)],
+-        [prefix + cmd.UNMARK_SELECTION_FO, () =&gt; w_leoIntegration.changeMark(false, undefined, true)],
+-
+-        [prefix + cmd.COPY, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.COPY_PNODE, p_node, RefreshType.NoRefresh, false)], // No refresh/focus
+-        [prefix + cmd.CUT, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CUT_PNODE, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.PASTE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_PNODE, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.DELETE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DELETE_PNODE, p_node, RefreshType.RefreshTree, false)],
+-
+-        [prefix + cmd.COPY_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.COPY_PNODE, undefined, RefreshType.NoRefresh, false)], // No refresh/focus
+-        [prefix + cmd.CUT_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CUT_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.CUT_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CUT_PNODE, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.PASTE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.PASTE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_PNODE, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.PASTE_CLONE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.PASTE_CLONE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.DELETE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DELETE_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.DELETE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DELETE_PNODE, undefined, RefreshType.RefreshTree, true)],
+-
+-        [prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; w_leoIntegration.editHeadline(p_node, false)],
+-        [prefix + cmd.HEADLINE_SELECTION, () =&gt; w_leoIntegration.editHeadline(undefined, false)],
+-        [prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; w_leoIntegration.editHeadline(undefined, true)],
+-
+-        [prefix + cmd.MOVE_DOWN, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_DOWN, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_LEFT, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_LEFT, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_RIGHT, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_UP, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_UP, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.INSERT, (p_node: LeoNode) =&gt; w_leoIntegration.insertNode(p_node, false)],
+-        [prefix + cmd.CLONE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.PROMOTE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PROMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.DEMOTE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE, p_node, RefreshType.RefreshTreeAndBody, false)],
+-
+-        [prefix + cmd.MOVE_DOWN_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_DOWN_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.MOVE_LEFT_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_LEFT_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.MOVE_RIGHT_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_RIGHT_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.MOVE_UP_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.MOVE_UP_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.INSERT_SELECTION, () =&gt; w_leoIntegration.insertNode(undefined, false)],
+-        [prefix + cmd.INSERT_SELECTION_FO, () =&gt; w_leoIntegration.insertNode(undefined, true)],
++        [prefix + cmd.START_SERVER, () =&gt; li.startServer()],
++        [prefix + cmd.CONNECT, () =&gt; li.connect()],
++        [prefix + cmd.SHOW_LOG, () =&gt; li.showLogPane()],
++        [prefix + cmd.SHOW_BODY, () =&gt; li.showBody(false)], // Also focuses on body
++        [prefix + cmd.SHOW_OUTLINE, () =&gt; li.showOutline(true)], // Also focuses on outline
++        [prefix + cmd.NEW_FILE, () =&gt; li.newLeoFile()],
++        [prefix + cmd.SWITCH_FILE, () =&gt; li.switchLeoFile()],
++
++        [prefix + cmd.OPEN_FILE, () =&gt; li.openLeoFile()],
++        [prefix + cmd.SAVE_AS_FILE, () =&gt; li.saveAsLeoFile()],
++        [prefix + cmd.SAVE_FILE, () =&gt; li.saveLeoFile()],
++        [prefix + cmd.SAVE_FILE_FO, () =&gt; li.saveLeoFile(true)],
++        [prefix + cmd.CLOSE_FILE, () =&gt; li.closeLeoFile()],
++
++        [prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; li.selectTreeNode(p_node, false, false)], // Called by nodes in tree when selected
++        [prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) =&gt; li.selectTreeNode(p_node, false, true)],
++
++        [prefix + cmd.CONTRACT_ALL, () =&gt; li.nodeCommand(bridge.CONTRACT_ALL, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.CONTRACT_ALL_FO, () =&gt; li.nodeCommand(bridge.CONTRACT_ALL, undefined, RefreshType.RefreshTree, true)],
++
++        [prefix + cmd.MARK, (p_node: LeoNode) =&gt; li.changeMark(true, p_node, false)],
++        [prefix + cmd.UNMARK, (p_node: LeoNode) =&gt; li.changeMark(false, p_node, false)],
++        [prefix + cmd.MARK_SELECTION, () =&gt; li.changeMark(true, undefined, false)],
++        [prefix + cmd.UNMARK_SELECTION, () =&gt; li.changeMark(false, undefined, false)],
++        [prefix + cmd.MARK_SELECTION_FO, () =&gt; li.changeMark(true, undefined, true)],
++        [prefix + cmd.UNMARK_SELECTION_FO, () =&gt; li.changeMark(false, undefined, true)],
++
++        [prefix + cmd.COPY, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.COPY_PNODE, p_node, RefreshType.NoRefresh, false)], // No refresh/focus
++        [prefix + cmd.CUT, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.CUT_PNODE, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.PASTE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.PASTE_PNODE, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.PASTE_CLONE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.PASTE_CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.DELETE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.DELETE_PNODE, p_node, RefreshType.RefreshTree, false)],
++
++        [prefix + cmd.COPY_SELECTION, () =&gt; li.nodeCommand(bridge.COPY_PNODE, undefined, RefreshType.NoRefresh, false)], // No refresh/focus
++        [prefix + cmd.CUT_SELECTION, () =&gt; li.nodeCommand(bridge.CUT_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.CUT_SELECTION_FO, () =&gt; li.nodeCommand(bridge.CUT_PNODE, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.PASTE_SELECTION, () =&gt; li.nodeCommand(bridge.PASTE_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.PASTE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.PASTE_PNODE, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.PASTE_CLONE_SELECTION, () =&gt; li.nodeCommand(bridge.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.PASTE_CLONE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.PASTE_CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.DELETE_SELECTION, () =&gt; li.nodeCommand(bridge.DELETE_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.DELETE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.DELETE_PNODE, undefined, RefreshType.RefreshTree, true)],
++
++        [prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; li.editHeadline(p_node, false)],
++        [prefix + cmd.HEADLINE_SELECTION, () =&gt; li.editHeadline(undefined, false)],
++        [prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; li.editHeadline(undefined, true)],
++
++        [prefix + cmd.MOVE_DOWN, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.MOVE_PNODE_DOWN, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_LEFT, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.MOVE_PNODE_LEFT, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.MOVE_PNODE_RIGHT, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_UP, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.MOVE_PNODE_UP, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.INSERT, (p_node: LeoNode) =&gt; li.insertNode(p_node, false)],
++        [prefix + cmd.CLONE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.PROMOTE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.PROMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.DEMOTE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.DEMOTE_PNODE, p_node, RefreshType.RefreshTree, false)],
++        [prefix + cmd.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.REFRESH_FROM_DISK_PNODE, p_node, RefreshType.RefreshTreeAndBody, false)],
++
++        [prefix + cmd.MOVE_DOWN_SELECTION, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_DOWN_SELECTION_FO, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_DOWN, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.MOVE_LEFT_SELECTION, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_LEFT_SELECTION_FO, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_LEFT, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.MOVE_RIGHT_SELECTION, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_RIGHT_SELECTION_FO, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_RIGHT, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.MOVE_UP_SELECTION, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.MOVE_UP_SELECTION_FO, () =&gt; li.nodeCommand(bridge.MOVE_PNODE_UP, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.INSERT_SELECTION, () =&gt; li.insertNode(undefined, false)],
++        [prefix + cmd.INSERT_SELECTION_FO, () =&gt; li.insertNode(undefined, true)],
+ 
+         // * Special command for when inserting rapidly more than one node without even specifying a headline label, such as spamming CTRL+I rapidly.
+-        [prefix + cmd.INSERT_SELECTION_INTERRUPT, () =&gt; w_leoIntegration.insertNode(undefined, undefined, true)],
+-
+-        [prefix + cmd.CLONE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.CLONE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.PROMOTE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.PROMOTE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
+-        [prefix + cmd.DEMOTE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.DEMOTE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
+-
+-        [prefix + cmd.REFRESH_FROM_DISK_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
+-        [prefix + cmd.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
+-
+-        [prefix + cmd.SORT_CHILDREN, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_CHILDREN, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.SORT_SIBLING, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, false)],
+-        [prefix + cmd.SORT_SIBLING_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, true)],
+-
+-        [prefix + cmd.PAGE_UP, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PAGE_UP, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.PAGE_DOWN, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.PAGE_DOWN, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_FIRST_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_FIRST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_LAST_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_LAST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_LAST_SIBLING, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_LAST_SIBLING, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, p_node, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, false)],
+-        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, true)],
+-
+-        [prefix + cmd.GOTO_NEXT_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_PREV_VISIBLE, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_PREV_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.GOTO_NEXT_MARKED, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.GOTO_NEXT_MARKED, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.CONTRACT_OR_GO_LEFT, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.CONTRACT_OR_GO_LEFT, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.EXPAND_AND_GO_RIGHT, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.EXPAND_AND_GO_RIGHT, undefined, RefreshType.RefreshTreeAndBody, true)],
+-
+-        [prefix + cmd.UNDO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.UNDO, undefined, RefreshType.RefreshTreeAndBody, false)],
+-        [prefix + cmd.UNDO_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.UNDO, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.REDO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, false)],
+-        [prefix + cmd.REDO_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.REDO, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.EXECUTE, () =&gt; w_leoIntegration.executeScript()],
+-
+-        [prefix + cmd.HOIST, (p_node: LeoNode) =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, p_node, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.HOIST_SELECTION, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
+-        [prefix + cmd.HOIST_SELECTION_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
+-        [prefix + cmd.DEHOIST, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, false)],
+-        [prefix + cmd.DEHOIST_FO, () =&gt; w_leoIntegration.nodeCommand(Constants.LEOBRIDGE.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.INSERT_SELECTION_INTERRUPT, () =&gt; li.insertNode(undefined, undefined, true)],
++
++        [prefix + cmd.CLONE_SELECTION, () =&gt; li.nodeCommand(bridge.CLONE_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.CLONE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.CLONE_PNODE, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.PROMOTE_SELECTION, () =&gt; li.nodeCommand(bridge.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.PROMOTE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.PROMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
++        [prefix + cmd.DEMOTE_SELECTION, () =&gt; li.nodeCommand(bridge.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.DEMOTE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.DEMOTE_PNODE, undefined, RefreshType.RefreshTree, true)],
++
++        [prefix + cmd.REFRESH_FROM_DISK_SELECTION, () =&gt; li.nodeCommand(bridge.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
++        [prefix + cmd.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; li.nodeCommand(bridge.REFRESH_FROM_DISK_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
++
++        [prefix + cmd.SORT_CHILDREN, () =&gt; li.nodeCommand(bridge.SORT_CHILDREN, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.SORT_SIBLING, () =&gt; li.nodeCommand(bridge.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, false)],
++        [prefix + cmd.SORT_SIBLING_FO, () =&gt; li.nodeCommand(bridge.SORT_SIBLINGS, undefined, RefreshType.RefreshTree, true)],
++
++        [prefix + cmd.PAGE_UP, () =&gt; li.nodeCommand(bridge.PAGE_UP, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.PAGE_DOWN, () =&gt; li.nodeCommand(bridge.PAGE_DOWN, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_FIRST_VISIBLE, () =&gt; li.nodeCommand(bridge.GOTO_FIRST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_LAST_VISIBLE, () =&gt; li.nodeCommand(bridge.GOTO_LAST_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_LAST_SIBLING, () =&gt; li.nodeCommand(bridge.GOTO_LAST_SIBLING, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.GOTO_NEXT_CLONE, p_node, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION, () =&gt; li.nodeCommand(bridge.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, false)],
++        [prefix + cmd.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; li.nodeCommand(bridge.GOTO_NEXT_CLONE, undefined, RefreshType.RefreshTreeAndBody, true)],
++
++        [prefix + cmd.GOTO_NEXT_VISIBLE, () =&gt; li.nodeCommand(bridge.GOTO_NEXT_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_PREV_VISIBLE, () =&gt; li.nodeCommand(bridge.GOTO_PREV_VISIBLE, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.GOTO_NEXT_MARKED, () =&gt; li.nodeCommand(bridge.GOTO_NEXT_MARKED, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.CONTRACT_OR_GO_LEFT, () =&gt; li.nodeCommand(bridge.CONTRACT_OR_GO_LEFT, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.EXPAND_AND_GO_RIGHT, () =&gt; li.nodeCommand(bridge.EXPAND_AND_GO_RIGHT, undefined, RefreshType.RefreshTreeAndBody, true)],
++
++        [prefix + cmd.UNDO, () =&gt; li.nodeCommand(bridge.UNDO, undefined, RefreshType.RefreshTreeAndBody, false)],
++        [prefix + cmd.UNDO_FO, () =&gt; li.nodeCommand(bridge.UNDO, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.REDO, () =&gt; li.nodeCommand(bridge.REDO, undefined, RefreshType.RefreshTreeAndBody, false)],
++        [prefix + cmd.REDO_FO, () =&gt; li.nodeCommand(bridge.REDO, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.EXECUTE, () =&gt; li.executeScript()],
++
++        [prefix + cmd.HOIST, (p_node: LeoNode) =&gt; li.nodeCommand(bridge.HOIST_PNODE, p_node, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.HOIST_SELECTION, () =&gt; li.nodeCommand(bridge.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, false)],
++        [prefix + cmd.HOIST_SELECTION_FO, () =&gt; li.nodeCommand(bridge.HOIST_PNODE, undefined, RefreshType.RefreshTreeAndBody, true)],
++        [prefix + cmd.DEHOIST, () =&gt; li.nodeCommand(bridge.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, false)],
++        [prefix + cmd.DEHOIST_FO, () =&gt; li.nodeCommand(bridge.DEHOIST, undefined, RefreshType.RefreshTreeAndBody, true)],
+ 
+         // TODO : @boltex More commands to implement #15, #23, #24
+-        [prefix + cmd.CLONE_FIND_ALL, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindAll command")],
+-        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindAllFlattened command")],
+-        [prefix + cmd.CLONE_FIND_MARKED, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindMarked command")],
+-        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; vscode.window.showInformationMessage("TODO: cloneFindFlattenedMarked command")],
+-        [prefix + cmd.EXTRACT, () =&gt; vscode.window.showInformationMessage("TODO: extract command")],
+-        [prefix + cmd.EXTRACT_NAMES, () =&gt; vscode.window.showInformationMessage("TODO: extractNames command")],
+-        [prefix + cmd.COPY_MARKED, () =&gt; vscode.window.showInformationMessage("TODO: copyMarked command")],
+-        [prefix + cmd.DIFF_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: diffMarkedNodes command")],
+-        [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; vscode.window.showInformationMessage("TODO: markChangedItems command")],
+-        [prefix + cmd.MARK_SUBHEADS, () =&gt; vscode.window.showInformationMessage("TODO: markSubheads command")],
+-        [prefix + cmd.UNMARK_ALL, () =&gt; vscode.window.showInformationMessage("TODO: unmarkAll command")],
+-        [prefix + cmd.CLONE_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: cloneMarkedNodes command")],
+-        [prefix + cmd.DELETE_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: deleteMarkedNodes command")],
+-        [prefix + cmd.MOVE_MARKED_NODES, () =&gt; vscode.window.showInformationMessage("TODO: moveMarkedNode command")]
++        [prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
++        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
++        [prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
++        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
++        [prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
++        [prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
++        [prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
++        [prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
++        [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
++        [prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
++        [prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
++        [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
++        [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
++        [prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")]
+     ];
+ 
+     w_commands.map(function (p_command) { p_context.subscriptions.push(vscode.commands.registerCommand(...p_command)); });
+@@ -176,8 +185,8 @@
+     // * Show Welcome / settings screen if the version is newer than last time, then start automatic server and connection
+     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
+         // * Start server and / or connect to it (as specified in settings)
+-        w_leoIntegration.startNetworkServices();
+-        p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
++        li.startNetworkServices();
++        p_context.globalState.update(c.VERSION_STATE_KEY, w_leoIntegVersion);
+         console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
+     });
+ }
+@language python
+</t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
         return self.sendLeoBridgePackage("node", self.p_to_ap(p_node))  # Single node, singular
