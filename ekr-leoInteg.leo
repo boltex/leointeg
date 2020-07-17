@@ -45,6 +45,8 @@
 <v t="ekr.20200717100831.1"><vh>&lt;&lt; mark commands &gt;&gt;</vh></v>
 <v t="ekr.20200717100934.1"><vh>&lt;&lt; cut/paste commands &gt;&gt;</vh></v>
 <v t="ekr.20200717101025.1"><vh>&lt;&lt; node commands &gt;&gt;</vh></v>
+<v t="ekr.20200717102128.1"><vh>&lt;&lt; not implemented yet &gt;&gt;</vh></v>
+<v t="ekr.20200717102200.1"><vh>&lt;&lt; misc commands &gt;&gt;</vh></v>
 </v>
 <v t="ekr.20200704142236.21"><vh>deactivate</vh></v>
 <v t="ekr.20200704142236.22"><vh>showWelcomeIfNewer</vh></v>
@@ -1178,12 +1180,11 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_cmdPrefix = Constants.NAME + ".";
     
     // EKR: temp abbreviations to shorten the lines.
-    const c = Constants;
-    const prefix = w_cmdPrefix;
+    const bridge = Constants.LEOBRIDGE;
     const cmd = Constants.COMMANDS;
     const li = w_leoIntegration;
-    const bridge = Constants.LEOBRIDGE;
     const node_cmd = w_leoIntegration.nodeCommand
+    const prefix = w_cmdPrefix;
     const refreshBoth = RefreshType.RefreshTreeAndBody;
     const refreshTree = RefreshType.RefreshTree;
     const showInfo = vscode.window.showInformationMessage;
@@ -1196,57 +1197,13 @@ export function activate(p_context: vscode.ExtensionContext) {
         [prefix + "test", () =&gt; li.test()], // * Test function useful when debugging
         [prefix + "testFromOutline", () =&gt; li.test(true)], // * Test function useful when debugging
 
-        [prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; li.selectOpenedLeoDocument(p_index)],
-            // Test for undeclared commands VERDICT IT WORKS!
-        [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; li.clickButton(p_node)],
-            // Test for undeclared commands VERDICT IT WORKS!
-        [prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; li.removeButton(p_node)],
-            // Cannot be undeclared because its referenced in package.json
-
-        [prefix + cmd.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
-        [prefix + cmd.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()],
-            // Same as 'show welcome screen'
-        [prefix + cmd.START_SERVER, () =&gt; li.startServer()],
-        [prefix + cmd.CONNECT, () =&gt; li.connect()],
-        [prefix + cmd.SHOW_LOG, () =&gt; li.showLogPane()],
-        [prefix + cmd.SHOW_BODY, () =&gt; li.showBody(false)],
-            // Also focuses on body
-        [prefix + cmd.SHOW_OUTLINE, () =&gt; li.showOutline(true)],
-            // Also focuses on outline
-            
         &lt;&lt; file commands &gt;&gt;
-
-        [prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; li.selectTreeNode(p_node, false, false)],
-            // Called by nodes in tree when selected
-        [prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) =&gt; li.selectTreeNode(p_node, false, true)],
-
-        [prefix + cmd.CONTRACT_ALL, () =&gt; node_cmd(bridge.CONTRACT_ALL, u, refreshTree, false)],
-        [prefix + cmd.CONTRACT_ALL_FO, () =&gt; node_cmd(bridge.CONTRACT_ALL, u, refreshTree, true)],
-        
         &lt;&lt; mark commands &gt;&gt;
         &lt;&lt; cut/paste commands &gt;&gt;
-        [prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; li.editHeadline(p_node, false)],
-        [prefix + cmd.HEADLINE_SELECTION, () =&gt; li.editHeadline(u, false)],
-        [prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; li.editHeadline(u, true)],
         &lt;&lt; node commands &gt;&gt;
-
         [prefix + cmd.EXECUTE, () =&gt; li.executeScript()],
-
-        // TODO : @boltex More commands to implement #15, #23, #24
-        [prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
-        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
-        [prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
-        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
-        [prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
-        [prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
-        [prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
-        [prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
-        [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
-        [prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
-        [prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
-        [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
-        [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
-        [prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")]
+        &lt;&lt; misc commands &gt;&gt;
+        &lt;&lt; not implemented yet &gt;&gt;
     ];
 
     w_commands.map(function (p_command) { p_context.subscriptions.push(vscode.commands.registerCommand(...p_command)); });
@@ -1255,7 +1212,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
         // * Start server and / or connect to it (as specified in settings)
         li.startNetworkServices();
-        p_context.globalState.update(c.VERSION_STATE_KEY, w_leoIntegVersion);
+        p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
         console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
     });
 }
@@ -5380,6 +5337,49 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [prefix + cmd.HOIST_SELECTION_FO, () =&gt; node_cmd(bridge.HOIST_PNODE, u, refreshBoth, true)],
 [prefix + cmd.DEHOIST, () =&gt; node_cmd(bridge.DEHOIST, u, refreshBoth, false)],
 [prefix + cmd.DEHOIST_FO, () =&gt; node_cmd(bridge.DEHOIST, u, refreshBoth, true)],
+
+[prefix + cmd.CONTRACT_ALL, () =&gt; node_cmd(bridge.CONTRACT_ALL, u, refreshTree, false)],
+[prefix + cmd.CONTRACT_ALL_FO, () =&gt; node_cmd(bridge.CONTRACT_ALL, u, refreshTree, true)],
+</t>
+<t tx="ekr.20200717102128.1">
+// TODO : @boltex More commands to implement #15, #23, #24
+[prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
+[prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
+[prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
+[prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
+[prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
+[prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
+[prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
+[prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
+[prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
+[prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
+[prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
+[prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
+[prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
+[prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")]</t>
+<t tx="ekr.20200717102200.1">[prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; li.selectOpenedLeoDocument(p_index)],
+    // Test for undeclared commands VERDICT IT WORKS!
+[prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; li.clickButton(p_node)],
+    // Test for undeclared commands VERDICT IT WORKS!
+[prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; li.removeButton(p_node)],
+    // Cannot be undeclared because its referenced in package.json
+[prefix + cmd.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
+[prefix + cmd.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()],
+    // Same as 'show welcome screen'
+[prefix + cmd.START_SERVER, () =&gt; li.startServer()],
+[prefix + cmd.CONNECT, () =&gt; li.connect()],
+[prefix + cmd.SHOW_LOG, () =&gt; li.showLogPane()],
+[prefix + cmd.SHOW_BODY, () =&gt; li.showBody(false)],
+    // Also focuses on body
+[prefix + cmd.SHOW_OUTLINE, () =&gt; li.showOutline(true)],
+    // Also focuses on outline
+[prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; li.selectTreeNode(p_node, false, false)],
+    // Called by nodes in tree when selected
+[prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) =&gt; li.selectTreeNode(p_node, false, true)],
+
+[prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; li.editHeadline(p_node, false)],
+[prefix + cmd.HEADLINE_SELECTION, () =&gt; li.editHeadline(u, false)],
+[prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; li.editHeadline(u, true)],
 </t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
