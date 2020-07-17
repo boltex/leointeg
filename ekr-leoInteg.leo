@@ -1170,14 +1170,14 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
     
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        [prefix + "test", () =&gt; li.test()], // * Test function useful when debugging
-        [prefix + "testFromOutline", () =&gt; li.test(true)], // * Test function useful when debugging
+        [prefix + "test", () =&gt; leo.test()], // * Test function useful when debugging
+        [prefix + "testFromOutline", () =&gt; leo.test(true)], // * Test function useful when debugging
 
         &lt;&lt; file commands &gt;&gt;
         &lt;&lt; mark commands &gt;&gt;
         &lt;&lt; cut/paste commands &gt;&gt;
         &lt;&lt; node commands &gt;&gt;
-        [prefix + cmd.EXECUTE, () =&gt; li.executeScript()],
+        [prefix + cmd.EXECUTE, () =&gt; leo.executeScript()],
         &lt;&lt; misc commands &gt;&gt;
         &lt;&lt; not implemented yet &gt;&gt;
     ];
@@ -5212,20 +5212,20 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 <t tx="ekr.20200717092150.1"></t>
 <t tx="ekr.20200717094106.1">Exception has occurred: Error: ENOENT: no such file or directory, stat 'c:\Users\edreamleo\AppData\Roaming\Code\logs\20200717T093611\exthost4\output_logging_20200717T093935'</t>
 <t tx="ekr.20200717095046.1"></t>
-<t tx="ekr.20200717100408.1">[prefix + cmd.NEW_FILE, () =&gt; li.newLeoFile()],
-[prefix + cmd.SWITCH_FILE, () =&gt; li.switchLeoFile()],
+<t tx="ekr.20200717100408.1">[prefix + cmd.NEW_FILE, () =&gt; leo.newLeoFile()],
+[prefix + cmd.SWITCH_FILE, () =&gt; leo.switchLeoFile()],
 
-[prefix + cmd.OPEN_FILE, () =&gt; li.openLeoFile()],
-[prefix + cmd.SAVE_AS_FILE, () =&gt; li.saveAsLeoFile()],
-[prefix + cmd.SAVE_FILE, () =&gt; li.saveLeoFile()],
-[prefix + cmd.SAVE_FILE_FO, () =&gt; li.saveLeoFile(true)],
-[prefix + cmd.CLOSE_FILE, () =&gt; li.closeLeoFile()],</t>
-<t tx="ekr.20200717100831.1">[prefix + cmd.MARK, (p_node: LeoNode) =&gt; li.changeMark(true, p_node, false)],
-[prefix + cmd.UNMARK, (p_node: LeoNode) =&gt; li.changeMark(false, p_node, false)],
-[prefix + cmd.MARK_SELECTION, () =&gt; li.changeMark(true, u, false)],
-[prefix + cmd.UNMARK_SELECTION, () =&gt; li.changeMark(false, u, false)],
-[prefix + cmd.MARK_SELECTION_FO, () =&gt; li.changeMark(true, u, true)],
-[prefix + cmd.UNMARK_SELECTION_FO, () =&gt; li.changeMark(false, u, true)],</t>
+[prefix + cmd.OPEN_FILE, () =&gt; leo.openLeoFile()],
+[prefix + cmd.SAVE_AS_FILE, () =&gt; leo.saveAsLeoFile()],
+[prefix + cmd.SAVE_FILE, () =&gt; leo.saveLeoFile()],
+[prefix + cmd.SAVE_FILE_FO, () =&gt; leo.saveLeoFile(true)],
+[prefix + cmd.CLOSE_FILE, () =&gt; leo.closeLeoFile()],</t>
+<t tx="ekr.20200717100831.1">[prefix + cmd.MARK, (p_node: LeoNode) =&gt; leo.changeMark(true, p_node, false)],
+[prefix + cmd.UNMARK, (p_node: LeoNode) =&gt; leo.changeMark(false, p_node, false)],
+[prefix + cmd.MARK_SELECTION, () =&gt; leo.changeMark(true, u, false)],
+[prefix + cmd.UNMARK_SELECTION, () =&gt; leo.changeMark(false, u, false)],
+[prefix + cmd.MARK_SELECTION_FO, () =&gt; leo.changeMark(true, u, true)],
+[prefix + cmd.UNMARK_SELECTION_FO, () =&gt; leo.changeMark(false, u, true)],</t>
 <t tx="ekr.20200717100934.1">
 [prefix + cmd.COPY, (p_node: LeoNode) =&gt; node_cmd(bridge.COPY_PNODE, p_node, RefreshType.NoRefresh, false)],
     // No refresh/focus
@@ -5248,7 +5248,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [prefix + cmd.MOVE_LEFT, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_LEFT, p_node, refreshTree, false)],
 [prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_RIGHT, p_node, refreshTree, false)],
 [prefix + cmd.MOVE_UP, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_UP, p_node, refreshTree, false)],
-[prefix + cmd.INSERT, (p_node: LeoNode) =&gt; li.insertNode(p_node, false)],
+[prefix + cmd.INSERT, (p_node: LeoNode) =&gt; leo.insertNode(p_node, false)],
 [prefix + cmd.CLONE, (p_node: LeoNode) =&gt; node_cmd(bridge.CLONE_PNODE, p_node, refreshTree, false)],
 [prefix + cmd.PROMOTE, (p_node: LeoNode) =&gt; node_cmd(bridge.PROMOTE_PNODE, p_node, refreshTree, false)],
 [prefix + cmd.DEMOTE, (p_node: LeoNode) =&gt; node_cmd(bridge.DEMOTE_PNODE, p_node, refreshTree, false)],
@@ -5263,11 +5263,11 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [prefix + cmd.MOVE_UP_SELECTION, () =&gt; node_cmd(bridge.MOVE_PNODE_UP, u, refreshTree, false)],
 [prefix + cmd.MOVE_UP_SELECTION_FO, () =&gt; node_cmd(bridge.MOVE_PNODE_UP, u, refreshTree, true)],
 
-[prefix + cmd.INSERT_SELECTION, () =&gt; li.insertNode(u, false)],
-[prefix + cmd.INSERT_SELECTION_FO, () =&gt; li.insertNode(u, true)],
+[prefix + cmd.INSERT_SELECTION, () =&gt; leo.insertNode(u, false)],
+[prefix + cmd.INSERT_SELECTION_FO, () =&gt; leo.insertNode(u, true)],
 
 // * Special command for when inserting rapidly more than one node without even specifying a headline label, such as spamming CTRL+I rapidly.
-[prefix + cmd.INSERT_SELECTION_INTERRUPT, () =&gt; li.insertNode(u, u, true)],
+[prefix + cmd.INSERT_SELECTION_INTERRUPT, () =&gt; leo.insertNode(u, u, true)],
 
 [prefix + cmd.CLONE_SELECTION, () =&gt; node_cmd(bridge.CLONE_PNODE, u, refreshTree, false)],
 [prefix + cmd.CLONE_SELECTION_FO, () =&gt; node_cmd(bridge.CLONE_PNODE, u, refreshTree, true)],
@@ -5327,29 +5327,29 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
 [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
 [prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")]</t>
-<t tx="ekr.20200717102200.1">[prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; li.selectOpenedLeoDocument(p_index)],
+<t tx="ekr.20200717102200.1">[prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; leo.selectOpenedLeoDocument(p_index)],
     // Test for undeclared commands VERDICT IT WORKS!
-[prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; li.clickButton(p_node)],
+[prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; leo.clickButton(p_node)],
     // Test for undeclared commands VERDICT IT WORKS!
-[prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; li.removeButton(p_node)],
+[prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; leo.removeButton(p_node)],
     // Cannot be undeclared because its referenced in package.json
 [prefix + cmd.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
 [prefix + cmd.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()],
     // Same as 'show welcome screen'
-[prefix + cmd.START_SERVER, () =&gt; li.startServer()],
-[prefix + cmd.CONNECT, () =&gt; li.connect()],
-[prefix + cmd.SHOW_LOG, () =&gt; li.showLogPane()],
-[prefix + cmd.SHOW_BODY, () =&gt; li.showBody(false)],
+[prefix + cmd.START_SERVER, () =&gt; leo.startServer()],
+[prefix + cmd.CONNECT, () =&gt; leo.connect()],
+[prefix + cmd.SHOW_LOG, () =&gt; leo.showLogPane()],
+[prefix + cmd.SHOW_BODY, () =&gt; leo.showBody(false)],
     // Also focuses on body
-[prefix + cmd.SHOW_OUTLINE, () =&gt; li.showOutline(true)],
+[prefix + cmd.SHOW_OUTLINE, () =&gt; leo.showOutline(true)],
     // Also focuses on outline
-[prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; li.selectTreeNode(p_node, false, false)],
+[prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; leo.selectTreeNode(p_node, false, false)],
     // Called by nodes in tree when selected
-[prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) =&gt; li.selectTreeNode(p_node, false, true)],
+[prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) =&gt; leo.selectTreeNode(p_node, false, true)],
 
-[prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; li.editHeadline(p_node, false)],
-[prefix + cmd.HEADLINE_SELECTION, () =&gt; li.editHeadline(u, false)],
-[prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; li.editHeadline(u, true)],
+[prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; leo.editHeadline(p_node, false)],
+[prefix + cmd.HEADLINE_SELECTION, () =&gt; leo.editHeadline(u, false)],
+[prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; leo.editHeadline(u, true)],
 </t>
 <t tx="ekr.20200717102947.1">const w_cmdPrefix = Constants.NAME + ".";
 const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
@@ -5362,7 +5362,7 @@ const w_start = process.hrtime(); // For calculating total startup time duration
 // EKR: More abbreviations to shorten the lines.
 const bridge = Constants.LEOBRIDGE;
 const cmd = Constants.COMMANDS;
-const li = w_leoIntegration;
+const leo = w_leoIntegration;
 const node_cmd = w_leoIntegration.nodeCommand;
 const prefix = w_cmdPrefix;
 const refreshBoth = RefreshType.RefreshTreeAndBody;
@@ -5376,7 +5376,7 @@ utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo fi
 <t tx="ekr.20200717103819.1">// If the version is newer than last time, then start automatic server and connection
 showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
     // * Start server and / or connect to it (as specified in settings)
-    li.startNetworkServices();
+    leo.startNetworkServices();
     p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
     console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
 });</t>

@@ -24,7 +24,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     // EKR: More abbreviations to shorten the lines.
     const bridge = Constants.LEOBRIDGE;
     const cmd = Constants.COMMANDS;
-    const li = w_leoIntegration;
+    const leo = w_leoIntegration;
     const node_cmd = w_leoIntegration.nodeCommand;
     const prefix = w_cmdPrefix;
     const refreshBoth = RefreshType.RefreshTreeAndBody;
@@ -39,23 +39,23 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_commands: [string, (...args: any[]) => any][] = [
     
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        [prefix + "test", () => li.test()], // * Test function useful when debugging
-        [prefix + "testFromOutline", () => li.test(true)], // * Test function useful when debugging
+        [prefix + "test", () => leo.test()], // * Test function useful when debugging
+        [prefix + "testFromOutline", () => leo.test(true)], // * Test function useful when debugging
 
-        [prefix + cmd.NEW_FILE, () => li.newLeoFile()],
-        [prefix + cmd.SWITCH_FILE, () => li.switchLeoFile()],
+        [prefix + cmd.NEW_FILE, () => leo.newLeoFile()],
+        [prefix + cmd.SWITCH_FILE, () => leo.switchLeoFile()],
 
-        [prefix + cmd.OPEN_FILE, () => li.openLeoFile()],
-        [prefix + cmd.SAVE_AS_FILE, () => li.saveAsLeoFile()],
-        [prefix + cmd.SAVE_FILE, () => li.saveLeoFile()],
-        [prefix + cmd.SAVE_FILE_FO, () => li.saveLeoFile(true)],
-        [prefix + cmd.CLOSE_FILE, () => li.closeLeoFile()],
-        [prefix + cmd.MARK, (p_node: LeoNode) => li.changeMark(true, p_node, false)],
-        [prefix + cmd.UNMARK, (p_node: LeoNode) => li.changeMark(false, p_node, false)],
-        [prefix + cmd.MARK_SELECTION, () => li.changeMark(true, u, false)],
-        [prefix + cmd.UNMARK_SELECTION, () => li.changeMark(false, u, false)],
-        [prefix + cmd.MARK_SELECTION_FO, () => li.changeMark(true, u, true)],
-        [prefix + cmd.UNMARK_SELECTION_FO, () => li.changeMark(false, u, true)],
+        [prefix + cmd.OPEN_FILE, () => leo.openLeoFile()],
+        [prefix + cmd.SAVE_AS_FILE, () => leo.saveAsLeoFile()],
+        [prefix + cmd.SAVE_FILE, () => leo.saveLeoFile()],
+        [prefix + cmd.SAVE_FILE_FO, () => leo.saveLeoFile(true)],
+        [prefix + cmd.CLOSE_FILE, () => leo.closeLeoFile()],
+        [prefix + cmd.MARK, (p_node: LeoNode) => leo.changeMark(true, p_node, false)],
+        [prefix + cmd.UNMARK, (p_node: LeoNode) => leo.changeMark(false, p_node, false)],
+        [prefix + cmd.MARK_SELECTION, () => leo.changeMark(true, u, false)],
+        [prefix + cmd.UNMARK_SELECTION, () => leo.changeMark(false, u, false)],
+        [prefix + cmd.MARK_SELECTION_FO, () => leo.changeMark(true, u, true)],
+        [prefix + cmd.UNMARK_SELECTION_FO, () => leo.changeMark(false, u, true)],
 
         [prefix + cmd.COPY, (p_node: LeoNode) => node_cmd(bridge.COPY_PNODE, p_node, RefreshType.NoRefresh, false)],
             // No refresh/focus
@@ -78,7 +78,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [prefix + cmd.MOVE_LEFT, (p_node: LeoNode) => node_cmd(bridge.MOVE_PNODE_LEFT, p_node, refreshTree, false)],
         [prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) => node_cmd(bridge.MOVE_PNODE_RIGHT, p_node, refreshTree, false)],
         [prefix + cmd.MOVE_UP, (p_node: LeoNode) => node_cmd(bridge.MOVE_PNODE_UP, p_node, refreshTree, false)],
-        [prefix + cmd.INSERT, (p_node: LeoNode) => li.insertNode(p_node, false)],
+        [prefix + cmd.INSERT, (p_node: LeoNode) => leo.insertNode(p_node, false)],
         [prefix + cmd.CLONE, (p_node: LeoNode) => node_cmd(bridge.CLONE_PNODE, p_node, refreshTree, false)],
         [prefix + cmd.PROMOTE, (p_node: LeoNode) => node_cmd(bridge.PROMOTE_PNODE, p_node, refreshTree, false)],
         [prefix + cmd.DEMOTE, (p_node: LeoNode) => node_cmd(bridge.DEMOTE_PNODE, p_node, refreshTree, false)],
@@ -93,11 +93,11 @@ export function activate(p_context: vscode.ExtensionContext) {
         [prefix + cmd.MOVE_UP_SELECTION, () => node_cmd(bridge.MOVE_PNODE_UP, u, refreshTree, false)],
         [prefix + cmd.MOVE_UP_SELECTION_FO, () => node_cmd(bridge.MOVE_PNODE_UP, u, refreshTree, true)],
 
-        [prefix + cmd.INSERT_SELECTION, () => li.insertNode(u, false)],
-        [prefix + cmd.INSERT_SELECTION_FO, () => li.insertNode(u, true)],
+        [prefix + cmd.INSERT_SELECTION, () => leo.insertNode(u, false)],
+        [prefix + cmd.INSERT_SELECTION_FO, () => leo.insertNode(u, true)],
 
         // * Special command for when inserting rapidly more than one node without even specifying a headline label, such as spamming CTRL+I rapidly.
-        [prefix + cmd.INSERT_SELECTION_INTERRUPT, () => li.insertNode(u, u, true)],
+        [prefix + cmd.INSERT_SELECTION_INTERRUPT, () => leo.insertNode(u, u, true)],
 
         [prefix + cmd.CLONE_SELECTION, () => node_cmd(bridge.CLONE_PNODE, u, refreshTree, false)],
         [prefix + cmd.CLONE_SELECTION_FO, () => node_cmd(bridge.CLONE_PNODE, u, refreshTree, true)],
@@ -141,30 +141,30 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         [prefix + cmd.CONTRACT_ALL, () => node_cmd(bridge.CONTRACT_ALL, u, refreshTree, false)],
         [prefix + cmd.CONTRACT_ALL_FO, () => node_cmd(bridge.CONTRACT_ALL, u, refreshTree, true)],
-        [prefix + cmd.EXECUTE, () => li.executeScript()],
-        [prefix + cmd.SET_OPENED_FILE, (p_index: number) => li.selectOpenedLeoDocument(p_index)],
+        [prefix + cmd.EXECUTE, () => leo.executeScript()],
+        [prefix + cmd.SET_OPENED_FILE, (p_index: number) => leo.selectOpenedLeoDocument(p_index)],
             // Test for undeclared commands VERDICT IT WORKS!
-        [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) => li.clickButton(p_node)],
+        [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) => leo.clickButton(p_node)],
             // Test for undeclared commands VERDICT IT WORKS!
-        [prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) => li.removeButton(p_node)],
+        [prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) => leo.removeButton(p_node)],
             // Cannot be undeclared because its referenced in package.json
         [prefix + cmd.SHOW_WELCOME, () => w_leoSettingsWebview.openWebview()],
         [prefix + cmd.SHOW_SETTINGS, () => w_leoSettingsWebview.openWebview()],
             // Same as 'show welcome screen'
-        [prefix + cmd.START_SERVER, () => li.startServer()],
-        [prefix + cmd.CONNECT, () => li.connect()],
-        [prefix + cmd.SHOW_LOG, () => li.showLogPane()],
-        [prefix + cmd.SHOW_BODY, () => li.showBody(false)],
+        [prefix + cmd.START_SERVER, () => leo.startServer()],
+        [prefix + cmd.CONNECT, () => leo.connect()],
+        [prefix + cmd.SHOW_LOG, () => leo.showLogPane()],
+        [prefix + cmd.SHOW_BODY, () => leo.showBody(false)],
             // Also focuses on body
-        [prefix + cmd.SHOW_OUTLINE, () => li.showOutline(true)],
+        [prefix + cmd.SHOW_OUTLINE, () => leo.showOutline(true)],
             // Also focuses on outline
-        [prefix + cmd.SELECT_NODE, (p_node: LeoNode) => li.selectTreeNode(p_node, false, false)],
+        [prefix + cmd.SELECT_NODE, (p_node: LeoNode) => leo.selectTreeNode(p_node, false, false)],
             // Called by nodes in tree when selected
-        [prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) => li.selectTreeNode(p_node, false, true)],
+        [prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) => leo.selectTreeNode(p_node, false, true)],
 
-        [prefix + cmd.HEADLINE, (p_node: LeoNode) => li.editHeadline(p_node, false)],
-        [prefix + cmd.HEADLINE_SELECTION, () => li.editHeadline(u, false)],
-        [prefix + cmd.HEADLINE_SELECTION_FO, () => li.editHeadline(u, true)],
+        [prefix + cmd.HEADLINE, (p_node: LeoNode) => leo.editHeadline(p_node, false)],
+        [prefix + cmd.HEADLINE_SELECTION, () => leo.editHeadline(u, false)],
+        [prefix + cmd.HEADLINE_SELECTION_FO, () => leo.editHeadline(u, true)],
         // TODO : @boltex More commands to implement #15, #23, #24
         [prefix + cmd.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
         [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
@@ -189,7 +189,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     // If the version is newer than last time, then start automatic server and connection
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() => {
         // * Start server and / or connect to it (as specified in settings)
-        li.startNetworkServices();
+        leo.startNetworkServices();
         p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
         console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
     });
