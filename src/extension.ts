@@ -102,6 +102,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [prefix + cmd.CONTRACT_OR_GO_LEFT, () => leo.nodeCommand(bridge.CONTRACT_OR_GO_LEFT, u, refreshBoth, true)],
 
         [prefix + cmd.EXPAND_AND_GO_RIGHT, () => leo.nodeCommand(bridge.EXPAND_AND_GO_RIGHT, u, refreshBoth, true)],
+        [prefix + cmd.GIT_DIFF, () => leo.nodeCommand(bridge.GIT_DIFF, u, refreshBoth, true)],
         [prefix + cmd.GOTO_NEXT_CLONE, (p_node: LeoNode) => leo.nodeCommand(bridge.GOTO_NEXT_CLONE, p_node, refreshBoth, true)],
         [prefix + cmd.GOTO_NEXT_CLONE_SELECTION, () => leo.nodeCommand(bridge.GOTO_NEXT_CLONE, u, refreshBoth, false)],
         [prefix + cmd.GOTO_NEXT_CLONE_SELECTION_FO, () => leo.nodeCommand(bridge.GOTO_NEXT_CLONE, u, refreshBoth, true)],

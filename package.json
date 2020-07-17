@@ -253,6 +253,11 @@
     ],
     "commands": [
       {
+        "command": "leointeg.gitDiff",
+        "title": "Git Diff",
+        "category": "Leo"
+      },
+      {
         "command": "leointeg.showSettingsPage",
         "title": "Open Settings",
         "category": "Leo",
@@ -1041,6 +1046,10 @@
     ],
     "menus": {
       "commandPalette": [
+        {
+          "command": "leointeg.gitDiff",
+          "when": "leoBridgeReady"
+        }, 
         {
           "command": "leointeg.startServer",
           "when": "!leoBridgeReady && !leoTreeOpened && !leoServerStarted"

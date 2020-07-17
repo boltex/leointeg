@@ -416,11 +416,13 @@ class LeoBridgeIntegController:
     def __init__(self):
         # TODO : @boltex #74 need gnx_to_vnode for each opened file/commander
         self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
-        self.bridge = leoBridge.controller(gui='nullGui',
-                                           loadPlugins=True,  # True: attempt to load plugins.
-                                           readSettings=True,  # True: read standard settings files.
-                                           silent=True,      # True: don't print signon messages.
-                                           verbose=False)     # True: prints messages that would be sent to the log pane.
+        self.bridge = leoBridge.controller(
+            gui='nullGui',
+            loadPlugins=True,   # True: attempt to load plugins.
+            readSettings=True,  # True: read standard settings files.
+            silent=True,        # True: don't print signon messages.
+            verbose=False,      # True: prints messages that would be sent to the log pane.
+        )
         self.g = self.bridge.globals()
 
         # * Trace outputs to pythons stdout, also prints the function call stack
@@ -447,7 +449,7 @@ class LeoBridgeIntegController:
         # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
         self.g.app.gui.runAskYesNoDialog = self._returnYes  # override for "revert to file" operation
 
-        # * setup leoBackground to get messages from leo
+        # setup leoBackground to get messages from leo
         try:
             self.g.app.idleTimeManager.start()  # To catch derived file changes
         except:
@@ -963,12 +965,46 @@ class LeoBridgeIntegController:
         self.commander.dehoist()
         return self.outputPNode(self.commander.p)  # in any case, return selected node
 
+    def gitDiff(self, p_ap):
+        '''Move a node LEFT, don't select it if possible'''
+        return self.editFileCommand("gitDiff", p_ap, True)
     def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
-        '''Generic call to an outline operation (p_command) for specific p-node (p_ap), with possibility of trying to preserve the current selection (p_keepSelection)'''
+        '''
+        Generic call to an outline operation (p_command) for specific p-node (p_ap),
+        with possibility of trying to preserve the current selection (p_keepSelection)
+        '''
         if p_ap:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 w_func = getattr(self.commander, p_command)
+                if w_p == self.commander.p:
+                    w_func()
+                else:
+                    oldPosition = self.commander.p  # not same node, save position to possibly return to
+                    self.commander.selectPosition(w_p)
+                    w_func()
+                    if p_keepSelection and self.commander.positionExists(oldPosition):
+                        self.commander.selectPosition(oldPosition)  # select if old position still valid
+                return self.outputPNode(self.commander.p)  # in both cases, return selected node
+            else:
+                return self.outputError("Error in " + p_command + " no w_p node found")  # default empty
+        else:
+            return self.outputError("Error in " + p_command + " no param p_ap")
+
+    def editFileCommand(self, p_command, p_ap, p_keepSelection=False):
+        '''
+        Generic call to an c.editFileCommands command (p_command) for specific p-node (p_ap),
+        with possibility of trying to preserve the current selection (p_keepSelection)
+        '''
+        if p_ap:
+            w_p = self.ap_to_p(p_ap)
+            self.g.trace(p_command, repr(w_p))
+            if w_p:
+                try:
+                    w_func = getattr(self.commander.editFileCommands, p_command, None)
+                    self.g.trace('w_func', w_func)
+                except Exception:
+                    return self.outputError("Error in " + p_command + " Exception!")
                 if w_p == self.commander.p:
                     w_func()
                 else:

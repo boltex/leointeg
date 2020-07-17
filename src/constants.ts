@@ -1,9 +1,11 @@
 import * as vscode from "vscode";
 
+
 /**
  * * Text and numeric constants used throughout leoInteg
  */
 export class Constants {
+
 
     public static PUBLISHER: string = "boltex";
     public static NAME: string = "leointeg";
@@ -78,7 +80,6 @@ export class Constants {
         TERMINAL_PANE_TITLE: "LeoBridge Server",
         THEME_STATUSBAR: "statusBar.foreground"
     };
-
     /**
      * * Basic user messages strings for messages and dialogs
      */
@@ -122,7 +123,6 @@ export class Constants {
         IGNORED: " They were ignored.", // with voluntary leading space
         TOO_FAST: "leoInteg is busy! " // with voluntary trailing space
     };
-
     /**
      * * Choices offered when about to lose current changes to a Leo Document
      */
@@ -140,7 +140,6 @@ export class Constants {
             isCloseAffordance: true
         }
     ];
-
     /**
      * * String for JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
      */
@@ -167,7 +166,6 @@ export class Constants {
         IP_ADDRESS: "connectionAddress",
         IP_PORT: "connectionPort",
     };
-
     /**
      * * Used in 'when' clauses, set with vscode.commands.executeCommand("setContext",...)
      */
@@ -219,7 +217,6 @@ export class Constants {
         AUTO_START_SERVER: Constants.CONFIG.AUTO_START_SERVER,   // Used at startup
         AUTO_CONNECT: Constants.CONFIG.AUTO_CONNECT              // Used at startup
     };
-
     /**
      * * Actions that can be invoked by Leo through leobridge
      */
@@ -254,6 +251,9 @@ export class Constants {
      * * Commands for leobridgeserver.py
      */
     public static LEOBRIDGE = {
+
+        GIT_DIFF: "gitDiff", // EKR
+
         APPLY_CONFIG: "applyConfig",
         ASK_RESULT: "askResult",
         GET_ALL_GNX: "getAllGnx",
@@ -341,13 +341,16 @@ export class Constants {
         CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
         QUICK_OPEN: "workbench.action.quickOpen"
     };
-
     /**
      * * All commands this expansion exposes (in package.json, contributes > commands)
      */
     public static COMMANDS = {
+        
+        GIT_DIFF: "gitDiff", // EKR
+
         SHOW_WELCOME: "showWelcomePage", // Always available: not in the commandPalette section of package.json
         SHOW_SETTINGS: "showSettingsPage", // Always available: not in the commandPalette section of package.json
+
         // * LeoBridge
         START_SERVER: "startServer",
         CONNECT: "connectToServer",
@@ -468,4 +471,5 @@ export class Constants {
         DELETE_MARKED_NODES: "deleteMarkedNodes",
         MOVE_MARKED_NODES: "moveMarkedNodes"
     };
+    
 }
