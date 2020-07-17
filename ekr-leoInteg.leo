@@ -5359,7 +5359,7 @@ const w_leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(p_contex
 const w_previousVersion = p_context.globalState.get&lt;string&gt;(Constants.VERSION_STATE_KEY);
 const w_start = process.hrtime(); // For calculating total startup time duration
 
-// EKR: Move abbreviations to shorten the lines.
+// EKR: More abbreviations to shorten the lines.
 const bridge = Constants.LEOBRIDGE;
 const cmd = Constants.COMMANDS;
 const li = w_leoIntegration;
