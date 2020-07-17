@@ -27,6 +27,7 @@ export class Constants {
     public static URI_SCHEME_HEADER: string = "leo:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
     public static UNTITLED_FILE_NAME: string = "untitled";
+    public static RECENT_FILES_KEY: string = "leoFiles";
 
     public static DEFAULT_PYTHON: string = "python3.7";
     public static WIN32_PYTHON: string = "py";

@@ -475,11 +475,48 @@ export class LeoIntegration {
         }
     }
 
-    private _openRecentFiles(): void { }
+    /**
+     * * Open Leo files found in context.globalState.leoFiles
+     */
+    private _openRecentFiles(): void {
+        // Loop through context.globalState.<something> and check if they exist: open them
+        const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
+        w_recentFiles.forEach(i_fileName => {
+            this.openLeoFile(vscode.Uri.file(i_fileName));
+        });
+    }
 
-    private _addRecentFile(): void { }
 
-    private _removeRecentFile(): void { }
+    /**
+     * * Adds to the context.globalState.leoFiles if not already in there (no duplicates)
+     * @param p_file path+file name string
+     */
+    private _addRecentFile(p_file: string): void {
+        // just push that string into the context.globalState.<something> array
+        const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
+        if (w_recentFiles) {
+            if (!w_recentFiles.includes(p_file)) {
+                w_recentFiles.push(p_file);
+            }
+            this._context.globalState.update(Constants.RECENT_FILES_KEY, w_recentFiles); // update with added file
+        } else {
+            // First so create key entry
+            this._context.globalState.update(Constants.RECENT_FILES_KEY, [p_file]); // array of single file
+        }
+    }
+
+    /**
+     * * Removes from context.globalState.leoFiles if found (should not have duplicates)
+     * @param p_file path+file name string
+     */
+    private _removeRecentFile(p_file: string): void {
+        // Check if exist in context.globalState.<something> and remove if found
+        const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
+        if (w_recentFiles && w_recentFiles.includes(p_file)) {
+            w_recentFiles.splice(w_recentFiles.indexOf(p_file), 1);
+            this._context.globalState.update(Constants.RECENT_FILES_KEY, w_recentFiles); // update with added file
+        }
+    }
 
     /**
      * * Handles the opening of a file in vscode, and check if it's a Leo file
