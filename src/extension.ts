@@ -45,17 +45,24 @@ export function activate(p_context: vscode.ExtensionContext) {
         [prefix + "test", () => li.test()], // * Test function useful when debugging
         [prefix + "testFromOutline", () => li.test(true)], // * Test function useful when debugging
 
-        [prefix + cmd.SET_OPENED_FILE, (p_index: number) => li.selectOpenedLeoDocument(p_index)], // Test for undeclared commands VERDICT IT WORKS!
-        [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) => li.clickButton(p_node)], // Test for undeclared commands VERDICT IT WORKS!
-        [prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) => li.removeButton(p_node)], // Cannot be undeclared because its referenced in package.json
+        [prefix + cmd.SET_OPENED_FILE, (p_index: number) => li.selectOpenedLeoDocument(p_index)],
+            // Test for undeclared commands VERDICT IT WORKS!
+        [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) => li.clickButton(p_node)],
+            // Test for undeclared commands VERDICT IT WORKS!
+        [prefix + cmd.REMOVE_BUTTON, (p_node: LeoButtonNode) => li.removeButton(p_node)],
+            // Cannot be undeclared because its referenced in package.json
 
         [prefix + cmd.SHOW_WELCOME, () => w_leoSettingsWebview.openWebview()],
-        [prefix + cmd.SHOW_SETTINGS, () => w_leoSettingsWebview.openWebview()], // Same as 'show welcome screen'
+        [prefix + cmd.SHOW_SETTINGS, () => w_leoSettingsWebview.openWebview()],
+            // Same as 'show welcome screen'
         [prefix + cmd.START_SERVER, () => li.startServer()],
         [prefix + cmd.CONNECT, () => li.connect()],
         [prefix + cmd.SHOW_LOG, () => li.showLogPane()],
-        [prefix + cmd.SHOW_BODY, () => li.showBody(false)], // Also focuses on body
-        [prefix + cmd.SHOW_OUTLINE, () => li.showOutline(true)], // Also focuses on outline
+        [prefix + cmd.SHOW_BODY, () => li.showBody(false)],
+            // Also focuses on body
+        [prefix + cmd.SHOW_OUTLINE, () => li.showOutline(true)],
+            // Also focuses on outline
+            
         [prefix + cmd.NEW_FILE, () => li.newLeoFile()],
         [prefix + cmd.SWITCH_FILE, () => li.switchLeoFile()],
 
@@ -65,7 +72,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [prefix + cmd.SAVE_FILE_FO, () => li.saveLeoFile(true)],
         [prefix + cmd.CLOSE_FILE, () => li.closeLeoFile()],
 
-        [prefix + cmd.SELECT_NODE, (p_node: LeoNode) => li.selectTreeNode(p_node, false, false)], // Called by nodes in tree when selected
+        [prefix + cmd.SELECT_NODE, (p_node: LeoNode) => li.selectTreeNode(p_node, false, false)],
+            // Called by nodes in tree when selected
         [prefix + cmd.OPEN_ASIDE, (p_node: LeoNode) => li.selectTreeNode(p_node, false, true)],
 
         [prefix + cmd.CONTRACT_ALL, () => li.nodeCommand(bridge.CONTRACT_ALL, undefined, RefreshType.RefreshTree, false)],
@@ -78,13 +86,15 @@ export function activate(p_context: vscode.ExtensionContext) {
         [prefix + cmd.MARK_SELECTION_FO, () => li.changeMark(true, undefined, true)],
         [prefix + cmd.UNMARK_SELECTION_FO, () => li.changeMark(false, undefined, true)],
 
-        [prefix + cmd.COPY, (p_node: LeoNode) => li.nodeCommand(bridge.COPY_PNODE, p_node, RefreshType.NoRefresh, false)], // No refresh/focus
+        [prefix + cmd.COPY, (p_node: LeoNode) => li.nodeCommand(bridge.COPY_PNODE, p_node, RefreshType.NoRefresh, false)],
+            // No refresh/focus
         [prefix + cmd.CUT, (p_node: LeoNode) => li.nodeCommand(bridge.CUT_PNODE, p_node, RefreshType.RefreshTree, false)],
         [prefix + cmd.PASTE, (p_node: LeoNode) => li.nodeCommand(bridge.PASTE_PNODE, p_node, RefreshType.RefreshTree, false)],
         [prefix + cmd.PASTE_CLONE, (p_node: LeoNode) => li.nodeCommand(bridge.PASTE_CLONE_PNODE, p_node, RefreshType.RefreshTree, false)],
         [prefix + cmd.DELETE, (p_node: LeoNode) => li.nodeCommand(bridge.DELETE_PNODE, p_node, RefreshType.RefreshTree, false)],
 
-        [prefix + cmd.COPY_SELECTION, () => li.nodeCommand(bridge.COPY_PNODE, undefined, RefreshType.NoRefresh, false)], // No refresh/focus
+        [prefix + cmd.COPY_SELECTION, () => li.nodeCommand(bridge.COPY_PNODE, undefined, RefreshType.NoRefresh, false)],
+            // No refresh/focus
         [prefix + cmd.CUT_SELECTION, () => li.nodeCommand(bridge.CUT_PNODE, undefined, RefreshType.RefreshTree, false)],
         [prefix + cmd.CUT_SELECTION_FO, () => li.nodeCommand(bridge.CUT_PNODE, undefined, RefreshType.RefreshTree, true)],
         [prefix + cmd.PASTE_SELECTION, () => li.nodeCommand(bridge.PASTE_PNODE, undefined, RefreshType.RefreshTree, false)],
