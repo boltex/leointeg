@@ -5231,9 +5231,9 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 // Test for undeclared commands VERDICT IT WORKS!
 [prefix + cmd.SET_OPENED_FILE, (p_index: number) =&gt; leo.selectOpenedLeoDocument(p_index)],
 
-[prefix + cmd.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; node_cmd(bridge.REFRESH_FROM_DISK_PNODE, p_node, refreshBoth, false)],
-[prefix + cmd.REFRESH_FROM_DISK_SELECTION, () =&gt; node_cmd(bridge.REFRESH_FROM_DISK_PNODE, u, refreshBoth, false)],
-[prefix + cmd.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; node_cmd(bridge.REFRESH_FROM_DISK_PNODE, u, refreshBoth, true)],
+[prefix + cmd.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.REFRESH_FROM_DISK_PNODE, p_node, refreshBoth, false)],
+[prefix + cmd.REFRESH_FROM_DISK_SELECTION, () =&gt; leo.nodeCommand(bridge.REFRESH_FROM_DISK_PNODE, u, refreshBoth, false)],
+[prefix + cmd.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.REFRESH_FROM_DISK_PNODE, u, refreshBoth, true)],
 </t>
 <t tx="ekr.20200717100831.1">[prefix + cmd.MARK, (p_node: LeoNode) =&gt; leo.changeMark(true, p_node, false)],
 [prefix + cmd.MARK_SELECTION, () =&gt; leo.changeMark(true, u, false)],
@@ -5244,22 +5244,22 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [prefix + cmd.UNMARK_SELECTION_FO, () =&gt; leo.changeMark(false, u, true)],
 </t>
 <t tx="ekr.20200717100934.1">// cut/copy/paste/delete given node.
-[prefix + cmd.COPY, (p_node: LeoNode) =&gt; node_cmd(bridge.COPY_PNODE, p_node, noRefresh, false)],
-[prefix + cmd.CUT, (p_node: LeoNode) =&gt; node_cmd(bridge.CUT_PNODE, p_node, refreshTree, false)],
-[prefix + cmd.DELETE, (p_node: LeoNode) =&gt; node_cmd(bridge.DELETE_PNODE, p_node, refreshTree, false)],
-[prefix + cmd.PASTE, (p_node: LeoNode) =&gt; node_cmd(bridge.PASTE_PNODE, p_node, refreshTree, false)],
-[prefix + cmd.PASTE_CLONE, (p_node: LeoNode) =&gt; node_cmd(bridge.PASTE_CLONE_PNODE, p_node, refreshTree, false)],
+[prefix + cmd.COPY, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.COPY_PNODE, p_node, noRefresh, false)],
+[prefix + cmd.CUT, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.CUT_PNODE, p_node, refreshTree, false)],
+[prefix + cmd.DELETE, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.DELETE_PNODE, p_node, refreshTree, false)],
+[prefix + cmd.PASTE, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.PASTE_PNODE, p_node, refreshTree, false)],
+[prefix + cmd.PASTE_CLONE, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.PASTE_CLONE_PNODE, p_node, refreshTree, false)],
 
 // cut/copy/paste/delete c.p..
-[prefix + cmd.COPY_SELECTION, () =&gt; node_cmd(bridge.COPY_PNODE, u, noRefresh, false)],
-[prefix + cmd.CUT_SELECTION, () =&gt; node_cmd(bridge.CUT_PNODE, u, refreshTree, false)],
-[prefix + cmd.CUT_SELECTION_FO, () =&gt; node_cmd(bridge.CUT_PNODE, u, refreshTree, true)],
-[prefix + cmd.DELETE_SELECTION, () =&gt; node_cmd(bridge.DELETE_PNODE, u, refreshTree, false)],
-[prefix + cmd.DELETE_SELECTION_FO, () =&gt; node_cmd(bridge.DELETE_PNODE, u, refreshTree, true)],
-[prefix + cmd.PASTE_CLONE_SELECTION, () =&gt; node_cmd(bridge.PASTE_CLONE_PNODE, u, refreshTree, false)],
-[prefix + cmd.PASTE_CLONE_SELECTION_FO, () =&gt; node_cmd(bridge.PASTE_CLONE_PNODE, u, refreshTree, true)],
-[prefix + cmd.PASTE_SELECTION, () =&gt; node_cmd(bridge.PASTE_PNODE, u, refreshTree, false)],
-[prefix + cmd.PASTE_SELECTION_FO, () =&gt; node_cmd(bridge.PASTE_PNODE, u, refreshTree, true)],
+[prefix + cmd.COPY_SELECTION, () =&gt; leo.nodeCommand(bridge.COPY_PNODE, u, noRefresh, false)],
+[prefix + cmd.CUT_SELECTION, () =&gt; leo.nodeCommand(bridge.CUT_PNODE, u, refreshTree, false)],
+[prefix + cmd.CUT_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.CUT_PNODE, u, refreshTree, true)],
+[prefix + cmd.DELETE_SELECTION, () =&gt; leo.nodeCommand(bridge.DELETE_PNODE, u, refreshTree, false)],
+[prefix + cmd.DELETE_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.DELETE_PNODE, u, refreshTree, true)],
+[prefix + cmd.PASTE_CLONE_SELECTION, () =&gt; leo.nodeCommand(bridge.PASTE_CLONE_PNODE, u, refreshTree, false)],
+[prefix + cmd.PASTE_CLONE_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.PASTE_CLONE_PNODE, u, refreshTree, true)],
+[prefix + cmd.PASTE_SELECTION, () =&gt; leo.nodeCommand(bridge.PASTE_PNODE, u, refreshTree, false)],
+[prefix + cmd.PASTE_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.PASTE_PNODE, u, refreshTree, true)],
 </t>
 <t tx="ekr.20200717101025.1"></t>
 <t tx="ekr.20200717102128.1">// TODO : @boltex More commands to implement #15, #23, #24
@@ -5289,7 +5289,7 @@ const w_start = process.hrtime(); // For calculating total startup time duration
 const bridge = Constants.LEOBRIDGE;
 const cmd = Constants.COMMANDS;
 const leo = w_leoIntegration;
-const node_cmd = w_leoIntegration.nodeCommand;
+// const node_cmd = w_leoIntegration.nodeCommand;
 const prefix = Constants.NAME + ".";
 const noRefresh = RefreshType.NoRefresh;
 const refreshBoth = RefreshType.RefreshTreeAndBody;
@@ -5313,11 +5313,11 @@ showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
 [prefix + cmd.HEADLINE_SELECTION, () =&gt; leo.editHeadline(u, false)],
 [prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; leo.editHeadline(u, true)],
 </t>
-<t tx="ekr.20200717123144.1">[prefix + cmd.REDO, () =&gt; node_cmd(bridge.REDO, u, refreshBoth, false)],
-[prefix + cmd.REDO_FO, () =&gt; node_cmd(bridge.REDO, u, refreshBoth, true)],
+<t tx="ekr.20200717123144.1">[prefix + cmd.REDO, () =&gt; leo.nodeCommand(bridge.REDO, u, refreshBoth, false)],
+[prefix + cmd.REDO_FO, () =&gt; leo.nodeCommand(bridge.REDO, u, refreshBoth, true)],
 
-[prefix + cmd.UNDO, () =&gt; node_cmd(bridge.UNDO, u, refreshBoth, false)],
-[prefix + cmd.UNDO_FO, () =&gt; node_cmd(bridge.UNDO, u, refreshBoth, true)],
+[prefix + cmd.UNDO, () =&gt; leo.nodeCommand(bridge.UNDO, u, refreshBoth, false)],
+[prefix + cmd.UNDO_FO, () =&gt; leo.nodeCommand(bridge.UNDO, u, refreshBoth, true)],
 </t>
 <t tx="ekr.20200717123731.1">[prefix + cmd.SELECT_NODE, (p_node: LeoNode) =&gt; leo.selectTreeNode(p_node, false, false)],
     // Called by nodes in tree when selected
@@ -5344,9 +5344,9 @@ showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
 <t tx="ekr.20200717123836.1">[prefix + cmd.CONNECT, () =&gt; leo.connect()],
 [prefix + cmd.START_SERVER, () =&gt; leo.startServer()],
 </t>
-<t tx="ekr.20200717124624.1">[prefix + cmd.CLONE, (p_node: LeoNode) =&gt; node_cmd(bridge.CLONE_PNODE, p_node, refreshTree, false)],
-[prefix + cmd.CLONE_SELECTION, () =&gt; node_cmd(bridge.CLONE_PNODE, u, refreshTree, false)],
-[prefix + cmd.CLONE_SELECTION_FO, () =&gt; node_cmd(bridge.CLONE_PNODE, u, refreshTree, true)],
+<t tx="ekr.20200717124624.1">[prefix + cmd.CLONE, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.CLONE_PNODE, p_node, refreshTree, false)],
+[prefix + cmd.CLONE_SELECTION, () =&gt; leo.nodeCommand(bridge.CLONE_PNODE, u, refreshTree, false)],
+[prefix + cmd.CLONE_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.CLONE_PNODE, u, refreshTree, true)],
 
 [prefix + cmd.INSERT, (p_node: LeoNode) =&gt; leo.insertNode(p_node, false)],
 [prefix + cmd.INSERT_SELECTION, () =&gt; leo.insertNode(u, false)],
@@ -5356,62 +5356,62 @@ showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
 // such as spamming CTRL+I rapidly.
 [prefix + cmd.INSERT_SELECTION_INTERRUPT, () =&gt; leo.insertNode(u, u, true)],
 </t>
-<t tx="ekr.20200717124627.1">[prefix + cmd.CONTRACT_ALL, () =&gt; node_cmd(bridge.CONTRACT_ALL, u, refreshTree, false)],
-[prefix + cmd.CONTRACT_ALL_FO, () =&gt; node_cmd(bridge.CONTRACT_ALL, u, refreshTree, true)],
-[prefix + cmd.CONTRACT_OR_GO_LEFT, () =&gt; node_cmd(bridge.CONTRACT_OR_GO_LEFT, u, refreshBoth, true)],
+<t tx="ekr.20200717124627.1">[prefix + cmd.CONTRACT_ALL, () =&gt; leo.nodeCommand(bridge.CONTRACT_ALL, u, refreshTree, false)],
+[prefix + cmd.CONTRACT_ALL_FO, () =&gt; leo.nodeCommand(bridge.CONTRACT_ALL, u, refreshTree, true)],
+[prefix + cmd.CONTRACT_OR_GO_LEFT, () =&gt; leo.nodeCommand(bridge.CONTRACT_OR_GO_LEFT, u, refreshBoth, true)],
 
-[prefix + cmd.EXPAND_AND_GO_RIGHT, () =&gt; node_cmd(bridge.EXPAND_AND_GO_RIGHT, u, refreshBoth, true)],
+[prefix + cmd.EXPAND_AND_GO_RIGHT, () =&gt; leo.nodeCommand(bridge.EXPAND_AND_GO_RIGHT, u, refreshBoth, true)],
 </t>
-<t tx="ekr.20200717124627.2">[prefix + cmd.DEHOIST, () =&gt; node_cmd(bridge.DEHOIST, u, refreshBoth, false)],
-[prefix + cmd.DEHOIST_FO, () =&gt; node_cmd(bridge.DEHOIST, u, refreshBoth, true)],
+<t tx="ekr.20200717124627.2">[prefix + cmd.DEHOIST, () =&gt; leo.nodeCommand(bridge.DEHOIST, u, refreshBoth, false)],
+[prefix + cmd.DEHOIST_FO, () =&gt; leo.nodeCommand(bridge.DEHOIST, u, refreshBoth, true)],
 
-[prefix + cmd.HOIST, (p_node: LeoNode) =&gt; node_cmd(bridge.HOIST_PNODE, p_node, refreshBoth, true)],
-[prefix + cmd.HOIST_SELECTION, () =&gt; node_cmd(bridge.HOIST_PNODE, u, refreshBoth, false)],
-[prefix + cmd.HOIST_SELECTION_FO, () =&gt; node_cmd(bridge.HOIST_PNODE, u, refreshBoth, true)],
+[prefix + cmd.HOIST, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.HOIST_PNODE, p_node, refreshBoth, true)],
+[prefix + cmd.HOIST_SELECTION, () =&gt; leo.nodeCommand(bridge.HOIST_PNODE, u, refreshBoth, false)],
+[prefix + cmd.HOIST_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.HOIST_PNODE, u, refreshBoth, true)],
 </t>
-<t tx="ekr.20200717124627.3">[prefix + cmd.DEMOTE, (p_node: LeoNode) =&gt; node_cmd(bridge.DEMOTE_PNODE, p_node, refreshTree, false)],
-[prefix + cmd.DEMOTE_SELECTION, () =&gt; node_cmd(bridge.DEMOTE_PNODE, u, refreshTree, false)],
-[prefix + cmd.DEMOTE_SELECTION_FO, () =&gt; node_cmd(bridge.DEMOTE_PNODE, u, refreshTree, true)],
+<t tx="ekr.20200717124627.3">[prefix + cmd.DEMOTE, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.DEMOTE_PNODE, p_node, refreshTree, false)],
+[prefix + cmd.DEMOTE_SELECTION, () =&gt; leo.nodeCommand(bridge.DEMOTE_PNODE, u, refreshTree, false)],
+[prefix + cmd.DEMOTE_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.DEMOTE_PNODE, u, refreshTree, true)],
 
-[prefix + cmd.PROMOTE, (p_node: LeoNode) =&gt; node_cmd(bridge.PROMOTE_PNODE, p_node, refreshTree, false)],
-[prefix + cmd.PROMOTE_SELECTION, () =&gt; node_cmd(bridge.PROMOTE_PNODE, u, refreshTree, false)],
-[prefix + cmd.PROMOTE_SELECTION_FO, () =&gt; node_cmd(bridge.PROMOTE_PNODE, u, refreshTree, true)],
+[prefix + cmd.PROMOTE, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.PROMOTE_PNODE, p_node, refreshTree, false)],
+[prefix + cmd.PROMOTE_SELECTION, () =&gt; leo.nodeCommand(bridge.PROMOTE_PNODE, u, refreshTree, false)],
+[prefix + cmd.PROMOTE_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.PROMOTE_PNODE, u, refreshTree, true)],
 </t>
-<t tx="ekr.20200717124628.1">[prefix + cmd.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; node_cmd(bridge.GOTO_NEXT_CLONE, p_node, refreshBoth, true)],
-[prefix + cmd.GOTO_NEXT_CLONE_SELECTION, () =&gt; node_cmd(bridge.GOTO_NEXT_CLONE, u, refreshBoth, false)],
-[prefix + cmd.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; node_cmd(bridge.GOTO_NEXT_CLONE, u, refreshBoth, true)],
+<t tx="ekr.20200717124628.1">[prefix + cmd.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.GOTO_NEXT_CLONE, p_node, refreshBoth, true)],
+[prefix + cmd.GOTO_NEXT_CLONE_SELECTION, () =&gt; leo.nodeCommand(bridge.GOTO_NEXT_CLONE, u, refreshBoth, false)],
+[prefix + cmd.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.GOTO_NEXT_CLONE, u, refreshBoth, true)],
 
-[prefix + cmd.GOTO_NEXT_MARKED, () =&gt; node_cmd(bridge.GOTO_NEXT_MARKED, u, refreshBoth, true)],
+[prefix + cmd.GOTO_NEXT_MARKED, () =&gt; leo.nodeCommand(bridge.GOTO_NEXT_MARKED, u, refreshBoth, true)],
 
-[prefix + cmd.GOTO_FIRST_VISIBLE, () =&gt; node_cmd(bridge.GOTO_FIRST_VISIBLE, u, refreshBoth, true)],
-[prefix + cmd.GOTO_LAST_SIBLING, () =&gt; node_cmd(bridge.GOTO_LAST_SIBLING, u, refreshBoth, true)],
-[prefix + cmd.GOTO_LAST_VISIBLE, () =&gt; node_cmd(bridge.GOTO_LAST_VISIBLE, u, refreshBoth, true)],
-[prefix + cmd.GOTO_NEXT_VISIBLE, () =&gt; node_cmd(bridge.GOTO_NEXT_VISIBLE, u, refreshBoth, true)],
-[prefix + cmd.GOTO_PREV_VISIBLE, () =&gt; node_cmd(bridge.GOTO_PREV_VISIBLE, u, refreshBoth, true)],
+[prefix + cmd.GOTO_FIRST_VISIBLE, () =&gt; leo.nodeCommand(bridge.GOTO_FIRST_VISIBLE, u, refreshBoth, true)],
+[prefix + cmd.GOTO_LAST_SIBLING, () =&gt; leo.nodeCommand(bridge.GOTO_LAST_SIBLING, u, refreshBoth, true)],
+[prefix + cmd.GOTO_LAST_VISIBLE, () =&gt; leo.nodeCommand(bridge.GOTO_LAST_VISIBLE, u, refreshBoth, true)],
+[prefix + cmd.GOTO_NEXT_VISIBLE, () =&gt; leo.nodeCommand(bridge.GOTO_NEXT_VISIBLE, u, refreshBoth, true)],
+[prefix + cmd.GOTO_PREV_VISIBLE, () =&gt; leo.nodeCommand(bridge.GOTO_PREV_VISIBLE, u, refreshBoth, true)],
 
 </t>
-<t tx="ekr.20200717124918.1">[prefix + cmd.MOVE_DOWN, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_DOWN, p_node, refreshTree, false)],
-[prefix + cmd.MOVE_DOWN_SELECTION, () =&gt; node_cmd(bridge.MOVE_PNODE_DOWN, u, refreshTree, false)],
-[prefix + cmd.MOVE_DOWN_SELECTION_FO, () =&gt; node_cmd(bridge.MOVE_PNODE_DOWN, u, refreshTree, true)],
+<t tx="ekr.20200717124918.1">[prefix + cmd.MOVE_DOWN, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.MOVE_PNODE_DOWN, p_node, refreshTree, false)],
+[prefix + cmd.MOVE_DOWN_SELECTION, () =&gt; leo.nodeCommand(bridge.MOVE_PNODE_DOWN, u, refreshTree, false)],
+[prefix + cmd.MOVE_DOWN_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.MOVE_PNODE_DOWN, u, refreshTree, true)],
 
-[prefix + cmd.MOVE_LEFT, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_LEFT, p_node, refreshTree, false)],
-[prefix + cmd.MOVE_LEFT_SELECTION, () =&gt; node_cmd(bridge.MOVE_PNODE_LEFT, u, refreshTree, false)],
-[prefix + cmd.MOVE_LEFT_SELECTION_FO, () =&gt; node_cmd(bridge.MOVE_PNODE_LEFT, u, refreshTree, true)],
+[prefix + cmd.MOVE_LEFT, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.MOVE_PNODE_LEFT, p_node, refreshTree, false)],
+[prefix + cmd.MOVE_LEFT_SELECTION, () =&gt; leo.nodeCommand(bridge.MOVE_PNODE_LEFT, u, refreshTree, false)],
+[prefix + cmd.MOVE_LEFT_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.MOVE_PNODE_LEFT, u, refreshTree, true)],
 
-[prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_RIGHT, p_node, refreshTree, false)],
-[prefix + cmd.MOVE_RIGHT_SELECTION, () =&gt; node_cmd(bridge.MOVE_PNODE_RIGHT, u, refreshTree, false)],
-[prefix + cmd.MOVE_RIGHT_SELECTION_FO, () =&gt; node_cmd(bridge.MOVE_PNODE_RIGHT, u, refreshTree, true)],
+[prefix + cmd.MOVE_RIGHT, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.MOVE_PNODE_RIGHT, p_node, refreshTree, false)],
+[prefix + cmd.MOVE_RIGHT_SELECTION, () =&gt; leo.nodeCommand(bridge.MOVE_PNODE_RIGHT, u, refreshTree, false)],
+[prefix + cmd.MOVE_RIGHT_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.MOVE_PNODE_RIGHT, u, refreshTree, true)],
 
-[prefix + cmd.MOVE_UP, (p_node: LeoNode) =&gt; node_cmd(bridge.MOVE_PNODE_UP, p_node, refreshTree, false)],
-[prefix + cmd.MOVE_UP_SELECTION, () =&gt; node_cmd(bridge.MOVE_PNODE_UP, u, refreshTree, false)],
-[prefix + cmd.MOVE_UP_SELECTION_FO, () =&gt; node_cmd(bridge.MOVE_PNODE_UP, u, refreshTree, true)],
+[prefix + cmd.MOVE_UP, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.MOVE_PNODE_UP, p_node, refreshTree, false)],
+[prefix + cmd.MOVE_UP_SELECTION, () =&gt; leo.nodeCommand(bridge.MOVE_PNODE_UP, u, refreshTree, false)],
+[prefix + cmd.MOVE_UP_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.MOVE_PNODE_UP, u, refreshTree, true)],
 </t>
-<t tx="ekr.20200717125114.1">[prefix + cmd.SORT_CHILDREN, () =&gt; node_cmd(bridge.SORT_CHILDREN, u, refreshTree, false)],
-[prefix + cmd.SORT_SIBLING, () =&gt; node_cmd(bridge.SORT_SIBLINGS, u, refreshTree, false)],
-[prefix + cmd.SORT_SIBLING_FO, () =&gt; node_cmd(bridge.SORT_SIBLINGS, u, refreshTree, true)],
+<t tx="ekr.20200717125114.1">[prefix + cmd.SORT_CHILDREN, () =&gt; leo.nodeCommand(bridge.SORT_CHILDREN, u, refreshTree, false)],
+[prefix + cmd.SORT_SIBLING, () =&gt; leo.nodeCommand(bridge.SORT_SIBLINGS, u, refreshTree, false)],
+[prefix + cmd.SORT_SIBLING_FO, () =&gt; leo.nodeCommand(bridge.SORT_SIBLINGS, u, refreshTree, true)],
 </t>
-<t tx="ekr.20200717125131.1">[prefix + cmd.PAGE_UP, () =&gt; node_cmd(bridge.PAGE_UP, u, refreshBoth, true)],
-[prefix + cmd.PAGE_DOWN, () =&gt; node_cmd(bridge.PAGE_DOWN, u, refreshBoth, true)],
+<t tx="ekr.20200717125131.1">[prefix + cmd.PAGE_UP, () =&gt; leo.nodeCommand(bridge.PAGE_UP, u, refreshBoth, true)],
+[prefix + cmd.PAGE_DOWN, () =&gt; leo.nodeCommand(bridge.PAGE_DOWN, u, refreshBoth, true)],
 </t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
