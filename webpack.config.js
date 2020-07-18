@@ -115,7 +115,8 @@ function getWebviewsConfig(env) {
           }
         : false,
     }),
-    new HtmlExcludeAssetsPlugin({}),
+    // @ts-ignore
+    new HtmlExcludeAssetsPlugin(),
     new CspHtmlPlugin(),
     new ImageminPlugin({
       disable: true, // disabled -were just going to put images for webview in resources anyways

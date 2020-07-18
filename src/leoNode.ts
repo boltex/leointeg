@@ -31,7 +31,7 @@ export class LeoNode extends vscode.TreeItem {
         super(label, collapsibleState);
         this.contextValue = this._getNodeContextValue();
         this.command = {
-            command: Constants.NAME + "." + Constants.COMMANDS.SELECT_NODE,
+            command: Constants.COMMANDS.SELECT_NODE,
             title: '',
             arguments: [this]
         };

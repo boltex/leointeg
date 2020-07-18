@@ -227,6 +227,23 @@
 </v>
 <v t="felix.20191126232435.1"><vh>main</vh></v>
 </v>
+<v t="felix.20200718024635.1"><vh>@clean src/commandStack.ts</vh>
+<v t="felix.20200718024635.2"><vh>class CommandStack</vh>
+<v t="felix.20200718024635.3"><vh>CommandStack.size</vh></v>
+<v t="felix.20200718024635.4"><vh>CommandStack.newSelection</vh></v>
+<v t="felix.20200718024635.5"><vh>CommandStack.add</vh></v>
+<v t="felix.20200718024635.6"><vh>CommandStack._tryStart</vh></v>
+<v t="felix.20200718024635.7"><vh>CommandStack._runStackCommand</vh></v>
+<v t="felix.20200718024635.8"><vh>CommandStack._resolveResult</vh></v>
+</v>
+</v>
+<v t="felix.20200718030926.1"><vh>@clean src/config.ts</vh>
+<v t="felix.20200718030926.2"><vh>class Config</vh>
+<v t="felix.20200718030926.3"><vh>Config.getConfig</vh></v>
+<v t="felix.20200718030926.4"><vh>Config.setLeoIntegSettings</vh></v>
+<v t="felix.20200718030926.5"><vh>Config.buildFromSavedSettings</vh></v>
+</v>
+</v>
 <v t="felix.20200718020912.1"><vh>@clean src/constants.ts</vh>
 <v t="felix.20200718020912.2"><vh>class Constants</vh>
 <v t="felix.20200718020912.3"><vh>general constants</vh></v>
@@ -244,22 +261,34 @@
 <v t="felix.20200718020912.15"><vh>commands strings</vh></v>
 </v>
 </v>
-<v t="felix.20200718024635.1"><vh>@clean src/commandStack.ts</vh>
-<v t="felix.20200718024635.2"><vh>class CommandStack</vh>
-<v t="felix.20200718024635.3"><vh>CommandStack.size</vh></v>
-<v t="felix.20200718024635.4"><vh>CommandStack.newSelection</vh></v>
-<v t="felix.20200718024635.5"><vh>CommandStack.add</vh></v>
-<v t="felix.20200718024635.6"><vh>CommandStack._tryStart</vh></v>
-<v t="felix.20200718024635.7"><vh>CommandStack._runStackCommand</vh></v>
-<v t="felix.20200718024635.8"><vh>CommandStack._resolveResult</vh></v>
+<v t="felix.20200718031424.1"><vh>@clean src/extension.ts</vh>
+<v t="felix.20200718031424.2"><vh>activate</vh>
+<v t="felix.20200718031424.3"><vh>&lt;&lt; define constants &gt;&gt;</vh></v>
+<v t="felix.20200718031424.4"><vh> not implemented commands</vh></v>
+<v t="felix.20200718031424.5"><vh>button commands</vh></v>
+<v t="felix.20200718031424.6"><vh>file commands</vh></v>
+<v t="felix.20200718031424.7"><vh>edit headline commands</vh></v>
+<v t="felix.20200718031424.8"><vh>node commands...</vh>
+<v t="felix.20200718031424.9"><vh>cut/copy/paste commands</vh></v>
+<v t="felix.20200718031424.10"><vh>expand/contract commands</vh></v>
+<v t="felix.20200718031424.11"><vh>git-diff (new, activate)</vh></v>
+<v t="felix.20200718031424.12"><vh>goto commands</vh></v>
+<v t="felix.20200718031424.13"><vh>hoist/dehoist commands</vh></v>
+<v t="felix.20200718031424.14"><vh>insert/clone commands</vh></v>
+<v t="felix.20200718031424.15"><vh>mark/unmark commands</vh></v>
+<v t="felix.20200718031424.16"><vh>move commands</vh></v>
+<v t="felix.20200718031424.17"><vh>page up/down commands</vh></v>
+<v t="felix.20200718031424.18"><vh>promote/demote commands</vh></v>
+<v t="felix.20200718031424.19"><vh>sort commands</vh></v>
+<v t="felix.20200718031424.20"><vh>undo/redo commands</vh></v>
 </v>
+<v t="felix.20200718031424.21"><vh>server commands</vh></v>
+<v t="felix.20200718031424.22"><vh>select/show commands</vh></v>
+<v t="felix.20200718031424.23"><vh>&lt;&lt; show welcome screen &gt;&gt;</vh></v>
 </v>
-<v t="felix.20200718030926.1"><vh>@clean src/config.ts</vh>
-<v t="felix.20200718030926.2"><vh>class Config</vh>
-<v t="felix.20200718030926.3"><vh>Config.getConfig</vh></v>
-<v t="felix.20200718030926.4"><vh>Config.setLeoIntegSettings</vh></v>
-<v t="felix.20200718030926.5"><vh>Config.buildFromSavedSettings</vh></v>
-</v>
+<v t="felix.20200718031424.24"><vh>deactivate</vh></v>
+<v t="felix.20200718031424.25"><vh>showWelcomeIfNewer</vh></v>
+<v t="felix.20200718031424.26"><vh>getDurationMilliseconds</vh></v>
 </v>
 </vnodes>
 <tnodes>
@@ -1824,7 +1853,7 @@ def runByName(self, p_package):
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.46.0"
+    "vscode": "^1.47.0"
   },
   "keywords": [
     "leo",
@@ -4206,128 +4235,128 @@ public static VSCODE_COMMANDS = {
  * * All commands this expansion exposes (in package.json, contributes &gt; commands)
  */
 public static COMMANDS = {
-    SHOW_WELCOME: "showWelcomePage", // Always available: not in the commandPalette section of package.json
-    SHOW_SETTINGS: "showSettingsPage", // Always available: not in the commandPalette section of package.json
+    SHOW_WELCOME: Constants.NAME + ".showWelcomePage", // Always available: not in the commandPalette section of package.json
+    SHOW_SETTINGS: Constants.NAME + ".showSettingsPage", // Always available: not in the commandPalette section of package.json
     // * LeoBridge
-    START_SERVER: "startServer",
-    CONNECT: "connectToServer",
-    SET_OPENED_FILE: "setOpenedFile",
-    OPEN_FILE: "openLeoFile", // sets focus on BODY
-    SWITCH_FILE: "switchLeoFile",
-    NEW_FILE: "newLeoFile",
-    SAVE_FILE: "saveLeoFile", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
-    SAVE_FILE_FO: "saveLeoFileFromOutline", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
-    SAVE_AS_FILE: "saveAsLeoFile",
-    CLOSE_FILE: "closeLeoFile",
-    CLICK_BUTTON: "clickButton",
-    REMOVE_BUTTON: "removeButton",
-    MINIBUFFER: "minibuffer",
+    START_SERVER: Constants.NAME + ".startServer",
+    CONNECT: Constants.NAME + ".connectToServer",
+    SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
+    OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
+    SWITCH_FILE: Constants.NAME + ".switchLeoFile",
+    NEW_FILE: Constants.NAME + ".newLeoFile",
+    SAVE_FILE: Constants.NAME + ".saveLeoFile", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+    SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+    SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
+    CLOSE_FILE: Constants.NAME + ".closeLeoFile",
+    CLICK_BUTTON: Constants.NAME + ".clickButton",
+    REMOVE_BUTTON: Constants.NAME + ".removeButton",
+    MINIBUFFER: Constants.NAME + ".minibuffer",
     // * Outline selection
-    SELECT_NODE: "selectTreeNode",
-    OPEN_ASIDE: "openAside",
+    SELECT_NODE: Constants.NAME + ".selectTreeNode",
+    OPEN_ASIDE: Constants.NAME + ".openAside",
     // * Goto operations that always finish with focus in outline
-    PAGE_UP: "pageUp",
-    PAGE_DOWN: "pageDown",
-    GOTO_FIRST_VISIBLE: "gotoFirstVisible",
-    GOTO_LAST_VISIBLE: "gotoLastVisible",
-    GOTO_LAST_SIBLING: "gotoLastSibling",
-    GOTO_NEXT_VISIBLE: "gotoNextVisible",
-    GOTO_PREV_VISIBLE: "gotoPrevVisible",
-    GOTO_NEXT_MARKED: "gotoNextMarked",
-    GOTO_NEXT_CLONE: "gotoNextClone",
-    GOTO_NEXT_CLONE_SELECTION: "gotoNextCloneSelection",
-    GOTO_NEXT_CLONE_SELECTION_FO: "gotoNextCloneSelectionFromOutline",
-    CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
-    EXPAND_AND_GO_RIGHT: "expandAndGoRight",
+    PAGE_UP: Constants.NAME + ".pageUp",
+    PAGE_DOWN: Constants.NAME + ".pageDown",
+    GOTO_FIRST_VISIBLE: Constants.NAME + ".gotoFirstVisible",
+    GOTO_LAST_VISIBLE: Constants.NAME + ".gotoLastVisible",
+    GOTO_LAST_SIBLING: Constants.NAME + ".gotoLastSibling",
+    GOTO_NEXT_VISIBLE: Constants.NAME + ".gotoNextVisible",
+    GOTO_PREV_VISIBLE: Constants.NAME + ".gotoPrevVisible",
+    GOTO_NEXT_MARKED: Constants.NAME + ".gotoNextMarked",
+    GOTO_NEXT_CLONE: Constants.NAME + ".gotoNextClone",
+    GOTO_NEXT_CLONE_SELECTION: Constants.NAME + ".gotoNextCloneSelection",
+    GOTO_NEXT_CLONE_SELECTION_FO: Constants.NAME + ".gotoNextCloneSelectionFromOutline",
+    CONTRACT_OR_GO_LEFT: Constants.NAME + ".contractOrGoLeft",
+    EXPAND_AND_GO_RIGHT: Constants.NAME + ".expandAndGoRight",
     // * Leo Operations
-    UNDO: "undo", // From command Palette
-    UNDO_FO: "undoFromOutline", // from button, return focus on OUTLINE
-    REDO: "redo", // From command Palette
-    REDO_FO: "redoFromOutline", // from button, return focus on OUTLINE
-    EXECUTE: "executeScriptSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
-    SHOW_BODY: "showBody",
-    SHOW_OUTLINE: "showOutline",
-    SHOW_LOG: "showLogPane",
-    SORT_CHILDREN: "sortChildrenSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
-    SORT_SIBLING: "sortSiblingsSelection",
-    SORT_SIBLING_FO: "sortSiblingsSelectionFromOutline",
-    CONTRACT_ALL: "contractAll", // From command Palette
-    CONTRACT_ALL_FO: "contractAllFromOutline", // from button, return focus on OUTLINE
+    UNDO: Constants.NAME + ".undo", // From command Palette
+    UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE
+    REDO: Constants.NAME + ".redo", // From command Palette
+    REDO_FO: Constants.NAME + ".redoFromOutline", // from button, return focus on OUTLINE
+    EXECUTE: Constants.NAME + ".executeScriptSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+    SHOW_BODY: Constants.NAME + ".showBody",
+    SHOW_OUTLINE: Constants.NAME + ".showOutline",
+    SHOW_LOG: Constants.NAME + ".showLogPane",
+    SORT_CHILDREN: Constants.NAME + ".sortChildrenSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+    SORT_SIBLING: Constants.NAME + ".sortSiblingsSelection",
+    SORT_SIBLING_FO: Constants.NAME + ".sortSiblingsSelectionFromOutline",
+    CONTRACT_ALL: Constants.NAME + ".contractAll", // From command Palette
+    CONTRACT_ALL_FO: Constants.NAME + ".contractAllFromOutline", // from button, return focus on OUTLINE
     // * Commands from tree panel buttons or context: focus on OUTLINE
-    MARK: "mark",
-    UNMARK: "unmark",
-    COPY: "copyNode",
-    CUT: "cutNode",
-    PASTE: "pasteNode",
-    PASTE_CLONE: "pasteNodeAsClone",
-    DELETE: "delete",
-    HEADLINE: "editHeadline",
-    MOVE_DOWN: "moveOutlineDown",
-    MOVE_LEFT: "moveOutlineLeft",
-    MOVE_RIGHT: "moveOutlineRight",
-    MOVE_UP: "moveOutlineUp",
-    INSERT: "insertNode",
-    CLONE: "cloneNode",
-    PROMOTE: "promote",
-    DEMOTE: "demote",
-    REFRESH_FROM_DISK: "refreshFromDisk",
+    MARK: Constants.NAME + ".mark",
+    UNMARK: Constants.NAME + ".unmark",
+    COPY: Constants.NAME + ".copyNode",
+    CUT: Constants.NAME + ".cutNode",
+    PASTE: Constants.NAME + ".pasteNode",
+    PASTE_CLONE: Constants.NAME + ".pasteNodeAsClone",
+    DELETE: Constants.NAME + ".delete",
+    HEADLINE: Constants.NAME + ".editHeadline",
+    MOVE_DOWN: Constants.NAME + ".moveOutlineDown",
+    MOVE_LEFT: Constants.NAME + ".moveOutlineLeft",
+    MOVE_RIGHT: Constants.NAME + ".moveOutlineRight",
+    MOVE_UP: Constants.NAME + ".moveOutlineUp",
+    INSERT: Constants.NAME + ".insertNode",
+    CLONE: Constants.NAME + ".cloneNode",
+    PROMOTE: Constants.NAME + ".promote",
+    DEMOTE: Constants.NAME + ".demote",
+    REFRESH_FROM_DISK: Constants.NAME + ".refreshFromDisk",
     // * Commands from keyboard, while focus on BODY (command-palette returns to BODY for now)
-    MARK_SELECTION: "markSelection",
-    UNMARK_SELECTION: "unmarkSelection",
-    COPY_SELECTION: "copyNodeSelection", // Nothing to refresh/focus so no "FO" version
-    CUT_SELECTION: "cutNodeSelection",
-    PASTE_SELECTION: "pasteNodeAtSelection",
-    PASTE_CLONE_SELECTION: "pasteNodeAsCloneAtSelection",
-    DELETE_SELECTION: "deleteSelection",
-    HEADLINE_SELECTION: "editSelectedHeadline",
-    MOVE_DOWN_SELECTION: "moveOutlineDownSelection",
-    MOVE_LEFT_SELECTION: "moveOutlineLeftSelection",
-    MOVE_RIGHT_SELECTION: "moveOutlineRightSelection",
-    MOVE_UP_SELECTION: "moveOutlineUpSelection",
-    INSERT_SELECTION: "insertNodeSelection",
-    INSERT_SELECTION_INTERRUPT: "insertNodeSelectionInterrupt", // Headline input box can be interrupted with another insert
-    CLONE_SELECTION: "cloneNodeSelection",
-    PROMOTE_SELECTION: "promoteSelection",
-    DEMOTE_SELECTION: "demoteSelection",
-    REFRESH_FROM_DISK_SELECTION: "refreshFromDiskSelection",
+    MARK_SELECTION: Constants.NAME + ".markSelection",
+    UNMARK_SELECTION: Constants.NAME + ".unmarkSelection",
+    COPY_SELECTION: Constants.NAME + ".copyNodeSelection", // Nothing to refresh/focus so no "FO" version
+    CUT_SELECTION: Constants.NAME + ".cutNodeSelection",
+    PASTE_SELECTION: Constants.NAME + ".pasteNodeAtSelection",
+    PASTE_CLONE_SELECTION: Constants.NAME + ".pasteNodeAsCloneAtSelection",
+    DELETE_SELECTION: Constants.NAME + ".deleteSelection",
+    HEADLINE_SELECTION: Constants.NAME + ".editSelectedHeadline",
+    MOVE_DOWN_SELECTION: Constants.NAME + ".moveOutlineDownSelection",
+    MOVE_LEFT_SELECTION: Constants.NAME + ".moveOutlineLeftSelection",
+    MOVE_RIGHT_SELECTION: Constants.NAME + ".moveOutlineRightSelection",
+    MOVE_UP_SELECTION: Constants.NAME + ".moveOutlineUpSelection",
+    INSERT_SELECTION: Constants.NAME + ".insertNodeSelection",
+    INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Headline input box can be interrupted with another insert
+    CLONE_SELECTION: Constants.NAME + ".cloneNodeSelection",
+    PROMOTE_SELECTION: Constants.NAME + ".promoteSelection",
+    DEMOTE_SELECTION: Constants.NAME + ".demoteSelection",
+    REFRESH_FROM_DISK_SELECTION: Constants.NAME + ".refreshFromDiskSelection",
     // * Commands from keyboard, while focus on OUTLINE
-    MARK_SELECTION_FO: "markSelectionFromOutline",
-    UNMARK_SELECTION_FO: "unmarkSelectionFromOutline",
+    MARK_SELECTION_FO: Constants.NAME + ".markSelectionFromOutline",
+    UNMARK_SELECTION_FO: Constants.NAME + ".unmarkSelectionFromOutline",
     // COPY_SELECTION Nothing to refresh/focus for "copy a node" so no entry here
-    CUT_SELECTION_FO: "cutNodeSelectionFromOutline",
-    PASTE_SELECTION_FO: "pasteNodeAtSelectionFromOutline",
-    PASTE_CLONE_SELECTION_FO: "pasteNodeAsCloneAtSelectionFromOutline",
-    DELETE_SELECTION_FO: "deleteSelectionFromOutline",
-    HEADLINE_SELECTION_FO: "editSelectedHeadlineFromOutline",
-    MOVE_DOWN_SELECTION_FO: "moveOutlineDownSelectionFromOutline",
-    MOVE_LEFT_SELECTION_FO: "moveOutlineLeftSelectionFromOutline",
-    MOVE_RIGHT_SELECTION_FO: "moveOutlineRightSelectionFromOutline",
-    MOVE_UP_SELECTION_FO: "moveOutlineUpSelectionFromOutline",
-    INSERT_SELECTION_FO: "insertNodeSelectionFromOutline",
-    CLONE_SELECTION_FO: "cloneNodeSelectionFromOutline",
-    PROMOTE_SELECTION_FO: "promoteSelectionFromOutline",
-    DEMOTE_SELECTION_FO: "demoteSelectionFromOutline",
-    REFRESH_FROM_DISK_SELECTION_FO: "refreshFromDiskSelectionFromOutline",
-    HOIST: "hoistNode",
-    HOIST_SELECTION: "hoistSelection",
-    HOIST_SELECTION_FO: "hoistSelectionFromOutline",
-    DEHOIST: "deHoist",
-    DEHOIST_FO: "deHoistFromOutline",
+    CUT_SELECTION_FO: Constants.NAME + ".cutNodeSelectionFromOutline",
+    PASTE_SELECTION_FO: Constants.NAME + ".pasteNodeAtSelectionFromOutline",
+    PASTE_CLONE_SELECTION_FO: Constants.NAME + ".pasteNodeAsCloneAtSelectionFromOutline",
+    DELETE_SELECTION_FO: Constants.NAME + ".deleteSelectionFromOutline",
+    HEADLINE_SELECTION_FO: Constants.NAME + ".editSelectedHeadlineFromOutline",
+    MOVE_DOWN_SELECTION_FO: Constants.NAME + ".moveOutlineDownSelectionFromOutline",
+    MOVE_LEFT_SELECTION_FO: Constants.NAME + ".moveOutlineLeftSelectionFromOutline",
+    MOVE_RIGHT_SELECTION_FO: Constants.NAME + ".moveOutlineRightSelectionFromOutline",
+    MOVE_UP_SELECTION_FO: Constants.NAME + ".moveOutlineUpSelectionFromOutline",
+    INSERT_SELECTION_FO: Constants.NAME + ".insertNodeSelectionFromOutline",
+    CLONE_SELECTION_FO: Constants.NAME + ".cloneNodeSelectionFromOutline",
+    PROMOTE_SELECTION_FO: Constants.NAME + ".promoteSelectionFromOutline",
+    DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",
+    REFRESH_FROM_DISK_SELECTION_FO: Constants.NAME + ".refreshFromDiskSelectionFromOutline",
+    HOIST: Constants.NAME + ".hoistNode",
+    HOIST_SELECTION: Constants.NAME + ".hoistSelection",
+    HOIST_SELECTION_FO: Constants.NAME + ".hoistSelectionFromOutline",
+    DEHOIST: Constants.NAME + ".deHoist",
+    DEHOIST_FO: Constants.NAME + ".deHoistFromOutline",
     // * - - - - - - - - - - - - - - - not implemented yet
-    CLONE_FIND_ALL: "cloneFindAll",
-    CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened",
-    CLONE_FIND_MARKED: "cloneFindMarked",
-    CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked",
-    EXTRACT: "extract",
-    EXTRACT_NAMES: "extractNames",
-    COPY_MARKED: "copyMarked",
-    DIFF_MARKED_NODES: "diffMarkedNodes",
-    MARK_CHANGED_ITEMS: "markChangedItems",
-    MARK_SUBHEADS: "markSubheads",
-    UNMARK_ALL: "unmarkAll",
-    CLONE_MARKED_NODES: "cloneMarkedNodes",
-    DELETE_MARKED_NODES: "deleteMarkedNodes",
-    MOVE_MARKED_NODES: "moveMarkedNodes"
+    CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
+    CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
+    CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
+    CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
+    EXTRACT: Constants.NAME + ".extract",
+    EXTRACT_NAMES: Constants.NAME + ".extractNames",
+    COPY_MARKED: Constants.NAME + ".copyMarked",
+    DIFF_MARKED_NODES: Constants.NAME + ".diffMarkedNodes",
+    MARK_CHANGED_ITEMS: Constants.NAME + ".markChangedItems",
+    MARK_SUBHEADS: Constants.NAME + ".markSubheads",
+    UNMARK_ALL: Constants.NAME + ".unmarkAll",
+    CLONE_MARKED_NODES: Constants.NAME + ".cloneMarkedNodes",
+    DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
+    MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes"
 };
 </t>
 <t tx="felix.20200718020912.2">/**
@@ -4914,6 +4943,292 @@ public buildFromSavedSettings(): void {
         utils.setContext(Constants.CONTEXT_FLAGS.SHOW_COPY, this.showCopyOnNodes);
     }
 }
+</t>
+<t tx="felix.20200718031424.1">import * as vscode from "vscode";
+import * as utils from "./utils";
+import { Constants } from "./constants";
+import { RefreshType } from "./types";
+import { LeoIntegration } from "./leoIntegration";
+import { LeoNode } from "./leoNode";
+import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
+import { LeoButtonNode } from "./leoButtonNode";
+
+@others
+@language typescript
+@tabwidth -4
+</t>
+<t tx="felix.20200718031424.10">[CMD.CONTRACT_ALL, () =&gt; w_leo.nodeCommand(BRIDGE.CONTRACT_ALL, U, REFRESH_TREE, false)],
+[CMD.CONTRACT_ALL_FO, () =&gt; w_leo.nodeCommand(BRIDGE.CONTRACT_ALL, U, REFRESH_TREE, true)],
+[CMD.CONTRACT_OR_GO_LEFT, () =&gt; w_leo.nodeCommand(BRIDGE.CONTRACT_OR_GO_LEFT, U, REFRESH_BOTH, true)],
+
+[CMD.EXPAND_AND_GO_RIGHT, () =&gt; w_leo.nodeCommand(BRIDGE.EXPAND_AND_GO_RIGHT, U, REFRESH_BOTH, true)],
+</t>
+<t tx="felix.20200718031424.11">// [cmd.GIT_DIFF, () =&gt; leo.nodeCommand(bridge.GIT_DIFF, u, refreshBoth, true)],
+</t>
+<t tx="felix.20200718031424.12">[CMD.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.GOTO_NEXT_CLONE, p_node, REFRESH_BOTH, true)],
+[CMD.GOTO_NEXT_CLONE_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.GOTO_NEXT_CLONE, U, REFRESH_BOTH, false)],
+[CMD.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.GOTO_NEXT_CLONE, U, REFRESH_BOTH, true)],
+
+[CMD.GOTO_NEXT_MARKED, () =&gt; w_leo.nodeCommand(BRIDGE.GOTO_NEXT_MARKED, U, REFRESH_BOTH, true)],
+
+[CMD.GOTO_FIRST_VISIBLE, () =&gt; w_leo.nodeCommand(BRIDGE.GOTO_FIRST_VISIBLE, U, REFRESH_BOTH, true)],
+[CMD.GOTO_LAST_SIBLING, () =&gt; w_leo.nodeCommand(BRIDGE.GOTO_LAST_SIBLING, U, REFRESH_BOTH, true)],
+[CMD.GOTO_LAST_VISIBLE, () =&gt; w_leo.nodeCommand(BRIDGE.GOTO_LAST_VISIBLE, U, REFRESH_BOTH, true)],
+[CMD.GOTO_NEXT_VISIBLE, () =&gt; w_leo.nodeCommand(BRIDGE.GOTO_NEXT_VISIBLE, U, REFRESH_BOTH, true)],
+[CMD.GOTO_PREV_VISIBLE, () =&gt; w_leo.nodeCommand(BRIDGE.GOTO_PREV_VISIBLE, U, REFRESH_BOTH, true)],
+
+</t>
+<t tx="felix.20200718031424.13">[CMD.DEHOIST, () =&gt; w_leo.nodeCommand(BRIDGE.DEHOIST, U, REFRESH_BOTH, false)],
+[CMD.DEHOIST_FO, () =&gt; w_leo.nodeCommand(BRIDGE.DEHOIST, U, REFRESH_BOTH, true)],
+
+[CMD.HOIST, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.HOIST_PNODE, p_node, REFRESH_BOTH, true)],
+[CMD.HOIST_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.HOIST_PNODE, U, REFRESH_BOTH, false)],
+[CMD.HOIST_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.HOIST_PNODE, U, REFRESH_BOTH, true)],
+</t>
+<t tx="felix.20200718031424.14">[CMD.CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.CLONE_PNODE, p_node, REFRESH_TREE, false)],
+[CMD.CLONE_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.CLONE_PNODE, U, REFRESH_TREE, false)],
+[CMD.CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.CLONE_PNODE, U, REFRESH_TREE, true)],
+
+[CMD.INSERT, (p_node: LeoNode) =&gt; w_leo.insertNode(p_node, false)],
+[CMD.INSERT_SELECTION, () =&gt; w_leo.insertNode(U, false)],
+[CMD.INSERT_SELECTION_FO, () =&gt; w_leo.insertNode(U, true)],
+
+// * Special command for when inserting rapidly more than one node without even specifying a headline label,
+// such as spamming CTRL+I rapidly.
+[CMD.INSERT_SELECTION_INTERRUPT, () =&gt; w_leo.insertNode(U, U, true)],
+</t>
+<t tx="felix.20200718031424.15">[CMD.MARK, (p_node: LeoNode) =&gt; w_leo.changeMark(true, p_node, false)],
+[CMD.MARK_SELECTION, () =&gt; w_leo.changeMark(true, U, false)],
+[CMD.MARK_SELECTION_FO, () =&gt; w_leo.changeMark(true, U, true)],
+
+[CMD.UNMARK, (p_node: LeoNode) =&gt; w_leo.changeMark(false, p_node, false)],
+[CMD.UNMARK_SELECTION, () =&gt; w_leo.changeMark(false, U, false)],
+[CMD.UNMARK_SELECTION_FO, () =&gt; w_leo.changeMark(false, U, true)],
+</t>
+<t tx="felix.20200718031424.16">[CMD.MOVE_DOWN, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.MOVE_PNODE_DOWN, p_node, REFRESH_TREE, false)],
+[CMD.MOVE_DOWN_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.MOVE_PNODE_DOWN, U, REFRESH_TREE, false)],
+[CMD.MOVE_DOWN_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.MOVE_PNODE_DOWN, U, REFRESH_TREE, true)],
+
+[CMD.MOVE_LEFT, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.MOVE_PNODE_LEFT, p_node, REFRESH_TREE, false)],
+[CMD.MOVE_LEFT_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.MOVE_PNODE_LEFT, U, REFRESH_TREE, false)],
+[CMD.MOVE_LEFT_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.MOVE_PNODE_LEFT, U, REFRESH_TREE, true)],
+
+[CMD.MOVE_RIGHT, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.MOVE_PNODE_RIGHT, p_node, REFRESH_TREE, false)],
+[CMD.MOVE_RIGHT_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.MOVE_PNODE_RIGHT, U, REFRESH_TREE, false)],
+[CMD.MOVE_RIGHT_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.MOVE_PNODE_RIGHT, U, REFRESH_TREE, true)],
+
+[CMD.MOVE_UP, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.MOVE_PNODE_UP, p_node, REFRESH_TREE, false)],
+[CMD.MOVE_UP_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.MOVE_PNODE_UP, U, REFRESH_TREE, false)],
+[CMD.MOVE_UP_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.MOVE_PNODE_UP, U, REFRESH_TREE, true)],
+</t>
+<t tx="felix.20200718031424.17">[CMD.PAGE_UP, () =&gt; w_leo.nodeCommand(BRIDGE.PAGE_UP, U, REFRESH_BOTH, true)],
+[CMD.PAGE_DOWN, () =&gt; w_leo.nodeCommand(BRIDGE.PAGE_DOWN, U, REFRESH_BOTH, true)],
+</t>
+<t tx="felix.20200718031424.18">[CMD.DEMOTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.DEMOTE_PNODE, p_node, REFRESH_TREE, false)],
+[CMD.DEMOTE_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.DEMOTE_PNODE, U, REFRESH_TREE, false)],
+[CMD.DEMOTE_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.DEMOTE_PNODE, U, REFRESH_TREE, true)],
+
+[CMD.PROMOTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.PROMOTE_PNODE, p_node, REFRESH_TREE, false)],
+[CMD.PROMOTE_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.PROMOTE_PNODE, U, REFRESH_TREE, false)],
+[CMD.PROMOTE_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.PROMOTE_PNODE, U, REFRESH_TREE, true)],
+</t>
+<t tx="felix.20200718031424.19">[CMD.SORT_CHILDREN, () =&gt; w_leo.nodeCommand(BRIDGE.SORT_CHILDREN, U, REFRESH_TREE, false)],
+[CMD.SORT_SIBLING, () =&gt; w_leo.nodeCommand(BRIDGE.SORT_SIBLINGS, U, REFRESH_TREE, false)],
+[CMD.SORT_SIBLING_FO, () =&gt; w_leo.nodeCommand(BRIDGE.SORT_SIBLINGS, U, REFRESH_TREE, true)],
+</t>
+<t tx="felix.20200718031424.2">@language typescript
+/**
+ * * Called when extension is activated.
+ * It creates the leoIntegration and the 'welcome/Settings' webview instances.
+ */
+export function activate(p_context: vscode.ExtensionContext) {
+
+    &lt;&lt; define constants &gt;&gt;
+
+    const w_commands: [string, (...args: any[]) =&gt; any][] = [
+
+        // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
+        ["test", () =&gt; w_leo.test()], // Test function useful when debugging
+        ["testFromOutline", () =&gt; w_leo.test(true)], // Test function useful when debugging.
+
+        // Define entries for all commands
+        [CMD.EXECUTE, () =&gt; w_leo.executeScript()],
+        @others
+    ];
+
+    w_commands.map(function (p_command) {
+        p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
+    });
+    &lt;&lt; show welcome screen &gt;&gt;
+}
+
+</t>
+<t tx="felix.20200718031424.20">[CMD.REDO, () =&gt; w_leo.nodeCommand(BRIDGE.REDO, U, REFRESH_BOTH, false)],
+[CMD.REDO_FO, () =&gt; w_leo.nodeCommand(BRIDGE.REDO, U, REFRESH_BOTH, true)],
+
+[CMD.UNDO, () =&gt; w_leo.nodeCommand(BRIDGE.UNDO, U, REFRESH_BOTH, false)],
+[CMD.UNDO_FO, () =&gt; w_leo.nodeCommand(BRIDGE.UNDO, U, REFRESH_BOTH, true)],
+</t>
+<t tx="felix.20200718031424.21">[CMD.CONNECT, () =&gt; w_leo.connect()],
+[CMD.START_SERVER, () =&gt; w_leo.startServer()],
+</t>
+<t tx="felix.20200718031424.22">[CMD.SELECT_NODE, (p_node: LeoNode) =&gt; w_leo.selectTreeNode(p_node, false, false)],
+// Called by nodes in tree when selected
+[CMD.OPEN_ASIDE, (p_node: LeoNode) =&gt; w_leo.selectTreeNode(p_node, false, true)],
+
+[CMD.SHOW_OUTLINE, () =&gt; w_leo.showOutline(true)],
+// Also focuses on outline
+
+[CMD.SHOW_LOG, () =&gt; w_leo.showLogPane()],
+[CMD.SHOW_BODY, () =&gt; w_leo.showBody(false)],
+// Also focuses on body
+
+[CMD.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
+[CMD.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()],
+// Same as 'show welcome screen'
+
+</t>
+<t tx="felix.20200718031424.23">// If the version is newer than last time, then start automatic server and connection
+showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
+    // * Start server and / or connect to it (as specified in settings)
+    w_leo.startNetworkServices();
+    p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
+    console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
+});
+</t>
+<t tx="felix.20200718031424.24">/**
+ * * Called when extension is deactivated
+ */
+export function deactivate() {
+    console.log('deactivate called for extension "leointeg"');
+}
+
+</t>
+<t tx="felix.20200718031424.25">/**
+ * * Show welcome screen if needed, based on last version executed
+ * @param p_version Current version, as a string, from packageJSON.version
+ * @param p_previousVersion Previous version, as a string, from context.globalState.get service
+ * @returns a promise that triggers when command to show the welcome screen is finished, or immediately if not needed
+ */
+async function showWelcomeIfNewer(p_version: string, p_previousVersion: string | undefined): Promise&lt;unknown&gt; {
+    let w_showWelcomeScreen: boolean = false;
+    if (p_previousVersion === undefined) {
+        console.log('leoInteg first-time install');
+        w_showWelcomeScreen = true;
+    } else {
+        if (p_previousVersion !== p_version) {
+            console.log(`leoInteg upgraded from v${p_previousVersion} to v${p_version}`);
+        }
+        const [w_major, w_minor] = p_version.split('.').map(p_stringVal =&gt; parseInt(p_stringVal, 10));
+        const [w_prevMajor, w_prevMinor] = p_previousVersion.split('.').map(p_stringVal =&gt; parseInt(p_stringVal, 10));
+        if (
+            (w_major === w_prevMajor &amp;&amp; w_minor === w_prevMinor) ||
+            // Don't notify on downgrades
+            (w_major &lt; w_prevMajor || (w_major === w_prevMajor &amp;&amp; w_minor &lt; w_prevMinor))
+        ) {
+            w_showWelcomeScreen = false;
+        } else if (w_major !== w_prevMajor || (w_major === w_prevMajor &amp;&amp; w_minor &gt; w_prevMinor)) {
+            // Will show on major or minor upgrade (Formatted as 'Major.Minor.Revision' eg. 1.2.3)
+            w_showWelcomeScreen = true;
+        }
+    }
+    if (w_showWelcomeScreen) {
+        return vscode.commands.executeCommand(Constants.COMMANDS.SHOW_WELCOME);
+    } else {
+        return Promise.resolve();
+    }
+}
+
+</t>
+<t tx="felix.20200718031424.26">/**
+ * * Returns the milliseconds between a given starting process.hrtime tuple and the current call to process.hrtime
+ * @param p_start starting process.hrtime to subtract from current immediate time
+ * @returns number of milliseconds passed since the given start hrtime
+ */
+function getDurationMilliseconds(p_start: [number, number]): number {
+    const [secs, nanosecs] = process.hrtime(p_start);
+    return secs * 1000 + Math.floor(nanosecs / 1000000);
+}
+</t>
+<t tx="felix.20200718031424.3">const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
+const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
+const w_leo: LeoIntegration = new LeoIntegration(p_context);
+const w_leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(p_context, w_leo);
+const w_previousVersion = p_context.globalState.get&lt;string&gt;(Constants.VERSION_STATE_KEY);
+const w_start = process.hrtime(); // For calculating total startup time duration
+
+// Shortcut pointers for readability
+const U = undefined;
+const BRIDGE = Constants.LEOBRIDGE;
+const CMD = Constants.COMMANDS;
+const NO_REFRESH = RefreshType.NoRefresh;
+const REFRESH_TREE = RefreshType.RefreshTree;
+const REFRESH_BOTH = RefreshType.RefreshTreeAndBody;
+const showInfo = vscode.window.showInformationMessage;
+
+// * Reset Extension context flags (used in 'when' clauses in package.json)
+utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
+utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
+</t>
+<t tx="felix.20200718031424.4">// TODO : @boltex More commands to implement #15, #23, #24
+[CMD.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
+[CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
+[CMD.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
+[CMD.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
+[CMD.EXTRACT, () =&gt; showInfo("TODO: extract command")],
+[CMD.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
+[CMD.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
+[CMD.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
+[CMD.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
+[CMD.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
+[CMD.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
+[CMD.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
+[CMD.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
+[CMD.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")],
+</t>
+<t tx="felix.20200718031424.5">// Test for undeclared commands VERDICT IT WORKS!
+[CMD.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.clickButton(p_node)],
+
+// Cannot be undeclared because its referenced in package.json
+[CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.removeButton(p_node)],
+</t>
+<t tx="felix.20200718031424.6">[CMD.CLOSE_FILE, () =&gt; w_leo.closeLeoFile()],
+[CMD.NEW_FILE, () =&gt; w_leo.newLeoFile()],
+[CMD.OPEN_FILE, () =&gt; w_leo.openLeoFile()],
+[CMD.SAVE_AS_FILE, () =&gt; w_leo.saveAsLeoFile()],
+[CMD.SAVE_FILE, () =&gt; w_leo.saveLeoFile()],
+[CMD.SAVE_FILE_FO, () =&gt; w_leo.saveLeoFile(true)],
+[CMD.SWITCH_FILE, () =&gt; w_leo.switchLeoFile()],
+
+// Test for undeclared commands VERDICT IT WORKS!
+[CMD.SET_OPENED_FILE, (p_index: number) =&gt; w_leo.selectOpenedLeoDocument(p_index)],
+
+[CMD.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.REFRESH_FROM_DISK_PNODE, p_node, REFRESH_BOTH, false)],
+[CMD.REFRESH_FROM_DISK_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.REFRESH_FROM_DISK_PNODE, U, REFRESH_BOTH, false)],
+[CMD.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.REFRESH_FROM_DISK_PNODE, U, REFRESH_BOTH, true)],
+</t>
+<t tx="felix.20200718031424.7">[CMD.HEADLINE, (p_node: LeoNode) =&gt; w_leo.editHeadline(p_node, false)],
+[CMD.HEADLINE_SELECTION, () =&gt; w_leo.editHeadline(U, false)],
+[CMD.HEADLINE_SELECTION_FO, () =&gt; w_leo.editHeadline(U, true)],
+</t>
+<t tx="felix.20200718031424.8"></t>
+<t tx="felix.20200718031424.9">// cut/copy/paste/delete given node.
+[CMD.COPY, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.COPY_PNODE, p_node, NO_REFRESH, false)],
+[CMD.CUT, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.CUT_PNODE, p_node, REFRESH_TREE, false)],
+[CMD.DELETE, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.DELETE_PNODE, p_node, REFRESH_TREE, false)],
+[CMD.PASTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.PASTE_PNODE, p_node, REFRESH_TREE, false)],
+[CMD.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.PASTE_CLONE_PNODE, p_node, REFRESH_TREE, false)],
+
+// cut/copy/paste/delete c.p..
+[CMD.COPY_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.COPY_PNODE, U, NO_REFRESH, false)],
+[CMD.CUT_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.CUT_PNODE, U, REFRESH_TREE, false)],
+[CMD.CUT_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.CUT_PNODE, U, REFRESH_TREE, true)],
+[CMD.DELETE_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.DELETE_PNODE, U, REFRESH_TREE, false)],
+[CMD.DELETE_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.DELETE_PNODE, U, REFRESH_TREE, true)],
+[CMD.PASTE_CLONE_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.PASTE_CLONE_PNODE, U, REFRESH_TREE, false)],
+[CMD.PASTE_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.PASTE_CLONE_PNODE, U, REFRESH_TREE, true)],
+[CMD.PASTE_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.PASTE_PNODE, U, REFRESH_TREE, false)],
+[CMD.PASTE_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.PASTE_PNODE, U, REFRESH_TREE, true)],
 </t>
 </tnodes>
 </leo_file>

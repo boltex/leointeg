@@ -13,7 +13,7 @@
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.46.0"
+    "vscode": "^1.47.0"
   },
   "keywords": [
     "leo",
@@ -1761,40 +1761,40 @@
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
       },
       {
-        "command": "leointeg.editSelectedHeadline",
-        "key": "ctrl+h",
-        "mac": "cmd+h",
-        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      "command": "leointeg.editSelectedHeadline",
+      "key": "ctrl+h",
+      "mac": "cmd+h",
+      "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
-        "command": "leointeg.editSelectedHeadlineFromOutline",
-        "key": "ctrl+h",
-        "mac": "cmd+h",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      "command": "leointeg.editSelectedHeadlineFromOutline",
+      "key": "ctrl+h",
+      "mac": "cmd+h",
+      "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {
-        "command": "leointeg.markSelection",
-        "key": "ctrl+m",
-        "mac": "cmd+m",
-        "when": "leoTreeOpened && !leoMarked && editorTextFocus && resourceScheme == leo"
+      "command": "leointeg.markSelection",
+      "key": "ctrl+m",
+      "mac": "cmd+m",
+      "when": "leoTreeOpened && !leoMarked && editorTextFocus && resourceScheme == leo"
       },
       {
-        "command": "leointeg.markSelectionFromOutline",
-        "key": "ctrl+m",
-        "mac": "cmd+m",
-        "when": "leoTreeOpened && !leoMarked && sideBarFocus && focusedView =~ /leoIntegration/"
+      "command": "leointeg.markSelectionFromOutline",
+      "key": "ctrl+m",
+      "mac": "cmd+m",
+      "when": "leoTreeOpened && !leoMarked && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {
-        "command": "leointeg.unmarkSelection",
-        "key": "ctrl+m",
-        "mac": "cmd+m",
-        "when": "leoTreeOpened && leoMarked && editorTextFocus && resourceScheme == leo"
+      "command": "leointeg.unmarkSelection",
+      "key": "ctrl+m",
+      "mac": "cmd+m",
+      "when": "leoTreeOpened && leoMarked && editorTextFocus && resourceScheme == leo"
       },
       {
-        "command": "leointeg.unmarkSelectionFromOutline",
-        "key": "ctrl+m",
-        "mac": "cmd+m",
-        "when": "leoTreeOpened && leoMarked && sideBarFocus && focusedView =~ /leoIntegration/"
+      "command": "leointeg.unmarkSelectionFromOutline",
+      "key": "ctrl+m",
+      "mac": "cmd+m",
+      "when": "leoTreeOpened && leoMarked && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineDownSelection",

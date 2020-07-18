@@ -21,7 +21,7 @@ export class LeoDocumentNode extends vscode.TreeItem {
         this.label = w_isNamed ? utils.getFileFromPath(this.documentEntry.name) : Constants.UNTITLED_FILE_NAME;
         this.tooltip = w_isNamed ? this.documentEntry.name : Constants.UNTITLED_FILE_NAME;
         this.command = {
-            command: Constants.NAME + "." + Constants.COMMANDS.SET_OPENED_FILE,
+            command: Constants.COMMANDS.SET_OPENED_FILE,
             title: '',
             arguments: [this.documentEntry.index]
         };

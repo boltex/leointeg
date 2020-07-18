@@ -20,7 +20,7 @@ export class LeoButtonNode extends vscode.TreeItem {
         super(button.name);
         // * Setup this instance
         this.command = {
-            command: Constants.NAME + "." + Constants.COMMANDS.CLICK_BUTTON,
+            command: Constants.COMMANDS.CLICK_BUTTON,
             title: '',
             arguments: [this]
         };
