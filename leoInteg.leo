@@ -227,6 +227,23 @@
 </v>
 <v t="felix.20191126232435.1"><vh>main</vh></v>
 </v>
+<v t="felix.20200718020912.1"><vh>@clean src/constants.ts</vh>
+<v t="felix.20200718020912.2"><vh>class Constants</vh>
+<v t="felix.20200718020912.3"><vh>general constants</vh></v>
+<v t="felix.20200718020912.4"><vh>language id's</vh></v>
+<v t="felix.20200718020912.5"><vh>workbench interface panels</vh></v>
+<v t="felix.20200718020912.6"><vh>user messages</vh></v>
+<v t="felix.20200718020912.7"><vh>ask/save buttons</vh></v>
+<v t="felix.20200718020912.8"><vh>configuration keys</vh></v>
+<v t="felix.20200718020912.9"><vh>context flags</vh></v>
+<v t="felix.20200718020912.14"><vh>vscode executeCommand strings</vh></v>
+<v t="felix.20200718020912.10"><vh>async actions</vh></v>
+<v t="felix.20200718020912.11"><vh>async info messages codes</vh></v>
+<v t="felix.20200718020912.12"><vh>async ask return codes</vh></v>
+<v t="felix.20200718020912.13"><vh>leoBridge action strings</vh></v>
+<v t="felix.20200718020912.15"><vh>commands strings</vh></v>
+</v>
+</v>
 </vnodes>
 <tnodes>
 <t tx="felix.20190922171916.2">@doc
@@ -4031,6 +4048,503 @@ def runByName(self, p_package):
   "key": "alt+right",
   "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 }
+</t>
+<t tx="felix.20200718020912.1">import * as vscode from "vscode";
+
+@others
+@language typescript
+@tabwidth -4
+</t>
+<t tx="felix.20200718020912.10">/**
+ * * Actions that can be invoked by Leo through leobridge
+ */
+public static ASYNC_ACTIONS = {
+    ASYNC_LOG: "log",
+    ASYNC_ASK: "ask",
+    ASYNC_WARN: "warn",
+    ASYNC_INFO: "info",
+    ASYNC_INTERVAL: "interval"
+};
+
+</t>
+<t tx="felix.20200718020912.11">/**
+ * * When async action was ASYNC_INFO
+ */
+public static ASYNC_INFO_MESSAGE_CODES = {
+    ASYNC_REFRESHED: "refreshed",
+    ASYNC_IGNORED: "ignored"
+};
+
+</t>
+<t tx="felix.20200718020912.12">/**
+ * * runAskYesNoDialog or runAskOkDialog result codes, used when async action requires a response
+ */
+public static ASYNC_ASK_RETURN_CODES = {
+    YES: "yes",
+    NO: "no",
+    YES_ALL: "yes-all",
+    NO_ALL: "no-all",
+    OK: '"ok"' // Quotes in string as a 'JSON parameter'
+};
+
+</t>
+<t tx="felix.20200718020912.13">/**
+ * * Commands for leobridgeserver.py
+ */
+public static LEOBRIDGE = {
+    APPLY_CONFIG: "applyConfig",
+    ASK_RESULT: "askResult",
+    GET_ALL_GNX: "getAllGnx",
+    GET_BODY_LENGTH: "getBodyLength",
+    GET_BODY: "getBody",
+    GET_PNODE: "getPNode",
+    GET_PARENT: "getParent",
+    GET_CHILDREN: "getChildren",
+    GET_SELECTED_NODE: "getSelectedNode",
+    SET_SELECTED_NODE: "setSelectedNode",
+    SET_BODY: "setBody",
+    SET_HEADLINE: "setNewHeadline",
+    EXPAND_NODE: "expandNode",
+    COLLAPSE_NODE: "collapseNode",
+    CONTRACT_ALL: "contractAll",
+    GET_OPENED_FILES: "getOpenedFiles",
+    SET_OPENED_FILE: "setOpenedFile", // Pass index ? name to validate / error check, only index when stable
+    OPEN_FILE: "openFile",
+    CLOSE_FILE: "closeFile",
+    SAVE_FILE: "saveFile",
+    SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
+    GET_BUTTONS: "getButtons",
+    REMOVE_BUTTON: "removeButton",
+    CLICK_BUTTON: "clickButton",
+    GET_COMMANDS: "getCommands", // ask leoBridge for the list of known commands
+    RUN_BY_NAME: "runByName", // Run a command by its string name like in minibuffer
+    // * Goto operations
+    PAGE_UP: "pageUp",
+    PAGE_DOWN: "pageDown",
+    GOTO_FIRST_VISIBLE: "gotoFirstVisible",
+    GOTO_LAST_VISIBLE: "gotoLastVisible",
+    GOTO_LAST_SIBLING: "gotoLastSibling",
+    GOTO_NEXT_VISIBLE: "gotoNextVisible",
+    GOTO_PREV_VISIBLE: "gotoPrevVisible",
+    GOTO_NEXT_MARKED: "gotoNextMarked",
+    GOTO_NEXT_CLONE: "gotoNextClone",
+    CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
+    EXPAND_AND_GO_RIGHT: "expandAndGoRight",
+    // * Leo Operations
+    MARK_PNODE: "markPNode",
+    UNMARK_PNODE: "unmarkPNode",
+    COPY_PNODE: "copyPNode",
+    CUT_PNODE: "cutPNode",
+    PASTE_PNODE: "pastePNode",
+    PASTE_CLONE_PNODE: "pasteAsClonePNode",
+    DELETE_PNODE: "deletePNode",
+    MOVE_PNODE_DOWN: "movePNodeDown",
+    MOVE_PNODE_LEFT: "movePNodeLeft",
+    MOVE_PNODE_RIGHT: "movePNodeRight",
+    MOVE_PNODE_UP: "movePNodeUp",
+    INSERT_PNODE: "insertPNode",
+    INSERT_NAMED_PNODE: "insertNamedPNode",
+    CLONE_PNODE: "clonePNode",
+    PROMOTE_PNODE: "promotePNode",
+    DEMOTE_PNODE: "demotePNode",
+    REFRESH_FROM_DISK_PNODE: "refreshFromDiskPNode",
+    SORT_CHILDREN: "sortChildrenPNode",
+    SORT_SIBLINGS: "sortSiblingsPNode",
+    UNDO: "undo",
+    REDO: "redo",
+    EXECUTE_SCRIPT: "executeScript",
+    GET_STATES: "getStates",
+    HOIST_PNODE: "hoistPNode",
+    DEHOIST: "deHoist",
+    // TODO : @boltex More commands to implement #15, #23, #24
+    CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
+    CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
+    CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex
+    CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // #24 @boltex
+    EXTRACT: "extract", // #15 @boltex
+    EXTRACT_NAMES: "extractNames", // #15 @boltex
+    COPY_MARKED: "copyMarked", // #23 @boltex
+    DIFF_MARKED_NODES: "diffMarkedNodes", // #23 @boltex
+    MARK_CHANGED_ITEMS: "markChangedItems", // #23 @boltex
+    MARK_SUBHEADS: "markSubheads", // #23 @boltex
+    UNMARK_ALL: "unmarkAll", // #23 @boltex
+    CLONE_MARKED_NODES: "cloneMarkedNodes", // #23 @boltex
+    DELETE_MARKED_NODES: "deleteMarkedNodes", // #23 @boltex
+    MOVE_MARKED_NODES: "moveMarkedNodes" // #23 @boltex
+};
+
+</t>
+<t tx="felix.20200718020912.14">/**
+ * * Command strings to be used with vscode.commands.executeCommand
+ * See https://code.visualstudio.com/api/extension-guides/command#programmatically-executing-a-command
+ */
+public static VSCODE_COMMANDS = {
+    SET_CONTEXT: "setContext",
+    CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
+    QUICK_OPEN: "workbench.action.quickOpen"
+};
+
+</t>
+<t tx="felix.20200718020912.15">/**
+ * * All commands this expansion exposes (in package.json, contributes &gt; commands)
+ */
+public static COMMANDS = {
+    SHOW_WELCOME: "showWelcomePage", // Always available: not in the commandPalette section of package.json
+    SHOW_SETTINGS: "showSettingsPage", // Always available: not in the commandPalette section of package.json
+    // * LeoBridge
+    START_SERVER: "startServer",
+    CONNECT: "connectToServer",
+    SET_OPENED_FILE: "setOpenedFile",
+    OPEN_FILE: "openLeoFile", // sets focus on BODY
+    SWITCH_FILE: "switchLeoFile",
+    NEW_FILE: "newLeoFile",
+    SAVE_FILE: "saveLeoFile", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+    SAVE_FILE_FO: "saveLeoFileFromOutline", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+    SAVE_AS_FILE: "saveAsLeoFile",
+    CLOSE_FILE: "closeLeoFile",
+    CLICK_BUTTON: "clickButton",
+    REMOVE_BUTTON: "removeButton",
+    MINIBUFFER: "minibuffer",
+    // * Outline selection
+    SELECT_NODE: "selectTreeNode",
+    OPEN_ASIDE: "openAside",
+    // * Goto operations that always finish with focus in outline
+    PAGE_UP: "pageUp",
+    PAGE_DOWN: "pageDown",
+    GOTO_FIRST_VISIBLE: "gotoFirstVisible",
+    GOTO_LAST_VISIBLE: "gotoLastVisible",
+    GOTO_LAST_SIBLING: "gotoLastSibling",
+    GOTO_NEXT_VISIBLE: "gotoNextVisible",
+    GOTO_PREV_VISIBLE: "gotoPrevVisible",
+    GOTO_NEXT_MARKED: "gotoNextMarked",
+    GOTO_NEXT_CLONE: "gotoNextClone",
+    GOTO_NEXT_CLONE_SELECTION: "gotoNextCloneSelection",
+    GOTO_NEXT_CLONE_SELECTION_FO: "gotoNextCloneSelectionFromOutline",
+    CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
+    EXPAND_AND_GO_RIGHT: "expandAndGoRight",
+    // * Leo Operations
+    UNDO: "undo", // From command Palette
+    UNDO_FO: "undoFromOutline", // from button, return focus on OUTLINE
+    REDO: "redo", // From command Palette
+    REDO_FO: "redoFromOutline", // from button, return focus on OUTLINE
+    EXECUTE: "executeScriptSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+    SHOW_BODY: "showBody",
+    SHOW_OUTLINE: "showOutline",
+    SHOW_LOG: "showLogPane",
+    SORT_CHILDREN: "sortChildrenSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+    SORT_SIBLING: "sortSiblingsSelection",
+    SORT_SIBLING_FO: "sortSiblingsSelectionFromOutline",
+    CONTRACT_ALL: "contractAll", // From command Palette
+    CONTRACT_ALL_FO: "contractAllFromOutline", // from button, return focus on OUTLINE
+    // * Commands from tree panel buttons or context: focus on OUTLINE
+    MARK: "mark",
+    UNMARK: "unmark",
+    COPY: "copyNode",
+    CUT: "cutNode",
+    PASTE: "pasteNode",
+    PASTE_CLONE: "pasteNodeAsClone",
+    DELETE: "delete",
+    HEADLINE: "editHeadline",
+    MOVE_DOWN: "moveOutlineDown",
+    MOVE_LEFT: "moveOutlineLeft",
+    MOVE_RIGHT: "moveOutlineRight",
+    MOVE_UP: "moveOutlineUp",
+    INSERT: "insertNode",
+    CLONE: "cloneNode",
+    PROMOTE: "promote",
+    DEMOTE: "demote",
+    REFRESH_FROM_DISK: "refreshFromDisk",
+    // * Commands from keyboard, while focus on BODY (command-palette returns to BODY for now)
+    MARK_SELECTION: "markSelection",
+    UNMARK_SELECTION: "unmarkSelection",
+    COPY_SELECTION: "copyNodeSelection", // Nothing to refresh/focus so no "FO" version
+    CUT_SELECTION: "cutNodeSelection",
+    PASTE_SELECTION: "pasteNodeAtSelection",
+    PASTE_CLONE_SELECTION: "pasteNodeAsCloneAtSelection",
+    DELETE_SELECTION: "deleteSelection",
+    HEADLINE_SELECTION: "editSelectedHeadline",
+    MOVE_DOWN_SELECTION: "moveOutlineDownSelection",
+    MOVE_LEFT_SELECTION: "moveOutlineLeftSelection",
+    MOVE_RIGHT_SELECTION: "moveOutlineRightSelection",
+    MOVE_UP_SELECTION: "moveOutlineUpSelection",
+    INSERT_SELECTION: "insertNodeSelection",
+    INSERT_SELECTION_INTERRUPT: "insertNodeSelectionInterrupt", // Headline input box can be interrupted with another insert
+    CLONE_SELECTION: "cloneNodeSelection",
+    PROMOTE_SELECTION: "promoteSelection",
+    DEMOTE_SELECTION: "demoteSelection",
+    REFRESH_FROM_DISK_SELECTION: "refreshFromDiskSelection",
+    // * Commands from keyboard, while focus on OUTLINE
+    MARK_SELECTION_FO: "markSelectionFromOutline",
+    UNMARK_SELECTION_FO: "unmarkSelectionFromOutline",
+    // COPY_SELECTION Nothing to refresh/focus for "copy a node" so no entry here
+    CUT_SELECTION_FO: "cutNodeSelectionFromOutline",
+    PASTE_SELECTION_FO: "pasteNodeAtSelectionFromOutline",
+    PASTE_CLONE_SELECTION_FO: "pasteNodeAsCloneAtSelectionFromOutline",
+    DELETE_SELECTION_FO: "deleteSelectionFromOutline",
+    HEADLINE_SELECTION_FO: "editSelectedHeadlineFromOutline",
+    MOVE_DOWN_SELECTION_FO: "moveOutlineDownSelectionFromOutline",
+    MOVE_LEFT_SELECTION_FO: "moveOutlineLeftSelectionFromOutline",
+    MOVE_RIGHT_SELECTION_FO: "moveOutlineRightSelectionFromOutline",
+    MOVE_UP_SELECTION_FO: "moveOutlineUpSelectionFromOutline",
+    INSERT_SELECTION_FO: "insertNodeSelectionFromOutline",
+    CLONE_SELECTION_FO: "cloneNodeSelectionFromOutline",
+    PROMOTE_SELECTION_FO: "promoteSelectionFromOutline",
+    DEMOTE_SELECTION_FO: "demoteSelectionFromOutline",
+    REFRESH_FROM_DISK_SELECTION_FO: "refreshFromDiskSelectionFromOutline",
+    HOIST: "hoistNode",
+    HOIST_SELECTION: "hoistSelection",
+    HOIST_SELECTION_FO: "hoistSelectionFromOutline",
+    DEHOIST: "deHoist",
+    DEHOIST_FO: "deHoistFromOutline",
+    // * - - - - - - - - - - - - - - - not implemented yet
+    CLONE_FIND_ALL: "cloneFindAll",
+    CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened",
+    CLONE_FIND_MARKED: "cloneFindMarked",
+    CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked",
+    EXTRACT: "extract",
+    EXTRACT_NAMES: "extractNames",
+    COPY_MARKED: "copyMarked",
+    DIFF_MARKED_NODES: "diffMarkedNodes",
+    MARK_CHANGED_ITEMS: "markChangedItems",
+    MARK_SUBHEADS: "markSubheads",
+    UNMARK_ALL: "unmarkAll",
+    CLONE_MARKED_NODES: "cloneMarkedNodes",
+    DELETE_MARKED_NODES: "deleteMarkedNodes",
+    MOVE_MARKED_NODES: "moveMarkedNodes"
+};
+</t>
+<t tx="felix.20200718020912.2">/**
+ * * Text and numeric constants used throughout leoInteg
+ */
+export class Constants {
+
+    @others
+}
+</t>
+<t tx="felix.20200718020912.3">public static PUBLISHER: string = "boltex";
+public static NAME: string = "leointeg";
+public static CONFIG_NAME: string = "leoIntegration";
+public static CONFIG_REFRESH_MATCH: string = "OnNodes"; // substring to distinguish 'on-hover' icon commands
+
+public static TREEVIEW_ID: string = Constants.CONFIG_NAME;
+public static TREEVIEW_EXPLORER_ID: string = Constants.CONFIG_NAME + "Explorer";
+
+public static DOCUMENTS_ID: string = "leoDocuments";
+public static DOCUMENTS_EXPLORER_ID: string = "leoDocumentsExplorer";
+
+public static BUTTONS_ID: string = "leoButtons";
+public static BUTTONS_EXPLORER_ID: string = "leoButtonsExplorer";
+
+public static VERSION_STATE_KEY: string = "leoIntegVersion";
+
+public static FILE_EXTENSION: string = "leo";
+public static URI_LEO_SCHEME: string = "leo";
+public static URI_FILE_SCHEME: string = "file";
+public static URI_SCHEME_HEADER: string = "leo:/";
+public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
+public static UNTITLED_FILE_NAME: string = "untitled";
+public static RECENT_FILES_KEY: string = "leoFiles";
+
+public static DEFAULT_PYTHON: string = "python3.7";
+public static WIN32_PYTHON: string = "py";
+public static SERVER_PATH: string = "/leobridgeserver.py";
+public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
+
+public static TCPIP_DEFAULT_PORT: number = 32125;
+public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
+public static TCPIP_DEFAULT_ADDRESS: string = "localhost";
+
+public static ERROR_PACKAGE_ID: number = 0;
+public static STARTING_PACKAGE_ID: number = 1;
+public static STATUSBAR_DEBOUNCE_DELAY: number = 50;
+public static STATES_DEBOUNCE_DELAY: number = 200; // a fifth of a second after command stack completion
+
+</t>
+<t tx="felix.20200718020912.4">/**
+ * * Strings used as language id (default is "leobody")
+ * TODO : #56 @boltex Add more languages strings for when directives such as @language are used throughout body panes
+ */
+public static BODY_LANGUAGES = {
+    default: "leobody"
+};
+
+</t>
+<t tx="felix.20200718020912.5">/**
+ * * Strings used in the workbench interface panels (not for messages or dialogs)
+ */
+public static GUI = {
+    ICON_LIGHT_DOCUMENT: "resources/light/document.svg",
+    ICON_DARK_DOCUMENT: "resources/dark/document.svg",
+    ICON_LIGHT_DOCUMENT_DIRTY: "resources/light/document-dirty.svg",
+    ICON_DARK_DOCUMENT_DIRTY: "resources/dark/document-dirty.svg",
+    ICON_LIGHT_BUTTON: "resources/light/button.svg",
+    ICON_DARK_BUTTON: "resources/dark/button.svg",
+    ICON_LIGHT_BUTTON_ADD: "resources/light/button-add.svg",
+    ICON_DARK_BUTTON_ADD: "resources/dark/button-add.svg",
+    ICON_LIGHT_PATH: "resources/light/box",
+    ICON_DARK_PATH: "resources/dark/box",
+    ICON_FILE_EXT: ".svg",
+    STATUSBAR_DEFAULT_COLOR: "fb7c47",
+    STATUSBAR_DEFAULT_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: 🦁
+    STATUSBAR_INDICATOR: "$(keyboard) ",
+    QUICK_OPEN_LEO_COMMANDS: "&gt;leo: ",
+    EXPLORER_TREEVIEW_PREFIX: "LEO ",
+    TREEVIEW_TITLE: "OUTLINE",
+    TREEVIEW_TITLE_NOT_CONNECTED: "NOT CONNECTED",
+    TREEVIEW_TITLE_CONNECTED: "CONNECTED",
+    TREEVIEW_TITLE_INTEGRATION: "INTEGRATION",
+    BODY_TITLE: "LEO BODY",
+    LOG_PANE_TITLE: "Leo Log Window",
+    TERMINAL_PANE_TITLE: "LeoBridge Server",
+    THEME_STATUSBAR: "statusBar.foreground"
+};
+
+</t>
+<t tx="felix.20200718020912.6">/**
+ * * Basic user messages strings for messages and dialogs
+ */
+public static USER_MESSAGES = {
+    SCRIPT_BUTTON: "Creates a button from selected node's script",
+    SCRIPT_BUTTON_TOOLTIP:
+        "The 'Script Button' button creates a new button.\n" +
+        "Its name will be the headline of the presently selected node\n" +
+        "Hitting this newly created button executes the button's script.\n" +
+        "\n" +
+        "For example, to run a script on any part of an outline:\n" +
+        "\n" +
+        "1.  Select the node containing the script.\n" +
+        "2.  Press 'Script Button'. This will create a new button.\n" +
+        "3.  Select the node on which you want to run the script.\n" +
+        "4.  Press the *new* button.",
+    SAVE_CHANGES: "Save changes to",
+    BEFORE_CLOSING: "before closing?",
+    CANCEL: "Cancel",
+    OPEN_WITH_LEOINTEG: "Open this Leo file with LeoInteg?",
+    FILE_ALREADY_OPENED: "Leo file already opened",
+    CHOOSE_OPENED_FILE: "Select an opened Leo File",
+    FILE_NOT_OPENED: "No files opened.",
+    STATUSBAR_TOOLTIP_ON: "Leo Key Bindings are in effect", // TODO : Add description of what happens if clicked
+    STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
+    PROMPT_EDIT_HEADLINE: "Edit Headline",
+    PROMPT_INSERT_NODE: "Insert Node",
+    DEFAULT_HEADLINE: "New Headline",
+    START_SERVER_ERROR: "Error - Cannot start server: ",
+    CONNECT_FAILED: "Leo Bridge Connection Failed",
+    CONNECT_ERROR: "Leo Bridge Connection Error: Incorrect id",
+    CONNECTED: "Connected",
+    ALREADY_CONNECTED: "Already connected",
+    DISCONNECTED: "Disconnected",
+    CLOSE_ERROR: "Cannot close: No files opened.",
+    YES: "Yes",
+    NO: "No",
+    YES_ALL: "Yes to all",
+    NO_ALL: "No to all",
+    CHANGES_DETECTED: "Changes to external files were detected.",
+    REFRESHED: " Nodes were refreshed from file.", // with voluntary leading space
+    IGNORED: " They were ignored.", // with voluntary leading space
+    TOO_FAST: "leoInteg is busy! " // with voluntary trailing space
+};
+
+</t>
+<t tx="felix.20200718020912.7">/**
+ * * Choices offered when about to lose current changes to a Leo Document
+ */
+public static ASK_SAVE_CHANGES_BUTTONS: vscode.MessageItem[] = [
+    {
+        title: Constants.USER_MESSAGES.YES,
+        isCloseAffordance: false
+    },
+    {
+        title: Constants.USER_MESSAGES.NO,
+        isCloseAffordance: false
+    },
+    {
+        title: Constants.USER_MESSAGES.CANCEL,
+        isCloseAffordance: true
+    }
+];
+
+</t>
+<t tx="felix.20200718020912.8">/**
+ * * String for JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
+ */
+public static CONFIG = {
+    CHECK_FOR_CHANGE_EXTERNAL_FILES: "checkForChangeExternalFiles",
+    DEFAULT_RELOAD_IGNORE: "defaultReloadIgnore",
+    LEO_TREE_BROWSE: "leoTreeBrowse",
+    TREE_KEEP_FOCUS: "treeKeepFocus",
+    TREE_KEEP_FOCUS_WHEN_ASIDE: "treeKeepFocusWhenAside",
+    STATUSBAR_STRING: "statusBarString",
+    STATUSBAR_COLOR: "statusBarColor",
+    TREE_IN_EXPLORER: "treeInExplorer",
+    SHOW_OPEN_ASIDE: "showOpenAside",
+    SHOW_EDIT: "showEditOnNodes",
+    SHOW_ARROWS: "showArrowsOnNodes",
+    SHOW_ADD: "showAddOnNodes",
+    SHOW_MARK: "showMarkOnNodes",
+    SHOW_CLONE: "showCloneOnNodes",
+    SHOW_COPY: "showCopyOnNodes",
+    INVERT_NODES: "invertNodeContrast",
+    LEO_PYTHON_COMMAND: "leoPythonCommand",
+    AUTO_START_SERVER: "startServerAutomatically",
+    AUTO_CONNECT: "connectToServerAutomatically",
+    IP_ADDRESS: "connectionAddress",
+    IP_PORT: "connectionPort",
+};
+
+</t>
+<t tx="felix.20200718020912.9">/**
+ * * Used in 'when' clauses, set with vscode.commands.executeCommand("setContext",...)
+ */
+public static CONTEXT_FLAGS = {
+    // Main flags for connection and opened file
+    BRIDGE_READY: "leoBridgeReady", // Connected to leoBridge
+    TREE_OPENED: "leoTreeOpened", // At least one Leo file opened
+    TREE_TITLED: "leoTreeTitled", // Tree is a Leo file and not a new untitled document
+    SERVER_STARTED: "leoServerStarted", // Auto-start or manually started
+    // 'states' flags for currently opened tree view
+    LEO_CHANGED: "leoChanged",
+    LEO_CAN_UNDO: "leoCanUndo",
+    LEO_CAN_REDO: "leoCanRedo",
+    LEO_CAN_DEMOTE: "leoCanDemote",
+    LEO_CAN_PROMOTE: "leoCanPromote",
+    LEO_CAN_DEHOIST: "leoCanDehoist",
+    // 'states' flags about current selection, for visibility and commands availability
+    SELECTED_MARKED: "leoMarked", // no need for unmarked here, use !leoMarked
+    SELECTED_CLONE: "leoCloned",
+    SELECTED_DIRTY: "leoDirty",
+    SELECTED_EMPTY: "leoEmpty",
+    SELECTED_CHILD: "leoChild", // Has children
+    SELECTED_ATFILE: "LeoAtFile", // Can be refreshed
+    SELECTED_ROOT: "leoRoot", // ! Not given by Leo: Computed by leoInteg/vscode instead
+    // Statusbar Flag 'keybindings in effect'
+    LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
+    // Context Flags for 'when' clauses, used concatenated, for each outline node
+    NODE_MARKED: "leoNodeMarked",  // Selected node is marked
+    NODE_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked (Needed for regexp)
+    NODE_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
+    NODE_CLONED: "leoNodeCloned",
+    NODE_ROOT: "leoNodeRoot",
+    NODE_NOT_ROOT: "leoNodeNotRoot",
+    // Flags for Leo documents tree view icons and hover node command buttons
+    DOCUMENT_SELECTED_TITLED: "leoDocumentSelectedTitled",
+    DOCUMENT_TITLED: "leoDocumentTitled",
+    DOCUMENT_SELECTED_UNTITLED: "leoDocumentSelectedUntitled",
+    DOCUMENT_UNTITLED: "leoDocumentUntitled",
+    // Flags that match specific LeoInteg config settings
+    LEO_TREE_BROWSE: Constants.CONFIG.LEO_TREE_BROWSE, // Leo outline also in the explorer view
+    TREE_IN_EXPLORER: Constants.CONFIG.TREE_IN_EXPLORER, // Leo outline also in the explorer view
+    SHOW_OPEN_ASIDE: Constants.CONFIG.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
+    SHOW_EDIT: Constants.CONFIG.SHOW_EDIT,              // Hover Icons on outline nodes
+    SHOW_ARROWS: Constants.CONFIG.SHOW_ARROWS,           // Hover Icons on outline nodes
+    SHOW_ADD: Constants.CONFIG.SHOW_ADD,                 // Hover Icons on outline nodes
+    SHOW_MARK: Constants.CONFIG.SHOW_MARK,               // Hover Icons on outline nodes
+    SHOW_CLONE: Constants.CONFIG.SHOW_CLONE,             // Hover Icons on outline nodes
+    SHOW_COPY: Constants.CONFIG.SHOW_COPY,               // Hover Icons on outline nodes
+    AUTO_START_SERVER: Constants.CONFIG.AUTO_START_SERVER,   // Used at startup
+    AUTO_CONNECT: Constants.CONFIG.AUTO_CONNECT              // Used at startup
+};
+
 </t>
 </tnodes>
 </leo_file>

@@ -224,6 +224,16 @@ export class Constants {
     };
 
     /**
+     * * Command strings to be used with vscode.commands.executeCommand
+     * See https://code.visualstudio.com/api/extension-guides/command#programmatically-executing-a-command
+     */
+    public static VSCODE_COMMANDS = {
+        SET_CONTEXT: "setContext",
+        CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
+        QUICK_OPEN: "workbench.action.quickOpen"
+    };
+
+    /**
      * * Actions that can be invoked by Leo through leobridge
      */
     public static ASYNC_ACTIONS = {
@@ -336,15 +346,6 @@ export class Constants {
         CLONE_MARKED_NODES: "cloneMarkedNodes", // #23 @boltex
         DELETE_MARKED_NODES: "deleteMarkedNodes", // #23 @boltex
         MOVE_MARKED_NODES: "moveMarkedNodes" // #23 @boltex
-    };
-
-    /**
-     * * Command strings to be used with vscode.commands.executeCommand
-     */
-    public static VSCODE_COMMANDS = {
-        SET_CONTEXT: "setContext",
-        CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
-        QUICK_OPEN: "workbench.action.quickOpen"
     };
 
     /**
