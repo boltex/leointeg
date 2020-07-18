@@ -92,14 +92,19 @@ export class LeoStatusBar {
      * * Updates the status bar visual indicator flag directly
      */
     private _updateLeoObjectIndicator(): void {
-        if (this._updateStatusBarTimeout) { // Can be called directly, so clear timer if any
+        // Can be called directly, so clear timer if any
+        if (this._updateStatusBarTimeout) { 
             clearTimeout(this._updateStatusBarTimeout);
         }
+        
         utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
+        
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
             (this._string ? this._string : this._leoIntegration.config.statusBarString) + " " +
             (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
-        if (this.statusBarFlag && this._leoIntegration.leoStates.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
+            
+        // Also check in constructor for statusBar properties (the createStatusBarItem call itself)
+        if (this.statusBarFlag && this._leoIntegration.leoStates.fileOpenedReady) { 
             this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
             this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
         } else {

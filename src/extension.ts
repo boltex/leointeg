@@ -13,6 +13,10 @@ import { LeoButtonNode } from "./leoButtonNode";
  */
 export function activate(p_context: vscode.ExtensionContext) {
 
+    // * Reset Extension context flags (used in 'when' clauses in package.json)
+    utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
+    utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
+
     const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
     const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
     const w_leo: LeoIntegration = new LeoIntegration(p_context);
@@ -28,10 +32,6 @@ export function activate(p_context: vscode.ExtensionContext) {
     const REFRESH_TREE = RefreshType.RefreshTree;
     const REFRESH_BOTH = RefreshType.RefreshTreeAndBody;
     const showInfo = vscode.window.showInformationMessage;
-
-    // * Reset Extension context flags (used in 'when' clauses in package.json)
-    utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
-    utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
 
     const w_commands: [string, (...args: any[]) => any][] = [
 
@@ -191,15 +191,13 @@ export function activate(p_context: vscode.ExtensionContext) {
     w_commands.map(function (p_command) {
         p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
     });
-    // If the version is newer than last time, then start automatic server and connection
+
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() => {
-        // * Start server and / or connect to it (as specified in settings)
-        w_leo.startNetworkServices();
+        w_leo.startNetworkServices(); // Start server and/or connect to it, as specified in settings
         p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
         console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
     });
 }
-
 /**
  * * Called when extension is deactivated
  */

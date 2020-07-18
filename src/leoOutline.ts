@@ -14,9 +14,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
 
-    private _refreshSingleNodeFlag: boolean = false; // used in leoOutline.ts to check if getTreeItem(element: LeoNode) should fetch from Leo, or return as-is
-
-    private _debugId: number = 0;
+    // used in leoOutline.ts to check if getTreeItem(element: LeoNode) should fetch from Leo, or return as-is
+    private _refreshSingleNodeFlag: boolean = false;
 
     constructor(private _leoIntegration: LeoIntegration) { }
 
@@ -25,7 +24,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
      * @param p_node The outline's node itself as a LeoNode instance
      */
     public refreshTreeNode(p_node: LeoNode): void {
-        this._refreshSingleNodeFlag = true; // We want to do a real refresh, not just giving back the same we've got as input in getTreeItem
+        // We want to do a real refresh, not just giving back the same we've got as input in getTreeItem
+        this._refreshSingleNodeFlag = true;
         this._onDidChangeTreeData.fire(p_node);
     }
 
@@ -53,23 +53,14 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         if (!this._leoIntegration.leoStates.fileOpenedReady) {
             return Promise.resolve([]); // Defaults to an empty list of children
         }
-        this._debugId++;
         if (element) {
-            console.log('get id' + this._debugId + ', for :' + element.label);
-
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element.apJson)
                 .then((p_package: LeoBridgePackage) => {
-                    console.log('back at ' + this._debugId);
-
                     return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
                 });
         } else {
-            console.log('get id' + this._debugId + ', for ROOT');
-
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, "null")
                 .then((p_package: LeoBridgePackage) => {
-                    console.log('ROOT at ' + this._debugId);
-
                     const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
                     if (w_nodes && w_nodes.length === 1) {
                         w_nodes[0].setRoot();
@@ -85,7 +76,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
         // ! Might be called if nodes are revealed while in vscode's refresh process
         // ! Parent asked for this way will go up till root and effectively refresh whole tree.
-        console.log('ERROR! GET PARENT CALLED! on: ', element.label);
+        // console.log('ERROR! GET PARENT CALLED! on: ', element.label);
 
         if (this._leoIntegration.leoStates.fileOpenedReady) {
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PARENT, element ? element.apJson : "null")

@@ -389,7 +389,7 @@ export class LeoIntegration {
         this._leoButtonsProvider.refreshTreeRoot();
         this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) => {
             if (p_package.states) {
-                this.leoStates.leoStateFlags(p_package.states);
+                this.leoStates.setLeoStateFlags(p_package.states);
             }
         });
     }
@@ -817,7 +817,7 @@ export class LeoIntegration {
      * @param p_leoNode The node that was detected as the selected node in Leo
      */
     private _apToLeoNodeConvertReveal(p_leoNode: LeoNode): void {
-        this.leoStates.selectedNodeFlags(p_leoNode);
+        this.leoStates.setSelectedNodeFlags(p_leoNode);
         // First setup flags for selecting and focusing based on the current reveal type needed
         const w_selectFlag = this._revealType >= RevealType.RevealSelect; // at least RevealSelect
         let w_focusFlag = this._revealType >= RevealType.RevealSelectFocus;  // at least RevealSelectFocus
@@ -930,7 +930,7 @@ export class LeoIntegration {
         if (p_aside && p_node !== this.lastSelectedNode) {
             this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
         }
-        this.leoStates.selectedNodeFlags(p_node);
+        this.leoStates.setSelectedNodeFlags(p_node);
         // TODO : #39 @boltex Save and restore selection, along with cursor position, from selection state saved in each node (or gnx array)
         this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
         const w_showBodyKeepFocus = p_aside ? this.config.treeKeepFocusWhenAside : this.config.treeKeepFocus;

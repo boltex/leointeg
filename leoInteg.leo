@@ -7,6 +7,7 @@
 <find_panel_settings/>
 <vnodes>
 <v t="felix.20190922171916.2"><vh>Introduction</vh></v>
+<v t="felix.20200718165721.1"><vh>Code</vh>
 <v t="felix.20200717222352.1"><vh>@clean package.json</vh>
 <v t="felix.20200717222716.1"><vh>configuration</vh>
 <v t="felix.20200717223431.1"><vh>External Files Change Detection</vh></v>
@@ -27,9 +28,9 @@
 <v t="felix.20200717224519.1"><vh>Show UI Panes</vh></v>
 <v t="felix.20200717224549.1"><vh>Leo File Documents</vh></v>
 <v t="felix.20200717230237.1"><vh>Tree View</vh></v>
-<v t="felix.20200717230331.1"><vh>Node Edition</vh></v>
+<v t="felix.20200717230331.1"><vh>Node Editing</vh></v>
 <v t="felix.20200717230350.1"><vh>Move Nodes</vh></v>
-<v t="felix.20200717230620.1"><vh>Outline Edition</vh></v>
+<v t="felix.20200717230620.1"><vh>Outline Editing</vh></v>
 <v t="felix.20200717230807.1"><vh>Goto Nodes</vh></v>
 <v t="felix.20200717230820.1"><vh>Hoist/Dehoist</vh></v>
 <v t="felix.20200717230830.1"><vh>Undo/Redo</vh></v>
@@ -60,9 +61,9 @@
 <v t="felix.20200718001744.1"><vh>Show UI Panes</vh></v>
 <v t="felix.20200718001726.1"><vh>Leo File Documents</vh></v>
 <v t="felix.20200718001920.1"><vh>Tree View</vh></v>
-<v t="felix.20200718001925.1"><vh>Node Edition</vh></v>
+<v t="felix.20200718001925.1"><vh>Node Editing</vh></v>
 <v t="felix.20200718001929.1"><vh>Move Nodes</vh></v>
-<v t="felix.20200718001935.1"><vh>Outline Edition</vh></v>
+<v t="felix.20200718001935.1"><vh>Outline Editing</vh></v>
 <v t="felix.20200718001940.1"><vh>Goto Nodes</vh></v>
 <v t="felix.20200718001958.1"><vh>Hoist/Dehoist</vh></v>
 <v t="felix.20200718002007.1"><vh>Undo/Redo</vh></v>
@@ -72,9 +73,9 @@
 <v t="felix.20200718003207.1"><vh>Show UI Panes</vh></v>
 <v t="felix.20200718003215.1"><vh>Leo File Documents</vh></v>
 <v t="felix.20200718003223.1"><vh>Tree View</vh></v>
-<v t="felix.20200718003227.1"><vh>Node Edition</vh></v>
+<v t="felix.20200718003227.1"><vh>Node Editing</vh></v>
 <v t="felix.20200718003236.1"><vh>Move Nodes</vh></v>
-<v t="felix.20200718003239.1"><vh>Outline Edition</vh></v>
+<v t="felix.20200718003239.1"><vh>Outline Editing</vh></v>
 <v t="felix.20200718003243.1"><vh>Goto Nodes</vh></v>
 <v t="felix.20200718003251.1"><vh>Hoist/Dehoist</vh></v>
 <v t="felix.20200718003259.1"><vh>Undo/Redo</vh></v>
@@ -89,9 +90,9 @@
 <v t="felix.20200718005412.1"><vh>Show UI Panes</vh></v>
 <v t="felix.20200718005425.1"><vh>Leo File Documents</vh></v>
 <v t="felix.20200718005440.1"><vh>Tree View</vh></v>
-<v t="felix.20200718005444.1"><vh>Node Edition</vh></v>
+<v t="felix.20200718005444.1"><vh>Node Editing</vh></v>
 <v t="felix.20200718005448.1"><vh>Move Nodes</vh></v>
-<v t="felix.20200718005453.1"><vh>Outline Edition</vh></v>
+<v t="felix.20200718005453.1"><vh>Outline Editing</vh></v>
 <v t="felix.20200718005458.1"><vh>Goto Nodes</vh></v>
 </v>
 <v t="felix.20200717223127.1"><vh>resourceLabelFormatters</vh></v>
@@ -149,8 +150,10 @@
 <v t="felix.20200216160305.1"><vh>saveFile</vh></v>
 <v t="felix.20200619165641.1"><vh>getStates</vh></v>
 <v t="felix.20200710014747.1"><vh>getButtons</vh></v>
+<v t="felix.20200718122313.1"><vh>removeButton</vh></v>
 <v t="felix.20200710030614.1"><vh>clickButton</vh></v>
-<v t="felix.20200711182907.1"><vh>removeButton</vh></v>
+<v t="felix.20200711182907.1"><vh>getCommands</vh></v>
+<v t="felix.20200718122351.1"><vh>runByName</vh></v>
 <v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
 <v t="felix.20191128004456.1"><vh>setActionId</vh></v>
 <v t="felix.20200213195413.1"><vh>asyncOutput</vh></v>
@@ -229,19 +232,19 @@
 </v>
 <v t="felix.20200718024635.1"><vh>@clean src/commandStack.ts</vh>
 <v t="felix.20200718024635.2"><vh>class CommandStack</vh>
-<v t="felix.20200718024635.3"><vh>CommandStack.size</vh></v>
-<v t="felix.20200718024635.4"><vh>CommandStack.newSelection</vh></v>
-<v t="felix.20200718024635.5"><vh>CommandStack.add</vh></v>
-<v t="felix.20200718024635.6"><vh>CommandStack._tryStart</vh></v>
-<v t="felix.20200718024635.7"><vh>CommandStack._runStackCommand</vh></v>
-<v t="felix.20200718024635.8"><vh>CommandStack._resolveResult</vh></v>
+<v t="felix.20200718024635.3"><vh>size</vh></v>
+<v t="felix.20200718024635.4"><vh>newSelection</vh></v>
+<v t="felix.20200718024635.5"><vh>add</vh></v>
+<v t="felix.20200718024635.6"><vh>_tryStart</vh></v>
+<v t="felix.20200718024635.7"><vh>_runStackCommand</vh></v>
+<v t="felix.20200718024635.8"><vh>_resolveResult</vh></v>
 </v>
 </v>
 <v t="felix.20200718030926.1"><vh>@clean src/config.ts</vh>
 <v t="felix.20200718030926.2"><vh>class Config</vh>
-<v t="felix.20200718030926.3"><vh>Config.getConfig</vh></v>
-<v t="felix.20200718030926.4"><vh>Config.setLeoIntegSettings</vh></v>
-<v t="felix.20200718030926.5"><vh>Config.buildFromSavedSettings</vh></v>
+<v t="felix.20200718030926.3"><vh>getConfig</vh></v>
+<v t="felix.20200718030926.4"><vh>setLeoIntegSettings</vh></v>
+<v t="felix.20200718030926.5"><vh>buildFromSavedSettings</vh></v>
 </v>
 </v>
 <v t="felix.20200718020912.1"><vh>@clean src/constants.ts</vh>
@@ -263,28 +266,26 @@
 </v>
 <v t="felix.20200718031424.1"><vh>@clean src/extension.ts</vh>
 <v t="felix.20200718031424.2"><vh>activate</vh>
-<v t="felix.20200718031424.3"><vh>&lt;&lt; define constants &gt;&gt;</vh></v>
-<v t="felix.20200718031424.4"><vh> not implemented commands</vh></v>
+<v t="felix.20200718031424.4"><vh>TODO commands</vh></v>
 <v t="felix.20200718031424.5"><vh>button commands</vh></v>
 <v t="felix.20200718031424.6"><vh>file commands</vh></v>
 <v t="felix.20200718031424.7"><vh>edit headline commands</vh></v>
 <v t="felix.20200718031424.8"><vh>node commands...</vh>
-<v t="felix.20200718031424.9"><vh>cut/copy/paste commands</vh></v>
-<v t="felix.20200718031424.10"><vh>expand/contract commands</vh></v>
-<v t="felix.20200718031424.11"><vh>git-diff (new, activate)</vh></v>
-<v t="felix.20200718031424.12"><vh>goto commands</vh></v>
-<v t="felix.20200718031424.13"><vh>hoist/dehoist commands</vh></v>
-<v t="felix.20200718031424.14"><vh>insert/clone commands</vh></v>
-<v t="felix.20200718031424.15"><vh>mark/unmark commands</vh></v>
-<v t="felix.20200718031424.16"><vh>move commands</vh></v>
-<v t="felix.20200718031424.17"><vh>page up/down commands</vh></v>
-<v t="felix.20200718031424.18"><vh>promote/demote commands</vh></v>
-<v t="felix.20200718031424.19"><vh>sort commands</vh></v>
-<v t="felix.20200718031424.20"><vh>undo/redo commands</vh></v>
+<v t="felix.20200718031424.9"><vh>cut/copy/paste</vh></v>
+<v t="felix.20200718031424.10"><vh>expand/contract</vh></v>
+<v t="felix.20200718031424.11"><vh>git-diff</vh></v>
+<v t="felix.20200718031424.12"><vh>goto</vh></v>
+<v t="felix.20200718031424.13"><vh>hoist/dehoist</vh></v>
+<v t="felix.20200718031424.14"><vh>insert/clone</vh></v>
+<v t="felix.20200718031424.15"><vh>mark/unmark</vh></v>
+<v t="felix.20200718031424.16"><vh>move nodes</vh></v>
+<v t="felix.20200718031424.17"><vh>pgUp/pgDown</vh></v>
+<v t="felix.20200718031424.18"><vh>promote/demote</vh></v>
+<v t="felix.20200718031424.19"><vh>sorting</vh></v>
+<v t="felix.20200718031424.20"><vh>undo/redo</vh></v>
 </v>
 <v t="felix.20200718031424.21"><vh>server commands</vh></v>
 <v t="felix.20200718031424.22"><vh>select/show commands</vh></v>
-<v t="felix.20200718031424.23"><vh>&lt;&lt; show welcome screen &gt;&gt;</vh></v>
 </v>
 <v t="felix.20200718031424.24"><vh>deactivate</vh></v>
 <v t="felix.20200718031424.25"><vh>showWelcomeIfNewer</vh></v>
@@ -292,11 +293,182 @@
 </v>
 <v t="felix.20200718035737.1"><vh>@clean src/leoAsync.ts</vh>
 <v t="felix.20200718035737.2"><vh>class LeoAsync</vh>
-<v t="felix.20200718035737.3"><vh>LeoAsync.log</vh></v>
-<v t="felix.20200718035737.4"><vh>LeoAsync.showSaveAsDialog</vh></v>
-<v t="felix.20200718035737.5"><vh>LeoAsync.showAskModalDialog</vh></v>
-<v t="felix.20200718035737.6"><vh>LeoAsync.showWarnModalMessage</vh></v>
-<v t="felix.20200718035737.7"><vh>LeoAsync.showChangesDetectedInfoMessage</vh></v>
+<v t="felix.20200718035737.3"><vh>log</vh></v>
+<v t="felix.20200718035737.4"><vh>showSaveAsDialog</vh></v>
+<v t="felix.20200718035737.5"><vh>showAskModalDialog</vh></v>
+<v t="felix.20200718035737.6"><vh>showWarnModalMessage</vh></v>
+<v t="felix.20200718035737.7"><vh>showChangesDetectedInfoMessage</vh></v>
+</v>
+</v>
+<v t="felix.20200718040540.1"><vh>@clean src/leoBody.ts</vh>
+<v t="felix.20200718040540.2"><vh>class LeoBodyProvider</vh>
+<v t="felix.20200718040540.3"><vh>setBodyTime</vh></v>
+<v t="felix.20200718040540.4"><vh>setRenameTime</vh></v>
+<v t="felix.20200718040540.5"><vh>fireRefreshFile</vh></v>
+<v t="felix.20200718040540.6"><vh>refreshPossibleGnxList</vh></v>
+<v t="felix.20200718040540.7"><vh>getExpiredGnxList</vh></v>
+<v t="felix.20200718040540.8"><vh>watch</vh></v>
+<v t="felix.20200718040540.9"><vh>fireDeleteExpiredGnx</vh></v>
+<v t="felix.20200718040540.10"><vh>stat</vh></v>
+<v t="felix.20200718040540.11"><vh>readFile</vh></v>
+<v t="felix.20200718040540.12"><vh>readDirectory</vh></v>
+<v t="felix.20200718040540.13"><vh>createDirectory</vh></v>
+<v t="felix.20200718040540.14"><vh>writeFile</vh></v>
+<v t="felix.20200718040540.15"><vh>rename</vh></v>
+<v t="felix.20200718040540.16"><vh>delete</vh></v>
+<v t="felix.20200718040540.17"><vh>copy</vh></v>
+<v t="felix.20200718040540.18"><vh>_fireSoon</vh></v>
+</v>
+</v>
+<v t="felix.20200718153505.1"><vh>@clean src/leoBridge.ts</vh>
+<v t="felix.20200718153505.2"><vh>class LeoBridge</vh>
+<v t="felix.20200718153505.3"><vh>action</vh></v>
+<v t="felix.20200718155251.1"><vh>isBusy</vh></v>
+<v t="felix.20200718153505.4"><vh>_asyncAction</vh></v>
+<v t="felix.20200718153505.5"><vh>_buildActionParameter</vh></v>
+<v t="felix.20200718153505.6"><vh>_resolveBridgeReady</vh></v>
+<v t="felix.20200718153505.7"><vh>_rejectAction</vh></v>
+<v t="felix.20200718153505.8"><vh>_callAction</vh></v>
+<v t="felix.20200718153505.9"><vh>_tryParseJSON</vh></v>
+<v t="felix.20200718153505.11"><vh>_processAnswer</vh></v>
+<v t="felix.20200718153505.12"><vh>initLeoProcess</vh></v>
+<v t="felix.20200718153505.13"><vh>_send</vh></v>
+</v>
+</v>
+<v t="felix.20200718162303.1"><vh>@clean src/leoButtonNode.ts</vh>
+<v t="felix.20200718162303.2"><vh>class LeoButtonNode</vh>
+<v t="felix.20200718162435.1"><vh>iconPath</vh></v>
+<v t="felix.20200718162442.1"><vh>id</vh></v>
+<v t="felix.20200718162452.1"><vh>tooltip</vh></v>
+<v t="felix.20200718162459.1"><vh>description</vh></v>
+</v>
+</v>
+<v t="felix.20200718164130.1"><vh>@clean src/leoButtons.ts</vh>
+<v t="felix.20200718164130.2"><vh>class LeoButtonsProvider</vh>
+<v t="felix.20200718164130.3"><vh>refreshTreeRoot</vh></v>
+<v t="felix.20200718164130.4"><vh>getTreeItem</vh></v>
+<v t="felix.20200718164130.5"><vh>getChildren</vh></v>
+<v t="felix.20200718164130.6"><vh>getParent</vh></v>
+</v>
+</v>
+<v t="felix.20200718164509.1"><vh>@clean src/leoDocumentNode.ts</vh>
+<v t="felix.20200718164509.2"><vh>class LeoDocumentNode</vh>
+<v t="felix.20200718164635.1"><vh>iconPath</vh></v>
+<v t="felix.20200718164638.1"><vh>id</vh></v>
+</v>
+</v>
+<v t="felix.20200718165108.1"><vh>@clean src/leoDocuments.ts</vh>
+<v t="felix.20200718165108.2"><vh>class LeoDocumentsProvider</vh>
+<v t="felix.20200718165108.3"><vh>refreshTreeRoot</vh></v>
+<v t="felix.20200718165108.4"><vh>getTreeItem</vh></v>
+<v t="felix.20200718165108.5"><vh>getChildren</vh></v>
+<v t="felix.20200718165108.6"><vh>getParent</vh></v>
+</v>
+</v>
+<v t="felix.20200718170429.1"><vh>@clean src/leoFileBrowser.ts</vh>
+<v t="felix.20200718170429.2"><vh>class LeoFilesBrowser</vh>
+<v t="felix.20200718170429.3"><vh>_getBestOpenFolderUri</vh></v>
+<v t="felix.20200718170429.4"><vh>getLeoFileUrl</vh></v>
+</v>
+</v>
+<v t="felix.20200718170712.1"><vh>@clean src/leoNode.ts</vh>
+<v t="felix.20200718170712.2"><vh>class LeoNode</vh>
+<v t="felix.20200718170712.3"><vh>copyProperties</vh></v>
+<v t="felix.20200718170712.4"><vh>setRoot</vh></v>
+<v t="felix.20200718170712.5"><vh>_getNodeContextValue</vh></v>
+<v t="felix.20200718170712.6"><vh>getCursorSelection</vh></v>
+<v t="felix.20200718170712.7"><vh>setCursorSelection</vh></v>
+<v t="felix.20200718171904.1"><vh>iconPath</vh></v>
+<v t="felix.20200718171854.1"><vh>id</vh></v>
+<v t="felix.20200718171837.1"><vh>description</vh></v>
+<v t="felix.20200718171849.1"><vh>tooltip</vh></v>
+</v>
+</v>
+<v t="felix.20200718180428.1"><vh>@clean src/leoOutline.ts</vh>
+<v t="felix.20200718180428.2"><vh>class LeoOutlineProvider</vh>
+<v t="felix.20200718180428.3"><vh>refreshTreeNode</vh></v>
+<v t="felix.20200718180428.4"><vh>refreshTreeRoot</vh></v>
+<v t="felix.20200718180428.5"><vh>getTreeItem</vh></v>
+<v t="felix.20200718180428.6"><vh>getChildren</vh></v>
+<v t="felix.20200718180428.7"><vh>getParent</vh></v>
+</v>
+</v>
+<v t="felix.20200718192351.1"><vh>@clean src/leoStates.ts</vh>
+<v t="felix.20200718192411.1"><vh>class LeoStates</vh>
+<v t="felix.20200718193719.1"><vh>General State Flags</vh>
+<v t="felix.20200718193219.1"><vh>leoBridgeReady</vh></v>
+<v t="felix.20200718193222.1"><vh>fileOpenedReady</vh></v>
+<v t="felix.20200718193226.1"><vh>leoOpenedFileName</vh></v>
+<v t="felix.20200718193230.1"><vh>leoChanged</vh></v>
+<v t="felix.20200718193233.1"><vh>leoCanUndo</vh></v>
+<v t="felix.20200718193235.1"><vh>leoCanRedo</vh></v>
+<v t="felix.20200718193238.1"><vh>leoCanDemote</vh></v>
+<v t="felix.20200718193241.1"><vh>leoCanPromote</vh></v>
+<v t="felix.20200718193244.1"><vh>leoCanDehoist</vh></v>
+</v>
+<v t="felix.20200718193731.1"><vh>Selected Node Flags</vh>
+<v t="felix.20200718193338.1"><vh>leoMarked</vh></v>
+<v t="felix.20200718193341.1"><vh>leoCloned</vh></v>
+<v t="felix.20200718193343.1"><vh>leoDirty</vh></v>
+<v t="felix.20200718193348.1"><vh>leoEmpty</vh></v>
+<v t="felix.20200718193350.1"><vh>leoChild</vh></v>
+<v t="felix.20200718193353.1"><vh>leoAtFile</vh></v>
+<v t="felix.20200718193403.1"><vh>leoRoot</vh></v>
+</v>
+<v t="felix.20200718193500.1"><vh>constructor</vh></v>
+<v t="felix.20200718192411.2"><vh>selectedNodeFlags</vh></v>
+<v t="felix.20200718192411.3"><vh>leoStateFlags</vh></v>
+</v>
+</v>
+<v t="felix.20200718185403.1"><vh>@clean src/leoStatusBar.ts</vh>
+<v t="felix.20200718185403.2"><vh>class LeoStatusBar</vh>
+<v t="felix.20200718185403.3"><vh>show</vh></v>
+<v t="felix.20200718185403.4"><vh>hide</vh></v>
+<v t="felix.20200718185403.5"><vh>setString</vh></v>
+<v t="felix.20200718185403.6"><vh>update</vh></v>
+<v t="felix.20200718185403.7"><vh>_updateLeoObjectIndicatorDebounced</vh></v>
+<v t="felix.20200718185403.8"><vh>_updateLeoObjectIndicator</vh></v>
+</v>
+</v>
+<v t="felix.20200718191946.1"><vh>@clean src/serverManager.ts</vh>
+<v t="felix.20200718191946.2"><vh>class ServerService</vh>
+<v t="felix.20200718191946.3"><vh>_gotTerminalData</vh></v>
+<v t="felix.20200718191946.4"><vh>startServer</vh></v>
+</v>
+</v>
+<v t="felix.20200718194857.1"><vh>@clean src/types.d.ts</vh>
+<v t="felix.20200718194857.2"><vh>ConfigMembers</vh></v>
+<v t="felix.20200718194857.3"><vh>RevealType</vh></v>
+<v t="felix.20200718194857.4"><vh>RefreshType</vh></v>
+<v t="felix.20200718194857.5"><vh>UserCommand</vh></v>
+<v t="felix.20200718194857.6"><vh>LeoAction</vh></v>
+<v t="felix.20200718194857.7"><vh>LeoLogEntry</vh></v>
+<v t="felix.20200718194857.8"><vh>ArchivedPosition</vh></v>
+<v t="felix.20200718194857.9"><vh>LeoPackageStates</vh></v>
+<v t="felix.20200718194857.10"><vh>LeoBridgePackage</vh></v>
+<v t="felix.20200718194857.11"><vh>LeoDocument</vh></v>
+<v t="felix.20200718194857.12"><vh>LeoButton</vh></v>
+<v t="felix.20200718194857.13"><vh>Icon</vh></v>
+<v t="felix.20200718194857.14"><vh>BodyTimeInfo</vh></v>
+<v t="felix.20200718194857.15"><vh>showSaveAsDialogParameters</vh></v>
+<v t="felix.20200718194857.16"><vh>runAskYesNoDialogParameters</vh></v>
+<v t="felix.20200718194857.17"><vh>runWarnMessageDialogParameters</vh></v>
+<v t="felix.20200718194857.18"><vh>runInfoMessageDialogParameters</vh></v>
+<v t="felix.20200718194857.19"><vh>AskMessageItem</vh></v>
+<v t="felix.20200718194857.20"><vh>ChooseDocumentItem</vh></v>
+</v>
+<v t="felix.20200718195558.1"><vh>@clean src/utils.ts</vh>
+<v t="felix.20200718195558.2"><vh>padNumber2</vh></v>
+<v t="felix.20200718195558.3"><vh>buildNodeIconPaths</vh></v>
+<v t="felix.20200718195558.4"><vh>buildDocumentIconPaths</vh></v>
+<v t="felix.20200718195558.5"><vh>buildButtonsIconPaths</vh></v>
+<v t="felix.20200718195558.6"><vh>buildNodeAndTextJson</vh></v>
+<v t="felix.20200718195558.7"><vh>getFileFromPath</vh></v>
+<v t="felix.20200718195558.8"><vh>isIconChangedByEdit</vh></v>
+<v t="felix.20200718195558.9"><vh>isHexColor</vh></v>
+<v t="felix.20200718195558.10"><vh>strToLeoUri</vh></v>
+<v t="felix.20200718195558.11"><vh>leoUriToStr</vh></v>
+<v t="felix.20200718195558.12"><vh>setContext</vh></v>
 </v>
 </v>
 </vnodes>
@@ -1776,18 +1948,6 @@ wsPort = 32125
             w_buttons.append(w_entry)
     return self.sendLeoBridgePackage("buttons", w_buttons)
 
-def removeButton(self, p_package):
-    '''Removes an entry from the buttonsDict by index string'''
-    w_index = p_package['index']
-    w_dict = self.commander.theScriptingController.buttonsDict
-    w_key = None
-    for i_key in w_dict:
-        if(str(i_key) == w_index):
-            w_key = i_key
-    if w_key:
-        del(w_dict[w_key])  # delete object member
-    return self.outputPNode(self.commander.p)  # return selected node when done
-
 </t>
 <t tx="felix.20200710030614.1">def clickButton(self, p_package):
     '''Handles buttons clicked in vscode from the '@button' panel'''
@@ -1818,18 +1978,6 @@ def removeButton(self, p_package):
     w_commands.append("three")
 
     return self.sendLeoBridgePackage("commands", w_commands)
-
-def runByName(self, p_package):
-    pass
-
-    print("runByName for string:")
-
-    if "text" in p_package:
-        print(p_package['text'])
-    else:
-        print("no string given")
-
-    return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 <t tx="felix.20200711210205.1">def pageDown(self, p_ap):
@@ -4106,9 +4254,9 @@ def runByName(self, p_package):
 </t>
 <t tx="felix.20200718020912.1">import * as vscode from "vscode";
 
-@others
 @language typescript
 @tabwidth -4
+@others
 </t>
 <t tx="felix.20200718020912.10">/**
  * * Actions that can be invoked by Leo through leobridge
@@ -4440,7 +4588,7 @@ public static GUI = {
     ICON_DARK_PATH: "resources/dark/box",
     ICON_FILE_EXT: ".svg",
     STATUSBAR_DEFAULT_COLOR: "fb7c47",
-    STATUSBAR_DEFAULT_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: 🦁
+    STATUSBAR_DEFAULT_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
     STATUSBAR_INDICATOR: "$(keyboard) ",
     QUICK_OPEN_LEO_COMMANDS: "&gt;leo: ",
     EXPLORER_TREEVIEW_PREFIX: "LEO ",
@@ -4606,9 +4754,10 @@ import * as utils from "./utils";
 import { UserCommand, RefreshType, LeoBridgePackage } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
-@others
 @language typescript
 @tabwidth -4
+@others
+
 </t>
 <t tx="felix.20200718024635.2">/**
  * * Front-facing, user command stack of actions. 
@@ -4787,9 +4936,9 @@ import { ConfigMembers, RefreshType } from "./types";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
-@others
 @language typescript
 @tabwidth -4
+@others
 </t>
 <t tx="felix.20200718030926.2">/**
  * * Configuration Settings Service
@@ -4962,9 +5111,9 @@ import { LeoNode } from "./leoNode";
 import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
 
-@others
 @language typescript
 @tabwidth -4
+@others
 </t>
 <t tx="felix.20200718031424.10">[CMD.CONTRACT_ALL, () =&gt; w_leo.nodeCommand(BRIDGE.CONTRACT_ALL, U, REFRESH_TREE, false)],
 [CMD.CONTRACT_ALL_FO, () =&gt; w_leo.nodeCommand(BRIDGE.CONTRACT_ALL, U, REFRESH_TREE, true)],
@@ -5052,7 +5201,25 @@ import { LeoButtonNode } from "./leoButtonNode";
  */
 export function activate(p_context: vscode.ExtensionContext) {
 
-    &lt;&lt; define constants &gt;&gt;
+    // * Reset Extension context flags (used in 'when' clauses in package.json)
+    utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
+    utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
+
+    const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
+    const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
+    const w_leo: LeoIntegration = new LeoIntegration(p_context);
+    const w_leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(p_context, w_leo);
+    const w_previousVersion = p_context.globalState.get&lt;string&gt;(Constants.VERSION_STATE_KEY);
+    const w_start = process.hrtime(); // For calculating total startup time duration
+
+    // Shortcut pointers for readability
+    const U = undefined;
+    const BRIDGE = Constants.LEOBRIDGE;
+    const CMD = Constants.COMMANDS;
+    const NO_REFRESH = RefreshType.NoRefresh;
+    const REFRESH_TREE = RefreshType.RefreshTree;
+    const REFRESH_BOTH = RefreshType.RefreshTreeAndBody;
+    const showInfo = vscode.window.showInformationMessage;
 
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
 
@@ -5068,9 +5235,13 @@ export function activate(p_context: vscode.ExtensionContext) {
     w_commands.map(function (p_command) {
         p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
     });
-    &lt;&lt; show welcome screen &gt;&gt;
-}
 
+    showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
+        w_leo.startNetworkServices(); // Start server and/or connect to it, as specified in settings
+        p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
+        console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
+    });
+}
 </t>
 <t tx="felix.20200718031424.20">[CMD.REDO, () =&gt; w_leo.nodeCommand(BRIDGE.REDO, U, REFRESH_BOTH, false)],
 [CMD.REDO_FO, () =&gt; w_leo.nodeCommand(BRIDGE.REDO, U, REFRESH_BOTH, true)],
@@ -5096,14 +5267,6 @@ export function activate(p_context: vscode.ExtensionContext) {
 [CMD.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()],
 // Same as 'show welcome screen'
 
-</t>
-<t tx="felix.20200718031424.23">// If the version is newer than last time, then start automatic server and connection
-showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
-    // * Start server and / or connect to it (as specified in settings)
-    w_leo.startNetworkServices();
-    p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-    console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
-});
 </t>
 <t tx="felix.20200718031424.24">/**
  * * Called when extension is deactivated
@@ -5158,26 +5321,6 @@ function getDurationMilliseconds(p_start: [number, number]): number {
     const [secs, nanosecs] = process.hrtime(p_start);
     return secs * 1000 + Math.floor(nanosecs / 1000000);
 }
-</t>
-<t tx="felix.20200718031424.3">const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
-const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
-const w_leo: LeoIntegration = new LeoIntegration(p_context);
-const w_leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(p_context, w_leo);
-const w_previousVersion = p_context.globalState.get&lt;string&gt;(Constants.VERSION_STATE_KEY);
-const w_start = process.hrtime(); // For calculating total startup time duration
-
-// Shortcut pointers for readability
-const U = undefined;
-const BRIDGE = Constants.LEOBRIDGE;
-const CMD = Constants.COMMANDS;
-const NO_REFRESH = RefreshType.NoRefresh;
-const REFRESH_TREE = RefreshType.RefreshTree;
-const REFRESH_BOTH = RefreshType.RefreshTreeAndBody;
-const showInfo = vscode.window.showInformationMessage;
-
-// * Reset Extension context flags (used in 'when' clauses in package.json)
-utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
-utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
 </t>
 <t tx="felix.20200718031424.4">// TODO : @boltex More commands to implement #15, #23, #24
 [CMD.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
@@ -5248,6 +5391,10 @@ import {
 } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
+@language typescript
+@tabwidth -4
+@others
+
 /*
     TODO : Should Reproduce those interactive controls that may be asked by Leo and redo a true UI bridge
 
@@ -5307,12 +5454,8 @@ def simulateDialog(self, key, defaultVal):
     return defaultVal
 
 */
-@others
-@language typescript
-@tabwidth -4
 </t>
-<t tx="felix.20200718035737.2">
-/**
+<t tx="felix.20200718035737.2">/**
  * * Handles the functions called by Leo through leoBridge such as adding a log pane entry, runAskYesNoDialog for file changes, etc.
  * * Some config settings affect this behavior, such as defaultReloadIgnore and checkForChangeExternalFiles
  */
@@ -5341,8 +5484,8 @@ public log(p_message: string): void {
  * @param p_saveAsArg
  */
 public showSaveAsDialog(p_saveAsArg: showSaveAsDialogParameters): void {
+    // TODO : Check if needed
     console.log('TODO: SHOW SAVE AS DIALOG!');
-
 }
 
 </t>
@@ -5434,6 +5577,2116 @@ public showChangesDetectedInfoMessage(p_infoArg: runInfoMessageDialogParameters)
     }
     vscode.window.showInformationMessage(w_message);
 }
+</t>
+<t tx="felix.20200718040540.1">import * as vscode from "vscode";
+import * as utils from "./utils";
+import * as path from 'path';
+import { Constants } from "./constants";
+import { LeoIntegration } from "./leoIntegration";
+import { BodyTimeInfo } from "./types";
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20200718040540.10">public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable&lt;vscode.FileStat&gt; {
+    // TODO : Fix extraneous stat(...) call(s)
+    if (this._leoIntegration.leoStates.fileOpenedReady) {
+        if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
+            // console.log('called stat on root');
+            return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
+        } else if (utils.leoUriToStr(p_uri) === this._lastGnx) {
+            // If same as last checked, sending back time at absolute past
+            return {
+                type: vscode.FileType.File,
+                ctime: 0,
+                mtime: 0, // this._selectedBody.mtime, // IF this._selectedBody.mtime we get file changed on disk error!!
+                size: this._lastGnxBodyLength
+            };
+        } else {
+            const w_gnx = utils.leoUriToStr(p_uri);
+            if (false &amp;&amp; this._selectedBody.gnx !== w_gnx &amp;&amp; this._renameBody.gnx !== w_gnx) {
+                // ! TEST IF NEEDED !
+                console.log('ERROR File not in list selected: ' + this._selectedBody.gnx +
+                    " renamed: " + this._renameBody.gnx +
+                    " stat asked on w_gnx: " + w_gnx);
+                throw vscode.FileSystemError.FileNotFound();
+            } else {
+                return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY_LENGTH, '"' + w_gnx + '"')
+                    .then((p_result) =&gt; {
+                        let w_mtime: number = 0;
+                        if (this._renameBody.gnx === w_gnx) {
+                            w_mtime = this._renameBody.mtime;
+                        } else {
+                            w_mtime = this._selectedBody.mtime;
+                        }
+                        return Promise.resolve(
+                            {
+                                type: vscode.FileType.File,
+                                ctime: 0,
+                                mtime: w_mtime,
+                                size: p_result.bodyLength ? p_result.bodyLength : 0
+                            }
+                        );
+                    });
+            }
+        }
+    } else {
+        throw vscode.FileSystemError.FileNotFound(); // console.log("not ready");
+    }
+}
+
+</t>
+<t tx="felix.20200718040540.11">public readFile(p_uri: vscode.Uri): Thenable&lt;Uint8Array&gt; {
+    if (this._leoIntegration.leoStates.fileOpenedReady) {
+        if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
+            throw vscode.FileSystemError.FileIsADirectory();
+        } else {
+            const w_gnx = utils.leoUriToStr(p_uri);
+            // if (!this._possibleGnxList.includes(w_gnx)) {
+            if (this._selectedBody.gnx !== w_gnx &amp;&amp; this._renameBody.gnx !== w_gnx) {
+                console.error("readFile: ERROR File not in list! readFile missing refreshes?");
+                throw vscode.FileSystemError.FileNotFound();
+            } else {
+                return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY, '"' + w_gnx + '"')
+                    .then((p_result) =&gt; {
+                        if (p_result.bodyData) {
+                            this._lastGnx = w_gnx;
+                            this._lastBodyData = p_result.bodyData;
+                            this._lastGnxBodyLength = p_result.bodyData.length;
+                            return Promise.resolve(Buffer.from(p_result.bodyData));
+                        } else if (p_result.bodyData === "") {
+                            this._lastGnx = w_gnx;
+                            this._lastGnxBodyLength = 0;
+                            this._lastBodyData = "";
+                            return Promise.resolve(Buffer.from(""));
+                        } else {
+                            if (this._lastGnx === w_gnx) {
+                                // was last gnx of closed file about to be switched to new document selected
+                                console.log('Passed in not found: ' + w_gnx);
+
+                                return Promise.resolve(Buffer.from(this._lastBodyData));
+                            }
+                            console.error("ERROR =&gt; readFile of unknown GNX"); // is possibleGnxList updated correctly?
+                            return Promise.resolve(Buffer.from(""));
+                            //  throw vscode.FileSystemError.FileNotFound();
+                        }
+                    });
+            }
+        }
+    } else {
+        throw vscode.FileSystemError.FileNotFound();
+    }
+}
+
+</t>
+<t tx="felix.20200718040540.12">public readDirectory(p_uri: vscode.Uri): Thenable&lt;[string, vscode.FileType][]&gt; {
+    if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
+        const w_directory: [string, vscode.FileType][] = [];
+        w_directory.push([this._selectedBody.gnx, vscode.FileType.File]);
+        return Promise.resolve(w_directory);
+    } else {
+        throw vscode.FileSystemError.FileNotFound();
+    }
+}
+
+</t>
+<t tx="felix.20200718040540.13">public createDirectory(p_uri: vscode.Uri): void {
+    console.warn('Called createDirectory with ', p_uri.fsPath); // should not happen
+    throw vscode.FileSystemError.NoPermissions();
+}
+
+</t>
+<t tx="felix.20200718040540.14">public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
+    this._leoIntegration.triggerBodySave(true);
+    const w_gnx = utils.leoUriToStr(p_uri);
+    const w_now = Date.now();
+    if (this._selectedBody.gnx === w_gnx) {
+        this._selectedBody.mtime = w_now;
+    }
+    if (this._renameBody.gnx === w_gnx) {
+        this._renameBody.mtime = w_now;
+    }
+    this._fireSoon({ type: vscode.FileChangeType.Changed, uri: p_uri });
+}
+
+</t>
+<t tx="felix.20200718040540.15">public rename(p_oldUri: vscode.Uri, p_newUri: vscode.Uri, p_options: { overwrite: boolean }): void {
+    const w_gnx = utils.leoUriToStr(p_newUri);
+    if (this._selectedBody.gnx === w_gnx) {
+        this._selectedBody.mtime = Date.now();
+    }
+    if (this._renameBody.gnx === w_gnx) {
+        this._renameBody.mtime = Date.now();
+    }
+    this._fireSoon(
+        { type: vscode.FileChangeType.Deleted, uri: p_oldUri },
+        { type: vscode.FileChangeType.Created, uri: p_newUri }
+    );
+}
+
+</t>
+<t tx="felix.20200718040540.16">public delete(uri: vscode.Uri): void {
+    let w_dirname = uri.with({ path: path.posix.dirname(uri.path) }); // dirname is just a slash "/"
+    this._fireSoon({ type: vscode.FileChangeType.Changed, uri: w_dirname }, { uri, type: vscode.FileChangeType.Deleted });
+}
+
+</t>
+<t tx="felix.20200718040540.17">public copy(p_uri: vscode.Uri): void {
+    console.warn('Called copy on ', p_uri.fsPath); // should not happen
+    throw vscode.FileSystemError.NoPermissions();
+}
+
+private _emitter = new vscode.EventEmitter&lt;vscode.FileChangeEvent[]&gt;();
+private _bufferedEvents: vscode.FileChangeEvent[] = [];
+private _fireSoonHandle?: NodeJS.Timer;
+
+</t>
+<t tx="felix.20200718040540.18">private _fireSoon(...p_events: vscode.FileChangeEvent[]): void {
+    this._bufferedEvents.push(...p_events);
+    if (this._fireSoonHandle) {
+        clearTimeout(this._fireSoonHandle);
+    }
+    this._fireSoonHandle = setTimeout(() =&gt; {
+        this._emitter.fire(this._bufferedEvents);
+        this._bufferedEvents.length = 0; // clearing events array
+    }, 5);
+}
+</t>
+<t tx="felix.20200718040540.2">/**
+ * * Body panes implementation as a file system using "leo" as a scheme identifier
+ * Saving and renaming prevents flickering and prevents undos to 'traverse through' different gnx
+ */
+export class LeoBodyProvider implements vscode.FileSystemProvider {
+
+    // * Simple structure to keep mtime of selected and renamed body virtual files
+    private _selectedBody: BodyTimeInfo = { gnx: "", ctime: 0, mtime: 0 };
+    private _renameBody: BodyTimeInfo = { gnx: "", ctime: 0, mtime: 0 };
+
+    // * Last file read data with the readFile method
+    private _lastGnx: string = ""; // gnx of last file read
+    private _lastBodyData: string = ""; // body content of last file read
+    private _lastGnxBodyLength: number = 0; // length of last file read
+
+    // * List of currently opened body panes gnx (from 'watch' &amp; 'dispose' methods)
+    private _openedBodiesGnx: string[] = [];
+
+    // * List of all possible vNodes gnx in the currently opened leo file (since last refresh/tree operation)
+    private _possibleGnxList: string[] = [];
+
+    // * An event to signal that a resource has been changed
+    // * It should fire for resources that are being [watched](#FileSystemProvider.watch) by clients of this provider
+    private _onDidChangeFileEmitter = new vscode.EventEmitter&lt;vscode.FileChangeEvent[]&gt;();
+    readonly onDidChangeFile: vscode.Event&lt;vscode.FileChangeEvent[]&gt; = this._onDidChangeFileEmitter.event;
+
+    constructor(private _leoIntegration: LeoIntegration) { }
+
+    @others
+}
+</t>
+<t tx="felix.20200718040540.3">/**
+ * * Sets selected node body's modified time for this gnx virtual file
+ * @param p_uri URI of file for which to set made-up modified time
+ */
+public setBodyTime(p_uri: vscode.Uri): void {
+    const w_gnx = utils.leoUriToStr(p_uri);
+    this._selectedBody = {
+        gnx: w_gnx,
+        ctime: 0,
+        mtime: (w_gnx === this._renameBody.gnx &amp;&amp; this._selectedBody.gnx === this._renameBody.gnx) ? this._renameBody.mtime : Date.now(),
+    };
+}
+
+</t>
+<t tx="felix.20200718040540.4">/**
+ * * Sets renamed file modified time for this gnx, used for 'rename' hack to prevent text undos between gnx
+ * @param p_uri URI of file for which to set made-up modified time
+ */
+public setRenameTime(p_gnx: string): void {
+    this._renameBody = {
+        gnx: p_gnx,
+        ctime: 0,
+        mtime: Date.now(),
+    };
+}
+
+</t>
+<t tx="felix.20200718040540.5">/**
+ * * Refresh the body pane for a particular gnx by telling vscode that the file from the Leo file provider has changed
+ * @param p_gnx Gnx of body associated with this virtual file, mostly Leo's selected node
+ */
+public fireRefreshFile(p_gnx: string): void {
+    this._selectedBody = {
+        gnx: p_gnx,
+        ctime: 0,
+        mtime: Date.now(),
+    };
+    this._onDidChangeFileEmitter.fire([{
+        type: vscode.FileChangeType.Changed,
+        uri: utils.strToLeoUri(p_gnx)
+    } as vscode.FileChangeEvent]);
+}
+
+</t>
+<t tx="felix.20200718040540.6">/**
+ * * Refreshes the '_possibleGnxList' list of all unique gnx from Leo
+ * @returns a promise that resolves to the fresh gnx string array
+ */
+public refreshPossibleGnxList(): Thenable&lt;string[]&gt; {
+    // * Get updated list of possible gnx
+    return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_ALL_GNX).then((p_result) =&gt; {
+        if (p_result.allGnx) {
+            this._possibleGnxList = p_result.allGnx;
+        } else {
+            this._possibleGnxList = [];
+        }
+        return Promise.resolve(this._possibleGnxList);
+    });
+}
+
+</t>
+<t tx="felix.20200718040540.7">/**
+ * * Get list of bodies that should be closed: gnx from openedBodiesGnx that are not in possibleGnxList
+ * @returns Promise that resolves in a string array
+ */
+public getExpiredGnxList(): Thenable&lt;string[]&gt; {
+    return this.refreshPossibleGnxList()
+        .then(p_possibleGnxList =&gt; {
+            const w_gnxToClose: string[] = [];
+            this._openedBodiesGnx.forEach(p_openedGnx =&gt; {
+                if (!p_possibleGnxList.includes(p_openedGnx)) {
+                    w_gnxToClose.push(p_openedGnx);
+                }
+            });
+            this.fireDeleteExpiredGnx(w_gnxToClose);
+            return Promise.resolve(w_gnxToClose);
+        });
+}
+
+</t>
+<t tx="felix.20200718040540.8">public watch(p_resource: vscode.Uri): vscode.Disposable {
+    const w_gnx = utils.leoUriToStr(p_resource);
+    if (!this._openedBodiesGnx.includes(w_gnx)) {
+        this._openedBodiesGnx.push(w_gnx); // add gnx
+    }
+    return new vscode.Disposable(() =&gt; {
+        const w_position = this._openedBodiesGnx.indexOf(w_gnx); // find and remove it
+        if (w_position &gt; -1) {
+            this._openedBodiesGnx.splice(w_position, 1);
+        }
+    });
+}
+
+</t>
+<t tx="felix.20200718040540.9">public fireDeleteExpiredGnx(p_gnxList: string[]): void {
+    p_gnxList.forEach(p_gnx =&gt; {
+        const w_uri: vscode.Uri = utils.strToLeoUri(p_gnx);
+        this._fireSoon({ uri: w_uri, type: vscode.FileChangeType.Deleted });
+    });
+}
+
+</t>
+<t tx="felix.20200718122313.1">def removeButton(self, p_package):
+    '''Removes an entry from the buttonsDict by index string'''
+    w_index = p_package['index']
+    w_dict = self.commander.theScriptingController.buttonsDict
+    w_key = None
+    for i_key in w_dict:
+        if(str(i_key) == w_index):
+            w_key = i_key
+    if w_key:
+        del(w_dict[w_key])  # delete object member
+    return self.outputPNode(self.commander.p)  # return selected node when done
+
+</t>
+<t tx="felix.20200718122351.1">def runByName(self, p_package):
+    pass
+
+    print("runByName for string:")
+
+    if "text" in p_package:
+        print(p_package['text'])
+    else:
+        print("no string given")
+
+    return self.outputPNode(self.commander.p)  # return selected node when done
+
+</t>
+<t tx="felix.20200718153505.1">import * as vscode from "vscode";
+import * as WebSocket from 'ws';
+import { Constants } from "./constants";
+import { LeoBridgePackage, LeoAction } from "./types";
+import { LeoIntegration } from "./leoIntegration";
+import { LeoAsync } from "./leoAsync";
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20200718153505.11">/**
+ * * Process data that came from the Leo process
+ * @param p_data given JSON data
+ */
+private _processAnswer(p_data: string): void {
+    const w_parsedData = this._tryParseJSON(p_data);
+    if (w_parsedData &amp;&amp; w_parsedData.id) {
+        this._resolveBridgeReady(w_parsedData);
+        this._callAction();
+    } else if (w_parsedData &amp;&amp; w_parsedData.async) {
+        // * Check for async messages such as log pane entries or other
+        this._asyncAction(w_parsedData);
+    } else {
+        // unprocessed/unknown python output
+        console.error("[leoBridge] Unprocessed or unknown JSON received: ", p_data);
+    }
+}
+
+</t>
+<t tx="felix.20200718153505.12">/**
+ * * Spawn a websocket
+ * @returns A promise for a LeoBridgePackage object containing only an 'id' member of 1 that will resolve when the 'leoBridge' is established
+ */
+public initLeoProcess(): Promise&lt;LeoBridgePackage&gt; {
+    this._websocket = new WebSocket(Constants.TCPIP_DEFAULT_PROTOCOL +
+        this._leoIntegration.config.connectionAddress +
+        ":" + this._leoIntegration.config.connectionPort);
+    // * Capture the python process output
+    this._websocket.onmessage = (p_event) =&gt; {
+        if (p_event.data) {
+            this._processAnswer(p_event.data.toString());
+        }
+    };
+    this._websocket.onerror = (p_event: WebSocket.ErrorEvent) =&gt; {
+        console.error(`Websocket error: ${p_event.message}`);
+    };
+    this._websocket.onclose = (p_event: WebSocket.CloseEvent) =&gt; {
+        // * Disconnected from server
+        console.log(`Websocket closed, code: ${p_event.code}`);
+        this._rejectAction(`Websocket closed, code: ${p_event.code}`);
+        // TODO : Implement a better connection error handling
+        if (this._leoIntegration.leoStates.leoBridgeReady) {
+            this._leoIntegration.cancelConnect(`Websocket closed, code: ${p_event.code}`);
+        }
+    };
+    // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
+    this._readyPromise = this.action("", "", { id: Constants.STARTING_PACKAGE_ID }, true);
+    return this._readyPromise; // This promise will resolve when the started python process starts
+}
+
+</t>
+<t tx="felix.20200718153505.13">/**
+ * * Send into the python process input
+ * @param p_data JSON Message string to be sent to leobridgeserver.py
+ */
+private _send(p_data: string): any {
+    if (this._readyPromise) {
+        this._readyPromise.then(() =&gt; { // using '.then' that was surely resolved already: to be buffered in case process isn't ready.
+            if (this._websocket &amp;&amp; this._websocket.OPEN) {
+                this._websocket.send(p_data); // p_message should be json
+            }
+        });
+    }
+}
+</t>
+<t tx="felix.20200718153505.2">/**
+ * * Handles communication with the leobridgeserver.py python script via websockets
+ */
+export class LeoBridge {
+
+    private _actionBusy: boolean = false; // A busy state meaning an action was started from the bottom but has yet to resolve
+
+    private _leoBridgeSerialId: number = 0; // TODO : When doing error checking, see if this should be Constants.STARTING_PACKAGE_ID or 0 or 2... ?
+    private _callStack: LeoAction[] = [];
+    private _readyPromise: Promise&lt;LeoBridgePackage&gt; | undefined;
+
+    // private _hasbin = require('hasbin'); // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
+    private _websocket: WebSocket | null = null;
+    private _leoAsync: LeoAsync;
+
+    constructor(
+        private _context: vscode.ExtensionContext,
+        private _leoIntegration: LeoIntegration
+    ) {
+        this._leoAsync = new LeoAsync(_context, _leoIntegration);
+    }
+
+    @others
+}
+</t>
+<t tx="felix.20200718153505.3">/**
+ * * Places an action on top of a stack, to be resolved from the bottom
+ * @param p_action Command string to be performed by Leo via leobridgeserver.py
+ * @param p_jsonParam Optional JSON parameter for the specified action
+ * @param p_deferredPayload Used to build this._readyPromise that resolves itself at startup
+ * @param p_preventCall Flag for special action used to build this._readyPromise that resolves itself at startup
+ * @returns a Promise that will contain the JSON package answered back by leobridgeserver.py
+ */
+public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise&lt;LeoBridgePackage&gt; {
+    return new Promise((resolve, reject) =&gt; {
+        const w_action: LeoAction = {
+            parameter: this._buildActionParameter(p_action, p_jsonParam),
+            deferredPayload: p_deferredPayload ? p_deferredPayload : undefined,
+            resolveFn: resolve,
+            rejectFn: reject
+        };
+
+        this._callStack.push(w_action);
+        if (!p_preventCall) {
+            this._callAction();
+        }
+    });
+}
+
+</t>
+<t tx="felix.20200718153505.4">/**
+ * * Actions invoked by Leo that can be called asynchronously at any time
+ * @param w_parsedData that contains an 'async' string member, that was parsed from a _websocket.onmessage package
+ */
+private _asyncAction(w_parsedData: any): void {
+    if (w_parsedData &amp;&amp; w_parsedData.async &amp;&amp; (typeof w_parsedData.async === "string")) {
+        switch (w_parsedData.async) {
+            case Constants.ASYNC_ACTIONS.ASYNC_LOG: {
+                this._leoAsync.log(w_parsedData.log);
+                break;
+            }
+            case Constants.ASYNC_ACTIONS.ASYNC_ASK: {
+                this._leoAsync.showAskModalDialog(w_parsedData);
+                break;
+            }
+            case Constants.ASYNC_ACTIONS.ASYNC_WARN: {
+                this._leoAsync.showWarnModalMessage(w_parsedData);
+                break;
+            }
+            case Constants.ASYNC_ACTIONS.ASYNC_INFO: {
+                this._leoAsync.showChangesDetectedInfoMessage(w_parsedData);
+                break;
+            }
+            case Constants.ASYNC_ACTIONS.ASYNC_INTERVAL: {
+                console.log("interval ", w_parsedData); // 'ping' interval for debugging
+                break;
+            }
+            default: {
+                console.error("[leoIntegration] Unknown async action ", w_parsedData);
+                break;
+            }
+        }
+    } else {
+        console.error("[leoIntegration] Unknown async command from leoBridge");
+    }
+}
+
+</t>
+<t tx="felix.20200718153505.5">/**
+ * * Build JSON string for action parameter to the leoBridge
+ * @param p_action Action string to be invoked as command by Leo in the leobridgeserver.py script
+ * @param p_jsonParam Optional JSON string to be added as a 'param' to the action sent to Leo
+ */
+private _buildActionParameter(p_action: string, p_jsonParam?: string): string {
+    return "{\"id\":" + (++this._leoBridgeSerialId) + // no quotes, serial id is a number, pre incremented
+        ", \"action\": \"" + p_action +  // action is string so surround with quotes
+        "\", \"param\":" + p_jsonParam +  // param is already json, no need for added quotes
+        "}";
+}
+
+</t>
+<t tx="felix.20200718153505.6">/**
+ * * Resolves promises with the answers from an action that was finished
+ * @param p_object Parsed data that was given as the answer by the Leo command that finished
+ */
+private _resolveBridgeReady(p_object: string) {
+    let w_bottomAction = this._callStack.shift();
+    if (w_bottomAction) {
+        if (w_bottomAction.deferredPayload) {
+            // Used when the action already has a return value ready but is also waiting for python's side
+            w_bottomAction.resolveFn(w_bottomAction.deferredPayload); // given back 'as is'
+        } else {
+            w_bottomAction.resolveFn(p_object);
+        }
+        this._actionBusy = false;
+    } else {
+        console.error("[leoBridge] Error stack empty");
+    }
+}
+
+</t>
+<t tx="felix.20200718153505.7">/**
+ * * Rejects an action from the bottom of the stack
+ * @param p_reason Given rejection 'reason'
+ */
+private _rejectAction(p_reason: string): void {
+    const w_bottomAction = this._callStack.shift();
+    if (w_bottomAction) {
+        w_bottomAction.rejectFn(p_reason);
+    }
+}
+
+</t>
+<t tx="felix.20200718153505.8">/**
+ * * Sends an action from the bottom of the stack
+ */
+private _callAction(): void {
+    if (this._callStack.length &amp;&amp; !this._actionBusy) {
+        this._actionBusy = true; // launch / resolve bottom one
+        const w_action = this._callStack[0];
+        this._send(w_action.parameter + "\n");
+    }
+}
+
+</t>
+<t tx="felix.20200718153505.9">/**
+ * * JSON.parse encased in a Try/Catch block
+ * @param p_jsonStr The JSON string to be parsed
+ * @returns The resulting object or 'false' if unsuccessful
+ */
+private _tryParseJSON(p_jsonStr: string): boolean | any {
+    try {
+        var w_object = JSON.parse(p_jsonStr);
+        // JSON.parse(null) returns null, and typeof null === "object", null is falsy, so this suffices:
+        if (w_object &amp;&amp; typeof w_object === "object") {
+            return w_object;
+        }
+    }
+    catch (e) {
+        console.error('[leoBridge] JSON was invalid: ' + p_jsonStr);
+    }
+    return false;
+}
+
+</t>
+<t tx="felix.20200718155251.1">/**
+ * * Busy state of the leoBridge's command stack
+ */
+public isBusy(): boolean {
+    return this._actionBusy || !!this._callStack.length;
+}
+
+</t>
+<t tx="felix.20200718162303.1">import * as vscode from "vscode";
+import { Constants } from "./constants";
+import { LeoButton, Icon } from "./types";
+import { LeoIntegration } from "./leoIntegration";
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20200718162303.2">/**
+ * * Leo @buttons tree view node item implementation, for usage in a TreeDataProvider.
+ */
+export class LeoButtonNode extends vscode.TreeItem {
+
+    // Context string that is checked in package.json with 'when' clauses
+    public contextValue: string;
+
+    private _isAdd: boolean;
+
+    constructor(
+        public button: LeoButton,
+        private _leoIntegration: LeoIntegration
+    ) {
+        super(button.name);
+        // Setup this instance (just differentiate 'script-button' for now)
+        this.command = {
+            command: Constants.COMMANDS.CLICK_BUTTON,
+            title: '',
+            arguments: [this]
+        };
+        this._isAdd = (this.button.index === "nullButtonWidget 1" &amp;&amp; this.button.name === "script-button");
+        this.contextValue = "leoButtonNode";
+    }
+
+    @others
+}
+</t>
+<t tx="felix.20200718162435.1">public get iconPath(): Icon {
+    return this._leoIntegration.buttonIcons[this._isAdd ? 1 : 0];
+}
+
+</t>
+<t tx="felix.20200718162442.1">public get id(): string {
+    // Add prefix and suffix salt to index prevent accidental duplicates
+    return "p" + this.button.index + "s" + this.button.name;
+}
+
+</t>
+<t tx="felix.20200718162452.1">public get tooltip(): string {
+    if (this._isAdd) {
+        return Constants.USER_MESSAGES.SCRIPT_BUTTON_TOOLTIP;
+    } else {
+        return this.button.name;
+    }
+}
+
+</t>
+<t tx="felix.20200718162459.1">public get description(): string | boolean {
+    if (this._isAdd) {
+        return Constants.USER_MESSAGES.SCRIPT_BUTTON;
+    } else {
+        return false;
+    }
+}
+</t>
+<t tx="felix.20200718164130.1">import * as vscode from "vscode";
+import { LeoIntegration } from "./leoIntegration";
+import { LeoButtonNode } from "./leoButtonNode";
+import { ProviderResult } from "vscode";
+import { Constants } from "./constants";
+import { LeoButton } from "./types";
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20200718164130.2">/**
+ * * '@buttons' shown as a list with this TreeDataProvider implementation
+ */
+export class LeoButtonsProvider implements vscode.TreeDataProvider&lt;LeoButtonNode&gt; {
+
+    private _onDidChangeTreeData: vscode.EventEmitter&lt;LeoButtonNode | undefined&gt; = new vscode.EventEmitter&lt;LeoButtonNode | undefined&gt;();
+
+    readonly onDidChangeTreeData: vscode.Event&lt;LeoButtonNode | undefined&gt; = this._onDidChangeTreeData.event;
+
+    constructor(private _leoIntegration: LeoIntegration) { }
+
+    @others
+}
+</t>
+<t tx="felix.20200718164130.3">/**
+ * * Refresh the whole outline
+ */
+public refreshTreeRoot(): void {
+    this._onDidChangeTreeData.fire(undefined);
+}
+
+</t>
+<t tx="felix.20200718164130.4">public getTreeItem(element: LeoButtonNode): Thenable&lt;LeoButtonNode&gt; | LeoButtonNode {
+    return element;
+}
+
+</t>
+<t tx="felix.20200718164130.5">public getChildren(element?: LeoButtonNode): Thenable&lt;LeoButtonNode[]&gt; {
+
+    // if called with element, or not ready, give back empty array as there won't be any children
+    if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
+
+        // call action to get get list, and convert to LeoButtonNode(s) array
+        return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BUTTONS).then(p_package =&gt; {
+            if (p_package &amp;&amp; p_package) {
+                const w_list: LeoButtonNode[] = [];
+                const w_buttons: LeoButton[] = p_package.buttons!;
+                if (w_buttons &amp;&amp; w_buttons.length) {
+                    w_buttons.forEach((i_button: LeoButton) =&gt; {
+                        w_list.push(new LeoButtonNode(i_button, this._leoIntegration));
+                    });
+                }
+                return Promise.resolve(w_list);
+            } else {
+                return Promise.resolve([]);
+            }
+        });
+    } else {
+        return Promise.resolve([]); // Defaults to an empty list of children
+    }
+}
+
+</t>
+<t tx="felix.20200718164130.6">public getParent(element: LeoButtonNode): ProviderResult&lt;LeoButtonNode&gt; | null {
+    return null; // A list, as such, entries are always child of root, so return null
+}
+
+</t>
+<t tx="felix.20200718164509.1">import * as vscode from "vscode";
+import { Constants } from "./constants";
+import { LeoDocument, Icon } from "./types";
+import * as utils from "./utils";
+import { LeoIntegration } from "./leoIntegration";
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20200718164509.2">/**
+ * * Opened Leo documents tree view node item implementation for usage in a TreeDataProvider
+ */
+export class LeoDocumentNode extends vscode.TreeItem {
+
+    // Context string is checked in package.json with 'when' clauses
+    public contextValue: string;
+
+    constructor(
+        public documentEntry: LeoDocument,
+        private _leoIntegration: LeoIntegration
+    ) {
+        super(documentEntry.name);
+        // Setup this instance
+        const w_isNamed: boolean = !!this.documentEntry.name;
+        this.label = w_isNamed ? utils.getFileFromPath(this.documentEntry.name) : Constants.UNTITLED_FILE_NAME;
+        this.tooltip = w_isNamed ? this.documentEntry.name : Constants.UNTITLED_FILE_NAME;
+        this.command = {
+            command: Constants.COMMANDS.SET_OPENED_FILE,
+            title: '',
+            arguments: [this.documentEntry.index]
+        };
+        // If this was created as a selected node, make sure it's selected as we may have opened/closed document
+        if (this.documentEntry.selected) {
+            this._leoIntegration.setDocumentSelection(this);
+            this.contextValue = w_isNamed ? Constants.CONTEXT_FLAGS.DOCUMENT_SELECTED_TITLED : Constants.CONTEXT_FLAGS.DOCUMENT_SELECTED_UNTITLED;
+        } else {
+            this.contextValue = w_isNamed ? Constants.CONTEXT_FLAGS.DOCUMENT_TITLED : Constants.CONTEXT_FLAGS.DOCUMENT_UNTITLED;
+        }
+    }
+
+    @others
+}
+</t>
+<t tx="felix.20200718164635.1">public get iconPath(): Icon {
+    return this._leoIntegration.documentIcons[this.documentEntry.changed ? 1 : 0];
+}
+
+</t>
+<t tx="felix.20200718164638.1">public get id(): string {
+    // Add prefix and suffix salt to numeric index prevent accidental duplicates
+    return "p" + this.documentEntry.index + "s" + this.documentEntry.name;
+}
+</t>
+<t tx="felix.20200718165108.1">import * as vscode from "vscode";
+import { LeoIntegration } from "./leoIntegration";
+import { LeoDocumentNode } from "./leoDocumentNode";
+import { ProviderResult } from "vscode";
+import { Constants } from "./constants";
+import { LeoDocument } from "./types";
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20200718165108.2">/**
+ * * Opened Leo documents shown as a list with this TreeDataProvider implementation
+ */
+export class LeoDocumentsProvider implements vscode.TreeDataProvider&lt;LeoDocumentNode&gt; {
+
+    private _onDidChangeTreeData: vscode.EventEmitter&lt;LeoDocumentNode | undefined&gt; = new vscode.EventEmitter&lt;LeoDocumentNode | undefined&gt;();
+
+    readonly onDidChangeTreeData: vscode.Event&lt;LeoDocumentNode | undefined&gt; = this._onDidChangeTreeData.event;
+
+    constructor(private _leoIntegration: LeoIntegration) { }
+
+    @others
+}
+</t>
+<t tx="felix.20200718165108.3">/**
+ * * Refresh the whole outline
+ */
+public refreshTreeRoot(): void {
+    this._onDidChangeTreeData.fire(undefined);
+}
+
+</t>
+<t tx="felix.20200718165108.4">public getTreeItem(element: LeoDocumentNode): Thenable&lt;LeoDocumentNode&gt; | LeoDocumentNode {
+    return element;
+}
+
+</t>
+<t tx="felix.20200718165108.5">public getChildren(element?: LeoDocumentNode): Thenable&lt;LeoDocumentNode[]&gt; {
+
+    // if called with element, or not ready, give back empty array as there won't be any children
+    if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
+
+        // call action to get get list, and convert to LeoDocumentNode(s) array
+        return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package =&gt; {
+            if (p_package &amp;&amp; p_package) {
+                const w_list: LeoDocumentNode[] = [];
+                const w_files: LeoDocument[] = p_package.openedFiles!.files;
+
+                let w_index: number = 0;
+
+                if (w_files &amp;&amp; w_files.length) {
+                    w_files.forEach((i_file: LeoDocument) =&gt; {
+                        w_list.push(new LeoDocumentNode(i_file, this._leoIntegration));
+                        w_index++;
+                    });
+                }
+
+                return Promise.resolve(w_list);
+            } else {
+                return Promise.resolve([]);
+            }
+        });
+    } else {
+        return Promise.resolve([]); // Defaults to an empty list of children
+    }
+}
+
+</t>
+<t tx="felix.20200718165108.6">public getParent(element: LeoDocumentNode): ProviderResult&lt;LeoDocumentNode&gt; | null {
+    return null; // A list, as such, entries are always child of root, so return null
+}
+</t>
+<t tx="felix.20200718165721.1"></t>
+<t tx="felix.20200718170429.1">import * as vscode from "vscode";
+import { Constants } from "./constants";
+import * as path from "path"; // TODO : Use this library to have reliable support for window-vs-linux file-paths
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20200718170429.2">/**
+ * * Handles opening of file browser when choosing which Leo file to open
+ */
+export class LeoFilesBrowser {
+
+    private _fileBrowserActive: boolean = false;
+
+    constructor(private _context: vscode.ExtensionContext) { }
+
+    @others
+}
+</t>
+<t tx="felix.20200718170429.3">/**
+ * * Find a folder to propose when opening the browse-for-leo-file chooser
+ * @returns An Uri for path to a folder for initial opening
+ */
+private _getBestOpenFolderUri(): vscode.Uri {
+    let w_openedFileEnvUri: vscode.Uri | boolean = false;
+    let w_activeUri: vscode.Uri | undefined = undefined;
+
+    if (vscode.workspace.workspaceFolders &amp;&amp; vscode.workspace.workspaceFolders[0]) {
+        w_activeUri = vscode.workspace.workspaceFolders[0].uri;
+    }
+
+    if (w_activeUri) {
+        const w_defaultFolder = vscode.workspace.getWorkspaceFolder(w_activeUri);
+        if (w_defaultFolder) {
+            w_openedFileEnvUri = w_defaultFolder.uri; // Set as current opened document-path's folder
+        }
+    }
+    if (!w_openedFileEnvUri) {
+        w_openedFileEnvUri = vscode.Uri.file("~"); // TODO : set as home folder properly, this doesn't work
+        // ! EXAMPLE WITH os : const homedir = require('os').homedir();
+    }
+    return w_openedFileEnvUri;
+}
+
+</t>
+<t tx="felix.20200718170429.4">/**
+ * * Open a file browser and let the user choose a Leo file or cancel the operation
+ * @param p_saveAsFlag Optional, a flag that will ask for a 'save' path+filename.
+ * @returns a promise resolving to a chosen path string, or rejected with an empty string if cancelled
+ */
+public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
+    if (this._fileBrowserActive) {
+        return Promise.resolve("");
+    }
+    this._fileBrowserActive = true;
+    return new Promise((resolve, reject) =&gt; {
+        const w_filters: { [name: string]: string[] } = {};
+        w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [Constants.FILE_EXTENSION];
+
+        if (p_saveAsFlag) {
+            // Choose file
+            vscode.window.showSaveDialog({
+                saveLabel: "Save Leo File",
+                defaultUri: this._getBestOpenFolderUri(),
+                filters: { 'Leo File': ['leo'] }
+            })
+                .then(p_chosenLeoFile =&gt; {
+                    this._fileBrowserActive = false;
+                    if (p_chosenLeoFile) {
+                        // single string
+                        resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                    } else {
+                        reject("");
+                    }
+                });
+        } else {
+            vscode.window
+                .showOpenDialog({
+                    canSelectMany: false,
+                    defaultUri: this._getBestOpenFolderUri(),
+                    filters: w_filters
+                })
+                .then(p_chosenLeoFile =&gt; {
+                    this._fileBrowserActive = false;
+                    if (p_chosenLeoFile) {
+                        // array instead of single string
+                        resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                    } else {
+                        reject("");
+                    }
+                });
+        }
+    });
+}
+</t>
+<t tx="felix.20200718170712.1">import * as vscode from "vscode";
+import { Constants } from "./constants";
+import { LeoIntegration } from "./leoIntegration";
+import { ArchivedPosition, Icon } from "./types"; // * TO HELP DEBUG
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20200718170712.2">/**
+ * * Implementation of tree nodes for usage in a TreeDataProvider
+ */
+export class LeoNode extends vscode.TreeItem {
+
+    public cursorSelection: any; // TODO : #39 @boltex Keep body's cursor and selection position from vscode to get it back
+    public contextValue: string; // * Context string is checked in package.json with 'when' clauses
+
+    public isRoot: boolean = false; // * for hoist/dehoist context flags purposes
+
+    constructor(
+        public label: string, // Node headline
+        public gnx: string,
+        public collapsibleState: vscode.TreeItemCollapsibleState, // Computed in receiver/creator
+        public apJson: string, // Key for leo/python side of things
+        public childIndex: number, // For debugging purposes
+        public cloned: boolean,
+        public dirty: boolean,
+        public marked: boolean,
+        public atFile: boolean,
+        public hasBody: boolean,
+        public u: any,
+        private _leoIntegration: LeoIntegration,
+        private _id: string
+    ) {
+        super(label, collapsibleState);
+        this.contextValue = this._getNodeContextValue();
+        this.command = {
+            command: Constants.COMMANDS.SELECT_NODE,
+            title: '',
+            arguments: [this]
+        };
+    }
+
+    // * TO HELP DEBUG
+
+    // get description(): string {
+    //     // * some smaller grayed-out text accompanying the main label
+    //     const w_ap: ArchivedPosition = JSON.parse(this.apJson);
+    //     return "child:" + w_ap.childIndex + " lvl:" + w_ap.level + " gnx:" + w_ap.gnx;
+    // }
+
+    // get description(): string {
+    //     // * some smaller grayed-out text accompanying the main label
+    //     return "id:" + this.id;
+    // }
+
+    @others
+}
+</t>
+<t tx="felix.20200718170712.3">/**
+ * * Sets this node properties (dirty, marked, etc.) by copying from a given node.
+ * * This is needed by the outline provider when refreshing a single node.
+ * @param p_node Node to copy properties from.
+ * @returns Node itself with the new properties applied
+ */
+public copyProperties(p_node: LeoNode): LeoNode {
+    this.label = p_node.label;
+    this.gnx = p_node.gnx;
+    this.collapsibleState = p_node.collapsibleState;
+    this.apJson = p_node.apJson;
+    this.childIndex = p_node.childIndex;
+    this.cloned = p_node.cloned;
+    this.dirty = p_node.dirty;
+    this.marked = p_node.marked;
+    this.atFile = p_node.atFile;
+    this.hasBody = p_node.hasBody;
+    this.isRoot = p_node.isRoot;
+    this.contextValue = this._getNodeContextValue();
+    return this;
+}
+
+</t>
+<t tx="felix.20200718170712.4">/**
+ * * Set this node as the root for hoist/dehoist context flags purposes
+ */
+public setRoot(): void {
+    this.isRoot = true;
+    this._leoIntegration.leoStates.leoRoot = true; // Set this special global 'selected node' flag
+    this.contextValue = this._getNodeContextValue();
+}
+
+</t>
+<t tx="felix.20200718170712.5">private _getNodeContextValue(): string {
+    // Start it with 'leoNodeMarked' or 'leoNodeUnmarked'
+    let w_contextValue = Constants.CONTEXT_FLAGS.NODE_UNMARKED;
+    if (this.marked) {
+        w_contextValue = Constants.CONTEXT_FLAGS.NODE_MARKED;
+    }
+    // then append 'leoNodeAtFile' to existing if needed
+    if (this.atFile) {
+        w_contextValue += Constants.CONTEXT_FLAGS.NODE_ATFILE;
+    }
+    // then append 'leoNodeCloned' to existing if needed
+    if (this.cloned) {
+        w_contextValue += Constants.CONTEXT_FLAGS.NODE_CLONED;
+    }
+    // and finally, check for 'root' too
+    if (this.isRoot) {
+        w_contextValue += Constants.CONTEXT_FLAGS.NODE_ROOT;
+    } else {
+        w_contextValue += Constants.CONTEXT_FLAGS.NODE_NOT_ROOT;
+    }
+    return w_contextValue;
+}
+
+</t>
+<t tx="felix.20200718170712.6">public getCursorSelection(): any {
+    return this.cursorSelection;
+}
+
+</t>
+<t tx="felix.20200718170712.7">public setCursorSelection(p_cursorSelection: any): void {
+    this.cursorSelection = p_cursorSelection;
+}
+
+</t>
+<t tx="felix.20200718171837.1">public get description(): string {
+    // * some smaller grayed-out text accompanying the main label
+    if (this.u) {
+        return "\u{1F4CE} (" + Object.keys(this.u).length + ")";
+    } else {
+        return ""; // Falsy will not be shown
+    }
+}
+
+</t>
+<t tx="felix.20200718171849.1">public get tooltip(): string {
+    if (this.u) {
+        //  "\ntotal keys is :" + Object.keys(this.u).length
+        return this.label + "\n" +
+            JSON.stringify(this.u, undefined, 2);
+    } else {
+        return this.label; // * Whole headline as tooltip
+    }
+}
+</t>
+<t tx="felix.20200718171854.1">// Optional id for the tree item that has to be unique across tree.
+// The id is used to preserve the selection and expansion state of the tree item.
+// If not provided, an id is generated using the tree item's label.
+// Note that when labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
+public get id(): string { return this._id; }
+
+</t>
+<t tx="felix.20200718171904.1">public get iconPath(): Icon {
+    // From Leo's leoNodes.py computeIcon function
+    // 1=has Body, 2=marked, 4=cloned, 8=dirty
+    let w_dirty: boolean = this._leoIntegration.config.invertNodeContrast ? !this.dirty : this.dirty;
+    let w_icon: number =
+        (+w_dirty &lt;&lt; 3) |
+        (+this.cloned &lt;&lt; 2) |
+        (+this.marked &lt;&lt; 1) |
+        +this.hasBody;
+    return this._leoIntegration.nodeIcons[w_icon];
+}
+
+</t>
+<t tx="felix.20200718180428.1">import * as vscode from "vscode";
+import { LeoIntegration } from "./leoIntegration";
+import { LeoNode } from "./leoNode";
+import { ProviderResult } from "vscode";
+import { Constants } from "./constants";
+import { LeoBridgePackage } from "./types";
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20200718180428.2">/**
+ * * Leo outline implemented as a tree view with this TreeDataProvider implementation
+ */
+export class LeoOutlineProvider implements vscode.TreeDataProvider&lt;LeoNode&gt; {
+
+    private _onDidChangeTreeData: vscode.EventEmitter&lt;LeoNode | undefined&gt; = new vscode.EventEmitter&lt;LeoNode | undefined&gt;();
+
+    readonly onDidChangeTreeData: vscode.Event&lt;LeoNode | undefined&gt; = this._onDidChangeTreeData.event;
+
+    // used in leoOutline.ts to check if getTreeItem(element: LeoNode) should fetch from Leo, or return as-is
+    private _refreshSingleNodeFlag: boolean = false;
+
+    constructor(private _leoIntegration: LeoIntegration) { }
+
+    @others
+}
+</t>
+<t tx="felix.20200718180428.3">/**
+ * * Refresh a single node
+ * @param p_node The outline's node itself as a LeoNode instance
+ */
+public refreshTreeNode(p_node: LeoNode): void {
+    // We want to do a real refresh, not just giving back the same we've got as input in getTreeItem
+    this._refreshSingleNodeFlag = true;
+    this._onDidChangeTreeData.fire(p_node);
+}
+
+</t>
+<t tx="felix.20200718180428.4">/**
+ * * Refresh the whole outline
+ */
+public refreshTreeRoot(): void {
+    this._onDidChangeTreeData.fire(undefined);
+}
+
+</t>
+<t tx="felix.20200718180428.5">public getTreeItem(element: LeoNode): Thenable&lt;LeoNode&gt; | LeoNode {
+    if (this._refreshSingleNodeFlag) {
+        this._refreshSingleNodeFlag = false;
+        return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PNODE, element.apJson)
+            .then((p_package: LeoBridgePackage) =&gt; {
+                const w_node = this._leoIntegration.apToLeoNode(p_package.node!, true, element);
+                return element.copyProperties(w_node);
+            });
+    } else {
+        return element;
+    }
+}
+
+</t>
+<t tx="felix.20200718180428.6">public getChildren(element?: LeoNode): Thenable&lt;LeoNode[]&gt; {
+    if (!this._leoIntegration.leoStates.fileOpenedReady) {
+        return Promise.resolve([]); // Defaults to an empty list of children
+    }
+    if (element) {
+        return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element.apJson)
+            .then((p_package: LeoBridgePackage) =&gt; {
+                return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+            });
+    } else {
+        return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, "null")
+            .then((p_package: LeoBridgePackage) =&gt; {
+                const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+                if (w_nodes &amp;&amp; w_nodes.length === 1) {
+                    w_nodes[0].setRoot();
+                }
+                return w_nodes;
+            });
+    }
+}
+
+</t>
+<t tx="felix.20200718180428.7">public getParent(element: LeoNode): ProviderResult&lt;LeoNode&gt; | null {
+    // * This method should be implemented in order to access reveal API.
+    // ! But it should NOT have to be called because we will only try to 'select' already revealed nodes
+
+    // ! Might be called if nodes are revealed while in vscode's refresh process
+    // ! Parent asked for this way will go up till root and effectively refresh whole tree.
+    // console.log('ERROR! GET PARENT CALLED! on: ', element.label);
+
+    if (this._leoIntegration.leoStates.fileOpenedReady) {
+        return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PARENT, element ? element.apJson : "null")
+            .then((p_package: LeoBridgePackage) =&gt; {
+                if (p_package.node === null) {
+                    return null;
+                } else {
+                    return this._leoIntegration.apToLeoNode(p_package.node!);
+                }
+            });
+    } else {
+        return null; // Default gives no parent
+    }
+}
+</t>
+<t tx="felix.20200718185403.1">import * as vscode from "vscode";
+import * as utils from "./utils";
+import { Constants } from "./constants";
+import { LeoIntegration } from "./leoIntegration";
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20200718185403.2">/**
+ * * Statusbar indicator controller object
+ */
+export class LeoStatusBar {
+
+    private _leoStatusBarItem: vscode.StatusBarItem;
+    private _statusbarNormalColor = new vscode.ThemeColor(Constants.GUI.THEME_STATUSBAR);  // "statusBar.foreground"
+    private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
+    private _string: string = ""; // Use this string with indicator, using this will replace the default from config
+
+    // * Represents having focus on a leo tree, body or document panel to enable leo keybindings
+    private _statusBarFlag: boolean = false;
+    set statusBarFlag(p_value: boolean) {
+        this._statusBarFlag = p_value;
+    }
+    get statusBarFlag(): boolean {
+        return this._statusBarFlag;
+    }
+
+    constructor(
+        private _context: vscode.ExtensionContext,
+        private _leoIntegration: LeoIntegration
+    ) {
+        this._leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
+        this._leoStatusBarItem.color = this._leoIntegration.config.statusBarColor;
+
+        // this._leoStatusBarItem.command = Constants.COMMANDS.SWITCH_FILE;
+        this._leoStatusBarItem.command = "leointeg.test"; // just call test function for now to help debugging
+        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this._leoIntegration.config.statusBarString;
+        this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
+        _context.subscriptions.push(this._leoStatusBarItem);
+        this._leoStatusBarItem.hide();
+    }
+
+    @others
+}
+</t>
+<t tx="felix.20200718185403.3">/**
+ * * Makes the statusbar indicator visible
+ */
+public show(): void {
+    this._leoStatusBarItem.show();
+}
+
+</t>
+<t tx="felix.20200718185403.4">/**
+ * * Hides the statusbar indicator
+ */
+public hide(): void {
+    this._leoStatusBarItem.hide();
+}
+
+</t>
+<t tx="felix.20200718185403.5">/**
+ * * Sets string to replace default from config &amp; refresh it
+ */
+public setString(p_string: string): void {
+    this._string = p_string;
+    this._updateLeoObjectIndicator();
+}
+
+</t>
+<t tx="felix.20200718185403.6">/**
+ * * Updates the status bar visual indicator visual indicator with optional debouncing delay
+ * @param p_state True/False flag for On or Off status
+ * @param p_debounceDelay Optional, in milliseconds
+ */
+public update(p_state: boolean, p_debounceDelay?: number, p_forced?: boolean): void {
+    if (p_forced || (p_state !== this.statusBarFlag)) {
+        this.statusBarFlag = p_state;
+        if (p_debounceDelay) {
+            this._updateLeoObjectIndicatorDebounced(p_debounceDelay);
+        } else {
+            this._updateLeoObjectIndicator();
+        }
+    }
+}
+
+</t>
+<t tx="felix.20200718185403.7">/**
+ * * Updates the status bar visual indicator flag in a debounced manner
+ * @param p_delay number of milliseconds
+ */
+private _updateLeoObjectIndicatorDebounced(p_delay: number): void {
+    if (this._updateStatusBarTimeout) {
+        clearTimeout(this._updateStatusBarTimeout);
+    }
+    this._updateStatusBarTimeout = setTimeout(() =&gt; {
+        this._updateLeoObjectIndicator();
+    }, p_delay);
+}
+
+</t>
+<t tx="felix.20200718185403.8">/**
+ * * Updates the status bar visual indicator flag directly
+ */
+private _updateLeoObjectIndicator(): void {
+    // Can be called directly, so clear timer if any
+    if (this._updateStatusBarTimeout) { 
+        clearTimeout(this._updateStatusBarTimeout);
+    }
+    
+    utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
+    
+    this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
+        (this._string ? this._string : this._leoIntegration.config.statusBarString) + " " +
+        (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
+        
+    // Also check in constructor for statusBar properties (the createStatusBarItem call itself)
+    if (this.statusBarFlag &amp;&amp; this._leoIntegration.leoStates.fileOpenedReady) { 
+        this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
+        this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
+    } else {
+        this._leoStatusBarItem.color = this._statusbarNormalColor;
+        this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_OFF;
+    }
+}
+</t>
+<t tx="felix.20200718191946.1">import * as os from 'os';
+import * as child from 'child_process';
+import * as path from "path"; // TODO : Use this library to have reliable support for window-vs-linux file-paths
+import * as vscode from "vscode";
+import * as utils from "./utils";
+import { Constants } from "./constants";
+import { LeoIntegration } from './leoIntegration';
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20200718191946.2">/**
+ * * Provides simple automatic leo bridge server startup
+ */
+export class ServerService {
+    // TODO : See #10 @boltex Problem starting the leo-bridge server automatically with anaconda/miniconda on windows
+    // See https://github.com/yhirose/vscode-filtertext/blob/master/src/extension.ts#L196
+
+    private _platform: string;
+    private _isWin32: boolean;
+
+    /**
+     * * Leo Bridge Server Process
+     */
+    private _serverProcess: child.ChildProcess | undefined;
+
+    private _resolvePromise: ((value?: unknown) =&gt; void) | undefined;
+    private _rejectPromise: ((reason?: any) =&gt; void) | undefined;
+
+    private _isStarted: boolean = false;
+
+    constructor(
+        private _context: vscode.ExtensionContext,
+        private _leoIntegration: LeoIntegration
+    ) {
+        this._platform = os.platform();
+        this._isWin32 = this._platform === "win32";
+    }
+
+    @others
+}
+</t>
+<t tx="felix.20200718191946.3">/**
+ * * Splits the received data into lines and parses output to detect server start event
+ * * Otherwise just outputs lines to the terminal Output
+ * @param p_data Data object (not pure string)
+ */
+private _gotTerminalData(p_data: string): void {
+    p_data.toString().split("\n").forEach(p_line =&gt; {
+        p_line = p_line.trim();
+        if (p_line) { // * std out process line by line: json shouldn't have line breaks
+            if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
+                if (this._resolvePromise &amp;&amp; !this._isStarted) {
+                    this._isStarted = true;
+                    this._resolvePromise(p_line); // * Server confirmed started
+                }
+            }
+            this._leoIntegration.addTerminalPaneEntry(p_line); // Output message anyways
+        }
+    });
+}
+
+</t>
+<t tx="felix.20200718191946.4">/**
+ * * Get command from settings or best command for the current OS
+ * @param p_leoPythonCommand String command to start python on this computer
+ * @returns A promise that resolves when the server is started, or that is rejected in case of problem while starting
+ */
+public startServer(p_leoPythonCommand: string): Promise&lt;any&gt; {
+    let w_pythonPath = "";
+    this._leoIntegration.showTerminalPane();
+    const w_serverScriptPath = this._context.extensionPath + Constants.SERVER_PATH;
+    if (p_leoPythonCommand &amp;&amp; p_leoPythonCommand.length) {
+        // Start by running command (see executeCommand for multiple useful snippets)
+        w_pythonPath = p_leoPythonCommand; // Set path
+        this._leoIntegration.addTerminalPaneEntry('Starting server with command: ' + p_leoPythonCommand);
+    } else {
+        w_pythonPath = Constants.DEFAULT_PYTHON;
+        if (this._isWin32) {
+            w_pythonPath = Constants.WIN32_PYTHON;
+        }
+        this._leoIntegration.addTerminalPaneEntry('Starting server with command : ' +
+            w_pythonPath + ((this._isWin32 &amp;&amp; w_pythonPath === "py") ? " -3 " : "") +
+            " " + w_serverScriptPath);
+    }
+
+    const w_serverStartPromise = new Promise((p_resolve, w_reject) =&gt; {
+        // * Spawn a python child process for a leoBridge server
+        this._resolvePromise = p_resolve;
+        this._rejectPromise = w_reject;
+    });
+
+    let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
+
+    if (this._isWin32 &amp;&amp; w_pythonPath === "py") {
+        w_args.push("-3");
+    }
+    w_args.push(w_serverScriptPath);
+    this._serverProcess = child.spawn(w_pythonPath, w_args);
+
+    if (this._serverProcess &amp;&amp; this._serverProcess.stdout) {
+        // * Capture the python process output
+        this._serverProcess.stdout.on("data", (p_data: string) =&gt; {
+            this._gotTerminalData(p_data);
+        });
+    } else {
+        console.error("No stdout");
+    }
+    if (this._serverProcess &amp;&amp; this._serverProcess.stderr) {
+        // * Capture other python process outputs
+        this._serverProcess.stderr.on("data", (p_data: string) =&gt; {
+            console.log(`stderr: ${p_data}`);
+            this._isStarted = false;
+            utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+            this._serverProcess = undefined;
+            if (this._rejectPromise) {
+                this._rejectPromise(`stderr: ${p_data}`);
+            }
+        });
+    } else {
+        console.error("No stderr");
+    }
+    if (this._serverProcess) {
+        this._serverProcess!.on("close", (p_code: any) =&gt; {
+            console.log(`leoBridge exited with code ${p_code}`);
+            this._isStarted = false;
+            utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+            this._serverProcess = undefined;
+            if (this._rejectPromise) {
+                this._rejectPromise(`leoBridge exited with code ${p_code}`);
+            }
+        });
+    }
+
+    return w_serverStartPromise;
+}
+</t>
+<t tx="felix.20200718192351.1">import * as vscode from "vscode";
+import * as utils from "./utils";
+import { Constants } from "./constants";
+import { LeoIntegration } from "./leoIntegration";
+import { LeoNode } from "./leoNode";
+import { LeoPackageStates } from "./types";
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20200718192411.1">/**
+ * * Holds state flags used to restrict command and icon availability
+ */
+export class LeoStates {
+
+    @others
+}
+</t>
+<t tx="felix.20200718192411.2">public setSelectedNodeFlags(p_node: LeoNode): void {
+    this.leoRoot = false; // * RESET the root flag : It is set by vscode instead right after getting list of children for root of outline
+    this.leoMarked = p_node.marked;
+    this.leoCloned = p_node.cloned;
+    this.leoDirty = p_node.dirty;
+    this.leoEmpty = !p_node.hasBody;
+    this.leoChild = !(p_node.collapsibleState === vscode.TreeItemCollapsibleState.None);
+    this.leoAtFile = p_node.atFile;
+}
+
+</t>
+<t tx="felix.20200718192411.3">public setLeoStateFlags(p_states: LeoPackageStates): void {
+    this.leoChanged = p_states.changed;
+    this.leoCanUndo = p_states.canUndo;
+    this.leoCanRedo = p_states.canRedo;
+    this.leoCanDemote = p_states.canDemote;
+    this.leoCanPromote = p_states.canPromote;
+    this.leoCanDehoist = p_states.canDehoist;
+}
+</t>
+<t tx="felix.20200718193219.1">// * Connected to a Leo bridge server
+private _leoBridgeReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.BRIDGE_READY
+get leoBridgeReady(): boolean {
+    return this._leoBridgeReady;
+}
+set leoBridgeReady(p_value: boolean) {
+    this._leoBridgeReady = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, p_value);
+}
+
+</t>
+<t tx="felix.20200718193222.1">// * A Leo file is opened
+private _fileOpenedReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.TREE_OPENED
+get fileOpenedReady(): boolean {
+    return this._fileOpenedReady;
+}
+set fileOpenedReady(p_value: boolean) {
+    this._fileOpenedReady = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, p_value);
+    this._leoIntegration.setTreeViewTitle(
+        p_value ? Constants.GUI.TREEVIEW_TITLE : Constants.GUI.TREEVIEW_TITLE_INTEGRATION
+    );
+}
+
+</t>
+<t tx="felix.20200718193226.1">// * Currently opened Leo file path and name, empty string if new unsaved file.
+private _leoOpenedFileName: string = "";
+get leoOpenedFileName(): string {
+    return this._leoOpenedFileName;
+}
+set leoOpenedFileName(p_name: string) {
+    if (p_name &amp;&amp; p_name.length) {
+        this._leoOpenedFileName = p_name;
+        utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, true);
+    } else {
+        this._leoOpenedFileName = "";
+        utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, false);
+    }
+}
+
+</t>
+<t tx="felix.20200718193230.1">// * 'states' flags for currently opened tree view
+private _leoChanged: boolean = false;
+get leoChanged(): boolean {
+    return this._leoChanged;
+}
+set leoChanged(p_value: boolean) {
+    this._leoChanged = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.LEO_CHANGED, p_value);
+}
+
+</t>
+<t tx="felix.20200718193233.1">private _leoCanUndo: boolean = false;
+get leoCanUndo(): boolean {
+    return this._leoCanUndo;
+}
+set leoCanUndo(p_value: boolean) {
+    this._leoCanUndo = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_UNDO, p_value);
+}
+
+</t>
+<t tx="felix.20200718193235.1">private _leoCanRedo: boolean = false;
+get leoCanRedo(): boolean {
+    return this._leoCanRedo;
+}
+set leoCanRedo(p_value: boolean) {
+    this._leoCanRedo = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_REDO, p_value);
+}
+
+</t>
+<t tx="felix.20200718193238.1">private _leoCanDemote: boolean = false;
+get leoCanDemote(): boolean {
+    return this._leoCanDemote;
+}
+set leoCanDemote(p_value: boolean) {
+    this._leoCanDemote = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_DEMOTE, p_value);
+}
+
+</t>
+<t tx="felix.20200718193241.1">private _leoCanPromote: boolean = false;
+get leoCanPromote(): boolean {
+    return this._leoCanPromote;
+}
+set leoCanPromote(p_value: boolean) {
+    this._leoCanPromote = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_PROMOTE, p_value);
+}
+
+</t>
+<t tx="felix.20200718193244.1">private _leoCanDehoist: boolean = false;
+get leoCanDehoist(): boolean {
+    return this._leoCanDehoist;
+}
+set leoCanDehoist(p_value: boolean) {
+    this._leoCanDehoist = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_DEHOIST, p_value);
+}
+
+</t>
+<t tx="felix.20200718193338.1">// * 'states' flags about current selection, for visibility and commands availability
+private _leoMarked: boolean = false;
+get leoMarked(): boolean {
+    return this._leoMarked;
+}
+set leoMarked(p_value: boolean) {
+    this._leoMarked = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_value);
+}
+
+</t>
+<t tx="felix.20200718193341.1">private _leoCloned: boolean = false;
+get leoCloned(): boolean {
+    return this._leoCloned;
+}
+set leoCloned(p_value: boolean) {
+    this._leoCloned = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_CLONE, p_value);
+}
+
+</t>
+<t tx="felix.20200718193343.1">private _leoDirty: boolean = false;
+get leoDirty(): boolean {
+    return this._leoDirty;
+}
+set leoDirty(p_value: boolean) {
+    this._leoDirty = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_DIRTY, p_value);
+}
+
+</t>
+<t tx="felix.20200718193348.1">private _leoEmpty: boolean = false;
+get leoEmpty(): boolean {
+    return this._leoEmpty;
+}
+set leoEmpty(p_value: boolean) {
+    this._leoEmpty = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_EMPTY, p_value);
+}
+
+</t>
+<t tx="felix.20200718193350.1">private _leoChild: boolean = false;
+get leoChild(): boolean {
+    return this._leoChild;
+}
+set leoChild(p_value: boolean) {
+    this._leoChild = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_CHILD, p_value);
+}
+
+</t>
+<t tx="felix.20200718193353.1">private _leoAtFile: boolean = false;
+get leoAtFile(): boolean {
+    return this._leoAtFile;
+}
+set leoAtFile(p_value: boolean) {
+    this._leoAtFile = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_ATFILE, p_value);
+}
+
+</t>
+<t tx="felix.20200718193403.1">// * Special is-root 'state' flag about current selection, for visibility and commands availability
+private _leoRoot: boolean = false;
+get leoRoot(): boolean {
+    return this._leoRoot;
+}
+set leoRoot(p_value: boolean) {
+    this._leoRoot = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_ROOT, p_value);
+}
+
+</t>
+<t tx="felix.20200718193500.1">constructor(
+    private _context: vscode.ExtensionContext,
+    private _leoIntegration: LeoIntegration
+) { }
+
+</t>
+<t tx="felix.20200718193719.1"></t>
+<t tx="felix.20200718193731.1"></t>
+<t tx="felix.20200718194857.1">import * as vscode from "vscode";
+import { LeoNode } from "./leoNode";
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20200718194857.10">/**
+ * * Main JSON information package format used between leointeg and Leo
+ */
+export interface LeoBridgePackage {
+    id: number; // TODO : Could be used for error checking
+    // * Each of those top level member is an answer from a Constants.LEOBRIDGE command
+    allGnx?: string[];
+    bodyLength?: number;
+    bodyData?: string;
+    node?: ArchivedPosition;
+    nodes?: ArchivedPosition[];
+    states?: LeoPackageStates;
+    closed?: {
+        total: number;
+        filename?: string;
+        node?: ArchivedPosition;
+    },
+    opened?: {
+        total: number;
+        filename: string;
+        node: ArchivedPosition;
+    },
+    setOpened?: {
+        total: number;
+        filename: string;
+        node: ArchivedPosition
+    },
+    openedFiles?: {
+        index: number;
+        files: LeoDocument[]
+    }
+    buttons?: LeoButton[]
+    commands?: string[]
+}
+
+</t>
+<t tx="felix.20200718194857.11">/**
+ * * Leo document structure used in the 'Opened Leo Documents' tree view provider sent back by the server
+ */
+export interface LeoDocument {
+    name: string;
+    index: number;
+    changed: boolean;
+    selected: boolean;
+}
+
+</t>
+<t tx="felix.20200718194857.12">/**
+ * * Leo '@button' structure used in the '@buttons' tree view provider sent back by the server
+ */
+export interface LeoButton {
+    name: string;
+    index: string; // STRING KEY
+}
+
+</t>
+<t tx="felix.20200718194857.13">/**
+ * * Icon path names used in leoNodes for rendering in treeview
+ */
+export interface Icon {
+    light: string;
+    dark: string;
+}
+
+</t>
+<t tx="felix.20200718194857.14">/**
+ * * LeoBody virtual file time information object
+ */
+export interface BodyTimeInfo {
+    gnx: string;
+    ctime: number;
+    mtime: number;
+}
+
+</t>
+<t tx="felix.20200718194857.15">/**
+ * * Parameter structure used in the 'runSaveFileDialog' equivalent when asking user input
+ */
+export interface showSaveAsDialogParameters {
+    // See TODO in leoAsync.ts
+    "initialFile": string;
+    "title": string;
+    "message": string;
+    "filetypes": string[];
+    "defaultExtension": string;
+}
+
+</t>
+<t tx="felix.20200718194857.16">/**
+ * * Parameter structure used in the 'runAskYesNoDialog' equivalent when asking user input
+ */
+export interface runAskYesNoDialogParameters {
+    "ask": string;
+    "message": string;
+    "yes_all": boolean;
+    "no_all": boolean;
+}
+
+</t>
+<t tx="felix.20200718194857.17">/**
+ * * Parameter structure used in the 'runAskOkDialog' equivalent when showing a warning
+ */
+export interface runWarnMessageDialogParameters {
+    "warn": string;
+    "message": string;
+}
+
+</t>
+<t tx="felix.20200718194857.18">/**
+ * * Parameter structure for non-blocking info message about detected file changes
+ */
+export interface runInfoMessageDialogParameters {
+    "message": string;
+}
+
+</t>
+<t tx="felix.20200718194857.19">/**
+ * * Used in showAskModalDialog to get answer from user interaction
+ */
+export interface AskMessageItem extends vscode.MessageItem {
+    value: string;
+}
+
+</t>
+<t tx="felix.20200718194857.2">/**
+ * * Types of the various JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
+ */
+export interface ConfigMembers {
+    checkForChangeExternalFiles: string;
+    defaultReloadIgnore: string;
+    leoTreeBrowse: boolean;
+    treeKeepFocus: boolean;
+    treeKeepFocusWhenAside: boolean;
+    statusBarString: string;
+    statusBarColor: string;
+    treeInExplorer: boolean;
+    showOpenAside: boolean;
+    showEditOnNodes: boolean;
+    showArrowsOnNodes: boolean;
+    showAddOnNodes: boolean;
+    showMarkOnNodes: boolean;
+    showCloneOnNodes: boolean;
+    showCopyOnNodes: boolean;
+    invertNodeContrast: boolean;
+    leoPythonCommand: string;
+    startServerAutomatically: boolean;
+    connectToServerAutomatically: boolean;
+    connectionAddress: string;
+    connectionPort: number;
+}
+
+</t>
+<t tx="felix.20200718194857.20">/**
+ * * Used in switch Leo document to get answer from user interaction
+ */
+export interface ChooseDocumentItem extends vscode.QuickPickItem {
+    value: number;
+}
+</t>
+<t tx="felix.20200718194857.3">/**
+ * * When refreshing the outline and getting to Leo's selected node
+ */
+export const enum RevealType {
+    NoReveal = 0, // In apToLeoNode conversion, If if the global revealType is "NoReveal" and its the selected node, re-use the old id
+    Reveal,
+    RevealSelect,
+    RevealSelectFocus
+}
+
+</t>
+<t tx="felix.20200718194857.4">/**
+ * * User command's refresh-type for when coming back from executing the command
+ */
+export const enum RefreshType {
+    NoRefresh = 0, // only for 'copy-node' so far
+    RefreshTree,   // Refresh tree and show body pane if not already opened, but no need to refresh it
+    RefreshTreeAndBody // undo, redo, execute and others can also modify the current body, so refresh the filesystem gnx too
+}
+
+</t>
+<t tx="felix.20200718194857.5">/**
+ * * Command parameter for when 'stacking' front end commands
+ */
+export interface UserCommand {
+    action: string;
+    node?: LeoNode | undefined;  // We can START a stack with a targeted command
+    providedHeadline?: string | undefined;
+    refreshType: RefreshType;
+    fromOutline: boolean;
+}
+
+</t>
+<t tx="felix.20200718194857.6">/**
+ * * Actions to be performed by Leo, pushed and resolved as a stack
+ */
+export interface LeoAction {
+    parameter: string; // to pass along with action to python's side
+    deferredPayload?: any | undefined; // Used when the action already has a return value ready but is also waiting for python's side
+    resolveFn: (result: any) =&gt; void; // call that with an answer from python's (or other) side
+    rejectFn: (reason: any) =&gt; void; // call if problem is encountered
+}
+
+</t>
+<t tx="felix.20200718194857.7">/**
+ * * Simple 'string log entry' package format
+ */
+export interface LeoLogEntry {
+    log: string;
+}
+
+</t>
+<t tx="felix.20200718194857.8">/**
+ * * ArchivedPosition format package from Leo's leoflexx.py
+ */
+export interface ArchivedPosition {
+    hasBody: boolean;       // bool(p.b),
+    hasChildren: boolean;   // p.hasChildren()
+    childIndex: number;     // p._childIndex
+    cloned: boolean;        // p.isCloned()
+    dirty: boolean;         // p.isDirty()
+    expanded: boolean;      // p.isExpanded()
+    gnx: string;            // p.v.gnx
+    level: number;          // p.level()
+    headline: string;       // p.h
+    marked: boolean;        // p.isMarked()
+    atFile: boolean         // p.isAnyAtFileNode():
+    selected: boolean;      // p == commander.p
+    u?: any;               // User Attributes
+    stack: {
+        gnx: string;        // stack_v.gnx
+        childIndex: number; // stack_childIndex
+        headline: string;   // stack_v.h
+    }[];                    // for (stack_v, stack_childIndex) in p.stack]
+}
+
+</t>
+<t tx="felix.20200718194857.9">/**
+ * * Items in the package object gotten back from 'getStates'
+ */
+export interface LeoPackageStates {
+    changed: boolean;
+    canUndo: boolean;
+    canRedo: boolean;
+    canDemote: boolean;
+    canPromote: boolean;
+    canDehoist: boolean;
+}
+
+</t>
+<t tx="felix.20200718195558.1">import * as vscode from "vscode";
+import { Constants } from "./constants";
+import { Icon } from "./types";
+import { LeoNode } from "./leoNode";
+
+// String and other types/structures helper functions, along with common vscode API calls
+
+@language typescript
+@tabwidth -4
+@others
+
+</t>
+<t tx="felix.20200718195558.10">/**
+ * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
+ * @param p_str leo node gnx strings are used to build Uri
+ * @returns A vscode 'Uri' object
+ */
+export function strToLeoUri(p_str: string): vscode.Uri {
+    return vscode.Uri.parse(Constants.URI_SCHEME_HEADER + p_str);
+}
+
+</t>
+<t tx="felix.20200718195558.11">/**
+ * * Gets the gnx, (or another string like 'LEO BODY' or other), from a vscode.Uri object
+ * @param p_uri Source uri to extract from
+ * @returns The string source that was used to build this Uri
+ */
+export function leoUriToStr(p_uri: vscode.Uri): string {
+    // TODO : Use length of a constant or something other than 'fsPath'
+    // For now, just remove the '/' (or backslash on Windows) before the path string
+    return p_uri.fsPath.substr(1);
+}
+
+</t>
+<t tx="felix.20200718195558.12">/**
+ * * Sets a vscode context variable with the 'vscode.commands.executeCommand' and 'setContext' method
+ * @param p_key Key string name such as constants 'bridgeReady' or 'treeOpened', etc.
+ * @param p_value Value to be assigned to the p_key 'key'
+ * @returns A Thenable that was returned by the executeCommand call to set the context
+ */
+export function setContext(p_key: string, p_value: any): Thenable&lt;unknown&gt; {
+    return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, p_key, p_value);
+}
+</t>
+<t tx="felix.20200718195558.2">/**
+ * * Build a string for representing a number that's 2 digits wide, padding with a zero if needed
+ * @param p_number Between 0 and 99
+ * @returns a 2 digit wide string representation of the number, left padded with zeros as needed.
+ */
+export function padNumber2(p_number: number): string {
+    return ("0" + p_number).slice(-2);
+}
+
+</t>
+<t tx="felix.20200718195558.3">/**
+ * * Build all possible strings for node icons graphic file paths
+ * @param p_context Needed to get to absolute paths on the system
+ * @returns An array of the 16 vscode node icons used in this vscode expansion
+ */
+export function buildNodeIconPaths(p_context: vscode.ExtensionContext): Icon[] {
+    return Array(16).fill("").map((p_val, p_index) =&gt; {
+        return {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_PATH + padNumber2(p_index) + Constants.GUI.ICON_FILE_EXT),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_PATH + padNumber2(p_index) + Constants.GUI.ICON_FILE_EXT)
+        };
+    });
+}
+
+</t>
+<t tx="felix.20200718195558.4">/**
+ * * Build all possible strings for documents icons graphic file paths
+ * @param p_context Needed to get to absolute paths on the system
+ * @returns An array containing icons for the documents tree view
+ */
+export function buildDocumentIconPaths(p_context: vscode.ExtensionContext): Icon[] {
+    return [
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_DOCUMENT),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_DOCUMENT)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_DOCUMENT_DIRTY),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_DOCUMENT_DIRTY)
+        }
+    ];
+}
+
+</t>
+<t tx="felix.20200718195558.5">/**
+ * * Build all possible strings for buttons icons graphic file paths
+ * @param p_context Needed to get to absolute paths on the system
+ * @returns An array containing icons for the documents tree view
+ */
+export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[] {
+    return [
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_ADD),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_ADD)
+        }
+    ];
+}
+
+</t>
+<t tx="felix.20200718195558.6">/**
+ * * Builds and returns a JSON string with 'node' and 'text' members
+ * @param p_nodeJson Targeted tree node in the proper JSON format
+ * @param p_text Desired text sent along with node in the parameters of the action to be 'called'
+ * @returns JSON string suitable for being a parameter of a leoBridge action
+ */
+export function buildNodeAndTextJson(p_nodeJson: string, p_text: string): string {
+    return "{\"node\":" + p_nodeJson +
+        ", \"text\": " + JSON.stringify(p_text) +
+        "}";
+}
+
+</t>
+<t tx="felix.20200718195558.7">/**
+ * * Extracts the file name from a full path, such as "foo.bar" from "/abc/def/foo.bar"
+ * @param p_path Full path such as "/var/drop/foo/boo/moo.js" or "C:\Documents and Settings\img\recycled log.jpg"
+ * @returns file name string such as "moo.js" or "recycled log.jpg""
+ */
+export function getFileFromPath(p_path: string): string {
+    return p_path.replace(/^.*[\\\/]/, '');
+}
+
+</t>
+<t tx="felix.20200718195558.8">/**
+ * * Checks if a node would become dirty if it were to now have body content at all
+ * @param p_node LeoNode from vscode's outline
+ * @param p_newHasBody Flag to signify presence of body content, to be compared with its current state
+ * @returns True if it would change the icon with actual body content, false otherwise
+ */
+export function isIconChangedByEdit(p_node: LeoNode, p_newHasBody: boolean): boolean {
+    if (!p_node.dirty || (p_node.hasBody === !p_newHasBody)) {
+        return true;
+    }
+    return false;
+}
+
+</t>
+<t tx="felix.20200718195558.9">/**
+ * * Checks if a string is formatted as a valid rrggbb color code.
+ * @param p_hexString hexadecimal 6 digits string, without leading '0x'
+ * @returns True if the string is a valid representation of an hexadecimal 6 digit number
+ */
+export function isHexColor(p_hexString: string): boolean {
+    return typeof p_hexString === 'string'
+        &amp;&amp; p_hexString.length === 6
+        &amp;&amp; !isNaN(Number('0x' + p_hexString));
+}
+
 </t>
 </tnodes>
 </leo_file>
