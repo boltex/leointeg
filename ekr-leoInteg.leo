@@ -411,8 +411,9 @@
 </v>
 <v t="ekr.20200712080426.1"><vh>bc.git-diff</vh></v>
 <v t="felix.20191128001054.1"><vh>bc.Outline and Body Interaction</vh>
-<v t="felix.20200105173826.1"><vh>bc.outlineCommand</vh></v>
-<v t="ekr.20200717173745.1"><vh>bc.editFileCommand</vh></v>
+<v t="felix.20200105173826.1"><vh>bc.outlineCommand &amp; helper</vh>
+<v t="ekr.20200718063226.1"><vh>bc.get_commander_method</vh></v>
+</v>
 <v t="felix.20191231203711.1"><vh>bc.undo</vh></v>
 <v t="felix.20200103204811.1"><vh>bc.redo</vh></v>
 <v t="felix.20200301235235.1"><vh>bc.refreshFromDiskPNode</vh></v>
@@ -441,18 +442,22 @@
 <v t="felix.20191126232434.31"><vh>bc.p_to_ap</vh></v>
 </v>
 </v>
-<v t="felix.20191126232435.1"><vh>main</vh></v>
+<v t="felix.20191126232435.1"><vh>main (leobridgeserver.py, handles exceptions)</vh></v>
 </v>
 <v t="felix.20191126232434.4"></v>
-<v t="ekr.20200704142237.2"></v>
-<v t="ekr.20200717095046.1"><vh>----- git-diff command</vh></v>
+<v t="ekr.20200717095046.1"><vh>----- git-diff command</vh>
+<v t="ekr.20200717182938.1"><vh>Error log</vh></v>
+</v>
+<v t="ekr.20200718061920.1"><vh>----- changed &amp; new</vh>
 <v t="ekr.20200704142236.17"></v>
-<v t="ekr.20200717173745.1"></v>
-<v t="felix.20200105173826.1"></v>
 <v t="ekr.20200704142236.19"></v>
 <v t="ekr.20200717172800.1"></v>
 <v t="ekr.20200712080426.1"></v>
-<v t="ekr.20200717182938.1"><vh>Error log</vh></v>
+</v>
+<v t="ekr.20200704142237.2"></v>
+<v t="felix.20200105173826.1"></v>
+<v t="felix.20191126232435.1"></v>
+<v t="ekr.20200718091833.1"><vh>Crash</vh></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200624091412.1"></t>
@@ -4379,7 +4384,7 @@ import { LeoButton } from "./types";
 <t tx="ekr.20200712071756.1"></t>
 <t tx="ekr.20200712080426.1">def gitDiff(self, p_ap):
     '''Move a node LEFT, don't select it if possible'''
-    return self.editFileCommand("gitDiff", p_ap, True)
+    return self.outlineCommand("gitDiff", p_ap, True)
 </t>
 <t tx="ekr.20200712164636.1"></t>
 <t tx="ekr.20200712165519.1"></t>
@@ -4813,7 +4818,6 @@ const w_start = process.hrtime(); // For calculating total startup time duration
 const bridge = Constants.LEOBRIDGE;
 const cmd = Constants.COMMANDS;
 const leo = w_leoIntegration;
-// const leoNode = leo.nodeCommand;
 const prefix = Constants.NAME + ".";
 const noRefresh = RefreshType.NoRefresh;
 const refreshBoth = RefreshType.RefreshTreeAndBody;
@@ -4938,35 +4942,6 @@ showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
 [prefix + cmd.PAGE_DOWN, () =&gt; leo.nodeCommand(bridge.PAGE_DOWN, u, refreshBoth, true)],
 </t>
 <t tx="ekr.20200717172800.1">[prefix + cmd.GIT_DIFF, () =&gt; leo.nodeCommand(bridge.GIT_DIFF, u, refreshBoth, true)],
-</t>
-<t tx="ekr.20200717173745.1">def editFileCommand(self, p_command, p_ap, p_keepSelection=False):
-    '''
-    Generic call to an c.editFileCommands command (p_command) for specific p-node (p_ap),
-    with possibility of trying to preserve the current selection (p_keepSelection)
-    '''
-    if p_ap:
-        w_p = self.ap_to_p(p_ap)
-        self.g.trace(p_command, repr(w_p))
-        if w_p:
-            try:
-                w_func = getattr(self.commander.editFileCommands, p_command, None)
-                self.g.trace('w_func', w_func)
-            except Exception:
-                return self.outputError("Error in " + p_command + " Exception!")
-            if w_p == self.commander.p:
-                w_func()
-            else:
-                oldPosition = self.commander.p  # not same node, save position to possibly return to
-                self.commander.selectPosition(w_p)
-                w_func()
-                if p_keepSelection and self.commander.positionExists(oldPosition):
-                    self.commander.selectPosition(oldPosition)  # select if old position still valid
-            return self.outputPNode(self.commander.p)  # in both cases, return selected node
-        else:
-            return self.outputError("Error in " + p_command + " no w_p node found")  # default empty
-    else:
-        return self.outputError("Error in " + p_command + " no param p_ap")
-
 </t>
 <t tx="ekr.20200717174807.1">
 public static PUBLISHER: string = "boltex";
@@ -6339,7 +6314,7 @@ public static COMMANDS = {
         {
           "command": "leointeg.gitDiff",
           "when": "leoBridgeReady"
-        }, 
+        },
         {
           "command": "leointeg.startServer",
           "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; !leoServerStarted"
@@ -7450,7 +7425,8 @@ public static COMMANDS = {
     "hasbin": "^1.2.3",
     "ws": "^7.3.0"
   }
-}</t>
+}
+</t>
 <t tx="ekr.20200717182938.1">
 Exception has occurred: Error: ENOENT: no such file or directory, stat
 'c:\Users\edreamleo\AppData\Roaming\Code\logs\20200717T182451\exthost3\output_logging_20200717T182516'</t>
@@ -7607,7 +7583,68 @@ Exception has occurred: Error: ENOENT: no such file or directory, stat
         "description": "Connection port"
       }
     }
-  },</t>
+  },
+</t>
+<t tx="ekr.20200718061920.1"></t>
+<t tx="ekr.20200718063226.1">def get_commander_method(self, p_command):
+    """ Return the given method (p_command) in the Commands class or subcommanders."""
+    ### self.g.trace(p_command)
+    #
+    # First, try the commands class.
+    w_func = getattr(self.commander, p_command, None)
+    if w_func:
+        return w_func
+    #
+    # Search all subcommanders for the method.
+    table = (  # This table comes from c.initObjectIvars.
+        'abbrevCommands',
+        'bufferCommands',
+        'chapterCommands',
+        'controlCommands',
+        'convertCommands',
+        'debugCommands',
+        'editCommands',
+        'editFileCommands',
+        'evalController',
+        'gotoCommands',
+        'helpCommands',
+        'keyHandler',
+        'keyHandlerCommands',
+        'killBufferCommands',
+        'leoCommands',
+        'leoTestManager',
+        'macroCommands',
+        'miniBufferWidget',
+        'printingController',
+        'queryReplaceCommands',
+        'rectangleCommands',
+        'searchCommands',
+        'spellCommands',
+        'vimCommands',  # Not likely to be useful.
+    )
+    for ivar in table:
+        subcommander = getattr(self.commander, ivar, None)
+        if subcommander:
+            w_func = getattr(subcommander, p_command, None)
+            if w_func:
+                ### self.g.trace(f"Found c.{ivar}.{p_command}")
+                return w_func
+        ### else:
+            ### self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
+    return None
+</t>
+<t tx="ekr.20200718091833.1">
+Exception in leobridgeserver.py!
+Traceback (most recent call last):
+
+
+  File "C:\leo.repo\leointeg/leobridgeserver.py", line 1394, in leoBridgeServer
+    answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
+
+  File "C:\leo.repo\leointeg/leobridgeserver.py", line 1145, in getBody
+    w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
+
+AttributeError: 'NoneType' object has no attribute 'fileCommands'</t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
         return self.sendLeoBridgePackage("node", self.p_to_ap(p_node))  # Single node, singular
@@ -8064,7 +8101,7 @@ if __name__ == '__main__':
             async for w_message in websocket:
                 w_param = json.loads(w_message)
                 if w_param and w_param['action']:
-                    # print("action:" + w_param['action'])
+                    # print(f"action: {w_param['action']}", flush=True)
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
@@ -8075,8 +8112,14 @@ if __name__ == '__main__':
                     answer = "Error in processCommand"
                     print(answer, flush=True)
                 await websocket.send(answer)
-        except:
-            print("Caught Websocket Disconnect Event", flush=True)
+        except websockets.exceptions.ConnectionClosedError:
+            print("Websocket connection closed", flush=True)
+        except Exception:
+            print('Exception in leobridgeserver.py!', flush=True)
+            # Like g.es_exception()...
+            typ, val, tb = sys.exc_info()
+            for line in traceback.format_exception(typ, val, tb):
+                print(line, flush=True)
         finally:
             asyncio.get_event_loop().stop()
 
@@ -8202,13 +8245,14 @@ if __name__ == '__main__':
 <t tx="felix.20191128001054.1"></t>
 <t tx="felix.20191128002414.1">import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
-import asyncio
-import websockets
-import sys
-import getopt
-import time
-import json
 
+import asyncio
+import getopt
+import json
+import sys
+import time
+import traceback
+import websockets
 </t>
 <t tx="felix.20191128002417.1"># server defaults
 wsHost = "localhost"
@@ -8331,27 +8375,32 @@ wsPort = 32125
 </t>
 <t tx="felix.20200105173826.1">def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
     '''
-    Generic call to an outline operation (p_command) for specific p-node (p_ap),
-    with possibility of trying to preserve the current selection (p_keepSelection)
-    '''
-    if p_ap:
-        w_p = self.ap_to_p(p_ap)
-        if w_p:
-            w_func = getattr(self.commander, p_command)
-            if w_p == self.commander.p:
-                w_func()
-            else:
-                oldPosition = self.commander.p  # not same node, save position to possibly return to
-                self.commander.selectPosition(w_p)
-                w_func()
-                if p_keepSelection and self.commander.positionExists(oldPosition):
-                    self.commander.selectPosition(oldPosition)  # select if old position still valid
-            return self.outputPNode(self.commander.p)  # in both cases, return selected node
-        else:
-            return self.outputError("Error in " + p_command + " no w_p node found")  # default empty
-    else:
-        return self.outputError("Error in " + p_command + " no param p_ap")
+    Generic call to a method in Leo's Commands class or any subcommander class.
 
+    p_command: a method name (a string).
+    p-node: (p_ap), an archived position.
+    p_keepSelection: preserve the current selection.
+    '''
+    if not p_ap:
+        return self.outputError(f"Error in {p_command}: no param p_ap")
+    w_p = self.ap_to_p(p_ap)
+    if not w_p:
+        return self.outputError(f"Error in {p_command}: no w_p node found")
+    w_func = self.get_commander_method(p_command)
+    if not w_func:
+        return self.outputError(f"Error in {p_command}: no method found")
+    if w_p == self.commander.p:
+        w_func()
+    else:
+        oldPosition = self.commander.p
+        self.commander.selectPosition(w_p)
+        w_func()
+        if p_keepSelection and self.commander.positionExists(oldPosition):
+            self.commander.selectPosition(oldPosition)  
+    return self.outputPNode(self.commander.p)
+
+# Compatibility.
+leoCommand = outlineCommand
 </t>
 <t tx="felix.20200120224033.1">def insertNamedPNode(self, p_package):
     '''Insert a node at given node, set its headline, select it and finally return it'''
