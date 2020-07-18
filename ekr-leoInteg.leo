@@ -20,7 +20,7 @@
 <v t="ekr.20200713082426.1"><vh>To do</vh></v>
 <v t="ekr.20200717180557.1"><vh>@nosent package.json</vh></v>
 <v t="ekr.20200704142236.2"><vh>leointeg/src...</vh>
-<v t="ekr.20200704142236.3"><vh>@clean commandStack.ts</vh>
+<v t="ekr.20200704142236.3"><vh>@clean src/commandStack.ts</vh>
 <v t="ekr.20200704142236.4"><vh>class CommandStack</vh>
 <v t="ekr.20200704142236.5"><vh>CommandStack.size</vh></v>
 <v t="ekr.20200704142236.6"><vh>CommandStack.newSelection</vh></v>
@@ -30,14 +30,14 @@
 <v t="ekr.20200704142236.10"><vh>CommandStack._resolveResult</vh></v>
 </v>
 </v>
-<v t="ekr.20200704142236.11"><vh>@clean config.ts</vh>
+<v t="ekr.20200704142236.11"><vh>@clean src/config.ts</vh>
 <v t="ekr.20200704142236.12"><vh>class Config</vh>
 <v t="ekr.20200704142236.13"><vh>Config.getConfig</vh></v>
 <v t="ekr.20200704142236.14"><vh>Config.setLeoIntegSettings</vh></v>
 <v t="ekr.20200704142236.15"><vh>Config.buildFromSavedSettings</vh></v>
 </v>
 </v>
-<v t="ekr.20200704142236.16"><vh>@clean constants.ts</vh>
+<v t="ekr.20200704142236.16"><vh>@clean src/constants.ts</vh>
 <v t="ekr.20200704142236.17"><vh>class Constants</vh>
 <v t="ekr.20200717174807.1"><vh>&lt;&lt; general constants &gt;&gt;</vh></v>
 <v t="ekr.20200717174827.1"><vh>language id's</vh></v>
@@ -54,7 +54,7 @@
 <v t="ekr.20200717175521.1"><vh>commands</vh></v>
 </v>
 </v>
-<v t="ekr.20200704142236.18"><vh>@clean extension.ts</vh>
+<v t="ekr.20200704142236.18"><vh>@clean src/extension.ts</vh>
 <v t="ekr.20200704142236.19"><vh>activate</vh>
 <v t="ekr.20200717102947.1"><vh>&lt;&lt; define constants &gt;&gt;</vh></v>
 <v t="ekr.20200717102128.1"><vh> not implemented commands</vh></v>
@@ -83,7 +83,7 @@
 <v t="ekr.20200704142236.22"><vh>showWelcomeIfNewer</vh></v>
 <v t="ekr.20200704142236.23"><vh>getDurationMilliseconds</vh></v>
 </v>
-<v t="ekr.20200704142236.24"><vh>@clean leoAsync.ts</vh>
+<v t="ekr.20200704142236.24"><vh>@clean src/leoAsync.ts</vh>
 <v t="ekr.20200704142236.25"><vh>class LeoAsync</vh>
 <v t="ekr.20200704142236.26"><vh>LeoAsync.log</vh></v>
 <v t="ekr.20200704142236.27"><vh>LeoAsync.showSaveAsDialog</vh></v>
@@ -92,7 +92,7 @@
 <v t="ekr.20200704142236.30"><vh>LeoAsync.showChangesDetectedInfoMessage</vh></v>
 </v>
 </v>
-<v t="ekr.20200704142236.31"><vh>@clean leoBody.ts</vh>
+<v t="ekr.20200704142236.31"><vh>@clean src/leoBody.ts</vh>
 <v t="ekr.20200704142236.32"><vh>class LeoBodyProvider</vh>
 <v t="ekr.20200704142236.33"><vh>LeoBodyProvider.setBodyTime</vh></v>
 <v t="ekr.20200704142236.34"><vh>LeoBodyProvider.setRenameTime</vh></v>
@@ -112,7 +112,7 @@
 <v t="ekr.20200704142236.48"><vh>LeoBodyProvider._fireSoon</vh></v>
 </v>
 </v>
-<v t="ekr.20200704142236.49"><vh>@clean leoBridge.ts</vh>
+<v t="ekr.20200704142236.49"><vh>@clean src/leoBridge.ts</vh>
 <v t="ekr.20200704142236.50"><vh>class LeoBridge</vh>
 <v t="ekr.20200704142236.51"><vh>LeoBridge.action</vh></v>
 <v t="ekr.20200704142236.52"><vh>LeoBridge._asyncAction</vh></v>
@@ -128,10 +128,10 @@
 <v t="ekr.20200704142236.61"><vh>LeoBridge._send</vh></v>
 </v>
 </v>
-<v t="ekr.20200712055600.63"><vh>@clean leoButtonNode.ts</vh>
+<v t="ekr.20200712055600.63"><vh>@clean src/leoButtonNode.ts</vh>
 <v t="ekr.20200712055600.64"><vh>class LeoButtonNode</vh></v>
 </v>
-<v t="ekr.20200712055600.65"><vh>@clean leoButtons.ts</vh>
+<v t="ekr.20200712055600.65"><vh>@clean src/leoButtons.ts</vh>
 <v t="ekr.20200712055600.66"><vh>class LeoButtonsProvider</vh>
 <v t="ekr.20200712055600.67"><vh>LeoButtonsProvider.refreshTreeRoot</vh></v>
 <v t="ekr.20200712055600.68"><vh>LeoButtonsProvider.getTreeItem</vh></v>
@@ -139,10 +139,10 @@
 <v t="ekr.20200712055600.70"><vh>LeoButtonsProvider.getParent</vh></v>
 </v>
 </v>
-<v t="ekr.20200704142236.62"><vh>@clean leoDocumentNode.ts</vh>
+<v t="ekr.20200704142236.62"><vh>@clean src/leoDocumentNode.ts</vh>
 <v t="ekr.20200704142236.63"><vh>class LeoDocumentNode</vh></v>
 </v>
-<v t="ekr.20200704142236.64"><vh>@clean leoDocuments.ts</vh>
+<v t="ekr.20200704142236.64"><vh>@clean src/leoDocuments.ts</vh>
 <v t="ekr.20200704142236.65"><vh>class LeoDocumentsProvider</vh>
 <v t="ekr.20200704142236.66"><vh>LeoDocumentsProvider.refreshTreeRoot</vh></v>
 <v t="ekr.20200704142236.67"><vh>LeoDocumentsProvider.getTreeItem</vh></v>
@@ -150,13 +150,13 @@
 <v t="ekr.20200704142236.69"><vh>LeoDocumentsProvider.getParent</vh></v>
 </v>
 </v>
-<v t="ekr.20200704142236.70"><vh>@clean leoFileBrowser.ts</vh>
+<v t="ekr.20200704142236.70"><vh>@clean src/leoFileBrowser.ts</vh>
 <v t="ekr.20200704142236.71"><vh>class LeoFilesBrowser</vh>
 <v t="ekr.20200704142236.72"><vh>LeoFilesBrowser._getBestOpenFolderUri</vh></v>
 <v t="ekr.20200704142236.73"><vh>LeoFilesBrowser.getLeoFileUrl</vh></v>
 </v>
 </v>
-<v t="ekr.20200704142237.1"><vh>@clean leoIntegration.ts</vh>
+<v t="ekr.20200704142237.1"><vh>@clean src/leoIntegration.ts</vh>
 <v t="ekr.20200704142237.2"><vh>class LeoIntegration</vh>
 <v t="ekr.20200704142237.3"><vh>leo.constructor</vh></v>
 <v t="ekr.20200712165659.1"><vh>leo.Comm...</vh>
@@ -233,7 +233,7 @@
 </v>
 </v>
 </v>
-<v t="ekr.20200704142237.60"><vh>@clean leoNode.ts</vh>
+<v t="ekr.20200704142237.60"><vh>@clean src/leoNode.ts</vh>
 <v t="ekr.20200704142237.61"><vh>class LeoNode</vh>
 <v t="ekr.20200704142237.62"><vh>LeoNode.copyProperties</vh></v>
 <v t="ekr.20200704142237.63"><vh>LeoNode.setRoot</vh></v>
@@ -242,7 +242,7 @@
 <v t="ekr.20200704142237.65"><vh>LeoNode.setCursorSelection</vh></v>
 </v>
 </v>
-<v t="ekr.20200704142237.66"><vh>@clean leoOutline.ts</vh>
+<v t="ekr.20200704142237.66"><vh>@clean src/leoOutline.ts</vh>
 <v t="ekr.20200704142237.67"><vh>class LeoOutlineProvider</vh>
 <v t="ekr.20200704142237.68"><vh>LeoOutlineProvider.refreshTreeNode</vh></v>
 <v t="ekr.20200704142237.69"><vh>LeoOutlineProvider.refreshTreeRoot</vh></v>
@@ -251,7 +251,7 @@
 <v t="ekr.20200704142237.72"><vh>LeoOutlineProvider.getParent</vh></v>
 </v>
 </v>
-<v t="ekr.20200704142237.73"><vh>@clean leoStatusBar.ts</vh>
+<v t="ekr.20200704142237.73"><vh>@clean src/leoStatusBar.ts</vh>
 <v t="ekr.20200704142237.74"><vh>class LeoStatusBar</vh>
 <v t="ekr.20200704142237.75"><vh>LeoStatusBar.show</vh></v>
 <v t="ekr.20200704142237.76"><vh>LeoStatusBar.hide</vh></v>
@@ -261,13 +261,13 @@
 <v t="ekr.20200704142237.80"><vh>LeoStatusBar._updateLeoObjectIndicator</vh></v>
 </v>
 </v>
-<v t="ekr.20200704142237.81"><vh>@clean serverManager.ts</vh>
+<v t="ekr.20200704142237.81"><vh>@clean src/serverManager.ts</vh>
 <v t="ekr.20200704142237.82"><vh>class ServerService</vh>
 <v t="ekr.20200704142237.83"><vh>ServerService.constructor</vh></v>
 <v t="ekr.20200704142237.84"><vh>ServerService.startServer</vh></v>
 </v>
 </v>
-<v t="ekr.20200704142237.85"><vh>@clean types.d.ts</vh>
+<v t="ekr.20200704142237.85"><vh>@clean src/types.d.ts</vh>
 <v t="ekr.20200704142237.86"><vh>ConfigMembers</vh></v>
 <v t="ekr.20200704142237.87"><vh>RevealType</vh></v>
 <v t="ekr.20200704142237.88"><vh>RefreshType</vh></v>
@@ -288,7 +288,7 @@
 <v t="ekr.20200704142237.101"><vh>AskMessageItem</vh></v>
 <v t="ekr.20200704142237.102"><vh>ChooseDocumentItem</vh></v>
 </v>
-<v t="ekr.20200704142237.103"><vh>@clean utils.ts</vh>
+<v t="ekr.20200704142237.103"><vh>@clean src/utils.ts</vh>
 <v t="ekr.20200704142237.104"><vh>padNumber2</vh></v>
 <v t="ekr.20200704142237.105"><vh>buildNodeIconPaths</vh></v>
 <v t="ekr.20200704142237.106"><vh>buildDocumentIconPaths</vh></v>
@@ -515,8 +515,7 @@ private _resolveResult(p_package: LeoBridgePackage): void {
     }
 }
 </t>
-<t tx="ekr.20200704142236.11">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142236.11">import * as vscode from "vscode";
 import * as utils from "./utils";
 import { ConfigMembers, RefreshType } from "./types";
 import { Constants } from "./constants";
@@ -688,8 +687,7 @@ public buildFromSavedSettings(): void {
     }
 }
 </t>
-<t tx="ekr.20200704142236.16">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142236.16">import * as vscode from "vscode";
 
 @others
 @language typescript
@@ -707,8 +705,7 @@ export class Constants {
     
 }
 </t>
-<t tx="ekr.20200704142236.18">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142236.18">import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
 import { RefreshType } from "./types";
@@ -803,8 +800,7 @@ function getDurationMilliseconds(p_start: [number, number]): number {
     return secs * 1000 + Math.floor(nanosecs / 1000000);
 }
 </t>
-<t tx="ekr.20200704142236.24">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142236.24">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { AskMessageItem, RefreshType, runAskYesNoDialogParameters, runWarnMessageDialogParameters, runInfoMessageDialogParameters, showSaveAsDialogParameters } from "./types";
 import { LeoIntegration } from "./leoIntegration";
@@ -976,8 +972,7 @@ public showWarnModalMessage(p_waitArg: runWarnMessageDialogParameters): void {
 }
 
 </t>
-<t tx="ekr.20200704142236.3">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142236.3">import * as vscode from "vscode";
 import * as utils from "./utils";
 import { UserCommand, RefreshType, LeoBridgePackage } from "./types";
 import { LeoIntegration } from "./leoIntegration";
@@ -1006,8 +1001,7 @@ public showChangesDetectedInfoMessage(p_infoArg: runInfoMessageDialogParameters)
     vscode.window.showInformationMessage(w_message);
 }
 </t>
-<t tx="ekr.20200704142236.31">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142236.31">import * as vscode from "vscode";
 import * as utils from "./utils";
 import * as path from 'path';
 import { Constants } from "./constants";
@@ -1340,8 +1334,7 @@ private _fireSoonHandle?: NodeJS.Timer;
     }, 5);
 }
 </t>
-<t tx="ekr.20200704142236.49">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142236.49">import * as vscode from "vscode";
 import * as WebSocket from 'ws';
 import { Constants } from "./constants";
 import { LeoBridgePackage, LeoAction } from "./types";
@@ -1603,8 +1596,7 @@ public newSelection(): void {
     }
 }
 </t>
-<t tx="ekr.20200704142236.62">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142236.62">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoDocument, Icon } from "./types";
 import * as utils from "./utils";
@@ -1654,8 +1646,7 @@ import { LeoIntegration } from "./leoIntegration";
     }
 }
 </t>
-<t tx="ekr.20200704142236.64">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142236.64">import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoDocumentNode } from "./leoDocumentNode";
 import { ProviderResult } from "vscode";
@@ -1747,8 +1738,7 @@ public add(p_command: UserCommand): boolean {
 }
 
 </t>
-<t tx="ekr.20200704142236.70">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142236.70">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import * as path from "path"; // TODO : Use this library to have reliable support for window-vs-linux file-paths
 
@@ -1910,8 +1900,7 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
 }
 
 </t>
-<t tx="ekr.20200704142237.1">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142237.1">import * as vscode from "vscode";
 import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
@@ -1970,8 +1959,7 @@ export interface ChooseDocumentItem extends vscode.QuickPickItem {
     value: number;
 }
 </t>
-<t tx="ekr.20200704142237.103">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142237.103">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { Icon } from "./types";
 import { LeoNode } from "./leoNode";
@@ -3315,8 +3303,7 @@ public startServer(): void {
 }
 
 </t>
-<t tx="ekr.20200704142237.60">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142237.60">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 import { ArchivedPosition, Icon } from "./types"; // * TO HELP DEBUG
@@ -3454,8 +3441,7 @@ public get tooltip(): string {
     }
 }
 </t>
-<t tx="ekr.20200704142237.66">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142237.66">import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { ProviderResult } from "vscode";
@@ -3593,8 +3579,7 @@ public connect(): void {
     }
 }
 </t>
-<t tx="ekr.20200704142237.73">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142237.73">import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
@@ -3735,8 +3720,7 @@ public cancelConnect(p_message?: string): void {
     }
 }
 </t>
-<t tx="ekr.20200704142237.81">@path C:/leo.repo/leointeg/src/
-import * as os from 'os';
+<t tx="ekr.20200704142237.81">import * as os from 'os';
 import * as child from 'child_process';
 import * as path from "path"; // TODO : Use this library to have reliable support for window-vs-linux file-paths
 import * as vscode from "vscode";
@@ -3874,8 +3858,7 @@ public startServer(p_leoPythonCommand: string): Promise&lt;any&gt; {
     return w_serverStartPromise;
 }
 </t>
-<t tx="ekr.20200704142237.85">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200704142237.85">import * as vscode from "vscode";
 import { LeoNode } from "./leoNode";
 
 /**
@@ -4074,8 +4057,7 @@ export interface runWarnMessageDialogParameters {
 }
 
 </t>
-<t tx="ekr.20200712055600.63">@path C:/leo.repo/leointeg/src/
-
+<t tx="ekr.20200712055600.63">
 // @button node implementation for usage with the leoButtons.ts treeview provider
 import * as vscode from "vscode";
 import { Constants } from "./constants";
@@ -4136,8 +4118,7 @@ import { LeoIntegration } from "./leoIntegration";
 
 }
 </t>
-<t tx="ekr.20200712055600.65">@path C:/leo.repo/leointeg/src/
-import * as vscode from "vscode";
+<t tx="ekr.20200712055600.65">import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoButtonNode } from "./leoButtonNode";
 import { ProviderResult } from "vscode";
