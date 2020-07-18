@@ -453,12 +453,12 @@ export class Constants {
         PROMOTE_SELECTION_FO: "promoteSelectionFromOutline",
         DEMOTE_SELECTION_FO: "demoteSelectionFromOutline",
         REFRESH_FROM_DISK_SELECTION_FO: "refreshFromDiskSelectionFromOutline",
-        // * - - - - - - - - - - - - - - - not implemented yet
         HOIST: "hoistNode",
         HOIST_SELECTION: "hoistSelection",
         HOIST_SELECTION_FO: "hoistSelectionFromOutline",
         DEHOIST: "deHoist",
         DEHOIST_FO: "deHoistFromOutline",
+        // * - - - - - - - - - - - - - - - not implemented yet
         CLONE_FIND_ALL: "cloneFindAll",
         CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened",
         CLONE_FIND_MARKED: "cloneFindMarked",
