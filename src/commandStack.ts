@@ -4,15 +4,19 @@ import { UserCommand, RefreshType, LeoBridgePackage } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
- * * Front-facing, user command stack of actions. Actions can also be added once started resolving.
+ * * Front-facing, user command stack of actions. 
+ * Actions can also be added once started resolving.
  */
 export class CommandStack {
 
     private _stack: UserCommand[] = [];
     private _busy: boolean = false;
 
-    private _finalRefreshType: RefreshType = RefreshType.NoRefresh; // Refresh type after last command is done. (Keep only if higher)
-    private _finalFromOutline: boolean = false; // Set focus on outline instead of body? (Keep from last one pushed)
+    // Refresh type, for after the last command is done. (From highest so far)
+    private _finalRefreshType: RefreshType = RefreshType.NoRefresh; 
+    
+    // Flag indicating to set focus on outline when all done, instead of body. (From last one pushed)
+    private _finalFromOutline: boolean = false; 
 
     // * Received selection from the last command that finished.
     // * Note: JSON string representation of a node, will be re-sent as node to leo instead of lastSelectedNode
@@ -34,7 +38,8 @@ export class CommandStack {
     }
 
     /**
-     * * Signal to the command stack that a new selected node was received in case it needed to know when to clear its own '_receivedSelection'
+     * * Signal to the command stack that a new selected node was received. 
+     * This command stacks needs to know when to clear its own '_receivedSelection'
      */
     public newSelection(): void {
         if (!this._busy) {
@@ -44,8 +49,9 @@ export class CommandStack {
 
     /**
      * * Adds on top and try to execute the bottom command if not already running
-     * @param p_command a userCommand object about the action, the node if any, refresh type and fromOutline flag
-     * @returns true if added, false if it could not due to stack 'rules': Targeted command (specified node) can only be added on an empty stack
+     * @param p_command is an object that has the action, node, refresh type and 'fromOutline' flag
+     * @returns true if added, false if it could not due to stack 'rules':
+     *  - Targeted command (for a specific node) can only be added on an empty stack
      */
     public add(p_command: UserCommand): boolean {
         if (this.size() && p_command.node) {
@@ -61,7 +67,7 @@ export class CommandStack {
     }
 
     /**
-     * * Try to launch commands that were added on the stack if any
+     * * Try to launch commands that were added on the stack, if any.
      */
     private _tryStart(): void {
         if (this.size() && !this._busy) {
@@ -76,7 +82,7 @@ export class CommandStack {
     }
 
     /**
-     * * Run the command at the index 0, the bottom of the stack
+     * * Run the command at index 0: The bottom of the stack.
      */
     private _runStackCommand(): Promise<LeoBridgePackage> {
         // console.log('Running from a stack of', this._stack.length);
@@ -125,7 +131,7 @@ export class CommandStack {
     }
 
     /**
-     * * Handle the result from the command that has finished, and either launch the next one refresh accordingly
+     * * Handle the result from the command that has finished: either launch the next one, or refresh accordingly.
      * @param p_package is the json return 'package' that was just received back from Leo
      */
     private _resolveResult(p_package: LeoBridgePackage): void {
