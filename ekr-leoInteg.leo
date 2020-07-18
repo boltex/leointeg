@@ -8119,7 +8119,7 @@ if __name__ == '__main__':
             # Like g.es_exception()...
             typ, val, tb = sys.exc_info()
             for line in traceback.format_exception(typ, val, tb):
-                print(line, flush=True)
+                print(line.rstrip(), flush=True)
         finally:
             asyncio.get_event_loop().stop()
 
