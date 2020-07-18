@@ -456,6 +456,22 @@ class LeoBridgeIntegController:
         except:
             print('ERROR with idleTimeManager')
 
+    def __getattr__xxx(self, attr):
+        """
+        This method delegates missing methods to our leoCommand method.
+
+        I usually don't like to use __getattr__, but here it seem justified: we
+        don't want to define methods for all of Leo's commands here!
+        
+        Otoh, the code actually works without this, but apparently
+        there are problem on startup in the .json files.
+        """
+        print(f"bc__getattr__ {attr}", flush=True)
+        func = self.get_commander_method(attr)
+        if func:
+            # Delegate all "missing" methods to our leoCommand method.
+            return self.leoCommand
+        raise AttributeError
     async def _asyncIdleLoop(self, p_seconds, p_fn):
         while True:
             await asyncio.sleep(p_seconds)
@@ -966,10 +982,11 @@ class LeoBridgeIntegController:
         self.commander.dehoist()
         return self.outputPNode(self.commander.p)  # in any case, return selected node
 
-    def gitDiff(self, p_ap):
-        '''Move a node LEFT, don't select it if possible'''
-        return self.outlineCommand("gitDiff", p_ap, True)
-    def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
+    def gitDiff_xxx(self, p_ap):
+        '''Do the git-diff command'''
+        return self.leoCommand("gitDiff", p_ap, True)
+
+    def leoCommand(self, p_command, p_ap, p_keepSelection=False):
         '''
         Generic call to a method in Leo's Commands class or any subcommander class.
 
@@ -995,8 +1012,8 @@ class LeoBridgeIntegController:
                 self.commander.selectPosition(oldPosition)  
         return self.outputPNode(self.commander.p)
 
-    # Compatibility.
-    leoCommand = outlineCommand
+    # Temporary Compatibility.
+    outlineCommand = leoCommand
     def get_commander_method(self, p_command):
         """ Return the given method (p_command) in the Commands class or subcommanders."""
         ### self.g.trace(p_command)
@@ -1391,7 +1408,17 @@ def main():
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
-                    answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
+                    ### answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
+                    #
+                    # func = getattr(integController, w_param['action'], integController.leoCommand)
+                    func = getattr(integController, w_param['action'], None)
+                    if func:
+                        # print('FOUND:', func.__name__, flush=True)
+                        answer = func(w_param['param'])
+                    else:
+                        # Attempt to execute the command indirectly.
+                        print(f"NOT found: {w_param['action']}", flush=True)
+                        answer = integController.leoCommand(w_param['action'], w_param['param'], True)
                 else:
                     answer = "Error in processCommand"
                     print(answer, flush=True)

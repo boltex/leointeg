@@ -59,11 +59,11 @@
 <v t="ekr.20200704142236.18"><vh>@clean src/extension.ts</vh>
 <v t="ekr.20200704142236.19"><vh>activate</vh>
 <v t="ekr.20200717102947.1"><vh>&lt;&lt; define constants &gt;&gt;</vh></v>
-<v t="ekr.20200717102128.1"><vh> not implemented commands</vh></v>
 <v t="ekr.20200717123815.1"><vh>button commands</vh></v>
 <v t="ekr.20200717100408.1"><vh>file commands</vh></v>
 <v t="ekr.20200717122457.1"><vh>edit headline commands</vh></v>
 <v t="ekr.20200717101025.1"><vh>node commands...</vh>
+<v t="ekr.20200717102128.1"><vh>new commands (extension.ts)</vh></v>
 <v t="ekr.20200717100934.1"><vh>cut/copy/paste commands</vh></v>
 <v t="ekr.20200717124627.1"><vh>expand/contract commands</vh></v>
 <v t="ekr.20200717172800.1"><vh>git-diff (new, activate)</vh></v>
@@ -338,6 +338,7 @@
 </v>
 <v t="felix.20191126232434.4"><vh>class LeoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>bc.__init__</vh></v>
+<v t="ekr.20200718163426.1"><vh>bc.__getattr__ (not used)</vh></v>
 <v t="ekr.20200712071756.1"><vh>bc.Comm...</vh>
 <v t="felix.20200303214235.1"><vh>bc._asyncIdleLoop</vh></v>
 <v t="ekr.20200712063635.1"><vh>bc._returnNo</vh></v>
@@ -409,7 +410,9 @@
 <v t="felix.20191231201748.1"><vh>bc.hoistPNode</vh></v>
 <v t="felix.20191231201749.1"><vh>bc.deHoist</vh></v>
 </v>
+<v t="ekr.20200718132510.1"><vh>bc.New commands</vh>
 <v t="ekr.20200712080426.1"><vh>bc.git-diff</vh></v>
+</v>
 <v t="felix.20191128001054.1"><vh>bc.Outline and Body Interaction</vh>
 <v t="felix.20200105173826.1"><vh>bc.outlineCommand &amp; helper</vh>
 <v t="ekr.20200718063226.1"><vh>bc.get_commander_method</vh></v>
@@ -442,7 +445,7 @@
 <v t="felix.20191126232434.31"><vh>bc.p_to_ap</vh></v>
 </v>
 </v>
-<v t="felix.20191126232435.1"><vh>main (leobridgeserver.py, handles exceptions)</vh></v>
+<v t="felix.20191126232435.1"><vh>main (leobridgeserver.py, crux, handles exceptions)</vh></v>
 </v>
 <v t="felix.20191126232434.4"></v>
 <v t="ekr.20200717095046.1"><vh>----- git-diff command</vh>
@@ -455,9 +458,49 @@
 <v t="ekr.20200712080426.1"></v>
 </v>
 <v t="ekr.20200704142237.2"></v>
+<v t="ekr.20200718091833.1"><vh>Crash</vh></v>
+<v t="ekr.20200717102128.1"></v>
+<v t="ekr.20200718124158.1"><vh>COPY: new commands</vh></v>
+<v t="ekr.20200718123417.1"><vh>COPY: old commands</vh></v>
+<v t="ekr.20200704142237.44"></v>
+<v t="ekr.20200712080426.1"></v>
 <v t="felix.20200105173826.1"></v>
 <v t="felix.20191126232435.1"></v>
-<v t="ekr.20200718091833.1"><vh>Crash</vh></v>
+<v t="ekr.20200718163426.1"></v>
+<v t="ekr.20200718172429.1"><vh>git diff HEAD </vh>
+<v t="ekr.20200718172429.2"><vh>leobridgeserver.py</vh>
+<v t="ekr.20200718172429.261"><vh>Changed</vh>
+<v t="ekr.20200718172429.262"><vh>bc.__getattr__ (not used)</vh>
+<v t="ekr.20200718172429.263"><vh>Old:bc.__getattr__ (not used)</vh></v>
+<v t="ekr.20200718163426.1"></v>
+</v>
+<v t="ekr.20200718172429.264"><vh>bc.git-diff</vh>
+<v t="ekr.20200718172429.265"><vh>Old:bc.git-diff</vh></v>
+<v t="ekr.20200712080426.1"></v>
+</v>
+<v t="ekr.20200718172429.266"><vh>bc.outlineCommand &amp; helper</vh>
+<v t="ekr.20200718172429.267"><vh>Old:bc.outlineCommand &amp; helper</vh></v>
+<v t="felix.20200105173826.1"></v>
+</v>
+<v t="ekr.20200718172429.268"><vh>main (leobridgeserver.py, crux, handles exceptions)</vh>
+<v t="ekr.20200718172429.269"><vh>Old:main (leobridgeserver.py, crux, handles exceptions)</vh></v>
+<v t="felix.20191126232435.1"></v>
+</v>
+</v>
+</v>
+<v t="ekr.20200718172430.1"><vh>src/extension.ts</vh>
+<v t="ekr.20200718172430.58"><vh>Changed</vh>
+<v t="ekr.20200718172430.59"><vh>activate</vh>
+<v t="ekr.20200718172430.60"><vh>Old:activate</vh></v>
+<v t="ekr.20200704142236.19"></v>
+</v>
+<v t="ekr.20200718172430.61"><vh>new commands (extension.ts)</vh>
+<v t="ekr.20200718172430.62"><vh>Old:new commands (extension.ts)</vh></v>
+<v t="ekr.20200717102128.1"></v>
+</v>
+</v>
+</v>
+</v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200624091412.1"></t>
@@ -4382,9 +4425,10 @@ import { LeoButton } from "./types";
 </t>
 <t tx="ekr.20200712071738.1"></t>
 <t tx="ekr.20200712071756.1"></t>
-<t tx="ekr.20200712080426.1">def gitDiff(self, p_ap):
-    '''Move a node LEFT, don't select it if possible'''
-    return self.outlineCommand("gitDiff", p_ap, True)
+<t tx="ekr.20200712080426.1">def gitDiff_xxx(self, p_ap):
+    '''Do the git-diff command'''
+    return self.leoCommand("gitDiff", p_ap, True)
+
 </t>
 <t tx="ekr.20200712164636.1"></t>
 <t tx="ekr.20200712165519.1"></t>
@@ -4791,21 +4835,42 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [prefix + cmd.PASTE_SELECTION_FO, () =&gt; leo.nodeCommand(bridge.PASTE_PNODE, u, refreshTree, true)],
 </t>
 <t tx="ekr.20200717101025.1"></t>
-<t tx="ekr.20200717102128.1">// TODO : @boltex More commands to implement #15, #23, #24
-[prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
-[prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
-[prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
-[prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
-[prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
-[prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
-[prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
-[prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
-[prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
-[prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
-[prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
-[prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
-[prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
-[prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")],
+<t tx="ekr.20200717102128.1">@language typescript
+
+// TODO : @boltex More commands to implement #15, #23, #24
+// [prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
+// [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
+// [prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
+// [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
+// [prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
+// [prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
+
+// [prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
+// [prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
+// [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
+// [prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
+// [prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
+// [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
+// [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
+// [prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")],
+
+[prefix + cmd.CLONE_FIND_ALL, () =&gt; leo.nodeCommand(bridge.CLONE_FIND_ALL, u, refreshBoth, true)],
+[prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; leo.nodeCommand(bridge.CLONE_FIND_ALL_FLATTENED, u, refreshBoth, true)],
+[prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; leo.nodeCommand(bridge.CLONE_FIND_FLATTENED_MARKED, u, refreshBoth, true)],
+[prefix + cmd.CLONE_FIND_MARKED, () =&gt; leo.nodeCommand(bridge.CLONE_FIND_MARKED, u, refreshBoth, true)],
+[prefix + cmd.CLONE_MARKED_NODES, () =&gt; leo.nodeCommand(bridge.CLONE_MARKED_NODES, u, refreshBoth, true)],
+
+[prefix + cmd.COPY_MARKED, () =&gt; leo.nodeCommand(bridge.COPY_MARKED, u, refreshBoth, true)],
+[prefix + cmd.MOVE_MARKED_NODES, () =&gt; leo.nodeCommand(bridge.MOVE_MARKED_NODES, u, refreshBoth, true)],
+[prefix + cmd.DELETE_MARKED_NODES, () =&gt; leo.nodeCommand(bridge.DELETE_MARKED_NODES, u, refreshBoth, true)],
+[prefix + cmd.DIFF_MARKED_NODES, () =&gt; leo.nodeCommand(bridge.DIFF_MARKED_NODES, u, refreshBoth, true)],
+
+[prefix + cmd.EXTRACT, () =&gt; leo.nodeCommand(bridge.EXTRACT, u, refreshBoth, true)],
+[prefix + cmd.EXTRACT_NAMES, () =&gt; leo.nodeCommand(bridge.EXTRACT_NAMES, u, refreshBoth, true)],
+
+[prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; leo.nodeCommand(bridge.MARK_CHANGED_ITEMS, u, refreshBoth, true)],
+[prefix + cmd.MARK_SUBHEADS, () =&gt; leo.nodeCommand(bridge.MARK_SUBHEADS, u, refreshBoth, true)],
+[prefix + cmd.UNMARK_ALL, () =&gt; leo.nodeCommand(bridge.UNMARK_ALL, u, refreshBoth, true)],
 </t>
 <t tx="ekr.20200717102947.1">const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
 const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
@@ -7645,6 +7710,545 @@ Traceback (most recent call last):
     w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
 
 AttributeError: 'NoneType' object has no attribute 'fileCommands'</t>
+<t tx="ekr.20200718123417.1">// TODO : @boltex More commands to implement #15, #23, #24
+[prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
+[prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
+[prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
+[prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
+[prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
+[prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
+[prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
+[prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
+[prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
+[prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
+[prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
+[prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
+[prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
+[prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")],
+</t>
+<t tx="ekr.20200718124158.1">@language typescript
+
+// TODO : @boltex More commands to implement #15, #23, #24
+// [prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
+// [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
+// [prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
+// [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
+// [prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
+// [prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
+// [prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
+// [prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
+// [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
+// [prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
+// [prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
+// [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
+// [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
+// [prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")],
+
+
+// leo.nodeCommand(bridge.XXX, p_node, noRefresh, false)],
+
+[prefix + cmd.CLONE_FIND_ALL, () =&gt; leo.leoCommand(bridge.CLONE_FIND_ALL, u, refreshBoth, true)],
+[prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; leo.leoCommand(bridge.CLONE_FIND_ALL_FLATTENED, u, refreshBoth, true)],
+[prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; leo.leoCommand(bridge.CLONE_FIND_FLATTENED_MARKED, u, refreshBoth, true)],
+[prefix + cmd.CLONE_FIND_MARKED, () =&gt; leo.leoCommand(bridge.CLONE_FIND_MARKED, u, refreshBoth, true)],
+[prefix + cmd.CLONE_MARKED_NODES, () =&gt; leo.leoCommand(bridge.CLONE_MARKED_NODES, u, refreshBoth, true)],
+
+[prefix + cmd.COPY_MARKED, () =&gt; leo.leoCommand(bridge.COPY_MARKED, u, refreshBoth, true)],
+[prefix + cmd.MOVE_MARKED_NODES, () =&gt; leo.leoCommand(bridge.MOVE_MARKED_NODES, u, refreshBoth, true)],
+[prefix + cmd.DELETE_MARKED_NODES, () =&gt; leo.leoCommand(bridge.DELETE_MARKED_NODES, u, refreshBoth, true)],
+[prefix + cmd.DIFF_MARKED_NODES, () =&gt; leo.leoCommand(bridge.DIFF_MARKED_NODES, u, refreshBoth, true)],
+
+[prefix + cmd.EXTRACT, () =&gt; leo.leoCommand(bridge.EXTRACT, u, refreshBoth, true)],
+[prefix + cmd.EXTRACT_NAMES, () =&gt; leo.leoCommand(bridge.EXTRACT_NAMES, u, refreshBoth, true)],
+
+[prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; leo.leoCommand(bridge.MARK_CHANGED_ITEMS, u, refreshBoth, true)],
+[prefix + cmd.MARK_SUBHEADS, () =&gt; leo.leoCommand(bridge.MARK_SUBHEADS, u, refreshBoth, true)],
+[prefix + cmd.UNMARK_ALL, () =&gt; leo.leoCommand(bridge.UNMARK_ALL, u, refreshBoth, true)],
+</t>
+<t tx="ekr.20200718132510.1"></t>
+<t tx="ekr.20200718163426.1">def __getattr__xxx(self, attr):
+    """
+    This method delegates missing methods to our leoCommand method.
+
+    I usually don't like to use __getattr__, but here it seem justified: we
+    don't want to define methods for all of Leo's commands here!
+    
+    Otoh, the code actually works without this, but apparently
+    there are problem on startup in the .json files.
+    """
+    print(f"bc__getattr__ {attr}", flush=True)
+    func = self.get_commander_method(attr)
+    if func:
+        # Delegate all "missing" methods to our leoCommand method.
+        return self.leoCommand
+    raise AttributeError
+</t>
+<t tx="ekr.20200718172429.1">@ignore
+@nosearch
+HEAD=42c2741</t>
+<t tx="ekr.20200718172429.2">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -456,6 +456,22 @@
+         except:
+             print('ERROR with idleTimeManager')
+ 
++    def __getattr__xxx(self, attr):
++        """
++        This method delegates missing methods to our leoCommand method.
++
++        I usually don't like to use __getattr__, but here it seem justified: we
++        don't want to define methods for all of Leo's commands here!
++        
++        Otoh, the code actually works without this, but apparently
++        there are problem on startup in the .json files.
++        """
++        print(f"bc__getattr__ {attr}", flush=True)
++        func = self.get_commander_method(attr)
++        if func:
++            # Delegate all "missing" methods to our leoCommand method.
++            return self.leoCommand
++        raise AttributeError
+     async def _asyncIdleLoop(self, p_seconds, p_fn):
+         while True:
+             await asyncio.sleep(p_seconds)
+@@ -966,10 +982,11 @@
+         self.commander.dehoist()
+         return self.outputPNode(self.commander.p)  # in any case, return selected node
+ 
+-    def gitDiff(self, p_ap):
+-        '''Move a node LEFT, don't select it if possible'''
+-        return self.outlineCommand("gitDiff", p_ap, True)
+-    def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
++    def gitDiff_xxx(self, p_ap):
++        '''Do the git-diff command'''
++        return self.leoCommand("gitDiff", p_ap, True)
++
++    def leoCommand(self, p_command, p_ap, p_keepSelection=False):
+         '''
+         Generic call to a method in Leo's Commands class or any subcommander class.
+ 
+@@ -995,8 +1012,8 @@
+                 self.commander.selectPosition(oldPosition)  
+         return self.outputPNode(self.commander.p)
+ 
+-    # Compatibility.
+-    leoCommand = outlineCommand
++    # Temporary Compatibility.
++    outlineCommand = leoCommand
+     def get_commander_method(self, p_command):
+         """ Return the given method (p_command) in the Commands class or subcommanders."""
+         ### self.g.trace(p_command)
+@@ -1391,7 +1408,17 @@
+                     # ! functions called this way need to accept at least a parameter other than 'self'
+                     # ! See : getSelectedNode and getAllGnx
+                     # TODO : Block attempts to call functions starting with underscore or reserved
+-                    answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
++                    ### answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
++                    #
++                    # func = getattr(integController, w_param['action'], integController.leoCommand)
++                    func = getattr(integController, w_param['action'], None)
++                    if func:
++                        # print('FOUND:', func.__name__, flush=True)
++                        answer = func(w_param['param'])
++                    else:
++                        # Attempt to execute the command indirectly.
++                        print(f"NOT found: {w_param['action']}", flush=True)
++                        answer = integController.leoCommand(w_param['action'], w_param['param'], True)
+                 else:
+                     answer = "Error in processCommand"
+                     print(answer, flush=True)
+@language python
+</t>
+<t tx="ekr.20200718172429.261"></t>
+<t tx="ekr.20200718172429.262">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -0,0 +1,16 @@
++def __getattr__xxx(self, attr):
++    """
++    This method delegates missing methods to our leoCommand method.
++
++    I usually don't like to use __getattr__, but here it seem justified: we
++    don't want to define methods for all of Leo's commands here!
++    
++    Otoh, the code actually works without this, but apparently
++    there are problem on startup in the .json files.
++    """
++    print(f"bc__getattr__ {attr}", flush=True)
++    func = self.get_commander_method(attr)
++    if func:
++        # Delegate all "missing" methods to our leoCommand method.
++        return self.leoCommand
++    raise AttributeError
+@language python
+</t>
+<t tx="ekr.20200718172429.263"></t>
+<t tx="ekr.20200718172429.264">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -1,4 +1,4 @@
+-def gitDiff(self, p_ap):
+-    '''Move a node LEFT, don't select it if possible'''
+-    return self.outlineCommand("gitDiff", p_ap, True)
+-def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
++def gitDiff_xxx(self, p_ap):
++    '''Do the git-diff command'''
++    return self.leoCommand("gitDiff", p_ap, True)
++
+@language python
+</t>
+<t tx="ekr.20200718172429.265">def gitDiff(self, p_ap):
+    '''Move a node LEFT, don't select it if possible'''
+    return self.outlineCommand("gitDiff", p_ap, True)
+def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
+</t>
+<t tx="ekr.20200718172429.266">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -1,3 +1,4 @@
++def leoCommand(self, p_command, p_ap, p_keepSelection=False):
+     '''
+     Generic call to a method in Leo's Commands class or any subcommander class.
+ 
+@@ -23,5 +24,5 @@
+             self.commander.selectPosition(oldPosition)  
+     return self.outputPNode(self.commander.p)
+ 
+-# Compatibility.
+-leoCommand = outlineCommand
++# Temporary Compatibility.
++outlineCommand = leoCommand
+@language python
+</t>
+<t tx="ekr.20200718172429.267">    '''
+    Generic call to a method in Leo's Commands class or any subcommander class.
+
+    p_command: a method name (a string).
+    p-node: (p_ap), an archived position.
+    p_keepSelection: preserve the current selection.
+    '''
+    if not p_ap:
+        return self.outputError(f"Error in {p_command}: no param p_ap")
+    w_p = self.ap_to_p(p_ap)
+    if not w_p:
+        return self.outputError(f"Error in {p_command}: no w_p node found")
+    w_func = self.get_commander_method(p_command)
+    if not w_func:
+        return self.outputError(f"Error in {p_command}: no method found")
+    if w_p == self.commander.p:
+        w_func()
+    else:
+        oldPosition = self.commander.p
+        self.commander.selectPosition(w_p)
+        w_func()
+        if p_keepSelection and self.commander.positionExists(oldPosition):
+            self.commander.selectPosition(oldPosition)  
+    return self.outputPNode(self.commander.p)
+
+# Compatibility.
+leoCommand = outlineCommand
+</t>
+<t tx="ekr.20200718172429.268">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -49,7 +49,17 @@
+                     # ! functions called this way need to accept at least a parameter other than 'self'
+                     # ! See : getSelectedNode and getAllGnx
+                     # TODO : Block attempts to call functions starting with underscore or reserved
+-                    answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
++                    ### answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
++                    #
++                    # func = getattr(integController, w_param['action'], integController.leoCommand)
++                    func = getattr(integController, w_param['action'], None)
++                    if func:
++                        # print('FOUND:', func.__name__, flush=True)
++                        answer = func(w_param['param'])
++                    else:
++                        # Attempt to execute the command indirectly.
++                        print(f"NOT found: {w_param['action']}", flush=True)
++                        answer = integController.leoCommand(w_param['action'], w_param['param'], True)
+                 else:
+                     answer = "Error in processCommand"
+                     print(answer, flush=True)
+@language python
+</t>
+<t tx="ekr.20200718172429.269">def main():
+    '''python script for leo integration via leoBridge'''
+    global wsHost, wsPort
+    print("Starting LeoBridge... (Launch with -h for help)", flush=True)
+    # replace default host address and port if provided as arguments
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "ha:p:", ["help", "address=", "port="])
+    except getopt.GetoptError:
+        print('leobridgeserver.py -a &lt;address&gt; -p &lt;port&gt;')
+        print('defaults to localhost on port 32125', flush=True)
+        if args:
+            print("unused args: " + str(args), flush=True)
+        sys.exit(2)
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            print('leobridgeserver.py -a &lt;address&gt; -p &lt;port&gt;')
+            print('defaults to localhost on port 32125', flush=True)
+            sys.exit()
+        elif opt in ("-a", "--address"):
+            wsHost = arg
+        elif opt in ("-p", "--port"):
+            wsPort = arg
+
+    # * start Server
+    integController = LeoBridgeIntegController()
+
+    # * This is a basic example loop
+    # async def asyncInterval(timeout):
+    #     dummyCounter = 0
+    #     strTimeout = str(timeout) + ' sec interval'
+    #     while True:
+    #         await asyncio.sleep(timeout)
+    #         dummyCounter = dummyCounter+1
+    #         await integController.asyncOutput("{\"interval\":" + str(timeout+dummyCounter) + "}")  # as number
+    #         print(strTimeout)
+
+    async def leoBridgeServer(websocket, path):
+        try:
+            integController.initConnection(websocket)
+            await websocket.send(integController.sendLeoBridgePackage())  # * Start by sending empty as 'ok'
+            integController.logSignon()
+            async for w_message in websocket:
+                w_param = json.loads(w_message)
+                if w_param and w_param['action']:
+                    # print(f"action: {w_param['action']}", flush=True)
+                    # * Storing id of action in global var instead of passing as parameter
+                    integController.setActionId(w_param['id'])
+                    # ! functions called this way need to accept at least a parameter other than 'self'
+                    # ! See : getSelectedNode and getAllGnx
+                    # TODO : Block attempts to call functions starting with underscore or reserved
+                    answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
+                else:
+                    answer = "Error in processCommand"
+                    print(answer, flush=True)
+                await websocket.send(answer)
+        except websockets.exceptions.ConnectionClosedError:
+            print("Websocket connection closed", flush=True)
+        except Exception:
+            print('Exception in leobridgeserver.py!', flush=True)
+            # Like g.es_exception()...
+            typ, val, tb = sys.exc_info()
+            for line in traceback.format_exception(typ, val, tb):
+                print(line.rstrip(), flush=True)
+        finally:
+            asyncio.get_event_loop().stop()
+
+    localLoop = asyncio.get_event_loop()
+    start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
+    # localLoop.create_task(asyncInterval(5)) # Starts a test loop of async communication
+    localLoop.run_until_complete(start_server)
+    print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
+    localLoop.run_forever()
+    print("Stopping leobridge server", flush=True)
+
+
+</t>
+<t tx="ekr.20200718172430.1">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -43,21 +43,6 @@
+ 
+         // Define entries for all commands
+         [prefix + cmd.EXECUTE, () =&gt; leo.executeScript()],
+-        // TODO : @boltex More commands to implement #15, #23, #24
+-        [prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
+-        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
+-        [prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
+-        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
+-        [prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
+-        [prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
+-        [prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
+-        [prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
+-        [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
+-        [prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
+-        [prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
+-        [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
+-        [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
+-        [prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")],
+         // Test for undeclared commands VERDICT IT WORKS!
+         [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; leo.clickButton(p_node)],
+ 
+@@ -80,6 +65,41 @@
+         [prefix + cmd.HEADLINE, (p_node: LeoNode) =&gt; leo.editHeadline(p_node, false)],
+         [prefix + cmd.HEADLINE_SELECTION, () =&gt; leo.editHeadline(u, false)],
+         [prefix + cmd.HEADLINE_SELECTION_FO, () =&gt; leo.editHeadline(u, true)],
++
++        // TODO : @boltex More commands to implement #15, #23, #24
++        // [prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
++        // [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
++        // [prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
++        // [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
++        // [prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
++        // [prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
++
++        // [prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
++        // [prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
++        // [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
++        // [prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
++        // [prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
++        // [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
++        // [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
++        // [prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")],
++
++        [prefix + cmd.CLONE_FIND_ALL, () =&gt; leo.nodeCommand(bridge.CLONE_FIND_ALL, u, refreshBoth, true)],
++        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; leo.nodeCommand(bridge.CLONE_FIND_ALL_FLATTENED, u, refreshBoth, true)],
++        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; leo.nodeCommand(bridge.CLONE_FIND_FLATTENED_MARKED, u, refreshBoth, true)],
++        [prefix + cmd.CLONE_FIND_MARKED, () =&gt; leo.nodeCommand(bridge.CLONE_FIND_MARKED, u, refreshBoth, true)],
++        [prefix + cmd.CLONE_MARKED_NODES, () =&gt; leo.nodeCommand(bridge.CLONE_MARKED_NODES, u, refreshBoth, true)],
++
++        [prefix + cmd.COPY_MARKED, () =&gt; leo.nodeCommand(bridge.COPY_MARKED, u, refreshBoth, true)],
++        [prefix + cmd.MOVE_MARKED_NODES, () =&gt; leo.nodeCommand(bridge.MOVE_MARKED_NODES, u, refreshBoth, true)],
++        [prefix + cmd.DELETE_MARKED_NODES, () =&gt; leo.nodeCommand(bridge.DELETE_MARKED_NODES, u, refreshBoth, true)],
++        [prefix + cmd.DIFF_MARKED_NODES, () =&gt; leo.nodeCommand(bridge.DIFF_MARKED_NODES, u, refreshBoth, true)],
++
++        [prefix + cmd.EXTRACT, () =&gt; leo.nodeCommand(bridge.EXTRACT, u, refreshBoth, true)],
++        [prefix + cmd.EXTRACT_NAMES, () =&gt; leo.nodeCommand(bridge.EXTRACT_NAMES, u, refreshBoth, true)],
++
++        [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; leo.nodeCommand(bridge.MARK_CHANGED_ITEMS, u, refreshBoth, true)],
++        [prefix + cmd.MARK_SUBHEADS, () =&gt; leo.nodeCommand(bridge.MARK_SUBHEADS, u, refreshBoth, true)],
++        [prefix + cmd.UNMARK_ALL, () =&gt; leo.nodeCommand(bridge.UNMARK_ALL, u, refreshBoth, true)],
+         // cut/copy/paste/delete given node.
+         [prefix + cmd.COPY, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.COPY_PNODE, p_node, noRefresh, false)],
+         [prefix + cmd.CUT, (p_node: LeoNode) =&gt; leo.nodeCommand(bridge.CUT_PNODE, p_node, refreshTree, false)],
+@language python
+</t>
+<t tx="ekr.20200718172430.58"></t>
+<t tx="ekr.20200718172430.59">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -15,21 +15,6 @@
+ 
+         // Define entries for all commands
+         [prefix + cmd.EXECUTE, () =&gt; leo.executeScript()],
+-        // TODO : @boltex More commands to implement #15, #23, #24
+-        [prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
+-        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
+-        [prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
+-        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
+-        [prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
+-        [prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
+-        [prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
+-        [prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
+-        [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
+-        [prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
+-        [prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
+-        [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
+-        [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
+-        [prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")],
+         @others
+     ];
+ 
+@language python
+</t>
+<t tx="ekr.20200718172430.60">@language typescript
+/**
+ * * Called when extension is activated.
+ * * It creates the leoIntegration and the 'welcome/Settings' webview instances.
+ */
+export function activate(p_context: vscode.ExtensionContext) {
+
+    &lt;&lt; define constants &gt;&gt;
+
+    const w_commands: [string, (...args: any[]) =&gt; any][] = [
+    
+        // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
+        [prefix + "test", () =&gt; leo.test()], // Test function useful when debugging
+        [prefix + "testFromOutline", () =&gt; leo.test(true)], // Test function useful when debugging.
+
+        // Define entries for all commands
+        [prefix + cmd.EXECUTE, () =&gt; leo.executeScript()],
+        // TODO : @boltex More commands to implement #15, #23, #24
+        [prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
+        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
+        [prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
+        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
+        [prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
+        [prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
+        [prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
+        [prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
+        [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
+        [prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
+        [prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
+        [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
+        [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
+        [prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")],
+        @others
+    ];
+
+    w_commands.map(function (p_command) {
+        p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
+    });
+    &lt;&lt; show welcome screen &gt;&gt;
+}
+
+</t>
+<t tx="ekr.20200718172430.61">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -1 +1,36 @@
+ @language typescript
++
++// TODO : @boltex More commands to implement #15, #23, #24
++// [prefix + cmd.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
++// [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
++// [prefix + cmd.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
++// [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
++// [prefix + cmd.EXTRACT, () =&gt; showInfo("TODO: extract command")],
++// [prefix + cmd.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
++
++// [prefix + cmd.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
++// [prefix + cmd.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
++// [prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
++// [prefix + cmd.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
++// [prefix + cmd.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
++// [prefix + cmd.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
++// [prefix + cmd.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
++// [prefix + cmd.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")],
++
++[prefix + cmd.CLONE_FIND_ALL, () =&gt; leo.nodeCommand(bridge.CLONE_FIND_ALL, u, refreshBoth, true)],
++[prefix + cmd.CLONE_FIND_ALL_FLATTENED, () =&gt; leo.nodeCommand(bridge.CLONE_FIND_ALL_FLATTENED, u, refreshBoth, true)],
++[prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () =&gt; leo.nodeCommand(bridge.CLONE_FIND_FLATTENED_MARKED, u, refreshBoth, true)],
++[prefix + cmd.CLONE_FIND_MARKED, () =&gt; leo.nodeCommand(bridge.CLONE_FIND_MARKED, u, refreshBoth, true)],
++[prefix + cmd.CLONE_MARKED_NODES, () =&gt; leo.nodeCommand(bridge.CLONE_MARKED_NODES, u, refreshBoth, true)],
++
++[prefix + cmd.COPY_MARKED, () =&gt; leo.nodeCommand(bridge.COPY_MARKED, u, refreshBoth, true)],
++[prefix + cmd.MOVE_MARKED_NODES, () =&gt; leo.nodeCommand(bridge.MOVE_MARKED_NODES, u, refreshBoth, true)],
++[prefix + cmd.DELETE_MARKED_NODES, () =&gt; leo.nodeCommand(bridge.DELETE_MARKED_NODES, u, refreshBoth, true)],
++[prefix + cmd.DIFF_MARKED_NODES, () =&gt; leo.nodeCommand(bridge.DIFF_MARKED_NODES, u, refreshBoth, true)],
++
++[prefix + cmd.EXTRACT, () =&gt; leo.nodeCommand(bridge.EXTRACT, u, refreshBoth, true)],
++[prefix + cmd.EXTRACT_NAMES, () =&gt; leo.nodeCommand(bridge.EXTRACT_NAMES, u, refreshBoth, true)],
++
++[prefix + cmd.MARK_CHANGED_ITEMS, () =&gt; leo.nodeCommand(bridge.MARK_CHANGED_ITEMS, u, refreshBoth, true)],
++[prefix + cmd.MARK_SUBHEADS, () =&gt; leo.nodeCommand(bridge.MARK_SUBHEADS, u, refreshBoth, true)],
++[prefix + cmd.UNMARK_ALL, () =&gt; leo.nodeCommand(bridge.UNMARK_ALL, u, refreshBoth, true)],
+@language python
+</t>
+<t tx="ekr.20200718172430.62">@language typescript
+</t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
         return self.sendLeoBridgePackage("node", self.p_to_ap(p_node))  # Single node, singular
@@ -8107,7 +8711,17 @@ if __name__ == '__main__':
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
-                    answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
+                    ### answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
+                    #
+                    # func = getattr(integController, w_param['action'], integController.leoCommand)
+                    func = getattr(integController, w_param['action'], None)
+                    if func:
+                        # print('FOUND:', func.__name__, flush=True)
+                        answer = func(w_param['param'])
+                    else:
+                        # Attempt to execute the command indirectly.
+                        print(f"NOT found: {w_param['action']}", flush=True)
+                        answer = integController.leoCommand(w_param['action'], w_param['param'], True)
                 else:
                     answer = "Error in processCommand"
                     print(answer, flush=True)
@@ -8373,7 +8987,7 @@ wsPort = 32125
     return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
-<t tx="felix.20200105173826.1">def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
+<t tx="felix.20200105173826.1">def leoCommand(self, p_command, p_ap, p_keepSelection=False):
     '''
     Generic call to a method in Leo's Commands class or any subcommander class.
 
@@ -8399,8 +9013,8 @@ wsPort = 32125
             self.commander.selectPosition(oldPosition)  
     return self.outputPNode(self.commander.p)
 
-# Compatibility.
-leoCommand = outlineCommand
+# Temporary Compatibility.
+outlineCommand = leoCommand
 </t>
 <t tx="felix.20200120224033.1">def insertNamedPNode(self, p_package):
     '''Insert a node at given node, set its headline, select it and finally return it'''

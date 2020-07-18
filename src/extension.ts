@@ -43,21 +43,6 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         // Define entries for all commands
         [prefix + cmd.EXECUTE, () => leo.executeScript()],
-        // TODO : @boltex More commands to implement #15, #23, #24
-        [prefix + cmd.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
-        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
-        [prefix + cmd.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],
-        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () => showInfo("TODO: cloneFindFlattenedMarked command")],
-        [prefix + cmd.EXTRACT, () => showInfo("TODO: extract command")],
-        [prefix + cmd.EXTRACT_NAMES, () => showInfo("TODO: extractNames command")],
-        [prefix + cmd.COPY_MARKED, () => showInfo("TODO: copyMarked command")],
-        [prefix + cmd.DIFF_MARKED_NODES, () => showInfo("TODO: diffMarkedNodes command")],
-        [prefix + cmd.MARK_CHANGED_ITEMS, () => showInfo("TODO: markChangedItems command")],
-        [prefix + cmd.MARK_SUBHEADS, () => showInfo("TODO: markSubheads command")],
-        [prefix + cmd.UNMARK_ALL, () => showInfo("TODO: unmarkAll command")],
-        [prefix + cmd.CLONE_MARKED_NODES, () => showInfo("TODO: cloneMarkedNodes command")],
-        [prefix + cmd.DELETE_MARKED_NODES, () => showInfo("TODO: deleteMarkedNodes command")],
-        [prefix + cmd.MOVE_MARKED_NODES, () => showInfo("TODO: moveMarkedNode command")],
         // Test for undeclared commands VERDICT IT WORKS!
         [prefix + cmd.CLICK_BUTTON, (p_node: LeoButtonNode) => leo.clickButton(p_node)],
 
@@ -80,6 +65,41 @@ export function activate(p_context: vscode.ExtensionContext) {
         [prefix + cmd.HEADLINE, (p_node: LeoNode) => leo.editHeadline(p_node, false)],
         [prefix + cmd.HEADLINE_SELECTION, () => leo.editHeadline(u, false)],
         [prefix + cmd.HEADLINE_SELECTION_FO, () => leo.editHeadline(u, true)],
+
+        // TODO : @boltex More commands to implement #15, #23, #24
+        // [prefix + cmd.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
+        // [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
+        // [prefix + cmd.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],
+        // [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () => showInfo("TODO: cloneFindFlattenedMarked command")],
+        // [prefix + cmd.EXTRACT, () => showInfo("TODO: extract command")],
+        // [prefix + cmd.EXTRACT_NAMES, () => showInfo("TODO: extractNames command")],
+
+        // [prefix + cmd.COPY_MARKED, () => showInfo("TODO: copyMarked command")],
+        // [prefix + cmd.DIFF_MARKED_NODES, () => showInfo("TODO: diffMarkedNodes command")],
+        // [prefix + cmd.MARK_CHANGED_ITEMS, () => showInfo("TODO: markChangedItems command")],
+        // [prefix + cmd.MARK_SUBHEADS, () => showInfo("TODO: markSubheads command")],
+        // [prefix + cmd.UNMARK_ALL, () => showInfo("TODO: unmarkAll command")],
+        // [prefix + cmd.CLONE_MARKED_NODES, () => showInfo("TODO: cloneMarkedNodes command")],
+        // [prefix + cmd.DELETE_MARKED_NODES, () => showInfo("TODO: deleteMarkedNodes command")],
+        // [prefix + cmd.MOVE_MARKED_NODES, () => showInfo("TODO: moveMarkedNode command")],
+
+        [prefix + cmd.CLONE_FIND_ALL, () => leo.nodeCommand(bridge.CLONE_FIND_ALL, u, refreshBoth, true)],
+        [prefix + cmd.CLONE_FIND_ALL_FLATTENED, () => leo.nodeCommand(bridge.CLONE_FIND_ALL_FLATTENED, u, refreshBoth, true)],
+        [prefix + cmd.CLONE_FIND_FLATTENED_MARKED, () => leo.nodeCommand(bridge.CLONE_FIND_FLATTENED_MARKED, u, refreshBoth, true)],
+        [prefix + cmd.CLONE_FIND_MARKED, () => leo.nodeCommand(bridge.CLONE_FIND_MARKED, u, refreshBoth, true)],
+        [prefix + cmd.CLONE_MARKED_NODES, () => leo.nodeCommand(bridge.CLONE_MARKED_NODES, u, refreshBoth, true)],
+
+        [prefix + cmd.COPY_MARKED, () => leo.nodeCommand(bridge.COPY_MARKED, u, refreshBoth, true)],
+        [prefix + cmd.MOVE_MARKED_NODES, () => leo.nodeCommand(bridge.MOVE_MARKED_NODES, u, refreshBoth, true)],
+        [prefix + cmd.DELETE_MARKED_NODES, () => leo.nodeCommand(bridge.DELETE_MARKED_NODES, u, refreshBoth, true)],
+        [prefix + cmd.DIFF_MARKED_NODES, () => leo.nodeCommand(bridge.DIFF_MARKED_NODES, u, refreshBoth, true)],
+
+        [prefix + cmd.EXTRACT, () => leo.nodeCommand(bridge.EXTRACT, u, refreshBoth, true)],
+        [prefix + cmd.EXTRACT_NAMES, () => leo.nodeCommand(bridge.EXTRACT_NAMES, u, refreshBoth, true)],
+
+        [prefix + cmd.MARK_CHANGED_ITEMS, () => leo.nodeCommand(bridge.MARK_CHANGED_ITEMS, u, refreshBoth, true)],
+        [prefix + cmd.MARK_SUBHEADS, () => leo.nodeCommand(bridge.MARK_SUBHEADS, u, refreshBoth, true)],
+        [prefix + cmd.UNMARK_ALL, () => leo.nodeCommand(bridge.UNMARK_ALL, u, refreshBoth, true)],
         // cut/copy/paste/delete given node.
         [prefix + cmd.COPY, (p_node: LeoNode) => leo.nodeCommand(bridge.COPY_PNODE, p_node, noRefresh, false)],
         [prefix + cmd.CUT, (p_node: LeoNode) => leo.nodeCommand(bridge.CUT_PNODE, p_node, refreshTree, false)],
