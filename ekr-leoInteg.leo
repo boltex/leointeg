@@ -18,7 +18,9 @@
 <v t="ekr.20200704142009.1"><vh>Recursive import script</vh></v>
 </v>
 <v t="ekr.20200713082426.1"><vh>To do</vh></v>
-<v t="ekr.20200717180557.1"><vh>@nosent package.json</vh></v>
+<v t="ekr.20200717180557.1"><vh>@clean package.json</vh>
+<v t="ekr.20200717191257.1"><vh>&lt;&lt; contributes &gt;&gt;</vh></v>
+</v>
 <v t="ekr.20200704142236.2"><vh>leointeg/src...</vh>
 <v t="ekr.20200704142236.3"><vh>@clean src/commandStack.ts</vh>
 <v t="ekr.20200704142236.4"><vh>class CommandStack</vh>
@@ -1085,13 +1087,13 @@ import { BodyTimeInfo } from "./types";
         uri: utils.strToLeoUri(p_gnx)
     } as vscode.FileChangeEvent]);
 }
-
-/**
+</t>
+<t tx="ekr.20200704142236.36">/**
  * * Refreshes the '_possibleGnxList' list of all unique gnx from Leo
  * @returns a promise that resolves to the fresh gnx string array
  */
-</t>
-<t tx="ekr.20200704142236.36">public refreshPossibleGnxList(): Thenable&lt;string[]&gt; {
+
+public refreshPossibleGnxList(): Thenable&lt;string[]&gt; {
     // * Get updated list of possible gnx
     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_ALL_GNX).then((p_result) =&gt; {
         if (p_result.allGnx) {
@@ -1102,13 +1104,13 @@ import { BodyTimeInfo } from "./types";
         return Promise.resolve(this._possibleGnxList);
     });
 }
-
-/**
+</t>
+<t tx="ekr.20200704142236.37">/**
  * * Get list of bodies that should be closed: gnx from openedBodiesGnx that are not in possibleGnxList
  * @returns Promise that resolves in a string array
  */
-</t>
-<t tx="ekr.20200704142236.37">public getExpiredGnxList(): Thenable&lt;string[]&gt; {
+
+public getExpiredGnxList(): Thenable&lt;string[]&gt; {
     return this.refreshPossibleGnxList()
         .then(p_possibleGnxList =&gt; {
             const w_gnxToClose: string[] = [];
@@ -1121,7 +1123,6 @@ import { BodyTimeInfo } from "./types";
             return Promise.resolve(w_gnxToClose);
         });
 }
-
 </t>
 <t tx="ekr.20200704142236.38">public watch(p_resource: vscode.Uri): vscode.Disposable {
     const w_gnx = utils.leoUriToStr(p_resource);
@@ -5476,160 +5477,7 @@ public static COMMANDS = {
     "color": "#fffbdc",
     "theme": "light"
   },
-  "contributes": {
-    "configuration": {
-      "title": "Leo Integration",
-      "properties": {
-        "leoIntegration.checkForChangeExternalFiles": {
-          "scope": "application",
-          "default": "none",
-          "type": "string",
-          "description": "Set default for checking changes to external files",
-          "enum": [
-            "none",
-            "force-check",
-            "force-ignore"
-          ],
-          "enumDescriptions": [
-            "Default from Leo's config",
-            "Check for changes",
-            "Ignore all changes"
-          ]
-        },
-        "leoIntegration.defaultReloadIgnore": {
-          "scope": "application",
-          "default": "none",
-          "type": "string",
-          "description": "Set default for derived files to always reload, or always ignore, when changes are detected",
-          "enum": [
-            "none",
-            "yes-all",
-            "no-all"
-          ],
-          "enumDescriptions": [
-            "Choose each time",
-            "Reload All",
-            "Ignore All"
-          ]
-        },
-        "leoIntegration.leoTreeBrowse": {
-          "scope": "application",
-          "default": true,
-          "type": "boolean",
-          "description": "Specifies whether to use Leo's style of tree browsing with the arrow keys"
-        },
-        "leoIntegration.treeKeepFocus": {
-          "scope": "application",
-          "default": true,
-          "type": "boolean",
-          "description": "Specifies whether to keep focus in the outline when selecting a node - overridden by \"leoTreeBrowse\""
-        },
-        "leoIntegration.treeKeepFocusWhenAside": {
-          "scope": "application",
-          "default": false,
-          "type": "boolean",
-          "description": "Specifies whether to keep focus in the outline when opening a body pane on the side"
-        },
-        "leoIntegration.statusBarString": {
-          "scope": "application",
-          "default": "",
-          "type": "string",
-          "description": "Sets the message string of the Status Bar Indicator"
-        },
-        "leoIntegration.statusBarColor": {
-          "scope": "application",
-          "default": "fb7c47",
-          "type": "string",
-          "description": "Specifies the hexadecimal color string for the Status Bar Indicator"
-        },
-        "leoIntegration.treeInExplorer": {
-          "scope": "application",
-          "default": true,
-          "type": "boolean",
-          "description": "Show the outline tree in the explorer view"
-        },
-        "leoIntegration.showOpenAside": {
-          "scope": "application",
-          "default": true,
-          "type": "boolean",
-          "description": "Offer 'Open to the Side' in nodes context menu"
-        },
-        "leoIntegration.showEditOnNodes": {
-          "scope": "application",
-          "default": true,
-          "type": "boolean",
-          "description": "Shows 'Edit Headline' button on tree nodes"
-        },
-        "leoIntegration.showArrowsOnNodes": {
-          "scope": "application",
-          "default": false,
-          "type": "boolean",
-          "description": "Shows 'Move Node' arrow buttons on tree nodes"
-        },
-        "leoIntegration.showAddOnNodes": {
-          "scope": "application",
-          "default": false,
-          "type": "boolean",
-          "description": "Shows 'Insert' button on tree nodes"
-        },
-        "leoIntegration.showMarkOnNodes": {
-          "scope": "application",
-          "default": false,
-          "type": "boolean",
-          "description": "Shows 'Mark/Unmark' buttons on tree nodes"
-        },
-        "leoIntegration.showCloneOnNodes": {
-          "scope": "application",
-          "default": false,
-          "type": "boolean",
-          "description": "Shows 'Clone' button on tree nodes"
-        },
-        "leoIntegration.showCopyOnNodes": {
-          "scope": "application",
-          "default": false,
-          "type": "boolean",
-          "description": "Shows 'Copy' button on tree nodes"
-        },
-        "leoIntegration.invertNodeContrast": {
-          "scope": "application",
-          "default": false,
-          "type": "boolean",
-          "description": "Inverts the contrast of the dirty/clean border aspect of tree nodes"
-        },
-        "leoIntegration.leoPythonCommand": {
-          "scope": "application",
-          "default": "",
-          "type": "string",
-          "description": "Specifies the command to start python (Defaults to 'py' on windows and 'python3' otherwise)"
-        },
-        "leoIntegration.startServerAutomatically": {
-          "scope": "application",
-          "default": false,
-          "type": "boolean",
-          "description": "Starts a LeoBridge server automatically, by running the leobridgeserver.py python script"
-        },
-        "leoIntegration.connectToServerAutomatically": {
-          "scope": "application",
-          "default": false,
-          "type": "boolean",
-          "description": "Connect automatically to a Leo server on specified 'Connection Port' upon activation of this extension"
-        },
-        "leoIntegration.connectionAddress": {
-          "default": "localhost",
-          "scope": "application",
-          "type": "string",
-          "description": "Connection host"
-        },
-        "leoIntegration.connectionPort": {
-          "default": 32125,
-          "scope": "application",
-          "minimum": 0,
-          "maximum": 65535,
-          "type": "number",
-          "description": "Connection port"
-        }
-      }
-    },
+  &lt;&lt; contributes &gt;&gt;
     "viewsContainers": {
       "activitybar": [
         {
@@ -7605,6 +7453,160 @@ public static COMMANDS = {
 <t tx="ekr.20200717182938.1">
 Exception has occurred: Error: ENOENT: no such file or directory, stat
 'c:\Users\edreamleo\AppData\Roaming\Code\logs\20200717T182451\exthost3\output_logging_20200717T182516'</t>
+<t tx="ekr.20200717191257.1">"contributes": {
+  "configuration": {
+    "title": "Leo Integration",
+    "properties": {
+      "leoIntegration.checkForChangeExternalFiles": {
+        "scope": "application",
+        "default": "none",
+        "type": "string",
+        "description": "Set default for checking changes to external files",
+        "enum": [
+          "none",
+          "force-check",
+          "force-ignore"
+        ],
+        "enumDescriptions": [
+          "Default from Leo's config",
+          "Check for changes",
+          "Ignore all changes"
+        ]
+      },
+      "leoIntegration.defaultReloadIgnore": {
+        "scope": "application",
+        "default": "none",
+        "type": "string",
+        "description": "Set default for derived files to always reload, or always ignore, when changes are detected",
+        "enum": [
+          "none",
+          "yes-all",
+          "no-all"
+        ],
+        "enumDescriptions": [
+          "Choose each time",
+          "Reload All",
+          "Ignore All"
+        ]
+      },
+      "leoIntegration.leoTreeBrowse": {
+        "scope": "application",
+        "default": true,
+        "type": "boolean",
+        "description": "Specifies whether to use Leo's style of tree browsing with the arrow keys"
+      },
+      "leoIntegration.treeKeepFocus": {
+        "scope": "application",
+        "default": true,
+        "type": "boolean",
+        "description": "Specifies whether to keep focus in the outline when selecting a node - overridden by \"leoTreeBrowse\""
+      },
+      "leoIntegration.treeKeepFocusWhenAside": {
+        "scope": "application",
+        "default": false,
+        "type": "boolean",
+        "description": "Specifies whether to keep focus in the outline when opening a body pane on the side"
+      },
+      "leoIntegration.statusBarString": {
+        "scope": "application",
+        "default": "",
+        "type": "string",
+        "description": "Sets the message string of the Status Bar Indicator"
+      },
+      "leoIntegration.statusBarColor": {
+        "scope": "application",
+        "default": "fb7c47",
+        "type": "string",
+        "description": "Specifies the hexadecimal color string for the Status Bar Indicator"
+      },
+      "leoIntegration.treeInExplorer": {
+        "scope": "application",
+        "default": true,
+        "type": "boolean",
+        "description": "Show the outline tree in the explorer view"
+      },
+      "leoIntegration.showOpenAside": {
+        "scope": "application",
+        "default": true,
+        "type": "boolean",
+        "description": "Offer 'Open to the Side' in nodes context menu"
+      },
+      "leoIntegration.showEditOnNodes": {
+        "scope": "application",
+        "default": true,
+        "type": "boolean",
+        "description": "Shows 'Edit Headline' button on tree nodes"
+      },
+      "leoIntegration.showArrowsOnNodes": {
+        "scope": "application",
+        "default": false,
+        "type": "boolean",
+        "description": "Shows 'Move Node' arrow buttons on tree nodes"
+      },
+      "leoIntegration.showAddOnNodes": {
+        "scope": "application",
+        "default": false,
+        "type": "boolean",
+        "description": "Shows 'Insert' button on tree nodes"
+      },
+      "leoIntegration.showMarkOnNodes": {
+        "scope": "application",
+        "default": false,
+        "type": "boolean",
+        "description": "Shows 'Mark/Unmark' buttons on tree nodes"
+      },
+      "leoIntegration.showCloneOnNodes": {
+        "scope": "application",
+        "default": false,
+        "type": "boolean",
+        "description": "Shows 'Clone' button on tree nodes"
+      },
+      "leoIntegration.showCopyOnNodes": {
+        "scope": "application",
+        "default": false,
+        "type": "boolean",
+        "description": "Shows 'Copy' button on tree nodes"
+      },
+      "leoIntegration.invertNodeContrast": {
+        "scope": "application",
+        "default": false,
+        "type": "boolean",
+        "description": "Inverts the contrast of the dirty/clean border aspect of tree nodes"
+      },
+      "leoIntegration.leoPythonCommand": {
+        "scope": "application",
+        "default": "",
+        "type": "string",
+        "description": "Specifies the command to start python (Defaults to 'py' on windows and 'python3' otherwise)"
+      },
+      "leoIntegration.startServerAutomatically": {
+        "scope": "application",
+        "default": false,
+        "type": "boolean",
+        "description": "Starts a LeoBridge server automatically, by running the leobridgeserver.py python script"
+      },
+      "leoIntegration.connectToServerAutomatically": {
+        "scope": "application",
+        "default": false,
+        "type": "boolean",
+        "description": "Connect automatically to a Leo server on specified 'Connection Port' upon activation of this extension"
+      },
+      "leoIntegration.connectionAddress": {
+        "default": "localhost",
+        "scope": "application",
+        "type": "string",
+        "description": "Connection host"
+      },
+      "leoIntegration.connectionPort": {
+        "default": 32125,
+        "scope": "application",
+        "minimum": 0,
+        "maximum": 65535,
+        "type": "number",
+        "description": "Connection port"
+      }
+    }
+  },</t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
         return self.sendLeoBridgePackage("node", self.p_to_ap(p_node))  # Single node, singular
