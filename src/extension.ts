@@ -40,9 +40,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         ["testFromOutline", () => w_leo.test(true)], // Test function useful when debugging.
 
         // Define entries for all commands
-         [CMD.MINIBUFFER, () => w_leoIntegration.minibuffer()], // Cannot be undeclared because its referenced in package.json
-         [CMD.EXECUTE, () => w_leo.executeScript()],
-         
+        [CMD.MINIBUFFER, () => w_leo.minibuffer()], // Cannot be undeclared because its referenced in package.json
+        [CMD.EXECUTE, () => w_leo.executeScript()],
         // Test for undeclared commands VERDICT IT WORKS!
         [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leo.clickButton(p_node)],
 

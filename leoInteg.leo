@@ -7689,8 +7689,8 @@ export function isHexColor(p_hexString: string): boolean {
 }
 
 </t>
-<t tx="felix.20200718201153.1"> [CMD.MINIBUFFER, () =&gt; w_leoIntegration.minibuffer()], // Cannot be undeclared because its referenced in package.json
- [CMD.EXECUTE, () =&gt; w_leo.executeScript()],
- </t>
+<t tx="felix.20200718201153.1">[CMD.MINIBUFFER, () =&gt; w_leo.minibuffer()], // Cannot be undeclared because its referenced in package.json
+[CMD.EXECUTE, () =&gt; w_leo.executeScript()],
+</t>
 </tnodes>
 </leo_file>
