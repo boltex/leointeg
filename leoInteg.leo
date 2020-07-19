@@ -90,7 +90,12 @@
 <v t="felix.20200718005425.1"><vh>Leo File Documents</vh></v>
 <v t="felix.20200718005440.1"><vh>Tree View</vh></v>
 <v t="felix.20200718005444.1"><vh>Node Editing</vh></v>
-<v t="felix.20200718005448.1"><vh>Move Nodes</vh></v>
+<v t="felix.20200718005448.1"><vh>Move Nodes</vh>
+<v t="felix.20200719154213.1"><vh>Move Down</vh></v>
+<v t="felix.20200719154227.1"><vh>Move left</vh></v>
+<v t="felix.20200719154239.1"><vh>Move right</vh></v>
+<v t="felix.20200719154246.1"><vh>Move Up</vh></v>
+</v>
 <v t="felix.20200718005453.1"><vh>Outline Editing</vh></v>
 <v t="felix.20200718005458.1"><vh>Goto Nodes</vh></v>
 </v>
@@ -232,7 +237,7 @@
 </v>
 <v t="felix.20191126232435.1"><vh>main</vh></v>
 </v>
-<v t="felix.20200718165721.1"><vh>Typescript Sources</vh>
+<v t="felix.20200718165721.1"><vh>Leo Integration Sources</vh>
 <v t="felix.20200718024635.1"><vh>@clean src/commandStack.ts</vh>
 <v t="felix.20200718024635.2"><vh>class CommandStack</vh>
 <v t="felix.20200718024635.3"><vh>size</vh></v>
@@ -569,7 +574,7 @@
 <v t="felix.20200718195558.12"><vh>setContext</vh></v>
 </v>
 </v>
-<v t="felix.20200718220416.1"><vh>Webview Sources</vh>
+<v t="felix.20200718220416.1"><vh>Welcome &amp; Settings Webview</vh>
 <v t="felix.20200718222954.1"><vh>webview/apps/index.html</vh></v>
 <v t="felix.20200718223004.1"><vh>webview/apps/index.ts</vh></v>
 <v t="felix.20200718223013.1"><vh>webview/apps/theme.ts</vh></v>
@@ -4093,103 +4098,7 @@ wsPort = 32125
   "when": "leoTreeOpened &amp;&amp; leoMarked &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
 },
 </t>
-<t tx="felix.20200718005448.1">{
-  "command": "leointeg.moveOutlineDownSelection",
-  "key": "ctrl+d",
-  "mac": "cmd+d",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineDownSelectionFromOutline",
-  "key": "ctrl+d",
-  "mac": "cmd+d",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineLeftSelection",
-  "key": "ctrl+l",
-  "mac": "cmd+l",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineLeftSelectionFromOutline",
-  "key": "ctrl+l",
-  "mac": "cmd+l",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineRightSelection",
-  "key": "ctrl+r",
-  "mac": "cmd+r",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineRightSelectionFromOutline",
-  "key": "ctrl+r",
-  "mac": "cmd+r",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineUpSelection",
-  "key": "ctrl+u",
-  "mac": "cmd+u",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineUpSelectionFromOutline",
-  "key": "ctrl+u",
-  "mac": "cmd+u",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineDownSelection",
-  "key": "shift+alt+down",
-  "mac": "shift+alt+down",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineDownSelectionFromOutline",
-  "key": "shift+alt+down",
-  "mac": "shift+alt+down",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineLeftSelection",
-  "key": "shift+alt+left",
-  "mac": "shift+alt+left",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineLeftSelectionFromOutline",
-  "key": "shift+alt+left",
-  "mac": "shift+alt+left",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineRightSelection",
-  "key": "shift+alt+right",
-  "mac": "shift+alt+right",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineRightSelectionFromOutline",
-  "key": "shift+alt+right",
-  "mac": "shift+alt+right",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineUpSelection",
-  "key": "shift+alt+up",
-  "mac": "shift+alt+up",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineUpSelectionFromOutline",
-  "key": "shift+alt+up",
-  "mac": "shift+alt+up",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-</t>
+<t tx="felix.20200718005448.1"></t>
 <t tx="felix.20200718005453.1">{
   "command": "leointeg.sortSiblingsSelection",
   "key": "alt+a",
@@ -7937,24 +7846,26 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 &gt; _More commands are available by opening the **Command Palette** and typing 'Leo'_
 
-| Commands Keybinding        |     |                       | Command            |
-| :------------------------- | :-- | :-------------------- | :----------------- |
-| `Alt + -`                  |     |                       | Contract All       |
-| `Ctrl + I`                 |     |                       | Insert Node        |
-| `Ctrl + H`                 |     |                       | Edit Headline      |
-| `Ctrl + Backquote`         |     |                       | Clone Node         |
-| `Ctrl + Shift + C`         |     |                       | Copy Node          |
-| `Ctrl + Shift + X`         |     |                       | Cut Node           |
-| `Ctrl + Shift + V`         |     |                       | Paste Node         |
-| `Ctrl + Shift + Backspace` |     |                       | Delete Node        |
-| `Ctrl + B`                 |     |                       | Execute Script     |
-| `Ctrl + M`                 |     |                       | Mark / Unmark      |
-| `Ctrl + {`                 |     | `Ctrl + }`            | Promote / Demote   |
-| `Alt + A`                  |     |                       | Sort Siblings      |
-| `Ctrl + U`                 | or  | `Shift + Alt + Up`    | Move Outline Up    |
-| `Ctrl + D`                 | or  | `Shift + Alt + Down`  | Move Outline Down  |
-| `Ctrl + L`                 | or  | `Shift + Alt + Left`  | Move Outline Left  |
-| `Ctrl + R`                 | or  | `Shift + Alt + Right` | Move Outline Right |
+| Commands Keybinding        |     |                         | Command            |
+| :------------------------- | :-- | :---------------------- | :----------------- |
+| `Alt + -`                  |     |                         | Contract All       |
+| `Ctrl + I`                 |     |                         | Insert Node        |
+| `Ctrl + H`                 |     |                         | Edit Headline      |
+| `Ctrl + Backquote`         |     |                         | Clone Node         |
+| `Ctrl + Shift + C`         |     |                         | Copy Node          |
+| `Ctrl + Shift + X`         |     |                         | Cut Node           |
+| `Ctrl + Shift + V`         |     |                         | Paste Node         |
+| `Ctrl + Shift + Backspace` |     |                         | Delete Node        |
+| `Ctrl + B`                 |     |                         | Execute Script     |
+| `Ctrl + M`                 |     |                         | Mark / Unmark      |
+| `Ctrl + {`                 |     | `Ctrl + }`              | Promote / Demote   |
+| `Alt + A`                  |     |                         | Sort Siblings      |
+| `Ctrl + U`                 | or  | `Shift [+ Alt] + Up`    | Move Outline Up    |
+| `Ctrl + D`                 | or  | `Shift [+ Alt] + Down`  | Move Outline Down  |
+| `Ctrl + L`                 | or  | `Shift [+ Alt] + Left`  | Move Outline Left  |
+| `Ctrl + R`                 | or  | `Shift [+ Alt] + Right` | Move Outline Right |
+
+&gt; Move Outline commands only need the 'Alt' key modifier when focus is on body pane.
 
 ### Tree Browsing Keybindings
 
@@ -9993,5 +9904,125 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 <t tx="felix.20200719031802.1"></t>
 <t tx="felix.20200719033306.1"></t>
 <t tx="felix.20200719033511.1"></t>
+<t tx="felix.20200719154213.1">{
+  "command": "leointeg.moveOutlineDownSelection",
+  "key": "ctrl+d",
+  "mac": "cmd+d",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineDownSelection",
+  "key": "shift+alt+down",
+  "mac": "shift+alt+down",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineDownSelectionFromOutline",
+  "key": "ctrl+d",
+  "mac": "cmd+d",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineDownSelectionFromOutline",
+  "key": "shift+down",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineDownSelectionFromOutline",
+  "key": "shift+alt+down",
+  "mac": "shift+alt+down",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+</t>
+<t tx="felix.20200719154227.1">{
+  "command": "leointeg.moveOutlineLeftSelection",
+  "key": "ctrl+l",
+  "mac": "cmd+l",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineLeftSelection",
+  "key": "shift+alt+left",
+  "mac": "shift+alt+left",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineLeftSelectionFromOutline",
+  "key": "ctrl+l",
+  "mac": "cmd+l",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineLeftSelectionFromOutline",
+  "key": "shift+left",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineLeftSelectionFromOutline",
+  "key": "shift+alt+left",
+  "mac": "shift+alt+left",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+</t>
+<t tx="felix.20200719154239.1">{
+  "command": "leointeg.moveOutlineRightSelection",
+  "key": "ctrl+r",
+  "mac": "cmd+r",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineRightSelection",
+  "key": "shift+alt+right",
+  "mac": "shift+alt+right",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineRightSelectionFromOutline",
+  "key": "ctrl+r",
+  "mac": "cmd+r",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineRightSelectionFromOutline",
+  "key": "shift+right",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineRightSelectionFromOutline",
+  "key": "shift+alt+right",
+  "mac": "shift+alt+right",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+</t>
+<t tx="felix.20200719154246.1">{
+  "command": "leointeg.moveOutlineUpSelection",
+  "key": "ctrl+u",
+  "mac": "cmd+u",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineUpSelection",
+  "key": "shift+alt+up",
+  "mac": "shift+alt+up",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineUpSelectionFromOutline",
+  "key": "ctrl+u",
+  "mac": "cmd+u",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineUpSelectionFromOutline",
+  "key": "shift+up",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineUpSelectionFromOutline",
+  "key": "shift+alt+up",
+  "mac": "shift+alt+up",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+</t>
 </tnodes>
 </leo_file>
