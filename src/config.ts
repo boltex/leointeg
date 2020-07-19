@@ -42,7 +42,7 @@ export class Config implements ConfigMembers {
 
     /**
      * * Get Leointeg Configuration
-     * @returns An object with all 'live' config settings members such as treeKeepFocus, defaultReloadIgnore, etc.
+     * @returns An object with live config settings members such as treeKeepFocus, defaultReloadIgnore, etc.
      */
     public getConfig(): ConfigMembers {
         return {
@@ -72,9 +72,9 @@ export class Config implements ConfigMembers {
     }
 
     /**
-     * * Make changes to the expansion config settings, the updated configuration values are persisted
-     * @param p_changes an array of key/values to change in the expansion settings
-     * @returns a promise in case additional procedures need to be run upon completion
+     * * Apply changes to the expansion config settings, those configuration values are persisted
+     * @param p_changes is an array of key/values to change in the expansion settings
+     * @returns a promise, in case additional procedures need to be run upon completion
      */
     public setLeoIntegSettings(p_changes: { code: string, value: any }[]): Promise<void> {
         this._isSettingConfig = true;

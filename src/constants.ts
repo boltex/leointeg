@@ -24,10 +24,12 @@ export class Constants {
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";
-    public static URI_SCHEME: string = "leo";
+    public static URI_LEO_SCHEME: string = "leo";
+    public static URI_FILE_SCHEME: string = "file";
     public static URI_SCHEME_HEADER: string = "leo:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
     public static UNTITLED_FILE_NAME: string = "untitled";
+    public static RECENT_FILES_KEY: string = "leoFiles";
 
     public static DEFAULT_PYTHON: string = "python3.7";
     public static WIN32_PYTHON: string = "py";
@@ -67,7 +69,7 @@ export class Constants {
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
         STATUSBAR_DEFAULT_COLOR: "fb7c47",
-        STATUSBAR_DEFAULT_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: 🦁
+        STATUSBAR_DEFAULT_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
         STATUSBAR_INDICATOR: "$(keyboard) ",
         QUICK_OPEN_LEO_COMMANDS: ">leo: ",
         EXPLORER_TREEVIEW_PREFIX: "LEO ",
@@ -99,6 +101,7 @@ export class Constants {
         SAVE_CHANGES: "Save changes to",
         BEFORE_CLOSING: "before closing?",
         CANCEL: "Cancel",
+        OPEN_WITH_LEOINTEG: "Open this Leo file with LeoInteg?",
         FILE_ALREADY_OPENED: "Leo file already opened",
         CHOOSE_OPENED_FILE: "Select an opened Leo File",
         FILE_NOT_OPENED: "No files opened.",
@@ -218,6 +221,16 @@ export class Constants {
         AUTO_CONNECT: Constants.CONFIG.AUTO_CONNECT              // Used at startup
     };
     /**
+     * * Command strings to be used with vscode.commands.executeCommand
+     * See https://code.visualstudio.com/api/extension-guides/command#programmatically-executing-a-command
+     */
+    public static VSCODE_COMMANDS = {
+        SET_CONTEXT: "setContext",
+        CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
+        QUICK_OPEN: "workbench.action.quickOpen"
+    };
+
+    /**
      * * Actions that can be invoked by Leo through leobridge
      */
     public static ASYNC_ACTIONS = {
@@ -251,9 +264,6 @@ export class Constants {
      * * Commands for leobridgeserver.py
      */
     public static LEOBRIDGE = {
-
-        GIT_DIFF: "gitDiff", // EKR
-
         APPLY_CONFIG: "applyConfig",
         ASK_RESULT: "askResult",
         GET_ALL_GNX: "getAllGnx",
@@ -278,6 +288,9 @@ export class Constants {
         GET_BUTTONS: "getButtons",
         REMOVE_BUTTON: "removeButton",
         CLICK_BUTTON: "clickButton",
+        GET_COMMANDS: "getCommands", // ask leoBridge for the list of known commands, (starting with text string)
+        RUN_BY_NAME: "runByName", // Run a command by its string name like in minibuffer
+        GIT_DIFF: "gitDiff",
         // * Goto operations
         PAGE_UP: "pageUp",
         PAGE_DOWN: "pageDown",
@@ -334,142 +347,131 @@ export class Constants {
     };
 
     /**
-     * * Command strings to be used with vscode.commands.executeCommand
-     */
-    public static VSCODE_COMMANDS = {
-        SET_CONTEXT: "setContext",
-        CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
-        QUICK_OPEN: "workbench.action.quickOpen"
-    };
-    /**
      * * All commands this expansion exposes (in package.json, contributes > commands)
      */
     public static COMMANDS = {
-        
-        GIT_DIFF: "gitDiff", // EKR
-
-        SHOW_WELCOME: "showWelcomePage", // Always available: not in the commandPalette section of package.json
-        SHOW_SETTINGS: "showSettingsPage", // Always available: not in the commandPalette section of package.json
-
+        SHOW_WELCOME: Constants.NAME + ".showWelcomePage", // Always available: not in the commandPalette section of package.json
+        SHOW_SETTINGS: Constants.NAME + ".showSettingsPage", // Always available: not in the commandPalette section of package.json
         // * LeoBridge
-        START_SERVER: "startServer",
-        CONNECT: "connectToServer",
-        SET_OPENED_FILE: "setOpenedFile",
-        OPEN_FILE: "openLeoFile", // sets focus on BODY
-        SWITCH_FILE: "switchLeoFile",
-        NEW_FILE: "newLeoFile",
-        SAVE_FILE: "saveLeoFile", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
-        SAVE_FILE_FO: "saveLeoFileFromOutline", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
-        SAVE_AS_FILE: "saveAsLeoFile",
-        CLOSE_FILE: "closeLeoFile",
-        CLICK_BUTTON: "clickButton",
-        REMOVE_BUTTON: "removeButton",
+        START_SERVER: Constants.NAME + ".startServer",
+        CONNECT: Constants.NAME + ".connectToServer",
+        SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
+        OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
+        SWITCH_FILE: Constants.NAME + ".switchLeoFile",
+        NEW_FILE: Constants.NAME + ".newLeoFile",
+        SAVE_FILE: Constants.NAME + ".saveLeoFile", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
+        CLOSE_FILE: Constants.NAME + ".closeLeoFile",
+        CLICK_BUTTON: Constants.NAME + ".clickButton",
+        REMOVE_BUTTON: Constants.NAME + ".removeButton",
+        MINIBUFFER: Constants.NAME + ".minibuffer",
+        GIT_DIFF: Constants.NAME + ".gitDiff",
         // * Outline selection
-        SELECT_NODE: "selectTreeNode",
-        OPEN_ASIDE: "openAside",
+        SELECT_NODE: Constants.NAME + ".selectTreeNode",
+        OPEN_ASIDE: Constants.NAME + ".openAside",
         // * Goto operations that always finish with focus in outline
-        PAGE_UP: "pageUp",
-        PAGE_DOWN: "pageDown",
-        GOTO_FIRST_VISIBLE: "gotoFirstVisible",
-        GOTO_LAST_VISIBLE: "gotoLastVisible",
-        GOTO_LAST_SIBLING: "gotoLastSibling",
-        GOTO_NEXT_VISIBLE: "gotoNextVisible",
-        GOTO_PREV_VISIBLE: "gotoPrevVisible",
-        GOTO_NEXT_MARKED: "gotoNextMarked",
-        GOTO_NEXT_CLONE: "gotoNextClone",
-        GOTO_NEXT_CLONE_SELECTION: "gotoNextCloneSelection",
-        GOTO_NEXT_CLONE_SELECTION_FO: "gotoNextCloneSelectionFromOutline",
-        CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
-        EXPAND_AND_GO_RIGHT: "expandAndGoRight",
+        PAGE_UP: Constants.NAME + ".pageUp",
+        PAGE_DOWN: Constants.NAME + ".pageDown",
+        GOTO_FIRST_VISIBLE: Constants.NAME + ".gotoFirstVisible",
+        GOTO_LAST_VISIBLE: Constants.NAME + ".gotoLastVisible",
+        GOTO_LAST_SIBLING: Constants.NAME + ".gotoLastSibling",
+        GOTO_NEXT_VISIBLE: Constants.NAME + ".gotoNextVisible",
+        GOTO_PREV_VISIBLE: Constants.NAME + ".gotoPrevVisible",
+        GOTO_NEXT_MARKED: Constants.NAME + ".gotoNextMarked",
+        GOTO_NEXT_CLONE: Constants.NAME + ".gotoNextClone",
+        GOTO_NEXT_CLONE_SELECTION: Constants.NAME + ".gotoNextCloneSelection",
+        GOTO_NEXT_CLONE_SELECTION_FO: Constants.NAME + ".gotoNextCloneSelectionFromOutline",
+        CONTRACT_OR_GO_LEFT: Constants.NAME + ".contractOrGoLeft",
+        EXPAND_AND_GO_RIGHT: Constants.NAME + ".expandAndGoRight",
         // * Leo Operations
-        UNDO: "undo", // From command Palette
-        UNDO_FO: "undoFromOutline", // from button, return focus on OUTLINE
-        REDO: "redo", // From command Palette
-        REDO_FO: "redoFromOutline", // from button, return focus on OUTLINE
-        EXECUTE: "executeScriptSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
-        SHOW_BODY: "showBody",
-        SHOW_OUTLINE: "showOutline",
-        SHOW_LOG: "showLogPane",
-        SORT_CHILDREN: "sortChildrenSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
-        SORT_SIBLING: "sortSiblingsSelection",
-        SORT_SIBLING_FO: "sortSiblingsSelectionFromOutline",
-        CONTRACT_ALL: "contractAll", // From command Palette
-        CONTRACT_ALL_FO: "contractAllFromOutline", // from button, return focus on OUTLINE
+        UNDO: Constants.NAME + ".undo", // From command Palette
+        UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE
+        REDO: Constants.NAME + ".redo", // From command Palette
+        REDO_FO: Constants.NAME + ".redoFromOutline", // from button, return focus on OUTLINE
+        EXECUTE: Constants.NAME + ".executeScriptSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SHOW_BODY: Constants.NAME + ".showBody",
+        SHOW_OUTLINE: Constants.NAME + ".showOutline",
+        SHOW_LOG: Constants.NAME + ".showLogPane",
+        SORT_CHILDREN: Constants.NAME + ".sortChildrenSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SORT_SIBLING: Constants.NAME + ".sortSiblingsSelection",
+        SORT_SIBLING_FO: Constants.NAME + ".sortSiblingsSelectionFromOutline",
+        CONTRACT_ALL: Constants.NAME + ".contractAll", // From command Palette
+        CONTRACT_ALL_FO: Constants.NAME + ".contractAllFromOutline", // from button, return focus on OUTLINE
         // * Commands from tree panel buttons or context: focus on OUTLINE
-        MARK: "mark",
-        UNMARK: "unmark",
-        COPY: "copyNode",
-        CUT: "cutNode",
-        PASTE: "pasteNode",
-        PASTE_CLONE: "pasteNodeAsClone",
-        DELETE: "delete",
-        HEADLINE: "editHeadline",
-        MOVE_DOWN: "moveOutlineDown",
-        MOVE_LEFT: "moveOutlineLeft",
-        MOVE_RIGHT: "moveOutlineRight",
-        MOVE_UP: "moveOutlineUp",
-        INSERT: "insertNode",
-        CLONE: "cloneNode",
-        PROMOTE: "promote",
-        DEMOTE: "demote",
-        REFRESH_FROM_DISK: "refreshFromDisk",
+        MARK: Constants.NAME + ".mark",
+        UNMARK: Constants.NAME + ".unmark",
+        COPY: Constants.NAME + ".copyNode",
+        CUT: Constants.NAME + ".cutNode",
+        PASTE: Constants.NAME + ".pasteNode",
+        PASTE_CLONE: Constants.NAME + ".pasteNodeAsClone",
+        DELETE: Constants.NAME + ".delete",
+        HEADLINE: Constants.NAME + ".editHeadline",
+        MOVE_DOWN: Constants.NAME + ".moveOutlineDown",
+        MOVE_LEFT: Constants.NAME + ".moveOutlineLeft",
+        MOVE_RIGHT: Constants.NAME + ".moveOutlineRight",
+        MOVE_UP: Constants.NAME + ".moveOutlineUp",
+        INSERT: Constants.NAME + ".insertNode",
+        CLONE: Constants.NAME + ".cloneNode",
+        PROMOTE: Constants.NAME + ".promote",
+        DEMOTE: Constants.NAME + ".demote",
+        REFRESH_FROM_DISK: Constants.NAME + ".refreshFromDisk",
         // * Commands from keyboard, while focus on BODY (command-palette returns to BODY for now)
-        MARK_SELECTION: "markSelection",
-        UNMARK_SELECTION: "unmarkSelection",
-        COPY_SELECTION: "copyNodeSelection", // Nothing to refresh/focus so no "FO" version
-        CUT_SELECTION: "cutNodeSelection",
-        PASTE_SELECTION: "pasteNodeAtSelection",
-        PASTE_CLONE_SELECTION: "pasteNodeAsCloneAtSelection",
-        DELETE_SELECTION: "deleteSelection",
-        HEADLINE_SELECTION: "editSelectedHeadline",
-        MOVE_DOWN_SELECTION: "moveOutlineDownSelection",
-        MOVE_LEFT_SELECTION: "moveOutlineLeftSelection",
-        MOVE_RIGHT_SELECTION: "moveOutlineRightSelection",
-        MOVE_UP_SELECTION: "moveOutlineUpSelection",
-        INSERT_SELECTION: "insertNodeSelection",
-        INSERT_SELECTION_INTERRUPT: "insertNodeSelectionInterrupt", // Headline input box can be interrupted with another insert
-        CLONE_SELECTION: "cloneNodeSelection",
-        PROMOTE_SELECTION: "promoteSelection",
-        DEMOTE_SELECTION: "demoteSelection",
-        REFRESH_FROM_DISK_SELECTION: "refreshFromDiskSelection",
+        MARK_SELECTION: Constants.NAME + ".markSelection",
+        UNMARK_SELECTION: Constants.NAME + ".unmarkSelection",
+        COPY_SELECTION: Constants.NAME + ".copyNodeSelection", // Nothing to refresh/focus so no "FO" version
+        CUT_SELECTION: Constants.NAME + ".cutNodeSelection",
+        PASTE_SELECTION: Constants.NAME + ".pasteNodeAtSelection",
+        PASTE_CLONE_SELECTION: Constants.NAME + ".pasteNodeAsCloneAtSelection",
+        DELETE_SELECTION: Constants.NAME + ".deleteSelection",
+        HEADLINE_SELECTION: Constants.NAME + ".editSelectedHeadline",
+        MOVE_DOWN_SELECTION: Constants.NAME + ".moveOutlineDownSelection",
+        MOVE_LEFT_SELECTION: Constants.NAME + ".moveOutlineLeftSelection",
+        MOVE_RIGHT_SELECTION: Constants.NAME + ".moveOutlineRightSelection",
+        MOVE_UP_SELECTION: Constants.NAME + ".moveOutlineUpSelection",
+        INSERT_SELECTION: Constants.NAME + ".insertNodeSelection",
+        INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Headline input box can be interrupted with another insert
+        CLONE_SELECTION: Constants.NAME + ".cloneNodeSelection",
+        PROMOTE_SELECTION: Constants.NAME + ".promoteSelection",
+        DEMOTE_SELECTION: Constants.NAME + ".demoteSelection",
+        REFRESH_FROM_DISK_SELECTION: Constants.NAME + ".refreshFromDiskSelection",
         // * Commands from keyboard, while focus on OUTLINE
-        MARK_SELECTION_FO: "markSelectionFromOutline",
-        UNMARK_SELECTION_FO: "unmarkSelectionFromOutline",
+        MARK_SELECTION_FO: Constants.NAME + ".markSelectionFromOutline",
+        UNMARK_SELECTION_FO: Constants.NAME + ".unmarkSelectionFromOutline",
         // COPY_SELECTION Nothing to refresh/focus for "copy a node" so no entry here
-        CUT_SELECTION_FO: "cutNodeSelectionFromOutline",
-        PASTE_SELECTION_FO: "pasteNodeAtSelectionFromOutline",
-        PASTE_CLONE_SELECTION_FO: "pasteNodeAsCloneAtSelectionFromOutline",
-        DELETE_SELECTION_FO: "deleteSelectionFromOutline",
-        HEADLINE_SELECTION_FO: "editSelectedHeadlineFromOutline",
-        MOVE_DOWN_SELECTION_FO: "moveOutlineDownSelectionFromOutline",
-        MOVE_LEFT_SELECTION_FO: "moveOutlineLeftSelectionFromOutline",
-        MOVE_RIGHT_SELECTION_FO: "moveOutlineRightSelectionFromOutline",
-        MOVE_UP_SELECTION_FO: "moveOutlineUpSelectionFromOutline",
-        INSERT_SELECTION_FO: "insertNodeSelectionFromOutline",
-        CLONE_SELECTION_FO: "cloneNodeSelectionFromOutline",
-        PROMOTE_SELECTION_FO: "promoteSelectionFromOutline",
-        DEMOTE_SELECTION_FO: "demoteSelectionFromOutline",
-        REFRESH_FROM_DISK_SELECTION_FO: "refreshFromDiskSelectionFromOutline",
+        CUT_SELECTION_FO: Constants.NAME + ".cutNodeSelectionFromOutline",
+        PASTE_SELECTION_FO: Constants.NAME + ".pasteNodeAtSelectionFromOutline",
+        PASTE_CLONE_SELECTION_FO: Constants.NAME + ".pasteNodeAsCloneAtSelectionFromOutline",
+        DELETE_SELECTION_FO: Constants.NAME + ".deleteSelectionFromOutline",
+        HEADLINE_SELECTION_FO: Constants.NAME + ".editSelectedHeadlineFromOutline",
+        MOVE_DOWN_SELECTION_FO: Constants.NAME + ".moveOutlineDownSelectionFromOutline",
+        MOVE_LEFT_SELECTION_FO: Constants.NAME + ".moveOutlineLeftSelectionFromOutline",
+        MOVE_RIGHT_SELECTION_FO: Constants.NAME + ".moveOutlineRightSelectionFromOutline",
+        MOVE_UP_SELECTION_FO: Constants.NAME + ".moveOutlineUpSelectionFromOutline",
+        INSERT_SELECTION_FO: Constants.NAME + ".insertNodeSelectionFromOutline",
+        CLONE_SELECTION_FO: Constants.NAME + ".cloneNodeSelectionFromOutline",
+        PROMOTE_SELECTION_FO: Constants.NAME + ".promoteSelectionFromOutline",
+        DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",
+        REFRESH_FROM_DISK_SELECTION_FO: Constants.NAME + ".refreshFromDiskSelectionFromOutline",
+        HOIST: Constants.NAME + ".hoistNode",
+        HOIST_SELECTION: Constants.NAME + ".hoistSelection",
+        HOIST_SELECTION_FO: Constants.NAME + ".hoistSelectionFromOutline",
+        DEHOIST: Constants.NAME + ".deHoist",
+        DEHOIST_FO: Constants.NAME + ".deHoistFromOutline",
         // * - - - - - - - - - - - - - - - not implemented yet
-        HOIST: "hoistNode",
-        HOIST_SELECTION: "hoistSelection",
-        HOIST_SELECTION_FO: "hoistSelectionFromOutline",
-        DEHOIST: "deHoist",
-        DEHOIST_FO: "deHoistFromOutline",
-        CLONE_FIND_ALL: "cloneFindAll",
-        CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened",
-        CLONE_FIND_MARKED: "cloneFindMarked",
-        CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked",
-        EXTRACT: "extract",
-        EXTRACT_NAMES: "extractNames",
-        COPY_MARKED: "copyMarked",
-        DIFF_MARKED_NODES: "diffMarkedNodes",
-        MARK_CHANGED_ITEMS: "markChangedItems",
-        MARK_SUBHEADS: "markSubheads",
-        UNMARK_ALL: "unmarkAll",
-        CLONE_MARKED_NODES: "cloneMarkedNodes",
-        DELETE_MARKED_NODES: "deleteMarkedNodes",
-        MOVE_MARKED_NODES: "moveMarkedNodes"
+        CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
+        CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
+        CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
+        CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
+        EXTRACT: Constants.NAME + ".extract",
+        EXTRACT_NAMES: Constants.NAME + ".extractNames",
+        COPY_MARKED: Constants.NAME + ".copyMarked",
+        DIFF_MARKED_NODES: Constants.NAME + ".diffMarkedNodes",
+        MARK_CHANGED_ITEMS: Constants.NAME + ".markChangedItems",
+        MARK_SUBHEADS: Constants.NAME + ".markSubheads",
+        UNMARK_ALL: Constants.NAME + ".unmarkAll",
+        CLONE_MARKED_NODES: Constants.NAME + ".cloneMarkedNodes",
+        DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
+        MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes"
     };
-    
 }

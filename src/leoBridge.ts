@@ -52,8 +52,15 @@ export class LeoBridge {
     }
 
     /**
+     * * Busy state of the leoBridge's command stack
+     */
+    public isBusy(): boolean {
+        return this._actionBusy || !!this._callStack.length;
+    }
+
+    /**
      * * Actions invoked by Leo that can be called asynchronously at any time
-     * @param w_parsedData Object that contains an 'async' string member that was parsed from a _websocket.onmessage JSON package
+     * @param w_parsedData that contains an 'async' string member, that was parsed from a _websocket.onmessage package
      */
     private _asyncAction(w_parsedData: any): void {
         if (w_parsedData && w_parsedData.async && (typeof w_parsedData.async === "string")) {

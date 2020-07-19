@@ -173,7 +173,7 @@ export class LeoStates {
         private _leoIntegration: LeoIntegration
     ) { }
 
-    public selectedNodeFlags(p_node: LeoNode): void {
+    public setSelectedNodeFlags(p_node: LeoNode): void {
         this.leoRoot = false; // * RESET the root flag : It is set by vscode instead right after getting list of children for root of outline
         this.leoMarked = p_node.marked;
         this.leoCloned = p_node.cloned;
@@ -183,7 +183,7 @@ export class LeoStates {
         this.leoAtFile = p_node.atFile;
     }
 
-    public leoStateFlags(p_states: LeoPackageStates): void {
+    public setLeoStateFlags(p_states: LeoPackageStates): void {
         this.leoChanged = p_states.changed;
         this.leoCanUndo = p_states.canUndo;
         this.leoCanRedo = p_states.canRedo;

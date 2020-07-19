@@ -3,7 +3,7 @@ import { Constants } from "./constants";
 import { Icon } from "./types";
 import { LeoNode } from "./leoNode";
 
-// * String and other types/structures helper functions, along with common vscode API calls
+// String and other types/structures helper functions, along with common vscode API calls
 
 /**
  * * Build a string for representing a number that's 2 digits wide, padding with a zero if needed
@@ -138,3 +138,4 @@ export function leoUriToStr(p_uri: vscode.Uri): string {
 export function setContext(p_key: string, p_value: any): Thenable<unknown> {
     return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, p_key, p_value);
 }
+

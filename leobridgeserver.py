@@ -1,14 +1,13 @@
 #! python3
 import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
-
 import asyncio
-import getopt
-import json
-import sys
-import time
-import traceback
 import websockets
+import sys
+import getopt
+import time
+import json
+
 # server defaults
 wsHost = "localhost"
 wsPort = 32125
@@ -450,7 +449,7 @@ class LeoBridgeIntegController:
         # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
         self.g.app.gui.runAskYesNoDialog = self._returnYes  # override for "revert to file" operation
 
-        # setup leoBackground to get messages from leo
+        # * setup leoBackground to get messages from leo
         try:
             self.g.app.idleTimeManager.start()  # To catch derived file changes
         except:
@@ -462,7 +461,7 @@ class LeoBridgeIntegController:
 
         I usually don't like to use __getattr__, but here it seem justified: we
         don't want to define methods for all of Leo's commands here!
-        
+
         Otoh, the code actually works without this, but apparently
         there are problem on startup in the .json files.
         """
@@ -472,6 +471,7 @@ class LeoBridgeIntegController:
             # Delegate all "missing" methods to our leoCommand method.
             return self.leoCommand
         raise AttributeError
+
     async def _asyncIdleLoop(self, p_seconds, p_fn):
         while True:
             await asyncio.sleep(p_seconds)
@@ -712,6 +712,18 @@ class LeoBridgeIntegController:
                 w_buttons.append(w_entry)
         return self.sendLeoBridgePackage("buttons", w_buttons)
 
+    def removeButton(self, p_package):
+        '''Removes an entry from the buttonsDict by index string'''
+        w_index = p_package['index']
+        w_dict = self.commander.theScriptingController.buttonsDict
+        w_key = None
+        for i_key in w_dict:
+            if(str(i_key) == w_index):
+                w_key = i_key
+        if w_key:
+            del(w_dict[w_key])  # delete object member
+        return self.outputPNode(self.commander.p)  # return selected node when done
+
     def clickButton(self, p_package):
         '''Handles buttons clicked in vscode from the '@button' panel'''
         w_index = p_package['index']
@@ -724,16 +736,42 @@ class LeoBridgeIntegController:
             w_button.command()  # run clicked button command
         return self.outputPNode(self.commander.p)  # return selected node when done
 
-    def removeButton(self, p_package):
-        '''Removes an entry from the buttonsDict by index string'''
-        w_index = p_package['index']
-        w_dict = self.commander.theScriptingController.buttonsDict
-        w_key = None
-        for i_key in w_dict:
-            if(str(i_key) == w_index):
-                w_key = i_key
-        if w_key:
-            del(w_dict[w_key])  # delete object member
+    def getCommands(self, p_package):
+        '''get command list starting with string, or none'''
+
+        # TODO
+
+        print("get command list starting with string: ")
+
+        if "text" in p_package:
+            print(p_package['text'])
+        else:
+            print("no string given")
+
+        w_commands = []
+        w_commands.append("one")
+        w_commands.append("two")
+        w_commands.append("three")
+
+        return self.sendLeoBridgePackage("commands", w_commands)
+
+    def runByName(self, p_package):
+        '''Run a command by name, with optional parameters'''
+        # TODO
+
+        print("runByName for string:")
+
+        if "text" in p_package:
+            print(p_package['text'])
+        else:
+            print("no string given")
+
+        # Also consider p_package['params'] to be rebuilt from JSON
+        if "params" in p_package:
+            print(p_package['params'])
+        else:
+            print("no params given")
+
         return self.outputPNode(self.commander.p)  # return selected node when done
 
     def setActionId(self, p_id):
@@ -986,37 +1024,9 @@ class LeoBridgeIntegController:
         '''Do the git-diff command'''
         return self.leoCommand("gitDiff", p_ap, True)
 
-    def leoCommand(self, p_command, p_ap, p_keepSelection=False):
-        '''
-        Generic call to a method in Leo's Commands class or any subcommander class.
-
-        p_command: a method name (a string).
-        p-node: (p_ap), an archived position.
-        p_keepSelection: preserve the current selection.
-        '''
-        if not p_ap:
-            return self.outputError(f"Error in {p_command}: no param p_ap")
-        w_p = self.ap_to_p(p_ap)
-        if not w_p:
-            return self.outputError(f"Error in {p_command}: no w_p node found")
-        w_func = self.get_commander_method(p_command)
-        if not w_func:
-            return self.outputError(f"Error in {p_command}: no method found")
-        if w_p == self.commander.p:
-            w_func()
-        else:
-            oldPosition = self.commander.p
-            self.commander.selectPosition(w_p)
-            w_func()
-            if p_keepSelection and self.commander.positionExists(oldPosition):
-                self.commander.selectPosition(oldPosition)  
-        return self.outputPNode(self.commander.p)
-
-    # Temporary Compatibility.
-    outlineCommand = leoCommand
-    def get_commander_method(self, p_command):
+    def _get_commander_method(self, p_command):
         """ Return the given method (p_command) in the Commands class or subcommanders."""
-        ### self.g.trace(p_command)
+        # self.g.trace(p_command)
         #
         # First, try the commands class.
         w_func = getattr(self.commander, p_command, None)
@@ -1057,9 +1067,39 @@ class LeoBridgeIntegController:
                 if w_func:
                     ### self.g.trace(f"Found c.{ivar}.{p_command}")
                     return w_func
-            ### else:
-                ### self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
+            # else:
+                # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
         return None
+
+    def leoCommand(self, p_command, p_ap, p_keepSelection=False):
+        '''
+        Generic call to a method in Leo's Commands class or any subcommander class.
+
+        p_command: a method name (a string).
+        p-node: (p_ap), an archived position.
+        p_keepSelection: preserve the current selection.
+        '''
+        if not p_ap:
+            return self.outputError(f"Error in {p_command}: no param p_ap")
+        w_p = self.ap_to_p(p_ap)
+        if not w_p:
+            return self.outputError(f"Error in {p_command}: no w_p node found")
+        w_func = self._get_commander_method(p_command)
+        if not w_func:
+            return self.outputError(f"Error in {p_command}: no method found")
+        if w_p == self.commander.p:
+            w_func()
+        else:
+            oldPosition = self.commander.p
+            self.commander.selectPosition(w_p)
+            w_func()
+            if p_keepSelection and self.commander.positionExists(oldPosition):
+                self.commander.selectPosition(oldPosition)
+        return self.outputPNode(self.commander.p)
+
+    # Temporary Compatibility.
+    outlineCommand = leoCommand
+
     def undo(self, p_paramUnused):
         '''Undo last un-doable operation'''
         if self.commander.undoer.canUndo():
@@ -1408,7 +1448,7 @@ def main():
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
-                    ### answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
+                    # answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
                     #
                     # func = getattr(integController, w_param['action'], integController.leoCommand)
                     func = getattr(integController, w_param['action'], None)

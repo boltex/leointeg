@@ -7,7 +7,7 @@ import { BodyTimeInfo } from "./types";
 
 /**
  * * Body panes implementation as a file system using "leo" as a scheme identifier
- * * Saving and renaming prevents flickering and prevents undos to 'traverse through' different gnx
+ * Saving and renaming prevents flickering and prevents undos to 'traverse through' different gnx
  */
 export class LeoBodyProvider implements vscode.FileSystemProvider {
 
@@ -73,11 +73,11 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             uri: utils.strToLeoUri(p_gnx)
         } as vscode.FileChangeEvent]);
     }
+
     /**
      * * Refreshes the '_possibleGnxList' list of all unique gnx from Leo
      * @returns a promise that resolves to the fresh gnx string array
      */
-
     public refreshPossibleGnxList(): Thenable<string[]> {
         // * Get updated list of possible gnx
         return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_ALL_GNX).then((p_result) => {
@@ -89,11 +89,11 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             return Promise.resolve(this._possibleGnxList);
         });
     }
+
     /**
      * * Get list of bodies that should be closed: gnx from openedBodiesGnx that are not in possibleGnxList
      * @returns Promise that resolves in a string array
      */
-
     public getExpiredGnxList(): Thenable<string[]> {
         return this.refreshPossibleGnxList()
             .then(p_possibleGnxList => {
@@ -107,6 +107,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 return Promise.resolve(w_gnxToClose);
             });
     }
+
     public watch(p_resource: vscode.Uri): vscode.Disposable {
         const w_gnx = utils.leoUriToStr(p_resource);
         if (!this._openedBodiesGnx.includes(w_gnx)) {

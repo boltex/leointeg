@@ -31,7 +31,7 @@ export class LeoNode extends vscode.TreeItem {
         super(label, collapsibleState);
         this.contextValue = this._getNodeContextValue();
         this.command = {
-            command: Constants.NAME + "." + Constants.COMMANDS.SELECT_NODE,
+            command: Constants.COMMANDS.SELECT_NODE,
             title: '',
             arguments: [this]
         };
@@ -82,16 +82,20 @@ export class LeoNode extends vscode.TreeItem {
     }
 
     private _getNodeContextValue(): string {
-        let w_contextValue = Constants.CONTEXT_FLAGS.NODE_UNMARKED; // * Start it with 'leoNodeMarked' or 'leoNodeUnmarked'
+        // Start it with 'leoNodeMarked' or 'leoNodeUnmarked'
+        let w_contextValue = Constants.CONTEXT_FLAGS.NODE_UNMARKED;
         if (this.marked) {
             w_contextValue = Constants.CONTEXT_FLAGS.NODE_MARKED;
         }
+        // then append 'leoNodeAtFile' to existing if needed
         if (this.atFile) {
-            w_contextValue += Constants.CONTEXT_FLAGS.NODE_ATFILE; // * then append 'leoNodeAtFile' to existing if needed
+            w_contextValue += Constants.CONTEXT_FLAGS.NODE_ATFILE;
         }
+        // then append 'leoNodeCloned' to existing if needed
         if (this.cloned) {
-            w_contextValue += Constants.CONTEXT_FLAGS.NODE_CLONED; // * then append 'leoNodeCloned' to existing if needed
+            w_contextValue += Constants.CONTEXT_FLAGS.NODE_CLONED;
         }
+        // and finally, check for 'root' too
         if (this.isRoot) {
             w_contextValue += Constants.CONTEXT_FLAGS.NODE_ROOT;
         } else {
@@ -129,7 +133,7 @@ export class LeoNode extends vscode.TreeItem {
     public get description(): string {
         // * some smaller grayed-out text accompanying the main label
         if (this.u) {
-            return "📎 (" + Object.keys(this.u).length + ")";
+            return "\u{1F4CE} (" + Object.keys(this.u).length + ")";
         } else {
             return ""; // Falsy will not be shown
         }

@@ -14,7 +14,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
 
-    private _refreshSingleNodeFlag: boolean = false; // used in leoOutline.ts to check if getTreeItem(element: LeoNode) should fetch from Leo, or return as-is
+    // used in leoOutline.ts to check if getTreeItem(element: LeoNode) should fetch from Leo, or return as-is
+    private _refreshSingleNodeFlag: boolean = false;
 
     constructor(private _leoIntegration: LeoIntegration) { }
 
@@ -23,7 +24,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
      * @param p_node The outline's node itself as a LeoNode instance
      */
     public refreshTreeNode(p_node: LeoNode): void {
-        this._refreshSingleNodeFlag = true; // We want to do a real refresh, not just giving back the same we've got as input in getTreeItem
+        // We want to do a real refresh, not just giving back the same we've got as input in getTreeItem
+        this._refreshSingleNodeFlag = true;
         this._onDidChangeTreeData.fire(p_node);
     }
 

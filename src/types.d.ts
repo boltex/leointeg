@@ -99,6 +99,9 @@ export interface ArchivedPosition {
     }[];                    // for (stack_v, stack_childIndex) in p.stack]
 }
 
+/**
+ * * Items in the package object gotten back from 'getStates'
+ */
 export interface LeoPackageStates {
     changed: boolean;
     canUndo: boolean;
@@ -140,6 +143,7 @@ export interface LeoBridgePackage {
         files: LeoDocument[]
     }
     buttons?: LeoButton[]
+    commands?: string[]
 }
 
 /**

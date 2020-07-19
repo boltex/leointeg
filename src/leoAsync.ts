@@ -1,67 +1,11 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
-import { AskMessageItem, RefreshType, runAskYesNoDialogParameters, runWarnMessageDialogParameters, runInfoMessageDialogParameters, showSaveAsDialogParameters } from "./types";
+import {
+    AskMessageItem, RefreshType, runAskYesNoDialogParameters,
+    runWarnMessageDialogParameters, runInfoMessageDialogParameters,
+    showSaveAsDialogParameters
+} from "./types";
 import { LeoIntegration } from "./leoIntegration";
-
-/*
-    TODO : Should Reproduce those interactive controls that may be asked by Leo and redo a true UI bridge
-
-def runAboutLeoDialog(self, c, version, theCopyright, url, email):
-    return self.simulateDialog("aboutLeoDialog", None)
-
-def runAskLeoIDDialog(self):
-    return self.simulateDialog("leoIDDialog", None)
-
-def runAskOkDialog(self, c, title, message=None, text="Ok"):
-    return self.simulateDialog("okDialog", "Ok")
-
-def runAskOkCancelNumberDialog(self, c, title, message,
-    cancelButtonText=None,
-    okButtonText=None,
-):
-    return self.simulateDialog("numberDialog", -1)
-
-def runAskOkCancelStringDialog(self, c, title, message,
-    cancelButtonText=None,
-    okButtonText=None,
-    default="",
-    wide=False,
-):
-    return self.simulateDialog("stringDialog", '')
-
-def runCompareDialog(self, c):
-    return self.simulateDialog("compareDialog", '')
-
-def runOpenFileDialog(self, c, title, filetypes, defaultextension,
-    multiple=False,
-    startpath=None,
-):
-    return self.simulateDialog("openFileDialog", None)
-
-def runSaveFileDialog(self, c, initialfile, title, filetypes, defaultextension):
-    return self.simulateDialog("saveFileDialog", None)
-
-def runAskYesNoDialog(self, c, title,
-    message=None,
-    yes_all=False,
-    no_all=False,
-):
-    return self.simulateDialog("yesNoDialog", "no")
-
-def runAskYesNoCancelDialog(self, c, title,
-    message=None,
-    yesMessage="Yes",
-    noMessage="No",
-    yesToAllMessage=None,
-    defaultButton="Yes",
-    cancelMessage=None,
-):
-    return self.simulateDialog("yesNoCancelDialog", "cancel")
-
-def simulateDialog(self, key, defaultVal):
-    return defaultVal
-
-*/
 
 /**
  * * Handles the functions called by Leo through leoBridge such as adding a log pane entry, runAskYesNoDialog for file changes, etc.
@@ -88,8 +32,8 @@ export class LeoAsync {
      * @param p_saveAsArg
      */
     public showSaveAsDialog(p_saveAsArg: showSaveAsDialogParameters): void {
+        // TODO : Check if needed
         console.log('TODO: SHOW SAVE AS DIALOG!');
-
     }
 
     /**
@@ -179,3 +123,63 @@ export class LeoAsync {
         vscode.window.showInformationMessage(w_message);
     }
 }
+
+/*
+    TODO : Should Reproduce those interactive controls that may be asked by Leo and redo a true UI bridge
+
+def runAboutLeoDialog(self, c, version, theCopyright, url, email):
+    return self.simulateDialog("aboutLeoDialog", None)
+
+def runAskLeoIDDialog(self):
+    return self.simulateDialog("leoIDDialog", None)
+
+def runAskOkDialog(self, c, title, message=None, text="Ok"):
+    return self.simulateDialog("okDialog", "Ok")
+
+def runAskOkCancelNumberDialog(self, c, title, message,
+    cancelButtonText=None,
+    okButtonText=None,
+):
+    return self.simulateDialog("numberDialog", -1)
+
+def runAskOkCancelStringDialog(self, c, title, message,
+    cancelButtonText=None,
+    okButtonText=None,
+    default="",
+    wide=False,
+):
+    return self.simulateDialog("stringDialog", '')
+
+def runCompareDialog(self, c):
+    return self.simulateDialog("compareDialog", '')
+
+def runOpenFileDialog(self, c, title, filetypes, defaultextension,
+    multiple=False,
+    startpath=None,
+):
+    return self.simulateDialog("openFileDialog", None)
+
+def runSaveFileDialog(self, c, initialfile, title, filetypes, defaultextension):
+    return self.simulateDialog("saveFileDialog", None)
+
+def runAskYesNoDialog(self, c, title,
+    message=None,
+    yes_all=False,
+    no_all=False,
+):
+    return self.simulateDialog("yesNoDialog", "no")
+
+def runAskYesNoCancelDialog(self, c, title,
+    message=None,
+    yesMessage="Yes",
+    noMessage="No",
+    yesToAllMessage=None,
+    defaultButton="Yes",
+    cancelMessage=None,
+):
+    return self.simulateDialog("yesNoCancelDialog", "cancel")
+
+def simulateDialog(self, key, defaultVal):
+    return defaultVal
+
+*/

@@ -1,16 +1,16 @@
-
-// @button node implementation for usage with the leoButtons.ts treeview provider
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoButton, Icon } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
- * * Leo @buttons tree view node item implementation for usage in a TreeDataProvider
+ * * Leo @buttons tree view node item implementation, for usage in a TreeDataProvider.
  */
 export class LeoButtonNode extends vscode.TreeItem {
 
-    public contextValue: string; // * Context string is checked in package.json with 'when' clauses
+    // Context string that is checked in package.json with 'when' clauses
+    public contextValue: string;
+
     private _isAdd: boolean;
 
     constructor(
@@ -18,9 +18,9 @@ export class LeoButtonNode extends vscode.TreeItem {
         private _leoIntegration: LeoIntegration
     ) {
         super(button.name);
-        // * Setup this instance
+        // Setup this instance (just differentiate 'script-button' for now)
         this.command = {
-            command: Constants.NAME + "." + Constants.COMMANDS.CLICK_BUTTON,
+            command: Constants.COMMANDS.CLICK_BUTTON,
             title: '',
             arguments: [this]
         };
@@ -52,5 +52,4 @@ export class LeoButtonNode extends vscode.TreeItem {
             return false;
         }
     }
-
 }
