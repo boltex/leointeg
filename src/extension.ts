@@ -88,7 +88,6 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.CONTRACT_OR_GO_LEFT, () => w_leo.nodeCommand(BRIDGE.CONTRACT_OR_GO_LEFT, U, REFRESH_BOTH, true)],
 
         [CMD.EXPAND_AND_GO_RIGHT, () => w_leo.nodeCommand(BRIDGE.EXPAND_AND_GO_RIGHT, U, REFRESH_BOTH, true)],
-        // [cmd.GIT_DIFF, () => leo.nodeCommand(bridge.GIT_DIFF, u, refreshBoth, true)],
         [CMD.GOTO_NEXT_CLONE, (p_node: LeoNode) => w_leo.nodeCommand(BRIDGE.GOTO_NEXT_CLONE, p_node, REFRESH_BOTH, true)],
         [CMD.GOTO_NEXT_CLONE_SELECTION, () => w_leo.nodeCommand(BRIDGE.GOTO_NEXT_CLONE, U, REFRESH_BOTH, false)],
         [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () => w_leo.nodeCommand(BRIDGE.GOTO_NEXT_CLONE, U, REFRESH_BOTH, true)],
@@ -159,20 +158,18 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.UNDO_FO, () => w_leo.nodeCommand(BRIDGE.UNDO, U, REFRESH_BOTH, true)],
         [CMD.CONNECT, () => w_leo.connect()],
         [CMD.START_SERVER, () => w_leo.startServer()],
+
+        // Called by nodes in tree when selected either by mouse, or with enter
         [CMD.SELECT_NODE, (p_node: LeoNode) => w_leo.selectTreeNode(p_node, false, false)],
-        // Called by nodes in tree when selected
         [CMD.OPEN_ASIDE, (p_node: LeoNode) => w_leo.selectTreeNode(p_node, false, true)],
 
-        [CMD.SHOW_OUTLINE, () => w_leo.showOutline(true)],
-        // Also focuses on outline
+        [CMD.SHOW_OUTLINE, () => w_leo.showOutline(true)], // Also focuses on outline
 
         [CMD.SHOW_LOG, () => w_leo.showLogPane()],
-        [CMD.SHOW_BODY, () => w_leo.showBody(false)],
-        // Also focuses on body
+        [CMD.SHOW_BODY, () => w_leo.showBody(false)], // Also focuses on body
 
         [CMD.SHOW_WELCOME, () => w_leoSettingsWebview.openWebview()],
-        [CMD.SHOW_SETTINGS, () => w_leoSettingsWebview.openWebview()],
-        // Same as 'show welcome screen'
+        [CMD.SHOW_SETTINGS, () => w_leoSettingsWebview.openWebview()], // Same as SHOW_WELCOME
 
         // TODO : @boltex More commands to implement #15, #23, #24
         [CMD.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],

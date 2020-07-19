@@ -5193,8 +5193,7 @@ import { LeoButtonNode } from "./leoButtonNode";
 
 [CMD.EXPAND_AND_GO_RIGHT, () =&gt; w_leo.nodeCommand(BRIDGE.EXPAND_AND_GO_RIGHT, U, REFRESH_BOTH, true)],
 </t>
-<t tx="felix.20200718031424.11">// [cmd.GIT_DIFF, () =&gt; leo.nodeCommand(bridge.GIT_DIFF, u, refreshBoth, true)],
-</t>
+<t tx="felix.20200718031424.11"></t>
 <t tx="felix.20200718031424.12">[CMD.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.GOTO_NEXT_CLONE, p_node, REFRESH_BOTH, true)],
 [CMD.GOTO_NEXT_CLONE_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.GOTO_NEXT_CLONE, U, REFRESH_BOTH, false)],
 [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.GOTO_NEXT_CLONE, U, REFRESH_BOTH, true)],
@@ -5322,21 +5321,19 @@ export function activate(p_context: vscode.ExtensionContext) {
 </t>
 <t tx="felix.20200718031424.21">[CMD.CONNECT, () =&gt; w_leo.connect()],
 [CMD.START_SERVER, () =&gt; w_leo.startServer()],
+
+// Called by nodes in tree when selected either by mouse, or with enter
 </t>
 <t tx="felix.20200718031424.22">[CMD.SELECT_NODE, (p_node: LeoNode) =&gt; w_leo.selectTreeNode(p_node, false, false)],
-// Called by nodes in tree when selected
 [CMD.OPEN_ASIDE, (p_node: LeoNode) =&gt; w_leo.selectTreeNode(p_node, false, true)],
 
-[CMD.SHOW_OUTLINE, () =&gt; w_leo.showOutline(true)],
-// Also focuses on outline
+[CMD.SHOW_OUTLINE, () =&gt; w_leo.showOutline(true)], // Also focuses on outline
 
 [CMD.SHOW_LOG, () =&gt; w_leo.showLogPane()],
-[CMD.SHOW_BODY, () =&gt; w_leo.showBody(false)],
-// Also focuses on body
+[CMD.SHOW_BODY, () =&gt; w_leo.showBody(false)], // Also focuses on body
 
 [CMD.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
-[CMD.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()],
-// Same as 'show welcome screen'
+[CMD.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()], // Same as SHOW_WELCOME
 
 </t>
 <t tx="felix.20200718031424.24">/**
@@ -5430,7 +5427,7 @@ function getDurationMilliseconds(p_start: [number, number]): number {
 [CMD.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.REFRESH_FROM_DISK_PNODE, p_node, REFRESH_BOTH, false)],
 [CMD.REFRESH_FROM_DISK_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.REFRESH_FROM_DISK_PNODE, U, REFRESH_BOTH, false)],
 [CMD.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.REFRESH_FROM_DISK_PNODE, U, REFRESH_BOTH, true)],
-[CMD.GIT_DIFF, () =&gt; leo.nodeCommand(BRIDGE.GIT_DIFF, U, REFRESH_BOTH, true)],
+[CMD.GIT_DIFF, () =&gt; w_leo.nodeCommand(BRIDGE.GIT_DIFF, U, REFRESH_BOTH, true)],
 </t>
 <t tx="felix.20200718031424.7">[CMD.HEADLINE, (p_node: LeoNode) =&gt; w_leo.editHeadline(p_node, false)],
 [CMD.HEADLINE_SELECTION, () =&gt; w_leo.editHeadline(U, false)],
