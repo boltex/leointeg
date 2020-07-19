@@ -718,9 +718,11 @@ class LeoBridgeIntegController:
         return self.outputPNode(self.commander.p)  # return selected node when done
 
     def getCommands(self, p_package):
-        pass
+        '''get command list starting with string, or none'''
 
-        print("get command list for string: ")
+        # TODO
+
+        print("get command list starting with string: ")
 
         if "text" in p_package:
             print(p_package['text'])
@@ -735,7 +737,8 @@ class LeoBridgeIntegController:
         return self.sendLeoBridgePackage("commands", w_commands)
 
     def runByName(self, p_package):
-        pass
+        '''Run a command by name, with optional parameters'''
+        # TODO
 
         print("runByName for string:")
 
@@ -743,6 +746,12 @@ class LeoBridgeIntegController:
             print(p_package['text'])
         else:
             print("no string given")
+
+        # Also consider p_package['params'] to be rebuilt from JSON
+        if "params" in p_package:
+            print(p_package['params'])
+        else:
+            print("no params given")
 
         return self.outputPNode(self.commander.p)  # return selected node when done
 
@@ -992,25 +1001,84 @@ class LeoBridgeIntegController:
         self.commander.dehoist()
         return self.outputPNode(self.commander.p)  # in any case, return selected node
 
-    def outlineCommand(self, p_command, p_ap, p_keepSelection=False):
-        '''Generic call to an outline operation (p_command) for specific p-node (p_ap), with possibility of trying to preserve the current selection (p_keepSelection)'''
-        if p_ap:
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                w_func = getattr(self.commander, p_command)
-                if w_p == self.commander.p:
-                    w_func()
-                else:
-                    oldPosition = self.commander.p  # not same node, save position to possibly return to
-                    self.commander.selectPosition(w_p)
-                    w_func()
-                    if p_keepSelection and self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
-            else:
-                return self.outputError("Error in " + p_command + " no w_p node found")  # default empty
+    def gitDiff_xxx(self, p_ap):
+        '''Do the git-diff command'''
+        return self.leoCommand("gitDiff", p_ap, True)
+
+    def _get_commander_method(self, p_command):
+        """ Return the given method (p_command) in the Commands class or subcommanders."""
+        ### self.g.trace(p_command)
+        #
+        # First, try the commands class.
+        w_func = getattr(self.commander, p_command, None)
+        if w_func:
+            return w_func
+        #
+        # Search all subcommanders for the method.
+        table = (  # This table comes from c.initObjectIvars.
+            'abbrevCommands',
+            'bufferCommands',
+            'chapterCommands',
+            'controlCommands',
+            'convertCommands',
+            'debugCommands',
+            'editCommands',
+            'editFileCommands',
+            'evalController',
+            'gotoCommands',
+            'helpCommands',
+            'keyHandler',
+            'keyHandlerCommands',
+            'killBufferCommands',
+            'leoCommands',
+            'leoTestManager',
+            'macroCommands',
+            'miniBufferWidget',
+            'printingController',
+            'queryReplaceCommands',
+            'rectangleCommands',
+            'searchCommands',
+            'spellCommands',
+            'vimCommands',  # Not likely to be useful.
+        )
+        for ivar in table:
+            subcommander = getattr(self.commander, ivar, None)
+            if subcommander:
+                w_func = getattr(subcommander, p_command, None)
+                if w_func:
+                    ### self.g.trace(f"Found c.{ivar}.{p_command}")
+                    return w_func
+            ### else:
+                ### self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
+        return None
+    def leoCommand(self, p_command, p_ap, p_keepSelection=False):
+        '''
+        Generic call to a method in Leo's Commands class or any subcommander class.
+
+        p_command: a method name (a string).
+        p-node: (p_ap), an archived position.
+        p_keepSelection: preserve the current selection.
+        '''
+        if not p_ap:
+            return self.outputError(f"Error in {p_command}: no param p_ap")
+        w_p = self.ap_to_p(p_ap)
+        if not w_p:
+            return self.outputError(f"Error in {p_command}: no w_p node found")
+        w_func = self._get_commander_method(p_command)
+        if not w_func:
+            return self.outputError(f"Error in {p_command}: no method found")
+        if w_p == self.commander.p:
+            w_func()
         else:
-            return self.outputError("Error in " + p_command + " no param p_ap")
+            oldPosition = self.commander.p
+            self.commander.selectPosition(w_p)
+            w_func()
+            if p_keepSelection and self.commander.positionExists(oldPosition):
+                self.commander.selectPosition(oldPosition)  
+        return self.outputPNode(self.commander.p)
+
+    # Temporary Compatibility.
+    outlineCommand = leoCommand
 
     def undo(self, p_paramUnused):
         '''Undo last un-doable operation'''
@@ -1354,19 +1422,35 @@ def main():
             async for w_message in websocket:
                 w_param = json.loads(w_message)
                 if w_param and w_param['action']:
-                    # print("action:" + w_param['action'])
+                    # print(f"action: {w_param['action']}", flush=True)
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
-                    answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
+                    ### answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
+                    #
+                    # func = getattr(integController, w_param['action'], integController.leoCommand)
+                    func = getattr(integController, w_param['action'], None)
+                    if func:
+                        # print('FOUND:', func.__name__, flush=True)
+                        answer = func(w_param['param'])
+                    else:
+                        # Attempt to execute the command indirectly.
+                        print(f"NOT found: {w_param['action']}", flush=True)
+                        answer = integController.leoCommand(w_param['action'], w_param['param'], True)
                 else:
                     answer = "Error in processCommand"
                     print(answer, flush=True)
                 await websocket.send(answer)
-        except:
-            print("Caught Websocket Disconnect Event", flush=True)
+        except websockets.exceptions.ConnectionClosedError:
+            print("Websocket connection closed", flush=True)
+        except Exception:
+            print('Exception in leobridgeserver.py!', flush=True)
+            # Like g.es_exception()...
+            typ, val, tb = sys.exc_info()
+            for line in traceback.format_exception(typ, val, tb):
+                print(line.rstrip(), flush=True)
         finally:
             asyncio.get_event_loop().stop()
 
