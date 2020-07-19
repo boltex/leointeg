@@ -1100,56 +1100,6 @@ class LeoBridgeIntegController:
     # Temporary Compatibility.
     outlineCommand = leoCommand
 
-    # Temporary Compatibility.
-    outlineCommand = leoCommand
-
-    def get_commander_method(self, p_command):
-        """ Return the given method (p_command) in the Commands class or subcommanders."""
-        # self.g.trace(p_command)
-        #
-        # First, try the commands class.
-        w_func = getattr(self.commander, p_command, None)
-        if w_func:
-            return w_func
-        #
-        # Search all subcommanders for the method.
-        table = (  # This table comes from c.initObjectIvars.
-            'abbrevCommands',
-            'bufferCommands',
-            'chapterCommands',
-            'controlCommands',
-            'convertCommands',
-            'debugCommands',
-            'editCommands',
-            'editFileCommands',
-            'evalController',
-            'gotoCommands',
-            'helpCommands',
-            'keyHandler',
-            'keyHandlerCommands',
-            'killBufferCommands',
-            'leoCommands',
-            'leoTestManager',
-            'macroCommands',
-            'miniBufferWidget',
-            'printingController',
-            'queryReplaceCommands',
-            'rectangleCommands',
-            'searchCommands',
-            'spellCommands',
-            'vimCommands',  # Not likely to be useful.
-        )
-        for ivar in table:
-            subcommander = getattr(self.commander, ivar, None)
-            if subcommander:
-                w_func = getattr(subcommander, p_command, None)
-                if w_func:
-                    ### self.g.trace(f"Found c.{ivar}.{p_command}")
-                    return w_func
-            # else:
-                # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
-        return None
-
     def undo(self, p_paramUnused):
         '''Undo last un-doable operation'''
         if self.commander.undoer.canUndo():
