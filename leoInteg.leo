@@ -7,7 +7,6 @@
 <find_panel_settings/>
 <vnodes>
 <v t="felix.20190922171916.2"><vh>Introduction</vh></v>
-<v t="felix.20200718165721.1"><vh>Code</vh>
 <v t="felix.20200717222352.1"><vh>@clean package.json</vh>
 <v t="felix.20200717222716.1"><vh>configuration</vh>
 <v t="felix.20200717223431.1"><vh>External Files Change Detection</vh></v>
@@ -230,6 +229,7 @@
 </v>
 <v t="felix.20191126232435.1"><vh>main</vh></v>
 </v>
+<v t="felix.20200718165721.1"><vh>Typescript Sources</vh>
 <v t="felix.20200718024635.1"><vh>@clean src/commandStack.ts</vh>
 <v t="felix.20200718024635.2"><vh>class CommandStack</vh>
 <v t="felix.20200718024635.3"><vh>size</vh></v>
@@ -470,6 +470,48 @@
 <v t="felix.20200718195558.10"><vh>strToLeoUri</vh></v>
 <v t="felix.20200718195558.11"><vh>leoUriToStr</vh></v>
 <v t="felix.20200718195558.12"><vh>setContext</vh></v>
+</v>
+</v>
+<v t="felix.20200718220416.1"><vh>Webview Sources</vh></v>
+<v t="felix.20200718220455.1"><vh>Syntaxes and Languages</vh></v>
+<v t="felix.20200718220811.1"><vh>Documentation</vh>
+<v t="felix.20200718220818.1"><vh>@clean README.md</vh>
+<v t="felix.20200718221645.1"><vh>Requirements</vh></v>
+<v t="felix.20200718222026.1"><vh>Development version installation</vh></v>
+<v t="felix.20200718222035.1"><vh>Features</vh></v>
+<v t="felix.20200718222043.1"><vh>Keybindings</vh></v>
+<v t="felix.20200718222048.1"><vh>Derive External Files</vh></v>
+<v t="felix.20200718222053.1"><vh>Automate Synchronization</vh></v>
+<v t="felix.20200718222058.1"><vh>Status Bar Indicator</vh></v>
+<v t="felix.20200718222102.1"><vh>Extension Settings</vh></v>
+<v t="felix.20200718222108.1"><vh>Issues</vh></v>
+<v t="felix.20200718222113.1"><vh>How it works</vh></v>
+<v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
+</v>
+<v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20200718222415.1"><vh>0.1.13</vh></v>
+<v t="felix.20200718222417.1"><vh>0.1.12</vh></v>
+<v t="felix.20200718222419.1"><vh>0.1.11</vh></v>
+<v t="felix.20200718222422.1"><vh>0.1.10</vh></v>
+<v t="felix.20200718222425.1"><vh>0.1.9</vh></v>
+<v t="felix.20200718222427.1"><vh>0.1.8</vh></v>
+<v t="felix.20200718222429.1"><vh>0.1.7</vh></v>
+<v t="felix.20200718222433.1"><vh>0.1.6</vh></v>
+<v t="felix.20200718222435.1"><vh>0.1.5</vh></v>
+<v t="felix.20200718222437.1"><vh>0.1.4</vh></v>
+<v t="felix.20200718222439.1"><vh>0.1.3</vh></v>
+<v t="felix.20200718222440.1"><vh>0.1.2</vh></v>
+<v t="felix.20200718222442.1"><vh>0.1.1</vh></v>
+<v t="felix.20200718222445.1"><vh>0.0.1</vh></v>
+</v>
+<v t="felix.20200718220833.2"><vh>@clean CONTRIBUTING.md</vh>
+<v t="felix.20200718222731.1"><vh>Introduction</vh></v>
+<v t="felix.20200718222739.1"><vh>Development requirements</vh></v>
+<v t="felix.20200718222741.1"><vh>Getting the source</vh></v>
+<v t="felix.20200718222745.1"><vh>Choosing a debug profile</vh></v>
+<v t="felix.20200718222748.1"><vh>Starting the extension</vh></v>
+<v t="felix.20200718222754.1"><vh>The python server script</vh></v>
+<v t="felix.20200718222757.1"><vh>Issues</vh></v>
 </v>
 </v>
 </vnodes>
@@ -7691,6 +7733,419 @@ export function isHexColor(p_hexString: string): boolean {
 </t>
 <t tx="felix.20200718201153.1">[CMD.MINIBUFFER, () =&gt; w_leo.minibuffer()], // Cannot be undeclared because its referenced in package.json
 [CMD.EXECUTE, () =&gt; w_leo.executeScript()],
+</t>
+<t tx="felix.20200718220416.1"></t>
+<t tx="felix.20200718220455.1"></t>
+<t tx="felix.20200718220811.1"></t>
+<t tx="felix.20200718220818.1">@language md
+@tabwidth -4
+# ![LeoEditor](resources/leoapp.png) Leo Editor Integration with Visual Studio Code
+
+## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
+
+### Break your code down into sections structured as an outline, to derive or parse back your files
+
+&gt; Leo is a fundamentally different way of using and organizing data, programs and scripts.
+
+See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
+or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.visualstudio.com](https://code.visualstudio.com/).
+
+![Screenshot](resources/animated-screenshot.gif)
+
+@others
+
+---
+
+**Enjoy!**
+</t>
+<t tx="felix.20200718220833.1">@language md
+@tabwidth -4
+# Change Log
+
+@others
+</t>
+<t tx="felix.20200718220833.2">@language md
+@tabwidth -4
+# How to install and run the development version
+
+Thanks for trying out the development version of LeoInteg! :sunglasses: Contributions and pull requests are more than welcome!
+
+@others
+</t>
+<t tx="felix.20200718221645.1">## Requirements
+
+- Having [Leo's path made available in the \$PYTHONPATH environment variable](https://docs.python.org/2/using/windows.html#excursus-setting-environment-variables)\
+  ([More info](https://docs.python.org/2/using/cmdline.html#environment-variables))
+- Having the Websocket Python Library installed.
+  _Install with :_ `pip install websockets`\
+  (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
+
+</t>
+<t tx="felix.20200718222026.1">## Development version installation
+
+In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's next release), make sure you have Node.js and Git installed, then clone the sources and run `npm install` in a terminal to install the remaining development dependencies.
+
+![run extension](/resources/run-extension.png)
+
+You can then run the **Run Extension** target, as shown above, in the **Debug View**.
+
+&gt; See [CONTRIBUTING.md](CONTRIBUTING.md) for complete details on how to install and run this extension.
+
+</t>
+<t tx="felix.20200718222035.1">## Features
+
+- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes**, **opened documents selector** along with **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
+- Keybindings that match those from Leo, and a **'Leo Tree Browsing'** switch that enables Leo-style arrow keys behavior, for outline keyboard navigation.
+- A **welcome screen** that also gives access to this extension's **settings**.
+- **Derived files change detection**. See [External Files](#derive-external-files) below for more details
+- **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
+- Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
+  - Open body panes to the side
+  - Outline edition commands
+  - Clipboard operations
+  - Undo/Redo commands
+
+![Menu](resources/context-hover-menus.png)
+
+</t>
+<t tx="felix.20200718222043.1">## Keybindings
+
+&gt; _More commands are available by opening the **Command Palette** and typing 'Leo'_
+
+| Commands Keybinding        |     |                       | Command            |
+| :------------------------- | :-- | :-------------------- | :----------------- |
+| `Alt + -`                  |     |                       | Contract All       |
+| `Ctrl + I`                 |     |                       | Insert Node        |
+| `Ctrl + H`                 |     |                       | Edit Headline      |
+| `Ctrl + Backquote`         |     |                       | Clone Node         |
+| `Ctrl + Shift + C`         |     |                       | Copy Node          |
+| `Ctrl + Shift + X`         |     |                       | Cut Node           |
+| `Ctrl + Shift + V`         |     |                       | Paste Node         |
+| `Ctrl + Shift + Backspace` |     |                       | Delete Node        |
+| `Ctrl + B`                 |     |                       | Execute Script     |
+| `Ctrl + M`                 |     |                       | Mark / Unmark      |
+| `Ctrl + {`                 |     | `Ctrl + }`            | Promote / Demote   |
+| `Alt + A`                  |     |                       | Sort Siblings      |
+| `Ctrl + U`                 | or  | `Shift + Alt + Up`    | Move Outline Up    |
+| `Ctrl + D`                 | or  | `Shift + Alt + Down`  | Move Outline Down  |
+| `Ctrl + L`                 | or  | `Shift + Alt + Left`  | Move Outline Left  |
+| `Ctrl + R`                 | or  | `Shift + Alt + Right` | Move Outline Right |
+
+### Tree Browsing Keybindings
+
+&gt; _With the **'Leo Tree Browsing'** setting enabled, all arrows and numeric keypad keys change the outline's selection directly_
+
+| Tree Browsing Keybinding |     | With **'Leo Tree Browsing'** enabled | Command                  |
+| :----------------------- | :-- | :----------------------------------- | :----------------------- |
+| `Alt + Home`             | or  | `Home`                               | Go To First Visible Node |
+| `Alt + End`              |     |                                      | Go To Last Sibling       |
+|                          |     | `End`                                | Go To Last Visible Node  |
+| `Alt + N`                |     |                                      | Go To Next Clone         |
+| `Alt + Arrow Keys`       | or  | `Arrow Keys`                         | Browse Tree              |
+| `Ctrl + T`               |     |                                      | Switch Tree/Body Focus   |
+| `Tab`                    |     |                                      | Focus from Tree to Body  |
+
+</t>
+<t tx="felix.20200718222048.1">## Derive External Files
+
+Use the **Save Leo File** command to derive external files.
+
+Leo will detect derived file changes and will ask to either **refresh from disk** or **ignore the changes**.
+
+![derive files](resources/derived-file.gif)
+
+</t>
+<t tx="felix.20200718222053.1">## Automate Synchronization
+
+The **change detection** process can be automated to always refresh, or ignore file changes: A **notification** will inform you of the action taken instead.
+
+![auto sync](resources/auto-sync.gif)
+
+</t>
+<t tx="felix.20200718222058.1">## Status Bar Indicator
+
+A customizable keyboard status bar indicator is shown when this extension is activated.
+It will turn orange (or your choice of text and color), when leo's **keyboard shortcuts** are active.
+This occurs when an outline node or a body pane has focus:
+
+![Statusbar](resources/statusbar-keyboard.gif)
+
+</t>
+<t tx="felix.20200718222102.1">## Extension Settings
+
+### Open the command palette `CTRL+SHIFT+P` and start typing `leo settings` to access LeoInteg's welcome/settings screen
+
+&gt; _(Changes are auto-saved to the user's profile after 0.5 seconds)_
+
+- Control the visibility of the outline pane in the explorer view.
+- Decide how and when to refresh and synchronize content when derived (external) file are modified.
+- Show additional icons on outline nodes (Move, delete, mark, copy, paste...)
+- Choose to either focus on the body pane, or keep focus in the outline when a node is selected.
+- Hide or show the "Open on the side" command in the context menu to open a node beside the active editor
+- Set preferences for setting the address and port, and for automatically starting, and/or connecting, to a Leo Bridge server.
+
+![Settings](resources/welcome-settings.gif)
+
+</t>
+<t tx="felix.20200718222108.1">## Issues
+
+Main issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
+
+### Linux Keybindings
+
+If you're experiencing trouble with the keyboard shortcuts for
+the 'Clone Node' or the 'Promote' and 'Demote' commands,
+use **"keyboard.dispatch": "keyCode"** in your settings and restart vscode.
+See [Troubleshoot Linux Keybindings](https://github.com/microsoft/vscode/wiki/Keybinding-Issues#troubleshoot-linux-keybindings)
+for more information.
+
+### Move outline keyboard commands
+
+For some users, the **`Alt+[Arrow Keys]`**, **`Ctrl+D`** and **`Ctrl+T`** keybinding are already assigned.
+To help with this conflict, tree-browsing, outline-move keyboard commands, and switch focus command will only trigger
+with the additional condition of having no text selection in the editor.
+So select at least one character to use the previously assigned original keyboard commands while focus is in the body pane.
+
+&gt; This extension is still in development, so please refer to its [issue tracker](https://github.com/boltex/leointeg/issues) to learn more about its intended features, or to contribute with additional information if you encounter other issues yourself.
+
+</t>
+<t tx="felix.20200718222113.1">## How it works
+
+Integration is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
+
+The outline pane is made by implementing a [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics), while the body panes _virtual documents_ are made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api) and using the node's gnx as identifiers.
+
+</t>
+<t tx="felix.20200718222118.1">## Acknowledgments
+
+### _Thanks to_
+
+- [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
+- [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
+- [Vitalije](https://github.com/vitalije) for his contributions and support
+- [Arjan](https://github.com/ar-jan) for his suggestions and ideas
+</t>
+<t tx="felix.20200718222415.1">## 0.1.13
+
+- Added support for precise focus placement, focus switch between tree/body.
+- Made the extension more aware of the current selection state, to have strictly relevant buttons visible shown only.
+- Made the 'edit headline' hover icon removable, in order to enable 'Tab' keybinding to go from tree to body directly.
+- Added commands and keybindings for 'goto' operations 'hoist/dehoist' [#25](https://github.com/boltex/leointeg/issues/25) and other commands. [#30](https://github.com/boltex/leointeg/issues/30)
+- Added support for Leo-Style outline navigation. [#43](https://github.com/boltex/leointeg/issues/43) Has to be enabled with an option in the config settings: "Use Leo Tree Browsing" which makes the arrow keys, pgUp/pgDn, home/end move the selection instead of a cursor when focus is on Leo's outline.
+- Implemented @buttons in it's own panel, visible where the already existing 'outline' and 'opened leo documents' panels reside.
+- Added (basic) unknown attributes support as hover tooltip and small description on node headlines.
+- Added a 'leoBridge Server Terminal Panel' to gather output of the leoBridge stdOut pipe. It's displayed among the 'output panels', along with the standard 'leo log window', when the server is started by leoInteg. (either with the auto-start config setting, or by calling the 'start server' command via buttons or the command-palette.)
+
+</t>
+<t tx="felix.20200718222417.1">## 0.1.12
+
+- Added support for multiple opened files along with the 'new', 'Close', 'Save-As' commands.
+- Improved the icons and commands, which are visible, or invisible depending on context.
+- Added 'tree view' listing the opened Leo documents which is available in the Leo view, and the explorer view.
+- Added basic leonine syntax coloring. (No specific \@languages yet)
+- Added selection support to the 'Execute-Script' command.
+
+</t>
+<t tx="felix.20200718222419.1">## 0.1.11
+
+- Fixed undo operation for the _insert_ and _rename_ commands (Some other commands may still need fixes to their 'undo' support)
+- Fixed crashing when editing body pane under Leo 6.2.
+
+</t>
+<t tx="felix.20200718222422.1">## 0.1.10
+
+- Added more [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree for starting a server, connecting to it, and added content to help with automation settings.
+- Changed the starting default configuration setting for starting and connecting to the leoBridge server script to false.
+- Made starting and connecting to the leoBridge server script easier to access in the interface, and in the welcome/settings webview.
+- Added new CONTRIBUTING.md markdown file for running the development version of the leoInteg extension.
+- Closes [#44](https://github.com/boltex/leointeg/issues/44)
+
+</t>
+<t tx="felix.20200718222425.1">## 0.1.9
+
+- Added new compilation configuration (server, extension, or both) to help debugging.
+- Support async output from leoBridge, for log pane and other events.
+- External file change detection with modal dialogs matching Leo's gui dialogs.
+- Added config options to bypass derived files change detection dialogs with defaults, allowing automatic synchronization of derived files in both directions.
+- Added support for redo, refresh from disk and many any other core Leo commands and operations.
+- Added support for rapid outline edition command entry, including 'insert node' command **`Ctrl+I`** and for replacing focus on relevant elements to mimic actual Leo interface workflow.
+- Added [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree to help with connecting and opening
+- Replaced body-editor content transfer logic and removed the related option in the expansion's settings. The body is sent to Leo when appropriate without need of a timed delay.
+- _REMOVED FEATURE_ Rolled back 'multi-body' feature for simultaneous body panes from different gnx. Body panes from the same gnx are still available.
+
+</t>
+<t tx="felix.20200718222427.1">## 0.1.8
+
+- Extension now built with webpack. [As recommended by vsCode's extension guidelines](https://code.visualstudio.com/api/working-with-extensions/bundling-extension#using-webpack)
+- Added a 'Welcome Screen' webview (also compiled by webpack from html, scss and ts files) to show a greeting with basic info, and provide an easy way to change the configuration settings.
+- Added commands accessible via either tree menu, context menu, and 'standard' Leo keyboard shortcuts:
+  - Insert, delete
+  - Cut/Copy/Paste/Clone/Paste as clone
+  - Move, promote, demote node operations
+  - Mark, unmark, sort children, sort siblings and undo
+
+</t>
+<t tx="felix.20200718222429.1">## 0.1.7
+
+- Changed main mode of communication from stdin/out to tcp/ip websockets.
+- Made a standalone 'Leo Server' python script.
+
+</t>
+<t tx="felix.20200718222433.1">## 0.1.6
+
+- Major 'Browsing' update before adding outline editing and file saving &amp; derivation (Thanks for testing!)
+- Refactored and simplified communication between vscode and leoBridge.
+- Stabilized browsing with multiple simultaneous body panes.
+- Added Leo Outline into explorer view.
+- Supports new command to open a node on the side from the context menu.
+- Multiple configuration options: Open Settings with CTRL+',' type 'leo', or look for 'leo integration' in extensions.
+
+_Note: Headline and body edition does not affect the Leo file yet._
+
+</t>
+<t tx="felix.20200718222435.1">## 0.1.5
+
+- Stabilized tree browsing, along with headline and body editing.
+
+</t>
+<t tx="felix.20200718222437.1">## 0.1.4
+
+- Major Refactor to streamline codebase; Eliminated code duplication.
+- Complete rewrite after going trying out most of what is possible with both vscode and leo APIs.
+- New body pane system that prevents corrupting undos across different positions: It uses the node's actual gnx instead of a generic "body" string as a file path for the custom filesystem.
+
+</t>
+<t tx="felix.20200718222439.1">## 0.1.3
+
+- This version creates a body panel via a custom filesystem: 'leo'. It only has a file, "leo:/body", the body of the currently selected node.
+
+_Note: This editable body panel does not affect Leo file yet._
+
+</t>
+<t tx="felix.20200718222440.1">## 0.1.2
+
+- Prototype Goal Achieved!
+- Browsing Now shows body text too, just like browsing in Leo without editing body nor headlines. (read only for now)
+
+</t>
+<t tx="felix.20200718222442.1">## 0.1.1
+
+- Leo File Opening.
+- Basic outline browsing, along with the recognizable node icons.
+
+</t>
+<t tx="felix.20200718222445.1">## 0.0.1
+
+- Initial basic skeleton of this extension. Press F5 to view icon and test the startup of the extension!
+- Implemented [leoBridge](https://leoeditor.com/leoBridge.html) interaction.
+
+![LeoEditor](resources/leoapp96px.png)
+</t>
+<t tx="felix.20200718222731.1">## Introduction
+
+If you're new to vscode and want to try out Leo with this vscode extension, you might want to look at this [Getting Started](https://code.visualstudio.com/docs#vscode-in-action) page to get an overview.
+
+Furthermore, if you've never ran a vscode extension in an **Extension Development Host**, here is a [short overview about running and modifying a simple extension](https://code.visualstudio.com/api/get-started/your-first-extension).
+
+If you're having problems with the procedures below, try [running this sample extension](https://github.com/Microsoft/vscode-extension-samples/tree/master/helloworld-sample#running-the-sample) first to catch underlying problems or missing dependencies.
+
+</t>
+<t tx="felix.20200718222739.1">## Development requirements
+
+- **use Leo's 'devel' branch** (This is temporary until Leo's next release)
+
+- Make sure you have [Node.js](https://nodejs.org/en/download/) and [Git](https://git-scm.com/downloads) installed.
+
+- Check your node.js version by typing `node -v` in a terminal. [The latest lts version is 12.18.0](https://nodejs.org/en/download/).
+
+- Also check your vscode version by opening the 'about' dialog from the help menu. You should at least match or exceed the version below.
+
+On Windows:
+
+![about](resources/vscode-about-win.png)
+
+On Linux:
+
+![about](resources/vscode-about.png)
+
+</t>
+<t tx="felix.20200718222741.1">## Getting the source and its development dependencies
+
+- Clone the repository using the command line by typing : `git clone https://github.com/boltex/leointeg.git`
+
+![clone](resources/git-clone.png)
+
+- Although you could 'cd' into the leoInteg folder and run some commands from the same terminal, let's instead use the terminal from within vscode. So open the leoInteg folder with vscode instead, either with the context menu as shown below, or by choosing "Open Folder..." from within vscode:
+
+![open with vscode](resources/open-with-vscode.png)
+
+- With vscode now opened with the **leoInteg folder as its workspace**, use the `ctrl+shift+p` keyboard shortcut to open command palette and toggle the terminal. (You can find any command through the command palette)
+
+![open terminal](resources/open-terminal.png)
+
+- Install the development dependencies by entering the `npm install` command in the terminal. **(Important if you also just _pulled_ updated sources)**
+
+- When the command has finished running, you should see logged results in the terminal and also that a new **node_modules** folder was created.
+
+![dependencies](resources/node-modules.png)
+
+- You're now ready to **compile and run** the development version of the leoInteg extension.
+
+</t>
+<t tx="felix.20200718222745.1">## Choosing a debug profile
+
+- Bring up the **Run view**, by selecting the Run icon in the **Activity Bar**. _(Screenshot below)_
+
+- When simply running the extension, choose the **Run Extension** profile.
+
+![profile](resources/debug-profile.png)
+
+&gt; (**Optional**) To contribute code to the python server script, or run it through the vscode debugger, you may need to install the [python development extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python).
+
+- For simply running and using leoInteg, just start the extension and the server as shown below.
+
+</t>
+<t tx="felix.20200718222748.1">## Starting the extension
+
+- Use the **Start Debugging** command (or press **F5**) to start another vscode window with the expansion _installed and running_ within it.
+
+![extension started](resources/leointeg-started.png)
+
+- If any problems occurred during the extension compilation it will be logged in the vscode instance that started the debug process in its **task-webpack** terminal panel. Otherwise if its running, the extension itself will be logging any messages in the **debug-console** panel. (See animation below)
+
+![extension logs](resources/debug-anim.gif)
+
+</t>
+<t tx="felix.20200718222754.1">## The python server script
+
+- This extension needs the **`leobridgeserver.py`** script to be running. That is where the two extra extension requirements come into play:
+  - Having [Leo's path made available in the \$PYTHONPATH environment variable](https://docs.python.org/2/using/windows.html#excursus-setting-environment-variables) ([More info](https://docs.python.org/2/using/cmdline.html#environment-variables))
+  - Having the [Websocket Python Library installed](https://websockets.readthedocs.io/en/stable/intro.html)
+
+### 3 ways to start the server script
+
+1. You can have LeoInteg try to start a server script instance itself via the **Start Leo Bridge Server** command or button. It will use the 'py' command on Windows and 'python3' command on other OSes by default. _You can automate this process via leoInteg's configuration settings._
+2. You can have vscode's **Debug View** start it as a debug session starts by choosing a debug profile that includes the server script. It's then possible to step in, inspect and debug the python server script. _The [python development extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) may be required._
+3. You can also start it yourself manually, by running the leobridgeserver.py script from a command prompt.
+
+### Using Anaconda or other custom python installations
+
+- LeoInteg provides configuration options to specify how to launch python interpreter but this may not be enough to get it to start on your system, see [#10](https://github.com/boltex/leointeg/issues/10) and other issues relating to configurations in _sitecustomize.py_ file as noted in [Leo's google group forum](https://groups.google.com/d/msg/leo-editor/FAP8lVnWLyQ/lWHWEYH9AgAJ).
+
+- If Leointeg or vscode cannot start running the server script on you system or OS, a **workaround** is to start the server script beforehand manually with whichever python interpreter you have installed.
+
+![launch server](resources/manual-server-start.png)
+
+- It will terminate automatically when a user disconnect.
+
+**Note**: If force-closing the server from the integrated vscode terminal, use the 'Kill terminal' button instead of the 'X' that just hides the panel.
+
+![kill terminal](resources/kill-terminal.png)
+
+</t>
+<t tx="felix.20200718222757.1">## Issues
+
+More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
 </tnodes>
 </leo_file>
