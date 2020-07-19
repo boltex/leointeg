@@ -1021,7 +1021,7 @@ class LeoBridgeIntegController:
         self.commander.dehoist()
         return self.outputPNode(self.commander.p)  # in any case, return selected node
 
-    def gitDiff(self, p_ap):
+    def gitDiff_xxx(self, p_ap):
         '''Do the git-diff command'''
         #return self.leoCommand("gitDiff", p_ap, True)
         # Need to set current working dir because not .git of the opened leo file! 
@@ -1104,7 +1104,6 @@ class LeoBridgeIntegController:
 
     # Temporary Compatibility.
     outlineCommand = leoCommand
-
     def undo(self, p_paramUnused):
         '''Undo last un-doable operation'''
         if self.commander.undoer.canUndo():
