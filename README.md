@@ -48,24 +48,26 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 > _More commands are available by opening the **Command Palette** and typing 'Leo'_
 
-| Commands Keybinding        |     |                       | Command            |
-| :------------------------- | :-- | :-------------------- | :----------------- |
-| `Alt + -`                  |     |                       | Contract All       |
-| `Ctrl + I`                 |     |                       | Insert Node        |
-| `Ctrl + H`                 |     |                       | Edit Headline      |
-| `Ctrl + Backquote`         |     |                       | Clone Node         |
-| `Ctrl + Shift + C`         |     |                       | Copy Node          |
-| `Ctrl + Shift + X`         |     |                       | Cut Node           |
-| `Ctrl + Shift + V`         |     |                       | Paste Node         |
-| `Ctrl + Shift + Backspace` |     |                       | Delete Node        |
-| `Ctrl + B`                 |     |                       | Execute Script     |
-| `Ctrl + M`                 |     |                       | Mark / Unmark      |
-| `Ctrl + {`                 |     | `Ctrl + }`            | Promote / Demote   |
-| `Alt + A`                  |     |                       | Sort Siblings      |
-| `Ctrl + U`                 | or  | `Shift + Alt + Up`    | Move Outline Up    |
-| `Ctrl + D`                 | or  | `Shift + Alt + Down`  | Move Outline Down  |
-| `Ctrl + L`                 | or  | `Shift + Alt + Left`  | Move Outline Left  |
-| `Ctrl + R`                 | or  | `Shift + Alt + Right` | Move Outline Right |
+| Commands Keybinding        |     |                         | Command            |
+| :------------------------- | :-- | :---------------------- | :----------------- |
+| `Alt + -`                  |     |                         | Contract All       |
+| `Ctrl + I`                 |     |                         | Insert Node        |
+| `Ctrl + H`                 |     |                         | Edit Headline      |
+| `Ctrl + Backquote`         |     |                         | Clone Node         |
+| `Ctrl + Shift + C`         |     |                         | Copy Node          |
+| `Ctrl + Shift + X`         |     |                         | Cut Node           |
+| `Ctrl + Shift + V`         |     |                         | Paste Node         |
+| `Ctrl + Shift + Backspace` |     |                         | Delete Node        |
+| `Ctrl + B`                 |     |                         | Execute Script     |
+| `Ctrl + M`                 |     |                         | Mark / Unmark      |
+| `Ctrl + {`                 |     | `Ctrl + }`              | Promote / Demote   |
+| `Alt + A`                  |     |                         | Sort Siblings      |
+| `Ctrl + U`                 | or  | `Shift [+ Alt] + Up`    | Move Outline Up    |
+| `Ctrl + D`                 | or  | `Shift [+ Alt] + Down`  | Move Outline Down  |
+| `Ctrl + L`                 | or  | `Shift [+ Alt] + Left`  | Move Outline Left  |
+| `Ctrl + R`                 | or  | `Shift [+ Alt] + Right` | Move Outline Right |
+
+> Move Outline commands only need the 'Alt' key modifier when focus is on body pane.
 
 ### Tree Browsing Keybindings
 
