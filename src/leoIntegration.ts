@@ -319,6 +319,18 @@ export class LeoIntegration {
     }
 
     /**
+     * * Send configuration through leoBridge to the server script, mostly used when checking if refreshing derived files is optional.
+     * @param p_config A config object containing all the configuration settings
+     */
+    public sendConfigToServer(p_config: ConfigMembers): void {
+        if (this.leoStates.fileOpenedReady) {
+            this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package => {
+                // Back from applying configuration to leobridgeserver.py
+            });
+        }
+    }
+
+    /**
      * * Reveals the leoBridge server terminal output if not already visible
      */
     public showTerminalPane(): void {
@@ -366,18 +378,6 @@ export class LeoIntegration {
      */
     public addLogPaneEntry(p_message: string): void {
         this._leoLogPane.appendLine(p_message);
-    }
-
-    /**
-     * * Send configuration through leoBridge to the server script, mostly used when checking if refreshing derived files is optional.
-     * @param p_config A config object containing all the configuration settings
-     */
-    public sendConfigToServer(p_config: ConfigMembers): void {
-        if (this.leoStates.fileOpenedReady) {
-            this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package => {
-                // Back from applying configuration to leobridgeserver.py
-            });
-        }
     }
 
     /**
@@ -623,14 +623,6 @@ export class LeoIntegration {
     }
 
     /**
-     * * Triggers when a vscode window have gained or lost focus
-     * @param p_event WindowState (focussed or not) event passed by vscode
-     */
-    private _onChangeWindowState(p_event: vscode.WindowState): void {
-        this.triggerBodySave(); // In case user is about to modify a derived file, we want to send possible edited body text to Leo
-    }
-
-    /**
      * * Handle typing that was detected in a document
      * @param p_event Text changed event passed by vscode
      */
@@ -743,7 +735,8 @@ export class LeoIntegration {
     }
 
     /**
-     * * Refresh tree for node hover icons refresh only
+     * * Refresh tree for 'node hover icons' refresh
+     * only after changing settings
      */
     public configTreeRefresh(): void {
         if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
@@ -1323,30 +1316,6 @@ export class LeoIntegration {
     }
 
     /**
-     * * Invoke an '@button' click directly by index string. Used by '@buttons' treeview.
-     */
-    public clickButton(p_node: LeoButtonNode): void {
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        this._leoBridge.action(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
-            .then((p_clickButtonResult: LeoBridgePackage) => {
-                // console.log('Back from clickButton, package is: ', p_clickButtonResult);
-                this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
-            });
-    }
-
-    /**
-     * * Removes an '@button' from Leo's button dict, directly by index string. Used by '@buttons' treeview.
-     */
-    public removeButton(p_node: LeoButtonNode): void {
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        this._leoBridge.action(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
-            .then((p_removeButtonResult: LeoBridgePackage) => {
-                // console.log('Back from removeButton, package is: ', p_removeButtonResult);
-                this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
-            });
-    }
-
-    /**
      * * Open quickPick/inputBox minibuffer dialog
      */
     public minibuffer(): void {
@@ -1484,6 +1453,30 @@ export class LeoIntegration {
                     return Promise.reject(p_errorOpen);
                 });
         }
+    }
+
+    /**
+     * * Invoke an '@button' click directly by index string. Used by '@buttons' treeview.
+     */
+    public clickButton(p_node: LeoButtonNode): void {
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        this._leoBridge.action(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
+            .then((p_clickButtonResult: LeoBridgePackage) => {
+                // console.log('Back from clickButton, package is: ', p_clickButtonResult);
+                this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+            });
+    }
+
+    /**
+     * * Removes an '@button' from Leo's button dict, directly by index string. Used by '@buttons' treeview.
+     */
+    public removeButton(p_node: LeoButtonNode): void {
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        this._leoBridge.action(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
+            .then((p_removeButtonResult: LeoBridgePackage) => {
+                // console.log('Back from removeButton, package is: ', p_removeButtonResult);
+                this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+            });
     }
 
     /**
