@@ -97,8 +97,8 @@
 <v t="felix.20200717223127.1"><vh>resourceLabelFormatters</vh></v>
 </v>
 <v t="felix.20191126232434.2"><vh>@clean leobridgeserver.py</vh>
-<v t="felix.20191128002414.1"><vh>Imports</vh></v>
-<v t="felix.20191128002417.1"><vh>Constants</vh></v>
+<v t="felix.20191128002414.1"><vh>&lt;&lt; imports &gt;&gt;</vh></v>
+<v t="felix.20191128002417.1"><vh>&lt;&lt; constants &gt;&gt;</vh></v>
 <v t="felix.20200302204251.1"><vh>class IdleTimeManager</vh>
 <v t="felix.20200302204251.2"><vh>itm.add_callback</vh></v>
 <v t="felix.20200302204251.3"><vh>itm.on_idle</vh></v>
@@ -804,6 +804,8 @@ UPPERCASE : An immutable constant from the constants.ts source file.
 <t tx="felix.20191126232434.2">#! python3
 @language python
 @tabwidth -4
+&lt;&lt; imports &gt;&gt;
+&lt;&lt; constants &gt;&gt;
 @others
 if __name__ == '__main__':
     # Startup
@@ -1267,11 +1269,12 @@ if __name__ == '__main__':
 <t tx="felix.20191128002414.1">import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
 import asyncio
-import websockets
-import sys
 import getopt
-import time
 import json
+import sys
+import time
+import traceback
+import websockets
 
 </t>
 <t tx="felix.20191128002417.1"># server defaults

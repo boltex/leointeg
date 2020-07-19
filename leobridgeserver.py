@@ -2,11 +2,12 @@
 import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
 import asyncio
-import websockets
-import sys
 import getopt
-import time
 import json
+import sys
+import time
+import traceback
+import websockets
 
 # server defaults
 wsHost = "localhost"
