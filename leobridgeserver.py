@@ -416,11 +416,13 @@ class LeoBridgeIntegController:
     def __init__(self):
         # TODO : @boltex #74 need gnx_to_vnode for each opened file/commander
         self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
-        self.bridge = leoBridge.controller(gui='nullGui',
-                                           loadPlugins=True,  # True: attempt to load plugins.
-                                           readSettings=True,  # True: read standard settings files.
-                                           silent=True,      # True: don't print signon messages.
-                                           verbose=False)     # True: prints messages that would be sent to the log pane.
+        self.bridge = leoBridge.controller(
+            gui='nullGui',
+            loadPlugins=True,   # True: attempt to load plugins.
+            readSettings=True,  # True: read standard settings files.
+            silent=True,        # True: don't print signon messages.
+            verbose=False,      # True: prints messages that would be sent to the log pane.
+        )
         self.g = self.bridge.globals()
 
         # * Trace outputs to pythons stdout, also prints the function call stack
@@ -452,6 +454,23 @@ class LeoBridgeIntegController:
             self.g.app.idleTimeManager.start()  # To catch derived file changes
         except:
             print('ERROR with idleTimeManager')
+
+    def __getattr__xxx(self, attr):
+        """
+        This method delegates missing methods to our leoCommand method.
+
+        I usually don't like to use __getattr__, but here it seem justified: we
+        don't want to define methods for all of Leo's commands here!
+
+        Otoh, the code actually works without this, but apparently
+        there are problem on startup in the .json files.
+        """
+        print(f"bc__getattr__ {attr}", flush=True)
+        func = self.get_commander_method(attr)
+        if func:
+            # Delegate all "missing" methods to our leoCommand method.
+            return self.leoCommand
+        raise AttributeError
 
     async def _asyncIdleLoop(self, p_seconds, p_fn):
         while True:
@@ -1007,7 +1026,7 @@ class LeoBridgeIntegController:
 
     def _get_commander_method(self, p_command):
         """ Return the given method (p_command) in the Commands class or subcommanders."""
-        ### self.g.trace(p_command)
+        # self.g.trace(p_command)
         #
         # First, try the commands class.
         w_func = getattr(self.commander, p_command, None)
@@ -1048,9 +1067,10 @@ class LeoBridgeIntegController:
                 if w_func:
                     ### self.g.trace(f"Found c.{ivar}.{p_command}")
                     return w_func
-            ### else:
-                ### self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
+            # else:
+                # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
         return None
+
     def leoCommand(self, p_command, p_ap, p_keepSelection=False):
         '''
         Generic call to a method in Leo's Commands class or any subcommander class.
@@ -1074,7 +1094,7 @@ class LeoBridgeIntegController:
             self.commander.selectPosition(w_p)
             w_func()
             if p_keepSelection and self.commander.positionExists(oldPosition):
-                self.commander.selectPosition(oldPosition)  
+                self.commander.selectPosition(oldPosition)
         return self.outputPNode(self.commander.p)
 
     # Temporary Compatibility.
@@ -1428,7 +1448,7 @@ def main():
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
-                    ### answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
+                    # answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
                     #
                     # func = getattr(integController, w_param['action'], integController.leoCommand)
                     func = getattr(integController, w_param['action'], None)

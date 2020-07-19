@@ -130,6 +130,7 @@
 </v>
 <v t="felix.20191126232434.4"><vh>class LeoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
+<v t="felix.20200719005546.1"><vh>__getattr__xxx</vh></v>
 <v t="felix.20200303214235.1"><vh>_asyncIdleLoop</vh></v>
 <v t="felix.20200626012709.1"><vh>_returnNo</vh></v>
 <v t="felix.20200626030820.1"><vh>_returnYes</vh></v>
@@ -913,11 +914,13 @@ if __name__ == '__main__':
 <t tx="felix.20191126232434.5">def __init__(self):
     # TODO : @boltex #74 need gnx_to_vnode for each opened file/commander
     self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
-    self.bridge = leoBridge.controller(gui='nullGui',
-                                       loadPlugins=True,  # True: attempt to load plugins.
-                                       readSettings=True,  # True: read standard settings files.
-                                       silent=True,      # True: don't print signon messages.
-                                       verbose=False)     # True: prints messages that would be sent to the log pane.
+    self.bridge = leoBridge.controller(
+        gui='nullGui',
+        loadPlugins=True,   # True: attempt to load plugins.
+        readSettings=True,  # True: read standard settings files.
+        silent=True,        # True: don't print signon messages.
+        verbose=False,      # True: prints messages that would be sent to the log pane.
+    )
     self.g = self.bridge.globals()
 
     # * Trace outputs to pythons stdout, also prints the function call stack
@@ -1021,7 +1024,7 @@ if __name__ == '__main__':
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
-                    ### answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
+                    # answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
                     #
                     # func = getattr(integController, w_param['action'], integController.leoCommand)
                     func = getattr(integController, w_param['action'], None)
@@ -8222,7 +8225,7 @@ More information can be found on the repository's [Issues Page](https://github.c
         self.commander.selectPosition(w_p)
         w_func()
         if p_keepSelection and self.commander.positionExists(oldPosition):
-            self.commander.selectPosition(oldPosition)  
+            self.commander.selectPosition(oldPosition)
     return self.outputPNode(self.commander.p)
 
 # Temporary Compatibility.
@@ -8231,7 +8234,7 @@ outlineCommand = leoCommand
 </t>
 <t tx="felix.20200719001908.2">def _get_commander_method(self, p_command):
     """ Return the given method (p_command) in the Commands class or subcommanders."""
-    ### self.g.trace(p_command)
+    # self.g.trace(p_command)
     #
     # First, try the commands class.
     w_func = getattr(self.commander, p_command, None)
@@ -8272,9 +8275,28 @@ outlineCommand = leoCommand
             if w_func:
                 ### self.g.trace(f"Found c.{ivar}.{p_command}")
                 return w_func
-        ### else:
-            ### self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
+        # else:
+            # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
     return None
+
+</t>
+<t tx="felix.20200719005546.1">def __getattr__xxx(self, attr):
+    """
+    This method delegates missing methods to our leoCommand method.
+
+    I usually don't like to use __getattr__, but here it seem justified: we
+    don't want to define methods for all of Leo's commands here!
+
+    Otoh, the code actually works without this, but apparently
+    there are problem on startup in the .json files.
+    """
+    print(f"bc__getattr__ {attr}", flush=True)
+    func = self.get_commander_method(attr)
+    if func:
+        # Delegate all "missing" methods to our leoCommand method.
+        return self.leoCommand
+    raise AttributeError
+
 </t>
 </tnodes>
 </leo_file>
