@@ -1,14 +1,13 @@
 #! python3
 import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
-
 import asyncio
-import getopt
-import json
-import sys
-import time
-import traceback
 import websockets
+import sys
+import getopt
+import time
+import json
+
 # server defaults
 wsHost = "localhost"
 wsPort = 32125
@@ -450,7 +449,7 @@ class LeoBridgeIntegController:
         # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
         self.g.app.gui.runAskYesNoDialog = self._returnYes  # override for "revert to file" operation
 
-        # setup leoBackground to get messages from leo
+        # * setup leoBackground to get messages from leo
         try:
             self.g.app.idleTimeManager.start()  # To catch derived file changes
         except:
@@ -462,6 +461,7 @@ class LeoBridgeIntegController:
 
         I usually don't like to use __getattr__, but here it seem justified: we
         don't want to define methods for all of Leo's commands here!
+
         Otoh, the code actually works without this, but apparently
         there are problem on startup in the .json files.
         """
