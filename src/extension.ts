@@ -62,6 +62,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.REFRESH_FROM_DISK, (p_node: LeoNode) => w_leo.nodeCommand(BRIDGE.REFRESH_FROM_DISK_PNODE, p_node, REFRESH_BOTH, false)],
         [CMD.REFRESH_FROM_DISK_SELECTION, () => w_leo.nodeCommand(BRIDGE.REFRESH_FROM_DISK_PNODE, U, REFRESH_BOTH, false)],
         [CMD.REFRESH_FROM_DISK_SELECTION_FO, () => w_leo.nodeCommand(BRIDGE.REFRESH_FROM_DISK_PNODE, U, REFRESH_BOTH, true)],
+        [CMD.GIT_DIFF, () => leo.nodeCommand(BRIDGE.GIT_DIFF, U, REFRESH_BOTH, true)],
         [CMD.HEADLINE, (p_node: LeoNode) => w_leo.editHeadline(p_node, false)],
         [CMD.HEADLINE_SELECTION, () => w_leo.editHeadline(U, false)],
         [CMD.HEADLINE_SELECTION_FO, () => w_leo.editHeadline(U, true)],

@@ -291,8 +291,9 @@ export class Constants {
         GET_BUTTONS: "getButtons",
         REMOVE_BUTTON: "removeButton",
         CLICK_BUTTON: "clickButton",
-        GET_COMMANDS: "getCommands", // ask leoBridge for the list of known commands
+        GET_COMMANDS: "getCommands", // ask leoBridge for the list of known commands, (starting with text string)
         RUN_BY_NAME: "runByName", // Run a command by its string name like in minibuffer
+        GIT_DIFF: "gitDiff",
         // * Goto operations
         PAGE_UP: "pageUp",
         PAGE_DOWN: "pageDown",
@@ -368,6 +369,7 @@ export class Constants {
         CLICK_BUTTON: Constants.NAME + ".clickButton",
         REMOVE_BUTTON: Constants.NAME + ".removeButton",
         MINIBUFFER: Constants.NAME + ".minibuffer",
+        GIT_DIFF: "gitDiff",
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",
         OPEN_ASIDE: Constants.NAME + ".openAside",

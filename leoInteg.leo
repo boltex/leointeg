@@ -2526,6 +2526,11 @@ wsPort = 32125
   "category": "Leo",
   "title": "Refresh from Disk"
 },
+{
+  "command": "leointeg.gitDiff",
+  "category": "Leo",
+  "title": "Git Diff"
+},
 </t>
 <t tx="felix.20200717230237.1">{
   "command": "leointeg.selectTreeNode",
@@ -3462,6 +3467,10 @@ wsPort = 32125
   "command": "leointeg.refreshFromDiskSelection",
   "when": "leoTreeOpened &amp;&amp; leoAtFile"
 },
+{
+  "command": "leointeg.gitDiff",
+  "when": "leoBridgeReady"
+},
 </t>
 <t tx="felix.20200718001744.1">{
   "command": "leointeg.showLogPane",
@@ -3479,7 +3488,7 @@ wsPort = 32125
 </t>
 <t tx="felix.20200718001920.1">{
   "command": "leointeg.contractAll",
-  "when": "leoTreeOpened"
+  "when": "leoTreeOpened &amp;&amp; leoTreeOpened"
 },
 </t>
 <t tx="felix.20200718001925.1">{
@@ -3952,40 +3961,40 @@ wsPort = 32125
 },
 </t>
 <t tx="felix.20200718005444.1">{
-"command": "leointeg.editSelectedHeadline",
-"key": "ctrl+h",
-"mac": "cmd+h",
-"when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "command": "leointeg.editSelectedHeadline",
+  "key": "ctrl+h",
+  "mac": "cmd+h",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
-"command": "leointeg.editSelectedHeadlineFromOutline",
-"key": "ctrl+h",
-"mac": "cmd+h",
-"when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+  "command": "leointeg.editSelectedHeadlineFromOutline",
+  "key": "ctrl+h",
+  "mac": "cmd+h",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
 },
 {
-"command": "leointeg.markSelection",
-"key": "ctrl+m",
-"mac": "cmd+m",
-"when": "leoTreeOpened &amp;&amp; !leoMarked &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "command": "leointeg.markSelection",
+  "key": "ctrl+m",
+  "mac": "cmd+m",
+  "when": "leoTreeOpened &amp;&amp; !leoMarked &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
-"command": "leointeg.markSelectionFromOutline",
-"key": "ctrl+m",
-"mac": "cmd+m",
-"when": "leoTreeOpened &amp;&amp; !leoMarked &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+  "command": "leointeg.markSelectionFromOutline",
+  "key": "ctrl+m",
+  "mac": "cmd+m",
+  "when": "leoTreeOpened &amp;&amp; !leoMarked &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
 },
 {
-"command": "leointeg.unmarkSelection",
-"key": "ctrl+m",
-"mac": "cmd+m",
-"when": "leoTreeOpened &amp;&amp; leoMarked &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "command": "leointeg.unmarkSelection",
+  "key": "ctrl+m",
+  "mac": "cmd+m",
+  "when": "leoTreeOpened &amp;&amp; leoMarked &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
-"command": "leointeg.unmarkSelectionFromOutline",
-"key": "ctrl+m",
-"mac": "cmd+m",
-"when": "leoTreeOpened &amp;&amp; leoMarked &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+  "command": "leointeg.unmarkSelectionFromOutline",
+  "key": "ctrl+m",
+  "mac": "cmd+m",
+  "when": "leoTreeOpened &amp;&amp; leoMarked &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
 },
 </t>
 <t tx="felix.20200718005448.1">{
@@ -4378,8 +4387,9 @@ public static LEOBRIDGE = {
     GET_BUTTONS: "getButtons",
     REMOVE_BUTTON: "removeButton",
     CLICK_BUTTON: "clickButton",
-    GET_COMMANDS: "getCommands", // ask leoBridge for the list of known commands
+    GET_COMMANDS: "getCommands", // ask leoBridge for the list of known commands, (starting with text string)
     RUN_BY_NAME: "runByName", // Run a command by its string name like in minibuffer
+    GIT_DIFF: "gitDiff",
     // * Goto operations
     PAGE_UP: "pageUp",
     PAGE_DOWN: "pageDown",
@@ -4467,6 +4477,7 @@ public static COMMANDS = {
     CLICK_BUTTON: Constants.NAME + ".clickButton",
     REMOVE_BUTTON: Constants.NAME + ".removeButton",
     MINIBUFFER: Constants.NAME + ".minibuffer",
+    GIT_DIFF: "gitDiff",
     // * Outline selection
     SELECT_NODE: Constants.NAME + ".selectTreeNode",
     OPEN_ASIDE: Constants.NAME + ".openAside",
@@ -5417,6 +5428,7 @@ function getDurationMilliseconds(p_start: [number, number]): number {
 [CMD.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.REFRESH_FROM_DISK_PNODE, p_node, REFRESH_BOTH, false)],
 [CMD.REFRESH_FROM_DISK_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.REFRESH_FROM_DISK_PNODE, U, REFRESH_BOTH, false)],
 [CMD.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.REFRESH_FROM_DISK_PNODE, U, REFRESH_BOTH, true)],
+[CMD.GIT_DIFF, () =&gt; leo.nodeCommand(BRIDGE.GIT_DIFF, U, REFRESH_BOTH, true)],
 </t>
 <t tx="felix.20200718031424.7">[CMD.HEADLINE, (p_node: LeoNode) =&gt; w_leo.editHeadline(p_node, false)],
 [CMD.HEADLINE_SELECTION, () =&gt; w_leo.editHeadline(U, false)],
