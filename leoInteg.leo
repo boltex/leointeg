@@ -472,8 +472,24 @@
 <v t="felix.20200718195558.12"><vh>setContext</vh></v>
 </v>
 </v>
-<v t="felix.20200718220416.1"><vh>Webview Sources</vh></v>
-<v t="felix.20200718220455.1"><vh>Syntaxes and Languages</vh></v>
+<v t="felix.20200718220416.1"><vh>Webview Sources</vh>
+<v t="felix.20200718222954.1"><vh>webview/apps/index.html</vh></v>
+<v t="felix.20200718223004.1"><vh>webview/apps/index.ts</vh></v>
+<v t="felix.20200718223013.1"><vh>webview/apps/theme.ts</vh></v>
+<v t="felix.20200718223018.1"><vh>webview/apps/colors.ts</vh></v>
+<v t="felix.20200718223029.1"><vh>webview/apps/scss/main.scss</vh></v>
+<v t="felix.20200718223032.1"><vh>webview/apps/scss/popup.scss</vh></v>
+</v>
+<v t="felix.20200718220455.1"><vh>Syntaxes and Languages</vh>
+<v t="felix.20200718223103.1"><vh>language-configuration.json</vh></v>
+<v t="felix.20200718223123.1"><vh>syntaxes/leobody.tmLanguage.json</vh></v>
+</v>
+<v t="felix.20200718223724.1"><vh>Build Settings</vh>
+<v t="felix.20200718223807.1"><vh>tsconfig.json</vh></v>
+<v t="felix.20200718223820.1"><vh>tsconfig.webviews.json</vh></v>
+<v t="felix.20200718223833.1"><vh>tslint.json</vh></v>
+<v t="felix.20200718223838.1"><vh>webpack.config.js</vh></v>
+</v>
 <v t="felix.20200718220811.1"><vh>Documentation</vh>
 <v t="felix.20200718220818.1"><vh>@clean README.md</vh>
 <v t="felix.20200718221645.1"><vh>Requirements</vh></v>
@@ -7734,8 +7750,8 @@ export function isHexColor(p_hexString: string): boolean {
 <t tx="felix.20200718201153.1">[CMD.MINIBUFFER, () =&gt; w_leo.minibuffer()], // Cannot be undeclared because its referenced in package.json
 [CMD.EXECUTE, () =&gt; w_leo.executeScript()],
 </t>
-<t tx="felix.20200718220416.1"></t>
-<t tx="felix.20200718220455.1"></t>
+<t tx="felix.20200718220416.1">to leonize</t>
+<t tx="felix.20200718220455.1">to leonize</t>
 <t tx="felix.20200718220811.1"></t>
 <t tx="felix.20200718220818.1">@language md
 @tabwidth -4
@@ -8147,5 +8163,18 @@ On Linux:
 
 More information can be found on the repository's [Issues Page](https://github.com/boltex/leointeg/issues), where details and troubleshooting can be addressed more directly.
 </t>
+<t tx="felix.20200718222954.1"></t>
+<t tx="felix.20200718223004.1"></t>
+<t tx="felix.20200718223013.1"></t>
+<t tx="felix.20200718223018.1"></t>
+<t tx="felix.20200718223029.1"></t>
+<t tx="felix.20200718223032.1"></t>
+<t tx="felix.20200718223103.1"></t>
+<t tx="felix.20200718223123.1"></t>
+<t tx="felix.20200718223724.1">to leonize</t>
+<t tx="felix.20200718223807.1"></t>
+<t tx="felix.20200718223820.1"></t>
+<t tx="felix.20200718223833.1"></t>
+<t tx="felix.20200718223838.1"></t>
 </tnodes>
 </leo_file>
