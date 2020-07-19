@@ -1,13 +1,14 @@
 #! python3
 import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
-import asyncio
-import websockets
-import sys
-import getopt
-import time
-import json
 
+import asyncio
+import getopt
+import json
+import sys
+import time
+import traceback
+import websockets
 # server defaults
 wsHost = "localhost"
 wsPort = 32125
@@ -449,7 +450,7 @@ class LeoBridgeIntegController:
         # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
         self.g.app.gui.runAskYesNoDialog = self._returnYes  # override for "revert to file" operation
 
-        # * setup leoBackground to get messages from leo
+        # setup leoBackground to get messages from leo
         try:
             self.g.app.idleTimeManager.start()  # To catch derived file changes
         except:
@@ -461,7 +462,6 @@ class LeoBridgeIntegController:
 
         I usually don't like to use __getattr__, but here it seem justified: we
         don't want to define methods for all of Leo's commands here!
-
         Otoh, the code actually works without this, but apparently
         there are problem on startup in the .json files.
         """
@@ -1099,6 +1099,56 @@ class LeoBridgeIntegController:
 
     # Temporary Compatibility.
     outlineCommand = leoCommand
+
+    # Temporary Compatibility.
+    outlineCommand = leoCommand
+
+    def get_commander_method(self, p_command):
+        """ Return the given method (p_command) in the Commands class or subcommanders."""
+        # self.g.trace(p_command)
+        #
+        # First, try the commands class.
+        w_func = getattr(self.commander, p_command, None)
+        if w_func:
+            return w_func
+        #
+        # Search all subcommanders for the method.
+        table = (  # This table comes from c.initObjectIvars.
+            'abbrevCommands',
+            'bufferCommands',
+            'chapterCommands',
+            'controlCommands',
+            'convertCommands',
+            'debugCommands',
+            'editCommands',
+            'editFileCommands',
+            'evalController',
+            'gotoCommands',
+            'helpCommands',
+            'keyHandler',
+            'keyHandlerCommands',
+            'killBufferCommands',
+            'leoCommands',
+            'leoTestManager',
+            'macroCommands',
+            'miniBufferWidget',
+            'printingController',
+            'queryReplaceCommands',
+            'rectangleCommands',
+            'searchCommands',
+            'spellCommands',
+            'vimCommands',  # Not likely to be useful.
+        )
+        for ivar in table:
+            subcommander = getattr(self.commander, ivar, None)
+            if subcommander:
+                w_func = getattr(subcommander, p_command, None)
+                if w_func:
+                    ### self.g.trace(f"Found c.{ivar}.{p_command}")
+                    return w_func
+            # else:
+                # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
+        return None
 
     def undo(self, p_paramUnused):
         '''Undo last un-doable operation'''

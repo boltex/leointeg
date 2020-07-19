@@ -1053,6 +1053,10 @@
     "menus": {
       "commandPalette": [
         {
+          "command": "leointeg.gitDiff",
+          "when": "leoBridgeReady"
+        },
+        {
           "command": "leointeg.startServer",
           "when": "!leoBridgeReady && !leoTreeOpened && !leoServerStarted"
         },

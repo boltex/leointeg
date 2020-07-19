@@ -1,9 +1,11 @@
 import * as vscode from "vscode";
 
+
 /**
  * * Text and numeric constants used throughout leoInteg
  */
 export class Constants {
+
 
     public static PUBLISHER: string = "boltex";
     public static NAME: string = "leointeg";
@@ -80,7 +82,6 @@ export class Constants {
         TERMINAL_PANE_TITLE: "LeoBridge Server",
         THEME_STATUSBAR: "statusBar.foreground"
     };
-
     /**
      * * Basic user messages strings for messages and dialogs
      */
@@ -125,7 +126,6 @@ export class Constants {
         IGNORED: " They were ignored.", // with voluntary leading space
         TOO_FAST: "leoInteg is busy! " // with voluntary trailing space
     };
-
     /**
      * * Choices offered when about to lose current changes to a Leo Document
      */
@@ -143,7 +143,6 @@ export class Constants {
             isCloseAffordance: true
         }
     ];
-
     /**
      * * String for JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
      */
@@ -170,7 +169,6 @@ export class Constants {
         IP_ADDRESS: "connectionAddress",
         IP_PORT: "connectionPort",
     };
-
     /**
      * * Used in 'when' clauses, set with vscode.commands.executeCommand("setContext",...)
      */
@@ -222,7 +220,6 @@ export class Constants {
         AUTO_START_SERVER: Constants.CONFIG.AUTO_START_SERVER,   // Used at startup
         AUTO_CONNECT: Constants.CONFIG.AUTO_CONNECT              // Used at startup
     };
-
     /**
      * * Command strings to be used with vscode.commands.executeCommand
      * See https://code.visualstudio.com/api/extension-guides/command#programmatically-executing-a-command
