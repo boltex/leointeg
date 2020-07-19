@@ -8285,11 +8285,14 @@ More information can be found on the repository's [Issues Page](https://github.c
 <t tx="felix.20200718223820.1"></t>
 <t tx="felix.20200718223833.1"></t>
 <t tx="felix.20200718223838.1"></t>
-<t tx="felix.20200719001713.1">def gitDiff_xxx(self, p_ap):
+<t tx="felix.20200719001713.1">def gitDiff(self, p_ap):
     '''Do the git-diff command'''
-    return self.leoCommand("gitDiff", p_ap, True)
-
-</t>
+    #return self.leoCommand("gitDiff", p_ap, True)
+    # Need to set current working dir because not .git of the opened leo file! 
+    # (oops! gives diff from the leoInteg folder !)
+    w_func = self._get_commander_method("gitDiff")
+    w_func(event=None)
+    return self.outputPNode(self.commander.p)  # in any case, return selected node</t>
 <t tx="felix.20200719001908.1">def leoCommand(self, p_command, p_ap, p_keepSelection=False):
     '''
     Generic call to a method in Leo's Commands class or any subcommander class.

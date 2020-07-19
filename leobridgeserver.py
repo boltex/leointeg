@@ -1020,10 +1020,14 @@ class LeoBridgeIntegController:
         self.commander.dehoist()
         return self.outputPNode(self.commander.p)  # in any case, return selected node
 
-    def gitDiff_xxx(self, p_ap):
+    def gitDiff(self, p_ap):
         '''Do the git-diff command'''
-        return self.leoCommand("gitDiff", p_ap, True)
-
+        #return self.leoCommand("gitDiff", p_ap, True)
+        # Need to set current working dir because not .git of the opened leo file! 
+        # (oops! gives diff from the leoInteg folder !)
+        w_func = self._get_commander_method("gitDiff")
+        w_func(event=None)
+        return self.outputPNode(self.commander.p)  # in any case, return selected node
     def _get_commander_method(self, p_command):
         """ Return the given method (p_command) in the Commands class or subcommanders."""
         # self.g.trace(p_command)
