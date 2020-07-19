@@ -40,22 +40,9 @@ export function activate(p_context: vscode.ExtensionContext) {
         ["testFromOutline", () => w_leo.test(true)], // Test function useful when debugging.
 
         // Define entries for all commands
-        [CMD.EXECUTE, () => w_leo.executeScript()],
-        // TODO : @boltex More commands to implement #15, #23, #24
-        [CMD.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
-        [CMD.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
-        [CMD.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],
-        [CMD.CLONE_FIND_FLATTENED_MARKED, () => showInfo("TODO: cloneFindFlattenedMarked command")],
-        [CMD.EXTRACT, () => showInfo("TODO: extract command")],
-        [CMD.EXTRACT_NAMES, () => showInfo("TODO: extractNames command")],
-        [CMD.COPY_MARKED, () => showInfo("TODO: copyMarked command")],
-        [CMD.DIFF_MARKED_NODES, () => showInfo("TODO: diffMarkedNodes command")],
-        [CMD.MARK_CHANGED_ITEMS, () => showInfo("TODO: markChangedItems command")],
-        [CMD.MARK_SUBHEADS, () => showInfo("TODO: markSubheads command")],
-        [CMD.UNMARK_ALL, () => showInfo("TODO: unmarkAll command")],
-        [CMD.CLONE_MARKED_NODES, () => showInfo("TODO: cloneMarkedNodes command")],
-        [CMD.DELETE_MARKED_NODES, () => showInfo("TODO: deleteMarkedNodes command")],
-        [CMD.MOVE_MARKED_NODES, () => showInfo("TODO: moveMarkedNode command")],
+         [CMD.MINIBUFFER, () => w_leoIntegration.minibuffer()], // Cannot be undeclared because its referenced in package.json
+         [CMD.EXECUTE, () => w_leo.executeScript()],
+         
         // Test for undeclared commands VERDICT IT WORKS!
         [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leo.clickButton(p_node)],
 
@@ -63,7 +50,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) => w_leo.removeButton(p_node)],
         [CMD.CLOSE_FILE, () => w_leo.closeLeoFile()],
         [CMD.NEW_FILE, () => w_leo.newLeoFile()],
-        [CMD.OPEN_FILE, () => w_leo.openLeoFile()],
+
+        [CMD.OPEN_FILE, (p_uri?: vscode.Uri) => w_leo.openLeoFile(p_uri)],
         [CMD.SAVE_AS_FILE, () => w_leo.saveAsLeoFile()],
         [CMD.SAVE_FILE, () => w_leo.saveLeoFile()],
         [CMD.SAVE_FILE_FO, () => w_leo.saveLeoFile(true)],
@@ -186,6 +174,21 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.SHOW_SETTINGS, () => w_leoSettingsWebview.openWebview()],
         // Same as 'show welcome screen'
 
+        // TODO : @boltex More commands to implement #15, #23, #24
+        [CMD.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
+        [CMD.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
+        [CMD.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],
+        [CMD.CLONE_FIND_FLATTENED_MARKED, () => showInfo("TODO: cloneFindFlattenedMarked command")],
+        [CMD.EXTRACT, () => showInfo("TODO: extract command")],
+        [CMD.EXTRACT_NAMES, () => showInfo("TODO: extractNames command")],
+        [CMD.COPY_MARKED, () => showInfo("TODO: copyMarked command")],
+        [CMD.DIFF_MARKED_NODES, () => showInfo("TODO: diffMarkedNodes command")],
+        [CMD.MARK_CHANGED_ITEMS, () => showInfo("TODO: markChangedItems command")],
+        [CMD.MARK_SUBHEADS, () => showInfo("TODO: markSubheads command")],
+        [CMD.UNMARK_ALL, () => showInfo("TODO: unmarkAll command")],
+        [CMD.CLONE_MARKED_NODES, () => showInfo("TODO: cloneMarkedNodes command")],
+        [CMD.DELETE_MARKED_NODES, () => showInfo("TODO: deleteMarkedNodes command")],
+        [CMD.MOVE_MARKED_NODES, () => showInfo("TODO: moveMarkedNode command")],
     ];
 
     w_commands.map(function (p_command) {

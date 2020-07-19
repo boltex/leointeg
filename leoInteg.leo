@@ -266,7 +266,7 @@
 </v>
 <v t="felix.20200718031424.1"><vh>@clean src/extension.ts</vh>
 <v t="felix.20200718031424.2"><vh>activate</vh>
-<v t="felix.20200718031424.4"><vh>TODO commands</vh></v>
+<v t="felix.20200718201153.1"><vh>scripting</vh></v>
 <v t="felix.20200718031424.5"><vh>button commands</vh></v>
 <v t="felix.20200718031424.6"><vh>file commands</vh></v>
 <v t="felix.20200718031424.7"><vh>edit headline commands</vh></v>
@@ -286,6 +286,7 @@
 </v>
 <v t="felix.20200718031424.21"><vh>server commands</vh></v>
 <v t="felix.20200718031424.22"><vh>select/show commands</vh></v>
+<v t="felix.20200718031424.4"><vh>TODO commands</vh></v>
 </v>
 <v t="felix.20200718031424.24"><vh>deactivate</vh></v>
 <v t="felix.20200718031424.25"><vh>showWelcomeIfNewer</vh></v>
@@ -5228,7 +5229,6 @@ export function activate(p_context: vscode.ExtensionContext) {
         ["testFromOutline", () =&gt; w_leo.test(true)], // Test function useful when debugging.
 
         // Define entries for all commands
-        [CMD.EXECUTE, () =&gt; w_leo.executeScript()],
         @others
     ];
 
@@ -5346,7 +5346,8 @@ function getDurationMilliseconds(p_start: [number, number]): number {
 </t>
 <t tx="felix.20200718031424.6">[CMD.CLOSE_FILE, () =&gt; w_leo.closeLeoFile()],
 [CMD.NEW_FILE, () =&gt; w_leo.newLeoFile()],
-[CMD.OPEN_FILE, () =&gt; w_leo.openLeoFile()],
+
+[CMD.OPEN_FILE, (p_uri?: vscode.Uri) =&gt; w_leo.openLeoFile(p_uri)],
 [CMD.SAVE_AS_FILE, () =&gt; w_leo.saveAsLeoFile()],
 [CMD.SAVE_FILE, () =&gt; w_leo.saveLeoFile()],
 [CMD.SAVE_FILE_FO, () =&gt; w_leo.saveLeoFile(true)],
@@ -7688,5 +7689,8 @@ export function isHexColor(p_hexString: string): boolean {
 }
 
 </t>
+<t tx="felix.20200718201153.1"> [CMD.MINIBUFFER, () =&gt; w_leoIntegration.minibuffer()], // Cannot be undeclared because its referenced in package.json
+ [CMD.EXECUTE, () =&gt; w_leo.executeScript()],
+ </t>
 </tnodes>
 </leo_file>
