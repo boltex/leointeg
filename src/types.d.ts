@@ -112,6 +112,16 @@ export interface LeoPackageStates {
 }
 
 /**
+ * * Returned info about currently opened and editing document
+ * after opening or switching/setting the opened document
+ */
+export interface LeoBridgePackageOpenedInfo {
+    total: number;
+    filename: string;
+    node: ArchivedPosition;
+}
+
+/**
  * * Main JSON information package format used between leointeg and Leo
  */
 export interface LeoBridgePackage {
@@ -128,22 +138,14 @@ export interface LeoBridgePackage {
         filename?: string;
         node?: ArchivedPosition;
     },
-    opened?: {
-        total: number;
-        filename: string;
-        node: ArchivedPosition;
-    },
-    setOpened?: {
-        total: number;
-        filename: string;
-        node: ArchivedPosition
-    },
+    opened?: LeoBridgePackageOpenedInfo,
+    setOpened?: LeoBridgePackageOpenedInfo,
     openedFiles?: {
         index: number;
-        files: LeoDocument[]
+        files: LeoDocument[];
     }
-    buttons?: LeoButton[]
-    commands?: string[]
+    buttons?: LeoButton[];
+    commands?: string[];
 }
 
 /**

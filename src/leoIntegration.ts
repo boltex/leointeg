@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem, LeoDocument } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -487,7 +487,7 @@ export class LeoIntegration {
     /**
      * * A Leo file was opened: setup leoInteg's UI accordingly.
      */
-    private _setupOpenedLeoDocument(p_openFileResult: any): Thenable<vscode.TextEditor> {
+    private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackageOpenedInfo): Thenable<vscode.TextEditor> {
         const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
         this.leoStates.leoOpenedFileName = p_openFileResult.filename;
 
@@ -1446,7 +1446,7 @@ export class LeoIntegration {
         if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
             this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_leoFileUri.fsPath.replace(/\\/g, "/") + '"')
                 .then((p_openFileResult: LeoBridgePackage) => {
-                    return this._setupOpenedLeoDocument(p_openFileResult.opened);
+                    return this._setupOpenedLeoDocument(p_openFileResult.opened!);
                 }, p_errorOpen => {
                     console.log('in .then not opened or already opened');
                     return Promise.reject(p_errorOpen);
@@ -1459,7 +1459,7 @@ export class LeoIntegration {
                     return Promise.reject(p_errorGetFile);
                 })
                 .then((p_openFileResult: LeoBridgePackage) => {
-                    return this._setupOpenedLeoDocument(p_openFileResult.opened);
+                    return this._setupOpenedLeoDocument(p_openFileResult.opened!);
                 }, p_errorOpen => {
                     console.log('in .then not opened or already opened');
                     return Promise.reject(p_errorOpen);

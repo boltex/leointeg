@@ -553,6 +553,7 @@
 <v t="felix.20200718194857.7"><vh>LeoLogEntry</vh></v>
 <v t="felix.20200718194857.8"><vh>ArchivedPosition</vh></v>
 <v t="felix.20200718194857.9"><vh>LeoPackageStates</vh></v>
+<v t="felix.20200720012918.1"><vh>LeoBridgePackageOpenedInfo</vh></v>
 <v t="felix.20200718194857.10"><vh>LeoBridgePackage</vh></v>
 <v t="felix.20200718194857.11"><vh>LeoDocument</vh></v>
 <v t="felix.20200718194857.12"><vh>LeoButton</vh></v>
@@ -7384,22 +7385,14 @@ export interface LeoBridgePackage {
         filename?: string;
         node?: ArchivedPosition;
     },
-    opened?: {
-        total: number;
-        filename: string;
-        node: ArchivedPosition;
-    },
-    setOpened?: {
-        total: number;
-        filename: string;
-        node: ArchivedPosition
-    },
+    opened?: LeoBridgePackageOpenedInfo,
+    setOpened?: LeoBridgePackageOpenedInfo,
     openedFiles?: {
         index: number;
-        files: LeoDocument[]
+        files: LeoDocument[];
     }
-    buttons?: LeoButton[]
-    commands?: string[]
+    buttons?: LeoButton[];
+    commands?: string[];
 }
 
 </t>
@@ -8308,7 +8301,7 @@ outlineCommand = leoCommand
 import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem, LeoDocument } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -8553,7 +8546,7 @@ private _setupNoOpenedLeoDocument(): void {
 <t tx="felix.20200719025231.23">/**
  * * A Leo file was opened: setup leoInteg's UI accordingly.
  */
-private _setupOpenedLeoDocument(p_openFileResult: any): Thenable&lt;vscode.TextEditor&gt; {
+private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackageOpenedInfo): Thenable&lt;vscode.TextEditor&gt; {
     const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
     this.leoStates.leoOpenedFileName = p_openFileResult.filename;
 
@@ -9647,7 +9640,7 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): void {
     if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath.trim()) {
         this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_leoFileUri.fsPath.replace(/\\/g, "/") + '"')
             .then((p_openFileResult: LeoBridgePackage) =&gt; {
-                return this._setupOpenedLeoDocument(p_openFileResult.opened);
+                return this._setupOpenedLeoDocument(p_openFileResult.opened!);
             }, p_errorOpen =&gt; {
                 console.log('in .then not opened or already opened');
                 return Promise.reject(p_errorOpen);
@@ -9660,7 +9653,7 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): void {
                 return Promise.reject(p_errorGetFile);
             })
             .then((p_openFileResult: LeoBridgePackage) =&gt; {
-                return this._setupOpenedLeoDocument(p_openFileResult.opened);
+                return this._setupOpenedLeoDocument(p_openFileResult.opened!);
             }, p_errorOpen =&gt; {
                 console.log('in .then not opened or already opened');
                 return Promise.reject(p_errorOpen);
@@ -10090,6 +10083,17 @@ public minibuffer(): void {
 
             this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
         });
+}
+
+</t>
+<t tx="felix.20200720012918.1">/**
+ * * Returned info about currently opened and editing document
+ * after opening or switching/setting the opened document
+ */
+export interface LeoBridgePackageOpenedInfo {
+    total: number;
+    filename: string;
+    node: ArchivedPosition;
 }
 
 </t>
