@@ -774,7 +774,7 @@ class LeoBridgeIntegController:
         """get command list starting with the prefix string."""
         c, g = self.commander, self.g
         prefix = p_package.get('text', '').strip()
-        all_commands = list(c.commandsDict.keys())
+        all_commands = sorted(list(c.commandsDict.keys()))
         if prefix:
             commands, common_prefix = g.itemsMatchingPrefixInList(prefix, all_commands)
         else:
