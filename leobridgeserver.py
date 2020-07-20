@@ -763,7 +763,7 @@ class LeoBridgeIntegController:
         # print('done', flush=True)  # Doesn't help.
         return self.sendLeoBridgePackage("commands", commands)
     def getDocstringForCommand(self, p_package):
-        """get command list starting with the prefix string."""
+        """get docstring for the given command."""
         command_name = p_package.get('text', '').strip()
         func = self._get_commander_method(command_name)
         docstring = func.__doc__ if func else ''
