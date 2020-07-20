@@ -14,6 +14,7 @@ wsHost = "localhost"
 wsPort = 32125
 
 
+# pylint: disable=no-else-return
 class IdleTimeManager:
     """
     A singleton class to manage idle-time handling. This class handles all
@@ -770,24 +771,17 @@ class LeoBridgeIntegController:
         return self.outputPNode(self.commander.p)  # return selected node when done
 
     def getCommands(self, p_package):
-        '''get command list starting with string, or none'''
-
-        # TODO
-
-        print("get command list starting with string: ")
-
-        if "text" in p_package:
-            print(p_package['text'])
+        """get command list starting with the prefix string."""
+        
+        c, g = self.commander, self.g
+        prefix = p_package.get('text', '').strip()
+        print(f"getCommands. text={prefix!r}", flush=True)
+        if prefix:
+            tabList = list(c.commandsDict.keys())
+            commands, common_prefix = g.itemsMatchingPrefixInList(prefix, tabList)
         else:
-            print("no string given")
-
-        w_commands = []
-        w_commands.append("one")
-        w_commands.append("two")
-        w_commands.append("three")
-
-        return self.sendLeoBridgePackage("commands", w_commands)
-
+            commands = []
+        return self.sendLeoBridgePackage("commands", commands)
     def runByName(self, p_package):
         '''Run a command by name, with optional parameters'''
         # TODO
