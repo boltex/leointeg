@@ -457,23 +457,6 @@ class LeoBridgeIntegController:
         except Exception:
             print('ERROR with idleTimeManager')
 
-    # def __getattr__(self, attr):
-        # """
-        # This method delegates missing methods to our leoCommand method.
-
-        # I usually don't like to use __getattr__, but here it seem justified: we
-        # don't want to define methods for all of Leo's commands here!
-
-        # Otoh, the code actually works without this, but apparently
-        # there are problem on startup in the .json files.
-        # """
-        # print(f"bc__getattr__ {attr}", flush=True)
-        # func = self._get_commander_method(attr)
-        # if func:
-            # # Delegate all "missing" methods to our leoCommand method.
-            # return self.leoCommand
-        # raise AttributeError
-
     async def _asyncIdleLoop(self, p_seconds, p_fn):
         while True:
             await asyncio.sleep(p_seconds)
@@ -779,6 +762,12 @@ class LeoBridgeIntegController:
         g.printObj(commands, tag=f"commands for {prefix}")
         # print('done', flush=True)  # Doesn't help.
         return self.sendLeoBridgePackage("commands", commands)
+    def getDocstringForCommand(self, p_package):
+        """get command list starting with the prefix string."""
+        command_name = p_package.get('text', '').strip()
+        func = self._get_commander_method(command_name)
+        docstring = func.__doc__ if func else ''
+        return self.sendLeoBridgePackage("docstring", docstring or '')
     def setActionId(self, p_id):
         self.currentActionId = p_id
 
@@ -1025,14 +1014,6 @@ class LeoBridgeIntegController:
         self.commander.dehoist()
         return self.outputPNode(self.commander.p)  # in any case, return selected node
 
-    def gitDiff_xxx(self, p_ap):
-        '''Do the git-diff command'''
-        #return self.leoCommand("gitDiff", p_ap, True)
-        # Need to set current working dir because not .git of the opened leo file! 
-        # (oops! gives diff from the leoInteg folder !)
-        w_func = self._get_commander_method("gitDiff")
-        w_func(event=None)
-        return self.outputPNode(self.commander.p)  # in any case, return selected node
     def _get_commander_method(self, p_command):
         """ Return the given method (p_command) in the Commands class or subcommanders."""
         # self.g.trace(p_command)
@@ -1456,9 +1437,7 @@ def main():
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
-                    # answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
                     #
-                    # func = getattr(integController, w_param['action'], integController.leoCommand)
                     func = getattr(integController, w_param['action'], None)
                     if func:
                         # print('FOUND:', func.__name__, flush=True)
