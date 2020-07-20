@@ -1812,9 +1812,26 @@
         "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
       },
       {
+        "command": "leointeg.moveOutlineDownSelection",
+        "key": "shift+alt+down",
+        "mac": "shift+alt+down",
+        "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
+      },
+      {
         "command": "leointeg.moveOutlineDownSelectionFromOutline",
         "key": "ctrl+d",
         "mac": "cmd+d",
+        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.moveOutlineDownSelectionFromOutline",
+        "key": "shift+down",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.moveOutlineDownSelectionFromOutline",
+        "key": "shift+alt+down",
+        "mac": "shift+alt+down",
         "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {
@@ -1824,9 +1841,26 @@
         "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
       },
       {
+        "command": "leointeg.moveOutlineLeftSelection",
+        "key": "shift+alt+left",
+        "mac": "shift+alt+left",
+        "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
+      },
+      {
         "command": "leointeg.moveOutlineLeftSelectionFromOutline",
         "key": "ctrl+l",
         "mac": "cmd+l",
+        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.moveOutlineLeftSelectionFromOutline",
+        "key": "shift+left",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.moveOutlineLeftSelectionFromOutline",
+        "key": "shift+alt+left",
+        "mac": "shift+alt+left",
         "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {
@@ -1836,15 +1870,38 @@
         "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
       },
       {
+        "command": "leointeg.moveOutlineRightSelection",
+        "key": "shift+alt+right",
+        "mac": "shift+alt+right",
+        "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
+      },
+      {
         "command": "leointeg.moveOutlineRightSelectionFromOutline",
         "key": "ctrl+r",
         "mac": "cmd+r",
         "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {
+        "command": "leointeg.moveOutlineRightSelectionFromOutline",
+        "key": "shift+right",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.moveOutlineRightSelectionFromOutline",
+        "key": "shift+alt+right",
+        "mac": "shift+alt+right",
+        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
         "command": "leointeg.moveOutlineUpSelection",
         "key": "ctrl+u",
         "mac": "cmd+u",
+        "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.moveOutlineUpSelection",
+        "key": "shift+alt+up",
+        "mac": "shift+alt+up",
         "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
       },
       {
@@ -1854,46 +1911,9 @@
         "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {
-        "command": "leointeg.moveOutlineDownSelection",
-        "key": "shift+alt+down",
-        "mac": "shift+alt+down",
-        "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
-      },
-      {
-        "command": "leointeg.moveOutlineDownSelectionFromOutline",
-        "key": "shift+alt+down",
-        "mac": "shift+alt+down",
-        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
-      },
-      {
-        "command": "leointeg.moveOutlineLeftSelection",
-        "key": "shift+alt+left",
-        "mac": "shift+alt+left",
-        "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
-      },
-      {
-        "command": "leointeg.moveOutlineLeftSelectionFromOutline",
-        "key": "shift+alt+left",
-        "mac": "shift+alt+left",
-        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
-      },
-      {
-        "command": "leointeg.moveOutlineRightSelection",
-        "key": "shift+alt+right",
-        "mac": "shift+alt+right",
-        "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
-      },
-      {
-        "command": "leointeg.moveOutlineRightSelectionFromOutline",
-        "key": "shift+alt+right",
-        "mac": "shift+alt+right",
-        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
-      },
-      {
-        "command": "leointeg.moveOutlineUpSelection",
-        "key": "shift+alt+up",
-        "mac": "shift+alt+up",
-        "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
+        "command": "leointeg.moveOutlineUpSelectionFromOutline",
+        "key": "shift+up",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineUpSelectionFromOutline",
