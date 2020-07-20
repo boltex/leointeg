@@ -468,7 +468,7 @@ class LeoBridgeIntegController:
         # there are problem on startup in the .json files.
         # """
         # print(f"bc__getattr__ {attr}", flush=True)
-        # func = self.get_commander_method(attr)
+        # func = self._get_commander_method(attr)
         # if func:
             # # Delegate all "missing" methods to our leoCommand method.
             # return self.leoCommand
