@@ -637,8 +637,137 @@
 <v t="felix.20200718222757.1"><vh>Issues</vh></v>
 </v>
 </v>
+<v t="felix.20200711182907.1"></v>
+<v t="ekr.20200720113455.1"><vh>git diff HEAD </vh>
+<v t="ekr.20200720113455.2"><vh>leobridgeserver.py</vh>
+<v t="ekr.20200720113455.259"><vh>Changed</vh>
+<v t="ekr.20200720113455.260"><vh>getCommands</vh>
+<v t="ekr.20200720113455.261"><vh>Old:getCommands</vh></v>
+<v t="felix.20200711182907.1"></v>
+</v>
+</v>
+</v>
+<v t="ekr.20200720113455.262"><vh>src/leoIntegration.ts</vh>
+<v t="ekr.20200720113455.433"><vh>Changed</vh>
+<v t="ekr.20200720113455.434"><vh>minibuffer</vh>
+<v t="ekr.20200720113455.435"><vh>Old:minibuffer</vh></v>
+<v t="felix.20200719235201.1"></v>
+</v>
+</v>
+</v>
+</v>
 </vnodes>
 <tnodes>
+<t tx="ekr.20200720113455.1">@ignore
+@nosearch
+HEAD=08724f9</t>
+<t tx="ekr.20200720113455.2">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -772,15 +772,14 @@
+ 
+     def getCommands(self, p_package):
+         """get command list starting with the prefix string."""
+-        
+         c, g = self.commander, self.g
+         prefix = p_package.get('text', '').strip()
+-        print(f"getCommands. text={prefix!r}", flush=True)
+         if prefix:
+             tabList = list(c.commandsDict.keys())
+             commands, common_prefix = g.itemsMatchingPrefixInList(prefix, tabList)
+         else:
+             commands = []
++        g.printObj(commands, tag=f"commands for {prefix}")
+         return self.sendLeoBridgePackage("commands", commands)
+     def runByName(self, p_package):
+         '''Run a command by name, with optional parameters'''
+@language python
+</t>
+<t tx="ekr.20200720113455.259"></t>
+<t tx="ekr.20200720113455.260">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -1,12 +1,11 @@
+ def getCommands(self, p_package):
+     """get command list starting with the prefix string."""
+-    
+     c, g = self.commander, self.g
+     prefix = p_package.get('text', '').strip()
+-    print(f"getCommands. text={prefix!r}", flush=True)
+     if prefix:
+         tabList = list(c.commandsDict.keys())
+         commands, common_prefix = g.itemsMatchingPrefixInList(prefix, tabList)
+     else:
+         commands = []
++    g.printObj(commands, tag=f"commands for {prefix}")
+     return self.sendLeoBridgePackage("commands", commands)
+@language python
+</t>
+<t tx="ekr.20200720113455.261">def getCommands(self, p_package):
+    """get command list starting with the prefix string."""
+    
+    c, g = self.commander, self.g
+    prefix = p_package.get('text', '').strip()
+    print(f"getCommands. text={prefix!r}", flush=True)
+    if prefix:
+        tabList = list(c.commandsDict.keys())
+        commands, common_prefix = g.itemsMatchingPrefixInList(prefix, tabList)
+    else:
+        commands = []
+    return self.sendLeoBridgePackage("commands", commands)
+</t>
+<t tx="ekr.20200720113455.262">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -1489,7 +1489,7 @@
+      */
+     public minibuffer(): void {
+         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+-        this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "a string" }))
++        this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "close" }))
+             .then((p_result: LeoBridgePackage) =&gt; {
+                 console.log('Back from GET_COMMANDS, package is: ', p_result.commands);
+@language python
+</t>
+<t tx="ekr.20200720113455.433"></t>
+<t tx="ekr.20200720113455.434">@ignore
+@nosearch
+@language patch
+--- HEAD
++++ uncommitted
+@@ -5,7 +5,7 @@
+  */
+ public minibuffer(): void {
+     if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+-    this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "a string" }))
++    this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "close" }))
+         .then((p_result: LeoBridgePackage) =&gt; {
+             console.log('Back from GET_COMMANDS, package is: ', p_result.commands);
+ 
+@language python
+</t>
+<t tx="ekr.20200720113455.435">/**
+ * * Open quickPick/inputBox minibuffer dialog.
+ * for the user to choose from all commands
+ * available in this file's commander
+ */
+public minibuffer(): void {
+    if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+    this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "a string" }))
+        .then((p_result: LeoBridgePackage) =&gt; {
+            console.log('Back from GET_COMMANDS, package is: ', p_result.commands);
+
+            this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+        });
+}
+
+</t>
 <t tx="felix.20190922171916.2">@doc
 
 This Leo file contains all of the source for the Visual Studio Code 'Leo Integration' Extension
@@ -829,7 +958,7 @@ if __name__ == '__main__':
     '''EMIT OUT body string length of a node'''
     if p_gnx:
         w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
-        if w_v and len(w_v.b):
+        if w_v and w_v.b:
             return self.sendLeoBridgePackage("bodyLength", len(w_v.b))
         else:
             return self.sendLeoBridgePackage("bodyLength", 0)
@@ -877,8 +1006,7 @@ if __name__ == '__main__':
             w_p.h = w_newHeadline
             self.commander.undoer.afterChangeNodeContents(w_p, 'Change Headline', w_bunch)
             return self.outputPNode(w_p)
-    else:
-        return self.outputError("Error in setNewHeadline")
+    return self.outputError("Error in setNewHeadline")
 
 </t>
 <t tx="felix.20191126232434.24">def setSelectedNode(self, p_ap):
@@ -1056,7 +1184,7 @@ if __name__ == '__main__':
     # * setup leoBackground to get messages from leo
     try:
         self.g.app.idleTimeManager.start()  # To catch derived file changes
-    except:
+    except Exception:
         print('ERROR with idleTimeManager')
 
 </t>
@@ -1292,6 +1420,7 @@ wsHost = "localhost"
 wsPort = 32125
 
 
+# pylint: disable=no-else-return
 </t>
 <t tx="felix.20191128003151.1"></t>
 <t tx="felix.20191128003648.1"></t>
@@ -1986,7 +2115,7 @@ wsPort = 32125
     w_index = 0
     w_indexFound = 0
     for w_commander in self.g.app.commanders():
-        if w_commander.closed == False:
+        if not w_commander.closed:
             w_isSelected = False
             w_isChanged = w_commander.changed
             if self.commander == w_commander:
@@ -2006,7 +2135,7 @@ wsPort = 32125
     '''Get total of opened commander (who have closed == false)'''
     w_total = 0
     for w_commander in self.g.app.commanders():
-        if w_commander.closed == False:
+        if not w_commander.closed:
             w_total = w_total + 1
     return w_total
 
@@ -2014,7 +2143,7 @@ wsPort = 32125
 <t tx="felix.20200623215904.1">def _getFirstOpenedCommander(self):
     '''Get first opened commander, or False if there are none.'''
     for w_commander in self.g.app.commanders():
-        if w_commander.closed == False:
+        if not w_commander.closed:
             return w_commander
     return False
 
@@ -2024,7 +2153,7 @@ wsPort = 32125
     w_openedCommanders = []
 
     for w_commander in self.g.app.commanders():
-        if w_commander.closed == False:
+        if not w_commander.closed:
             w_openedCommanders.append(w_commander)
 
     w_index = p_package['index']
@@ -2129,24 +2258,16 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200711182907.1">def getCommands(self, p_package):
-    '''get command list starting with string, or none'''
-
-    # TODO
-
-    print("get command list starting with string: ")
-
-    if "text" in p_package:
-        print(p_package['text'])
+    """get command list starting with the prefix string."""
+    c, g = self.commander, self.g
+    prefix = p_package.get('text', '').strip()
+    if prefix:
+        tabList = list(c.commandsDict.keys())
+        commands, common_prefix = g.itemsMatchingPrefixInList(prefix, tabList)
     else:
-        print("no string given")
-
-    w_commands = []
-    w_commands.append("one")
-    w_commands.append("two")
-    w_commands.append("three")
-
-    return self.sendLeoBridgePackage("commands", w_commands)
-
+        commands = []
+    g.printObj(commands, tag=f"commands for {prefix}")
+    return self.sendLeoBridgePackage("commands", commands)
 </t>
 <t tx="felix.20200711210205.1">def pageDown(self, p_ap):
     """Selects a node a couple of steps down in the tree to simulate page down"""
@@ -8207,20 +8328,21 @@ More information can be found on the repository's [Issues Page](https://github.c
 <t tx="felix.20200718223820.1"></t>
 <t tx="felix.20200718223833.1"></t>
 <t tx="felix.20200718223838.1"></t>
-<t tx="felix.20200719001713.1">def gitDiff(self, p_ap):
+<t tx="felix.20200719001713.1">def gitDiff_xxx(self, p_ap):
     '''Do the git-diff command'''
     #return self.leoCommand("gitDiff", p_ap, True)
     # Need to set current working dir because not .git of the opened leo file! 
     # (oops! gives diff from the leoInteg folder !)
     w_func = self._get_commander_method("gitDiff")
     w_func(event=None)
-    return self.outputPNode(self.commander.p)  # in any case, return selected node</t>
+    return self.outputPNode(self.commander.p)  # in any case, return selected node
+</t>
 <t tx="felix.20200719001908.1">def leoCommand(self, p_command, p_ap, p_keepSelection=False):
     '''
     Generic call to a method in Leo's Commands class or any subcommander class.
 
     p_command: a method name (a string).
-    p-node: (p_ap), an archived position.
+    p_ap: an archived position.
     p_keepSelection: preserve the current selection.
     '''
     if not p_ap:
@@ -8243,7 +8365,6 @@ More information can be found on the repository's [Issues Page](https://github.c
 
 # Temporary Compatibility.
 outlineCommand = leoCommand
-
 </t>
 <t tx="felix.20200719001908.2">def _get_commander_method(self, p_command):
     """ Return the given method (p_command) in the Commands class or subcommanders."""
@@ -8293,22 +8414,22 @@ outlineCommand = leoCommand
     return None
 
 </t>
-<t tx="felix.20200719005546.1">def __getattr__xxx(self, attr):
-    """
-    This method delegates missing methods to our leoCommand method.
+<t tx="felix.20200719005546.1"># def __getattr__(self, attr):
+    # """
+    # This method delegates missing methods to our leoCommand method.
 
-    I usually don't like to use __getattr__, but here it seem justified: we
-    don't want to define methods for all of Leo's commands here!
+    # I usually don't like to use __getattr__, but here it seem justified: we
+    # don't want to define methods for all of Leo's commands here!
 
-    Otoh, the code actually works without this, but apparently
-    there are problem on startup in the .json files.
-    """
-    print(f"bc__getattr__ {attr}", flush=True)
-    func = self.get_commander_method(attr)
-    if func:
-        # Delegate all "missing" methods to our leoCommand method.
-        return self.leoCommand
-    raise AttributeError
+    # Otoh, the code actually works without this, but apparently
+    # there are problem on startup in the .json files.
+    # """
+    # print(f"bc__getattr__ {attr}", flush=True)
+    # func = self._get_commander_method(attr)
+    # if func:
+        # # Delegate all "missing" methods to our leoCommand method.
+        # return self.leoCommand
+    # raise AttributeError
 
 </t>
 <t tx="felix.20200719025231.1">import * as vscode from "vscode";
@@ -10082,7 +10203,7 @@ public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boole
  */
 public minibuffer(): void {
     if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-    this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "a string" }))
+    this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "close" }))
         .then((p_result: LeoBridgePackage) =&gt; {
             console.log('Back from GET_COMMANDS, package is: ', p_result.commands);
 

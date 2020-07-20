@@ -772,15 +772,14 @@ class LeoBridgeIntegController:
 
     def getCommands(self, p_package):
         """get command list starting with the prefix string."""
-        
         c, g = self.commander, self.g
         prefix = p_package.get('text', '').strip()
-        print(f"getCommands. text={prefix!r}", flush=True)
         if prefix:
             tabList = list(c.commandsDict.keys())
             commands, common_prefix = g.itemsMatchingPrefixInList(prefix, tabList)
         else:
             commands = []
+        g.printObj(commands, tag=f"commands for {prefix}")
         return self.sendLeoBridgePackage("commands", commands)
     def runByName(self, p_package):
         '''Run a command by name, with optional parameters'''
