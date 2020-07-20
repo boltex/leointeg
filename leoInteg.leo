@@ -90,7 +90,12 @@
 <v t="felix.20200718005425.1"><vh>Leo File Documents</vh></v>
 <v t="felix.20200718005440.1"><vh>Tree View</vh></v>
 <v t="felix.20200718005444.1"><vh>Node Editing</vh></v>
-<v t="felix.20200718005448.1"><vh>Move Nodes</vh></v>
+<v t="felix.20200718005448.1"><vh>Move Nodes</vh>
+<v t="felix.20200719154213.1"><vh>Move Down</vh></v>
+<v t="felix.20200719154227.1"><vh>Move left</vh></v>
+<v t="felix.20200719154239.1"><vh>Move right</vh></v>
+<v t="felix.20200719154246.1"><vh>Move Up</vh></v>
+</v>
 <v t="felix.20200718005453.1"><vh>Outline Editing</vh></v>
 <v t="felix.20200718005458.1"><vh>Goto Nodes</vh></v>
 </v>
@@ -146,6 +151,7 @@
 <v t="felix.20200622230608.1"><vh>getOpenedFiles</vh></v>
 <v t="felix.20200624172552.1"><vh>setOpenedFile</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
+<v t="felix.20200719172857.1"><vh>openFiles</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
 <v t="felix.20200216160305.1"><vh>saveFile</vh></v>
 <v t="felix.20200619165641.1"><vh>getStates</vh></v>
@@ -232,7 +238,7 @@
 </v>
 <v t="felix.20191126232435.1"><vh>main</vh></v>
 </v>
-<v t="felix.20200718165721.1"><vh>Typescript Sources</vh>
+<v t="felix.20200718165721.1"><vh>Leo Integration Sources</vh>
 <v t="felix.20200718024635.1"><vh>@clean src/commandStack.ts</vh>
 <v t="felix.20200718024635.2"><vh>class CommandStack</vh>
 <v t="felix.20200718024635.3"><vh>size</vh></v>
@@ -378,7 +384,7 @@
 <v t="felix.20200719025231.1"><vh>@clean src/leoIntegration.ts</vh>
 <v t="felix.20200719025231.2"><vh>class LeoIntegration</vh>
 <v t="felix.20200719025231.3"><vh>Constructor</vh></v>
-<v t="felix.20200719025231.4"><vh>Server</vh>
+<v t="felix.20200719025231.4"><vh>Server &amp; Startup</vh>
 <v t="felix.20200719025231.5"><vh>sendAction</vh></v>
 <v t="felix.20200719025231.6"><vh>startNetworkServices</vh></v>
 <v t="felix.20200719025231.7"><vh>startServer</vh></v>
@@ -386,7 +392,13 @@
 <v t="felix.20200719025231.9"><vh>cancelConnect</vh></v>
 <v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
 </v>
-<v t="felix.20200719025231.10"><vh>Log</vh>
+<v t="felix.20200719231248.1"><vh>Recent &amp; Last files</vh>
+<v t="felix.20200719233923.1"><vh>_openLastFiles</vh></v>
+<v t="felix.20200719233925.1"><vh>_addRecentAndLastFile</vh></v>
+<v t="felix.20200719233928.1"><vh>_removeRecentFile</vh></v>
+<v t="felix.20200719233930.1"><vh>_removeLastFile</vh></v>
+</v>
+<v t="felix.20200719025231.10"><vh>Log &amp; Terminal</vh>
 <v t="felix.20200719025231.11"><vh>showTerminalPane</vh></v>
 <v t="felix.20200719025231.12"><vh>hideTerminalPane</vh></v>
 <v t="felix.20200719025231.13"><vh>addTerminalPaneEntry</vh></v>
@@ -403,6 +415,7 @@
 </v>
 <v t="felix.20200719030811.1"><vh>UI Change Events</vh>
 <v t="felix.20200719025231.24"><vh>_onChangeConfiguration</vh></v>
+<v t="felix.20200719231446.1"><vh>_onDidOpenTextDocument</vh></v>
 <v t="felix.20200719025231.25"><vh>_onChangeCollapsedState</vh></v>
 <v t="felix.20200719025231.26"><vh>_onTreeViewVisibilityChanged</vh></v>
 <v t="felix.20200719025231.27"><vh>_onDocTreeViewVisibilityChanged</vh></v>
@@ -414,24 +427,19 @@
 <v t="felix.20200719025231.32"><vh>triggerBodySave</vh></v>
 <v t="felix.20200719025231.33"><vh>_bodySaveDocument</vh></v>
 </v>
-<v t="felix.20200719030902.1"><vh>Refresh UI</vh>
+<v t="felix.20200719030902.1"><vh>Refresh &amp; Reveal</vh>
 <v t="felix.20200719025231.34"><vh>setDocumentSelection</vh></v>
 <v t="felix.20200719025231.35"><vh>showOutline</vh></v>
 <v t="felix.20200719025231.36"><vh>configTreeRefresh</vh></v>
 <v t="felix.20200719025231.37"><vh>_refreshOutline</vh></v>
+<v t="felix.20200719025231.41"><vh>_revealTreeViewNode</vh></v>
+<v t="felix.20200719025231.42"><vh>launchRefresh</vh></v>
+<v t="felix.20200719025231.43"><vh>_gotSelection</vh></v>
 </v>
 <v t="felix.20200719030909.1"><vh>Conversion</vh>
 <v t="felix.20200719025231.38"><vh>apToLeoNode</vh></v>
 <v t="felix.20200719025231.39"><vh>_apToLeoNodeConvertReveal</vh></v>
 <v t="felix.20200719025231.40"><vh>arrayToLeoNodesArray</vh></v>
-</v>
-<v t="felix.20200719030929.1"><vh>Reveal</vh>
-<v t="felix.20200719025231.41"><vh>_revealTreeViewNode</vh></v>
-<v t="felix.20200719025231.42"><vh>launchRefresh</vh></v>
-<v t="felix.20200719025231.43"><vh>_gotSelection</vh></v>
-</v>
-<v t="felix.20200719031021.1"><vh>Selecting Commands</vh>
-<v t="felix.20200719025231.44"><vh>selectTreeNode</vh></v>
 </v>
 <v t="felix.20200719031115.1"><vh>Body Pane Management</vh>
 <v t="felix.20200719025231.45"><vh>_applyNodeSelectionToBody</vh></v>
@@ -442,6 +450,7 @@
 <v t="felix.20200719025231.50"><vh>showBody</vh></v>
 </v>
 <v t="felix.20200719025231.51"><vh>Outline Commands</vh>
+<v t="felix.20200719234337.1"><vh>selectTreeNode</vh></v>
 <v t="felix.20200719025231.52"><vh>nodeCommand</vh></v>
 <v t="felix.20200719025231.53"><vh>executeScript</vh></v>
 <v t="felix.20200719025231.54"><vh>changeMark</vh></v>
@@ -462,6 +471,7 @@
 <v t="felix.20200719025231.63"><vh>removeButton</vh></v>
 </v>
 <v t="felix.20200719033511.1"><vh>Other UI Functionality</vh>
+<v t="felix.20200719235201.1"><vh>minibuffer</vh></v>
 <v t="felix.20200719025231.67"><vh>setTreeViewTitle</vh></v>
 <v t="felix.20200719025231.68"><vh>showLeoCommands</vh></v>
 <v t="felix.20200719025231.69"><vh>statusBarOnClick</vh></v>
@@ -569,7 +579,7 @@
 <v t="felix.20200718195558.12"><vh>setContext</vh></v>
 </v>
 </v>
-<v t="felix.20200718220416.1"><vh>Webview Sources</vh>
+<v t="felix.20200718220416.1"><vh>Welcome &amp; Settings Webview</vh>
 <v t="felix.20200718222954.1"><vh>webview/apps/index.html</vh></v>
 <v t="felix.20200718223004.1"><vh>webview/apps/index.ts</vh></v>
 <v t="felix.20200718223013.1"><vh>webview/apps/theme.ts</vh></v>
@@ -1907,7 +1917,7 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200308145948.1"># Some methods are called in the usual (non-leoBridge without 'efc') save process.
-# Those may called by the 'save' function, like check_overwrite,
+# Those may be called by the 'save' function, like check_overwrite,
 # or by any other functions from the instance of leo.core.leoBridge that's running.
 
 </t>
@@ -4096,103 +4106,7 @@ wsPort = 32125
   "when": "leoTreeOpened &amp;&amp; leoMarked &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
 },
 </t>
-<t tx="felix.20200718005448.1">{
-  "command": "leointeg.moveOutlineDownSelection",
-  "key": "ctrl+d",
-  "mac": "cmd+d",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineDownSelectionFromOutline",
-  "key": "ctrl+d",
-  "mac": "cmd+d",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineLeftSelection",
-  "key": "ctrl+l",
-  "mac": "cmd+l",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineLeftSelectionFromOutline",
-  "key": "ctrl+l",
-  "mac": "cmd+l",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineRightSelection",
-  "key": "ctrl+r",
-  "mac": "cmd+r",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineRightSelectionFromOutline",
-  "key": "ctrl+r",
-  "mac": "cmd+r",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineUpSelection",
-  "key": "ctrl+u",
-  "mac": "cmd+u",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineUpSelectionFromOutline",
-  "key": "ctrl+u",
-  "mac": "cmd+u",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineDownSelection",
-  "key": "shift+alt+down",
-  "mac": "shift+alt+down",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineDownSelectionFromOutline",
-  "key": "shift+alt+down",
-  "mac": "shift+alt+down",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineLeftSelection",
-  "key": "shift+alt+left",
-  "mac": "shift+alt+left",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineLeftSelectionFromOutline",
-  "key": "shift+alt+left",
-  "mac": "shift+alt+left",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineRightSelection",
-  "key": "shift+alt+right",
-  "mac": "shift+alt+right",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineRightSelectionFromOutline",
-  "key": "shift+alt+right",
-  "mac": "shift+alt+right",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-{
-  "command": "leointeg.moveOutlineUpSelection",
-  "key": "shift+alt+up",
-  "mac": "shift+alt+up",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-},
-{
-  "command": "leointeg.moveOutlineUpSelectionFromOutline",
-  "key": "shift+alt+up",
-  "mac": "shift+alt+up",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
-},
-</t>
+<t tx="felix.20200718005448.1"></t>
 <t tx="felix.20200718005453.1">{
   "command": "leointeg.sortSiblingsSelection",
   "key": "alt+a",
@@ -4481,6 +4395,7 @@ public static LEOBRIDGE = {
     GET_OPENED_FILES: "getOpenedFiles",
     SET_OPENED_FILE: "setOpenedFile", // Pass index ? name to validate / error check, only index when stable
     OPEN_FILE: "openFile",
+    OPEN_FILES: "openFiles", // Sends an array of paths instead: for opening many files at once
     CLOSE_FILE: "closeFile",
     SAVE_FILE: "saveFile",
     SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
@@ -4717,7 +4632,8 @@ public static URI_FILE_SCHEME: string = "file";
 public static URI_SCHEME_HEADER: string = "leo:/";
 public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
 public static UNTITLED_FILE_NAME: string = "untitled";
-public static RECENT_FILES_KEY: string = "leoFiles";
+public static RECENT_FILES_KEY: string = "leoRecentFiles";
+public static LAST_FILES_KEY: string = "leoLastFiles";
 
 public static DEFAULT_PYTHON: string = "python3.7";
 public static WIN32_PYTHON: string = "py";
@@ -4793,6 +4709,7 @@ public static USER_MESSAGES = {
     BEFORE_CLOSING: "before closing?",
     CANCEL: "Cancel",
     OPEN_WITH_LEOINTEG: "Open this Leo file with LeoInteg?",
+    RIGHT_CLICK_TO_OPEN: "Right-click Leo files to open with LeoInteg",
     FILE_ALREADY_OPENED: "Leo file already opened",
     CHOOSE_OPENED_FILE: "Select an opened Leo File",
     FILE_NOT_OPENED: "No files opened.",
@@ -7940,24 +7857,26 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 &gt; _More commands are available by opening the **Command Palette** and typing 'Leo'_
 
-| Commands Keybinding        |     |                       | Command            |
-| :------------------------- | :-- | :-------------------- | :----------------- |
-| `Alt + -`                  |     |                       | Contract All       |
-| `Ctrl + I`                 |     |                       | Insert Node        |
-| `Ctrl + H`                 |     |                       | Edit Headline      |
-| `Ctrl + Backquote`         |     |                       | Clone Node         |
-| `Ctrl + Shift + C`         |     |                       | Copy Node          |
-| `Ctrl + Shift + X`         |     |                       | Cut Node           |
-| `Ctrl + Shift + V`         |     |                       | Paste Node         |
-| `Ctrl + Shift + Backspace` |     |                       | Delete Node        |
-| `Ctrl + B`                 |     |                       | Execute Script     |
-| `Ctrl + M`                 |     |                       | Mark / Unmark      |
-| `Ctrl + {`                 |     | `Ctrl + }`            | Promote / Demote   |
-| `Alt + A`                  |     |                       | Sort Siblings      |
-| `Ctrl + U`                 | or  | `Shift + Alt + Up`    | Move Outline Up    |
-| `Ctrl + D`                 | or  | `Shift + Alt + Down`  | Move Outline Down  |
-| `Ctrl + L`                 | or  | `Shift + Alt + Left`  | Move Outline Left  |
-| `Ctrl + R`                 | or  | `Shift + Alt + Right` | Move Outline Right |
+| Commands Keybinding        |     |                         | Command            |
+| :------------------------- | :-- | :---------------------- | :----------------- |
+| `Alt + -`                  |     |                         | Contract All       |
+| `Ctrl + I`                 |     |                         | Insert Node        |
+| `Ctrl + H`                 |     |                         | Edit Headline      |
+| `Ctrl + Backquote`         |     |                         | Clone Node         |
+| `Ctrl + Shift + C`         |     |                         | Copy Node          |
+| `Ctrl + Shift + X`         |     |                         | Cut Node           |
+| `Ctrl + Shift + V`         |     |                         | Paste Node         |
+| `Ctrl + Shift + Backspace` |     |                         | Delete Node        |
+| `Ctrl + B`                 |     |                         | Execute Script     |
+| `Ctrl + M`                 |     |                         | Mark / Unmark      |
+| `Ctrl + {`                 |     | `Ctrl + }`              | Promote / Demote   |
+| `Alt + A`                  |     |                         | Sort Siblings      |
+| `Ctrl + U`                 | or  | `Shift [+ Alt] + Up`    | Move Outline Up    |
+| `Ctrl + D`                 | or  | `Shift [+ Alt] + Down`  | Move Outline Down  |
+| `Ctrl + L`                 | or  | `Shift [+ Alt] + Left`  | Move Outline Left  |
+| `Ctrl + R`                 | or  | `Shift [+ Alt] + Right` | Move Outline Right |
+
+&gt; Move Outline commands only need the 'Alt' key modifier when focus is on body pane.
 
 ### Tree Browsing Keybindings
 
@@ -8690,71 +8609,6 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
 
 </t>
 <t tx="felix.20200719025231.25">/**
- * * Open Leo files found in context.globalState.leoFiles
- */
-private _openRecentFiles(): void {
-    // Loop through context.globalState.&lt;something&gt; and check if they exist: open them
-    const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
-    w_recentFiles.forEach(i_fileName =&gt; {
-        this.openLeoFile(vscode.Uri.file(i_fileName));
-    });
-}
-
-
-/**
- * * Adds to the context.globalState.leoFiles if not already in there (no duplicates)
- * @param p_file path+file name string
- */
-private _addRecentFile(p_file: string): void {
-    // just push that string into the context.globalState.&lt;something&gt; array
-    const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
-    if (w_recentFiles) {
-        if (!w_recentFiles.includes(p_file)) {
-            w_recentFiles.push(p_file);
-        }
-        this._context.globalState.update(Constants.RECENT_FILES_KEY, w_recentFiles); // update with added file
-    } else {
-        // First so create key entry
-        this._context.globalState.update(Constants.RECENT_FILES_KEY, [p_file]); // array of single file
-    }
-}
-
-/**
- * * Removes from context.globalState.leoFiles if found (should not have duplicates)
- * @param p_file path+file name string
- */
-private _removeRecentFile(p_file: string): void {
-    // Check if exist in context.globalState.&lt;something&gt; and remove if found
-    const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
-    if (w_recentFiles &amp;&amp; w_recentFiles.includes(p_file)) {
-        w_recentFiles.splice(w_recentFiles.indexOf(p_file), 1);
-        this._context.globalState.update(Constants.RECENT_FILES_KEY, w_recentFiles); // update with added file
-    }
-}
-
-/**
- * * Handles the opening of a file in vscode, and check if it's a Leo file
- * @param p_event The opened document event passed by vscode
- */
-private _onDidOpenTextDocument(p_document: vscode.TextDocument): void {
-    if (this.leoStates.leoBridgeReady &amp;&amp; p_document.uri.scheme === Constants.URI_FILE_SCHEME &amp;&amp; p_document.uri.fsPath.toLowerCase().endsWith(".leo")) {
-        vscode.window.showQuickPick([Constants.USER_MESSAGES.YES, Constants.USER_MESSAGES.NO], { placeHolder: Constants.USER_MESSAGES.OPEN_WITH_LEOINTEG })
-            .then(p_result =&gt; {
-                if (p_result &amp;&amp; p_result === Constants.USER_MESSAGES.YES) {
-                    const w_uri = p_document.uri;
-                    vscode.window.showTextDocument(p_document.uri, { preview: true, preserveFocus: false })
-                        .then(() =&gt; {
-                            return vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-                        })
-                        .then(() =&gt; {
-                            this.openLeoFile(w_uri);
-                        });
-                }
-            });
-    }
-}
-
-/**
  * * Handles the node expanding and collapsing interactions by the user in the treeview
  * @param p_event The event passed by vscode
  * @param p_expand True if it was an expand, false if it was a collapse event
@@ -9239,32 +9093,6 @@ private _gotSelection(p_node: LeoNode): Thenable&lt;vscode.TextEditor&gt; {
 }
 
 </t>
-<t tx="felix.20200719025231.44">/**
- * * User has selected a node via mouse click or via 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
- * @param p_node Node that was just selected
- * @param p_internalCall Flag used to indicate the selection is forced, and NOT originating from user interaction
- * @param p_aside Flag to force opening the body "Aside", i.e. when the selection was made from choosing "Open Aside"
- */
-public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable&lt;vscode.TextEditor&gt; {
-    // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
-    if (p_aside &amp;&amp; p_node !== this.lastSelectedNode) {
-        this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
-    }
-    this.leoStates.setSelectedNodeFlags(p_node);
-    // TODO : #39 @boltex Save and restore selection, along with cursor position, from selection state saved in each node (or gnx array)
-    this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
-    const w_showBodyKeepFocus = p_aside ? this.config.treeKeepFocusWhenAside : this.config.treeKeepFocus;
-    // * Check if having already this exact node position selected : Just show the body and exit!
-    if (p_node === this.lastSelectedNode) {
-        this._locateOpenedBody(p_node.gnx);
-        return this.showBody(!!p_aside, w_showBodyKeepFocus); // voluntary exit
-    }
-    // * Set selected node in Leo via leoBridge
-    this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson);
-    return this._applyNodeSelectionToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
-}
-
-</t>
 <t tx="felix.20200719025231.45">/**
  * * Makes sure the body now reflects the selected node. This is called after 'selectTreeNode', or after '_gotSelection' when refreshing.
  * @param p_node Node that was just selected
@@ -9715,18 +9543,7 @@ public removeButton(p_node: LeoButtonNode): void {
 }
 
 </t>
-<t tx="felix.20200719025231.64">/**
- * * Open quickPick/inputBox minibuffer dialog
- */
-public minibuffer(): void {
-    if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-    this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "a string" }))
-        .then((p_result: LeoBridgePackage) =&gt; {
-            console.log('Back from GET_COMMANDS, package is: ', p_result.commands);
-
-            this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
-        });
-}
+<t tx="felix.20200719025231.64">
 
 /**
  * * Close an opened Leo file
@@ -9977,8 +9794,6 @@ public cancelConnect(p_message?: string): void {
 <t tx="felix.20200719030842.1"></t>
 <t tx="felix.20200719030902.1"></t>
 <t tx="felix.20200719030909.1"></t>
-<t tx="felix.20200719030929.1"></t>
-<t tx="felix.20200719031021.1"></t>
 <t tx="felix.20200719031115.1"></t>
 <t tx="felix.20200719031346.1">/**
  * * Send configuration through leoBridge to the server script, mostly used when checking if refreshing derived files is optional.
@@ -9996,5 +9811,285 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 <t tx="felix.20200719031802.1"></t>
 <t tx="felix.20200719033306.1"></t>
 <t tx="felix.20200719033511.1"></t>
+<t tx="felix.20200719154213.1">{
+  "command": "leointeg.moveOutlineDownSelection",
+  "key": "ctrl+d",
+  "mac": "cmd+d",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineDownSelection",
+  "key": "shift+alt+down",
+  "mac": "shift+alt+down",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineDownSelectionFromOutline",
+  "key": "ctrl+d",
+  "mac": "cmd+d",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineDownSelectionFromOutline",
+  "key": "shift+down",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineDownSelectionFromOutline",
+  "key": "shift+alt+down",
+  "mac": "shift+alt+down",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+</t>
+<t tx="felix.20200719154227.1">{
+  "command": "leointeg.moveOutlineLeftSelection",
+  "key": "ctrl+l",
+  "mac": "cmd+l",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineLeftSelection",
+  "key": "shift+alt+left",
+  "mac": "shift+alt+left",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineLeftSelectionFromOutline",
+  "key": "ctrl+l",
+  "mac": "cmd+l",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineLeftSelectionFromOutline",
+  "key": "shift+left",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineLeftSelectionFromOutline",
+  "key": "shift+alt+left",
+  "mac": "shift+alt+left",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+</t>
+<t tx="felix.20200719154239.1">{
+  "command": "leointeg.moveOutlineRightSelection",
+  "key": "ctrl+r",
+  "mac": "cmd+r",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineRightSelection",
+  "key": "shift+alt+right",
+  "mac": "shift+alt+right",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineRightSelectionFromOutline",
+  "key": "ctrl+r",
+  "mac": "cmd+r",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineRightSelectionFromOutline",
+  "key": "shift+right",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineRightSelectionFromOutline",
+  "key": "shift+alt+right",
+  "mac": "shift+alt+right",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+</t>
+<t tx="felix.20200719154246.1">{
+  "command": "leointeg.moveOutlineUpSelection",
+  "key": "ctrl+u",
+  "mac": "cmd+u",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineUpSelection",
+  "key": "shift+alt+up",
+  "mac": "shift+alt+up",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.moveOutlineUpSelectionFromOutline",
+  "key": "ctrl+u",
+  "mac": "cmd+u",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineUpSelectionFromOutline",
+  "key": "shift+up",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.moveOutlineUpSelectionFromOutline",
+  "key": "shift+alt+up",
+  "mac": "shift+alt+up",
+  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+</t>
+<t tx="felix.20200719172857.1">def openFiles(self, p_package):
+    """
+    Opens an array of leo files
+    Returns an object that contains the last 'opened' member.
+    """
+    w_files = []
+    if "files" in p_package:
+        w_files = p_package["files"]
+
+    print('[%s]' % ', '.join(map(str, w_files)))
+
+    # w_found = False
+
+    # # If not empty string (asking for New file) then check if already opened
+    # if p_file:
+    #     for w_commander in self.g.app.commanders():
+    #         if w_commander.fileName() == p_file:
+    #             w_found = True
+    #             self.commander = w_commander
+
+    # if not w_found:
+    #     self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+
+    if self.commander:
+        self.commander.closed = False
+        self.create_gnx_to_vnode()
+        w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                    "node": self.p_to_ap(self.commander.p)}
+        return self.sendLeoBridgePackage("opened", w_result)
+    else:
+        return self.outputError('Error in openFile')
+
+</t>
+<t tx="felix.20200719231248.1"></t>
+<t tx="felix.20200719231446.1">/**
+ * * Handles the opening of a file in vscode, and check if it's a Leo file
+ * @param p_event The opened document event passed by vscode
+ */
+private _onDidOpenTextDocument(p_document: vscode.TextDocument): void {
+    if (this.leoStates.leoBridgeReady &amp;&amp; p_document.uri.scheme === Constants.URI_FILE_SCHEME &amp;&amp; p_document.uri.fsPath.toLowerCase().endsWith(".leo")) {
+        vscode.window.showQuickPick([Constants.USER_MESSAGES.YES, Constants.USER_MESSAGES.NO], { placeHolder: Constants.USER_MESSAGES.OPEN_WITH_LEOINTEG })
+            .then(p_result =&gt; {
+                if (p_result &amp;&amp; p_result === Constants.USER_MESSAGES.YES) {
+                    const w_uri = p_document.uri;
+                    vscode.window.showTextDocument(p_document.uri, { preview: true, preserveFocus: false })
+                        .then(() =&gt; {
+                            return vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+                        })
+                        .then(() =&gt; {
+                            this.openLeoFile(w_uri);
+                        });
+                }
+            });
+    }
+}
+
+</t>
+<t tx="felix.20200719233923.1">/**
+ * * Open Leo files found in context.globalState.leoFiles
+ */
+private _openLastFiles(): void {
+    // Loop through context.globalState.&lt;something&gt; and check if they exist: open them
+    const w_recentFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
+
+    console.log('openLeoFiles', w_recentFiles);
+
+    // this.openLeoFiles(w_recentFiles);
+
+}
+
+</t>
+<t tx="felix.20200719233925.1">/**
+ * * Adds to the context.globalState.leoFiles if not already in there (no duplicates)
+ * @param p_file path+file name string
+ */
+private _addRecentAndLastFile(p_file: string): void {
+    // just push that string into the context.globalState.&lt;something&gt; array
+    const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
+    if (w_recentFiles) {
+        if (!w_recentFiles.includes(p_file)) {
+            w_recentFiles.push(p_file);
+        }
+        this._context.globalState.update(Constants.RECENT_FILES_KEY, w_recentFiles); // update with added file
+    } else {
+        // First so create key entry
+        this._context.globalState.update(Constants.RECENT_FILES_KEY, [p_file]); // array of single file
+    }
+}
+
+</t>
+<t tx="felix.20200719233928.1">/**
+ * * Removes from context.globalState.leoRecentFiles if found (should not have duplicates)
+ * @param p_file path+file name string
+ */
+private _removeRecentFile(p_file: string): void {
+    // Check if exist in context.globalState.&lt;something&gt; and remove if found
+    const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
+    if (w_recentFiles &amp;&amp; w_recentFiles.includes(p_file)) {
+        w_recentFiles.splice(w_recentFiles.indexOf(p_file), 1);
+        this._context.globalState.update(Constants.RECENT_FILES_KEY, w_recentFiles); // update with added file
+    }
+}
+
+</t>
+<t tx="felix.20200719233930.1">/**
+ * * Removes from context.globalState.leoLastFiles if found (should not have duplicates)
+ * @param p_file path+file name string
+ */
+private _removeLastFile(p_file: string): void {
+    // Check if exist in context.globalState.&lt;something&gt; and remove if found
+    const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
+    if (w_lastFiles &amp;&amp; w_lastFiles.includes(p_file)) {
+        w_lastFiles.splice(w_lastFiles.indexOf(p_file), 1);
+        this._context.globalState.update(Constants.LAST_FILES_KEY, w_lastFiles); // update with added file
+    }
+}
+
+</t>
+<t tx="felix.20200719234337.1">/**
+ * * User has selected a node via mouse click or via 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
+ * @param p_node Node that was just selected
+ * @param p_internalCall Flag used to indicate the selection is forced, and NOT originating from user interaction
+ * @param p_aside Flag to force opening the body "Aside", i.e. when the selection was made from choosing "Open Aside"
+ */
+public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable&lt;vscode.TextEditor&gt; {
+    // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
+    if (p_aside &amp;&amp; p_node !== this.lastSelectedNode) {
+        this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
+    }
+    this.leoStates.setSelectedNodeFlags(p_node);
+    // TODO : #39 @boltex Save and restore selection, along with cursor position, from selection state saved in each node (or gnx array)
+    this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
+    const w_showBodyKeepFocus = p_aside ? this.config.treeKeepFocusWhenAside : this.config.treeKeepFocus;
+    // * Check if having already this exact node position selected : Just show the body and exit!
+    if (p_node === this.lastSelectedNode) {
+        this._locateOpenedBody(p_node.gnx);
+        return this.showBody(!!p_aside, w_showBodyKeepFocus); // voluntary exit
+    }
+    // * Set selected node in Leo via leoBridge
+    this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson);
+    return this._applyNodeSelectionToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
+}
+
+</t>
+<t tx="felix.20200719235201.1">/**
+ * * Open quickPick/inputBox minibuffer dialog.
+ * for the user to choose from all commands
+ * available in this file's commander
+ */
+public minibuffer(): void {
+    if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+    this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "a string" }))
+        .then((p_result: LeoBridgePackage) =&gt; {
+            console.log('Back from GET_COMMANDS, package is: ', p_result.commands);
+
+            this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+        });
+}
+
+</t>
 </tnodes>
 </leo_file>

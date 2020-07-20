@@ -331,6 +331,63 @@ export class LeoIntegration {
     }
 
     /**
+     * * Open Leo files found in context.globalState.leoFiles
+     */
+    private _openLastFiles(): void {
+        // Loop through context.globalState.<something> and check if they exist: open them
+        const w_recentFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
+
+        console.log('openLeoFiles', w_recentFiles);
+
+        // this.openLeoFiles(w_recentFiles);
+
+    }
+
+    /**
+     * * Adds to the context.globalState.leoFiles if not already in there (no duplicates)
+     * @param p_file path+file name string
+     */
+    private _addRecentAndLastFile(p_file: string): void {
+        // just push that string into the context.globalState.<something> array
+        const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
+        if (w_recentFiles) {
+            if (!w_recentFiles.includes(p_file)) {
+                w_recentFiles.push(p_file);
+            }
+            this._context.globalState.update(Constants.RECENT_FILES_KEY, w_recentFiles); // update with added file
+        } else {
+            // First so create key entry
+            this._context.globalState.update(Constants.RECENT_FILES_KEY, [p_file]); // array of single file
+        }
+    }
+
+    /**
+     * * Removes from context.globalState.leoRecentFiles if found (should not have duplicates)
+     * @param p_file path+file name string
+     */
+    private _removeRecentFile(p_file: string): void {
+        // Check if exist in context.globalState.<something> and remove if found
+        const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
+        if (w_recentFiles && w_recentFiles.includes(p_file)) {
+            w_recentFiles.splice(w_recentFiles.indexOf(p_file), 1);
+            this._context.globalState.update(Constants.RECENT_FILES_KEY, w_recentFiles); // update with added file
+        }
+    }
+
+    /**
+     * * Removes from context.globalState.leoLastFiles if found (should not have duplicates)
+     * @param p_file path+file name string
+     */
+    private _removeLastFile(p_file: string): void {
+        // Check if exist in context.globalState.<something> and remove if found
+        const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
+        if (w_lastFiles && w_lastFiles.includes(p_file)) {
+            w_lastFiles.splice(w_lastFiles.indexOf(p_file), 1);
+            this._context.globalState.update(Constants.LAST_FILES_KEY, w_lastFiles); // update with added file
+        }
+    }
+
+    /**
      * * Reveals the leoBridge server terminal output if not already visible
      */
     public showTerminalPane(): void {
@@ -472,49 +529,6 @@ export class LeoIntegration {
     private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
         if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
             this.config.buildFromSavedSettings();
-        }
-    }
-
-    /**
-     * * Open Leo files found in context.globalState.leoFiles
-     */
-    private _openRecentFiles(): void {
-        // Loop through context.globalState.<something> and check if they exist: open them
-        const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
-        w_recentFiles.forEach(i_fileName => {
-            this.openLeoFile(vscode.Uri.file(i_fileName));
-        });
-    }
-
-
-    /**
-     * * Adds to the context.globalState.leoFiles if not already in there (no duplicates)
-     * @param p_file path+file name string
-     */
-    private _addRecentFile(p_file: string): void {
-        // just push that string into the context.globalState.<something> array
-        const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
-        if (w_recentFiles) {
-            if (!w_recentFiles.includes(p_file)) {
-                w_recentFiles.push(p_file);
-            }
-            this._context.globalState.update(Constants.RECENT_FILES_KEY, w_recentFiles); // update with added file
-        } else {
-            // First so create key entry
-            this._context.globalState.update(Constants.RECENT_FILES_KEY, [p_file]); // array of single file
-        }
-    }
-
-    /**
-     * * Removes from context.globalState.leoFiles if found (should not have duplicates)
-     * @param p_file path+file name string
-     */
-    private _removeRecentFile(p_file: string): void {
-        // Check if exist in context.globalState.<something> and remove if found
-        const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
-        if (w_recentFiles && w_recentFiles.includes(p_file)) {
-            w_recentFiles.splice(w_recentFiles.indexOf(p_file), 1);
-            this._context.globalState.update(Constants.RECENT_FILES_KEY, w_recentFiles); // update with added file
         }
     }
 
@@ -765,6 +779,72 @@ export class LeoIntegration {
     }
 
     /**
+     * * 'TreeView.reveal' for any opened leo outline that is currently visible
+     * @param p_leoNode The node to be revealed
+     * @param p_options Options object for the revealed node to either also select it, focus it, and expand it
+     */
+    private _revealTreeViewNode(p_leoNode: LeoNode, p_options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): Thenable<void> {
+        if (this._leoTreeStandaloneView.visible) {
+            return this._leoTreeStandaloneView.reveal(p_leoNode, p_options);
+        }
+        if (this._leoTreeExplorerView.visible && this.config.treeInExplorer) {
+            return this._leoTreeExplorerView.reveal(p_leoNode, p_options);
+        }
+        return Promise.resolve(); // Defaults to resolving even if both are hidden
+    }
+
+    /**
+     * * Launch the tree root, and optionally body, refresh processes, leading to _gotSelection upon reaching the selected node
+     * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
+     * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
+     */
+    public launchRefresh(p_refreshType: RefreshType, p_fromOutline: boolean): void {
+        // * Rules not specified with ternary operator(s) for clarity
+        // Set w_revealType, it will ultimately set this._revealType. Used when finding the OUTLINE's selected node and setting or preventing focus into it
+        // Set this._fromOutline. Used when finding the selected node and showing the BODY to set or prevent focus in it
+        let w_revealType: RevealType = RevealType.NoReveal;
+        if (p_fromOutline) {
+            this._fromOutline = true;
+            w_revealType = RevealType.RevealSelectFocus;
+        } else {
+            this._fromOutline = false;
+            w_revealType = RevealType.RevealSelect;
+        }
+        // Set this._needRefreshBody. Used when finding the selected node and showing the BODY to trigger a 'fireRefreshFile'
+        if (p_refreshType === RefreshType.RefreshTreeAndBody) {
+            this._needRefreshBody = true;
+            // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
+            if (this._bodyLastChangedDocument && this._bodyLastChangedDocument.isDirty) {
+                this._bodyLastChangedDocument.save(); // ! Voluntarily save to 'clean' any pending body (lose trailing whitespace)
+            }
+        } else {
+            this._needRefreshBody = false;
+        }
+        // * _focusInterrupt Override
+        if (this._focusInterrupt) {
+            // this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
+            w_revealType = RevealType.RevealSelect;
+        }
+        // * Launch Outline's Root Refresh Cycle
+        this._refreshOutline(w_revealType);
+        this.getStates();
+    }
+
+    /**
+     * * Handle the selected node that was reached while converting received ap_nodes to LeoNodes
+     * @param p_node The selected node that was reached while receiving 'children' from tree view api implementing Leo's outline
+     */
+    private _gotSelection(p_node: LeoNode): Thenable<vscode.TextEditor> {
+        // * Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
+        let w_showBodyKeepFocus: boolean = this._fromOutline; // Will preserve focus where it is without forcing into the body pane if true
+        if (this._focusInterrupt) {
+            this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
+            w_showBodyKeepFocus = true;
+        }
+        return this._applyNodeSelectionToBody(p_node, false, w_showBodyKeepFocus);
+    }
+
+    /**
      * * Converts an archived position object to a LeoNode instance
      * @param p_ap The archived position to convert
      * @param p_revealSelected Flag that will trigger the node to reveal, select, and focus if its selected node in Leo
@@ -844,97 +924,6 @@ export class LeoIntegration {
             w_leoNodesArray.push(w_leoNode);
         }
         return w_leoNodesArray;
-    }
-
-    /**
-     * * 'TreeView.reveal' for any opened leo outline that is currently visible
-     * @param p_leoNode The node to be revealed
-     * @param p_options Options object for the revealed node to either also select it, focus it, and expand it
-     */
-    private _revealTreeViewNode(p_leoNode: LeoNode, p_options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): Thenable<void> {
-        if (this._leoTreeStandaloneView.visible) {
-            return this._leoTreeStandaloneView.reveal(p_leoNode, p_options);
-        }
-        if (this._leoTreeExplorerView.visible && this.config.treeInExplorer) {
-            return this._leoTreeExplorerView.reveal(p_leoNode, p_options);
-        }
-        return Promise.resolve(); // Defaults to resolving even if both are hidden
-    }
-
-    /**
-     * * Launch the tree root, and optionally body, refresh processes, leading to _gotSelection upon reaching the selected node
-     * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
-     * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
-     */
-    public launchRefresh(p_refreshType: RefreshType, p_fromOutline: boolean): void {
-        // * Rules not specified with ternary operator(s) for clarity
-        // Set w_revealType, it will ultimately set this._revealType. Used when finding the OUTLINE's selected node and setting or preventing focus into it
-        // Set this._fromOutline. Used when finding the selected node and showing the BODY to set or prevent focus in it
-        let w_revealType: RevealType = RevealType.NoReveal;
-        if (p_fromOutline) {
-            this._fromOutline = true;
-            w_revealType = RevealType.RevealSelectFocus;
-        } else {
-            this._fromOutline = false;
-            w_revealType = RevealType.RevealSelect;
-        }
-        // Set this._needRefreshBody. Used when finding the selected node and showing the BODY to trigger a 'fireRefreshFile'
-        if (p_refreshType === RefreshType.RefreshTreeAndBody) {
-            this._needRefreshBody = true;
-            // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
-            if (this._bodyLastChangedDocument && this._bodyLastChangedDocument.isDirty) {
-                this._bodyLastChangedDocument.save(); // ! Voluntarily save to 'clean' any pending body (lose trailing whitespace)
-            }
-        } else {
-            this._needRefreshBody = false;
-        }
-        // * _focusInterrupt Override
-        if (this._focusInterrupt) {
-            // this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
-            w_revealType = RevealType.RevealSelect;
-        }
-        // * Launch Outline's Root Refresh Cycle
-        this._refreshOutline(w_revealType);
-        this.getStates();
-    }
-
-    /**
-     * * Handle the selected node that was reached while converting received ap_nodes to LeoNodes
-     * @param p_node The selected node that was reached while receiving 'children' from tree view api implementing Leo's outline
-     */
-    private _gotSelection(p_node: LeoNode): Thenable<vscode.TextEditor> {
-        // * Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
-        let w_showBodyKeepFocus: boolean = this._fromOutline; // Will preserve focus where it is without forcing into the body pane if true
-        if (this._focusInterrupt) {
-            this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
-            w_showBodyKeepFocus = true;
-        }
-        return this._applyNodeSelectionToBody(p_node, false, w_showBodyKeepFocus);
-    }
-
-    /**
-     * * User has selected a node via mouse click or via 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
-     * @param p_node Node that was just selected
-     * @param p_internalCall Flag used to indicate the selection is forced, and NOT originating from user interaction
-     * @param p_aside Flag to force opening the body "Aside", i.e. when the selection was made from choosing "Open Aside"
-     */
-    public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable<vscode.TextEditor> {
-        // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
-        if (p_aside && p_node !== this.lastSelectedNode) {
-            this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
-        }
-        this.leoStates.setSelectedNodeFlags(p_node);
-        // TODO : #39 @boltex Save and restore selection, along with cursor position, from selection state saved in each node (or gnx array)
-        this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
-        const w_showBodyKeepFocus = p_aside ? this.config.treeKeepFocusWhenAside : this.config.treeKeepFocus;
-        // * Check if having already this exact node position selected : Just show the body and exit!
-        if (p_node === this.lastSelectedNode) {
-            this._locateOpenedBody(p_node.gnx);
-            return this.showBody(!!p_aside, w_showBodyKeepFocus); // voluntary exit
-        }
-        // * Set selected node in Leo via leoBridge
-        this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson);
-        return this._applyNodeSelectionToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
     }
 
     /**
@@ -1094,6 +1083,31 @@ export class LeoIntegration {
                 return Promise.resolve(w_bodyEditor);
             });
         });
+    }
+
+    /**
+     * * User has selected a node via mouse click or via 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
+     * @param p_node Node that was just selected
+     * @param p_internalCall Flag used to indicate the selection is forced, and NOT originating from user interaction
+     * @param p_aside Flag to force opening the body "Aside", i.e. when the selection was made from choosing "Open Aside"
+     */
+    public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable<vscode.TextEditor> {
+        // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
+        if (p_aside && p_node !== this.lastSelectedNode) {
+            this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
+        }
+        this.leoStates.setSelectedNodeFlags(p_node);
+        // TODO : #39 @boltex Save and restore selection, along with cursor position, from selection state saved in each node (or gnx array)
+        this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
+        const w_showBodyKeepFocus = p_aside ? this.config.treeKeepFocusWhenAside : this.config.treeKeepFocus;
+        // * Check if having already this exact node position selected : Just show the body and exit!
+        if (p_node === this.lastSelectedNode) {
+            this._locateOpenedBody(p_node.gnx);
+            return this.showBody(!!p_aside, w_showBodyKeepFocus); // voluntary exit
+        }
+        // * Set selected node in Leo via leoBridge
+        this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson);
+        return this._applyNodeSelectionToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
     }
 
     /**
@@ -1315,18 +1329,7 @@ export class LeoIntegration {
             });
     }
 
-    /**
-     * * Open quickPick/inputBox minibuffer dialog
-     */
-    public minibuffer(): void {
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "a string" }))
-            .then((p_result: LeoBridgePackage) => {
-                console.log('Back from GET_COMMANDS, package is: ', p_result.commands);
 
-                this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
-            });
-    }
 
     /**
      * * Close an opened Leo file
@@ -1475,6 +1478,21 @@ export class LeoIntegration {
         this._leoBridge.action(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
             .then((p_removeButtonResult: LeoBridgePackage) => {
                 // console.log('Back from removeButton, package is: ', p_removeButtonResult);
+                this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+            });
+    }
+
+    /**
+     * * Open quickPick/inputBox minibuffer dialog.
+     * for the user to choose from all commands
+     * available in this file's commander
+     */
+    public minibuffer(): void {
+        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+        this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "a string" }))
+            .then((p_result: LeoBridgePackage) => {
+                console.log('Back from GET_COMMANDS, package is: ', p_result.commands);
+
                 this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
             });
     }

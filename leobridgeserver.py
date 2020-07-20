@@ -394,7 +394,7 @@ class ExternalFilesController:
         self.waitingForAnswer = True
 
     # Some methods are called in the usual (non-leoBridge without 'efc') save process.
-    # Those may called by the 'save' function, like check_overwrite,
+    # Those may be called by the 'save' function, like check_overwrite,
     # or by any other functions from the instance of leo.core.leoBridge that's running.
 
     def open_with(self, c, d):
@@ -617,6 +617,38 @@ class LeoBridgeIntegController:
 
         # did this add to existing array of g.app.commanders() ?
         # print(*self.g.app.commanders(), sep='\n')
+
+        if self.commander:
+            self.commander.closed = False
+            self.create_gnx_to_vnode()
+            w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                        "node": self.p_to_ap(self.commander.p)}
+            return self.sendLeoBridgePackage("opened", w_result)
+        else:
+            return self.outputError('Error in openFile')
+
+    def openFiles(self, p_package):
+        """
+        Opens an array of leo files
+        Returns an object that contains the last 'opened' member.
+        """
+        w_files = []
+        if "files" in p_package:
+            w_files = p_package["files"]
+
+        print('[%s]' % ', '.join(map(str, w_files)))
+
+        # w_found = False
+
+        # # If not empty string (asking for New file) then check if already opened
+        # if p_file:
+        #     for w_commander in self.g.app.commanders():
+        #         if w_commander.fileName() == p_file:
+        #             w_found = True
+        #             self.commander = w_commander
+
+        # if not w_found:
+        #     self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
 
         if self.commander:
             self.commander.closed = False
