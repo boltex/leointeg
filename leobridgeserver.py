@@ -774,11 +774,11 @@ class LeoBridgeIntegController:
         """get command list starting with the prefix string."""
         c, g = self.commander, self.g
         prefix = p_package.get('text', '').strip()
+        all_commands = list(c.commandsDict.keys())
         if prefix:
-            tabList = list(c.commandsDict.keys())
-            commands, common_prefix = g.itemsMatchingPrefixInList(prefix, tabList)
+            commands, common_prefix = g.itemsMatchingPrefixInList(prefix, all_commands)
         else:
-            commands = []
+            commands = all_commands
         g.printObj(commands, tag=f"commands for {prefix}")
         return self.sendLeoBridgePackage("commands", commands)
     def runByName(self, p_package):
