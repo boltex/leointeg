@@ -774,33 +774,11 @@ class LeoBridgeIntegController:
         """get command list starting with the prefix string."""
         c, g = self.commander, self.g
         prefix = p_package.get('text', '').strip()
-        all_commands = sorted(list(c.commandsDict.keys()))
-        if prefix:
-            commands, common_prefix = g.itemsMatchingPrefixInList(prefix, all_commands)
-        else:
-            commands = all_commands
+        commands = sorted(list(c.commandsDict.keys()))
+        # Félix, this is the bug we discussed with print.
         g.printObj(commands, tag=f"commands for {prefix}")
         # print('done', flush=True)  # Doesn't help.
         return self.sendLeoBridgePackage("commands", commands)
-    def runByName(self, p_package):
-        '''Run a command by name, with optional parameters'''
-        # TODO
-
-        print("runByName for string:")
-
-        if "text" in p_package:
-            print(p_package['text'])
-        else:
-            print("no string given")
-
-        # Also consider p_package['params'] to be rebuilt from JSON
-        if "params" in p_package:
-            print(p_package['params'])
-        else:
-            print("no params given")
-
-        return self.outputPNode(self.commander.p)  # return selected node when done
-
     def setActionId(self, p_id):
         self.currentActionId = p_id
 
@@ -1130,6 +1108,7 @@ class LeoBridgeIntegController:
 
     # Temporary Compatibility.
     outlineCommand = leoCommand
+    runByName = leoCommand
     def undo(self, p_paramUnused):
         '''Undo last un-doable operation'''
         if self.commander.undoer.canUndo():
