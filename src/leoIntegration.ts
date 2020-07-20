@@ -27,6 +27,7 @@ export class LeoIntegration {
     private _leoIsConnecting: boolean = false; // Used in connect method to prevent other attempts while trying
     private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Set when leoBridge has a leo controller ready
     private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Title has to be kept because it might need to be set (again) when either tree is first shown when switching visibility
+    private _hasShownContextOpenMessage: boolean = false; // Used to show this information only once if a Leo file is opened via the explorer
 
     // * State flags
     public leoStates: LeoStates;
@@ -285,6 +286,7 @@ export class LeoIntegration {
                     this.leoStates.leoBridgeReady = true;
                     utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
                     this.showLogPane();
+                    this._openLastFiles(); // Try to open last opened files, if any
                     if (!this.config.connectToServerAutomatically) {
                         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                     }
@@ -538,19 +540,26 @@ export class LeoIntegration {
      */
     private _onDidOpenTextDocument(p_document: vscode.TextDocument): void {
         if (this.leoStates.leoBridgeReady && p_document.uri.scheme === Constants.URI_FILE_SCHEME && p_document.uri.fsPath.toLowerCase().endsWith(".leo")) {
-            vscode.window.showQuickPick([Constants.USER_MESSAGES.YES, Constants.USER_MESSAGES.NO], { placeHolder: Constants.USER_MESSAGES.OPEN_WITH_LEOINTEG })
-                .then(p_result => {
-                    if (p_result && p_result === Constants.USER_MESSAGES.YES) {
-                        const w_uri = p_document.uri;
-                        vscode.window.showTextDocument(p_document.uri, { preview: true, preserveFocus: false })
-                            .then(() => {
-                                return vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-                            })
-                            .then(() => {
-                                this.openLeoFile(w_uri);
-                            });
-                    }
-                });
+            if (!this._hasShownContextOpenMessage) {
+                vscode.window.showInformationMessage(Constants.USER_MESSAGES.RIGHT_CLICK_TO_OPEN);
+                this._hasShownContextOpenMessage = true;
+            }
+            // vscode.window.showQuickPick(
+            //     [Constants.USER_MESSAGES.YES, Constants.USER_MESSAGES.NO],
+            //     { placeHolder: Constants.USER_MESSAGES.OPEN_WITH_LEOINTEG }
+            // )
+            //     .then(p_result => {
+            //         if (p_result && p_result === Constants.USER_MESSAGES.YES) {
+            //             const w_uri = p_document.uri;
+            //             vscode.window.showTextDocument(p_document.uri, { preview: true, preserveFocus: false })
+            //                 .then(() => {
+            //                     return vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+            //                 })
+            //                 .then(() => {
+            //                     this.openLeoFile(w_uri);
+            //                 });
+            //         }
+            //     });
         }
     }
 

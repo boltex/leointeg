@@ -667,7 +667,6 @@ i_symbol : This in index for a loop or an iteration of some kind.
 
 UPPERCASE : An immutable constant from the constants.ts source file.
 
-
 </t>
 <t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
     if p_node:
@@ -8411,6 +8410,7 @@ export class LeoIntegration {
     private _leoIsConnecting: boolean = false; // Used in connect method to prevent other attempts while trying
     private _leoBridgeReadyPromise: Promise&lt;LeoBridgePackage&gt; | undefined; // Set when leoBridge has a leo controller ready
     private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Title has to be kept because it might need to be set (again) when either tree is first shown when switching visibility
+    private _hasShownContextOpenMessage: boolean = false; // Used to show this information only once if a Leo file is opened via the explorer
 
     // * State flags
     public leoStates: LeoStates;
@@ -9749,6 +9749,7 @@ public connect(): void {
                 this.leoStates.leoBridgeReady = true;
                 utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
                 this.showLogPane();
+                this._openLastFiles(); // Try to open last opened files, if any
                 if (!this.config.connectToServerAutomatically) {
                     vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                 }
@@ -9965,19 +9966,26 @@ public sendConfigToServer(p_config: ConfigMembers): void {
  */
 private _onDidOpenTextDocument(p_document: vscode.TextDocument): void {
     if (this.leoStates.leoBridgeReady &amp;&amp; p_document.uri.scheme === Constants.URI_FILE_SCHEME &amp;&amp; p_document.uri.fsPath.toLowerCase().endsWith(".leo")) {
-        vscode.window.showQuickPick([Constants.USER_MESSAGES.YES, Constants.USER_MESSAGES.NO], { placeHolder: Constants.USER_MESSAGES.OPEN_WITH_LEOINTEG })
-            .then(p_result =&gt; {
-                if (p_result &amp;&amp; p_result === Constants.USER_MESSAGES.YES) {
-                    const w_uri = p_document.uri;
-                    vscode.window.showTextDocument(p_document.uri, { preview: true, preserveFocus: false })
-                        .then(() =&gt; {
-                            return vscode.commands.executeCommand('workbench.action.closeActiveEditor');
-                        })
-                        .then(() =&gt; {
-                            this.openLeoFile(w_uri);
-                        });
-                }
-            });
+        if (!this._hasShownContextOpenMessage) {
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.RIGHT_CLICK_TO_OPEN);
+            this._hasShownContextOpenMessage = true;
+        }
+        // vscode.window.showQuickPick(
+        //     [Constants.USER_MESSAGES.YES, Constants.USER_MESSAGES.NO],
+        //     { placeHolder: Constants.USER_MESSAGES.OPEN_WITH_LEOINTEG }
+        // )
+        //     .then(p_result =&gt; {
+        //         if (p_result &amp;&amp; p_result === Constants.USER_MESSAGES.YES) {
+        //             const w_uri = p_document.uri;
+        //             vscode.window.showTextDocument(p_document.uri, { preview: true, preserveFocus: false })
+        //                 .then(() =&gt; {
+        //                     return vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+        //                 })
+        //                 .then(() =&gt; {
+        //                     this.openLeoFile(w_uri);
+        //                 });
+        //         }
+        //     });
     }
 }
 
