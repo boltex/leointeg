@@ -780,6 +780,7 @@ class LeoBridgeIntegController:
         else:
             commands = all_commands
         g.printObj(commands, tag=f"commands for {prefix}")
+        # print('done', flush=True)  # Doesn't help.
         return self.sendLeoBridgePackage("commands", commands)
     def runByName(self, p_package):
         '''Run a command by name, with optional parameters'''
