@@ -454,25 +454,25 @@ class LeoBridgeIntegController:
         # * setup leoBackground to get messages from leo
         try:
             self.g.app.idleTimeManager.start()  # To catch derived file changes
-        except:
+        except Exception:
             print('ERROR with idleTimeManager')
 
-    def __getattr__xxx(self, attr):
-        """
-        This method delegates missing methods to our leoCommand method.
+    # def __getattr__(self, attr):
+        # """
+        # This method delegates missing methods to our leoCommand method.
 
-        I usually don't like to use __getattr__, but here it seem justified: we
-        don't want to define methods for all of Leo's commands here!
+        # I usually don't like to use __getattr__, but here it seem justified: we
+        # don't want to define methods for all of Leo's commands here!
 
-        Otoh, the code actually works without this, but apparently
-        there are problem on startup in the .json files.
-        """
-        print(f"bc__getattr__ {attr}", flush=True)
-        func = self.get_commander_method(attr)
-        if func:
-            # Delegate all "missing" methods to our leoCommand method.
-            return self.leoCommand
-        raise AttributeError
+        # Otoh, the code actually works without this, but apparently
+        # there are problem on startup in the .json files.
+        # """
+        # print(f"bc__getattr__ {attr}", flush=True)
+        # func = self.get_commander_method(attr)
+        # if func:
+            # # Delegate all "missing" methods to our leoCommand method.
+            # return self.leoCommand
+        # raise AttributeError
 
     async def _asyncIdleLoop(self, p_seconds, p_fn):
         while True:
@@ -495,14 +495,14 @@ class LeoBridgeIntegController:
         '''Get total of opened commander (who have closed == false)'''
         w_total = 0
         for w_commander in self.g.app.commanders():
-            if w_commander.closed == False:
+            if not w_commander.closed:
                 w_total = w_total + 1
         return w_total
 
     def _getFirstOpenedCommander(self):
         '''Get first opened commander, or False if there are none.'''
         for w_commander in self.g.app.commanders():
-            if w_commander.closed == False:
+            if not w_commander.closed:
                 return w_commander
         return False
 
@@ -559,7 +559,7 @@ class LeoBridgeIntegController:
         w_index = 0
         w_indexFound = 0
         for w_commander in self.g.app.commanders():
-            if w_commander.closed == False:
+            if not w_commander.closed:
                 w_isSelected = False
                 w_isChanged = w_commander.changed
                 if self.commander == w_commander:
@@ -579,7 +579,7 @@ class LeoBridgeIntegController:
         w_openedCommanders = []
 
         for w_commander in self.g.app.commanders():
-            if w_commander.closed == False:
+            if not w_commander.closed:
                 w_openedCommanders.append(w_commander)
 
         w_index = p_package['index']
@@ -1244,7 +1244,7 @@ class LeoBridgeIntegController:
         '''EMIT OUT body string length of a node'''
         if p_gnx:
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
-            if w_v and len(w_v.b):
+            if w_v and w_v.b:
                 return self.sendLeoBridgePackage("bodyLength", len(w_v.b))
             else:
                 return self.sendLeoBridgePackage("bodyLength", 0)
@@ -1289,8 +1289,7 @@ class LeoBridgeIntegController:
                 w_p.h = w_newHeadline
                 self.commander.undoer.afterChangeNodeContents(w_p, 'Change Headline', w_bunch)
                 return self.outputPNode(w_p)
-        else:
-            return self.outputError("Error in setNewHeadline")
+        return self.outputError("Error in setNewHeadline")
 
     def setSelectedNode(self, p_ap):
         '''Select a node, or the first one found with its GNX'''
