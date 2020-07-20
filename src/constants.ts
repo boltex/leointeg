@@ -29,7 +29,8 @@ export class Constants {
     public static URI_SCHEME_HEADER: string = "leo:/";
     public static FILE_OPEN_FILTER_MESSAGE: string = "Leo Files";
     public static UNTITLED_FILE_NAME: string = "untitled";
-    public static RECENT_FILES_KEY: string = "leoFiles";
+    public static RECENT_FILES_KEY: string = "leoRecentFiles";
+    public static LAST_FILES_KEY: string = "leoLastFiles";
 
     public static DEFAULT_PYTHON: string = "python3.7";
     public static WIN32_PYTHON: string = "py";
@@ -102,6 +103,7 @@ export class Constants {
         BEFORE_CLOSING: "before closing?",
         CANCEL: "Cancel",
         OPEN_WITH_LEOINTEG: "Open this Leo file with LeoInteg?",
+        RIGHT_CLICK_TO_OPEN: "Right-click Leo files to open with LeoInteg",
         FILE_ALREADY_OPENED: "Leo file already opened",
         CHOOSE_OPENED_FILE: "Select an opened Leo File",
         FILE_NOT_OPENED: "No files opened.",
@@ -282,6 +284,7 @@ export class Constants {
         GET_OPENED_FILES: "getOpenedFiles",
         SET_OPENED_FILE: "setOpenedFile", // Pass index ? name to validate / error check, only index when stable
         OPEN_FILE: "openFile",
+        OPEN_FILES: "openFiles", // Sends an array of paths instead: for opening many files at once
         CLOSE_FILE: "closeFile",
         SAVE_FILE: "saveFile",
         SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
