@@ -1081,7 +1081,7 @@ class LeoBridgeIntegController:
         Generic call to a method in Leo's Commands class or any subcommander class.
 
         p_command: a method name (a string).
-        p-node: (p_ap), an archived position.
+        p_ap: an archived position.
         p_keepSelection: preserve the current selection.
         '''
         if not p_ap:
