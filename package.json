@@ -331,6 +331,11 @@
         }
       },
       {
+        "command": "leointeg.recentLeoFiles",
+        "category": "Leo",
+        "title": "Recent Files"
+      },
+      {
         "command": "leointeg.switchLeoFile",
         "title": "Switch Leo File",
         "category": "Leo",
@@ -1077,6 +1082,10 @@
           "when": "leoBridgeReady"
         },
         {
+          "command": "leointeg.recentLeoFiles",
+          "when": "leoBridgeReady"
+        },
+        {
           "command": "leointeg.switchLeoFile",
           "when": "leoBridgeReady && leoTreeOpened"
         },
@@ -1262,6 +1271,10 @@
         },
         {
           "command": "leointeg.test",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.removeButton",
           "when": "false"
         },
         {
@@ -1462,6 +1475,14 @@
         },
         {
           "command": "leointeg.expandAndGoRight",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.pageUp",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.pageDown",
           "when": "false"
         },
         {

@@ -286,7 +286,9 @@ export class LeoIntegration {
                     this.leoStates.leoBridgeReady = true;
                     utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
                     this.showLogPane();
-                    this._openLastFiles(); // Try to open last opened files, if any
+                    setTimeout(() => {
+                        this._openLastFiles(); // Try to open last opened files, if any
+                    }, 0);
                     if (!this.config.connectToServerAutomatically) {
                         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                     }
@@ -337,30 +339,60 @@ export class LeoIntegration {
      */
     private _openLastFiles(): void {
         // Loop through context.globalState.<something> and check if they exist: open them
-        const w_recentFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
-
-        console.log('openLeoFiles', w_recentFiles);
-
-        // this.openLeoFiles(w_recentFiles);
-
+        const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
+        if (w_lastFiles.length) {
+            this._leoBridge.action(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
+                .then((p_openFileResult: LeoBridgePackage) => {
+                    return this._setupOpenedLeoDocument(p_openFileResult.opened!);
+                }, p_errorOpen => {
+                    console.log('in .then not opened or already opened');
+                    return Promise.reject(p_errorOpen);
+                });
+        }
     }
 
     /**
-     * * Adds to the context.globalState.leoFiles if not already in there (no duplicates)
+     * * Adds to the context.globalState.<xxx>files if not already in there (no duplicates)
      * @param p_file path+file name string
      */
     private _addRecentAndLastFile(p_file: string): void {
+        if (!p_file.length) {
+            console.log('new unnamed file');
+            return;
+        }
         // just push that string into the context.globalState.<something> array
         const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
         if (w_recentFiles) {
             if (!w_recentFiles.includes(p_file)) {
                 w_recentFiles.push(p_file);
+                if (w_recentFiles.length > 10) {
+                    w_recentFiles.shift();
+                }
             }
             this._context.globalState.update(Constants.RECENT_FILES_KEY, w_recentFiles); // update with added file
         } else {
             // First so create key entry
             this._context.globalState.update(Constants.RECENT_FILES_KEY, [p_file]); // array of single file
         }
+        // lastFiles too
+        // TODO : REFACTOR IF DUPLICATE CODE
+        const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
+        if (w_lastFiles) {
+            if (!w_lastFiles.includes(p_file)) {
+                w_lastFiles.push(p_file);
+                if (w_lastFiles.length > 10) {
+                    w_lastFiles.shift();
+                }
+            }
+            this._context.globalState.update(Constants.LAST_FILES_KEY, w_lastFiles); // update with added file
+        } else {
+            // First so create key entry
+            this._context.globalState.update(Constants.LAST_FILES_KEY, [p_file]); // array of single file
+        }
+
+        console.log('w_recentFiles now:', w_recentFiles);
+        console.log('w_lastFiles now:', w_lastFiles);
+
     }
 
     /**
@@ -368,6 +400,7 @@ export class LeoIntegration {
      * @param p_file path+file name string
      */
     private _removeRecentFile(p_file: string): void {
+        // TODO : BEFORE SAVE-AS IF ALREADY SAVED
         // Check if exist in context.globalState.<something> and remove if found
         const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
         if (w_recentFiles && w_recentFiles.includes(p_file)) {
@@ -387,6 +420,23 @@ export class LeoIntegration {
             w_lastFiles.splice(w_lastFiles.indexOf(p_file), 1);
             this._context.globalState.update(Constants.LAST_FILES_KEY, w_lastFiles); // update with added file
         }
+    }
+
+    /**
+     * * Shows the recent Leo files list, choosing one will open it
+     */
+    public showRecentLeoFiles(): void {
+        const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
+        if (!w_recentFiles.length) { return; }
+        vscode.window.showQuickPick(
+            w_recentFiles,
+            { placeHolder: Constants.USER_MESSAGES.OPEN_RECENT_FILE }
+        )
+            .then(p_result => {
+                if (p_result) {
+                    this.openLeoFile(vscode.Uri.file(p_result));
+                }
+            });
     }
 
     /**
@@ -490,6 +540,9 @@ export class LeoIntegration {
     private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackageOpenedInfo): Thenable<vscode.TextEditor> {
         const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
         this.leoStates.leoOpenedFileName = p_openFileResult.filename;
+
+        // * If not unnamed file add to recent list & last opened list
+        this._addRecentAndLastFile(p_openFileResult.filename);
 
         // * Could be already opened, so perform 'rename hack' as if another node was selected
         if (this._bodyTextDocument && this.bodyUri) {
@@ -1238,7 +1291,6 @@ export class LeoIntegration {
      */
     public saveAsLeoFile(p_fromOutline?: boolean): void {
         if (!this.leoStates.fileOpenedReady || this._isBusy(true)) { return; } // Warn user to wait for end of busy state
-        // TODO : Implement & support multiple simultaneous files
         if (this.leoStates.fileOpenedReady) {
             if (this.lastSelectedNode) {
                 this.triggerBodySave(true)
@@ -1247,7 +1299,12 @@ export class LeoIntegration {
                     })
                     .then(p_chosenLeoFile => {
                         if (p_chosenLeoFile.trim()) {
+                            if (this.leoStates.leoOpenedFileName) {
+                                this._removeLastFile(this.leoStates.leoOpenedFileName);
+                                this._removeRecentFile(this.leoStates.leoOpenedFileName);
+                            }
                             this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, p_chosenLeoFile); // p_node and p_newHeadline can be undefined
+                            this._addRecentAndLastFile(p_chosenLeoFile.trim());
                         }
                     });
             }
@@ -1346,15 +1403,16 @@ export class LeoIntegration {
     public closeLeoFile(): void {
         if (this._isBusy(true)) { return; } // Warn user to wait for end of busy state
         if (this.leoStates.fileOpenedReady) {
+            const w_removeLastFileName = this.leoStates.leoOpenedFileName;
             this.triggerBodySave(true)
                 .then(() => {
                     return this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE, JSON.stringify({ forced: false }));
                 })
                 .then((p_package => {
-                    // TODO : p_package members names should be made into constants
                     if (p_package.closed) {
                         this._leoDocumentsProvider.refreshTreeRoot();
                         this._leoButtonsProvider.refreshTreeRoot();
+                        this._removeLastFile(w_removeLastFileName);
                         if (p_package.closed.total === 0) {
                             this._setupNoOpenedLeoDocument();
                         } else {
@@ -1400,11 +1458,12 @@ export class LeoIntegration {
                             } else {
                                 return Promise.reject(); // cancelled ask
                             }
-                        }).then((p_package: LeoBridgePackage | undefined) => {
+                        }).then((p_packageAfterSave: LeoBridgePackage | undefined) => {
                             // * back from CLOSE_FILE action, the last that can be performed (after saving if dirty or not)
                             this._leoDocumentsProvider.refreshTreeRoot();
                             this._leoButtonsProvider.refreshTreeRoot();
-                            if (p_package && p_package.closed && p_package.closed.total === 0) {
+                            this._removeLastFile(w_removeLastFileName);
+                            if (p_packageAfterSave && p_packageAfterSave.closed && p_packageAfterSave.closed.total === 0) {
                                 this._setupNoOpenedLeoDocument();
                             } else {
                                 this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
@@ -1542,6 +1601,8 @@ export class LeoIntegration {
     }
 
     public test(p_fromOutline?: boolean): void {
+        console.log("this.leoStates.leoOpenedFileName: " + this.leoStates.leoOpenedFileName);
+
         this.statusBarOnClick(); // placeholder / test
     }
 }
