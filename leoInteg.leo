@@ -288,7 +288,6 @@
 <v t="felix.20200718031424.8"><vh>node commands...</vh>
 <v t="felix.20200718031424.9"><vh>cut/copy/paste</vh></v>
 <v t="felix.20200718031424.10"><vh>expand/contract</vh></v>
-<v t="felix.20200718031424.11"><vh>git-diff</vh></v>
 <v t="felix.20200718031424.12"><vh>goto</vh></v>
 <v t="felix.20200718031424.13"><vh>hoist/dehoist</vh></v>
 <v t="felix.20200718031424.14"><vh>insert/clone</vh></v>
@@ -403,6 +402,7 @@
 <v t="felix.20200719233925.1"><vh>_addRecentAndLastFile</vh></v>
 <v t="felix.20200719233928.1"><vh>_removeRecentFile</vh></v>
 <v t="felix.20200719233930.1"><vh>_removeLastFile</vh></v>
+<v t="felix.20200721005448.1"><vh>showRecentLeoFiles</vh></v>
 </v>
 <v t="felix.20200719025231.10"><vh>Log &amp; Terminal</vh>
 <v t="felix.20200719025231.11"><vh>showTerminalPane</vh></v>
@@ -4669,7 +4669,7 @@ import { LeoIntegration } from "./leoIntegration";
 
 </t>
 <t tx="felix.20200718024635.2">/**
- * * Front-facing, user command stack of actions.
+ * * Front-facing, user command stack of actions. 
  * Actions can also be added once started resolving.
  */
 export class CommandStack {
@@ -4678,10 +4678,10 @@ export class CommandStack {
     private _busy: boolean = false;
 
     // Refresh type, for after the last command is done. (From highest so far)
-    private _finalRefreshType: RefreshType = RefreshType.NoRefresh;
-
+    private _finalRefreshType: RefreshType = RefreshType.NoRefresh; 
+    
     // Flag indicating to set focus on outline when all done, instead of body. (From last one pushed)
-    private _finalFromOutline: boolean = false;
+    private _finalFromOutline: boolean = false; 
 
     // * Received selection from the last command that finished.
     // * Note: JSON string representation of a node, will be re-sent as node to leo instead of lastSelectedNode
@@ -4707,7 +4707,7 @@ public size(): number {
 
 </t>
 <t tx="felix.20200718024635.4">/**
- * * Signal to the command stack that a new selected node was received.
+ * * Signal to the command stack that a new selected node was received. 
  * This command stacks needs to know when to clear its own '_receivedSelection'
  */
 public newSelection(): void {
@@ -5030,7 +5030,6 @@ import { LeoButtonNode } from "./leoButtonNode";
 
 [CMD.EXPAND_AND_GO_RIGHT, () =&gt; w_leo.nodeCommand(BRIDGE.EXPAND_AND_GO_RIGHT, U, REFRESH_BOTH, true)],
 </t>
-<t tx="felix.20200718031424.11"></t>
 <t tx="felix.20200718031424.12">[CMD.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand(BRIDGE.GOTO_NEXT_CLONE, p_node, REFRESH_BOTH, true)],
 [CMD.GOTO_NEXT_CLONE_SELECTION, () =&gt; w_leo.nodeCommand(BRIDGE.GOTO_NEXT_CLONE, U, REFRESH_BOTH, false)],
 [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand(BRIDGE.GOTO_NEXT_CLONE, U, REFRESH_BOTH, true)],
@@ -5132,8 +5131,8 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
 
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        ["leoInteg.test", () =&gt; w_leo.test()], // Test function useful when debugging
-        ["leoInteg.testFromOutline", () =&gt; w_leo.test(true)], // Test function useful when debugging.
+        ["leointeg.test", () =&gt; w_leo.test()], // Test function useful when debugging
+        ["leointeg.testFromOutline", () =&gt; w_leo.test(true)], // Test function useful when debugging.
 
         // Define entries for all commands
         @others
@@ -6813,18 +6812,18 @@ private _updateLeoObjectIndicatorDebounced(p_delay: number): void {
  */
 private _updateLeoObjectIndicator(): void {
     // Can be called directly, so clear timer if any
-    if (this._updateStatusBarTimeout) {
+    if (this._updateStatusBarTimeout) { 
         clearTimeout(this._updateStatusBarTimeout);
     }
-
+    
     utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
-
+    
     this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
         (this._string ? this._string : this._leoIntegration.config.statusBarString) + " " +
         (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
-
+        
     // Also check in constructor for statusBar properties (the createStatusBarItem call itself)
-    if (this.statusBarFlag &amp;&amp; this._leoIntegration.leoStates.fileOpenedReady) {
+    if (this.statusBarFlag &amp;&amp; this._leoIntegration.leoStates.fileOpenedReady) { 
         this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
         this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
     } else {
@@ -9208,7 +9207,10 @@ public saveAsLeoFile(p_fromOutline?: boolean): void {
                             this._removeRecentFile(this.leoStates.leoOpenedFileName);
                         }
                         this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, p_chosenLeoFile); // p_node and p_newHeadline can be undefined
+                        this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
+                        this._leoStatusBar.update(true, 0, true);
                         this._addRecentAndLastFile(p_chosenLeoFile.trim());
+
                     }
                 });
         }
@@ -9537,8 +9539,6 @@ public startServer(): void {
 
 </t>
 <t tx="felix.20200719025231.70">public test(p_fromOutline?: boolean): void {
-    console.log("this.leoStates.leoOpenedFileName: " + this.leoStates.leoOpenedFileName);
-
     this.statusBarOnClick(); // placeholder / test
 }
 </t>
@@ -9832,7 +9832,6 @@ private _openLastFiles(): void {
  */
 private _addRecentAndLastFile(p_file: string): void {
     if (!p_file.length) {
-        console.log('new unnamed file');
         return;
     }
     // just push that string into the context.globalState.&lt;something&gt; array
@@ -9864,10 +9863,6 @@ private _addRecentAndLastFile(p_file: string): void {
         // First so create key entry
         this._context.globalState.update(Constants.LAST_FILES_KEY, [p_file]); // array of single file
     }
-
-    console.log('w_recentFiles now:', w_recentFiles);
-    console.log('w_lastFiles now:', w_lastFiles);
-
 }
 
 </t>
@@ -9897,23 +9892,6 @@ private _removeLastFile(p_file: string): void {
         w_lastFiles.splice(w_lastFiles.indexOf(p_file), 1);
         this._context.globalState.update(Constants.LAST_FILES_KEY, w_lastFiles); // update with added file
     }
-}
-
-/**
- * * Shows the recent Leo files list, choosing one will open it
- */
-public showRecentLeoFiles(): void {
-    const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
-    if (!w_recentFiles.length) { return; }
-    vscode.window.showQuickPick(
-        w_recentFiles,
-        { placeHolder: Constants.USER_MESSAGES.OPEN_RECENT_FILE }
-    )
-        .then(p_result =&gt; {
-            if (p_result) {
-                this.openLeoFile(vscode.Uri.file(p_result));
-            }
-        });
 }
 
 </t>
@@ -10175,5 +10153,23 @@ export interface LeoBridgePackageOpenedInfo {
   "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened",
   "group": "navigation@6"
 }</t>
+<t tx="felix.20200721005448.1">/**
+ * * Shows the recent Leo files list, choosing one will open it
+ */
+public showRecentLeoFiles(): void {
+    const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
+    if (!w_recentFiles.length) { return; }
+    vscode.window.showQuickPick(
+        w_recentFiles,
+        { placeHolder: Constants.USER_MESSAGES.OPEN_RECENT_FILE }
+    )
+        .then(p_result =&gt; {
+            if (p_result) {
+                this.openLeoFile(vscode.Uri.file(p_result));
+            }
+        });
+}
+
+</t>
 </tnodes>
 </leo_file>

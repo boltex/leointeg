@@ -357,7 +357,6 @@ export class LeoIntegration {
      */
     private _addRecentAndLastFile(p_file: string): void {
         if (!p_file.length) {
-            console.log('new unnamed file');
             return;
         }
         // just push that string into the context.globalState.<something> array
@@ -389,10 +388,6 @@ export class LeoIntegration {
             // First so create key entry
             this._context.globalState.update(Constants.LAST_FILES_KEY, [p_file]); // array of single file
         }
-
-        console.log('w_recentFiles now:', w_recentFiles);
-        console.log('w_lastFiles now:', w_lastFiles);
-
     }
 
     /**
@@ -1304,7 +1299,10 @@ export class LeoIntegration {
                                 this._removeRecentFile(this.leoStates.leoOpenedFileName);
                             }
                             this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, p_chosenLeoFile); // p_node and p_newHeadline can be undefined
+                            this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
+                            this._leoStatusBar.update(true, 0, true);
                             this._addRecentAndLastFile(p_chosenLeoFile.trim());
+
                         }
                     });
             }
@@ -1601,8 +1599,6 @@ export class LeoIntegration {
     }
 
     public test(p_fromOutline?: boolean): void {
-        console.log("this.leoStates.leoOpenedFileName: " + this.leoStates.leoOpenedFileName);
-
         this.statusBarOnClick(); // placeholder / test
     }
 }
