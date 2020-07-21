@@ -4669,7 +4669,7 @@ import { LeoIntegration } from "./leoIntegration";
 
 </t>
 <t tx="felix.20200718024635.2">/**
- * * Front-facing, user command stack of actions. 
+ * * Front-facing, user command stack of actions.
  * Actions can also be added once started resolving.
  */
 export class CommandStack {
@@ -4678,10 +4678,10 @@ export class CommandStack {
     private _busy: boolean = false;
 
     // Refresh type, for after the last command is done. (From highest so far)
-    private _finalRefreshType: RefreshType = RefreshType.NoRefresh; 
-    
+    private _finalRefreshType: RefreshType = RefreshType.NoRefresh;
+
     // Flag indicating to set focus on outline when all done, instead of body. (From last one pushed)
-    private _finalFromOutline: boolean = false; 
+    private _finalFromOutline: boolean = false;
 
     // * Received selection from the last command that finished.
     // * Note: JSON string representation of a node, will be re-sent as node to leo instead of lastSelectedNode
@@ -4707,7 +4707,7 @@ public size(): number {
 
 </t>
 <t tx="felix.20200718024635.4">/**
- * * Signal to the command stack that a new selected node was received. 
+ * * Signal to the command stack that a new selected node was received.
  * This command stacks needs to know when to clear its own '_receivedSelection'
  */
 public newSelection(): void {
@@ -6813,18 +6813,18 @@ private _updateLeoObjectIndicatorDebounced(p_delay: number): void {
  */
 private _updateLeoObjectIndicator(): void {
     // Can be called directly, so clear timer if any
-    if (this._updateStatusBarTimeout) { 
+    if (this._updateStatusBarTimeout) {
         clearTimeout(this._updateStatusBarTimeout);
     }
-    
+
     utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
-    
+
     this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
         (this._string ? this._string : this._leoIntegration.config.statusBarString) + " " +
         (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
-        
+
     // Also check in constructor for statusBar properties (the createStatusBarItem call itself)
-    if (this.statusBarFlag &amp;&amp; this._leoIntegration.leoStates.fileOpenedReady) { 
+    if (this.statusBarFlag &amp;&amp; this._leoIntegration.leoStates.fileOpenedReady) {
         this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
         this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
     } else {
