@@ -103,6 +103,7 @@ export class Constants {
         BEFORE_CLOSING: "before closing?",
         CANCEL: "Cancel",
         OPEN_WITH_LEOINTEG: "Open this Leo file with LeoInteg?",
+        OPEN_RECENT_FILE: "Open Recent Leo File",
         RIGHT_CLICK_TO_OPEN: "Right-click Leo files to open with LeoInteg",
         FILE_ALREADY_OPENED: "Leo file already opened",
         CHOOSE_OPENED_FILE: "Select an opened Leo File",
@@ -264,6 +265,7 @@ export class Constants {
 
     /**
      * * Commands for leobridgeserver.py
+     * TODO : Proof of concept leoCommand
      */
     public static LEOBRIDGE = {
         APPLY_CONFIG: "applyConfig",
@@ -293,7 +295,7 @@ export class Constants {
         CLICK_BUTTON: "clickButton",
         GET_COMMANDS: "getCommands", // ask leoBridge for the list of known commands, (starting with text string)
         RUN_BY_NAME: "runByName", // Run a command by its string name like in minibuffer
-        GIT_DIFF: "gitDiff",
+        GIT_DIFF: "gitDiff", // TODO : Proof of concept leoCommand
         // * Goto operations
         PAGE_UP: "pageUp",
         PAGE_DOWN: "pageDown",
@@ -360,6 +362,7 @@ export class Constants {
         CONNECT: Constants.NAME + ".connectToServer",
         SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
         OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
+        RECENT_FILES: Constants.NAME + ".recentLeoFiles", // shows recent Leo files, opens one on selection
         SWITCH_FILE: Constants.NAME + ".switchLeoFile",
         NEW_FILE: Constants.NAME + ".newLeoFile",
         SAVE_FILE: Constants.NAME + ".saveLeoFile", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
@@ -369,7 +372,7 @@ export class Constants {
         CLICK_BUTTON: Constants.NAME + ".clickButton",
         REMOVE_BUTTON: Constants.NAME + ".removeButton",
         MINIBUFFER: Constants.NAME + ".minibuffer",
-        GIT_DIFF: Constants.NAME + ".gitDiff",
+        GIT_DIFF: Constants.NAME + ".gitDiff", // TODO : Proof of concept leoCommand
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",
         OPEN_ASIDE: Constants.NAME + ".openAside",

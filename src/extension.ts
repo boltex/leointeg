@@ -36,8 +36,8 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_commands: [string, (...args: any[]) => any][] = [
 
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        ["test", () => w_leo.test()], // Test function useful when debugging
-        ["testFromOutline", () => w_leo.test(true)], // Test function useful when debugging.
+        ["leointeg.test", () => w_leo.test()], // Test function useful when debugging
+        ["leointeg.testFromOutline", () => w_leo.test(true)], // Test function useful when debugging.
 
         // Define entries for all commands
         [CMD.MINIBUFFER, () => w_leo.minibuffer()], // Cannot be undeclared because its referenced in package.json
@@ -51,6 +51,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.NEW_FILE, () => w_leo.newLeoFile()],
 
         [CMD.OPEN_FILE, (p_uri?: vscode.Uri) => w_leo.openLeoFile(p_uri)],
+
+        [CMD.RECENT_FILES, () => w_leo.showRecentLeoFiles()],
         [CMD.SAVE_AS_FILE, () => w_leo.saveAsLeoFile()],
         [CMD.SAVE_FILE, () => w_leo.saveLeoFile()],
         [CMD.SAVE_FILE_FO, () => w_leo.saveLeoFile(true)],
