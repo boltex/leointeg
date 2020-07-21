@@ -2,6 +2,7 @@
 import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
 import asyncio
+import os.path
 import getopt
 import json
 import sys
@@ -622,18 +623,22 @@ class LeoBridgeIntegController:
 
         print('[%s]' % ', '.join(map(str, w_files)))
 
-        # w_found = False
+        for i_file in w_files:
+            w_found = False
+            # If not empty string (asking for New file) then check if already opened
+            if i_file:
+                for w_commander in self.g.app.commanders():
+                    if w_commander.fileName() == i_file:
+                        w_found = True
+                        self.commander = w_commander
 
-        # # If not empty string (asking for New file) then check if already opened
-        # if p_file:
-        #     for w_commander in self.g.app.commanders():
-        #         if w_commander.fileName() == p_file:
-        #             w_found = True
-        #             self.commander = w_commander
+            if not w_found:
+                if os.path.isfile(i_file):
+                    self.commander = self.bridge.openLeoFile(i_file)  # create self.commander
+            if self.commander:
+                self.commander.closed = False
 
-        # if not w_found:
-        #     self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
-
+        # Done with the last one, it's now the selected commander. Check again just in case.
         if self.commander:
             self.commander.closed = False
             self.create_gnx_to_vnode()
@@ -641,7 +646,7 @@ class LeoBridgeIntegController:
                         "node": self.p_to_ap(self.commander.p)}
             return self.sendLeoBridgePackage("opened", w_result)
         else:
-            return self.outputError('Error in openFile')
+            return self.outputError('Error in openFiles')
 
     def closeFile(self, p_package):
         """
@@ -1061,7 +1066,7 @@ class LeoBridgeIntegController:
                 # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
         return None
 
-    def leoCommand(self, p_command, p_ap, p_keepSelection=False):
+    def leoCommand(self, p_command, p_ap, p_keepSelection=False, p_byName=False):
         '''
         Generic call to a method in Leo's Commands class or any subcommander class.
 
@@ -1077,12 +1082,13 @@ class LeoBridgeIntegController:
         w_func = self._get_commander_method(p_command)
         if not w_func:
             return self.outputError(f"Error in {p_command}: no method found")
+        
         if w_p == self.commander.p:
-            w_func()
+            w_func(event=None)
         else:
             oldPosition = self.commander.p
             self.commander.selectPosition(w_p)
-            w_func()
+            w_func(event=None)
             if p_keepSelection and self.commander.positionExists(oldPosition):
                 self.commander.selectPosition(oldPosition)
         return self.outputPNode(self.commander.p)
@@ -1440,12 +1446,11 @@ def main():
                     #
                     func = getattr(integController, w_param['action'], None)
                     if func:
-                        # print('FOUND:', func.__name__, flush=True)
+                        # Is Filtered by Leo Bridge Integration Controller
                         answer = func(w_param['param'])
                     else:
-                        # Attempt to execute the command indirectly.
-                        print(f"NOT found: {w_param['action']}", flush=True)
-                        answer = integController.leoCommand(w_param['action'], w_param['param'], True)
+                        # Attempt to execute the command directly on the commander/subcommander
+                        answer = integController.leoCommand(w_param['action'], w_param['param'], False)
                 else:
                     answer = "Error in processCommand"
                     print(answer, flush=True)

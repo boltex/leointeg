@@ -183,7 +183,11 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 const w_gnx = utils.leoUriToStr(p_uri);
                 // if (!this._possibleGnxList.includes(w_gnx)) {
                 if (this._selectedBody.gnx !== w_gnx && this._renameBody.gnx !== w_gnx) {
+                    console.error("TODO : PREVENT UNDO ACROSS FILES");
                     console.error("readFile: ERROR File not in list! readFile missing refreshes?");
+                    console.log(this._renameBody.gnx, this._renameBody.gnx);
+                    console.log(this._selectedBody.gnx, this._selectedBody.gnx);
+
                     throw vscode.FileSystemError.FileNotFound();
                 } else {
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY, '"' + w_gnx + '"')
