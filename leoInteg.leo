@@ -1139,12 +1139,11 @@ if __name__ == '__main__':
                     # func = getattr(integController, w_param['action'], integController.leoCommand)
                     func = getattr(integController, w_param['action'], None)
                     if func:
-                        # print('FOUND:', func.__name__, flush=True)
+                        # Is Filtered by Leo Bridge Integration Controller
                         answer = func(w_param['param'])
                     else:
-                        # Attempt to execute the command indirectly.
-                        print(f"NOT found: {w_param['action']}", flush=True)
-                        answer = integController.leoCommand(w_param['action'], w_param['param'], True)
+                        # Attempt to execute the command directly on the commander/subcommander
+                        answer = integController.leoCommand(w_param['action'], w_param['param'], False)
                 else:
                     answer = "Error in processCommand"
                     print(answer, flush=True)
@@ -5553,7 +5552,11 @@ import { BodyTimeInfo } from "./types";
             const w_gnx = utils.leoUriToStr(p_uri);
             // if (!this._possibleGnxList.includes(w_gnx)) {
             if (this._selectedBody.gnx !== w_gnx &amp;&amp; this._renameBody.gnx !== w_gnx) {
+                console.error("TODO : PREVENT UNDO ACROSS FILES");
                 console.error("readFile: ERROR File not in list! readFile missing refreshes?");
+                console.log(this._renameBody.gnx, this._renameBody.gnx);
+                console.log(this._selectedBody.gnx, this._selectedBody.gnx);
+
                 throw vscode.FileSystemError.FileNotFound();
             } else {
                 return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY, '"' + w_gnx + '"')
@@ -8026,7 +8029,7 @@ More information can be found on the repository's [Issues Page](https://github.c
 <t tx="felix.20200718223820.1"></t>
 <t tx="felix.20200718223833.1"></t>
 <t tx="felix.20200718223838.1"></t>
-<t tx="felix.20200719001908.1">def leoCommand(self, p_command, p_ap, p_keepSelection=False):
+<t tx="felix.20200719001908.1">def leoCommand(self, p_command, p_ap, p_keepSelection=False, p_byName=False):
     '''
     Generic call to a method in Leo's Commands class or any subcommander class.
 
@@ -8042,12 +8045,13 @@ More information can be found on the repository's [Issues Page](https://github.c
     w_func = self._get_commander_method(p_command)
     if not w_func:
         return self.outputError(f"Error in {p_command}: no method found")
+    
     if w_p == self.commander.p:
-        w_func()
+        w_func(event=None)
     else:
         oldPosition = self.commander.p
         self.commander.selectPosition(w_p)
-        w_func()
+        w_func(event=None)
         if p_keepSelection and self.commander.positionExists(oldPosition):
             self.commander.selectPosition(oldPosition)
     return self.outputPNode(self.commander.p)

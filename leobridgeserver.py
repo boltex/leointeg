@@ -1087,7 +1087,7 @@ class LeoBridgeIntegController:
                 # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
         return None
 
-    def leoCommand(self, p_command, p_ap, p_keepSelection=False):
+    def leoCommand(self, p_command, p_ap, p_keepSelection=False, p_byName=False):
         '''
         Generic call to a method in Leo's Commands class or any subcommander class.
 
@@ -1103,12 +1103,13 @@ class LeoBridgeIntegController:
         w_func = self._get_commander_method(p_command)
         if not w_func:
             return self.outputError(f"Error in {p_command}: no method found")
+        
         if w_p == self.commander.p:
-            w_func()
+            w_func(event=None)
         else:
             oldPosition = self.commander.p
             self.commander.selectPosition(w_p)
-            w_func()
+            w_func(event=None)
             if p_keepSelection and self.commander.positionExists(oldPosition):
                 self.commander.selectPosition(oldPosition)
         return self.outputPNode(self.commander.p)
@@ -1469,12 +1470,11 @@ def main():
                     # func = getattr(integController, w_param['action'], integController.leoCommand)
                     func = getattr(integController, w_param['action'], None)
                     if func:
-                        # print('FOUND:', func.__name__, flush=True)
+                        # Is Filtered by Leo Bridge Integration Controller
                         answer = func(w_param['param'])
                     else:
-                        # Attempt to execute the command indirectly.
-                        print(f"NOT found: {w_param['action']}", flush=True)
-                        answer = integController.leoCommand(w_param['action'], w_param['param'], True)
+                        # Attempt to execute the command directly on the commander/subcommander
+                        answer = integController.leoCommand(w_param['action'], w_param['param'], False)
                 else:
                     answer = "Error in processCommand"
                     print(answer, flush=True)
