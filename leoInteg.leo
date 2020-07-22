@@ -166,7 +166,7 @@
 <v t="felix.20200718122313.1"><vh>removeButton</vh></v>
 <v t="felix.20200710030614.1"><vh>clickButton</vh></v>
 <v t="felix.20200711182907.1"><vh>getCommands</vh></v>
-<v t="felix.20200718122351.1"><vh>runByName</vh></v>
+<v t="felix.20200721223256.1"><vh>_getDocstringForCommand</vh></v>
 <v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
 <v t="felix.20191128004456.1"><vh>setActionId</vh></v>
 <v t="felix.20200213195413.1"><vh>asyncOutput</vh></v>
@@ -833,7 +833,7 @@ if __name__ == '__main__':
     '''EMIT OUT body string length of a node'''
     if p_gnx:
         w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
-        if w_v and len(w_v.b):
+        if w_v and w_v.b:
             return self.sendLeoBridgePackage("bodyLength", len(w_v.b))
         else:
             return self.sendLeoBridgePackage("bodyLength", 0)
@@ -881,8 +881,7 @@ if __name__ == '__main__':
             w_p.h = w_newHeadline
             self.commander.undoer.afterChangeNodeContents(w_p, 'Change Headline', w_bunch)
             return self.outputPNode(w_p)
-    else:
-        return self.outputError("Error in setNewHeadline")
+    return self.outputError("Error in setNewHeadline")
 
 </t>
 <t tx="felix.20191126232434.24">def setSelectedNode(self, p_ap):
@@ -950,8 +949,8 @@ if __name__ == '__main__':
     gnx_to_vnode = old_d
     new_len = len(list(gnx_to_vnode.keys()))
     assert old_len == new_len, (old_len, new_len)
-    print('Leo file opened. Its outline contains ' + str(qtyAllPositions) + " nodes positions.")
-    print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)))
+    # print('Leo file opened. Its outline contains ' + str(qtyAllPositions) + " nodes positions.")
+    # print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)))
 
 </t>
 <t tx="felix.20191126232434.29">def yieldAllRootChildren(self):
@@ -1060,7 +1059,7 @@ if __name__ == '__main__':
     # * setup leoBackground to get messages from leo
     try:
         self.g.app.idleTimeManager.start()  # To catch derived file changes
-    except:
+    except Exception:
         print('ERROR with idleTimeManager')
 
 </t>
@@ -1134,9 +1133,7 @@ if __name__ == '__main__':
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
-                    # answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
                     #
-                    # func = getattr(integController, w_param['action'], integController.leoCommand)
                     func = getattr(integController, w_param['action'], None)
                     if func:
                         # Is Filtered by Leo Bridge Integration Controller
@@ -1171,22 +1168,22 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191127000344.1">def movePNodeDown(self, p_ap):
     '''Move a node DOWN, don't select it if possible'''
-    return self.outlineCommand("moveOutlineDown", p_ap, True)
+    return self.leoCommand("moveOutlineDown", p_ap, True)
 
 </t>
 <t tx="felix.20191127000419.1">def movePNodeLeft(self, p_ap):
     '''Move a node LEFT, don't select it if possible'''
-    return self.outlineCommand("moveOutlineLeft", p_ap, True)
+    return self.leoCommand("moveOutlineLeft", p_ap, True)
 
 </t>
 <t tx="felix.20191127000420.1">def movePNodeRight(self, p_ap):
     '''Move a node RIGHT, don't select it if possible'''
-    return self.outlineCommand("moveOutlineRight", p_ap, True)
+    return self.leoCommand("moveOutlineRight", p_ap, True)
 
 </t>
 <t tx="felix.20191127000420.2">def movePNodeUp(self, p_ap):
     '''Move a node UP, don't select it if possible'''
-    return self.outlineCommand("moveOutlineUp", p_ap, True)
+    return self.leoCommand("moveOutlineUp", p_ap, True)
 
 </t>
 <t tx="felix.20191127001506.1">def insertPNode(self, p_ap):
@@ -1208,12 +1205,12 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191127001506.2">def promotePNode(self, p_ap):
     '''Promote a node, don't select it if possible'''
-    return self.outlineCommand("promote", p_ap, True)
+    return self.leoCommand("promote", p_ap, True)
 
 </t>
 <t tx="felix.20191127001506.3">def demotePNode(self, p_ap):
     '''Demote a node, don't select it if possible'''
-    return self.outlineCommand("demote", p_ap, True)
+    return self.leoCommand("demote", p_ap, True)
 
 </t>
 <t tx="felix.20191127002548.1">def deletePNode(self, p_ap):
@@ -1243,12 +1240,12 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191127004619.1">def copyPNode(self, p_ap):
     '''Copy a node, don't select it'''
-    return self.outlineCommand("copyOutline", p_ap, True)
+    return self.leoCommand("copyOutline", p_ap, True)
 
 </t>
 <t tx="felix.20191127004620.1">def cutPNode(self, p_ap):
     '''Cut a node, don't select it'''
-    return self.outlineCommand("cutOutline", p_ap, True)
+    return self.leoCommand("cutOutline", p_ap, True)
 
 </t>
 <t tx="felix.20191127004621.1">def markPNode(self, p_ap):
@@ -1282,12 +1279,13 @@ if __name__ == '__main__':
 <t tx="felix.20191128002414.1">import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
 import asyncio
-import websockets
 import os.path
-import sys
 import getopt
-import time
 import json
+import sys
+import time
+import traceback
+import websockets
 
 </t>
 <t tx="felix.20191128002417.1"># server defaults
@@ -1304,12 +1302,12 @@ wsPort = 32125
 </t>
 <t tx="felix.20191130211048.1">def pastePNode(self, p_ap):
     '''Paste a node, don't select it if possible'''
-    return self.outlineCommand("pasteOutline", p_ap, True)
+    return self.leoCommand("pasteOutline", p_ap, True)
 
 </t>
 <t tx="felix.20191130211048.2">def pasteAsClonePNode(self, p_ap):
     '''Paste as clone, don't select it if possible'''
-    return self.outlineCommand("pasteOutlineRetainingClones", p_ap, True)
+    return self.leoCommand("pasteOutlineRetainingClones", p_ap, True)
 
 </t>
 <t tx="felix.20191201194046.1">def getAllGnx(self, p_paramUnused):
@@ -1328,17 +1326,17 @@ wsPort = 32125
 </t>
 <t tx="felix.20191231184412.1">def sortChildrenPNode(self, p_ap):
     '''Sort children of a node, don't select it if possible'''
-    return self.outlineCommand("sortChildren", p_ap, True)
+    return self.leoCommand("sortChildren", p_ap, True)
 
 </t>
 <t tx="felix.20191231184412.2">def sortSiblingsPNode(self, p_ap):
     '''Sort siblings of a node, don't select it if possible'''
-    return self.outlineCommand("sortSiblings", p_ap, True)
+    return self.leoCommand("sortSiblings", p_ap, True)
 
 </t>
 <t tx="felix.20191231201748.1">def hoistPNode(self, p_ap):
     '''Select and Hoist a node'''
-    return self.outlineCommand("hoist", p_ap)  # Don't try to re-select node
+    return self.leoCommand("hoist", p_ap)  # Don't try to re-select node
 
 </t>
 <t tx="felix.20191231201749.1">def deHoist(self, p_paramUnused):
@@ -1353,9 +1351,9 @@ wsPort = 32125
         w_p = self.ap_to_p(p_ap)
         if w_p:
             if w_p == self.commander.p:
-                return self.outlineCommand("clone", p_ap, False)
+                return self.leoCommand("clone", p_ap, False)
             else:
-                return self.outlineCommand("clone", p_ap, True)
+                return self.leoCommand("clone", p_ap, True)
         else:
             return self.outputError("Error in clonePNode function, no w_p node found")  # default empty
     else:
@@ -1487,7 +1485,7 @@ wsPort = 32125
 </t>
 <t tx="felix.20200301235235.1">def refreshFromDiskPNode(self, p_ap):
     '''Refresh from Disk, don't select it if possible'''
-    return self.outlineCommand("refreshFromDisk", p_ap, True)
+    return self.leoCommand("refreshFromDisk", p_ap, True)
 
 </t>
 <t tx="felix.20200302204251.1">class IdleTimeManager:
@@ -1989,7 +1987,7 @@ wsPort = 32125
     w_index = 0
     w_indexFound = 0
     for w_commander in self.g.app.commanders():
-        if w_commander.closed == False:
+        if not w_commander.closed:
             w_isSelected = False
             w_isChanged = w_commander.changed
             if self.commander == w_commander:
@@ -2009,7 +2007,7 @@ wsPort = 32125
     '''Get total of opened commander (who have closed == false)'''
     w_total = 0
     for w_commander in self.g.app.commanders():
-        if w_commander.closed == False:
+        if not w_commander.closed:
             w_total = w_total + 1
     return w_total
 
@@ -2017,7 +2015,7 @@ wsPort = 32125
 <t tx="felix.20200623215904.1">def _getFirstOpenedCommander(self):
     '''Get first opened commander, or False if there are none.'''
     for w_commander in self.g.app.commanders():
-        if w_commander.closed == False:
+        if not w_commander.closed:
             return w_commander
     return False
 
@@ -2027,7 +2025,7 @@ wsPort = 32125
     w_openedCommanders = []
 
     for w_commander in self.g.app.commanders():
-        if w_commander.closed == False:
+        if not w_commander.closed:
             w_openedCommanders.append(w_commander)
 
     w_index = p_package['index']
@@ -2066,37 +2064,37 @@ wsPort = 32125
 </t>
 <t tx="felix.20200705201100.1">def gotoLastSibling(self, p_ap):
     """Select the last sibling of the selected node."""
-    return self.outlineCommand("goToLastSibling", p_ap)
+    return self.leoCommand("goToLastSibling", p_ap)
 
 </t>
 <t tx="felix.20200705223430.1">def contractOrGoLeft(self, p_ap):
     """Simulate the left Arrow Key in folder of Windows Explorer."""
-    return self.outlineCommand("contractNodeOrGoToParent", p_ap)
+    return self.leoCommand("contractNodeOrGoToParent", p_ap)
 
 </t>
 <t tx="felix.20200705223521.1">def expandAndGoRight(self, p_ap):
     """If a node has children, expand it if needed and go to the first child."""
-    return self.outlineCommand("expandNodeAndGoToFirstChild", p_ap)
+    return self.leoCommand("expandNodeAndGoToFirstChild", p_ap)
 
 </t>
 <t tx="felix.20200705223536.1">def gotoNextVisible(self, p_ap):
     """Select the visible node following the presently selected node."""
-    return self.outlineCommand("selectVisNext", p_ap)
+    return self.leoCommand("selectVisNext", p_ap)
 
 </t>
 <t tx="felix.20200705223541.1">def gotoPrevVisible(self, p_ap):
     """Select the visible node preceding the presently selected node."""
-    return self.outlineCommand("selectVisBack", p_ap)
+    return self.leoCommand("selectVisBack", p_ap)
 
 </t>
 <t tx="felix.20200705233325.1">def gotoLastVisible(self, p_ap):
     """Select the last visible node of selected chapter or hoist."""
-    return self.outlineCommand("goToLastVisibleNode", p_ap)
+    return self.leoCommand("goToLastVisibleNode", p_ap)
 
 </t>
 <t tx="felix.20200706030410.1">def gotoNextMarked(self, p_ap):
     """Select the next marked node."""
-    return self.outlineCommand("goToNextMarkedHeadline", p_ap)
+    return self.leoCommand("goToNextMarkedHeadline", p_ap)
 
 </t>
 <t tx="felix.20200706202247.1">def gotoNextClone(self, p_ap):
@@ -2104,7 +2102,7 @@ wsPort = 32125
     Select the next node that is a clone of the selected node.
     If the selected node is not a clone, do find-next-clone.
     """
-    return self.outlineCommand("goToNextClone", p_ap)
+    return self.leoCommand("goToNextClone", p_ap)
 
 </t>
 <t tx="felix.20200710014747.1">def getButtons(self, p_package):
@@ -2132,23 +2130,16 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200711182907.1">def getCommands(self, p_package):
-    '''get command list starting with string, or none'''
-
-    # TODO
-
-    print("get command list starting with string: ")
-
-    if "text" in p_package:
-        print(p_package['text'])
-    else:
-        print("no string given")
-
-    w_commands = []
-    w_commands.append("one")
-    w_commands.append("two")
-    w_commands.append("three")
-
-    return self.sendLeoBridgePackage("commands", w_commands)
+    """get command list starting with the prefix string."""
+    c, g = self.commander, self.g
+    prefix = p_package.get('text', '').strip()
+    commands = sorted(list(c.commandsDict.keys()))
+    # test restriction to the list
+    commands = [{"label": k, "detail": self._getDocstringForCommand(
+        k)} for k in commands if (len(k) &gt; 3 and k[0].isalpha())]
+    # g.printObj(commands, tag=f"commands for {prefix}")
+    # print('done', flush=True)  # Doesn't help.
+    return self.sendLeoBridgePackage("commands", commands)
 
 </t>
 <t tx="felix.20200711210205.1">def pageDown(self, p_ap):
@@ -2161,7 +2152,7 @@ wsPort = 32125
 </t>
 <t tx="felix.20200711210205.2">def gotoFirstVisible(self, p_ap):
     """Select the first visible node of the selected chapter or hoist."""
-    return self.outlineCommand("goToFirstVisibleNode", p_ap)
+    return self.leoCommand("goToFirstVisibleNode", p_ap)
 
 </t>
 <t tx="felix.20200717222352.1">@language json
@@ -4226,7 +4217,6 @@ public static LEOBRIDGE = {
     REMOVE_BUTTON: "removeButton",
     CLICK_BUTTON: "clickButton",
     GET_COMMANDS: "getCommands", // ask leoBridge for the list of known commands, (starting with text string)
-    RUN_BY_NAME: "runByName", // Run a command by its string name like in minibuffer
     GIT_DIFF: "gitDiff", // TODO : Proof of concept leoCommand
     // * Goto operations
     PAGE_UP: "pageUp",
@@ -4554,6 +4544,7 @@ public static USER_MESSAGES = {
     NO: "No",
     YES_ALL: "Yes to all",
     NO_ALL: "No to all",
+    MINIBUFFER_PROMPT: "Minibuffer Full Command",
     CHANGES_DETECTED: "Changes to external files were detected.",
     REFRESHED: " Nodes were refreshed from file.", // with voluntary leading space
     IGNORED: " They were ignored.", // with voluntary leading space
@@ -5807,26 +5798,6 @@ public getExpiredGnxList(): Thenable&lt;string[]&gt; {
             w_key = i_key
     if w_key:
         del(w_dict[w_key])  # delete object member
-    return self.outputPNode(self.commander.p)  # return selected node when done
-
-</t>
-<t tx="felix.20200718122351.1">def runByName(self, p_package):
-    '''Run a command by name, with optional parameters'''
-    # TODO
-
-    print("runByName for string:")
-
-    if "text" in p_package:
-        print(p_package['text'])
-    else:
-        print("no string given")
-
-    # Also consider p_package['params'] to be rebuilt from JSON
-    if "params" in p_package:
-        print(p_package['params'])
-    else:
-        print("no params given")
-
     return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
@@ -7225,7 +7196,7 @@ export interface LeoBridgePackage {
         files: LeoDocument[];
     }
     buttons?: LeoButton[];
-    commands?: string[];
+    commands?: vscode.QuickPickItem[];
 }
 
 </t>
@@ -8033,9 +8004,13 @@ More information can be found on the repository's [Issues Page](https://github.c
     '''
     Generic call to a method in Leo's Commands class or any subcommander class.
 
+    The p_ap position node is to be selected before having the command run,
+    while the p_keepSelection parameter specifies wether the original position should be re-selected.
+    The whole of those operations is to be undoable as one undo step.
+
     p_command: a method name (a string).
-    p-node: (p_ap), an archived position.
-    p_keepSelection: preserve the current selection.
+    p_ap: an archived position.
+    p_keepSelection: preserve the current selection, if possible.
     '''
     if not p_ap:
         return self.outputError(f"Error in {p_command}: no param p_ap")
@@ -8045,7 +8020,7 @@ More information can be found on the repository's [Issues Page](https://github.c
     w_func = self._get_commander_method(p_command)
     if not w_func:
         return self.outputError(f"Error in {p_command}: no method found")
-    
+
     if w_p == self.commander.p:
         w_func(event=None)
     else:
@@ -8055,9 +8030,6 @@ More information can be found on the repository's [Issues Page](https://github.c
         if p_keepSelection and self.commander.positionExists(oldPosition):
             self.commander.selectPosition(oldPosition)
     return self.outputPNode(self.commander.p)
-
-# Temporary Compatibility.
-outlineCommand = leoCommand
 
 </t>
 <t tx="felix.20200719001908.2">def _get_commander_method(self, p_command):
@@ -9753,8 +9725,6 @@ public sendConfigToServer(p_config: ConfigMembers): void {
     if "files" in p_package:
         w_files = p_package["files"]
 
-    print('[%s]' % ', '.join(map(str, w_files)))
-
     for i_file in w_files:
         w_found = False
         # If not empty string (asking for New file) then check if already opened
@@ -9932,12 +9902,25 @@ public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boole
  */
 public minibuffer(): void {
     if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-    this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "a string" }))
+    const w_promise: Thenable&lt;vscode.QuickPickItem[]&gt; = this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
         .then((p_result: LeoBridgePackage) =&gt; {
-            console.log('Back from GET_COMMANDS, package is: ', p_result.commands);
-
-            this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+            if (p_result.commands &amp;&amp; p_result.commands.length) {
+                return p_result.commands;
+            } else {
+                return [];
+            }
         });
+
+    const w_options: vscode.QuickPickOptions = {
+        placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
+        matchOnDetail: true
+    };
+
+    vscode.window.showQuickPick(w_promise, w_options).then((p_picked) =&gt; {
+        if (p_picked &amp;&amp; p_picked.label) {
+            this.nodeCommand(p_picked.label, undefined, RefreshType.RefreshTreeAndBody, true);
+        }
+    });
 }
 
 </t>
@@ -10173,6 +10156,18 @@ public showRecentLeoFiles(): void {
             }
         });
 }
+
+</t>
+<t tx="felix.20200721223256.1">def _getDocstringForCommand(self, command_name):
+    """get docstring for the given command."""
+    # ! maybe unneeded
+    # getCommands might return commands as list of dicts such as:
+    # [{"name": "hoist", "doc": "Hoists the node"} , {...}, ... ]
+    # command_name = p_package.get('text', '').strip()
+    func = self._get_commander_method(command_name)
+    docstring = func.__doc__ if func else ''
+    return docstring
+    #return self.sendLeoBridgePackage("docstring", docstring or '')
 
 </t>
 </tnodes>
