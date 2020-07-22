@@ -2,18 +2,20 @@
 import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
 import asyncio
-import websockets
 import os.path
-import sys
 import getopt
-import time
 import json
+import sys
+import time
+import traceback
+import websockets
 
 # server defaults
 wsHost = "localhost"
 wsPort = 32125
 
 
+# pylint: disable=no-else-return
 class IdleTimeManager:
     """
     A singleton class to manage idle-time handling. This class handles all
@@ -453,7 +455,7 @@ class LeoBridgeIntegController:
         # * setup leoBackground to get messages from leo
         try:
             self.g.app.idleTimeManager.start()  # To catch derived file changes
-        except:
+        except Exception:
             print('ERROR with idleTimeManager')
 
     async def _asyncIdleLoop(self, p_seconds, p_fn):
@@ -477,14 +479,14 @@ class LeoBridgeIntegController:
         '''Get total of opened commander (who have closed == false)'''
         w_total = 0
         for w_commander in self.g.app.commanders():
-            if w_commander.closed == False:
+            if not w_commander.closed:
                 w_total = w_total + 1
         return w_total
 
     def _getFirstOpenedCommander(self):
         '''Get first opened commander, or False if there are none.'''
         for w_commander in self.g.app.commanders():
-            if w_commander.closed == False:
+            if not w_commander.closed:
                 return w_commander
         return False
 
@@ -541,7 +543,7 @@ class LeoBridgeIntegController:
         w_index = 0
         w_indexFound = 0
         for w_commander in self.g.app.commanders():
-            if w_commander.closed == False:
+            if not w_commander.closed:
                 w_isSelected = False
                 w_isChanged = w_commander.changed
                 if self.commander == w_commander:
@@ -561,7 +563,7 @@ class LeoBridgeIntegController:
         w_openedCommanders = []
 
         for w_commander in self.g.app.commanders():
-            if w_commander.closed == False:
+            if not w_commander.closed:
                 w_openedCommanders.append(w_commander)
 
         w_index = p_package['index']
@@ -757,43 +759,20 @@ class LeoBridgeIntegController:
         return self.outputPNode(self.commander.p)  # return selected node when done
 
     def getCommands(self, p_package):
-        '''get command list starting with string, or none'''
-
-        # TODO
-
-        print("get command list starting with string: ")
-
-        if "text" in p_package:
-            print(p_package['text'])
-        else:
-            print("no string given")
-
-        w_commands = []
-        w_commands.append("one")
-        w_commands.append("two")
-        w_commands.append("three")
-
-        return self.sendLeoBridgePackage("commands", w_commands)
-
-    def runByName(self, p_package):
-        '''Run a command by name, with optional parameters'''
-        # TODO
-
-        print("runByName for string:")
-
-        if "text" in p_package:
-            print(p_package['text'])
-        else:
-            print("no string given")
-
-        # Also consider p_package['params'] to be rebuilt from JSON
-        if "params" in p_package:
-            print(p_package['params'])
-        else:
-            print("no params given")
-
-        return self.outputPNode(self.commander.p)  # return selected node when done
-
+        """get command list starting with the prefix string."""
+        c, g = self.commander, self.g
+        prefix = p_package.get('text', '').strip()
+        commands = sorted(list(c.commandsDict.keys()))
+        # Félix, this is the bug we discussed with print.
+        g.printObj(commands, tag=f"commands for {prefix}")
+        # print('done', flush=True)  # Doesn't help.
+        return self.sendLeoBridgePackage("commands", commands)
+    def getDocstringForCommand(self, p_package):
+        """get docstring for the given command."""
+        command_name = p_package.get('text', '').strip()
+        func = self._get_commander_method(command_name)
+        docstring = func.__doc__ if func else ''
+        return self.sendLeoBridgePackage("docstring", docstring or '')
     def setActionId(self, p_id):
         self.currentActionId = p_id
 
@@ -1092,7 +1071,7 @@ class LeoBridgeIntegController:
         Generic call to a method in Leo's Commands class or any subcommander class.
 
         p_command: a method name (a string).
-        p-node: (p_ap), an archived position.
+        p_ap: an archived position.
         p_keepSelection: preserve the current selection.
         '''
         if not p_ap:
@@ -1116,7 +1095,7 @@ class LeoBridgeIntegController:
 
     # Temporary Compatibility.
     outlineCommand = leoCommand
-
+    runByName = leoCommand
     def undo(self, p_paramUnused):
         '''Undo last un-doable operation'''
         if self.commander.undoer.canUndo():
@@ -1231,7 +1210,7 @@ class LeoBridgeIntegController:
         '''EMIT OUT body string length of a node'''
         if p_gnx:
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
-            if w_v and len(w_v.b):
+            if w_v and w_v.b:
                 return self.sendLeoBridgePackage("bodyLength", len(w_v.b))
             else:
                 return self.sendLeoBridgePackage("bodyLength", 0)
@@ -1276,8 +1255,7 @@ class LeoBridgeIntegController:
                 w_p.h = w_newHeadline
                 self.commander.undoer.afterChangeNodeContents(w_p, 'Change Headline', w_bunch)
                 return self.outputPNode(w_p)
-        else:
-            return self.outputError("Error in setNewHeadline")
+        return self.outputError("Error in setNewHeadline")
 
     def setSelectedNode(self, p_ap):
         '''Select a node, or the first one found with its GNX'''
@@ -1465,9 +1443,7 @@ def main():
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
-                    # answer = getattr(integController, w_param['action'])(w_param['param'])  # Crux
                     #
-                    # func = getattr(integController, w_param['action'], integController.leoCommand)
                     func = getattr(integController, w_param['action'], None)
                     if func:
                         # Is Filtered by Leo Bridge Integration Controller

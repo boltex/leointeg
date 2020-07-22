@@ -1555,7 +1555,7 @@ export class LeoIntegration {
      */
     public minibuffer(): void {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "a string" }))
+        this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "write" }))
             .then((p_result: LeoBridgePackage) => {
                 console.log('Back from GET_COMMANDS, package is: ', p_result.commands);
 
