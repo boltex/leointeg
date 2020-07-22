@@ -755,17 +755,41 @@ class LeoBridgeIntegController:
         return self.outputPNode(self.commander.p)  # return selected node when done
 
     def getCommands(self, p_package):
-        """get command list starting with the prefix string."""
+        """return a list of all commands."""
         c = self.commander
-        # prefix = p_package.get('text', '').strip()  # ? maybe drop the prefix concept entirely
-        commands = sorted(list(c.commandsDict.keys()))
-        # TEMPORARY test restriction : minimum 3 chars and starts with a letter... Edward will fix this ;)
-        commands = [{"label": k, "detail": self._getDocstringForCommand(
-            k)} for k in commands if (len(k) > 3 and k[0].isalpha())]
-        # g.printObj(commands, tag=f"commands for {prefix}") # comment kept for tests, may cleanup later
-        # print('done', flush=True)  # Doesn't help.
-        return self.sendLeoBridgePackage("commands", commands)
-
+            # To do: return only commands that make sense in vs-code.
+        if 0:
+            # Testing. This works: keys are command names, values are functions.
+            d = {
+                'clone-find-all-marked': c.cloneFindAllMarked,
+                'hoist': c.hoist,
+                'dehoist': c.dehoist,
+                'git-diff': c.editFileCommands.gitDiff,
+            }
+        else:
+            d = c.commandsDict  # keys are command names, values are functions.
+        result = []
+        for command_name in list(set(d)):  # Weird. Dict keys should be distinct ????
+            func = d.get(command_name)
+            if not func:
+                print('no func:', command_name, flush=True)
+                continue
+            # Prefer func.__func_name__ to func.__name__: Leo's decorators change func.__name__!
+            func_name = getattr(func, '__func_name__', func.__name__)
+            if not func_name:
+                print('no func_name', command_name, flush=True)
+                continue
+            doc = func.__doc__ or ''
+            result.append({
+                "command_name": command_name, # New, recommended for minibuffer display.
+                "label":  func_name, # should be function_name ?
+                "detail": doc,
+            })
+            # This shows up in the bridge log.
+            # print(f"__doc__: {len(doc):4} {command_name:40} {func_name} ", flush=True)
+            print(f"{func_name} ", flush=True)
+        
+        return self.sendLeoBridgePackage("commands", result)
     def _getDocstringForCommand(self, command_name):
         """get docstring for the given command."""
         func = self._get_commander_method(command_name)
