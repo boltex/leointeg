@@ -2,14 +2,13 @@
 import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
 import asyncio
-import os.path
 import getopt
 import json
+import os.path
 import sys
 import time
 import traceback
 import websockets
-
 # server defaults
 wsHost = "localhost"
 wsPort = 32125
@@ -757,8 +756,8 @@ class LeoBridgeIntegController:
 
     def getCommands(self, p_package):
         """get command list starting with the prefix string."""
-        c, g = self.commander, self.g
-        prefix = p_package.get('text', '').strip()  # ? maybe drop the prefix concept entirely
+        c = self.commander
+        # prefix = p_package.get('text', '').strip()  # ? maybe drop the prefix concept entirely
         commands = sorted(list(c.commandsDict.keys()))
         # TEMPORARY test restriction : minimum 3 chars and starts with a letter... Edward will fix this ;)
         commands = [{"label": k, "detail": self._getDocstringForCommand(
@@ -1328,7 +1327,7 @@ class LeoBridgeIntegController:
         # Bug fix: p_to_ap updates app.gnx_to_vnode. Save and restore it.
         old_d = self.gnx_to_vnode.copy()
         old_len = len(list(self.gnx_to_vnode.keys()))
-        t1 = time.process_time()
+        # t1 = time.process_time()
         qtyAllPositions = 0
         for p in self.commander.all_positions():
             qtyAllPositions += 1
