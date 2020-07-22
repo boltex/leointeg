@@ -124,6 +124,7 @@ export class Constants {
         NO: "No",
         YES_ALL: "Yes to all",
         NO_ALL: "No to all",
+        MINIBUFFER_PROMPT: "Minibuffer Full Command",
         CHANGES_DETECTED: "Changes to external files were detected.",
         REFRESHED: " Nodes were refreshed from file.", // with voluntary leading space
         IGNORED: " They were ignored.", // with voluntary leading space
@@ -294,7 +295,6 @@ export class Constants {
         REMOVE_BUTTON: "removeButton",
         CLICK_BUTTON: "clickButton",
         GET_COMMANDS: "getCommands", // ask leoBridge for the list of known commands, (starting with text string)
-        RUN_BY_NAME: "runByName", // Run a command by its string name like in minibuffer
         GIT_DIFF: "gitDiff", // TODO : Proof of concept leoCommand
         // * Goto operations
         PAGE_UP: "pageUp",

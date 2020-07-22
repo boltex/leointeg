@@ -145,7 +145,7 @@ export interface LeoBridgePackage {
         files: LeoDocument[];
     }
     buttons?: LeoButton[];
-    commands?: string[];
+    commands?: vscode.QuickPickItem[];
 }
 
 /**

@@ -1555,12 +1555,25 @@ export class LeoIntegration {
      */
     public minibuffer(): void {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "write" }))
+        const w_promise: Thenable<vscode.QuickPickItem[]> = this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
             .then((p_result: LeoBridgePackage) => {
-                console.log('Back from GET_COMMANDS, package is: ', p_result.commands);
-
-                this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+                if (p_result.commands && p_result.commands.length) {
+                    return p_result.commands;
+                } else {
+                    return [];
+                }
             });
+
+        const w_options: vscode.QuickPickOptions = {
+            placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
+            matchOnDetail: true
+        };
+
+        vscode.window.showQuickPick(w_promise, w_options).then((p_picked) => {
+            if (p_picked && p_picked.label) {
+                this.nodeCommand(p_picked.label, undefined, RefreshType.RefreshTreeAndBody, true);
+            }
+        });
     }
 
     /**

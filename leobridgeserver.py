@@ -15,7 +15,6 @@ wsHost = "localhost"
 wsPort = 32125
 
 
-# pylint: disable=no-else-return
 class IdleTimeManager:
     """
     A singleton class to manage idle-time handling. This class handles all
@@ -621,8 +620,6 @@ class LeoBridgeIntegController:
         if "files" in p_package:
             w_files = p_package["files"]
 
-        print('[%s]' % ', '.join(map(str, w_files)))
-
         for i_file in w_files:
             w_found = False
             # If not empty string (asking for New file) then check if already opened
@@ -763,16 +760,24 @@ class LeoBridgeIntegController:
         c, g = self.commander, self.g
         prefix = p_package.get('text', '').strip()
         commands = sorted(list(c.commandsDict.keys()))
-        # Félix, this is the bug we discussed with print.
-        g.printObj(commands, tag=f"commands for {prefix}")
+        # test restriction to the list
+        commands = [{"label": k, "detail": self._getDocstringForCommand(
+            k)} for k in commands if (len(k) > 3 and k[0].isalpha())]
+        # g.printObj(commands, tag=f"commands for {prefix}")
         # print('done', flush=True)  # Doesn't help.
         return self.sendLeoBridgePackage("commands", commands)
-    def getDocstringForCommand(self, p_package):
+
+    def _getDocstringForCommand(self, command_name):
         """get docstring for the given command."""
-        command_name = p_package.get('text', '').strip()
+        # ! maybe unneeded
+        # getCommands might return commands as list of dicts such as:
+        # [{"name": "hoist", "doc": "Hoists the node"} , {...}, ... ]
+        # command_name = p_package.get('text', '').strip()
         func = self._get_commander_method(command_name)
         docstring = func.__doc__ if func else ''
-        return self.sendLeoBridgePackage("docstring", docstring or '')
+        return docstring
+        #return self.sendLeoBridgePackage("docstring", docstring or '')
+
     def setActionId(self, p_id):
         self.currentActionId = p_id
 
@@ -827,42 +832,42 @@ class LeoBridgeIntegController:
 
     def gotoFirstVisible(self, p_ap):
         """Select the first visible node of the selected chapter or hoist."""
-        return self.outlineCommand("goToFirstVisibleNode", p_ap)
+        return self.leoCommand("goToFirstVisibleNode", p_ap)
 
     def gotoLastVisible(self, p_ap):
         """Select the last visible node of selected chapter or hoist."""
-        return self.outlineCommand("goToLastVisibleNode", p_ap)
+        return self.leoCommand("goToLastVisibleNode", p_ap)
 
     def gotoLastSibling(self, p_ap):
         """Select the last sibling of the selected node."""
-        return self.outlineCommand("goToLastSibling", p_ap)
+        return self.leoCommand("goToLastSibling", p_ap)
 
     def gotoNextVisible(self, p_ap):
         """Select the visible node following the presently selected node."""
-        return self.outlineCommand("selectVisNext", p_ap)
+        return self.leoCommand("selectVisNext", p_ap)
 
     def gotoPrevVisible(self, p_ap):
         """Select the visible node preceding the presently selected node."""
-        return self.outlineCommand("selectVisBack", p_ap)
+        return self.leoCommand("selectVisBack", p_ap)
 
     def gotoNextMarked(self, p_ap):
         """Select the next marked node."""
-        return self.outlineCommand("goToNextMarkedHeadline", p_ap)
+        return self.leoCommand("goToNextMarkedHeadline", p_ap)
 
     def gotoNextClone(self, p_ap):
         """
         Select the next node that is a clone of the selected node.
         If the selected node is not a clone, do find-next-clone.
         """
-        return self.outlineCommand("goToNextClone", p_ap)
+        return self.leoCommand("goToNextClone", p_ap)
 
     def contractOrGoLeft(self, p_ap):
         """Simulate the left Arrow Key in folder of Windows Explorer."""
-        return self.outlineCommand("contractNodeOrGoToParent", p_ap)
+        return self.leoCommand("contractNodeOrGoToParent", p_ap)
 
     def expandAndGoRight(self, p_ap):
         """If a node has children, expand it if needed and go to the first child."""
-        return self.outlineCommand("expandNodeAndGoToFirstChild", p_ap)
+        return self.leoCommand("expandNodeAndGoToFirstChild", p_ap)
 
     def markPNode(self, p_ap):
         '''Mark a node, don't select it'''
@@ -894,9 +899,9 @@ class LeoBridgeIntegController:
             w_p = self.ap_to_p(p_ap)
             if w_p:
                 if w_p == self.commander.p:
-                    return self.outlineCommand("clone", p_ap, False)
+                    return self.leoCommand("clone", p_ap, False)
                 else:
-                    return self.outlineCommand("clone", p_ap, True)
+                    return self.leoCommand("clone", p_ap, True)
             else:
                 return self.outputError("Error in clonePNode function, no w_p node found")  # default empty
         else:
@@ -904,19 +909,19 @@ class LeoBridgeIntegController:
 
     def copyPNode(self, p_ap):
         '''Copy a node, don't select it'''
-        return self.outlineCommand("copyOutline", p_ap, True)
+        return self.leoCommand("copyOutline", p_ap, True)
 
     def cutPNode(self, p_ap):
         '''Cut a node, don't select it'''
-        return self.outlineCommand("cutOutline", p_ap, True)
+        return self.leoCommand("cutOutline", p_ap, True)
 
     def pastePNode(self, p_ap):
         '''Paste a node, don't select it if possible'''
-        return self.outlineCommand("pasteOutline", p_ap, True)
+        return self.leoCommand("pasteOutline", p_ap, True)
 
     def pasteAsClonePNode(self, p_ap):
         '''Paste as clone, don't select it if possible'''
-        return self.outlineCommand("pasteOutlineRetainingClones", p_ap, True)
+        return self.leoCommand("pasteOutlineRetainingClones", p_ap, True)
 
     def deletePNode(self, p_ap):
         '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
@@ -944,19 +949,19 @@ class LeoBridgeIntegController:
 
     def movePNodeDown(self, p_ap):
         '''Move a node DOWN, don't select it if possible'''
-        return self.outlineCommand("moveOutlineDown", p_ap, True)
+        return self.leoCommand("moveOutlineDown", p_ap, True)
 
     def movePNodeLeft(self, p_ap):
         '''Move a node LEFT, don't select it if possible'''
-        return self.outlineCommand("moveOutlineLeft", p_ap, True)
+        return self.leoCommand("moveOutlineLeft", p_ap, True)
 
     def movePNodeRight(self, p_ap):
         '''Move a node RIGHT, don't select it if possible'''
-        return self.outlineCommand("moveOutlineRight", p_ap, True)
+        return self.leoCommand("moveOutlineRight", p_ap, True)
 
     def movePNodeUp(self, p_ap):
         '''Move a node UP, don't select it if possible'''
-        return self.outlineCommand("moveOutlineUp", p_ap, True)
+        return self.leoCommand("moveOutlineUp", p_ap, True)
 
     def insertPNode(self, p_ap):
         '''Insert a node at given node, then select it once created, and finally return it'''
@@ -996,23 +1001,23 @@ class LeoBridgeIntegController:
 
     def promotePNode(self, p_ap):
         '''Promote a node, don't select it if possible'''
-        return self.outlineCommand("promote", p_ap, True)
+        return self.leoCommand("promote", p_ap, True)
 
     def demotePNode(self, p_ap):
         '''Demote a node, don't select it if possible'''
-        return self.outlineCommand("demote", p_ap, True)
+        return self.leoCommand("demote", p_ap, True)
 
     def sortChildrenPNode(self, p_ap):
         '''Sort children of a node, don't select it if possible'''
-        return self.outlineCommand("sortChildren", p_ap, True)
+        return self.leoCommand("sortChildren", p_ap, True)
 
     def sortSiblingsPNode(self, p_ap):
         '''Sort siblings of a node, don't select it if possible'''
-        return self.outlineCommand("sortSiblings", p_ap, True)
+        return self.leoCommand("sortSiblings", p_ap, True)
 
     def hoistPNode(self, p_ap):
         '''Select and Hoist a node'''
-        return self.outlineCommand("hoist", p_ap)  # Don't try to re-select node
+        return self.leoCommand("hoist", p_ap)  # Don't try to re-select node
 
     def deHoist(self, p_paramUnused):
         '''De-Hoist'''
@@ -1070,9 +1075,13 @@ class LeoBridgeIntegController:
         '''
         Generic call to a method in Leo's Commands class or any subcommander class.
 
+        The p_ap position node is to be selected before having the command run,
+        while the p_keepSelection parameter specifies wether the original position should be re-selected.
+        The whole of those operations is to be undoable as one undo step.
+
         p_command: a method name (a string).
         p_ap: an archived position.
-        p_keepSelection: preserve the current selection.
+        p_keepSelection: preserve the current selection, if possible.
         '''
         if not p_ap:
             return self.outputError(f"Error in {p_command}: no param p_ap")
@@ -1082,7 +1091,7 @@ class LeoBridgeIntegController:
         w_func = self._get_commander_method(p_command)
         if not w_func:
             return self.outputError(f"Error in {p_command}: no method found")
-        
+
         if w_p == self.commander.p:
             w_func(event=None)
         else:
@@ -1093,9 +1102,6 @@ class LeoBridgeIntegController:
                 self.commander.selectPosition(oldPosition)
         return self.outputPNode(self.commander.p)
 
-    # Temporary Compatibility.
-    outlineCommand = leoCommand
-    runByName = leoCommand
     def undo(self, p_paramUnused):
         '''Undo last un-doable operation'''
         if self.commander.undoer.canUndo():
@@ -1110,7 +1116,7 @@ class LeoBridgeIntegController:
 
     def refreshFromDiskPNode(self, p_ap):
         '''Refresh from Disk, don't select it if possible'''
-        return self.outlineCommand("refreshFromDisk", p_ap, True)
+        return self.leoCommand("refreshFromDisk", p_ap, True)
 
     def executeScript(self, p_package):
         '''Select a node and run its script'''
@@ -1337,8 +1343,8 @@ class LeoBridgeIntegController:
         gnx_to_vnode = old_d
         new_len = len(list(gnx_to_vnode.keys()))
         assert old_len == new_len, (old_len, new_len)
-        print('Leo file opened. Its outline contains ' + str(qtyAllPositions) + " nodes positions.")
-        print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)))
+        # print('Leo file opened. Its outline contains ' + str(qtyAllPositions) + " nodes positions.")
+        # print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)))
 
     def ap_to_p(self, ap):
         '''(From Leo plugin leoflexx.py) Convert an archived position to a true Leo position.'''
