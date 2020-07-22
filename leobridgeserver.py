@@ -769,7 +769,7 @@ class LeoBridgeIntegController:
         else:
             d = c.commandsDict  # keys are command names, values are functions.
         result = []
-        for command_name in list(set(d)):  # Weird. Dict keys should be distinct ????
+        for command_name in sorted(d):
             func = d.get(command_name)
             if not func:
                 print('no func:', command_name, flush=True)
