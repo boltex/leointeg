@@ -758,25 +758,20 @@ class LeoBridgeIntegController:
     def getCommands(self, p_package):
         """get command list starting with the prefix string."""
         c, g = self.commander, self.g
-        prefix = p_package.get('text', '').strip()
+        prefix = p_package.get('text', '').strip()  # ? maybe drop the prefix concept entirely
         commands = sorted(list(c.commandsDict.keys()))
-        # test restriction to the list
+        # TEMPORARY test restriction : minimum 3 chars and starts with a letter... Edward will fix this ;)
         commands = [{"label": k, "detail": self._getDocstringForCommand(
             k)} for k in commands if (len(k) > 3 and k[0].isalpha())]
-        # g.printObj(commands, tag=f"commands for {prefix}")
+        # g.printObj(commands, tag=f"commands for {prefix}") # comment kept for tests, may cleanup later
         # print('done', flush=True)  # Doesn't help.
         return self.sendLeoBridgePackage("commands", commands)
 
     def _getDocstringForCommand(self, command_name):
         """get docstring for the given command."""
-        # ! maybe unneeded
-        # getCommands might return commands as list of dicts such as:
-        # [{"name": "hoist", "doc": "Hoists the node"} , {...}, ... ]
-        # command_name = p_package.get('text', '').strip()
         func = self._get_commander_method(command_name)
         docstring = func.__doc__ if func else ''
         return docstring
-        #return self.sendLeoBridgePackage("docstring", docstring or '')
 
     def setActionId(self, p_id):
         self.currentActionId = p_id

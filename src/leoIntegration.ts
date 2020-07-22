@@ -1549,7 +1549,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Open quickPick/inputBox minibuffer dialog.
+     * * Open quickPick/inputBox minibuffer pallette.
      * for the user to choose from all commands
      * available in this file's commander
      */

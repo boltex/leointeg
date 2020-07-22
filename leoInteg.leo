@@ -166,7 +166,7 @@
 <v t="felix.20200718122313.1"><vh>removeButton</vh></v>
 <v t="felix.20200710030614.1"><vh>clickButton</vh></v>
 <v t="felix.20200711182907.1"><vh>getCommands</vh></v>
-<v t="felix.20200721223256.1"><vh>_getDocstringForCommand</vh></v>
+<v t="felix.20200722004632.1"><vh>_getDocstringForCommand</vh></v>
 <v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
 <v t="felix.20191128004456.1"><vh>setActionId</vh></v>
 <v t="felix.20200213195413.1"><vh>asyncOutput</vh></v>
@@ -244,7 +244,104 @@
 </v>
 <v t="felix.20191126232435.1"><vh>main</vh></v>
 </v>
-<v t="felix.20200718165721.1"><vh>Leo Integration Sources</vh>
+<v t="felix.20200719025231.2"><vh>class LeoIntegration</vh>
+<v t="felix.20200719025231.3"><vh>Constructor</vh></v>
+<v t="felix.20200719025231.4"><vh>Server &amp; Startup</vh>
+<v t="felix.20200719025231.5"><vh>sendAction</vh></v>
+<v t="felix.20200719025231.6"><vh>startNetworkServices</vh></v>
+<v t="felix.20200719025231.7"><vh>startServer</vh></v>
+<v t="felix.20200719025231.8"><vh>connect</vh></v>
+<v t="felix.20200719025231.9"><vh>cancelConnect</vh></v>
+<v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
+</v>
+<v t="felix.20200719231248.1"><vh>Recent &amp; Last files</vh>
+<v t="felix.20200719233923.1"><vh>_openLastFiles</vh></v>
+<v t="felix.20200719233925.1"><vh>_addRecentAndLastFile</vh></v>
+<v t="felix.20200719233928.1"><vh>_removeRecentFile</vh></v>
+<v t="felix.20200719233930.1"><vh>_removeLastFile</vh></v>
+<v t="felix.20200721005448.1"><vh>showRecentLeoFiles</vh></v>
+</v>
+<v t="felix.20200719025231.10"><vh>Log &amp; Terminal</vh>
+<v t="felix.20200719025231.11"><vh>showTerminalPane</vh></v>
+<v t="felix.20200719025231.12"><vh>hideTerminalPane</vh></v>
+<v t="felix.20200719025231.13"><vh>addTerminalPaneEntry</vh></v>
+<v t="felix.20200719025231.14"><vh>showLogPane</vh></v>
+<v t="felix.20200719025231.15"><vh>hideLogPane</vh></v>
+<v t="felix.20200719025231.16"><vh>addLogPaneEntry</vh></v>
+</v>
+<v t="felix.20200719031802.1"><vh>States </vh>
+<v t="felix.20200719025231.19"><vh>_triggerGetStates</vh></v>
+<v t="felix.20200719025231.20"><vh>_isBusy</vh></v>
+<v t="felix.20200719025231.21"><vh>_isCurrentFileNamed</vh></v>
+<v t="felix.20200719025231.22"><vh>_setupNoOpenedLeoDocument</vh></v>
+<v t="felix.20200719025231.23"><vh>_setupOpenedLeoDocument</vh></v>
+</v>
+<v t="felix.20200719030811.1"><vh>UI Change Events</vh>
+<v t="felix.20200719025231.24"><vh>_onChangeConfiguration</vh></v>
+<v t="felix.20200719231446.1"><vh>_onDidOpenTextDocument</vh></v>
+<v t="felix.20200719025231.25"><vh>_onChangeCollapsedState</vh></v>
+<v t="felix.20200719025231.26"><vh>_onTreeViewVisibilityChanged</vh></v>
+<v t="felix.20200719025231.27"><vh>_onDocTreeViewVisibilityChanged</vh></v>
+<v t="felix.20200719025231.28"><vh>_onButtonsTreeViewVisibilityChanged</vh></v>
+<v t="felix.20200719025231.29"><vh>_onActiveEditorChanged</vh></v>
+<v t="felix.20200719025231.31"><vh>_onDocumentChanged</vh></v>
+</v>
+<v t="felix.20200719030842.1"><vh>Body Editing</vh>
+<v t="felix.20200719025231.32"><vh>triggerBodySave</vh></v>
+<v t="felix.20200719025231.33"><vh>_bodySaveDocument</vh></v>
+</v>
+<v t="felix.20200719030902.1"><vh>Refresh &amp; Reveal</vh>
+<v t="felix.20200719025231.34"><vh>setDocumentSelection</vh></v>
+<v t="felix.20200719025231.35"><vh>showOutline</vh></v>
+<v t="felix.20200719025231.36"><vh>configTreeRefresh</vh></v>
+<v t="felix.20200719025231.37"><vh>_refreshOutline</vh></v>
+<v t="felix.20200719025231.41"><vh>_revealTreeViewNode</vh></v>
+<v t="felix.20200719025231.42"><vh>launchRefresh</vh></v>
+<v t="felix.20200719025231.43"><vh>_gotSelection</vh></v>
+</v>
+<v t="felix.20200719030909.1"><vh>Conversion</vh>
+<v t="felix.20200719025231.38"><vh>apToLeoNode</vh></v>
+<v t="felix.20200719025231.39"><vh>_apToLeoNodeConvertReveal</vh></v>
+<v t="felix.20200719025231.40"><vh>arrayToLeoNodesArray</vh></v>
+</v>
+<v t="felix.20200719031115.1"><vh>Body Pane Management</vh>
+<v t="felix.20200719025231.45"><vh>_applyNodeSelectionToBody</vh></v>
+<v t="felix.20200719025231.46"><vh>_showBodyIfRequired</vh></v>
+<v t="felix.20200719025231.47"><vh>_switchBody</vh></v>
+<v t="felix.20200719025231.48"><vh>_locateOpenedBody</vh></v>
+<v t="felix.20200719025231.49"><vh>closeBody</vh></v>
+<v t="felix.20200719025231.50"><vh>showBody</vh></v>
+</v>
+<v t="felix.20200719025231.51"><vh>Outline Commands</vh>
+<v t="felix.20200719234337.1"><vh>selectTreeNode</vh></v>
+<v t="felix.20200719025231.52"><vh>nodeCommand</vh></v>
+<v t="felix.20200719025231.53"><vh>executeScript</vh></v>
+<v t="felix.20200719025231.54"><vh>changeMark</vh></v>
+<v t="felix.20200719025231.55"><vh>editHeadline</vh></v>
+<v t="felix.20200719025231.56"><vh>insertNode</vh></v>
+</v>
+<v t="felix.20200719025231.57"><vh>Leo Documents</vh>
+<v t="felix.20200719025231.58"><vh>saveAsLeoFile</vh></v>
+<v t="felix.20200719025231.59"><vh>saveLeoFile</vh></v>
+<v t="felix.20200719025231.60"><vh>switchLeoFile</vh></v>
+<v t="felix.20200719025231.61"><vh>selectOpenedLeoDocument</vh></v>
+<v t="felix.20200719025231.64"><vh>closeLeoFile</vh></v>
+<v t="felix.20200719025231.65"><vh>newLeoFile</vh></v>
+<v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
+</v>
+<v t="felix.20200719033306.1"><vh>Buttons</vh>
+<v t="felix.20200719025231.62"><vh>clickButton</vh></v>
+<v t="felix.20200719025231.63"><vh>removeButton</vh></v>
+</v>
+<v t="felix.20200719033511.1"><vh>Other UI Functionality</vh>
+<v t="felix.20200719235201.1"><vh>minibuffer</vh></v>
+<v t="felix.20200719025231.67"><vh>setTreeViewTitle</vh></v>
+<v t="felix.20200719025231.68"><vh>showLeoCommands</vh></v>
+<v t="felix.20200719025231.69"><vh>statusBarOnClick</vh></v>
+<v t="felix.20200719025231.70"><vh>test</vh></v>
+</v>
+</v>
+<v t="felix.20200718165721.1"><vh>Extension Typescript Sources</vh>
 <v t="felix.20200718024635.1"><vh>@clean src/commandStack.ts</vh>
 <v t="felix.20200718024635.2"><vh>class CommandStack</vh>
 <v t="felix.20200718024635.3"><vh>size</vh></v>
@@ -387,103 +484,7 @@
 </v>
 </v>
 <v t="felix.20200719025231.1"><vh>@clean src/leoIntegration.ts</vh>
-<v t="felix.20200719025231.2"><vh>class LeoIntegration</vh>
-<v t="felix.20200719025231.3"><vh>Constructor</vh></v>
-<v t="felix.20200719025231.4"><vh>Server &amp; Startup</vh>
-<v t="felix.20200719025231.5"><vh>sendAction</vh></v>
-<v t="felix.20200719025231.6"><vh>startNetworkServices</vh></v>
-<v t="felix.20200719025231.7"><vh>startServer</vh></v>
-<v t="felix.20200719025231.8"><vh>connect</vh></v>
-<v t="felix.20200719025231.9"><vh>cancelConnect</vh></v>
-<v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
-</v>
-<v t="felix.20200719231248.1"><vh>Recent &amp; Last files</vh>
-<v t="felix.20200719233923.1"><vh>_openLastFiles</vh></v>
-<v t="felix.20200719233925.1"><vh>_addRecentAndLastFile</vh></v>
-<v t="felix.20200719233928.1"><vh>_removeRecentFile</vh></v>
-<v t="felix.20200719233930.1"><vh>_removeLastFile</vh></v>
-<v t="felix.20200721005448.1"><vh>showRecentLeoFiles</vh></v>
-</v>
-<v t="felix.20200719025231.10"><vh>Log &amp; Terminal</vh>
-<v t="felix.20200719025231.11"><vh>showTerminalPane</vh></v>
-<v t="felix.20200719025231.12"><vh>hideTerminalPane</vh></v>
-<v t="felix.20200719025231.13"><vh>addTerminalPaneEntry</vh></v>
-<v t="felix.20200719025231.14"><vh>showLogPane</vh></v>
-<v t="felix.20200719025231.15"><vh>hideLogPane</vh></v>
-<v t="felix.20200719025231.16"><vh>addLogPaneEntry</vh></v>
-</v>
-<v t="felix.20200719031802.1"><vh>States </vh>
-<v t="felix.20200719025231.19"><vh>_triggerGetStates</vh></v>
-<v t="felix.20200719025231.20"><vh>_isBusy</vh></v>
-<v t="felix.20200719025231.21"><vh>_isCurrentFileNamed</vh></v>
-<v t="felix.20200719025231.22"><vh>_setupNoOpenedLeoDocument</vh></v>
-<v t="felix.20200719025231.23"><vh>_setupOpenedLeoDocument</vh></v>
-</v>
-<v t="felix.20200719030811.1"><vh>UI Change Events</vh>
-<v t="felix.20200719025231.24"><vh>_onChangeConfiguration</vh></v>
-<v t="felix.20200719231446.1"><vh>_onDidOpenTextDocument</vh></v>
-<v t="felix.20200719025231.25"><vh>_onChangeCollapsedState</vh></v>
-<v t="felix.20200719025231.26"><vh>_onTreeViewVisibilityChanged</vh></v>
-<v t="felix.20200719025231.27"><vh>_onDocTreeViewVisibilityChanged</vh></v>
-<v t="felix.20200719025231.28"><vh>_onButtonsTreeViewVisibilityChanged</vh></v>
-<v t="felix.20200719025231.29"><vh>_onActiveEditorChanged</vh></v>
-<v t="felix.20200719025231.31"><vh>_onDocumentChanged</vh></v>
-</v>
-<v t="felix.20200719030842.1"><vh>Body Editing</vh>
-<v t="felix.20200719025231.32"><vh>triggerBodySave</vh></v>
-<v t="felix.20200719025231.33"><vh>_bodySaveDocument</vh></v>
-</v>
-<v t="felix.20200719030902.1"><vh>Refresh &amp; Reveal</vh>
-<v t="felix.20200719025231.34"><vh>setDocumentSelection</vh></v>
-<v t="felix.20200719025231.35"><vh>showOutline</vh></v>
-<v t="felix.20200719025231.36"><vh>configTreeRefresh</vh></v>
-<v t="felix.20200719025231.37"><vh>_refreshOutline</vh></v>
-<v t="felix.20200719025231.41"><vh>_revealTreeViewNode</vh></v>
-<v t="felix.20200719025231.42"><vh>launchRefresh</vh></v>
-<v t="felix.20200719025231.43"><vh>_gotSelection</vh></v>
-</v>
-<v t="felix.20200719030909.1"><vh>Conversion</vh>
-<v t="felix.20200719025231.38"><vh>apToLeoNode</vh></v>
-<v t="felix.20200719025231.39"><vh>_apToLeoNodeConvertReveal</vh></v>
-<v t="felix.20200719025231.40"><vh>arrayToLeoNodesArray</vh></v>
-</v>
-<v t="felix.20200719031115.1"><vh>Body Pane Management</vh>
-<v t="felix.20200719025231.45"><vh>_applyNodeSelectionToBody</vh></v>
-<v t="felix.20200719025231.46"><vh>_showBodyIfRequired</vh></v>
-<v t="felix.20200719025231.47"><vh>_switchBody</vh></v>
-<v t="felix.20200719025231.48"><vh>_locateOpenedBody</vh></v>
-<v t="felix.20200719025231.49"><vh>closeBody</vh></v>
-<v t="felix.20200719025231.50"><vh>showBody</vh></v>
-</v>
-<v t="felix.20200719025231.51"><vh>Outline Commands</vh>
-<v t="felix.20200719234337.1"><vh>selectTreeNode</vh></v>
-<v t="felix.20200719025231.52"><vh>nodeCommand</vh></v>
-<v t="felix.20200719025231.53"><vh>executeScript</vh></v>
-<v t="felix.20200719025231.54"><vh>changeMark</vh></v>
-<v t="felix.20200719025231.55"><vh>editHeadline</vh></v>
-<v t="felix.20200719025231.56"><vh>insertNode</vh></v>
-</v>
-<v t="felix.20200719025231.57"><vh>Leo Documents</vh>
-<v t="felix.20200719025231.58"><vh>saveAsLeoFile</vh></v>
-<v t="felix.20200719025231.59"><vh>saveLeoFile</vh></v>
-<v t="felix.20200719025231.60"><vh>switchLeoFile</vh></v>
-<v t="felix.20200719025231.61"><vh>selectOpenedLeoDocument</vh></v>
-<v t="felix.20200719025231.64"><vh>closeLeoFile</vh></v>
-<v t="felix.20200719025231.65"><vh>newLeoFile</vh></v>
-<v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
-</v>
-<v t="felix.20200719033306.1"><vh>Buttons</vh>
-<v t="felix.20200719025231.62"><vh>clickButton</vh></v>
-<v t="felix.20200719025231.63"><vh>removeButton</vh></v>
-</v>
-<v t="felix.20200719033511.1"><vh>Other UI Functionality</vh>
-<v t="felix.20200719235201.1"><vh>minibuffer</vh></v>
-<v t="felix.20200719025231.67"><vh>setTreeViewTitle</vh></v>
-<v t="felix.20200719025231.68"><vh>showLeoCommands</vh></v>
-<v t="felix.20200719025231.69"><vh>statusBarOnClick</vh></v>
-<v t="felix.20200719025231.70"><vh>test</vh></v>
-</v>
-</v>
+<v t="felix.20200719025231.2"></v>
 </v>
 <v t="felix.20200718170712.1"><vh>@clean src/leoNode.ts</vh>
 <v t="felix.20200718170712.2"><vh>class LeoNode</vh>
@@ -2132,12 +2133,12 @@ wsPort = 32125
 <t tx="felix.20200711182907.1">def getCommands(self, p_package):
     """get command list starting with the prefix string."""
     c, g = self.commander, self.g
-    prefix = p_package.get('text', '').strip()
+    prefix = p_package.get('text', '').strip()  # ? maybe drop the prefix concept entirely
     commands = sorted(list(c.commandsDict.keys()))
-    # test restriction to the list
+    # TEMPORARY test restriction : minimum 3 chars and starts with a letter... Edward will fix this ;)
     commands = [{"label": k, "detail": self._getDocstringForCommand(
         k)} for k in commands if (len(k) &gt; 3 and k[0].isalpha())]
-    # g.printObj(commands, tag=f"commands for {prefix}")
+    # g.printObj(commands, tag=f"commands for {prefix}") # comment kept for tests, may cleanup later
     # print('done', flush=True)  # Doesn't help.
     return self.sendLeoBridgePackage("commands", commands)
 
@@ -9896,7 +9897,7 @@ public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boole
 
 </t>
 <t tx="felix.20200719235201.1">/**
- * * Open quickPick/inputBox minibuffer dialog.
+ * * Open quickPick/inputBox minibuffer pallette.
  * for the user to choose from all commands
  * available in this file's commander
  */
@@ -10158,16 +10159,11 @@ public showRecentLeoFiles(): void {
 }
 
 </t>
-<t tx="felix.20200721223256.1">def _getDocstringForCommand(self, command_name):
+<t tx="felix.20200722004632.1">def _getDocstringForCommand(self, command_name):
     """get docstring for the given command."""
-    # ! maybe unneeded
-    # getCommands might return commands as list of dicts such as:
-    # [{"name": "hoist", "doc": "Hoists the node"} , {...}, ... ]
-    # command_name = p_package.get('text', '').strip()
     func = self._get_commander_method(command_name)
     docstring = func.__doc__ if func else ''
     return docstring
-    #return self.sendLeoBridgePackage("docstring", docstring or '')
 
 </t>
 </tnodes>
