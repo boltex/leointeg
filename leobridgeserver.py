@@ -790,7 +790,6 @@ class LeoBridgeIntegController:
     def _bad_commands(self):
         """Return the list of Leo's command names that leoInteg should ignore."""
         c = self.commander
-        print('_compute_suppressed_command_names', c)
         bad = []
         d = c.commandsDict  # keys are command names, values are functions.
         #
@@ -803,6 +802,104 @@ class LeoBridgeIntegController:
         # This is a hand-curated list.
         bad_list = [
 
+            # Abreviations...
+            'abbrev-kill-all',
+            'abbrev-list',
+            'dabbrev-completion',
+            'dabbrev-expands',
+
+            # Autocompletion...
+            'auto-complete',
+            'auto-complete-force',
+            'disable-autocompleter',
+            'disable-calltips',
+            'enable-autocompleter',
+            'enable-calltips',
+
+            # Debugger...
+            'debug',
+            'db-again',
+            'db-b',
+            'db-c',
+            'db-h',
+            'db-input',
+            'db-l',
+            'db-n',
+            'db-q',
+            'db-r',
+            'db-s',
+            'db-status',
+            'db-w',
+
+            # File operations...
+            'directory-make',
+            'directory-remove',
+            'file-delete',
+            'file-diff-files',
+            'file-insert',
+            'file-new',
+            'file-open-by-name',
+
+            # All others...
+            'shell-command',
+            'shell-command-on-region',
+            'cheat-sheet',
+            'dehoist', # Duplicates of de-hoist.
+            'find-clone-all',
+            'find-clone-all-flattened',
+            'find-clone-tag',
+            'find-all',
+            'find-all-unique-regex',
+            'find-character',
+            'find-character-extend-selection',
+            'find-next',
+            'find-prev',
+            'find-word',
+            'find-word-in-line',
+
+            'global-search',
+
+            'isearch-backward',
+            'isearch-backward-regexp',
+            'isearch-forward',
+            'isearch-forward-regexp',
+            'isearch-with-present-options',
+
+            'replace',
+            'replace-all',
+            'replace-current-character',
+            'replace-then-find',
+
+            're-search-backward',
+            're-search-forward',
+
+            'search-backward',
+            'search-forward',
+            'search-return-to-origin',
+
+            'set-find-everywhere',
+            'set-find-node-only',
+            'set-find-suboutline-only',
+            'set-replace-string',
+            'set-search-string',
+
+            'show-find-options',
+
+            'start-search',
+
+            'toggle-find-collapses-nodes',
+            'toggle-find-ignore-case-option',
+            'toggle-find-in-body-option',
+            'toggle-find-in-headline-option',
+            'toggle-find-mark-changes-option',
+            'toggle-find-mark-finds-option',
+            'toggle-find-regex-option',
+            'toggle-find-word-option',
+            'toggle-find-wrap-around-option',
+
+            'word-search-backward',
+            'word-search-forward',
+
             # Buttons...
             'delete-script-button-button',
 
@@ -812,6 +909,7 @@ class LeoBridgeIntegController:
             'ctrl-click-at-cursor',
             'ctrl-click-icon',
             'double-click-icon-box',
+            'right-click-icon',
 
             # Editors...
             'add-editor', 'editor-add',
@@ -829,6 +927,10 @@ class LeoBridgeIntegController:
             'focus-to-spell-tab',
             'focus-to-tree',
 
+            'tab-cycle-next',
+            'tab-cycle-previous',
+            'tab-detach',
+
             # Headlines..
             'abort-edit-headline',
             'edit-headline',
@@ -837,15 +939,25 @@ class LeoBridgeIntegController:
             # Layout and panes...
             'adoc',
             'adoc-with-preview',
+
             'contract-body-pane',
             'contract-log-pane',
             'contract-outline-pane',
+
             'edit-pane-csv',
             'edit-pane-test-open',
+            'equal-sized-panes',
+            'expand-log-pane',
+            'expand-body-pane',
+            'expand-outline-pane',
+
             'free-layout-context-menu',
             'free-layout-load',
             'free-layout-restore',
             'free-layout-zoom',
+
+            'zoom-in',
+            'zoom-out'
 
             # Log
             'clear-log',
@@ -859,6 +971,7 @@ class LeoBridgeIntegController:
             'activate-plugins-menu',
             'activate-window-menu',
             'context-menu-open',
+            'menu-shortcut',
 
             # Modes...
             'clear-extend-mode',
@@ -868,14 +981,229 @@ class LeoBridgeIntegController:
             'contract-node',
             'contract-parent',
 
+            # Scrolling...
+            'scroll-down-half-page',
+            'scroll-down-line',
+            'scroll-down-page',
+            'scroll-outline-down-line',
+            'scroll-outline-down-page',
+            'scroll-outline-left',
+            'scroll-outline-right',
+            'scroll-outline-up-line',
+            'scroll-outline-up-page',
+            'scroll-up-half-page',
+            'scroll-up-line',
+            'scroll-up-page',
+
             # Windows...
             'about-leo',
+
             'cascade-windows',
             'close-others',
             'close-window',
+
+            'iconify-frame',
+
+            'find-tab-hide',
+            'find-tab-open',
+
+            'hide-body-dock',
+            'hide-body-pane',
+            'hide-invisibles',
+            'hide-log-pane',
+            'hide-outline-dock',
+            'hide-outline-pane',
+            'hide-tabs-dock',
+
+            'minimize-all',
+
+            'resize-to-screen',
+
+            'show-body-dock',
+            'show-hide-body-dock',
+            'show-hide-outline-dock',
+            'show-hide-render-dock',
+            'show-hide-tabs-dock',
+            'show-tabs-dock',
+            'clean-diff',
+            'cm-external-editor',
+
+            'delete-@button-parse-json-button',
+            'delete-trace-statements',
+
+            'disable-idle-time-events',
+            'do-nothing',
+
+            'enable-idle-time-events',
+            'enter-quick-command-mode',
+            'exit-named-mode',
+
+            'F6-open-console',
+
+            'flush-lines',
+            'full-command',
+
+            'get-child-headlines',
+
+            'history',
+
+            'insert-file-name',
+
+            'justify-toggle-auto',
+
+            'keep-lines',
+            'keyboard-quit',
+
+            'line-number',
+            'line-numbering-toggle',
+            'line-to-headline',
+
+            'marked-list',
+
+            'mode-help',
+
+            'open-python-window',
+
+            'open-with-idle',
+            'open-with-open-office',
+            'open-with-scite',
+            'open-with-word',
+
+            'recolor',
+            'redraw',
+
+            'repeat-complex-command',
+
+            'session-clear',
+            'session-create',
+            'session-refresh',
+            'session-restore',
+            'session-snapshot-load',
+            'session-snapshot-save',
+
+            'set-colors',
+            'set-command-state',
+            'set-comment-column',
+            'set-extend-mode',
+            'set-fill-column',
+            'set-fill-prefix',
+            'set-font',
+            'set-insert-state',
+            'set-overwrite-state',
+            'set-silent-mode',
+
+            'show-buttons',
+            'show-calltips',
+            'show-calltips-force',
+            'show-color-names',
+            'show-color-wheel',
+            'show-commands',
+            'show-file-line',
+
+            'show-focus',
+            'show-fonts',
+
+            'show-invisibles',
+            'show-next-tip',
+            'show-node-uas',
+            'show-outline-dock',
+            'show-plugin-handlers',
+            'show-plugins-info',
+            'show-settings',
+            'show-settings-outline',
+            'show-spell-info',
+            'show-stats',
+
+            'style-set-selected',
+
+            'suspend',
+
+            'toggle-abbrev-mode',
+            'toggle-active-pane',
+            'toggle-angle-brackets',
+            'toggle-at-auto-at-edit',
+            'toggle-autocompleter',
+            'toggle-calltips',
+            'toggle-case-region',
+            'toggle-extend-mode',
+            'toggle-idle-time-events',
+            'toggle-input-state',
+            'toggle-invisibles',
+            'toggle-line-numbering-root',
+            'toggle-sparse-move',
+            'toggle-split-direction',
+
+            'what-line',
+            'eval',
+            'eval-block',
+            'eval-last',
+            'eval-last-pretty',
+            'eval-replace',
+
+            'find-quick',
+            'find-quick-changed',
+            'find-quick-selected',
+            'find-quick-test-failures',
+            'find-quick-timeline',
+
+            'goto-next-history-node',
+            'goto-prev-history-node',
+
+            'preview',
+            'preview-body',
+            'preview-expanded-body',
+            'preview-expanded-html',
+            'preview-html',
+            'preview-marked-bodies',
+            'preview-marked-html',
+            'preview-marked-nodes',
+            'preview-node',
+            'preview-tree-bodies',
+            'preview-tree-html',
+            'preview-tree-nodes',
+
+            'spell-add',
+            'spell-as-you-type-next',
+            'spell-as-you-type-toggle',
+            'spell-as-you-type-undo',
+            'spell-as-you-type-wrap',
+            'spell-change',
+            'spell-change-then-find',
+            'spell-find',
+            'spell-ignore',
+            'spell-tab-hide',
+            'spell-tab-open',
+
+            'tag-children',
+
+            'todo-children-todo',
+            'todo-dec-pri',
+            'todo-find-todo',
+            'todo-fix-datetime',
+            'todo-inc-pri',
+
+            'vr',
+            'vr-contract',
+            'vr-expand',
+            'vr-hide',
+            'vr-lock',
+            'vr-pause-play-movie',
+            'vr-show',
+            'vr-toggle',
+            'vr-unlock',
+            'vr-update',
+            'vr-zoom',
+
+            'vs-create-tree',
+            'vs-dump',
+            'vs-reset',
+            'vs-update',
+            # vs code's text editing commands should cover all of these...
             'add-comments',
             'add-space-to-lines',
+            'add-tab-to-lines',
             'align-eq-signs',
+
             'back-char',
             'back-char-extend-selection',
             'back-page',
@@ -903,18 +1231,21 @@ class LeoBridgeIntegController:
             'beginning-of-buffer-extend-selection',
             'beginning-of-line',
             'beginning-of-line-extend-selection',
+
             'capitalize-word',
             'center-line',
             'center-region',
             'clean-all-blank-lines',
             'clean-all-lines',
             'clean-body',
+            'clean-lines',
             'clear-kill-ring',
             'clear-selected-text',
             'convert-blanks',
             'convert-tabs',
             'copy-text',
             'cut-text',
+
             'delete-char',
             'delete-comments',
             'delete-indentation',
@@ -923,10 +1254,26 @@ class LeoBridgeIntegController:
             'delete-word-smart',
             'downcase-region',
             'downcase-word',
+
             'end-of-buffer',
             'end-of-buffer-extend-selection',
             'end-of-line',
             'end-of-line-extend-selection',
+
+            'exchange-point-mark',
+
+            'extend-to-line',
+            'extend-to-paragraph',
+            'extend-to-sentence',
+            'extend-to-word',
+
+            'fill-paragraph',
+            'fill-region',
+            'fill-region-as-paragraph',
+
+            'finish-of-line',
+            'finish-of-line-extend-selection',
+
             'forward-char',
             'forward-char-extend-selection',
             'forward-end-word',
@@ -941,186 +1288,23 @@ class LeoBridgeIntegController:
             'forward-word-extend-selection',
             'forward-word-smart',
             'forward-word-smart-extend-selection',
-            
-            'cheat-sheet',
-            'dehoist', # Duplicates of de-hoist.
-            'find-clone-all',
-            'find-clone-all-flattened',
-            'find-clone-tag',
-            # Abreviations...
-            'abbrev-kill-all',
-            'abbrev-list',
-            'dabbrev-completion',
-            'dabbrev-expands',
 
-            # Autocompletion...
-            'auto-complete',
-            'auto-complete-force',
-            'disable-autocompleter',
-            'disable-calltips',
-            'enable-autocompleter',
-            'enable-calltips',
-
-            # Debugger...
-            'db-again',
-            'db-b',
-            'db-c',
-            'db-h',
-            'db-input',
-            'db-l',
-            'db-n',
-            'db-q',
-            'db-r',
-            'db-s',
-            'db-status',
-            'db-w',
-
-            # File operations...
-            'directory-make',
-            'directory-remove',
-            'vr',
-            'vr-contract',
-            'vr-expand',
-            'vr-hide',
-            'vr-lock',
-            'vr-pause-play-movie',
-            'vr-show',
-            'vr-toggle',
-            'vr-unlock',
-            'vr-update',
-            'vr-zoom',
-            
-            'add-tab-to-lines',
-           
-            'clean-diff',
-            'clean-lines',
-
-            'cls',
-            'cm-external-editor',
-            
-            'debug',
-            'delete-@button-parse-json-button',
-            'delete-trace-statements',
-           
-            'disable-idle-time-events',
-            'do-nothing',
-            
-            'edit-setting', # ?
-            'edit-shortcut',
-
-            'enable-idle-time-events',
-            
-            'enter-quick-command-mode',
-            'equal-sized-panes',
-            
-            'eval',
-            'eval-block',
-            'eval-last',
-            'eval-last-pretty',
-            'eval-replace',
-            
-            'exchange-point-mark',
-           
-            'exit-named-mode',
-
-            'expand-log-pane',
-            'expand-body-pane',
-            'expand-outline-pane',
-           
-            'extend-to-line',
-            'extend-to-paragraph',
-            'extend-to-sentence',
-            'extend-to-word',
-            
-            'F6-open-console',
-            
-            'file-delete',
-            'file-diff-files',
-            'file-insert',
-            'file-new',
-            'file-open-by-name',
-
-            'fill-paragraph',
-            'fill-region',
-            'fill-region-as-paragraph',
-
-            'find-all',
-            'find-all-unique-regex',
-            'find-character',
-            'find-character-extend-selection',
-
-            'find-next',
-            'find-prev',
-
-            'find-quick',
-            'find-quick-changed',
-            'find-quick-selected',
-            'find-quick-test-failures',
-            'find-quick-timeline',
-            'find-tab-hide',
-            'find-tab-open',
-            'find-var',
-            'find-word',
-            'find-word-in-line',
-
-            'finish-of-line',
-            'finish-of-line-extend-selection',
-            'flush-lines',
-            
-            'full-command',
-
-            'get-child-headlines',
-            
-            'global-search',
             'go-anywhere',
             'go-back',
             'go-forward',
-            'goto-any-clone',
             'goto-char',
-            'goto-global-line',
-            'goto-line',
-            
-            'goto-next-history-node', # ???
-            'goto-prev-history-node',
-            
-            'hide-body-dock',
-            'hide-body-pane',
-            'hide-invisibles',
-            'hide-log-pane',
-            'hide-outline-dock',
-            'hide-outline-pane',
-            'hide-tabs-dock',
-            
-            'history',
-           
-            'iconify-frame',
-            
+
             'indent-region',
             'indent-relative',
             'indent-rigidly',
             'indent-to-comment-column',
-            'insert-as-first-child',
-            
-            'insert-file-name',
+
             'insert-hard-tab',
-            'insert-icon',
             'insert-newline',
-            'insert-node-before',
             'insert-parentheses',
             'insert-soft-tab',
 
-            'isearch-backward',
-            'isearch-backward-regexp',
-            'isearch-forward',
-            'isearch-forward-regexp',
-            'isearch-with-present-options',
-            
-            'justify-toggle-auto',
-            'keep-lines',
-            'keyboard-quit',
-            
             'kill-line',
-            'kill-log-listener',
             'kill-paragraph',
             'kill-pylint',
             'kill-region',
@@ -1130,69 +1314,23 @@ class LeoBridgeIntegController:
             'kill-word',
             'kill-ws',
 
-            'line-number',
-            'line-numbering-toggle',
-            'line-to-headline',
-            'listen-to-log',
-            
-            'marked-list',
             'match-brackets',
-            'menu-shortcut',
-            'minimize-all',
-            'mode-help',
+
             'move-lines-down',
-            'move-lines-to-next-node',
             'move-lines-up',
-            
             'move-past-close',
             'move-past-close-extend-selection',
+
             'newline-and-indent',
             'next-line',
             'next-line-extend-selection',
             'next-or-end-of-line',
             'next-or-end-of-line-extend-selection',
-            
-            'open-python-window',
-            
-            'open-with-idle',
-            'open-with-open-office',
-            'open-with-scite',
-            'open-with-word',
-            
-            'pandoc',
-            'pandoc-with-preview',
-
-            'parse-body',
-            'parse-json',
-            'paste-as-template',
-            'paste-text',
-            'pdb',
-            'pop-cursor',
-            
-            'preview',
-            'preview-body',
-            'preview-expanded-body',
-            'preview-expanded-html',
-            'preview-html',
-            'preview-marked-bodies',
-            'preview-marked-html',
-            'preview-marked-nodes',
-            'preview-node',
-            'preview-tree-bodies',
-            'preview-tree-html',
-            'preview-tree-nodes',
 
             'previous-line',
             'previous-line-extend-selection',
             'previous-or-beginning-of-line',
             'previous-or-beginning-of-line-extend-selection',
-            
-            'push-cursor',
-           
-            're-search-backward',
-            're-search-forward',
-            
-            'recolor',
 
             'rectangle-clear',
             'rectangle-close',
@@ -1202,208 +1340,53 @@ class LeoBridgeIntegController:
             'rectangle-string',
             'rectangle-yank',
 
-            'redraw',
-
             'remove-blank-lines',
             'remove-newlines',
-            'remove-sentinels',
             'remove-space-from-lines',
             'remove-tab-from-lines',
-
-            'repeat-complex-command',
-            
-            'replace',
-            'replace-all',
-            'replace-current-character',
-            'replace-then-find',
-
-            'resize-to-screen',
 
             'reverse-region',
             'reverse-sort-lines',
             'reverse-sort-lines-ignoring-case',
-            
-            'right-click-icon',
-           
-            'screen-capture-5sec',
-            'screen-capture-now',
-            
-            'script-button', # ?
 
-            'scroll-down-half-page',
-            'scroll-down-line',
-            'scroll-down-page',
-            'scroll-outline-down-line',
-            'scroll-outline-down-page',
-            'scroll-outline-left',
-            'scroll-outline-right',
-            'scroll-outline-up-line',
-            'scroll-outline-up-page',
-            'scroll-up-half-page',
-            'scroll-up-line',
-            'scroll-up-page',
-            
-            'search-backward',
-            'search-forward',
-            'search-return-to-origin',
+            'paste-text',
+            'pop-cursor',
+            'push-cursor',
 
             'select-all',
             'select-next-trace-statement',
             'select-to-matching-bracket',
 
-            'session-clear',  # ?
-            'session-create',
-            'session-refresh',
-            'session-restore',
-            'session-snapshot-load',
-            'session-snapshot-save',
-            
-            'set-colors',  ### ???
-            'set-command-state',
-            'set-comment-column',
-            'set-extend-mode',
-            'set-fill-column',
-            'set-fill-prefix',
-            'set-find-everywhere',
-            'set-find-node-only',
-            'set-find-suboutline-only',
-            'set-font',
-            'set-insert-state',
-            'set-overwrite-state',
-            'set-reference-file',
-            'set-replace-string',
-            'set-search-string',
-            'set-silent-mode',
-
-            'shell-command',
-            'shell-command-on-region',
-
-            'show-all-uas',
-            'show-bindings',
-            'show-body-dock',
-            'show-buttons',
-            'show-calltips',
-            'show-calltips-force',
-            'show-clone-ancestors',
-            'show-clone-parents',
-            'show-color-names',
-            'show-color-wheel',
-            'show-commands',
-            'show-file-line',
-            'show-find-options',
-            'show-focus',
-            'show-fonts',
-            'show-hide-body-dock',
-            'show-hide-outline-dock',
-            'show-hide-render-dock',
-            'show-hide-tabs-dock',
-            'show-invisibles',
-            'show-next-tip',
-            'show-node-uas',
-            'show-outline-dock',
-            'show-plugin-handlers',
-            'show-plugins-info',
-            'show-settings',
-            'show-settings-outline',
-            'show-spell-info',
-            'show-stats',
-            
-            'show-tabs-dock',
-
             'sort-columns',
             'sort-fields',
             'sort-lines',
             'sort-lines-ignoring-case',
-           
-            'spell-add',
-            'spell-as-you-type-next',
-            'spell-as-you-type-toggle',
-            'spell-as-you-type-undo',
-            'spell-as-you-type-wrap',
-            'spell-change',
-            'spell-change-then-find',
-            'spell-find',
-            'spell-ignore',
-            'spell-tab-hide',
-            'spell-tab-open',
-            
+
             'split-defs',
             'split-line',
 
             'start-of-line',
             'start-of-line-extend-selection',
 
-            'start-search',
-
-            'style-set-selected',
-            'suspend',
-            'tab-cycle-next',
-            'tab-cycle-previous',
-            'tab-detach',
             'tabify',
-            'tag-children',
-            
-            'todo-children-todo',
-            'todo-dec-pri',
-            'todo-find-todo',
-            'todo-fix-datetime',
-            'todo-inc-pri',
-
-            'toggle-abbrev-mode',  ### ?
-            'toggle-active-pane',
-            'toggle-angle-brackets',
-            'toggle-at-auto-at-edit',
-            'toggle-autocompleter',
-            'toggle-calltips',
-            'toggle-case-region',
-            'toggle-extend-mode',
-            'toggle-find-collapses-nodes',
-            'toggle-find-ignore-case-option',
-            'toggle-find-in-body-option',
-            'toggle-find-in-headline-option',
-            'toggle-find-mark-changes-option',
-            'toggle-find-mark-finds-option',
-            'toggle-find-regex-option',
-            'toggle-find-word-option',
-            'toggle-find-wrap-around-option',
-            'toggle-idle-time-events',
-            'toggle-input-state',
-            'toggle-invisibles',
-            'toggle-line-numbering-root',
-            'toggle-sparse-move',
-            'toggle-split-direction',
             'transpose-chars',
             'transpose-lines',
             'transpose-words',
-
-            'typescript-to-py',
 
             'unformat-paragraph',
             'unindent-region',
 
             'untabify',
-            
+
             'upcase-region',
             'upcase-word',
             'update-ref-file',
-            
-            'vs-create-tree',
-            'vs-dump',
-            'vs-reset',
-            'vs-update',
 
-            'what-line',
-            'word-search-backward',
-            'word-search-forward',
-           
-            'xdb',
-            
             'yank',
             'yank-pop',
 
             'zap-to-character',
-            'zoom-in',
-            'zoom-out'
+
         ]
         bad.extend(bad_list)
         result = list(sorted(bad))
@@ -1466,6 +1449,8 @@ class LeoBridgeIntegController:
             'hoist',
 
             'insert-node',
+            'insert-node-before',
+            'insert-as-first-child',
             'insert-as-last-child',
             'insert-child',
 
@@ -1518,12 +1503,21 @@ class LeoBridgeIntegController:
             'dump-node',
             'dump-outline',
 
+            'insert-icon',
+
             'set-ua',
+
+            'show-all-uas',
+            'show-bindings',
+            'show-clone-ancestors',
+            'show-clone-parents',
             # Export files...
             'export-headlines',
             'export-jupyter-notebook',
             'outline-to-cweb',
             'outline-to-noweb',
+            'remove-sentinels',
+            'typescript-to-py',
 
             # Import files...
             'import-MORE-files',
@@ -1625,14 +1619,25 @@ class LeoBridgeIntegController:
             'clone-node-to-last-node',
             'clone-to-at-spot',
 
+            'edit-setting',
+            'edit-shortcut',
+
             'execute-pytest',
             'execute-script',
             'extract',
             'extract-names',
 
+            'goto-any-clone',
+            'goto-global-line',
+            'goto-line',
             'git-diff', 'gd',
 
+            'log-kill-listener', 'kill-log-listener',
+            'log-listen', 'listen-to-log',
+
             'make-stub-files',
+
+            'pdb',
 
             'redo',
             'rst3',
@@ -1645,6 +1650,8 @@ class LeoBridgeIntegController:
             'run-tests',
 
             'undo',
+
+            'xdb',
             # Beautify, blacken, fstringify...
             'beautify-files',
             'beautify-files-diff',
@@ -1666,6 +1673,7 @@ class LeoBridgeIntegController:
 
             'beautify-c',
 
+            'cls',
             'c-to-python',
             'c-to-python-clean-docs',
             'check-derived-file',
@@ -1720,17 +1728,24 @@ class LeoBridgeIntegController:
             'insert-jupyter-toc',
             'insert-markdown-toc',
 
+            'find-var',
+
             'join-leo-irc',
             'join-node-above',
             'join-node-below',
             'join-selection-to-node-below',
 
-            'log-kill-listener',
-            'log-listen',
+            'move-lines-to-next-node',
 
             'new',
 
             'open-outline',
+
+            'parse-body',
+            'parse-json',
+            'pandoc',
+            'pandoc-with-preview',
+            'paste-as-template',
 
             'print-body',
             'print-cmd-docstrings',
@@ -1763,6 +1778,10 @@ class LeoBridgeIntegController:
             'revert',
 
             'save-buffers-kill-leo',
+            'screen-capture-5sec',
+            'screen-capture-now',
+            'script-button', # ?
+            'set-reference-file',
             'show-style-sheet',
             'sort-recent-files',
             'sphinx',
