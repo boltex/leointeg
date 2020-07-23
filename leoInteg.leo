@@ -176,19 +176,6 @@
 <v t="felix.20191126232434.10"><vh>outputPNode</vh></v>
 <v t="felix.20191126232434.11"><vh>outputPNodes</vh></v>
 </v>
-<v t="felix.20200705193918.1"><vh>Outline Goto Commands</vh>
-<v t="felix.20200705193927.1"><vh>pageUp</vh></v>
-<v t="felix.20200711210205.1"><vh>pageDown</vh></v>
-<v t="felix.20200711210205.2"><vh>gotoFirstVisible</vh></v>
-<v t="felix.20200705233325.1"><vh>gotoLastVisible</vh></v>
-<v t="felix.20200705201100.1"><vh>gotoLastSibling</vh></v>
-<v t="felix.20200705223536.1"><vh>gotoNextVisible</vh></v>
-<v t="felix.20200705223541.1"><vh>gotoPrevVisible</vh></v>
-<v t="felix.20200706030410.1"><vh>gotoNextMarked</vh></v>
-<v t="felix.20200706202247.1"><vh>gotoNextClone</vh></v>
-<v t="felix.20200705223430.1"><vh>contractOrGoLeft</vh></v>
-<v t="felix.20200705223521.1"><vh>expandAndGoRight</vh></v>
-</v>
 <v t="felix.20191128000818.1"><vh>Outline Editing Commands</vh>
 <v t="felix.20191127004621.1"><vh>markPNode</vh></v>
 <v t="felix.20191127235913.1"><vh>unmarkPNode</vh></v>
@@ -208,14 +195,14 @@
 <v t="felix.20191127001506.3"><vh>demotePNode</vh></v>
 <v t="felix.20191231184412.1"><vh>sortChildrenPNode</vh></v>
 <v t="felix.20191231184412.2"><vh>sortSiblingsPNode</vh></v>
-<v t="felix.20191231201748.1"><vh>hoistPNode</vh></v>
-<v t="felix.20191231201749.1"><vh>deHoist</vh></v>
 </v>
 <v t="felix.20191128001054.1"><vh>Outline and Body Interaction</vh>
 <v t="felix.20200719001908.2"><vh>_get_commander_method</vh></v>
 <v t="felix.20200719001908.1"><vh>leoCommand</vh></v>
 <v t="felix.20191231203711.1"><vh>undo</vh></v>
 <v t="felix.20200103204811.1"><vh>redo</vh></v>
+<v t="felix.20200722221454.2"><vh>pageUp</vh></v>
+<v t="felix.20200722221454.3"><vh>pageDown</vh></v>
 <v t="felix.20200301235235.1"><vh>refreshFromDiskPNode</vh></v>
 <v t="felix.20191231214801.1"><vh>executeScript</vh></v>
 <v t="felix.20191126232434.15"><vh>getPNode</vh></v>
@@ -231,7 +218,6 @@
 <v t="felix.20191126232434.24"><vh>setSelectedNode</vh></v>
 <v t="felix.20191126232434.25"><vh>expandNode</vh></v>
 <v t="felix.20191126232434.26"><vh>collapseNode</vh></v>
-<v t="felix.20200329000454.1"><vh>contractAll</vh></v>
 <v t="felix.20191126232434.29"><vh>yieldAllRootChildren</vh></v>
 <v t="felix.20191216195906.1"><vh>findPNodeFromGnx</vh></v>
 </v>
@@ -1011,11 +997,10 @@ if __name__ == '__main__':
         w_ap['selected'] = True
     return w_ap
 
-
 def getLanguageAtPosition(self, p):
     """
     Return the language in effect at position p.
-    
+
     This is always a lowercase language name, never None.
     """
     c, g = self.commander, self.g
@@ -1040,7 +1025,8 @@ def getLanguageAtPosition(self, p):
             'default': default,
         }
         return self.sendLeoBridgePackage("result", result)
-        
+
+
 </t>
 <t tx="felix.20191126232434.4">class LeoBridgeIntegController:
     '''Leo Bridge Controller'''
@@ -1161,17 +1147,20 @@ def getLanguageAtPosition(self, p):
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
                     #
-                    func = getattr(integController, w_param['action'], None)
-                    if func:
+                    w_func = getattr(integController, w_param['action'], None)
+                    if w_func:
                         # Is Filtered by Leo Bridge Integration Controller
-                        answer = func(w_param['param'])
+                        w_answer = w_func(w_param['param'])
                     else:
                         # Attempt to execute the command directly on the commander/subcommander
-                        answer = integController.leoCommand(w_param['action'], w_param['param'], False)
+                        w_keep = False  # Possible to specify to try to keep original selection
+                        if "keep" in w_param:
+                            w_keep = w_param['keep']
+                        w_answer = integController.leoCommand(w_param['action'], w_param['param'], w_keep)
                 else:
-                    answer = "Error in processCommand"
-                    print(answer, flush=True)
-                await websocket.send(answer)
+                    w_answer = "Error in processCommand"
+                    print(w_answer, flush=True)
+                await websocket.send(w_answer)
         except websockets.exceptions.ConnectionClosedError:
             print("Websocket connection closed", flush=True)
         except Exception:
@@ -1301,7 +1290,9 @@ def getLanguageAtPosition(self, p):
         return self.outputError("Error in unmarkPNode no param p_ap")
 
 </t>
-<t tx="felix.20191128000818.1"></t>
+<t tx="felix.20191128000818.1"># Can be used on any non-selected node from the mouse context menu in vscode
+# They set the p_keepSelection parameter when calling leoCommand
+</t>
 <t tx="felix.20191128001054.1"></t>
 <t tx="felix.20191128002414.1">import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
@@ -1358,17 +1349,6 @@ wsPort = 32125
 <t tx="felix.20191231184412.2">def sortSiblingsPNode(self, p_ap):
     '''Sort siblings of a node, don't select it if possible'''
     return self.leoCommand("sortSiblings", p_ap, True)
-
-</t>
-<t tx="felix.20191231201748.1">def hoistPNode(self, p_ap):
-    '''Select and Hoist a node'''
-    return self.leoCommand("hoist", p_ap)  # Don't try to re-select node
-
-</t>
-<t tx="felix.20191231201749.1">def deHoist(self, p_paramUnused):
-    '''De-Hoist'''
-    self.commander.dehoist()
-    return self.outputPNode(self.commander.p)  # in any case, return selected node
 
 </t>
 <t tx="felix.20191231203545.1">def clonePNode(self, p_ap):
@@ -1971,12 +1951,6 @@ wsPort = 32125
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20200329000454.1">def contractAll(self, p_paramUnused):
-    '''(Collapse) Contract All'''
-    self.commander.contractAllHeadlines()
-    return self.outputPNode(self.commander.p)  # return selected node when done
-
-</t>
 <t tx="felix.20200619165641.1">def getStates(self, p_package):
     """
     Gets the currently opened file's general states for UI enabled/disabled states
@@ -2079,58 +2053,6 @@ wsPort = 32125
     return "yes"
 
 </t>
-<t tx="felix.20200705193918.1"></t>
-<t tx="felix.20200705193927.1">def pageUp(self, p_ap):
-    """Selects a node a couple of steps up in the tree to simulate page up"""
-    self.commander.selectVisBack()
-    self.commander.selectVisBack()
-    self.commander.selectVisBack()
-    return self.outputPNode(self.commander.p)
-
-</t>
-<t tx="felix.20200705201100.1">def gotoLastSibling(self, p_ap):
-    """Select the last sibling of the selected node."""
-    return self.leoCommand("goToLastSibling", p_ap)
-
-</t>
-<t tx="felix.20200705223430.1">def contractOrGoLeft(self, p_ap):
-    """Simulate the left Arrow Key in folder of Windows Explorer."""
-    return self.leoCommand("contractNodeOrGoToParent", p_ap)
-
-</t>
-<t tx="felix.20200705223521.1">def expandAndGoRight(self, p_ap):
-    """If a node has children, expand it if needed and go to the first child."""
-    return self.leoCommand("expandNodeAndGoToFirstChild", p_ap)
-
-</t>
-<t tx="felix.20200705223536.1">def gotoNextVisible(self, p_ap):
-    """Select the visible node following the presently selected node."""
-    return self.leoCommand("selectVisNext", p_ap)
-
-</t>
-<t tx="felix.20200705223541.1">def gotoPrevVisible(self, p_ap):
-    """Select the visible node preceding the presently selected node."""
-    return self.leoCommand("selectVisBack", p_ap)
-
-</t>
-<t tx="felix.20200705233325.1">def gotoLastVisible(self, p_ap):
-    """Select the last visible node of selected chapter or hoist."""
-    return self.leoCommand("goToLastVisibleNode", p_ap)
-
-</t>
-<t tx="felix.20200706030410.1">def gotoNextMarked(self, p_ap):
-    """Select the next marked node."""
-    return self.leoCommand("goToNextMarkedHeadline", p_ap)
-
-</t>
-<t tx="felix.20200706202247.1">def gotoNextClone(self, p_ap):
-    """
-    Select the next node that is a clone of the selected node.
-    If the selected node is not a clone, do find-next-clone.
-    """
-    return self.leoCommand("goToNextClone", p_ap)
-
-</t>
 <t tx="felix.20200710014747.1">def getButtons(self, p_package):
     '''Gets the currently opened file's @buttons list'''
     w_buttons = []
@@ -2158,10 +2080,10 @@ wsPort = 32125
 <t tx="felix.20200711182907.1">def getCommands(self, p_package):
     """return a list of all commands."""
     c = self.commander
-    
+
     # TODO: RETURN ONLY COMMANDS THAT MAKE SENSE IN VS-CODE. (such as !q: ...)
     d = c.commandsDict  # keys are command names, values are functions.
-        
+
     result = []
     for command_name in sorted(d):
         func = d.get(command_name)
@@ -2175,7 +2097,7 @@ wsPort = 32125
             continue
         doc = func.__doc__ or ''
         result.append({
-            "label": command_name, 
+            "label": command_name,
             "func":  func_name,
             "detail": doc,
         })
@@ -2184,19 +2106,6 @@ wsPort = 32125
         # print(f"{func_name} ", flush=True)
 
     return self.sendLeoBridgePackage("commands", result)
-
-</t>
-<t tx="felix.20200711210205.1">def pageDown(self, p_ap):
-    """Selects a node a couple of steps down in the tree to simulate page down"""
-    self.commander.selectVisNext()
-    self.commander.selectVisNext()
-    self.commander.selectVisNext()
-    return self.outputPNode(self.commander.p)
-
-</t>
-<t tx="felix.20200711210205.2">def gotoFirstVisible(self, p_ap):
-    """Select the first visible node of the selected chapter or hoist."""
-    return self.leoCommand("goToFirstVisibleNode", p_ap)
 
 </t>
 <t tx="felix.20200717222352.1">@language json
@@ -4249,7 +4158,7 @@ public static LEOBRIDGE = {
     SET_HEADLINE: "setNewHeadline",
     EXPAND_NODE: "expandNode",
     COLLAPSE_NODE: "collapseNode",
-    CONTRACT_ALL: "contractAll",
+    CONTRACT_ALL: "contractAllHeadlines",
     GET_OPENED_FILES: "getOpenedFiles",
     SET_OPENED_FILE: "setOpenedFile", // Pass index ? name to validate / error check, only index when stable
     OPEN_FILE: "openFile",
@@ -4265,15 +4174,15 @@ public static LEOBRIDGE = {
     // * Goto operations
     PAGE_UP: "pageUp",
     PAGE_DOWN: "pageDown",
-    GOTO_FIRST_VISIBLE: "gotoFirstVisible",
-    GOTO_LAST_VISIBLE: "gotoLastVisible",
-    GOTO_LAST_SIBLING: "gotoLastSibling",
-    GOTO_NEXT_VISIBLE: "gotoNextVisible",
-    GOTO_PREV_VISIBLE: "gotoPrevVisible",
-    GOTO_NEXT_MARKED: "gotoNextMarked",
-    GOTO_NEXT_CLONE: "gotoNextClone",
-    CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
-    EXPAND_AND_GO_RIGHT: "expandAndGoRight",
+    GOTO_FIRST_VISIBLE: "goToFirstVisibleNode",
+    GOTO_LAST_VISIBLE: "goToLastVisibleNode",
+    GOTO_LAST_SIBLING: "goToLastSibling",
+    GOTO_NEXT_VISIBLE: "selectVisNext",
+    GOTO_PREV_VISIBLE: "selectVisBack",
+    GOTO_NEXT_MARKED: "goToNextMarkedHeadline",
+    GOTO_NEXT_CLONE: "goToNextClone",
+    CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent",
+    EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild",
     // * Leo Operations
     MARK_PNODE: "markPNode",
     UNMARK_PNODE: "unmarkPNode",
@@ -4298,8 +4207,8 @@ public static LEOBRIDGE = {
     REDO: "redo",
     EXECUTE_SCRIPT: "executeScript",
     GET_STATES: "getStates",
-    HOIST_PNODE: "hoistPNode",
-    DEHOIST: "deHoist",
+    HOIST_PNODE: "hoist",
+    DEHOIST: "dehoist",
     // TODO : @boltex More commands to implement #15, #23, #24
     CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
     CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
@@ -7397,7 +7306,7 @@ export const enum RefreshType {
 
 </t>
 <t tx="felix.20200718194857.5">/**
- * * Command parameter for when 'stacking' front end commands
+ * * Command parameter for 'stacking' front end commands
  */
 export interface UserCommand {
     action: string;
@@ -8052,7 +7961,7 @@ More information can be found on the repository's [Issues Page](https://github.c
 <t tx="felix.20200718223820.1"></t>
 <t tx="felix.20200718223833.1"></t>
 <t tx="felix.20200718223838.1"></t>
-<t tx="felix.20200719001908.1">def leoCommand(self, p_command, p_ap, p_keepSelection=False, p_byName=False):
+<t tx="felix.20200719001908.1">def leoCommand(self, p_command, p_ap, p_keepSelection=False):
     '''
     Generic call to a method in Leo's Commands class or any subcommander class.
 
@@ -10215,6 +10124,22 @@ public showRecentLeoFiles(): void {
     func = self._get_commander_method(command_name)
     docstring = func.__doc__ if func else ''
     return docstring
+
+</t>
+<t tx="felix.20200722221454.2">def pageUp(self, p_ap):
+    """Selects a node a couple of steps up in the tree to simulate page up"""
+    self.commander.selectVisBack()
+    self.commander.selectVisBack()
+    self.commander.selectVisBack()
+    return self.outputPNode(self.commander.p)
+
+</t>
+<t tx="felix.20200722221454.3">def pageDown(self, p_ap):
+    """Selects a node a couple of steps down in the tree to simulate page down"""
+    self.commander.selectVisNext()
+    self.commander.selectVisNext()
+    self.commander.selectVisNext()
+    return self.outputPNode(self.commander.p)
 
 </t>
 </tnodes>

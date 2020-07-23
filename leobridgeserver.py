@@ -754,10 +754,10 @@ class LeoBridgeIntegController:
     def getCommands(self, p_package):
         """return a list of all commands."""
         c = self.commander
-        
+
         # TODO: RETURN ONLY COMMANDS THAT MAKE SENSE IN VS-CODE. (such as !q: ...)
         d = c.commandsDict  # keys are command names, values are functions.
-            
+
         result = []
         for command_name in sorted(d):
             func = d.get(command_name)
@@ -771,7 +771,7 @@ class LeoBridgeIntegController:
                 continue
             doc = func.__doc__ or ''
             result.append({
-                "label": command_name, 
+                "label": command_name,
                 "func":  func_name,
                 "detail": doc,
             })
@@ -825,59 +825,8 @@ class LeoBridgeIntegController:
             w_apList.append(self.p_to_ap(p))
         return self.sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
 
-    def pageUp(self, p_ap):
-        """Selects a node a couple of steps up in the tree to simulate page up"""
-        self.commander.selectVisBack()
-        self.commander.selectVisBack()
-        self.commander.selectVisBack()
-        return self.outputPNode(self.commander.p)
-
-    def pageDown(self, p_ap):
-        """Selects a node a couple of steps down in the tree to simulate page down"""
-        self.commander.selectVisNext()
-        self.commander.selectVisNext()
-        self.commander.selectVisNext()
-        return self.outputPNode(self.commander.p)
-
-    def gotoFirstVisible(self, p_ap):
-        """Select the first visible node of the selected chapter or hoist."""
-        return self.leoCommand("goToFirstVisibleNode", p_ap)
-
-    def gotoLastVisible(self, p_ap):
-        """Select the last visible node of selected chapter or hoist."""
-        return self.leoCommand("goToLastVisibleNode", p_ap)
-
-    def gotoLastSibling(self, p_ap):
-        """Select the last sibling of the selected node."""
-        return self.leoCommand("goToLastSibling", p_ap)
-
-    def gotoNextVisible(self, p_ap):
-        """Select the visible node following the presently selected node."""
-        return self.leoCommand("selectVisNext", p_ap)
-
-    def gotoPrevVisible(self, p_ap):
-        """Select the visible node preceding the presently selected node."""
-        return self.leoCommand("selectVisBack", p_ap)
-
-    def gotoNextMarked(self, p_ap):
-        """Select the next marked node."""
-        return self.leoCommand("goToNextMarkedHeadline", p_ap)
-
-    def gotoNextClone(self, p_ap):
-        """
-        Select the next node that is a clone of the selected node.
-        If the selected node is not a clone, do find-next-clone.
-        """
-        return self.leoCommand("goToNextClone", p_ap)
-
-    def contractOrGoLeft(self, p_ap):
-        """Simulate the left Arrow Key in folder of Windows Explorer."""
-        return self.leoCommand("contractNodeOrGoToParent", p_ap)
-
-    def expandAndGoRight(self, p_ap):
-        """If a node has children, expand it if needed and go to the first child."""
-        return self.leoCommand("expandNodeAndGoToFirstChild", p_ap)
-
+    # Can be used on any non-selected node from the mouse context menu in vscode
+    # They set the p_keepSelection parameter when calling leoCommand
     def markPNode(self, p_ap):
         '''Mark a node, don't select it'''
         if p_ap:
@@ -1024,15 +973,6 @@ class LeoBridgeIntegController:
         '''Sort siblings of a node, don't select it if possible'''
         return self.leoCommand("sortSiblings", p_ap, True)
 
-    def hoistPNode(self, p_ap):
-        '''Select and Hoist a node'''
-        return self.leoCommand("hoist", p_ap)  # Don't try to re-select node
-
-    def deHoist(self, p_paramUnused):
-        '''De-Hoist'''
-        self.commander.dehoist()
-        return self.outputPNode(self.commander.p)  # in any case, return selected node
-
     def _get_commander_method(self, p_command):
         """ Return the given method (p_command) in the Commands class or subcommanders."""
         # self.g.trace(p_command)
@@ -1080,7 +1020,7 @@ class LeoBridgeIntegController:
                 # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
         return None
 
-    def leoCommand(self, p_command, p_ap, p_keepSelection=False, p_byName=False):
+    def leoCommand(self, p_command, p_ap, p_keepSelection=False):
         '''
         Generic call to a method in Leo's Commands class or any subcommander class.
 
@@ -1122,6 +1062,20 @@ class LeoBridgeIntegController:
         if self.commander.undoer.canRedo():
             self.commander.undoer.redo()
         return self.outputPNode(self.commander.p)  # return selected node when done
+
+    def pageUp(self, p_ap):
+        """Selects a node a couple of steps up in the tree to simulate page up"""
+        self.commander.selectVisBack()
+        self.commander.selectVisBack()
+        self.commander.selectVisBack()
+        return self.outputPNode(self.commander.p)
+
+    def pageDown(self, p_ap):
+        """Selects a node a couple of steps down in the tree to simulate page down"""
+        self.commander.selectVisNext()
+        self.commander.selectVisNext()
+        self.commander.selectVisNext()
+        return self.outputPNode(self.commander.p)
 
     def refreshFromDiskPNode(self, p_ap):
         '''Refresh from Disk, don't select it if possible'''
@@ -1308,11 +1262,6 @@ class LeoBridgeIntegController:
                 w_p.contract()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
-    def contractAll(self, p_paramUnused):
-        '''(Collapse) Contract All'''
-        self.commander.contractAllHeadlines()
-        return self.outputPNode(self.commander.p)  # return selected node when done
-
     def yieldAllRootChildren(self):
         '''Return all root children P nodes'''
         p = self.commander.rootPosition()
@@ -1406,11 +1355,10 @@ class LeoBridgeIntegController:
             w_ap['selected'] = True
         return w_ap
 
-
     def getLanguageAtPosition(self, p):
         """
         Return the language in effect at position p.
-        
+
         This is always a lowercase language name, never None.
         """
         c, g = self.commander, self.g
@@ -1435,7 +1383,8 @@ class LeoBridgeIntegController:
                 'default': default,
             }
             return self.sendLeoBridgePackage("result", result)
-            
+
+
 def main():
     '''python script for leo integration via leoBridge'''
     global wsHost, wsPort
@@ -1488,17 +1437,20 @@ def main():
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
                     #
-                    func = getattr(integController, w_param['action'], None)
-                    if func:
+                    w_func = getattr(integController, w_param['action'], None)
+                    if w_func:
                         # Is Filtered by Leo Bridge Integration Controller
-                        answer = func(w_param['param'])
+                        w_answer = w_func(w_param['param'])
                     else:
                         # Attempt to execute the command directly on the commander/subcommander
-                        answer = integController.leoCommand(w_param['action'], w_param['param'], False)
+                        w_keep = False  # Possible to specify to try to keep original selection
+                        if "keep" in w_param:
+                            w_keep = w_param['keep']
+                        w_answer = integController.leoCommand(w_param['action'], w_param['param'], w_keep)
                 else:
-                    answer = "Error in processCommand"
-                    print(answer, flush=True)
-                await websocket.send(answer)
+                    w_answer = "Error in processCommand"
+                    print(w_answer, flush=True)
+                await websocket.send(w_answer)
         except websockets.exceptions.ConnectionClosedError:
             print("Websocket connection closed", flush=True)
         except Exception:

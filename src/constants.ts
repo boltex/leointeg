@@ -283,7 +283,7 @@ export class Constants {
         SET_HEADLINE: "setNewHeadline",
         EXPAND_NODE: "expandNode",
         COLLAPSE_NODE: "collapseNode",
-        CONTRACT_ALL: "contractAll",
+        CONTRACT_ALL: "contractAllHeadlines",
         GET_OPENED_FILES: "getOpenedFiles",
         SET_OPENED_FILE: "setOpenedFile", // Pass index ? name to validate / error check, only index when stable
         OPEN_FILE: "openFile",
@@ -299,15 +299,15 @@ export class Constants {
         // * Goto operations
         PAGE_UP: "pageUp",
         PAGE_DOWN: "pageDown",
-        GOTO_FIRST_VISIBLE: "gotoFirstVisible",
-        GOTO_LAST_VISIBLE: "gotoLastVisible",
-        GOTO_LAST_SIBLING: "gotoLastSibling",
-        GOTO_NEXT_VISIBLE: "gotoNextVisible",
-        GOTO_PREV_VISIBLE: "gotoPrevVisible",
-        GOTO_NEXT_MARKED: "gotoNextMarked",
-        GOTO_NEXT_CLONE: "gotoNextClone",
-        CONTRACT_OR_GO_LEFT: "contractOrGoLeft",
-        EXPAND_AND_GO_RIGHT: "expandAndGoRight",
+        GOTO_FIRST_VISIBLE: "goToFirstVisibleNode",
+        GOTO_LAST_VISIBLE: "goToLastVisibleNode",
+        GOTO_LAST_SIBLING: "goToLastSibling",
+        GOTO_NEXT_VISIBLE: "selectVisNext",
+        GOTO_PREV_VISIBLE: "selectVisBack",
+        GOTO_NEXT_MARKED: "goToNextMarkedHeadline",
+        GOTO_NEXT_CLONE: "goToNextClone",
+        CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent",
+        EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild",
         // * Leo Operations
         MARK_PNODE: "markPNode",
         UNMARK_PNODE: "unmarkPNode",
@@ -332,8 +332,8 @@ export class Constants {
         REDO: "redo",
         EXECUTE_SCRIPT: "executeScript",
         GET_STATES: "getStates",
-        HOIST_PNODE: "hoistPNode",
-        DEHOIST: "deHoist",
+        HOIST_PNODE: "hoist",
+        DEHOIST: "dehoist",
         // TODO : @boltex More commands to implement #15, #23, #24
         CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
         CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex

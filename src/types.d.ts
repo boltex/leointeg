@@ -48,7 +48,7 @@ export const enum RefreshType {
 }
 
 /**
- * * Command parameter for when 'stacking' front end commands
+ * * Command parameter for 'stacking' front end commands
  */
 export interface UserCommand {
     action: string;
