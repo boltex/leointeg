@@ -596,10 +596,7 @@ class LeoBridgeIntegController:
             self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
 
         # Leo at this point has done this too: g.app.windowList.append(c.frame)
-        # and so this now app.commanders() yields this: return [f.c for f in g.app.windowList]
-
-        # did this add to existing array of g.app.commanders() ?
-        # print(*self.g.app.commanders(), sep='\n')
+        # and so, now, app.commanders() yields this: return [f.c for f in g.app.windowList]
 
         if self.commander:
             self.commander.closed = False
@@ -768,6 +765,7 @@ class LeoBridgeIntegController:
             }
         else:
             d = c.commandsDict  # keys are command names, values are functions.
+            
         result = []
         for command_name in sorted(d):
             func = d.get(command_name)
@@ -781,15 +779,16 @@ class LeoBridgeIntegController:
                 continue
             doc = func.__doc__ or ''
             result.append({
-                "command_name": command_name, # New, recommended for minibuffer display.
-                "label":  func_name, # should be function_name ?
+                "label": command_name, 
+                "func":  func_name,
                 "detail": doc,
             })
             # This shows up in the bridge log.
             # print(f"__doc__: {len(doc):4} {command_name:40} {func_name} ", flush=True)
             print(f"{func_name} ", flush=True)
-        
+
         return self.sendLeoBridgePackage("commands", result)
+
     def _getDocstringForCommand(self, command_name):
         """get docstring for the given command."""
         func = self._get_commander_method(command_name)

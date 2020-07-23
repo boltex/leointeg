@@ -145,7 +145,7 @@ export interface LeoBridgePackage {
         files: LeoDocument[];
     }
     buttons?: LeoButton[];
-    commands?: vscode.QuickPickItem[];
+    commands?: MinibufferCommand[];
 }
 
 /**
@@ -232,4 +232,12 @@ export interface AskMessageItem extends vscode.MessageItem {
  */
 export interface ChooseDocumentItem extends vscode.QuickPickItem {
     value: number;
+}
+
+/**
+ * * Used by the minibuffer command pallette
+ * Gotten from the getCommands method in leobridgeserver.py
+ */
+export interface MinibufferCommand extends vscode.QuickPickItem {
+    func: string;
 }

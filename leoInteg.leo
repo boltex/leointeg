@@ -708,10 +708,7 @@ UPPERCASE : An immutable constant from the constants.ts source file.
         self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
 
     # Leo at this point has done this too: g.app.windowList.append(c.frame)
-    # and so this now app.commanders() yields this: return [f.c for f in g.app.windowList]
-
-    # did this add to existing array of g.app.commanders() ?
-    # print(*self.g.app.commanders(), sep='\n')
+    # and so, now, app.commanders() yields this: return [f.c for f in g.app.windowList]
 
     if self.commander:
         self.commander.closed = False
@@ -940,7 +937,7 @@ if __name__ == '__main__':
     # Bug fix: p_to_ap updates app.gnx_to_vnode. Save and restore it.
     old_d = self.gnx_to_vnode.copy()
     old_len = len(list(self.gnx_to_vnode.keys()))
-    t1 = time.process_time()
+    # t1 = time.process_time()
     qtyAllPositions = 0
     for p in self.commander.all_positions():
         qtyAllPositions += 1
@@ -1015,6 +1012,35 @@ if __name__ == '__main__':
     return w_ap
 
 
+def getLanguageAtPosition(self, p):
+    """
+    Return the language in effect at position p.
+    
+    This is always a lowercase language name, never None.
+    """
+    c, g = self.commander, self.g
+    aList = g.get_directives_dict_list(p)
+    d = g.scanAtCommentAndAtLanguageDirectives(aList)
+    #
+    # Félix, I'm not sure what the default, if any, should be.
+    #
+    if 1:  # Exactly as in Leo.
+        language = (
+            d and d.get('language') or
+            g.getLanguageFromAncestorAtFileNode(p) or
+            c.config.getString('target-language') or
+            'python'
+        )
+        return self.sendLeoBridgePackage("language", language.lower())
+    else:  # Return both an explicit language and a default language.
+        language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(p) or 'none'
+        default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
+        result = {
+            'language': language.lower(),
+            'default': default,
+        }
+        return self.sendLeoBridgePackage("result", result)
+        
 </t>
 <t tx="felix.20191126232434.4">class LeoBridgeIntegController:
     '''Leo Bridge Controller'''
@@ -1280,14 +1306,13 @@ if __name__ == '__main__':
 <t tx="felix.20191128002414.1">import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
 import asyncio
-import os.path
 import getopt
 import json
+import os.path
 import sys
 import time
 import traceback
 import websockets
-
 </t>
 <t tx="felix.20191128002417.1"># server defaults
 wsHost = "localhost"
@@ -2131,16 +2156,42 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200711182907.1">def getCommands(self, p_package):
-    """get command list starting with the prefix string."""
-    c, g = self.commander, self.g
-    prefix = p_package.get('text', '').strip()  # ? maybe drop the prefix concept entirely
-    commands = sorted(list(c.commandsDict.keys()))
-    # TEMPORARY test restriction : minimum 3 chars and starts with a letter... Edward will fix this ;)
-    commands = [{"label": k, "detail": self._getDocstringForCommand(
-        k)} for k in commands if (len(k) &gt; 3 and k[0].isalpha())]
-    # g.printObj(commands, tag=f"commands for {prefix}") # comment kept for tests, may cleanup later
-    # print('done', flush=True)  # Doesn't help.
-    return self.sendLeoBridgePackage("commands", commands)
+    """return a list of all commands."""
+    c = self.commander
+        # To do: return only commands that make sense in vs-code.
+    if 0:
+        # Testing. This works: keys are command names, values are functions.
+        d = {
+            'clone-find-all-marked': c.cloneFindAllMarked,
+            'hoist': c.hoist,
+            'dehoist': c.dehoist,
+            'git-diff': c.editFileCommands.gitDiff,
+        }
+    else:
+        d = c.commandsDict  # keys are command names, values are functions.
+        
+    result = []
+    for command_name in sorted(d):
+        func = d.get(command_name)
+        if not func:
+            print('no func:', command_name, flush=True)
+            continue
+        # Prefer func.__func_name__ to func.__name__: Leo's decorators change func.__name__!
+        func_name = getattr(func, '__func_name__', func.__name__)
+        if not func_name:
+            print('no func_name', command_name, flush=True)
+            continue
+        doc = func.__doc__ or ''
+        result.append({
+            "label": command_name, 
+            "func":  func_name,
+            "detail": doc,
+        })
+        # This shows up in the bridge log.
+        # print(f"__doc__: {len(doc):4} {command_name:40} {func_name} ", flush=True)
+        print(f"{func_name} ", flush=True)
+
+    return self.sendLeoBridgePackage("commands", result)
 
 </t>
 <t tx="felix.20200711210205.1">def pageDown(self, p_ap):
@@ -7197,7 +7248,7 @@ export interface LeoBridgePackage {
         files: LeoDocument[];
     }
     buttons?: LeoButton[];
-    commands?: vscode.QuickPickItem[];
+    commands?: MinibufferCommand[];
 }
 
 </t>
@@ -7322,6 +7373,14 @@ export interface ConfigMembers {
  */
 export interface ChooseDocumentItem extends vscode.QuickPickItem {
     value: number;
+}
+
+/**
+ * * Used by the minibuffer command pallette
+ * Gotten from the getCommands method in leobridgeserver.py
+ */
+export interface MinibufferCommand extends vscode.QuickPickItem {
+    func: string;
 }
 </t>
 <t tx="felix.20200718194857.3">/**
@@ -8085,7 +8144,7 @@ More information can be found on the repository's [Issues Page](https://github.c
 import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -9903,7 +9962,7 @@ public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boole
  */
 public minibuffer(): void {
     if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-    const w_promise: Thenable&lt;vscode.QuickPickItem[]&gt; = this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
+    const w_promise: Thenable&lt;MinibufferCommand[]&gt; = this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
         .then((p_result: LeoBridgePackage) =&gt; {
             if (p_result.commands &amp;&amp; p_result.commands.length) {
                 return p_result.commands;
@@ -9918,8 +9977,8 @@ public minibuffer(): void {
     };
 
     vscode.window.showQuickPick(w_promise, w_options).then((p_picked) =&gt; {
-        if (p_picked &amp;&amp; p_picked.label) {
-            this.nodeCommand(p_picked.label, undefined, RefreshType.RefreshTreeAndBody, true);
+        if (p_picked &amp;&amp; p_picked.func) {
+            this.nodeCommand(p_picked.func, undefined, RefreshType.RefreshTreeAndBody, true);
         }
     });
 }

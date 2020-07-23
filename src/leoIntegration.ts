@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -1555,7 +1555,7 @@ export class LeoIntegration {
      */
     public minibuffer(): void {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        const w_promise: Thenable<vscode.QuickPickItem[]> = this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
+        const w_promise: Thenable<MinibufferCommand[]> = this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
             .then((p_result: LeoBridgePackage) => {
                 if (p_result.commands && p_result.commands.length) {
                     return p_result.commands;
@@ -1570,8 +1570,8 @@ export class LeoIntegration {
         };
 
         vscode.window.showQuickPick(w_promise, w_options).then((p_picked) => {
-            if (p_picked && p_picked.label) {
-                this.nodeCommand(p_picked.label, undefined, RefreshType.RefreshTreeAndBody, true);
+            if (p_picked && p_picked.func) {
+                this.nodeCommand(p_picked.func, undefined, RefreshType.RefreshTreeAndBody, true);
             }
         });
     }
