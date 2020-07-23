@@ -1416,6 +1416,35 @@ class LeoBridgeIntegController:
         return w_ap
 
 
+    def getLanguageAtPosition(self, p):
+        """
+        Return the language in effect at position p.
+        
+        This is always a lowercase language name, never None.
+        """
+        c, g = self.commander, self.g
+        aList = g.get_directives_dict_list(p)
+        d = g.scanAtCommentAndAtLanguageDirectives(aList)
+        #
+        # Félix, I'm not sure what the default, if any, should be.
+        #
+        if 1:  # Exactly as in Leo.
+            language = (
+                d and d.get('language') or
+                g.getLanguageFromAncestorAtFileNode(p) or
+                c.config.getString('target-language') or
+                'python'
+            )
+            return self.sendLeoBridgePackage("language", language.lower())
+        else:  # Return both an explicit language and a default language.
+            language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(p) or 'none'
+            default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
+            result = {
+                'language': language.lower(),
+                'default': default,
+            }
+            return self.sendLeoBridgePackage("result", result)
+            
 def main():
     '''python script for leo integration via leoBridge'''
     global wsHost, wsPort
