@@ -2158,17 +2158,9 @@ wsPort = 32125
 <t tx="felix.20200711182907.1">def getCommands(self, p_package):
     """return a list of all commands."""
     c = self.commander
-        # To do: return only commands that make sense in vs-code.
-    if 0:
-        # Testing. This works: keys are command names, values are functions.
-        d = {
-            'clone-find-all-marked': c.cloneFindAllMarked,
-            'hoist': c.hoist,
-            'dehoist': c.dehoist,
-            'git-diff': c.editFileCommands.gitDiff,
-        }
-    else:
-        d = c.commandsDict  # keys are command names, values are functions.
+    
+    # TODO: RETURN ONLY COMMANDS THAT MAKE SENSE IN VS-CODE. (such as !q: ...)
+    d = c.commandsDict  # keys are command names, values are functions.
         
     result = []
     for command_name in sorted(d):
@@ -2189,7 +2181,7 @@ wsPort = 32125
         })
         # This shows up in the bridge log.
         # print(f"__doc__: {len(doc):4} {command_name:40} {func_name} ", flush=True)
-        print(f"{func_name} ", flush=True)
+        # print(f"{func_name} ", flush=True)
 
     return self.sendLeoBridgePackage("commands", result)
 
