@@ -827,6 +827,7 @@ class LeoBridgeIntegController:
 
     # Can be used on any non-selected node from the mouse context menu in vscode
     # They set the p_keepSelection parameter when calling leoCommand
+    # TODO : Pass 'keep' as a parameter from vscode to remove 12 other methods!
     def markPNode(self, p_ap):
         '''Mark a node, don't select it'''
         if p_ap:
@@ -1354,7 +1355,6 @@ class LeoBridgeIntegController:
         if p == self.commander.p:
             w_ap['selected'] = True
         return w_ap
-
     def getLanguageAtPosition(self, p):
         """
         Return the language in effect at position p.
@@ -1383,7 +1383,6 @@ class LeoBridgeIntegController:
                 'default': default,
             }
             return self.sendLeoBridgePackage("result", result)
-
 
 def main():
     '''python script for leo integration via leoBridge'''

@@ -226,6 +226,7 @@
 <v t="felix.20191126232434.28"><vh>test_round_trip_positions</vh></v>
 <v t="felix.20191126232434.30"><vh>ap_to_p</vh></v>
 <v t="felix.20191126232434.31"><vh>p_to_ap</vh></v>
+<v t="felix.20200722231611.1"><vh>getLanguageAtPosition</vh></v>
 </v>
 </v>
 <v t="felix.20191126232435.1"><vh>main</vh></v>
@@ -996,37 +997,6 @@ if __name__ == '__main__':
     if p == self.commander.p:
         w_ap['selected'] = True
     return w_ap
-
-def getLanguageAtPosition(self, p):
-    """
-    Return the language in effect at position p.
-
-    This is always a lowercase language name, never None.
-    """
-    c, g = self.commander, self.g
-    aList = g.get_directives_dict_list(p)
-    d = g.scanAtCommentAndAtLanguageDirectives(aList)
-    #
-    # Félix, I'm not sure what the default, if any, should be.
-    #
-    if 1:  # Exactly as in Leo.
-        language = (
-            d and d.get('language') or
-            g.getLanguageFromAncestorAtFileNode(p) or
-            c.config.getString('target-language') or
-            'python'
-        )
-        return self.sendLeoBridgePackage("language", language.lower())
-    else:  # Return both an explicit language and a default language.
-        language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(p) or 'none'
-        default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
-        result = {
-            'language': language.lower(),
-            'default': default,
-        }
-        return self.sendLeoBridgePackage("result", result)
-
-
 </t>
 <t tx="felix.20191126232434.4">class LeoBridgeIntegController:
     '''Leo Bridge Controller'''
@@ -1292,7 +1262,7 @@ def getLanguageAtPosition(self, p):
 </t>
 <t tx="felix.20191128000818.1"># Can be used on any non-selected node from the mouse context menu in vscode
 # They set the p_keepSelection parameter when calling leoCommand
-</t>
+# TODO : Pass 'keep' as a parameter from vscode to remove 12 other methods!</t>
 <t tx="felix.20191128001054.1"></t>
 <t tx="felix.20191128002414.1">import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
@@ -10140,6 +10110,36 @@ public showRecentLeoFiles(): void {
     self.commander.selectVisNext()
     self.commander.selectVisNext()
     return self.outputPNode(self.commander.p)
+
+</t>
+<t tx="felix.20200722231611.1">def getLanguageAtPosition(self, p):
+    """
+    Return the language in effect at position p.
+
+    This is always a lowercase language name, never None.
+    """
+    c, g = self.commander, self.g
+    aList = g.get_directives_dict_list(p)
+    d = g.scanAtCommentAndAtLanguageDirectives(aList)
+    #
+    # Félix, I'm not sure what the default, if any, should be.
+    #
+    if 1:  # Exactly as in Leo.
+        language = (
+            d and d.get('language') or
+            g.getLanguageFromAncestorAtFileNode(p) or
+            c.config.getString('target-language') or
+            'python'
+        )
+        return self.sendLeoBridgePackage("language", language.lower())
+    else:  # Return both an explicit language and a default language.
+        language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(p) or 'none'
+        default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
+        result = {
+            'language': language.lower(),
+            'default': default,
+        }
+        return self.sendLeoBridgePackage("result", result)
 
 </t>
 </tnodes>
