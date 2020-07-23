@@ -70,7 +70,7 @@ class IdleTimeManager:
 
 class ExternalFilesController:
     '''EFC Modified from Leo's sources'''
-
+    # pylint: disable=no-else-return
     def __init__(self, integController):
         '''Ctor for ExternalFiles class.'''
         self.on_idle_count = 0
@@ -413,8 +413,8 @@ class ExternalFilesController:
 
 class LeoBridgeIntegController:
     '''Leo Bridge Controller'''
-
-    def __init__(self, c=None):
+    # pylint: disable=no-else-return
+    def __init__(self):
         # TODO : @boltex #74 need gnx_to_vnode for each opened file/commander
         self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
         self.bridge = leoBridge.controller(
