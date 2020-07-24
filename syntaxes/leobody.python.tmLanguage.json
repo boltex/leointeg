@@ -3,67 +3,23 @@
 	"name": "Leo Body",
 	"patterns": [
 		{
-			"include": "#leo"
+			"include": "#comments"
 		},
 		{
-			"include": "#leo-languages"
+			"include": "#raw"
+		},
+		{
+			"include": "#sectionref"
+		},
+		{
+			"include": "#keywords"
 		},
 		{
 			"include": "#strings"
 		}
 	],
 	"repository": {
-		"leo": {
-			"patterns": [
-				{
-					"include": "#leo-comments"
-				},
-				{
-					"include": "#leo-raw"
-				},
-				{
-					"include": "#leo-sectionref"
-				},
-				{
-					"include": "#leo-keywords"
-				}
-			]
-		},
-		"leo-languages": {
-			"patterns": [
-				{
-					"begin": "^(@language python)($|\\s+)",
-					"end": "^(@language plain)($|\\s+)",
-					"beginCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"endCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"name": "meta.embedded.block.leobody.python"
-				},
-				{
-					"begin": "^(@language typescript)($|\\s+)",
-					"end": "^(@language plain)($|\\s+)",
-					"beginCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"endCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"name": "meta.embedded.block.leobody.typescript"
-				}
-			]
-		},
-		"leo-comments": {
+		"comments": {
 			"patterns": [
 				{
 					"begin": "^(@doc|@)($|\\s+)",
@@ -82,7 +38,7 @@
 				}
 			]
 		},
-		"leo-raw": {
+		"raw": {
 			"patterns": [
 				{
 					"begin": "^(@raw)($|\\s+)",
@@ -101,7 +57,7 @@
 				}
 			]
 		},
-		"leo-sectionref": {
+		"sectionref": {
 			"patterns": [
 				{
 					"match": "(<<)([\\sa-zA-Z0-9_\\-]+)(>>)",
@@ -119,14 +75,14 @@
 				}
 			]
 		},
-		"leo-keywords": {
+		"keywords": {
 			"patterns": [
 				{
 					"match": "^\\s*(@others|@all)($|\\s+)",
 					"name": "keyword"
 				},
 				{
-					"match": "^(@language)\\s+\\b(batch|c|cplusplus|csharp|css|fortran|haskell|html|java|javascript|latex|lua|makefile|matlab|pascal|perl|php|ruby)\\b",
+					"match": "^(@language)\\s+\\b(batch|c|cplusplus|csharp|css|fortran|haskell|html|java|javascript|latex|lua|makefile|matlab|pascal|perl|php|python|ruby)\\b",
 					"name": "keyword"
 				},
 				{
@@ -178,5 +134,5 @@
 			]
 		}
 	},
-	"scopeName": "source.leobody"
+	"scopeName": "source.leobody.python"
 }

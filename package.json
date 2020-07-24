@@ -247,14 +247,58 @@
         "extensions": [
           ""
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configurations/leobody.language-configuration.json"
+      },
+      {
+        "id": "leobody.python",
+        "aliases": [
+          "Leo Body Python",
+          "leobody.python"
+        ],
+        "extensions": [
+          ""
+        ],
+        "configuration": "./language-configurations/leobody.python.language-configuration.json"
+      },
+      {
+        "id": "leobody.typescript",
+        "aliases": [
+          "Leo Body Typescript",
+          "leobody.typescript"
+        ],
+        "extensions": [
+          ""
+        ],
+        "configuration": "./language-configurations/leobody.typescript.language-configuration.json"
       }
     ],
     "grammars": [
       {
         "language": "leobody",
         "scopeName": "source.leobody",
-        "path": "./syntaxes/leobody.tmLanguage.json"
+        "path": "./syntaxes/leobody.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.block.leobody.python": "leobody.python",
+          "meta.embedded.block.leobody.typescript": "leobody.typescript"
+        }
+      },
+      {
+        "language": "leobody.python",
+        "scopeName": "source.leobody.python",
+        "path": "./syntaxes/leobody.python.tmLanguage",
+        "embeddedLanguages": {
+          "meta.embedded.block.leobody": "leobody",
+          "meta.embedded.block.leobody.typescript": "leobody.typescript"
+        }
+      },
+      {
+        "language": "leobody.typescript",
+        "scopeName": "source.leobody.typescript",
+        "path": "./syntaxes/leobody.typescript.tmLanguage",
+        "embeddedLanguages": {
+          "meta.embedded.block.leobody": "leobody",
+          "meta.embedded.block.leobody.python": "leobody.python"
+        }
       }
     ],
     "commands": [
