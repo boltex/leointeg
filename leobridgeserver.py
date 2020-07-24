@@ -71,6 +71,7 @@ class IdleTimeManager:
 class ExternalFilesController:
     '''EFC Modified from Leo's sources'''
     # pylint: disable=no-else-return
+
     def __init__(self, integController):
         '''Ctor for ExternalFiles class.'''
         self.on_idle_count = 0
@@ -414,6 +415,7 @@ class ExternalFilesController:
 class LeoBridgeIntegController:
     '''Leo Bridge Controller'''
     # pylint: disable=no-else-return
+
     def __init__(self):
         # TODO : @boltex #74 need gnx_to_vnode for each opened file/commander
         self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
@@ -449,13 +451,13 @@ class LeoBridgeIntegController:
         self.g.app.externalFilesController = ExternalFilesController(self)
         # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
         self.g.app.gui.runAskYesNoDialog = self._returnYes  # override for "revert to file" operation
-        
+
         # * setup leoBackground to get messages from leo
         try:
             self.g.app.idleTimeManager.start()  # To catch derived file changes
         except Exception:
             print('ERROR with idleTimeManager')
-        
+
     async def _asyncIdleLoop(self, p_seconds, p_fn):
         while True:
             await asyncio.sleep(p_seconds)
@@ -844,7 +846,7 @@ class LeoBridgeIntegController:
             'shell-command',
             'shell-command-on-region',
             'cheat-sheet',
-            'dehoist', # Duplicates of de-hoist.
+            'dehoist',  # Duplicates of de-hoist.
             'find-clone-all',
             'find-clone-all-flattened',
             'find-clone-tag',
@@ -1391,6 +1393,7 @@ class LeoBridgeIntegController:
         bad.extend(bad_list)
         result = list(sorted(bad))
         return result
+
     def _good_commands(self):
         """Defined commands that definitely should be included in leoInteg."""
         good_list = [
@@ -1586,7 +1589,7 @@ class LeoBridgeIntegController:
             'file-save-as-unzipped',
             'file-save-by-name',
             'file-save-to',
-            'save',  ### Some may not be needed.
+            'save',  # Some may not be needed.
             'save-all',
             'save-as',
             'save-file',
@@ -1706,7 +1709,7 @@ class LeoBridgeIntegController:
             'gc-dump-objects-verbose',
             'gc-show-summary',
 
-            'help', ### To do.
+            'help',  # To do.
             'help-for-abbreviations',
             'help-for-autocompletion',
             'help-for-bindings',
@@ -1723,7 +1726,7 @@ class LeoBridgeIntegController:
             'help-for-scripting',
             'help-for-settings',
 
-            'insert-body-time', ### ?
+            'insert-body-time',  # ?
             'insert-headline-time',
             'insert-jupyter-toc',
             'insert-markdown-toc',
@@ -1780,31 +1783,31 @@ class LeoBridgeIntegController:
             'save-buffers-kill-leo',
             'screen-capture-5sec',
             'screen-capture-now',
-            'script-button', # ?
+            'script-button',  # ?
             'set-reference-file',
             'show-style-sheet',
             'sort-recent-files',
             'sphinx',
             'sphinx-with-preview',
-            'style-reload', # ?
+            'style-reload',  # ?
 
             'untangle',
             'untangle-all',
             'untangle-marked',
 
-            'view-lossage', # ?
+            'view-lossage',  # ?
 
             'weave',
-            
+
             # Dubious commands (to do)...
             'act-on-node',
-             
+
             'cfa',  # Do we need abbreviations?
             'cfam',
             'cff',
             'cffm',
             'cft',
-            
+
             'buffer-append-to',
             'buffer-copy',
             'buffer-insert',
@@ -1813,14 +1816,15 @@ class LeoBridgeIntegController:
             'buffer-switch-to',
             'buffers-list',
             'buffers-list-alphabetically',
-            
+
             'chapter-back',
             'chapter-next',
             'chapter-select',
             'chapter-select-main',
-            'create-def-list', # ?
+            'create-def-list',  # ?
         ]
         return good_list
+
     def _getDocstringForCommand(self, command_name):
         """get docstring for the given command."""
         func = self._get_commander_method(command_name)
@@ -2395,6 +2399,7 @@ class LeoBridgeIntegController:
         if p == self.commander.p:
             w_ap['selected'] = True
         return w_ap
+
     def getLanguageAtPosition(self, p):
         """
         Return the language in effect at position p.
@@ -2423,6 +2428,7 @@ class LeoBridgeIntegController:
                 'default': default,
             }
             return self.sendLeoBridgePackage("result", result)
+
 
 def main():
     '''python script for leo integration via leoBridge'''
