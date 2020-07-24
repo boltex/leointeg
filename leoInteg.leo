@@ -586,10 +586,7 @@
 <v t="felix.20200718223029.1"><vh>webview/apps/scss/main.scss</vh></v>
 <v t="felix.20200718223032.1"><vh>webview/apps/scss/popup.scss</vh></v>
 </v>
-<v t="felix.20200718220455.1"><vh>Syntaxes and Languages</vh>
-<v t="felix.20200718223103.1"><vh>language-configuration.json</vh></v>
-<v t="felix.20200718223123.1"><vh>syntaxes/leobody.tmLanguage.json</vh></v>
-</v>
+<v t="felix.20200718220455.1"><vh>Syntaxes and Languages</vh></v>
 <v t="felix.20200718223724.1"><vh>Build Settings</vh>
 <v t="felix.20200718223807.1"><vh>tsconfig.json</vh></v>
 <v t="felix.20200718223820.1"><vh>tsconfig.webviews.json</vh></v>
@@ -2244,7 +2241,29 @@ wsPort = 32125
     "extensions": [
       ""
     ],
-    "configuration": "./language-configuration.json"
+    "configuration": "./language-configurations/leobody.language-configuration.json"
+  },
+  {
+    "id": "leobody.python",
+    "aliases": [
+      "Leo Body Python",
+      "leobody.python"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.python.language-configuration.json"
+  },
+  {
+    "id": "leobody.typescript",
+    "aliases": [
+      "Leo Body Typescript",
+      "leobody.typescript"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.typescript.language-configuration.json"
   }
 ],
 </t>
@@ -2252,7 +2271,29 @@ wsPort = 32125
   {
     "language": "leobody",
     "scopeName": "source.leobody",
-    "path": "./syntaxes/leobody.tmLanguage.json"
+    "path": "./syntaxes/leobody.tmLanguage.json",
+    "embeddedLanguages": {
+      "meta.embedded.block.leobody.python": "leobody.python",
+      "meta.embedded.block.leobody.typescript": "leobody.typescript"
+    }
+  },
+  {
+    "language": "leobody.python",
+    "scopeName": "source.leobody.python",
+    "path": "./syntaxes/leobody.python.tmLanguage",
+    "embeddedLanguages": {
+      "meta.embedded.block.leobody": "leobody",
+      "meta.embedded.block.leobody.typescript": "leobody.typescript"
+    }
+  },
+  {
+    "language": "leobody.typescript",
+    "scopeName": "source.leobody.typescript",
+    "path": "./syntaxes/leobody.typescript.tmLanguage",
+    "embeddedLanguages": {
+      "meta.embedded.block.leobody": "leobody",
+      "meta.embedded.block.leobody.python": "leobody.python"
+    }
   }
 ],
 </t>
@@ -7938,8 +7979,6 @@ More information can be found on the repository's [Issues Page](https://github.c
 <t tx="felix.20200718223018.1"></t>
 <t tx="felix.20200718223029.1"></t>
 <t tx="felix.20200718223032.1"></t>
-<t tx="felix.20200718223103.1"></t>
-<t tx="felix.20200718223123.1"></t>
 <t tx="felix.20200718223724.1">to leonize</t>
 <t tx="felix.20200718223807.1"></t>
 <t tx="felix.20200718223820.1"></t>
@@ -9899,7 +9938,8 @@ export interface LeoBridgePackageOpenedInfo {
   "command": "leointeg.closeLeoFile",
   "when": "viewItem =~ /leoDocumentSelected/",
   "group": "inline@2"
-},</t>
+},
+</t>
 <t tx="felix.20200721003144.1">{
   "command": "leointeg.editHeadline",
   "when": "showEditOnNodes &amp;&amp; viewItem =~ /leoNode/",
@@ -9949,7 +9989,8 @@ export interface LeoBridgePackageOpenedInfo {
   "command": "leointeg.unmark",
   "when": "showMarkOnNodes &amp;&amp; viewItem =~ /leoNodeMarked/",
   "group": "inline@5"
-},</t>
+},
+</t>
 <t tx="felix.20200721003150.1">{
   "command": "leointeg.openAside",
   "when": "showOpenAside &amp;&amp; viewItem =~ /leoNode/",
@@ -10024,7 +10065,8 @@ export interface LeoBridgePackageOpenedInfo {
   "command": "leointeg.removeButton",
   "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoButtonNode/",
   "group": "leoButtonContext1@1"
-}</t>
+}
+</t>
 <t tx="felix.20200721003312.1">{
   "command": "leointeg.openLeoFile",
   "when": "view =~ /leoDocuments/ &amp;&amp; leoBridgeReady",
@@ -10034,7 +10076,8 @@ export interface LeoBridgePackageOpenedInfo {
   "command": "leointeg.newLeoFile",
   "when": "view =~ /leoDocuments/ &amp;&amp; leoBridgeReady",
   "group": "navigation@1"
-},</t>
+},
+</t>
 <t tx="felix.20200721003340.1">{
   "command": "leointeg.showSettingsPage",
   "when": "view =~ /leoIntegration/ &amp;&amp; !leoTreeOpened",
@@ -10084,7 +10127,8 @@ export interface LeoBridgePackageOpenedInfo {
   "command": "leointeg.contractAllFromOutline",
   "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened",
   "group": "navigation@6"
-}</t>
+}
+</t>
 <t tx="felix.20200721005448.1">/**
  * * Shows the recent Leo files list, choosing one will open it
  */
