@@ -1349,35 +1349,34 @@ wsPort = 32125
 </t>
 <t tx="felix.20191231214801.1">def executeScript(self, p_package):
     '''Select a node and run its script'''
-    if 'node' in p_package:
-        w_ap = p_package['node']
-        w_p = self.ap_to_p(w_ap)
-        if w_p:
-            self.commander.selectPosition(w_p)
-            w_script = ""
-            if 'text' in p_package:
-                w_script = str(p_package['text'])
-            if w_script and not w_script.isspace():
-                # * Mimic getScript !!
-                try:
-                    # Remove extra leading whitespace so the user may execute indented code.
-                    w_script = self.g.removeExtraLws(w_script, self.commander.tab_width)
-                    w_script = self.g.extractExecutableString(self.commander, w_p, w_script)
-                    w_validScript = self.g.composeScript(self.commander, w_p, w_script,
-                                                         forcePythonSentinels=True,
-                                                         useSentinels=True)
-                    self.commander.executeScript(script=w_validScript)
-                except Exception as e:
-                    self.g.trace('Error while executing script')
-                    print('Error while executing script')
-                    print(str(e))
-            else:
-                self.commander.executeScript()
-            return self.outputPNode(self.commander.p)  # in both cases, return selected node
-        else:
-            return self.outputError("Error in run no w_p node found")  # default empty
-    else:
+    c, g = self.commander, self.g
+    if not 'node' in p_package:
         return self.outputError("Error in run no param p_ap")
+    w_ap = p_package['node']
+    w_p = self.ap_to_p(w_ap)
+    if not w_p:
+        return self.outputError("Error in run no w_p node found")  # default empty
+    c.selectPosition(w_p)
+    w_script = ""
+    if 'text' in p_package:
+        w_script = str(p_package['text'])
+    if not w_script or w_script.isspace():
+        # Empty selection.
+        c.executeScript()
+        return self.outputPNode(self.commander.p)
+    # * Mimic getScript !!
+    try:
+        # Remove extra leading whitespace so the user may execute indented code.
+        w_script = g.removeExtraLws(w_script, c.tab_width)
+        w_script = g.extractExecutableString(c, w_p, w_script)
+        w_validScript = g.composeScript(
+            c, w_p, w_script, forcePythonSentinels=True, useSentinels=True)
+        c.executeScript(script=w_validScript)
+    except Exception as e:
+        g.trace('Error while executing script')
+        print('Error while executing script')
+        print(str(e))
+    return self.outputPNode(self.commander.p)
 
 </t>
 <t tx="felix.20200103204811.1">def redo(self, p_paramUnused):
