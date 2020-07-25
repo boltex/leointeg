@@ -299,6 +299,16 @@
           "meta.embedded.block.leobody": "leobody",
           "meta.embedded.block.leobody.python": "leobody.python"
         }
+      },
+      {
+        "path": "./syntaxes/injection.json",
+        "scopeName": "sql-string.injection",
+        "injectTo": [
+          "source.js"
+        ],
+        "embeddedLanguages": {
+          "meta.embedded.inline.sql": "sql"
+        }
       }
     ],
     "commands": [
