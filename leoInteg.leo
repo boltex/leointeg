@@ -209,6 +209,7 @@
 <v t="felix.20200722221454.3"><vh>pageDown</vh></v>
 <v t="felix.20200301235235.1"><vh>refreshFromDiskPNode</vh></v>
 <v t="felix.20191231214801.1"><vh>executeScript</vh></v>
+<v t="felix.20200725164340.1"><vh>getLanguage</vh></v>
 <v t="felix.20191126232434.15"><vh>getPNode</vh></v>
 <v t="felix.20191126232434.16"><vh>getChildren</vh></v>
 <v t="felix.20191126232434.17"><vh>getParent</vh></v>
@@ -230,7 +231,6 @@
 <v t="felix.20191126232434.28"><vh>test_round_trip_positions</vh></v>
 <v t="felix.20191126232434.30"><vh>ap_to_p</vh></v>
 <v t="felix.20191126232434.31"><vh>p_to_ap</vh></v>
-<v t="felix.20200722231611.1"><vh>getLanguageAtPosition</vh></v>
 </v>
 </v>
 <v t="felix.20191126232435.1"><vh>main</vh></v>
@@ -2293,6 +2293,16 @@ wsPort = 32125
       "meta.embedded.block.leobody": "leobody",
       "meta.embedded.block.leobody.python": "leobody.python"
     }
+  },
+  {
+    "path": "./syntaxes/injection.json",
+    "scopeName": "sql-string.injection",
+    "injectTo": [
+      "source.js"
+    ],
+    "embeddedLanguages": {
+      "meta.embedded.inline.sql": "sql"
+    }
   }
 ],
 </t>
@@ -4176,6 +4186,7 @@ public static LEOBRIDGE = {
     GET_PNODE: "getPNode",
     GET_PARENT: "getParent",
     GET_CHILDREN: "getChildren",
+    GET_LANGUAGE: "getLanguage",
     GET_SELECTED_NODE: "getSelectedNode",
     SET_SELECTED_NODE: "setSelectedNode",
     SET_BODY: "setBody",
@@ -8993,9 +9004,18 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
         this._bodyTextDocument = p_document;
 
         // TODO : Should get original @language effective value for specific 'top of document' body that is shown
-        if (this._bodyTextDocument.languageId !== Constants.BODY_LANGUAGES.default) {
-            vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, Constants.BODY_LANGUAGES.default);
+        if (this.lastSelectedNode) {
+            this._leoBridge.action(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
+                .then(p_result =&gt; {
+                    console.log('got language');
+                    if (this._bodyTextDocument) {
+                        vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, Constants.BODY_LANGUAGES.default);
+                    }
+                });
         }
+        // if (this._bodyTextDocument.languageId !== Constants.BODY_LANGUAGES.default) {
+        //     vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, Constants.BODY_LANGUAGES.default);
+        // }
 
         vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
             if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
@@ -10169,37 +10189,6 @@ public showRecentLeoFiles(): void {
     return self.outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200722231611.1">def getLanguageAtPosition(self, p):
-    """
-    Return the language in effect at position p.
-
-    This is always a lowercase language name, never None.
-    """
-    c, g = self.commander, self.g
-    aList = g.get_directives_dict_list(p)
-    d = g.scanAtCommentAndAtLanguageDirectives(aList)
-    #
-    # Félix, I'm not sure what the default, if any, should be.
-    #
-    if 1:  # Exactly as in Leo.
-        language = (
-            d and d.get('language') or
-            g.getLanguageFromAncestorAtFileNode(p) or
-            c.config.getString('target-language') or
-            'python'
-        )
-        return self.sendLeoBridgePackage("language", language.lower())
-    else:  # Return both an explicit language and a default language.
-        language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(p) or 'none'
-        default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
-        result = {
-            'language': language.lower(),
-            'default': default,
-        }
-        return self.sendLeoBridgePackage("result", result)
-
-
-</t>
 <t tx="felix.20200723204750.1"></t>
 <t tx="felix.20200723204838.1">def _bad_commands(self):
     """Return the list of Leo's command names that leoInteg should ignore."""
@@ -11237,6 +11226,35 @@ public showRecentLeoFiles(): void {
         'create-def-list',  # ?
     ]
     return good_list
+
+</t>
+<t tx="felix.20200725164340.1">def getLanguage(self, p):
+    """
+    Finds the language in effect at top of body for position p.
+
+    Return type is lowercase 'language' non-empty string.
+    """
+    c, g = self.commander, self.g
+    aList = g.get_directives_dict_list(p)
+    d = g.scanAtCommentAndAtLanguageDirectives(aList)
+    # TODO : Remove one of those branch after finishing color-syntax features
+    if 1:  # Exactly as in Leo.
+        language = (
+            d and d.get('language') or
+            g.getLanguageFromAncestorAtFileNode(p) or
+            c.config.getString('target-language') or
+            'plain'
+        )
+        return self.sendLeoBridgePackage("language", language.lower())
+    else:  # Return both an explicit language and a default language.
+        language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(p) or 'none'
+        default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
+        result = {
+            'language': language.lower(),
+            'default': default,
+        }
+        return self.sendLeoBridgePackage("result", result)
+
 
 </t>
 </tnodes>

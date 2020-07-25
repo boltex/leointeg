@@ -1109,9 +1109,18 @@ export class LeoIntegration {
             this._bodyTextDocument = p_document;
 
             // TODO : Should get original @language effective value for specific 'top of document' body that is shown
-            if (this._bodyTextDocument.languageId !== Constants.BODY_LANGUAGES.default) {
-                vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, Constants.BODY_LANGUAGES.default);
+            if (this.lastSelectedNode) {
+                this._leoBridge.action(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
+                    .then(p_result => {
+                        console.log('got language', p_result.language);
+                        if (this._bodyTextDocument) {
+                            vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, Constants.BODY_LANGUAGES.default);
+                        }
+                    });
             }
+            // if (this._bodyTextDocument.languageId !== Constants.BODY_LANGUAGES.default) {
+            //     vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, Constants.BODY_LANGUAGES.default);
+            // }
 
             vscode.window.visibleTextEditors.forEach(p_textEditor => {
                 if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {

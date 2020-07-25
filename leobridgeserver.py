@@ -2157,6 +2157,34 @@ class LeoBridgeIntegController:
             print(str(e))
         return self.outputPNode(self.commander.p)
 
+    def getLanguage(self, p):
+        """
+        Finds the language in effect at top of body for position p.
+
+        Return type is lowercase 'language' non-empty string.
+        """
+        c, g = self.commander, self.g
+        aList = g.get_directives_dict_list(p)
+        d = g.scanAtCommentAndAtLanguageDirectives(aList)
+        # TODO : Remove one of those branch after finishing color-syntax features
+        if 1:  # Exactly as in Leo.
+            language = (
+                d and d.get('language') or
+                g.getLanguageFromAncestorAtFileNode(p) or
+                c.config.getString('target-language') or
+                'plain'
+            )
+            return self.sendLeoBridgePackage("language", language.lower())
+        else:  # Return both an explicit language and a default language.
+            language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(p) or 'none'
+            default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
+            result = {
+                'language': language.lower(),
+                'default': default,
+            }
+            return self.sendLeoBridgePackage("result", result)
+
+
     def getPNode(self, p_ap):
         '''EMIT OUT a node, don't select it'''
         if p_ap:
@@ -2398,36 +2426,6 @@ class LeoBridgeIntegController:
         if p == self.commander.p:
             w_ap['selected'] = True
         return w_ap
-
-    def getLanguageAtPosition(self, p):
-        """
-        Return the language in effect at position p.
-
-        This is always a lowercase language name, never None.
-        """
-        c, g = self.commander, self.g
-        aList = g.get_directives_dict_list(p)
-        d = g.scanAtCommentAndAtLanguageDirectives(aList)
-        #
-        # Félix, I'm not sure what the default, if any, should be.
-        #
-        if 1:  # Exactly as in Leo.
-            language = (
-                d and d.get('language') or
-                g.getLanguageFromAncestorAtFileNode(p) or
-                c.config.getString('target-language') or
-                'python'
-            )
-            return self.sendLeoBridgePackage("language", language.lower())
-        else:  # Return both an explicit language and a default language.
-            language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(p) or 'none'
-            default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
-            result = {
-                'language': language.lower(),
-                'default': default,
-            }
-            return self.sendLeoBridgePackage("result", result)
-
 
 def main():
     '''python script for leo integration via leoBridge'''

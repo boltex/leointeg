@@ -277,6 +277,7 @@ export class Constants {
         GET_PNODE: "getPNode",
         GET_PARENT: "getParent",
         GET_CHILDREN: "getChildren",
+        GET_LANGUAGE: "getLanguage",
         GET_SELECTED_NODE: "getSelectedNode",
         SET_SELECTED_NODE: "setSelectedNode",
         SET_BODY: "setBody",
