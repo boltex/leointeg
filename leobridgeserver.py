@@ -2156,6 +2156,7 @@ class LeoBridgeIntegController:
             print('Error while executing script')
             print(str(e))
         return self.outputPNode(self.commander.p)
+
     def getPNode(self, p_ap):
         '''EMIT OUT a node, don't select it'''
         if p_ap:
