@@ -51,7 +51,9 @@ export class Constants {
      * TODO : #56 @boltex Add more languages strings for when directives such as @language are used throughout body panes
      */
     public static BODY_LANGUAGES = {
-        default: "leobody"
+        plain: "leobody.plain",
+        python: "leobody.python",
+        typescript: "leobody.typescript",
     };
 
     /**
@@ -331,7 +333,7 @@ export class Constants {
         SORT_SIBLINGS: "sortSiblingsPNode",
         UNDO: "undo",
         REDO: "redo",
-        EXECUTE_SCRIPT: "executeScript",
+        EXECUTE_SCRIPT: "executeScriptPackage",
         GET_STATES: "getStates",
         HOIST_PNODE: "hoist",
         DEHOIST: "dehoist",

@@ -1114,7 +1114,10 @@ export class LeoIntegration {
                     .then(p_result => {
                         console.log('got language', p_result.language);
                         if (this._bodyTextDocument) {
-                            vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, Constants.BODY_LANGUAGES.default);
+                            vscode.languages.setTextDocumentLanguage(
+                                this._bodyTextDocument,
+                                Constants.BODY_LANGUAGES.plain
+                            );
                         }
                     });
             }

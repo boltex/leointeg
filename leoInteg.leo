@@ -208,7 +208,7 @@
 <v t="felix.20200722221454.2"><vh>pageUp</vh></v>
 <v t="felix.20200722221454.3"><vh>pageDown</vh></v>
 <v t="felix.20200301235235.1"><vh>refreshFromDiskPNode</vh></v>
-<v t="felix.20191231214801.1"><vh>executeScript</vh></v>
+<v t="felix.20191231214801.1"><vh>executeScriptPackage</vh></v>
 <v t="felix.20200725164340.1"><vh>getLanguage</vh></v>
 <v t="felix.20191126232434.15"><vh>getPNode</vh></v>
 <v t="felix.20191126232434.16"><vh>getChildren</vh></v>
@@ -1347,15 +1347,15 @@ wsPort = 32125
     return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
-<t tx="felix.20191231214801.1">def executeScript(self, p_package):
+<t tx="felix.20191231214801.1">def executeScriptPackage(self, p_package):
     '''Select a node and run its script'''
     c, g = self.commander, self.g
     if not 'node' in p_package:
-        return self.outputError("Error in run no param p_ap")
+        return self.outputError("Error in executeScript no param node")
     w_ap = p_package['node']
     w_p = self.ap_to_p(w_ap)
     if not w_p:
-        return self.outputError("Error in run no w_p node found")  # default empty
+        return self.outputError("Error in executeScript no w_p node found")
     c.selectPosition(w_p)
     w_script = ""
     if 'text' in p_package:
@@ -2232,15 +2232,15 @@ wsPort = 32125
 </t>
 <t tx="felix.20200717222938.1">"languages": [
   {
-    "id": "leobody",
+    "id": "leobody.plain",
     "aliases": [
-      "Leo Body",
+      "Leo Body Plain",
       "leobody"
     ],
     "extensions": [
       ""
     ],
-    "configuration": "./language-configurations/leobody.language-configuration.json"
+    "configuration": "./language-configurations/leobody.plain.language-configuration.json"
   },
   {
     "id": "leobody.python",
@@ -2268,40 +2268,31 @@ wsPort = 32125
 </t>
 <t tx="felix.20200717222946.1">"grammars": [
   {
-    "language": "leobody",
-    "scopeName": "source.leobody",
-    "path": "./syntaxes/leobody.tmLanguage.json",
-    "embeddedLanguages": {
-      "meta.embedded.block.leobody.python": "leobody.python",
-      "meta.embedded.block.leobody.typescript": "leobody.typescript"
-    }
+    "language": "leobody.plain",
+    "scopeName": "source.leobody.plain",
+    "path": "./syntaxes/leobody.plain.tmLanguage.json"
   },
   {
     "language": "leobody.python",
     "scopeName": "source.leobody.python",
-    "path": "./syntaxes/leobody.python.tmLanguage",
-    "embeddedLanguages": {
-      "meta.embedded.block.leobody": "leobody",
-      "meta.embedded.block.leobody.typescript": "leobody.typescript"
-    }
+    "path": "./syntaxes/leobody.python.tmLanguage"
   },
   {
     "language": "leobody.typescript",
     "scopeName": "source.leobody.typescript",
-    "path": "./syntaxes/leobody.typescript.tmLanguage",
-    "embeddedLanguages": {
-      "meta.embedded.block.leobody": "leobody",
-      "meta.embedded.block.leobody.python": "leobody.python"
-    }
+    "path": "./syntaxes/leobody.typescript.tmLanguage"
   },
   {
-    "path": "./syntaxes/injection.json",
-    "scopeName": "sql-string.injection",
     "injectTo": [
-      "source.js"
+      "source.leobody.plain",
+      "source.leobody.python",
+      "source.leobody.typescript"
     ],
+    "scopeName": "source.leobody",
+    "path": "./syntaxes/leobody.tmLanguage",
     "embeddedLanguages": {
-      "meta.embedded.inline.sql": "sql"
+      "meta.embedded.block.leobody.python": "leobody.python",
+      "meta.embedded.block.leobody.typescript": "leobody.typescript"
     }
   }
 ],
@@ -4240,7 +4231,7 @@ public static LEOBRIDGE = {
     SORT_SIBLINGS: "sortSiblingsPNode",
     UNDO: "undo",
     REDO: "redo",
-    EXECUTE_SCRIPT: "executeScript",
+    EXECUTE_SCRIPT: "executeScriptPackage",
     GET_STATES: "getStates",
     HOIST_PNODE: "hoist",
     DEHOIST: "dehoist",
@@ -7169,6 +7160,7 @@ export interface LeoBridgePackage {
     allGnx?: string[];
     bodyLength?: number;
     bodyData?: string;
+    language?: string;
     node?: ArchivedPosition;
     nodes?: ArchivedPosition[];
     states?: LeoPackageStates;
@@ -9007,7 +8999,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
         if (this.lastSelectedNode) {
             this._leoBridge.action(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
                 .then(p_result =&gt; {
-                    console.log('got language');
+                    console.log('got language', p_result.language);
                     if (this._bodyTextDocument) {
                         vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, Constants.BODY_LANGUAGES.default);
                     }
@@ -11228,26 +11220,32 @@ public showRecentLeoFiles(): void {
     return good_list
 
 </t>
-<t tx="felix.20200725164340.1">def getLanguage(self, p):
+<t tx="felix.20200725164340.1">def getLanguage(self, p_ap):
     """
     Finds the language in effect at top of body for position p.
 
     Return type is lowercase 'language' non-empty string.
     """
+    if not p_ap:
+        return self.outputError("Error in getLanguage, no param p_ap")        
+    w_p = self.ap_to_p(p_ap)
+    if not w_p:
+        return self.outputError("Error in getLanguage no w_p node found")
+    
     c, g = self.commander, self.g
-    aList = g.get_directives_dict_list(p)
+    aList = g.get_directives_dict_list(w_p)
     d = g.scanAtCommentAndAtLanguageDirectives(aList)
     # TODO : Remove one of those branch after finishing color-syntax features
     if 1:  # Exactly as in Leo.
         language = (
             d and d.get('language') or
-            g.getLanguageFromAncestorAtFileNode(p) or
+            g.getLanguageFromAncestorAtFileNode(w_p) or
             c.config.getString('target-language') or
             'plain'
         )
         return self.sendLeoBridgePackage("language", language.lower())
     else:  # Return both an explicit language and a default language.
-        language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(p) or 'none'
+        language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(w_p) or 'none'
         default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
         result = {
             'language': language.lower(),
