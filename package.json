@@ -294,7 +294,7 @@
           "source.leobody.python",
           "source.leobody.typescript"
         ],
-        "scopeName": "source.leobody",
+        "scopeName": "leo.injection",
         "path": "./syntaxes/leobody.tmLanguage.json",
         "embeddedLanguages": {
           "meta.embedded.block.leobody.python": "leobody.python",

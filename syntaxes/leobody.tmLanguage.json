@@ -1,6 +1,7 @@
 {
 	"name": "Leo Body",
-	"scopeName": "source.leobody",
+	"scopeName": "leo.injection",
+	"injectionSelector": "L:source.leobody.plain",
 	"patterns": [
 		{
 			"include": "#leo-comments"

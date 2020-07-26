@@ -2275,12 +2275,12 @@ wsPort = 32125
   {
     "language": "leobody.python",
     "scopeName": "source.leobody.python",
-    "path": "./syntaxes/leobody.python.tmLanguage"
+    "path": "./syntaxes/leobody.python.tmLanguage.json"
   },
   {
     "language": "leobody.typescript",
     "scopeName": "source.leobody.typescript",
-    "path": "./syntaxes/leobody.typescript.tmLanguage"
+    "path": "./syntaxes/leobody.typescript.tmLanguage.json"
   },
   {
     "injectTo": [
@@ -2288,8 +2288,8 @@ wsPort = 32125
       "source.leobody.python",
       "source.leobody.typescript"
     ],
-    "scopeName": "source.leobody",
-    "path": "./syntaxes/leobody.tmLanguage",
+    "scopeName": "leo.injection",
+    "path": "./syntaxes/leobody.tmLanguage.json",
     "embeddedLanguages": {
       "meta.embedded.block.leobody.python": "leobody.python",
       "meta.embedded.block.leobody.typescript": "leobody.typescript"
@@ -4448,7 +4448,9 @@ public static STATES_DEBOUNCE_DELAY: number = 200; // a fifth of a second after 
  * TODO : #56 @boltex Add more languages strings for when directives such as @language are used throughout body panes
  */
 public static BODY_LANGUAGES = {
-    default: "leobody"
+    plain: "leobody.plain",
+    python: "leobody.python",
+    typescript: "leobody.typescript",
 };
 
 </t>
@@ -9001,7 +9003,11 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                 .then(p_result =&gt; {
                     console.log('got language', p_result.language);
                     if (this._bodyTextDocument) {
-                        vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, Constants.BODY_LANGUAGES.default);
+                        vscode.languages.setTextDocumentLanguage(
+                            this._bodyTextDocument,
+                            "leobody." + p_result.language
+                            // Constants.BODY_LANGUAGES.plain
+                        );
                     }
                 });
         }
