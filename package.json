@@ -239,15 +239,15 @@
     },
     "languages": [
       {
-        "id": "leobody",
+        "id": "leobody.plain",
         "aliases": [
-          "Leo Body",
+          "Leo Body Plain",
           "leobody"
         ],
         "extensions": [
           ""
         ],
-        "configuration": "./language-configurations/leobody.language-configuration.json"
+        "configuration": "./language-configurations/leobody.plain.language-configuration.json"
       },
       {
         "id": "leobody.python",
@@ -274,40 +274,31 @@
     ],
     "grammars": [
       {
-        "language": "leobody",
-        "scopeName": "source.leobody",
-        "path": "./syntaxes/leobody.tmLanguage.json",
-        "embeddedLanguages": {
-          "meta.embedded.block.leobody.python": "leobody.python",
-          "meta.embedded.block.leobody.typescript": "leobody.typescript"
-        }
+        "language": "leobody.plain",
+        "scopeName": "source.leobody.plain",
+        "path": "./syntaxes/leobody.plain.tmLanguage.json"
       },
       {
         "language": "leobody.python",
         "scopeName": "source.leobody.python",
-        "path": "./syntaxes/leobody.python.tmLanguage",
-        "embeddedLanguages": {
-          "meta.embedded.block.leobody": "leobody",
-          "meta.embedded.block.leobody.typescript": "leobody.typescript"
-        }
+        "path": "./syntaxes/leobody.python.tmLanguage"
       },
       {
         "language": "leobody.typescript",
         "scopeName": "source.leobody.typescript",
-        "path": "./syntaxes/leobody.typescript.tmLanguage",
-        "embeddedLanguages": {
-          "meta.embedded.block.leobody": "leobody",
-          "meta.embedded.block.leobody.python": "leobody.python"
-        }
+        "path": "./syntaxes/leobody.typescript.tmLanguage"
       },
       {
-        "path": "./syntaxes/injection.json",
-        "scopeName": "sql-string.injection",
         "injectTo": [
-          "source.js"
+          "source.leobody.plain",
+          "source.leobody.python",
+          "source.leobody.typescript"
         ],
+        "scopeName": "source.leobody",
+        "path": "./syntaxes/leobody.tmLanguage",
         "embeddedLanguages": {
-          "meta.embedded.inline.sql": "sql"
+          "meta.embedded.block.leobody.python": "leobody.python",
+          "meta.embedded.block.leobody.typescript": "leobody.typescript"
         }
       }
     ],

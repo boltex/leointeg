@@ -1,68 +1,24 @@
 {
-	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "Leo Body",
+	"scopeName": "source.leobody",
 	"patterns": [
 		{
-			"include": "#leo"
+			"include": "#leo-comments"
+		},
+		{
+			"include": "#leo-raw"
+		},
+		{
+			"include": "#leo-sectionref"
+		},
+		{
+			"include": "#leo-keywords"
 		},
 		{
 			"include": "#leo-languages"
-		},
-		{
-			"include": "#strings"
 		}
 	],
 	"repository": {
-		"leo": {
-			"patterns": [
-				{
-					"include": "#leo-comments"
-				},
-				{
-					"include": "#leo-raw"
-				},
-				{
-					"include": "#leo-sectionref"
-				},
-				{
-					"include": "#leo-keywords"
-				}
-			]
-		},
-		"leo-languages": {
-			"patterns": [
-				{
-					"begin": "^(@language python)($|\\s+)",
-					"end": "^(@language plain)($|\\s+)",
-					"beginCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"endCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"name": "meta.embedded.block.leobody.python"
-				},
-				{
-					"begin": "^(@language typescript)($|\\s+)",
-					"end": "^(@language plain)($|\\s+)",
-					"beginCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"endCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"name": "meta.embedded.block.leobody.typescript"
-				}
-			]
-		},
 		"leo-comments": {
 			"patterns": [
 				{
@@ -176,7 +132,40 @@
 					]
 				}
 			]
+		},
+		"leo-languages": {
+			"patterns": [
+				{
+					"begin": "^(@language python)($|\\s+)",
+					"end": "^(@language)($|\\s+)",
+					"beginCaptures": {
+						"0": {
+							"name": "keyword"
+						}
+					},
+					"endCaptures": {
+						"0": {
+							"name": "keyword"
+						}
+					},
+					"name": "meta.embedded.block.leobody.python"
+				},
+				{
+					"begin": "^(@language typescript)($|\\s+)",
+					"end": "^(@language)($|\\s+)",
+					"beginCaptures": {
+						"0": {
+							"name": "keyword"
+						}
+					},
+					"endCaptures": {
+						"0": {
+							"name": "keyword"
+						}
+					},
+					"name": "meta.embedded.block.leobody.typescript"
+				}
+			]
 		}
-	},
-	"scopeName": "source.leobody"
+	}
 }
