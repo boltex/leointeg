@@ -2263,6 +2263,17 @@ wsPort = 32125
       ""
     ],
     "configuration": "./language-configurations/leobody.typescript.language-configuration.json"
+  },
+  {
+    "id": "leobody.javascript",
+    "aliases": [
+      "Leo Body Javascript",
+      "leobody.javascript"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.typescript.language-configuration.json"
   }
 ],
 </t>
