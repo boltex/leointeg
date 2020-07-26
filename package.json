@@ -289,14 +289,23 @@
         "path": "./syntaxes/leobody.typescript.tmLanguage.json"
       },
       {
+        "language": "leobody.javascript",
+        "scopeName": "source.leobody.typescript",
+        "path": "./syntaxes/leobody.typescript.tmLanguage.json"
+      },
+      {
         "injectTo": [
           "source.leobody.plain",
           "source.leobody.python",
           "source.leobody.typescript"
         ],
-        "scopeName": "leo.injection",
         "path": "./syntaxes/leobody.tmLanguage.json",
-        "embeddedLanguages": {
+        "scopeName": "leo.injection",
+        "//tokenTypes": {
+          "meta.embedded.block.leobody.python": "other",
+          "meta.embedded.block.leobody.typescript": "other"
+        },
+        "//embeddedLanguages": {
           "meta.embedded.block.leobody.python": "leobody.python",
           "meta.embedded.block.leobody.typescript": "leobody.typescript"
         }

@@ -1,7 +1,7 @@
 {
 	"name": "Leo Body",
 	"scopeName": "leo.injection",
-	"injectionSelector": "L:source.leobody.plain",
+	"injectionSelector": "L:source.leobody",
 	"patterns": [
 		{
 			"include": "#leo-comments"
@@ -83,7 +83,7 @@
 					"name": "keyword"
 				},
 				{
-					"match": "^(@language)\\s+\\b(batch|c|cplusplus|csharp|css|fortran|haskell|html|java|javascript|latex|lua|makefile|matlab|pascal|perl|php|ruby)\\b",
+					"match": "^(@language)\\s+\\b(batch|c|cplusplus|csharp|css|fortran|haskell|html|java|javascript|latex|lua|makefile|matlab|pascal|perl|php|python|ruby|typescript)\\b",
 					"name": "keyword"
 				},
 				{
@@ -135,7 +135,8 @@
 			]
 		},
 		"leo-languages": {
-			"patterns": [
+			"patterns": [],
+			"//patterns": [
 				{
 					"begin": "^(@language python)($|\\s+)",
 					"end": "^(@language)($|\\s+)",
