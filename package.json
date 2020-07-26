@@ -281,12 +281,12 @@
       {
         "language": "leobody.python",
         "scopeName": "source.leobody.python",
-        "path": "./syntaxes/leobody.python.tmLanguage"
+        "path": "./syntaxes/leobody.python.tmLanguage.json"
       },
       {
         "language": "leobody.typescript",
         "scopeName": "source.leobody.typescript",
-        "path": "./syntaxes/leobody.typescript.tmLanguage"
+        "path": "./syntaxes/leobody.typescript.tmLanguage.json"
       },
       {
         "injectTo": [
@@ -295,7 +295,7 @@
           "source.leobody.typescript"
         ],
         "scopeName": "source.leobody",
-        "path": "./syntaxes/leobody.tmLanguage",
+        "path": "./syntaxes/leobody.tmLanguage.json",
         "embeddedLanguages": {
           "meta.embedded.block.leobody.python": "leobody.python",
           "meta.embedded.block.leobody.typescript": "leobody.typescript"
