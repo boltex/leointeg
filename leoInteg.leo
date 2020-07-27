@@ -19,6 +19,7 @@
 <v t="felix.20200717222918.1"><vh>views</vh></v>
 <v t="felix.20200717222938.1"><vh>languages</vh></v>
 <v t="felix.20200717222946.1"><vh>grammars</vh></v>
+<v t="felix.20200727012550.1"><vh>snippets</vh></v>
 <v t="felix.20200717223012.1"><vh>commands</vh>
 <v t="felix.20200717224224.1"><vh>Tests</vh></v>
 <v t="felix.20200717224216.1"><vh>Show Webviews</vh></v>
@@ -11420,6 +11421,37 @@ public showRecentLeoFiles(): void {
         return self.sendLeoBridgePackage("result", result)
 
 
+</t>
+<t tx="felix.20200727012550.1">"snippets": [
+  {
+    "language": "leobody.c",
+    "path": "./snippets/c.code-snippets"
+  },
+  {
+    "language": "leobody.cpp",
+    "path": "./snippets/cpp.code-snippets"
+  },
+  {
+    "language": "leobody.javascript",
+    "path": "./snippets/javascript.code-snippets"
+  },
+  {
+    "language": "leobody.typescript",
+    "path": "./snippets/typescript.code-snippets"
+  },
+  {
+    "language": "leobody.java",
+    "path": "./snippets/java.code-snippets"
+  },
+  {
+    "language": "leobody.php",
+    "path": "./snippets/php.code-snippets"
+  },
+  {
+    "language": "leobody.markdown",
+    "path": "./snippets/markdown.code-snippets"
+  }
+],
 </t>
 </tnodes>
 </leo_file>
