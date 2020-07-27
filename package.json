@@ -463,6 +463,36 @@
         }
       }
     ],
+    "snippets": [
+      {
+        "language": "leobody.c",
+        "path": "./snippets/c.code-snippets"
+      },
+      {
+        "language": "leobody.cpp",
+        "path": "./snippets/cpp.code-snippets"
+      },
+      {
+        "language": "leobody.javascript",
+        "path": "./snippets/javascript.code-snippets"
+      },
+      {
+        "language": "leobody.typescript",
+        "path": "./snippets/typescript.code-snippets"
+      },
+      {
+        "language": "leobody.java",
+        "path": "./snippets/java.code-snippets"
+      },
+      {
+        "language": "leobody.php",
+        "path": "./snippets/php.code-snippets"
+      },
+      {
+        "language": "leobody.markdown",
+        "path": "./snippets/markdown.code-snippets"
+      }
+    ],
     "commands": [
       {
         "command": "leointeg.test",
