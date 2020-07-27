@@ -47,14 +47,6 @@ export class Constants {
     public static STATES_DEBOUNCE_DELAY: number = 200; // a fifth of a second after command stack completion
 
     /**
-     * * Strings used as language id (default is "leobody")
-     * TODO : #56 @boltex Add more languages strings for when directives such as @language are used throughout body panes
-     */
-    public static BODY_LANGUAGES = {
-        default: "leobody"
-    };
-
-    /**
      * * Strings used in the workbench interface panels (not for messages or dialogs)
      */
     public static GUI = {
@@ -277,6 +269,7 @@ export class Constants {
         GET_PNODE: "getPNode",
         GET_PARENT: "getParent",
         GET_CHILDREN: "getChildren",
+        GET_LANGUAGE: "getLanguage",
         GET_SELECTED_NODE: "getSelectedNode",
         SET_SELECTED_NODE: "setSelectedNode",
         SET_BODY: "setBody",
@@ -330,7 +323,7 @@ export class Constants {
         SORT_SIBLINGS: "sortSiblingsPNode",
         UNDO: "undo",
         REDO: "redo",
-        EXECUTE_SCRIPT: "executeScript",
+        EXECUTE_SCRIPT: "executeScriptPackage",
         GET_STATES: "getStates",
         HOIST_PNODE: "hoist",
         DEHOIST: "dehoist",

@@ -1108,9 +1108,31 @@ export class LeoIntegration {
 
             this._bodyTextDocument = p_document;
 
-            // TODO : Should get original @language effective value for specific 'top of document' body that is shown
-            if (this._bodyTextDocument.languageId !== Constants.BODY_LANGUAGES.default) {
-                vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, Constants.BODY_LANGUAGES.default);
+            if (this.lastSelectedNode) {
+                this._leoBridge.action(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
+                    .then(p_result => {
+                        let w_language = p_result.language;
+                        // Exceptions
+                        switch (p_result.language) {
+                            case "cplusplus":
+                                w_language = "cpp";
+                                break;
+
+                            case "md":
+                                w_language = "markdown";
+                                break;
+                        }
+                        // Still the same ?
+                        if (
+                            this._bodyTextDocument && this.lastSelectedNode &&
+                            utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
+                        ) {
+                            vscode.languages.setTextDocumentLanguage(
+                                this._bodyTextDocument,
+                                "leobody." + w_language
+                            );
+                        }
+                    });
             }
 
             vscode.window.visibleTextEditors.forEach(p_textEditor => {

@@ -208,7 +208,8 @@
 <v t="felix.20200722221454.2"><vh>pageUp</vh></v>
 <v t="felix.20200722221454.3"><vh>pageDown</vh></v>
 <v t="felix.20200301235235.1"><vh>refreshFromDiskPNode</vh></v>
-<v t="felix.20191231214801.1"><vh>executeScript</vh></v>
+<v t="felix.20191231214801.1"><vh>executeScriptPackage</vh></v>
+<v t="felix.20200725164340.1"><vh>getLanguage</vh></v>
 <v t="felix.20191126232434.15"><vh>getPNode</vh></v>
 <v t="felix.20191126232434.16"><vh>getChildren</vh></v>
 <v t="felix.20191126232434.17"><vh>getParent</vh></v>
@@ -230,7 +231,6 @@
 <v t="felix.20191126232434.28"><vh>test_round_trip_positions</vh></v>
 <v t="felix.20191126232434.30"><vh>ap_to_p</vh></v>
 <v t="felix.20191126232434.31"><vh>p_to_ap</vh></v>
-<v t="felix.20200722231611.1"><vh>getLanguageAtPosition</vh></v>
 </v>
 </v>
 <v t="felix.20191126232435.1"><vh>main</vh></v>
@@ -586,10 +586,7 @@
 <v t="felix.20200718223029.1"><vh>webview/apps/scss/main.scss</vh></v>
 <v t="felix.20200718223032.1"><vh>webview/apps/scss/popup.scss</vh></v>
 </v>
-<v t="felix.20200718220455.1"><vh>Syntaxes and Languages</vh>
-<v t="felix.20200718223103.1"><vh>language-configuration.json</vh></v>
-<v t="felix.20200718223123.1"><vh>syntaxes/leobody.tmLanguage.json</vh></v>
-</v>
+<v t="felix.20200718220455.1"><vh>Syntaxes and Languages</vh></v>
 <v t="felix.20200718223724.1"><vh>Build Settings</vh>
 <v t="felix.20200718223807.1"><vh>tsconfig.json</vh></v>
 <v t="felix.20200718223820.1"><vh>tsconfig.webviews.json</vh></v>
@@ -1350,15 +1347,15 @@ wsPort = 32125
     return self.outputPNode(self.commander.p)  # return selected node when done
 
 </t>
-<t tx="felix.20191231214801.1">def executeScript(self, p_package):
+<t tx="felix.20191231214801.1">def executeScriptPackage(self, p_package):
     '''Select a node and run its script'''
     c, g = self.commander, self.g
     if not 'node' in p_package:
-        return self.outputError("Error in run no param p_ap")
+        return self.outputError("Error in executeScript no param node")
     w_ap = p_package['node']
     w_p = self.ap_to_p(w_ap)
     if not w_p:
-        return self.outputError("Error in run no w_p node found")  # default empty
+        return self.outputError("Error in executeScript no w_p node found")
     c.selectPosition(w_p)
     w_script = ""
     if 'text' in p_package:
@@ -2235,23 +2232,229 @@ wsPort = 32125
 </t>
 <t tx="felix.20200717222938.1">"languages": [
   {
-    "id": "leobody",
+    "id": "leobody.plain",
     "aliases": [
-      "Leo Body",
+      "Leo Body Plain",
       "leobody"
     ],
     "extensions": [
       ""
     ],
-    "configuration": "./language-configuration.json"
+    "configuration": "./language-configurations/leobody.plain.language-configuration.json"
+  },
+  {
+    "id": "leobody.python",
+    "aliases": [
+      "Leo Body Python",
+      "leobody.python"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.python.language-configuration.json"
+  },
+  {
+    "id": "leobody.typescript",
+    "aliases": [
+      "Leo Body Typescript",
+      "leobody.typescript"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.typescript.language-configuration.json"
+  },
+  {
+    "id": "leobody.javascript",
+    "aliases": [
+      "Leo Body Javascript",
+      "leobody.javascript"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.javascript.language-configuration.json"
+  },
+  {
+    "id": "leobody.c",
+    "aliases": [
+      "Leo Body c",
+      "leobody.c"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.c.language-configuration.json"
+  },
+  {
+    "id": "leobody.cpp",
+    "aliases": [
+      "Leo Body cpp",
+      "leobody.cpp"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.cpp.language-configuration.json"
+  },
+  {
+    "id": "leobody.css",
+    "aliases": [
+      "Leo Body css",
+      "leobody.css"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.css.language-configuration.json"
+  },
+  {
+    "id": "leobody.html",
+    "aliases": [
+      "Leo Body html",
+      "leobody.html"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.html.language-configuration.json"
+  },
+  {
+    "id": "leobody.java",
+    "aliases": [
+      "Leo Body java",
+      "leobody.java"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.java.language-configuration.json"
+  },
+  {
+    "id": "leobody.json",
+    "aliases": [
+      "Leo Body Json",
+      "leobody.json"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.json.language-configuration.json"
+  },
+  {
+    "id": "leobody.markdown",
+    "aliases": [
+      "Leo Body Markdown",
+      "leobody.markdown"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.markdown.language-configuration.json"
+  },
+  {
+    "id": "leobody.php",
+    "aliases": [
+      "Leo Body php",
+      "leobody.php"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.php.language-configuration.json"
   }
 ],
 </t>
 <t tx="felix.20200717222946.1">"grammars": [
   {
-    "language": "leobody",
-    "scopeName": "source.leobody",
-    "path": "./syntaxes/leobody.tmLanguage.json"
+    "language": "leobody.plain",
+    "scopeName": "source.leobody.plain",
+    "path": "./syntaxes/leobody.plain.tmLanguage.json"
+  },
+  {
+    "language": "leobody.python",
+    "scopeName": "source.leobody.python",
+    "path": "./syntaxes/leobody.python.tmLanguage.json"
+  },
+  {
+    "language": "leobody.typescript",
+    "scopeName": "source.leobody.typescript",
+    "path": "./syntaxes/leobody.typescript.tmLanguage.json"
+  },
+  {
+    "language": "leobody.javascript",
+    "scopeName": "source.leobody.javascript",
+    "path": "./syntaxes/leobody.javascript.tmLanguage.json"
+  },
+  {
+    "language": "leobody.c",
+    "scopeName": "source.leobody.c",
+    "path": "./syntaxes/leobody.c.tmLanguage.json"
+  },
+  {
+    "language": "leobody.cpp",
+    "scopeName": "source.leobody.cpp",
+    "path": "./syntaxes/leobody.cpp.tmLanguage.json"
+  },
+  {
+    "language": "leobody.css",
+    "scopeName": "source.leobody.css",
+    "path": "./syntaxes/leobody.css.tmLanguage.json"
+  },
+  {
+    "language": "leobody.html",
+    "scopeName": "source.leobody.html",
+    "path": "./syntaxes/leobody.html.tmLanguage.json"
+  },
+  {
+    "language": "leobody.java",
+    "scopeName": "source.leobody.java",
+    "path": "./syntaxes/leobody.java.tmLanguage.json"
+  },
+  {
+    "language": "leobody.json",
+    "scopeName": "source.leobody.json",
+    "path": "./syntaxes/leobody.json.tmLanguage.json"
+  },
+  {
+    "language": "leobody.markdown",
+    "scopeName": "source.leobody.markdown",
+    "path": "./syntaxes/leobody.markdown.tmLanguage.json"
+  },
+  {
+    "language": "leobody.php",
+    "scopeName": "source.leobody.php",
+    "path": "./syntaxes/leobody.php.tmLanguage.json"
+  },
+  {
+    "//TODO 1": "MAKE PHP/HTML/CSS/JS EMBEDDED FUNCTIONALITY WORK TOO",
+    "injectTo": [
+      "source.leobody.plain",
+      "source.leobody.python",
+      "source.leobody.typescript",
+      "source.leobody.javascript",
+      "source.leobody.c",
+      "source.leobody.cpp",
+      "source.leobody.css",
+      "source.leobody.html",
+      "source.leobody.java",
+      "source.leobody.json",
+      "source.leobody.markdown",
+      "source.leobody.php"
+    ],
+    "path": "./syntaxes/leobody.tmLanguage.json",
+    "scopeName": "leo.injection",
+    "//TODO 2": "MAKE EMBEDDED LANGUAGE SWITCHES WORK",
+    "//tokenTypes": {
+      "//meta.embedded.block.leobody.python": "other",
+      "//meta.embedded.block.leobody.typescript": "other",
+      "//...": "..."
+    },
+    "//embeddedLanguages": {
+      "//meta.embedded.block.leobody.python": "leobody.python",
+      "//meta.embedded.block.leobody.typescript": "leobody.typescript",
+      "//...": "..."
+    }
   }
 ],
 </t>
@@ -4135,6 +4338,7 @@ public static LEOBRIDGE = {
     GET_PNODE: "getPNode",
     GET_PARENT: "getParent",
     GET_CHILDREN: "getChildren",
+    GET_LANGUAGE: "getLanguage",
     GET_SELECTED_NODE: "getSelectedNode",
     SET_SELECTED_NODE: "setSelectedNode",
     SET_BODY: "setBody",
@@ -4188,7 +4392,7 @@ public static LEOBRIDGE = {
     SORT_SIBLINGS: "sortSiblingsPNode",
     UNDO: "undo",
     REDO: "redo",
-    EXECUTE_SCRIPT: "executeScript",
+    EXECUTE_SCRIPT: "executeScriptPackage",
     GET_STATES: "getStates",
     HOIST_PNODE: "hoist",
     DEHOIST: "dehoist",
@@ -4398,16 +4602,8 @@ public static ERROR_PACKAGE_ID: number = 0;
 public static STARTING_PACKAGE_ID: number = 1;
 public static STATUSBAR_DEBOUNCE_DELAY: number = 50;
 public static STATES_DEBOUNCE_DELAY: number = 200; // a fifth of a second after command stack completion
-
 </t>
-<t tx="felix.20200718020912.4">/**
- * * Strings used as language id (default is "leobody")
- * TODO : #56 @boltex Add more languages strings for when directives such as @language are used throughout body panes
- */
-public static BODY_LANGUAGES = {
-    default: "leobody"
-};
-
+<t tx="felix.20200718020912.4">
 </t>
 <t tx="felix.20200718020912.5">/**
  * * Strings used in the workbench interface panels (not for messages or dialogs)
@@ -7117,6 +7313,7 @@ export interface LeoBridgePackage {
     allGnx?: string[];
     bodyLength?: number;
     bodyData?: string;
+    language?: string;
     node?: ArchivedPosition;
     nodes?: ArchivedPosition[];
     states?: LeoPackageStates;
@@ -7937,8 +8134,6 @@ More information can be found on the repository's [Issues Page](https://github.c
 <t tx="felix.20200718223018.1"></t>
 <t tx="felix.20200718223029.1"></t>
 <t tx="felix.20200718223032.1"></t>
-<t tx="felix.20200718223103.1"></t>
-<t tx="felix.20200718223123.1"></t>
 <t tx="felix.20200718223724.1">to leonize</t>
 <t tx="felix.20200718223807.1"></t>
 <t tx="felix.20200718223820.1"></t>
@@ -8953,9 +9148,31 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
 
         this._bodyTextDocument = p_document;
 
-        // TODO : Should get original @language effective value for specific 'top of document' body that is shown
-        if (this._bodyTextDocument.languageId !== Constants.BODY_LANGUAGES.default) {
-            vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, Constants.BODY_LANGUAGES.default);
+        if (this.lastSelectedNode) {
+            this._leoBridge.action(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
+                .then(p_result =&gt; {
+                    let w_language = p_result.language;
+                    // Exceptions
+                    switch (p_result.language) {
+                        case "cplusplus":
+                            w_language = "cpp";
+                            break;
+
+                        case "md":
+                            w_language = "markdown";
+                            break;
+                    }
+                    // Still the same ?
+                    if (
+                        this._bodyTextDocument &amp;&amp; this.lastSelectedNode &amp;&amp;
+                        utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
+                    ) {
+                        vscode.languages.setTextDocumentLanguage(
+                            this._bodyTextDocument,
+                            "leobody." + w_language
+                        );
+                    }
+                });
         }
 
         vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
@@ -9898,7 +10115,8 @@ export interface LeoBridgePackageOpenedInfo {
   "command": "leointeg.closeLeoFile",
   "when": "viewItem =~ /leoDocumentSelected/",
   "group": "inline@2"
-},</t>
+},
+</t>
 <t tx="felix.20200721003144.1">{
   "command": "leointeg.editHeadline",
   "when": "showEditOnNodes &amp;&amp; viewItem =~ /leoNode/",
@@ -9948,7 +10166,8 @@ export interface LeoBridgePackageOpenedInfo {
   "command": "leointeg.unmark",
   "when": "showMarkOnNodes &amp;&amp; viewItem =~ /leoNodeMarked/",
   "group": "inline@5"
-},</t>
+},
+</t>
 <t tx="felix.20200721003150.1">{
   "command": "leointeg.openAside",
   "when": "showOpenAside &amp;&amp; viewItem =~ /leoNode/",
@@ -10023,7 +10242,8 @@ export interface LeoBridgePackageOpenedInfo {
   "command": "leointeg.removeButton",
   "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoButtonNode/",
   "group": "leoButtonContext1@1"
-}</t>
+}
+</t>
 <t tx="felix.20200721003312.1">{
   "command": "leointeg.openLeoFile",
   "when": "view =~ /leoDocuments/ &amp;&amp; leoBridgeReady",
@@ -10033,7 +10253,8 @@ export interface LeoBridgePackageOpenedInfo {
   "command": "leointeg.newLeoFile",
   "when": "view =~ /leoDocuments/ &amp;&amp; leoBridgeReady",
   "group": "navigation@1"
-},</t>
+},
+</t>
 <t tx="felix.20200721003340.1">{
   "command": "leointeg.showSettingsPage",
   "when": "view =~ /leoIntegration/ &amp;&amp; !leoTreeOpened",
@@ -10083,7 +10304,8 @@ export interface LeoBridgePackageOpenedInfo {
   "command": "leointeg.contractAllFromOutline",
   "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened",
   "group": "navigation@6"
-}</t>
+}
+</t>
 <t tx="felix.20200721005448.1">/**
  * * Shows the recent Leo files list, choosing one will open it
  */
@@ -10123,37 +10345,6 @@ public showRecentLeoFiles(): void {
     self.commander.selectVisNext()
     self.commander.selectVisNext()
     return self.outputPNode(self.commander.p)
-
-</t>
-<t tx="felix.20200722231611.1">def getLanguageAtPosition(self, p):
-    """
-    Return the language in effect at position p.
-
-    This is always a lowercase language name, never None.
-    """
-    c, g = self.commander, self.g
-    aList = g.get_directives_dict_list(p)
-    d = g.scanAtCommentAndAtLanguageDirectives(aList)
-    #
-    # Félix, I'm not sure what the default, if any, should be.
-    #
-    if 1:  # Exactly as in Leo.
-        language = (
-            d and d.get('language') or
-            g.getLanguageFromAncestorAtFileNode(p) or
-            c.config.getString('target-language') or
-            'python'
-        )
-        return self.sendLeoBridgePackage("language", language.lower())
-    else:  # Return both an explicit language and a default language.
-        language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(p) or 'none'
-        default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
-        result = {
-            'language': language.lower(),
-            'default': default,
-        }
-        return self.sendLeoBridgePackage("result", result)
-
 
 </t>
 <t tx="felix.20200723204750.1"></t>
@@ -11193,6 +11384,41 @@ public showRecentLeoFiles(): void {
         'create-def-list',  # ?
     ]
     return good_list
+
+</t>
+<t tx="felix.20200725164340.1">def getLanguage(self, p_ap):
+    """
+    Finds the language in effect at top of body for position p.
+
+    Return type is lowercase 'language' non-empty string.
+    """
+    if not p_ap:
+        return self.outputError("Error in getLanguage, no param p_ap")        
+    w_p = self.ap_to_p(p_ap)
+    if not w_p:
+        return self.outputError("Error in getLanguage no w_p node found")
+    
+    c, g = self.commander, self.g
+    aList = g.get_directives_dict_list(w_p)
+    d = g.scanAtCommentAndAtLanguageDirectives(aList)
+    # TODO : Remove one of those branch after finishing color-syntax features
+    if 1:  # Exactly as in Leo.
+        language = (
+            d and d.get('language') or
+            g.getLanguageFromAncestorAtFileNode(w_p) or
+            c.config.getString('target-language') or
+            'plain'
+        )
+        return self.sendLeoBridgePackage("language", language.lower())
+    else:  # Return both an explicit language and a default language.
+        language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(w_p) or 'none'
+        default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
+        result = {
+            'language': language.lower(),
+            'default': default,
+        }
+        return self.sendLeoBridgePackage("result", result)
+
 
 </t>
 </tnodes>
