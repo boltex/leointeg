@@ -948,13 +948,21 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191126232434.30">def ap_to_p(self, ap):
-    '''(From Leo plugin leoflexx.py) Convert an archived position to a true Leo position.'''
+    '''
+    (From Leo plugin leoflexx.py) Convert an archived position to a true Leo position.
+    Return false if no key
+    '''
     childIndex = ap['childIndex']
-    v = self.gnx_to_vnode[ap['gnx']]
-    stack = [
-        (self.gnx_to_vnode[d['gnx']], d['childIndex'])
-        for d in ap['stack']
-    ]
+
+    try:
+        v = self.gnx_to_vnode[ap['gnx']]  # Trap this
+        stack = [
+            (self.gnx_to_vnode[d['gnx']], d['childIndex'])
+            for d in ap['stack']
+        ]
+    except Exception:
+        return False
+
     return leoNodes.position(v, childIndex, stack)
 
 </t>
@@ -998,6 +1006,7 @@ if __name__ == '__main__':
     if p == self.commander.p:
         w_ap['selected'] = True
     return w_ap
+
 
 </t>
 <t tx="felix.20191126232434.4">class LeoBridgeIntegController:
@@ -5121,6 +5130,8 @@ public buildFromSavedSettings(): void {
         this.connectionPort = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.IP_PORT, Constants.TCPIP_DEFAULT_PORT); // 32125
         // * Set context for tree items visibility that are based on config options
         this._leoIntegration.sendConfigToServer(this.getConfig());
+        utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
+        utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
         utils.setContext(Constants.CONTEXT_FLAGS.LEO_TREE_BROWSE, this.leoTreeBrowse);
         utils.setContext(Constants.CONTEXT_FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
         utils.setContext(Constants.CONTEXT_FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
@@ -9695,12 +9706,19 @@ public connect(): void {
             if (p_package.id !== 1) {
                 this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
             } else {
-                this.leoStates.leoBridgeReady = true;
-                utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
+                const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
+                if (w_lastFiles.length) {
+                    // This context flag will trigger 'Connecting...' placeholder
+                    utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
+                    setTimeout(() =&gt; {
+                        this._openLastFiles(); // Try to open last opened files, if any
+                    }, 0);
+
+                } else {
+                    this.leoStates.leoBridgeReady = true;
+                }
+
                 this.showLogPane();
-                setTimeout(() =&gt; {
-                    this._openLastFiles(); // Try to open last opened files, if any
-                }, 0);
                 if (!this.config.connectToServerAutomatically) {
                     vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                 }
@@ -9952,8 +9970,10 @@ private _openLastFiles(): void {
     if (w_lastFiles.length) {
         this._leoBridge.action(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
             .then((p_openFileResult: LeoBridgePackage) =&gt; {
+                this.leoStates.leoBridgeReady = true;
                 return this._setupOpenedLeoDocument(p_openFileResult.opened!);
             }, p_errorOpen =&gt; {
+                this.leoStates.leoBridgeReady = true;
                 console.log('in .then not opened or already opened');
                 return Promise.reject(p_errorOpen);
             });
@@ -11393,11 +11413,11 @@ public showRecentLeoFiles(): void {
     Return type is lowercase 'language' non-empty string.
     """
     if not p_ap:
-        return self.outputError("Error in getLanguage, no param p_ap")        
+        return self.outputError("Error in getLanguage, no param p_ap")
     w_p = self.ap_to_p(p_ap)
     if not w_p:
-        return self.outputError("Error in getLanguage no w_p node found")
-    
+        return self.sendLeoBridgePackage("language", "plain")
+
     c, g = self.commander, self.g
     aList = g.get_directives_dict_list(w_p)
     d = g.scanAtCommentAndAtLanguageDirectives(aList)
@@ -11418,7 +11438,6 @@ public showRecentLeoFiles(): void {
             'default': default,
         }
         return self.sendLeoBridgePackage("result", result)
-
 
 </t>
 </tnodes>

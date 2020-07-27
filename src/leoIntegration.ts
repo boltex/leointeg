@@ -283,12 +283,19 @@ export class LeoIntegration {
                 if (p_package.id !== 1) {
                     this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
                 } else {
-                    this.leoStates.leoBridgeReady = true;
-                    utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, true);
+                    const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
+                    if (w_lastFiles.length) {
+                        // This context flag will trigger 'Connecting...' placeholder
+                        utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
+                        setTimeout(() => {
+                            this._openLastFiles(); // Try to open last opened files, if any
+                        }, 0);
+
+                    } else {
+                        this.leoStates.leoBridgeReady = true;
+                    }
+
                     this.showLogPane();
-                    setTimeout(() => {
-                        this._openLastFiles(); // Try to open last opened files, if any
-                    }, 0);
                     if (!this.config.connectToServerAutomatically) {
                         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                     }
@@ -343,8 +350,10 @@ export class LeoIntegration {
         if (w_lastFiles.length) {
             this._leoBridge.action(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
                 .then((p_openFileResult: LeoBridgePackage) => {
+                    this.leoStates.leoBridgeReady = true;
                     return this._setupOpenedLeoDocument(p_openFileResult.opened!);
                 }, p_errorOpen => {
+                    this.leoStates.leoBridgeReady = true;
                     console.log('in .then not opened or already opened');
                     return Promise.reject(p_errorOpen);
                 });

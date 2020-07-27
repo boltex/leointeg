@@ -2164,11 +2164,11 @@ class LeoBridgeIntegController:
         Return type is lowercase 'language' non-empty string.
         """
         if not p_ap:
-            return self.outputError("Error in getLanguage, no param p_ap")        
+            return self.outputError("Error in getLanguage, no param p_ap")
         w_p = self.ap_to_p(p_ap)
         if not w_p:
-            return self.outputError("Error in getLanguage no w_p node found")
-        
+            return self.sendLeoBridgePackage("language", "plain")
+
         c, g = self.commander, self.g
         aList = g.get_directives_dict_list(w_p)
         d = g.scanAtCommentAndAtLanguageDirectives(aList)
@@ -2189,7 +2189,6 @@ class LeoBridgeIntegController:
                 'default': default,
             }
             return self.sendLeoBridgePackage("result", result)
-
 
     def getPNode(self, p_ap):
         '''EMIT OUT a node, don't select it'''
@@ -2383,13 +2382,21 @@ class LeoBridgeIntegController:
         # print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)))
 
     def ap_to_p(self, ap):
-        '''(From Leo plugin leoflexx.py) Convert an archived position to a true Leo position.'''
+        '''
+        (From Leo plugin leoflexx.py) Convert an archived position to a true Leo position.
+        Return false if no key
+        '''
         childIndex = ap['childIndex']
-        v = self.gnx_to_vnode[ap['gnx']]
-        stack = [
-            (self.gnx_to_vnode[d['gnx']], d['childIndex'])
-            for d in ap['stack']
-        ]
+
+        try:
+            v = self.gnx_to_vnode[ap['gnx']]  # Trap this
+            stack = [
+                (self.gnx_to_vnode[d['gnx']], d['childIndex'])
+                for d in ap['stack']
+            ]
+        except Exception:
+            return False
+
         return leoNodes.position(v, childIndex, stack)
 
     def p_to_ap(self, p):
@@ -2432,6 +2439,7 @@ class LeoBridgeIntegController:
         if p == self.commander.p:
             w_ap['selected'] = True
         return w_ap
+
 
 def main():
     '''python script for leo integration via leoBridge'''
