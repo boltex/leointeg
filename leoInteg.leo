@@ -2427,6 +2427,7 @@ wsPort = 32125
     "path": "./syntaxes/leobody.php.tmLanguage.json"
   },
   {
+    "//TODO 1": "MAKE PHP/HTML/CSS/JS EMBEDDED FUNCTIONALITY WORK TOO",
     "injectTo": [
       "source.leobody.plain",
       "source.leobody.python",
@@ -2443,7 +2444,7 @@ wsPort = 32125
     ],
     "path": "./syntaxes/leobody.tmLanguage.json",
     "scopeName": "leo.injection",
-    "//TODO": "MAKE EMBEDDED LANGUAGE SWITCHES WORK",
+    "//TODO 2": "MAKE EMBEDDED LANGUAGE SWITCHES WORK",
     "//tokenTypes": {
       "//meta.embedded.block.leobody.python": "other",
       "//meta.embedded.block.leobody.typescript": "other",
