@@ -2273,7 +2273,95 @@ wsPort = 32125
     "extensions": [
       ""
     ],
-    "configuration": "./language-configurations/leobody.typescript.language-configuration.json"
+    "configuration": "./language-configurations/leobody.javascript.language-configuration.json"
+  },
+  {
+    "id": "leobody.c",
+    "aliases": [
+      "Leo Body c",
+      "leobody.c"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.c.language-configuration.json"
+  },
+  {
+    "id": "leobody.cpp",
+    "aliases": [
+      "Leo Body cpp",
+      "leobody.cpp"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.cpp.language-configuration.json"
+  },
+  {
+    "id": "leobody.css",
+    "aliases": [
+      "Leo Body css",
+      "leobody.css"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.css.language-configuration.json"
+  },
+  {
+    "id": "leobody.html",
+    "aliases": [
+      "Leo Body html",
+      "leobody.html"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.html.language-configuration.json"
+  },
+  {
+    "id": "leobody.java",
+    "aliases": [
+      "Leo Body java",
+      "leobody.java"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.java.language-configuration.json"
+  },
+  {
+    "id": "leobody.json",
+    "aliases": [
+      "Leo Body Json",
+      "leobody.json"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.json.language-configuration.json"
+  },
+  {
+    "id": "leobody.markdown",
+    "aliases": [
+      "Leo Body Markdown",
+      "leobody.markdown"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.markdown.language-configuration.json"
+  },
+  {
+    "id": "leobody.php",
+    "aliases": [
+      "Leo Body php",
+      "leobody.php"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.php.language-configuration.json"
   }
 ],
 </t>
@@ -2295,24 +2383,76 @@ wsPort = 32125
   },
   {
     "language": "leobody.javascript",
-    "scopeName": "source.leobody.typescript",
-    "path": "./syntaxes/leobody.typescript.tmLanguage.json"
+    "scopeName": "source.leobody.javascript",
+    "path": "./syntaxes/leobody.javascript.tmLanguage.json"
+  },
+  {
+    "language": "leobody.c",
+    "scopeName": "source.leobody.c",
+    "path": "./syntaxes/leobody.c.tmLanguage.json"
+  },
+  {
+    "language": "leobody.cpp",
+    "scopeName": "source.leobody.cpp",
+    "path": "./syntaxes/leobody.cpp.tmLanguage.json"
+  },
+  {
+    "language": "leobody.css",
+    "scopeName": "source.leobody.css",
+    "path": "./syntaxes/leobody.css.tmLanguage.json"
+  },
+  {
+    "language": "leobody.html",
+    "scopeName": "source.leobody.html",
+    "path": "./syntaxes/leobody.html.tmLanguage.json"
+  },
+  {
+    "language": "leobody.java",
+    "scopeName": "source.leobody.java",
+    "path": "./syntaxes/leobody.java.tmLanguage.json"
+  },
+  {
+    "language": "leobody.json",
+    "scopeName": "source.leobody.json",
+    "path": "./syntaxes/leobody.json.tmLanguage.json"
+  },
+  {
+    "language": "leobody.markdown",
+    "scopeName": "source.leobody.markdown",
+    "path": "./syntaxes/leobody.markdown.tmLanguage.json"
+  },
+  {
+    "language": "leobody.php",
+    "scopeName": "source.leobody.php",
+    "path": "./syntaxes/leobody.php.tmLanguage.json"
   },
   {
     "injectTo": [
       "source.leobody.plain",
       "source.leobody.python",
-      "source.leobody.typescript"
+      "source.leobody.typescript",
+      "source.leobody.javascript",
+      "source.leobody.c",
+      "source.leobody.cpp",
+      "source.leobody.css",
+      "source.leobody.html",
+      "source.leobody.java",
+      "source.leobody.json",
+      "source.leobody.markdown",
+      "source.leobody.php"
     ],
     "path": "./syntaxes/leobody.tmLanguage.json",
     "scopeName": "leo.injection",
+    "//TODO": "MAKE EMBEDDED LANGUAGE SWITCHES WORK",
     "//tokenTypes": {
-      "meta.embedded.block.leobody.python": "other",
-      "meta.embedded.block.leobody.typescript": "other"
+      "//meta.embedded.block.leobody.python": "other",
+      "//meta.embedded.block.leobody.typescript": "other",
+      "//...": "..."
     },
     "//embeddedLanguages": {
-      "meta.embedded.block.leobody.python": "leobody.python",
-      "meta.embedded.block.leobody.typescript": "leobody.typescript"
+      "//meta.embedded.block.leobody.python": "leobody.python",
+      "//meta.embedded.block.leobody.typescript": "leobody.typescript",
+      "//...": "..."
     }
   }
 ],
@@ -4461,18 +4601,8 @@ public static ERROR_PACKAGE_ID: number = 0;
 public static STARTING_PACKAGE_ID: number = 1;
 public static STATUSBAR_DEBOUNCE_DELAY: number = 50;
 public static STATES_DEBOUNCE_DELAY: number = 200; // a fifth of a second after command stack completion
-
 </t>
-<t tx="felix.20200718020912.4">/**
- * * Strings used as language id (default is "leobody")
- * TODO : #56 @boltex Add more languages strings for when directives such as @language are used throughout body panes
- */
-public static BODY_LANGUAGES = {
-    plain: "leobody.plain",
-    python: "leobody.python",
-    typescript: "leobody.typescript",
-};
-
+<t tx="felix.20200718020912.4">
 </t>
 <t tx="felix.20200718020912.5">/**
  * * Strings used in the workbench interface panels (not for messages or dialogs)
@@ -9017,23 +9147,32 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
 
         this._bodyTextDocument = p_document;
 
-        // TODO : Should get original @language effective value for specific 'top of document' body that is shown
         if (this.lastSelectedNode) {
             this._leoBridge.action(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
                 .then(p_result =&gt; {
-                    console.log('got language', p_result.language);
-                    if (this._bodyTextDocument) {
+                    let w_language = p_result.language;
+                    // Exceptions
+                    switch (p_result.language) {
+                        case "cplusplus":
+                            w_language = "cpp";
+                            break;
+
+                        case "md":
+                            w_language = "markdown";
+                            break;
+                    }
+                    // Still the same ?
+                    if (
+                        this._bodyTextDocument &amp;&amp; this.lastSelectedNode &amp;&amp;
+                        utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
+                    ) {
                         vscode.languages.setTextDocumentLanguage(
                             this._bodyTextDocument,
-                            "leobody." + p_result.language
-                            // Constants.BODY_LANGUAGES.plain
+                            "leobody." + w_language
                         );
                     }
                 });
         }
-        // if (this._bodyTextDocument.languageId !== Constants.BODY_LANGUAGES.default) {
-        //     vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, Constants.BODY_LANGUAGES.default);
-        // }
 
         vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
             if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {

@@ -280,7 +280,95 @@
         "extensions": [
           ""
         ],
-        "configuration": "./language-configurations/leobody.typescript.language-configuration.json"
+        "configuration": "./language-configurations/leobody.javascript.language-configuration.json"
+      },
+      {
+        "id": "leobody.c",
+        "aliases": [
+          "Leo Body c",
+          "leobody.c"
+        ],
+        "extensions": [
+          ""
+        ],
+        "configuration": "./language-configurations/leobody.c.language-configuration.json"
+      },
+      {
+        "id": "leobody.cpp",
+        "aliases": [
+          "Leo Body cpp",
+          "leobody.cpp"
+        ],
+        "extensions": [
+          ""
+        ],
+        "configuration": "./language-configurations/leobody.cpp.language-configuration.json"
+      },
+      {
+        "id": "leobody.css",
+        "aliases": [
+          "Leo Body css",
+          "leobody.css"
+        ],
+        "extensions": [
+          ""
+        ],
+        "configuration": "./language-configurations/leobody.css.language-configuration.json"
+      },
+      {
+        "id": "leobody.html",
+        "aliases": [
+          "Leo Body html",
+          "leobody.html"
+        ],
+        "extensions": [
+          ""
+        ],
+        "configuration": "./language-configurations/leobody.html.language-configuration.json"
+      },
+      {
+        "id": "leobody.java",
+        "aliases": [
+          "Leo Body java",
+          "leobody.java"
+        ],
+        "extensions": [
+          ""
+        ],
+        "configuration": "./language-configurations/leobody.java.language-configuration.json"
+      },
+      {
+        "id": "leobody.json",
+        "aliases": [
+          "Leo Body Json",
+          "leobody.json"
+        ],
+        "extensions": [
+          ""
+        ],
+        "configuration": "./language-configurations/leobody.json.language-configuration.json"
+      },
+      {
+        "id": "leobody.markdown",
+        "aliases": [
+          "Leo Body Markdown",
+          "leobody.markdown"
+        ],
+        "extensions": [
+          ""
+        ],
+        "configuration": "./language-configurations/leobody.markdown.language-configuration.json"
+      },
+      {
+        "id": "leobody.php",
+        "aliases": [
+          "Leo Body php",
+          "leobody.php"
+        ],
+        "extensions": [
+          ""
+        ],
+        "configuration": "./language-configurations/leobody.php.language-configuration.json"
       }
     ],
     "grammars": [
@@ -301,24 +389,77 @@
       },
       {
         "language": "leobody.javascript",
-        "scopeName": "source.leobody.typescript",
-        "path": "./syntaxes/leobody.typescript.tmLanguage.json"
+        "scopeName": "source.leobody.javascript",
+        "path": "./syntaxes/leobody.javascript.tmLanguage.json"
       },
       {
+        "language": "leobody.c",
+        "scopeName": "source.leobody.c",
+        "path": "./syntaxes/leobody.c.tmLanguage.json"
+      },
+      {
+        "language": "leobody.cpp",
+        "scopeName": "source.leobody.cpp",
+        "path": "./syntaxes/leobody.cpp.tmLanguage.json"
+      },
+      {
+        "language": "leobody.css",
+        "scopeName": "source.leobody.css",
+        "path": "./syntaxes/leobody.css.tmLanguage.json"
+      },
+      {
+        "language": "leobody.html",
+        "scopeName": "source.leobody.html",
+        "path": "./syntaxes/leobody.html.tmLanguage.json"
+      },
+      {
+        "language": "leobody.java",
+        "scopeName": "source.leobody.java",
+        "path": "./syntaxes/leobody.java.tmLanguage.json"
+      },
+      {
+        "language": "leobody.json",
+        "scopeName": "source.leobody.json",
+        "path": "./syntaxes/leobody.json.tmLanguage.json"
+      },
+      {
+        "language": "leobody.markdown",
+        "scopeName": "source.leobody.markdown",
+        "path": "./syntaxes/leobody.markdown.tmLanguage.json"
+      },
+      {
+        "language": "leobody.php",
+        "scopeName": "source.leobody.php",
+        "path": "./syntaxes/leobody.php.tmLanguage.json"
+      },
+      {
+        "//TODO 1": "MAKE PHP/HTML/CSS/JS EMBEDDED FUNCTIONALITY WORK TOO",
         "injectTo": [
           "source.leobody.plain",
           "source.leobody.python",
-          "source.leobody.typescript"
+          "source.leobody.typescript",
+          "source.leobody.javascript",
+          "source.leobody.c",
+          "source.leobody.cpp",
+          "source.leobody.css",
+          "source.leobody.html",
+          "source.leobody.java",
+          "source.leobody.json",
+          "source.leobody.markdown",
+          "source.leobody.php"
         ],
         "path": "./syntaxes/leobody.tmLanguage.json",
         "scopeName": "leo.injection",
+        "//TODO 2": "MAKE EMBEDDED LANGUAGE SWITCHES WORK",
         "//tokenTypes": {
-          "meta.embedded.block.leobody.python": "other",
-          "meta.embedded.block.leobody.typescript": "other"
+          "//meta.embedded.block.leobody.python": "other",
+          "//meta.embedded.block.leobody.typescript": "other",
+          "//...": "..."
         },
         "//embeddedLanguages": {
-          "meta.embedded.block.leobody.python": "leobody.python",
-          "meta.embedded.block.leobody.typescript": "leobody.typescript"
+          "//meta.embedded.block.leobody.python": "leobody.python",
+          "//meta.embedded.block.leobody.typescript": "leobody.typescript",
+          "//...": "..."
         }
       }
     ],
