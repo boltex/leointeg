@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand, UserCommand } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -1199,26 +1199,30 @@ export class LeoIntegration {
     }
 
     /**
-     * * Adds a command to the stack to be resolved, returns true if possible (based on stack state and rules), false otherwise
-     * @param p_action A string code constant member from Constants.LEOBRIDGE, which are commands for leobridgeserver.py
+     * * Trys to add a command to the frontend stack, returns true if added, false otherwise
+     * @param p_action A string commands for leobridgeserver.py, from Constants.LEOBRIDGE,
      * @param p_node Specific node to pass as parameter, or the selected node if omitted
-     * @param p_refreshType Specifies to either refresh nothing, the tree or both body and tree when finished resolving
+     * @param p_refresh Specifies to either refresh nothing, the tree or body and tree when finished
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
-     * @param p_providedHeadline Specific string to pass along as parameter with the action, similar to p_node parameter
-     * @returns True if added successfully (see command stack 'rules' in commandStack.ts), false otherwise
+     * @param p_text Specific string to pass along as parameter with the action, similar to p_node parameter
+     * @returns True if added (see command stack 'rules' in commandStack.ts), false otherwise
      */
-    public nodeCommand(p_action: string, p_node?: LeoNode, p_refreshType?: RefreshType, p_fromOutline?: boolean, p_providedHeadline?: string): boolean {
+    // public nodeCommand(p_action: string, p_node?: LeoNode, p_refresh?: RefreshType, p_fromOutline?: boolean, p_text?: string): boolean {
+    public nodeCommand(p_userCommand: UserCommand): boolean {
         this.triggerBodySave(); // No forced vscode save
-        if (this._commandStack.add({
-            action: p_action,
-            node: p_node,  // Will return false for sure if already started and this is not undefined
-            providedHeadline: p_providedHeadline ? p_providedHeadline : undefined,
-            refreshType: p_refreshType ? p_refreshType : RefreshType.NoRefresh,
-            fromOutline: !!p_fromOutline, // force boolean
-        })) {
+        /*  OLD PARAM */
+        //     {
+        //     action: p_action,
+        //     node: p_node,  // Will return false for sure if already started and this is not undefined
+        //     providedHeadline: p_text ? p_text : undefined,
+        //     refreshType: p_refresh ? p_refresh : RefreshType.NoRefresh,
+        //     fromOutline: !!p_fromOutline, // force boolean
+        // }
+        if (this._commandStack.add(p_userCommand)) {
             return true;
         } else {
-            vscode.window.showInformationMessage(Constants.USER_MESSAGES.TOO_FAST + p_action); // TODO : Use cleanup message string CONSTANT instead
+            // TODO : Use cleanup message string CONSTANT instead
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.TOO_FAST + p_userCommand.action);
             return false;
         }
     }
@@ -1236,13 +1240,25 @@ export class LeoIntegration {
                 let w_selection = vscode.window.activeTextEditor.selection;
                 let w_script = vscode.window.activeTextEditor.document.getText(w_selection);
                 if (w_script.length) {
-                    return this.nodeCommand(Constants.LEOBRIDGE.EXECUTE_SCRIPT, undefined, RefreshType.RefreshTreeAndBody, false, w_script);
+                    return this.nodeCommand({
+                        action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
+                        node: undefined,
+                        refreshType: RefreshType.RefreshTreeAndBody,
+                        fromOutline: false,
+                        providedHeadline: w_script
+                    });
                 }
             }
 
         }
         // * Catch all call: execute selected node outline with a single space as script
-        return this.nodeCommand(Constants.LEOBRIDGE.EXECUTE_SCRIPT, undefined, RefreshType.RefreshTreeAndBody, false, " ");
+        return this.nodeCommand({
+            action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
+            node: undefined,
+            refreshType: RefreshType.RefreshTreeAndBody,
+            fromOutline: false,
+            providedHeadline: " "
+        });
     }
 
     /**
@@ -1252,7 +1268,12 @@ export class LeoIntegration {
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
      */
     public changeMark(p_isMark: boolean, p_node?: LeoNode, p_fromOutline?: boolean): void {
-        if (this.nodeCommand(p_isMark ? Constants.LEOBRIDGE.MARK_PNODE : Constants.LEOBRIDGE.UNMARK_PNODE, p_node, RefreshType.RefreshTree, p_fromOutline)) {
+        if (this.nodeCommand({
+            action: p_isMark ? Constants.LEOBRIDGE.MARK_PNODE : Constants.LEOBRIDGE.UNMARK_PNODE,
+            node: p_node,
+            refreshType: RefreshType.RefreshTree,
+            fromOutline: !!p_fromOutline
+        })) {
             if (!p_node || p_node === this.lastSelectedNode) {
                 utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_isMark);
             }
@@ -1278,7 +1299,13 @@ export class LeoIntegration {
                 .then(p_newHeadline => {
                     if (p_newHeadline) {
                         p_node!.label = p_newHeadline; // ! When labels change, ids will change and its selection and expansion states cannot be kept stable anymore.
-                        this.nodeCommand(Constants.LEOBRIDGE.SET_HEADLINE, p_node, RefreshType.RefreshTree, p_fromOutline, p_newHeadline);
+                        this.nodeCommand({
+                            action: Constants.LEOBRIDGE.SET_HEADLINE,
+                            node: p_node,
+                            refreshType: RefreshType.RefreshTree,
+                            fromOutline: !!p_fromOutline,
+                            providedHeadline: p_newHeadline
+                        });
                     } else {
                         // TODO : Make sure focus is set back properly to either outline or body if this is canceled (Maybe unnecessary?)
                     }
@@ -1306,7 +1333,13 @@ export class LeoIntegration {
             vscode.window.showInputBox(this._headlineInputOptions)
                 .then(p_newHeadline => {
                     const w_action = p_newHeadline ? Constants.LEOBRIDGE.INSERT_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_PNODE;
-                    this.nodeCommand(w_action, p_node, RefreshType.RefreshTree, w_fromOutline, p_newHeadline); // p_node and p_newHeadline can be undefined
+                    this.nodeCommand({
+                        action: w_action,
+                        node: p_node,
+                        refreshType: RefreshType.RefreshTree,
+                        fromOutline: !!w_fromOutline,
+                        providedHeadline: p_newHeadline
+                    });
                 });
         }
     }
@@ -1329,7 +1362,13 @@ export class LeoIntegration {
                                 this._removeLastFile(this.leoStates.leoOpenedFileName);
                                 this._removeRecentFile(this.leoStates.leoOpenedFileName);
                             }
-                            this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, p_chosenLeoFile); // p_node and p_newHeadline can be undefined
+                            this.nodeCommand({
+                                action: Constants.LEOBRIDGE.SAVE_FILE,
+                                node: undefined,
+                                refreshType: RefreshType.RefreshTree,
+                                fromOutline: !!p_fromOutline,
+                                providedHeadline: p_chosenLeoFile
+                            });
                             this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
                             this._leoStatusBar.update(true, 0, true);
                             this._addRecentAndLastFile(p_chosenLeoFile.trim());
@@ -1354,7 +1393,13 @@ export class LeoIntegration {
             if (this.lastSelectedNode && this._isCurrentFileNamed()) {
                 this.triggerBodySave(true)
                     .then(() => {
-                        this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, ""); // p_node and p_newHeadline can be undefined
+                        this.nodeCommand({
+                            action: Constants.LEOBRIDGE.SAVE_FILE,
+                            node: undefined,
+                            refreshType: RefreshType.RefreshTree,
+                            fromOutline: !!p_fromOutline,
+                            providedHeadline: ""
+                        });
                     });
             } else {
                 this.saveAsLeoFile(p_fromOutline); // Override this command call if file is unnamed!
@@ -1423,8 +1468,6 @@ export class LeoIntegration {
                 }
             });
     }
-
-
 
     /**
      * * Close an opened Leo file
@@ -1594,15 +1637,18 @@ export class LeoIntegration {
                     return [];
                 }
             });
-
         const w_options: vscode.QuickPickOptions = {
             placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
             matchOnDetail: true
         };
-
         vscode.window.showQuickPick(w_promise, w_options).then((p_picked) => {
             if (p_picked && p_picked.func) {
-                this.nodeCommand(p_picked.func, undefined, RefreshType.RefreshTreeAndBody, true);
+                this.nodeCommand({
+                    action: p_picked.func,
+                    node: undefined,
+                    refreshType: RefreshType.RefreshTreeAndBody,
+                    fromOutline: !!true
+                });
             }
         });
     }

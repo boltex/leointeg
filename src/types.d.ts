@@ -48,7 +48,7 @@ export const enum RefreshType {
 }
 
 /**
- * * Command parameter for 'stacking' front end commands
+ * * Stackable front end commands
  */
 export interface UserCommand {
     action: string;
@@ -56,10 +56,11 @@ export interface UserCommand {
     providedHeadline?: string | undefined;
     refreshType: RefreshType;
     fromOutline: boolean;
+    keepSelection?: boolean;
 }
 
 /**
- * * Actions to be performed by Leo, pushed and resolved as a stack
+ * * Stackable leoBridge actions to be performed by Leo
  */
 export interface LeoAction {
     parameter: string; // to pass along with action to python's side
