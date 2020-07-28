@@ -9561,15 +9561,15 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
 // public nodeCommand(p_action: string, p_node?: LeoNode, p_refresh?: RefreshType, p_fromOutline?: boolean, p_text?: string): boolean {
 public nodeCommand(p_userCommand: UserCommand): boolean {
     this.triggerBodySave(); // No forced vscode save
-    if (this._commandStack.add(p_userCommand
-        //     {
-        //     action: p_action,
-        //     node: p_node,  // Will return false for sure if already started and this is not undefined
-        //     providedHeadline: p_text ? p_text : undefined,
-        //     refreshType: p_refresh ? p_refresh : RefreshType.NoRefresh,
-        //     fromOutline: !!p_fromOutline, // force boolean
-        // }
-    )) {
+    /*  OLD PARAM */
+    //     {
+    //     action: p_action,
+    //     node: p_node,  // Will return false for sure if already started and this is not undefined
+    //     providedHeadline: p_text ? p_text : undefined,
+    //     refreshType: p_refresh ? p_refresh : RefreshType.NoRefresh,
+    //     fromOutline: !!p_fromOutline, // force boolean
+    // }
+    if (this._commandStack.add(p_userCommand)) {
         return true;
     } else {
         // TODO : Use cleanup message string CONSTANT instead
