@@ -564,6 +564,7 @@
 <v t="felix.20200718194857.18"><vh>runInfoMessageDialogParameters</vh></v>
 <v t="felix.20200718194857.19"><vh>AskMessageItem</vh></v>
 <v t="felix.20200718194857.20"><vh>ChooseDocumentItem</vh></v>
+<v t="felix.20200728235241.1"><vh>MinibufferCommand</vh></v>
 </v>
 <v t="felix.20200718195558.1"><vh>@clean src/utils.ts</vh>
 <v t="felix.20200718195558.2"><vh>padNumber2</vh></v>
@@ -4801,7 +4802,7 @@ import { LeoIntegration } from "./leoIntegration";
 
 </t>
 <t tx="felix.20200718024635.2">/**
- * * Front-facing, user command stack of actions. 
+ * * Front-facing, user command stack of actions.
  * Actions can also be added once started resolving.
  */
 export class CommandStack {
@@ -4810,10 +4811,10 @@ export class CommandStack {
     private _busy: boolean = false;
 
     // Refresh type, for after the last command is done. (From highest so far)
-    private _finalRefreshType: RefreshType = RefreshType.NoRefresh; 
-    
+    private _finalRefreshType: RefreshType = RefreshType.NoRefresh;
+
     // Flag indicating to set focus on outline when all done, instead of body. (From last one pushed)
-    private _finalFromOutline: boolean = false; 
+    private _finalFromOutline: boolean = false;
 
     // * Received selection from the last command that finished.
     // * Note: JSON string representation of a node, will be re-sent as node to leo instead of lastSelectedNode
@@ -4839,7 +4840,7 @@ public size(): number {
 
 </t>
 <t tx="felix.20200718024635.4">/**
- * * Signal to the command stack that a new selected node was received. 
+ * * Signal to the command stack that a new selected node was received.
  * This command stacks needs to know when to clear its own '_receivedSelection'
  */
 public newSelection(): void {
@@ -4893,13 +4894,13 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
 
     const w_command = this._stack[0]; // Reference from bottom of stack, don't remove yet
 
-    // Build parameter's json here - use providedHeadline if needed
+    // Build parameter's json here - use text member if needed
     let w_nodeJson: string = ""; // ap json used in building w_jsonParam
     let w_jsonParam: string = ""; // Finished parameter that is sent
 
     // First one uses given node or last selected node, other subsequent on stack will use _receivedSelection
     // (Commands such as 'collapse all' will just ignore passed on node parameter)
-    const w_providedHeadline = w_command.providedHeadline; // Can be undefined
+    const w_text = w_command.text; // Can be undefined
     if (w_command.node) {
         // console.log('USING SPECIFIC Node');
 
@@ -4921,8 +4922,11 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
             console.log('ERROR NO ARCHIVED POSITION JSON');
         }
     }
-    if (w_providedHeadline) {
-        w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_providedHeadline); // 'Insert Named Node' or 'Edit Headline'
+    
+    // TODO : ADD 'Keep Selection' FLAG
+    // TODO : MAKE NODE COMMANDS USE PACKAGE OBJECT TOO
+    if (w_text) {
+        w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_text); // 'Insert Named Node' or 'Edit Headline'
     } else {
         w_jsonParam = w_nodeJson; // 'Insert Unnamed Node' or regular command
     }
@@ -7798,13 +7802,6 @@ export interface ChooseDocumentItem extends vscode.QuickPickItem {
     value: number;
 }
 
-/**
- * * Used by the minibuffer command pallette
- * Gotten from the getCommands method in leobridgeserver.py
- */
-export interface MinibufferCommand extends vscode.QuickPickItem {
-    func: string;
-}
 </t>
 <t tx="felix.20200718194857.3">/**
  * * When refreshing the outline and getting to Leo's selected node
@@ -7833,10 +7830,10 @@ export const enum RefreshType {
 export interface UserCommand {
     action: string;
     node?: LeoNode | undefined;  // We can START a stack with a targeted command
-    providedHeadline?: string | undefined;
-    refreshType: RefreshType;
-    fromOutline: boolean;
-    keepSelection?: boolean;
+    text?: string | undefined; // If a string is required, for headline, etc.
+    refreshType: RefreshType; // Minimal refresh level required by this command
+    fromOutline: boolean; // Focus back on outline instead of body
+    keepSelection?: boolean; // Should bring back selection on node prior to command
 }
 
 </t>
@@ -9565,7 +9562,7 @@ public nodeCommand(p_userCommand: UserCommand): boolean {
     //     {
     //     action: p_action,
     //     node: p_node,  // Will return false for sure if already started and this is not undefined
-    //     providedHeadline: p_text ? p_text : undefined,
+    //     text: p_text ? p_text : undefined,
     //     refreshType: p_refresh ? p_refresh : RefreshType.NoRefresh,
     //     fromOutline: !!p_fromOutline, // force boolean
     // }
@@ -9597,7 +9594,7 @@ public executeScript(): boolean {
                     node: undefined,
                     refreshType: RefreshType.RefreshTreeAndBody,
                     fromOutline: false,
-                    providedHeadline: w_script
+                    text: w_script
                 });
             }
         }
@@ -9609,7 +9606,7 @@ public executeScript(): boolean {
         node: undefined,
         refreshType: RefreshType.RefreshTreeAndBody,
         fromOutline: false,
-        providedHeadline: " "
+        text: " "
     });
 }
 
@@ -9658,7 +9655,7 @@ public editHeadline(p_node?: LeoNode, p_fromOutline?: boolean): void {
                         node: p_node,
                         refreshType: RefreshType.RefreshTree,
                         fromOutline: !!p_fromOutline,
-                        providedHeadline: p_newHeadline
+                        text: p_newHeadline
                     });
                 } else {
                     // TODO : Make sure focus is set back properly to either outline or body if this is canceled (Maybe unnecessary?)
@@ -9693,7 +9690,7 @@ public insertNode(p_node?: LeoNode, p_fromOutline?: boolean, p_interrupt?: boole
                     node: p_node,
                     refreshType: RefreshType.RefreshTree,
                     fromOutline: !!w_fromOutline,
-                    providedHeadline: p_newHeadline
+                    text: p_newHeadline
                 });
             });
     }
@@ -9724,7 +9721,7 @@ public saveAsLeoFile(p_fromOutline?: boolean): void {
                             node: undefined,
                             refreshType: RefreshType.RefreshTree,
                             fromOutline: !!p_fromOutline,
-                            providedHeadline: p_chosenLeoFile
+                            text: p_chosenLeoFile
                         });
                         this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
                         this._leoStatusBar.update(true, 0, true);
@@ -9756,7 +9753,7 @@ public saveLeoFile(p_fromOutline?: boolean): void {
                         node: undefined,
                         refreshType: RefreshType.RefreshTree,
                         fromOutline: !!p_fromOutline,
-                        providedHeadline: ""
+                        text: ""
                     });
                 });
         } else {
@@ -11848,6 +11845,14 @@ public showRecentLeoFiles(): void {
     "path": "./snippets/markdown.code-snippets"
   }
 ],
+</t>
+<t tx="felix.20200728235241.1">/**
+ * * Used by the minibuffer command pallette
+ * Gotten from the getCommands method in leobridgeserver.py
+ */
+export interface MinibufferCommand extends vscode.QuickPickItem {
+    func: string;
+}
 </t>
 </tnodes>
 </leo_file>

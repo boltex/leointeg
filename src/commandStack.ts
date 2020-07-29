@@ -4,7 +4,7 @@ import { UserCommand, RefreshType, LeoBridgePackage } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
- * * Front-facing, user command stack of actions. 
+ * * Front-facing, user command stack of actions.
  * Actions can also be added once started resolving.
  */
 export class CommandStack {
@@ -13,10 +13,10 @@ export class CommandStack {
     private _busy: boolean = false;
 
     // Refresh type, for after the last command is done. (From highest so far)
-    private _finalRefreshType: RefreshType = RefreshType.NoRefresh; 
-    
+    private _finalRefreshType: RefreshType = RefreshType.NoRefresh;
+
     // Flag indicating to set focus on outline when all done, instead of body. (From last one pushed)
-    private _finalFromOutline: boolean = false; 
+    private _finalFromOutline: boolean = false;
 
     // * Received selection from the last command that finished.
     // * Note: JSON string representation of a node, will be re-sent as node to leo instead of lastSelectedNode
@@ -38,7 +38,7 @@ export class CommandStack {
     }
 
     /**
-     * * Signal to the command stack that a new selected node was received. 
+     * * Signal to the command stack that a new selected node was received.
      * This command stacks needs to know when to clear its own '_receivedSelection'
      */
     public newSelection(): void {
@@ -89,13 +89,13 @@ export class CommandStack {
 
         const w_command = this._stack[0]; // Reference from bottom of stack, don't remove yet
 
-        // Build parameter's json here - use providedHeadline if needed
+        // Build parameter's json here - use text member if needed
         let w_nodeJson: string = ""; // ap json used in building w_jsonParam
         let w_jsonParam: string = ""; // Finished parameter that is sent
 
         // First one uses given node or last selected node, other subsequent on stack will use _receivedSelection
         // (Commands such as 'collapse all' will just ignore passed on node parameter)
-        const w_providedHeadline = w_command.providedHeadline; // Can be undefined
+        const w_text = w_command.text; // Can be undefined
         if (w_command.node) {
             // console.log('USING SPECIFIC Node');
 
@@ -117,8 +117,11 @@ export class CommandStack {
                 console.log('ERROR NO ARCHIVED POSITION JSON');
             }
         }
-        if (w_providedHeadline) {
-            w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_providedHeadline); // 'Insert Named Node' or 'Edit Headline'
+        
+        // TODO : ADD 'Keep Selection' FLAG
+        // TODO : MAKE NODE COMMANDS USE PACKAGE OBJECT TOO
+        if (w_text) {
+            w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_text); // 'Insert Named Node' or 'Edit Headline'
         } else {
             w_jsonParam = w_nodeJson; // 'Insert Unnamed Node' or regular command
         }

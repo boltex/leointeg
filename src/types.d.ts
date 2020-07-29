@@ -53,10 +53,10 @@ export const enum RefreshType {
 export interface UserCommand {
     action: string;
     node?: LeoNode | undefined;  // We can START a stack with a targeted command
-    providedHeadline?: string | undefined;
-    refreshType: RefreshType;
-    fromOutline: boolean;
-    keepSelection?: boolean;
+    text?: string | undefined; // If a string is required, for headline, etc.
+    refreshType: RefreshType; // Minimal refresh level required by this command
+    fromOutline: boolean; // Focus back on outline instead of body
+    keepSelection?: boolean; // Should bring back selection on node prior to command
 }
 
 /**

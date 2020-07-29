@@ -1214,7 +1214,7 @@ export class LeoIntegration {
         //     {
         //     action: p_action,
         //     node: p_node,  // Will return false for sure if already started and this is not undefined
-        //     providedHeadline: p_text ? p_text : undefined,
+        //     text: p_text ? p_text : undefined,
         //     refreshType: p_refresh ? p_refresh : RefreshType.NoRefresh,
         //     fromOutline: !!p_fromOutline, // force boolean
         // }
@@ -1245,7 +1245,7 @@ export class LeoIntegration {
                         node: undefined,
                         refreshType: RefreshType.RefreshTreeAndBody,
                         fromOutline: false,
-                        providedHeadline: w_script
+                        text: w_script
                     });
                 }
             }
@@ -1257,7 +1257,7 @@ export class LeoIntegration {
             node: undefined,
             refreshType: RefreshType.RefreshTreeAndBody,
             fromOutline: false,
-            providedHeadline: " "
+            text: " "
         });
     }
 
@@ -1304,7 +1304,7 @@ export class LeoIntegration {
                             node: p_node,
                             refreshType: RefreshType.RefreshTree,
                             fromOutline: !!p_fromOutline,
-                            providedHeadline: p_newHeadline
+                            text: p_newHeadline
                         });
                     } else {
                         // TODO : Make sure focus is set back properly to either outline or body if this is canceled (Maybe unnecessary?)
@@ -1338,7 +1338,7 @@ export class LeoIntegration {
                         node: p_node,
                         refreshType: RefreshType.RefreshTree,
                         fromOutline: !!w_fromOutline,
-                        providedHeadline: p_newHeadline
+                        text: p_newHeadline
                     });
                 });
         }
@@ -1367,7 +1367,7 @@ export class LeoIntegration {
                                 node: undefined,
                                 refreshType: RefreshType.RefreshTree,
                                 fromOutline: !!p_fromOutline,
-                                providedHeadline: p_chosenLeoFile
+                                text: p_chosenLeoFile
                             });
                             this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
                             this._leoStatusBar.update(true, 0, true);
@@ -1398,7 +1398,7 @@ export class LeoIntegration {
                             node: undefined,
                             refreshType: RefreshType.RefreshTree,
                             fromOutline: !!p_fromOutline,
-                            providedHeadline: ""
+                            text: ""
                         });
                     });
             } else {
