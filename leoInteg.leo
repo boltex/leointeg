@@ -547,6 +547,7 @@
 <v t="felix.20200718194857.2"><vh>ConfigMembers</vh></v>
 <v t="felix.20200718194857.3"><vh>RevealType</vh></v>
 <v t="felix.20200718194857.4"><vh>RefreshType</vh></v>
+<v t="felix.20200801021321.1"><vh>ReqRefresh</vh></v>
 <v t="felix.20200718194857.5"><vh>UserCommand</vh></v>
 <v t="felix.20200718194857.6"><vh>LeoAction</vh></v>
 <v t="felix.20200718194857.7"><vh>LeoLogEntry</vh></v>
@@ -7816,6 +7817,7 @@ export const enum RevealType {
 </t>
 <t tx="felix.20200718194857.4">/**
  * * User command's refresh-type for when coming back from executing the command
+ * TODO : Replace RefreshType with ReqRefresh : "Required Refresh" collection of flag dictionary
  */
 export const enum RefreshType {
     NoRefresh = 0, // only for 'copy-node' so far
@@ -11853,6 +11855,19 @@ public showRecentLeoFiles(): void {
 export interface MinibufferCommand extends vscode.QuickPickItem {
     func: string;
 }
+</t>
+<t tx="felix.20200801021321.1">/**
+ * * Required Refresh Dictionary of "elements to refresh" flags
+ * TODO : Replace RefreshType with ReqRefresh : "Required Refresh" collection of flag dictionary
+ */
+export interface ReqRefresh {
+    node?: boolean;
+    tree?: boolean;
+    body?: boolean;
+    buttons?: boolean;
+    documents?: boolean;
+}
+
 </t>
 </tnodes>
 </leo_file>
