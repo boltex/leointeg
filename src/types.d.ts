@@ -39,16 +39,6 @@ export const enum RevealType {
 }
 
 /**
- * * User command's refresh-type for when coming back from executing the command
- * TODO : Replace RefreshType with ReqRefresh : "Required Refresh" collection of flag dictionary
- */
-export const enum RefreshType {
-    NoRefresh = 0, // only for 'copy-node' so far
-    RefreshTree,   // Refresh tree and show body pane if not already opened, but no need to refresh it
-    RefreshTreeAndBody // undo, redo, execute and others can also modify the current body, so refresh the filesystem gnx too
-}
-
-/**
  * * Required Refresh Dictionary of "elements to refresh" flags
  * TODO : Replace RefreshType with ReqRefresh : "Required Refresh" collection of flag dictionary
  */
@@ -67,7 +57,7 @@ export interface UserCommand {
     action: string;
     node?: LeoNode | undefined;  // We can START a stack with a targeted command
     text?: string | undefined; // If a string is required, for headline, etc.
-    refreshType: RefreshType; // Minimal refresh level required by this command
+    refreshType: ReqRefresh; // Minimal refresh level required by this command
     fromOutline: boolean; // Focus back on outline instead of body
     keepSelection?: boolean; // Should bring back selection on node prior to command
 }

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
-import { UserCommand, RefreshType, LeoBridgePackage } from "./types";
+import { UserCommand, LeoBridgePackage, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
@@ -13,7 +13,7 @@ export class CommandStack {
     private _busy: boolean = false;
 
     // Refresh type, for after the last command is done. (From highest so far)
-    private _finalRefreshType: RefreshType = RefreshType.NoRefresh;
+    private _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
 
     // Flag indicating to set focus on outline when all done, instead of body. (From last one pushed)
     private _finalFromOutline: boolean = false;
@@ -117,7 +117,7 @@ export class CommandStack {
                 console.log('ERROR NO ARCHIVED POSITION JSON');
             }
         }
-        
+
         // TODO : ADD 'Keep Selection' FLAG
         // TODO : MAKE NODE COMMANDS USE PACKAGE OBJECT TOO
         if (w_text) {
@@ -126,8 +126,8 @@ export class CommandStack {
             w_jsonParam = w_nodeJson; // 'Insert Unnamed Node' or regular command
         }
 
-        // Setup _finalRefreshType, if higher than the one setup so far
-        this._finalRefreshType = w_command.refreshType > this._finalRefreshType ? w_command.refreshType : this._finalRefreshType;
+        // Setup _finalRefreshType, if command requires higher than the one setup so far
+        Object.assign(this._finalRefreshType, w_command.refreshType);
 
         // Submit this action to Leo and return a promise of its packaged answer
         return this._leoIntegration.sendAction(w_command.action, w_jsonParam);
@@ -139,10 +139,7 @@ export class CommandStack {
      */
     private _resolveResult(p_package: LeoBridgePackage): void {
         this._stack.shift();
-        // If last is done then do refresh outline and focus on outline, or body
-        // console.log('p_package :', p_package);
-
-        // TODO : p_package members names should be made into constants
+        // If last is done then do refresh outline and focus on outline, or body, as required
 
         this._receivedSelection = JSON.stringify(p_package.node); // ! Maybe set this._receivedSelection to the last one anyways ?
         if (!this.size()) {
@@ -152,12 +149,12 @@ export class CommandStack {
             this._busy = false; // We're not busy anymore // ! maybe keep using _receivedSelection instead of clearing it?
             // console.log(`busy NOW FALSE :  ${this._busy}`);
 
-            if (this._finalRefreshType) {
+            if (Object.keys(this._finalRefreshType).length) {
                 // At least some type of refresh
                 this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline);
             }
             // Reset refresh type and focus flag nonetheless
-            this._finalRefreshType = RefreshType.NoRefresh;
+            this._finalRefreshType = {};
             this._finalFromOutline = false;
 
         } else {
@@ -169,4 +166,3 @@ export class CommandStack {
         }
     }
 }
-

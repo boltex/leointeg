@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { RefreshType } from "./types";
+import { ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
@@ -28,9 +28,14 @@ export function activate(p_context: vscode.ExtensionContext) {
     const U = undefined;
     const BRIDGE = Constants.LEOBRIDGE;
     const CMD = Constants.COMMANDS;
-    const NO_REFRESH = RefreshType.NoRefresh;
-    const REFRESH_TREE = RefreshType.RefreshTree;
-    const REFRESH_BOTH = RefreshType.RefreshTreeAndBody;
+    const NO_REFRESH: ReqRefresh = {};
+    const REFRESH_TREE: ReqRefresh = {
+        tree: true
+    };
+    const REFRESH_TREE_BODY: ReqRefresh = {
+        body: true,
+        tree: true
+    };
     const showInfo = vscode.window.showInformationMessage;
 
     const w_commands: [string, (...args: any[]) => any][] = [
@@ -39,13 +44,10 @@ export function activate(p_context: vscode.ExtensionContext) {
         ["leointeg.test", () => w_leo.test()], // Test function useful when debugging
         ["leointeg.testFromOutline", () => w_leo.test(true)], // Test function useful when debugging.
 
-        // Define entries for all commands
+        // * Define entries for all commands
         [CMD.MINIBUFFER, () => w_leo.minibuffer()], // Cannot be undeclared because its referenced in package.json
         [CMD.EXECUTE, () => w_leo.executeScript()],
-        // Test for undeclared commands VERDICT IT WORKS!
-        [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leo.clickButton(p_node)],
-
-        // Cannot be undeclared because its referenced in package.json
+        [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leo.clickButton(p_node)], // not referenced in package.json
         [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) => w_leo.removeButton(p_node)],
         [CMD.CLOSE_FILE, () => w_leo.closeLeoFile()],
         [CMD.NEW_FILE, () => w_leo.newLeoFile()],
@@ -64,25 +66,25 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.REFRESH_FROM_DISK, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.REFRESH_FROM_DISK_PNODE,
             node: p_node,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.REFRESH_FROM_DISK_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.REFRESH_FROM_DISK_PNODE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.REFRESH_FROM_DISK_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.REFRESH_FROM_DISK_PNODE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.GIT_DIFF, () => w_leo.nodeCommand({
             action: BRIDGE.GIT_DIFF,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.HEADLINE, (p_node: LeoNode) => w_leo.editHeadline(p_node, false)],
@@ -99,25 +101,25 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.CUT, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.CUT_PNODE,
             node: p_node,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.DELETE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.DELETE_PNODE,
             node: p_node,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.PASTE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.PASTE_PNODE,
             node: p_node,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.PASTE_CLONE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.PASTE_CLONE_PNODE,
             node: p_node,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
 
@@ -131,164 +133,164 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.CUT_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.CUT_PNODE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.CUT_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.CUT_PNODE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.DELETE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.DELETE_PNODE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.DELETE_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.DELETE_PNODE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.PASTE_CLONE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.PASTE_CLONE_PNODE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.PASTE_CLONE_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.PASTE_CLONE_PNODE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.PASTE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.PASTE_PNODE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.PASTE_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.PASTE_PNODE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.CONTRACT_ALL, () => w_leo.nodeCommand({
             action: BRIDGE.CONTRACT_ALL,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.CONTRACT_ALL_FO, () => w_leo.nodeCommand({
             action: BRIDGE.CONTRACT_ALL,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.CONTRACT_OR_GO_LEFT, () => w_leo.nodeCommand({
             action: BRIDGE.CONTRACT_OR_GO_LEFT,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.EXPAND_AND_GO_RIGHT, () => w_leo.nodeCommand({
             action: BRIDGE.EXPAND_AND_GO_RIGHT,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.GOTO_NEXT_CLONE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: p_node,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.GOTO_NEXT_CLONE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
 
         [CMD.GOTO_NEXT_MARKED, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_MARKED,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.GOTO_FIRST_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_FIRST_VISIBLE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.GOTO_LAST_SIBLING, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_LAST_SIBLING,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.GOTO_LAST_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_LAST_VISIBLE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.GOTO_NEXT_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_VISIBLE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.GOTO_PREV_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_PREV_VISIBLE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.DEHOIST, () => w_leo.nodeCommand({
             action: BRIDGE.DEHOIST,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.DEHOIST_FO, () => w_leo.nodeCommand({
             action: BRIDGE.DEHOIST,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.HOIST, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.HOIST_PNODE,
             node: p_node,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.HOIST_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.HOIST_PNODE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE,
             fromOutline: false,
         })],
         [CMD.HOIST_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.HOIST_PNODE,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE,
             fromOutline: true,
         })],
         [CMD.CLONE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.CLONE_PNODE,
             node: p_node,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.CLONE_SELECTION, () => w_leo.nodeCommand({
@@ -322,7 +324,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.MOVE_DOWN, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_DOWN,
             node: p_node,
-            refreshType: REFRESH_TREE,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.MOVE_DOWN_SELECTION, () => w_leo.nodeCommand({
@@ -341,7 +343,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.MOVE_LEFT, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_LEFT,
             node: p_node,
-            refreshType: REFRESH_TREE,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.MOVE_LEFT_SELECTION, () => w_leo.nodeCommand({
@@ -360,7 +362,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.MOVE_RIGHT, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_RIGHT,
             node: p_node,
-            refreshType: REFRESH_TREE,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.MOVE_RIGHT_SELECTION, () => w_leo.nodeCommand({
@@ -379,7 +381,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.MOVE_UP, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_UP,
             node: p_node,
-            refreshType: REFRESH_TREE,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.MOVE_UP_SELECTION, () => w_leo.nodeCommand({
@@ -398,20 +400,20 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.PAGE_UP, () => w_leo.nodeCommand({
             action: BRIDGE.PAGE_UP,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.PAGE_DOWN, () => w_leo.nodeCommand({
             action: BRIDGE.PAGE_DOWN,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
 
         [CMD.DEMOTE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.DEMOTE_PNODE,
             node: p_node,
-            refreshType: REFRESH_TREE,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.DEMOTE_SELECTION, () => w_leo.nodeCommand({
@@ -429,7 +431,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.PROMOTE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.PROMOTE_PNODE,
             node: p_node,
-            refreshType: REFRESH_TREE,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.PROMOTE_SELECTION, () => w_leo.nodeCommand({
@@ -467,25 +469,25 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.REDO, () => w_leo.nodeCommand({
             action: BRIDGE.REDO,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.REDO_FO, () => w_leo.nodeCommand({
             action: BRIDGE.REDO,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.UNDO, () => w_leo.nodeCommand({
             action: BRIDGE.UNDO,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false,
         })],
         [CMD.UNDO_FO, () => w_leo.nodeCommand({
             action: BRIDGE.UNDO,
             node: U,
-            refreshType: REFRESH_BOTH,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
         [CMD.CONNECT, () => w_leo.connect()],

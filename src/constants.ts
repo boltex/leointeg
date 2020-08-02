@@ -1,11 +1,9 @@
 import * as vscode from "vscode";
 
-
 /**
  * * Text and numeric constants used throughout leoInteg
  */
 export class Constants {
-
 
     public static PUBLISHER: string = "boltex";
     public static NAME: string = "leointeg";
@@ -36,10 +34,7 @@ export class Constants {
     public static WIN32_PYTHON: string = "py";
     public static SERVER_PATH: string = "/leobridgeserver.py";
     public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
-
-    public static TCPIP_DEFAULT_PORT: number = 32125;
     public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
-    public static TCPIP_DEFAULT_ADDRESS: string = "localhost";
 
     public static ERROR_PACKAGE_ID: number = 0;
     public static STARTING_PACKAGE_ID: number = 1;
@@ -61,8 +56,6 @@ export class Constants {
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
-        STATUSBAR_DEFAULT_COLOR: "fb7c47",
-        STATUSBAR_DEFAULT_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
         STATUSBAR_INDICATOR: "$(keyboard) ",
         QUICK_OPEN_LEO_COMMANDS: ">leo: ",
         EXPLORER_TREEVIEW_PREFIX: "LEO ",
@@ -142,7 +135,7 @@ export class Constants {
     /**
      * * String for JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
      */
-    public static CONFIG = {
+    public static CONFIG_NAMES = {
         CHECK_FOR_CHANGE_EXTERNAL_FILES: "checkForChangeExternalFiles",
         DEFAULT_RELOAD_IGNORE: "defaultReloadIgnore",
         LEO_TREE_BROWSE: "leoTreeBrowse",
@@ -165,6 +158,35 @@ export class Constants {
         IP_ADDRESS: "connectionAddress",
         IP_PORT: "connectionPort",
     };
+
+    /**
+     * * Configuration Defaults used in config.ts
+     * used when setting itself and getting parameters from vscode
+     */
+    public static CONFIG_DEFAULTS = {
+        CHECK_FOR_CHANGE_EXTERNAL_FILES: "none",  // Used in leoBridge scrip,
+        DEFAULT_RELOAD_IGNORE: "none", // Used in leoBridge scrip,
+        LEO_TREE_BROWSE: true,
+        TREE_KEEP_FOCUS: true,
+        TREE_KEEP_FOCUS_WHEN_ASIDE: false,
+        STATUSBAR_STRING: "", // Strings like "Literate", "Leo", UTF-8 also supported: \u{1F981}
+        STATUSBAR_COLOR: "fb7c47",
+        TREE_IN_EXPLORER: true,
+        SHOW_OPEN_ASIDE: true,
+        SHOW_EDIT: true,
+        SHOW_ARROWS: false,
+        SHOW_ADD: false,
+        SHOW_MARK: false,
+        SHOW_CLONE: false,
+        SHOW_COPY: false,
+        INVERT_NODES: false,
+        LEO_PYTHON_COMMAND: "",
+        AUTO_START_SERVER: false,
+        AUTO_CONNECT: false,
+        IP_ADDRESS: "localhost",
+        IP_PORT: 32125
+    };
+
     /**
      * * Used in 'when' clauses, set with vscode.commands.executeCommand("setContext",...)
      */
@@ -204,18 +226,19 @@ export class Constants {
         DOCUMENT_SELECTED_UNTITLED: "leoDocumentSelectedUntitled",
         DOCUMENT_UNTITLED: "leoDocumentUntitled",
         // Flags that match specific LeoInteg config settings
-        LEO_TREE_BROWSE: Constants.CONFIG.LEO_TREE_BROWSE, // Leo outline also in the explorer view
-        TREE_IN_EXPLORER: Constants.CONFIG.TREE_IN_EXPLORER, // Leo outline also in the explorer view
-        SHOW_OPEN_ASIDE: Constants.CONFIG.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
-        SHOW_EDIT: Constants.CONFIG.SHOW_EDIT,              // Hover Icons on outline nodes
-        SHOW_ARROWS: Constants.CONFIG.SHOW_ARROWS,           // Hover Icons on outline nodes
-        SHOW_ADD: Constants.CONFIG.SHOW_ADD,                 // Hover Icons on outline nodes
-        SHOW_MARK: Constants.CONFIG.SHOW_MARK,               // Hover Icons on outline nodes
-        SHOW_CLONE: Constants.CONFIG.SHOW_CLONE,             // Hover Icons on outline nodes
-        SHOW_COPY: Constants.CONFIG.SHOW_COPY,               // Hover Icons on outline nodes
-        AUTO_START_SERVER: Constants.CONFIG.AUTO_START_SERVER,   // Used at startup
-        AUTO_CONNECT: Constants.CONFIG.AUTO_CONNECT              // Used at startup
+        LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Leo outline also in the explorer view
+        TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER, // Leo outline also in the explorer view
+        SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
+        SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,              // Hover Icons on outline nodes
+        SHOW_ARROWS: Constants.CONFIG_NAMES.SHOW_ARROWS,           // Hover Icons on outline nodes
+        SHOW_ADD: Constants.CONFIG_NAMES.SHOW_ADD,                 // Hover Icons on outline nodes
+        SHOW_MARK: Constants.CONFIG_NAMES.SHOW_MARK,               // Hover Icons on outline nodes
+        SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,             // Hover Icons on outline nodes
+        SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
+        AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
+        AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT              // Used at startup
     };
+
     /**
      * * Command strings to be used with vscode.commands.executeCommand
      * See https://code.visualstudio.com/api/extension-guides/command#programmatically-executing-a-command

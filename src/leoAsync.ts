@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import {
-    AskMessageItem, RefreshType, runAskYesNoDialogParameters,
+    AskMessageItem, ReqRefresh, runAskYesNoDialogParameters,
     runWarnMessageDialogParameters, runInfoMessageDialogParameters,
     showSaveAsDialogParameters
 } from "./types";
@@ -84,7 +84,8 @@ export class LeoAsync {
             if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
                 w_sendResultPromise.then(() => {
                     // Might have answered 'yes/yesAll' and refreshed and changed the body text
-                    this._leoIntegration.launchRefresh(RefreshType.RefreshTreeAndBody, false); // TODO : #34 @boltex Deal with focus placement
+                    // TODO : #34 @boltex Deal with focus placement
+                    this._leoIntegration.launchRefresh({ body: true, tree: true }, false);
                 });
             }
         });
@@ -112,7 +113,8 @@ export class LeoAsync {
         switch (p_infoArg.message) {
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_REFRESHED:
                 w_message += Constants.USER_MESSAGES.REFRESHED;
-                this._leoIntegration.launchRefresh(RefreshType.RefreshTreeAndBody, false); // TODO : #34 @boltex Deal with focus placement
+                // TODO : #34 @boltex Deal with focus placement
+                this._leoIntegration.launchRefresh({ body: true, tree: true }, false);
                 break;
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_IGNORED:
                 w_message += Constants.USER_MESSAGES.IGNORED;
