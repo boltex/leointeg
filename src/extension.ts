@@ -47,8 +47,10 @@ export function activate(p_context: vscode.ExtensionContext) {
         // * Define entries for all commands
         [CMD.MINIBUFFER, () => w_leo.minibuffer()], // Cannot be undeclared because its referenced in package.json
         [CMD.EXECUTE, () => w_leo.executeScript()],
+
         [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leo.clickButton(p_node)], // not referenced in package.json
         [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) => w_leo.removeButton(p_node)],
+
         [CMD.CLOSE_FILE, () => w_leo.closeLeoFile()],
         [CMD.NEW_FILE, () => w_leo.newLeoFile()],
 
@@ -87,6 +89,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
+
         [CMD.HEADLINE, (p_node: LeoNode) => w_leo.editHeadline(p_node, false)],
         [CMD.HEADLINE_SELECTION, () => w_leo.editHeadline(U, false)],
         [CMD.HEADLINE_SELECTION_FO, () => w_leo.editHeadline(U, true)],
@@ -178,6 +181,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
+
         [CMD.CONTRACT_ALL, () => w_leo.nodeCommand({
             action: BRIDGE.CONTRACT_ALL,
             node: U,
@@ -202,6 +206,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
+
         [CMD.GOTO_NEXT_CLONE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: p_node,
@@ -257,6 +262,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
+
         [CMD.DEHOIST, () => w_leo.nodeCommand({
             action: BRIDGE.DEHOIST,
             node: U,
@@ -287,6 +293,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE,
             fromOutline: true,
         })],
+
         [CMD.CLONE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.CLONE_PNODE,
             node: p_node,
@@ -313,6 +320,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         // * Special command for when inserting rapidly more than one node without even specifying a headline label,
         // such as spamming CTRL+I rapidly.
         [CMD.INSERT_SELECTION_INTERRUPT, () => w_leo.insertNode(U, U, true)],
+
         [CMD.MARK, (p_node: LeoNode) => w_leo.changeMark(true, p_node, false)],
         [CMD.MARK_SELECTION, () => w_leo.changeMark(true, U, false)],
         [CMD.MARK_SELECTION_FO, () => w_leo.changeMark(true, U, true)],
@@ -490,6 +498,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
         })],
+
         [CMD.CONNECT, () => w_leo.connect()],
         [CMD.START_SERVER, () => w_leo.startServer()],
 
@@ -520,6 +529,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.CLONE_MARKED_NODES, () => showInfo("TODO: cloneMarkedNodes command")],
         [CMD.DELETE_MARKED_NODES, () => showInfo("TODO: deleteMarkedNodes command")],
         [CMD.MOVE_MARKED_NODES, () => showInfo("TODO: moveMarkedNode command")],
+
     ];
 
     w_commands.map(function (p_command) {
@@ -583,3 +593,4 @@ function getDurationMilliseconds(p_start: [number, number]): number {
     const [secs, nanosecs] = process.hrtime(p_start);
     return secs * 1000 + Math.floor(nanosecs / 1000000);
 }
+

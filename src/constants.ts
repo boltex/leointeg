@@ -68,6 +68,7 @@ export class Constants {
         TERMINAL_PANE_TITLE: "LeoBridge Server",
         THEME_STATUSBAR: "statusBar.foreground"
     };
+
     /**
      * * Basic user messages strings for messages and dialogs
      */
@@ -115,6 +116,7 @@ export class Constants {
         IGNORED: " They were ignored.", // with voluntary leading space
         TOO_FAST: "leoInteg is busy! " // with voluntary trailing space
     };
+
     /**
      * * Choices offered when about to lose current changes to a Leo Document
      */
@@ -132,6 +134,7 @@ export class Constants {
             isCloseAffordance: true
         }
     ];
+
     /**
      * * String for JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
      */
@@ -496,4 +499,5 @@ export class Constants {
         DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
         MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes"
     };
+
 }

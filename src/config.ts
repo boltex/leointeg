@@ -110,6 +110,13 @@ export class Config implements ConfigMembers {
      * * Build config from settings from vscode's saved config settings
      */
     public buildFromSavedSettings(): void {
+        // Shorthand pointers for readability
+        const GET = vscode.workspace.getConfiguration;
+        const NAME = Constants.CONFIG_NAME;
+        const NAMES = Constants.CONFIG_NAMES;
+        const DEFAULTS = Constants.CONFIG_DEFAULTS;
+        const FLAGS = Constants.CONTEXT_FLAGS;
+
         if (this._isSettingConfig) {
             // * Currently setting config, wait until its done all, and this will be called automatically
             return;
@@ -157,4 +164,5 @@ export class Config implements ConfigMembers {
             utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
         }
     }
+
 }

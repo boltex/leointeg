@@ -80,7 +80,8 @@ export class LeoIntegration {
     private _currentDocumentChanged: boolean = false; // if clean and an edit is done: refresh opened documents view
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
-    private _needRefreshBody: boolean = false; // Flag for commands that might change current body
+    // TODO : REMOVE private _needRefreshBody: boolean = false; // Flag for commands that might change current body
+    private _refreshType: ReqRefresh = {}; // Flags for commands to require parts of UI to refresh
     private _fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
     private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
 
@@ -498,8 +499,14 @@ export class LeoIntegration {
      */
     private _triggerGetStates(): void {
         // Debounced timer has triggered so perform getStates action
-        this._leoDocumentsProvider.refreshTreeRoot();
-        this._leoButtonsProvider.refreshTreeRoot();
+        if (this._refreshType.documents) {
+            this._leoDocumentsProvider.refreshTreeRoot();
+            this._refreshType.documents = false;
+        }
+        if (this._refreshType.buttons) {
+            this._leoButtonsProvider.refreshTreeRoot();
+            this._refreshType.buttons = false;
+        }
         this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) => {
             if (p_package.states) {
                 this.leoStates.setLeoStateFlags(p_package.states);
@@ -868,6 +875,8 @@ export class LeoIntegration {
         // * Rules not specified with ternary operator(s) for clarity
         // Set w_revealType, it will ultimately set this._revealType. Used when finding the OUTLINE's selected node and setting or preventing focus into it
         // Set this._fromOutline. Used when finding the selected node and showing the BODY to set or prevent focus in it
+        this._refreshType = Object.assign({}, p_refreshType);
+
         let w_revealType: RevealType = RevealType.NoReveal;
         if (p_fromOutline) {
             this._fromOutline = true;
@@ -877,14 +886,11 @@ export class LeoIntegration {
             w_revealType = RevealType.RevealSelect;
         }
         // Set this._needRefreshBody. Used when finding the selected node and showing the BODY to trigger a 'fireRefreshFile'
-        if (p_refreshType.body) {
-            this._needRefreshBody = true;
+        if (this._refreshType.body) {
             // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
             if (this._bodyLastChangedDocument && this._bodyLastChangedDocument.isDirty) {
                 this._bodyLastChangedDocument.save(); // ! Voluntarily save to 'clean' any pending body (lose trailing whitespace)
             }
-        } else {
-            this._needRefreshBody = false;
         }
         // * _focusInterrupt Override
         if (this._focusInterrupt) {
@@ -892,7 +898,7 @@ export class LeoIntegration {
             w_revealType = RevealType.RevealSelect;
         }
         // * Launch Outline's Root Refresh Cycle
-        this._refreshOutline(w_revealType);
+        this._refreshOutline(w_revealType); // Always at least refresh tree?
         this.getStates();
     }
 
@@ -1106,8 +1112,8 @@ export class LeoIntegration {
      */
     public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable<vscode.TextEditor> {
         // first setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
-        if (this._needRefreshBody) {
-            this._needRefreshBody = false; // Flag has triggered a body refresh so we clear it
+        if (this._refreshType.body) {
+            this._refreshType.body = false;
             // TODO : CHECK IF TIMEOUT NECESSARY!
             setTimeout(() => {
                 this._leoFileSystem.fireRefreshFile(utils.leoUriToStr(this.bodyUri));
@@ -1121,6 +1127,7 @@ export class LeoIntegration {
                 this._leoBridge.action(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
                     .then(p_result => {
                         let w_language = p_result.language;
+                        // TODO : Move those exception in "constants.ts"
                         // Exceptions
                         switch (p_result.language) {
                             case "cplusplus":
@@ -1199,7 +1206,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Trys to add a command to the frontend stack, returns true if added, false otherwise
+     * * Tries to add a command to the frontend stack, returns true if added, false otherwise
      * @param p_action A string commands for leobridgeserver.py, from Constants.LEOBRIDGE,
      * @param p_node Specific node to pass as parameter, or the selected node if omitted
      * @param p_refresh Specifies to either refresh nothing, the tree or body and tree when finished
@@ -1243,7 +1250,7 @@ export class LeoIntegration {
                     return this.nodeCommand({
                         action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
                         node: undefined,
-                        refreshType: { tree: true, body: true },
+                        refreshType: { tree: true, body: true, buttons: true, documents: true },
                         fromOutline: false,
                         text: w_script
                     });
@@ -1255,7 +1262,7 @@ export class LeoIntegration {
         return this.nodeCommand({
             action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
             node: undefined,
-            refreshType: { tree: true, body: true },
+            refreshType: { tree: true, body: true, buttons: true, documents: true },
             fromOutline: false,
             text: " "
         });
@@ -1691,4 +1698,5 @@ export class LeoIntegration {
     public test(p_fromOutline?: boolean): void {
         this.statusBarOnClick(); // placeholder / test
     }
+
 }
