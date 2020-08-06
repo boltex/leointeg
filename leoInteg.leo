@@ -185,21 +185,9 @@
 <v t="felix.20191127004621.1"><vh>markPNode</vh></v>
 <v t="felix.20191127235913.1"><vh>unmarkPNode</vh></v>
 <v t="felix.20191231203545.1"><vh>clonePNode</vh></v>
-<v t="felix.20191127004619.1"><vh>copyPNode</vh></v>
-<v t="felix.20191127004620.1"><vh>cutPNode</vh></v>
-<v t="felix.20191130211048.1"><vh>pastePNode</vh></v>
-<v t="felix.20191130211048.2"><vh>pasteAsClonePNode</vh></v>
 <v t="felix.20191127002548.1"><vh>deletePNode</vh></v>
-<v t="felix.20191127000344.1"><vh>movePNodeDown</vh></v>
-<v t="felix.20191127000419.1"><vh>movePNodeLeft</vh></v>
-<v t="felix.20191127000420.1"><vh>movePNodeRight</vh></v>
-<v t="felix.20191127000420.2"><vh>movePNodeUp</vh></v>
 <v t="felix.20191127001506.1"><vh>insertPNode</vh></v>
 <v t="felix.20200120224033.1"><vh>insertNamedPNode</vh></v>
-<v t="felix.20191127001506.2"><vh>promotePNode</vh></v>
-<v t="felix.20191127001506.3"><vh>demotePNode</vh></v>
-<v t="felix.20191231184412.1"><vh>sortChildrenPNode</vh></v>
-<v t="felix.20191231184412.2"><vh>sortSiblingsPNode</vh></v>
 </v>
 <v t="felix.20191128001054.1"><vh>Outline and Body Interaction</vh>
 <v t="felix.20200719001908.2"><vh>_get_commander_method</vh></v>
@@ -208,7 +196,6 @@
 <v t="felix.20200103204811.1"><vh>redo</vh></v>
 <v t="felix.20200722221454.2"><vh>pageUp</vh></v>
 <v t="felix.20200722221454.3"><vh>pageDown</vh></v>
-<v t="felix.20200301235235.1"><vh>refreshFromDiskPNode</vh></v>
 <v t="felix.20191231214801.1"><vh>executeScriptPackage</vh></v>
 <v t="felix.20200725164340.1"><vh>getLanguage</vh></v>
 <v t="felix.20191126232434.15"><vh>getPNode</vh></v>
@@ -1167,26 +1154,6 @@ if __name__ == '__main__':
 
 
 </t>
-<t tx="felix.20191127000344.1">def movePNodeDown(self, p_ap):
-    '''Move a node DOWN, don't select it if possible'''
-    return self.leoCommand("moveOutlineDown", p_ap, True)
-
-</t>
-<t tx="felix.20191127000419.1">def movePNodeLeft(self, p_ap):
-    '''Move a node LEFT, don't select it if possible'''
-    return self.leoCommand("moveOutlineLeft", p_ap, True)
-
-</t>
-<t tx="felix.20191127000420.1">def movePNodeRight(self, p_ap):
-    '''Move a node RIGHT, don't select it if possible'''
-    return self.leoCommand("moveOutlineRight", p_ap, True)
-
-</t>
-<t tx="felix.20191127000420.2">def movePNodeUp(self, p_ap):
-    '''Move a node UP, don't select it if possible'''
-    return self.leoCommand("moveOutlineUp", p_ap, True)
-
-</t>
 <t tx="felix.20191127001506.1">def insertPNode(self, p_ap):
     '''Insert a node at given node, then select it once created, and finally return it'''
     if p_ap:
@@ -1202,16 +1169,6 @@ if __name__ == '__main__':
             return self.outputError("Error in insertPNode no w_p node found")  # default empty
     else:
         return self.outputError("Error in insertPNode no param p_ap")
-
-</t>
-<t tx="felix.20191127001506.2">def promotePNode(self, p_ap):
-    '''Promote a node, don't select it if possible'''
-    return self.leoCommand("promote", p_ap, True)
-
-</t>
-<t tx="felix.20191127001506.3">def demotePNode(self, p_ap):
-    '''Demote a node, don't select it if possible'''
-    return self.leoCommand("demote", p_ap, True)
 
 </t>
 <t tx="felix.20191127002548.1">def deletePNode(self, p_ap):
@@ -1237,16 +1194,6 @@ if __name__ == '__main__':
             return self.outputError("Error in deletePNode no w_p node found")  # default empty
     else:
         return self.outputError("Error in deletePNode no param p_ap")
-
-</t>
-<t tx="felix.20191127004619.1">def copyPNode(self, p_ap):
-    '''Copy a node, don't select it'''
-    return self.leoCommand("copyOutline", p_ap, True)
-
-</t>
-<t tx="felix.20191127004620.1">def cutPNode(self, p_ap):
-    '''Cut a node, don't select it'''
-    return self.leoCommand("cutOutline", p_ap, True)
 
 </t>
 <t tx="felix.20191127004621.1">def markPNode(self, p_ap):
@@ -1303,16 +1250,6 @@ wsPort = 32125
     self.currentActionId = p_id
 
 </t>
-<t tx="felix.20191130211048.1">def pastePNode(self, p_ap):
-    '''Paste a node, don't select it if possible'''
-    return self.leoCommand("pasteOutline", p_ap, True)
-
-</t>
-<t tx="felix.20191130211048.2">def pasteAsClonePNode(self, p_ap):
-    '''Paste as clone, don't select it if possible'''
-    return self.leoCommand("pasteOutlineRetainingClones", p_ap, True)
-
-</t>
 <t tx="felix.20191201194046.1">def getAllGnx(self, p_paramUnused):
     '''Get gnx array from all unique nodes'''
     w_all_gnx = [p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
@@ -1325,16 +1262,6 @@ wsPort = 32125
         if p.v.gnx == p_gnx:
             return p
     return False
-
-</t>
-<t tx="felix.20191231184412.1">def sortChildrenPNode(self, p_ap):
-    '''Sort children of a node, don't select it if possible'''
-    return self.leoCommand("sortChildren", p_ap, True)
-
-</t>
-<t tx="felix.20191231184412.2">def sortSiblingsPNode(self, p_ap):
-    '''Sort siblings of a node, don't select it if possible'''
-    return self.leoCommand("sortSiblings", p_ap, True)
 
 </t>
 <t tx="felix.20191231203545.1">def clonePNode(self, p_ap):
@@ -1472,11 +1399,6 @@ wsPort = 32125
         self.g.es(str(self.g.app.signon1))
     else:
         print('no loop in logSignon')
-
-</t>
-<t tx="felix.20200301235235.1">def refreshFromDiskPNode(self, p_ap):
-    '''Refresh from Disk, don't select it if possible'''
-    return self.leoCommand("refreshFromDisk", p_ap, True)
 
 </t>
 <t tx="felix.20200302204251.1">class IdleTimeManager:
@@ -4384,23 +4306,52 @@ public static LEOBRIDGE = {
     // * Leo Operations
     MARK_PNODE: "markPNode",
     UNMARK_PNODE: "unmarkPNode",
-    COPY_PNODE: "copyPNode",
-    CUT_PNODE: "cutPNode",
-    PASTE_PNODE: "pastePNode",
-    PASTE_CLONE_PNODE: "pasteAsClonePNode",
+
+    // COPY_PNODE: "copyPNode",
+    COPY_PNODE: "copyOutline",
+
+    // CUT_PNODE: "cutPNode",
+    CUT_PNODE: "cutOutline",
+
+    // PASTE_PNODE: "pastePNode",
+    PASTE_PNODE: "pasteOutline",
+
+    // PASTE_CLONE_PNODE: "pasteAsClonePNode",
+    PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
+
     DELETE_PNODE: "deletePNode",
-    MOVE_PNODE_DOWN: "movePNodeDown",
-    MOVE_PNODE_LEFT: "movePNodeLeft",
-    MOVE_PNODE_RIGHT: "movePNodeRight",
-    MOVE_PNODE_UP: "movePNodeUp",
+
+    // MOVE_PNODE_DOWN: "movePNodeDown",
+    MOVE_PNODE_DOWN: "moveOutlineDown",
+
+    // MOVE_PNODE_LEFT: "movePNodeLeft",
+    MOVE_PNODE_LEFT: "moveOutlineLeft",
+
+    // MOVE_PNODE_RIGHT: "movePNodeRight",
+    MOVE_PNODE_RIGHT: "moveOutlineRight",
+
+    // MOVE_PNODE_UP: "movePNodeUp",
+    MOVE_PNODE_UP: "moveOutlineUp",
+
     INSERT_PNODE: "insertPNode",
     INSERT_NAMED_PNODE: "insertNamedPNode",
     CLONE_PNODE: "clonePNode",
-    PROMOTE_PNODE: "promotePNode",
-    DEMOTE_PNODE: "demotePNode",
-    REFRESH_FROM_DISK_PNODE: "refreshFromDiskPNode",
-    SORT_CHILDREN: "sortChildrenPNode",
-    SORT_SIBLINGS: "sortSiblingsPNode",
+
+    // PROMOTE_PNODE: "promotePNode",
+    PROMOTE_PNODE: "promote",
+
+    // DEMOTE_PNODE: "demotePNode",
+    DEMOTE_PNODE: "demote",
+
+    // REFRESH_FROM_DISK_PNODE: "refreshFromDiskPNode",
+    REFRESH_FROM_DISK_PNODE: "refreshFromDisk",
+
+    // SORT_CHILDREN: "sortChildrenPNode",
+    SORT_CHILDREN: "sortChildren",
+
+    // SORT_SIBLINGS: "sortSiblingsPNode",
+    SORT_SIBLINGS: "sortSiblings",
+
     UNDO: "undo",
     REDO: "redo",
     EXECUTE_SCRIPT: "executeScriptPackage",

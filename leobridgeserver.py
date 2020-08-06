@@ -1910,22 +1910,6 @@ class LeoBridgeIntegController:
         else:
             return self.outputError("Error in clonePNode function, no param p_ap")
 
-    def copyPNode(self, p_ap):
-        '''Copy a node, don't select it'''
-        return self.leoCommand("copyOutline", p_ap, True)
-
-    def cutPNode(self, p_ap):
-        '''Cut a node, don't select it'''
-        return self.leoCommand("cutOutline", p_ap, True)
-
-    def pastePNode(self, p_ap):
-        '''Paste a node, don't select it if possible'''
-        return self.leoCommand("pasteOutline", p_ap, True)
-
-    def pasteAsClonePNode(self, p_ap):
-        '''Paste as clone, don't select it if possible'''
-        return self.leoCommand("pasteOutlineRetainingClones", p_ap, True)
-
     def deletePNode(self, p_ap):
         '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
         if p_ap:
@@ -1949,22 +1933,6 @@ class LeoBridgeIntegController:
                 return self.outputError("Error in deletePNode no w_p node found")  # default empty
         else:
             return self.outputError("Error in deletePNode no param p_ap")
-
-    def movePNodeDown(self, p_ap):
-        '''Move a node DOWN, don't select it if possible'''
-        return self.leoCommand("moveOutlineDown", p_ap, True)
-
-    def movePNodeLeft(self, p_ap):
-        '''Move a node LEFT, don't select it if possible'''
-        return self.leoCommand("moveOutlineLeft", p_ap, True)
-
-    def movePNodeRight(self, p_ap):
-        '''Move a node RIGHT, don't select it if possible'''
-        return self.leoCommand("moveOutlineRight", p_ap, True)
-
-    def movePNodeUp(self, p_ap):
-        '''Move a node UP, don't select it if possible'''
-        return self.leoCommand("moveOutlineUp", p_ap, True)
 
     def insertPNode(self, p_ap):
         '''Insert a node at given node, then select it once created, and finally return it'''
@@ -2001,22 +1969,6 @@ class LeoBridgeIntegController:
                 return self.outputError("Error in insertNamedPNode no w_p node found")  # default empty
         else:
             return self.outputError("Error in insertNamedPNode no param w_ap")
-
-    def promotePNode(self, p_ap):
-        '''Promote a node, don't select it if possible'''
-        return self.leoCommand("promote", p_ap, True)
-
-    def demotePNode(self, p_ap):
-        '''Demote a node, don't select it if possible'''
-        return self.leoCommand("demote", p_ap, True)
-
-    def sortChildrenPNode(self, p_ap):
-        '''Sort children of a node, don't select it if possible'''
-        return self.leoCommand("sortChildren", p_ap, True)
-
-    def sortSiblingsPNode(self, p_ap):
-        '''Sort siblings of a node, don't select it if possible'''
-        return self.leoCommand("sortSiblings", p_ap, True)
 
     def _get_commander_method(self, p_command):
         """ Return the given method (p_command) in the Commands class or subcommanders."""
@@ -2121,10 +2073,6 @@ class LeoBridgeIntegController:
         self.commander.selectVisNext()
         self.commander.selectVisNext()
         return self.outputPNode(self.commander.p)
-
-    def refreshFromDiskPNode(self, p_ap):
-        '''Refresh from Disk, don't select it if possible'''
-        return self.leoCommand("refreshFromDisk", p_ap, True)
 
     def executeScriptPackage(self, p_package):
         '''Select a node and run its script'''

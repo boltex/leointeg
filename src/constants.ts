@@ -330,23 +330,52 @@ export class Constants {
         // * Leo Operations
         MARK_PNODE: "markPNode",
         UNMARK_PNODE: "unmarkPNode",
-        COPY_PNODE: "copyPNode",
-        CUT_PNODE: "cutPNode",
-        PASTE_PNODE: "pastePNode",
-        PASTE_CLONE_PNODE: "pasteAsClonePNode",
+
+        // COPY_PNODE: "copyPNode",
+        COPY_PNODE: "copyOutline",
+
+        // CUT_PNODE: "cutPNode",
+        CUT_PNODE: "cutOutline",
+
+        // PASTE_PNODE: "pastePNode",
+        PASTE_PNODE: "pasteOutline",
+
+        // PASTE_CLONE_PNODE: "pasteAsClonePNode",
+        PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
+
         DELETE_PNODE: "deletePNode",
-        MOVE_PNODE_DOWN: "movePNodeDown",
-        MOVE_PNODE_LEFT: "movePNodeLeft",
-        MOVE_PNODE_RIGHT: "movePNodeRight",
-        MOVE_PNODE_UP: "movePNodeUp",
+
+        // MOVE_PNODE_DOWN: "movePNodeDown",
+        MOVE_PNODE_DOWN: "moveOutlineDown",
+
+        // MOVE_PNODE_LEFT: "movePNodeLeft",
+        MOVE_PNODE_LEFT: "moveOutlineLeft",
+
+        // MOVE_PNODE_RIGHT: "movePNodeRight",
+        MOVE_PNODE_RIGHT: "moveOutlineRight",
+
+        // MOVE_PNODE_UP: "movePNodeUp",
+        MOVE_PNODE_UP: "moveOutlineUp",
+
         INSERT_PNODE: "insertPNode",
         INSERT_NAMED_PNODE: "insertNamedPNode",
         CLONE_PNODE: "clonePNode",
-        PROMOTE_PNODE: "promotePNode",
-        DEMOTE_PNODE: "demotePNode",
-        REFRESH_FROM_DISK_PNODE: "refreshFromDiskPNode",
-        SORT_CHILDREN: "sortChildrenPNode",
-        SORT_SIBLINGS: "sortSiblingsPNode",
+
+        // PROMOTE_PNODE: "promotePNode",
+        PROMOTE_PNODE: "promote",
+
+        // DEMOTE_PNODE: "demotePNode",
+        DEMOTE_PNODE: "demote",
+
+        // REFRESH_FROM_DISK_PNODE: "refreshFromDiskPNode",
+        REFRESH_FROM_DISK_PNODE: "refreshFromDisk",
+
+        // SORT_CHILDREN: "sortChildrenPNode",
+        SORT_CHILDREN: "sortChildren",
+
+        // SORT_SIBLINGS: "sortSiblingsPNode",
+        SORT_SIBLINGS: "sortSiblings",
+
         UNDO: "undo",
         REDO: "redo",
         EXECUTE_SCRIPT: "executeScriptPackage",
