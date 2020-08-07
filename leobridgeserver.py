@@ -179,8 +179,8 @@ class ExternalFilesController:
             self.checksum_d[path] = self.checksum(path)
 
     def integResult(self, p_result):
-        '''Received result from vsCode'''
-        # Got the result to an asked question/warning from vscode
+        '''Received result from client'''
+        # Got the result to an asked question/warning from the client
         if not self.waitingForAnswer:
             print("ERROR: Received Result but no Asked Dialog")
             return
@@ -431,7 +431,7 @@ class LeoBridgeIntegController:
         # * Trace outputs to pythons stdout, also prints the function call stack
         # self.g.trace('test trace')
 
-        # * Intercept Log Pane output: Sends to vsCode's log pane
+        # * Intercept Log Pane output: Sends to client's log pane
         self.g.es = self.es  # pointer - not a function call
 
         # print(dir(self.g))
@@ -500,12 +500,12 @@ class LeoBridgeIntegController:
             print('[sendAsyncOutput] Error loop not ready' + json.dumps(p_package, separators=(',', ':')))
 
     def askResult(self, p_result):
-        '''Got the result to an asked question/warning from vscode'''
+        '''Got the result to an asked question/warning from client'''
         self.g.app.externalFilesController.integResult(p_result)
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def applyConfig(self, p_config):
-        '''Got leoInteg's config from vscode'''
+        '''Got leoInteg's config from client'''
         self.leoIntegConfig = p_config
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
@@ -536,6 +536,88 @@ class LeoBridgeIntegController:
     def initConnection(self, p_webSocket):
         self.webSocket = p_webSocket
         self.loop = asyncio.get_event_loop()
+
+    def _get_commander_method(self, p_command):
+        """ Return the given method (p_command) in the Commands class or subcommanders."""
+        # self.g.trace(p_command)
+        #
+        # First, try the commands class.
+        w_func = getattr(self.commander, p_command, None)
+        if w_func:
+            return w_func
+        #
+        # Search all subcommanders for the method.
+        table = (  # This table comes from c.initObjectIvars.
+            'abbrevCommands',
+            'bufferCommands',
+            'chapterCommands',
+            'controlCommands',
+            'convertCommands',
+            'debugCommands',
+            'editCommands',
+            'editFileCommands',
+            'evalController',
+            'gotoCommands',
+            'helpCommands',
+            'keyHandler',
+            'keyHandlerCommands',
+            'killBufferCommands',
+            'leoCommands',
+            'leoTestManager',
+            'macroCommands',
+            'miniBufferWidget',
+            'printingController',
+            'queryReplaceCommands',
+            'rectangleCommands',
+            'searchCommands',
+            'spellCommands',
+            'vimCommands',  # Not likely to be useful.
+        )
+        for ivar in table:
+            subcommander = getattr(self.commander, ivar, None)
+            if subcommander:
+                w_func = getattr(subcommander, p_command, None)
+                if w_func:
+                    ### self.g.trace(f"Found c.{ivar}.{p_command}")
+                    return w_func
+            # else:
+                # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
+        return None
+
+    def leoCommand(self, p_command, p_package):
+        '''
+        Generic call to a method in Leo's Commands class or any subcommander class.
+
+        The p_ap position node is to be selected before having the command run,
+        while the p_keepSelection parameter specifies wether the original position should be re-selected.
+        The whole of those operations is to be undoable as one undo step.
+
+        p_command: a method name (a string).
+        p_ap: an archived position.
+        p_keepSelection: preserve the current selection, if possible.
+        '''
+        w_keepSelection = False  # Set default, optional component of package
+        if "keep" in p_package:
+            w_keepSelection = p_package["keep"]
+        w_ap = p_package["node"]  # At least node parameter is present
+        if not w_ap:
+            return self._outputError(f"Error in {p_command}: no param node")
+        w_p = self._ap_to_p(w_ap)
+        if not w_p:
+            return self._outputError(f"Error in {p_command}: no w_p node found")
+        w_func = self._get_commander_method(p_command)
+        if not w_func:
+            return self._outputError(f"Error in {p_command}: no method found")
+
+        if w_p == self.commander.p:
+            w_func(event=None)
+        else:
+            oldPosition = self.commander.p
+            self.commander.selectPosition(w_p)
+            w_func(event=None)
+            if w_keepSelection and self.commander.positionExists(oldPosition):
+                self.commander.selectPosition(oldPosition)
+        return self._outputPNode(self.commander.p)
 
     def getOpenedFiles(self, p_package):
         '''Return array of opened file path/names to be used as openFile parameters to switch files'''
@@ -573,12 +655,12 @@ class LeoBridgeIntegController:
 
         if self.commander:
             self.commander.closed = False
-            self.create_gnx_to_vnode()
+            self._create_gnx_to_vnode()
             w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
-                        "node": self.p_to_ap(self.commander.p)}
+                        "node": self._p_to_ap(self.commander.p)}
             return self.sendLeoBridgePackage("setOpened", w_result)
         else:
-            return self.outputError('Error in setOpenedFile')
+            return self._outputError('Error in setOpenedFile')
 
     def openFile(self, p_file):
         """
@@ -602,12 +684,12 @@ class LeoBridgeIntegController:
 
         if self.commander:
             self.commander.closed = False
-            self.create_gnx_to_vnode()
+            self._create_gnx_to_vnode()
             w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
-                        "node": self.p_to_ap(self.commander.p)}
+                        "node": self._p_to_ap(self.commander.p)}
             return self.sendLeoBridgePackage("opened", w_result)
         else:
-            return self.outputError('Error in openFile')
+            return self._outputError('Error in openFile')
 
     def openFiles(self, p_package):
         """
@@ -636,12 +718,12 @@ class LeoBridgeIntegController:
         # Done with the last one, it's now the selected commander. Check again just in case.
         if self.commander:
             self.commander.closed = False
-            self.create_gnx_to_vnode()
+            self._create_gnx_to_vnode()
             w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
-                        "node": self.p_to_ap(self.commander.p)}
+                        "node": self._p_to_ap(self.commander.p)}
             return self.sendLeoBridgePackage("opened", w_result)
         else:
-            return self.outputError('Error in openFiles')
+            return self._outputError('Error in openFiles')
 
     def closeFile(self, p_package):
         """
@@ -667,9 +749,9 @@ class LeoBridgeIntegController:
             self.commander = None
 
         if self.commander:
-            self.create_gnx_to_vnode()
+            self._create_gnx_to_vnode()
             w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
-                        "node": self.p_to_ap(self.commander.p)}
+                        "node": self._p_to_ap(self.commander.p)}
             return self.sendLeoBridgePackage("closed", w_result)
         else:
             w_result = {"total": 0}
@@ -689,35 +771,6 @@ class LeoBridgeIntegController:
                 print(str(e))
 
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-
-    def getStates(self, p_package):
-        """
-        Gets the currently opened file's general states for UI enabled/disabled states
-        such as undo available, file changed/unchanged
-        """
-        w_states = {}
-        if self.commander:
-            try:
-                w_states["changed"] = self.commander.changed   # 'dirty/changed' member
-                w_states["canUndo"] = self.commander.canUndo()
-                w_states["canRedo"] = self.commander.canRedo()
-                w_states["canDemote"] = self.commander.canDemote()
-                w_states["canPromote"] = self.commander.canPromote()
-                w_states["canDehoist"] = self.commander.canDehoist()
-
-            except Exception as e:
-                self.g.trace('Error while getting states')
-                print("Error while getting states")
-                print(str(e))
-        else:
-            w_states["changed"] = False
-            w_states["canUndo"] = False
-            w_states["canRedo"] = False
-            w_states["canDemote"] = False
-            w_states["canPromote"] = False
-            w_states["canDehoist"] = False
-
-        return self.sendLeoBridgePackage("states", w_states)
 
     def getButtons(self, p_package):
         '''Gets the currently opened file's @buttons list'''
@@ -739,10 +792,10 @@ class LeoBridgeIntegController:
                 w_key = i_key
         if w_key:
             del(w_dict[w_key])  # delete object member
-        return self.outputPNode(self.commander.p)  # return selected node when done
+        return self._outputPNode(self.commander.p)  # return selected node when done
 
     def clickButton(self, p_package):
-        '''Handles buttons clicked in vscode from the '@button' panel'''
+        '''Handles buttons clicked in client from the '@button' panel'''
         w_index = p_package['index']
         w_dict = self.commander.theScriptingController.buttonsDict
         w_button = None
@@ -751,7 +804,7 @@ class LeoBridgeIntegController:
                 w_button = i_key
         if w_button:
             w_button.command()  # run clicked button command
-        return self.outputPNode(self.commander.p)  # return selected node when done
+        return self._outputPNode(self.commander.p)  # return selected node when done
 
     def getCommands(self, p_package):
         """Return a list of all Leo commands that make sense in leoInteg."""
@@ -1848,72 +1901,76 @@ class LeoBridgeIntegController:
         return(json.dumps(w_package, separators=(',', ':')))  # send as json
         # await self.webSocket.send(json.dumps(w_package, separators=(',', ':')))  # send as json
 
-    def outputError(self, p_message="Unknown Error"):
+    def _outputError(self, p_message="Unknown Error"):
         print("ERROR: " + p_message)  # Output to this server's running console
         w_package = {"id": self.currentActionId}
         w_package["error"] = p_message
         return p_message
 
-    def outputBodyData(self, p_bodyText=""):
+    def _outputBodyData(self, p_bodyText=""):
         return self.sendLeoBridgePackage("bodyData", p_bodyText)
 
-    def outputPNode(self, p_node=False):
+    def _outputPNode(self, p_node=False):
         if p_node:
-            return self.sendLeoBridgePackage("node", self.p_to_ap(p_node))  # Single node, singular
+            return self.sendLeoBridgePackage("node", self._p_to_ap(p_node))  # Single node, singular
         else:
             return self.sendLeoBridgePackage("node", None)
 
-    def outputPNodes(self, p_pList):
+    def _outputPNodes(self, p_pList):
         w_apList = []
         for p in p_pList:
-            w_apList.append(self.p_to_ap(p))
+            w_apList.append(self._p_to_ap(p))
         return self.sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
 
-    # Can be used on any non-selected node from the mouse context menu in vscode
-    # They set the p_keepSelection parameter when calling leoCommand
-    # TODO : Pass 'keep' as a parameter from vscode to remove 12 other methods!
-    def markPNode(self, p_ap):
+    def markPNode(self, p_package):
         '''Mark a node, don't select it'''
-        if p_ap:
-            w_p = self.ap_to_p(p_ap)
+        w_ap = p_package["node"]
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p:
                 w_p.setMarked()
-                return self.outputPNode(self.commander.p)  # return selected node when done (not w_p)
+                return self._outputPNode(self.commander.p)  # return selected node when done (not w_p)
             else:
-                return self.outputError("Error in markPNode no w_p node found")
+                return self._outputError("Error in markPNode no w_p node found")
         else:
-            return self.outputError("Error in markPNode no param p_ap")
+            return self._outputError("Error in markPNode no param node")
 
-    def unmarkPNode(self, p_ap):
+    def unmarkPNode(self, p_package):
         '''Unmark a node, don't select it'''
-        if p_ap:
-            w_p = self.ap_to_p(p_ap)
+        w_ap = p_package["node"]
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p:
                 w_p.clearMarked()
-                return self.outputPNode(self.commander.p)  # return selected node when done (not w_p)
+                return self._outputPNode(self.commander.p)  # return selected node when done (not w_p)
             else:
-                return self.outputError("Error in unmarkPNode no w_p node found")
+                return self._outputError("Error in unmarkPNode no w_p node found")
         else:
-            return self.outputError("Error in unmarkPNode no param p_ap")
+            return self._outputError("Error in unmarkPNode no param node")
 
-    def clonePNode(self, p_ap):
-        '''Clone a node, return it if it was also the current selection, otherwise try not to select it'''
-        if p_ap:
-            w_p = self.ap_to_p(p_ap)
-            if w_p:
-                if w_p == self.commander.p:
-                    return self.leoCommand("clone", p_ap, False)
-                else:
-                    return self.leoCommand("clone", p_ap, True)
-            else:
-                return self.outputError("Error in clonePNode function, no w_p node found")  # default empty
+    def clonePNode(self, p_package):
+        '''Clone a node, return it, if it was also the current selection, otherwise try not to select it'''
+        w_ap = p_package["node"]
+        if not w_ap:
+            return self._outputError("Error in clonePNode function, no param p_ap")
+        w_p = self._ap_to_p(w_ap)
+        if not w_p:
+            return self._outputError("Error in clonePNode function, no w_p node found")  # default empty
+        if w_p == self.commander.p:
+            self.commander.clone()
         else:
-            return self.outputError("Error in clonePNode function, no param p_ap")
+            oldPosition = self.commander.p
+            self.commander.selectPosition(w_p)
+            self.commander.clone()
+            if self.commander.positionExists(oldPosition):
+                self.commander.selectPosition(oldPosition)
+        return self._outputPNode(self.commander.p)  # return selected node either ways
 
-    def deletePNode(self, p_ap):
+    def deletePNode(self, p_package):
         '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
-        if p_ap:
-            w_p = self.ap_to_p(p_ap)
+        w_ap = p_package["node"]    
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p:
                 if w_p == self.commander.p:
                     self.commander.deleteOutline()  # already on this node, so delete it
@@ -1928,34 +1985,35 @@ class LeoBridgeIntegController:
                         # Try again with childIndex
                         if self.commander.positionExists(oldPosition):
                             self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
+                return self._outputPNode(self.commander.p)  # in both cases, return selected node
             else:
-                return self.outputError("Error in deletePNode no w_p node found")  # default empty
+                return self._outputError("Error in deletePNode no w_p node found")  # default empty
         else:
-            return self.outputError("Error in deletePNode no param p_ap")
+            return self._outputError("Error in deletePNode no param node")
 
-    def insertPNode(self, p_ap):
+    def insertPNode(self, p_package):
         '''Insert a node at given node, then select it once created, and finally return it'''
-        if p_ap:
-            w_p = self.ap_to_p(p_ap)
+        w_ap = p_package["node"]    
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p:
                 w_bunch = self.commander.undoer.beforeInsertNode(w_p)
                 w_newNode = w_p.insertAfter()
                 w_newNode.setDirty()
                 self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_bunch)
                 self.commander.selectPosition(w_newNode)
-                return self.outputPNode(self.commander.p)  # in both cases, return selected node
+                return self._outputPNode(self.commander.p)  # in both cases, return selected node
             else:
-                return self.outputError("Error in insertPNode no w_p node found")  # default empty
+                return self._outputError("Error in insertPNode no w_p node found")  # default empty
         else:
-            return self.outputError("Error in insertPNode no param p_ap")
+            return self._outputError("Error in insertPNode no param node")
 
     def insertNamedPNode(self, p_package):
         '''Insert a node at given node, set its headline, select it and finally return it'''
         w_newHeadline = p_package['text']
         w_ap = p_package['node']
         if w_ap:
-            w_p = self.ap_to_p(w_ap)
+            w_p = self._ap_to_p(w_ap)
             if w_p:
                 w_u = self.commander.undoer.beforeInsertNode(w_p)
                 w_newNode = w_p.insertAfter()
@@ -1964,125 +2022,33 @@ class LeoBridgeIntegController:
                 w_newNode.setDirty()
                 self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_u)
                 self.commander.selectPosition(w_newNode)
-                return self.outputPNode(self.commander.p)  # in any case, return selected node
+                return self._outputPNode(self.commander.p)  # in any case, return selected node
             else:
-                return self.outputError("Error in insertNamedPNode no w_p node found")  # default empty
+                return self._outputError("Error in insertNamedPNode no w_p node found")  # default empty
         else:
-            return self.outputError("Error in insertNamedPNode no param w_ap")
-
-    def _get_commander_method(self, p_command):
-        """ Return the given method (p_command) in the Commands class or subcommanders."""
-        # self.g.trace(p_command)
-        #
-        # First, try the commands class.
-        w_func = getattr(self.commander, p_command, None)
-        if w_func:
-            return w_func
-        #
-        # Search all subcommanders for the method.
-        table = (  # This table comes from c.initObjectIvars.
-            'abbrevCommands',
-            'bufferCommands',
-            'chapterCommands',
-            'controlCommands',
-            'convertCommands',
-            'debugCommands',
-            'editCommands',
-            'editFileCommands',
-            'evalController',
-            'gotoCommands',
-            'helpCommands',
-            'keyHandler',
-            'keyHandlerCommands',
-            'killBufferCommands',
-            'leoCommands',
-            'leoTestManager',
-            'macroCommands',
-            'miniBufferWidget',
-            'printingController',
-            'queryReplaceCommands',
-            'rectangleCommands',
-            'searchCommands',
-            'spellCommands',
-            'vimCommands',  # Not likely to be useful.
-        )
-        for ivar in table:
-            subcommander = getattr(self.commander, ivar, None)
-            if subcommander:
-                w_func = getattr(subcommander, p_command, None)
-                if w_func:
-                    ### self.g.trace(f"Found c.{ivar}.{p_command}")
-                    return w_func
-            # else:
-                # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
-        return None
-
-    def leoCommand(self, p_command, p_ap, p_keepSelection=False):
-        '''
-        Generic call to a method in Leo's Commands class or any subcommander class.
-
-        The p_ap position node is to be selected before having the command run,
-        while the p_keepSelection parameter specifies wether the original position should be re-selected.
-        The whole of those operations is to be undoable as one undo step.
-
-        p_command: a method name (a string).
-        p_ap: an archived position.
-        p_keepSelection: preserve the current selection, if possible.
-        '''
-        if not p_ap:
-            return self.outputError(f"Error in {p_command}: no param p_ap")
-        w_p = self.ap_to_p(p_ap)
-        if not w_p:
-            return self.outputError(f"Error in {p_command}: no w_p node found")
-        w_func = self._get_commander_method(p_command)
-        if not w_func:
-            return self.outputError(f"Error in {p_command}: no method found")
-
-        if w_p == self.commander.p:
-            w_func(event=None)
-        else:
-            oldPosition = self.commander.p
-            self.commander.selectPosition(w_p)
-            w_func(event=None)
-            if p_keepSelection and self.commander.positionExists(oldPosition):
-                self.commander.selectPosition(oldPosition)
-        return self.outputPNode(self.commander.p)
+            return self._outputError("Error in insertNamedPNode no param node")
 
     def undo(self, p_paramUnused):
         '''Undo last un-doable operation'''
         if self.commander.undoer.canUndo():
             self.commander.undoer.undo()
-        return self.outputPNode(self.commander.p)  # return selected node when done
+        return self._outputPNode(self.commander.p)  # return selected node when done
 
     def redo(self, p_paramUnused):
         '''Undo last un-doable operation'''
         if self.commander.undoer.canRedo():
             self.commander.undoer.redo()
-        return self.outputPNode(self.commander.p)  # return selected node when done
-
-    def pageUp(self, p_ap):
-        """Selects a node a couple of steps up in the tree to simulate page up"""
-        self.commander.selectVisBack()
-        self.commander.selectVisBack()
-        self.commander.selectVisBack()
-        return self.outputPNode(self.commander.p)
-
-    def pageDown(self, p_ap):
-        """Selects a node a couple of steps down in the tree to simulate page down"""
-        self.commander.selectVisNext()
-        self.commander.selectVisNext()
-        self.commander.selectVisNext()
-        return self.outputPNode(self.commander.p)
+        return self._outputPNode(self.commander.p)  # return selected node when done
 
     def executeScriptPackage(self, p_package):
         '''Select a node and run its script'''
         c, g = self.commander, self.g
         if not 'node' in p_package:
-            return self.outputError("Error in executeScript no param node")
+            return self._outputError("Error in executeScript no param node")
         w_ap = p_package['node']
-        w_p = self.ap_to_p(w_ap)
+        w_p = self._ap_to_p(w_ap)
         if not w_p:
-            return self.outputError("Error in executeScript no w_p node found")
+            return self._outputError("Error in executeScript no w_p node found")
         c.selectPosition(w_p)
         w_script = ""
         if 'text' in p_package:
@@ -2090,7 +2056,7 @@ class LeoBridgeIntegController:
         if not w_script or w_script.isspace():
             # Empty selection.
             c.executeScript()
-            return self.outputPNode(self.commander.p)
+            return self._outputPNode(self.commander.p)
         # * Mimic getScript !!
         try:
             # Remove extra leading whitespace so the user may execute indented code.
@@ -2103,7 +2069,50 @@ class LeoBridgeIntegController:
             g.trace('Error while executing script')
             print('Error while executing script')
             print(str(e))
-        return self.outputPNode(self.commander.p)
+        return self._outputPNode(self.commander.p)
+
+    def getStates(self, p_package):
+        """
+        Gets the currently opened file's general states for UI enabled/disabled states
+        such as undo available, file changed/unchanged
+        """
+        w_states = {}
+        if self.commander:
+            try:
+                w_states["changed"] = self.commander.changed   # 'dirty/changed' member
+                w_states["canUndo"] = self.commander.canUndo()
+                w_states["canRedo"] = self.commander.canRedo()
+                w_states["canDemote"] = self.commander.canDemote()
+                w_states["canPromote"] = self.commander.canPromote()
+                w_states["canDehoist"] = self.commander.canDehoist()
+
+            except Exception as e:
+                self.g.trace('Error while getting states')
+                print("Error while getting states")
+                print(str(e))
+        else:
+            w_states["changed"] = False
+            w_states["canUndo"] = False
+            w_states["canRedo"] = False
+            w_states["canDemote"] = False
+            w_states["canPromote"] = False
+            w_states["canDehoist"] = False
+
+        return self.sendLeoBridgePackage("states", w_states)
+
+    def pageUp(self, p_unused):
+        """Selects a node a couple of steps up in the tree to simulate page up"""
+        self.commander.selectVisBack()
+        self.commander.selectVisBack()
+        self.commander.selectVisBack()
+        return self._outputPNode(self.commander.p)
+
+    def pageDown(self, p_unused):
+        """Selects a node a couple of steps down in the tree to simulate page down"""
+        self.commander.selectVisNext()
+        self.commander.selectVisNext()
+        self.commander.selectVisNext()
+        return self._outputPNode(self.commander.p)
 
     def getLanguage(self, p_ap):
         """
@@ -2112,8 +2121,8 @@ class LeoBridgeIntegController:
         Return type is lowercase 'language' non-empty string.
         """
         if not p_ap:
-            return self.outputError("Error in getLanguage, no param p_ap")
-        w_p = self.ap_to_p(p_ap)
+            return self._outputError("Error in getLanguage, no param p_ap")
+        w_p = self._ap_to_p(p_ap)
         if not w_p:
             return self.sendLeoBridgePackage("language", "plain")
 
@@ -2141,47 +2150,44 @@ class LeoBridgeIntegController:
     def getPNode(self, p_ap):
         '''EMIT OUT a node, don't select it'''
         if p_ap:
-            w_p = self.ap_to_p(p_ap)
+            w_p = self._ap_to_p(p_ap)
             if w_p:
-                return self.outputPNode(w_p)
+                return self._outputPNode(w_p)
             else:
-                return self.outputError("Error in getPNode no w_p node found")
+                return self._outputError("Error in getPNode no w_p node found")
         else:
-            return self.outputError("Error in getPNode no param p_ap")
+            return self._outputError("Error in getPNode no param p_ap")
 
     def getChildren(self, p_ap):
         '''EMIT OUT list of children of a node'''
         if p_ap:
-            w_p = self.ap_to_p(p_ap)
+            w_p = self._ap_to_p(p_ap)
             if w_p and w_p.hasChildren():
-                return self.outputPNodes(w_p.children())
+                return self._outputPNodes(w_p.children())
             else:
-                return self.outputPNodes([])  # default empty array
+                return self._outputPNodes([])  # default empty array
         else:
             if self.commander.hoistStack:
-                return self.outputPNodes([self.commander.hoistStack[-1].p])
+                return self._outputPNodes([self.commander.hoistStack[-1].p])
             else:
-                return self.outputPNodes(self.yieldAllRootChildren())  # this outputs all Root Children
+                return self._outputPNodes(self._yieldAllRootChildren())  # this outputs all Root Children
 
     def getParent(self, p_ap):
         '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
         if p_ap:
-            w_p = self.ap_to_p(p_ap)
+            w_p = self._ap_to_p(p_ap)
             if w_p and w_p.hasParent():
-                return self.outputPNode(w_p.getParent())
-            else:
-                return self.outputPNode()  # default empty for root
-        else:
-            return self.outputPNode()
+                return self._outputPNode(w_p.getParent())  # if not root
+        return self._outputPNode()  # default empty for root as default
 
-    def getSelectedNode(self, p_paramUnused):
+    def getSelectedNode(self, p_unused):
         '''EMIT OUT Selected Position as an array, even if unique'''
         if self.commander.p:
-            return self.outputPNode(self.commander.p)
+            return self._outputPNode(self.commander.p)
         else:
-            return self.outputPNode()
+            return self._outputPNode()
 
-    def getAllGnx(self, p_paramUnused):
+    def getAllGnx(self, p_unused):
         '''Get gnx array from all unique nodes'''
         w_all_gnx = [p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
         return self.sendLeoBridgePackage("allGnx", w_all_gnx)
@@ -2192,13 +2198,10 @@ class LeoBridgeIntegController:
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
             if w_v:
                 if w_v.b:
-                    return self.outputBodyData(w_v.b)
+                    return self._outputBodyData(w_v.b)
                 else:
-                    return self.outputBodyData()  # default "" empty string
-            else:
-                return self.sendLeoBridgePackage()  # empty as inexistent
-        else:
-            return self.sendLeoBridgePackage()  # empty as inexistent
+                    return self._outputBodyData()  # default "" empty string
+        return self.sendLeoBridgePackage()  # default as inexistent
 
     def getBodyLength(self, p_gnx):
         '''EMIT OUT body string length of a node'''
@@ -2206,11 +2209,8 @@ class LeoBridgeIntegController:
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
             if w_v and w_v.b:
                 return self.sendLeoBridgePackage("bodyLength", len(w_v.b))
-            else:
-                return self.sendLeoBridgePackage("bodyLength", 0)
-        else:
-            # TODO : May need to signal inexistent by self.sendLeoBridgePackage()  # empty as inexistent
-            return self.sendLeoBridgePackage("bodyLength", 0)
+        # TODO : May need to signal inexistent by self.sendLeoBridgePackage()
+        return self.sendLeoBridgePackage("bodyLength", 0)  # empty as default
 
     def setNewBody(self, p_body):
         '''Change Body of selected node'''
@@ -2218,14 +2218,14 @@ class LeoBridgeIntegController:
         # TODO : Does this support 'Undo'?
         if self.commander.p:
             self.commander.p.b = p_body['body']
-            return self.outputPNode(self.commander.p)
+            return self._outputPNode(self.commander.p)
         else:
-            return self.outputError("Error in setNewBody")
+            return self._outputError("Error in setNewBody")
 
     def setBody(self, p_package):
         '''Change Body text of a node'''
         for w_p in self.commander.all_positions():
-            if w_p.v.gnx == p_package['gnx']:  # found
+            if w_p.v.gnx == p_package['gnx']:
                 # TODO : Before setting undo and trying to set body, first check if different than existing body
                 w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
                 w_p.v.setBodyString(p_package['body'])
@@ -2242,39 +2242,39 @@ class LeoBridgeIntegController:
         w_newHeadline = p_package['text']
         w_ap = p_package['node']
         if w_ap:
-            w_p = self.ap_to_p(w_ap)
+            w_p = self._ap_to_p(w_ap)
             if w_p:
                 # set this node's new headline
                 w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)
                 w_p.h = w_newHeadline
                 self.commander.undoer.afterChangeNodeContents(w_p, 'Change Headline', w_bunch)
-                return self.outputPNode(w_p)
-        return self.outputError("Error in setNewHeadline")
+                return self._outputPNode(w_p)
+        return self._outputError("Error in setNewHeadline")
 
     def setSelectedNode(self, p_ap):
         '''Select a node, or the first one found with its GNX'''
         if p_ap:
-            w_p = self.ap_to_p(p_ap)
+            w_p = self._ap_to_p(p_ap)
             if w_p:
                 if self.commander.positionExists(w_p):
                     # set this node as selection
                     self.commander.selectPosition(w_p)
                 else:
-                    w_foundPNode = self.findPNodeFromGnx(p_ap['gnx'])
+                    w_foundPNode = self._findPNodeFromGnx(p_ap['gnx'])
                     if w_foundPNode:
                         self.commander.selectPosition(w_foundPNode)
                     else:
                         print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
         # * return the finally selected node
         if self.commander.p:
-            return self.outputPNode(self.commander.p)
+            return self._outputPNode(self.commander.p)
         else:
-            return self.outputPNode()
+            return self._outputPNode()
 
     def expandNode(self, p_ap):
         '''Expand a node'''
         if p_ap:
-            w_p = self.ap_to_p(p_ap)
+            w_p = self._ap_to_p(p_ap)
             if w_p:
                 w_p.expand()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
@@ -2282,26 +2282,26 @@ class LeoBridgeIntegController:
     def collapseNode(self, p_ap):
         '''Collapse a node'''
         if p_ap:
-            w_p = self.ap_to_p(p_ap)
+            w_p = self._ap_to_p(p_ap)
             if w_p:
                 w_p.contract()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
-    def yieldAllRootChildren(self):
+    def _yieldAllRootChildren(self):
         '''Return all root children P nodes'''
         p = self.commander.rootPosition()
         while p:
             yield p
             p.moveToNext()
 
-    def findPNodeFromGnx(self, p_gnx):
+    def _findPNodeFromGnx(self, p_gnx):
         '''Return first p node with this gnx or false'''
         for p in self.commander.all_unique_positions():
             if p.v.gnx == p_gnx:
                 return p
         return False
 
-    def create_gnx_to_vnode(self):
+    def _create_gnx_to_vnode(self):
         '''Make the first gnx_to_vnode array with all unique nodes'''
         t1 = time.process_time()
         self.gnx_to_vnode = {v.gnx: v for v in self.commander.all_unique_nodes()}
@@ -2309,9 +2309,9 @@ class LeoBridgeIntegController:
         if 0:
             print('app.create_all_data: %5.3f sec. %s entries' % (
                 (time.process_time()-t1), len(list(self.gnx_to_vnode.keys()))))
-        self.test_round_trip_positions()
+        self._test_round_trip_positions()
 
-    def test_round_trip_positions(self):
+    def _test_round_trip_positions(self):
         '''(From Leo plugin leoflexx.py) Test the round tripping of p_to_ap and ap_to_p.'''
         # Bug fix: p_to_ap updates app.gnx_to_vnode. Save and restore it.
         old_d = self.gnx_to_vnode.copy()
@@ -2320,8 +2320,8 @@ class LeoBridgeIntegController:
         qtyAllPositions = 0
         for p in self.commander.all_positions():
             qtyAllPositions += 1
-            ap = self.p_to_ap(p)
-            p2 = self.ap_to_p(ap)
+            ap = self._p_to_ap(p)
+            p2 = self._ap_to_p(ap)
             assert p == p2, (repr(p), repr(p2), repr(ap))
         gnx_to_vnode = old_d
         new_len = len(list(gnx_to_vnode.keys()))
@@ -2329,7 +2329,7 @@ class LeoBridgeIntegController:
         # print('Leo file opened. Its outline contains ' + str(qtyAllPositions) + " nodes positions.")
         # print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)))
 
-    def ap_to_p(self, ap):
+    def _ap_to_p(self, ap):
         '''
         (From Leo plugin leoflexx.py) Convert an archived position to a true Leo position.
         Return false if no key
@@ -2347,7 +2347,7 @@ class LeoBridgeIntegController:
 
         return leoNodes.position(v, childIndex, stack)
 
-    def p_to_ap(self, p):
+    def _p_to_ap(self, p):
         '''(From Leo plugin leoflexx.py) Converts Leo position to a serializable archived position.'''
         if not p.v:
             print('app.p_to_ap: no p.v: %r %s' % (p))
@@ -2447,10 +2447,7 @@ def main():
                         w_answer = w_func(w_param['param'])
                     else:
                         # Attempt to execute the command directly on the commander/subcommander
-                        w_keep = False  # Possible to specify to try to keep original selection
-                        if "keep" in w_param:
-                            w_keep = w_param['keep']
-                        w_answer = integController.leoCommand(w_param['action'], w_param['param'], w_keep)
+                        w_answer = integController.leoCommand(w_param['action'], w_param['param'])
                 else:
                     w_answer = "Error in processCommand"
                     print(w_answer, flush=True)

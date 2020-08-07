@@ -156,16 +156,21 @@
 <v t="felix.20200219224515.1"><vh>logSignon</vh></v>
 <v t="felix.20200219222712.1"><vh>es</vh></v>
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
+<v t="felix.20200806211848.1"><vh>_get_commander_method</vh></v>
+<v t="felix.20200806211852.1"><vh>leoCommand</vh></v>
+<v t="felix.20200806214416.1"><vh>Documents Functions</vh>
 <v t="felix.20200622230608.1"><vh>getOpenedFiles</vh></v>
 <v t="felix.20200624172552.1"><vh>setOpenedFile</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
 <v t="felix.20200719172857.1"><vh>openFiles</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
 <v t="felix.20200216160305.1"><vh>saveFile</vh></v>
-<v t="felix.20200619165641.1"><vh>getStates</vh></v>
+</v>
+<v t="felix.20200806214615.1"><vh>buttons Functions</vh>
 <v t="felix.20200710014747.1"><vh>getButtons</vh></v>
 <v t="felix.20200718122313.1"><vh>removeButton</vh></v>
 <v t="felix.20200710030614.1"><vh>clickButton</vh></v>
+</v>
 <v t="felix.20200723204750.1"><vh>Minibuffer Functions</vh>
 <v t="felix.20200711182907.1"><vh>getCommands</vh></v>
 <v t="felix.20200723204838.1"><vh>_bad_commands</vh></v>
@@ -176,27 +181,26 @@
 <v t="felix.20191128004456.1"><vh>setActionId</vh></v>
 <v t="felix.20200213195413.1"><vh>asyncOutput</vh></v>
 <v t="felix.20191126232434.7"><vh>sendLeoBridgePackage</vh></v>
-<v t="felix.20191126232434.8"><vh>outputError</vh></v>
-<v t="felix.20191126232434.9"><vh>outputBodyData</vh></v>
-<v t="felix.20191126232434.10"><vh>outputPNode</vh></v>
-<v t="felix.20191126232434.11"><vh>outputPNodes</vh></v>
+<v t="felix.20191126232434.8"><vh>_outputError</vh></v>
+<v t="felix.20191126232434.9"><vh>_outputBodyData</vh></v>
+<v t="felix.20191126232434.10"><vh>_outputPNode</vh></v>
+<v t="felix.20191126232434.11"><vh>_outputPNodes</vh></v>
 </v>
-<v t="felix.20191128000818.1"><vh>Outline Editing Commands</vh>
+<v t="felix.20191128000818.1"><vh>Overriden Leo Commands</vh>
 <v t="felix.20191127004621.1"><vh>markPNode</vh></v>
 <v t="felix.20191127235913.1"><vh>unmarkPNode</vh></v>
 <v t="felix.20191231203545.1"><vh>clonePNode</vh></v>
 <v t="felix.20191127002548.1"><vh>deletePNode</vh></v>
 <v t="felix.20191127001506.1"><vh>insertPNode</vh></v>
 <v t="felix.20200120224033.1"><vh>insertNamedPNode</vh></v>
-</v>
-<v t="felix.20191128001054.1"><vh>Outline and Body Interaction</vh>
-<v t="felix.20200719001908.2"><vh>_get_commander_method</vh></v>
-<v t="felix.20200719001908.1"><vh>leoCommand</vh></v>
 <v t="felix.20191231203711.1"><vh>undo</vh></v>
 <v t="felix.20200103204811.1"><vh>redo</vh></v>
+<v t="felix.20191231214801.1"><vh>executeScriptPackage</vh></v>
+</v>
+<v t="felix.20191128001054.1"><vh>UI interaction</vh>
+<v t="felix.20200619165641.1"><vh>getStates</vh></v>
 <v t="felix.20200722221454.2"><vh>pageUp</vh></v>
 <v t="felix.20200722221454.3"><vh>pageDown</vh></v>
-<v t="felix.20191231214801.1"><vh>executeScriptPackage</vh></v>
 <v t="felix.20200725164340.1"><vh>getLanguage</vh></v>
 <v t="felix.20191126232434.15"><vh>getPNode</vh></v>
 <v t="felix.20191126232434.16"><vh>getChildren</vh></v>
@@ -211,14 +215,14 @@
 <v t="felix.20191126232434.24"><vh>setSelectedNode</vh></v>
 <v t="felix.20191126232434.25"><vh>expandNode</vh></v>
 <v t="felix.20191126232434.26"><vh>collapseNode</vh></v>
-<v t="felix.20191126232434.29"><vh>yieldAllRootChildren</vh></v>
-<v t="felix.20191216195906.1"><vh>findPNodeFromGnx</vh></v>
+<v t="felix.20191126232434.29"><vh>_yieldAllRootChildren</vh></v>
+<v t="felix.20191216195906.1"><vh>_findPNodeFromGnx</vh></v>
 </v>
 <v t="felix.20191128003648.1"><vh>leoFlexx Conversion Functions</vh>
-<v t="felix.20191126232434.27"><vh>create_gnx_to_vnode</vh></v>
-<v t="felix.20191126232434.28"><vh>test_round_trip_positions</vh></v>
-<v t="felix.20191126232434.30"><vh>ap_to_p</vh></v>
-<v t="felix.20191126232434.31"><vh>p_to_ap</vh></v>
+<v t="felix.20191126232434.27"><vh>_create_gnx_to_vnode</vh></v>
+<v t="felix.20191126232434.28"><vh>_test_round_trip_positions</vh></v>
+<v t="felix.20191126232434.30"><vh>_ap_to_p</vh></v>
+<v t="felix.20191126232434.31"><vh>_p_to_ap</vh></v>
 </v>
 </v>
 <v t="felix.20191126232435.1"><vh>main</vh></v>
@@ -654,17 +658,17 @@ i_symbol : (also j and k) index for a loop of some kind.
 UPPERCASE : An immutable constant from the constants.ts source file.
 
 </t>
-<t tx="felix.20191126232434.10">def outputPNode(self, p_node=False):
+<t tx="felix.20191126232434.10">def _outputPNode(self, p_node=False):
     if p_node:
-        return self.sendLeoBridgePackage("node", self.p_to_ap(p_node))  # Single node, singular
+        return self.sendLeoBridgePackage("node", self._p_to_ap(p_node))  # Single node, singular
     else:
         return self.sendLeoBridgePackage("node", None)
 
 </t>
-<t tx="felix.20191126232434.11">def outputPNodes(self, p_pList):
+<t tx="felix.20191126232434.11">def _outputPNodes(self, p_pList):
     w_apList = []
     for p in p_pList:
-        w_apList.append(self.p_to_ap(p))
+        w_apList.append(self._p_to_ap(p))
     return self.sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
 
 </t>
@@ -690,12 +694,12 @@ UPPERCASE : An immutable constant from the constants.ts source file.
 
     if self.commander:
         self.commander.closed = False
-        self.create_gnx_to_vnode()
+        self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
-                    "node": self.p_to_ap(self.commander.p)}
+                    "node": self._p_to_ap(self.commander.p)}
         return self.sendLeoBridgePackage("opened", w_result)
     else:
-        return self.outputError('Error in openFile')
+        return self._outputError('Error in openFile')
 
 </t>
 <t tx="felix.20191126232434.14">def closeFile(self, p_package):
@@ -722,9 +726,9 @@ UPPERCASE : An immutable constant from the constants.ts source file.
         self.commander = None
 
     if self.commander:
-        self.create_gnx_to_vnode()
+        self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
-                    "node": self.p_to_ap(self.commander.p)}
+                    "node": self._p_to_ap(self.commander.p)}
         return self.sendLeoBridgePackage("closed", w_result)
     else:
         w_result = {"total": 0}
@@ -734,48 +738,45 @@ UPPERCASE : An immutable constant from the constants.ts source file.
 <t tx="felix.20191126232434.15">def getPNode(self, p_ap):
     '''EMIT OUT a node, don't select it'''
     if p_ap:
-        w_p = self.ap_to_p(p_ap)
+        w_p = self._ap_to_p(p_ap)
         if w_p:
-            return self.outputPNode(w_p)
+            return self._outputPNode(w_p)
         else:
-            return self.outputError("Error in getPNode no w_p node found")
+            return self._outputError("Error in getPNode no w_p node found")
     else:
-        return self.outputError("Error in getPNode no param p_ap")
+        return self._outputError("Error in getPNode no param p_ap")
 
 </t>
 <t tx="felix.20191126232434.16">def getChildren(self, p_ap):
     '''EMIT OUT list of children of a node'''
     if p_ap:
-        w_p = self.ap_to_p(p_ap)
+        w_p = self._ap_to_p(p_ap)
         if w_p and w_p.hasChildren():
-            return self.outputPNodes(w_p.children())
+            return self._outputPNodes(w_p.children())
         else:
-            return self.outputPNodes([])  # default empty array
+            return self._outputPNodes([])  # default empty array
     else:
         if self.commander.hoistStack:
-            return self.outputPNodes([self.commander.hoistStack[-1].p])
+            return self._outputPNodes([self.commander.hoistStack[-1].p])
         else:
-            return self.outputPNodes(self.yieldAllRootChildren())  # this outputs all Root Children
+            return self._outputPNodes(self._yieldAllRootChildren())  # this outputs all Root Children
 
 </t>
 <t tx="felix.20191126232434.17">def getParent(self, p_ap):
     '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
     if p_ap:
-        w_p = self.ap_to_p(p_ap)
+        w_p = self._ap_to_p(p_ap)
         if w_p and w_p.hasParent():
-            return self.outputPNode(w_p.getParent())
-        else:
-            return self.outputPNode()  # default empty for root
-    else:
-        return self.outputPNode()
+            return self._outputPNode(w_p.getParent())  # if not root
+    return self._outputPNode()  # default empty for root as default
 
 </t>
-<t tx="felix.20191126232434.18">def getSelectedNode(self, p_paramUnused):
+<t tx="felix.20191126232434.18">def getSelectedNode(self, p_unused):
     '''EMIT OUT Selected Position as an array, even if unique'''
     if self.commander.p:
-        return self.outputPNode(self.commander.p)
+        return self._outputPNode(self.commander.p)
     else:
-        return self.outputPNode()
+        return self._outputPNode()
 
 </t>
 <t tx="felix.20191126232434.19">def getBody(self, p_gnx):
@@ -784,13 +785,10 @@ UPPERCASE : An immutable constant from the constants.ts source file.
         w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
         if w_v:
             if w_v.b:
-                return self.outputBodyData(w_v.b)
+                return self._outputBodyData(w_v.b)
             else:
-                return self.outputBodyData()  # default "" empty string
-        else:
-            return self.sendLeoBridgePackage()  # empty as inexistent
-    else:
-        return self.sendLeoBridgePackage()  # empty as inexistent
+                return self._outputBodyData()  # default "" empty string
+    return self.sendLeoBridgePackage()  # default as inexistent
 
 </t>
 <t tx="felix.20191126232434.2">#! python3
@@ -811,11 +809,8 @@ if __name__ == '__main__':
         w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
         if w_v and w_v.b:
             return self.sendLeoBridgePackage("bodyLength", len(w_v.b))
-        else:
-            return self.sendLeoBridgePackage("bodyLength", 0)
-    else:
-        # TODO : May need to signal inexistent by self.sendLeoBridgePackage()  # empty as inexistent
-        return self.sendLeoBridgePackage("bodyLength", 0)
+    # TODO : May need to signal inexistent by self.sendLeoBridgePackage()
+    return self.sendLeoBridgePackage("bodyLength", 0)  # empty as default
 
 </t>
 <t tx="felix.20191126232434.21">def setNewBody(self, p_body):
@@ -824,15 +819,15 @@ if __name__ == '__main__':
     # TODO : Does this support 'Undo'?
     if self.commander.p:
         self.commander.p.b = p_body['body']
-        return self.outputPNode(self.commander.p)
+        return self._outputPNode(self.commander.p)
     else:
-        return self.outputError("Error in setNewBody")
+        return self._outputError("Error in setNewBody")
 
 </t>
 <t tx="felix.20191126232434.22">def setBody(self, p_package):
     '''Change Body text of a node'''
     for w_p in self.commander.all_positions():
-        if w_p.v.gnx == p_package['gnx']:  # found
+        if w_p.v.gnx == p_package['gnx']:
             # TODO : Before setting undo and trying to set body, first check if different than existing body
             w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
             w_p.v.setBodyString(p_package['body'])
@@ -850,41 +845,41 @@ if __name__ == '__main__':
     w_newHeadline = p_package['text']
     w_ap = p_package['node']
     if w_ap:
-        w_p = self.ap_to_p(w_ap)
+        w_p = self._ap_to_p(w_ap)
         if w_p:
             # set this node's new headline
             w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)
             w_p.h = w_newHeadline
             self.commander.undoer.afterChangeNodeContents(w_p, 'Change Headline', w_bunch)
-            return self.outputPNode(w_p)
-    return self.outputError("Error in setNewHeadline")
+            return self._outputPNode(w_p)
+    return self._outputError("Error in setNewHeadline")
 
 </t>
 <t tx="felix.20191126232434.24">def setSelectedNode(self, p_ap):
     '''Select a node, or the first one found with its GNX'''
     if p_ap:
-        w_p = self.ap_to_p(p_ap)
+        w_p = self._ap_to_p(p_ap)
         if w_p:
             if self.commander.positionExists(w_p):
                 # set this node as selection
                 self.commander.selectPosition(w_p)
             else:
-                w_foundPNode = self.findPNodeFromGnx(p_ap['gnx'])
+                w_foundPNode = self._findPNodeFromGnx(p_ap['gnx'])
                 if w_foundPNode:
                     self.commander.selectPosition(w_foundPNode)
                 else:
                     print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
     # * return the finally selected node
     if self.commander.p:
-        return self.outputPNode(self.commander.p)
+        return self._outputPNode(self.commander.p)
     else:
-        return self.outputPNode()
+        return self._outputPNode()
 
 </t>
 <t tx="felix.20191126232434.25">def expandNode(self, p_ap):
     '''Expand a node'''
     if p_ap:
-        w_p = self.ap_to_p(p_ap)
+        w_p = self._ap_to_p(p_ap)
         if w_p:
             w_p.expand()
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
@@ -893,13 +888,13 @@ if __name__ == '__main__':
 <t tx="felix.20191126232434.26">def collapseNode(self, p_ap):
     '''Collapse a node'''
     if p_ap:
-        w_p = self.ap_to_p(p_ap)
+        w_p = self._ap_to_p(p_ap)
         if w_p:
             w_p.contract()
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20191126232434.27">def create_gnx_to_vnode(self):
+<t tx="felix.20191126232434.27">def _create_gnx_to_vnode(self):
     '''Make the first gnx_to_vnode array with all unique nodes'''
     t1 = time.process_time()
     self.gnx_to_vnode = {v.gnx: v for v in self.commander.all_unique_nodes()}
@@ -907,10 +902,10 @@ if __name__ == '__main__':
     if 0:
         print('app.create_all_data: %5.3f sec. %s entries' % (
             (time.process_time()-t1), len(list(self.gnx_to_vnode.keys()))))
-    self.test_round_trip_positions()
+    self._test_round_trip_positions()
 
 </t>
-<t tx="felix.20191126232434.28">def test_round_trip_positions(self):
+<t tx="felix.20191126232434.28">def _test_round_trip_positions(self):
     '''(From Leo plugin leoflexx.py) Test the round tripping of p_to_ap and ap_to_p.'''
     # Bug fix: p_to_ap updates app.gnx_to_vnode. Save and restore it.
     old_d = self.gnx_to_vnode.copy()
@@ -919,8 +914,8 @@ if __name__ == '__main__':
     qtyAllPositions = 0
     for p in self.commander.all_positions():
         qtyAllPositions += 1
-        ap = self.p_to_ap(p)
-        p2 = self.ap_to_p(ap)
+        ap = self._p_to_ap(p)
+        p2 = self._ap_to_p(ap)
         assert p == p2, (repr(p), repr(p2), repr(ap))
     gnx_to_vnode = old_d
     new_len = len(list(gnx_to_vnode.keys()))
@@ -929,7 +924,7 @@ if __name__ == '__main__':
     # print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)))
 
 </t>
-<t tx="felix.20191126232434.29">def yieldAllRootChildren(self):
+<t tx="felix.20191126232434.29">def _yieldAllRootChildren(self):
     '''Return all root children P nodes'''
     p = self.commander.rootPosition()
     while p:
@@ -937,7 +932,7 @@ if __name__ == '__main__':
         p.moveToNext()
 
 </t>
-<t tx="felix.20191126232434.30">def ap_to_p(self, ap):
+<t tx="felix.20191126232434.30">def _ap_to_p(self, ap):
     '''
     (From Leo plugin leoflexx.py) Convert an archived position to a true Leo position.
     Return false if no key
@@ -956,7 +951,7 @@ if __name__ == '__main__':
     return leoNodes.position(v, childIndex, stack)
 
 </t>
-<t tx="felix.20191126232434.31">def p_to_ap(self, p):
+<t tx="felix.20191126232434.31">def _p_to_ap(self, p):
     '''(From Leo plugin leoflexx.py) Converts Leo position to a serializable archived position.'''
     if not p.v:
         print('app.p_to_ap: no p.v: %r %s' % (p))
@@ -1020,7 +1015,7 @@ if __name__ == '__main__':
     # * Trace outputs to pythons stdout, also prints the function call stack
     # self.g.trace('test trace')
 
-    # * Intercept Log Pane output: Sends to vsCode's log pane
+    # * Intercept Log Pane output: Sends to client's log pane
     self.g.es = self.es  # pointer - not a function call
 
     # print(dir(self.g))
@@ -1056,14 +1051,14 @@ if __name__ == '__main__':
     # await self.webSocket.send(json.dumps(w_package, separators=(',', ':')))  # send as json
 
 </t>
-<t tx="felix.20191126232434.8">def outputError(self, p_message="Unknown Error"):
+<t tx="felix.20191126232434.8">def _outputError(self, p_message="Unknown Error"):
     print("ERROR: " + p_message)  # Output to this server's running console
     w_package = {"id": self.currentActionId}
     w_package["error"] = p_message
     return p_message
 
 </t>
-<t tx="felix.20191126232434.9">def outputBodyData(self, p_bodyText=""):
+<t tx="felix.20191126232434.9">def _outputBodyData(self, p_bodyText=""):
     return self.sendLeoBridgePackage("bodyData", p_bodyText)
 
 </t>
@@ -1125,10 +1120,7 @@ if __name__ == '__main__':
                         w_answer = w_func(w_param['param'])
                     else:
                         # Attempt to execute the command directly on the commander/subcommander
-                        w_keep = False  # Possible to specify to try to keep original selection
-                        if "keep" in w_param:
-                            w_keep = w_param['keep']
-                        w_answer = integController.leoCommand(w_param['action'], w_param['param'], w_keep)
+                        w_answer = integController.leoCommand(w_param['action'], w_param['param'])
                 else:
                     w_answer = "Error in processCommand"
                     print(w_answer, flush=True)
@@ -1154,27 +1146,29 @@ if __name__ == '__main__':
 
 
 </t>
-<t tx="felix.20191127001506.1">def insertPNode(self, p_ap):
+<t tx="felix.20191127001506.1">def insertPNode(self, p_package):
     '''Insert a node at given node, then select it once created, and finally return it'''
-    if p_ap:
-        w_p = self.ap_to_p(p_ap)
+    w_ap = p_package["node"]    
+    if w_ap:
+        w_p = self._ap_to_p(w_ap)
         if w_p:
             w_bunch = self.commander.undoer.beforeInsertNode(w_p)
             w_newNode = w_p.insertAfter()
             w_newNode.setDirty()
             self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_bunch)
             self.commander.selectPosition(w_newNode)
-            return self.outputPNode(self.commander.p)  # in both cases, return selected node
+            return self._outputPNode(self.commander.p)  # in both cases, return selected node
         else:
-            return self.outputError("Error in insertPNode no w_p node found")  # default empty
+            return self._outputError("Error in insertPNode no w_p node found")  # default empty
     else:
-        return self.outputError("Error in insertPNode no param p_ap")
+        return self._outputError("Error in insertPNode no param node")
 
 </t>
-<t tx="felix.20191127002548.1">def deletePNode(self, p_ap):
+<t tx="felix.20191127002548.1">def deletePNode(self, p_package):
     '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
-    if p_ap:
-        w_p = self.ap_to_p(p_ap)
+    w_ap = p_package["node"]    
+    if w_ap:
+        w_p = self._ap_to_p(w_ap)
         if w_p:
             if w_p == self.commander.p:
                 self.commander.deleteOutline()  # already on this node, so delete it
@@ -1189,43 +1183,42 @@ if __name__ == '__main__':
                     # Try again with childIndex
                     if self.commander.positionExists(oldPosition):
                         self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
-            return self.outputPNode(self.commander.p)  # in both cases, return selected node
+            return self._outputPNode(self.commander.p)  # in both cases, return selected node
         else:
-            return self.outputError("Error in deletePNode no w_p node found")  # default empty
+            return self._outputError("Error in deletePNode no w_p node found")  # default empty
     else:
-        return self.outputError("Error in deletePNode no param p_ap")
+        return self._outputError("Error in deletePNode no param node")
 
 </t>
-<t tx="felix.20191127004621.1">def markPNode(self, p_ap):
+<t tx="felix.20191127004621.1">def markPNode(self, p_package):
     '''Mark a node, don't select it'''
-    if p_ap:
-        w_p = self.ap_to_p(p_ap)
+    w_ap = p_package["node"]
+    if w_ap:
+        w_p = self._ap_to_p(w_ap)
         if w_p:
             w_p.setMarked()
-            return self.outputPNode(self.commander.p)  # return selected node when done (not w_p)
+            return self._outputPNode(self.commander.p)  # return selected node when done (not w_p)
         else:
-            return self.outputError("Error in markPNode no w_p node found")
+            return self._outputError("Error in markPNode no w_p node found")
     else:
-        return self.outputError("Error in markPNode no param p_ap")
+        return self._outputError("Error in markPNode no param node")
 
 </t>
-<t tx="felix.20191127235913.1">def unmarkPNode(self, p_ap):
+<t tx="felix.20191127235913.1">def unmarkPNode(self, p_package):
     '''Unmark a node, don't select it'''
-    if p_ap:
-        w_p = self.ap_to_p(p_ap)
+    w_ap = p_package["node"]
+    if w_ap:
+        w_p = self._ap_to_p(w_ap)
         if w_p:
             w_p.clearMarked()
-            return self.outputPNode(self.commander.p)  # return selected node when done (not w_p)
+            return self._outputPNode(self.commander.p)  # return selected node when done (not w_p)
         else:
-            return self.outputError("Error in unmarkPNode no w_p node found")
+            return self._outputError("Error in unmarkPNode no w_p node found")
     else:
-        return self.outputError("Error in unmarkPNode no param p_ap")
+        return self._outputError("Error in unmarkPNode no param node")
 
 </t>
-<t tx="felix.20191128000818.1"># Can be used on any non-selected node from the mouse context menu in vscode
-# They set the p_keepSelection parameter when calling leoCommand
-# TODO : Pass 'keep' as a parameter from vscode to remove 12 other methods!
-</t>
+<t tx="felix.20191128000818.1"></t>
 <t tx="felix.20191128001054.1"></t>
 <t tx="felix.20191128002414.1">import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
@@ -1250,13 +1243,13 @@ wsPort = 32125
     self.currentActionId = p_id
 
 </t>
-<t tx="felix.20191201194046.1">def getAllGnx(self, p_paramUnused):
+<t tx="felix.20191201194046.1">def getAllGnx(self, p_unused):
     '''Get gnx array from all unique nodes'''
     w_all_gnx = [p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
     return self.sendLeoBridgePackage("allGnx", w_all_gnx)
 
 </t>
-<t tx="felix.20191216195906.1">def findPNodeFromGnx(self, p_gnx):
+<t tx="felix.20191216195906.1">def _findPNodeFromGnx(self, p_gnx):
     '''Return first p node with this gnx or false'''
     for p in self.commander.all_unique_positions():
         if p.v.gnx == p_gnx:
@@ -1264,37 +1257,41 @@ wsPort = 32125
     return False
 
 </t>
-<t tx="felix.20191231203545.1">def clonePNode(self, p_ap):
-    '''Clone a node, return it if it was also the current selection, otherwise try not to select it'''
-    if p_ap:
-        w_p = self.ap_to_p(p_ap)
-        if w_p:
-            if w_p == self.commander.p:
-                return self.leoCommand("clone", p_ap, False)
-            else:
-                return self.leoCommand("clone", p_ap, True)
-        else:
-            return self.outputError("Error in clonePNode function, no w_p node found")  # default empty
+<t tx="felix.20191231203545.1">def clonePNode(self, p_package):
+    '''Clone a node, return it, if it was also the current selection, otherwise try not to select it'''
+    w_ap = p_package["node"]
+    if not w_ap:
+        return self._outputError("Error in clonePNode function, no param p_ap")
+    w_p = self._ap_to_p(w_ap)
+    if not w_p:
+        return self._outputError("Error in clonePNode function, no w_p node found")  # default empty
+    if w_p == self.commander.p:
+        self.commander.clone()
     else:
-        return self.outputError("Error in clonePNode function, no param p_ap")
+        oldPosition = self.commander.p
+        self.commander.selectPosition(w_p)
+        self.commander.clone()
+        if self.commander.positionExists(oldPosition):
+            self.commander.selectPosition(oldPosition)
+    return self._outputPNode(self.commander.p)  # return selected node either ways
 
 </t>
 <t tx="felix.20191231203711.1">def undo(self, p_paramUnused):
     '''Undo last un-doable operation'''
     if self.commander.undoer.canUndo():
         self.commander.undoer.undo()
-    return self.outputPNode(self.commander.p)  # return selected node when done
+    return self._outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 <t tx="felix.20191231214801.1">def executeScriptPackage(self, p_package):
     '''Select a node and run its script'''
     c, g = self.commander, self.g
     if not 'node' in p_package:
-        return self.outputError("Error in executeScript no param node")
+        return self._outputError("Error in executeScript no param node")
     w_ap = p_package['node']
-    w_p = self.ap_to_p(w_ap)
+    w_p = self._ap_to_p(w_ap)
     if not w_p:
-        return self.outputError("Error in executeScript no w_p node found")
+        return self._outputError("Error in executeScript no w_p node found")
     c.selectPosition(w_p)
     w_script = ""
     if 'text' in p_package:
@@ -1302,7 +1299,7 @@ wsPort = 32125
     if not w_script or w_script.isspace():
         # Empty selection.
         c.executeScript()
-        return self.outputPNode(self.commander.p)
+        return self._outputPNode(self.commander.p)
     # * Mimic getScript !!
     try:
         # Remove extra leading whitespace so the user may execute indented code.
@@ -1315,14 +1312,14 @@ wsPort = 32125
         g.trace('Error while executing script')
         print('Error while executing script')
         print(str(e))
-    return self.outputPNode(self.commander.p)
+    return self._outputPNode(self.commander.p)
 
 </t>
 <t tx="felix.20200103204811.1">def redo(self, p_paramUnused):
     '''Undo last un-doable operation'''
     if self.commander.undoer.canRedo():
         self.commander.undoer.redo()
-    return self.outputPNode(self.commander.p)  # return selected node when done
+    return self._outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 <t tx="felix.20200120224033.1">def insertNamedPNode(self, p_package):
@@ -1330,7 +1327,7 @@ wsPort = 32125
     w_newHeadline = p_package['text']
     w_ap = p_package['node']
     if w_ap:
-        w_p = self.ap_to_p(w_ap)
+        w_p = self._ap_to_p(w_ap)
         if w_p:
             w_u = self.commander.undoer.beforeInsertNode(w_p)
             w_newNode = w_p.insertAfter()
@@ -1339,11 +1336,11 @@ wsPort = 32125
             w_newNode.setDirty()
             self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_u)
             self.commander.selectPosition(w_newNode)
-            return self.outputPNode(self.commander.p)  # in any case, return selected node
+            return self._outputPNode(self.commander.p)  # in any case, return selected node
         else:
-            return self.outputError("Error in insertNamedPNode no w_p node found")  # default empty
+            return self._outputError("Error in insertNamedPNode no w_p node found")  # default empty
     else:
-        return self.outputError("Error in insertNamedPNode no param w_ap")
+        return self._outputError("Error in insertNamedPNode no param node")
 
 </t>
 <t tx="felix.20200211202929.1">def initConnection(self, p_webSocket):
@@ -1781,14 +1778,14 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200304220844.1">def askResult(self, p_result):
-    '''Got the result to an asked question/warning from vscode'''
+    '''Got the result to an asked question/warning from client'''
     self.g.app.externalFilesController.integResult(p_result)
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
 <t tx="felix.20200304221925.1">def integResult(self, p_result):
-    '''Received result from vsCode'''
-    # Got the result to an asked question/warning from vscode
+    '''Received result from client'''
+    # Got the result to an asked question/warning from the client
     if not self.waitingForAnswer:
         print("ERROR: Received Result but no Asked Dialog")
         return
@@ -1854,7 +1851,7 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200312231358.1">def applyConfig(self, p_config):
-    '''Got leoInteg's config from vscode'''
+    '''Got leoInteg's config from client'''
     self.leoIntegConfig = p_config
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
@@ -1943,12 +1940,12 @@ wsPort = 32125
 
     if self.commander:
         self.commander.closed = False
-        self.create_gnx_to_vnode()
+        self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
-                    "node": self.p_to_ap(self.commander.p)}
+                    "node": self._p_to_ap(self.commander.p)}
         return self.sendLeoBridgePackage("setOpened", w_result)
     else:
-        return self.outputError('Error in setOpenedFile')
+        return self._outputError('Error in setOpenedFile')
 
 </t>
 <t tx="felix.20200626012709.1">def _returnNo(self, *arguments):
@@ -1973,7 +1970,7 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200710030614.1">def clickButton(self, p_package):
-    '''Handles buttons clicked in vscode from the '@button' panel'''
+    '''Handles buttons clicked in client from the '@button' panel'''
     w_index = p_package['index']
     w_dict = self.commander.theScriptingController.buttonsDict
     w_button = None
@@ -1982,7 +1979,7 @@ wsPort = 32125
             w_button = i_key
     if w_button:
         w_button.command()  # run clicked button command
-    return self.outputPNode(self.commander.p)  # return selected node when done
+    return self._outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 <t tx="felix.20200711182907.1">def getCommands(self, p_package):
@@ -6185,7 +6182,7 @@ public getExpiredGnxList(): Thenable&lt;string[]&gt; {
             w_key = i_key
     if w_key:
         del(w_dict[w_key])  # delete object member
-    return self.outputPNode(self.commander.p)  # return selected node when done
+    return self._outputPNode(self.commander.p)  # return selected node when done
 
 </t>
 <t tx="felix.20200718153505.1">import * as vscode from "vscode";
@@ -8379,86 +8376,6 @@ More information can be found on the repository's [Issues Page](https://github.c
 <t tx="felix.20200718223820.1"></t>
 <t tx="felix.20200718223833.1"></t>
 <t tx="felix.20200718223838.1"></t>
-<t tx="felix.20200719001908.1">def leoCommand(self, p_command, p_ap, p_keepSelection=False):
-    '''
-    Generic call to a method in Leo's Commands class or any subcommander class.
-
-    The p_ap position node is to be selected before having the command run,
-    while the p_keepSelection parameter specifies wether the original position should be re-selected.
-    The whole of those operations is to be undoable as one undo step.
-
-    p_command: a method name (a string).
-    p_ap: an archived position.
-    p_keepSelection: preserve the current selection, if possible.
-    '''
-    if not p_ap:
-        return self.outputError(f"Error in {p_command}: no param p_ap")
-    w_p = self.ap_to_p(p_ap)
-    if not w_p:
-        return self.outputError(f"Error in {p_command}: no w_p node found")
-    w_func = self._get_commander_method(p_command)
-    if not w_func:
-        return self.outputError(f"Error in {p_command}: no method found")
-
-    if w_p == self.commander.p:
-        w_func(event=None)
-    else:
-        oldPosition = self.commander.p
-        self.commander.selectPosition(w_p)
-        w_func(event=None)
-        if p_keepSelection and self.commander.positionExists(oldPosition):
-            self.commander.selectPosition(oldPosition)
-    return self.outputPNode(self.commander.p)
-
-</t>
-<t tx="felix.20200719001908.2">def _get_commander_method(self, p_command):
-    """ Return the given method (p_command) in the Commands class or subcommanders."""
-    # self.g.trace(p_command)
-    #
-    # First, try the commands class.
-    w_func = getattr(self.commander, p_command, None)
-    if w_func:
-        return w_func
-    #
-    # Search all subcommanders for the method.
-    table = (  # This table comes from c.initObjectIvars.
-        'abbrevCommands',
-        'bufferCommands',
-        'chapterCommands',
-        'controlCommands',
-        'convertCommands',
-        'debugCommands',
-        'editCommands',
-        'editFileCommands',
-        'evalController',
-        'gotoCommands',
-        'helpCommands',
-        'keyHandler',
-        'keyHandlerCommands',
-        'killBufferCommands',
-        'leoCommands',
-        'leoTestManager',
-        'macroCommands',
-        'miniBufferWidget',
-        'printingController',
-        'queryReplaceCommands',
-        'rectangleCommands',
-        'searchCommands',
-        'spellCommands',
-        'vimCommands',  # Not likely to be useful.
-    )
-    for ivar in table:
-        subcommander = getattr(self.commander, ivar, None)
-        if subcommander:
-            w_func = getattr(subcommander, p_command, None)
-            if w_func:
-                ### self.g.trace(f"Found c.{ivar}.{p_command}")
-                return w_func
-        # else:
-            # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
-    return None
-
-</t>
 <t tx="felix.20200719025231.1">import * as vscode from "vscode";
 import { debounce } from "debounce";
 import * as utils from "./utils";
@@ -10202,12 +10119,12 @@ public sendConfigToServer(p_config: ConfigMembers): void {
     # Done with the last one, it's now the selected commander. Check again just in case.
     if self.commander:
         self.commander.closed = False
-        self.create_gnx_to_vnode()
+        self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
-                    "node": self.p_to_ap(self.commander.p)}
+                    "node": self._p_to_ap(self.commander.p)}
         return self.sendLeoBridgePackage("opened", w_result)
     else:
-        return self.outputError('Error in openFiles')
+        return self._outputError('Error in openFiles')
 
 </t>
 <t tx="felix.20200719231248.1"></t>
@@ -10634,20 +10551,20 @@ public showRecentLeoFiles(): void {
     return docstring
 
 </t>
-<t tx="felix.20200722221454.2">def pageUp(self, p_ap):
+<t tx="felix.20200722221454.2">def pageUp(self, p_unused):
     """Selects a node a couple of steps up in the tree to simulate page up"""
     self.commander.selectVisBack()
     self.commander.selectVisBack()
     self.commander.selectVisBack()
-    return self.outputPNode(self.commander.p)
+    return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200722221454.3">def pageDown(self, p_ap):
+<t tx="felix.20200722221454.3">def pageDown(self, p_unused):
     """Selects a node a couple of steps down in the tree to simulate page down"""
     self.commander.selectVisNext()
     self.commander.selectVisNext()
     self.commander.selectVisNext()
-    return self.outputPNode(self.commander.p)
+    return self._outputPNode(self.commander.p)
 
 </t>
 <t tx="felix.20200723204750.1"></t>
@@ -11696,8 +11613,8 @@ public showRecentLeoFiles(): void {
     Return type is lowercase 'language' non-empty string.
     """
     if not p_ap:
-        return self.outputError("Error in getLanguage, no param p_ap")
-    w_p = self.ap_to_p(p_ap)
+        return self._outputError("Error in getLanguage, no param p_ap")
+    w_p = self._ap_to_p(p_ap)
     if not w_p:
         return self.sendLeoBridgePackage("language", "plain")
 
@@ -11861,5 +11778,91 @@ public static CONFIG_DEFAULTS = {
 })],
 
 </t>
+<t tx="felix.20200806211848.1">def _get_commander_method(self, p_command):
+    """ Return the given method (p_command) in the Commands class or subcommanders."""
+    # self.g.trace(p_command)
+    #
+    # First, try the commands class.
+    w_func = getattr(self.commander, p_command, None)
+    if w_func:
+        return w_func
+    #
+    # Search all subcommanders for the method.
+    table = (  # This table comes from c.initObjectIvars.
+        'abbrevCommands',
+        'bufferCommands',
+        'chapterCommands',
+        'controlCommands',
+        'convertCommands',
+        'debugCommands',
+        'editCommands',
+        'editFileCommands',
+        'evalController',
+        'gotoCommands',
+        'helpCommands',
+        'keyHandler',
+        'keyHandlerCommands',
+        'killBufferCommands',
+        'leoCommands',
+        'leoTestManager',
+        'macroCommands',
+        'miniBufferWidget',
+        'printingController',
+        'queryReplaceCommands',
+        'rectangleCommands',
+        'searchCommands',
+        'spellCommands',
+        'vimCommands',  # Not likely to be useful.
+    )
+    for ivar in table:
+        subcommander = getattr(self.commander, ivar, None)
+        if subcommander:
+            w_func = getattr(subcommander, p_command, None)
+            if w_func:
+                ### self.g.trace(f"Found c.{ivar}.{p_command}")
+                return w_func
+        # else:
+            # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
+    return None
+
+</t>
+<t tx="felix.20200806211852.1">def leoCommand(self, p_command, p_package):
+    '''
+    Generic call to a method in Leo's Commands class or any subcommander class.
+
+    The p_ap position node is to be selected before having the command run,
+    while the p_keepSelection parameter specifies wether the original position should be re-selected.
+    The whole of those operations is to be undoable as one undo step.
+
+    p_command: a method name (a string).
+    p_ap: an archived position.
+    p_keepSelection: preserve the current selection, if possible.
+    '''
+    w_keepSelection = False  # Set default, optional component of package
+    if "keep" in p_package:
+        w_keepSelection = p_package["keep"]
+    w_ap = p_package["node"]  # At least node parameter is present
+    if not w_ap:
+        return self._outputError(f"Error in {p_command}: no param node")
+    w_p = self._ap_to_p(w_ap)
+    if not w_p:
+        return self._outputError(f"Error in {p_command}: no w_p node found")
+    w_func = self._get_commander_method(p_command)
+    if not w_func:
+        return self._outputError(f"Error in {p_command}: no method found")
+
+    if w_p == self.commander.p:
+        w_func(event=None)
+    else:
+        oldPosition = self.commander.p
+        self.commander.selectPosition(w_p)
+        w_func(event=None)
+        if w_keepSelection and self.commander.positionExists(oldPosition):
+            self.commander.selectPosition(oldPosition)
+    return self._outputPNode(self.commander.p)
+
+</t>
+<t tx="felix.20200806214416.1"></t>
+<t tx="felix.20200806214615.1"></t>
 </tnodes>
 </leo_file>
