@@ -9312,7 +9312,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
         this._bodyTextDocument = p_document;
 
         if (this.lastSelectedNode) {
-            this._leoBridge.action(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
+            this.sendAction(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
                 .then(p_result =&gt; {
                     let w_language = p_result.language;
                     // TODO : Move those exception in "constants.ts"
@@ -9615,7 +9615,7 @@ public switchLeoFile(): void {
     // TODO : Fix / Cleanup opened body panes close before reopening when switching
     this.triggerBodySave(true)
         .then(() =&gt; {
-            return this._leoBridge.action(Constants.LEOBRIDGE.GET_OPENED_FILES);
+            return this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
         })
         .then(p_package =&gt; {
             const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
@@ -9655,7 +9655,7 @@ public switchLeoFile(): void {
  */
 public selectOpenedLeoDocument(p_index: number): void {
     if (this._isBusy(true)) { return; } // Warn user to wait for end of busy state
-    this._leoBridge.action(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_index }))
+    this.sendAction(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_index }))
         .then((p_openFileResult: LeoBridgePackage) =&gt; {
             // Like we just opened or made a new file
             if (p_openFileResult.setOpened) {
@@ -9672,7 +9672,7 @@ public selectOpenedLeoDocument(p_index: number): void {
  */
 public clickButton(p_node: LeoButtonNode): void {
     if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-    this._leoBridge.action(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
+    this.sendAction(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
         .then((p_clickButtonResult: LeoBridgePackage) =&gt; {
             // console.log('Back from clickButton, package is: ', p_clickButtonResult);
             this.launchRefresh({ body: true, tree: true, documents: true, buttons: true }, false);
@@ -9685,7 +9685,7 @@ public clickButton(p_node: LeoButtonNode): void {
  */
 public removeButton(p_node: LeoButtonNode): void {
     if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-    this._leoBridge.action(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
+    this.sendAction(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
         .then((p_removeButtonResult: LeoBridgePackage) =&gt; {
             // console.log('Back from removeButton, package is: ', p_removeButtonResult);
             this.launchRefresh({ buttons: true }, false);
@@ -10165,7 +10165,7 @@ private _openLastFiles(): void {
     // Loop through context.globalState.&lt;something&gt; and check if they exist: open them
     const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
     if (w_lastFiles.length) {
-        this._leoBridge.action(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
+        this.sendAction(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
             .then((p_openFileResult: LeoBridgePackage) =&gt; {
                 this.leoStates.leoBridgeReady = true;
                 return this._setupOpenedLeoDocument(p_openFileResult.opened!);
@@ -10280,7 +10280,7 @@ public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boole
  */
 public minibuffer(): void {
     if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-    const w_promise: Thenable&lt;MinibufferCommand[]&gt; = this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
+    const w_promise: Thenable&lt;MinibufferCommand[]&gt; = this.sendAction(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
         .then((p_result: LeoBridgePackage) =&gt; {
             if (p_result.commands &amp;&amp; p_result.commands.length) {
                 return p_result.commands;

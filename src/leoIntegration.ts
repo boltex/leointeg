@@ -349,7 +349,7 @@ export class LeoIntegration {
         // Loop through context.globalState.<something> and check if they exist: open them
         const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
         if (w_lastFiles.length) {
-            this._leoBridge.action(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
+            this.sendAction(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
                 .then((p_openFileResult: LeoBridgePackage) => {
                     this.leoStates.leoBridgeReady = true;
                     return this._setupOpenedLeoDocument(p_openFileResult.opened!);
@@ -1124,7 +1124,7 @@ export class LeoIntegration {
             this._bodyTextDocument = p_document;
 
             if (this.lastSelectedNode) {
-                this._leoBridge.action(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
+                this.sendAction(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
                     .then(p_result => {
                         let w_language = p_result.language;
                         // TODO : Move those exception in "constants.ts"
@@ -1426,7 +1426,7 @@ export class LeoIntegration {
         // TODO : Fix / Cleanup opened body panes close before reopening when switching
         this.triggerBodySave(true)
             .then(() => {
-                return this._leoBridge.action(Constants.LEOBRIDGE.GET_OPENED_FILES);
+                return this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
             })
             .then(p_package => {
                 const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
@@ -1465,7 +1465,7 @@ export class LeoIntegration {
      */
     public selectOpenedLeoDocument(p_index: number): void {
         if (this._isBusy(true)) { return; } // Warn user to wait for end of busy state
-        this._leoBridge.action(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_index }))
+        this.sendAction(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_index }))
             .then((p_openFileResult: LeoBridgePackage) => {
                 // Like we just opened or made a new file
                 if (p_openFileResult.setOpened) {
@@ -1610,7 +1610,7 @@ export class LeoIntegration {
      */
     public clickButton(p_node: LeoButtonNode): void {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        this._leoBridge.action(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
+        this.sendAction(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
             .then((p_clickButtonResult: LeoBridgePackage) => {
                 // console.log('Back from clickButton, package is: ', p_clickButtonResult);
                 this.launchRefresh({ body: true, tree: true, documents: true, buttons: true }, false);
@@ -1622,7 +1622,7 @@ export class LeoIntegration {
      */
     public removeButton(p_node: LeoButtonNode): void {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        this._leoBridge.action(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
+        this.sendAction(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
             .then((p_removeButtonResult: LeoBridgePackage) => {
                 // console.log('Back from removeButton, package is: ', p_removeButtonResult);
                 this.launchRefresh({ buttons: true }, false);
@@ -1636,7 +1636,7 @@ export class LeoIntegration {
      */
     public minibuffer(): void {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        const w_promise: Thenable<MinibufferCommand[]> = this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
+        const w_promise: Thenable<MinibufferCommand[]> = this.sendAction(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
             .then((p_result: LeoBridgePackage) => {
                 if (p_result.commands && p_result.commands.length) {
                     return p_result.commands;
