@@ -857,7 +857,7 @@ class LeoBridgeIntegController:
         # This is a hand-curated list.
         bad_list = [
 
-            # Abreviations...
+            # Abbreviations...
             'abbrev-kill-all',
             'abbrev-list',
             'dabbrev-completion',
