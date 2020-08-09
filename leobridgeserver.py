@@ -599,6 +599,10 @@ class LeoBridgeIntegController:
         w_keepSelection = False  # Set default, optional component of package
         if "keep" in p_package:
             w_keepSelection = p_package["keep"]
+            print("have keep! " + str(w_keepSelection))
+        else:
+            print("NO keep!")
+
         w_ap = p_package["node"]  # At least node parameter is present
         if not w_ap:
             return self._outputError(f"Error in {p_command}: no param node")
@@ -1968,7 +1972,7 @@ class LeoBridgeIntegController:
 
     def deletePNode(self, p_package):
         '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
-        w_ap = p_package["node"]    
+        w_ap = p_package["node"]
         if w_ap:
             w_p = self._ap_to_p(w_ap)
             if w_p:
@@ -1993,7 +1997,7 @@ class LeoBridgeIntegController:
 
     def insertPNode(self, p_package):
         '''Insert a node at given node, then select it once created, and finally return it'''
-        w_ap = p_package["node"]    
+        w_ap = p_package["node"]
         if w_ap:
             w_p = self._ap_to_p(w_ap)
             if w_p:

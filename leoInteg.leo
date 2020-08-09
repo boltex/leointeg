@@ -1148,7 +1148,7 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191127001506.1">def insertPNode(self, p_package):
     '''Insert a node at given node, then select it once created, and finally return it'''
-    w_ap = p_package["node"]    
+    w_ap = p_package["node"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -1166,7 +1166,7 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191127002548.1">def deletePNode(self, p_package):
     '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
-    w_ap = p_package["node"]    
+    w_ap = p_package["node"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -3010,32 +3010,32 @@ wsPort = 32125
 {
   "command": "leointeg.promote",
   "category": "Leo",
-  "title": "Promote"
+  "title": "Promote Children"
 },
 {
   "command": "leointeg.promoteSelection",
   "category": "Leo",
-  "title": "Promote"
+  "title": "Promote Children"
 },
 {
   "command": "leointeg.promoteSelectionFromOutline",
   "category": "Leo",
-  "title": "Promote"
+  "title": "Promote Children"
 },
 {
   "command": "leointeg.demote",
   "category": "Leo",
-  "title": "Demote"
+  "title": "Demote Siblings"
 },
 {
   "command": "leointeg.demoteSelection",
   "category": "Leo",
-  "title": "Demote"
+  "title": "Demote Siblings"
 },
 {
   "command": "leointeg.demoteSelectionFromOutline",
   "category": "Leo",
-  "title": "Demote"
+  "title": "Demote Siblings"
 },
 {
   "command": "leointeg.sortChildrenSelection",
@@ -5097,25 +5097,25 @@ import { LeoButtonNode } from "./leoButtonNode";
     action: BRIDGE.CONTRACT_ALL,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.CONTRACT_ALL_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_ALL,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.CONTRACT_OR_GO_LEFT, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_OR_GO_LEFT,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.EXPAND_AND_GO_RIGHT, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.EXPAND_AND_GO_RIGHT,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 </t>
@@ -5123,56 +5123,56 @@ import { LeoButtonNode } from "./leoButtonNode";
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.GOTO_NEXT_CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 [CMD.GOTO_NEXT_MARKED, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_MARKED,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.GOTO_FIRST_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_FIRST_VISIBLE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.GOTO_LAST_SIBLING, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_LAST_SIBLING,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.GOTO_LAST_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_LAST_VISIBLE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.GOTO_NEXT_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_VISIBLE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.GOTO_PREV_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_PREV_VISIBLE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 </t>
@@ -5180,31 +5180,31 @@ import { LeoButtonNode } from "./leoButtonNode";
     action: BRIDGE.DEHOIST,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.DEHOIST_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEHOIST,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.HOIST, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.HOIST_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.HOIST_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 </t>
@@ -5212,19 +5212,19 @@ import { LeoButtonNode } from "./leoButtonNode";
     action: BRIDGE.CLONE_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CLONE_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CLONE_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 [CMD.INSERT, (p_node: LeoNode) =&gt; w_leo.insertNode(p_node, false)],
@@ -5250,18 +5250,19 @@ import { LeoButtonNode } from "./leoButtonNode";
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false,
+    keepSelection: true
 })],
 [CMD.MOVE_DOWN_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_DOWN,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.MOVE_DOWN_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_DOWN,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 [CMD.MOVE_LEFT, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
@@ -5269,18 +5270,19 @@ import { LeoButtonNode } from "./leoButtonNode";
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false,
+    keepSelection: true
 })],
 [CMD.MOVE_LEFT_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_LEFT,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.MOVE_LEFT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_LEFT,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 [CMD.MOVE_RIGHT, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
@@ -5288,18 +5290,19 @@ import { LeoButtonNode } from "./leoButtonNode";
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false,
+    keepSelection: true
 })],
 [CMD.MOVE_RIGHT_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_RIGHT,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.MOVE_RIGHT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_RIGHT,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 [CMD.MOVE_UP, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
@@ -5307,18 +5310,19 @@ import { LeoButtonNode } from "./leoButtonNode";
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false,
+    keepSelection: true
 })],
 [CMD.MOVE_UP_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_UP,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.MOVE_UP_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_UP,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 </t>
@@ -5326,13 +5330,13 @@ import { LeoButtonNode } from "./leoButtonNode";
     action: BRIDGE.PAGE_UP,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.PAGE_DOWN, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PAGE_DOWN,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 </t>
@@ -5341,36 +5345,38 @@ import { LeoButtonNode } from "./leoButtonNode";
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false,
+    keepSelection: true
 })],
 [CMD.DEMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEMOTE_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.DEMOTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEMOTE_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.PROMOTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false,
+    keepSelection: true
 })],
 [CMD.PROMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.PROMOTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: U,
     refreshType: REFRESH_TREE,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 </t>
@@ -5379,18 +5385,21 @@ import { LeoButtonNode } from "./leoButtonNode";
     node: U,
     refreshType: REFRESH_TREE,
     fromOutline: false,
+    keepSelection: true
 })],
 [CMD.SORT_SIBLING, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SORT_SIBLINGS,
     node: U,
     refreshType: REFRESH_TREE,
     fromOutline: false,
+    keepSelection: true
 })],
 [CMD.SORT_SIBLING_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SORT_SIBLINGS,
     node: U,
     refreshType: REFRESH_TREE,
     fromOutline: true,
+    keepSelection: true
 })],
 
 </t>
@@ -5451,25 +5460,25 @@ export function activate(p_context: vscode.ExtensionContext) {
     action: BRIDGE.REDO,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.REDO_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REDO,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.UNDO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.UNDO,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.UNDO_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.UNDO,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 </t>
@@ -5559,7 +5568,7 @@ function getDurationMilliseconds(p_start: [number, number]): number {
 [CMD.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
 [CMD.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
 [CMD.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
-[CMD.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")],
+[CMD.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")]
 
 </t>
 <t tx="felix.20200718031424.5">[CMD.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.clickButton(p_node)], // not referenced in package.json
@@ -5585,24 +5594,25 @@ function getDurationMilliseconds(p_start: [number, number]): number {
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false,
+    keepSelection: true
 })],
 [CMD.REFRESH_FROM_DISK_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REFRESH_FROM_DISK_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REFRESH_FROM_DISK_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.GIT_DIFF, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GIT_DIFF,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 </t>
@@ -5618,30 +5628,35 @@ function getDurationMilliseconds(p_start: [number, number]): number {
     node: p_node,
     refreshType: NO_REFRESH,
     fromOutline: false,
+    keepSelection: true
 })],
 [CMD.CUT, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.CUT_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false,
+    keepSelection: true
 })],
 [CMD.DELETE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false,
+    keepSelection: true
 })],
 [CMD.PASTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false,
+    keepSelection: true
 })],
 [CMD.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_CLONE_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false,
+    keepSelection: true
 })],
 
 </t>
@@ -11708,55 +11723,55 @@ public static CONFIG_DEFAULTS = {
     action: BRIDGE.COPY_PNODE,
     node: U,
     refreshType: NO_REFRESH,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.CUT_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CUT_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.CUT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CUT_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.DELETE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.DELETE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.PASTE_CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_CLONE_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.PASTE_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_CLONE_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 [CMD.PASTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: false
 })],
 [CMD.PASTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_PNODE,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
+    fromOutline: true
 })],
 
 </t>
@@ -11823,6 +11838,10 @@ public static CONFIG_DEFAULTS = {
     w_keepSelection = False  # Set default, optional component of package
     if "keep" in p_package:
         w_keepSelection = p_package["keep"]
+        print("have keep! " + str(w_keepSelection))
+    else:
+        print("NO keep!")
+
     w_ap = p_package["node"]  # At least node parameter is present
     if not w_ap:
         return self._outputError(f"Error in {p_command}: no param node")

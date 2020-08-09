@@ -872,6 +872,8 @@ export class LeoIntegration {
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
      */
     public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean): void {
+        console.log('WAS FROM OUTLINE! : ', p_fromOutline);
+
         // * Rules not specified with ternary operator(s) for clarity
         // Set w_revealType, it will ultimately set this._revealType. Used when finding the OUTLINE's selected node and setting or preventing focus into it
         // Set this._fromOutline. Used when finding the selected node and showing the BODY to set or prevent focus in it
@@ -898,6 +900,8 @@ export class LeoIntegration {
             w_revealType = RevealType.RevealSelect;
         }
         // * Launch Outline's Root Refresh Cycle
+        console.log('Finally refresihg with:', w_revealType);
+
         this._refreshOutline(w_revealType); // Always at least refresh tree?
         this.getStates();
     }
@@ -1170,6 +1174,8 @@ export class LeoIntegration {
                     preview: false // should text document be in preview only? set false for fully opened
                     // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top otherwise
                 };
+
+            console.log('Showing body, KeepFocus:', p_preserveFocus);
 
             // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
             return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor => {
