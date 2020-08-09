@@ -324,7 +324,7 @@
 <v t="felix.20200719025231.70"><vh>test</vh></v>
 </v>
 </v>
-<v t="felix.20200718165721.1"><vh>Extension Typescript Sources</vh>
+<v t="felix.20200718165721.1"><vh>Typescript Sources</vh>
 <v t="felix.20200718024635.1"><vh>@clean src/commandStack.ts</vh>
 <v t="felix.20200718024635.2"><vh>class CommandStack</vh>
 <v t="felix.20200718024635.3"><vh>size</vh></v>
@@ -4836,9 +4836,7 @@ private _tryStart(): void {
  * * Run the command at index 0: The bottom of the stack.
  */
 private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
-    // console.log('Running from a stack of', this._stack.length);
-
-    const w_command = this._stack[0]; // Reference from bottom of stack, don't remove yet
+    const w_command: UserCommand = this._stack[0]; // Reference from bottom of stack, don't remove yet
 
     // Build parameter's json here - use text member if needed
     let w_nodeJson: string = ""; // ap json used in building w_jsonParam
@@ -4846,22 +4844,14 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
 
     // First one uses given node or last selected node, other subsequent on stack will use _receivedSelection
     // (Commands such as 'collapse all' will just ignore passed on node parameter)
-    const w_text = w_command.text; // Can be undefined
+    // const w_text = w_command.text; // Can be undefined
     if (w_command.node) {
-        // console.log('USING SPECIFIC Node');
-
         w_nodeJson = w_command.node.apJson; // Was node specific, so we are starting from a new stack of commands
     } else {
         // Use received "selected node" unless first, then use last selected node
-        // console.log(`NOT SPECIFIC node, busy is ${this._busy}`);
-
         if (this._receivedSelection) {
-            // console.log('USING LAST _receivedSelection, SHOULD SEE NEXT ABOVE!');
-
             w_nodeJson = this._receivedSelection;
         } else {
-            // console.log('USING LAST lastSelectedNode');
-
             w_nodeJson = this._leoIntegration.lastSelectedNode!.apJson;
         }
         if (!w_nodeJson) {
@@ -4869,13 +4859,7 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
         }
     }
 
-    // TODO : ADD 'Keep Selection' FLAG
-    // TODO : MAKE NODE COMMANDS USE PACKAGE OBJECT TOO
-    if (w_text) {
-        w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_text); // 'Insert Named Node' or 'Edit Headline'
-    } else {
-        w_jsonParam = w_nodeJson; // 'Insert Unnamed Node' or regular command
-    }
+    w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_command); // 'Insert Named Node' or 'Edit Headline'
 
     // Setup _finalRefreshType, if command requires higher than the one setup so far
     Object.assign(this._finalRefreshType, w_command.refreshType);
@@ -7792,7 +7776,7 @@ export interface LeoPackageStates {
 </t>
 <t tx="felix.20200718195558.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
-import { Icon } from "./types";
+import { Icon, UserCommand } from "./types";
 import { LeoNode } from "./leoNode";
 
 // String and other types/structures helper functions, along with common vscode API calls
@@ -7903,10 +7887,17 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
  * @param p_text Desired text sent along with node in the parameters of the action to be 'called'
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
-export function buildNodeAndTextJson(p_nodeJson: string, p_text: string): string {
-    return "{\"node\":" + p_nodeJson +
-        ", \"text\": " + JSON.stringify(p_text) +
-        "}";
+export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand): string {
+    let w_json = "{\"node\":" + p_nodeJson; // already json
+    if (p_command.text) {
+        w_json += ", \"text\": " + JSON.stringify(p_command.text);
+    }
+    if (p_command.keepSelection) {
+        w_json += ", \"keep\": true";
+    }
+    // TODO : Generalize this function to send any other members of p_command / other members
+    w_json += "}";
+    return w_json;
 }
 
 </t>
@@ -9281,7 +9272,7 @@ public closeBody(): void {
 
 </t>
 <t tx="felix.20200719025231.5">/**
- * *  Sends an action for leobridgeserver.py to run with Leo. This is used mostly by LeoAsync, leoOutline and leoBody.
+ * * Sends an action for leobridgeserver.py to run with Leo. This is used mostly by LeoAsync, leoOutline and leoBody.
  * @param p_action is the action string constant, from Constants.LEOBRIDGE
  * @param p_jsonParam (optional, defaults to "null", which translates to None in python) a JSON string to be given to the python side, often built with JSON.stringify(object)
  * @param p_deferredPayload (optional) a pre-made package that will be given back as the response, instead of package coming back from python
@@ -9299,7 +9290,7 @@ public sendAction(p_action: string, p_jsonParam = "null", p_deferredPayload?: Le
  * @param p_preserveFocus flag that when true will stop the editor from taking focus once opened
  */
 public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode.TextEditor&gt; {
-    // first setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
+    // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
     if (this._refreshType.body) {
         this._refreshType.body = false;
         // TODO : CHECK IF TIMEOUT NECESSARY!
@@ -9379,17 +9370,8 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
  * @param p_text Specific string to pass along as parameter with the action, similar to p_node parameter
  * @returns True if added (see command stack 'rules' in commandStack.ts), false otherwise
  */
-// public nodeCommand(p_action: string, p_node?: LeoNode, p_refresh?: RefreshType, p_fromOutline?: boolean, p_text?: string): boolean {
 public nodeCommand(p_userCommand: UserCommand): boolean {
     this.triggerBodySave(); // No forced vscode save
-    /*  OLD PARAM */
-    //     {
-    //     action: p_action,
-    //     node: p_node,  // Will return false for sure if already started and this is not undefined
-    //     text: p_text ? p_text : undefined,
-    //     refreshType: p_refresh ? p_refresh : RefreshType.NoRefresh,
-    //     fromOutline: !!p_fromOutline, // force boolean
-    // }
     if (this._commandStack.add(p_userCommand)) {
         return true;
     } else {
