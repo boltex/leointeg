@@ -649,11 +649,11 @@ Generic, re-usable utility functions are kept in the utils.ts source file.
 Symbols Decorators and Prefixes
 -------------------------------
 
-w_symbol : A 'work' variable, to work with in the scope it got created.
+w_symbol : A 'work' variable, to work with in the scope it was created.
 
 p_symbol : This was passed as a parameter into the local scope.
 
-i_symbol : (also j and k) index for a loop of some kind.
+i_symbol : (also j and k) indexes for loops.
 
 UPPERCASE : An immutable constant from the constants.ts source file.
 

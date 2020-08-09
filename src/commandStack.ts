@@ -85,9 +85,7 @@ export class CommandStack {
      * * Run the command at index 0: The bottom of the stack.
      */
     private _runStackCommand(): Promise<LeoBridgePackage> {
-        // console.log('Running from a stack of', this._stack.length);
-
-        const w_command = this._stack[0]; // Reference from bottom of stack, don't remove yet
+        const w_command: UserCommand = this._stack[0]; // Reference from bottom of stack, don't remove yet
 
         // Build parameter's json here - use text member if needed
         let w_nodeJson: string = ""; // ap json used in building w_jsonParam
@@ -95,22 +93,14 @@ export class CommandStack {
 
         // First one uses given node or last selected node, other subsequent on stack will use _receivedSelection
         // (Commands such as 'collapse all' will just ignore passed on node parameter)
-        const w_text = w_command.text; // Can be undefined
+        // const w_text = w_command.text; // Can be undefined
         if (w_command.node) {
-            // console.log('USING SPECIFIC Node');
-
             w_nodeJson = w_command.node.apJson; // Was node specific, so we are starting from a new stack of commands
         } else {
             // Use received "selected node" unless first, then use last selected node
-            // console.log(`NOT SPECIFIC node, busy is ${this._busy}`);
-
             if (this._receivedSelection) {
-                // console.log('USING LAST _receivedSelection, SHOULD SEE NEXT ABOVE!');
-
                 w_nodeJson = this._receivedSelection;
             } else {
-                // console.log('USING LAST lastSelectedNode');
-
                 w_nodeJson = this._leoIntegration.lastSelectedNode!.apJson;
             }
             if (!w_nodeJson) {
@@ -118,13 +108,7 @@ export class CommandStack {
             }
         }
 
-        // TODO : ADD 'Keep Selection' FLAG
-        // TODO : MAKE NODE COMMANDS USE PACKAGE OBJECT TOO
-        if (w_text) {
-            w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_text); // 'Insert Named Node' or 'Edit Headline'
-        } else {
-            w_jsonParam = w_nodeJson; // 'Insert Unnamed Node' or regular command
-        }
+        w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_command); // 'Insert Named Node' or 'Edit Headline'
 
         // Setup _finalRefreshType, if command requires higher than the one setup so far
         Object.assign(this._finalRefreshType, w_command.refreshType);

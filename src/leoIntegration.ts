@@ -224,7 +224,7 @@ export class LeoIntegration {
     }
 
     /**
-     * *  Sends an action for leobridgeserver.py to run with Leo. This is used mostly by LeoAsync, leoOutline and leoBody.
+     * * Sends an action for leobridgeserver.py to run with Leo. This is used mostly by LeoAsync, leoOutline and leoBody.
      * @param p_action is the action string constant, from Constants.LEOBRIDGE
      * @param p_jsonParam (optional, defaults to "null", which translates to None in python) a JSON string to be given to the python side, often built with JSON.stringify(object)
      * @param p_deferredPayload (optional) a pre-made package that will be given back as the response, instead of package coming back from python
@@ -1111,7 +1111,7 @@ export class LeoIntegration {
      * @param p_preserveFocus flag that when true will stop the editor from taking focus once opened
      */
     public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable<vscode.TextEditor> {
-        // first setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
+        // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
         if (this._refreshType.body) {
             this._refreshType.body = false;
             // TODO : CHECK IF TIMEOUT NECESSARY!
@@ -1214,17 +1214,8 @@ export class LeoIntegration {
      * @param p_text Specific string to pass along as parameter with the action, similar to p_node parameter
      * @returns True if added (see command stack 'rules' in commandStack.ts), false otherwise
      */
-    // public nodeCommand(p_action: string, p_node?: LeoNode, p_refresh?: RefreshType, p_fromOutline?: boolean, p_text?: string): boolean {
     public nodeCommand(p_userCommand: UserCommand): boolean {
         this.triggerBodySave(); // No forced vscode save
-        /*  OLD PARAM */
-        //     {
-        //     action: p_action,
-        //     node: p_node,  // Will return false for sure if already started and this is not undefined
-        //     text: p_text ? p_text : undefined,
-        //     refreshType: p_refresh ? p_refresh : RefreshType.NoRefresh,
-        //     fromOutline: !!p_fromOutline, // force boolean
-        // }
         if (this._commandStack.add(p_userCommand)) {
             return true;
         } else {
