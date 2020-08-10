@@ -5212,7 +5212,7 @@ import { LeoButtonNode } from "./leoButtonNode";
     action: BRIDGE.CLONE_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
+    fromOutline: true
 })],
 [CMD.CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CLONE_PNODE,
@@ -5227,13 +5227,13 @@ import { LeoButtonNode } from "./leoButtonNode";
     fromOutline: true
 })],
 
-[CMD.INSERT, (p_node: LeoNode) =&gt; w_leo.insertNode(p_node, false)],
+[CMD.INSERT, (p_node: LeoNode) =&gt; w_leo.insertNode(p_node, true)],
 [CMD.INSERT_SELECTION, () =&gt; w_leo.insertNode(U, false)],
 [CMD.INSERT_SELECTION_FO, () =&gt; w_leo.insertNode(U, true)],
 
-// * Special command for when inserting rapidly more than one node without even specifying a headline label,
-// such as spamming CTRL+I rapidly.
-[CMD.INSERT_SELECTION_INTERRUPT, () =&gt; w_leo.insertNode(U, U, true)],
+// Special command for when inserting rapidly more than one node without
+// even specifying a headline label, such as spamming CTRL+I rapidly.
+[CMD.INSERT_SELECTION_INTERRUPT, () =&gt; w_leo.insertNode(U, false, true)],
 
 </t>
 <t tx="felix.20200718031424.15">[CMD.MARK, (p_node: LeoNode) =&gt; w_leo.changeMark(true, p_node, false)],
@@ -5249,7 +5249,7 @@ import { LeoButtonNode } from "./leoButtonNode";
     action: BRIDGE.MOVE_PNODE_DOWN,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: true,
     keepSelection: true
 })],
 [CMD.MOVE_DOWN_SELECTION, () =&gt; w_leo.nodeCommand({
@@ -5269,7 +5269,7 @@ import { LeoButtonNode } from "./leoButtonNode";
     action: BRIDGE.MOVE_PNODE_LEFT,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: true,
     keepSelection: true
 })],
 [CMD.MOVE_LEFT_SELECTION, () =&gt; w_leo.nodeCommand({
@@ -5289,7 +5289,7 @@ import { LeoButtonNode } from "./leoButtonNode";
     action: BRIDGE.MOVE_PNODE_RIGHT,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: true,
     keepSelection: true
 })],
 [CMD.MOVE_RIGHT_SELECTION, () =&gt; w_leo.nodeCommand({
@@ -5309,7 +5309,7 @@ import { LeoButtonNode } from "./leoButtonNode";
     action: BRIDGE.MOVE_PNODE_UP,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: true,
     keepSelection: true
 })],
 [CMD.MOVE_UP_SELECTION, () =&gt; w_leo.nodeCommand({
@@ -5344,7 +5344,7 @@ import { LeoButtonNode } from "./leoButtonNode";
     action: BRIDGE.DEMOTE_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: true,
     keepSelection: true
 })],
 [CMD.DEMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
@@ -5363,7 +5363,7 @@ import { LeoButtonNode } from "./leoButtonNode";
     action: BRIDGE.PROMOTE_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: true,
     keepSelection: true
 })],
 [CMD.PROMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
@@ -5593,8 +5593,8 @@ function getDurationMilliseconds(p_start: [number, number]): number {
     action: BRIDGE.REFRESH_FROM_DISK_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
-    keepSelection: true
+    fromOutline: true,
+    keepSelection: false
 })],
 [CMD.REFRESH_FROM_DISK_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REFRESH_FROM_DISK_PNODE,
@@ -5612,11 +5612,11 @@ function getDurationMilliseconds(p_start: [number, number]): number {
     action: BRIDGE.GIT_DIFF,
     node: U,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
+    fromOutline: false
 })],
 
 </t>
-<t tx="felix.20200718031424.7">[CMD.HEADLINE, (p_node: LeoNode) =&gt; w_leo.editHeadline(p_node, false)],
+<t tx="felix.20200718031424.7">[CMD.HEADLINE, (p_node: LeoNode) =&gt; w_leo.editHeadline(p_node, true)],
 [CMD.HEADLINE_SELECTION, () =&gt; w_leo.editHeadline(U, false)],
 [CMD.HEADLINE_SELECTION_FO, () =&gt; w_leo.editHeadline(U, true)],
 
@@ -5627,36 +5627,36 @@ function getDurationMilliseconds(p_start: [number, number]): number {
     action: BRIDGE.COPY_PNODE,
     node: p_node,
     refreshType: NO_REFRESH,
-    fromOutline: false,
+    fromOutline: true,
     keepSelection: true
 })],
 [CMD.CUT, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.CUT_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: true,
     keepSelection: true
 })],
 [CMD.DELETE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
+    fromOutline: true,
     keepSelection: true
 })],
 [CMD.PASTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
-    keepSelection: true
+    fromOutline: true,
+    keepSelection: false
 })],
 [CMD.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_CLONE_PNODE,
     node: p_node,
     refreshType: REFRESH_TREE_BODY,
-    fromOutline: false,
-    keepSelection: true
+    fromOutline: true,
+    keepSelection: false
 })],
 
 </t>
@@ -6463,7 +6463,7 @@ export class LeoButtonNode extends vscode.TreeItem {
             title: '',
             arguments: [this]
         };
-        this._isAdd = (this.button.index === "nullButtonWidget 1" &amp;&amp; this.button.name === "script-button");
+        this._isAdd = (this.button.index.startsWith("nullButtonWidget") &amp;&amp; this.button.name === "script-button");
         this.contextValue = "leoButtonNode";
     }
 
@@ -9128,6 +9128,8 @@ private _revealTreeViewNode(p_leoNode: LeoNode, p_options?: { select?: boolean, 
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
  */
 public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean): void {
+    console.log('---------- ---------- WAS FROM OUTLINE! : ', p_fromOutline);
+
     // * Rules not specified with ternary operator(s) for clarity
     // Set w_revealType, it will ultimately set this._revealType. Used when finding the OUTLINE's selected node and setting or preventing focus into it
     // Set this._fromOutline. Used when finding the selected node and showing the BODY to set or prevent focus in it
@@ -9154,6 +9156,8 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean): void {
         w_revealType = RevealType.RevealSelect;
     }
     // * Launch Outline's Root Refresh Cycle
+    console.log('Finally refresihg with:', w_revealType);
+
     this._refreshOutline(w_revealType); // Always at least refresh tree?
     this.getStates();
 }
@@ -9364,6 +9368,8 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                 preview: false // should text document be in preview only? set false for fully opened
                 // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top otherwise
             };
+
+        console.log('Showing body, KeepFocus:', p_preserveFocus);
 
         // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
         return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor =&gt; {
@@ -11718,7 +11724,7 @@ public static CONFIG_DEFAULTS = {
 };
 
 </t>
-<t tx="felix.20200802230238.1">// cut/copy/paste/delete c.p..
+<t tx="felix.20200802230238.1">// cut/copy/paste/delete current selection (self.commander.p)
 [CMD.COPY_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.COPY_PNODE,
     node: U,

@@ -70,7 +70,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             node: p_node,
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
-            keepSelection: true
+            keepSelection: false
         })],
         [CMD.REFRESH_FROM_DISK_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.REFRESH_FROM_DISK_PNODE,
@@ -91,7 +91,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: false
         })],
 
-        [CMD.HEADLINE, (p_node: LeoNode) => w_leo.editHeadline(p_node, false)],
+        [CMD.HEADLINE, (p_node: LeoNode) => w_leo.editHeadline(p_node, true)],
         [CMD.HEADLINE_SELECTION, () => w_leo.editHeadline(U, false)],
         [CMD.HEADLINE_SELECTION_FO, () => w_leo.editHeadline(U, true)],
 
@@ -100,39 +100,39 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.COPY_PNODE,
             node: p_node,
             refreshType: NO_REFRESH,
-            fromOutline: false,
+            fromOutline: true,
             keepSelection: true
         })],
         [CMD.CUT, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.CUT_PNODE,
             node: p_node,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false,
+            fromOutline: true,
             keepSelection: true
         })],
         [CMD.DELETE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.DELETE_PNODE,
             node: p_node,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false,
+            fromOutline: true,
             keepSelection: true
         })],
         [CMD.PASTE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.PASTE_PNODE,
             node: p_node,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false,
-            keepSelection: true
+            fromOutline: true,
+            keepSelection: false
         })],
         [CMD.PASTE_CLONE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.PASTE_CLONE_PNODE,
             node: p_node,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false,
-            keepSelection: true
+            fromOutline: true,
+            keepSelection: false
         })],
 
-        // cut/copy/paste/delete c.p..
+        // cut/copy/paste/delete current selection (self.commander.p)
         [CMD.COPY_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.COPY_PNODE,
             node: U,
@@ -304,7 +304,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.CLONE_PNODE,
             node: p_node,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false
+            fromOutline: true
         })],
         [CMD.CLONE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.CLONE_PNODE,
@@ -319,13 +319,13 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true
         })],
 
-        [CMD.INSERT, (p_node: LeoNode) => w_leo.insertNode(p_node, false)],
+        [CMD.INSERT, (p_node: LeoNode) => w_leo.insertNode(p_node, true)],
         [CMD.INSERT_SELECTION, () => w_leo.insertNode(U, false)],
         [CMD.INSERT_SELECTION_FO, () => w_leo.insertNode(U, true)],
 
-        // * Special command for when inserting rapidly more than one node without even specifying a headline label,
-        // such as spamming CTRL+I rapidly.
-        [CMD.INSERT_SELECTION_INTERRUPT, () => w_leo.insertNode(U, U, true)],
+        // Special command for when inserting rapidly more than one node without
+        // even specifying a headline label, such as spamming CTRL+I rapidly.
+        [CMD.INSERT_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, true)],
 
         [CMD.MARK, (p_node: LeoNode) => w_leo.changeMark(true, p_node, false)],
         [CMD.MARK_SELECTION, () => w_leo.changeMark(true, U, false)],
@@ -339,7 +339,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.MOVE_PNODE_DOWN,
             node: p_node,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false,
+            fromOutline: true,
             keepSelection: true
         })],
         [CMD.MOVE_DOWN_SELECTION, () => w_leo.nodeCommand({
@@ -359,7 +359,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.MOVE_PNODE_LEFT,
             node: p_node,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false,
+            fromOutline: true,
             keepSelection: true
         })],
         [CMD.MOVE_LEFT_SELECTION, () => w_leo.nodeCommand({
@@ -379,7 +379,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.MOVE_PNODE_RIGHT,
             node: p_node,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false,
+            fromOutline: true,
             keepSelection: true
         })],
         [CMD.MOVE_RIGHT_SELECTION, () => w_leo.nodeCommand({
@@ -399,7 +399,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.MOVE_PNODE_UP,
             node: p_node,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false,
+            fromOutline: true,
             keepSelection: true
         })],
         [CMD.MOVE_UP_SELECTION, () => w_leo.nodeCommand({
@@ -432,7 +432,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.DEMOTE_PNODE,
             node: p_node,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false,
+            fromOutline: true,
             keepSelection: true
         })],
         [CMD.DEMOTE_SELECTION, () => w_leo.nodeCommand({
@@ -451,7 +451,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.PROMOTE_PNODE,
             node: p_node,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false,
+            fromOutline: true,
             keepSelection: true
         })],
         [CMD.PROMOTE_SELECTION, () => w_leo.nodeCommand({
