@@ -872,7 +872,7 @@ export class LeoIntegration {
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
      */
     public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean): void {
-        console.log('WAS FROM OUTLINE! : ', p_fromOutline);
+        console.log('---------- ---------- WAS FROM OUTLINE! : ', p_fromOutline);
 
         // * Rules not specified with ternary operator(s) for clarity
         // Set w_revealType, it will ultimately set this._revealType. Used when finding the OUTLINE's selected node and setting or preventing focus into it

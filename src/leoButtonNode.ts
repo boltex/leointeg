@@ -24,7 +24,7 @@ export class LeoButtonNode extends vscode.TreeItem {
             title: '',
             arguments: [this]
         };
-        this._isAdd = (this.button.index === "nullButtonWidget 1" && this.button.name === "script-button");
+        this._isAdd = (this.button.index.startsWith("nullButtonWidget") && this.button.name === "script-button");
         this.contextValue = "leoButtonNode";
     }
 

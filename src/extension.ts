@@ -69,7 +69,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.REFRESH_FROM_DISK_PNODE,
             node: p_node,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: false,
+            fromOutline: true,
             keepSelection: true
         })],
         [CMD.REFRESH_FROM_DISK_SELECTION, () => w_leo.nodeCommand({
@@ -88,7 +88,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.GIT_DIFF,
             node: U,
             refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
+            fromOutline: false
         })],
 
         [CMD.HEADLINE, (p_node: LeoNode) => w_leo.editHeadline(p_node, false)],
