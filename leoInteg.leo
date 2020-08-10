@@ -1181,7 +1181,7 @@ if __name__ == '__main__':
                     self.commander.selectPosition(oldPosition)  # select if old position still valid
                 else:
                     oldPosition._childIndex = oldPosition._childIndex-1
-                    # Try again with childIndex
+                    # Try again with childIndex decremented
                     if self.commander.positionExists(oldPosition):
                         self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
             return self._outputPNode(self.commander.p)  # in both cases, return selected node
@@ -11840,30 +11840,30 @@ public static CONFIG_DEFAULTS = {
 </t>
 <t tx="felix.20200806214416.1"></t>
 <t tx="felix.20200806214615.1"></t>
-<t tx="felix.20200810020815.1">def cutPnode(self, p_package):
+<t tx="felix.20200810020815.1">def cutPNode(self, p_package):
     '''Cut a node, don't select it. Try to keep selection, then return the selected node that remains'''
     w_ap = p_package["node"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
             if w_p == self.commander.p:
-                self.commander.deleteOutline()  # already on this node, so delete it
+                self.commander.cutOutline()  # already on this node, so cut it
             else:
                 oldPosition = self.commander.p  # not same node, save position to possibly return to
                 self.commander.selectPosition(w_p)
-                self.commander.deleteOutline()
+                self.commander.cutOutline()
                 if self.commander.positionExists(oldPosition):
                     self.commander.selectPosition(oldPosition)  # select if old position still valid
                 else:
                     oldPosition._childIndex = oldPosition._childIndex-1
-                    # Try again with childIndex
+                    # Try again with childIndex decremented
                     if self.commander.positionExists(oldPosition):
                         self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
             return self._outputPNode(self.commander.p)  # in both cases, return selected node
         else:
-            return self._outputError("Error in deletePNode no w_p node found")  # default empty
+            return self._outputError("Error in cutPNode no w_p node found")  # default empty
     else:
-        return self._outputError("Error in deletePNode no param node")
+        return self._outputError("Error in cutPNode no param node")
 
 </t>
 </tnodes>
