@@ -330,52 +330,23 @@ export class Constants {
         // * Leo Operations
         MARK_PNODE: "markPNode",
         UNMARK_PNODE: "unmarkPNode",
-
-        // COPY_PNODE: "copyPNode",
-        COPY_PNODE: "copyOutline",
-
-        // CUT_PNODE: "cutPNode",
-        CUT_PNODE: "cutOutline",
-
-        // PASTE_PNODE: "pastePNode",
-        PASTE_PNODE: "pasteOutline",
-
-        // PASTE_CLONE_PNODE: "pasteAsClonePNode",
-        PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
-
+        COPY_PNODE: "copyOutline", // was overridden as "copyPNode"
+        CUT_PNODE: "cutPNode",
+        PASTE_PNODE: "pasteOutline", // was overridden as "pastePNode"
+        PASTE_CLONE_PNODE: "pasteOutlineRetainingClones", // was overridden as "pasteAsClonePNode"
         DELETE_PNODE: "deletePNode",
-
-        // MOVE_PNODE_DOWN: "movePNodeDown",
-        MOVE_PNODE_DOWN: "moveOutlineDown",
-
-        // MOVE_PNODE_LEFT: "movePNodeLeft",
-        MOVE_PNODE_LEFT: "moveOutlineLeft",
-
-        // MOVE_PNODE_RIGHT: "movePNodeRight",
-        MOVE_PNODE_RIGHT: "moveOutlineRight",
-
-        // MOVE_PNODE_UP: "movePNodeUp",
-        MOVE_PNODE_UP: "moveOutlineUp",
-
+        MOVE_PNODE_DOWN: "moveOutlineDown", // was overridden as "movePNodeDown"
+        MOVE_PNODE_LEFT: "moveOutlineLeft", // was overridden as "movePNodeLeft"
+        MOVE_PNODE_RIGHT: "moveOutlineRight", // was overridden as "movePNodeRight"
+        MOVE_PNODE_UP: "moveOutlineUp", // was overridden as "movePNodeUp"
         INSERT_PNODE: "insertPNode",
         INSERT_NAMED_PNODE: "insertNamedPNode",
         CLONE_PNODE: "clonePNode",
-
-        // PROMOTE_PNODE: "promotePNode",
-        PROMOTE_PNODE: "promote",
-
-        // DEMOTE_PNODE: "demotePNode",
-        DEMOTE_PNODE: "demote",
-
-        // REFRESH_FROM_DISK_PNODE: "refreshFromDiskPNode",
-        REFRESH_FROM_DISK_PNODE: "refreshFromDisk",
-
-        // SORT_CHILDREN: "sortChildrenPNode",
-        SORT_CHILDREN: "sortChildren",
-
-        // SORT_SIBLINGS: "sortSiblingsPNode",
-        SORT_SIBLINGS: "sortSiblings",
-
+        PROMOTE_PNODE: "promote", // was overridden as "promotePNode"
+        DEMOTE_PNODE: "demote", // was overridden as "demotePNode"
+        REFRESH_FROM_DISK_PNODE: "refreshFromDisk", // was overridden as "refreshFromDiskPNode"
+        SORT_CHILDREN: "sortChildren", // was overridden as "sortChildrenPNode"
+        SORT_SIBLINGS: "sortSiblings", // was overridden as "sortSiblingsPNode"
         UNDO: "undo",
         REDO: "redo",
         EXECUTE_SCRIPT: "executeScriptPackage",

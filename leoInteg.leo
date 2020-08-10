@@ -190,6 +190,7 @@
 <v t="felix.20191127004621.1"><vh>markPNode</vh></v>
 <v t="felix.20191127235913.1"><vh>unmarkPNode</vh></v>
 <v t="felix.20191231203545.1"><vh>clonePNode</vh></v>
+<v t="felix.20200810020815.1"><vh>cutPNode</vh></v>
 <v t="felix.20191127002548.1"><vh>deletePNode</vh></v>
 <v t="felix.20191127001506.1"><vh>insertPNode</vh></v>
 <v t="felix.20200120224033.1"><vh>insertNamedPNode</vh></v>
@@ -4303,52 +4304,23 @@ public static LEOBRIDGE = {
     // * Leo Operations
     MARK_PNODE: "markPNode",
     UNMARK_PNODE: "unmarkPNode",
-
-    // COPY_PNODE: "copyPNode",
-    COPY_PNODE: "copyOutline",
-
-    // CUT_PNODE: "cutPNode",
-    CUT_PNODE: "cutOutline",
-
-    // PASTE_PNODE: "pastePNode",
-    PASTE_PNODE: "pasteOutline",
-
-    // PASTE_CLONE_PNODE: "pasteAsClonePNode",
-    PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
-
+    COPY_PNODE: "copyOutline", // was overridden as "copyPNode"
+    CUT_PNODE: "cutPNode",
+    PASTE_PNODE: "pasteOutline", // was overridden as "pastePNode"
+    PASTE_CLONE_PNODE: "pasteOutlineRetainingClones", // was overridden as "pasteAsClonePNode"
     DELETE_PNODE: "deletePNode",
-
-    // MOVE_PNODE_DOWN: "movePNodeDown",
-    MOVE_PNODE_DOWN: "moveOutlineDown",
-
-    // MOVE_PNODE_LEFT: "movePNodeLeft",
-    MOVE_PNODE_LEFT: "moveOutlineLeft",
-
-    // MOVE_PNODE_RIGHT: "movePNodeRight",
-    MOVE_PNODE_RIGHT: "moveOutlineRight",
-
-    // MOVE_PNODE_UP: "movePNodeUp",
-    MOVE_PNODE_UP: "moveOutlineUp",
-
+    MOVE_PNODE_DOWN: "moveOutlineDown", // was overridden as "movePNodeDown"
+    MOVE_PNODE_LEFT: "moveOutlineLeft", // was overridden as "movePNodeLeft"
+    MOVE_PNODE_RIGHT: "moveOutlineRight", // was overridden as "movePNodeRight"
+    MOVE_PNODE_UP: "moveOutlineUp", // was overridden as "movePNodeUp"
     INSERT_PNODE: "insertPNode",
     INSERT_NAMED_PNODE: "insertNamedPNode",
     CLONE_PNODE: "clonePNode",
-
-    // PROMOTE_PNODE: "promotePNode",
-    PROMOTE_PNODE: "promote",
-
-    // DEMOTE_PNODE: "demotePNode",
-    DEMOTE_PNODE: "demote",
-
-    // REFRESH_FROM_DISK_PNODE: "refreshFromDiskPNode",
-    REFRESH_FROM_DISK_PNODE: "refreshFromDisk",
-
-    // SORT_CHILDREN: "sortChildrenPNode",
-    SORT_CHILDREN: "sortChildren",
-
-    // SORT_SIBLINGS: "sortSiblingsPNode",
-    SORT_SIBLINGS: "sortSiblings",
-
+    PROMOTE_PNODE: "promote", // was overridden as "promotePNode"
+    DEMOTE_PNODE: "demote", // was overridden as "demotePNode"
+    REFRESH_FROM_DISK_PNODE: "refreshFromDisk", // was overridden as "refreshFromDiskPNode"
+    SORT_CHILDREN: "sortChildren", // was overridden as "sortChildrenPNode"
+    SORT_SIBLINGS: "sortSiblings", // was overridden as "sortSiblingsPNode"
     UNDO: "undo",
     REDO: "redo",
     EXECUTE_SCRIPT: "executeScriptPackage",
@@ -9129,7 +9101,6 @@ private _revealTreeViewNode(p_leoNode: LeoNode, p_options?: { select?: boolean, 
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
  */
 public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean): void {
-    console.log('---------- ---------- WAS FROM OUTLINE! : ', p_fromOutline);
 
     // * Rules not specified with ternary operator(s) for clarity
     // Set w_revealType, it will ultimately set this._revealType. Used when finding the OUTLINE's selected node and setting or preventing focus into it
@@ -9157,7 +9128,6 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean): void {
         w_revealType = RevealType.RevealSelect;
     }
     // * Launch Outline's Root Refresh Cycle
-    console.log('Finally refresihg with:', w_revealType);
 
     this._refreshOutline(w_revealType); // Always at least refresh tree?
     this.getStates();
@@ -9369,8 +9339,6 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                 preview: false // should text document be in preview only? set false for fully opened
                 // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top otherwise
             };
-
-        console.log('Showing body, KeepFocus:', p_preserveFocus);
 
         // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
         return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor =&gt; {
@@ -11872,5 +11840,31 @@ public static CONFIG_DEFAULTS = {
 </t>
 <t tx="felix.20200806214416.1"></t>
 <t tx="felix.20200806214615.1"></t>
+<t tx="felix.20200810020815.1">def cutPnode(self, p_package):
+    '''Cut a node, don't select it. Try to keep selection, then return the selected node that remains'''
+    w_ap = p_package["node"]
+    if w_ap:
+        w_p = self._ap_to_p(w_ap)
+        if w_p:
+            if w_p == self.commander.p:
+                self.commander.deleteOutline()  # already on this node, so delete it
+            else:
+                oldPosition = self.commander.p  # not same node, save position to possibly return to
+                self.commander.selectPosition(w_p)
+                self.commander.deleteOutline()
+                if self.commander.positionExists(oldPosition):
+                    self.commander.selectPosition(oldPosition)  # select if old position still valid
+                else:
+                    oldPosition._childIndex = oldPosition._childIndex-1
+                    # Try again with childIndex
+                    if self.commander.positionExists(oldPosition):
+                        self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
+            return self._outputPNode(self.commander.p)  # in both cases, return selected node
+        else:
+            return self._outputError("Error in deletePNode no w_p node found")  # default empty
+    else:
+        return self._outputError("Error in deletePNode no param node")
+
+</t>
 </tnodes>
 </leo_file>

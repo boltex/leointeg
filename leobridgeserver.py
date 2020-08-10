@@ -1970,6 +1970,31 @@ class LeoBridgeIntegController:
                 self.commander.selectPosition(oldPosition)
         return self._outputPNode(self.commander.p)  # return selected node either ways
 
+    def cutPnode(self, p_package):
+        '''Cut a node, don't select it. Try to keep selection, then return the selected node that remains'''
+        w_ap = p_package["node"]
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
+            if w_p:
+                if w_p == self.commander.p:
+                    self.commander.deleteOutline()  # already on this node, so delete it
+                else:
+                    oldPosition = self.commander.p  # not same node, save position to possibly return to
+                    self.commander.selectPosition(w_p)
+                    self.commander.deleteOutline()
+                    if self.commander.positionExists(oldPosition):
+                        self.commander.selectPosition(oldPosition)  # select if old position still valid
+                    else:
+                        oldPosition._childIndex = oldPosition._childIndex-1
+                        # Try again with childIndex
+                        if self.commander.positionExists(oldPosition):
+                            self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
+                return self._outputPNode(self.commander.p)  # in both cases, return selected node
+            else:
+                return self._outputError("Error in deletePNode no w_p node found")  # default empty
+        else:
+            return self._outputError("Error in deletePNode no param node")
+
     def deletePNode(self, p_package):
         '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
         w_ap = p_package["node"]
