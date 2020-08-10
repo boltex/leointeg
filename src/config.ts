@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
-import { ConfigMembers, RefreshType } from "./types";
+import { ConfigMembers } from "./types";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -8,29 +8,29 @@ import { LeoIntegration } from "./leoIntegration";
  * * Configuration Settings Service
  */
 export class Config implements ConfigMembers {
+
     // Some config settings are used in leobridgeserver.py such as defaultReloadIgnore and checkForChangeExternalFiles
-    // TODO : Should use default values in a centralized way
-    public checkForChangeExternalFiles: string = "none";  // Used in leoBridge script
-    public defaultReloadIgnore: string = "none"; // Used in leoBridge script
-    public leoTreeBrowse: boolean = true;
-    public treeKeepFocus: boolean = true;
-    public treeKeepFocusWhenAside: boolean = false;
-    public treeInExplorer: boolean = true;
-    public showOpenAside: boolean = true;
-    public statusBarString: string = "";
-    public statusBarColor: string = "";
-    public showEditOnNodes: boolean = true;
-    public showArrowsOnNodes: boolean = false;
-    public showAddOnNodes: boolean = false;
-    public showMarkOnNodes: boolean = false;
-    public showCloneOnNodes: boolean = false;
-    public showCopyOnNodes: boolean = false;
-    public invertNodeContrast: boolean = false;
-    public leoPythonCommand: string = "";
-    public startServerAutomatically: boolean = false; // Now set this configuration option default to 'false' to showcase treeViews 'welcome content'
-    public connectToServerAutomatically: boolean = false; // Now set this configuration option default to 'false'
-    public connectionAddress: string = Constants.TCPIP_DEFAULT_ADDRESS;
-    public connectionPort: number = Constants.TCPIP_DEFAULT_PORT;
+    public checkForChangeExternalFiles: string = Constants.CONFIG_DEFAULTS.CHECK_FOR_CHANGE_EXTERNAL_FILES;
+    public defaultReloadIgnore: string = Constants.CONFIG_DEFAULTS.DEFAULT_RELOAD_IGNORE;
+    public leoTreeBrowse: boolean = Constants.CONFIG_DEFAULTS.LEO_TREE_BROWSE;
+    public treeKeepFocus: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS;
+    public treeKeepFocusWhenAside: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE;
+    public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
+    public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
+    public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
+    public showOpenAside: boolean = Constants.CONFIG_DEFAULTS.SHOW_OPEN_ASIDE;
+    public showEditOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDIT;
+    public showArrowsOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ARROWS;
+    public showAddOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ADD;
+    public showMarkOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK;
+    public showCloneOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLONE;
+    public showCopyOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_COPY;
+    public invertNodeContrast: boolean = Constants.CONFIG_DEFAULTS.INVERT_NODES;
+    public leoPythonCommand: string = Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND;
+    public startServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_START_SERVER;
+    public connectToServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_CONNECT;
+    public connectionAddress: string = Constants.CONFIG_DEFAULTS.IP_ADDRESS;
+    public connectionPort: number = Constants.CONFIG_DEFAULTS.IP_PORT;
 
     private _isSettingConfig: boolean = false;
     private _needsTreeRefresh: boolean = false;
@@ -48,14 +48,13 @@ export class Config implements ConfigMembers {
         return {
             checkForChangeExternalFiles: this.checkForChangeExternalFiles,  // Used in leoBridge script
             defaultReloadIgnore: this.defaultReloadIgnore,  // Used in leoBridge script
-
             leoTreeBrowse: this.leoTreeBrowse,
             treeKeepFocus: this.treeKeepFocus,
             treeKeepFocusWhenAside: this.treeKeepFocusWhenAside,
-            treeInExplorer: this.treeInExplorer,
-            showOpenAside: this.showOpenAside,
             statusBarString: this.statusBarString,
             statusBarColor: this.statusBarColor,
+            treeInExplorer: this.treeInExplorer,
+            showOpenAside: this.showOpenAside,
             showEditOnNodes: this.showEditOnNodes,
             showArrowsOnNodes: this.showArrowsOnNodes,
             showAddOnNodes: this.showAddOnNodes,
@@ -111,46 +110,47 @@ export class Config implements ConfigMembers {
      * * Build config from settings from vscode's saved config settings
      */
     public buildFromSavedSettings(): void {
+        // Shorthand pointers for readability
+        const GET = vscode.workspace.getConfiguration;
+        const NAME = Constants.CONFIG_NAME;
+        const NAMES = Constants.CONFIG_NAMES;
+        const DEFAULTS = Constants.CONFIG_DEFAULTS;
+        const FLAGS = Constants.CONTEXT_FLAGS;
+
         if (this._isSettingConfig) {
             // * Currently setting config, wait until its done all, and this will be called automatically
             return;
         } else {
-            // * Graphic and theme settings
-            this.invertNodeContrast = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.INVERT_NODES, false);
-            this.statusBarString = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.STATUSBAR_STRING, Constants.GUI.STATUSBAR_DEFAULT_STRING);
+            this.checkForChangeExternalFiles = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.CHECK_FOR_CHANGE_EXTERNAL_FILES, Constants.CONFIG_DEFAULTS.CHECK_FOR_CHANGE_EXTERNAL_FILES);
+            this.defaultReloadIgnore = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.DEFAULT_RELOAD_IGNORE, Constants.CONFIG_DEFAULTS.DEFAULT_RELOAD_IGNORE);
+            this.leoTreeBrowse = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.LEO_TREE_BROWSE, Constants.CONFIG_DEFAULTS.LEO_TREE_BROWSE);
+            this.treeKeepFocus = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.TREE_KEEP_FOCUS, Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS);
+            this.treeKeepFocusWhenAside = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.TREE_KEEP_FOCUS_WHEN_ASIDE, Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE);
+            this.statusBarString = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.STATUSBAR_STRING, Constants.CONFIG_DEFAULTS.STATUSBAR_STRING);
             if (this.statusBarString.length > 8) {
-                this.statusBarString = Constants.GUI.STATUSBAR_DEFAULT_STRING;
+                this.statusBarString = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
             }
-            this.statusBarColor = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.STATUSBAR_COLOR, Constants.GUI.STATUSBAR_DEFAULT_COLOR);
+            this.statusBarColor = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.STATUSBAR_COLOR, Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR);
             if (!utils.isHexColor(this.statusBarColor)) {
-                this.statusBarColor = Constants.GUI.STATUSBAR_DEFAULT_COLOR;
+                this.statusBarColor = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
             }
-            // * Interface elements visibility defaults
-            // TODO : Should use default values in a centralized way
-            this.checkForChangeExternalFiles = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.CHECK_FOR_CHANGE_EXTERNAL_FILES, "none");
-            this.defaultReloadIgnore = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.DEFAULT_RELOAD_IGNORE, "none");
-            this.treeInExplorer = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.TREE_IN_EXPLORER, true);
-            this.showOpenAside = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.SHOW_OPEN_ASIDE, true);
-            this.showEditOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.SHOW_EDIT, false);
-            this.showArrowsOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.SHOW_ARROWS, false);
-            this.showAddOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.SHOW_ADD, false);
-            this.showMarkOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.SHOW_MARK, false);
-            this.showCloneOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.SHOW_CLONE, false);
-            this.showCopyOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.SHOW_COPY, false);
-            // * Interface settings
-            this.leoTreeBrowse = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.LEO_TREE_BROWSE, true);
-            this.treeKeepFocus = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.TREE_KEEP_FOCUS, true);
-            this.treeKeepFocusWhenAside = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.TREE_KEEP_FOCUS_WHEN_ASIDE, false);
-            // * Server and connection automation
-            this.leoPythonCommand = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.LEO_PYTHON_COMMAND, "");
-            this.startServerAutomatically = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.AUTO_START_SERVER, false);
-            this.connectToServerAutomatically = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.AUTO_CONNECT, false);
-            this.connectionAddress = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.IP_ADDRESS, Constants.TCPIP_DEFAULT_ADDRESS); // 'ws://'
-            this.connectionPort = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG.IP_PORT, Constants.TCPIP_DEFAULT_PORT); // 32125
+            this.treeInExplorer = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.TREE_IN_EXPLORER, Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER);
+            this.showOpenAside = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE, Constants.CONFIG_DEFAULTS.SHOW_OPEN_ASIDE);
+            this.showEditOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_EDIT, Constants.CONFIG_DEFAULTS.SHOW_EDIT);
+            this.showArrowsOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_ARROWS, Constants.CONFIG_DEFAULTS.SHOW_ARROWS);
+            this.showAddOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_ADD, Constants.CONFIG_DEFAULTS.SHOW_ADD);
+            this.showMarkOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_MARK, Constants.CONFIG_DEFAULTS.SHOW_MARK);
+            this.showCloneOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_CLONE, Constants.CONFIG_DEFAULTS.SHOW_CLONE);
+            this.showCopyOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_COPY, Constants.CONFIG_DEFAULTS.SHOW_COPY);
+            this.invertNodeContrast = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.INVERT_NODES, Constants.CONFIG_DEFAULTS.INVERT_NODES);
+            this.leoPythonCommand = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.LEO_PYTHON_COMMAND, Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND);
+            this.startServerAutomatically = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.AUTO_START_SERVER, Constants.CONFIG_DEFAULTS.AUTO_START_SERVER);
+            this.connectToServerAutomatically = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.AUTO_CONNECT, Constants.CONFIG_DEFAULTS.AUTO_CONNECT);
+            this.connectionAddress = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.IP_ADDRESS, Constants.CONFIG_DEFAULTS.IP_ADDRESS);
+            this.connectionPort = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.IP_PORT, Constants.CONFIG_DEFAULTS.IP_PORT);
+
             // * Set context for tree items visibility that are based on config options
             this._leoIntegration.sendConfigToServer(this.getConfig());
-            utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
-            utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
             utils.setContext(Constants.CONTEXT_FLAGS.LEO_TREE_BROWSE, this.leoTreeBrowse);
             utils.setContext(Constants.CONTEXT_FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
             utils.setContext(Constants.CONTEXT_FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
@@ -160,6 +160,9 @@ export class Config implements ConfigMembers {
             utils.setContext(Constants.CONTEXT_FLAGS.SHOW_MARK, this.showMarkOnNodes);
             utils.setContext(Constants.CONTEXT_FLAGS.SHOW_CLONE, this.showCloneOnNodes);
             utils.setContext(Constants.CONTEXT_FLAGS.SHOW_COPY, this.showCopyOnNodes);
+            utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
+            utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
         }
     }
+
 }

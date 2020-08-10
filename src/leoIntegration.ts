@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, RefreshType, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, ReqRefresh, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand, UserCommand } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -80,7 +80,8 @@ export class LeoIntegration {
     private _currentDocumentChanged: boolean = false; // if clean and an edit is done: refresh opened documents view
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
-    private _needRefreshBody: boolean = false; // Flag for commands that might change current body
+    // TODO : REMOVE private _needRefreshBody: boolean = false; // Flag for commands that might change current body
+    private _refreshType: ReqRefresh = {}; // Flags for commands to require parts of UI to refresh
     private _fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
     private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
 
@@ -223,7 +224,7 @@ export class LeoIntegration {
     }
 
     /**
-     * *  Sends an action for leobridgeserver.py to run with Leo. This is used mostly by LeoAsync, leoOutline and leoBody.
+     * * Sends an action for leobridgeserver.py to run with Leo. This is used mostly by LeoAsync, leoOutline and leoBody.
      * @param p_action is the action string constant, from Constants.LEOBRIDGE
      * @param p_jsonParam (optional, defaults to "null", which translates to None in python) a JSON string to be given to the python side, often built with JSON.stringify(object)
      * @param p_deferredPayload (optional) a pre-made package that will be given back as the response, instead of package coming back from python
@@ -348,7 +349,7 @@ export class LeoIntegration {
         // Loop through context.globalState.<something> and check if they exist: open them
         const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
         if (w_lastFiles.length) {
-            this._leoBridge.action(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
+            this.sendAction(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
                 .then((p_openFileResult: LeoBridgePackage) => {
                     this.leoStates.leoBridgeReady = true;
                     return this._setupOpenedLeoDocument(p_openFileResult.opened!);
@@ -498,8 +499,14 @@ export class LeoIntegration {
      */
     private _triggerGetStates(): void {
         // Debounced timer has triggered so perform getStates action
-        this._leoDocumentsProvider.refreshTreeRoot();
-        this._leoButtonsProvider.refreshTreeRoot();
+        if (this._refreshType.documents) {
+            this._leoDocumentsProvider.refreshTreeRoot();
+            this._refreshType.documents = false;
+        }
+        if (this._refreshType.buttons) {
+            this._leoButtonsProvider.refreshTreeRoot();
+            this._refreshType.buttons = false;
+        }
         this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) => {
             if (p_package.states) {
                 this.leoStates.setLeoStateFlags(p_package.states);
@@ -864,10 +871,13 @@ export class LeoIntegration {
      * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
      */
-    public launchRefresh(p_refreshType: RefreshType, p_fromOutline: boolean): void {
+    public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean): void {
+
         // * Rules not specified with ternary operator(s) for clarity
         // Set w_revealType, it will ultimately set this._revealType. Used when finding the OUTLINE's selected node and setting or preventing focus into it
         // Set this._fromOutline. Used when finding the selected node and showing the BODY to set or prevent focus in it
+        this._refreshType = Object.assign({}, p_refreshType);
+
         let w_revealType: RevealType = RevealType.NoReveal;
         if (p_fromOutline) {
             this._fromOutline = true;
@@ -877,14 +887,11 @@ export class LeoIntegration {
             w_revealType = RevealType.RevealSelect;
         }
         // Set this._needRefreshBody. Used when finding the selected node and showing the BODY to trigger a 'fireRefreshFile'
-        if (p_refreshType === RefreshType.RefreshTreeAndBody) {
-            this._needRefreshBody = true;
+        if (this._refreshType.body) {
             // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
             if (this._bodyLastChangedDocument && this._bodyLastChangedDocument.isDirty) {
                 this._bodyLastChangedDocument.save(); // ! Voluntarily save to 'clean' any pending body (lose trailing whitespace)
             }
-        } else {
-            this._needRefreshBody = false;
         }
         // * _focusInterrupt Override
         if (this._focusInterrupt) {
@@ -892,7 +899,8 @@ export class LeoIntegration {
             w_revealType = RevealType.RevealSelect;
         }
         // * Launch Outline's Root Refresh Cycle
-        this._refreshOutline(w_revealType);
+
+        this._refreshOutline(w_revealType); // Always at least refresh tree?
         this.getStates();
     }
 
@@ -1105,9 +1113,9 @@ export class LeoIntegration {
      * @param p_preserveFocus flag that when true will stop the editor from taking focus once opened
      */
     public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable<vscode.TextEditor> {
-        // first setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
-        if (this._needRefreshBody) {
-            this._needRefreshBody = false; // Flag has triggered a body refresh so we clear it
+        // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
+        if (this._refreshType.body) {
+            this._refreshType.body = false;
             // TODO : CHECK IF TIMEOUT NECESSARY!
             setTimeout(() => {
                 this._leoFileSystem.fireRefreshFile(utils.leoUriToStr(this.bodyUri));
@@ -1118,9 +1126,10 @@ export class LeoIntegration {
             this._bodyTextDocument = p_document;
 
             if (this.lastSelectedNode) {
-                this._leoBridge.action(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
+                this.sendAction(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
                     .then(p_result => {
                         let w_language = p_result.language;
+                        // TODO : Move those exception in "constants.ts"
                         // Exceptions
                         switch (p_result.language) {
                             case "cplusplus":
@@ -1199,26 +1208,21 @@ export class LeoIntegration {
     }
 
     /**
-     * * Adds a command to the stack to be resolved, returns true if possible (based on stack state and rules), false otherwise
-     * @param p_action A string code constant member from Constants.LEOBRIDGE, which are commands for leobridgeserver.py
+     * * Tries to add a command to the frontend stack, returns true if added, false otherwise
+     * @param p_action A string commands for leobridgeserver.py, from Constants.LEOBRIDGE,
      * @param p_node Specific node to pass as parameter, or the selected node if omitted
-     * @param p_refreshType Specifies to either refresh nothing, the tree or both body and tree when finished resolving
+     * @param p_refresh Specifies to either refresh nothing, the tree or body and tree when finished
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
-     * @param p_providedHeadline Specific string to pass along as parameter with the action, similar to p_node parameter
-     * @returns True if added successfully (see command stack 'rules' in commandStack.ts), false otherwise
+     * @param p_text Specific string to pass along as parameter with the action, similar to p_node parameter
+     * @returns True if added (see command stack 'rules' in commandStack.ts), false otherwise
      */
-    public nodeCommand(p_action: string, p_node?: LeoNode, p_refreshType?: RefreshType, p_fromOutline?: boolean, p_providedHeadline?: string): boolean {
+    public nodeCommand(p_userCommand: UserCommand): boolean {
         this.triggerBodySave(); // No forced vscode save
-        if (this._commandStack.add({
-            action: p_action,
-            node: p_node,  // Will return false for sure if already started and this is not undefined
-            providedHeadline: p_providedHeadline ? p_providedHeadline : undefined,
-            refreshType: p_refreshType ? p_refreshType : RefreshType.NoRefresh,
-            fromOutline: !!p_fromOutline, // force boolean
-        })) {
+        if (this._commandStack.add(p_userCommand)) {
             return true;
         } else {
-            vscode.window.showInformationMessage(Constants.USER_MESSAGES.TOO_FAST + p_action); // TODO : Use cleanup message string CONSTANT instead
+            // TODO : Use cleanup message string CONSTANT instead
+            vscode.window.showInformationMessage(Constants.USER_MESSAGES.TOO_FAST + p_userCommand.action);
             return false;
         }
     }
@@ -1236,13 +1240,25 @@ export class LeoIntegration {
                 let w_selection = vscode.window.activeTextEditor.selection;
                 let w_script = vscode.window.activeTextEditor.document.getText(w_selection);
                 if (w_script.length) {
-                    return this.nodeCommand(Constants.LEOBRIDGE.EXECUTE_SCRIPT, undefined, RefreshType.RefreshTreeAndBody, false, w_script);
+                    return this.nodeCommand({
+                        action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
+                        node: undefined,
+                        refreshType: { tree: true, body: true, buttons: true, documents: true },
+                        fromOutline: false,
+                        text: w_script
+                    });
                 }
             }
 
         }
         // * Catch all call: execute selected node outline with a single space as script
-        return this.nodeCommand(Constants.LEOBRIDGE.EXECUTE_SCRIPT, undefined, RefreshType.RefreshTreeAndBody, false, " ");
+        return this.nodeCommand({
+            action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
+            node: undefined,
+            refreshType: { tree: true, body: true, buttons: true, documents: true },
+            fromOutline: false,
+            text: " "
+        });
     }
 
     /**
@@ -1252,7 +1268,12 @@ export class LeoIntegration {
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
      */
     public changeMark(p_isMark: boolean, p_node?: LeoNode, p_fromOutline?: boolean): void {
-        if (this.nodeCommand(p_isMark ? Constants.LEOBRIDGE.MARK_PNODE : Constants.LEOBRIDGE.UNMARK_PNODE, p_node, RefreshType.RefreshTree, p_fromOutline)) {
+        if (this.nodeCommand({
+            action: p_isMark ? Constants.LEOBRIDGE.MARK_PNODE : Constants.LEOBRIDGE.UNMARK_PNODE,
+            node: p_node,
+            refreshType: { tree: true },
+            fromOutline: !!p_fromOutline
+        })) {
             if (!p_node || p_node === this.lastSelectedNode) {
                 utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_isMark);
             }
@@ -1278,7 +1299,13 @@ export class LeoIntegration {
                 .then(p_newHeadline => {
                     if (p_newHeadline) {
                         p_node!.label = p_newHeadline; // ! When labels change, ids will change and its selection and expansion states cannot be kept stable anymore.
-                        this.nodeCommand(Constants.LEOBRIDGE.SET_HEADLINE, p_node, RefreshType.RefreshTree, p_fromOutline, p_newHeadline);
+                        this.nodeCommand({
+                            action: Constants.LEOBRIDGE.SET_HEADLINE,
+                            node: p_node,
+                            refreshType: { tree: true },
+                            fromOutline: !!p_fromOutline,
+                            text: p_newHeadline
+                        });
                     } else {
                         // TODO : Make sure focus is set back properly to either outline or body if this is canceled (Maybe unnecessary?)
                     }
@@ -1306,7 +1333,13 @@ export class LeoIntegration {
             vscode.window.showInputBox(this._headlineInputOptions)
                 .then(p_newHeadline => {
                     const w_action = p_newHeadline ? Constants.LEOBRIDGE.INSERT_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_PNODE;
-                    this.nodeCommand(w_action, p_node, RefreshType.RefreshTree, w_fromOutline, p_newHeadline); // p_node and p_newHeadline can be undefined
+                    this.nodeCommand({
+                        action: w_action,
+                        node: p_node,
+                        refreshType: { tree: true },
+                        fromOutline: !!w_fromOutline,
+                        text: p_newHeadline
+                    });
                 });
         }
     }
@@ -1329,7 +1362,13 @@ export class LeoIntegration {
                                 this._removeLastFile(this.leoStates.leoOpenedFileName);
                                 this._removeRecentFile(this.leoStates.leoOpenedFileName);
                             }
-                            this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, p_chosenLeoFile); // p_node and p_newHeadline can be undefined
+                            this.nodeCommand({
+                                action: Constants.LEOBRIDGE.SAVE_FILE,
+                                node: undefined,
+                                refreshType: { tree: true },
+                                fromOutline: !!p_fromOutline,
+                                text: p_chosenLeoFile
+                            });
                             this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
                             this._leoStatusBar.update(true, 0, true);
                             this._addRecentAndLastFile(p_chosenLeoFile.trim());
@@ -1354,7 +1393,13 @@ export class LeoIntegration {
             if (this.lastSelectedNode && this._isCurrentFileNamed()) {
                 this.triggerBodySave(true)
                     .then(() => {
-                        this.nodeCommand(Constants.LEOBRIDGE.SAVE_FILE, undefined, RefreshType.RefreshTree, p_fromOutline, ""); // p_node and p_newHeadline can be undefined
+                        this.nodeCommand({
+                            action: Constants.LEOBRIDGE.SAVE_FILE,
+                            node: undefined,
+                            refreshType: { tree: true },
+                            fromOutline: !!p_fromOutline,
+                            text: ""
+                        });
                     });
             } else {
                 this.saveAsLeoFile(p_fromOutline); // Override this command call if file is unnamed!
@@ -1374,7 +1419,7 @@ export class LeoIntegration {
         // TODO : Fix / Cleanup opened body panes close before reopening when switching
         this.triggerBodySave(true)
             .then(() => {
-                return this._leoBridge.action(Constants.LEOBRIDGE.GET_OPENED_FILES);
+                return this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
             })
             .then(p_package => {
                 const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
@@ -1413,7 +1458,7 @@ export class LeoIntegration {
      */
     public selectOpenedLeoDocument(p_index: number): void {
         if (this._isBusy(true)) { return; } // Warn user to wait for end of busy state
-        this._leoBridge.action(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_index }))
+        this.sendAction(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_index }))
             .then((p_openFileResult: LeoBridgePackage) => {
                 // Like we just opened or made a new file
                 if (p_openFileResult.setOpened) {
@@ -1423,8 +1468,6 @@ export class LeoIntegration {
                 }
             });
     }
-
-
 
     /**
      * * Close an opened Leo file
@@ -1445,7 +1488,7 @@ export class LeoIntegration {
                         if (p_package.closed.total === 0) {
                             this._setupNoOpenedLeoDocument();
                         } else {
-                            this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+                            this.launchRefresh({ body: true, tree: true, documents: true, buttons: true }, false);
                         }
                     } else if (p_package.closed === false) {
                         // Explicitly false and not just undefined
@@ -1495,7 +1538,7 @@ export class LeoIntegration {
                             if (p_packageAfterSave && p_packageAfterSave.closed && p_packageAfterSave.closed.total === 0) {
                                 this._setupNoOpenedLeoDocument();
                             } else {
-                                this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+                                this.launchRefresh({ body: true, tree: true, documents: true, buttons: true }, false);
                             }
                         });
                     }
@@ -1560,10 +1603,10 @@ export class LeoIntegration {
      */
     public clickButton(p_node: LeoButtonNode): void {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        this._leoBridge.action(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
+        this.sendAction(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
             .then((p_clickButtonResult: LeoBridgePackage) => {
                 // console.log('Back from clickButton, package is: ', p_clickButtonResult);
-                this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+                this.launchRefresh({ body: true, tree: true, documents: true, buttons: true }, false);
             });
     }
 
@@ -1572,10 +1615,10 @@ export class LeoIntegration {
      */
     public removeButton(p_node: LeoButtonNode): void {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        this._leoBridge.action(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
+        this.sendAction(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
             .then((p_removeButtonResult: LeoBridgePackage) => {
                 // console.log('Back from removeButton, package is: ', p_removeButtonResult);
-                this.launchRefresh(RefreshType.RefreshTreeAndBody, false);
+                this.launchRefresh({ buttons: true }, false);
             });
     }
 
@@ -1586,7 +1629,7 @@ export class LeoIntegration {
      */
     public minibuffer(): void {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        const w_promise: Thenable<MinibufferCommand[]> = this._leoBridge.action(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
+        const w_promise: Thenable<MinibufferCommand[]> = this.sendAction(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
             .then((p_result: LeoBridgePackage) => {
                 if (p_result.commands && p_result.commands.length) {
                     return p_result.commands;
@@ -1594,15 +1637,18 @@ export class LeoIntegration {
                     return [];
                 }
             });
-
         const w_options: vscode.QuickPickOptions = {
             placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
             matchOnDetail: true
         };
-
         vscode.window.showQuickPick(w_promise, w_options).then((p_picked) => {
             if (p_picked && p_picked.func) {
-                this.nodeCommand(p_picked.func, undefined, RefreshType.RefreshTreeAndBody, true);
+                this.nodeCommand({
+                    action: p_picked.func,
+                    node: undefined,
+                    refreshType: { body: true, tree: true, documents: true, buttons: true },
+                    fromOutline: !!true
+                });
             }
         });
     }
@@ -1645,4 +1691,5 @@ export class LeoIntegration {
     public test(p_fromOutline?: boolean): void {
         this.statusBarOnClick(); // placeholder / test
     }
+
 }

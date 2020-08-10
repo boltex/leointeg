@@ -942,32 +942,32 @@
       {
         "command": "leointeg.promote",
         "category": "Leo",
-        "title": "Promote"
+        "title": "Promote Children"
       },
       {
         "command": "leointeg.promoteSelection",
         "category": "Leo",
-        "title": "Promote"
+        "title": "Promote Children"
       },
       {
         "command": "leointeg.promoteSelectionFromOutline",
         "category": "Leo",
-        "title": "Promote"
+        "title": "Promote Children"
       },
       {
         "command": "leointeg.demote",
         "category": "Leo",
-        "title": "Demote"
+        "title": "Demote Siblings"
       },
       {
         "command": "leointeg.demoteSelection",
         "category": "Leo",
-        "title": "Demote"
+        "title": "Demote Siblings"
       },
       {
         "command": "leointeg.demoteSelectionFromOutline",
         "category": "Leo",
-        "title": "Demote"
+        "title": "Demote Siblings"
       },
       {
         "command": "leointeg.sortChildrenSelection",

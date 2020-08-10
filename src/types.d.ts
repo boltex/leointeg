@@ -39,27 +39,31 @@ export const enum RevealType {
 }
 
 /**
- * * User command's refresh-type for when coming back from executing the command
+ * * Required Refresh Dictionary of "elements to refresh" flags
+ * TODO : Replace RefreshType with ReqRefresh : "Required Refresh" collection of flag dictionary
  */
-export const enum RefreshType {
-    NoRefresh = 0, // only for 'copy-node' so far
-    RefreshTree,   // Refresh tree and show body pane if not already opened, but no need to refresh it
-    RefreshTreeAndBody // undo, redo, execute and others can also modify the current body, so refresh the filesystem gnx too
+export interface ReqRefresh {
+    node?: boolean;
+    tree?: boolean;
+    body?: boolean;
+    buttons?: boolean;
+    documents?: boolean;
 }
 
 /**
- * * Command parameter for 'stacking' front end commands
+ * * Stackable front end commands
  */
 export interface UserCommand {
     action: string;
     node?: LeoNode | undefined;  // We can START a stack with a targeted command
-    providedHeadline?: string | undefined;
-    refreshType: RefreshType;
-    fromOutline: boolean;
+    text?: string | undefined; // If a string is required, for headline, etc.
+    refreshType: ReqRefresh; // Minimal refresh level required by this command
+    fromOutline: boolean; // Focus back on outline instead of body
+    keepSelection?: boolean; // Should bring back selection on node prior to command
 }
 
 /**
- * * Actions to be performed by Leo, pushed and resolved as a stack
+ * * Stackable leoBridge actions to be performed by Leo
  */
 export interface LeoAction {
     parameter: string; // to pass along with action to python's side

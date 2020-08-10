@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
-import { Icon } from "./types";
+import { Icon, UserCommand } from "./types";
 import { LeoNode } from "./leoNode";
 
 // String and other types/structures helper functions, along with common vscode API calls
@@ -70,10 +70,17 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
  * @param p_text Desired text sent along with node in the parameters of the action to be 'called'
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
-export function buildNodeAndTextJson(p_nodeJson: string, p_text: string): string {
-    return "{\"node\":" + p_nodeJson +
-        ", \"text\": " + JSON.stringify(p_text) +
-        "}";
+export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand): string {
+    let w_json = "{\"node\":" + p_nodeJson; // already json
+    if (p_command.text) {
+        w_json += ", \"text\": " + JSON.stringify(p_command.text);
+    }
+    if (p_command.keepSelection) {
+        w_json += ", \"keep\": true";
+    }
+    // TODO : Generalize this function to send any other members of p_command / other members
+    w_json += "}";
+    return w_json;
 }
 
 /**

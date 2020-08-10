@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
-import { UserCommand, RefreshType, LeoBridgePackage } from "./types";
+import { UserCommand, LeoBridgePackage, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
- * * Front-facing, user command stack of actions. 
+ * * Front-facing, user command stack of actions.
  * Actions can also be added once started resolving.
  */
 export class CommandStack {
@@ -13,10 +13,10 @@ export class CommandStack {
     private _busy: boolean = false;
 
     // Refresh type, for after the last command is done. (From highest so far)
-    private _finalRefreshType: RefreshType = RefreshType.NoRefresh; 
-    
+    private _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
+
     // Flag indicating to set focus on outline when all done, instead of body. (From last one pushed)
-    private _finalFromOutline: boolean = false; 
+    private _finalFromOutline: boolean = false;
 
     // * Received selection from the last command that finished.
     // * Note: JSON string representation of a node, will be re-sent as node to leo instead of lastSelectedNode
@@ -38,7 +38,7 @@ export class CommandStack {
     }
 
     /**
-     * * Signal to the command stack that a new selected node was received. 
+     * * Signal to the command stack that a new selected node was received.
      * This command stacks needs to know when to clear its own '_receivedSelection'
      */
     public newSelection(): void {
@@ -85,46 +85,33 @@ export class CommandStack {
      * * Run the command at index 0: The bottom of the stack.
      */
     private _runStackCommand(): Promise<LeoBridgePackage> {
-        // console.log('Running from a stack of', this._stack.length);
+        const w_command: UserCommand = this._stack[0]; // Reference from bottom of stack, don't remove yet
 
-        const w_command = this._stack[0]; // Reference from bottom of stack, don't remove yet
-
-        // Build parameter's json here - use providedHeadline if needed
+        // Build parameter's json here - use text member if needed
         let w_nodeJson: string = ""; // ap json used in building w_jsonParam
         let w_jsonParam: string = ""; // Finished parameter that is sent
 
         // First one uses given node or last selected node, other subsequent on stack will use _receivedSelection
         // (Commands such as 'collapse all' will just ignore passed on node parameter)
-        const w_providedHeadline = w_command.providedHeadline; // Can be undefined
+        // const w_text = w_command.text; // Can be undefined
         if (w_command.node) {
-            // console.log('USING SPECIFIC Node');
-
             w_nodeJson = w_command.node.apJson; // Was node specific, so we are starting from a new stack of commands
         } else {
             // Use received "selected node" unless first, then use last selected node
-            // console.log(`NOT SPECIFIC node, busy is ${this._busy}`);
-
             if (this._receivedSelection) {
-                // console.log('USING LAST _receivedSelection, SHOULD SEE NEXT ABOVE!');
-
                 w_nodeJson = this._receivedSelection;
             } else {
-                // console.log('USING LAST lastSelectedNode');
-
                 w_nodeJson = this._leoIntegration.lastSelectedNode!.apJson;
             }
             if (!w_nodeJson) {
                 console.log('ERROR NO ARCHIVED POSITION JSON');
             }
         }
-        if (w_providedHeadline) {
-            w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_providedHeadline); // 'Insert Named Node' or 'Edit Headline'
-        } else {
-            w_jsonParam = w_nodeJson; // 'Insert Unnamed Node' or regular command
-        }
 
-        // Setup _finalRefreshType, if higher than the one setup so far
-        this._finalRefreshType = w_command.refreshType > this._finalRefreshType ? w_command.refreshType : this._finalRefreshType;
+        w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_command); // 'Insert Named Node' or 'Edit Headline'
+
+        // Setup _finalRefreshType, if command requires higher than the one setup so far
+        Object.assign(this._finalRefreshType, w_command.refreshType);
 
         // Submit this action to Leo and return a promise of its packaged answer
         return this._leoIntegration.sendAction(w_command.action, w_jsonParam);
@@ -136,10 +123,7 @@ export class CommandStack {
      */
     private _resolveResult(p_package: LeoBridgePackage): void {
         this._stack.shift();
-        // If last is done then do refresh outline and focus on outline, or body
-        // console.log('p_package :', p_package);
-
-        // TODO : p_package members names should be made into constants
+        // If last is done then do refresh outline and focus on outline, or body, as required
 
         this._receivedSelection = JSON.stringify(p_package.node); // ! Maybe set this._receivedSelection to the last one anyways ?
         if (!this.size()) {
@@ -149,12 +133,12 @@ export class CommandStack {
             this._busy = false; // We're not busy anymore // ! maybe keep using _receivedSelection instead of clearing it?
             // console.log(`busy NOW FALSE :  ${this._busy}`);
 
-            if (this._finalRefreshType) {
+            if (Object.keys(this._finalRefreshType).length) {
                 // At least some type of refresh
                 this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline);
             }
             // Reset refresh type and focus flag nonetheless
-            this._finalRefreshType = RefreshType.NoRefresh;
+            this._finalRefreshType = {};
             this._finalFromOutline = false;
 
         } else {
@@ -165,5 +149,5 @@ export class CommandStack {
             });
         }
     }
-}
 
+}
