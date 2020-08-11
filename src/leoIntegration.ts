@@ -953,8 +953,7 @@ export class LeoIntegration {
             !!p_ap.hasBody,         // hasBody
             w_u,                    // unknownAttributes
             this,                   // _leoIntegration pointer
-            // If there's no reveal and its the selected node re-use the old id
-            (!this._revealType && p_ap.selected && this.lastSelectedNode) ? this.lastSelectedNode.id : (++this._nodeId).toString()
+            utils.murmurNode(p_ap, this._TreeId.toString(16))
         );
         if (p_revealSelected && this._revealType && p_ap.selected) {
             this._apToLeoNodeConvertReveal(p_specificNode ? p_specificNode : w_leoNode);

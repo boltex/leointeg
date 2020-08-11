@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
+import * as murmur from "murmurhash-js";
 import { Constants } from "./constants";
-import { Icon, UserCommand } from "./types";
+import { Icon, UserCommand, ArchivedPosition } from "./types";
 import { LeoNode } from "./leoNode";
 
 // String and other types/structures helper functions, along with common vscode API calls
@@ -12,6 +13,19 @@ import { LeoNode } from "./leoNode";
  */
 export function padNumber2(p_number: number): string {
     return ("0" + p_number).slice(-2);
+}
+
+/**
+ * 64 bit Hexadecimal String hash of an archived position
+ * Without taking collapsed state into account
+ * @param p_ap Archived position
+ * @param p_salt To be added to the hashing process (Change when tree changes)
+ */
+export function murmurNode(p_ap: ArchivedPosition, p_salt: string): string {
+    // Not taking apJson directly as to exclude collapsed state
+    const w_string: string = p_salt + p_ap.headline + p_ap.gnx + p_ap.childIndex.toString() + JSON.stringify(p_ap.stack);
+    const w_first: string = murmur.murmur3(w_string).toString(16); // 8 character hex (32 bit)
+    return w_first + murmur.murmur3(w_first + w_string).toString(16); // 16 character hex string (64 bit)
 }
 
 /**

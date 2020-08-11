@@ -561,6 +561,7 @@
 </v>
 <v t="felix.20200718195558.1"><vh>@clean src/utils.ts</vh>
 <v t="felix.20200718195558.2"><vh>padNumber2</vh></v>
+<v t="felix.20200811004449.1"><vh>murmurNode</vh></v>
 <v t="felix.20200718195558.3"><vh>buildNodeIconPaths</vh></v>
 <v t="felix.20200718195558.4"><vh>buildDocumentIconPaths</vh></v>
 <v t="felix.20200718195558.5"><vh>buildButtonsIconPaths</vh></v>
@@ -2098,9 +2099,11 @@ wsPort = 32125
   },
   "dependencies": {
     "@types/debounce": "^1.2.0",
+    "@types/murmurhash-js": "^1.0.3",
     "bufferutil": "^4.0.1",
     "debounce": "^1.2.0",
     "hasbin": "^1.2.3",
+    "murmurhash-js": "^1.0.0",
     "ws": "^7.3.0"
   }
 }
@@ -7763,8 +7766,9 @@ export interface LeoPackageStates {
 
 </t>
 <t tx="felix.20200718195558.1">import * as vscode from "vscode";
+import * as murmur from "murmurhash-js";
 import { Constants } from "./constants";
-import { Icon, UserCommand } from "./types";
+import { Icon, UserCommand, ArchivedPosition } from "./types";
 import { LeoNode } from "./leoNode";
 
 // String and other types/structures helper functions, along with common vscode API calls
@@ -8443,20 +8447,23 @@ public addLogPaneEntry(p_message: string): void {
  * * 'getStates' action for use in debounced method call
  */
 private _triggerGetStates(): void {
-    // Debounced timer has triggered so perform getStates action
     if (this._refreshType.documents) {
-        this._leoDocumentsProvider.refreshTreeRoot();
         this._refreshType.documents = false;
+        this._leoDocumentsProvider.refreshTreeRoot();
     }
     if (this._refreshType.buttons) {
-        this._leoButtonsProvider.refreshTreeRoot();
         this._refreshType.buttons = false;
+        this._leoButtonsProvider.refreshTreeRoot();
     }
-    this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) =&gt; {
-        if (p_package.states) {
-            this.leoStates.setLeoStateFlags(p_package.states);
-        }
-    });
+    if (this._refreshType.states) {
+        this._refreshType.states = false;
+        this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) =&gt; {
+            if (p_package.states) {
+                this.leoStates.setLeoStateFlags(p_package.states);
+            }
+        });
+    }
+
 }
 
 </t>
@@ -8494,7 +8501,8 @@ export class LeoIntegration {
     private _leoTreeStandaloneView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Tree View Container with an Activity Bar icon
     private _leoTreeExplorerView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Explorer Sidebar
     private _lastVisibleTreeView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Explorer Sidebar
-    private _nextNodeId: number = Constants.STARTING_PACKAGE_ID; // Used to generate id's for new treeNodes: The id is used to preserve or set the selection and expansion states
+    private _nodeId: number = Constants.STARTING_PACKAGE_ID; // Used to generate id's for new treeNodes: The id is used to preserve or set the selection and expansion states
+    private _TreeId: number = 0; // base hash for tree node murmurhash generated Ids
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
     get lastSelectedNode(): LeoNode | undefined { // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
@@ -9024,8 +9032,7 @@ public apToLeoNode(p_ap: ArchivedPosition, p_revealSelected?: boolean, p_specifi
         !!p_ap.hasBody,         // hasBody
         w_u,                    // unknownAttributes
         this,                   // _leoIntegration pointer
-        // If there's no reveal and its the selected node re-use the old id
-        (!this._revealType &amp;&amp; p_ap.selected &amp;&amp; this.lastSelectedNode) ? this.lastSelectedNode.id : (++this._nextNodeId).toString()
+        utils.murmurNode(p_ap, this._TreeId.toString(16))
     );
     if (p_revealSelected &amp;&amp; this._revealType &amp;&amp; p_ap.selected) {
         this._apToLeoNodeConvertReveal(p_specificNode ? p_specificNode : w_leoNode);
@@ -11659,6 +11666,7 @@ export interface ReqRefresh {
     node?: boolean;
     tree?: boolean;
     body?: boolean;
+    states?: boolean;
     buttons?: boolean;
     documents?: boolean;
 }
@@ -11864,6 +11872,20 @@ public static CONFIG_DEFAULTS = {
             return self._outputError("Error in cutPNode no w_p node found")  # default empty
     else:
         return self._outputError("Error in cutPNode no param node")
+
+</t>
+<t tx="felix.20200811004449.1">/**
+ * 64 bit Hexadecimal String hash of an archived position
+ * Without taking collapsed state into account
+ * @param p_ap Archived position
+ * @param p_salt To be added to the hashing process (Change when tree changes)
+ */
+export function murmurNode(p_ap: ArchivedPosition, p_salt: string): string {
+    // Not taking apJson directly as to exclude collapsed state
+    const w_string: string = p_salt + p_ap.headline + p_ap.gnx + p_ap.childIndex.toString() + JSON.stringify(p_ap.stack);
+    const w_first: string = murmur.murmur3(w_string).toString(16); // 8 character hex (32 bit)
+    return w_first + murmur.murmur3(w_first + w_string).toString(16); // 16 character hex string (64 bit)
+}
 
 </t>
 </tnodes>
