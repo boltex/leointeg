@@ -54,7 +54,8 @@ export class LeoIntegration {
     private _leoTreeStandaloneView: vscode.TreeView<LeoNode>; // Outline tree view added to the Tree View Container with an Activity Bar icon
     private _leoTreeExplorerView: vscode.TreeView<LeoNode>; // Outline tree view added to the Explorer Sidebar
     private _lastVisibleTreeView: vscode.TreeView<LeoNode>; // Outline tree view added to the Explorer Sidebar
-    private _nextNodeId: number = Constants.STARTING_PACKAGE_ID; // Used to generate id's for new treeNodes: The id is used to preserve or set the selection and expansion states
+    private _nodeId: number = Constants.STARTING_PACKAGE_ID; // Used to generate id's for new treeNodes: The id is used to preserve or set the selection and expansion states
+    private _TreeId: number = 0; // base hash for tree node murmurhash generated Ids
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
     get lastSelectedNode(): LeoNode | undefined { // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
@@ -498,20 +499,23 @@ export class LeoIntegration {
      * * 'getStates' action for use in debounced method call
      */
     private _triggerGetStates(): void {
-        // Debounced timer has triggered so perform getStates action
         if (this._refreshType.documents) {
-            this._leoDocumentsProvider.refreshTreeRoot();
             this._refreshType.documents = false;
+            this._leoDocumentsProvider.refreshTreeRoot();
         }
         if (this._refreshType.buttons) {
-            this._leoButtonsProvider.refreshTreeRoot();
             this._refreshType.buttons = false;
+            this._leoButtonsProvider.refreshTreeRoot();
         }
-        this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) => {
-            if (p_package.states) {
-                this.leoStates.setLeoStateFlags(p_package.states);
-            }
-        });
+        if (this._refreshType.states) {
+            this._refreshType.states = false;
+            this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) => {
+                if (p_package.states) {
+                    this.leoStates.setLeoStateFlags(p_package.states);
+                }
+            });
+        }
+
     }
 
     /**
@@ -950,7 +954,7 @@ export class LeoIntegration {
             w_u,                    // unknownAttributes
             this,                   // _leoIntegration pointer
             // If there's no reveal and its the selected node re-use the old id
-            (!this._revealType && p_ap.selected && this.lastSelectedNode) ? this.lastSelectedNode.id : (++this._nextNodeId).toString()
+            (!this._revealType && p_ap.selected && this.lastSelectedNode) ? this.lastSelectedNode.id : (++this._nodeId).toString()
         );
         if (p_revealSelected && this._revealType && p_ap.selected) {
             this._apToLeoNodeConvertReveal(p_specificNode ? p_specificNode : w_leoNode);

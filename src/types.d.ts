@@ -46,6 +46,7 @@ export interface ReqRefresh {
     node?: boolean;
     tree?: boolean;
     body?: boolean;
+    states?: boolean;
     buttons?: boolean;
     documents?: boolean;
 }
