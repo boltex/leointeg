@@ -55,14 +55,13 @@ export class LeoIntegration {
     private _leoTreeExplorerView: vscode.TreeView<LeoNode>; // Outline tree view added to the Explorer Sidebar
     private _lastVisibleTreeView: vscode.TreeView<LeoNode>; // Outline tree view added to the Explorer Sidebar
     private _nodeId: number = Constants.STARTING_PACKAGE_ID; // Used to generate id's for new treeNodes: The id is used to preserve or set the selection and expansion states
-    private _TreeId: number = 0; // base hash for tree node murmurhash generated Ids
+    private _treeId: number = 0; // Starting salt for tree node murmurhash generated Ids
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
     get lastSelectedNode(): LeoNode | undefined { // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
         return this._lastSelectedNode;
     }
-    set lastSelectedNode(p_leoNode: LeoNode | undefined) {  // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
-        // console.log(`Setting Last Selected Node:${p_leoNode!.label}, with id: ${p_leoNode!.id}`);
+    set lastSelectedNode(p_leoNode: LeoNode | undefined) { // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
         this._lastSelectedNode = p_leoNode;
         if (p_leoNode) {
             utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_leoNode.marked); // Global context to 'flag' the selected node's marked state
@@ -819,8 +818,6 @@ export class LeoIntegration {
             this._lastVisibleTreeView.reveal(this._lastSelectedNode, {
                 select: true,
                 focus: p_focusOutline
-            }).then(() => {
-                // console.log('done showing/revealing outline');
             });
         }
     }
@@ -871,7 +868,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Launch the tree root, and optionally body, refresh processes, leading to _gotSelection upon reaching the selected node
+     * * Launches refresh for UI components and states
      * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
      */
@@ -903,8 +900,16 @@ export class LeoIntegration {
             w_revealType = RevealType.RevealSelect;
         }
         // * Launch Outline's Root Refresh Cycle
-
-        this._refreshOutline(w_revealType); // Always at least refresh tree?
+        if (this._refreshType.tree) {
+            this._refreshType.tree = false;
+            this._treeId = this._treeId + 1;
+            this._refreshOutline(w_revealType);
+        } else if (this._refreshType.node) {
+            this._refreshType.node = false;
+            // TODO : REVEAL SELECTED NODE !
+        } else {
+            console.error('Unhandled Refresh Case'); // Example: body only without tree refresh, should not happen so far...
+        }
         this.getStates();
     }
 
@@ -953,7 +958,7 @@ export class LeoIntegration {
             !!p_ap.hasBody,         // hasBody
             w_u,                    // unknownAttributes
             this,                   // _leoIntegration pointer
-            utils.murmurNode(p_ap, this._TreeId.toString(16))
+            utils.hashNode(p_ap, this._treeId.toString(36))
         );
         if (p_revealSelected && this._revealType && p_ap.selected) {
             this._apToLeoNodeConvertReveal(p_specificNode ? p_specificNode : w_leoNode);
@@ -1246,7 +1251,7 @@ export class LeoIntegration {
                     return this.nodeCommand({
                         action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
                         node: undefined,
-                        refreshType: { tree: true, body: true, buttons: true, documents: true },
+                        refreshType: { tree: true, body: true, buttons: true, states: true, documents: true }, //
                         fromOutline: false,
                         text: w_script
                     });
@@ -1258,7 +1263,7 @@ export class LeoIntegration {
         return this.nodeCommand({
             action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
             node: undefined,
-            refreshType: { tree: true, body: true, buttons: true, documents: true },
+            refreshType: { tree: true, body: true, buttons: true, states: true, documents: true }, //
             fromOutline: false,
             text: " "
         });
@@ -1491,7 +1496,7 @@ export class LeoIntegration {
                         if (p_package.closed.total === 0) {
                             this._setupNoOpenedLeoDocument();
                         } else {
-                            this.launchRefresh({ body: true, tree: true, documents: true, buttons: true }, false);
+                            this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
                         }
                     } else if (p_package.closed === false) {
                         // Explicitly false and not just undefined
@@ -1541,7 +1546,7 @@ export class LeoIntegration {
                             if (p_packageAfterSave && p_packageAfterSave.closed && p_packageAfterSave.closed.total === 0) {
                                 this._setupNoOpenedLeoDocument();
                             } else {
-                                this.launchRefresh({ body: true, tree: true, documents: true, buttons: true }, false);
+                                this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
                             }
                         });
                     }
@@ -1608,8 +1613,7 @@ export class LeoIntegration {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
         this.sendAction(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
             .then((p_clickButtonResult: LeoBridgePackage) => {
-                // console.log('Back from clickButton, package is: ', p_clickButtonResult);
-                this.launchRefresh({ body: true, tree: true, documents: true, buttons: true }, false);
+                this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
             });
     }
 
@@ -1620,7 +1624,6 @@ export class LeoIntegration {
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
         this.sendAction(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
             .then((p_removeButtonResult: LeoBridgePackage) => {
-                // console.log('Back from removeButton, package is: ', p_removeButtonResult);
                 this.launchRefresh({ buttons: true }, false);
             });
     }
@@ -1649,7 +1652,7 @@ export class LeoIntegration {
                 this.nodeCommand({
                     action: p_picked.func,
                     node: undefined,
-                    refreshType: { body: true, tree: true, documents: true, buttons: true },
+                    refreshType: { tree: true, body: true, documents: true, buttons: true, states: true },
                     fromOutline: !!true
                 });
             }

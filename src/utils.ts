@@ -16,16 +16,18 @@ export function padNumber2(p_number: number): string {
 }
 
 /**
- * 64 bit Hexadecimal String hash of an archived position
- * Without taking collapsed state into account
+ * Builds a string hash out of of an archived position, default without taking collapsed state into account
  * @param p_ap Archived position
  * @param p_salt To be added to the hashing process (Change when tree changes)
  */
-export function murmurNode(p_ap: ArchivedPosition, p_salt: string): string {
-    // Not taking apJson directly as to exclude collapsed state
-    const w_string: string = p_salt + p_ap.headline + p_ap.gnx + p_ap.childIndex.toString() + JSON.stringify(p_ap.stack);
-    const w_first: string = murmur.murmur3(w_string).toString(16); // 8 character hex (32 bit)
-    return w_first + murmur.murmur3(w_first + w_string).toString(16); // 16 character hex string (64 bit)
+export function hashNode(p_ap: ArchivedPosition, p_salt: string, p_withCollapse?: boolean): string {
+    const w_string1: string = p_ap.headline + p_ap.gnx + p_ap.childIndex.toString(36);
+    const w_string2: string = w_string1 + p_ap.childIndex.toString(36) + JSON.stringify(p_ap.stack);
+    const w_first: string = murmur.murmur3(w_string2).toString(36);
+    if (p_withCollapse) {
+        p_salt += p_ap.expanded ? "1" : "0";
+    }
+    return p_salt + w_string1 + w_first + murmur.murmur3(w_first + w_string2).toString(36);
 }
 
 /**

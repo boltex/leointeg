@@ -561,7 +561,7 @@
 </v>
 <v t="felix.20200718195558.1"><vh>@clean src/utils.ts</vh>
 <v t="felix.20200718195558.2"><vh>padNumber2</vh></v>
-<v t="felix.20200811004449.1"><vh>murmurNode</vh></v>
+<v t="felix.20200811004449.1"><vh>hashNode</vh></v>
 <v t="felix.20200718195558.3"><vh>buildNodeIconPaths</vh></v>
 <v t="felix.20200718195558.4"><vh>buildDocumentIconPaths</vh></v>
 <v t="felix.20200718195558.5"><vh>buildButtonsIconPaths</vh></v>
@@ -4837,7 +4837,7 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
     w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_command); // 'Insert Named Node' or 'Edit Headline'
 
     // Setup _finalRefreshType, if command requires higher than the one setup so far
-    Object.assign(this._finalRefreshType, w_command.refreshType);
+    Object.assign(this._finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)
 
     // Submit this action to Leo and return a promise of its packaged answer
     return this._leoIntegration.sendAction(w_command.action, w_jsonParam);
@@ -5071,25 +5071,25 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.10">[CMD.CONTRACT_ALL, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_ALL,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: false
 })],
 [CMD.CONTRACT_ALL_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_ALL,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.CONTRACT_OR_GO_LEFT, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_OR_GO_LEFT,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.EXPAND_AND_GO_RIGHT, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.EXPAND_AND_GO_RIGHT,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 
@@ -5097,56 +5097,56 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.12">[CMD.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.GOTO_NEXT_CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: false
 })],
 [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 
 [CMD.GOTO_NEXT_MARKED, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_MARKED,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.GOTO_FIRST_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_FIRST_VISIBLE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.GOTO_LAST_SIBLING, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_LAST_SIBLING,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.GOTO_LAST_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_LAST_VISIBLE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.GOTO_NEXT_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_VISIBLE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.GOTO_PREV_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_PREV_VISIBLE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 
@@ -5154,31 +5154,31 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.13">[CMD.DEHOIST, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEHOIST,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: false
 })],
 [CMD.DEHOIST_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEHOIST,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.HOIST, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.HOIST_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: false
 })],
 [CMD.HOIST_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: true
 })],
 
@@ -5186,19 +5186,19 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.14">[CMD.CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.CLONE_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CLONE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: false
 })],
 [CMD.CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CLONE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: true
 })],
 
@@ -5223,80 +5223,80 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.16">[CMD.MOVE_DOWN, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_DOWN,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.MOVE_DOWN_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_DOWN,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: false
 })],
 [CMD.MOVE_DOWN_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_DOWN,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: true
 })],
 
 [CMD.MOVE_LEFT, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_LEFT,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.MOVE_LEFT_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_LEFT,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: false
 })],
 [CMD.MOVE_LEFT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_LEFT,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: true
 })],
 
 [CMD.MOVE_RIGHT, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_RIGHT,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.MOVE_RIGHT_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_RIGHT,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: false
 })],
 [CMD.MOVE_RIGHT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_RIGHT,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: true
 })],
 
 [CMD.MOVE_UP, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_UP,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.MOVE_UP_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_UP,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: false
 })],
 [CMD.MOVE_UP_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_UP,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: true
 })],
 
@@ -5304,13 +5304,13 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.17">[CMD.PAGE_UP, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PAGE_UP,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.PAGE_DOWN, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PAGE_DOWN,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 
@@ -5318,39 +5318,39 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.18">[CMD.DEMOTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEMOTE_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.DEMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEMOTE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: false
 })],
 [CMD.DEMOTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEMOTE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: true
 })],
 [CMD.PROMOTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.PROMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: false
 })],
 [CMD.PROMOTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: true
 })],
 
@@ -5358,21 +5358,21 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.19">[CMD.SORT_CHILDREN, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SORT_CHILDREN,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: false,
     keepSelection: true
 })],
 [CMD.SORT_SIBLING, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SORT_SIBLINGS,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: false,
     keepSelection: true
 })],
 [CMD.SORT_SIBLING_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SORT_SIBLINGS,
     node: U,
-    refreshType: REFRESH_TREE,
+    refreshType: REFRESH_TREE_STATES,
     fromOutline: true,
     keepSelection: true
 })],
@@ -5401,12 +5401,25 @@ export function activate(p_context: vscode.ExtensionContext) {
     const BRIDGE = Constants.LEOBRIDGE;
     const CMD = Constants.COMMANDS;
     const NO_REFRESH: ReqRefresh = {};
+    const REFRESH_NODE_STATES: ReqRefresh = {
+        node: true, // Reveal the returned 'selected position' without changes to the tree
+        states: true // changed, canUndo, canRedo, canDemote, canPromote, canDehoist
+    };
     const REFRESH_TREE: ReqRefresh = {
         tree: true
     };
     const REFRESH_TREE_BODY: ReqRefresh = {
+        tree: true,
+        body: true
+    };
+    const REFRESH_TREE_STATES: ReqRefresh = {
+        tree: true,
+        states: true
+    };
+    const REFRESH_TREE_BODY_STATES: ReqRefresh = {
+        tree: true,
         body: true,
-        tree: true
+        states: true
     };
     const showInfo = vscode.window.showInformationMessage;
 
@@ -5434,25 +5447,25 @@ export function activate(p_context: vscode.ExtensionContext) {
 <t tx="felix.20200718031424.20">[CMD.REDO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REDO,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: false
 })],
 [CMD.REDO_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REDO,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.UNDO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.UNDO,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: false
 })],
 [CMD.UNDO_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.UNDO,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 
@@ -5567,26 +5580,26 @@ function getDurationMilliseconds(p_start: [number, number]): number {
 [CMD.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.REFRESH_FROM_DISK_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true,
     keepSelection: false
 })],
 [CMD.REFRESH_FROM_DISK_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REFRESH_FROM_DISK_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: false
 })],
 [CMD.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REFRESH_FROM_DISK_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.GIT_DIFF, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GIT_DIFF,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: false
 })],
 
@@ -5608,28 +5621,28 @@ function getDurationMilliseconds(p_start: [number, number]): number {
 [CMD.CUT, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.CUT_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.DELETE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.PASTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true,
     keepSelection: false
 })],
 [CMD.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_CLONE_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true,
     keepSelection: false
 })],
@@ -5789,9 +5802,7 @@ public showAskModalDialog(p_askArg: runAskYesNoDialogParameters): void {
         const w_sendResultPromise = this._leoIntegration.sendAction(Constants.LEOBRIDGE.ASK_RESULT, '"' + this._askResult + '"'); // Quotes in string as a 'JSON parameter'
         if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
             w_sendResultPromise.then(() =&gt; {
-                // Might have answered 'yes/yesAll' and refreshed and changed the body text
-                // TODO : #34 @boltex Deal with focus placement
-                this._leoIntegration.launchRefresh({ body: true, tree: true }, false);
+                this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
             });
         }
     });
@@ -5822,7 +5833,7 @@ public showChangesDetectedInfoMessage(p_infoArg: runInfoMessageDialogParameters)
         case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_REFRESHED:
             w_message += Constants.USER_MESSAGES.REFRESHED;
             // TODO : #34 @boltex Deal with focus placement
-            this._leoIntegration.launchRefresh({ body: true, tree: true }, false);
+            this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
             break;
         case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_IGNORED:
             w_message += Constants.USER_MESSAGES.IGNORED;
@@ -6898,6 +6909,7 @@ public setRoot(): void {
     if (this.u) {
         return "\u{1F4CE} (" + Object.keys(this.u).length + ")";
     } else {
+        return "id:" + this.id; // ! debug test
         return ""; // Falsy will not be shown
     }
 }
@@ -7699,7 +7711,7 @@ export const enum RevealType {
  * * Stackable front end commands
  */
 export interface UserCommand {
-    action: string;
+    action: string; // String from Constants.LEOBRIDGE, which are commands for leobridgeserver.py
     node?: LeoNode | undefined;  // We can START a stack with a targeted command
     text?: string | undefined; // If a string is required, for headline, etc.
     refreshType: ReqRefresh; // Minimal refresh level required by this command
@@ -8502,14 +8514,13 @@ export class LeoIntegration {
     private _leoTreeExplorerView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Explorer Sidebar
     private _lastVisibleTreeView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Explorer Sidebar
     private _nodeId: number = Constants.STARTING_PACKAGE_ID; // Used to generate id's for new treeNodes: The id is used to preserve or set the selection and expansion states
-    private _TreeId: number = 0; // base hash for tree node murmurhash generated Ids
+    private _treeId: number = 0; // Starting salt for tree node murmurhash generated Ids
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
     get lastSelectedNode(): LeoNode | undefined { // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
         return this._lastSelectedNode;
     }
-    set lastSelectedNode(p_leoNode: LeoNode | undefined) {  // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
-        // console.log(`Setting Last Selected Node:${p_leoNode!.label}, with id: ${p_leoNode!.id}`);
+    set lastSelectedNode(p_leoNode: LeoNode | undefined) { // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
         this._lastSelectedNode = p_leoNode;
         if (p_leoNode) {
             utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_leoNode.marked); // Global context to 'flag' the selected node's marked state
@@ -8962,8 +8973,6 @@ public showOutline(p_focusOutline: boolean): void {
         this._lastVisibleTreeView.reveal(this._lastSelectedNode, {
             select: true,
             focus: p_focusOutline
-        }).then(() =&gt; {
-            // console.log('done showing/revealing outline');
         });
     }
 }
@@ -9032,7 +9041,7 @@ public apToLeoNode(p_ap: ArchivedPosition, p_revealSelected?: boolean, p_specifi
         !!p_ap.hasBody,         // hasBody
         w_u,                    // unknownAttributes
         this,                   // _leoIntegration pointer
-        utils.murmurNode(p_ap, this._TreeId.toString(16))
+        utils.hashNode(p_ap, this._treeId.toString(36))
     );
     if (p_revealSelected &amp;&amp; this._revealType &amp;&amp; p_ap.selected) {
         this._apToLeoNodeConvertReveal(p_specificNode ? p_specificNode : w_leoNode);
@@ -9103,7 +9112,7 @@ private _revealTreeViewNode(p_leoNode: LeoNode, p_options?: { select?: boolean, 
 
 </t>
 <t tx="felix.20200719025231.42">/**
- * * Launch the tree root, and optionally body, refresh processes, leading to _gotSelection upon reaching the selected node
+ * * Launches refresh for UI components and states
  * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
  */
@@ -9135,8 +9144,16 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean): void {
         w_revealType = RevealType.RevealSelect;
     }
     // * Launch Outline's Root Refresh Cycle
-
-    this._refreshOutline(w_revealType); // Always at least refresh tree?
+    if (this._refreshType.tree) {
+        this._refreshType.tree = false;
+        this._treeId = this._treeId + 1;
+        this._refreshOutline(w_revealType);
+    } else if (this._refreshType.node) {
+        this._refreshType.node = false;
+        // TODO : REVEAL SELECTED NODE !
+    } else {
+        console.error('Unhandled Refresh Case'); // Example: body only without tree refresh, should not happen so far...
+    }
     this.getStates();
 }
 
@@ -9395,7 +9412,7 @@ public executeScript(): boolean {
                 return this.nodeCommand({
                     action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
                     node: undefined,
-                    refreshType: { tree: true, body: true, buttons: true, documents: true },
+                    refreshType: { tree: true, body: true, buttons: true, states: true, documents: true }, //
                     fromOutline: false,
                     text: w_script
                 });
@@ -9407,7 +9424,7 @@ public executeScript(): boolean {
     return this.nodeCommand({
         action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
         node: undefined,
-        refreshType: { tree: true, body: true, buttons: true, documents: true },
+        refreshType: { tree: true, body: true, buttons: true, states: true, documents: true }, //
         fromOutline: false,
         text: " "
     });
@@ -9653,8 +9670,7 @@ public clickButton(p_node: LeoButtonNode): void {
     if (this._isBusy()) { return; } // Warn user to wait for end of busy state
     this.sendAction(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
         .then((p_clickButtonResult: LeoBridgePackage) =&gt; {
-            // console.log('Back from clickButton, package is: ', p_clickButtonResult);
-            this.launchRefresh({ body: true, tree: true, documents: true, buttons: true }, false);
+            this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
         });
 }
 
@@ -9666,7 +9682,6 @@ public removeButton(p_node: LeoButtonNode): void {
     if (this._isBusy()) { return; } // Warn user to wait for end of busy state
     this.sendAction(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
         .then((p_removeButtonResult: LeoBridgePackage) =&gt; {
-            // console.log('Back from removeButton, package is: ', p_removeButtonResult);
             this.launchRefresh({ buttons: true }, false);
         });
 }
@@ -9691,7 +9706,7 @@ public closeLeoFile(): void {
                     if (p_package.closed.total === 0) {
                         this._setupNoOpenedLeoDocument();
                     } else {
-                        this.launchRefresh({ body: true, tree: true, documents: true, buttons: true }, false);
+                        this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
                     }
                 } else if (p_package.closed === false) {
                     // Explicitly false and not just undefined
@@ -9741,7 +9756,7 @@ public closeLeoFile(): void {
                         if (p_packageAfterSave &amp;&amp; p_packageAfterSave.closed &amp;&amp; p_packageAfterSave.closed.total === 0) {
                             this._setupNoOpenedLeoDocument();
                         } else {
-                            this.launchRefresh({ body: true, tree: true, documents: true, buttons: true }, false);
+                            this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
                         }
                     });
                 }
@@ -10276,7 +10291,7 @@ public minibuffer(): void {
             this.nodeCommand({
                 action: p_picked.func,
                 node: undefined,
-                refreshType: { body: true, tree: true, documents: true, buttons: true },
+                refreshType: { tree: true, body: true, documents: true, buttons: true, states: true },
                 fromOutline: !!true
             });
         }
@@ -11663,12 +11678,12 @@ export interface MinibufferCommand extends vscode.QuickPickItem {
  * TODO : Replace RefreshType with ReqRefresh : "Required Refresh" collection of flag dictionary
  */
 export interface ReqRefresh {
-    node?: boolean;
-    tree?: boolean;
-    body?: boolean;
-    states?: boolean;
-    buttons?: boolean;
-    documents?: boolean;
+    node?: boolean; // Reveal received selected node (Navigation only, no tree change)
+    tree?: boolean; // Tree needs refresh
+    body?: boolean; // Body needs refresh
+    states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
+    buttons?: boolean; // Buttons needs refresh
+    documents?: boolean; // Documents needs refresh
 }
 
 </t>
@@ -11711,49 +11726,49 @@ public static CONFIG_DEFAULTS = {
 [CMD.CUT_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CUT_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: false
 })],
 [CMD.CUT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CUT_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.DELETE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: false
 })],
 [CMD.DELETE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.PASTE_CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_CLONE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: false
 })],
 [CMD.PASTE_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_CLONE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 [CMD.PASTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: false
 })],
 [CMD.PASTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY,
+    refreshType: REFRESH_TREE_BODY_STATES,
     fromOutline: true
 })],
 
@@ -11875,16 +11890,18 @@ public static CONFIG_DEFAULTS = {
 
 </t>
 <t tx="felix.20200811004449.1">/**
- * 64 bit Hexadecimal String hash of an archived position
- * Without taking collapsed state into account
+ * Builds a string hash out of of an archived position, default without taking collapsed state into account
  * @param p_ap Archived position
  * @param p_salt To be added to the hashing process (Change when tree changes)
  */
-export function murmurNode(p_ap: ArchivedPosition, p_salt: string): string {
-    // Not taking apJson directly as to exclude collapsed state
-    const w_string: string = p_salt + p_ap.headline + p_ap.gnx + p_ap.childIndex.toString() + JSON.stringify(p_ap.stack);
-    const w_first: string = murmur.murmur3(w_string).toString(16); // 8 character hex (32 bit)
-    return w_first + murmur.murmur3(w_first + w_string).toString(16); // 16 character hex string (64 bit)
+export function hashNode(p_ap: ArchivedPosition, p_salt: string, p_withCollapse?: boolean): string {
+    const w_string1: string = p_ap.headline + p_ap.gnx + p_ap.childIndex.toString(36);
+    const w_string2: string = w_string1 + p_ap.childIndex.toString(36) + JSON.stringify(p_ap.stack);
+    const w_first: string = murmur.murmur3(w_string2).toString(36);
+    if (p_withCollapse) {
+        p_salt += p_ap.expanded ? "1" : "0";
+    }
+    return p_salt + w_string1 + w_first + murmur.murmur3(w_first + w_string2).toString(36);
 }
 
 </t>

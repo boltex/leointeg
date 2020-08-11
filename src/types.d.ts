@@ -43,19 +43,19 @@ export const enum RevealType {
  * TODO : Replace RefreshType with ReqRefresh : "Required Refresh" collection of flag dictionary
  */
 export interface ReqRefresh {
-    node?: boolean;
-    tree?: boolean;
-    body?: boolean;
-    states?: boolean;
-    buttons?: boolean;
-    documents?: boolean;
+    node?: boolean; // Reveal received selected node (Navigation only, no tree change)
+    tree?: boolean; // Tree needs refresh
+    body?: boolean; // Body needs refresh
+    states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
+    buttons?: boolean; // Buttons needs refresh
+    documents?: boolean; // Documents needs refresh
 }
 
 /**
  * * Stackable front end commands
  */
 export interface UserCommand {
-    action: string;
+    action: string; // String from Constants.LEOBRIDGE, which are commands for leobridgeserver.py
     node?: LeoNode | undefined;  // We can START a stack with a targeted command
     text?: string | undefined; // If a string is required, for headline, etc.
     refreshType: ReqRefresh; // Minimal refresh level required by this command

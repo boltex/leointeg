@@ -83,9 +83,7 @@ export class LeoAsync {
             const w_sendResultPromise = this._leoIntegration.sendAction(Constants.LEOBRIDGE.ASK_RESULT, '"' + this._askResult + '"'); // Quotes in string as a 'JSON parameter'
             if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
                 w_sendResultPromise.then(() => {
-                    // Might have answered 'yes/yesAll' and refreshed and changed the body text
-                    // TODO : #34 @boltex Deal with focus placement
-                    this._leoIntegration.launchRefresh({ body: true, tree: true }, false);
+                    this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
                 });
             }
         });
@@ -114,7 +112,7 @@ export class LeoAsync {
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_REFRESHED:
                 w_message += Constants.USER_MESSAGES.REFRESHED;
                 // TODO : #34 @boltex Deal with focus placement
-                this._leoIntegration.launchRefresh({ body: true, tree: true }, false);
+                this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
                 break;
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_IGNORED:
                 w_message += Constants.USER_MESSAGES.IGNORED;
