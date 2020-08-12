@@ -81,9 +81,9 @@ export class Constants {
             "\n" +
             "For example, to run a script on any part of an outline:\n" +
             "\n" +
-            "1.  Select the node containing the script.\n" +
+            "1.  Select the node containing a script. (Ex.: \"g.es(p.h)\")\n" +
             "2.  Press 'Script Button'. This will create a new button.\n" +
-            "3.  Select the node on which you want to run the script.\n" +
+            "3.  Select a node on which you want to run the script.\n" +
             "4.  Press the *new* button.",
         SAVE_CHANGES: "Save changes to",
         BEFORE_CLOSING: "before closing?",

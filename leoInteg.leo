@@ -228,103 +228,6 @@
 </v>
 <v t="felix.20191126232435.1"><vh>main</vh></v>
 </v>
-<v t="felix.20200719025231.2"><vh>class LeoIntegration</vh>
-<v t="felix.20200719025231.3"><vh>Constructor</vh></v>
-<v t="felix.20200719025231.4"><vh>Server &amp; Startup</vh>
-<v t="felix.20200719025231.5"><vh>sendAction</vh></v>
-<v t="felix.20200719025231.6"><vh>startNetworkServices</vh></v>
-<v t="felix.20200719025231.7"><vh>startServer</vh></v>
-<v t="felix.20200719025231.8"><vh>connect</vh></v>
-<v t="felix.20200719025231.9"><vh>cancelConnect</vh></v>
-<v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
-</v>
-<v t="felix.20200719231248.1"><vh>Recent &amp; Last files</vh>
-<v t="felix.20200719233923.1"><vh>_openLastFiles</vh></v>
-<v t="felix.20200719233925.1"><vh>_addRecentAndLastFile</vh></v>
-<v t="felix.20200719233928.1"><vh>_removeRecentFile</vh></v>
-<v t="felix.20200719233930.1"><vh>_removeLastFile</vh></v>
-<v t="felix.20200721005448.1"><vh>showRecentLeoFiles</vh></v>
-</v>
-<v t="felix.20200719025231.10"><vh>Log &amp; Terminal</vh>
-<v t="felix.20200719025231.11"><vh>showTerminalPane</vh></v>
-<v t="felix.20200719025231.12"><vh>hideTerminalPane</vh></v>
-<v t="felix.20200719025231.13"><vh>addTerminalPaneEntry</vh></v>
-<v t="felix.20200719025231.14"><vh>showLogPane</vh></v>
-<v t="felix.20200719025231.15"><vh>hideLogPane</vh></v>
-<v t="felix.20200719025231.16"><vh>addLogPaneEntry</vh></v>
-</v>
-<v t="felix.20200719031802.1"><vh>States </vh>
-<v t="felix.20200719025231.19"><vh>_triggerGetStates</vh></v>
-<v t="felix.20200719025231.20"><vh>_isBusy</vh></v>
-<v t="felix.20200719025231.21"><vh>_isCurrentFileNamed</vh></v>
-<v t="felix.20200719025231.22"><vh>_setupNoOpenedLeoDocument</vh></v>
-<v t="felix.20200719025231.23"><vh>_setupOpenedLeoDocument</vh></v>
-</v>
-<v t="felix.20200719030811.1"><vh>UI Change Events</vh>
-<v t="felix.20200719025231.24"><vh>_onChangeConfiguration</vh></v>
-<v t="felix.20200719231446.1"><vh>_onDidOpenTextDocument</vh></v>
-<v t="felix.20200719025231.25"><vh>_onChangeCollapsedState</vh></v>
-<v t="felix.20200719025231.26"><vh>_onTreeViewVisibilityChanged</vh></v>
-<v t="felix.20200719025231.27"><vh>_onDocTreeViewVisibilityChanged</vh></v>
-<v t="felix.20200719025231.28"><vh>_onButtonsTreeViewVisibilityChanged</vh></v>
-<v t="felix.20200719025231.29"><vh>_onActiveEditorChanged</vh></v>
-<v t="felix.20200719025231.31"><vh>_onDocumentChanged</vh></v>
-</v>
-<v t="felix.20200719030842.1"><vh>Body Editing</vh>
-<v t="felix.20200719025231.32"><vh>triggerBodySave</vh></v>
-<v t="felix.20200719025231.33"><vh>_bodySaveDocument</vh></v>
-</v>
-<v t="felix.20200719030902.1"><vh>Refresh &amp; Reveal</vh>
-<v t="felix.20200719025231.34"><vh>setDocumentSelection</vh></v>
-<v t="felix.20200719025231.35"><vh>showOutline</vh></v>
-<v t="felix.20200719025231.36"><vh>configTreeRefresh</vh></v>
-<v t="felix.20200719025231.37"><vh>_refreshOutline</vh></v>
-<v t="felix.20200719025231.41"><vh>_revealTreeViewNode</vh></v>
-<v t="felix.20200719025231.42"><vh>launchRefresh</vh></v>
-<v t="felix.20200719025231.43"><vh>_gotSelection</vh></v>
-</v>
-<v t="felix.20200719030909.1"><vh>Conversion</vh>
-<v t="felix.20200719025231.38"><vh>apToLeoNode</vh></v>
-<v t="felix.20200719025231.39"><vh>_apToLeoNodeConvertReveal</vh></v>
-<v t="felix.20200719025231.40"><vh>arrayToLeoNodesArray</vh></v>
-</v>
-<v t="felix.20200719031115.1"><vh>Body Pane Management</vh>
-<v t="felix.20200719025231.45"><vh>_applyNodeSelectionToBody</vh></v>
-<v t="felix.20200719025231.46"><vh>_showBodyIfRequired</vh></v>
-<v t="felix.20200719025231.47"><vh>_switchBody</vh></v>
-<v t="felix.20200719025231.48"><vh>_locateOpenedBody</vh></v>
-<v t="felix.20200719025231.49"><vh>closeBody</vh></v>
-<v t="felix.20200719025231.50"><vh>showBody</vh></v>
-</v>
-<v t="felix.20200719025231.51"><vh>Outline Commands</vh>
-<v t="felix.20200719234337.1"><vh>selectTreeNode</vh></v>
-<v t="felix.20200719025231.52"><vh>nodeCommand</vh></v>
-<v t="felix.20200719025231.53"><vh>executeScript</vh></v>
-<v t="felix.20200719025231.54"><vh>changeMark</vh></v>
-<v t="felix.20200719025231.55"><vh>editHeadline</vh></v>
-<v t="felix.20200719025231.56"><vh>insertNode</vh></v>
-</v>
-<v t="felix.20200719025231.57"><vh>Leo Documents</vh>
-<v t="felix.20200719025231.58"><vh>saveAsLeoFile</vh></v>
-<v t="felix.20200719025231.59"><vh>saveLeoFile</vh></v>
-<v t="felix.20200719025231.60"><vh>switchLeoFile</vh></v>
-<v t="felix.20200719025231.61"><vh>selectOpenedLeoDocument</vh></v>
-<v t="felix.20200719025231.64"><vh>closeLeoFile</vh></v>
-<v t="felix.20200719025231.65"><vh>newLeoFile</vh></v>
-<v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
-</v>
-<v t="felix.20200719033306.1"><vh>Buttons</vh>
-<v t="felix.20200719025231.62"><vh>clickButton</vh></v>
-<v t="felix.20200719025231.63"><vh>removeButton</vh></v>
-</v>
-<v t="felix.20200719033511.1"><vh>Other UI Functionality</vh>
-<v t="felix.20200719235201.1"><vh>minibuffer</vh></v>
-<v t="felix.20200719025231.67"><vh>setTreeViewTitle</vh></v>
-<v t="felix.20200719025231.68"><vh>showLeoCommands</vh></v>
-<v t="felix.20200719025231.69"><vh>statusBarOnClick</vh></v>
-<v t="felix.20200719025231.70"><vh>test</vh></v>
-</v>
-</v>
 <v t="felix.20200718165721.1"><vh>Typescript Sources</vh>
 <v t="felix.20200718024635.1"><vh>@clean src/commandStack.ts</vh>
 <v t="felix.20200718024635.2"><vh>class CommandStack</vh>
@@ -371,11 +274,11 @@
 <v t="felix.20200802230238.1"><vh>cut/copy/paste selected node</vh></v>
 <v t="felix.20200718031424.10"><vh>expand/contract</vh></v>
 <v t="felix.20200718031424.12"><vh>goto</vh></v>
+<v t="felix.20200718031424.17"><vh>pgUp/pgDown</vh></v>
 <v t="felix.20200718031424.13"><vh>hoist/dehoist</vh></v>
 <v t="felix.20200718031424.14"><vh>insert/clone</vh></v>
 <v t="felix.20200718031424.15"><vh>mark/unmark</vh></v>
 <v t="felix.20200718031424.16"><vh>move nodes</vh></v>
-<v t="felix.20200718031424.17"><vh>pgUp/pgDown</vh></v>
 <v t="felix.20200718031424.18"><vh>promote/demote</vh></v>
 <v t="felix.20200718031424.19"><vh>sorting</vh></v>
 <v t="felix.20200718031424.20"><vh>undo/redo</vh></v>
@@ -469,7 +372,104 @@
 </v>
 </v>
 <v t="felix.20200719025231.1"><vh>@clean src/leoIntegration.ts</vh>
-<v t="felix.20200719025231.2"></v>
+<v t="felix.20200719025231.2"><vh>class LeoIntegration</vh>
+<v t="felix.20200719025231.3"><vh>Constructor</vh></v>
+<v t="felix.20200719025231.4"><vh>Server &amp; Startup</vh>
+<v t="felix.20200719025231.5"><vh>sendAction</vh></v>
+<v t="felix.20200719025231.6"><vh>startNetworkServices</vh></v>
+<v t="felix.20200719025231.7"><vh>startServer</vh></v>
+<v t="felix.20200719025231.8"><vh>connect</vh></v>
+<v t="felix.20200719025231.9"><vh>cancelConnect</vh></v>
+<v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
+</v>
+<v t="felix.20200719231248.1"><vh>Recent &amp; Last files</vh>
+<v t="felix.20200719233923.1"><vh>_openLastFiles</vh></v>
+<v t="felix.20200719233925.1"><vh>_addRecentAndLastFile</vh></v>
+<v t="felix.20200719233928.1"><vh>_removeRecentFile</vh></v>
+<v t="felix.20200719233930.1"><vh>_removeLastFile</vh></v>
+<v t="felix.20200721005448.1"><vh>showRecentLeoFiles</vh></v>
+</v>
+<v t="felix.20200719025231.10"><vh>Log &amp; Terminal</vh>
+<v t="felix.20200719025231.11"><vh>showTerminalPane</vh></v>
+<v t="felix.20200719025231.12"><vh>hideTerminalPane</vh></v>
+<v t="felix.20200719025231.13"><vh>addTerminalPaneEntry</vh></v>
+<v t="felix.20200719025231.14"><vh>showLogPane</vh></v>
+<v t="felix.20200719025231.15"><vh>hideLogPane</vh></v>
+<v t="felix.20200719025231.16"><vh>addLogPaneEntry</vh></v>
+</v>
+<v t="felix.20200719031802.1"><vh>States </vh>
+<v t="felix.20200719025231.19"><vh>_triggerGetStates</vh></v>
+<v t="felix.20200719025231.20"><vh>_isBusy</vh></v>
+<v t="felix.20200719025231.21"><vh>_isCurrentFileNamed</vh></v>
+<v t="felix.20200719025231.22"><vh>_setupNoOpenedLeoDocument</vh></v>
+<v t="felix.20200719025231.23"><vh>_setupOpenedLeoDocument</vh></v>
+</v>
+<v t="felix.20200719030811.1"><vh>UI Change Events</vh>
+<v t="felix.20200719025231.24"><vh>_onChangeConfiguration</vh></v>
+<v t="felix.20200719231446.1"><vh>_onDidOpenTextDocument</vh></v>
+<v t="felix.20200719025231.25"><vh>_onChangeCollapsedState</vh></v>
+<v t="felix.20200719025231.26"><vh>_onTreeViewVisibilityChanged</vh></v>
+<v t="felix.20200719025231.27"><vh>_onDocTreeViewVisibilityChanged</vh></v>
+<v t="felix.20200719025231.28"><vh>_onButtonsTreeViewVisibilityChanged</vh></v>
+<v t="felix.20200719025231.29"><vh>_onActiveEditorChanged</vh></v>
+<v t="felix.20200719025231.31"><vh>_onDocumentChanged</vh></v>
+</v>
+<v t="felix.20200719030842.1"><vh>Body Editing</vh>
+<v t="felix.20200719025231.32"><vh>triggerBodySave</vh></v>
+<v t="felix.20200719025231.33"><vh>_bodySaveDocument</vh></v>
+</v>
+<v t="felix.20200719030902.1"><vh>Refresh &amp; Reveal</vh>
+<v t="felix.20200719025231.34"><vh>setDocumentSelection</vh></v>
+<v t="felix.20200719025231.35"><vh>showOutline</vh></v>
+<v t="felix.20200719025231.36"><vh>configTreeRefresh</vh></v>
+<v t="felix.20200719025231.37"><vh>_refreshOutline</vh></v>
+<v t="felix.20200719025231.41"><vh>_revealTreeViewNode</vh></v>
+<v t="felix.20200719025231.42"><vh>launchRefresh</vh></v>
+<v t="felix.20200719025231.43"><vh>_gotSelection</vh></v>
+</v>
+<v t="felix.20200719030909.1"><vh>Conversion</vh>
+<v t="felix.20200719025231.38"><vh>apToLeoNode</vh></v>
+<v t="felix.20200719025231.39"><vh>_apToLeoNodeConvertReveal</vh></v>
+<v t="felix.20200719025231.40"><vh>arrayToLeoNodesArray</vh></v>
+</v>
+<v t="felix.20200719031115.1"><vh>Body Pane Management</vh>
+<v t="felix.20200719025231.45"><vh>_tryApplyNodeToBody</vh></v>
+<v t="felix.20200812190752.1"><vh>_applyNodeToBody</vh></v>
+<v t="felix.20200719025231.46"><vh>_showBodyIfRequired</vh></v>
+<v t="felix.20200719025231.47"><vh>_switchBody</vh></v>
+<v t="felix.20200719025231.48"><vh>_locateOpenedBody</vh></v>
+<v t="felix.20200719025231.49"><vh>closeBody</vh></v>
+<v t="felix.20200719025231.50"><vh>showBody</vh></v>
+</v>
+<v t="felix.20200719025231.51"><vh>Outline Commands</vh>
+<v t="felix.20200719234337.1"><vh>selectTreeNode</vh></v>
+<v t="felix.20200719025231.52"><vh>nodeCommand</vh></v>
+<v t="felix.20200719025231.53"><vh>executeScript</vh></v>
+<v t="felix.20200719025231.54"><vh>changeMark</vh></v>
+<v t="felix.20200719025231.55"><vh>editHeadline</vh></v>
+<v t="felix.20200719025231.56"><vh>insertNode</vh></v>
+</v>
+<v t="felix.20200719025231.57"><vh>Leo Documents</vh>
+<v t="felix.20200719025231.58"><vh>saveAsLeoFile</vh></v>
+<v t="felix.20200719025231.59"><vh>saveLeoFile</vh></v>
+<v t="felix.20200719025231.60"><vh>switchLeoFile</vh></v>
+<v t="felix.20200719025231.61"><vh>selectOpenedLeoDocument</vh></v>
+<v t="felix.20200719025231.64"><vh>closeLeoFile</vh></v>
+<v t="felix.20200719025231.65"><vh>newLeoFile</vh></v>
+<v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
+</v>
+<v t="felix.20200719033306.1"><vh>Buttons</vh>
+<v t="felix.20200719025231.62"><vh>clickButton</vh></v>
+<v t="felix.20200719025231.63"><vh>removeButton</vh></v>
+</v>
+<v t="felix.20200719033511.1"><vh>Other UI Functionality</vh>
+<v t="felix.20200719235201.1"><vh>minibuffer</vh></v>
+<v t="felix.20200719025231.67"><vh>setTreeViewTitle</vh></v>
+<v t="felix.20200719025231.68"><vh>showLeoCommands</vh></v>
+<v t="felix.20200719025231.69"><vh>statusBarOnClick</vh></v>
+<v t="felix.20200719025231.70"><vh>test</vh></v>
+</v>
+</v>
 </v>
 <v t="felix.20200718170712.1"><vh>@clean src/leoNode.ts</vh>
 <v t="felix.20200718170712.2"><vh>class LeoNode</vh>
@@ -541,6 +541,7 @@
 <v t="felix.20200718194857.3"><vh>RevealType</vh></v>
 <v t="felix.20200801021321.1"><vh>ReqRefresh</vh></v>
 <v t="felix.20200718194857.5"><vh>UserCommand</vh></v>
+<v t="felix.20200812185631.1"><vh>ShowBodyParam</vh></v>
 <v t="felix.20200718194857.6"><vh>LeoAction</vh></v>
 <v t="felix.20200718194857.7"><vh>LeoLogEntry</vh></v>
 <v t="felix.20200718194857.8"><vh>ArchivedPosition</vh></v>
@@ -4576,9 +4577,9 @@ public static USER_MESSAGES = {
         "\n" +
         "For example, to run a script on any part of an outline:\n" +
         "\n" +
-        "1.  Select the node containing the script.\n" +
+        "1.  Select the node containing a script. (Ex.: \"g.es(p.h)\")\n" +
         "2.  Press 'Script Button'. This will create a new button.\n" +
-        "3.  Select the node on which you want to run the script.\n" +
+        "3.  Select a node on which you want to run the script.\n" +
         "4.  Press the *new* button.",
     SAVE_CHANGES: "Save changes to",
     BEFORE_CLOSING: "before closing?",
@@ -4862,7 +4863,7 @@ private _resolveResult(p_package: LeoBridgePackage): void {
 
         if (Object.keys(this._finalRefreshType).length) {
             // At least some type of refresh
-            this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline);
+            this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline, p_package.node);
         }
         // Reset refresh type and focus flag nonetheless
         this._finalRefreshType = {};
@@ -5071,25 +5072,25 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.10">[CMD.CONTRACT_ALL, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_ALL,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: false
 })],
 [CMD.CONTRACT_ALL_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_ALL,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 [CMD.CONTRACT_OR_GO_LEFT, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_OR_GO_LEFT,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 [CMD.EXPAND_AND_GO_RIGHT, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.EXPAND_AND_GO_RIGHT,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 
@@ -5097,56 +5098,56 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.12">[CMD.GOTO_NEXT_CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 [CMD.GOTO_NEXT_CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: false
 })],
 [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_CLONE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 
 [CMD.GOTO_NEXT_MARKED, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_MARKED,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 [CMD.GOTO_FIRST_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_FIRST_VISIBLE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 [CMD.GOTO_LAST_SIBLING, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_LAST_SIBLING,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 [CMD.GOTO_LAST_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_LAST_VISIBLE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 [CMD.GOTO_NEXT_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_NEXT_VISIBLE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 [CMD.GOTO_PREV_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_PREV_VISIBLE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 
@@ -5154,31 +5155,31 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.13">[CMD.DEHOIST, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEHOIST,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
 [CMD.DEHOIST_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEHOIST,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 [CMD.HOIST, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 [CMD.HOIST_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: false
 })],
 [CMD.HOIST_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: true
 })],
 
@@ -5186,19 +5187,19 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.14">[CMD.CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.CLONE_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 [CMD.CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CLONE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: false
 })],
 [CMD.CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CLONE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: true
 })],
 
@@ -5223,80 +5224,80 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.16">[CMD.MOVE_DOWN, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_DOWN,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.MOVE_DOWN_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_DOWN,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: false
 })],
 [CMD.MOVE_DOWN_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_DOWN,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: true
 })],
 
 [CMD.MOVE_LEFT, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_LEFT,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.MOVE_LEFT_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_LEFT,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: false
 })],
 [CMD.MOVE_LEFT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_LEFT,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: true
 })],
 
 [CMD.MOVE_RIGHT, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_RIGHT,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.MOVE_RIGHT_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_RIGHT,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: false
 })],
 [CMD.MOVE_RIGHT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_RIGHT,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: true
 })],
 
 [CMD.MOVE_UP, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_UP,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.MOVE_UP_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_UP,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: false
 })],
 [CMD.MOVE_UP_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_UP,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: true
 })],
 
@@ -5304,13 +5305,13 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.17">[CMD.PAGE_UP, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PAGE_UP,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 [CMD.PAGE_DOWN, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PAGE_DOWN,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_NODE_BODY,
     fromOutline: true
 })],
 
@@ -5318,39 +5319,39 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.18">[CMD.DEMOTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEMOTE_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.DEMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEMOTE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: false
 })],
 [CMD.DEMOTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEMOTE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: true
 })],
 [CMD.PROMOTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.PROMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: false
 })],
 [CMD.PROMOTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: true
 })],
 
@@ -5358,21 +5359,21 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.19">[CMD.SORT_CHILDREN, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SORT_CHILDREN,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: false,
     keepSelection: true
 })],
 [CMD.SORT_SIBLING, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SORT_SIBLINGS,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: false,
     keepSelection: true
 })],
 [CMD.SORT_SIBLING_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SORT_SIBLINGS,
     node: U,
-    refreshType: REFRESH_TREE_STATES,
+    refreshType: REFRESH_TREE,
     fromOutline: true,
     keepSelection: true
 })],
@@ -5401,22 +5402,16 @@ export function activate(p_context: vscode.ExtensionContext) {
     const BRIDGE = Constants.LEOBRIDGE;
     const CMD = Constants.COMMANDS;
     const NO_REFRESH: ReqRefresh = {};
-    const REFRESH_NODE_STATES: ReqRefresh = {
+    const REFRESH_NODE_BODY: ReqRefresh = {
         node: true, // Reveal the returned 'selected position' without changes to the tree
-        states: true // changed, canUndo, canRedo, canDemote, canPromote, canDehoist
+        body: true, // Goto/select another node needs the body pane refreshed
+        states: true
     };
     const REFRESH_TREE: ReqRefresh = {
-        tree: true
-    };
-    const REFRESH_TREE_BODY: ReqRefresh = {
-        tree: true,
-        body: true
-    };
-    const REFRESH_TREE_STATES: ReqRefresh = {
         tree: true,
         states: true
     };
-    const REFRESH_TREE_BODY_STATES: ReqRefresh = {
+    const REFRESH_TREE_BODY: ReqRefresh = {
         tree: true,
         body: true,
         states: true
@@ -5447,25 +5442,25 @@ export function activate(p_context: vscode.ExtensionContext) {
 <t tx="felix.20200718031424.20">[CMD.REDO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REDO,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
 [CMD.REDO_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REDO,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 [CMD.UNDO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.UNDO,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
 [CMD.UNDO_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.UNDO,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 
@@ -5580,26 +5575,26 @@ function getDurationMilliseconds(p_start: [number, number]): number {
 [CMD.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.REFRESH_FROM_DISK_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true,
     keepSelection: false
 })],
 [CMD.REFRESH_FROM_DISK_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REFRESH_FROM_DISK_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
 [CMD.REFRESH_FROM_DISK_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REFRESH_FROM_DISK_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 [CMD.GIT_DIFF, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GIT_DIFF,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
 
@@ -5621,28 +5616,28 @@ function getDurationMilliseconds(p_start: [number, number]): number {
 [CMD.CUT, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.CUT_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.DELETE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true,
     keepSelection: true
 })],
 [CMD.PASTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true,
     keepSelection: false
 })],
 [CMD.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_CLONE_PNODE,
     node: p_node,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true,
     keepSelection: false
 })],
@@ -6909,7 +6904,7 @@ public setRoot(): void {
     if (this.u) {
         return "\u{1F4CE} (" + Object.keys(this.u).length + ")";
     } else {
-        return "id:" + this.id; // ! debug test
+        // return "id:" + this.id; // ! debug test
         return ""; // Falsy will not be shown
     }
 }
@@ -7030,7 +7025,8 @@ public refreshTreeRoot(): void {
 </t>
 <t tx="felix.20200718180428.7">public getParent(element: LeoNode): ProviderResult&lt;LeoNode&gt; | null {
     // * This method should be implemented in order to access reveal API.
-    // ! But it should NOT have to be called because we will only try to 'select' already revealed nodes
+    // ! But it should NOT have to be called if only trying to 'select' already revealed nodes
+    // ! Called when revealing single nodes
 
     // ! Might be called if nodes are revealed while in vscode's refresh process
     // ! Parent asked for this way will go up till root and effectively refresh whole tree.
@@ -8375,7 +8371,7 @@ More information can be found on the repository's [Issues Page](https://github.c
 import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, ReqRefresh, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand, UserCommand } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, ReqRefresh, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand, UserCommand, ShowBodyParam } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -8549,6 +8545,8 @@ export class LeoIntegration {
     private _leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
     private _bodyTextDocument: vscode.TextDocument | undefined; // Set when selected in tree by user, or opening a Leo file in showBody. and by _locateOpenedBody.
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
+    private _showBodyStarted: boolean = false; // Flag for when _applySelectionToBody 'show body' cycle is busy
+    private _showBodyParams: ShowBodyParam | undefined; // _applySelectionToBody parameters, may be overwritten at each call if not finished
 
     private _bodyUri: vscode.Uri = utils.strToLeoUri("");
     get bodyUri(): vscode.Uri {
@@ -8934,13 +8932,12 @@ private _bodySaveDocument(p_document: vscode.TextDocument, p_forcedVsCodeSave?: 
 
 </t>
 <t tx="felix.20200719025231.34">/**
- * * Places selection on the required node in a 'timeout'. Used after refreshing the opened Leo documents view.
+ * * Places selection on the required node with a 'timeout'. Used after refreshing the opened Leo documents view.
  * @param p_documentNode Document node instance in the Leo document view to be the 'selected' one.
  */
 public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
     this._currentDocumentChanged = p_documentNode.documentEntry.changed;
     this.leoStates.leoOpenedFileName = p_documentNode.documentEntry.name;
-    @others
     setTimeout(() =&gt; {
         if (!this._leoDocuments.visible &amp;&amp; !this._leoDocumentsExplorer.visible) {
             return;
@@ -9116,7 +9113,7 @@ private _revealTreeViewNode(p_leoNode: LeoNode, p_options?: { select?: boolean, 
  * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
  */
-public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean): void {
+public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: ArchivedPosition): void {
 
     // * Rules not specified with ternary operator(s) for clarity
     // Set w_revealType, it will ultimately set this._revealType. Used when finding the OUTLINE's selected node and setting or preventing focus into it
@@ -9143,14 +9140,25 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean): void {
         // this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
         w_revealType = RevealType.RevealSelect;
     }
-    // * Launch Outline's Root Refresh Cycle
+    // * Either the whole tree refreshes, or a single tree node is revealed when just navigating
     if (this._refreshType.tree) {
         this._refreshType.tree = false;
         this._treeId = this._treeId + 1;
         this._refreshOutline(w_revealType);
-    } else if (this._refreshType.node) {
+    } else if (this._refreshType.node &amp;&amp; p_ap) {
+        // * Force single node "refresh" by revealing it, instead of "refreshing" it
         this._refreshType.node = false;
-        // TODO : REVEAL SELECTED NODE !
+        const w_node = this.apToLeoNode(p_ap);
+        this.leoStates.setSelectedNodeFlags(w_node);
+        this._revealTreeViewNode(w_node, {
+            select: true, focus: true // ! FOCUS FORCED TO TRUE always leave focus on tree when navigating
+        });
+        if (this._refreshType.body) {
+            this._refreshType.body = false;
+            // REFRESH BODY!!
+            this._tryApplyNodeToBody(w_node, false, true); // ! NEEDS STACK AND THROTTLE!
+        }
+
     } else {
         console.error('Unhandled Refresh Case'); // Example: body only without tree refresh, should not happen so far...
     }
@@ -9162,54 +9170,59 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean): void {
  * * Handle the selected node that was reached while converting received ap_nodes to LeoNodes
  * @param p_node The selected node that was reached while receiving 'children' from tree view api implementing Leo's outline
  */
-private _gotSelection(p_node: LeoNode): Thenable&lt;vscode.TextEditor&gt; {
+private _gotSelection(p_node: LeoNode): void {
     // * Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
     let w_showBodyKeepFocus: boolean = this._fromOutline; // Will preserve focus where it is without forcing into the body pane if true
     if (this._focusInterrupt) {
         this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
         w_showBodyKeepFocus = true;
     }
-    return this._applyNodeSelectionToBody(p_node, false, w_showBodyKeepFocus);
+    this._tryApplyNodeToBody(p_node, false, w_showBodyKeepFocus);
 }
 
 </t>
 <t tx="felix.20200719025231.45">/**
- * * Makes sure the body now reflects the selected node. This is called after 'selectTreeNode', or after '_gotSelection' when refreshing.
+ * * Makes sure the body now reflects the selected node.
+ * This is called after 'selectTreeNode', or after '_gotSelection' when refreshing.
  * @param p_node Node that was just selected
  * @param p_aside Flag to indicate opening 'Aside' was required
  * @param p_showBodyKeepFocus Flag used to keep focus where it was instead of forcing in body
  * @param p_force_open Flag to force opening the body pane editor
  */
-private _applyNodeSelectionToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable&lt;vscode.TextEditor&gt; {
-    // Check first if body needs refresh: if so we will voluntarily throw out any pending edits on body
-    this.triggerBodySave(); // Send body to Leo because we're about to (re)show a body of possibly different gnx
-    this.lastSelectedNode = p_node; // Set the 'lastSelectedNode'  this will also set the 'marked' node context
-    this._commandStack.newSelection();
-    // * Is the last opened body still opened? If not the new gnx then make the body pane switch and show itself if needed,
-    if (this._bodyTextDocument &amp;&amp; !this._bodyTextDocument.isClosed) {
-        // * Check if already opened and visible, _locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
-        if (this._locateOpenedBody(p_node.gnx)) {
-            // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
-            this.bodyUri = utils.strToLeoUri(p_node.gnx);
-            return this._showBodyIfRequired(p_aside, p_showBodyKeepFocus, p_force_open); // already opened in a column so just tell vscode to show it
-        } else {
-            // * So far, _bodyTextDocument is still opened and different from new selection: so "save &amp; rename" to block undo/redos
-            return this._switchBody(p_node.gnx)
-                .then(() =&gt; {
-                    return this._showBodyIfRequired(p_aside, p_showBodyKeepFocus, p_force_open); // Also finish by showing it if not already visible
-                });
-        }
-    } else {
-        // * Is the last opened body is closed so just open the newly selected one
-        this.bodyUri = utils.strToLeoUri(p_node.gnx);
-        return this._showBodyIfRequired(p_aside, p_showBodyKeepFocus, p_force_open);
+private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): void {
+    this._showBodyParams = {
+        node: p_node,
+        aside: p_aside,
+        showBodyKeepFocus: p_showBodyKeepFocus,
+        force_open: p_force_open //  can be undefined
+    };
+    // Start it if possible, otherwise the last _showBodyParams will be used again right after
+    if (!this._showBodyStarted) {
+        this._showBodyStarted = true;
+        this._applyNodeToBody(this._showBodyParams)
+            .then((p_textEditor: vscode.TextEditor) =&gt; {
+                // finished
+                this._showBodyStarted = false;
+                if (this._showBodyParams) {
+                    // New node to show again! Call itself faking params from the specified ones.
+                    this._tryApplyNodeToBody(
+                        this._showBodyParams.node,
+                        this._showBodyParams.aside,
+                        this._showBodyParams.showBodyKeepFocus,
+                        this._showBodyParams.force_open
+                    );
+                }
+            });
+        // Clear global body params, will get refilled if needed
+        this._showBodyParams = undefined;
     }
 }
 
 </t>
 <t tx="felix.20200719025231.46">/**
- * * This function tries to prevent opening the body editor unnecessarily when hiding and re(showing) the outline pane
- * TODO : Find Better Conditions! Always true for now...
+ * * Show the body pane if not already opened, and if allowed by leoInteg's control logic.
+ * Prevent opening the body editor unnecessarily when hiding and re(showing) the outline pane
+ * TODO : This is an intermediate / transition function, COMBINE IT OR ELIMINATE IT!
  * @param p_aside Flag for opening the editor beside any currently opened and focused editor
  * @param p_showBodyKeepFocus flag that when true will stop the editor from taking focus once opened
  * @param p_force_open Forces opening the body pane editor
@@ -9219,8 +9232,10 @@ private _showBodyIfRequired(p_aside: boolean, p_showBodyKeepFocus: boolean, p_fo
         this._preventShowBody = false;
         return Promise.resolve(vscode.window.activeTextEditor!);
     }
+    // TODO : Find Better Conditions! Always true for now...
     if (true || p_force_open || this._leoTreeStandaloneView.visible) {
-        return this.showBody(p_aside, p_showBodyKeepFocus); // ! Always true for now to stabilize refreshes after derived files refreshes and others.
+        // ! Always true for now to stabilize refreshes after derived files refreshes and others.
+        return this.showBody(p_aside, p_showBodyKeepFocus);
     } else {
         return Promise.resolve(vscode.window.activeTextEditor!);
     }
@@ -10247,7 +10262,7 @@ private _removeLastFile(p_file: string): void {
  * @param p_internalCall Flag used to indicate the selection is forced, and NOT originating from user interaction
  * @param p_aside Flag to force opening the body "Aside", i.e. when the selection was made from choosing "Open Aside"
  */
-public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable&lt;vscode.TextEditor&gt; {
+public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): void {
     // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
     if (p_aside &amp;&amp; p_node !== this.lastSelectedNode) {
         this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
@@ -10259,11 +10274,11 @@ public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boole
     // * Check if having already this exact node position selected : Just show the body and exit!
     if (p_node === this.lastSelectedNode) {
         this._locateOpenedBody(p_node.gnx);
-        return this.showBody(!!p_aside, w_showBodyKeepFocus); // voluntary exit
+        this.showBody(!!p_aside, w_showBodyKeepFocus); // voluntary exit
     }
     // * Set selected node in Leo via leoBridge
     this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson);
-    return this._applyNodeSelectionToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
+    this._tryApplyNodeToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
 }
 
 </t>
@@ -11726,49 +11741,49 @@ public static CONFIG_DEFAULTS = {
 [CMD.CUT_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CUT_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
 [CMD.CUT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CUT_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 [CMD.DELETE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
 [CMD.DELETE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 [CMD.PASTE_CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_CLONE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
 [CMD.PASTE_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_CLONE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 [CMD.PASTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
 [CMD.PASTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PASTE_PNODE,
     node: U,
-    refreshType: REFRESH_TREE_BODY_STATES,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 
@@ -11902,6 +11917,48 @@ export function hashNode(p_ap: ArchivedPosition, p_salt: string, p_withCollapse?
         p_salt += p_ap.expanded ? "1" : "0";
     }
     return p_salt + w_string1 + w_first + murmur.murmur3(w_first + w_string2).toString(36);
+}
+
+</t>
+<t tx="felix.20200812185631.1">/**
+ * * Object container for parameters of leoIntegration's "apply-selected-node-to-body" method
+ */
+export interface ShowBodyParam {
+    node: LeoNode,
+    aside: boolean,
+    showBodyKeepFocus: boolean,
+    force_open?: boolean
+}
+
+</t>
+<t tx="felix.20200812190752.1">
+/**
+ * * Actually performs the 'throttled' version of applying the selection to the body pane
+ */
+private _applyNodeToBody(p_params: ShowBodyParam): Thenable&lt;vscode.TextEditor&gt; {
+    // Check first if body needs refresh: if so we will voluntarily throw out any pending edits on body
+    this.triggerBodySave(); // Send body to Leo because we're about to (re)show a body of possibly different gnx
+    this.lastSelectedNode = p_params.node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
+    this._commandStack.newSelection();
+    // * Is the last opened body still opened? If not the new gnx then make the body pane switch and show itself if needed,
+    if (this._bodyTextDocument &amp;&amp; !this._bodyTextDocument.isClosed) {
+        // * Check if already opened and visible, _locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
+        if (this._locateOpenedBody(p_params.node.gnx)) {
+            // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
+            this.bodyUri = utils.strToLeoUri(p_params.node.gnx);
+            return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // already opened in a column so just tell vscode to show it
+        } else {
+            // * So far, _bodyTextDocument is still opened and different from new selection: so "save &amp; rename" to block undo/redos
+            return this._switchBody(p_params.node.gnx)
+                .then(() =&gt; {
+                    return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // Also finish by showing it if not already visible
+                });
+        }
+    } else {
+        // * Is the last opened body is closed so just open the newly selected one
+        this.bodyUri = utils.strToLeoUri(p_params.node.gnx);
+        return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open);
+    }
 }
 
 </t>

@@ -135,7 +135,7 @@ export class CommandStack {
 
             if (Object.keys(this._finalRefreshType).length) {
                 // At least some type of refresh
-                this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline);
+                this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline, p_package.node);
             }
             // Reset refresh type and focus flag nonetheless
             this._finalRefreshType = {};

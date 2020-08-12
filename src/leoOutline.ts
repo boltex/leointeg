@@ -72,7 +72,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     public getParent(element: LeoNode): ProviderResult<LeoNode> | null {
         // * This method should be implemented in order to access reveal API.
-        // ! But it should NOT have to be called because we will only try to 'select' already revealed nodes
+        // ! But it should NOT have to be called if only trying to 'select' already revealed nodes
+        // ! Called when revealing single nodes
 
         // ! Might be called if nodes are revealed while in vscode's refresh process
         // ! Parent asked for this way will go up till root and effectively refresh whole tree.

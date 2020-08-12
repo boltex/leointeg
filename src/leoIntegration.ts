@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, ReqRefresh, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand, UserCommand } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, ReqRefresh, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand, UserCommand, ShowBodyParam } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -90,6 +90,8 @@ export class LeoIntegration {
     private _leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
     private _bodyTextDocument: vscode.TextDocument | undefined; // Set when selected in tree by user, or opening a Leo file in showBody. and by _locateOpenedBody.
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
+    private _showBodyStarted: boolean = false; // Flag for when _applySelectionToBody 'show body' cycle is busy
+    private _showBodyParams: ShowBodyParam | undefined; // _applySelectionToBody parameters, may be overwritten at each call if not finished
 
     private _bodyUri: vscode.Uri = utils.strToLeoUri("");
     get bodyUri(): vscode.Uri {
@@ -781,7 +783,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Places selection on the required node in a 'timeout'. Used after refreshing the opened Leo documents view.
+     * * Places selection on the required node with a 'timeout'. Used after refreshing the opened Leo documents view.
      * @param p_documentNode Document node instance in the Leo document view to be the 'selected' one.
      */
     public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
@@ -872,7 +874,7 @@ export class LeoIntegration {
      * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
      */
-    public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean): void {
+    public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: ArchivedPosition): void {
 
         // * Rules not specified with ternary operator(s) for clarity
         // Set w_revealType, it will ultimately set this._revealType. Used when finding the OUTLINE's selected node and setting or preventing focus into it
@@ -899,14 +901,25 @@ export class LeoIntegration {
             // this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
             w_revealType = RevealType.RevealSelect;
         }
-        // * Launch Outline's Root Refresh Cycle
+        // * Either the whole tree refreshes, or a single tree node is revealed when just navigating
         if (this._refreshType.tree) {
             this._refreshType.tree = false;
             this._treeId = this._treeId + 1;
             this._refreshOutline(w_revealType);
-        } else if (this._refreshType.node) {
+        } else if (this._refreshType.node && p_ap) {
+            // * Force single node "refresh" by revealing it, instead of "refreshing" it
             this._refreshType.node = false;
-            // TODO : REVEAL SELECTED NODE !
+            const w_node = this.apToLeoNode(p_ap);
+            this.leoStates.setSelectedNodeFlags(w_node);
+            this._revealTreeViewNode(w_node, {
+                select: true, focus: true // ! FOCUS FORCED TO TRUE always leave focus on tree when navigating
+            });
+            if (this._refreshType.body) {
+                this._refreshType.body = false;
+                // REFRESH BODY!!
+                this._tryApplyNodeToBody(w_node, false, true); // ! NEEDS STACK AND THROTTLE!
+            }
+
         } else {
             console.error('Unhandled Refresh Case'); // Example: body only without tree refresh, should not happen so far...
         }
@@ -917,14 +930,14 @@ export class LeoIntegration {
      * * Handle the selected node that was reached while converting received ap_nodes to LeoNodes
      * @param p_node The selected node that was reached while receiving 'children' from tree view api implementing Leo's outline
      */
-    private _gotSelection(p_node: LeoNode): Thenable<vscode.TextEditor> {
+    private _gotSelection(p_node: LeoNode): void {
         // * Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
         let w_showBodyKeepFocus: boolean = this._fromOutline; // Will preserve focus where it is without forcing into the body pane if true
         if (this._focusInterrupt) {
             this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
             w_showBodyKeepFocus = true;
         }
-        return this._applyNodeSelectionToBody(p_node, false, w_showBodyKeepFocus);
+        this._tryApplyNodeToBody(p_node, false, w_showBodyKeepFocus);
     }
 
     /**
@@ -1009,41 +1022,76 @@ export class LeoIntegration {
     }
 
     /**
-     * * Makes sure the body now reflects the selected node. This is called after 'selectTreeNode', or after '_gotSelection' when refreshing.
+     * * Makes sure the body now reflects the selected node.
+     * This is called after 'selectTreeNode', or after '_gotSelection' when refreshing.
      * @param p_node Node that was just selected
      * @param p_aside Flag to indicate opening 'Aside' was required
      * @param p_showBodyKeepFocus Flag used to keep focus where it was instead of forcing in body
      * @param p_force_open Flag to force opening the body pane editor
      */
-    private _applyNodeSelectionToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable<vscode.TextEditor> {
+    private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): void {
+        this._showBodyParams = {
+            node: p_node,
+            aside: p_aside,
+            showBodyKeepFocus: p_showBodyKeepFocus,
+            force_open: p_force_open //  can be undefined
+        };
+        // Start it if possible, otherwise the last _showBodyParams will be used again right after
+        if (!this._showBodyStarted) {
+            this._showBodyStarted = true;
+            this._applyNodeToBody(this._showBodyParams)
+                .then((p_textEditor: vscode.TextEditor) => {
+                    // finished
+                    this._showBodyStarted = false;
+                    if (this._showBodyParams) {
+                        // New node to show again! Call itself faking params from the specified ones.
+                        this._tryApplyNodeToBody(
+                            this._showBodyParams.node,
+                            this._showBodyParams.aside,
+                            this._showBodyParams.showBodyKeepFocus,
+                            this._showBodyParams.force_open
+                        );
+                    }
+                });
+            // Clear global body params, will get refilled if needed
+            this._showBodyParams = undefined;
+        }
+    }
+
+
+    /**
+     * * Actually performs the 'throttled' version of applying the selection to the body pane
+     */
+    private _applyNodeToBody(p_params: ShowBodyParam): Thenable<vscode.TextEditor> {
         // Check first if body needs refresh: if so we will voluntarily throw out any pending edits on body
         this.triggerBodySave(); // Send body to Leo because we're about to (re)show a body of possibly different gnx
-        this.lastSelectedNode = p_node; // Set the 'lastSelectedNode'  this will also set the 'marked' node context
+        this.lastSelectedNode = p_params.node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
         this._commandStack.newSelection();
         // * Is the last opened body still opened? If not the new gnx then make the body pane switch and show itself if needed,
         if (this._bodyTextDocument && !this._bodyTextDocument.isClosed) {
             // * Check if already opened and visible, _locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
-            if (this._locateOpenedBody(p_node.gnx)) {
+            if (this._locateOpenedBody(p_params.node.gnx)) {
                 // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
-                this.bodyUri = utils.strToLeoUri(p_node.gnx);
-                return this._showBodyIfRequired(p_aside, p_showBodyKeepFocus, p_force_open); // already opened in a column so just tell vscode to show it
+                this.bodyUri = utils.strToLeoUri(p_params.node.gnx);
+                return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // already opened in a column so just tell vscode to show it
             } else {
                 // * So far, _bodyTextDocument is still opened and different from new selection: so "save & rename" to block undo/redos
-                return this._switchBody(p_node.gnx)
+                return this._switchBody(p_params.node.gnx)
                     .then(() => {
-                        return this._showBodyIfRequired(p_aside, p_showBodyKeepFocus, p_force_open); // Also finish by showing it if not already visible
+                        return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // Also finish by showing it if not already visible
                     });
             }
         } else {
             // * Is the last opened body is closed so just open the newly selected one
-            this.bodyUri = utils.strToLeoUri(p_node.gnx);
-            return this._showBodyIfRequired(p_aside, p_showBodyKeepFocus, p_force_open);
+            this.bodyUri = utils.strToLeoUri(p_params.node.gnx);
+            return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open);
         }
     }
 
     /**
-     * * This function tries to prevent opening the body editor unnecessarily when hiding and re(showing) the outline pane
-     * TODO : Find Better Conditions! Always true for now...
+     * * Show the body pane if not already opened, and if allowed by leoInteg's control logic.
+     * Prevent opening the body editor unnecessarily when hiding and re(showing) the outline pane
+     * TODO : This is an intermediate / transition function, COMBINE IT OR ELIMINATE IT!
      * @param p_aside Flag for opening the editor beside any currently opened and focused editor
      * @param p_showBodyKeepFocus flag that when true will stop the editor from taking focus once opened
      * @param p_force_open Forces opening the body pane editor
@@ -1053,8 +1101,10 @@ export class LeoIntegration {
             this._preventShowBody = false;
             return Promise.resolve(vscode.window.activeTextEditor!);
         }
+        // TODO : Find Better Conditions! Always true for now...
         if (true || p_force_open || this._leoTreeStandaloneView.visible) {
-            return this.showBody(p_aside, p_showBodyKeepFocus); // ! Always true for now to stabilize refreshes after derived files refreshes and others.
+            // ! Always true for now to stabilize refreshes after derived files refreshes and others.
+            return this.showBody(p_aside, p_showBodyKeepFocus);
         } else {
             return Promise.resolve(vscode.window.activeTextEditor!);
         }
@@ -1196,7 +1246,7 @@ export class LeoIntegration {
      * @param p_internalCall Flag used to indicate the selection is forced, and NOT originating from user interaction
      * @param p_aside Flag to force opening the body "Aside", i.e. when the selection was made from choosing "Open Aside"
      */
-    public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Thenable<vscode.TextEditor> {
+    public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): void {
         // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
         if (p_aside && p_node !== this.lastSelectedNode) {
             this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
@@ -1208,11 +1258,11 @@ export class LeoIntegration {
         // * Check if having already this exact node position selected : Just show the body and exit!
         if (p_node === this.lastSelectedNode) {
             this._locateOpenedBody(p_node.gnx);
-            return this.showBody(!!p_aside, w_showBodyKeepFocus); // voluntary exit
+            this.showBody(!!p_aside, w_showBodyKeepFocus); // voluntary exit
         }
         // * Set selected node in Leo via leoBridge
         this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson);
-        return this._applyNodeSelectionToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
+        this._tryApplyNodeToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
     }
 
     /**
