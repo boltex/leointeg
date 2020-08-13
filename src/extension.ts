@@ -347,11 +347,11 @@ export function activate(p_context: vscode.ExtensionContext) {
         // even specifying a headline label, such as spamming CTRL+I rapidly.
         [CMD.INSERT_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, true)],
 
-        [CMD.MARK, (p_node: LeoNode) => w_leo.changeMark(true, p_node, false)],
+        [CMD.MARK, (p_node: LeoNode) => w_leo.changeMark(true, p_node, true)],
         [CMD.MARK_SELECTION, () => w_leo.changeMark(true, U, false)],
         [CMD.MARK_SELECTION_FO, () => w_leo.changeMark(true, U, true)],
 
-        [CMD.UNMARK, (p_node: LeoNode) => w_leo.changeMark(false, p_node, false)],
+        [CMD.UNMARK, (p_node: LeoNode) => w_leo.changeMark(false, p_node, true)],
         [CMD.UNMARK_SELECTION, () => w_leo.changeMark(false, U, false)],
         [CMD.UNMARK_SELECTION_FO, () => w_leo.changeMark(false, U, true)],
 

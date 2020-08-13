@@ -735,8 +735,8 @@ export class LeoIntegration {
                         .then(() => {
                             this.lastSelectedNode!.dirty = true;
                             this.lastSelectedNode!.hasBody = w_hasBody;
-                            this._treeId++;
-                            this._refreshOutline(RevealType.NoReveal); // NoReveal for keeping the same id and selection
+                            // NOT incrementing this.treeID to keep ids intact
+                            this._refreshOutline(RevealType.NoReveal); // NoReveal, keeping the same id anyways
                         });
                     return; // * Don't continue
                 }

@@ -5212,11 +5212,11 @@ import { LeoButtonNode } from "./leoButtonNode";
 [CMD.INSERT_SELECTION_INTERRUPT, () =&gt; w_leo.insertNode(U, false, true)],
 
 </t>
-<t tx="felix.20200718031424.15">[CMD.MARK, (p_node: LeoNode) =&gt; w_leo.changeMark(true, p_node, false)],
+<t tx="felix.20200718031424.15">[CMD.MARK, (p_node: LeoNode) =&gt; w_leo.changeMark(true, p_node, true)],
 [CMD.MARK_SELECTION, () =&gt; w_leo.changeMark(true, U, false)],
 [CMD.MARK_SELECTION_FO, () =&gt; w_leo.changeMark(true, U, true)],
 
-[CMD.UNMARK, (p_node: LeoNode) =&gt; w_leo.changeMark(false, p_node, false)],
+[CMD.UNMARK, (p_node: LeoNode) =&gt; w_leo.changeMark(false, p_node, true)],
 [CMD.UNMARK_SELECTION, () =&gt; w_leo.changeMark(false, U, false)],
 [CMD.UNMARK_SELECTION_FO, () =&gt; w_leo.changeMark(false, U, true)],
 
@@ -8881,8 +8881,8 @@ private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
                     .then(() =&gt; {
                         this.lastSelectedNode!.dirty = true;
                         this.lastSelectedNode!.hasBody = w_hasBody;
-                        this._treeId++;
-                        this._refreshOutline(RevealType.NoReveal); // NoReveal for keeping the same id and selection
+                        // NOT incrementing this.treeID to keep ids intact
+                        this._refreshOutline(RevealType.NoReveal); // NoReveal, keeping the same id anyways
                     });
                 return; // * Don't continue
             }
