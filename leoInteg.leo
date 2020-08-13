@@ -5072,25 +5072,25 @@ import { LeoButtonNode } from "./leoButtonNode";
 <t tx="felix.20200718031424.10">[CMD.CONTRACT_ALL, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_ALL,
     node: U,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
 [CMD.CONTRACT_ALL_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_ALL,
     node: U,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 [CMD.CONTRACT_OR_GO_LEFT, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_OR_GO_LEFT,
     node: U,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 [CMD.EXPAND_AND_GO_RIGHT, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.EXPAND_AND_GO_RIGHT,
     node: U,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 
@@ -8509,7 +8509,6 @@ export class LeoIntegration {
     private _leoTreeStandaloneView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Tree View Container with an Activity Bar icon
     private _leoTreeExplorerView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Explorer Sidebar
     private _lastVisibleTreeView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Explorer Sidebar
-    private _nodeId: number = Constants.STARTING_PACKAGE_ID; // Used to generate id's for new treeNodes: The id is used to preserve or set the selection and expansion states
     private _treeId: number = 0; // Starting salt for tree node murmurhash generated Ids
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
@@ -8620,7 +8619,7 @@ private _setupNoOpenedLeoDocument(): void {
     this.leoStates.fileOpenedReady = false;
     this._bodyTextDocument = undefined;
     this.lastSelectedNode = undefined;
-    this._refreshOutline(RevealType.RevealSelectFocus);
+    this._refreshOutline(RevealType.NoReveal);
     this.closeBody();
 }
 
@@ -8652,6 +8651,7 @@ private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackageOpenedInfo): T
     // * Startup flag
     this.leoStates.fileOpenedReady = true;
     // * Maybe first valid redraw of tree along with the selected node and its body
+    this._treeId++;
     this._refreshOutline(RevealType.RevealSelectFocus); // p_revealSelection flag set
     // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // ? Maybe unused when used with welcome content
     // * Maybe first StatusBar appearance
@@ -8711,6 +8711,7 @@ private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEve
         this._lastVisibleTreeView = p_explorerView ? this._leoTreeExplorerView : this._leoTreeStandaloneView;
         this.setTreeViewTitle();
         this._needLastSelectedRefresh = true; // Its a new node in a new tree so refresh lastSelectedNode too
+        this._treeId++;
         this._refreshOutline(RevealType.RevealSelect);
     }
 }
@@ -8880,6 +8881,7 @@ private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
                     .then(() =&gt; {
                         this.lastSelectedNode!.dirty = true;
                         this.lastSelectedNode!.hasBody = w_hasBody;
+                        this._treeId++;
                         this._refreshOutline(RevealType.NoReveal); // NoReveal for keeping the same id and selection
                     });
                 return; // * Don't continue
@@ -8983,6 +8985,7 @@ public configTreeRefresh(): void {
     if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
         this._revealType = RevealType.RevealSelect;
         this._preventShowBody = true;
+        this._treeId++;
         this._leoTreeDataProvider.refreshTreeRoot();
     }
 }
@@ -9143,7 +9146,7 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: A
     // * Either the whole tree refreshes, or a single tree node is revealed when just navigating
     if (this._refreshType.tree) {
         this._refreshType.tree = false;
-        this._treeId = this._treeId + 1;
+        this._treeId++;
         this._refreshOutline(w_revealType);
     } else if (this._refreshType.node &amp;&amp; p_ap) {
         // * Force single node "refresh" by revealing it, instead of "refreshing" it
@@ -9956,7 +9959,7 @@ public cancelConnect(p_message?: string): void {
     this.leoStates.leoBridgeReady = false;
     this._leoBridgeReadyPromise = undefined;
     this._leoStatusBar.update(false);
-    this._refreshOutline(RevealType.RevealSelect);
+    this._refreshOutline(RevealType.NoReveal);
 }
 
 </t>

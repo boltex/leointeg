@@ -54,7 +54,6 @@ export class LeoIntegration {
     private _leoTreeStandaloneView: vscode.TreeView<LeoNode>; // Outline tree view added to the Tree View Container with an Activity Bar icon
     private _leoTreeExplorerView: vscode.TreeView<LeoNode>; // Outline tree view added to the Explorer Sidebar
     private _lastVisibleTreeView: vscode.TreeView<LeoNode>; // Outline tree view added to the Explorer Sidebar
-    private _nodeId: number = Constants.STARTING_PACKAGE_ID; // Used to generate id's for new treeNodes: The id is used to preserve or set the selection and expansion states
     private _treeId: number = 0; // Starting salt for tree node murmurhash generated Ids
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
@@ -329,7 +328,7 @@ export class LeoIntegration {
         this.leoStates.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
         this._leoStatusBar.update(false);
-        this._refreshOutline(RevealType.RevealSelect);
+        this._refreshOutline(RevealType.NoReveal);
     }
 
     /**
@@ -546,7 +545,7 @@ export class LeoIntegration {
         this.leoStates.fileOpenedReady = false;
         this._bodyTextDocument = undefined;
         this.lastSelectedNode = undefined;
-        this._refreshOutline(RevealType.RevealSelectFocus);
+        this._refreshOutline(RevealType.NoReveal);
         this.closeBody();
     }
 
@@ -577,6 +576,7 @@ export class LeoIntegration {
         // * Startup flag
         this.leoStates.fileOpenedReady = true;
         // * Maybe first valid redraw of tree along with the selected node and its body
+        this._treeId++;
         this._refreshOutline(RevealType.RevealSelectFocus); // p_revealSelection flag set
         // this.setTreeViewTitle(Constants.GUI.TREEVIEW_TITLE); // ? Maybe unused when used with welcome content
         // * Maybe first StatusBar appearance
@@ -662,6 +662,7 @@ export class LeoIntegration {
             this._lastVisibleTreeView = p_explorerView ? this._leoTreeExplorerView : this._leoTreeStandaloneView;
             this.setTreeViewTitle();
             this._needLastSelectedRefresh = true; // Its a new node in a new tree so refresh lastSelectedNode too
+            this._treeId++;
             this._refreshOutline(RevealType.RevealSelect);
         }
     }
@@ -734,6 +735,7 @@ export class LeoIntegration {
                         .then(() => {
                             this.lastSelectedNode!.dirty = true;
                             this.lastSelectedNode!.hasBody = w_hasBody;
+                            this._treeId++;
                             this._refreshOutline(RevealType.NoReveal); // NoReveal for keeping the same id and selection
                         });
                     return; // * Don't continue
@@ -832,6 +834,7 @@ export class LeoIntegration {
         if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
             this._revealType = RevealType.RevealSelect;
             this._preventShowBody = true;
+            this._treeId++;
             this._leoTreeDataProvider.refreshTreeRoot();
         }
     }
@@ -904,7 +907,7 @@ export class LeoIntegration {
         // * Either the whole tree refreshes, or a single tree node is revealed when just navigating
         if (this._refreshType.tree) {
             this._refreshType.tree = false;
-            this._treeId = this._treeId + 1;
+            this._treeId++;
             this._refreshOutline(w_revealType);
         } else if (this._refreshType.node && p_ap) {
             // * Force single node "refresh" by revealing it, instead of "refreshing" it

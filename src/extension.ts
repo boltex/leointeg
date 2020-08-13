@@ -198,25 +198,25 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.CONTRACT_ALL, () => w_leo.nodeCommand({
             action: BRIDGE.CONTRACT_ALL,
             node: U,
-            refreshType: REFRESH_NODE_BODY,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: false
         })],
         [CMD.CONTRACT_ALL_FO, () => w_leo.nodeCommand({
             action: BRIDGE.CONTRACT_ALL,
             node: U,
-            refreshType: REFRESH_NODE_BODY,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
         [CMD.CONTRACT_OR_GO_LEFT, () => w_leo.nodeCommand({
             action: BRIDGE.CONTRACT_OR_GO_LEFT,
             node: U,
-            refreshType: REFRESH_NODE_BODY,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
         [CMD.EXPAND_AND_GO_RIGHT, () => w_leo.nodeCommand({
             action: BRIDGE.EXPAND_AND_GO_RIGHT,
             node: U,
-            refreshType: REFRESH_NODE_BODY,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
 
