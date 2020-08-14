@@ -132,6 +132,13 @@ export class LeoIntegration {
         flush(): void;
     };
 
+    // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
+    public refreshDocumentsPane: (() => void) & {
+        clear(): void;
+    } & {
+        flush(): void;
+    };
+
     constructor(private _context: vscode.ExtensionContext) {
         // * Setup States
         this.leoStates = new LeoStates(_context, this);
@@ -222,6 +229,7 @@ export class LeoIntegration {
 
         // * Debounced refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
         this.getStates = debounce(this._triggerGetStates, Constants.STATES_DEBOUNCE_DELAY);
+        this.refreshDocumentsPane = debounce(this._refreshDocumentsPane, Constants.DOCUMENTS_DEBOUNCE_DELAY);
     }
 
     /**
@@ -501,7 +509,7 @@ export class LeoIntegration {
     private _triggerGetStates(): void {
         if (this._refreshType.documents) {
             this._refreshType.documents = false;
-            this._leoDocumentsProvider.refreshTreeRoot();
+            this.refreshDocumentsPane();
         }
         if (this._refreshType.buttons) {
             this._refreshType.buttons = false;
@@ -587,7 +595,7 @@ export class LeoIntegration {
         // * Send config to python's side (for settings such as defaultReloadIgnore and checkForChangeExternalFiles)
         this.sendConfigToServer(this.config.getConfig());
         // * Refresh Opened tree views
-        this._leoDocumentsProvider.refreshTreeRoot();
+        this.refreshDocumentsPane();
         this._leoButtonsProvider.refreshTreeRoot();
         // * Maybe first Body appearance
         return this.showBody(false);
@@ -643,13 +651,19 @@ export class LeoIntegration {
         this.triggerBodySave(true);
         if (p_treeView.selection[0] && p_treeView.selection[0] === p_event.element) {
             // * This happens if the tree selection is the same as the expanded/collapsed node: Just have Leo do the same
-            this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson);
+            // Pass
         } else {
             // * This part only happens if the user clicked on the arrow without trying to select the node
             this._revealTreeViewNode(p_event.element, { select: true, focus: false }); // No force focus : it breaks collapse/expand when direct parent
             this.selectTreeNode(p_event.element, true);  // not waiting for a .then(...) so not to add any lag
-            this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson);
         }
+        this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson)
+            .then(() => {
+                if (this.config.leoTreeBrowse) {
+                    this._treeId++;
+                    this._refreshOutline(RevealType.RevealSelect);
+                }
+            });
     }
 
     /**
@@ -677,7 +691,7 @@ export class LeoIntegration {
             // (Facultative/unused) Do something different if explorer view is used, instead of the standalone outline pane
         }
         if (p_event.visible) {
-            this._leoDocumentsProvider.refreshTreeRoot();
+            this.refreshDocumentsPane();
         }
     }
 
@@ -773,6 +787,7 @@ export class LeoIntegration {
                 body: p_document.getText()
             };
             return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)).then(() => {
+                this._refreshType.states = true;
                 this.getStates();
                 if (p_forcedVsCodeSave) {
                     return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
@@ -927,6 +942,14 @@ export class LeoIntegration {
             console.error('Unhandled Refresh Case'); // Example: body only without tree refresh, should not happen so far...
         }
         this.getStates();
+    }
+
+    /**
+     * * Public method to refresh the documents pane
+     *  Document Panel May be refreshed by other services (states service, ...)
+     */
+    private _refreshDocumentsPane(): void {
+        this._leoDocumentsProvider.refreshTreeRoot();
     }
 
     /**
@@ -1129,7 +1152,7 @@ export class LeoIntegration {
                 );
                 return vscode.workspace.applyEdit(w_edit).then(p_result => {
                     this.bodyUri = utils.strToLeoUri(p_newGnx); // Old is now set to new to finish
-                    return Promise.resolve(p_result); // Also finish by showing it if not already visible
+                    return Promise.resolve(p_result);
                 });
             });
         } else {
@@ -1264,7 +1287,12 @@ export class LeoIntegration {
             this.showBody(!!p_aside, w_showBodyKeepFocus); // voluntary exit
         }
         // * Set selected node in Leo via leoBridge
-        this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson);
+        this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson).then(() => {
+            if (!p_internalCall) {
+                this._refreshType.states = true;
+                this.getStates();
+            }
+        });
         this._tryApplyNodeToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
     }
 
@@ -1363,7 +1391,7 @@ export class LeoIntegration {
                         this.nodeCommand({
                             action: Constants.LEOBRIDGE.SET_HEADLINE,
                             node: p_node,
-                            refreshType: { tree: true },
+                            refreshType: { tree: true, states: true },
                             fromOutline: !!p_fromOutline,
                             text: p_newHeadline
                         });
@@ -1397,7 +1425,7 @@ export class LeoIntegration {
                     this.nodeCommand({
                         action: w_action,
                         node: p_node,
-                        refreshType: { tree: true },
+                        refreshType: { tree: true, states: true },
                         fromOutline: !!w_fromOutline,
                         text: p_newHeadline
                     });
@@ -1426,7 +1454,7 @@ export class LeoIntegration {
                             this.nodeCommand({
                                 action: Constants.LEOBRIDGE.SAVE_FILE,
                                 node: undefined,
-                                refreshType: { tree: true },
+                                refreshType: { tree: true, states: true },
                                 fromOutline: !!p_fromOutline,
                                 text: p_chosenLeoFile
                             });
@@ -1457,7 +1485,7 @@ export class LeoIntegration {
                         this.nodeCommand({
                             action: Constants.LEOBRIDGE.SAVE_FILE,
                             node: undefined,
-                            refreshType: { tree: true },
+                            refreshType: { tree: true, states: true, documents: true },
                             fromOutline: !!p_fromOutline,
                             text: ""
                         });
@@ -1543,7 +1571,7 @@ export class LeoIntegration {
                 })
                 .then((p_package => {
                     if (p_package.closed) {
-                        this._leoDocumentsProvider.refreshTreeRoot();
+                        this.refreshDocumentsPane();
                         this._leoButtonsProvider.refreshTreeRoot();
                         this._removeLastFile(w_removeLastFileName);
                         if (p_package.closed.total === 0) {
@@ -1593,7 +1621,7 @@ export class LeoIntegration {
                             }
                         }).then((p_packageAfterSave: LeoBridgePackage | undefined) => {
                             // * back from CLOSE_FILE action, the last that can be performed (after saving if dirty or not)
-                            this._leoDocumentsProvider.refreshTreeRoot();
+                            this.refreshDocumentsPane();
                             this._leoButtonsProvider.refreshTreeRoot();
                             this._removeLastFile(w_removeLastFileName);
                             if (p_packageAfterSave && p_packageAfterSave.closed && p_packageAfterSave.closed.total === 0) {

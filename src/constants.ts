@@ -38,8 +38,9 @@ export class Constants {
 
     public static ERROR_PACKAGE_ID: number = 0;
     public static STARTING_PACKAGE_ID: number = 1;
-    public static STATUSBAR_DEBOUNCE_DELAY: number = 50;
-    public static STATES_DEBOUNCE_DELAY: number = 200; // a fifth of a second after command stack completion
+    public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
+    public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
+    public static STATES_DEBOUNCE_DELAY: number = 100;
 
     /**
      * * Strings used in the workbench interface panels (not for messages or dialogs)

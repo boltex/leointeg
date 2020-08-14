@@ -425,6 +425,7 @@
 <v t="felix.20200719025231.37"><vh>_refreshOutline</vh></v>
 <v t="felix.20200719025231.41"><vh>_revealTreeViewNode</vh></v>
 <v t="felix.20200719025231.42"><vh>launchRefresh</vh></v>
+<v t="fil.20200813213424.1"><vh>_refreshDocumentsPane</vh></v>
 <v t="felix.20200719025231.43"><vh>_gotSelection</vh></v>
 </v>
 <v t="felix.20200719030909.1"><vh>Conversion</vh>
@@ -4532,8 +4533,9 @@ public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
 
 public static ERROR_PACKAGE_ID: number = 0;
 public static STARTING_PACKAGE_ID: number = 1;
-public static STATUSBAR_DEBOUNCE_DELAY: number = 50;
-public static STATES_DEBOUNCE_DELAY: number = 200; // a fifth of a second after command stack completion
+public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
+public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
+public static STATES_DEBOUNCE_DELAY: number = 100;
 
 </t>
 <t tx="felix.20200718020912.5">/**
@@ -7397,6 +7399,10 @@ get leoChanged(): boolean {
     return this._leoChanged;
 }
 set leoChanged(p_value: boolean) {
+    if (this._leoChanged !== p_value) {
+        // Refresh Documents Panel
+        this._leoIntegration.refreshDocumentsPane();
+    }
     this._leoChanged = p_value;
     utils.setContext(Constants.CONTEXT_FLAGS.LEO_CHANGED, p_value);
 }
@@ -7764,12 +7770,12 @@ export interface ArchivedPosition {
  * * Items in the package object gotten back from 'getStates'
  */
 export interface LeoPackageStates {
-    changed: boolean;
-    canUndo: boolean;
-    canRedo: boolean;
-    canDemote: boolean;
-    canPromote: boolean;
-    canDehoist: boolean;
+    changed: boolean; // Leo document has changed (is dirty)
+    canUndo: boolean; // Leo document can undo the last operation done
+    canRedo: boolean; // Leo document can redo the last operation 'undone'
+    canDemote: boolean; // Currently selected node can have its siblings demoted
+    canPromote: boolean; // Currently selected node can have its children promoted
+    canDehoist: boolean; // Leo Document is currently hoisted and can be de-hoisted
 }
 
 </t>
@@ -8457,7 +8463,7 @@ public addLogPaneEntry(p_message: string): void {
 private _triggerGetStates(): void {
     if (this._refreshType.documents) {
         this._refreshType.documents = false;
-        this._leoDocumentsProvider.refreshTreeRoot();
+        this.refreshDocumentsPane();
     }
     if (this._refreshType.buttons) {
         this._refreshType.buttons = false;
@@ -8587,6 +8593,13 @@ export class LeoIntegration {
         flush(): void;
     };
 
+    // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
+    public refreshDocumentsPane: (() =&gt; void) &amp; {
+        clear(): void;
+    } &amp; {
+        flush(): void;
+    };
+
     @others
 }
 </t>
@@ -8662,7 +8675,7 @@ private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackageOpenedInfo): T
     // * Send config to python's side (for settings such as defaultReloadIgnore and checkForChangeExternalFiles)
     this.sendConfigToServer(this.config.getConfig());
     // * Refresh Opened tree views
-    this._leoDocumentsProvider.refreshTreeRoot();
+    this.refreshDocumentsPane();
     this._leoButtonsProvider.refreshTreeRoot();
     // * Maybe first Body appearance
     return this.showBody(false);
@@ -8691,13 +8704,19 @@ private _onChangeCollapsedState(p_event: vscode.TreeViewExpansionEvent&lt;LeoNod
     this.triggerBodySave(true);
     if (p_treeView.selection[0] &amp;&amp; p_treeView.selection[0] === p_event.element) {
         // * This happens if the tree selection is the same as the expanded/collapsed node: Just have Leo do the same
-        this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson);
+        // Pass
     } else {
         // * This part only happens if the user clicked on the arrow without trying to select the node
         this._revealTreeViewNode(p_event.element, { select: true, focus: false }); // No force focus : it breaks collapse/expand when direct parent
         this.selectTreeNode(p_event.element, true);  // not waiting for a .then(...) so not to add any lag
-        this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson);
     }
+    this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson)
+        .then(() =&gt; {
+            if (this.config.leoTreeBrowse) {
+                this._treeId++;
+                this._refreshOutline(RevealType.RevealSelect);
+            }
+        });
 }
 
 </t>
@@ -8727,7 +8746,7 @@ private _onDocTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChange
         // (Facultative/unused) Do something different if explorer view is used, instead of the standalone outline pane
     }
     if (p_event.visible) {
-        this._leoDocumentsProvider.refreshTreeRoot();
+        this.refreshDocumentsPane();
     }
 }
 
@@ -8858,6 +8877,7 @@ private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_interna
 
     // * Debounced refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
     this.getStates = debounce(this._triggerGetStates, Constants.STATES_DEBOUNCE_DELAY);
+    this.refreshDocumentsPane = debounce(this._refreshDocumentsPane, Constants.DOCUMENTS_DEBOUNCE_DELAY);
 }
 
 </t>
@@ -8921,6 +8941,7 @@ private _bodySaveDocument(p_document: vscode.TextDocument, p_forcedVsCodeSave?: 
             body: p_document.getText()
         };
         return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)).then(() =&gt; {
+            this._refreshType.states = true;
             this.getStates();
             if (p_forcedVsCodeSave) {
                 return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
@@ -9261,7 +9282,7 @@ private _switchBody(p_newGnx: string): Thenable&lt;boolean&gt; {
             );
             return vscode.workspace.applyEdit(w_edit).then(p_result =&gt; {
                 this.bodyUri = utils.strToLeoUri(p_newGnx); // Old is now set to new to finish
-                return Promise.resolve(p_result); // Also finish by showing it if not already visible
+                return Promise.resolve(p_result);
             });
         });
     } else {
@@ -9491,7 +9512,7 @@ public editHeadline(p_node?: LeoNode, p_fromOutline?: boolean): void {
                     this.nodeCommand({
                         action: Constants.LEOBRIDGE.SET_HEADLINE,
                         node: p_node,
-                        refreshType: { tree: true },
+                        refreshType: { tree: true, states: true },
                         fromOutline: !!p_fromOutline,
                         text: p_newHeadline
                     });
@@ -9526,7 +9547,7 @@ public insertNode(p_node?: LeoNode, p_fromOutline?: boolean, p_interrupt?: boole
                 this.nodeCommand({
                     action: w_action,
                     node: p_node,
-                    refreshType: { tree: true },
+                    refreshType: { tree: true, states: true },
                     fromOutline: !!w_fromOutline,
                     text: p_newHeadline
                 });
@@ -9557,7 +9578,7 @@ public saveAsLeoFile(p_fromOutline?: boolean): void {
                         this.nodeCommand({
                             action: Constants.LEOBRIDGE.SAVE_FILE,
                             node: undefined,
-                            refreshType: { tree: true },
+                            refreshType: { tree: true, states: true },
                             fromOutline: !!p_fromOutline,
                             text: p_chosenLeoFile
                         });
@@ -9589,7 +9610,7 @@ public saveLeoFile(p_fromOutline?: boolean): void {
                     this.nodeCommand({
                         action: Constants.LEOBRIDGE.SAVE_FILE,
                         node: undefined,
-                        refreshType: { tree: true },
+                        refreshType: { tree: true, states: true, documents: true },
                         fromOutline: !!p_fromOutline,
                         text: ""
                     });
@@ -9718,7 +9739,7 @@ public closeLeoFile(): void {
             })
             .then((p_package =&gt; {
                 if (p_package.closed) {
-                    this._leoDocumentsProvider.refreshTreeRoot();
+                    this.refreshDocumentsPane();
                     this._leoButtonsProvider.refreshTreeRoot();
                     this._removeLastFile(w_removeLastFileName);
                     if (p_package.closed.total === 0) {
@@ -9768,7 +9789,7 @@ public closeLeoFile(): void {
                         }
                     }).then((p_packageAfterSave: LeoBridgePackage | undefined) =&gt; {
                         // * back from CLOSE_FILE action, the last that can be performed (after saving if dirty or not)
-                        this._leoDocumentsProvider.refreshTreeRoot();
+                        this.refreshDocumentsPane();
                         this._leoButtonsProvider.refreshTreeRoot();
                         this._removeLastFile(w_removeLastFileName);
                         if (p_packageAfterSave &amp;&amp; p_packageAfterSave.closed &amp;&amp; p_packageAfterSave.closed.total === 0) {
@@ -10280,7 +10301,12 @@ public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boole
         this.showBody(!!p_aside, w_showBodyKeepFocus); // voluntary exit
     }
     // * Set selected node in Leo via leoBridge
-    this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson);
+    this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson).then(() =&gt; {
+        if (!p_internalCall) {
+            this._refreshType.states = true;
+            this.getStates();
+        }
+    });
     this._tryApplyNodeToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
 }
 
@@ -11962,6 +11988,15 @@ private _applyNodeToBody(p_params: ShowBodyParam): Thenable&lt;vscode.TextEditor
         this.bodyUri = utils.strToLeoUri(p_params.node.gnx);
         return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open);
     }
+}
+
+</t>
+<t tx="fil.20200813213424.1">/**
+ * * Public method to refresh the documents pane
+ *  Document Panel May be refreshed by other services (states service, ...)
+ */
+private _refreshDocumentsPane(): void {
+    this._leoDocumentsProvider.refreshTreeRoot();
 }
 
 </t>

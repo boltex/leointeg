@@ -54,6 +54,10 @@ export class LeoStates {
         return this._leoChanged;
     }
     set leoChanged(p_value: boolean) {
+        if (this._leoChanged !== p_value) {
+            // Refresh Documents Panel
+            this._leoIntegration.refreshDocumentsPane();
+        }
         this._leoChanged = p_value;
         utils.setContext(Constants.CONTEXT_FLAGS.LEO_CHANGED, p_value);
     }
