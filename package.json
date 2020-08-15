@@ -2450,9 +2450,11 @@
   },
   "dependencies": {
     "@types/debounce": "^1.2.0",
+    "@types/murmurhash-js": "^1.0.3",
     "bufferutil": "^4.0.1",
     "debounce": "^1.2.0",
     "hasbin": "^1.2.3",
+    "murmurhash-js": "^1.0.0",
     "ws": "^7.3.0"
   }
 }

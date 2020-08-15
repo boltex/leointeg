@@ -43,23 +43,34 @@ export const enum RevealType {
  * TODO : Replace RefreshType with ReqRefresh : "Required Refresh" collection of flag dictionary
  */
 export interface ReqRefresh {
-    node?: boolean;
-    tree?: boolean;
-    body?: boolean;
-    buttons?: boolean;
-    documents?: boolean;
+    node?: boolean; // Reveal received selected node (Navigation only, no tree change)
+    tree?: boolean; // Tree needs refresh
+    body?: boolean; // Body needs refresh
+    states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
+    buttons?: boolean; // Buttons needs refresh
+    documents?: boolean; // Documents needs refresh
 }
 
 /**
  * * Stackable front end commands
  */
 export interface UserCommand {
-    action: string;
+    action: string; // String from Constants.LEOBRIDGE, which are commands for leobridgeserver.py
     node?: LeoNode | undefined;  // We can START a stack with a targeted command
     text?: string | undefined; // If a string is required, for headline, etc.
     refreshType: ReqRefresh; // Minimal refresh level required by this command
     fromOutline: boolean; // Focus back on outline instead of body
     keepSelection?: boolean; // Should bring back selection on node prior to command
+}
+
+/**
+ * * Object container for parameters of leoIntegration's "apply-selected-node-to-body" method
+ */
+export interface ShowBodyParam {
+    node: LeoNode,
+    aside: boolean,
+    showBodyKeepFocus: boolean,
+    force_open?: boolean
 }
 
 /**
@@ -107,12 +118,12 @@ export interface ArchivedPosition {
  * * Items in the package object gotten back from 'getStates'
  */
 export interface LeoPackageStates {
-    changed: boolean;
-    canUndo: boolean;
-    canRedo: boolean;
-    canDemote: boolean;
-    canPromote: boolean;
-    canDehoist: boolean;
+    changed: boolean; // Leo document has changed (is dirty)
+    canUndo: boolean; // Leo document can undo the last operation done
+    canRedo: boolean; // Leo document can redo the last operation 'undone'
+    canDemote: boolean; // Currently selected node can have its siblings demoted
+    canPromote: boolean; // Currently selected node can have its children promoted
+    canDehoist: boolean; // Leo Document is currently hoisted and can be de-hoisted
 }
 
 /**

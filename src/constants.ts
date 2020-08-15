@@ -38,8 +38,9 @@ export class Constants {
 
     public static ERROR_PACKAGE_ID: number = 0;
     public static STARTING_PACKAGE_ID: number = 1;
-    public static STATUSBAR_DEBOUNCE_DELAY: number = 50;
-    public static STATES_DEBOUNCE_DELAY: number = 200; // a fifth of a second after command stack completion
+    public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
+    public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
+    public static STATES_DEBOUNCE_DELAY: number = 100;
 
     /**
      * * Strings used in the workbench interface panels (not for messages or dialogs)
@@ -81,9 +82,9 @@ export class Constants {
             "\n" +
             "For example, to run a script on any part of an outline:\n" +
             "\n" +
-            "1.  Select the node containing the script.\n" +
+            "1.  Select the node containing a script. (Ex.: \"g.es(p.h)\")\n" +
             "2.  Press 'Script Button'. This will create a new button.\n" +
-            "3.  Select the node on which you want to run the script.\n" +
+            "3.  Select a node on which you want to run the script.\n" +
             "4.  Press the *new* button.",
         SAVE_CHANGES: "Save changes to",
         BEFORE_CLOSING: "before closing?",
@@ -112,7 +113,7 @@ export class Constants {
         NO_ALL: "No to all",
         MINIBUFFER_PROMPT: "Minibuffer Full Command",
         CHANGES_DETECTED: "Changes to external files were detected.",
-        REFRESHED: " Nodes were refreshed from file.", // with voluntary leading space
+        REFRESHED: " Nodes refreshed.", // with voluntary leading space
         IGNORED: " They were ignored.", // with voluntary leading space
         TOO_FAST: "leoInteg is busy! " // with voluntary trailing space
     };

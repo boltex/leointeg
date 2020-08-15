@@ -111,7 +111,7 @@ export class CommandStack {
         w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_command); // 'Insert Named Node' or 'Edit Headline'
 
         // Setup _finalRefreshType, if command requires higher than the one setup so far
-        Object.assign(this._finalRefreshType, w_command.refreshType);
+        Object.assign(this._finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)
 
         // Submit this action to Leo and return a promise of its packaged answer
         return this._leoIntegration.sendAction(w_command.action, w_jsonParam);
@@ -135,7 +135,7 @@ export class CommandStack {
 
             if (Object.keys(this._finalRefreshType).length) {
                 // At least some type of refresh
-                this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline);
+                this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline, p_package.node);
             }
             // Reset refresh type and focus flag nonetheless
             this._finalRefreshType = {};

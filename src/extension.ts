@@ -29,12 +29,19 @@ export function activate(p_context: vscode.ExtensionContext) {
     const BRIDGE = Constants.LEOBRIDGE;
     const CMD = Constants.COMMANDS;
     const NO_REFRESH: ReqRefresh = {};
+    const REFRESH_NODE_BODY: ReqRefresh = {
+        node: true, // Reveal the returned 'selected position' without changes to the tree
+        body: true, // Goto/select another node needs the body pane refreshed
+        states: true
+    };
     const REFRESH_TREE: ReqRefresh = {
-        tree: true
+        tree: true,
+        states: true
     };
     const REFRESH_TREE_BODY: ReqRefresh = {
+        tree: true,
         body: true,
-        tree: true
+        states: true
     };
     const showInfo = vscode.window.showInformationMessage;
 
@@ -216,56 +223,69 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.GOTO_NEXT_CLONE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: p_node,
-            refreshType: REFRESH_TREE_BODY,
+            refreshType: REFRESH_NODE_BODY,
             fromOutline: true
         })],
         [CMD.GOTO_NEXT_CLONE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: U,
-            refreshType: REFRESH_TREE_BODY,
+            refreshType: REFRESH_NODE_BODY,
             fromOutline: false
         })],
         [CMD.GOTO_NEXT_CLONE_SELECTION_FO, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
             node: U,
-            refreshType: REFRESH_TREE_BODY,
+            refreshType: REFRESH_NODE_BODY,
             fromOutline: true
         })],
 
         [CMD.GOTO_NEXT_MARKED, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_MARKED,
             node: U,
-            refreshType: REFRESH_TREE_BODY,
+            refreshType: REFRESH_NODE_BODY,
             fromOutline: true
         })],
         [CMD.GOTO_FIRST_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_FIRST_VISIBLE,
             node: U,
-            refreshType: REFRESH_TREE_BODY,
+            refreshType: REFRESH_NODE_BODY,
             fromOutline: true
         })],
         [CMD.GOTO_LAST_SIBLING, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_LAST_SIBLING,
             node: U,
-            refreshType: REFRESH_TREE_BODY,
+            refreshType: REFRESH_NODE_BODY,
             fromOutline: true
         })],
         [CMD.GOTO_LAST_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_LAST_VISIBLE,
             node: U,
-            refreshType: REFRESH_TREE_BODY,
+            refreshType: REFRESH_NODE_BODY,
             fromOutline: true
         })],
         [CMD.GOTO_NEXT_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_VISIBLE,
             node: U,
-            refreshType: REFRESH_TREE_BODY,
+            refreshType: REFRESH_NODE_BODY,
             fromOutline: true
         })],
         [CMD.GOTO_PREV_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_PREV_VISIBLE,
             node: U,
-            refreshType: REFRESH_TREE_BODY,
+            refreshType: REFRESH_NODE_BODY,
+            fromOutline: true
+        })],
+
+        [CMD.PAGE_UP, () => w_leo.nodeCommand({
+            action: BRIDGE.PAGE_UP,
+            node: U,
+            refreshType: REFRESH_NODE_BODY,
+            fromOutline: true
+        })],
+        [CMD.PAGE_DOWN, () => w_leo.nodeCommand({
+            action: BRIDGE.PAGE_DOWN,
+            node: U,
+            refreshType: REFRESH_NODE_BODY,
             fromOutline: true
         })],
 
@@ -327,11 +347,11 @@ export function activate(p_context: vscode.ExtensionContext) {
         // even specifying a headline label, such as spamming CTRL+I rapidly.
         [CMD.INSERT_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, true)],
 
-        [CMD.MARK, (p_node: LeoNode) => w_leo.changeMark(true, p_node, false)],
+        [CMD.MARK, (p_node: LeoNode) => w_leo.changeMark(true, p_node, true)],
         [CMD.MARK_SELECTION, () => w_leo.changeMark(true, U, false)],
         [CMD.MARK_SELECTION_FO, () => w_leo.changeMark(true, U, true)],
 
-        [CMD.UNMARK, (p_node: LeoNode) => w_leo.changeMark(false, p_node, false)],
+        [CMD.UNMARK, (p_node: LeoNode) => w_leo.changeMark(false, p_node, true)],
         [CMD.UNMARK_SELECTION, () => w_leo.changeMark(false, U, false)],
         [CMD.UNMARK_SELECTION_FO, () => w_leo.changeMark(false, U, true)],
 
@@ -412,19 +432,6 @@ export function activate(p_context: vscode.ExtensionContext) {
             action: BRIDGE.MOVE_PNODE_UP,
             node: U,
             refreshType: REFRESH_TREE,
-            fromOutline: true
-        })],
-
-        [CMD.PAGE_UP, () => w_leo.nodeCommand({
-            action: BRIDGE.PAGE_UP,
-            node: U,
-            refreshType: REFRESH_TREE_BODY,
-            fromOutline: true
-        })],
-        [CMD.PAGE_DOWN, () => w_leo.nodeCommand({
-            action: BRIDGE.PAGE_DOWN,
-            node: U,
-            refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
 
