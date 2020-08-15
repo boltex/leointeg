@@ -9289,7 +9289,11 @@ private _switchBody(p_newGnx: string): Thenable&lt;boolean&gt; {
                 this.bodyUri = utils.strToLeoUri(p_newGnx);
 
                 // TODO : CLEAR UNDO HISTORY AND FILE HISTORY
-                vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
+                if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
+
+                    vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
+
+                }
 
                 return Promise.resolve(p_result);
             });
