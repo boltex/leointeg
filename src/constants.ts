@@ -113,7 +113,7 @@ export class Constants {
         NO_ALL: "No to all",
         MINIBUFFER_PROMPT: "Minibuffer Full Command",
         CHANGES_DETECTED: "Changes to external files were detected.",
-        REFRESHED: " Nodes were refreshed from file.", // with voluntary leading space
+        REFRESHED: " Nodes refreshed.", // with voluntary leading space
         IGNORED: " They were ignored.", // with voluntary leading space
         TOO_FAST: "leoInteg is busy! " // with voluntary trailing space
     };

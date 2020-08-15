@@ -569,6 +569,7 @@ export class LeoIntegration {
 
         // * Could be already opened, so perform 'rename hack' as if another node was selected
         if (this._bodyTextDocument && this.bodyUri) {
+            // TODO : BUG WHEN SWITCHING LEO DOCUMENT : NEED CROSSOVER LOGIC!
             this._switchBody(w_selectedLeoNode.gnx);
         } else {
             this.bodyUri = utils.strToLeoUri(w_selectedLeoNode.gnx);
@@ -1094,6 +1095,7 @@ export class LeoIntegration {
         this.lastSelectedNode = p_params.node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
         this._commandStack.newSelection();
         // * Is the last opened body still opened? If not the new gnx then make the body pane switch and show itself if needed,
+        /*
         if (this._bodyTextDocument && !this._bodyTextDocument.isClosed) {
             // * Check if already opened and visible, _locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
             if (this._locateOpenedBody(p_params.node.gnx)) {
@@ -1109,6 +1111,22 @@ export class LeoIntegration {
             }
         } else {
             // * Is the last opened body is closed so just open the newly selected one
+            this.bodyUri = utils.strToLeoUri(p_params.node.gnx);
+            return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open);
+        }
+         */
+        if (this._bodyTextDocument) {
+            if (!this._bodyTextDocument.isClosed && this._locateOpenedBody(p_params.node.gnx)) {
+                // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
+                this.bodyUri = utils.strToLeoUri(p_params.node.gnx); // ? Should already be this same string / remove if unnecessary ?
+                return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // already opened in a column so just tell vscode to show it
+            } else {
+                return this._switchBody(p_params.node.gnx)
+                    .then(() => {
+                        return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // Also finish by showing it if not already visible
+                    });
+            }
+        } else {
             this.bodyUri = utils.strToLeoUri(p_params.node.gnx);
             return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open);
         }
@@ -1138,20 +1156,32 @@ export class LeoIntegration {
 
     /**
      * * Save and rename from this.bodyUri to p_newGnx: This changes the body content & blocks 'undos' from crossing over
+     * ! BUG : UNDO NOW CROSS OVER !
      * @param p_newGnx New gnx body id to switch to
      */
     private _switchBody(p_newGnx: string): Thenable<boolean> {
         if (this._bodyTextDocument) {
             return this._bodyTextDocument.save().then((p_result) => {
+
                 const w_edit = new vscode.WorkspaceEdit();
                 this._leoFileSystem.setRenameTime(p_newGnx);
                 w_edit.renameFile(
                     this.bodyUri, // Old URI from last node
                     utils.strToLeoUri(p_newGnx), // New URI from selected node
-                    { overwrite: true, ignoreIfExists: true }
+                    { overwrite: true }
                 );
                 return vscode.workspace.applyEdit(w_edit).then(p_result => {
-                    this.bodyUri = utils.strToLeoUri(p_newGnx); // Old is now set to new to finish
+                    const w_oldUri: vscode.Uri = this.bodyUri;
+                    // * Old is now set to new!
+                    this.bodyUri = utils.strToLeoUri(p_newGnx);
+
+                    // TODO : CLEAR UNDO HISTORY AND FILE HISTORY
+                    if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
+
+                        vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
+
+                    }
+
                     return Promise.resolve(p_result);
                 });
             });
@@ -1181,9 +1211,13 @@ export class LeoIntegration {
      * * Closes any body pane opened in this vscode window instance
      */
     public closeBody(): void {
-        // TODO : Try to close body pane(s)
+        // TODO : CLEAR UNDO HISTORY AND FILE HISTORY for this.bodyUri !
+        if (this.bodyUri) {
+            vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', this.bodyUri.path);
+        }
         vscode.window.visibleTextEditors.forEach(p_textEditor => {
             if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+                vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.path);
                 if (p_textEditor.hide) {
                     p_textEditor.hide();
                 }
