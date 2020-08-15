@@ -779,7 +779,7 @@ class LeoBridgeIntegController:
     def getButtons(self, p_package):
         '''Gets the currently opened file's @buttons list'''
         w_buttons = []
-        if self.commander.theScriptingController and self.commander.theScriptingController.buttonsDict:
+        if self.commander and self.commander.theScriptingController and self.commander.theScriptingController.buttonsDict:
             w_dict = self.commander.theScriptingController.buttonsDict
             for w_key in w_dict:
                 w_entry = {"name": w_dict[w_key], "index": str(w_key)}
