@@ -14,7 +14,6 @@
 <v t="ekr.20200722125546.1"><vh>script: Print all command names</vh></v>
 <v t="ekr.20200815113508.1"><vh>script: Find empty nodes that have no children</vh></v>
 </v>
-<v t="ekr.20200719054819.1"><vh>Other</vh>
 <v t="felix.20200718220811.1"><vh>Documentation</vh>
 <v t="felix.20200718220818.1"><vh>@clean README.md</vh>
 <v t="felix.20200718221645.1"><vh>Requirements</vh></v>
@@ -53,8 +52,6 @@
 <v t="felix.20200718222754.1"><vh>The python server script</vh></v>
 <v t="felix.20200718222757.1"><vh>Issues</vh></v>
 </v>
-</v>
-<v t="felix.20190922171916.2"><vh>Introduction</vh></v>
 </v>
 <v t="ekr.20200722190517.1"><vh>Files: Other</vh>
 <v t="felix.20191126232434.2"><vh>@clean leobridgeserver.py</vh>
@@ -242,7 +239,7 @@
 <v t="ekr.20200722130456.1"><vh>@edit .gitignore</vh></v>
 <v t="ekr.20200722174734.1"><vh>@@edit syntaxes/leobody.tmLanguage.json</vh></v>
 </v>
-<v t="felix.20200718165721.1"><vh>Files: Ts</vh>
+<v t="felix.20200718165721.1"><vh>Files: Typescript</vh>
 <v t="felix.20200718024635.1"><vh>@clean src/commandStack.ts</vh>
 <v t="felix.20200718024635.2"><vh>class CommandStack</vh>
 <v t="felix.20200718024635.3"><vh>size</vh></v>
@@ -590,7 +587,6 @@
 </v>
 </vnodes>
 <tnodes>
-<t tx="ekr.20200719054819.1"></t>
 <t tx="ekr.20200722125546.1">@language python
 
 g.cls()
@@ -4566,36 +4562,6 @@ print('done')</t>
     }
   ]
 },
-</t>
-<t tx="felix.20190922171916.2">@doc
-
-This Leo file contains all of the source for the Visual Studio Code 'Leo Integration' Extension
-
-To contribute, see the official issues page for current list of 'TODO's at https://github.com/boltex/leointeg/issues
-
-Coding Standards
-================
-
-All non-trivial structure types should be defined in the types.d.ts file. Any other symbol should have its type properly defined at declaration.
-
-Avoid hardcoded data in code. Immutable constants and objects structures should be in the constants.ts source file.
-
-Generic, re-usable utility functions are kept in the utils.ts source file.
-
-
-
-Symbols Decorators prefixes
----------------------------
-
-w_symbol : A 'work' variable, to work with.
-
-p_symbol : This was passed as parameter into the scope you're in.
-
-i_symbol : This in index for a loop or an iteration of some kind.
-
-UPPERCASE : An immutable constant from the constants.ts source file.
-
-
 </t>
 <t tx="felix.20191126232434.10">    c, g = self.commander, self.g
     aList = g.get_directives_dict_list(w_p)
