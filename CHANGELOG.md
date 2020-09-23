@@ -10,7 +10,7 @@
 - Implemented @buttons in it's own panel, visible where the already existing 'outline' and 'opened leo documents' panels reside.
 - Added (basic) unknown attributes support as hover tooltip and small description on node headlines.
 - Added a 'leoBridge Server Terminal Panel' to gather output of the leoBridge stdOut pipe. It's displayed among the 'output panels', along with the standard 'leo log window', when the server is started by leoInteg. (either with the auto-start config setting, or by calling the 'start server' command via buttons or the command-palette.)
-- Syntax coloring is now enabled for those languages : batch, c, cplusplus, csharp, css, fortran, haskell, html, java, javascript, json, latex, lua, makefile, matlab, md, pascal, perl, php, python, ruby and typescript.
+- Syntax coloring is now enabled for those languages : C, C++, CSS, HTML, Java, Javascript, json, Markdown, PHP, Python, Rust and Typescript.
 
 ## 0.1.12
 

@@ -1887,15 +1887,15 @@ print('done')</t>
     "lint": "tslint -p ./"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.1",
+    "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
-    "@types/node": "^14.0.5",
-    "@types/vscode": "^1.45.1",
-    "@types/ws": "^7.2.4",
+    "@types/node": "^14.11.2",
+    "@types/vscode": "^1.49.0",
+    "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
     "css-loader": "^3.5.3",
-    "eslint": "^7.1.0",
+    "eslint": "^7.9.0",
     "fork-ts-checker-webpack-plugin": "^4.1.6",
     "glob": "^7.1.6",
     "html-loader": "^1.1.0",
@@ -1907,11 +1907,11 @@ print('done')</t>
     "node-sass": "^4.14.1",
     "sass-loader": "^8.0.2",
     "ts-loader": "^7.0.5",
-    "tslint": "^6.1.2",
-    "typescript": "^3.9.3",
+    "tslint": "^6.1.3",
+    "typescript": "^3.9.7",
     "vscode-test": "^1.4.0",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.11"
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12"
   },
   "dependencies": {
     "@types/debounce": "^1.2.0",
@@ -1920,7 +1920,7 @@ print('done')</t>
     "debounce": "^1.2.0",
     "hasbin": "^1.2.3",
     "murmurhash-js": "^1.0.0",
-    "ws": "^7.3.0"
+    "ws": "^7.3.1"
   }
 }
 </t>
@@ -1983,7 +1983,7 @@ print('done')</t>
   {
     "id": "leobody.cpp",
     "aliases": [
-      "Leo Body cpp",
+      "Leo Body C++",
       "leobody.cpp"
     ],
     "extensions": [
@@ -1994,7 +1994,7 @@ print('done')</t>
   {
     "id": "leobody.css",
     "aliases": [
-      "Leo Body css",
+      "Leo Body CSS",
       "leobody.css"
     ],
     "extensions": [
@@ -2005,7 +2005,7 @@ print('done')</t>
   {
     "id": "leobody.html",
     "aliases": [
-      "Leo Body html",
+      "Leo Body HTML",
       "leobody.html"
     ],
     "extensions": [
@@ -2016,7 +2016,7 @@ print('done')</t>
   {
     "id": "leobody.java",
     "aliases": [
-      "Leo Body java",
+      "Leo Body Java",
       "leobody.java"
     ],
     "extensions": [
@@ -2049,13 +2049,24 @@ print('done')</t>
   {
     "id": "leobody.php",
     "aliases": [
-      "Leo Body php",
+      "Leo Body PHP",
       "leobody.php"
     ],
     "extensions": [
       ""
     ],
     "configuration": "./language-configurations/leobody.php.language-configuration.json"
+  },
+  {
+    "id": "leobody.rust",
+    "aliases": [
+      "Leo Body Rust",
+      "leobody.rust"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.rust.language-configuration.json"
   }
 ],
 </t>
@@ -2121,6 +2132,11 @@ print('done')</t>
     "path": "./syntaxes/leobody.php.tmLanguage.json"
   },
   {
+    "language": "leobody.rust",
+    "scopeName": "source.leobody.rust",
+    "path": "./syntaxes/leobody.rust.tmLanguage.json"
+  },
+  {
     "//TODO 1": "MAKE PHP/HTML/CSS/JS EMBEDDED FUNCTIONALITY WORK TOO",
     "injectTo": [
       "source.leobody.plain",
@@ -2134,7 +2150,8 @@ print('done')</t>
       "source.leobody.java",
       "source.leobody.json",
       "source.leobody.markdown",
-      "source.leobody.php"
+      "source.leobody.php",
+      "source.leobody.rust"
     ],
     "path": "./syntaxes/leobody.tmLanguage.json",
     "scopeName": "leo.injection",
@@ -2180,6 +2197,10 @@ print('done')</t>
   {
     "language": "leobody.markdown",
     "path": "./snippets/markdown.code-snippets"
+  },
+  {
+    "language": "leobody.rust",
+    "path": "./snippets/rust.code-snippets"
   }
 ],
 </t>
@@ -10043,6 +10064,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 - Implemented @buttons in it's own panel, visible where the already existing 'outline' and 'opened leo documents' panels reside.
 - Added (basic) unknown attributes support as hover tooltip and small description on node headlines.
 - Added a 'leoBridge Server Terminal Panel' to gather output of the leoBridge stdOut pipe. It's displayed among the 'output panels', along with the standard 'leo log window', when the server is started by leoInteg. (either with the auto-start config setting, or by calling the 'start server' command via buttons or the command-palette.)
+- Syntax coloring is now enabled for those languages : C, C++, CSS, HTML, Java, Javascript, json, Markdown, PHP, Python, Rust and Typescript.
 
 @others
 </t>
@@ -11299,7 +11321,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                 .then(p_result =&gt; {
                     let w_language = p_result.language;
                     // TODO : Move those exception in "constants.ts"
-                    // Exceptions
+                    // ! Exceptions
                     switch (p_result.language) {
                         case "cplusplus":
                             w_language = "cpp";
