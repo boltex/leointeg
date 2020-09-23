@@ -83,7 +83,7 @@
 					"name": "keyword"
 				},
 				{
-					"match": "^(@language)\\s+\\b(batch|c|cplusplus|csharp|css|fortran|haskell|html|java|javascript|json|latex|lua|makefile|matlab|md|pascal|perl|php|python|ruby|typescript)\\b",
+					"match": "^(@language)\\s+\\b(batch|c|cplusplus|csharp|css|fortran|haskell|html|java|javascript|json|latex|lua|makefile|matlab|md|pascal|perl|php|python|ruby|rust|typescript)\\b",
 					"name": "keyword"
 				},
 				{
