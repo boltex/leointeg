@@ -87,7 +87,7 @@
 </v>
 </v>
 <v t="felix.20191126232434.4"><vh>class LeoBridgeIntegController</vh>
-<v t="felix.20191126232434.5"><vh>bc.__init__</vh></v>
+<v t="felix.20191126232434.5"><vh>__init__</vh></v>
 <v t="felix.20200303214235.1"><vh>_asyncIdleLoop</vh></v>
 <v t="felix.20200626012709.1"><vh>_returnNo</vh></v>
 <v t="felix.20200626030820.1"><vh>_returnYes</vh></v>
@@ -100,20 +100,53 @@
 <v t="felix.20200219224515.1"><vh>logSignon</vh></v>
 <v t="felix.20200219222712.1"><vh>es</vh></v>
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
+<v t="felix.20200924205439.1"><vh>_get_commander_method</vh></v>
+<v t="felix.20200924205503.1"><vh>leoCommand</vh></v>
+<v t="felix.20200924223845.1"><vh>LeoDocuments</vh>
 <v t="felix.20200622230608.1"><vh>getOpenedFiles</vh></v>
 <v t="felix.20200624172552.1"><vh>setOpenedFile</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
+<v t="felix.20200924205915.1"><vh>openFiles</vh></v>
 <v t="felix.20191126232434.14"><vh>closeFile</vh></v>
 <v t="felix.20200216160305.1"><vh>saveFile</vh></v>
+</v>
+<v t="felix.20200924223910.1"><vh>At Buttons</vh>
+<v t="felix.20200924210020.1"><vh>getButtons</vh></v>
+<v t="felix.20200924210024.1"><vh>removeButton</vh></v>
+<v t="felix.20200924210029.1"><vh>clickButton</vh></v>
+</v>
+<v t="felix.20200924223945.1"><vh>Minibuffer</vh>
+<v t="felix.20200924210036.1"><vh>getCommands</vh></v>
+<v t="felix.20200924210058.1"><vh>_bad_commands</vh></v>
+<v t="felix.20200924210112.1"><vh>_good_commands</vh></v>
+<v t="felix.20200924210952.1"><vh>_getDocstringForCommand</vh></v>
+</v>
+<v t="felix.20200924224017.1"><vh>JSON Output Functions</vh>
+<v t="felix.20200924211032.1"><vh>setActionId</vh></v>
+<v t="felix.20200924211034.1"><vh>asyncOutput</vh></v>
+<v t="felix.20200924211037.1"><vh>sendLeoBridgePackage</vh></v>
+<v t="felix.20200924211041.1"><vh>_outputError</vh></v>
+<v t="felix.20200924211048.1"><vh>_outputBodyData</vh></v>
+<v t="felix.20200924211051.1"><vh>_outputPNode</vh></v>
+<v t="felix.20200924211054.1"><vh>_outputPNodes</vh></v>
+</v>
+<v t="felix.20200924224100.1"><vh>Overriden Leo Commands</vh>
+<v t="felix.20200924211057.1"><vh>markPNode</vh></v>
+<v t="felix.20200924211100.1"><vh>unmarkPNode</vh></v>
+<v t="felix.20200924211104.1"><vh>clonePNode</vh></v>
+<v t="felix.20200924211121.1"><vh>cutPNode</vh></v>
+<v t="felix.20200924211125.1"><vh>deletePNode</vh></v>
+<v t="felix.20200924211127.1"><vh>insertPNode</vh></v>
+<v t="felix.20200924211132.1"><vh>insertNamedPNode</vh></v>
+<v t="felix.20200924211135.1"><vh>undo</vh></v>
+<v t="felix.20200924211138.1"><vh>redo</vh></v>
+<v t="felix.20200924211142.1"><vh>executeScriptPackage</vh></v>
+</v>
+<v t="felix.20200924224219.1"><vh>UI interaction</vh>
 <v t="felix.20200619165641.1"><vh>getStates</vh></v>
-<v t="felix.20191128003151.1"><vh>JSON Output Functions</vh>
-<v t="felix.20191128004456.1"><vh>setActionId</vh></v>
-<v t="felix.20200213195413.1"><vh>asyncOutput</vh></v>
-<v t="felix.20191126232434.7"><vh>sendLeoBridgePackage</vh></v>
-<v t="felix.20191126232434.8"><vh>outputError</vh></v>
-<v t="felix.20191126232434.9"><vh>outputBodyData</vh></v>
-<v t="felix.20191126232434.10"><vh>outputPNode</vh></v>
-<v t="felix.20191126232434.11"><vh>outputPNodes</vh></v>
+<v t="felix.20200924213359.1"><vh>pageUp</vh></v>
+<v t="felix.20200924213606.1"><vh>pageDown</vh></v>
+<v t="felix.20200924213612.1"><vh>getLanguage</vh></v>
 </v>
 <v t="felix.20191128001054.1"><vh>Outline and Body Interaction</vh>
 <v t="felix.20191126232434.15"><vh>getPNode</vh></v>
@@ -129,15 +162,14 @@
 <v t="felix.20191126232434.24"><vh>setSelectedNode</vh></v>
 <v t="felix.20191126232434.25"><vh>expandNode</vh></v>
 <v t="felix.20191126232434.26"><vh>collapseNode</vh></v>
-<v t="felix.20200329000454.1"><vh>contractAll</vh></v>
-<v t="felix.20191126232434.29"><vh>yieldAllRootChildren</vh></v>
-<v t="felix.20191216195906.1"><vh>findPNodeFromGnx</vh></v>
+<v t="felix.20191126232434.29"><vh>_yieldAllRootChildren</vh></v>
+<v t="felix.20191216195906.1"><vh>_findPNodeFromGnx</vh></v>
 </v>
 <v t="felix.20191128003648.1"><vh>leoFlexx Conversion Functions</vh>
-<v t="felix.20191126232434.27"><vh>create_gnx_to_vnode</vh></v>
-<v t="felix.20191126232434.28"><vh>test_round_trip_positions</vh></v>
-<v t="felix.20191126232434.30"><vh>ap_to_p</vh></v>
-<v t="felix.20191126232434.31"><vh>p_to_ap</vh></v>
+<v t="felix.20191126232434.27"><vh>_create_gnx_to_vnode</vh></v>
+<v t="felix.20191126232434.28"><vh>_test_round_trip_positions</vh></v>
+<v t="felix.20191126232434.30"><vh>_ap_to_p</vh></v>
+<v t="felix.20191126232434.31"><vh>_p_to_ap</vh></v>
 </v>
 </v>
 <v t="felix.20191126232435.1"><vh>main leoBridgeServer loop</vh></v>
@@ -1832,7 +1864,7 @@ def is_significant(p):
     for ch in '()[]{};':
         s = s.replace(ch, '')
     return s.strip()
-    
+
 for p in c.all_unique_positions():
     if not is_significant(p) and not p.hasChildren():
         print(p.h)
@@ -4409,29 +4441,6 @@ print('done')</t>
   ]
 },
 </t>
-<t tx="felix.20191126232434.10">    c, g = self.commander, self.g
-    aList = g.get_directives_dict_list(w_p)
-    d = g.scanAtCommentAndAtLanguageDirectives(aList)
-    # TODO : Remove one of those branch after finishing color-syntax features
-    if 1:  # Exactly as in Leo.
-        language = (
-</t>
-<t tx="felix.20191126232434.11">            d and d.get('language') or
-            g.getLanguageFromAncestorAtFileNode(w_p) or
-            c.config.getString('target-language') or
-            'plain'
-        )
-        return self.sendLeoBridgePackage("language", language.lower())
-    else:  # Return both an explicit language and a default language.
-        language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(w_p) or 'none'
-        default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
-        result = {
-            'language': language.lower(),
-            'default': default,
-        }
-        return self.sendLeoBridgePackage("result", result)
-
-</t>
 <t tx="felix.20191126232434.13">def openFile(self, p_file):
     """
     Open a leo file via leoBridge controller, or create a new document if empty string.
@@ -4460,40 +4469,6 @@ print('done')</t>
         return self.sendLeoBridgePackage("opened", w_result)
     else:
         return self._outputError('Error in openFile')
-
-def openFiles(self, p_package):
-    """
-    Opens an array of leo files
-    Returns an object that contains the last 'opened' member.
-    """
-    w_files = []
-    if "files" in p_package:
-        w_files = p_package["files"]
-
-    for i_file in w_files:
-        w_found = False
-        # If not empty string (asking for New file) then check if already opened
-        if i_file:
-            for w_commander in self.g.app.commanders():
-                if w_commander.fileName() == i_file:
-                    w_found = True
-                    self.commander = w_commander
-
-        if not w_found:
-            if os.path.isfile(i_file):
-                self.commander = self.bridge.openLeoFile(i_file)  # create self.commander
-        if self.commander:
-            self.commander.closed = False
-
-    # Done with the last one, it's now the selected commander. Check again just in case.
-    if self.commander:
-        self.commander.closed = False
-        self._create_gnx_to_vnode()
-        w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
-                    "node": self._p_to_ap(self.commander.p)}
-        return self.sendLeoBridgePackage("opened", w_result)
-    else:
-        return self._outputError('Error in openFiles')
 
 </t>
 <t tx="felix.20191126232434.14">def closeFile(self, p_package):
@@ -4564,9 +4539,9 @@ def openFiles(self, p_package):
             return self._outputPNode(w_p.getParent())  # if not root
     return self._outputPNode()  # default empty for root as default
 
-def getSelectedNode(self, p_unused):
 </t>
-<t tx="felix.20191126232434.18">    '''EMIT OUT Selected Position as an array, even if unique'''
+<t tx="felix.20191126232434.18">def getSelectedNode(self, p_unused):
+    '''EMIT OUT Selected Position as an array, even if unique'''
     if self.commander.p:
         return self._outputPNode(self.commander.p)
     else:
@@ -4690,6 +4665,7 @@ if __name__ == '__main__':
         if w_p:
             w_p.contract()
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
 </t>
 <t tx="felix.20191126232434.27">def _create_gnx_to_vnode(self):
     '''Make the first gnx_to_vnode array with all unique nodes'''
@@ -4721,7 +4697,8 @@ if __name__ == '__main__':
     # print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)))
 
 </t>
-<t tx="felix.20191126232434.29">    '''Return all root children P nodes'''
+<t tx="felix.20191126232434.29">def _yieldAllRootChildren(self):
+    '''Return all root children P nodes'''
     p = self.commander.rootPosition()
     while p:
         yield p
@@ -4839,25 +4816,6 @@ if __name__ == '__main__':
         print('ERROR with idleTimeManager')
 
 </t>
-<t tx="felix.20191126232434.7">    self.commander.selectVisNext()
-    self.commander.selectVisNext()
-    return self._outputPNode(self.commander.p)
-
-def getLanguage(self, p_ap):
-    """
-    Finds the language in effect at top of body for position p.
-</t>
-<t tx="felix.20191126232434.8">
-    Return type is lowercase 'language' non-empty string.
-    """
-    if not p_ap:
-        return self._outputError("Error in getLanguage, no param p_ap")
-    w_p = self._ap_to_p(p_ap)
-</t>
-<t tx="felix.20191126232434.9">    if not w_p:
-        return self.sendLeoBridgePackage("language", "plain")
-
-</t>
 <t tx="felix.20191126232435.1">def main():
     '''python script for leo integration via leoBridge'''
     global wsHost, wsPort
@@ -4959,12 +4917,7 @@ wsPort = 32125
 
 
 </t>
-<t tx="felix.20191128003151.1"></t>
 <t tx="felix.20191128003648.1"></t>
-<t tx="felix.20191128004456.1">def pageUp(self, p_unused):
-    """Selects a node a couple of steps up in the tree to simulate page up"""
-    self.commander.selectVisBack()
-</t>
 <t tx="felix.20191201194046.1">def getAllGnx(self, p_unused):
     '''Get gnx array from all unique nodes'''
     w_all_gnx = [p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
@@ -4983,100 +4936,6 @@ wsPort = 32125
     self.webSocket = p_webSocket
     self.loop = asyncio.get_event_loop()
 
-def _get_commander_method(self, p_command):
-    """ Return the given method (p_command) in the Commands class or subcommanders."""
-    # self.g.trace(p_command)
-    #
-    # First, try the commands class.
-    w_func = getattr(self.commander, p_command, None)
-    if w_func:
-        return w_func
-    #
-    # Search all subcommanders for the method.
-    table = (  # This table comes from c.initObjectIvars.
-        'abbrevCommands',
-        'bufferCommands',
-        'chapterCommands',
-        'controlCommands',
-        'convertCommands',
-        'debugCommands',
-        'editCommands',
-        'editFileCommands',
-        'evalController',
-        'gotoCommands',
-        'helpCommands',
-        'keyHandler',
-        'keyHandlerCommands',
-        'killBufferCommands',
-        'leoCommands',
-        'leoTestManager',
-        'macroCommands',
-        'miniBufferWidget',
-        'printingController',
-        'queryReplaceCommands',
-        'rectangleCommands',
-        'searchCommands',
-        'spellCommands',
-        'vimCommands',  # Not likely to be useful.
-    )
-    for ivar in table:
-        subcommander = getattr(self.commander, ivar, None)
-        if subcommander:
-            w_func = getattr(subcommander, p_command, None)
-            if w_func:
-                ### self.g.trace(f"Found c.{ivar}.{p_command}")
-                return w_func
-        # else:
-            # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
-    return None
-
-def leoCommand(self, p_command, p_package):
-    '''
-    Generic call to a method in Leo's Commands class or any subcommander class.
-
-    The p_ap position node is to be selected before having the command run,
-    while the p_keepSelection parameter specifies wether the original position should be re-selected.
-    The whole of those operations is to be undoable as one undo step.
-
-    p_command: a method name (a string).
-    p_ap: an archived position.
-    p_keepSelection: preserve the current selection, if possible.
-    '''
-    w_keepSelection = False  # Set default, optional component of package
-    if "keep" in p_package:
-        w_keepSelection = p_package["keep"]
-        print("have keep! " + str(w_keepSelection))
-    else:
-        print("NO keep!")
-
-    w_ap = p_package["node"]  # At least node parameter is present
-    if not w_ap:
-        return self._outputError(f"Error in {p_command}: no param node")
-    w_p = self._ap_to_p(w_ap)
-    if not w_p:
-        return self._outputError(f"Error in {p_command}: no w_p node found")
-    w_func = self._get_commander_method(p_command)
-    if not w_func:
-        return self._outputError(f"Error in {p_command}: no method found")
-
-    if w_p == self.commander.p:
-        w_func(event=None)
-    else:
-        oldPosition = self.commander.p
-        self.commander.selectPosition(w_p)
-        w_func(event=None)
-        if w_keepSelection and self.commander.positionExists(oldPosition):
-            self.commander.selectPosition(oldPosition)
-    return self._outputPNode(self.commander.p)
-
-</t>
-<t tx="felix.20200213195413.1">    self.commander.selectVisBack()
-    self.commander.selectVisBack()
-    return self._outputPNode(self.commander.p)
-
-def pageDown(self, p_unused):
-    """Selects a node a couple of steps down in the tree to simulate page down"""
-    self.commander.selectVisNext()
 </t>
 <t tx="felix.20200216160305.1">def saveFile(self, p_package):
     '''Saves the leo file. New or dirty derived files are rewritten'''
@@ -5092,1330 +4951,6 @@ def pageDown(self, p_unused):
             print(str(e))
 
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-
-def getButtons(self, p_package):
-    '''Gets the currently opened file's @buttons list'''
-    w_buttons = []
-    if self.commander and self.commander.theScriptingController and self.commander.theScriptingController.buttonsDict:
-        w_dict = self.commander.theScriptingController.buttonsDict
-        for w_key in w_dict:
-            w_entry = {"name": w_dict[w_key], "index": str(w_key)}
-            w_buttons.append(w_entry)
-    return self.sendLeoBridgePackage("buttons", w_buttons)
-
-def removeButton(self, p_package):
-    '''Removes an entry from the buttonsDict by index string'''
-    w_index = p_package['index']
-    w_dict = self.commander.theScriptingController.buttonsDict
-    w_key = None
-    for i_key in w_dict:
-        if(str(i_key) == w_index):
-            w_key = i_key
-    if w_key:
-        del(w_dict[w_key])  # delete object member
-    return self._outputPNode(self.commander.p)  # return selected node when done
-
-def clickButton(self, p_package):
-    '''Handles buttons clicked in client from the '@button' panel'''
-    w_index = p_package['index']
-    w_dict = self.commander.theScriptingController.buttonsDict
-    w_button = None
-    for i_key in w_dict:
-        if(str(i_key) == w_index):
-            w_button = i_key
-    if w_button:
-        w_button.command()  # run clicked button command
-    return self._outputPNode(self.commander.p)  # return selected node when done
-
-def getCommands(self, p_package):
-    """Return a list of all Leo commands that make sense in leoInteg."""
-    c = self.commander
-    d = c.commandsDict  # keys are command names, values are functions.
-    bad_names = self._bad_commands()  # #92.
-    good_names = self._good_commands()
-    duplicates = set(bad_names).intersection(set(good_names))
-    if duplicates:
-        print('duplicate command names...')
-        for z in sorted(duplicates):
-            print(z)
-    result = []
-    for command_name in sorted(d):
-        func = d.get(command_name)
-        if not func:
-            print('no func:', command_name, flush=True)
-            continue
-        if command_name in bad_names:  # #92.
-            continue
-        # Prefer func.__func_name__ to func.__name__: Leo's decorators change func.__name__!
-        func_name = getattr(func, '__func_name__', func.__name__)
-        if not func_name:
-            print('no name', command_name, flush=True)
-            continue
-        doc = func.__doc__ or ''
-        result.append({
-            "label": command_name,
-            "func":  func_name,
-            "detail": doc,
-        })
-        # This shows up in the bridge log.
-        # print(f"__doc__: {len(doc):4} {command_name:40} {func_name} ", flush=True)
-        # print(f"{func_name} ", flush=True)
-
-    return self.sendLeoBridgePackage("commands", result)
-
-def _bad_commands(self):
-    """Return the list of Leo's command names that leoInteg should ignore."""
-    c = self.commander
-    bad = []
-    d = c.commandsDict  # keys are command names, values are functions.
-    #
-    # First, remove @button, @command and vim commands.
-    for command_name in sorted(d):
-        if command_name.startswith((':', '@')):
-            # print('ignore', command_name)
-            bad.append(command_name)
-    # Second, remove other commands.
-    # This is a hand-curated list.
-    bad_list = [
-
-        # Abbreviations...
-        'abbrev-kill-all',
-        'abbrev-list',
-        'dabbrev-completion',
-        'dabbrev-expands',
-
-        # Autocompletion...
-        'auto-complete',
-        'auto-complete-force',
-        'disable-autocompleter',
-        'disable-calltips',
-        'enable-autocompleter',
-        'enable-calltips',
-
-        # Debugger...
-        'debug',
-        'db-again',
-        'db-b',
-        'db-c',
-        'db-h',
-        'db-input',
-        'db-l',
-        'db-n',
-        'db-q',
-        'db-r',
-        'db-s',
-        'db-status',
-        'db-w',
-
-        # File operations...
-        'directory-make',
-        'directory-remove',
-        'file-delete',
-        'file-diff-files',
-        'file-insert',
-        'file-new',
-        'file-open-by-name',
-
-        # All others...
-        'shell-command',
-        'shell-command-on-region',
-        'cheat-sheet',
-        'dehoist',  # Duplicates of de-hoist.
-        'find-clone-all',
-        'find-clone-all-flattened',
-        'find-clone-tag',
-        'find-all',
-        'find-all-unique-regex',
-        'find-character',
-        'find-character-extend-selection',
-        'find-next',
-        'find-prev',
-        'find-word',
-        'find-word-in-line',
-
-        'global-search',
-
-        'isearch-backward',
-        'isearch-backward-regexp',
-        'isearch-forward',
-        'isearch-forward-regexp',
-        'isearch-with-present-options',
-
-        'replace',
-        'replace-all',
-        'replace-current-character',
-        'replace-then-find',
-
-        're-search-backward',
-        're-search-forward',
-
-        'search-backward',
-        'search-forward',
-        'search-return-to-origin',
-
-        'set-find-everywhere',
-        'set-find-node-only',
-        'set-find-suboutline-only',
-        'set-replace-string',
-        'set-search-string',
-
-        'show-find-options',
-
-        'start-search',
-
-        'toggle-find-collapses-nodes',
-        'toggle-find-ignore-case-option',
-        'toggle-find-in-body-option',
-        'toggle-find-in-headline-option',
-        'toggle-find-mark-changes-option',
-        'toggle-find-mark-finds-option',
-        'toggle-find-regex-option',
-        'toggle-find-word-option',
-        'toggle-find-wrap-around-option',
-
-        'word-search-backward',
-        'word-search-forward',
-
-        # Buttons...
-        'delete-script-button-button',
-
-        # Clicks...
-        'click-click-box',
-        'click-icon-box',
-        'ctrl-click-at-cursor',
-        'ctrl-click-icon',
-        'double-click-icon-box',
-        'right-click-icon',
-
-        # Editors...
-        'add-editor', 'editor-add',
-        'delete-editor', 'editor-delete',
-        'detach-editor-toggle',
-        'detach-editor-toggle-max',
-
-        # Focus...
-        'cycle-editor-focus', 'editor-cycle-focus',
-        'focus-to-body',
-        'focus-to-find',
-        'focus-to-log',
-        'focus-to-minibuffer',
-        'focus-to-nav',
-        'focus-to-spell-tab',
-        'focus-to-tree',
-
-        'tab-cycle-next',
-        'tab-cycle-previous',
-        'tab-detach',
-
-        # Headlines..
-        'abort-edit-headline',
-        'edit-headline',
-        'end-edit-headline',
-
-        # Layout and panes...
-        'adoc',
-        'adoc-with-preview',
-
-        'contract-body-pane',
-        'contract-log-pane',
-        'contract-outline-pane',
-
-        'edit-pane-csv',
-        'edit-pane-test-open',
-        'equal-sized-panes',
-        'expand-log-pane',
-        'expand-body-pane',
-        'expand-outline-pane',
-
-        'free-layout-context-menu',
-        'free-layout-load',
-        'free-layout-restore',
-        'free-layout-zoom',
-
-        'zoom-in',
-        'zoom-out'
-
-        # Log
-        'clear-log',
-
-        # Menus...
-        'activate-cmds-menu',
-        'activate-edit-menu',
-        'activate-file-menu',
-        'activate-help-menu',
-        'activate-outline-menu',
-        'activate-plugins-menu',
-        'activate-window-menu',
-        'context-menu-open',
-        'menu-shortcut',
-
-        # Modes...
-        'clear-extend-mode',
-
-        # Outline...
-        'contract-or-go-left',
-        'contract-node',
-        'contract-parent',
-
-        # Scrolling...
-        'scroll-down-half-page',
-        'scroll-down-line',
-        'scroll-down-page',
-        'scroll-outline-down-line',
-        'scroll-outline-down-page',
-        'scroll-outline-left',
-        'scroll-outline-right',
-        'scroll-outline-up-line',
-        'scroll-outline-up-page',
-        'scroll-up-half-page',
-        'scroll-up-line',
-        'scroll-up-page',
-
-        # Windows...
-        'about-leo',
-
-        'cascade-windows',
-        'close-others',
-        'close-window',
-
-        'iconify-frame',
-
-        'find-tab-hide',
-        'find-tab-open',
-
-        'hide-body-dock',
-        'hide-body-pane',
-        'hide-invisibles',
-        'hide-log-pane',
-        'hide-outline-dock',
-        'hide-outline-pane',
-        'hide-tabs-dock',
-
-        'minimize-all',
-
-        'resize-to-screen',
-
-        'show-body-dock',
-        'show-hide-body-dock',
-        'show-hide-outline-dock',
-        'show-hide-render-dock',
-        'show-hide-tabs-dock',
-        'show-tabs-dock',
-        'clean-diff',
-        'cm-external-editor',
-
-        'delete-@button-parse-json-button',
-        'delete-trace-statements',
-
-        'disable-idle-time-events',
-        'do-nothing',
-
-        'enable-idle-time-events',
-        'enter-quick-command-mode',
-        'exit-named-mode',
-
-        'F6-open-console',
-
-        'flush-lines',
-        'full-command',
-
-        'get-child-headlines',
-
-        'history',
-
-        'insert-file-name',
-
-        'justify-toggle-auto',
-
-        'keep-lines',
-        'keyboard-quit',
-
-        'line-number',
-        'line-numbering-toggle',
-        'line-to-headline',
-
-        'marked-list',
-
-        'mode-help',
-
-        'open-python-window',
-
-        'open-with-idle',
-        'open-with-open-office',
-        'open-with-scite',
-        'open-with-word',
-
-        'recolor',
-        'redraw',
-
-        'repeat-complex-command',
-
-        'session-clear',
-        'session-create',
-        'session-refresh',
-        'session-restore',
-        'session-snapshot-load',
-        'session-snapshot-save',
-
-        'set-colors',
-        'set-command-state',
-        'set-comment-column',
-        'set-extend-mode',
-        'set-fill-column',
-        'set-fill-prefix',
-        'set-font',
-        'set-insert-state',
-        'set-overwrite-state',
-        'set-silent-mode',
-
-        'show-buttons',
-        'show-calltips',
-        'show-calltips-force',
-        'show-color-names',
-        'show-color-wheel',
-        'show-commands',
-        'show-file-line',
-
-        'show-focus',
-        'show-fonts',
-
-        'show-invisibles',
-        'show-next-tip',
-        'show-node-uas',
-        'show-outline-dock',
-        'show-plugin-handlers',
-        'show-plugins-info',
-        'show-settings',
-        'show-settings-outline',
-        'show-spell-info',
-        'show-stats',
-
-        'style-set-selected',
-
-        'suspend',
-
-        'toggle-abbrev-mode',
-        'toggle-active-pane',
-        'toggle-angle-brackets',
-        'toggle-at-auto-at-edit',
-        'toggle-autocompleter',
-        'toggle-calltips',
-        'toggle-case-region',
-        'toggle-extend-mode',
-        'toggle-idle-time-events',
-        'toggle-input-state',
-        'toggle-invisibles',
-        'toggle-line-numbering-root',
-        'toggle-sparse-move',
-        'toggle-split-direction',
-
-        'what-line',
-        'eval',
-        'eval-block',
-        'eval-last',
-        'eval-last-pretty',
-        'eval-replace',
-
-        'find-quick',
-        'find-quick-changed',
-        'find-quick-selected',
-        'find-quick-test-failures',
-        'find-quick-timeline',
-
-        'goto-next-history-node',
-        'goto-prev-history-node',
-
-        'preview',
-        'preview-body',
-        'preview-expanded-body',
-        'preview-expanded-html',
-        'preview-html',
-        'preview-marked-bodies',
-        'preview-marked-html',
-        'preview-marked-nodes',
-        'preview-node',
-        'preview-tree-bodies',
-        'preview-tree-html',
-        'preview-tree-nodes',
-
-        'spell-add',
-        'spell-as-you-type-next',
-        'spell-as-you-type-toggle',
-        'spell-as-you-type-undo',
-        'spell-as-you-type-wrap',
-        'spell-change',
-        'spell-change-then-find',
-        'spell-find',
-        'spell-ignore',
-        'spell-tab-hide',
-        'spell-tab-open',
-
-        'tag-children',
-
-        'todo-children-todo',
-        'todo-dec-pri',
-        'todo-find-todo',
-        'todo-fix-datetime',
-        'todo-inc-pri',
-
-        'vr',
-        'vr-contract',
-        'vr-expand',
-        'vr-hide',
-        'vr-lock',
-        'vr-pause-play-movie',
-        'vr-show',
-        'vr-toggle',
-        'vr-unlock',
-        'vr-update',
-        'vr-zoom',
-
-        'vs-create-tree',
-        'vs-dump',
-        'vs-reset',
-        'vs-update',
-        # vs code's text editing commands should cover all of these...
-        'add-comments',
-        'add-space-to-lines',
-        'add-tab-to-lines',
-        'align-eq-signs',
-
-        'back-char',
-        'back-char-extend-selection',
-        'back-page',
-        'back-page-extend-selection',
-        'back-paragraph',
-        'back-paragraph-extend-selection',
-        'back-sentence',
-        'back-sentence-extend-selection',
-        'back-to-home',
-        'back-to-home-extend-selection',
-        'back-to-indentation',
-        'back-word',
-        'back-word-extend-selection',
-        'back-word-smart',
-        'back-word-smart-extend-selection',
-        'backward-delete-char',
-        'backward-delete-word',
-        'backward-delete-word-smart',
-        'backward-find-character',
-        'backward-find-character-extend-selection',
-        'backward-kill-paragraph',
-        'backward-kill-sentence',
-        'backward-kill-word',
-        'beginning-of-buffer',
-        'beginning-of-buffer-extend-selection',
-        'beginning-of-line',
-        'beginning-of-line-extend-selection',
-
-        'capitalize-word',
-        'center-line',
-        'center-region',
-        'clean-all-blank-lines',
-        'clean-all-lines',
-        'clean-body',
-        'clean-lines',
-        'clear-kill-ring',
-        'clear-selected-text',
-        'convert-blanks',
-        'convert-tabs',
-        'copy-text',
-        'cut-text',
-
-        'delete-char',
-        'delete-comments',
-        'delete-indentation',
-        'delete-spaces',
-        'delete-word',
-        'delete-word-smart',
-        'downcase-region',
-        'downcase-word',
-
-        'end-of-buffer',
-        'end-of-buffer-extend-selection',
-        'end-of-line',
-        'end-of-line-extend-selection',
-
-        'exchange-point-mark',
-
-        'extend-to-line',
-        'extend-to-paragraph',
-        'extend-to-sentence',
-        'extend-to-word',
-
-        'fill-paragraph',
-        'fill-region',
-        'fill-region-as-paragraph',
-
-        'finish-of-line',
-        'finish-of-line-extend-selection',
-
-        'forward-char',
-        'forward-char-extend-selection',
-        'forward-end-word',
-        'forward-end-word-extend-selection',
-        'forward-page',
-        'forward-page-extend-selection',
-        'forward-paragraph',
-        'forward-paragraph-extend-selection',
-        'forward-sentence',
-        'forward-sentence-extend-selection',
-        'forward-word',
-        'forward-word-extend-selection',
-        'forward-word-smart',
-        'forward-word-smart-extend-selection',
-
-        'go-anywhere',
-        'go-back',
-        'go-forward',
-        'goto-char',
-
-        'indent-region',
-        'indent-relative',
-        'indent-rigidly',
-        'indent-to-comment-column',
-
-        'insert-hard-tab',
-        'insert-newline',
-        'insert-parentheses',
-        'insert-soft-tab',
-
-        'kill-line',
-        'kill-paragraph',
-        'kill-pylint',
-        'kill-region',
-        'kill-region-save',
-        'kill-sentence',
-        'kill-to-end-of-line',
-        'kill-word',
-        'kill-ws',
-
-        'match-brackets',
-
-        'move-lines-down',
-        'move-lines-up',
-        'move-past-close',
-        'move-past-close-extend-selection',
-
-        'newline-and-indent',
-        'next-line',
-        'next-line-extend-selection',
-        'next-or-end-of-line',
-        'next-or-end-of-line-extend-selection',
-
-        'previous-line',
-        'previous-line-extend-selection',
-        'previous-or-beginning-of-line',
-        'previous-or-beginning-of-line-extend-selection',
-
-        'rectangle-clear',
-        'rectangle-close',
-        'rectangle-delete',
-        'rectangle-kill',
-        'rectangle-open',
-        'rectangle-string',
-        'rectangle-yank',
-
-        'remove-blank-lines',
-        'remove-newlines',
-        'remove-space-from-lines',
-        'remove-tab-from-lines',
-
-        'reverse-region',
-        'reverse-sort-lines',
-        'reverse-sort-lines-ignoring-case',
-
-        'paste-text',
-        'pop-cursor',
-        'push-cursor',
-
-        'select-all',
-        'select-next-trace-statement',
-        'select-to-matching-bracket',
-
-        'sort-columns',
-        'sort-fields',
-        'sort-lines',
-        'sort-lines-ignoring-case',
-
-        'split-defs',
-        'split-line',
-
-        'start-of-line',
-        'start-of-line-extend-selection',
-
-        'tabify',
-        'transpose-chars',
-        'transpose-lines',
-        'transpose-words',
-
-        'unformat-paragraph',
-        'unindent-region',
-
-        'untabify',
-
-        'upcase-region',
-        'upcase-word',
-        'update-ref-file',
-
-        'yank',
-        'yank-pop',
-
-        'zap-to-character',
-
-    ]
-    bad.extend(bad_list)
-    result = list(sorted(bad))
-    return result
-
-def _good_commands(self):
-    """Defined commands that definitely should be included in leoInteg."""
-    good_list = [
-
-        'contract-all',
-        'contract-all-other-nodes',
-        'clone-node',
-        'copy-node',
-        'copy-marked-nodes',
-        'cut-node',
-
-        'de-hoist',
-        'delete-marked-nodes',
-        'delete-node',
-        'demangle-recent-files',
-        'demote',
-
-        'expand-and-go-right',
-        'expand-next-level',
-        'expand-node',
-        'expand-or-go-right',
-        'expand-prev-level',
-        'expand-to-level-1',
-        'expand-to-level-2',
-        'expand-to-level-3',
-        'expand-to-level-4',
-        'expand-to-level-5',
-        'expand-to-level-6',
-        'expand-to-level-7',
-        'expand-to-level-8',
-        'expand-to-level-9',
-        'expand-all',
-        'expand-all-subheads',
-        'expand-ancestors-only',
-
-        'find-next-clone',
-
-        'goto-first-node',
-        'goto-first-sibling',
-        'goto-first-visible-node',
-        'goto-last-node',
-        'goto-last-sibling',
-        'goto-last-visible-node',
-        'goto-next-changed',
-        'goto-next-clone',
-        'goto-next-marked',
-        'goto-next-node',
-        'goto-next-sibling',
-        'goto-next-visible',
-        'goto-parent',
-        'goto-prev-marked',
-        'goto-prev-node',
-        'goto-prev-sibling',
-        'goto-prev-visible',
-
-        'hoist',
-
-        'insert-node',
-        'insert-node-before',
-        'insert-as-first-child',
-        'insert-as-last-child',
-        'insert-child',
-
-        'mark',
-        'mark-changed-items',
-        'mark-first-parents',
-        'mark-subheads',
-
-        'move-marked-nodes',
-        'move-outline-down',
-        'move-outline-left',
-        'move-outline-right',
-        'move-outline-up',
-
-        'paste-node',
-        'paste-retaining-clones',
-        'promote',
-        'promote-bodies',
-        'promote-headlines',
-
-        'sort-children',
-        'sort-siblings',
-
-        'tangle',
-        'tangle-all',
-        'tangle-marked',
-
-        'unmark-all',
-        'unmark-first-parents',
-        'clean-main-spell-dict',
-        'clean-persistence',
-        'clean-recent-files',
-        'clean-spellpyx',
-        'clean-user-spell-dict',
-
-        'clear-all-caches',
-        'clear-all-hoists',
-        'clear-all-uas',
-        'clear-cache',
-        'clear-node-uas',
-        'clear-recent-files',
-
-        'delete-first-icon',
-        'delete-last-icon',
-        'delete-node-icons',
-
-        'dump-caches',
-        'dump-clone-parents',
-        'dump-expanded',
-        'dump-node',
-        'dump-outline',
-
-        'insert-icon',
-
-        'set-ua',
-
-        'show-all-uas',
-        'show-bindings',
-        'show-clone-ancestors',
-        'show-clone-parents',
-        # Export files...
-        'export-headlines',
-        'export-jupyter-notebook',
-        'outline-to-cweb',
-        'outline-to-noweb',
-        'remove-sentinels',
-        'typescript-to-py',
-
-        # Import files...
-        'import-MORE-files',
-        'import-file',
-        'import-free-mind-files',
-        'import-jupyter-notebook',
-        'import-legacy-external-files',
-        'import-mind-jet-files',
-        'import-tabbed-files',
-        'import-todo-text-files',
-        'import-zim-folder',
-
-        # Open specific files...
-        # 'ekr-projects',
-        'leo-cheat-sheet',  # These duplicates are useful.
-        'leo-dist-leo',
-        'leo-docs-leo',
-        'leo-plugins-leo',
-        'leo-py-leo',
-        'leo-quickstart-leo',
-        'leo-scripts-leo',
-        'leo-settings',
-        'leo-unittest-leo',
-        'my-leo-settings',
-        # 'scripts',
-        'settings',
-
-        'open-cheat-sheet-leo',
-        'open-desktop-integration-leo',
-        'open-leo-dist-leo',
-        'open-leo-docs-leo',
-        'open-leo-plugins-leo',
-        'open-leo-py-leo',
-        'open-leo-settings',
-        'open-leo-settings-leo',
-        'open-local-settings',
-        'open-my-leo-settings',
-        'open-my-leo-settings-leo',
-        'open-quickstart-leo',
-        'open-scripts-leo',
-        'open-unittest-leo',
-
-        # Open other places...
-        'open-offline-tutorial',
-        'open-online-home',
-        'open-online-toc',
-        'open-online-tutorials',
-        'open-online-videos',
-        'open-recent-file',
-        'open-theme-file',
-        'open-url',
-        'open-url-under-cursor',
-        'open-users-guide',
-
-        # Read outlines...
-        'read-at-auto-nodes',
-        'read-at-file-nodes',
-        'read-at-shadow-nodes',
-        'read-file-into-node',
-        'read-outline-only',
-        'read-ref-file',
-
-        # Save Files.
-        'file-save',
-        'file-save-as',
-        'file-save-as-unzipped',
-        'file-save-by-name',
-        'file-save-to',
-        'save',  # Some may not be needed.
-        'save-all',
-        'save-as',
-        'save-file',
-        'save-file-as',
-        'save-file-as-unzipped',
-        'save-file-as-zipped',
-        'save-file-by-name',
-        'save-file-to',
-        'save-to',
-
-        # Write parts of outlines...
-        'write-at-auto-nodes',
-        'write-at-file-nodes',
-        'write-at-shadow-nodes',
-        'write-dirty-at-auto-nodes',
-        'write-dirty-at-file-nodes',
-        'write-dirty-at-shadow-nodes',
-        'write-edited-recent-files',
-        'write-file-from-node',
-        'write-missing-at-file-nodes',
-        'write-outline-only',
-
-        'clone-find-all',
-        'clone-find-all-flattened',
-        'clone-find-all-flattened-marked',
-        'clone-find-all-marked',
-        'clone-find-parents',
-        'clone-find-tag',
-        'clone-marked-nodes',
-        'clone-node-to-last-node',
-        'clone-to-at-spot',
-
-        'edit-setting',
-        'edit-shortcut',
-
-        'execute-pytest',
-        'execute-script',
-        'extract',
-        'extract-names',
-
-        'goto-any-clone',
-        'goto-global-line',
-        'goto-line',
-        'git-diff', 'gd',
-
-        'log-kill-listener', 'kill-log-listener',
-        'log-listen', 'listen-to-log',
-
-        'make-stub-files',
-
-        'pdb',
-
-        'redo',
-        'rst3',
-        'run-all-unit-tests-externally',
-        'run-all-unit-tests-locally',
-        'run-marked-unit-tests-externally',
-        'run-marked-unit-tests-locally',
-        'run-selected-unit-tests-externally',
-        'run-selected-unit-tests-locally',
-        'run-tests',
-
-        'undo',
-
-        'xdb',
-        # Beautify, blacken, fstringify...
-        'beautify-files',
-        'beautify-files-diff',
-        'blacken-files',
-        'blacken-files-diff',
-        'diff-and-open-leo-files',
-        'diff-beautify-files',
-        'diff-fstringify-files',
-        'diff-leo-files',
-        'diff-marked-nodes',
-        'fstringify-files',
-        'fstringify-files-diff',
-        'fstringify-files-silent',
-        'pretty-print-c',
-        'silent-fstringify-files',
-
-        # All other commands...
-        'at-file-to-at-auto',
-
-        'beautify-c',
-
-        'cls',
-        'c-to-python',
-        'c-to-python-clean-docs',
-        'check-derived-file',
-        'check-outline',
-        'code-to-rst',
-        'compare-two-leo-files',
-        'convert-all-blanks',
-        'convert-all-tabs',
-        'count-children',
-        'count-pages',
-        'count-region',
-
-        'desktop-integration-leo',
-
-        'edit-recent-files',
-        'exit-leo',
-
-        'file-compare-two-leo-files',
-        'find-def',
-        'find-long-lines',
-        'find-missing-docstrings',
-        'flake8',
-        'flatten-outline',
-        'flatten-outline-to-node',
-        'flatten-script',
-
-        'gc-collect-garbage',
-        'gc-dump-all-objects',
-        'gc-dump-new-objects',
-        'gc-dump-objects-verbose',
-        'gc-show-summary',
-
-        'help',  # To do.
-        'help-for-abbreviations',
-        'help-for-autocompletion',
-        'help-for-bindings',
-        'help-for-command',
-        'help-for-creating-external-files',
-        'help-for-debugging-commands',
-        'help-for-drag-and-drop',
-        'help-for-dynamic-abbreviations',
-        'help-for-find-commands',
-        'help-for-keystroke',
-        'help-for-minibuffer',
-        'help-for-python',
-        'help-for-regular-expressions',
-        'help-for-scripting',
-        'help-for-settings',
-
-        'insert-body-time',  # ?
-        'insert-headline-time',
-        'insert-jupyter-toc',
-        'insert-markdown-toc',
-
-        'find-var',
-
-        'join-leo-irc',
-        'join-node-above',
-        'join-node-below',
-        'join-selection-to-node-below',
-
-        'move-lines-to-next-node',
-
-        'new',
-
-        'open-outline',
-
-        'parse-body',
-        'parse-json',
-        'pandoc',
-        'pandoc-with-preview',
-        'paste-as-template',
-
-        'print-body',
-        'print-cmd-docstrings',
-        'print-expanded-body',
-        'print-expanded-html',
-        'print-html',
-        'print-marked-bodies',
-        'print-marked-html',
-        'print-marked-nodes',
-        'print-node',
-        'print-sep',
-        'print-tree-bodies',
-        'print-tree-html',
-        'print-tree-nodes',
-        'print-window-state',
-
-        'pyflakes',
-        'pylint',
-        'pylint-kill',
-        'python-to-coffeescript',
-
-        'quit-leo',
-
-        'reformat-body',
-        'reformat-paragraph',
-        'refresh-from-disk',
-        'reload-all-settings',
-        'reload-settings',
-        'reload-style-sheets',
-        'revert',
-
-        'save-buffers-kill-leo',
-        'screen-capture-5sec',
-        'screen-capture-now',
-        'script-button',  # ?
-        'set-reference-file',
-        'show-style-sheet',
-        'sort-recent-files',
-        'sphinx',
-        'sphinx-with-preview',
-        'style-reload',  # ?
-
-        'untangle',
-        'untangle-all',
-        'untangle-marked',
-
-        'view-lossage',  # ?
-
-        'weave',
-
-        # Dubious commands (to do)...
-        'act-on-node',
-
-        'cfa',  # Do we need abbreviations?
-        'cfam',
-        'cff',
-        'cffm',
-        'cft',
-
-        'buffer-append-to',
-        'buffer-copy',
-        'buffer-insert',
-        'buffer-kill',
-        'buffer-prepend-to',
-        'buffer-switch-to',
-        'buffers-list',
-        'buffers-list-alphabetically',
-
-        'chapter-back',
-        'chapter-next',
-        'chapter-select',
-        'chapter-select-main',
-        'create-def-list',  # ?
-    ]
-    return good_list
-
-def _getDocstringForCommand(self, command_name):
-    """get docstring for the given command."""
-    func = self._get_commander_method(command_name)
-    docstring = func.__doc__ if func else ''
-    return docstring
-
-def setActionId(self, p_id):
-    self.currentActionId = p_id
-
-async def asyncOutput(self, p_json):
-    '''Output json string to the websocket'''
-    if self.webSocket:
-        await self.webSocket.send(p_json)
-    else:
-        print("websocket not ready yet")
-
-def sendLeoBridgePackage(self, p_key=False, p_any=None):
-    w_package = {"id": self.currentActionId}
-    if p_key:
-        w_package[p_key] = p_any  # add [key]?:any
-    return(json.dumps(w_package, separators=(',', ':')))  # send as json
-    # await self.webSocket.send(json.dumps(w_package, separators=(',', ':')))  # send as json
-
-def _outputError(self, p_message="Unknown Error"):
-    print("ERROR: " + p_message)  # Output to this server's running console
-    w_package = {"id": self.currentActionId}
-    w_package["error"] = p_message
-    return p_message
-
-def _outputBodyData(self, p_bodyText=""):
-    return self.sendLeoBridgePackage("bodyData", p_bodyText)
-
-def _outputPNode(self, p_node=False):
-    if p_node:
-        return self.sendLeoBridgePackage("node", self._p_to_ap(p_node))  # Single node, singular
-    else:
-        return self.sendLeoBridgePackage("node", None)
-
-def _outputPNodes(self, p_pList):
-    w_apList = []
-    for p in p_pList:
-        w_apList.append(self._p_to_ap(p))
-    return self.sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
-
-def markPNode(self, p_package):
-    '''Mark a node, don't select it'''
-    w_ap = p_package["node"]
-    if w_ap:
-        w_p = self._ap_to_p(w_ap)
-        if w_p:
-            w_p.setMarked()
-            return self._outputPNode(self.commander.p)  # return selected node when done (not w_p)
-        else:
-            return self._outputError("Error in markPNode no w_p node found")
-    else:
-        return self._outputError("Error in markPNode no param node")
-
-def unmarkPNode(self, p_package):
-    '''Unmark a node, don't select it'''
-    w_ap = p_package["node"]
-    if w_ap:
-        w_p = self._ap_to_p(w_ap)
-        if w_p:
-            w_p.clearMarked()
-            return self._outputPNode(self.commander.p)  # return selected node when done (not w_p)
-        else:
-            return self._outputError("Error in unmarkPNode no w_p node found")
-    else:
-        return self._outputError("Error in unmarkPNode no param node")
-
-def clonePNode(self, p_package):
-    '''Clone a node, return it, if it was also the current selection, otherwise try not to select it'''
-    w_ap = p_package["node"]
-    if not w_ap:
-        return self._outputError("Error in clonePNode function, no param p_ap")
-    w_p = self._ap_to_p(w_ap)
-    if not w_p:
-        return self._outputError("Error in clonePNode function, no w_p node found")  # default empty
-    if w_p == self.commander.p:
-        self.commander.clone()
-    else:
-        oldPosition = self.commander.p
-        self.commander.selectPosition(w_p)
-        self.commander.clone()
-        if self.commander.positionExists(oldPosition):
-            self.commander.selectPosition(oldPosition)
-    return self._outputPNode(self.commander.p)  # return selected node either ways
-
-def cutPNode(self, p_package):
-    '''Cut a node, don't select it. Try to keep selection, then return the selected node that remains'''
-    w_ap = p_package["node"]
-    if w_ap:
-        w_p = self._ap_to_p(w_ap)
-        if w_p:
-            if w_p == self.commander.p:
-                self.commander.cutOutline()  # already on this node, so cut it
-            else:
-                oldPosition = self.commander.p  # not same node, save position to possibly return to
-                self.commander.selectPosition(w_p)
-                self.commander.cutOutline()
-                if self.commander.positionExists(oldPosition):
-                    self.commander.selectPosition(oldPosition)  # select if old position still valid
-                else:
-                    oldPosition._childIndex = oldPosition._childIndex-1
-                    # Try again with childIndex decremented
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
-            return self._outputPNode(self.commander.p)  # in both cases, return selected node
-        else:
-            return self._outputError("Error in cutPNode no w_p node found")  # default empty
-    else:
-        return self._outputError("Error in cutPNode no param node")
-
-def deletePNode(self, p_package):
-    '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
-    w_ap = p_package["node"]
-    if w_ap:
-        w_p = self._ap_to_p(w_ap)
-        if w_p:
-            if w_p == self.commander.p:
-                self.commander.deleteOutline()  # already on this node, so delete it
-            else:
-                oldPosition = self.commander.p  # not same node, save position to possibly return to
-                self.commander.selectPosition(w_p)
-                self.commander.deleteOutline()
-                if self.commander.positionExists(oldPosition):
-                    self.commander.selectPosition(oldPosition)  # select if old position still valid
-                else:
-                    oldPosition._childIndex = oldPosition._childIndex-1
-                    # Try again with childIndex decremented
-                    if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
-            return self._outputPNode(self.commander.p)  # in both cases, return selected node
-        else:
-            return self._outputError("Error in deletePNode no w_p node found")  # default empty
-    else:
-        return self._outputError("Error in deletePNode no param node")
-
-def insertPNode(self, p_package):
-    '''Insert a node at given node, then select it once created, and finally return it'''
-    w_ap = p_package["node"]
-    if w_ap:
-        w_p = self._ap_to_p(w_ap)
-        if w_p:
-            w_bunch = self.commander.undoer.beforeInsertNode(w_p)
-            w_newNode = w_p.insertAfter()
-            w_newNode.setDirty()
-            self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_bunch)
-            self.commander.selectPosition(w_newNode)
-            return self._outputPNode(self.commander.p)  # in both cases, return selected node
-        else:
-            return self._outputError("Error in insertPNode no w_p node found")  # default empty
-    else:
-        return self._outputError("Error in insertPNode no param node")
-
-def insertNamedPNode(self, p_package):
-    '''Insert a node at given node, set its headline, select it and finally return it'''
-    w_newHeadline = p_package['text']
-    w_ap = p_package['node']
-    if w_ap:
-        w_p = self._ap_to_p(w_ap)
-        if w_p:
-            w_u = self.commander.undoer.beforeInsertNode(w_p)
-            w_newNode = w_p.insertAfter()
-            # set this node's new headline
-            w_newNode.h = w_newHeadline
-            w_newNode.setDirty()
-            self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_u)
-            self.commander.selectPosition(w_newNode)
-            return self._outputPNode(self.commander.p)  # in any case, return selected node
-        else:
-            return self._outputError("Error in insertNamedPNode no w_p node found")  # default empty
-    else:
-        return self._outputError("Error in insertNamedPNode no param node")
-
-def undo(self, p_paramUnused):
-    '''Undo last un-doable operation'''
-    if self.commander.undoer.canUndo():
-        self.commander.undoer.undo()
-    return self._outputPNode(self.commander.p)  # return selected node when done
-
-def redo(self, p_paramUnused):
-    '''Undo last un-doable operation'''
-    if self.commander.undoer.canRedo():
-        self.commander.undoer.redo()
-    return self._outputPNode(self.commander.p)  # return selected node when done
-
-def executeScriptPackage(self, p_package):
-    '''Select a node and run its script'''
-    c, g = self.commander, self.g
-    if not 'node' in p_package:
-        return self._outputError("Error in executeScript no param node")
-    w_ap = p_package['node']
-    w_p = self._ap_to_p(w_ap)
-    if not w_p:
-        return self._outputError("Error in executeScript no w_p node found")
-    c.selectPosition(w_p)
-    w_script = ""
-    if 'text' in p_package:
-        w_script = str(p_package['text'])
-    if not w_script or w_script.isspace():
-        # Empty selection.
-        c.executeScript()
-        return self._outputPNode(self.commander.p)
-    # * Mimic getScript !!
-    try:
-        # Remove extra leading whitespace so the user may execute indented code.
-        w_script = g.removeExtraLws(w_script, c.tab_width)
-        w_script = g.extractExecutableString(c, w_p, w_script)
-        w_validScript = g.composeScript(
-            c, w_p, w_script, forcePythonSentinels=True, useSentinels=True)
-        c.executeScript(script=w_validScript)
-    except Exception as e:
-        g.trace('Error while executing script')
-        print('Error while executing script')
-        print(str(e))
-    return self._outputPNode(self.commander.p)
 
 </t>
 <t tx="felix.20200219222712.1">def es(self, * args, **keys):
@@ -6901,9 +5436,6 @@ def executeScriptPackage(self, p_package):
     self.leoIntegConfig = p_config
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
-</t>
-<t tx="felix.20200329000454.1">
-def _yieldAllRootChildren(self):
 </t>
 <t tx="felix.20200619165641.1">def getStates(self, p_package):
     """
@@ -10036,9 +8568,9 @@ export function isHexColor(p_hexString: string): boolean {
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
-### Break your code down into sections structured as an outline, to derive or parse back your files
+### Break your code down into sections structured as an outline, to derive or parse back your files 
 
-&gt; Leo is a fundamentally different way of using and organizing data, programs and scripts.
+&gt; Leo is a fundamentally different way of using and organizing data, programs and scripts. [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4)
 
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
 or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.visualstudio.com](https://code.visualstudio.com/).
@@ -10087,6 +8619,10 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 
 </t>
 <t tx="felix.20200718222026.1">## Development version installation
+
+[Video tutorial of installation and startup](https://www.youtube.com/watch?v=rutt11xL54I):
+
+[![Installation and startup video](https://img.youtube.com/vi/rutt11xL54I/0.jpg)](https://www.youtube.com/watch?v=rutt11xL54I)
 
 In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's next release), make sure you have Node.js and Git installed, then clone the sources and run `npm install` in a terminal to install the remaining development dependencies.
 
@@ -10338,7 +8874,11 @@ _Note: This editable body panel does not affect Leo file yet._
 </t>
 <t tx="felix.20200718222731.1">## Introduction
 
-If you're new to vscode and want to try out Leo with this vscode extension, you might want to look at this [Getting Started](https://code.visualstudio.com/docs#vscode-in-action) page to get an overview.
+[Video tutorial of installation and startup](https://www.youtube.com/watch?v=rutt11xL54I):
+
+[![Installation and startup video](https://img.youtube.com/vi/rutt11xL54I/0.jpg)](https://www.youtube.com/watch?v=rutt11xL54I)
+
+If you're new to vscode and want to try out Leo with this vscode extension, you might want to look at this [Getting Started](https://code.visualstudio.com/docs#vscode-in-action) page to get an overview of vscode.
 
 Furthermore, if you've never ran a vscode extension in an **Extension Development Host**, here is a [short overview about running and modifying a simple extension](https://code.visualstudio.com/api/get-started/your-first-extension).
 
@@ -11953,5 +10493,1532 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 <t tx="felix.20200719031802.1"></t>
 <t tx="felix.20200719033306.1"></t>
 <t tx="felix.20200719033511.1"></t>
+<t tx="felix.20200924205439.1">def _get_commander_method(self, p_command):
+    """ Return the given method (p_command) in the Commands class or subcommanders."""
+    # self.g.trace(p_command)
+    #
+    # First, try the commands class.
+    w_func = getattr(self.commander, p_command, None)
+    if w_func:
+        return w_func
+    #
+    # Search all subcommanders for the method.
+    table = (  # This table comes from c.initObjectIvars.
+        'abbrevCommands',
+        'bufferCommands',
+        'chapterCommands',
+        'controlCommands',
+        'convertCommands',
+        'debugCommands',
+        'editCommands',
+        'editFileCommands',
+        'evalController',
+        'gotoCommands',
+        'helpCommands',
+        'keyHandler',
+        'keyHandlerCommands',
+        'killBufferCommands',
+        'leoCommands',
+        'leoTestManager',
+        'macroCommands',
+        'miniBufferWidget',
+        'printingController',
+        'queryReplaceCommands',
+        'rectangleCommands',
+        'searchCommands',
+        'spellCommands',
+        'vimCommands',  # Not likely to be useful.
+    )
+    for ivar in table:
+        subcommander = getattr(self.commander, ivar, None)
+        if subcommander:
+            w_func = getattr(subcommander, p_command, None)
+            if w_func:
+                ### self.g.trace(f"Found c.{ivar}.{p_command}")
+                return w_func
+        # else:
+            # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
+    return None
+
+</t>
+<t tx="felix.20200924205503.1">def leoCommand(self, p_command, p_package):
+    '''
+    Generic call to a method in Leo's Commands class or any subcommander class.
+
+    The p_ap position node is to be selected before having the command run,
+    while the p_keepSelection parameter specifies wether the original position should be re-selected.
+    The whole of those operations is to be undoable as one undo step.
+
+    p_command: a method name (a string).
+    p_ap: an archived position.
+    p_keepSelection: preserve the current selection, if possible.
+    '''
+    w_keepSelection = False  # Set default, optional component of package
+    if "keep" in p_package:
+        w_keepSelection = p_package["keep"]
+        print("have keep! " + str(w_keepSelection))
+    else:
+        print("NO keep!")
+
+    w_ap = p_package["node"]  # At least node parameter is present
+    if not w_ap:
+        return self._outputError(f"Error in {p_command}: no param node")
+    w_p = self._ap_to_p(w_ap)
+    if not w_p:
+        return self._outputError(f"Error in {p_command}: no w_p node found")
+    w_func = self._get_commander_method(p_command)
+    if not w_func:
+        return self._outputError(f"Error in {p_command}: no method found")
+
+    if w_p == self.commander.p:
+        w_func(event=None)
+    else:
+        oldPosition = self.commander.p
+        self.commander.selectPosition(w_p)
+        w_func(event=None)
+        if w_keepSelection and self.commander.positionExists(oldPosition):
+            self.commander.selectPosition(oldPosition)
+    return self._outputPNode(self.commander.p)
+
+</t>
+<t tx="felix.20200924205915.1">def openFiles(self, p_package):
+    """
+    Opens an array of leo files
+    Returns an object that contains the last 'opened' member.
+    """
+    w_files = []
+    if "files" in p_package:
+        w_files = p_package["files"]
+
+    for i_file in w_files:
+        w_found = False
+        # If not empty string (asking for New file) then check if already opened
+        if i_file:
+            for w_commander in self.g.app.commanders():
+                if w_commander.fileName() == i_file:
+                    w_found = True
+                    self.commander = w_commander
+
+        if not w_found:
+            if os.path.isfile(i_file):
+                self.commander = self.bridge.openLeoFile(i_file)  # create self.commander
+        if self.commander:
+            self.commander.closed = False
+
+    # Done with the last one, it's now the selected commander. Check again just in case.
+    if self.commander:
+        self.commander.closed = False
+        self._create_gnx_to_vnode()
+        w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
+                    "node": self._p_to_ap(self.commander.p)}
+        return self.sendLeoBridgePackage("opened", w_result)
+    else:
+        return self._outputError('Error in openFiles')
+
+</t>
+<t tx="felix.20200924210020.1">def getButtons(self, p_package):
+    '''Gets the currently opened file's @buttons list'''
+    w_buttons = []
+    if self.commander and self.commander.theScriptingController and self.commander.theScriptingController.buttonsDict:
+        w_dict = self.commander.theScriptingController.buttonsDict
+        for w_key in w_dict:
+            w_entry = {"name": w_dict[w_key], "index": str(w_key)}
+            w_buttons.append(w_entry)
+    return self.sendLeoBridgePackage("buttons", w_buttons)
+
+</t>
+<t tx="felix.20200924210024.1">def removeButton(self, p_package):
+    '''Removes an entry from the buttonsDict by index string'''
+    w_index = p_package['index']
+    w_dict = self.commander.theScriptingController.buttonsDict
+    w_key = None
+    for i_key in w_dict:
+        if(str(i_key) == w_index):
+            w_key = i_key
+    if w_key:
+        del(w_dict[w_key])  # delete object member
+    return self._outputPNode(self.commander.p)  # return selected node when done
+
+</t>
+<t tx="felix.20200924210029.1">def clickButton(self, p_package):
+    '''Handles buttons clicked in client from the '@button' panel'''
+    w_index = p_package['index']
+    w_dict = self.commander.theScriptingController.buttonsDict
+    w_button = None
+    for i_key in w_dict:
+        if(str(i_key) == w_index):
+            w_button = i_key
+    if w_button:
+        w_button.command()  # run clicked button command
+    return self._outputPNode(self.commander.p)  # return selected node when done
+
+</t>
+<t tx="felix.20200924210036.1">def getCommands(self, p_package):
+    """Return a list of all Leo commands that make sense in leoInteg."""
+    c = self.commander
+    d = c.commandsDict  # keys are command names, values are functions.
+    bad_names = self._bad_commands()  # #92.
+    good_names = self._good_commands()
+    duplicates = set(bad_names).intersection(set(good_names))
+    if duplicates:
+        print('duplicate command names...')
+        for z in sorted(duplicates):
+            print(z)
+    result = []
+    for command_name in sorted(d):
+        func = d.get(command_name)
+        if not func:
+            print('no func:', command_name, flush=True)
+            continue
+        if command_name in bad_names:  # #92.
+            continue
+        # Prefer func.__func_name__ to func.__name__: Leo's decorators change func.__name__!
+        func_name = getattr(func, '__func_name__', func.__name__)
+        if not func_name:
+            print('no name', command_name, flush=True)
+            continue
+        doc = func.__doc__ or ''
+        result.append({
+            "label": command_name,
+            "func":  func_name,
+            "detail": doc,
+        })
+        # This shows up in the bridge log.
+        # print(f"__doc__: {len(doc):4} {command_name:40} {func_name} ", flush=True)
+        # print(f"{func_name} ", flush=True)
+
+    return self.sendLeoBridgePackage("commands", result)
+
+</t>
+<t tx="felix.20200924210058.1">def _bad_commands(self):
+    """Return the list of Leo's command names that leoInteg should ignore."""
+    c = self.commander
+    bad = []
+    d = c.commandsDict  # keys are command names, values are functions.
+    #
+    # First, remove @button, @command and vim commands.
+    for command_name in sorted(d):
+        if command_name.startswith((':', '@')):
+            # print('ignore', command_name)
+            bad.append(command_name)
+    # Second, remove other commands.
+    # This is a hand-curated list.
+    bad_list = [
+
+        # Abbreviations...
+        'abbrev-kill-all',
+        'abbrev-list',
+        'dabbrev-completion',
+        'dabbrev-expands',
+
+        # Autocompletion...
+        'auto-complete',
+        'auto-complete-force',
+        'disable-autocompleter',
+        'disable-calltips',
+        'enable-autocompleter',
+        'enable-calltips',
+
+        # Debugger...
+        'debug',
+        'db-again',
+        'db-b',
+        'db-c',
+        'db-h',
+        'db-input',
+        'db-l',
+        'db-n',
+        'db-q',
+        'db-r',
+        'db-s',
+        'db-status',
+        'db-w',
+
+        # File operations...
+        'directory-make',
+        'directory-remove',
+        'file-delete',
+        'file-diff-files',
+        'file-insert',
+        'file-new',
+        'file-open-by-name',
+
+        # All others...
+        'shell-command',
+        'shell-command-on-region',
+        'cheat-sheet',
+        'dehoist',  # Duplicates of de-hoist.
+        'find-clone-all',
+        'find-clone-all-flattened',
+        'find-clone-tag',
+        'find-all',
+        'find-all-unique-regex',
+        'find-character',
+        'find-character-extend-selection',
+        'find-next',
+        'find-prev',
+        'find-word',
+        'find-word-in-line',
+
+        'global-search',
+
+        'isearch-backward',
+        'isearch-backward-regexp',
+        'isearch-forward',
+        'isearch-forward-regexp',
+        'isearch-with-present-options',
+
+        'replace',
+        'replace-all',
+        'replace-current-character',
+        'replace-then-find',
+
+        're-search-backward',
+        're-search-forward',
+
+        'search-backward',
+        'search-forward',
+        'search-return-to-origin',
+
+        'set-find-everywhere',
+        'set-find-node-only',
+        'set-find-suboutline-only',
+        'set-replace-string',
+        'set-search-string',
+
+        'show-find-options',
+
+        'start-search',
+
+        'toggle-find-collapses-nodes',
+        'toggle-find-ignore-case-option',
+        'toggle-find-in-body-option',
+        'toggle-find-in-headline-option',
+        'toggle-find-mark-changes-option',
+        'toggle-find-mark-finds-option',
+        'toggle-find-regex-option',
+        'toggle-find-word-option',
+        'toggle-find-wrap-around-option',
+
+        'word-search-backward',
+        'word-search-forward',
+
+        # Buttons...
+        'delete-script-button-button',
+
+        # Clicks...
+        'click-click-box',
+        'click-icon-box',
+        'ctrl-click-at-cursor',
+        'ctrl-click-icon',
+        'double-click-icon-box',
+        'right-click-icon',
+
+        # Editors...
+        'add-editor', 'editor-add',
+        'delete-editor', 'editor-delete',
+        'detach-editor-toggle',
+        'detach-editor-toggle-max',
+
+        # Focus...
+        'cycle-editor-focus', 'editor-cycle-focus',
+        'focus-to-body',
+        'focus-to-find',
+        'focus-to-log',
+        'focus-to-minibuffer',
+        'focus-to-nav',
+        'focus-to-spell-tab',
+        'focus-to-tree',
+
+        'tab-cycle-next',
+        'tab-cycle-previous',
+        'tab-detach',
+
+        # Headlines..
+        'abort-edit-headline',
+        'edit-headline',
+        'end-edit-headline',
+
+        # Layout and panes...
+        'adoc',
+        'adoc-with-preview',
+
+        'contract-body-pane',
+        'contract-log-pane',
+        'contract-outline-pane',
+
+        'edit-pane-csv',
+        'edit-pane-test-open',
+        'equal-sized-panes',
+        'expand-log-pane',
+        'expand-body-pane',
+        'expand-outline-pane',
+
+        'free-layout-context-menu',
+        'free-layout-load',
+        'free-layout-restore',
+        'free-layout-zoom',
+
+        'zoom-in',
+        'zoom-out'
+
+        # Log
+        'clear-log',
+
+        # Menus...
+        'activate-cmds-menu',
+        'activate-edit-menu',
+        'activate-file-menu',
+        'activate-help-menu',
+        'activate-outline-menu',
+        'activate-plugins-menu',
+        'activate-window-menu',
+        'context-menu-open',
+        'menu-shortcut',
+
+        # Modes...
+        'clear-extend-mode',
+
+        # Outline...
+        'contract-or-go-left',
+        'contract-node',
+        'contract-parent',
+
+        # Scrolling...
+        'scroll-down-half-page',
+        'scroll-down-line',
+        'scroll-down-page',
+        'scroll-outline-down-line',
+        'scroll-outline-down-page',
+        'scroll-outline-left',
+        'scroll-outline-right',
+        'scroll-outline-up-line',
+        'scroll-outline-up-page',
+        'scroll-up-half-page',
+        'scroll-up-line',
+        'scroll-up-page',
+
+        # Windows...
+        'about-leo',
+
+        'cascade-windows',
+        'close-others',
+        'close-window',
+
+        'iconify-frame',
+
+        'find-tab-hide',
+        'find-tab-open',
+
+        'hide-body-dock',
+        'hide-body-pane',
+        'hide-invisibles',
+        'hide-log-pane',
+        'hide-outline-dock',
+        'hide-outline-pane',
+        'hide-tabs-dock',
+
+        'minimize-all',
+
+        'resize-to-screen',
+
+        'show-body-dock',
+        'show-hide-body-dock',
+        'show-hide-outline-dock',
+        'show-hide-render-dock',
+        'show-hide-tabs-dock',
+        'show-tabs-dock',
+        'clean-diff',
+        'cm-external-editor',
+
+        'delete-@button-parse-json-button',
+        'delete-trace-statements',
+
+        'disable-idle-time-events',
+        'do-nothing',
+
+        'enable-idle-time-events',
+        'enter-quick-command-mode',
+        'exit-named-mode',
+
+        'F6-open-console',
+
+        'flush-lines',
+        'full-command',
+
+        'get-child-headlines',
+
+        'history',
+
+        'insert-file-name',
+
+        'justify-toggle-auto',
+
+        'keep-lines',
+        'keyboard-quit',
+
+        'line-number',
+        'line-numbering-toggle',
+        'line-to-headline',
+
+        'marked-list',
+
+        'mode-help',
+
+        'open-python-window',
+
+        'open-with-idle',
+        'open-with-open-office',
+        'open-with-scite',
+        'open-with-word',
+
+        'recolor',
+        'redraw',
+
+        'repeat-complex-command',
+
+        'session-clear',
+        'session-create',
+        'session-refresh',
+        'session-restore',
+        'session-snapshot-load',
+        'session-snapshot-save',
+
+        'set-colors',
+        'set-command-state',
+        'set-comment-column',
+        'set-extend-mode',
+        'set-fill-column',
+        'set-fill-prefix',
+        'set-font',
+        'set-insert-state',
+        'set-overwrite-state',
+        'set-silent-mode',
+
+        'show-buttons',
+        'show-calltips',
+        'show-calltips-force',
+        'show-color-names',
+        'show-color-wheel',
+        'show-commands',
+        'show-file-line',
+
+        'show-focus',
+        'show-fonts',
+
+        'show-invisibles',
+        'show-next-tip',
+        'show-node-uas',
+        'show-outline-dock',
+        'show-plugin-handlers',
+        'show-plugins-info',
+        'show-settings',
+        'show-settings-outline',
+        'show-spell-info',
+        'show-stats',
+
+        'style-set-selected',
+
+        'suspend',
+
+        'toggle-abbrev-mode',
+        'toggle-active-pane',
+        'toggle-angle-brackets',
+        'toggle-at-auto-at-edit',
+        'toggle-autocompleter',
+        'toggle-calltips',
+        'toggle-case-region',
+        'toggle-extend-mode',
+        'toggle-idle-time-events',
+        'toggle-input-state',
+        'toggle-invisibles',
+        'toggle-line-numbering-root',
+        'toggle-sparse-move',
+        'toggle-split-direction',
+
+        'what-line',
+        'eval',
+        'eval-block',
+        'eval-last',
+        'eval-last-pretty',
+        'eval-replace',
+
+        'find-quick',
+        'find-quick-changed',
+        'find-quick-selected',
+        'find-quick-test-failures',
+        'find-quick-timeline',
+
+        'goto-next-history-node',
+        'goto-prev-history-node',
+
+        'preview',
+        'preview-body',
+        'preview-expanded-body',
+        'preview-expanded-html',
+        'preview-html',
+        'preview-marked-bodies',
+        'preview-marked-html',
+        'preview-marked-nodes',
+        'preview-node',
+        'preview-tree-bodies',
+        'preview-tree-html',
+        'preview-tree-nodes',
+
+        'spell-add',
+        'spell-as-you-type-next',
+        'spell-as-you-type-toggle',
+        'spell-as-you-type-undo',
+        'spell-as-you-type-wrap',
+        'spell-change',
+        'spell-change-then-find',
+        'spell-find',
+        'spell-ignore',
+        'spell-tab-hide',
+        'spell-tab-open',
+
+        'tag-children',
+
+        'todo-children-todo',
+        'todo-dec-pri',
+        'todo-find-todo',
+        'todo-fix-datetime',
+        'todo-inc-pri',
+
+        'vr',
+        'vr-contract',
+        'vr-expand',
+        'vr-hide',
+        'vr-lock',
+        'vr-pause-play-movie',
+        'vr-show',
+        'vr-toggle',
+        'vr-unlock',
+        'vr-update',
+        'vr-zoom',
+
+        'vs-create-tree',
+        'vs-dump',
+        'vs-reset',
+        'vs-update',
+        # vs code's text editing commands should cover all of these...
+        'add-comments',
+        'add-space-to-lines',
+        'add-tab-to-lines',
+        'align-eq-signs',
+
+        'back-char',
+        'back-char-extend-selection',
+        'back-page',
+        'back-page-extend-selection',
+        'back-paragraph',
+        'back-paragraph-extend-selection',
+        'back-sentence',
+        'back-sentence-extend-selection',
+        'back-to-home',
+        'back-to-home-extend-selection',
+        'back-to-indentation',
+        'back-word',
+        'back-word-extend-selection',
+        'back-word-smart',
+        'back-word-smart-extend-selection',
+        'backward-delete-char',
+        'backward-delete-word',
+        'backward-delete-word-smart',
+        'backward-find-character',
+        'backward-find-character-extend-selection',
+        'backward-kill-paragraph',
+        'backward-kill-sentence',
+        'backward-kill-word',
+        'beginning-of-buffer',
+        'beginning-of-buffer-extend-selection',
+        'beginning-of-line',
+        'beginning-of-line-extend-selection',
+
+        'capitalize-word',
+        'center-line',
+        'center-region',
+        'clean-all-blank-lines',
+        'clean-all-lines',
+        'clean-body',
+        'clean-lines',
+        'clear-kill-ring',
+        'clear-selected-text',
+        'convert-blanks',
+        'convert-tabs',
+        'copy-text',
+        'cut-text',
+
+        'delete-char',
+        'delete-comments',
+        'delete-indentation',
+        'delete-spaces',
+        'delete-word',
+        'delete-word-smart',
+        'downcase-region',
+        'downcase-word',
+
+        'end-of-buffer',
+        'end-of-buffer-extend-selection',
+        'end-of-line',
+        'end-of-line-extend-selection',
+
+        'exchange-point-mark',
+
+        'extend-to-line',
+        'extend-to-paragraph',
+        'extend-to-sentence',
+        'extend-to-word',
+
+        'fill-paragraph',
+        'fill-region',
+        'fill-region-as-paragraph',
+
+        'finish-of-line',
+        'finish-of-line-extend-selection',
+
+        'forward-char',
+        'forward-char-extend-selection',
+        'forward-end-word',
+        'forward-end-word-extend-selection',
+        'forward-page',
+        'forward-page-extend-selection',
+        'forward-paragraph',
+        'forward-paragraph-extend-selection',
+        'forward-sentence',
+        'forward-sentence-extend-selection',
+        'forward-word',
+        'forward-word-extend-selection',
+        'forward-word-smart',
+        'forward-word-smart-extend-selection',
+
+        'go-anywhere',
+        'go-back',
+        'go-forward',
+        'goto-char',
+
+        'indent-region',
+        'indent-relative',
+        'indent-rigidly',
+        'indent-to-comment-column',
+
+        'insert-hard-tab',
+        'insert-newline',
+        'insert-parentheses',
+        'insert-soft-tab',
+
+        'kill-line',
+        'kill-paragraph',
+        'kill-pylint',
+        'kill-region',
+        'kill-region-save',
+        'kill-sentence',
+        'kill-to-end-of-line',
+        'kill-word',
+        'kill-ws',
+
+        'match-brackets',
+
+        'move-lines-down',
+        'move-lines-up',
+        'move-past-close',
+        'move-past-close-extend-selection',
+
+        'newline-and-indent',
+        'next-line',
+        'next-line-extend-selection',
+        'next-or-end-of-line',
+        'next-or-end-of-line-extend-selection',
+
+        'previous-line',
+        'previous-line-extend-selection',
+        'previous-or-beginning-of-line',
+        'previous-or-beginning-of-line-extend-selection',
+
+        'rectangle-clear',
+        'rectangle-close',
+        'rectangle-delete',
+        'rectangle-kill',
+        'rectangle-open',
+        'rectangle-string',
+        'rectangle-yank',
+
+        'remove-blank-lines',
+        'remove-newlines',
+        'remove-space-from-lines',
+        'remove-tab-from-lines',
+
+        'reverse-region',
+        'reverse-sort-lines',
+        'reverse-sort-lines-ignoring-case',
+
+        'paste-text',
+        'pop-cursor',
+        'push-cursor',
+
+        'select-all',
+        'select-next-trace-statement',
+        'select-to-matching-bracket',
+
+        'sort-columns',
+        'sort-fields',
+        'sort-lines',
+        'sort-lines-ignoring-case',
+
+        'split-defs',
+        'split-line',
+
+        'start-of-line',
+        'start-of-line-extend-selection',
+
+        'tabify',
+        'transpose-chars',
+        'transpose-lines',
+        'transpose-words',
+
+        'unformat-paragraph',
+        'unindent-region',
+
+        'untabify',
+
+        'upcase-region',
+        'upcase-word',
+        'update-ref-file',
+
+        'yank',
+        'yank-pop',
+
+        'zap-to-character',
+
+    ]
+    bad.extend(bad_list)
+    result = list(sorted(bad))
+    return result
+
+</t>
+<t tx="felix.20200924210112.1">def _good_commands(self):
+    """Defined commands that definitely should be included in leoInteg."""
+    good_list = [
+
+        'contract-all',
+        'contract-all-other-nodes',
+        'clone-node',
+        'copy-node',
+        'copy-marked-nodes',
+        'cut-node',
+
+        'de-hoist',
+        'delete-marked-nodes',
+        'delete-node',
+        'demangle-recent-files',
+        'demote',
+
+        'expand-and-go-right',
+        'expand-next-level',
+        'expand-node',
+        'expand-or-go-right',
+        'expand-prev-level',
+        'expand-to-level-1',
+        'expand-to-level-2',
+        'expand-to-level-3',
+        'expand-to-level-4',
+        'expand-to-level-5',
+        'expand-to-level-6',
+        'expand-to-level-7',
+        'expand-to-level-8',
+        'expand-to-level-9',
+        'expand-all',
+        'expand-all-subheads',
+        'expand-ancestors-only',
+
+        'find-next-clone',
+
+        'goto-first-node',
+        'goto-first-sibling',
+        'goto-first-visible-node',
+        'goto-last-node',
+        'goto-last-sibling',
+        'goto-last-visible-node',
+        'goto-next-changed',
+        'goto-next-clone',
+        'goto-next-marked',
+        'goto-next-node',
+        'goto-next-sibling',
+        'goto-next-visible',
+        'goto-parent',
+        'goto-prev-marked',
+        'goto-prev-node',
+        'goto-prev-sibling',
+        'goto-prev-visible',
+
+        'hoist',
+
+        'insert-node',
+        'insert-node-before',
+        'insert-as-first-child',
+        'insert-as-last-child',
+        'insert-child',
+
+        'mark',
+        'mark-changed-items',
+        'mark-first-parents',
+        'mark-subheads',
+
+        'move-marked-nodes',
+        'move-outline-down',
+        'move-outline-left',
+        'move-outline-right',
+        'move-outline-up',
+
+        'paste-node',
+        'paste-retaining-clones',
+        'promote',
+        'promote-bodies',
+        'promote-headlines',
+
+        'sort-children',
+        'sort-siblings',
+
+        'tangle',
+        'tangle-all',
+        'tangle-marked',
+
+        'unmark-all',
+        'unmark-first-parents',
+        'clean-main-spell-dict',
+        'clean-persistence',
+        'clean-recent-files',
+        'clean-spellpyx',
+        'clean-user-spell-dict',
+
+        'clear-all-caches',
+        'clear-all-hoists',
+        'clear-all-uas',
+        'clear-cache',
+        'clear-node-uas',
+        'clear-recent-files',
+
+        'delete-first-icon',
+        'delete-last-icon',
+        'delete-node-icons',
+
+        'dump-caches',
+        'dump-clone-parents',
+        'dump-expanded',
+        'dump-node',
+        'dump-outline',
+
+        'insert-icon',
+
+        'set-ua',
+
+        'show-all-uas',
+        'show-bindings',
+        'show-clone-ancestors',
+        'show-clone-parents',
+        # Export files...
+        'export-headlines',
+        'export-jupyter-notebook',
+        'outline-to-cweb',
+        'outline-to-noweb',
+        'remove-sentinels',
+        'typescript-to-py',
+
+        # Import files...
+        'import-MORE-files',
+        'import-file',
+        'import-free-mind-files',
+        'import-jupyter-notebook',
+        'import-legacy-external-files',
+        'import-mind-jet-files',
+        'import-tabbed-files',
+        'import-todo-text-files',
+        'import-zim-folder',
+
+        # Open specific files...
+        # 'ekr-projects',
+        'leo-cheat-sheet',  # These duplicates are useful.
+        'leo-dist-leo',
+        'leo-docs-leo',
+        'leo-plugins-leo',
+        'leo-py-leo',
+        'leo-quickstart-leo',
+        'leo-scripts-leo',
+        'leo-settings',
+        'leo-unittest-leo',
+        'my-leo-settings',
+        # 'scripts',
+        'settings',
+
+        'open-cheat-sheet-leo',
+        'open-desktop-integration-leo',
+        'open-leo-dist-leo',
+        'open-leo-docs-leo',
+        'open-leo-plugins-leo',
+        'open-leo-py-leo',
+        'open-leo-settings',
+        'open-leo-settings-leo',
+        'open-local-settings',
+        'open-my-leo-settings',
+        'open-my-leo-settings-leo',
+        'open-quickstart-leo',
+        'open-scripts-leo',
+        'open-unittest-leo',
+
+        # Open other places...
+        'open-offline-tutorial',
+        'open-online-home',
+        'open-online-toc',
+        'open-online-tutorials',
+        'open-online-videos',
+        'open-recent-file',
+        'open-theme-file',
+        'open-url',
+        'open-url-under-cursor',
+        'open-users-guide',
+
+        # Read outlines...
+        'read-at-auto-nodes',
+        'read-at-file-nodes',
+        'read-at-shadow-nodes',
+        'read-file-into-node',
+        'read-outline-only',
+        'read-ref-file',
+
+        # Save Files.
+        'file-save',
+        'file-save-as',
+        'file-save-as-unzipped',
+        'file-save-by-name',
+        'file-save-to',
+        'save',  # Some may not be needed.
+        'save-all',
+        'save-as',
+        'save-file',
+        'save-file-as',
+        'save-file-as-unzipped',
+        'save-file-as-zipped',
+        'save-file-by-name',
+        'save-file-to',
+        'save-to',
+
+        # Write parts of outlines...
+        'write-at-auto-nodes',
+        'write-at-file-nodes',
+        'write-at-shadow-nodes',
+        'write-dirty-at-auto-nodes',
+        'write-dirty-at-file-nodes',
+        'write-dirty-at-shadow-nodes',
+        'write-edited-recent-files',
+        'write-file-from-node',
+        'write-missing-at-file-nodes',
+        'write-outline-only',
+
+        'clone-find-all',
+        'clone-find-all-flattened',
+        'clone-find-all-flattened-marked',
+        'clone-find-all-marked',
+        'clone-find-parents',
+        'clone-find-tag',
+        'clone-marked-nodes',
+        'clone-node-to-last-node',
+        'clone-to-at-spot',
+
+        'edit-setting',
+        'edit-shortcut',
+
+        'execute-pytest',
+        'execute-script',
+        'extract',
+        'extract-names',
+
+        'goto-any-clone',
+        'goto-global-line',
+        'goto-line',
+        'git-diff', 'gd',
+
+        'log-kill-listener', 'kill-log-listener',
+        'log-listen', 'listen-to-log',
+
+        'make-stub-files',
+
+        'pdb',
+
+        'redo',
+        'rst3',
+        'run-all-unit-tests-externally',
+        'run-all-unit-tests-locally',
+        'run-marked-unit-tests-externally',
+        'run-marked-unit-tests-locally',
+        'run-selected-unit-tests-externally',
+        'run-selected-unit-tests-locally',
+        'run-tests',
+
+        'undo',
+
+        'xdb',
+        # Beautify, blacken, fstringify...
+        'beautify-files',
+        'beautify-files-diff',
+        'blacken-files',
+        'blacken-files-diff',
+        'diff-and-open-leo-files',
+        'diff-beautify-files',
+        'diff-fstringify-files',
+        'diff-leo-files',
+        'diff-marked-nodes',
+        'fstringify-files',
+        'fstringify-files-diff',
+        'fstringify-files-silent',
+        'pretty-print-c',
+        'silent-fstringify-files',
+
+        # All other commands...
+        'at-file-to-at-auto',
+
+        'beautify-c',
+
+        'cls',
+        'c-to-python',
+        'c-to-python-clean-docs',
+        'check-derived-file',
+        'check-outline',
+        'code-to-rst',
+        'compare-two-leo-files',
+        'convert-all-blanks',
+        'convert-all-tabs',
+        'count-children',
+        'count-pages',
+        'count-region',
+
+        'desktop-integration-leo',
+
+        'edit-recent-files',
+        'exit-leo',
+
+        'file-compare-two-leo-files',
+        'find-def',
+        'find-long-lines',
+        'find-missing-docstrings',
+        'flake8',
+        'flatten-outline',
+        'flatten-outline-to-node',
+        'flatten-script',
+
+        'gc-collect-garbage',
+        'gc-dump-all-objects',
+        'gc-dump-new-objects',
+        'gc-dump-objects-verbose',
+        'gc-show-summary',
+
+        'help',  # To do.
+        'help-for-abbreviations',
+        'help-for-autocompletion',
+        'help-for-bindings',
+        'help-for-command',
+        'help-for-creating-external-files',
+        'help-for-debugging-commands',
+        'help-for-drag-and-drop',
+        'help-for-dynamic-abbreviations',
+        'help-for-find-commands',
+        'help-for-keystroke',
+        'help-for-minibuffer',
+        'help-for-python',
+        'help-for-regular-expressions',
+        'help-for-scripting',
+        'help-for-settings',
+
+        'insert-body-time',  # ?
+        'insert-headline-time',
+        'insert-jupyter-toc',
+        'insert-markdown-toc',
+
+        'find-var',
+
+        'join-leo-irc',
+        'join-node-above',
+        'join-node-below',
+        'join-selection-to-node-below',
+
+        'move-lines-to-next-node',
+
+        'new',
+
+        'open-outline',
+
+        'parse-body',
+        'parse-json',
+        'pandoc',
+        'pandoc-with-preview',
+        'paste-as-template',
+
+        'print-body',
+        'print-cmd-docstrings',
+        'print-expanded-body',
+        'print-expanded-html',
+        'print-html',
+        'print-marked-bodies',
+        'print-marked-html',
+        'print-marked-nodes',
+        'print-node',
+        'print-sep',
+        'print-tree-bodies',
+        'print-tree-html',
+        'print-tree-nodes',
+        'print-window-state',
+
+        'pyflakes',
+        'pylint',
+        'pylint-kill',
+        'python-to-coffeescript',
+
+        'quit-leo',
+
+        'reformat-body',
+        'reformat-paragraph',
+        'refresh-from-disk',
+        'reload-all-settings',
+        'reload-settings',
+        'reload-style-sheets',
+        'revert',
+
+        'save-buffers-kill-leo',
+        'screen-capture-5sec',
+        'screen-capture-now',
+        'script-button',  # ?
+        'set-reference-file',
+        'show-style-sheet',
+        'sort-recent-files',
+        'sphinx',
+        'sphinx-with-preview',
+        'style-reload',  # ?
+
+        'untangle',
+        'untangle-all',
+        'untangle-marked',
+
+        'view-lossage',  # ?
+
+        'weave',
+
+        # Dubious commands (to do)...
+        'act-on-node',
+
+        'cfa',  # Do we need abbreviations?
+        'cfam',
+        'cff',
+        'cffm',
+        'cft',
+
+        'buffer-append-to',
+        'buffer-copy',
+        'buffer-insert',
+        'buffer-kill',
+        'buffer-prepend-to',
+        'buffer-switch-to',
+        'buffers-list',
+        'buffers-list-alphabetically',
+
+        'chapter-back',
+        'chapter-next',
+        'chapter-select',
+        'chapter-select-main',
+        'create-def-list',  # ?
+    ]
+    return good_list
+
+</t>
+<t tx="felix.20200924210952.1">def _getDocstringForCommand(self, command_name):
+    """get docstring for the given command."""
+    func = self._get_commander_method(command_name)
+    docstring = func.__doc__ if func else ''
+    return docstring
+
+</t>
+<t tx="felix.20200924211032.1">def setActionId(self, p_id):
+    self.currentActionId = p_id
+
+</t>
+<t tx="felix.20200924211034.1">async def asyncOutput(self, p_json):
+    '''Output json string to the websocket'''
+    if self.webSocket:
+        await self.webSocket.send(p_json)
+    else:
+        print("websocket not ready yet")
+
+</t>
+<t tx="felix.20200924211037.1">def sendLeoBridgePackage(self, p_key=False, p_any=None):
+    w_package = {"id": self.currentActionId}
+    if p_key:
+        w_package[p_key] = p_any  # add [key]?:any
+    return(json.dumps(w_package, separators=(',', ':')))  # send as json
+    # await self.webSocket.send(json.dumps(w_package, separators=(',', ':')))  # send as json
+
+</t>
+<t tx="felix.20200924211041.1">def _outputError(self, p_message="Unknown Error"):
+    print("ERROR: " + p_message)  # Output to this server's running console
+    w_package = {"id": self.currentActionId}
+    w_package["error"] = p_message
+    return p_message
+
+</t>
+<t tx="felix.20200924211048.1">def _outputBodyData(self, p_bodyText=""):
+    return self.sendLeoBridgePackage("bodyData", p_bodyText)
+
+</t>
+<t tx="felix.20200924211051.1">def _outputPNode(self, p_node=False):
+    if p_node:
+        return self.sendLeoBridgePackage("node", self._p_to_ap(p_node))  # Single node, singular
+    else:
+        return self.sendLeoBridgePackage("node", None)
+
+</t>
+<t tx="felix.20200924211054.1">def _outputPNodes(self, p_pList):
+    w_apList = []
+    for p in p_pList:
+        w_apList.append(self._p_to_ap(p))
+    return self.sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
+
+</t>
+<t tx="felix.20200924211057.1">def markPNode(self, p_package):
+    '''Mark a node, don't select it'''
+    w_ap = p_package["node"]
+    if w_ap:
+        w_p = self._ap_to_p(w_ap)
+        if w_p:
+            w_p.setMarked()
+            return self._outputPNode(self.commander.p)  # return selected node when done (not w_p)
+        else:
+            return self._outputError("Error in markPNode no w_p node found")
+    else:
+        return self._outputError("Error in markPNode no param node")
+
+</t>
+<t tx="felix.20200924211100.1">def unmarkPNode(self, p_package):
+    '''Unmark a node, don't select it'''
+    w_ap = p_package["node"]
+    if w_ap:
+        w_p = self._ap_to_p(w_ap)
+        if w_p:
+            w_p.clearMarked()
+            return self._outputPNode(self.commander.p)  # return selected node when done (not w_p)
+        else:
+            return self._outputError("Error in unmarkPNode no w_p node found")
+    else:
+        return self._outputError("Error in unmarkPNode no param node")
+
+</t>
+<t tx="felix.20200924211104.1">def clonePNode(self, p_package):
+    '''Clone a node, return it, if it was also the current selection, otherwise try not to select it'''
+    w_ap = p_package["node"]
+    if not w_ap:
+        return self._outputError("Error in clonePNode function, no param p_ap")
+    w_p = self._ap_to_p(w_ap)
+    if not w_p:
+        return self._outputError("Error in clonePNode function, no w_p node found")  # default empty
+    if w_p == self.commander.p:
+        self.commander.clone()
+    else:
+        oldPosition = self.commander.p
+        self.commander.selectPosition(w_p)
+        self.commander.clone()
+        if self.commander.positionExists(oldPosition):
+            self.commander.selectPosition(oldPosition)
+    return self._outputPNode(self.commander.p)  # return selected node either ways
+
+</t>
+<t tx="felix.20200924211121.1">def cutPNode(self, p_package):
+    '''Cut a node, don't select it. Try to keep selection, then return the selected node that remains'''
+    w_ap = p_package["node"]
+    if w_ap:
+        w_p = self._ap_to_p(w_ap)
+        if w_p:
+            if w_p == self.commander.p:
+                self.commander.cutOutline()  # already on this node, so cut it
+            else:
+                oldPosition = self.commander.p  # not same node, save position to possibly return to
+                self.commander.selectPosition(w_p)
+                self.commander.cutOutline()
+                if self.commander.positionExists(oldPosition):
+                    self.commander.selectPosition(oldPosition)  # select if old position still valid
+                else:
+                    oldPosition._childIndex = oldPosition._childIndex-1
+                    # Try again with childIndex decremented
+                    if self.commander.positionExists(oldPosition):
+                        self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
+            return self._outputPNode(self.commander.p)  # in both cases, return selected node
+        else:
+            return self._outputError("Error in cutPNode no w_p node found")  # default empty
+    else:
+        return self._outputError("Error in cutPNode no param node")
+
+</t>
+<t tx="felix.20200924211125.1">def deletePNode(self, p_package):
+    '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
+    w_ap = p_package["node"]
+    if w_ap:
+        w_p = self._ap_to_p(w_ap)
+        if w_p:
+            if w_p == self.commander.p:
+                self.commander.deleteOutline()  # already on this node, so delete it
+            else:
+                oldPosition = self.commander.p  # not same node, save position to possibly return to
+                self.commander.selectPosition(w_p)
+                self.commander.deleteOutline()
+                if self.commander.positionExists(oldPosition):
+                    self.commander.selectPosition(oldPosition)  # select if old position still valid
+                else:
+                    oldPosition._childIndex = oldPosition._childIndex-1
+                    # Try again with childIndex decremented
+                    if self.commander.positionExists(oldPosition):
+                        self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
+            return self._outputPNode(self.commander.p)  # in both cases, return selected node
+        else:
+            return self._outputError("Error in deletePNode no w_p node found")  # default empty
+    else:
+        return self._outputError("Error in deletePNode no param node")
+
+</t>
+<t tx="felix.20200924211127.1">def insertPNode(self, p_package):
+    '''Insert a node at given node, then select it once created, and finally return it'''
+    w_ap = p_package["node"]
+    if w_ap:
+        w_p = self._ap_to_p(w_ap)
+        if w_p:
+            w_bunch = self.commander.undoer.beforeInsertNode(w_p)
+            w_newNode = w_p.insertAfter()
+            w_newNode.setDirty()
+            self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_bunch)
+            self.commander.selectPosition(w_newNode)
+            return self._outputPNode(self.commander.p)  # in both cases, return selected node
+        else:
+            return self._outputError("Error in insertPNode no w_p node found")  # default empty
+    else:
+        return self._outputError("Error in insertPNode no param node")
+
+</t>
+<t tx="felix.20200924211132.1">def insertNamedPNode(self, p_package):
+    '''Insert a node at given node, set its headline, select it and finally return it'''
+    w_newHeadline = p_package['text']
+    w_ap = p_package['node']
+    if w_ap:
+        w_p = self._ap_to_p(w_ap)
+        if w_p:
+            w_u = self.commander.undoer.beforeInsertNode(w_p)
+            w_newNode = w_p.insertAfter()
+            # set this node's new headline
+            w_newNode.h = w_newHeadline
+            w_newNode.setDirty()
+            self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_u)
+            self.commander.selectPosition(w_newNode)
+            return self._outputPNode(self.commander.p)  # in any case, return selected node
+        else:
+            return self._outputError("Error in insertNamedPNode no w_p node found")  # default empty
+    else:
+        return self._outputError("Error in insertNamedPNode no param node")
+
+</t>
+<t tx="felix.20200924211135.1">def undo(self, p_paramUnused):
+    '''Undo last un-doable operation'''
+    if self.commander.undoer.canUndo():
+        self.commander.undoer.undo()
+    return self._outputPNode(self.commander.p)  # return selected node when done
+
+</t>
+<t tx="felix.20200924211138.1">def redo(self, p_paramUnused):
+    '''Undo last un-doable operation'''
+    if self.commander.undoer.canRedo():
+        self.commander.undoer.redo()
+    return self._outputPNode(self.commander.p)  # return selected node when done
+
+</t>
+<t tx="felix.20200924211142.1">def executeScriptPackage(self, p_package):
+    '''Select a node and run its script'''
+    c, g = self.commander, self.g
+    if not 'node' in p_package:
+        return self._outputError("Error in executeScript no param node")
+    w_ap = p_package['node']
+    w_p = self._ap_to_p(w_ap)
+    if not w_p:
+        return self._outputError("Error in executeScript no w_p node found")
+    c.selectPosition(w_p)
+    w_script = ""
+    if 'text' in p_package:
+        w_script = str(p_package['text'])
+    if not w_script or w_script.isspace():
+        # Empty selection.
+        c.executeScript()
+        return self._outputPNode(self.commander.p)
+    # * Mimic getScript !!
+    try:
+        # Remove extra leading whitespace so the user may execute indented code.
+        w_script = g.removeExtraLws(w_script, c.tab_width)
+        w_script = g.extractExecutableString(c, w_p, w_script)
+        w_validScript = g.composeScript(
+            c, w_p, w_script, forcePythonSentinels=True, useSentinels=True)
+        c.executeScript(script=w_validScript)
+    except Exception as e:
+        g.trace('Error while executing script')
+        print('Error while executing script')
+        print(str(e))
+    return self._outputPNode(self.commander.p)
+
+</t>
+<t tx="felix.20200924213359.1">def pageUp(self, p_unused):
+    """Selects a node a couple of steps up in the tree to simulate page up"""
+    self.commander.selectVisBack()
+    self.commander.selectVisBack()
+    self.commander.selectVisBack()
+    return self._outputPNode(self.commander.p)
+
+</t>
+<t tx="felix.20200924213606.1">def pageDown(self, p_unused):
+    """Selects a node a couple of steps down in the tree to simulate page down"""
+    self.commander.selectVisNext()
+    self.commander.selectVisNext()
+    self.commander.selectVisNext()
+    return self._outputPNode(self.commander.p)
+
+</t>
+<t tx="felix.20200924213612.1">def getLanguage(self, p_ap):
+    """
+    Finds the language in effect at top of body for position p.
+
+    Return type is lowercase 'language' non-empty string.
+    """
+    if not p_ap:
+        return self._outputError("Error in getLanguage, no param p_ap")
+    w_p = self._ap_to_p(p_ap)
+    if not w_p:
+        return self.sendLeoBridgePackage("language", "plain")
+
+    c, g = self.commander, self.g
+    aList = g.get_directives_dict_list(w_p)
+    d = g.scanAtCommentAndAtLanguageDirectives(aList)
+    # TODO : Remove one of those branch after finishing color-syntax features
+    if 1:  # Exactly as in Leo.
+        language = (
+            d and d.get('language') or
+            g.getLanguageFromAncestorAtFileNode(w_p) or
+            c.config.getString('target-language') or
+            'plain'
+        )
+        return self.sendLeoBridgePackage("language", language.lower())
+    else:  # Return both an explicit language and a default language.
+        language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(w_p) or 'none'
+        default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
+        result = {
+            'language': language.lower(),
+            'default': default,
+        }
+        return self.sendLeoBridgePackage("result", result)
+
+</t>
+<t tx="felix.20200924223845.1"></t>
+<t tx="felix.20200924223910.1"></t>
+<t tx="felix.20200924223945.1"></t>
+<t tx="felix.20200924224017.1"></t>
+<t tx="felix.20200924224100.1"></t>
+<t tx="felix.20200924224219.1"></t>
 </tnodes>
 </leo_file>
