@@ -2,9 +2,9 @@
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
-### Break your code down into sections structured as an outline, to derive or parse back your files
+### Break your code down into sections structured as an outline, to derive or parse back your files 
 
-> Leo is a fundamentally different way of using and organizing data, programs and scripts.
+> Leo is a fundamentally different way of using and organizing data, programs and scripts. [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4)
 
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
 or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.visualstudio.com](https://code.visualstudio.com/).
@@ -20,6 +20,10 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
   (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
 
 ## Development version installation
+
+[Video tutorial of installation and startup](https://www.youtube.com/watch?v=rutt11xL54I):
+
+[![Installation and startup video](https://img.youtube.com/vi/rutt11xL54I/0.jpg)](https://www.youtube.com/watch?v=rutt11xL54I)
 
 In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's next release), make sure you have Node.js and Git installed, then clone the sources and run `npm install` in a terminal to install the remaining development dependencies.
 
