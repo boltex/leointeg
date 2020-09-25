@@ -140,7 +140,7 @@
 <v t="felix.20191126232434.31"><vh>p_to_ap</vh></v>
 </v>
 </v>
-<v t="felix.20191126232435.1"><vh>main (crux)</vh></v>
+<v t="felix.20191126232435.1"><vh>main leoBridgeServer loop</vh></v>
 </v>
 <v t="ekr.20200815123601.1"><vh>@clean package.json</vh>
 <v t="ekr.20200815123601.2"><vh>configuration</vh>
@@ -4575,6 +4575,7 @@ def getSelectedNode(self, p_unused):
 </t>
 <t tx="felix.20191126232434.19">def getBody(self, p_gnx):
     '''EMIT OUT body of a node'''
+    # TODO : if not found, send code to prevent unresolved promise if 'document switch' occured shortly before
     if p_gnx:
         w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
         if w_v:
@@ -4582,7 +4583,8 @@ def getSelectedNode(self, p_unused):
                 return self._outputBodyData(w_v.b)
             else:
                 return self._outputBodyData()  # default "" empty string
-    return self.sendLeoBridgePackage()  # default as inexistent
+    return self._outputBodyData() # Send as empty to fix unresolved promise if 'document switch' occured shortly before
+    #return self.sendLeoBridgePackage()  # default as inexistent
 
 </t>
 <t tx="felix.20191126232434.2">#! python3
@@ -4908,7 +4910,7 @@ def getLanguage(self, p_ap):
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
                     #
-                    w_func = getattr(integController, w_param['action'], None)
+                    w_func = getattr(integController, w_param['action'], None) # crux
                     if w_func:
                         # Is Filtered by Leo Bridge Integration Controller
                         w_answer = w_func(w_param['param'])
@@ -4937,7 +4939,6 @@ def getLanguage(self, p_ap):
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     localLoop.run_forever()
     print("Stopping leobridge server", flush=True)
-
 
 </t>
 <t tx="felix.20191128001054.1"></t>
@@ -10064,7 +10065,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 - Implemented @buttons in it's own panel, visible where the already existing 'outline' and 'opened leo documents' panels reside.
 - Added (basic) unknown attributes support as hover tooltip and small description on node headlines.
 - Added a 'leoBridge Server Terminal Panel' to gather output of the leoBridge stdOut pipe. It's displayed among the 'output panels', along with the standard 'leo log window', when the server is started by leoInteg. (either with the auto-start config setting, or by calling the 'start server' command via buttons or the command-palette.)
-- Syntax coloring is now enabled for those languages : C, C++, CSS, HTML, Java, Javascript, json, Markdown, PHP, Python, Rust and Typescript.
+- Syntax coloring and Snippets are now enabled for those languages : C, C++, CSS, HTML, Java, Javascript, json, Markdown, PHP, Python, Rust and Typescript. They are taken from the default extension for that language, or if non-existent, from the most popular extension for that language
 
 @others
 </t>

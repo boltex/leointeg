@@ -2223,6 +2223,7 @@ class LeoBridgeIntegController:
 
     def getBody(self, p_gnx):
         '''EMIT OUT body of a node'''
+        # TODO : if not found, send code to prevent unresolved promise if 'document switch' occured shortly before
         if p_gnx:
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
             if w_v:
@@ -2230,7 +2231,8 @@ class LeoBridgeIntegController:
                     return self._outputBodyData(w_v.b)
                 else:
                     return self._outputBodyData()  # default "" empty string
-        return self.sendLeoBridgePackage()  # default as inexistent
+        return self._outputBodyData() # Send as empty to fix unresolved promise if 'document switch' occured shortly before
+        #return self.sendLeoBridgePackage()  # default as inexistent
 
     def getBodyLength(self, p_gnx):
         '''EMIT OUT body string length of a node'''
@@ -2470,7 +2472,7 @@ def main():
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
                     #
-                    w_func = getattr(integController, w_param['action'], None)
+                    w_func = getattr(integController, w_param['action'], None) # crux
                     if w_func:
                         # Is Filtered by Leo Bridge Integration Controller
                         w_answer = w_func(w_param['param'])
@@ -2499,7 +2501,6 @@ def main():
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     localLoop.run_forever()
     print("Stopping leobridge server", flush=True)
-
 
 if __name__ == '__main__':
     # Startup
