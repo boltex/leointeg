@@ -470,6 +470,7 @@
 <v t="felix.20200719025231.27"><vh>_onDocTreeViewVisibilityChanged</vh></v>
 <v t="ekr.20200815085705.1"><vh>_onButtonsTreeViewVisibilityChanged</vh></v>
 <v t="felix.20200719025231.29"><vh>_onActiveEditorChanged</vh></v>
+<v t="felix.20200928004727.1"><vh>_onChangeEditorSelection</vh></v>
 <v t="felix.20200719025231.31"><vh>_onDocumentChanged</vh></v>
 </v>
 <v t="felix.20200719030842.1"><vh>Body Editing</vh>
@@ -9252,6 +9253,10 @@ export class LeoIntegration {
     private _showBodyStarted: boolean = false; // Flag for when _applySelectionToBody 'show body' cycle is busy
     private _showBodyParams: ShowBodyParam | undefined; // _applySelectionToBody parameters, may be overwritten at each call if not finished
 
+    // * Selection
+    private _selectionGnx: string = "";
+    private _selection: vscode.Selection | undefined;
+
     private _bodyUri: vscode.Uri = utils.strToLeoUri("");
     get bodyUri(): vscode.Uri {
         return this._bodyUri;
@@ -9536,7 +9541,7 @@ private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_interna
     vscode.window.onDidChangeActiveTextEditor(p_event =&gt; this._onActiveEditorChanged(p_event));
 
     // * The selection in an output panel or any other editor has changed
-    // vscode.window.onDidChangeTextEditorSelection(p_event =&gt; this._onChangeEditorSelection(p_event)); // ! Not used for now
+    vscode.window.onDidChangeTextEditorSelection(p_event =&gt; this._onChangeEditorSelection(p_event)); // ! Not used for now
 
     // * The view column of an editor has changed (when shifting editors through closing/inserting editors or closing columns)
     // No effect when dragging editor tabs: it just closes and reopens in other column, see '_onChangeVisibleEditors'
@@ -12249,6 +12254,22 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 <t tx="felix.20200927230228.1">def toPythonIndexRowCol(self, index):
     print("toPythonIndexRowCol", flush=True)
     return (0, 0, 0)
+
+</t>
+<t tx="felix.20200928004727.1">/**
+ * * Handles detection of the active editor's selection change or cursor position
+ */
+private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
+
+    if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
+        // console.log('Changed selection length', p_event.selections.length);
+        if (p_event.selections.length) {
+            console.log(p_event.selections[0]);
+
+        }
+
+    }
+}
 
 </t>
 </tnodes>

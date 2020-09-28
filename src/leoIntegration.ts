@@ -92,6 +92,10 @@ export class LeoIntegration {
     private _showBodyStarted: boolean = false; // Flag for when _applySelectionToBody 'show body' cycle is busy
     private _showBodyParams: ShowBodyParam | undefined; // _applySelectionToBody parameters, may be overwritten at each call if not finished
 
+    // * Selection
+    private _selectionGnx: string = "";
+    private _selection: vscode.Selection | undefined;
+
     private _bodyUri: vscode.Uri = utils.strToLeoUri("");
     get bodyUri(): vscode.Uri {
         return this._bodyUri;
@@ -203,7 +207,7 @@ export class LeoIntegration {
         vscode.window.onDidChangeActiveTextEditor(p_event => this._onActiveEditorChanged(p_event));
 
         // * The selection in an output panel or any other editor has changed
-        // vscode.window.onDidChangeTextEditorSelection(p_event => this._onChangeEditorSelection(p_event)); // ! Not used for now
+        vscode.window.onDidChangeTextEditorSelection(p_event => this._onChangeEditorSelection(p_event)); // ! Not used for now
 
         // * The view column of an editor has changed (when shifting editors through closing/inserting editors or closing columns)
         // No effect when dragging editor tabs: it just closes and reopens in other column, see '_onChangeVisibleEditors'
@@ -727,6 +731,21 @@ export class LeoIntegration {
         // * Status flag check
         if (vscode.window.activeTextEditor) {
             this._leoStatusBar.update(vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME);
+        }
+    }
+
+    /**
+     * * Handles detection of the active editor's selection change or cursor position
+     */
+    private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
+
+        if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
+            // console.log('Changed selection length', p_event.selections.length);
+            if (p_event.selections.length) {
+                console.log(p_event.selections[0]);
+
+            }
+
         }
     }
 
