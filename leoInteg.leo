@@ -86,11 +86,44 @@
 <v t="felix.20200308150842.1"><vh>destroy_frame</vh></v>
 </v>
 </v>
+<v t="felix.20200926235854.1"><vh>class Wrapper</vh>
+<v t="felix.20200927230134.1"><vh>__init__</vh></v>
+<v t="felix.20200927230137.1"><vh>appendText</vh></v>
+<v t="felix.20200927230140.1"><vh>clipboard_append</vh></v>
+<v t="felix.20200927230143.1"><vh>clipboard_clear</vh></v>
+<v t="felix.20200927230145.1"><vh>delete</vh></v>
+<v t="felix.20200927230148.1"><vh>deleteTextSelection</vh></v>
+<v t="felix.20200927230150.1"><vh>disable</vh></v>
+<v t="felix.20200927230152.1"><vh>enable</vh></v>
+<v t="felix.20200927230153.1"><vh>flashCharacter</vh></v>
+<v t="felix.20200927230155.1"><vh>get</vh></v>
+<v t="felix.20200927230157.1"><vh>getAllText</vh></v>
+<v t="felix.20200927230159.1"><vh>getInsertPoint</vh></v>
+<v t="felix.20200927230200.1"><vh>getSelectedText</vh></v>
+<v t="felix.20200927230202.1"><vh>getSelectionRange</vh></v>
+<v t="felix.20200927230204.1"><vh>getXScrollPosition</vh></v>
+<v t="felix.20200927230206.1"><vh>getYScrollPosition</vh></v>
+<v t="felix.20200927230207.1"><vh>hasSelection</vh></v>
+<v t="felix.20200927230209.1"><vh>insert</vh></v>
+<v t="felix.20200927230210.1"><vh>see</vh></v>
+<v t="felix.20200927230211.1"><vh>seeInsertPoint</vh></v>
+<v t="felix.20200927230213.1"><vh>selectAllText</vh></v>
+<v t="felix.20200927230216.1"><vh>setAllText</vh></v>
+<v t="felix.20200927230217.1"><vh>setFocus</vh></v>
+<v t="felix.20200927230218.1"><vh>setInsertPoint</vh></v>
+<v t="felix.20200927230220.1"><vh>setSelectionRange</vh></v>
+<v t="felix.20200927230222.1"><vh>setXScrollPosition</vh></v>
+<v t="felix.20200927230223.1"><vh>setYScrollPosition</vh></v>
+<v t="felix.20200927230225.1"><vh>tag_configure</vh></v>
+<v t="felix.20200927230226.1"><vh>toPythonIndex</vh></v>
+<v t="felix.20200927230228.1"><vh>toPythonIndexRowCol</vh></v>
+</v>
 <v t="felix.20191126232434.4"><vh>class LeoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
 <v t="felix.20200303214235.1"><vh>_asyncIdleLoop</vh></v>
 <v t="felix.20200626012709.1"><vh>_returnNo</vh></v>
 <v t="felix.20200626030820.1"><vh>_returnYes</vh></v>
+<v t="felix.20200927213534.1"><vh>_getScript</vh></v>
 <v t="felix.20200303214255.1"><vh>_idleTime</vh></v>
 <v t="felix.20200623201853.1"><vh>_getTotalOpened</vh></v>
 <v t="felix.20200623215904.1"><vh>_getFirstOpenedCommander</vh></v>
@@ -102,7 +135,7 @@
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
 <v t="felix.20200924205439.1"><vh>_get_commander_method</vh></v>
 <v t="felix.20200924205503.1"><vh>leoCommand</vh></v>
-<v t="felix.20200924223845.1"><vh>LeoDocuments</vh>
+<v t="felix.20200924223845.1"><vh>Leo Documents</vh>
 <v t="felix.20200622230608.1"><vh>getOpenedFiles</vh></v>
 <v t="felix.20200624172552.1"><vh>setOpenedFile</vh></v>
 <v t="felix.20191126232434.13"><vh>openFile</vh></v>
@@ -127,6 +160,7 @@
 <v t="felix.20200924211037.1"><vh>sendLeoBridgePackage</vh></v>
 <v t="felix.20200924211041.1"><vh>_outputError</vh></v>
 <v t="felix.20200924211048.1"><vh>_outputBodyData</vh></v>
+<v t="felix.20200927224639.1"><vh>_outputSelectionData</vh></v>
 <v t="felix.20200924211051.1"><vh>_outputPNode</vh></v>
 <v t="felix.20200924211054.1"><vh>_outputPNodes</vh></v>
 </v>
@@ -156,8 +190,10 @@
 <v t="felix.20191201194046.1"><vh>getAllGnx</vh></v>
 <v t="felix.20191126232434.19"><vh>getBody</vh></v>
 <v t="felix.20191126232434.20"><vh>getBodyLength</vh></v>
+<v t="felix.20200927222851.1"><vh>getSelection</vh></v>
 <v t="felix.20191126232434.21"><vh>setNewBody</vh></v>
 <v t="felix.20191126232434.22"><vh>setBody</vh></v>
+<v t="felix.20200927222902.1"><vh>setSelection</vh></v>
 <v t="felix.20191126232434.23"><vh>setNewHeadline</vh></v>
 <v t="felix.20191126232434.24"><vh>setSelectedNode</vh></v>
 <v t="felix.20191126232434.25"><vh>expandNode</vh></v>
@@ -4463,6 +4499,7 @@ print('done')</t>
 
     if self.commander:
         self.commander.closed = False
+
         self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                     "node": self._p_to_ap(self.commander.p)}
@@ -4550,7 +4587,7 @@ print('done')</t>
 </t>
 <t tx="felix.20191126232434.19">def getBody(self, p_gnx):
     '''EMIT OUT body of a node'''
-    # TODO : if not found, send code to prevent unresolved promise if 'document switch' occured shortly before
+    # TODO : if not found, send code to prevent unresolved promise if 'document switch' occurred shortly before
     if p_gnx:
         w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
         if w_v:
@@ -4558,8 +4595,8 @@ print('done')</t>
                 return self._outputBodyData(w_v.b)
             else:
                 return self._outputBodyData()  # default "" empty string
-    return self._outputBodyData() # Send as empty to fix unresolved promise if 'document switch' occured shortly before
-    #return self.sendLeoBridgePackage()  # default as inexistent
+    return self._outputBodyData()  # Send as empty to fix unresolved promise if 'document switch' occurred shortly before
+    # return self.sendLeoBridgePackage()  # default as inexistent
 
 </t>
 <t tx="felix.20191126232434.2">#! python3
@@ -4641,7 +4678,7 @@ if __name__ == '__main__':
                 if w_foundPNode:
                     self.commander.selectPosition(w_foundPNode)
                 else:
-                    print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
+                    print("Set Selection node does not exist! ap was:" + json.dumps(p_ap), flush=True)
     # * return the finally selected node
     if self.commander.p:
         return self._outputPNode(self.commander.p)
@@ -4674,7 +4711,7 @@ if __name__ == '__main__':
     # This is likely the only data that ever will be needed.
     if 0:
         print('app.create_all_data: %5.3f sec. %s entries' % (
-            (time.process_time()-t1), len(list(self.gnx_to_vnode.keys()))))
+            (time.process_time()-t1), len(list(self.gnx_to_vnode.keys()))), flush=True)
     self._test_round_trip_positions()
 
 </t>
@@ -4693,8 +4730,8 @@ if __name__ == '__main__':
     gnx_to_vnode = old_d
     new_len = len(list(gnx_to_vnode.keys()))
     assert old_len == new_len, (old_len, new_len)
-    # print('Leo file opened. Its outline contains ' + str(qtyAllPositions) + " nodes positions.")
-    # print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)))
+    # print('Leo file opened. Its outline contains ' + str(qtyAllPositions) + " nodes positions.", flush=True)
+    # print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)), flush=True)
 
 </t>
 <t tx="felix.20191126232434.29">def _yieldAllRootChildren(self):
@@ -4727,7 +4764,7 @@ if __name__ == '__main__':
 <t tx="felix.20191126232434.31">def _p_to_ap(self, p):
     '''(From Leo plugin leoflexx.py) Converts Leo position to a serializable archived position.'''
     if not p.v:
-        print('app.p_to_ap: no p.v: %r %s' % (p))
+        print('app.p_to_ap: no p.v: %r %s' % (p), flush=True)
         assert False
     p_gnx = p.v.gnx
     if p_gnx not in self.gnx_to_vnode:
@@ -4791,17 +4828,18 @@ if __name__ == '__main__':
     # * Intercept Log Pane output: Sends to client's log pane
     self.g.es = self.es  # pointer - not a function call
 
-    # print(dir(self.g))
+    # print(dir(self.g), flush=True)
     self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
 
-    # * Currently Selected Commander (opened from leo.core.leoBridge or chosen via the g.app.windowList frame list)
+    # * Currently Selected Commander (opened from leo.core.leoBridge or chosen via the g.app.windowList 2 list)
     self.commander = None
 
     self.leoIntegConfig = None
     self.webSocket = None
     self.loop = None
 
-    # * Replacement instances to Leo's codebase : IdleTime, idleTimeManager and externalFilesController
+    # * Replacement instances to Leo's codebase : getScript, IdleTime, idleTimeManager and externalFilesController
+    self.g.getScript = self._getScript
     self.g.IdleTime = self._idleTime
     self.g.app.idleTimeManager = IdleTimeManager(self.g)
     # attach instance to g.app for calls to set_time, etc.
@@ -4822,6 +4860,7 @@ if __name__ == '__main__':
     print("Starting LeoBridge... (Launch with -h for help)", flush=True)
     # replace default host address and port if provided as arguments
 
+    args = None
     try:
         opts, args = getopt.getopt(sys.argv[1:], "ha:p:", ["help", "address=", "port="])
     except getopt.GetoptError:
@@ -4868,7 +4907,7 @@ if __name__ == '__main__':
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
                     #
-                    w_func = getattr(integController, w_param['action'], None) # crux
+                    w_func = getattr(integController, w_param['action'], None)  # crux
                     if w_func:
                         # Is Filtered by Leo Bridge Integration Controller
                         w_answer = w_func(w_param['param'])
@@ -4897,6 +4936,7 @@ if __name__ == '__main__':
     print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
     localLoop.run_forever()
     print("Stopping leobridge server", flush=True)
+
 
 </t>
 <t tx="felix.20191128001054.1"></t>
@@ -4947,8 +4987,8 @@ wsPort = 32125
                 self.commander.save()
         except Exception as e:
             self.g.trace('Error while saving')
-            print("Error while saving")
-            print(str(e))
+            print("Error while saving", flush=True)
+            print(str(e), flush=True)
 
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
@@ -4976,7 +5016,7 @@ wsPort = 32125
         self.g.es(str(self.g.app.signon))
         self.g.es(str(self.g.app.signon1))
     else:
-        print('no loop in logSignon')
+        print('no loop in logSignon', flush=True)
 
 </t>
 <t tx="felix.20200302204251.1">class IdleTimeManager:
@@ -5229,7 +5269,7 @@ wsPort = 32125
     Hence the need to call realpath() here.
     '''
 
-    # print("called set_time for " + str(path))
+    # print("called set_time for " + str(path), flush=True)
 
     t = new_time or self.get_mtime(path)
     self._time_d[self.integController.g.os_path_realpath(path)] = t
@@ -5368,7 +5408,7 @@ wsPort = 32125
     '''Received result from client'''
     # Got the result to an asked question/warning from the client
     if not self.waitingForAnswer:
-        print("ERROR: Received Result but no Asked Dialog")
+        print("ERROR: Received Result but no Asked Dialog", flush=True)
         return
     # check if p_resultwas from a warn (ok) or an ask ('yes','yes-all','no','no-all')
     # act accordingly
@@ -5401,7 +5441,8 @@ wsPort = 32125
 </t>
 <t tx="felix.20200304224909.1">def sendAsyncOutput(self, p_package):
     if "async" not in p_package:
-        print('[sendAsyncOutput] Error async member missing in package parameter' + json.dumps(p_package, separators=(',', ':')))
+        print('[sendAsyncOutput] Error async member missing in package parameter')
+        print(json.dumps(p_package, separators=(',', ':')), flush=True)
         return
     if self.loop:
         self.loop.create_task(self.asyncOutput(json.dumps(p_package, separators=(',', ':'))))
@@ -5423,7 +5464,7 @@ wsPort = 32125
 
 </t>
 <t tx="felix.20200308150848.1">def check_overwrite(self, c, fn):
-    # print("check_overwrite!! ")
+    # print("check_overwrite!! ", flush=True)
     return True
 
 </t>
@@ -5454,8 +5495,8 @@ wsPort = 32125
 
         except Exception as e:
             self.g.trace('Error while getting states')
-            print("Error while getting states")
-            print(str(e))
+            print("Error while getting states", flush=True)
+            print(str(e), flush=True)
     else:
         w_states["changed"] = False
         w_states["canUndo"] = False
@@ -9957,8 +9998,8 @@ public executeScript(): boolean {
         // was active text editor leoBody, check if selection length
         if (vscode.window.activeTextEditor.selections.length === 1 &amp;&amp; !vscode.window.activeTextEditor.selection.isEmpty) {
             // Exactly one selection range, and is not empty, so try "executing" only the selected content.
-            let w_selection = vscode.window.activeTextEditor.selection;
-            let w_script = vscode.window.activeTextEditor.document.getText(w_selection);
+            let w_selection: vscode.Selection = vscode.window.activeTextEditor.selection;
+            let w_script: string = vscode.window.activeTextEditor.document.getText(w_selection);
             if (w_script.length) {
                 return this.nodeCommand({
                     action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
@@ -10556,9 +10597,9 @@ public sendConfigToServer(p_config: ConfigMembers): void {
     w_keepSelection = False  # Set default, optional component of package
     if "keep" in p_package:
         w_keepSelection = p_package["keep"]
-        print("have keep! " + str(w_keepSelection))
-    else:
-        print("NO keep!")
+    #     print("have keep! " + str(w_keepSelection), flush=True)
+    # else:
+    #     print("NO keep!", flush=True)
 
     w_ap = p_package["node"]  # At least node parameter is present
     if not w_ap:
@@ -10604,10 +10645,10 @@ public sendConfigToServer(p_config: ConfigMembers): void {
                 self.commander = self.bridge.openLeoFile(i_file)  # create self.commander
         if self.commander:
             self.commander.closed = False
+            self.commander.frame.body.wrapper = Wrapper(self.commander)
 
     # Done with the last one, it's now the selected commander. Check again just in case.
     if self.commander:
-        self.commander.closed = False
         self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                     "node": self._p_to_ap(self.commander.p)}
@@ -10661,7 +10702,7 @@ public sendConfigToServer(p_config: ConfigMembers): void {
     good_names = self._good_commands()
     duplicates = set(bad_names).intersection(set(good_names))
     if duplicates:
-        print('duplicate command names...')
+        print('duplicate command names...', flush=True)
         for z in sorted(duplicates):
             print(z)
     result = []
@@ -11744,7 +11785,7 @@ public sendConfigToServer(p_config: ConfigMembers): void {
     if self.webSocket:
         await self.webSocket.send(p_json)
     else:
-        print("websocket not ready yet")
+        print("websocket not ready yet", flush=True)
 
 </t>
 <t tx="felix.20200924211037.1">def sendLeoBridgePackage(self, p_key=False, p_any=None):
@@ -11756,7 +11797,7 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 
 </t>
 <t tx="felix.20200924211041.1">def _outputError(self, p_message="Unknown Error"):
-    print("ERROR: " + p_message)  # Output to this server's running console
+    print("ERROR: " + p_message, flush=True)  # Output to this server's running console
     w_package = {"id": self.currentActionId}
     w_package["error"] = p_message
     return p_message
@@ -11959,8 +12000,8 @@ public sendConfigToServer(p_config: ConfigMembers): void {
         c.executeScript(script=w_validScript)
     except Exception as e:
         g.trace('Error while executing script')
-        print('Error while executing script')
-        print(str(e))
+        print('Error while executing script', flush=True)
+        print(str(e), flush=True)
     return self._outputPNode(self.commander.p)
 
 </t>
@@ -12020,5 +12061,196 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 <t tx="felix.20200924224017.1"></t>
 <t tx="felix.20200924224100.1"></t>
 <t tx="felix.20200924224219.1"></t>
+<t tx="felix.20200926235854.1">class Wrapper:
+    """LeoInteg class that implements the wrapper api used throughout Leo's core."""
+
+    @others
+
+</t>
+<t tx="felix.20200927213534.1">def _getScript(self, c, p,
+               useSelectedText=True,
+               forcePythonSentinels=True,
+               useSentinels=True,
+               ):
+    """
+    Return the expansion of the selected text of node p.
+    Return the expansion of all of node p's body text if
+    p is not the current node or if there is no text selection.
+    """
+    w = c.frame.body.wrapper
+    if not p:
+        p = c.p
+    try:
+        if w and p == c.p and useSelectedText and w.hasSelection():
+            s = w.getSelectedText()
+        else:
+            s = p.b
+        # Remove extra leading whitespace so the user may execute indented code.
+        s = self.g.removeExtraLws(s, c.tab_width)
+        s = self.g.extractExecutableString(c, p, s)
+        script = self.g.composeScript(c, p, s,
+                                 forcePythonSentinels=forcePythonSentinels,
+                                 useSentinels=useSentinels)
+    except Exception:
+        self.g.es_print("unexpected exception in g.getScript")
+        self.g.es_exception()
+        script = ''
+    return script
+
+</t>
+<t tx="felix.20200927222851.1">def getSelection(self, p_unused):
+    '''
+    Output the currently selected node's body selection states,
+    saved on it's own commander.
+    '''
+    pass
+    return self._outputSelectionData(self.commander)
+
+</t>
+<t tx="felix.20200927222902.1">def setSelection(self, p_package):
+    '''
+    Set selection start and end for the currently selected node's body.
+    Save those values on the commander to get them back when switching documents
+    '''
+    pass
+    return self._outputPNode(self.commander.p)
+
+</t>
+<t tx="felix.20200927224639.1">def _outputSelectionData(self, p_bodySelection):
+    return self.sendLeoBridgePackage("bodySelection", p_bodySelection)
+
+</t>
+<t tx="felix.20200927230134.1">def __init__(self, c):
+    print("Creating wrapper", flush=True)
+    pass
+
+</t>
+<t tx="felix.20200927230137.1">def appendText(self, s):
+    print("appendText", flush=True)
+
+</t>
+<t tx="felix.20200927230140.1">def clipboard_append(self, s):
+    print("clipboard_append", flush=True)
+
+</t>
+<t tx="felix.20200927230143.1">def clipboard_clear(self):
+    print("clipboard_clear", flush=True)
+
+</t>
+<t tx="felix.20200927230145.1">def delete(self, i, j=None):
+    print("delete", flush=True)
+
+</t>
+<t tx="felix.20200927230148.1">def deleteTextSelection(self):
+    print("deleteTextSelection", flush=True)
+
+</t>
+<t tx="felix.20200927230150.1">def disable(self):
+    print("disable", flush=True)
+
+</t>
+<t tx="felix.20200927230152.1">def enable(self, enabled=True):
+    print("enable", flush=True)
+
+</t>
+<t tx="felix.20200927230153.1">def flashCharacter(self, i, bg='white', fg='red', flashes=3, delay=75):
+    print("flashCharacter", flush=True)
+
+</t>
+<t tx="felix.20200927230155.1">def get(self, i, j):
+    print("get", flush=True)
+    return ''
+
+</t>
+<t tx="felix.20200927230157.1">def getAllText(self):
+    print("getAllText", flush=True)
+    return ''
+
+</t>
+<t tx="felix.20200927230159.1">def getInsertPoint(self):
+    print("getInsertPoint", flush=True)
+    return 0
+
+</t>
+<t tx="felix.20200927230200.1">def getSelectedText(self):
+    print("getSelectedText", flush=True)
+    return 'firstLine\n#secondline\ng.es("from wrapper test class") '  # test
+
+</t>
+<t tx="felix.20200927230202.1">def getSelectionRange(self):
+    print("getSelectionRange", flush=True)
+    return (1, 54)  # test
+
+</t>
+<t tx="felix.20200927230204.1">def getXScrollPosition(self):
+    print("getXScrollPosition", flush=True)
+    return 0
+
+</t>
+<t tx="felix.20200927230206.1">def getYScrollPosition(self): 
+    print("getYScrollPosition", flush=True)
+    return 0
+
+</t>
+<t tx="felix.20200927230207.1">def hasSelection(self):
+    print("hasSelection", flush=True)
+    return True  # test
+
+</t>
+<t tx="felix.20200927230209.1">def insert(self, i, s): 
+    print("insert", flush=True)
+
+</t>
+<t tx="felix.20200927230210.1">def see(self, i): 
+    print("see", flush=True)
+
+</t>
+<t tx="felix.20200927230211.1">def seeInsertPoint(self):
+    print("seeInsertPoint", flush=True)
+
+</t>
+<t tx="felix.20200927230213.1">def selectAllText(self, insert=None):
+    print("selectAllText", flush=True)
+
+</t>
+<t tx="felix.20200927230216.1">def setAllText(self, s):
+    print("setAllText", flush=True)
+
+</t>
+<t tx="felix.20200927230217.1">def setFocus(self):
+    print("setFocus", flush=True)
+    pass  # Required: sets the focus to wrapper.widget.
+
+</t>
+<t tx="felix.20200927230218.1">def setInsertPoint(self, pos, s=None):
+    print("setInsertPoint", flush=True)
+
+</t>
+<t tx="felix.20200927230220.1">def setSelectionRange(self, i, j, insert=None):
+    print("setSelectionRange", flush=True)
+
+</t>
+<t tx="felix.20200927230222.1">def setXScrollPosition(self, i):
+    print("setXScrollPosition", flush=True)
+
+</t>
+<t tx="felix.20200927230223.1">def setYScrollPosition(self, i):
+    print("setYScrollPosition", flush=True)
+
+</t>
+<t tx="felix.20200927230225.1">def tag_configure(self, colorName, **keys):
+    print("tag_configure", flush=True)
+
+</t>
+<t tx="felix.20200927230226.1">def toPythonIndex(self, index):
+    print("toPythonIndex", flush=True)
+    return 0
+
+</t>
+<t tx="felix.20200927230228.1">def toPythonIndexRowCol(self, index):
+    print("toPythonIndexRowCol", flush=True)
+    return (0, 0, 0)
+
+</t>
 </tnodes>
 </leo_file>

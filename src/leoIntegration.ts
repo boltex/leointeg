@@ -1360,8 +1360,8 @@ export class LeoIntegration {
             // was active text editor leoBody, check if selection length
             if (vscode.window.activeTextEditor.selections.length === 1 && !vscode.window.activeTextEditor.selection.isEmpty) {
                 // Exactly one selection range, and is not empty, so try "executing" only the selected content.
-                let w_selection = vscode.window.activeTextEditor.selection;
-                let w_script = vscode.window.activeTextEditor.document.getText(w_selection);
+                let w_selection: vscode.Selection = vscode.window.activeTextEditor.selection;
+                let w_script: string = vscode.window.activeTextEditor.document.getText(w_selection);
                 if (w_script.length) {
                     return this.nodeCommand({
                         action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
