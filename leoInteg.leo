@@ -8609,7 +8609,7 @@ export function isHexColor(p_hexString: string): boolean {
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
-### Break your code down into sections structured as an outline, to derive or parse back your files 
+### Break your code down into sections structured as an outline, to derive or parse back your files
 
 &gt; Leo is a fundamentally different way of using and organizing data, programs and scripts. [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4)
 
@@ -8622,8 +8622,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 
 ---
 
-**Enjoy!**
-</t>
+**🦁 Enjoy!**</t>
 <t tx="felix.20200718220833.1">@language md
 @tabwidth -4
 # Change Log

@@ -2,7 +2,7 @@
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
-### Break your code down into sections structured as an outline, to derive or parse back your files 
+### Break your code down into sections structured as an outline, to derive or parse back your files
 
 > Leo is a fundamentally different way of using and organizing data, programs and scripts. [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4)
 
@@ -162,4 +162,4 @@ The outline pane is made by implementing a [TreeDataProvider for vscode's TreeVi
 
 ---
 
-**Enjoy!**
+**🦁 Enjoy!**
