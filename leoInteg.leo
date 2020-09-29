@@ -86,37 +86,28 @@
 <v t="felix.20200308150842.1"><vh>destroy_frame</vh></v>
 </v>
 </v>
-<v t="felix.20200926235854.1"><vh>class Wrapper</vh>
-<v t="felix.20200927230134.1"><vh>__init__</vh></v>
-<v t="felix.20200927230137.1"><vh>appendText</vh></v>
-<v t="felix.20200927230140.1"><vh>clipboard_append</vh></v>
-<v t="felix.20200927230143.1"><vh>clipboard_clear</vh></v>
-<v t="felix.20200927230145.1"><vh>delete</vh></v>
-<v t="felix.20200927230148.1"><vh>deleteTextSelection</vh></v>
-<v t="felix.20200927230150.1"><vh>disable</vh></v>
-<v t="felix.20200927230152.1"><vh>enable</vh></v>
-<v t="felix.20200927230153.1"><vh>flashCharacter</vh></v>
-<v t="felix.20200927230155.1"><vh>get</vh></v>
-<v t="felix.20200927230157.1"><vh>getAllText</vh></v>
-<v t="felix.20200927230159.1"><vh>getInsertPoint</vh></v>
-<v t="felix.20200927230200.1"><vh>getSelectedText</vh></v>
-<v t="felix.20200927230202.1"><vh>getSelectionRange</vh></v>
-<v t="felix.20200927230204.1"><vh>getXScrollPosition</vh></v>
-<v t="felix.20200927230206.1"><vh>getYScrollPosition</vh></v>
-<v t="felix.20200927230207.1"><vh>hasSelection</vh></v>
-<v t="felix.20200927230209.1"><vh>insert</vh></v>
-<v t="felix.20200927230210.1"><vh>see</vh></v>
-<v t="felix.20200927230211.1"><vh>seeInsertPoint</vh></v>
-<v t="felix.20200927230213.1"><vh>selectAllText</vh></v>
-<v t="felix.20200927230216.1"><vh>setAllText</vh></v>
-<v t="felix.20200927230217.1"><vh>setFocus</vh></v>
-<v t="felix.20200927230218.1"><vh>setInsertPoint</vh></v>
-<v t="felix.20200927230220.1"><vh>setSelectionRange</vh></v>
-<v t="felix.20200927230222.1"><vh>setXScrollPosition</vh></v>
-<v t="felix.20200927230223.1"><vh>setYScrollPosition</vh></v>
-<v t="felix.20200927230225.1"><vh>tag_configure</vh></v>
-<v t="felix.20200927230226.1"><vh>toPythonIndex</vh></v>
-<v t="felix.20200927230228.1"><vh>toPythonIndexRowCol</vh></v>
+<v t="felix.20200928174406.1"><vh>class IntegTextWrapper</vh>
+<v t="felix.20200928174406.2"><vh>stw.ctor</vh></v>
+<v t="felix.20200928174406.3"><vh>stw.Clipboard</vh></v>
+<v t="felix.20200928174406.4"><vh>stw.Do-nothings</vh></v>
+<v t="felix.20200928174406.5"><vh>stw.Text</vh>
+<v t="felix.20200928174406.6"><vh>stw.appendText</vh></v>
+<v t="felix.20200928174406.7"><vh>stw.delete</vh></v>
+<v t="felix.20200928174406.8"><vh>stw.deleteTextSelection</vh></v>
+<v t="felix.20200928174406.9"><vh>stw.get</vh></v>
+<v t="felix.20200928174406.10"><vh>stw.getAllText</vh></v>
+<v t="felix.20200928174406.11"><vh>stw.getInsertPoint</vh></v>
+<v t="felix.20200928174406.12"><vh>stw.getSelectedText</vh></v>
+<v t="felix.20200928174406.13"><vh>stw.getSelectionRange</vh></v>
+<v t="felix.20200928174406.14"><vh>stw.hasSelection</vh></v>
+<v t="felix.20200928174406.15"><vh>stw.insert</vh></v>
+<v t="felix.20200928174406.16"><vh>stw.selectAllText</vh></v>
+<v t="felix.20200928174406.17"><vh>stw.setAllText</vh></v>
+<v t="felix.20200928174406.18"><vh>stw.setInsertPoint</vh></v>
+<v t="felix.20200928174406.19"><vh>stw.setSelectionRange</vh></v>
+<v t="felix.20200928174406.20"><vh>stw.toPythonIndex</vh></v>
+<v t="felix.20200928174406.21"><vh>stw.toPythonIndexRowCol</vh></v>
+</v>
 </v>
 <v t="felix.20191126232434.4"><vh>class LeoBridgeIntegController</vh>
 <v t="felix.20191126232434.5"><vh>__init__</vh></v>
@@ -475,6 +466,7 @@
 </v>
 <v t="felix.20200719030842.1"><vh>Body Editing</vh>
 <v t="felix.20200719025231.32"><vh>triggerBodySave</vh></v>
+<v t="felix.20200928133238.1"><vh>_bodySaveSelection</vh></v>
 <v t="felix.20200719025231.33"><vh>_bodySaveDocument</vh></v>
 </v>
 <v t="felix.20200719030902.1"><vh>Refresh UI</vh>
@@ -4500,6 +4492,9 @@ print('done')</t>
 
     if self.commander:
         self.commander.closed = False
+        if not w_found:
+            # is new so also replace wrapper
+            self.commander.frame.body.wrapper = IntegTextWrapper(self.commander, "integBody", self.g)
 
         self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
@@ -9255,7 +9250,7 @@ export class LeoIntegration {
 
     // * Selection
     private _selectionGnx: string = "";
-    private _selection: vscode.Selection | undefined;
+    private _selection: vscode.Selection | undefined; // Has "start", "end" positions, and also contains a 'active' position which is the cursor position.
 
     private _bodyUri: vscode.Uri = utils.strToLeoUri("");
     get bodyUri(): vscode.Uri {
@@ -10649,7 +10644,7 @@ public sendConfigToServer(p_config: ConfigMembers): void {
                 self.commander = self.bridge.openLeoFile(i_file)  # create self.commander
         if self.commander:
             self.commander.closed = False
-            self.commander.frame.body.wrapper = Wrapper(self.commander)
+            self.commander.frame.body.wrapper = IntegTextWrapper(self.commander, "integBody", self.g)
 
     # Done with the last one, it's now the selected commander. Check again just in case.
     if self.commander:
@@ -12065,12 +12060,6 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 <t tx="felix.20200924224017.1"></t>
 <t tx="felix.20200924224100.1"></t>
 <t tx="felix.20200924224219.1"></t>
-<t tx="felix.20200926235854.1">class Wrapper:
-    """LeoInteg class that implements the wrapper api used throughout Leo's core."""
-
-    @others
-
-</t>
 <t tx="felix.20200927213534.1">def _getScript(self, c, p,
                useSelectedText=True,
                forcePythonSentinels=True,
@@ -12093,8 +12082,8 @@ public sendConfigToServer(p_config: ConfigMembers): void {
         s = self.g.removeExtraLws(s, c.tab_width)
         s = self.g.extractExecutableString(c, p, s)
         script = self.g.composeScript(c, p, s,
-                                 forcePythonSentinels=forcePythonSentinels,
-                                 useSentinels=useSentinels)
+                                      forcePythonSentinels=forcePythonSentinels,
+                                      useSentinels=useSentinels)
     except Exception:
         self.g.es_print("unexpected exception in g.getScript")
         self.g.es_exception()
@@ -12124,138 +12113,6 @@ public sendConfigToServer(p_config: ConfigMembers): void {
     return self.sendLeoBridgePackage("bodySelection", p_bodySelection)
 
 </t>
-<t tx="felix.20200927230134.1">def __init__(self, c):
-    print("Creating wrapper", flush=True)
-    pass
-
-</t>
-<t tx="felix.20200927230137.1">def appendText(self, s):
-    print("appendText", flush=True)
-
-</t>
-<t tx="felix.20200927230140.1">def clipboard_append(self, s):
-    print("clipboard_append", flush=True)
-
-</t>
-<t tx="felix.20200927230143.1">def clipboard_clear(self):
-    print("clipboard_clear", flush=True)
-
-</t>
-<t tx="felix.20200927230145.1">def delete(self, i, j=None):
-    print("delete", flush=True)
-
-</t>
-<t tx="felix.20200927230148.1">def deleteTextSelection(self):
-    print("deleteTextSelection", flush=True)
-
-</t>
-<t tx="felix.20200927230150.1">def disable(self):
-    print("disable", flush=True)
-
-</t>
-<t tx="felix.20200927230152.1">def enable(self, enabled=True):
-    print("enable", flush=True)
-
-</t>
-<t tx="felix.20200927230153.1">def flashCharacter(self, i, bg='white', fg='red', flashes=3, delay=75):
-    print("flashCharacter", flush=True)
-
-</t>
-<t tx="felix.20200927230155.1">def get(self, i, j):
-    print("get", flush=True)
-    return ''
-
-</t>
-<t tx="felix.20200927230157.1">def getAllText(self):
-    print("getAllText", flush=True)
-    return ''
-
-</t>
-<t tx="felix.20200927230159.1">def getInsertPoint(self):
-    print("getInsertPoint", flush=True)
-    return 0
-
-</t>
-<t tx="felix.20200927230200.1">def getSelectedText(self):
-    print("getSelectedText", flush=True)
-    return 'firstLine\n#secondline\ng.es("from wrapper test class") '  # test
-
-</t>
-<t tx="felix.20200927230202.1">def getSelectionRange(self):
-    print("getSelectionRange", flush=True)
-    return (1, 54)  # test
-
-</t>
-<t tx="felix.20200927230204.1">def getXScrollPosition(self):
-    print("getXScrollPosition", flush=True)
-    return 0
-
-</t>
-<t tx="felix.20200927230206.1">def getYScrollPosition(self): 
-    print("getYScrollPosition", flush=True)
-    return 0
-
-</t>
-<t tx="felix.20200927230207.1">def hasSelection(self):
-    print("hasSelection", flush=True)
-    return True  # test
-
-</t>
-<t tx="felix.20200927230209.1">def insert(self, i, s): 
-    print("insert", flush=True)
-
-</t>
-<t tx="felix.20200927230210.1">def see(self, i): 
-    print("see", flush=True)
-
-</t>
-<t tx="felix.20200927230211.1">def seeInsertPoint(self):
-    print("seeInsertPoint", flush=True)
-
-</t>
-<t tx="felix.20200927230213.1">def selectAllText(self, insert=None):
-    print("selectAllText", flush=True)
-
-</t>
-<t tx="felix.20200927230216.1">def setAllText(self, s):
-    print("setAllText", flush=True)
-
-</t>
-<t tx="felix.20200927230217.1">def setFocus(self):
-    print("setFocus", flush=True)
-    pass  # Required: sets the focus to wrapper.widget.
-
-</t>
-<t tx="felix.20200927230218.1">def setInsertPoint(self, pos, s=None):
-    print("setInsertPoint", flush=True)
-
-</t>
-<t tx="felix.20200927230220.1">def setSelectionRange(self, i, j, insert=None):
-    print("setSelectionRange", flush=True)
-
-</t>
-<t tx="felix.20200927230222.1">def setXScrollPosition(self, i):
-    print("setXScrollPosition", flush=True)
-
-</t>
-<t tx="felix.20200927230223.1">def setYScrollPosition(self, i):
-    print("setYScrollPosition", flush=True)
-
-</t>
-<t tx="felix.20200927230225.1">def tag_configure(self, colorName, **keys):
-    print("tag_configure", flush=True)
-
-</t>
-<t tx="felix.20200927230226.1">def toPythonIndex(self, index):
-    print("toPythonIndex", flush=True)
-    return 0
-
-</t>
-<t tx="felix.20200927230228.1">def toPythonIndexRowCol(self, index):
-    print("toPythonIndexRowCol", flush=True)
-    return (0, 0, 0)
-
-</t>
 <t tx="felix.20200928004727.1">/**
  * * Handles detection of the active editor's selection change or cursor position
  */
@@ -12264,12 +12121,230 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
     if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
         // console.log('Changed selection length', p_event.selections.length);
         if (p_event.selections.length) {
-            console.log(p_event.selections[0]);
-
+            console.log(p_event.selections[0].start, p_event.selections[0].end);
+            this._selection = p_event.selections[0];
+            this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
         }
 
     }
 }
+
+</t>
+<t tx="felix.20200928133238.1">public _bodySaveSelection(): void {
+    //
+}
+
+</t>
+<t tx="felix.20200928174406.1">class IntegTextWrapper:
+    """
+    A class that represents text as a Python string.
+    Modified from Leo's StringTextWrapper class source
+    """
+
+    @others
+
+</t>
+<t tx="felix.20200928174406.10">def getAllText(self):
+    """IntegTextWrapper."""
+    print("getAllText", flush=True)
+    s = self.s
+    return self.g.checkUnicode(s)
+
+</t>
+<t tx="felix.20200928174406.11">def getInsertPoint(self):
+    """IntegTextWrapper."""
+    print("getInsertPoint", flush=True)
+    i = self.ins
+    if i is None:
+        if self.virtualInsertPoint is None:
+            i = 0
+        else:
+            i = self.virtualInsertPoint
+    self.virtualInsertPoint = i
+    return i
+
+</t>
+<t tx="felix.20200928174406.12">def getSelectedText(self):
+    """IntegTextWrapper."""
+    print("getSelectedText", flush=True)
+    i, j = self.sel
+    s = self.s[i:j]
+    return self.g.checkUnicode(s)
+
+</t>
+<t tx="felix.20200928174406.13">def getSelectionRange(self, sort=True):
+    """Return the selected range of the widget."""
+    print("getSelectionRange", flush=True)
+    sel = self.sel
+    if len(sel) == 2 and sel[0] &gt;= 0 and sel[1] &gt;= 0:
+        i, j = sel
+        if sort and i &gt; j:
+            sel = j, i  # Bug fix: 10/5/07
+        return sel
+    i = self.ins
+    return i, i
+
+</t>
+<t tx="felix.20200928174406.14">def hasSelection(self):
+    """IntegTextWrapper."""
+    print("hasSelection", flush=True)
+    i, j = self.getSelectionRange()
+    return i != j
+
+</t>
+<t tx="felix.20200928174406.15">def insert(self, i, s):
+    """IntegTextWrapper."""
+    print("insert", flush=True)
+    i = self.toPythonIndex(i)
+    s1 = s
+    self.s = self.s[:i] + s1 + self.s[i:]
+    i += len(s1)
+    self.ins = i
+    self.sel = i, i
+
+</t>
+<t tx="felix.20200928174406.16">def selectAllText(self, insert=None):
+    """IntegTextWrapper."""
+    print("selectAllText", flush=True)
+    self.setSelectionRange(0, 'end', insert=insert)
+
+</t>
+<t tx="felix.20200928174406.17">def setAllText(self, s):
+    """IntegTextWrapper."""
+    print("setAllText", flush=True)
+    self.s = s
+    i = len(self.s)
+    self.ins = i
+    self.sel = i, i
+
+</t>
+<t tx="felix.20200928174406.18">def setInsertPoint(self, pos, s=None):
+    """IntegTextWrapper."""
+    print("setInsertPoint", flush=True)
+    self.virtualInsertPoint = i = self.toPythonIndex(pos)
+    self.ins = i
+    self.sel = i, i
+
+</t>
+<t tx="felix.20200928174406.19">def setSelectionRange(self, i, j, insert=None):
+    """IntegTextWrapper."""
+    print("setSelectionRange", flush=True)
+    i, j = self.toPythonIndex(i), self.toPythonIndex(j)
+    self.sel = i, j
+    self.ins = j if insert is None else self.toPythonIndex(insert)
+
+</t>
+<t tx="felix.20200928174406.2">def __init__(self, c, name, g):
+    """Ctor for the IntegTextWrapper class."""
+    self.c = c
+    self.name = name
+    self.g = g  # Should g be totally global across all leoIntegration classes?
+    self.ins = 0
+    self.sel = 0, 0
+    self.s = ''
+    self.supportsHighLevelInterface = True
+    self.widget = None  # This ivar must exist, and be None.
+
+def __repr__(self):
+    return f"&lt;IntegTextWrapper: {id(self)} {self.name}&gt;"
+
+def getName(self):
+    """IntegTextWrapper."""
+    return self.name  # Essential.
+
+</t>
+<t tx="felix.20200928174406.20">def toPythonIndex(self, index):
+    """IntegTextWrapper."""
+    print("toPythonIndex", flush=True)
+    return self.g.toPythonIndex(self.s, index)
+
+</t>
+<t tx="felix.20200928174406.21">def toPythonIndexRowCol(self, index):
+    """IntegTextWrapper."""
+    print("toPythonIndexRowCol", flush=True)
+    s = self.getAllText()
+    i = self.toPythonIndex(index)
+    row, col = self.g.convertPythonIndexToRowCol(s, i)
+    return i, row, col
+
+</t>
+<t tx="felix.20200928174406.3">def clipboard_clear(self):
+    self.g.app.gui.replaceClipboardWith('')
+
+def clipboard_append(self, s):
+    s1 = self.g.app.gui.getTextFromClipboard()
+    self.g.app.gui.replaceClipboardWith(s1 + s)
+
+</t>
+<t tx="felix.20200928174406.4">def flashCharacter(self, i, bg='white', fg='red', flashes=3, delay=75): pass
+
+def getXScrollPosition(self):
+    print("getXScrollPosition", flush=True)
+    return 0
+
+def getYScrollPosition(self): 
+    print("getYScrollPosition", flush=True)
+    return 0
+
+def see(self, i): pass
+
+def seeInsertPoint(self): pass
+
+def setFocus(self): pass
+
+def setStyleClass(self, name): pass
+
+def setXScrollPosition(self, i):
+    print("setXScrollPosition", flush=True)
+
+def setYScrollPosition(self, i):
+    print("setYScrollPosition", flush=True)
+
+def tag_configure(self, colorName, **keys): pass
+
+</t>
+<t tx="felix.20200928174406.5"></t>
+<t tx="felix.20200928174406.6">def appendText(self, s):
+    """IntegTextWrapper."""
+    print("appendText", flush=True)
+    self.s = self.s + self.g.toUnicode(s)
+    # defensive
+    self.ins = len(self.s)
+    self.sel = self.ins, self.ins
+
+</t>
+<t tx="felix.20200928174406.7">def delete(self, i, j=None):
+    """IntegTextWrapper."""
+    print("delete", flush=True)
+    i = self.toPythonIndex(i)
+    if j is None:
+        j = i + 1
+    j = self.toPythonIndex(j)
+    # This allows subclasses to use this base class method.
+    if i &gt; j:
+        i, j = j, i
+    s = self.getAllText()
+    self.setAllText(s[:i] + s[j:])
+    # Bug fix: 2011/11/13: Significant in external tests.
+    self.setSelectionRange(i, i, insert=i)
+
+</t>
+<t tx="felix.20200928174406.8">def deleteTextSelection(self):
+    """IntegTextWrapper."""
+    print("deleteTextSelection", flush=True)
+    i, j = self.getSelectionRange()
+    self.delete(i, j)
+
+</t>
+<t tx="felix.20200928174406.9">def get(self, i, j=None):
+    """IntegTextWrapper."""
+    print("get", flush=True)
+    i = self.toPythonIndex(i)
+    if j is None:
+        j = i + 1
+    j = self.toPythonIndex(j)
+    s = self.s[i:j]
+    return self.g.toUnicode(s)
 
 </t>
 </tnodes>

@@ -94,7 +94,7 @@ export class LeoIntegration {
 
     // * Selection
     private _selectionGnx: string = "";
-    private _selection: vscode.Selection | undefined;
+    private _selection: vscode.Selection | undefined; // Has "start", "end" positions, and also contains a 'active' position which is the cursor position.
 
     private _bodyUri: vscode.Uri = utils.strToLeoUri("");
     get bodyUri(): vscode.Uri {
@@ -742,8 +742,9 @@ export class LeoIntegration {
         if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
             // console.log('Changed selection length', p_event.selections.length);
             if (p_event.selections.length) {
-                console.log(p_event.selections[0]);
-
+                console.log(p_event.selections[0].start, p_event.selections[0].end);
+                this._selection = p_event.selections[0];
+                this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
             }
 
         }
@@ -792,6 +793,10 @@ export class LeoIntegration {
             this._bodyLastChangedDocument = undefined;
             return Promise.resolve(true);
         }
+    }
+
+    public _bodySaveSelection(): void {
+        //
     }
 
     /**

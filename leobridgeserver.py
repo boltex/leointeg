@@ -412,56 +412,38 @@ class ExternalFilesController:
         return
 
 
-class Wrapper:
-    """LeoInteg class that implements the wrapper api used throughout Leo's core."""
+class IntegTextWrapper:
+    """
+    A class that represents text as a Python string.
+    Modified from Leo's StringTextWrapper class source
+    """
 
-    def __init__(self, c):
-        print("Creating wrapper", flush=True)
-        pass
+    def __init__(self, c, name, g):
+        """Ctor for the IntegTextWrapper class."""
+        self.c = c
+        self.name = name
+        self.g = g  # Should g be totally global across all leoIntegration classes?
+        self.ins = 0
+        self.sel = 0, 0
+        self.s = ''
+        self.supportsHighLevelInterface = True
+        self.widget = None  # This ivar must exist, and be None.
 
-    def appendText(self, s):
-        print("appendText", flush=True)
+    def __repr__(self):
+        return f"<IntegTextWrapper: {id(self)} {self.name}>"
 
-    def clipboard_append(self, s):
-        print("clipboard_append", flush=True)
+    def getName(self):
+        """IntegTextWrapper."""
+        return self.name  # Essential.
 
     def clipboard_clear(self):
-        print("clipboard_clear", flush=True)
+        self.g.app.gui.replaceClipboardWith('')
 
-    def delete(self, i, j=None):
-        print("delete", flush=True)
+    def clipboard_append(self, s):
+        s1 = self.g.app.gui.getTextFromClipboard()
+        self.g.app.gui.replaceClipboardWith(s1 + s)
 
-    def deleteTextSelection(self):
-        print("deleteTextSelection", flush=True)
-
-    def disable(self):
-        print("disable", flush=True)
-
-    def enable(self, enabled=True):
-        print("enable", flush=True)
-
-    def flashCharacter(self, i, bg='white', fg='red', flashes=3, delay=75):
-        print("flashCharacter", flush=True)
-
-    def get(self, i, j):
-        print("get", flush=True)
-        return ''
-
-    def getAllText(self):
-        print("getAllText", flush=True)
-        return ''
-
-    def getInsertPoint(self):
-        print("getInsertPoint", flush=True)
-        return 0
-
-    def getSelectedText(self):
-        print("getSelectedText", flush=True)
-        return 'firstLine\n#secondline\ng.es("from wrapper test class") '  # test
-
-    def getSelectionRange(self):
-        print("getSelectionRange", flush=True)
-        return (1, 54)  # test
+    def flashCharacter(self, i, bg='white', fg='red', flashes=3, delay=75): pass
 
     def getXScrollPosition(self):
         print("getXScrollPosition", flush=True)
@@ -471,34 +453,13 @@ class Wrapper:
         print("getYScrollPosition", flush=True)
         return 0
 
-    def hasSelection(self):
-        print("hasSelection", flush=True)
-        return True  # test
+    def see(self, i): pass
 
-    def insert(self, i, s): 
-        print("insert", flush=True)
+    def seeInsertPoint(self): pass
 
-    def see(self, i): 
-        print("see", flush=True)
+    def setFocus(self): pass
 
-    def seeInsertPoint(self):
-        print("seeInsertPoint", flush=True)
-
-    def selectAllText(self, insert=None):
-        print("selectAllText", flush=True)
-
-    def setAllText(self, s):
-        print("setAllText", flush=True)
-
-    def setFocus(self):
-        print("setFocus", flush=True)
-        pass  # Required: sets the focus to wrapper.widget.
-
-    def setInsertPoint(self, pos, s=None):
-        print("setInsertPoint", flush=True)
-
-    def setSelectionRange(self, i, j, insert=None):
-        print("setSelectionRange", flush=True)
+    def setStyleClass(self, name): pass
 
     def setXScrollPosition(self, i):
         print("setXScrollPosition", flush=True)
@@ -506,16 +467,139 @@ class Wrapper:
     def setYScrollPosition(self, i):
         print("setYScrollPosition", flush=True)
 
-    def tag_configure(self, colorName, **keys):
-        print("tag_configure", flush=True)
+    def tag_configure(self, colorName, **keys): pass
+
+    def appendText(self, s):
+        """IntegTextWrapper."""
+        print("appendText", flush=True)
+        self.s = self.s + self.g.toUnicode(s)
+        # defensive
+        self.ins = len(self.s)
+        self.sel = self.ins, self.ins
+
+    def delete(self, i, j=None):
+        """IntegTextWrapper."""
+        print("delete", flush=True)
+        i = self.toPythonIndex(i)
+        if j is None:
+            j = i + 1
+        j = self.toPythonIndex(j)
+        # This allows subclasses to use this base class method.
+        if i > j:
+            i, j = j, i
+        s = self.getAllText()
+        self.setAllText(s[:i] + s[j:])
+        # Bug fix: 2011/11/13: Significant in external tests.
+        self.setSelectionRange(i, i, insert=i)
+
+    def deleteTextSelection(self):
+        """IntegTextWrapper."""
+        print("deleteTextSelection", flush=True)
+        i, j = self.getSelectionRange()
+        self.delete(i, j)
+
+    def get(self, i, j=None):
+        """IntegTextWrapper."""
+        print("get", flush=True)
+        i = self.toPythonIndex(i)
+        if j is None:
+            j = i + 1
+        j = self.toPythonIndex(j)
+        s = self.s[i:j]
+        return self.g.toUnicode(s)
+
+    def getAllText(self):
+        """IntegTextWrapper."""
+        print("getAllText", flush=True)
+        s = self.s
+        return self.g.checkUnicode(s)
+
+    def getInsertPoint(self):
+        """IntegTextWrapper."""
+        print("getInsertPoint", flush=True)
+        i = self.ins
+        if i is None:
+            if self.virtualInsertPoint is None:
+                i = 0
+            else:
+                i = self.virtualInsertPoint
+        self.virtualInsertPoint = i
+        return i
+
+    def getSelectedText(self):
+        """IntegTextWrapper."""
+        print("getSelectedText", flush=True)
+        i, j = self.sel
+        s = self.s[i:j]
+        return self.g.checkUnicode(s)
+
+    def getSelectionRange(self, sort=True):
+        """Return the selected range of the widget."""
+        print("getSelectionRange", flush=True)
+        sel = self.sel
+        if len(sel) == 2 and sel[0] >= 0 and sel[1] >= 0:
+            i, j = sel
+            if sort and i > j:
+                sel = j, i  # Bug fix: 10/5/07
+            return sel
+        i = self.ins
+        return i, i
+
+    def hasSelection(self):
+        """IntegTextWrapper."""
+        print("hasSelection", flush=True)
+        i, j = self.getSelectionRange()
+        return i != j
+
+    def insert(self, i, s):
+        """IntegTextWrapper."""
+        print("insert", flush=True)
+        i = self.toPythonIndex(i)
+        s1 = s
+        self.s = self.s[:i] + s1 + self.s[i:]
+        i += len(s1)
+        self.ins = i
+        self.sel = i, i
+
+    def selectAllText(self, insert=None):
+        """IntegTextWrapper."""
+        print("selectAllText", flush=True)
+        self.setSelectionRange(0, 'end', insert=insert)
+
+    def setAllText(self, s):
+        """IntegTextWrapper."""
+        print("setAllText", flush=True)
+        self.s = s
+        i = len(self.s)
+        self.ins = i
+        self.sel = i, i
+
+    def setInsertPoint(self, pos, s=None):
+        """IntegTextWrapper."""
+        print("setInsertPoint", flush=True)
+        self.virtualInsertPoint = i = self.toPythonIndex(pos)
+        self.ins = i
+        self.sel = i, i
+
+    def setSelectionRange(self, i, j, insert=None):
+        """IntegTextWrapper."""
+        print("setSelectionRange", flush=True)
+        i, j = self.toPythonIndex(i), self.toPythonIndex(j)
+        self.sel = i, j
+        self.ins = j if insert is None else self.toPythonIndex(insert)
 
     def toPythonIndex(self, index):
+        """IntegTextWrapper."""
         print("toPythonIndex", flush=True)
-        return 0
+        return self.g.toPythonIndex(self.s, index)
 
     def toPythonIndexRowCol(self, index):
+        """IntegTextWrapper."""
         print("toPythonIndexRowCol", flush=True)
-        return (0, 0, 0)
+        s = self.getAllText()
+        i = self.toPythonIndex(index)
+        row, col = self.g.convertPythonIndexToRowCol(s, i)
+        return i, row, col
 
 
 class LeoBridgeIntegController:
@@ -600,8 +684,8 @@ class LeoBridgeIntegController:
             s = self.g.removeExtraLws(s, c.tab_width)
             s = self.g.extractExecutableString(c, p, s)
             script = self.g.composeScript(c, p, s,
-                                     forcePythonSentinels=forcePythonSentinels,
-                                     useSentinels=useSentinels)
+                                          forcePythonSentinels=forcePythonSentinels,
+                                          useSentinels=useSentinels)
         except Exception:
             self.g.es_print("unexpected exception in g.getScript")
             self.g.es_exception()
@@ -826,6 +910,9 @@ class LeoBridgeIntegController:
 
         if self.commander:
             self.commander.closed = False
+            if not w_found:
+                # is new so also replace wrapper
+                self.commander.frame.body.wrapper = IntegTextWrapper(self.commander, "integBody", self.g)
 
             self._create_gnx_to_vnode()
             w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
@@ -857,7 +944,7 @@ class LeoBridgeIntegController:
                     self.commander = self.bridge.openLeoFile(i_file)  # create self.commander
             if self.commander:
                 self.commander.closed = False
-                self.commander.frame.body.wrapper = Wrapper(self.commander)
+                self.commander.frame.body.wrapper = IntegTextWrapper(self.commander, "integBody", self.g)
 
         # Done with the last one, it's now the selected commander. Check again just in case.
         if self.commander:
