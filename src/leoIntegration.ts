@@ -1267,10 +1267,14 @@ export class LeoIntegration {
 
             this._bodyTextDocument = p_document;
 
+            // * body editor is opened with the right content - now set its other attributes for
+            // * proper usage : set its language, and restore the proper cursor position
             if (this.lastSelectedNode) {
-                this.sendAction(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
+                this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
                     .then(p_result => {
-                        let w_language = p_result.language;
+                        let w_language = p_result.bodyStates!.language;
+                        console.log('row col', p_result.bodyStates!.row, p_result.bodyStates!.col);
+
                         // TODO : Move those exception in "constants.ts"
                         // ! Exceptions
                         switch (p_result.language) {

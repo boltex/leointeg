@@ -285,21 +285,22 @@ export class Constants {
 
     /**
      * * Commands for leobridgeserver.py
-     * TODO : Proof of concept leoCommand
+     *
      */
     public static LEOBRIDGE = {
         APPLY_CONFIG: "applyConfig",
         ASK_RESULT: "askResult",
         GET_ALL_GNX: "getAllGnx",
         GET_BODY_LENGTH: "getBodyLength",
+        GET_BODY_STATES: "getBodyStates",
         GET_BODY: "getBody",
         GET_PNODE: "getPNode",
         GET_PARENT: "getParent",
         GET_CHILDREN: "getChildren",
-        GET_LANGUAGE: "getLanguage",
         GET_SELECTED_NODE: "getSelectedNode",
         SET_SELECTED_NODE: "setSelectedNode",
         SET_BODY: "setBody",
+        SET_SELECTION: "setSelection",
         SET_HEADLINE: "setNewHeadline",
         EXPAND_NODE: "expandNode",
         COLLAPSE_NODE: "collapseNode",
@@ -365,7 +366,7 @@ export class Constants {
         DIFF_MARKED_NODES: "diffMarkedNodes", // #23 @boltex
         MARK_CHANGED_ITEMS: "markChangedItems", // #23 @boltex
         MARK_SUBHEADS: "markSubheads", // #23 @boltex
-        UNMARK_ALL: "unmarkAll", // #23 @boltex
+        UNMARK_ALL: "unmarkAll", // TODO : #23 @boltex
         CLONE_MARKED_NODES: "cloneMarkedNodes", // #23 @boltex
         DELETE_MARKED_NODES: "deleteMarkedNodes", // #23 @boltex
         MOVE_MARKED_NODES: "moveMarkedNodes" // #23 @boltex

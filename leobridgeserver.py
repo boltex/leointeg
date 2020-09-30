@@ -449,7 +449,7 @@ class IntegTextWrapper:
         print("getXScrollPosition", flush=True)
         return 0
 
-    def getYScrollPosition(self): 
+    def getYScrollPosition(self):
         print("getYScrollPosition", flush=True)
         return 0
 
@@ -2372,38 +2372,39 @@ class LeoBridgeIntegController:
         self.commander.selectVisNext()
         return self._outputPNode(self.commander.p)
 
-    def getLanguage(self, p_ap):
+    def getBodyStates(self, p_ap):
         """
-        Finds the language in effect at top of body for position p.
-
-        Return type is lowercase 'language' non-empty string.
+        Finds the language in effect at top of body for position p,
+        return type is lowercase 'language' non-empty string.
+        Also returns the saved cursor position from last time node was accessed.
         """
         if not p_ap:
             return self._outputError("Error in getLanguage, no param p_ap")
         w_p = self._ap_to_p(p_ap)
         if not w_p:
-            return self.sendLeoBridgePackage("language", "plain")
+            states = {
+                'language': 'plain',
+                'row': 0,
+                'col': 0
+            }
+        else:
+            c, g = self.commander, self.g
+            aList = g.get_directives_dict_list(w_p)
+            d = g.scanAtCommentAndAtLanguageDirectives(aList)
 
-        c, g = self.commander, self.g
-        aList = g.get_directives_dict_list(w_p)
-        d = g.scanAtCommentAndAtLanguageDirectives(aList)
-        # TODO : Remove one of those branch after finishing color-syntax features
-        if 1:  # Exactly as in Leo.
             language = (
                 d and d.get('language') or
                 g.getLanguageFromAncestorAtFileNode(w_p) or
                 c.config.getString('target-language') or
                 'plain'
             )
-            return self.sendLeoBridgePackage("language", language.lower())
-        else:  # Return both an explicit language and a default language.
-            language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(w_p) or 'none'
-            default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
-            result = {
+            i, row, col = c.frame.body.wrapper.toPythonIndexRowCol(w_p.v.insertSpot)
+            states = {
                 'language': language.lower(),
-                'default': default,
+                'row': row,
+                'col': col
             }
-            return self.sendLeoBridgePackage("result", result)
+        return self.sendLeoBridgePackage("bodyStates", states)
 
     def getPNode(self, p_ap):
         '''EMIT OUT a node, don't select it'''
@@ -2472,14 +2473,6 @@ class LeoBridgeIntegController:
         # TODO : May need to signal inexistent by self.sendLeoBridgePackage()
         return self.sendLeoBridgePackage("bodyLength", 0)  # empty as default
 
-    def getSelection(self, p_unused):
-        '''
-        Output the currently selected node's body selection states,
-        saved on it's own commander.
-        '''
-        pass
-        return self._outputSelectionData(self.commander)
-
     def setNewBody(self, p_body):
         '''Change Body of selected node'''
         # TODO : This method is unused for now? Remove if unnecessary.
@@ -2507,11 +2500,13 @@ class LeoBridgeIntegController:
 
     def setSelection(self, p_package):
         '''
-        Set selection start and end for the currently selected node's body.
-        Save those values on the commander to get them back when switching documents
+        Set cursor position, along with selection start and end for the currently selected node's body.
+        Save those values on the commander's body wrapper class to get them back when switching documents.
         '''
         pass
+        print("Set Selection into wrapper!!")
         return self._outputPNode(self.commander.p)
+
 
     def setNewHeadline(self, p_package):
         '''Change Headline of a node'''

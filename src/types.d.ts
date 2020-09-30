@@ -145,7 +145,12 @@ export interface LeoBridgePackage {
     allGnx?: string[];
     bodyLength?: number;
     bodyData?: string;
-    language?: string;
+    bodyStates?: {
+        language: string;
+        row: number;
+        col: number;
+    }
+    language: string;
     node?: ArchivedPosition;
     nodes?: ArchivedPosition[];
     states?: LeoPackageStates;

@@ -167,13 +167,11 @@
 <v t="felix.20200924211138.1"><vh>redo</vh></v>
 <v t="felix.20200924211142.1"><vh>executeScriptPackage</vh></v>
 </v>
-<v t="felix.20200924224219.1"><vh>UI interaction</vh>
-<v t="felix.20200619165641.1"><vh>getStates</vh></v>
-<v t="felix.20200924213359.1"><vh>pageUp</vh></v>
-<v t="felix.20200924213606.1"><vh>pageDown</vh></v>
-<v t="felix.20200924213612.1"><vh>getLanguage</vh></v>
-</v>
 <v t="felix.20191128001054.1"><vh>Outline and Body Interaction</vh>
+<v t="felix.20200929215102.2"><vh>getStates</vh></v>
+<v t="felix.20200929215102.3"><vh>pageUp</vh></v>
+<v t="felix.20200929215102.4"><vh>pageDown</vh></v>
+<v t="felix.20200929215102.5"><vh>getBodyStates</vh></v>
 <v t="felix.20191126232434.15"><vh>getPNode</vh></v>
 <v t="felix.20191126232434.16"><vh>getChildren</vh></v>
 <v t="felix.20191126232434.17"><vh>getParent</vh></v>
@@ -181,10 +179,9 @@
 <v t="felix.20191201194046.1"><vh>getAllGnx</vh></v>
 <v t="felix.20191126232434.19"><vh>getBody</vh></v>
 <v t="felix.20191126232434.20"><vh>getBodyLength</vh></v>
-<v t="felix.20200927222851.1"><vh>getSelection</vh></v>
 <v t="felix.20191126232434.21"><vh>setNewBody</vh></v>
 <v t="felix.20191126232434.22"><vh>setBody</vh></v>
-<v t="felix.20200927222902.1"><vh>setSelection</vh></v>
+<v t="felix.20200929230231.1"><vh>setSelection</vh></v>
 <v t="felix.20191126232434.23"><vh>setNewHeadline</vh></v>
 <v t="felix.20191126232434.24"><vh>setSelectedNode</vh></v>
 <v t="felix.20191126232434.25"><vh>expandNode</vh></v>
@@ -645,6 +642,7 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
+<v t="felix.20191126232434.4"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -659,7 +657,9 @@ for command_name in sorted(d):
     func_name = getattr(func, '__func_name__', func.__name__)
     # print(f"{command_name:&gt;40} {func_name}")
     print(command_name)
-print('len(d)', len(d))</t>
+print('len(d)', len(d))
+
+</t>
 <t tx="ekr.20200722190504.1"></t>
 <t tx="ekr.20200722190517.1"></t>
 <t tx="ekr.20200724052304.1">c.backup_helper(sub_dir='leoInteg')
@@ -1897,7 +1897,9 @@ def is_significant(p):
 for p in c.all_unique_positions():
     if not is_significant(p) and not p.hasChildren():
         print(p.h)
-print('done')</t>
+print('done')
+
+</t>
 <t tx="ekr.20200815123601.1">@language json
 @tabwidth -2
 {
@@ -5474,36 +5476,6 @@ wsPort = 32125
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20200619165641.1">def getStates(self, p_package):
-    """
-    Gets the currently opened file's general states for UI enabled/disabled states
-    such as undo available, file changed/unchanged
-    """
-    w_states = {}
-    if self.commander:
-        try:
-            w_states["changed"] = self.commander.changed   # 'dirty/changed' member
-            w_states["canUndo"] = self.commander.canUndo()
-            w_states["canRedo"] = self.commander.canRedo()
-            w_states["canDemote"] = self.commander.canDemote()
-            w_states["canPromote"] = self.commander.canPromote()
-            w_states["canDehoist"] = self.commander.canDehoist()
-
-        except Exception as e:
-            self.g.trace('Error while getting states')
-            print("Error while getting states", flush=True)
-            print(str(e), flush=True)
-    else:
-        w_states["changed"] = False
-        w_states["canUndo"] = False
-        w_states["canRedo"] = False
-        w_states["canDemote"] = False
-        w_states["canPromote"] = False
-        w_states["canDehoist"] = False
-
-    return self.sendLeoBridgePackage("states", w_states)
-
-</t>
 <t tx="felix.20200622230608.1">def getOpenedFiles(self, p_package):
     '''Return array of opened file path/names to be used as openFile parameters to switch files'''
     w_files = []
@@ -5617,21 +5589,22 @@ public static ASYNC_ASK_RETURN_CODES = {
 </t>
 <t tx="felix.20200718020912.13">/**
  * * Commands for leobridgeserver.py
- * TODO : Proof of concept leoCommand
+ *
  */
 public static LEOBRIDGE = {
     APPLY_CONFIG: "applyConfig",
     ASK_RESULT: "askResult",
     GET_ALL_GNX: "getAllGnx",
     GET_BODY_LENGTH: "getBodyLength",
+    GET_BODY_STATES: "getBodyStates",
     GET_BODY: "getBody",
     GET_PNODE: "getPNode",
     GET_PARENT: "getParent",
     GET_CHILDREN: "getChildren",
-    GET_LANGUAGE: "getLanguage",
     GET_SELECTED_NODE: "getSelectedNode",
     SET_SELECTED_NODE: "setSelectedNode",
     SET_BODY: "setBody",
+    SET_SELECTION: "setSelection",
     SET_HEADLINE: "setNewHeadline",
     EXPAND_NODE: "expandNode",
     COLLAPSE_NODE: "collapseNode",
@@ -5697,7 +5670,7 @@ public static LEOBRIDGE = {
     DIFF_MARKED_NODES: "diffMarkedNodes", // #23 @boltex
     MARK_CHANGED_ITEMS: "markChangedItems", // #23 @boltex
     MARK_SUBHEADS: "markSubheads", // #23 @boltex
-    UNMARK_ALL: "unmarkAll", // #23 @boltex
+    UNMARK_ALL: "unmarkAll", // TODO : #23 @boltex
     CLONE_MARKED_NODES: "cloneMarkedNodes", // #23 @boltex
     DELETE_MARKED_NODES: "deleteMarkedNodes", // #23 @boltex
     MOVE_MARKED_NODES: "moveMarkedNodes" // #23 @boltex
@@ -8226,7 +8199,12 @@ export interface LeoBridgePackage {
     allGnx?: string[];
     bodyLength?: number;
     bodyData?: string;
-    language?: string;
+    bodyStates?: {
+        language: string;
+        row: number;
+        col: number;
+    }
+    language: string;
     node?: ArchivedPosition;
     nodes?: ArchivedPosition[];
     states?: LeoPackageStates;
@@ -9897,10 +9875,14 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
 
         this._bodyTextDocument = p_document;
 
+        // * body editor is opened with the right content - now set its other attributes for
+        // * proper usage : set its language, and restore the proper cursor position
         if (this.lastSelectedNode) {
-            this.sendAction(Constants.LEOBRIDGE.GET_LANGUAGE, this.lastSelectedNode.apJson)
+            this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
                 .then(p_result =&gt; {
-                    let w_language = p_result.language;
+                    let w_language = p_result.bodyStates!.language;
+                    console.log('row col', p_result.bodyStates!.row, p_result.bodyStates!.col);
+
                     // TODO : Move those exception in "constants.ts"
                     // ! Exceptions
                     switch (p_result.language) {
@@ -12004,62 +11986,11 @@ public sendConfigToServer(p_config: ConfigMembers): void {
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924213359.1">def pageUp(self, p_unused):
-    """Selects a node a couple of steps up in the tree to simulate page up"""
-    self.commander.selectVisBack()
-    self.commander.selectVisBack()
-    self.commander.selectVisBack()
-    return self._outputPNode(self.commander.p)
-
-</t>
-<t tx="felix.20200924213606.1">def pageDown(self, p_unused):
-    """Selects a node a couple of steps down in the tree to simulate page down"""
-    self.commander.selectVisNext()
-    self.commander.selectVisNext()
-    self.commander.selectVisNext()
-    return self._outputPNode(self.commander.p)
-
-</t>
-<t tx="felix.20200924213612.1">def getLanguage(self, p_ap):
-    """
-    Finds the language in effect at top of body for position p.
-
-    Return type is lowercase 'language' non-empty string.
-    """
-    if not p_ap:
-        return self._outputError("Error in getLanguage, no param p_ap")
-    w_p = self._ap_to_p(p_ap)
-    if not w_p:
-        return self.sendLeoBridgePackage("language", "plain")
-
-    c, g = self.commander, self.g
-    aList = g.get_directives_dict_list(w_p)
-    d = g.scanAtCommentAndAtLanguageDirectives(aList)
-    # TODO : Remove one of those branch after finishing color-syntax features
-    if 1:  # Exactly as in Leo.
-        language = (
-            d and d.get('language') or
-            g.getLanguageFromAncestorAtFileNode(w_p) or
-            c.config.getString('target-language') or
-            'plain'
-        )
-        return self.sendLeoBridgePackage("language", language.lower())
-    else:  # Return both an explicit language and a default language.
-        language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(w_p) or 'none'
-        default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
-        result = {
-            'language': language.lower(),
-            'default': default,
-        }
-        return self.sendLeoBridgePackage("result", result)
-
-</t>
 <t tx="felix.20200924223845.1"></t>
 <t tx="felix.20200924223910.1"></t>
 <t tx="felix.20200924223945.1"></t>
 <t tx="felix.20200924224017.1"></t>
 <t tx="felix.20200924224100.1"></t>
-<t tx="felix.20200924224219.1"></t>
 <t tx="felix.20200927213534.1">def _getScript(self, c, p,
                useSelectedText=True,
                forcePythonSentinels=True,
@@ -12089,24 +12020,6 @@ public sendConfigToServer(p_config: ConfigMembers): void {
         self.g.es_exception()
         script = ''
     return script
-
-</t>
-<t tx="felix.20200927222851.1">def getSelection(self, p_unused):
-    '''
-    Output the currently selected node's body selection states,
-    saved on it's own commander.
-    '''
-    pass
-    return self._outputSelectionData(self.commander)
-
-</t>
-<t tx="felix.20200927222902.1">def setSelection(self, p_package):
-    '''
-    Set selection start and end for the currently selected node's body.
-    Save those values on the commander to get them back when switching documents
-    '''
-    pass
-    return self._outputPNode(self.commander.p)
 
 </t>
 <t tx="felix.20200927224639.1">def _outputSelectionData(self, p_bodySelection):
@@ -12282,7 +12195,7 @@ def getXScrollPosition(self):
     print("getXScrollPosition", flush=True)
     return 0
 
-def getYScrollPosition(self): 
+def getYScrollPosition(self):
     print("getYScrollPosition", flush=True)
     return 0
 
@@ -12345,6 +12258,98 @@ def tag_configure(self, colorName, **keys): pass
     j = self.toPythonIndex(j)
     s = self.s[i:j]
     return self.g.toUnicode(s)
+
+</t>
+<t tx="felix.20200929215102.2">def getStates(self, p_package):
+    """
+    Gets the currently opened file's general states for UI enabled/disabled states
+    such as undo available, file changed/unchanged
+    """
+    w_states = {}
+    if self.commander:
+        try:
+            w_states["changed"] = self.commander.changed   # 'dirty/changed' member
+            w_states["canUndo"] = self.commander.canUndo()
+            w_states["canRedo"] = self.commander.canRedo()
+            w_states["canDemote"] = self.commander.canDemote()
+            w_states["canPromote"] = self.commander.canPromote()
+            w_states["canDehoist"] = self.commander.canDehoist()
+
+        except Exception as e:
+            self.g.trace('Error while getting states')
+            print("Error while getting states", flush=True)
+            print(str(e), flush=True)
+    else:
+        w_states["changed"] = False
+        w_states["canUndo"] = False
+        w_states["canRedo"] = False
+        w_states["canDemote"] = False
+        w_states["canPromote"] = False
+        w_states["canDehoist"] = False
+
+    return self.sendLeoBridgePackage("states", w_states)
+
+</t>
+<t tx="felix.20200929215102.3">def pageUp(self, p_unused):
+    """Selects a node a couple of steps up in the tree to simulate page up"""
+    self.commander.selectVisBack()
+    self.commander.selectVisBack()
+    self.commander.selectVisBack()
+    return self._outputPNode(self.commander.p)
+
+</t>
+<t tx="felix.20200929215102.4">def pageDown(self, p_unused):
+    """Selects a node a couple of steps down in the tree to simulate page down"""
+    self.commander.selectVisNext()
+    self.commander.selectVisNext()
+    self.commander.selectVisNext()
+    return self._outputPNode(self.commander.p)
+
+</t>
+<t tx="felix.20200929215102.5">def getBodyStates(self, p_ap):
+    """
+    Finds the language in effect at top of body for position p,
+    return type is lowercase 'language' non-empty string.
+    Also returns the saved cursor position from last time node was accessed.
+    """
+    if not p_ap:
+        return self._outputError("Error in getLanguage, no param p_ap")
+    w_p = self._ap_to_p(p_ap)
+    if not w_p:
+        states = {
+            'language': 'plain',
+            'row': 0,
+            'col': 0
+        }
+    else:
+        c, g = self.commander, self.g
+        aList = g.get_directives_dict_list(w_p)
+        d = g.scanAtCommentAndAtLanguageDirectives(aList)
+
+        language = (
+            d and d.get('language') or
+            g.getLanguageFromAncestorAtFileNode(w_p) or
+            c.config.getString('target-language') or
+            'plain'
+        )
+        i, row, col = c.frame.body.wrapper.toPythonIndexRowCol(w_p.v.insertSpot)
+        states = {
+            'language': language.lower(),
+            'row': row,
+            'col': col
+        }
+    return self.sendLeoBridgePackage("bodyStates", states)
+
+</t>
+<t tx="felix.20200929230231.1">def setSelection(self, p_package):
+    '''
+    Set cursor position, along with selection start and end for the currently selected node's body.
+    Save those values on the commander's body wrapper class to get them back when switching documents.
+    '''
+    pass
+    print("Set Selection into wrapper!!")
+    return self._outputPNode(self.commander.p)
+
 
 </t>
 </tnodes>
