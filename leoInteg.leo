@@ -642,7 +642,6 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
-<v t="felix.20191126232434.4"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -4497,6 +4496,7 @@ print('done')
         if not w_found:
             # is new so also replace wrapper
             self.commander.frame.body.wrapper = IntegTextWrapper(self.commander, "integBody", self.g)
+            self.commander.selectPosition(self.commander.p)
 
         self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
@@ -8204,7 +8204,6 @@ export interface LeoBridgePackage {
         row: number;
         col: number;
     }
-    language: string;
     node?: ArchivedPosition;
     nodes?: ArchivedPosition[];
     states?: LeoPackageStates;
@@ -9885,11 +9884,10 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
 
                     // TODO : Move those exception in "constants.ts"
                     // ! Exceptions
-                    switch (p_result.language) {
+                    switch (p_result.bodyStates!.language) {
                         case "cplusplus":
                             w_language = "cpp";
                             break;
-
                         case "md":
                             w_language = "markdown";
                             break;
@@ -10627,6 +10625,7 @@ public sendConfigToServer(p_config: ConfigMembers): void {
         if self.commander:
             self.commander.closed = False
             self.commander.frame.body.wrapper = IntegTextWrapper(self.commander, "integBody", self.g)
+            self.commander.selectPosition(self.commander.p)
 
     # Done with the last one, it's now the selected commander. Check again just in case.
     if self.commander:
@@ -12058,14 +12057,14 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
 
 </t>
 <t tx="felix.20200928174406.10">def getAllText(self):
-    """IntegTextWrapper."""
-    print("getAllText", flush=True)
+    """IntegTextWrapper getAllText"""
     s = self.s
+    print("getAllText: " + s, flush=True)
     return self.g.checkUnicode(s)
 
 </t>
 <t tx="felix.20200928174406.11">def getInsertPoint(self):
-    """IntegTextWrapper."""
+    """IntegTextWrapper getInsertPoint"""
     print("getInsertPoint", flush=True)
     i = self.ins
     if i is None:
@@ -12078,7 +12077,7 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
 
 </t>
 <t tx="felix.20200928174406.12">def getSelectedText(self):
-    """IntegTextWrapper."""
+    """IntegTextWrapper getSelectedText"""
     print("getSelectedText", flush=True)
     i, j = self.sel
     s = self.s[i:j]
@@ -12099,14 +12098,14 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
 
 </t>
 <t tx="felix.20200928174406.14">def hasSelection(self):
-    """IntegTextWrapper."""
+    """IntegTextWrapper hasSelection"""
     print("hasSelection", flush=True)
     i, j = self.getSelectionRange()
     return i != j
 
 </t>
 <t tx="felix.20200928174406.15">def insert(self, i, s):
-    """IntegTextWrapper."""
+    """IntegTextWrapper insert"""
     print("insert", flush=True)
     i = self.toPythonIndex(i)
     s1 = s
@@ -12117,14 +12116,14 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
 
 </t>
 <t tx="felix.20200928174406.16">def selectAllText(self, insert=None):
-    """IntegTextWrapper."""
+    """IntegTextWrapper selectAllText"""
     print("selectAllText", flush=True)
     self.setSelectionRange(0, 'end', insert=insert)
 
 </t>
 <t tx="felix.20200928174406.17">def setAllText(self, s):
-    """IntegTextWrapper."""
-    print("setAllText", flush=True)
+    """IntegTextWrapper setAllText"""
+    print("setAllText :" + s, flush=True)
     self.s = s
     i = len(self.s)
     self.ins = i
@@ -12132,7 +12131,7 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
 
 </t>
 <t tx="felix.20200928174406.18">def setInsertPoint(self, pos, s=None):
-    """IntegTextWrapper."""
+    """IntegTextWrapper setInsertPoint"""
     print("setInsertPoint", flush=True)
     self.virtualInsertPoint = i = self.toPythonIndex(pos)
     self.ins = i
@@ -12140,7 +12139,7 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
 
 </t>
 <t tx="felix.20200928174406.19">def setSelectionRange(self, i, j, insert=None):
-    """IntegTextWrapper."""
+    """IntegTextWrapper setSelectionRange"""
     print("setSelectionRange", flush=True)
     i, j = self.toPythonIndex(i), self.toPythonIndex(j)
     self.sel = i, j
@@ -12167,13 +12166,13 @@ def getName(self):
 
 </t>
 <t tx="felix.20200928174406.20">def toPythonIndex(self, index):
-    """IntegTextWrapper."""
+    """IntegTextWrapper toPythonIndex"""
     print("toPythonIndex", flush=True)
     return self.g.toPythonIndex(self.s, index)
 
 </t>
 <t tx="felix.20200928174406.21">def toPythonIndexRowCol(self, index):
-    """IntegTextWrapper."""
+    """IntegTextWrapper toPythonIndexRowCol"""
     print("toPythonIndexRowCol", flush=True)
     s = self.getAllText()
     i = self.toPythonIndex(index)
@@ -12218,7 +12217,7 @@ def tag_configure(self, colorName, **keys): pass
 </t>
 <t tx="felix.20200928174406.5"></t>
 <t tx="felix.20200928174406.6">def appendText(self, s):
-    """IntegTextWrapper."""
+    """IntegTextWrapper appendText"""
     print("appendText", flush=True)
     self.s = self.s + self.g.toUnicode(s)
     # defensive
@@ -12227,7 +12226,7 @@ def tag_configure(self, colorName, **keys): pass
 
 </t>
 <t tx="felix.20200928174406.7">def delete(self, i, j=None):
-    """IntegTextWrapper."""
+    """IntegTextWrapper delete"""
     print("delete", flush=True)
     i = self.toPythonIndex(i)
     if j is None:
@@ -12250,7 +12249,7 @@ def tag_configure(self, colorName, **keys): pass
 
 </t>
 <t tx="felix.20200928174406.9">def get(self, i, j=None):
-    """IntegTextWrapper."""
+    """IntegTextWrapper get"""
     print("get", flush=True)
     i = self.toPythonIndex(i)
     if j is None:
@@ -12346,8 +12345,12 @@ def tag_configure(self, colorName, **keys): pass
     Set cursor position, along with selection start and end for the currently selected node's body.
     Save those values on the commander's body wrapper class to get them back when switching documents.
     '''
-    pass
     print("Set Selection into wrapper!!")
+    w_wrapper = self.commander.frame.body.wrapper
+    
+    # use g.convertRowColToPythonIndex(s, row, col, lines=None):
+    # it Converts zero-based row/col indices, into a python index into string s.
+    
     return self._outputPNode(self.commander.p)
 
 

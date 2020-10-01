@@ -150,7 +150,6 @@ export interface LeoBridgePackage {
         row: number;
         col: number;
     }
-    language: string;
     node?: ArchivedPosition;
     nodes?: ArchivedPosition[];
     states?: LeoPackageStates;

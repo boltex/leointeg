@@ -1277,11 +1277,10 @@ export class LeoIntegration {
 
                         // TODO : Move those exception in "constants.ts"
                         // ! Exceptions
-                        switch (p_result.language) {
+                        switch (p_result.bodyStates!.language) {
                             case "cplusplus":
                                 w_language = "cpp";
                                 break;
-
                             case "md":
                                 w_language = "markdown";
                                 break;

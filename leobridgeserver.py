@@ -470,7 +470,7 @@ class IntegTextWrapper:
     def tag_configure(self, colorName, **keys): pass
 
     def appendText(self, s):
-        """IntegTextWrapper."""
+        """IntegTextWrapper appendText"""
         print("appendText", flush=True)
         self.s = self.s + self.g.toUnicode(s)
         # defensive
@@ -478,7 +478,7 @@ class IntegTextWrapper:
         self.sel = self.ins, self.ins
 
     def delete(self, i, j=None):
-        """IntegTextWrapper."""
+        """IntegTextWrapper delete"""
         print("delete", flush=True)
         i = self.toPythonIndex(i)
         if j is None:
@@ -499,7 +499,7 @@ class IntegTextWrapper:
         self.delete(i, j)
 
     def get(self, i, j=None):
-        """IntegTextWrapper."""
+        """IntegTextWrapper get"""
         print("get", flush=True)
         i = self.toPythonIndex(i)
         if j is None:
@@ -509,13 +509,13 @@ class IntegTextWrapper:
         return self.g.toUnicode(s)
 
     def getAllText(self):
-        """IntegTextWrapper."""
-        print("getAllText", flush=True)
+        """IntegTextWrapper getAllText"""
         s = self.s
+        print("getAllText: " + s, flush=True)
         return self.g.checkUnicode(s)
 
     def getInsertPoint(self):
-        """IntegTextWrapper."""
+        """IntegTextWrapper getInsertPoint"""
         print("getInsertPoint", flush=True)
         i = self.ins
         if i is None:
@@ -527,7 +527,7 @@ class IntegTextWrapper:
         return i
 
     def getSelectedText(self):
-        """IntegTextWrapper."""
+        """IntegTextWrapper getSelectedText"""
         print("getSelectedText", flush=True)
         i, j = self.sel
         s = self.s[i:j]
@@ -546,13 +546,13 @@ class IntegTextWrapper:
         return i, i
 
     def hasSelection(self):
-        """IntegTextWrapper."""
+        """IntegTextWrapper hasSelection"""
         print("hasSelection", flush=True)
         i, j = self.getSelectionRange()
         return i != j
 
     def insert(self, i, s):
-        """IntegTextWrapper."""
+        """IntegTextWrapper insert"""
         print("insert", flush=True)
         i = self.toPythonIndex(i)
         s1 = s
@@ -562,39 +562,39 @@ class IntegTextWrapper:
         self.sel = i, i
 
     def selectAllText(self, insert=None):
-        """IntegTextWrapper."""
+        """IntegTextWrapper selectAllText"""
         print("selectAllText", flush=True)
         self.setSelectionRange(0, 'end', insert=insert)
 
     def setAllText(self, s):
-        """IntegTextWrapper."""
-        print("setAllText", flush=True)
+        """IntegTextWrapper setAllText"""
+        print("setAllText :" + s, flush=True)
         self.s = s
         i = len(self.s)
         self.ins = i
         self.sel = i, i
 
     def setInsertPoint(self, pos, s=None):
-        """IntegTextWrapper."""
+        """IntegTextWrapper setInsertPoint"""
         print("setInsertPoint", flush=True)
         self.virtualInsertPoint = i = self.toPythonIndex(pos)
         self.ins = i
         self.sel = i, i
 
     def setSelectionRange(self, i, j, insert=None):
-        """IntegTextWrapper."""
+        """IntegTextWrapper setSelectionRange"""
         print("setSelectionRange", flush=True)
         i, j = self.toPythonIndex(i), self.toPythonIndex(j)
         self.sel = i, j
         self.ins = j if insert is None else self.toPythonIndex(insert)
 
     def toPythonIndex(self, index):
-        """IntegTextWrapper."""
+        """IntegTextWrapper toPythonIndex"""
         print("toPythonIndex", flush=True)
         return self.g.toPythonIndex(self.s, index)
 
     def toPythonIndexRowCol(self, index):
-        """IntegTextWrapper."""
+        """IntegTextWrapper toPythonIndexRowCol"""
         print("toPythonIndexRowCol", flush=True)
         s = self.getAllText()
         i = self.toPythonIndex(index)
@@ -913,6 +913,7 @@ class LeoBridgeIntegController:
             if not w_found:
                 # is new so also replace wrapper
                 self.commander.frame.body.wrapper = IntegTextWrapper(self.commander, "integBody", self.g)
+                self.commander.selectPosition(self.commander.p)
 
             self._create_gnx_to_vnode()
             w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
@@ -945,6 +946,7 @@ class LeoBridgeIntegController:
             if self.commander:
                 self.commander.closed = False
                 self.commander.frame.body.wrapper = IntegTextWrapper(self.commander, "integBody", self.g)
+                self.commander.selectPosition(self.commander.p)
 
         # Done with the last one, it's now the selected commander. Check again just in case.
         if self.commander:
@@ -2503,8 +2505,12 @@ class LeoBridgeIntegController:
         Set cursor position, along with selection start and end for the currently selected node's body.
         Save those values on the commander's body wrapper class to get them back when switching documents.
         '''
-        pass
         print("Set Selection into wrapper!!")
+        w_wrapper = self.commander.frame.body.wrapper
+        
+        # use g.convertRowColToPythonIndex(s, row, col, lines=None):
+        # it Converts zero-based row/col indices, into a python index into string s.
+        
         return self._outputPNode(self.commander.p)
 
 
