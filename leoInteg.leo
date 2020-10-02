@@ -9226,8 +9226,13 @@ export class LeoIntegration {
     private _showBodyParams: ShowBodyParam | undefined; // _applySelectionToBody parameters, may be overwritten at each call if not finished
 
     // * Selection
+    private _selectionDirty: boolean = false;
     private _selectionGnx: string = "";
-    private _selection: vscode.Selection | undefined; // Has "start", "end" positions, and also contains a 'active' position which is the cursor position.
+    /**
+     * Selection has "start", "end" positions, and also contains a 'active' position which is the cursor position.
+     * Position has line, character and many helper methods
+     */
+    private _selection: vscode.Selection | undefined;
 
     private _bodyUri: vscode.Uri = utils.strToLeoUri("");
     get bodyUri(): vscode.Uri {
@@ -9575,6 +9580,8 @@ private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
 </t>
 <t tx="felix.20200719025231.32">/**
  * * Save body to Leo if its dirty. That is, only if a change has been made to the body 'document' so far
+ * TODO :
+ * * Save cursor position and text selection if changed since last set for this gnx
  * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
  */
 public triggerBodySave(p_forcedVsCodeSave?: boolean): Thenable&lt;boolean&gt; {
@@ -9582,10 +9589,13 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean): Thenable&lt;boolean&gt; {
     if (this._bodyLastChangedDocument &amp;&amp; this._bodyLastChangedDocument.isDirty) {
         const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
         this._bodyLastChangedDocument = undefined; // reset to make falsy
-        return this._bodySaveDocument(w_document, p_forcedVsCodeSave);
+        return this._bodySaveDocument(w_document, p_forcedVsCodeSave)
+            .then(p_result =&gt; {
+                return this._bodySaveSelection();
+            });
     } else {
         this._bodyLastChangedDocument = undefined;
-        return Promise.resolve(true);
+        return this._bodySaveSelection();
     }
 }
 
@@ -12034,6 +12044,7 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
         // console.log('Changed selection length', p_event.selections.length);
         if (p_event.selections.length) {
             console.log(p_event.selections[0].start, p_event.selections[0].end);
+            this._selectionDirty = true;
             this._selection = p_event.selections[0];
             this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
         }
@@ -12042,8 +12053,25 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
 }
 
 </t>
-<t tx="felix.20200928133238.1">public _bodySaveSelection(): void {
-    //
+<t tx="felix.20200928133238.1">public _bodySaveSelection(): Thenable&lt;boolean&gt; {
+    if (this._selectionDirty) {
+        const w_param = {
+            gnx: this._selectionGnx,
+            pos: this._selection?.active || 0,
+            start: this._selection?.start || 0,
+            end: this._selection?.end || 0
+        };
+
+        return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(p_result =&gt; {
+
+            console.log('back from set selection: ', p_result);
+
+            this._selectionDirty = false;
+            return Promise.resolve(true);
+        });
+    } else {
+        return Promise.resolve(true);
+    }
 }
 
 </t>
@@ -12342,17 +12370,26 @@ def tag_configure(self, colorName, **keys): pass
 </t>
 <t tx="felix.20200929230231.1">def setSelection(self, p_package):
     '''
-    Set cursor position, along with selection start and end for the currently selected node's body.
+    If gnx parameter matches the selected node's gnx, set cursor position,  
+    along with selection start and end. (For the currently selected node's body)
     Save those values on the commander's body wrapper class to get them back when switching documents.
     '''
     print("Set Selection into wrapper!!")
     w_wrapper = self.commander.frame.body.wrapper
     
+    # receives this 
+    # {
+    #   gnx:   this._selectionGnx,
+    #   pos:   this._selection?.active || 0,
+    #   start: this._selection?.start || 0,
+    #   end:   this._selection?.end || 0
+    # }
+    
+    
     # use g.convertRowColToPythonIndex(s, row, col, lines=None):
     # it Converts zero-based row/col indices, into a python index into string s.
     
     return self._outputPNode(self.commander.p)
-
 
 </t>
 </tnodes>

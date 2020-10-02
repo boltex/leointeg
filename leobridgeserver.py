@@ -2502,17 +2502,26 @@ class LeoBridgeIntegController:
 
     def setSelection(self, p_package):
         '''
-        Set cursor position, along with selection start and end for the currently selected node's body.
+        If gnx parameter matches the selected node's gnx, set cursor position,  
+        along with selection start and end. (For the currently selected node's body)
         Save those values on the commander's body wrapper class to get them back when switching documents.
         '''
         print("Set Selection into wrapper!!")
         w_wrapper = self.commander.frame.body.wrapper
         
+        # receives this 
+        # {
+        #   gnx:   this._selectionGnx,
+        #   pos:   this._selection?.active || 0,
+        #   start: this._selection?.start || 0,
+        #   end:   this._selection?.end || 0
+        # }
+        
+        
         # use g.convertRowColToPythonIndex(s, row, col, lines=None):
         # it Converts zero-based row/col indices, into a python index into string s.
         
         return self._outputPNode(self.commander.p)
-
 
     def setNewHeadline(self, p_package):
         '''Change Headline of a node'''
