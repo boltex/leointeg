@@ -2502,26 +2502,39 @@ class LeoBridgeIntegController:
 
     def setSelection(self, p_package):
         '''
-        If gnx parameter matches the selected node's gnx, set cursor position,  
+        If gnx parameter matches the selected node's gnx, set cursor position,
         along with selection start and end. (For the currently selected node's body)
         Save those values on the commander's body wrapper class to get them back when switching documents.
         '''
         print("Set Selection into wrapper!!")
         w_wrapper = self.commander.frame.body.wrapper
-        
-        # receives this 
-        # {
-        #   gnx:   this._selectionGnx,
-        #   pos:   this._selection?.active || 0,
-        #   start: this._selection?.start || 0,
-        #   end:   this._selection?.end || 0
-        # }
-        
-        
-        # use g.convertRowColToPythonIndex(s, row, col, lines=None):
-        # it Converts zero-based row/col indices, into a python index into string s.
-        
-        return self._outputPNode(self.commander.p)
+
+        # * This is sent as the package by the client IDE
+        # const w_param = {
+        #     gnx: this._selectionGnx,
+        #     selection: [
+        #         this._selection?.active.line || 0,
+        #         this._selection?.active.character || 0,
+        #         this._selection?.start.line || 0,
+        #         this._selection?.start.character || 0,
+        #         this._selection?.end.line || 0,
+        #         this._selection?.end.character || 0
+        #     ]
+        # };
+
+        if self.commander.p.v.gnx == p_package['gnx']:
+            print('same gnx: '+ self.commander.p.v.gnx)
+        else:
+            print('ERROR: NOT SAME GNX: selected:'+ self.commander.p.v.gnx + ', package:'+  p_package['gnx'])
+
+        w_body = self.commander.p.v.b;
+        w_sel = p_package['selection']
+        w_insert =  self.g.convertRowColToPythonIndex(w_body, w_sel[0], w_sel[1])
+        w_startSel = self.g.convertRowColToPythonIndex(w_body, w_sel[2], w_sel[3])
+        w_endSel =  self.g.convertRowColToPythonIndex(w_body, w_sel[4], w_sel[5])
+        w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
+
+        return self._outputPNode(self.commander.p)  # output currently selected node as 'ok'
 
     def setNewHeadline(self, p_package):
         '''Change Headline of a node'''

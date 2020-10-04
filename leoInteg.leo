@@ -642,6 +642,7 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
+<v t="felix.20191128001054.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -9580,8 +9581,6 @@ private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
 </t>
 <t tx="felix.20200719025231.32">/**
  * * Save body to Leo if its dirty. That is, only if a change has been made to the body 'document' so far
- * TODO :
- * * Save cursor position and text selection if changed since last set for this gnx
  * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
  */
 public triggerBodySave(p_forcedVsCodeSave?: boolean): Thenable&lt;boolean&gt; {
@@ -9892,7 +9891,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                     let w_language = p_result.bodyStates!.language;
                     console.log('row col', p_result.bodyStates!.row, p_result.bodyStates!.col);
 
-                    // TODO : Move those exception in "constants.ts"
+                    // TODO : Move those exception in "constants.ts" as a mapping from string-&gt;string
                     // ! Exceptions
                     switch (p_result.bodyStates!.language) {
                         case "cplusplus":
@@ -12039,7 +12038,6 @@ public sendConfigToServer(p_config: ConfigMembers): void {
  * * Handles detection of the active editor's selection change or cursor position
  */
 private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
-
     if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
         if (p_event.selections.length) {
             console.log("Got new selection from interface", p_event.selections[0].start, p_event.selections[0].end);
@@ -12047,18 +12045,25 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
             this._selection = p_event.selections[0];
             this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
         }
-
     }
 }
 
 </t>
-<t tx="felix.20200928133238.1">public _bodySaveSelection(): Thenable&lt;boolean&gt; {
+<t tx="felix.20200928133238.1">/**
+ * * Saves the cursor position along with the text selection states (start and end positions)
+ */
+public _bodySaveSelection(): Thenable&lt;boolean&gt; {
     if (this._selectionDirty) {
         const w_param = {
             gnx: this._selectionGnx,
-            pos: this._selection?.active || 0,
-            start: this._selection?.start || 0,
-            end: this._selection?.end || 0
+            selection: [
+                this._selection?.active.line || 0,
+                this._selection?.active.character || 0,
+                this._selection?.start.line || 0,
+                this._selection?.start.character || 0,
+                this._selection?.end.line || 0,
+                this._selection?.end.character || 0
+            ]
         };
 
         return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(p_result =&gt; {
@@ -12369,26 +12374,41 @@ def tag_configure(self, colorName, **keys): pass
 </t>
 <t tx="felix.20200929230231.1">def setSelection(self, p_package):
     '''
-    If gnx parameter matches the selected node's gnx, set cursor position,  
+    If gnx parameter matches the selected node's gnx, set cursor position,
     along with selection start and end. (For the currently selected node's body)
     Save those values on the commander's body wrapper class to get them back when switching documents.
     '''
     print("Set Selection into wrapper!!")
     w_wrapper = self.commander.frame.body.wrapper
-    
-    # receives this 
-    # {
-    #   gnx:   this._selectionGnx,
-    #   pos:   this._selection?.active || 0,
-    #   start: this._selection?.start || 0,
-    #   end:   this._selection?.end || 0
-    # }
-    
-    
-    # use g.convertRowColToPythonIndex(s, row, col, lines=None):
+
+    # const w_param = {
+    #     gnx: this._selectionGnx,
+    #     selection: [
+    #         this._selection?.active.line || 0,
+    #         this._selection?.active.character || 0,
+    #         this._selection?.start.line || 0,
+    #         this._selection?.start.character || 0,
+    #         this._selection?.end.line || 0,
+    #         this._selection?.end.character || 0
+    #     ]
+    # };
+
+    if self.commander.p.v.gnx == p_package['gnx']:
+        print('same gnx: '+ self.commander.p.v.gnx)
+    else:
+        print('ERROR: NOT SAME GNX: selected:'+ self.commander.p.v.gnx + ', package:'+  p_package['gnx'])
+
+    w_body = self.commander.p.v.b;
+    w_startSel = p_package['selection'][0]
+    w_endSel = p_package['']
+    w_insert = p_package['']
+
+    # use g.convertRowColToPythonIndex(s, row, col):
     # it Converts zero-based row/col indices, into a python index into string s.
-    
-    return self._outputPNode(self.commander.p)
+
+    w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
+
+    return self._outputPNode(self.commander.p)  # output currently selected node as 'ok'
 
 </t>
 </tnodes>

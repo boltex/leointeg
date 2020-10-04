@@ -743,7 +743,6 @@ export class LeoIntegration {
      * * Handles detection of the active editor's selection change or cursor position
      */
     private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
-
         if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
             if (p_event.selections.length) {
                 console.log("Got new selection from interface", p_event.selections[0].start, p_event.selections[0].end);
@@ -751,7 +750,6 @@ export class LeoIntegration {
                 this._selection = p_event.selections[0];
                 this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
             }
-
         }
     }
 
@@ -786,8 +784,6 @@ export class LeoIntegration {
 
     /**
      * * Save body to Leo if its dirty. That is, only if a change has been made to the body 'document' so far
-     * TODO :
-     * * Save cursor position and text selection if changed since last set for this gnx
      * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
      */
     public triggerBodySave(p_forcedVsCodeSave?: boolean): Thenable<boolean> {
@@ -805,13 +801,21 @@ export class LeoIntegration {
         }
     }
 
+    /**
+     * * Saves the cursor position along with the text selection states (start and end positions)
+     */
     public _bodySaveSelection(): Thenable<boolean> {
         if (this._selectionDirty) {
             const w_param = {
                 gnx: this._selectionGnx,
-                pos: this._selection?.active || 0,
-                start: this._selection?.start || 0,
-                end: this._selection?.end || 0
+                selection: [
+                    this._selection?.active.line || 0,
+                    this._selection?.active.character || 0,
+                    this._selection?.start.line || 0,
+                    this._selection?.start.character || 0,
+                    this._selection?.end.line || 0,
+                    this._selection?.end.character || 0
+                ]
             };
 
             return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(p_result => {
@@ -1302,7 +1306,7 @@ export class LeoIntegration {
                         let w_language = p_result.bodyStates!.language;
                         console.log('row col', p_result.bodyStates!.row, p_result.bodyStates!.col);
 
-                        // TODO : Move those exception in "constants.ts"
+                        // TODO : Move those exception in "constants.ts" as a mapping from string->string
                         // ! Exceptions
                         switch (p_result.bodyStates!.language) {
                             case "cplusplus":
