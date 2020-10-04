@@ -642,7 +642,6 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
-<v t="felix.20191128001054.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -12381,6 +12380,7 @@ def tag_configure(self, colorName, **keys): pass
     print("Set Selection into wrapper!!")
     w_wrapper = self.commander.frame.body.wrapper
 
+    # * This is sent as the package by the client IDE
     # const w_param = {
     #     gnx: this._selectionGnx,
     #     selection: [
@@ -12399,13 +12399,10 @@ def tag_configure(self, colorName, **keys): pass
         print('ERROR: NOT SAME GNX: selected:'+ self.commander.p.v.gnx + ', package:'+  p_package['gnx'])
 
     w_body = self.commander.p.v.b;
-    w_startSel = p_package['selection'][0]
-    w_endSel = p_package['']
-    w_insert = p_package['']
-
-    # use g.convertRowColToPythonIndex(s, row, col):
-    # it Converts zero-based row/col indices, into a python index into string s.
-
+    w_sel = p_package['selection']
+    w_insert =  self.g.convertRowColToPythonIndex(w_body, w_sel[0], w_sel[1])
+    w_startSel = self.g.convertRowColToPythonIndex(w_body, w_sel[2], w_sel[3])
+    w_endSel =  self.g.convertRowColToPythonIndex(w_body, w_sel[4], w_sel[5])
     w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
 
     return self._outputPNode(self.commander.p)  # output currently selected node as 'ok'
