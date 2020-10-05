@@ -1304,7 +1304,20 @@ export class LeoIntegration {
                 this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
                     .then(p_result => {
                         let w_language = p_result.bodyStates!.language;
+
                         console.log('row col', p_result.bodyStates!.row, p_result.bodyStates!.col);
+                        // TODO : get 6 member array like when setting selection in leo, transform accordingly
+                        const w_selection = new vscode.Selection(
+                            0, //  firstLine.lineNumber,
+                            0, //  firstLine.range.start.character,
+                            0, //  lastLine.lineNumber,
+                            0 //   lastLine.range.end.character
+                        );
+                        vscode.window.visibleTextEditors.forEach(p_textEditor => {
+                            if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
+                                p_textEditor.selection = w_selection;
+                            }
+                        });
 
                         // TODO : Move those exception in "constants.ts" as a mapping from string->string
                         // ! Exceptions

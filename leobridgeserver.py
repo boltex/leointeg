@@ -2502,39 +2502,64 @@ class LeoBridgeIntegController:
 
     def setSelection(self, p_package):
         '''
-        If gnx parameter matches the selected node's gnx, set cursor position,
-        along with selection start and end. (For the currently selected node's body)
-        Save those values on the commander's body wrapper class to get them back when switching documents.
+        Set cursor position, along with selection start and end.
+        (For the currently selected node's body, if gnx matches only)
+        Save those values on the commander's body "wrapper"
         '''
-        print("Set Selection into wrapper!!")
-        w_wrapper = self.commander.frame.body.wrapper
 
         # * This is sent as the package by the client IDE
-        # const w_param = {
-        #     gnx: this._selectionGnx,
-        #     selection: [
-        #         this._selection?.active.line || 0,
-        #         this._selection?.active.character || 0,
-        #         this._selection?.start.line || 0,
-        #         this._selection?.start.character || 0,
-        #         this._selection?.end.line || 0,
-        #         this._selection?.end.character || 0
-        #     ]
-        # };
-
-        if self.commander.p.v.gnx == p_package['gnx']:
-            print('same gnx: '+ self.commander.p.v.gnx)
+        #  gnx: selectionGnx,
+        #  selection: [
+        #    active.line || 0,
+        #    active.character || 0,
+        #    start.line || 0,
+        #    start.character || 0,
+        #    end.line || 0,
+        #    end.character || 0
+        #  ]
+        w_same = False  # Flag for actually doing the wrapper if really same gnx.
+        w_wrapper = self.commander.frame.body.wrapper
+        w_gnx = p_package['gnx']
+        w_body = ""
+        w_v = None
+        if self.commander.p.v.gnx == w_gnx:
+            print('Set Selection! OK SAME GNX: '+ self.commander.p.v.gnx)
+            w_same = True
+            w_v = self.commander.p.v
         else:
-            print('ERROR: NOT SAME GNX: selected:'+ self.commander.p.v.gnx + ', package:'+  p_package['gnx'])
+            print('Set Selection! NOT SAME GNX: selected:'+ self.commander.p.v.gnx + ', package:'+  w_gnx)
+            w_v = self.commander.fileCommands.gnxDict.get(w_gnx)
 
-        w_body = self.commander.p.v.b;
+        if not w_v:
+            print('Set Selection! NOT SAME Leo Document')
+            return self._outputPNode(self.commander.p)  # ! FAILED (but return as normal)
+
+        w_body = w_v.b
         w_sel = p_package['selection']
         w_insert =  self.g.convertRowColToPythonIndex(w_body, w_sel[0], w_sel[1])
         w_startSel = self.g.convertRowColToPythonIndex(w_body, w_sel[2], w_sel[3])
         w_endSel =  self.g.convertRowColToPythonIndex(w_body, w_sel[4], w_sel[5])
-        w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
 
-        return self._outputPNode(self.commander.p)  # output currently selected node as 'ok'
+        if w_same:
+            w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
+        else:
+            w_v.insertSpot = w_insert;
+            w_v.selectionStart = w_startSel;
+            w_v.selectionLength = (w_endSel - w_startSel) if w_endSel > w_startSel else 0
+
+        # When switching nodes, Leo's core saves the insert point, selection,
+        # and vertical scroll position in the old (unselected) vnode. From v.init:
+
+        # self.insertSpot = None
+        #     # Location of previous insert point.
+        # self.scrollBarSpot = None
+        #     # Previous value of scrollbar position.
+        # self.selectionLength = 0
+        #     # The length of the selected body text.
+        # self.selectionStart = 0
+        #         # The start of the selected body text.
+
+        return self._outputPNode(self.commander.p)  # output selected node as 'ok'
 
     def setNewHeadline(self, p_package):
         '''Change Headline of a node'''
