@@ -203,6 +203,19 @@ export interface BodyTimeInfo {
 }
 
 /**
+ * * LeoBody virtual file time information object
+ */
+export interface BodySelectionInfo {
+    gnx: string;
+    activeLine: number;
+    activeCol: number;
+    startLine: number;
+    startCol: number;
+    endLine: number;
+    endCol: number;
+}
+
+/**
  * * Parameter structure used in the 'runSaveFileDialog' equivalent when asking user input
  */
 export interface showSaveAsDialogParameters {

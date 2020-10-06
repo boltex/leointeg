@@ -601,6 +601,7 @@
 <v t="felix.20200718194857.12"><vh>LeoButton</vh></v>
 <v t="felix.20200718194857.13"><vh>Icon</vh></v>
 <v t="felix.20200718194857.14"><vh>BodyTimeInfo</vh></v>
+<v t="felix.20201006195046.1"><vh>BodySelectionInfo</vh></v>
 <v t="felix.20200718194857.15"><vh>showSaveAsDialogParameters</vh></v>
 <v t="felix.20200718194857.16"><vh>runAskYesNoDialogParameters</vh></v>
 <v t="felix.20200718194857.17"><vh>runWarnMessageDialogParameters</vh></v>
@@ -12078,10 +12079,10 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
     if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
         if (p_event.selections.length) {
-            console.log("Got new selection from interface", p_event.selections[0].start, p_event.selections[0].end);
             this._selectionDirty = true;
             this._selection = p_event.selections[0];
             this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
+            console.log("Got new selection from interface, gnx:", this._selectionGnx);
         }
     }
 }
@@ -12092,6 +12093,8 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
  */
 public _bodySaveSelection(): Thenable&lt;boolean&gt; {
     if (this._selectionDirty) {
+        console.log('sending selection for gnx ' + this._selectionGnx);
+
         const w_param = {
             gnx: this._selectionGnx,
             selection: [
@@ -12494,6 +12497,20 @@ def tag_configure(self, colorName, **keys): pass
     #         # The start of the selected body text.
 
     return self._outputPNode(self.commander.p)  # output selected node as 'ok'
+
+</t>
+<t tx="felix.20201006195046.1">/**
+ * * LeoBody virtual file time information object
+ */
+export interface BodySelectionInfo {
+    gnx: string;
+    activeLine: number;
+    activeCol: number;
+    startLine: number;
+    startCol: number;
+    endLine: number;
+    endCol: number;
+}
 
 </t>
 </tnodes>

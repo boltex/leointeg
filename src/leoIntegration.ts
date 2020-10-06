@@ -745,10 +745,10 @@ export class LeoIntegration {
     private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
         if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
             if (p_event.selections.length) {
-                console.log("Got new selection from interface", p_event.selections[0].start, p_event.selections[0].end);
                 this._selectionDirty = true;
                 this._selection = p_event.selections[0];
                 this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
+                console.log("Got new selection from interface, gnx:", this._selectionGnx);
             }
         }
     }
@@ -806,6 +806,8 @@ export class LeoIntegration {
      */
     public _bodySaveSelection(): Thenable<boolean> {
         if (this._selectionDirty) {
+            console.log('sending selection for gnx ' + this._selectionGnx);
+
             const w_param = {
                 gnx: this._selectionGnx,
                 selection: [
