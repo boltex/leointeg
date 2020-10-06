@@ -147,8 +147,7 @@ export interface LeoBridgePackage {
     bodyData?: string;
     bodyStates?: {
         language: string;
-        row: number;
-        col: number;
+        selection: number[];
     }
     node?: ArchivedPosition;
     nodes?: ArchivedPosition[];

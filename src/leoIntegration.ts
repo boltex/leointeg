@@ -1303,16 +1303,42 @@ export class LeoIntegration {
             if (this.lastSelectedNode) {
                 this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
                     .then(p_result => {
+
+                        // * Receives from python :
+                        //  language: language.lower(),
+                        //  selection: [
+                        //    w_activeRow,
+                        //    w_activeCol,
+                        //    w_startRow,
+                        //    w_startCol,
+                        //    w_endRow,
+                        //    w_endCol
+                        //  ]
+
                         let w_language = p_result.bodyStates!.language;
 
-                        console.log('row col', p_result.bodyStates!.row, p_result.bodyStates!.col);
-                        // TODO : get 6 member array like when setting selection in leo, transform accordingly
+                        console.log('selection from Leo', p_result.bodyStates!.selection);
+
+                        const w_activeRow: number = p_result.bodyStates!.selection[0];
+                        const w_activeCol: number = p_result.bodyStates!.selection[1];
+                        let w_anchorLine: number = p_result.bodyStates!.selection[2];
+                        let w_anchorCharacter: number = p_result.bodyStates!.selection[3];
+
+                        if (p_result.bodyStates!.selection[0] === p_result.bodyStates!.selection[2] &&
+                            p_result.bodyStates!.selection[1] === p_result.bodyStates!.selection[3]) {
+                            // active insertion same as start selection, so use the other ones
+                            w_anchorLine = p_result.bodyStates!.selection[4];
+                            w_anchorCharacter = p_result.bodyStates!.selection[5];
+                        }
+
+                        // constructor(anchorLine: number, anchorCharacter: number, activeLine: number, activeCharacter: number);
                         const w_selection = new vscode.Selection(
-                            0, //  firstLine.lineNumber,
-                            0, //  firstLine.range.start.character,
-                            0, //  lastLine.lineNumber,
-                            0 //   lastLine.range.end.character
+                            w_anchorLine,
+                            w_anchorCharacter,
+                            w_activeRow,
+                            w_activeCol
                         );
+
                         vscode.window.visibleTextEditors.forEach(p_textEditor => {
                             if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
                                 p_textEditor.selection = w_selection;
@@ -1329,6 +1355,7 @@ export class LeoIntegration {
                                 w_language = "markdown";
                                 break;
                         }
+
                         // Still the same ?
                         if (
                             this._bodyTextDocument && this.lastSelectedNode &&

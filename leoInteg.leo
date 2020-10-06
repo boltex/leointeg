@@ -642,7 +642,6 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
-<v t="felix.20191128001054.1"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -8202,8 +8201,7 @@ export interface LeoBridgePackage {
     bodyData?: string;
     bodyStates?: {
         language: string;
-        row: number;
-        col: number;
+        selection: number[];
     }
     node?: ArchivedPosition;
     nodes?: ArchivedPosition[];
@@ -9888,16 +9886,42 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
         if (this.lastSelectedNode) {
             this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
                 .then(p_result =&gt; {
+
+                    // * Receives from python :
+                    //  language: language.lower(),
+                    //  selection: [
+                    //    w_activeRow,
+                    //    w_activeCol,
+                    //    w_startRow,
+                    //    w_startCol,
+                    //    w_endRow,
+                    //    w_endCol
+                    //  ]
+
                     let w_language = p_result.bodyStates!.language;
 
-                    console.log('row col', p_result.bodyStates!.row, p_result.bodyStates!.col);
-                    // TODO : get 6 member array like when setting selection in leo, transform accordingly
+                    console.log('selection from Leo', p_result.bodyStates!.selection);
+
+                    const w_activeRow: number = p_result.bodyStates!.selection[0];
+                    const w_activeCol: number = p_result.bodyStates!.selection[1];
+                    let w_anchorLine: number = p_result.bodyStates!.selection[2];
+                    let w_anchorCharacter: number = p_result.bodyStates!.selection[3];
+
+                    if (p_result.bodyStates!.selection[0] === p_result.bodyStates!.selection[2] &amp;&amp;
+                        p_result.bodyStates!.selection[1] === p_result.bodyStates!.selection[3]) {
+                        // active insertion same as start selection, so use the other ones
+                        w_anchorLine = p_result.bodyStates!.selection[4];
+                        w_anchorCharacter = p_result.bodyStates!.selection[5];
+                    }
+
+                    // constructor(anchorLine: number, anchorCharacter: number, activeLine: number, activeCharacter: number);
                     const w_selection = new vscode.Selection(
-                        0, //  firstLine.lineNumber,
-                        0, //  firstLine.range.start.character,
-                        0, //  lastLine.lineNumber,
-                        0 //   lastLine.range.end.character
+                        w_anchorLine,
+                        w_anchorCharacter,
+                        w_activeRow,
+                        w_activeCol
                     );
+
                     vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
                         if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
                             p_textEditor.selection = w_selection;
@@ -9914,6 +9938,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                             w_language = "markdown";
                             break;
                     }
+
                     // Still the same ?
                     if (
                         this._bodyTextDocument &amp;&amp; this.lastSelectedNode &amp;&amp;
@@ -12358,14 +12383,17 @@ def tag_configure(self, colorName, **keys): pass
     """
     if not p_ap:
         return self._outputError("Error in getLanguage, no param p_ap")
+
     w_p = self._ap_to_p(p_ap)
-    if not w_p:
-        states = {
-            'language': 'plain',
-            'row': 0,
-            'col': 0
+    w_wrapper = self.commander.frame.body.wrapper
+
+    states = {
+        'language': 'plain',
+        'selection': [0,0,0,0,0,0]
         }
-    else:
+
+    if w_p:
+
         c, g = self.commander, self.g
         aList = g.get_directives_dict_list(w_p)
         d = g.scanAtCommentAndAtLanguageDirectives(aList)
@@ -12376,11 +12404,31 @@ def tag_configure(self, colorName, **keys): pass
             c.config.getString('target-language') or
             'plain'
         )
-        i, row, col = c.frame.body.wrapper.toPythonIndexRowCol(w_p.v.insertSpot)
+
+        w_active = w_p.v.insertSpot
+        w_start = w_p.v.selectionStart
+        w_end =  w_p.v.selectionStart + w_p.v.selectionLength
+
+        # get selection from wrapper instead if its the selected node
+        if self.commander.p.v.gnx == w_p.v.gnx:
+            w_active = w_wrapper.getInsertPoint()
+            w_start, w_end = w_wrapper.getSelectionRange(True)
+
+        # compute line and column for the insertion point, and the start &amp; end of selection
+        w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(w_active)
+        w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(w_start)
+        w_endI, w_endRow, w_endCol = c.frame.body.wrapper.toPythonIndexRowCol(w_end)
+
         states = {
             'language': language.lower(),
-            'row': row,
-            'col': col
+            'selection': [
+                w_activeRow,
+                w_activeCol,
+                w_startRow,
+                w_startCol,
+                w_endRow,
+                w_endCol
+                ]
         }
     return self.sendLeoBridgePackage("bodyStates", states)
 
@@ -12402,6 +12450,7 @@ def tag_configure(self, colorName, **keys): pass
     #    end.line || 0,
     #    end.character || 0
     #  ]
+
     w_same = False  # Flag for actually doing the wrapper if really same gnx.
     w_wrapper = self.commander.frame.body.wrapper
     w_gnx = p_package['gnx']

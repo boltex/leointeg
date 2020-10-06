@@ -2382,14 +2382,17 @@ class LeoBridgeIntegController:
         """
         if not p_ap:
             return self._outputError("Error in getLanguage, no param p_ap")
+
         w_p = self._ap_to_p(p_ap)
-        if not w_p:
-            states = {
-                'language': 'plain',
-                'row': 0,
-                'col': 0
+        w_wrapper = self.commander.frame.body.wrapper
+
+        states = {
+            'language': 'plain',
+            'selection': [0,0,0,0,0,0]
             }
-        else:
+
+        if w_p:
+
             c, g = self.commander, self.g
             aList = g.get_directives_dict_list(w_p)
             d = g.scanAtCommentAndAtLanguageDirectives(aList)
@@ -2400,11 +2403,31 @@ class LeoBridgeIntegController:
                 c.config.getString('target-language') or
                 'plain'
             )
-            i, row, col = c.frame.body.wrapper.toPythonIndexRowCol(w_p.v.insertSpot)
+
+            w_active = w_p.v.insertSpot
+            w_start = w_p.v.selectionStart
+            w_end =  w_p.v.selectionStart + w_p.v.selectionLength
+
+            # get selection from wrapper instead if its the selected node
+            if self.commander.p.v.gnx == w_p.v.gnx:
+                w_active = w_wrapper.getInsertPoint()
+                w_start, w_end = w_wrapper.getSelectionRange(True)
+
+            # compute line and column for the insertion point, and the start & end of selection
+            w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(w_active)
+            w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(w_start)
+            w_endI, w_endRow, w_endCol = c.frame.body.wrapper.toPythonIndexRowCol(w_end)
+
             states = {
                 'language': language.lower(),
-                'row': row,
-                'col': col
+                'selection': [
+                    w_activeRow,
+                    w_activeCol,
+                    w_startRow,
+                    w_startCol,
+                    w_endRow,
+                    w_endCol
+                    ]
             }
         return self.sendLeoBridgePackage("bodyStates", states)
 
@@ -2517,6 +2540,7 @@ class LeoBridgeIntegController:
         #    end.line || 0,
         #    end.character || 0
         #  ]
+
         w_same = False  # Flag for actually doing the wrapper if really same gnx.
         w_wrapper = self.commander.frame.body.wrapper
         w_gnx = p_package['gnx']
