@@ -1317,7 +1317,7 @@ export interface ShowBodyParam {
 }
 </t>
 <t tx="ekr.20200815091408.1">/**
- * * Items in the package object gotten back from 'getStates'
+ * * Object sent back from leoInteg's 'getStates' command
  */
 export interface LeoPackageStates {
     changed: boolean; // Leo document has changed (is dirty)
@@ -1331,7 +1331,7 @@ export interface LeoPackageStates {
 </t>
 <t tx="ekr.20200815091439.1">/**
  * * Returned info about currently opened and editing document
- * after opening or switching/setting the opened document
+ * Used after opening, switching or setting the opened document
  */
 export interface LeoBridgePackageOpenedInfo {
     total: number;
@@ -8192,7 +8192,7 @@ import { LeoNode } from "./leoNode";
 @others
 </t>
 <t tx="felix.20200718194857.10">/**
- * * Main JSON information package format used between leointeg and Leo
+ * * Main interface for JSON sent from Leo back to leoInteg
  */
 export interface LeoBridgePackage {
     id: number; // TODO : Could be used for error checking
@@ -8202,7 +8202,7 @@ export interface LeoBridgePackage {
     bodyData?: string;
     bodyStates?: {
         language: string;
-        selection: number[];
+        selection: BodySelectionInfo;
     }
     node?: ArchivedPosition;
     nodes?: ArchivedPosition[];
@@ -8999,7 +8999,7 @@ More information can be found on the repository's [Issues Page](https://github.c
 import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, ReqRefresh, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand, UserCommand, ShowBodyParam } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, ReqRefresh, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand, UserCommand, ShowBodyParam, BodySelectionInfo } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -9886,33 +9886,21 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
         // * proper usage : set its language, and restore the proper cursor position
         if (this.lastSelectedNode) {
             this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
-                .then(p_result =&gt; {
+                .then((p_result: LeoBridgePackage) =&gt; {
 
-                    // * Receives from python :
-                    //  language: language.lower(),
-                    //  selection: [
-                    //    w_activeRow,
-                    //    w_activeCol,
-                    //    w_startRow,
-                    //    w_startCol,
-                    //    w_endRow,
-                    //    w_endCol
-                    //  ]
+                    let w_language: string = p_result.bodyStates!.language;
+                    const w_leoBodySel: BodySelectionInfo = p_result.bodyStates!.selection;
 
-                    let w_language = p_result.bodyStates!.language;
+                    const w_activeRow: number = w_leoBodySel.activeLine;
+                    const w_activeCol: number = w_leoBodySel.activeCol;
+                    let w_anchorLine: number = w_leoBodySel.startLine;
+                    let w_anchorCharacter: number = w_leoBodySel.startCol;
 
-                    console.log('selection from Leo', p_result.bodyStates!.selection);
-
-                    const w_activeRow: number = p_result.bodyStates!.selection[0];
-                    const w_activeCol: number = p_result.bodyStates!.selection[1];
-                    let w_anchorLine: number = p_result.bodyStates!.selection[2];
-                    let w_anchorCharacter: number = p_result.bodyStates!.selection[3];
-
-                    if (p_result.bodyStates!.selection[0] === p_result.bodyStates!.selection[2] &amp;&amp;
-                        p_result.bodyStates!.selection[1] === p_result.bodyStates!.selection[3]) {
+                    if (w_leoBodySel.activeLine === w_leoBodySel.startLine &amp;&amp;
+                        w_leoBodySel.activeCol === w_leoBodySel.startCol) {
                         // active insertion same as start selection, so use the other ones
-                        w_anchorLine = p_result.bodyStates!.selection[4];
-                        w_anchorCharacter = p_result.bodyStates!.selection[5];
+                        w_anchorLine = w_leoBodySel.endLine;
+                        w_anchorCharacter = w_leoBodySel.endCol;
                     }
 
                     // constructor(anchorLine: number, anchorCharacter: number, activeLine: number, activeCharacter: number);
@@ -9924,13 +9912,15 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                     );
 
                     vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
-                        if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
+                        if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath &amp;&amp;
+                            utils.leoUriToStr(p_document.uri) === w_leoBodySel.gnx
+                        ) {
+                            console.log('SETTING CURSOR SELECTION IN VSCODE');
                             p_textEditor.selection = w_selection;
                         }
                     });
 
                     // TODO : Move those exception in "constants.ts" as a mapping from string-&gt;string
-                    // ! Exceptions
                     switch (p_result.bodyStates!.language) {
                         case "cplusplus":
                             w_language = "cpp";
@@ -12390,9 +12380,27 @@ def tag_configure(self, colorName, **keys): pass
     w_p = self._ap_to_p(p_ap)
     w_wrapper = self.commander.frame.body.wrapper
 
+    # interface BodySelectionInfo {
+    #     gnx: string;
+    #     activeLine: number;
+    #     activeCol: number;
+    #     startLine: number;
+    #     startCol: number;
+    #     endLine: number;
+    #     endCol: number;
+    # }
+
     states = {
         'language': 'plain',
-        'selection': [0,0,0,0,0,0]
+        'selection': {
+                        "gnx": w_p.v.gnx,
+                        "activeLine": 0,
+                        "activeCol": 0,
+                        "startLine": 0,
+                        "startCol": 0,
+                        "endLine": 0,
+                        "endCol": 0,
+                    }
         }
 
     if w_p:
@@ -12424,14 +12432,15 @@ def tag_configure(self, colorName, **keys): pass
 
         states = {
             'language': language.lower(),
-            'selection': [
-                w_activeRow,
-                w_activeCol,
-                w_startRow,
-                w_startCol,
-                w_endRow,
-                w_endCol
-                ]
+            'selection': {
+                        "gnx": w_p.v.gnx,
+                        "activeLine": w_activeRow,
+                        "activeCol": w_activeCol,
+                        "startLine": w_startRow,
+                        "startCol": w_startCol,
+                        "endLine": w_endRow,
+                        "endCol": w_endCol,
+                    }
         }
     return self.sendLeoBridgePackage("bodyStates", states)
 
@@ -12500,7 +12509,7 @@ def tag_configure(self, colorName, **keys): pass
 
 </t>
 <t tx="felix.20201006195046.1">/**
- * * LeoBody virtual file time information object
+ * * LeoBody cursor active position and text selection state, along with gnx
  */
 export interface BodySelectionInfo {
     gnx: string;

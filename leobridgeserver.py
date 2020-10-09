@@ -2386,9 +2386,27 @@ class LeoBridgeIntegController:
         w_p = self._ap_to_p(p_ap)
         w_wrapper = self.commander.frame.body.wrapper
 
+        # interface BodySelectionInfo {
+        #     gnx: string;
+        #     activeLine: number;
+        #     activeCol: number;
+        #     startLine: number;
+        #     startCol: number;
+        #     endLine: number;
+        #     endCol: number;
+        # }
+
         states = {
             'language': 'plain',
-            'selection': [0,0,0,0,0,0]
+            'selection': {
+                            "gnx": w_p.v.gnx,
+                            "activeLine": 0,
+                            "activeCol": 0,
+                            "startLine": 0,
+                            "startCol": 0,
+                            "endLine": 0,
+                            "endCol": 0,
+                        }
             }
 
         if w_p:
@@ -2420,14 +2438,15 @@ class LeoBridgeIntegController:
 
             states = {
                 'language': language.lower(),
-                'selection': [
-                    w_activeRow,
-                    w_activeCol,
-                    w_startRow,
-                    w_startCol,
-                    w_endRow,
-                    w_endCol
-                    ]
+                'selection': {
+                            "gnx": w_p.v.gnx,
+                            "activeLine": w_activeRow,
+                            "activeCol": w_activeCol,
+                            "startLine": w_startRow,
+                            "startCol": w_startCol,
+                            "endLine": w_endRow,
+                            "endCol": w_endCol,
+                        }
             }
         return self.sendLeoBridgePackage("bodyStates", states)
 

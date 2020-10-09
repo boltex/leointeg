@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, ReqRefresh, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand, UserCommand, ShowBodyParam } from "./types";
+import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, ReqRefresh, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand, UserCommand, ShowBodyParam, BodySelectionInfo } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -1304,33 +1304,21 @@ export class LeoIntegration {
             // * proper usage : set its language, and restore the proper cursor position
             if (this.lastSelectedNode) {
                 this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
-                    .then(p_result => {
+                    .then((p_result: LeoBridgePackage) => {
 
-                        // * Receives from python :
-                        //  language: language.lower(),
-                        //  selection: [
-                        //    w_activeRow,
-                        //    w_activeCol,
-                        //    w_startRow,
-                        //    w_startCol,
-                        //    w_endRow,
-                        //    w_endCol
-                        //  ]
+                        let w_language: string = p_result.bodyStates!.language;
+                        const w_leoBodySel: BodySelectionInfo = p_result.bodyStates!.selection;
 
-                        let w_language = p_result.bodyStates!.language;
+                        const w_activeRow: number = w_leoBodySel.activeLine;
+                        const w_activeCol: number = w_leoBodySel.activeCol;
+                        let w_anchorLine: number = w_leoBodySel.startLine;
+                        let w_anchorCharacter: number = w_leoBodySel.startCol;
 
-                        console.log('selection from Leo', p_result.bodyStates!.selection);
-
-                        const w_activeRow: number = p_result.bodyStates!.selection[0];
-                        const w_activeCol: number = p_result.bodyStates!.selection[1];
-                        let w_anchorLine: number = p_result.bodyStates!.selection[2];
-                        let w_anchorCharacter: number = p_result.bodyStates!.selection[3];
-
-                        if (p_result.bodyStates!.selection[0] === p_result.bodyStates!.selection[2] &&
-                            p_result.bodyStates!.selection[1] === p_result.bodyStates!.selection[3]) {
+                        if (w_leoBodySel.activeLine === w_leoBodySel.startLine &&
+                            w_leoBodySel.activeCol === w_leoBodySel.startCol) {
                             // active insertion same as start selection, so use the other ones
-                            w_anchorLine = p_result.bodyStates!.selection[4];
-                            w_anchorCharacter = p_result.bodyStates!.selection[5];
+                            w_anchorLine = w_leoBodySel.endLine;
+                            w_anchorCharacter = w_leoBodySel.endCol;
                         }
 
                         // constructor(anchorLine: number, anchorCharacter: number, activeLine: number, activeCharacter: number);
@@ -1342,13 +1330,15 @@ export class LeoIntegration {
                         );
 
                         vscode.window.visibleTextEditors.forEach(p_textEditor => {
-                            if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
+                            if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath &&
+                                utils.leoUriToStr(p_document.uri) === w_leoBodySel.gnx
+                            ) {
+                                console.log('SETTING CURSOR SELECTION IN VSCODE');
                                 p_textEditor.selection = w_selection;
                             }
                         });
 
                         // TODO : Move those exception in "constants.ts" as a mapping from string->string
-                        // ! Exceptions
                         switch (p_result.bodyStates!.language) {
                             case "cplusplus":
                                 w_language = "cpp";

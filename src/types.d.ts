@@ -115,7 +115,7 @@ export interface ArchivedPosition {
 }
 
 /**
- * * Items in the package object gotten back from 'getStates'
+ * * Object sent back from leoInteg's 'getStates' command
  */
 export interface LeoPackageStates {
     changed: boolean; // Leo document has changed (is dirty)
@@ -128,7 +128,7 @@ export interface LeoPackageStates {
 
 /**
  * * Returned info about currently opened and editing document
- * after opening or switching/setting the opened document
+ * Used after opening, switching or setting the opened document
  */
 export interface LeoBridgePackageOpenedInfo {
     total: number;
@@ -137,7 +137,7 @@ export interface LeoBridgePackageOpenedInfo {
 }
 
 /**
- * * Main JSON information package format used between leointeg and Leo
+ * * Main interface for JSON sent from Leo back to leoInteg
  */
 export interface LeoBridgePackage {
     id: number; // TODO : Could be used for error checking
@@ -147,7 +147,7 @@ export interface LeoBridgePackage {
     bodyData?: string;
     bodyStates?: {
         language: string;
-        selection: number[];
+        selection: BodySelectionInfo;
     }
     node?: ArchivedPosition;
     nodes?: ArchivedPosition[];
@@ -203,7 +203,7 @@ export interface BodyTimeInfo {
 }
 
 /**
- * * LeoBody virtual file time information object
+ * * LeoBody cursor active position and text selection state, along with gnx
  */
 export interface BodySelectionInfo {
     gnx: string;
