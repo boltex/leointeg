@@ -1917,7 +1917,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.47.0"
+    "vscode": "^1.50.0"
   },
   "keywords": [
     "leo",
@@ -1953,7 +1953,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.49.0",
+    "@types/vscode": "^1.50.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
