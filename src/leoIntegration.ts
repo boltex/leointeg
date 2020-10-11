@@ -748,7 +748,7 @@ export class LeoIntegration {
                 this._selectionDirty = true;
                 this._selection = p_event.selections[0];
                 this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
-                console.log("Got new selection from interface, gnx:", this._selectionGnx);
+                // console.log("Got new selection from interface, gnx:", this._selectionGnx);
             }
         }
     }
@@ -806,7 +806,7 @@ export class LeoIntegration {
      */
     public _bodySaveSelection(): Thenable<boolean> {
         if (this._selectionDirty) {
-            console.log('sending selection for gnx ' + this._selectionGnx);
+            // console.log('sending selection for gnx ' + this._selectionGnx);
 
             const w_param = {
                 gnx: this._selectionGnx,
@@ -822,7 +822,7 @@ export class LeoIntegration {
 
             return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(p_result => {
 
-                console.log('back from set selection: ', p_result);
+                // console.log('back from set selection: ', p_result);
 
                 this._selectionDirty = false;
                 return Promise.resolve(true);
@@ -1333,7 +1333,6 @@ export class LeoIntegration {
                             if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath &&
                                 utils.leoUriToStr(p_document.uri) === w_leoBodySel.gnx
                             ) {
-                                console.log('SETTING CURSOR SELECTION IN VSCODE');
                                 p_textEditor.selection = w_selection;
                             }
                         });
@@ -1858,7 +1857,7 @@ export class LeoIntegration {
                     action: p_picked.func,
                     node: undefined,
                     refreshType: { tree: true, body: true, documents: true, buttons: true, states: true },
-                    fromOutline: !!true
+                    fromOutline: false // true
                 });
             }
         });

@@ -1278,7 +1278,7 @@ public minibuffer(): void {
                 action: p_picked.func,
                 node: undefined,
                 refreshType: { tree: true, body: true, documents: true, buttons: true, states: true },
-                fromOutline: !!true
+                fromOutline: false // true
             });
         }
     });
@@ -9915,7 +9915,6 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                         if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath &amp;&amp;
                             utils.leoUriToStr(p_document.uri) === w_leoBodySel.gnx
                         ) {
-                            console.log('SETTING CURSOR SELECTION IN VSCODE');
                             p_textEditor.selection = w_selection;
                         }
                     });
@@ -12072,7 +12071,7 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
             this._selectionDirty = true;
             this._selection = p_event.selections[0];
             this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
-            console.log("Got new selection from interface, gnx:", this._selectionGnx);
+            // console.log("Got new selection from interface, gnx:", this._selectionGnx);
         }
     }
 }
@@ -12083,7 +12082,7 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
  */
 public _bodySaveSelection(): Thenable&lt;boolean&gt; {
     if (this._selectionDirty) {
-        console.log('sending selection for gnx ' + this._selectionGnx);
+        // console.log('sending selection for gnx ' + this._selectionGnx);
 
         const w_param = {
             gnx: this._selectionGnx,
@@ -12099,7 +12098,7 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 
         return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(p_result =&gt; {
 
-            console.log('back from set selection: ', p_result);
+            // console.log('back from set selection: ', p_result);
 
             this._selectionDirty = false;
             return Promise.resolve(true);
@@ -12122,13 +12121,11 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 <t tx="felix.20200928174406.10">def getAllText(self):
     """IntegTextWrapper getAllText"""
     s = self.s
-    print("getAllText: " + s, flush=True)
     return self.g.checkUnicode(s)
 
 </t>
 <t tx="felix.20200928174406.11">def getInsertPoint(self):
     """IntegTextWrapper getInsertPoint"""
-    print("getInsertPoint", flush=True)
     i = self.ins
     if i is None:
         if self.virtualInsertPoint is None:
@@ -12141,7 +12138,6 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 </t>
 <t tx="felix.20200928174406.12">def getSelectedText(self):
     """IntegTextWrapper getSelectedText"""
-    print("getSelectedText", flush=True)
     i, j = self.sel
     s = self.s[i:j]
     return self.g.checkUnicode(s)
@@ -12149,7 +12145,6 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 </t>
 <t tx="felix.20200928174406.13">def getSelectionRange(self, sort=True):
     """Return the selected range of the widget."""
-    print("getSelectionRange", flush=True)
     sel = self.sel
     if len(sel) == 2 and sel[0] &gt;= 0 and sel[1] &gt;= 0:
         i, j = sel
@@ -12162,14 +12157,12 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 </t>
 <t tx="felix.20200928174406.14">def hasSelection(self):
     """IntegTextWrapper hasSelection"""
-    print("hasSelection", flush=True)
     i, j = self.getSelectionRange()
     return i != j
 
 </t>
 <t tx="felix.20200928174406.15">def insert(self, i, s):
     """IntegTextWrapper insert"""
-    print("insert", flush=True)
     i = self.toPythonIndex(i)
     s1 = s
     self.s = self.s[:i] + s1 + self.s[i:]
@@ -12180,13 +12173,11 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 </t>
 <t tx="felix.20200928174406.16">def selectAllText(self, insert=None):
     """IntegTextWrapper selectAllText"""
-    print("selectAllText", flush=True)
     self.setSelectionRange(0, 'end', insert=insert)
 
 </t>
 <t tx="felix.20200928174406.17">def setAllText(self, s):
     """IntegTextWrapper setAllText"""
-    print("setAllText :" + s, flush=True)
     self.s = s
     i = len(self.s)
     self.ins = i
@@ -12195,7 +12186,6 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 </t>
 <t tx="felix.20200928174406.18">def setInsertPoint(self, pos, s=None):
     """IntegTextWrapper setInsertPoint"""
-    print("setInsertPoint", flush=True)
     self.virtualInsertPoint = i = self.toPythonIndex(pos)
     self.ins = i
     self.sel = i, i
@@ -12203,7 +12193,6 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 </t>
 <t tx="felix.20200928174406.19">def setSelectionRange(self, i, j, insert=None):
     """IntegTextWrapper setSelectionRange"""
-    print("setSelectionRange", flush=True)
     i, j = self.toPythonIndex(i), self.toPythonIndex(j)
     self.sel = i, j
     self.ins = j if insert is None else self.toPythonIndex(insert)
@@ -12230,13 +12219,11 @@ def getName(self):
 </t>
 <t tx="felix.20200928174406.20">def toPythonIndex(self, index):
     """IntegTextWrapper toPythonIndex"""
-    print("toPythonIndex", flush=True)
     return self.g.toPythonIndex(self.s, index)
 
 </t>
 <t tx="felix.20200928174406.21">def toPythonIndexRowCol(self, index):
     """IntegTextWrapper toPythonIndexRowCol"""
-    print("toPythonIndexRowCol", flush=True)
     s = self.getAllText()
     i = self.toPythonIndex(index)
     row, col = self.g.convertPythonIndexToRowCol(s, i)
@@ -12254,11 +12241,9 @@ def clipboard_append(self, s):
 <t tx="felix.20200928174406.4">def flashCharacter(self, i, bg='white', fg='red', flashes=3, delay=75): pass
 
 def getXScrollPosition(self):
-    print("getXScrollPosition", flush=True)
     return 0
 
 def getYScrollPosition(self):
-    print("getYScrollPosition", flush=True)
     return 0
 
 def see(self, i): pass
@@ -12269,11 +12254,9 @@ def setFocus(self): pass
 
 def setStyleClass(self, name): pass
 
-def setXScrollPosition(self, i):
-    print("setXScrollPosition", flush=True)
+def setXScrollPosition(self, i): pass # todo
 
-def setYScrollPosition(self, i):
-    print("setYScrollPosition", flush=True)
+def setYScrollPosition(self, i): pass # todo
 
 def tag_configure(self, colorName, **keys): pass
 
@@ -12281,7 +12264,6 @@ def tag_configure(self, colorName, **keys): pass
 <t tx="felix.20200928174406.5"></t>
 <t tx="felix.20200928174406.6">def appendText(self, s):
     """IntegTextWrapper appendText"""
-    print("appendText", flush=True)
     self.s = self.s + self.g.toUnicode(s)
     # defensive
     self.ins = len(self.s)
@@ -12290,7 +12272,6 @@ def tag_configure(self, colorName, **keys): pass
 </t>
 <t tx="felix.20200928174406.7">def delete(self, i, j=None):
     """IntegTextWrapper delete"""
-    print("delete", flush=True)
     i = self.toPythonIndex(i)
     if j is None:
         j = i + 1
@@ -12306,14 +12287,12 @@ def tag_configure(self, colorName, **keys): pass
 </t>
 <t tx="felix.20200928174406.8">def deleteTextSelection(self):
     """IntegTextWrapper."""
-    print("deleteTextSelection", flush=True)
     i, j = self.getSelectionRange()
     self.delete(i, j)
 
 </t>
 <t tx="felix.20200928174406.9">def get(self, i, j=None):
     """IntegTextWrapper get"""
-    print("get", flush=True)
     i = self.toPythonIndex(i)
     if j is None:
         j = i + 1
@@ -12469,15 +12448,15 @@ def tag_configure(self, colorName, **keys): pass
     w_body = ""
     w_v = None
     if self.commander.p.v.gnx == w_gnx:
-        print('Set Selection! OK SAME GNX: '+ self.commander.p.v.gnx)
+        # print('Set Selection! OK SAME GNX: '+ self.commander.p.v.gnx)
         w_same = True
         w_v = self.commander.p.v
     else:
-        print('Set Selection! NOT SAME GNX: selected:'+ self.commander.p.v.gnx + ', package:'+  w_gnx)
+        # print('Set Selection! NOT SAME GNX: selected:'+ self.commander.p.v.gnx + ', package:'+  w_gnx)
         w_v = self.commander.fileCommands.gnxDict.get(w_gnx)
 
     if not w_v:
-        print('Set Selection! NOT SAME Leo Document')
+        # print('Set Selection! NOT SAME Leo Document')
         return self._outputPNode(self.commander.p)  # ! FAILED (but return as normal)
 
     w_body = w_v.b
