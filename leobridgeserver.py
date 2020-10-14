@@ -2566,9 +2566,12 @@ class LeoBridgeIntegController:
         if w_same:
             w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
         else:
-            w_v.insertSpot = w_insert;
-            w_v.selectionStart = w_startSel;
-            w_v.selectionLength = (w_endSel - w_startSel) if w_endSel > w_startSel else 0
+            pass
+
+        # Set for v node no matter what
+        w_v.insertSpot = w_insert;
+        w_v.selectionStart = w_startSel;
+        w_v.selectionLength = (w_endSel - w_startSel) if w_endSel > w_startSel else 0
 
         # When switching nodes, Leo's core saves the insert point, selection,
         # and vertical scroll position in the old (unselected) vnode. From v.init:

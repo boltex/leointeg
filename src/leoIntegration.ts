@@ -93,13 +93,9 @@ export class LeoIntegration {
     private _showBodyParams: ShowBodyParam | undefined; // _applySelectionToBody parameters, may be overwritten at each call if not finished
 
     // * Selection
-    private _selectionDirty: boolean = false;
-    private _selectionGnx: string = "";
-    /**
-     * Selection has "start", "end" positions, and also contains a 'active' position which is the cursor position.
-     * Position has line, character and many helper methods
-     */
-    private _selection: vscode.Selection | undefined;
+    private _selectionDirty: boolean = false; // Flag set when cursor selection is changed
+    private _selectionGnx: string = ""; // Packaged into 'BodySelectionInfo' structures, sent to Leo
+    private _selection: vscode.Selection | undefined; // also packaged into 'BodySelectionInfo'
 
     private _bodyUri: vscode.Uri = utils.strToLeoUri("");
     get bodyUri(): vscode.Uri {
@@ -211,8 +207,11 @@ export class LeoIntegration {
         // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
         vscode.window.onDidChangeActiveTextEditor(p_event => this._onActiveEditorChanged(p_event));
 
-        // * The selection in an output panel or any other editor has changed
-        vscode.window.onDidChangeTextEditorSelection(p_event => this._onChangeEditorSelection(p_event)); // ! Not used for now
+        // * React to change in selection and cursor position
+        vscode.window.onDidChangeTextEditorSelection(p_event => this._onChangeEditorSelection(p_event));
+
+        // * React to change in scroll position and window size
+        vscode.window.onDidChangeTextEditorVisibleRanges((p_event => this._onChangeEditorScroll(p_event)));
 
         // * The view column of an editor has changed (when shifting editors through closing/inserting editors or closing columns)
         // No effect when dragging editor tabs: it just closes and reopens in other column, see '_onChangeVisibleEditors'
@@ -748,10 +747,20 @@ export class LeoIntegration {
                 this._selectionDirty = true;
                 this._selection = p_event.selections[0];
                 this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
-                // console.log("Got new selection from interface, gnx:", this._selectionGnx);
+                console.log("Got new selection from interface, gnx:", this._selectionGnx);
             }
         }
     }
+
+    /**
+     * * Handles detection of the active editor's scroll position changes
+     */
+    private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent): void {
+        //
+        console.log('changed scroll', p_event.textEditor, p_event.visibleRanges);
+
+    }
+
 
     /**
      * * Handle typing that was detected in a document
@@ -807,7 +816,7 @@ export class LeoIntegration {
     public _bodySaveSelection(): Thenable<boolean> {
         if (this._selectionDirty) {
             // console.log('sending selection for gnx ' + this._selectionGnx);
-
+            // TODO use BodySelectionInfo type interface instead
             const w_param = {
                 gnx: this._selectionGnx,
                 selection: [
@@ -824,7 +833,7 @@ export class LeoIntegration {
 
                 // console.log('back from set selection: ', p_result);
 
-                this._selectionDirty = false;
+                this._selectionDirty = false;  // TODO : Maybe consider this false as action is sent?
                 return Promise.resolve(true);
             });
         } else {
