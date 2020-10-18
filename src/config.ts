@@ -42,7 +42,7 @@ export class Config implements ConfigMembers {
     ) { }
 
     /**
-     * * Get actual 'live' Leointeg Configuration
+     * * Get actual 'live' Leointeg configuration
      * @returns An object with config settings members such as treeKeepFocus, defaultReloadIgnore, etc.
      */
     public getConfig(): ConfigMembers {
@@ -72,7 +72,7 @@ export class Config implements ConfigMembers {
     }
 
     /**
-     * * Apply changes to the expansion config settings. Those values are saved in user's settings
+     * * Apply changes to the expansion config settings and save them in ser settings.
      * @param p_changes is an array of codes and values to be changed
      * @returns a promise that resolves upon completion
      */
@@ -86,10 +86,10 @@ export class Config implements ConfigMembers {
                 this._needsTreeRefresh = true;
             }
             if (w_vscodeConfig.inspect(i_change.code)!.defaultValue === i_change.value) {
-                // set as undefined - same as default
+                // Set as undefined - same as default
                 w_promises.push(w_vscodeConfig.update(i_change.code, undefined, true));
             } else {
-                // set as value which is not default
+                // Set as value which is not default
                 w_promises.push(w_vscodeConfig.update(i_change.code, i_change.value, true));
             }
         });

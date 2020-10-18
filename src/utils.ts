@@ -153,10 +153,10 @@ export function leoUriToStr(p_uri: vscode.Uri): string {
 }
 
 /**
- * * Sets a vscode context variable with the 'vscode.commands.executeCommand' and 'setContext' method
+ * * Sets a vscode context variable with 'vscode.commands.executeCommand' & 'setContext'
  * @param p_key Key string name such as constants 'bridgeReady' or 'treeOpened', etc.
  * @param p_value Value to be assigned to the p_key 'key'
- * @returns A Thenable that was returned by the executeCommand call to set the context
+ * @returns A Thenable that is returned by the executeCommand call
  */
 export function setContext(p_key: string, p_value: any): Thenable<unknown> {
     return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, p_key, p_value);
