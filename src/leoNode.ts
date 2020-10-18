@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
-import { ArchivedPosition, Icon } from "./types"; // * TO HELP DEBUG
+import { ArchivedPosition, Icon } from "./types"; // To help debug
 
 /**
  * * Implementation of tree nodes for usage in a TreeDataProvider

@@ -165,7 +165,7 @@ export class Constants {
 
     /**
      * * Configuration Defaults used in config.ts
-     * used when setting itself and getting parameters from vscode
+     * Used when setting itself and getting parameters from vscode
      */
     public static CONFIG_DEFAULTS = {
         CHECK_FOR_CHANGE_EXTERNAL_FILES: "none",  // Used in leoBridge scrip,
@@ -285,7 +285,6 @@ export class Constants {
 
     /**
      * * Commands for leobridgeserver.py
-     *
      */
     public static LEOBRIDGE = {
         APPLY_CONFIG: "applyConfig",
@@ -306,7 +305,7 @@ export class Constants {
         COLLAPSE_NODE: "collapseNode",
         CONTRACT_ALL: "contractAllHeadlines",
         GET_OPENED_FILES: "getOpenedFiles",
-        SET_OPENED_FILE: "setOpenedFile", // Pass index ? name to validate / error check, only index when stable
+        SET_OPENED_FILE: "setOpenedFile",
         OPEN_FILE: "openFile",
         OPEN_FILES: "openFiles", // Sends an array of paths instead: for opening many files at once
         CLOSE_FILE: "closeFile",
@@ -456,8 +455,8 @@ export class Constants {
         MOVE_LEFT_SELECTION: Constants.NAME + ".moveOutlineLeftSelection",
         MOVE_RIGHT_SELECTION: Constants.NAME + ".moveOutlineRightSelection",
         MOVE_UP_SELECTION: Constants.NAME + ".moveOutlineUpSelection",
-        INSERT_SELECTION: Constants.NAME + ".insertNodeSelection",
-        INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Headline input box can be interrupted with another insert
+        INSERT_SELECTION: Constants.NAME + ".insertNodeSelection", // Can be interrupted
+        INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Interrupted version
         CLONE_SELECTION: Constants.NAME + ".cloneNodeSelection",
         PROMOTE_SELECTION: Constants.NAME + ".promoteSelection",
         DEMOTE_SELECTION: Constants.NAME + ".demoteSelection",
@@ -465,7 +464,7 @@ export class Constants {
         // * Commands from keyboard, while focus on OUTLINE
         MARK_SELECTION_FO: Constants.NAME + ".markSelectionFromOutline",
         UNMARK_SELECTION_FO: Constants.NAME + ".unmarkSelectionFromOutline",
-        // COPY_SELECTION Nothing to refresh/focus for "copy a node" so no entry here
+        // COPY_SELECTION Nothing to refresh/focus for "copy a node" so no "FO" version
         CUT_SELECTION_FO: Constants.NAME + ".cutNodeSelectionFromOutline",
         PASTE_SELECTION_FO: Constants.NAME + ".pasteNodeAtSelectionFromOutline",
         PASTE_CLONE_SELECTION_FO: Constants.NAME + ".pasteNodeAsCloneAtSelectionFromOutline",

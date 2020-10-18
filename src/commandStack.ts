@@ -5,33 +5,31 @@ import { LeoIntegration } from "./leoIntegration";
 
 /**
  * * Front-facing, user command stack of actions.
- * Actions can also be added once started resolving.
+ * Actions can also be added while this stack has started resolving.
  */
 export class CommandStack {
 
     private _stack: UserCommand[] = [];
     private _busy: boolean = false;
 
-    // Refresh type, for after the last command is done. (From highest so far)
+    // Refresh type, for use after the last command has done resolving. (From highest so far)
     private _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
 
-    // Flag indicating to set focus on outline when all done, instead of body. (From last one pushed)
+    // Flag used to set focus on outline instead of body when done resolving. (From last pushed)
     private _finalFromOutline: boolean = false;
 
-    // * Received selection from the last command that finished.
-    // * Note: JSON string representation of a node, will be re-sent as node to leo instead of lastSelectedNode
-    private _receivedSelection: string = ""; // Selected node that was received from last command from a running stack. Empty string is used as 'false'.
+    // Received selection from the last command that finished as JSON string representation.
+    // It will be re-sent as 'target node' instead of lastSelectedNode if present.
+    private _receivedSelection: string = ""; // Empty string is used as 'falsy'.
 
     constructor(
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
-    ) {
-        this._busy = false;
-    }
+    ) { }
 
     /**
-     * * Get command stack size
-     * @returns the number of actions on the command stack
+     * * Returns the command stack size
+     * @returns number of actions on the command stack
      */
     public size(): number {
         return this._stack.length;
@@ -49,9 +47,9 @@ export class CommandStack {
 
     /**
      * * Adds on top and try to execute the bottom command if not already running
+     * Targeted command (for a specific node) can only be added on an empty stack
      * @param p_command is an object that has the action, node, refresh type and 'fromOutline' flag
      * @returns true if added, false if it could not due to stack 'rules':
-     *  - Targeted command (for a specific node) can only be added on an empty stack
      */
     public add(p_command: UserCommand): boolean {
         if (this.size() && p_command.node) {
@@ -87,7 +85,6 @@ export class CommandStack {
     private _runStackCommand(): Promise<LeoBridgePackage> {
         const w_command: UserCommand = this._stack[0]; // Reference from bottom of stack, don't remove yet
 
-        // Build parameter's json here - use text member if needed
         let w_nodeJson: string = ""; // ap json used in building w_jsonParam
         let w_jsonParam: string = ""; // Finished parameter that is sent
 
@@ -97,7 +94,7 @@ export class CommandStack {
         if (w_command.node) {
             w_nodeJson = w_command.node.apJson; // Was node specific, so we are starting from a new stack of commands
         } else {
-            // Use received "selected node" unless first, then use last selected node
+            // Use received "selected node" unless first use, then use last selected node
             if (this._receivedSelection) {
                 w_nodeJson = this._receivedSelection;
             } else {
@@ -123,15 +120,12 @@ export class CommandStack {
      */
     private _resolveResult(p_package: LeoBridgePackage): void {
         this._stack.shift();
-        // If last is done then do refresh outline and focus on outline, or body, as required
 
-        this._receivedSelection = JSON.stringify(p_package.node); // ! Maybe set this._receivedSelection to the last one anyways ?
+        this._receivedSelection = JSON.stringify(p_package.node);
+
         if (!this.size()) {
-            // Reset 'received' selected node so that lastSelectedNode is used instead
-            // this._receivedSelection = ""; // ! Maybe not clear this here at this point!
-
-            this._busy = false; // We're not busy anymore // ! maybe keep using _receivedSelection instead of clearing it?
-            // console.log(`busy NOW FALSE :  ${this._busy}`);
+            // If last is done then do refresh outline and focus on outline, or body, as required
+            this._busy = false;
 
             if (Object.keys(this._finalRefreshType).length) {
                 // At least some type of refresh
@@ -143,7 +137,6 @@ export class CommandStack {
 
         } else {
             // size > 0, so call _runStackCommand again, keep _busy set to true
-            // console.log('Next!');
             this._runStackCommand().then((p_package: LeoBridgePackage) => {
                 this._resolveResult(p_package);
             });

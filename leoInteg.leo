@@ -588,6 +588,7 @@
 </v>
 <v t="felix.20200718194857.1"><vh>@clean src/types.d.ts</vh>
 <v t="felix.20200718194857.2"><vh>ConfigMembers</vh></v>
+<v t="felix.20201017224340.1"><vh>ConfigSetting</vh></v>
 <v t="felix.20200718194857.3"><vh>RevealType</vh></v>
 <v t="felix.20200718194857.4"><vh>RefreshType</vh></v>
 <v t="felix.20200718194857.5"><vh>UserCommand</vh></v>
@@ -644,6 +645,8 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
+<v t="felix.20191126232434.4"></v>
+<v t="felix.20200719025231.2"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -803,7 +806,7 @@ public showChangesDetectedInfoMessage(p_infoArg: runInfoMessageDialogParameters)
 </t>
 <t tx="ekr.20200815084016.1">/**
  * * Configuration Defaults used in config.ts
- * used when setting itself and getting parameters from vscode
+ * Used when setting itself and getting parameters from vscode
  */
 public static CONFIG_DEFAULTS = {
     CHECK_FOR_CHANGE_EXTERNAL_FILES: "none",  // Used in leoBridge scrip,
@@ -1385,10 +1388,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 
 </t>
 <t tx="ekr.20200815113156.1">// * Define entries for all commands
-[CMD.MINIBUFFER, () =&gt; w_leo.minibuffer()], // Cannot be undeclared because its referenced in package.json
+[CMD.MINIBUFFER, () =&gt; w_leo.minibuffer()], // Is referenced in package.json
 [CMD.EXECUTE, () =&gt; w_leo.executeScript()],
 
-[CMD.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.clickButton(p_node)], // not referenced in package.json
+[CMD.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.clickButton(p_node)], // Not referenced in package.json
 [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.removeButton(p_node)],
 
 [CMD.CLOSE_FILE, () =&gt; w_leo.closeLeoFile()],
@@ -1402,7 +1405,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SAVE_FILE_FO, () =&gt; w_leo.saveLeoFile(true)],
 [CMD.SWITCH_FILE, () =&gt; w_leo.switchLeoFile()],
 
-// Test for undeclared commands VERDICT IT WORKS!
 [CMD.SET_OPENED_FILE, (p_index: number) =&gt; w_leo.selectOpenedLeoDocument(p_index)],
 
 [CMD.REFRESH_FROM_DISK, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
@@ -5612,7 +5614,7 @@ public static LEOBRIDGE = {
     COLLAPSE_NODE: "collapseNode",
     CONTRACT_ALL: "contractAllHeadlines",
     GET_OPENED_FILES: "getOpenedFiles",
-    SET_OPENED_FILE: "setOpenedFile", // Pass index ? name to validate / error check, only index when stable
+    SET_OPENED_FILE: "setOpenedFile",
     OPEN_FILE: "openFile",
     OPEN_FILES: "openFiles", // Sends an array of paths instead: for opening many files at once
     CLOSE_FILE: "closeFile",
@@ -5772,7 +5774,7 @@ public static COMMANDS = {
     // * Commands from keyboard, while focus on OUTLINE
     MARK_SELECTION_FO: Constants.NAME + ".markSelectionFromOutline",
     UNMARK_SELECTION_FO: Constants.NAME + ".unmarkSelectionFromOutline",
-    // COPY_SELECTION Nothing to refresh/focus for "copy a node" so no entry here
+    // COPY_SELECTION Nothing to refresh/focus for "copy a node" so no "FO" version
     CUT_SELECTION_FO: Constants.NAME + ".cutNodeSelectionFromOutline",
     PASTE_SELECTION_FO: Constants.NAME + ".pasteNodeAtSelectionFromOutline",
     PASTE_CLONE_SELECTION_FO: Constants.NAME + ".pasteNodeAsCloneAtSelectionFromOutline",
@@ -6055,36 +6057,34 @@ import { LeoIntegration } from "./leoIntegration";
 </t>
 <t tx="felix.20200718024635.2">/**
  * * Front-facing, user command stack of actions.
- * Actions can also be added once started resolving.
+ * Actions can also be added while this stack has started resolving.
  */
 export class CommandStack {
 
     private _stack: UserCommand[] = [];
     private _busy: boolean = false;
 
-    // Refresh type, for after the last command is done. (From highest so far)
+    // Refresh type, for use after the last command has done resolving. (From highest so far)
     private _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
 
-    // Flag indicating to set focus on outline when all done, instead of body. (From last one pushed)
+    // Flag used to set focus on outline instead of body when done resolving. (From last pushed)
     private _finalFromOutline: boolean = false;
 
-    // * Received selection from the last command that finished.
-    // * Note: JSON string representation of a node, will be re-sent as node to leo instead of lastSelectedNode
-    private _receivedSelection: string = ""; // Selected node that was received from last command from a running stack. Empty string is used as 'false'.
+    // Received selection from the last command that finished as JSON string representation.
+    // It will be re-sent as 'target node' instead of lastSelectedNode if present.
+    private _receivedSelection: string = ""; // Empty string is used as 'falsy'.
 
     constructor(
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
-    ) {
-        this._busy = false;
-    }
+    ) { }
 
     @others
 }
 </t>
 <t tx="felix.20200718024635.3">/**
- * * Get command stack size
- * @returns the number of actions on the command stack
+ * * Returns the command stack size
+ * @returns number of actions on the command stack
  */
 public size(): number {
     return this._stack.length;
@@ -6104,9 +6104,9 @@ public newSelection(): void {
 </t>
 <t tx="felix.20200718024635.5">/**
  * * Adds on top and try to execute the bottom command if not already running
+ * Targeted command (for a specific node) can only be added on an empty stack
  * @param p_command is an object that has the action, node, refresh type and 'fromOutline' flag
  * @returns true if added, false if it could not due to stack 'rules':
- *  - Targeted command (for a specific node) can only be added on an empty stack
  */
 public add(p_command: UserCommand): boolean {
     if (this.size() &amp;&amp; p_command.node) {
@@ -6144,7 +6144,6 @@ private _tryStart(): void {
 private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
     const w_command: UserCommand = this._stack[0]; // Reference from bottom of stack, don't remove yet
 
-    // Build parameter's json here - use text member if needed
     let w_nodeJson: string = ""; // ap json used in building w_jsonParam
     let w_jsonParam: string = ""; // Finished parameter that is sent
 
@@ -6154,7 +6153,7 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
     if (w_command.node) {
         w_nodeJson = w_command.node.apJson; // Was node specific, so we are starting from a new stack of commands
     } else {
-        // Use received "selected node" unless first, then use last selected node
+        // Use received "selected node" unless first use, then use last selected node
         if (this._receivedSelection) {
             w_nodeJson = this._receivedSelection;
         } else {
@@ -6181,15 +6180,12 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
  */
 private _resolveResult(p_package: LeoBridgePackage): void {
     this._stack.shift();
-    // If last is done then do refresh outline and focus on outline, or body, as required
 
-    this._receivedSelection = JSON.stringify(p_package.node); // ! Maybe set this._receivedSelection to the last one anyways ?
+    this._receivedSelection = JSON.stringify(p_package.node);
+
     if (!this.size()) {
-        // Reset 'received' selected node so that lastSelectedNode is used instead
-        // this._receivedSelection = ""; // ! Maybe not clear this here at this point!
-
-        this._busy = false; // We're not busy anymore // ! maybe keep using _receivedSelection instead of clearing it?
-        // console.log(`busy NOW FALSE :  ${this._busy}`);
+        // If last is done then do refresh outline and focus on outline, or body, as required
+        this._busy = false;
 
         if (Object.keys(this._finalRefreshType).length) {
             // At least some type of refresh
@@ -6201,7 +6197,6 @@ private _resolveResult(p_package: LeoBridgePackage): void {
 
     } else {
         // size &gt; 0, so call _runStackCommand again, keep _busy set to true
-        // console.log('Next!');
         this._runStackCommand().then((p_package: LeoBridgePackage) =&gt; {
             this._resolveResult(p_package);
         });
@@ -6211,7 +6206,7 @@ private _resolveResult(p_package: LeoBridgePackage): void {
 </t>
 <t tx="felix.20200718030926.1">import * as vscode from "vscode";
 import * as utils from "./utils";
-import { ConfigMembers } from "./types";
+import { ConfigMembers, ConfigSetting } from "./types";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -6224,9 +6219,10 @@ import { LeoIntegration } from "./leoIntegration";
  */
 export class Config implements ConfigMembers {
 
-    // Some config settings are used in leobridgeserver.py such as defaultReloadIgnore and checkForChangeExternalFiles
+    // Config settings used in leobridgeserver.py, on Leo's side.
     public checkForChangeExternalFiles: string = Constants.CONFIG_DEFAULTS.CHECK_FOR_CHANGE_EXTERNAL_FILES;
     public defaultReloadIgnore: string = Constants.CONFIG_DEFAULTS.DEFAULT_RELOAD_IGNORE;
+    // Config settings used in leoInteg/vscode's side
     public leoTreeBrowse: boolean = Constants.CONFIG_DEFAULTS.LEO_TREE_BROWSE;
     public treeKeepFocus: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS;
     public treeKeepFocusWhenAside: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE;
@@ -6247,7 +6243,7 @@ export class Config implements ConfigMembers {
     public connectionAddress: string = Constants.CONFIG_DEFAULTS.IP_ADDRESS;
     public connectionPort: number = Constants.CONFIG_DEFAULTS.IP_PORT;
 
-    private _isSettingConfig: boolean = false;
+    private _isBusySettingConfig: boolean = false;
     private _needsTreeRefresh: boolean = false;
 
     constructor(
@@ -6259,8 +6255,8 @@ export class Config implements ConfigMembers {
 }
 </t>
 <t tx="felix.20200718030926.3">/**
- * * Get Leointeg Configuration
- * @returns An object with live config settings members such as treeKeepFocus, defaultReloadIgnore, etc.
+ * * Get actual 'live' Leointeg Configuration
+ * @returns An object with config settings members such as treeKeepFocus, defaultReloadIgnore, etc.
  */
 public getConfig(): ConfigMembers {
     return {
@@ -6290,12 +6286,12 @@ public getConfig(): ConfigMembers {
 
 </t>
 <t tx="felix.20200718030926.4">/**
- * * Apply changes to the expansion config settings, those configuration values are persisted
- * @param p_changes is an array of key/values to change in the expansion settings
- * @returns a promise, in case additional procedures need to be run upon completion
+ * * Apply changes to the expansion config settings. Those values are saved in user's settings
+ * @param p_changes is an array of codes and values to be changed
+ * @returns a promise that resolves upon completion
  */
-public setLeoIntegSettings(p_changes: { code: string, value: any }[]): Promise&lt;void&gt; {
-    this._isSettingConfig = true;
+public setLeoIntegSettings(p_changes: ConfigSetting[]): Promise&lt;void&gt; {
+    this._isBusySettingConfig = true;
     const w_promises: Thenable&lt;void&gt;[] = [];
     const w_vscodeConfig = vscode.workspace.getConfiguration(Constants.CONFIG_NAME);
     p_changes.forEach(i_change =&gt; {
@@ -6306,11 +6302,9 @@ public setLeoIntegSettings(p_changes: { code: string, value: any }[]): Promise&l
         if (w_vscodeConfig.inspect(i_change.code)!.defaultValue === i_change.value) {
             // set as undefined - same as default
             w_promises.push(w_vscodeConfig.update(i_change.code, undefined, true));
-            // console.log("clearing ", change.code, "to undefined");
         } else {
             // set as value which is not default
             w_promises.push(w_vscodeConfig.update(i_change.code, i_change.value, true));
-            // console.log("setting ", change.code, "to ", change.value);
         }
     });
     return Promise.all(w_promises).then(() =&gt; {
@@ -6320,8 +6314,9 @@ public setLeoIntegSettings(p_changes: { code: string, value: any }[]): Promise&l
                 this._leoIntegration.configTreeRefresh();
             }, 200);
         }
-        this._isSettingConfig = false;
+        this._isBusySettingConfig = false;
         this.buildFromSavedSettings();
+        return Promise.resolve();
     });
 }
 
@@ -6337,51 +6332,51 @@ public buildFromSavedSettings(): void {
     const DEFAULTS = Constants.CONFIG_DEFAULTS;
     const FLAGS = Constants.CONTEXT_FLAGS;
 
-    if (this._isSettingConfig) {
+    if (this._isBusySettingConfig) {
         // * Currently setting config, wait until its done all, and this will be called automatically
         return;
     } else {
-        this.checkForChangeExternalFiles = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.CHECK_FOR_CHANGE_EXTERNAL_FILES, Constants.CONFIG_DEFAULTS.CHECK_FOR_CHANGE_EXTERNAL_FILES);
-        this.defaultReloadIgnore = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.DEFAULT_RELOAD_IGNORE, Constants.CONFIG_DEFAULTS.DEFAULT_RELOAD_IGNORE);
-        this.leoTreeBrowse = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.LEO_TREE_BROWSE, Constants.CONFIG_DEFAULTS.LEO_TREE_BROWSE);
-        this.treeKeepFocus = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.TREE_KEEP_FOCUS, Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS);
-        this.treeKeepFocusWhenAside = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.TREE_KEEP_FOCUS_WHEN_ASIDE, Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE);
-        this.statusBarString = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.STATUSBAR_STRING, Constants.CONFIG_DEFAULTS.STATUSBAR_STRING);
+        this.checkForChangeExternalFiles = GET(NAME).get(NAMES.CHECK_FOR_CHANGE_EXTERNAL_FILES, DEFAULTS.CHECK_FOR_CHANGE_EXTERNAL_FILES);
+        this.defaultReloadIgnore = GET(NAME).get(NAMES.DEFAULT_RELOAD_IGNORE, DEFAULTS.DEFAULT_RELOAD_IGNORE);
+        this.leoTreeBrowse = GET(NAME).get(NAMES.LEO_TREE_BROWSE, DEFAULTS.LEO_TREE_BROWSE);
+        this.treeKeepFocus = GET(NAME).get(NAMES.TREE_KEEP_FOCUS, DEFAULTS.TREE_KEEP_FOCUS);
+        this.treeKeepFocusWhenAside = GET(NAME).get(NAMES.TREE_KEEP_FOCUS_WHEN_ASIDE, DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE);
+        this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
         if (this.statusBarString.length &gt; 8) {
-            this.statusBarString = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
+            this.statusBarString = DEFAULTS.STATUSBAR_STRING;
         }
-        this.statusBarColor = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.STATUSBAR_COLOR, Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR);
+        this.statusBarColor = GET(NAME).get(NAMES.STATUSBAR_COLOR, DEFAULTS.STATUSBAR_COLOR);
         if (!utils.isHexColor(this.statusBarColor)) {
-            this.statusBarColor = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
+            this.statusBarColor = DEFAULTS.STATUSBAR_COLOR;
         }
-        this.treeInExplorer = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.TREE_IN_EXPLORER, Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER);
-        this.showOpenAside = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE, Constants.CONFIG_DEFAULTS.SHOW_OPEN_ASIDE);
-        this.showEditOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_EDIT, Constants.CONFIG_DEFAULTS.SHOW_EDIT);
-        this.showArrowsOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_ARROWS, Constants.CONFIG_DEFAULTS.SHOW_ARROWS);
-        this.showAddOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_ADD, Constants.CONFIG_DEFAULTS.SHOW_ADD);
-        this.showMarkOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_MARK, Constants.CONFIG_DEFAULTS.SHOW_MARK);
-        this.showCloneOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_CLONE, Constants.CONFIG_DEFAULTS.SHOW_CLONE);
-        this.showCopyOnNodes = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.SHOW_COPY, Constants.CONFIG_DEFAULTS.SHOW_COPY);
-        this.invertNodeContrast = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.INVERT_NODES, Constants.CONFIG_DEFAULTS.INVERT_NODES);
-        this.leoPythonCommand = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.LEO_PYTHON_COMMAND, Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND);
-        this.startServerAutomatically = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.AUTO_START_SERVER, Constants.CONFIG_DEFAULTS.AUTO_START_SERVER);
-        this.connectToServerAutomatically = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.AUTO_CONNECT, Constants.CONFIG_DEFAULTS.AUTO_CONNECT);
-        this.connectionAddress = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.IP_ADDRESS, Constants.CONFIG_DEFAULTS.IP_ADDRESS);
-        this.connectionPort = vscode.workspace.getConfiguration(Constants.CONFIG_NAME).get(Constants.CONFIG_NAMES.IP_PORT, Constants.CONFIG_DEFAULTS.IP_PORT);
+        this.treeInExplorer = GET(NAME).get(NAMES.TREE_IN_EXPLORER, DEFAULTS.TREE_IN_EXPLORER);
+        this.showOpenAside = GET(NAME).get(NAMES.SHOW_OPEN_ASIDE, DEFAULTS.SHOW_OPEN_ASIDE);
+        this.showEditOnNodes = GET(NAME).get(NAMES.SHOW_EDIT, DEFAULTS.SHOW_EDIT);
+        this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
+        this.showAddOnNodes = GET(NAME).get(NAMES.SHOW_ADD, DEFAULTS.SHOW_ADD);
+        this.showMarkOnNodes = GET(NAME).get(NAMES.SHOW_MARK, DEFAULTS.SHOW_MARK);
+        this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
+        this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
+        this.invertNodeContrast = GET(NAME).get(NAMES.INVERT_NODES, DEFAULTS.INVERT_NODES);
+        this.leoPythonCommand = GET(NAME).get(NAMES.LEO_PYTHON_COMMAND, DEFAULTS.LEO_PYTHON_COMMAND);
+        this.startServerAutomatically = GET(NAME).get(NAMES.AUTO_START_SERVER, DEFAULTS.AUTO_START_SERVER);
+        this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);
+        this.connectionAddress = GET(NAME).get(NAMES.IP_ADDRESS, DEFAULTS.IP_ADDRESS);
+        this.connectionPort = GET(NAME).get(NAMES.IP_PORT, DEFAULTS.IP_PORT);
 
         // * Set context for tree items visibility that are based on config options
         this._leoIntegration.sendConfigToServer(this.getConfig());
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_TREE_BROWSE, this.leoTreeBrowse);
-        utils.setContext(Constants.CONTEXT_FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
-        utils.setContext(Constants.CONTEXT_FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
-        utils.setContext(Constants.CONTEXT_FLAGS.SHOW_EDIT, this.showEditOnNodes);
-        utils.setContext(Constants.CONTEXT_FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);
-        utils.setContext(Constants.CONTEXT_FLAGS.SHOW_ADD, this.showAddOnNodes);
-        utils.setContext(Constants.CONTEXT_FLAGS.SHOW_MARK, this.showMarkOnNodes);
-        utils.setContext(Constants.CONTEXT_FLAGS.SHOW_CLONE, this.showCloneOnNodes);
-        utils.setContext(Constants.CONTEXT_FLAGS.SHOW_COPY, this.showCopyOnNodes);
-        utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
-        utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
+        utils.setContext(FLAGS.LEO_TREE_BROWSE, this.leoTreeBrowse);
+        utils.setContext(FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
+        utils.setContext(FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
+        utils.setContext(FLAGS.SHOW_EDIT, this.showEditOnNodes);
+        utils.setContext(FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);
+        utils.setContext(FLAGS.SHOW_ADD, this.showAddOnNodes);
+        utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
+        utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
+        utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
+        utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
+        utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
     }
 }
 
@@ -7349,7 +7344,7 @@ public refreshTreeRoot(): void {
 <t tx="felix.20200718165721.1"></t>
 <t tx="felix.20200718170429.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
-import * as path from "path"; // TODO : Use this library to have reliable support for window-vs-linux file-paths
+import * as path from "path"; // TODO : Use this to have reliable support for window-vs-linux file-paths
 
 @language typescript
 @tabwidth -4
@@ -7446,7 +7441,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
 <t tx="felix.20200718170712.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
-import { ArchivedPosition, Icon } from "./types"; // * TO HELP DEBUG
+import { ArchivedPosition, Icon } from "./types"; // To help debug
 
 @language typescript
 @tabwidth -4
@@ -7845,7 +7840,7 @@ private _updateLeoObjectIndicator(): void {
 </t>
 <t tx="felix.20200718191946.1">import * as os from 'os';
 import * as child from 'child_process';
-import * as path from "path"; // TODO : Use this library to have reliable support for window-vs-linux file-paths
+import * as path from "path"; // TODO : Use this to have reliable support for window-vs-linux file-paths
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
@@ -8339,6 +8334,9 @@ export interface ConfigMembers {
     connectionPort: number;
 }
 
+/**
+ * * Structure for configuration settings changes used along with welcome/settings webview .
+ */
 </t>
 <t tx="felix.20200718194857.20">/**
  * * Used in switch Leo document to get answer from user interaction
@@ -9153,7 +9151,7 @@ private _triggerGetStates(): void {
 
 </t>
 <t tx="felix.20200719025231.2">/**
- * * Orchestrates Leo integration into vscode with treeview and file system providers
+ * * Orchestrates Leo integration into vscode
  */
 export class LeoIntegration {
 
@@ -9760,15 +9758,15 @@ public arrayToLeoNodesArray(p_array: ArchivedPosition[]): LeoNode[] {
  * TODO : This is an intermediate / transition function, COMBINE IT OR ELIMINATE IT!
  * @param p_aside Flag for opening the editor beside any currently opened and focused editor
  * @param p_showBodyKeepFocus flag that when true will stop the editor from taking focus once opened
- * @param p_force_open Forces opening the body pane editor
+ * @param p_forceOpen Forces opening the body pane editor
  */
-private _showBodyIfRequired(p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable&lt;vscode.TextEditor&gt; {
+private _showBodyIfRequired(p_aside: boolean, p_showBodyKeepFocus: boolean, p_forceOpen?: boolean): Thenable&lt;vscode.TextEditor&gt; {
     if (this._preventShowBody) {
         this._preventShowBody = false;
         return Promise.resolve(vscode.window.activeTextEditor!);
     }
     // TODO : Find Better Conditions! Always true for now...
-    if (true || p_force_open || this._leoTreeStandaloneView.visible) {
+    if (true || p_forceOpen || this._leoTreeStandaloneView.visible) {
         // ! Always true for now to stabilize refreshes after derived files refreshes and others.
         return this.showBody(p_aside, p_showBodyKeepFocus);
     } else {
@@ -12513,6 +12511,12 @@ private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent
 
 }
 
+
+</t>
+<t tx="felix.20201017224340.1">export interface ConfigSetting {
+    code: string;
+    value: any;
+}
 
 </t>
 </tnodes>

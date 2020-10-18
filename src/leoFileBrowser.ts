@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
-import * as path from "path"; // TODO : Use this library to have reliable support for window-vs-linux file-paths
+import * as path from "path"; // TODO : Use this to have reliable support for window-vs-linux file-paths
 
 /**
  * * Handles opening of file browser when choosing which Leo file to open

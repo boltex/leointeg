@@ -19,7 +19,7 @@ import { LeoButtonsProvider } from "./leoButtons";
 import { LeoButtonNode } from "./leoButtonNode";
 
 /**
- * * Orchestrates Leo integration into vscode with treeview and file system providers
+ * * Orchestrates Leo integration into vscode
  */
 export class LeoIntegration {
 
@@ -1204,15 +1204,15 @@ export class LeoIntegration {
      * TODO : This is an intermediate / transition function, COMBINE IT OR ELIMINATE IT!
      * @param p_aside Flag for opening the editor beside any currently opened and focused editor
      * @param p_showBodyKeepFocus flag that when true will stop the editor from taking focus once opened
-     * @param p_force_open Forces opening the body pane editor
+     * @param p_forceOpen Forces opening the body pane editor
      */
-    private _showBodyIfRequired(p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable<vscode.TextEditor> {
+    private _showBodyIfRequired(p_aside: boolean, p_showBodyKeepFocus: boolean, p_forceOpen?: boolean): Thenable<vscode.TextEditor> {
         if (this._preventShowBody) {
             this._preventShowBody = false;
             return Promise.resolve(vscode.window.activeTextEditor!);
         }
         // TODO : Find Better Conditions! Always true for now...
-        if (true || p_force_open || this._leoTreeStandaloneView.visible) {
+        if (true || p_forceOpen || this._leoTreeStandaloneView.visible) {
             // ! Always true for now to stabilize refreshes after derived files refreshes and others.
             return this.showBody(p_aside, p_showBodyKeepFocus);
         } else {
@@ -1608,8 +1608,6 @@ export class LeoIntegration {
      */
     public saveLeoFile(p_fromOutline?: boolean): void {
         if (!this.leoStates.fileOpenedReady || this._isBusy(true)) { return; } // Warn user to wait for end of busy state
-
-        // TODO : Specify which file when supporting multiple simultaneous opened Leo files
         if (this.leoStates.fileOpenedReady) {
             if (this.lastSelectedNode && this._isCurrentFileNamed()) {
                 this.triggerBodySave(true)

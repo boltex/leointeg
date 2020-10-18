@@ -1,6 +1,6 @@
 import * as os from 'os';
 import * as child from 'child_process';
-import * as path from "path"; // TODO : Use this library to have reliable support for window-vs-linux file-paths
+import * as path from "path"; // TODO : Use this to have reliable support for window-vs-linux file-paths
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";

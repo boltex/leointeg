@@ -52,10 +52,10 @@ export function activate(p_context: vscode.ExtensionContext) {
         ["leointeg.testFromOutline", () => w_leo.test(true)], // Test function useful when debugging.
 
         // * Define entries for all commands
-        [CMD.MINIBUFFER, () => w_leo.minibuffer()], // Cannot be undeclared because its referenced in package.json
+        [CMD.MINIBUFFER, () => w_leo.minibuffer()], // Is referenced in package.json
         [CMD.EXECUTE, () => w_leo.executeScript()],
 
-        [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leo.clickButton(p_node)], // not referenced in package.json
+        [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leo.clickButton(p_node)], // Not referenced in package.json
         [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) => w_leo.removeButton(p_node)],
 
         [CMD.CLOSE_FILE, () => w_leo.closeLeoFile()],
@@ -69,7 +69,6 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.SAVE_FILE_FO, () => w_leo.saveLeoFile(true)],
         [CMD.SWITCH_FILE, () => w_leo.switchLeoFile()],
 
-        // Test for undeclared commands VERDICT IT WORKS!
         [CMD.SET_OPENED_FILE, (p_index: number) => w_leo.selectOpenedLeoDocument(p_index)],
 
         [CMD.REFRESH_FROM_DISK, (p_node: LeoNode) => w_leo.nodeCommand({

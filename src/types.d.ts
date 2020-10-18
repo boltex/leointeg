@@ -29,6 +29,14 @@ export interface ConfigMembers {
 }
 
 /**
+ * * Structure for configuration settings changes used along with welcome/settings webview .
+ */
+export interface ConfigSetting {
+    code: string;
+    value: any;
+}
+
+/**
  * * When refreshing the outline and getting to Leo's selected node
  */
 export const enum RevealType {
