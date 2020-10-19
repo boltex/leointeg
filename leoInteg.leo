@@ -334,7 +334,6 @@
 </v>
 <v t="felix.20200718031424.24"><vh>deactivate</vh></v>
 <v t="felix.20200718031424.25"><vh>showWelcomeIfNewer</vh></v>
-<v t="felix.20200718031424.26"><vh>getDurationMilliseconds</vh></v>
 </v>
 <v t="felix.20200718035737.1"><vh>@clean src/leoAsync.ts</vh>
 <v t="ekr.20200815083608.1"><vh>class LeoAsync</vh>
@@ -619,6 +618,7 @@
 <v t="felix.20200718195558.4"><vh>buildDocumentIconPaths</vh></v>
 <v t="ekr.20200815091945.1"><vh>buildButtonsIconPaths</vh></v>
 <v t="felix.20200718195558.6"><vh>buildNodeAndTextJson</vh></v>
+<v t="felix.20201018163510.1"><vh>getDurationMilliseconds</vh></v>
 <v t="felix.20200718195558.7"><vh>getFileFromPath</vh></v>
 <v t="felix.20200718195558.8"><vh>isIconChangedByEdit</vh></v>
 <v t="felix.20200718195558.9"><vh>isHexColor</vh></v>
@@ -645,8 +645,6 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
-<v t="felix.20191126232434.4"></v>
-<v t="felix.20200719025231.2"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -834,7 +832,7 @@ public static CONFIG_DEFAULTS = {
 
 </t>
 <t tx="ekr.20200815084550.1">/*
-    TODO : Should Reproduce those interactive controls that may be asked by Leo and redo a true UI bridge
+    TODO : Should Reproduce those interactive controls that may be asked by Leo, and redo a true UI bridge
 
 def runAboutLeoDialog(self, c, version, theCopyright, url, email):
     return self.simulateDialog("aboutLeoDialog", None)
@@ -1167,6 +1165,7 @@ private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFoc
 </t>
 <t tx="ekr.20200815090152.2">/**
  * * Actually performs the 'throttled' version of applying the selection to the body pane
+ * @param p_params contains the node, as a LeoNode, and the aside, showBodyKeepFocus and force_open flags
  */
 private _applyNodeToBody(p_params: ShowBodyParam): Thenable&lt;vscode.TextEditor&gt; {
     // Check first if body needs refresh: if so we will voluntarily throw out any pending edits on body
@@ -1346,7 +1345,7 @@ export interface LeoBridgePackageOpenedInfo {
 </t>
 <t tx="ekr.20200815091534.1">/**
  * * Used by the minibuffer command pallette
- * Gotten from the getCommands method in leobridgeserver.py
+ * Acquired from the getCommands method in leobridgeserver.py
  */
 export interface MinibufferCommand extends vscode.QuickPickItem {
     func: string;
@@ -1871,7 +1870,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
 [CMD.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()], // Same as SHOW_WELCOME
 
-// TODO : @boltex More commands to implement #15, #23, #24
+// TODO : @boltex More commands for issues #15, #23, #24
 [CMD.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
 [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
 [CMD.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
@@ -5593,7 +5592,6 @@ public static ASYNC_ASK_RETURN_CODES = {
 </t>
 <t tx="felix.20200718020912.13">/**
  * * Commands for leobridgeserver.py
- *
  */
 public static LEOBRIDGE = {
     APPLY_CONFIG: "applyConfig",
@@ -5765,8 +5763,8 @@ public static COMMANDS = {
     MOVE_LEFT_SELECTION: Constants.NAME + ".moveOutlineLeftSelection",
     MOVE_RIGHT_SELECTION: Constants.NAME + ".moveOutlineRightSelection",
     MOVE_UP_SELECTION: Constants.NAME + ".moveOutlineUpSelection",
-    INSERT_SELECTION: Constants.NAME + ".insertNodeSelection",
-    INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Headline input box can be interrupted with another insert
+    INSERT_SELECTION: Constants.NAME + ".insertNodeSelection", // Can be interrupted
+    INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Interrupted version
     CLONE_SELECTION: Constants.NAME + ".cloneNodeSelection",
     PROMOTE_SELECTION: Constants.NAME + ".promoteSelection",
     DEMOTE_SELECTION: Constants.NAME + ".demoteSelection",
@@ -6056,23 +6054,25 @@ import { LeoIntegration } from "./leoIntegration";
 @others
 </t>
 <t tx="felix.20200718024635.2">/**
- * * Front-facing, user command stack of actions.
- * Actions can also be added while this stack has started resolving.
+ * * Front-facing, user command stack of actions
+ * This implements a user-facing command stack, (push on top, remove bottom)
+ * Commands can also be added while this stack has started resolving.
+ * This 'stack' concept is similar to the 'LeoBridge' class used for interacting with Leo.
  */
 export class CommandStack {
 
-    private _stack: UserCommand[] = [];
-    private _busy: boolean = false;
+    private _stack: UserCommand[] = []; // Actual commands array
+    private _busy: boolean = false; // Flag stating commands started resolving
 
-    // Refresh type, for use after the last command has done resolving. (From highest so far)
+    // Refresh type, for use after the last command has done resolving (From highest so far)
     private _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
 
-    // Flag used to set focus on outline instead of body when done resolving. (From last pushed)
+    // Flag used to set focus on outline instead of body when done resolving (From last pushed)
     private _finalFromOutline: boolean = false;
 
-    // Received selection from the last command that finished as JSON string representation.
-    // It will be re-sent as 'target node' instead of lastSelectedNode if present.
-    private _receivedSelection: string = ""; // Empty string is used as 'falsy'.
+    // Received selection from the last command that finished as JSON string representation
+    // It will be re-sent as 'target node' instead of lastSelectedNode if present
+    private _selectedNode: string = ""; // Empty string is used as 'falsy'
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -6093,29 +6093,27 @@ public size(): number {
 </t>
 <t tx="felix.20200718024635.4">/**
  * * Signal to the command stack that a new selected node was received.
- * This command stacks needs to know when to clear its own '_receivedSelection'
+ * Command stack needs to know when to clear its own '_receivedSelection'
  */
 public newSelection(): void {
     if (!this._busy) {
-        this._receivedSelection = "";
+        this._selectedNode = "";
     }
 }
 
 </t>
 <t tx="felix.20200718024635.5">/**
  * * Adds on top and try to execute the bottom command if not already running
- * Targeted command (for a specific node) can only be added on an empty stack
- * @param p_command is an object that has the action, node, refresh type and 'fromOutline' flag
- * @returns true if added, false if it could not due to stack 'rules':
+ * Targeted command (targeting a specific node) can only be added on an empty stack
+ * @param p_command Object that has the action, targeted node (if any), refresh type and 'fromOutline' flag
+ * @returns true if added, false if it could not (due to front end stack 'rules')
  */
 public add(p_command: UserCommand): boolean {
-    if (this.size() &amp;&amp; p_command.node) {
-        // If already started we only if if action requires generic selected node as param
-        return false;
+    if (p_command.node &amp;&amp; this.size()) {
+        return false; // Can only add a command which targets a node if the stack is empty
     } else {
         this._stack.push(p_command);
-        // This flag is set on command entered, not when finally executed because a rapid type in editor can override focus
-        this._finalFromOutline = p_command.fromOutline; // use the last _finalFromOutline regardless of previous so change now
+        this._finalFromOutline = p_command.fromOutline; // Set final "focus-placement"
         this._tryStart();
         return true;
     }
@@ -6127,10 +6125,8 @@ public add(p_command: UserCommand): boolean {
  */
 private _tryStart(): void {
     if (this.size() &amp;&amp; !this._busy) {
-
-        // actions have beed added and command stack instance is not busy, so set the busy flag and start from the bottom
+        // Ok to start, so set the busy flag and start from the bottom
         this._busy = true; // Cleared when the last command has returned (and the stack is empty)
-
         this._runStackCommand().then((p_package: LeoBridgePackage) =&gt; {
             this._resolveResult(p_package);
         });
@@ -6142,20 +6138,22 @@ private _tryStart(): void {
  * * Run the command at index 0: The bottom of the stack.
  */
 private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
-    const w_command: UserCommand = this._stack[0]; // Reference from bottom of stack, don't remove yet
+    // Reference from bottom of stack, but don't remove it yet!
+    const w_command: UserCommand = this._stack[0];
 
     let w_nodeJson: string = ""; // ap json used in building w_jsonParam
     let w_jsonParam: string = ""; // Finished parameter that is sent
 
-    // First one uses given node or last selected node, other subsequent on stack will use _receivedSelection
-    // (Commands such as 'collapse all' will just ignore passed on node parameter)
-    // const w_text = w_command.text; // Can be undefined
+    // First command uses given node or last selected node.
+    // Other subsequent commands on stack will use _receivedSelection regardless.
+    // (Commands such as 'collapse all' just ignore node parameter)
     if (w_command.node) {
-        w_nodeJson = w_command.node.apJson; // Was node specific, so we are starting from a new stack of commands
+        // Was node specific, so starting a new stack of commands
+        w_nodeJson = w_command.node.apJson;
     } else {
         // Use received "selected node" unless first use, then use last selected node
-        if (this._receivedSelection) {
-            w_nodeJson = this._receivedSelection;
+        if (this._selectedNode) {
+            w_nodeJson = this._selectedNode;
         } else {
             w_nodeJson = this._leoIntegration.lastSelectedNode!.apJson;
         }
@@ -6163,7 +6161,6 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
             console.log('ERROR NO ARCHIVED POSITION JSON');
         }
     }
-
     w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_command); // 'Insert Named Node' or 'Edit Headline'
 
     // Setup _finalRefreshType, if command requires higher than the one setup so far
@@ -6179,14 +6176,13 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
  * @param p_package is the json return 'package' that was just received back from Leo
  */
 private _resolveResult(p_package: LeoBridgePackage): void {
-    this._stack.shift();
+    this._stack.shift(); // Finally remove resolved command from stack bottom
 
-    this._receivedSelection = JSON.stringify(p_package.node);
+    this._selectedNode = JSON.stringify(p_package.node);
 
     if (!this.size()) {
         // If last is done then do refresh outline and focus on outline, or body, as required
         this._busy = false;
-
         if (Object.keys(this._finalRefreshType).length) {
             // At least some type of refresh
             this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline, p_package.node);
@@ -6194,9 +6190,8 @@ private _resolveResult(p_package: LeoBridgePackage): void {
         // Reset refresh type and focus flag nonetheless
         this._finalRefreshType = {};
         this._finalFromOutline = false;
-
     } else {
-        // size &gt; 0, so call _runStackCommand again, keep _busy set to true
+        // Size &gt; 0, so call _runStackCommand again, keep _busy set to true
         this._runStackCommand().then((p_package: LeoBridgePackage) =&gt; {
             this._resolveResult(p_package);
         });
@@ -6219,7 +6214,7 @@ import { LeoIntegration } from "./leoIntegration";
  */
 export class Config implements ConfigMembers {
 
-    // Config settings used in leobridgeserver.py, on Leo's side.
+    // Config settings used in leobridgeserver.py, on Leo's side
     public checkForChangeExternalFiles: string = Constants.CONFIG_DEFAULTS.CHECK_FOR_CHANGE_EXTERNAL_FILES;
     public defaultReloadIgnore: string = Constants.CONFIG_DEFAULTS.DEFAULT_RELOAD_IGNORE;
     // Config settings used in leoInteg/vscode's side
@@ -6255,7 +6250,7 @@ export class Config implements ConfigMembers {
 }
 </t>
 <t tx="felix.20200718030926.3">/**
- * * Get actual 'live' Leointeg Configuration
+ * * Get actual 'live' Leointeg configuration
  * @returns An object with config settings members such as treeKeepFocus, defaultReloadIgnore, etc.
  */
 public getConfig(): ConfigMembers {
@@ -6286,7 +6281,7 @@ public getConfig(): ConfigMembers {
 
 </t>
 <t tx="felix.20200718030926.4">/**
- * * Apply changes to the expansion config settings. Those values are saved in user's settings
+ * * Apply changes to the expansion config settings and save them in ser settings.
  * @param p_changes is an array of codes and values to be changed
  * @returns a promise that resolves upon completion
  */
@@ -6300,10 +6295,10 @@ public setLeoIntegSettings(p_changes: ConfigSetting[]): Promise&lt;void&gt; {
             this._needsTreeRefresh = true;
         }
         if (w_vscodeConfig.inspect(i_change.code)!.defaultValue === i_change.value) {
-            // set as undefined - same as default
+            // Set as undefined - same as default
             w_promises.push(w_vscodeConfig.update(i_change.code, undefined, true));
         } else {
-            // set as value which is not default
+            // Set as value which is not default
             w_promises.push(w_vscodeConfig.update(i_change.code, i_change.value, true));
         }
     });
@@ -6395,8 +6390,9 @@ import { LeoButtonNode } from "./leoButtonNode";
 @others
 </t>
 <t tx="felix.20200718031424.2">/**
- * * Called when extension is activated.
- * It creates the leoIntegration and the 'welcome/Settings' webview instances.
+ * * Called by vscode when extension is activated
+ * It creates the leoIntegration instance
+ * Will also open the 'welcome/Settings' webview instance if a new version is opened
  */
 export function activate(p_context: vscode.ExtensionContext) {
 
@@ -6446,11 +6442,14 @@ export function activate(p_context: vscode.ExtensionContext) {
     });
 
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
-        w_leo.startNetworkServices(); // Start server and/or connect to it, as specified in settings
+        // Start server and/or connect to it, as per user settings
+        w_leo.startNetworkServices();
+        // Save version # for next startup comparison
         p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-        console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
+        console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
     });
 }
+
 </t>
 <t tx="felix.20200718031424.24">/**
  * * Called when extension is deactivated
@@ -6464,7 +6463,7 @@ export function deactivate() {
  * * Show welcome screen if needed, based on last version executed
  * @param p_version Current version, as a string, from packageJSON.version
  * @param p_previousVersion Previous version, as a string, from context.globalState.get service
- * @returns a promise that triggers when command to show the welcome screen is finished, or immediately if not needed
+ * @returns A promise that triggers when command to show the welcome screen is finished, or immediately if not needed
  */
 async function showWelcomeIfNewer(p_version: string, p_previousVersion: string | undefined): Promise&lt;unknown&gt; {
     let w_showWelcomeScreen: boolean = false;
@@ -6494,24 +6493,14 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
         return Promise.resolve();
     }
 }
-
-</t>
-<t tx="felix.20200718031424.26">/**
- * * Returns the milliseconds between a given starting process.hrtime tuple and the current call to process.hrtime
- * @param p_start starting process.hrtime to subtract from current immediate time
- * @returns number of milliseconds passed since the given start hrtime
- */
-function getDurationMilliseconds(p_start: [number, number]): number {
-    const [secs, nanosecs] = process.hrtime(p_start);
-    return secs * 1000 + Math.floor(nanosecs / 1000000);
-}
-
 </t>
 <t tx="felix.20200718035737.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import {
-    AskMessageItem, ReqRefresh, runAskYesNoDialogParameters,
-    runWarnMessageDialogParameters, runInfoMessageDialogParameters,
+    AskMessageItem,
+    runAskYesNoDialogParameters,
+    runWarnMessageDialogParameters,
+    runInfoMessageDialogParameters,
     showSaveAsDialogParameters
 } from "./types";
 import { LeoIntegration } from "./leoIntegration";
@@ -6699,6 +6688,7 @@ private _fireSoonHandle?: NodeJS.Timer;
 </t>
 <t tx="felix.20200718040540.2">/**
  * * Body panes implementation as a file system using "leo" as a scheme identifier
+ * TODO : Replace sae/rename procedure to overcome API change for undos.
  * Saving and renaming prevents flickering and prevents undos to 'traverse through' different gnx
  */
 export class LeoBodyProvider implements vscode.FileSystemProvider {
@@ -6744,7 +6734,7 @@ public setBodyTime(p_uri: vscode.Uri): void {
 </t>
 <t tx="felix.20200718040540.4">/**
  * * Sets renamed file modified time for this gnx, used for 'rename' hack to prevent text undos between gnx
- * @param p_uri URI of file for which to set made-up modified time
+ * @param p_gnx gnx of file for which to set made-up modified time
  */
 public setRenameTime(p_gnx: string): void {
     this._renameBody = {
@@ -6908,18 +6898,23 @@ private _send(p_data: string): any {
 </t>
 <t tx="felix.20200718153505.2">/**
  * * Handles communication with the leobridgeserver.py python script via websockets
+ * This implements a bridge-facing action stack, (push on top, remove bottom)
+ * 'actions' get sent to Leo, and resolve a promise with the result when the answer comes back.
+ * This 'stack' concept is similar to the 'CommandStack' class used for vscode's user interactions.
  */
 export class LeoBridge {
 
-    private _actionBusy: boolean = false; // A busy state meaning an action was started from the bottom but has yet to resolve
-
-    private _leoBridgeSerialId: number = 0; // TODO : When doing error checking, see if this should be Constants.STARTING_PACKAGE_ID or 0 or 2... ?
     private _callStack: LeoAction[] = [];
+    private _actionBusy: boolean = false; // Action was started from the bottom, but has yet to resolve
+
+    private _leoBridgeSerialId: number = 0; // TODO : Error checking (should be Constants.STARTING_PACKAGE_ID or 0 or 2...?)
     private _readyPromise: Promise&lt;LeoBridgePackage&gt; | undefined;
 
-    // private _hasbin = require('hasbin'); // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
     private _websocket: WebSocket | null = null;
     private _leoAsync: LeoAsync;
+
+    // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
+    // private _hasbin = require('hasbin');
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -6958,7 +6953,8 @@ public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBri
 </t>
 <t tx="felix.20200718153505.4">/**
  * * Actions invoked by Leo that can be called asynchronously at any time
- * @param w_parsedData that contains an 'async' string member, that was parsed from a _websocket.onmessage package
+ * @param w_parsedData that contains an 'async' string member,
+ * that was parsed from a _websocket.onmessage package
  */
 private _asyncAction(w_parsedData: any): void {
     if (w_parsedData &amp;&amp; w_parsedData.async &amp;&amp; (typeof w_parsedData.async === "string")) {
@@ -7123,7 +7119,7 @@ export class LeoButtonNode extends vscode.TreeItem {
 
 </t>
 <t tx="felix.20200718162442.1">public get id(): string {
-    // Add prefix and suffix salt to index prevent accidental duplicates
+    // Add prefix and suffix salt to index to prevent accidental duplicates
     return "p" + this.button.index + "s" + this.button.name;
 }
 
@@ -7210,7 +7206,8 @@ public refreshTreeRoot(): void {
 
 </t>
 <t tx="felix.20200718164130.6">public getParent(element: LeoButtonNode): ProviderResult&lt;LeoButtonNode&gt; | null {
-    return null; // A list, as such, entries are always child of root, so return null
+    // Buttons are just a list, as such, entries are always child of root so return null
+    return null;
 }
 
 </t>
@@ -7264,7 +7261,7 @@ export class LeoDocumentNode extends vscode.TreeItem {
 
 </t>
 <t tx="felix.20200718164638.1">public get id(): string {
-    // Add prefix and suffix salt to numeric index prevent accidental duplicates
+    // Add prefix and suffix salt to numeric index to prevent accidental duplicates
     return "p" + this.documentEntry.index + "s" + this.documentEntry.name;
 }
 </t>
@@ -7338,7 +7335,8 @@ public refreshTreeRoot(): void {
 
 </t>
 <t tx="felix.20200718165108.6">public getParent(element: LeoDocumentNode): ProviderResult&lt;LeoDocumentNode&gt; | null {
-    return null; // A list, as such, entries are always child of root, so return null
+    // Leo documents are just a list, as such, entries are always child of root, so return null
+    return null;
 }
 </t>
 <t tx="felix.20200718165721.1"></t>
@@ -7363,7 +7361,7 @@ export class LeoFilesBrowser {
 }
 </t>
 <t tx="felix.20200718170429.3">/**
- * * Find a folder to propose when opening the browse-for-leo-file chooser
+ * * Finds a folder to propose when opening the browse-for-leo-file chooser
  * @returns An Uri for path to a folder for initial opening
  */
 private _getBestOpenFolderUri(): vscode.Uri {
@@ -7390,8 +7388,8 @@ private _getBestOpenFolderUri(): vscode.Uri {
 </t>
 <t tx="felix.20200718170429.4">/**
  * * Open a file browser and let the user choose a Leo file or cancel the operation
- * @param p_saveAsFlag Optional, a flag that will ask for a 'save' path+filename.
- * @returns a promise resolving to a chosen path string, or rejected with an empty string if cancelled
+ * @param p_saveAsFlag Optional flag that will ask for a 'save' path+filename
+ * @returns A promise resolving to a chosen path string, or rejected with an empty string if cancelled
  */
 public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
     if (this._fileBrowserActive) {
@@ -7441,7 +7439,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
 <t tx="felix.20200718170712.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
-import { ArchivedPosition, Icon } from "./types"; // To help debug
+import { ArchivedPosition, Icon } from "./types"; // ArchivedPosition included to help debug
 
 @language typescript
 @tabwidth -4
@@ -7482,7 +7480,6 @@ export class LeoNode extends vscode.TreeItem {
     }
 
     // * TO HELP DEBUG
-
     // get description(): string {
     //     // * some smaller grayed-out text accompanying the main label
     //     const w_ap: ArchivedPosition = JSON.parse(this.apJson);
@@ -7617,7 +7614,7 @@ import { LeoBridgePackage } from "./types";
 @others
 </t>
 <t tx="felix.20200718180428.2">/**
- * * Leo outline implemented as a tree view with this TreeDataProvider implementation
+ * * Leo outline implemented as a tree view with this TreeDataProvider
  */
 export class LeoOutlineProvider implements vscode.TreeDataProvider&lt;LeoNode&gt; {
 
@@ -7721,7 +7718,7 @@ import { LeoIntegration } from "./leoIntegration";
 @others
 </t>
 <t tx="felix.20200718185403.2">/**
- * * Statusbar indicator controller object
+ * * Statusbar indicator controller service
  */
 export class LeoStatusBar {
 
@@ -7818,18 +7815,18 @@ private _updateLeoObjectIndicatorDebounced(p_delay: number): void {
  */
 private _updateLeoObjectIndicator(): void {
     // Can be called directly, so clear timer if any
-    if (this._updateStatusBarTimeout) { 
+    if (this._updateStatusBarTimeout) {
         clearTimeout(this._updateStatusBarTimeout);
     }
-    
+
     utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
-    
+
     this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
         (this._string ? this._string : this._leoIntegration.config.statusBarString) + " " +
         (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
-        
+
     // Also check in constructor for statusBar properties (the createStatusBarItem call itself)
-    if (this.statusBarFlag &amp;&amp; this._leoIntegration.leoStates.fileOpenedReady) { 
+    if (this.statusBarFlag &amp;&amp; this._leoIntegration.leoStates.fileOpenedReady) {
         this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
         this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
     } else {
@@ -7851,7 +7848,8 @@ import { LeoIntegration } from './leoIntegration';
 @others
 </t>
 <t tx="felix.20200718191946.2">/**
- * * Provides simple automatic leo bridge server startup
+ * * Leo bridge server service
+ * Provides simple automatic leo bridge server startup functionality
  */
 export class ServerService {
     // TODO : See #10 @boltex Problem starting the leo-bridge server automatically with anaconda/miniconda on windows
@@ -7967,7 +7965,9 @@ import { LeoPackageStates } from "./types";
 @others
 </t>
 <t tx="felix.20200718192411.1">/**
- * * Holds state flags used to restrict command and icon availability
+ * * Global states service
+ * Holds state flags used to restrict command availability and icon visibility
+ * Changes UI by changing vscode's context variables
  */
 export class LeoStates {
 
@@ -7995,7 +7995,7 @@ export class LeoStates {
 }
 </t>
 <t tx="felix.20200718193219.1">// * Connected to a Leo bridge server
-private _leoBridgeReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.BRIDGE_READY
+private _leoBridgeReady: boolean = false;
 get leoBridgeReady(): boolean {
     return this._leoBridgeReady;
 }
@@ -8006,7 +8006,7 @@ set leoBridgeReady(p_value: boolean) {
 
 </t>
 <t tx="felix.20200718193222.1">// * A Leo file is opened
-private _fileOpenedReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.TREE_OPENED
+private _fileOpenedReady: boolean = false; // Sets context flag along with treeview title
 get fileOpenedReady(): boolean {
     return this._fileOpenedReady;
 }
@@ -8192,7 +8192,7 @@ import { LeoNode } from "./leoNode";
  */
 export interface LeoBridgePackage {
     id: number; // TODO : Could be used for error checking
-    // * Each of those top level member is an answer from a Constants.LEOBRIDGE command
+    // * Each of those top level member is an answer from a "Constants.LEOBRIDGE" command
     allGnx?: string[];
     bodyLength?: number;
     bodyData?: string;
@@ -8335,7 +8335,7 @@ export interface ConfigMembers {
 }
 
 /**
- * * Structure for configuration settings changes used along with welcome/settings webview .
+ * * Structure for configuration settings changes used along with welcome/settings webview.
  */
 </t>
 <t tx="felix.20200718194857.20">/**
@@ -8359,7 +8359,6 @@ export const enum RevealType {
 </t>
 <t tx="felix.20200718194857.4">/**
  * * Required Refresh Dictionary of "elements to refresh" flags
- * TODO : Replace RefreshType with ReqRefresh : "Required Refresh" collection of flag dictionary
  */
 export interface ReqRefresh {
     node?: boolean; // Reveal received selected node (Navigation only, no tree change)
@@ -8464,10 +8463,10 @@ export function leoUriToStr(p_uri: vscode.Uri): string {
 
 </t>
 <t tx="felix.20200718195558.12">/**
- * * Sets a vscode context variable with the 'vscode.commands.executeCommand' and 'setContext' method
+ * * Sets a vscode context variable with 'vscode.commands.executeCommand' &amp; 'setContext'
  * @param p_key Key string name such as constants 'bridgeReady' or 'treeOpened', etc.
  * @param p_value Value to be assigned to the p_key 'key'
- * @returns A Thenable that was returned by the executeCommand call to set the context
+ * @returns A Thenable that is returned by the executeCommand call
  */
 export function setContext(p_key: string, p_value: any): Thenable&lt;unknown&gt; {
     return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, p_key, p_value);
@@ -8998,7 +8997,21 @@ More information can be found on the repository's [Issues Page](https://github.c
 import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, ReqRefresh, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand, UserCommand, ShowBodyParam, BodySelectionInfo } from "./types";
+import {
+    LeoBridgePackage,
+    RevealType,
+    ArchivedPosition,
+    Icon,
+    ConfigMembers,
+    ReqRefresh,
+    ChooseDocumentItem,
+    LeoDocument,
+    LeoBridgePackageOpenedInfo,
+    MinibufferCommand,
+    UserCommand,
+    ShowBodyParam,
+    BodySelectionInfo
+} from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -10038,7 +10051,7 @@ public executeScript(): boolean {
 
 </t>
 <t tx="felix.20200719025231.54">/**
- * Changes the marked state of a specified, or currently selected node
+ * * Changes the marked state of a specified, or currently selected node
  * @param p_isMark Set 'True' to mark, otherwise unmarks the node
  * @param p_node Specifies which node use, or leave undefined to mark or unmark the currently selected node
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
@@ -10168,8 +10181,6 @@ public saveAsLeoFile(p_fromOutline?: boolean): void {
  */
 public saveLeoFile(p_fromOutline?: boolean): void {
     if (!this.leoStates.fileOpenedReady || this._isBusy(true)) { return; } // Warn user to wait for end of busy state
-
-    // TODO : Specify which file when supporting multiple simultaneous opened Leo files
     if (this.leoStates.fileOpenedReady) {
         if (this.lastSelectedNode &amp;&amp; this._isCurrentFileNamed()) {
             this.triggerBodySave(true)
@@ -12516,6 +12527,17 @@ private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent
 <t tx="felix.20201017224340.1">export interface ConfigSetting {
     code: string;
     value: any;
+}
+
+</t>
+<t tx="felix.20201018163510.1">/**
+ * * Returns the milliseconds between a given starting process.hrtime tuple and the current call to process.hrtime
+ * @param p_start starting process.hrtime to subtract from current immediate time
+ * @returns number of milliseconds passed since the given start hrtime
+ */
+export function getDurationMs(p_start: [number, number]): number {
+    const [w_secs, w_nanosecs] = process.hrtime(p_start);
+    return w_secs * 1000 + Math.floor(w_nanosecs / 1000000);
 }
 
 </t>

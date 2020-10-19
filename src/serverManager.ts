@@ -7,7 +7,8 @@ import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
 
 /**
- * * Provides simple automatic leo bridge server startup
+ * * Leo bridge server service
+ * Provides simple automatic leo bridge server startup functionality
  */
 export class ServerService {
     // TODO : See #10 @boltex Problem starting the leo-bridge server automatically with anaconda/miniconda on windows

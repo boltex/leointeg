@@ -2,7 +2,21 @@ import * as vscode from "vscode";
 import { debounce } from "debounce";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { LeoBridgePackage, RevealType, ArchivedPosition, Icon, ConfigMembers, ReqRefresh, ChooseDocumentItem, LeoDocument, LeoBridgePackageOpenedInfo, MinibufferCommand, UserCommand, ShowBodyParam, BodySelectionInfo } from "./types";
+import {
+    LeoBridgePackage,
+    RevealType,
+    ArchivedPosition,
+    Icon,
+    ConfigMembers,
+    ReqRefresh,
+    ChooseDocumentItem,
+    LeoDocument,
+    LeoBridgePackageOpenedInfo,
+    MinibufferCommand,
+    UserCommand,
+    ShowBodyParam,
+    BodySelectionInfo
+} from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
 import { LeoNode } from "./leoNode";
@@ -1154,6 +1168,7 @@ export class LeoIntegration {
 
     /**
      * * Actually performs the 'throttled' version of applying the selection to the body pane
+     * @param p_params contains the node, as a LeoNode, and the aside, showBodyKeepFocus and force_open flags
      */
     private _applyNodeToBody(p_params: ShowBodyParam): Thenable<vscode.TextEditor> {
         // Check first if body needs refresh: if so we will voluntarily throw out any pending edits on body
@@ -1483,7 +1498,7 @@ export class LeoIntegration {
     }
 
     /**
-     * Changes the marked state of a specified, or currently selected node
+     * * Changes the marked state of a specified, or currently selected node
      * @param p_isMark Set 'True' to mark, otherwise unmarks the node
      * @param p_node Specifies which node use, or leave undefined to mark or unmark the currently selected node
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline

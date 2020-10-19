@@ -34,7 +34,7 @@ export class LeoButtonNode extends vscode.TreeItem {
     }
 
     public get id(): string {
-        // Add prefix and suffix salt to index prevent accidental duplicates
+        // Add prefix and suffix salt to index to prevent accidental duplicates
         return "p" + this.button.index + "s" + this.button.name;
     }
 

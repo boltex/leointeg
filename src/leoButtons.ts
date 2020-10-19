@@ -53,7 +53,8 @@ export class LeoButtonsProvider implements vscode.TreeDataProvider<LeoButtonNode
     }
 
     public getParent(element: LeoButtonNode): ProviderResult<LeoButtonNode> | null {
-        return null; // A list, as such, entries are always child of root, so return null
+        // Buttons are just a list, as such, entries are always child of root so return null
+        return null;
     }
 
 }

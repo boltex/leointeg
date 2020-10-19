@@ -29,7 +29,7 @@ export interface ConfigMembers {
 }
 
 /**
- * * Structure for configuration settings changes used along with welcome/settings webview .
+ * * Structure for configuration settings changes used along with welcome/settings webview.
  */
 export interface ConfigSetting {
     code: string;
@@ -48,7 +48,6 @@ export const enum RevealType {
 
 /**
  * * Required Refresh Dictionary of "elements to refresh" flags
- * TODO : Replace RefreshType with ReqRefresh : "Required Refresh" collection of flag dictionary
  */
 export interface ReqRefresh {
     node?: boolean; // Reveal received selected node (Navigation only, no tree change)
@@ -149,7 +148,7 @@ export interface LeoBridgePackageOpenedInfo {
  */
 export interface LeoBridgePackage {
     id: number; // TODO : Could be used for error checking
-    // * Each of those top level member is an answer from a Constants.LEOBRIDGE command
+    // * Each of those top level member is an answer from a "Constants.LEOBRIDGE" command
     allGnx?: string[];
     bodyLength?: number;
     bodyData?: string;
@@ -276,7 +275,7 @@ export interface ChooseDocumentItem extends vscode.QuickPickItem {
 
 /**
  * * Used by the minibuffer command pallette
- * Gotten from the getCommands method in leobridgeserver.py
+ * Acquired from the getCommands method in leobridgeserver.py
  */
 export interface MinibufferCommand extends vscode.QuickPickItem {
     func: string;

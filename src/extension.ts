@@ -8,8 +8,9 @@ import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
 
 /**
- * * Called when extension is activated.
- * It creates the leoIntegration and the 'welcome/Settings' webview instances.
+ * * Called by vscode when extension is activated
+ * It creates the leoIntegration instance
+ * Will also open the 'welcome/Settings' webview instance if a new version is opened
  */
 export function activate(p_context: vscode.ExtensionContext) {
 
@@ -535,7 +536,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.SHOW_WELCOME, () => w_leoSettingsWebview.openWebview()],
         [CMD.SHOW_SETTINGS, () => w_leoSettingsWebview.openWebview()], // Same as SHOW_WELCOME
 
-        // TODO : @boltex More commands to implement #15, #23, #24
+        // TODO : @boltex More commands for issues #15, #23, #24
         [CMD.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
         [CMD.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
         [CMD.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],
@@ -558,11 +559,14 @@ export function activate(p_context: vscode.ExtensionContext) {
     });
 
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() => {
-        w_leo.startNetworkServices(); // Start server and/or connect to it, as specified in settings
+        // Start server and/or connect to it, as per user settings
+        w_leo.startNetworkServices();
+        // Save version # for next startup comparison
         p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-        console.log('leoInteg startup launched in ', getDurationMilliseconds(w_start), 'ms');
+        console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
     });
 }
+
 /**
  * * Called when extension is deactivated
  */
@@ -574,7 +578,7 @@ export function deactivate() {
  * * Show welcome screen if needed, based on last version executed
  * @param p_version Current version, as a string, from packageJSON.version
  * @param p_previousVersion Previous version, as a string, from context.globalState.get service
- * @returns a promise that triggers when command to show the welcome screen is finished, or immediately if not needed
+ * @returns A promise that triggers when command to show the welcome screen is finished, or immediately if not needed
  */
 async function showWelcomeIfNewer(p_version: string, p_previousVersion: string | undefined): Promise<unknown> {
     let w_showWelcomeScreen: boolean = false;
@@ -604,14 +608,3 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
         return Promise.resolve();
     }
 }
-
-/**
- * * Returns the milliseconds between a given starting process.hrtime tuple and the current call to process.hrtime
- * @param p_start starting process.hrtime to subtract from current immediate time
- * @returns number of milliseconds passed since the given start hrtime
- */
-function getDurationMilliseconds(p_start: [number, number]): number {
-    const [secs, nanosecs] = process.hrtime(p_start);
-    return secs * 1000 + Math.floor(nanosecs / 1000000);
-}
-

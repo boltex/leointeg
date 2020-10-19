@@ -6,12 +6,14 @@ import { LeoNode } from "./leoNode";
 import { LeoPackageStates } from "./types";
 
 /**
- * * Holds state flags used to restrict command and icon availability
+ * * Global states service
+ * Holds state flags used to restrict command availability and icon visibility
+ * Changes UI by changing vscode's context variables
  */
 export class LeoStates {
 
     // * Connected to a Leo bridge server
-    private _leoBridgeReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.BRIDGE_READY
+    private _leoBridgeReady: boolean = false;
     get leoBridgeReady(): boolean {
         return this._leoBridgeReady;
     }
@@ -21,7 +23,7 @@ export class LeoStates {
     }
 
     // * A Leo file is opened
-    private _fileOpenedReady: boolean = false; // Used along with executeCommand 'setContext' with Constants.CONTEXT_FLAGS.TREE_OPENED
+    private _fileOpenedReady: boolean = false; // Sets context flag along with treeview title
     get fileOpenedReady(): boolean {
         return this._fileOpenedReady;
     }

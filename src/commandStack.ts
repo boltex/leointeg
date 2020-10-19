@@ -4,23 +4,25 @@ import { UserCommand, LeoBridgePackage, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
- * * Front-facing, user command stack of actions.
- * Actions can also be added while this stack has started resolving.
+ * * Front-facing, user command stack of actions
+ * This implements a user-facing command stack, (push on top, remove bottom)
+ * Commands can also be added while this stack has started resolving.
+ * This 'stack' concept is similar to the 'LeoBridge' class used for interacting with Leo.
  */
 export class CommandStack {
 
     private _stack: UserCommand[] = []; // Actual commands array
     private _busy: boolean = false; // Flag stating commands started resolving
 
-    // Refresh type, for use after the last command has done resolving. (From highest so far)
+    // Refresh type, for use after the last command has done resolving (From highest so far)
     private _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
 
-    // Flag used to set focus on outline instead of body when done resolving. (From last pushed)
+    // Flag used to set focus on outline instead of body when done resolving (From last pushed)
     private _finalFromOutline: boolean = false;
 
-    // Received selection from the last command that finished as JSON string representation.
-    // It will be re-sent as 'target node' instead of lastSelectedNode if present.
-    private _selectedNode: string = ""; // Empty string is used as 'falsy'.
+    // Received selection from the last command that finished as JSON string representation
+    // It will be re-sent as 'target node' instead of lastSelectedNode if present
+    private _selectedNode: string = ""; // Empty string is used as 'falsy'
 
     constructor(
         private _context: vscode.ExtensionContext,

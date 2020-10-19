@@ -1,8 +1,10 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import {
-    AskMessageItem, ReqRefresh, runAskYesNoDialogParameters,
-    runWarnMessageDialogParameters, runInfoMessageDialogParameters,
+    AskMessageItem,
+    runAskYesNoDialogParameters,
+    runWarnMessageDialogParameters,
+    runInfoMessageDialogParameters,
     showSaveAsDialogParameters
 } from "./types";
 import { LeoIntegration } from "./leoIntegration";
@@ -126,7 +128,7 @@ export class LeoAsync {
 }
 
 /*
-    TODO : Should Reproduce those interactive controls that may be asked by Leo and redo a true UI bridge
+    TODO : Should Reproduce those interactive controls that may be asked by Leo, and redo a true UI bridge
 
 def runAboutLeoDialog(self, c, version, theCopyright, url, email):
     return self.simulateDialog("aboutLeoDialog", None)

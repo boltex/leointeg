@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
-import { ArchivedPosition, Icon } from "./types"; // To help debug
+import { ArchivedPosition, Icon } from "./types"; // ArchivedPosition included to help debug
 
 /**
  * * Implementation of tree nodes for usage in a TreeDataProvider
@@ -38,7 +38,6 @@ export class LeoNode extends vscode.TreeItem {
     }
 
     // * TO HELP DEBUG
-
     // get description(): string {
     //     // * some smaller grayed-out text accompanying the main label
     //     const w_ap: ArchivedPosition = JSON.parse(this.apJson);

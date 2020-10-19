@@ -12,7 +12,7 @@ export class LeoFilesBrowser {
     constructor(private _context: vscode.ExtensionContext) { }
 
     /**
-     * * Find a folder to propose when opening the browse-for-leo-file chooser
+     * * Finds a folder to propose when opening the browse-for-leo-file chooser
      * @returns An Uri for path to a folder for initial opening
      */
     private _getBestOpenFolderUri(): vscode.Uri {
@@ -38,8 +38,8 @@ export class LeoFilesBrowser {
 
     /**
      * * Open a file browser and let the user choose a Leo file or cancel the operation
-     * @param p_saveAsFlag Optional, a flag that will ask for a 'save' path+filename.
-     * @returns a promise resolving to a chosen path string, or rejected with an empty string if cancelled
+     * @param p_saveAsFlag Optional flag that will ask for a 'save' path+filename
+     * @returns A promise resolving to a chosen path string, or rejected with an empty string if cancelled
      */
     public getLeoFileUrl(p_saveAsFlag?: boolean): Promise<string> {
         if (this._fileBrowserActive) {

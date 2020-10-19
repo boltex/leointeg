@@ -7,18 +7,23 @@ import { LeoAsync } from "./leoAsync";
 
 /**
  * * Handles communication with the leobridgeserver.py python script via websockets
+ * This implements a bridge-facing action stack, (push on top, remove bottom)
+ * 'actions' get sent to Leo, and resolve a promise with the result when the answer comes back.
+ * This 'stack' concept is similar to the 'CommandStack' class used for vscode's user interactions.
  */
 export class LeoBridge {
 
-    private _actionBusy: boolean = false; // A busy state meaning an action was started from the bottom but has yet to resolve
-
-    private _leoBridgeSerialId: number = 0; // TODO : When doing error checking, see if this should be Constants.STARTING_PACKAGE_ID or 0 or 2... ?
     private _callStack: LeoAction[] = [];
+    private _actionBusy: boolean = false; // Action was started from the bottom, but has yet to resolve
+
+    private _leoBridgeSerialId: number = 0; // TODO : Error checking (should be Constants.STARTING_PACKAGE_ID or 0 or 2...?)
     private _readyPromise: Promise<LeoBridgePackage> | undefined;
 
-    // private _hasbin = require('hasbin'); // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
     private _websocket: WebSocket | null = null;
     private _leoAsync: LeoAsync;
+
+    // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
+    // private _hasbin = require('hasbin');
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -60,7 +65,8 @@ export class LeoBridge {
 
     /**
      * * Actions invoked by Leo that can be called asynchronously at any time
-     * @param w_parsedData that contains an 'async' string member, that was parsed from a _websocket.onmessage package
+     * @param w_parsedData that contains an 'async' string member,
+     * that was parsed from a _websocket.onmessage package
      */
     private _asyncAction(w_parsedData: any): void {
         if (w_parsedData && w_parsedData.async && (typeof w_parsedData.async === "string")) {

@@ -6,7 +6,7 @@ import { Constants } from "./constants";
 import { LeoBridgePackage } from "./types";
 
 /**
- * * Leo outline implemented as a tree view with this TreeDataProvider implementation
+ * * Leo outline implemented as a tree view with this TreeDataProvider
  */
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 

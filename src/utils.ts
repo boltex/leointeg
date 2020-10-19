@@ -100,6 +100,16 @@ export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand)
 }
 
 /**
+ * * Returns the milliseconds between a given starting process.hrtime tuple and the current call to process.hrtime
+ * @param p_start starting process.hrtime to subtract from current immediate time
+ * @returns number of milliseconds passed since the given start hrtime
+ */
+export function getDurationMs(p_start: [number, number]): number {
+    const [w_secs, w_nanosecs] = process.hrtime(p_start);
+    return w_secs * 1000 + Math.floor(w_nanosecs / 1000000);
+}
+
+/**
  * * Extracts the file name from a full path, such as "foo.bar" from "/abc/def/foo.bar"
  * @param p_path Full path such as "/var/drop/foo/boo/moo.js" or "C:\Documents and Settings\img\recycled log.jpg"
  * @returns file name string such as "moo.js" or "recycled log.jpg""
