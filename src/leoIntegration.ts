@@ -761,7 +761,10 @@ export class LeoIntegration {
                 this._selectionDirty = true;
                 this._selection = p_event.selections[0];
                 this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
-                console.log("Got new selection from interface, gnx:", this._selectionGnx);
+                console.log("Got new selection from interface, gnx: " + this._selectionGnx +
+                    ", start: " + this._selection.start.line + " " + this._selection.start.character +
+                    ", end: " + this._selection.end.line + " " + this._selection.end.character
+                );
             }
         }
     }
@@ -770,11 +773,10 @@ export class LeoIntegration {
      * * Handles detection of the active editor's scroll position changes
      */
     private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent): void {
-        //
-        console.log('changed scroll', p_event.textEditor, p_event.visibleRanges);
+        // test
+        console.log('changed scroll', p_event.textEditor, p_event.visibleRanges[0].start, p_event.visibleRanges[0].end);
 
     }
-
 
     /**
      * * Handle typing that was detected in a document

@@ -864,6 +864,7 @@ class LeoBridgeIntegController:
             self._create_gnx_to_vnode()
             w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                         "node": self._p_to_ap(self.commander.p)}
+            self.commander.selectPosition(self.commander.p) # maybe needed for frame wrapper
             return self.sendLeoBridgePackage("setOpened", w_result)
         else:
             return self._outputError('Error in setOpenedFile')
@@ -2282,6 +2283,7 @@ class LeoBridgeIntegController:
 
     def executeScriptPackage(self, p_package):
         '''Select a node and run its script'''
+        # TODO : Should be removed to finish #39
         c, g = self.commander, self.g
         if not 'node' in p_package:
             return self._outputError("Error in executeScript no param node")
@@ -2499,6 +2501,7 @@ class LeoBridgeIntegController:
 
     def setNewBody(self, p_body):
         '''Change Body of selected node'''
+        print("    setNewBody")
         # TODO : This method is unused for now? Remove if unnecessary.
         # TODO : Does this support 'Undo'?
         if self.commander.p:
@@ -2509,18 +2512,25 @@ class LeoBridgeIntegController:
 
     def setBody(self, p_package):
         '''Change Body text of a node'''
+        w_gnx = p_package['gnx']
+        w_body = p_package['body']
         for w_p in self.commander.all_positions():
-            if w_p.v.gnx == p_package['gnx']:
+            if w_p.v.gnx == w_gnx:
+                print("for gnx " + w_gnx + " setting body to " + p_package['body'])
                 # TODO : Before setting undo and trying to set body, first check if different than existing body
                 w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
-                w_p.v.setBodyString(p_package['body'])
+                w_p.v.setBodyString(w_body)
                 self.commander.undoer.afterChangeNodeContents(w_p, "Body Text", w_bunch)
                 if not self.commander.isChanged():
                     self.commander.setChanged()
                 if not w_p.v.isDirty():
                     w_p.setDirty()
+                print("1 self.commander.p.v.b" + self.commander.p.v.b)
+                print("2 w_p.v.b" + w_p.v.b)
                 break
-        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+        print("3 self.commander.p.v.b" + self.commander.p.v.b)
+        return self._outputPNode(self.commander.p)  # return selected node 
+        # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def setSelection(self, p_package):
         '''
@@ -2528,6 +2538,8 @@ class LeoBridgeIntegController:
         (For the currently selected node's body, if gnx matches only)
         Save those values on the commander's body "wrapper"
         '''
+
+        # TODO : Also save & restore scroll position
 
         # * This is sent as the package by the client IDE
         #  gnx: selectionGnx,
@@ -2540,7 +2552,7 @@ class LeoBridgeIntegController:
         #    end.character || 0
         #  ]
 
-        w_same = False  # Flag for actually doing the wrapper if really same gnx.
+        w_same = False  # Flag for actually setting values in the wrapper, if same gnx.
         w_wrapper = self.commander.frame.body.wrapper
         w_gnx = p_package['gnx']
         w_body = ""
@@ -2554,14 +2566,22 @@ class LeoBridgeIntegController:
             w_v = self.commander.fileCommands.gnxDict.get(w_gnx)
 
         if not w_v:
-            # print('Set Selection! NOT SAME Leo Document')
+            print('Set Selection! NOT SAME Leo Document')
             return self._outputPNode(self.commander.p)  # ! FAILED (but return as normal)
 
         w_body = w_v.b
+        print("x for body"+ w_body)
+
+        print("1 COPY self.commander.p.v.b" + self.commander.p.v.b)
         w_sel = p_package['selection']
         w_insert =  self.g.convertRowColToPythonIndex(w_body, w_sel[0], w_sel[1])
         w_startSel = self.g.convertRowColToPythonIndex(w_body, w_sel[2], w_sel[3])
         w_endSel =  self.g.convertRowColToPythonIndex(w_body, w_sel[4], w_sel[5])
+
+        # w_same
+        print("w_same "+ str(w_same) +" w_insert " + str(w_insert) + " w_startSel " + str(w_startSel)+ " w_endSel " + str(w_endSel))
+        print("from "+ str(w_sel))
+        print("z for body"+ w_body)
 
         if w_same:
             w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)

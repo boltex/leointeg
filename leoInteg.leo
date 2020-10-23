@@ -645,6 +645,7 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
+<v t="felix.20191126232434.2"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -4626,6 +4627,7 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191126232434.21">def setNewBody(self, p_body):
     '''Change Body of selected node'''
+    print("    setNewBody")
     # TODO : This method is unused for now? Remove if unnecessary.
     # TODO : Does this support 'Undo'?
     if self.commander.p:
@@ -4637,18 +4639,25 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191126232434.22">def setBody(self, p_package):
     '''Change Body text of a node'''
+    w_gnx = p_package['gnx']
+    w_body = p_package['body']
     for w_p in self.commander.all_positions():
-        if w_p.v.gnx == p_package['gnx']:
+        if w_p.v.gnx == w_gnx:
+            print("for gnx " + w_gnx + " setting body to " + p_package['body'])
             # TODO : Before setting undo and trying to set body, first check if different than existing body
             w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
-            w_p.v.setBodyString(p_package['body'])
+            w_p.v.setBodyString(w_body)
             self.commander.undoer.afterChangeNodeContents(w_p, "Body Text", w_bunch)
             if not self.commander.isChanged():
                 self.commander.setChanged()
             if not w_p.v.isDirty():
                 w_p.setDirty()
+            print("1 self.commander.p.v.b" + self.commander.p.v.b)
+            print("2 w_p.v.b" + w_p.v.b)
             break
-    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+    print("3 self.commander.p.v.b" + self.commander.p.v.b)
+    return self._outputPNode(self.commander.p)  # return selected node 
+    # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
 <t tx="felix.20191126232434.23">def setNewHeadline(self, p_package):
@@ -5536,6 +5545,7 @@ wsPort = 32125
         self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                     "node": self._p_to_ap(self.commander.p)}
+        self.commander.selectPosition(self.commander.p) # maybe needed for frame wrapper
         return self.sendLeoBridgePackage("setOpened", w_result)
     else:
         return self._outputError('Error in setOpenedFile')
@@ -12001,6 +12011,7 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 </t>
 <t tx="felix.20200924211142.1">def executeScriptPackage(self, p_package):
     '''Select a node and run its script'''
+    # TODO : Should be removed to finish #39
     c, g = self.commander, self.g
     if not 'node' in p_package:
         return self._outputError("Error in executeScript no param node")
@@ -12080,7 +12091,10 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
             this._selectionDirty = true;
             this._selection = p_event.selections[0];
             this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
-            console.log("Got new selection from interface, gnx:", this._selectionGnx);
+            console.log("Got new selection from interface, gnx: " + this._selectionGnx +
+                ", start: " + this._selection.start.line + " " + this._selection.start.character +
+                ", end: " + this._selection.end.line + " " + this._selection.end.character
+            );
         }
     }
 }
@@ -12440,6 +12454,8 @@ def tag_configure(self, colorName, **keys): pass
     Save those values on the commander's body "wrapper"
     '''
 
+    # TODO : Also save &amp; restore scroll position
+
     # * This is sent as the package by the client IDE
     #  gnx: selectionGnx,
     #  selection: [
@@ -12451,7 +12467,7 @@ def tag_configure(self, colorName, **keys): pass
     #    end.character || 0
     #  ]
 
-    w_same = False  # Flag for actually doing the wrapper if really same gnx.
+    w_same = False  # Flag for actually setting values in the wrapper, if same gnx.
     w_wrapper = self.commander.frame.body.wrapper
     w_gnx = p_package['gnx']
     w_body = ""
@@ -12465,14 +12481,22 @@ def tag_configure(self, colorName, **keys): pass
         w_v = self.commander.fileCommands.gnxDict.get(w_gnx)
 
     if not w_v:
-        # print('Set Selection! NOT SAME Leo Document')
+        print('Set Selection! NOT SAME Leo Document')
         return self._outputPNode(self.commander.p)  # ! FAILED (but return as normal)
 
     w_body = w_v.b
+    print("x for body"+ w_body)
+
+    print("1 COPY self.commander.p.v.b" + self.commander.p.v.b)
     w_sel = p_package['selection']
     w_insert =  self.g.convertRowColToPythonIndex(w_body, w_sel[0], w_sel[1])
     w_startSel = self.g.convertRowColToPythonIndex(w_body, w_sel[2], w_sel[3])
     w_endSel =  self.g.convertRowColToPythonIndex(w_body, w_sel[4], w_sel[5])
+
+    # w_same
+    print("w_same "+ str(w_same) +" w_insert " + str(w_insert) + " w_startSel " + str(w_startSel)+ " w_endSel " + str(w_endSel))
+    print("from "+ str(w_sel))
+    print("z for body"+ w_body)
 
     if w_same:
         w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
@@ -12517,11 +12541,10 @@ export interface BodySelectionInfo {
  * * Handles detection of the active editor's scroll position changes
  */
 private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent): void {
-    //
-    console.log('changed scroll', p_event.textEditor, p_event.visibleRanges);
+    // test
+    console.log('changed scroll', p_event.textEditor, p_event.visibleRanges[0].start, p_event.visibleRanges[0].end);
 
 }
-
 
 </t>
 <t tx="felix.20201017224340.1">export interface ConfigSetting {
