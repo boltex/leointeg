@@ -645,7 +645,6 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
-<v t="felix.20191126232434.2"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -4656,6 +4655,12 @@ if __name__ == '__main__':
             print("2 w_p.v.b" + w_p.v.b)
             break
     print("3 self.commander.p.v.b" + self.commander.p.v.b)
+    # additional forced string setting
+    if w_gnx:
+        w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
+        if w_v:
+            w_v.b = w_body
+    print("4 self.commander.p.v.b" + self.commander.p.v.b)                
     return self._outputPNode(self.commander.p)  # return selected node 
     # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
@@ -4910,20 +4915,22 @@ if __name__ == '__main__':
             async for w_message in websocket:
                 w_param = json.loads(w_message)
                 if w_param and w_param['action']:
-                    # print(f"action: {w_param['action']}", flush=True)
+                    w_action = w_param['action']
+                    w_actionParam = w_param['param']
+                    print(f"action: {w_param['action']}", flush=True)
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
                     #
-                    w_func = getattr(integController, w_param['action'], None)  # crux
+                    w_func = getattr(integController, w_action, None)  # crux
                     if w_func:
                         # Is Filtered by Leo Bridge Integration Controller
-                        w_answer = w_func(w_param['param'])
+                        w_answer = w_func(w_actionParam)
                     else:
                         # Attempt to execute the command directly on the commander/subcommander
-                        w_answer = integController.leoCommand(w_param['action'], w_param['param'])
+                        w_answer = integController.leoCommand(w_action, w_actionParam)
                 else:
                     w_answer = "Error in processCommand"
                     print(w_answer, flush=True)
