@@ -166,6 +166,7 @@
 <v t="felix.20200924211135.1"><vh>undo</vh></v>
 <v t="felix.20200924211138.1"><vh>redo</vh></v>
 <v t="felix.20200924211142.1"><vh>executeScriptPackage</vh></v>
+<v t="felix.20201025144113.1"><vh>test</vh></v>
 </v>
 <v t="felix.20191128001054.1"><vh>Outline and Body Interaction</vh>
 <v t="felix.20200929215102.2"><vh>getStates</vh></v>
@@ -4660,8 +4661,8 @@ if __name__ == '__main__':
         w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
         if w_v:
             w_v.b = w_body
-    print("4 self.commander.p.v.b" + self.commander.p.v.b)                
-    return self._outputPNode(self.commander.p)  # return selected node 
+    print("4 self.commander.p.v.b" + self.commander.p.v.b)
+    return self._outputPNode(self.commander.p)  # return selected node
     # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
@@ -12151,6 +12152,7 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 <t tx="felix.20200928174406.10">def getAllText(self):
     """IntegTextWrapper getAllText"""
     s = self.s
+    print("WRAPPER getAllText  " + s)
     return self.g.checkUnicode(s)
 
 </t>
@@ -12170,6 +12172,7 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
     """IntegTextWrapper getSelectedText"""
     i, j = self.sel
     s = self.s[i:j]
+    print("WRAPPER getSelectedText with self.s[i:j]: " + s)
     return self.g.checkUnicode(s)
 
 </t>
@@ -12208,6 +12211,7 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 </t>
 <t tx="felix.20200928174406.17">def setAllText(self, s):
     """IntegTextWrapper setAllText"""
+    print("WRAPPER setAllText: " + s)
     self.s = s
     i = len(self.s)
     self.ins = i
@@ -12230,6 +12234,7 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 </t>
 <t tx="felix.20200928174406.2">def __init__(self, c, name, g):
     """Ctor for the IntegTextWrapper class."""
+    print("CREATING WRAPPER")
     self.c = c
     self.name = name
     self.g = g  # Should g be totally global across all leoIntegration classes?
@@ -12328,6 +12333,7 @@ def tag_configure(self, colorName, **keys): pass
         j = i + 1
     j = self.toPythonIndex(j)
     s = self.s[i:j]
+    print("WRAPPER GET with self.s[i:j]: " + s)
     return self.g.toUnicode(s)
 
 </t>
@@ -12549,7 +12555,7 @@ export interface BodySelectionInfo {
  */
 private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent): void {
     // test
-    console.log('changed scroll', p_event.textEditor, p_event.visibleRanges[0].start, p_event.visibleRanges[0].end);
+    // console.log('changed scroll', p_event.textEditor, p_event.visibleRanges[0].start, p_event.visibleRanges[0].end);
 
 }
 
@@ -12569,6 +12575,11 @@ export function getDurationMs(p_start: [number, number]): number {
     const [w_secs, w_nanosecs] = process.hrtime(p_start);
     return w_secs * 1000 + Math.floor(w_nanosecs / 1000000);
 }
+
+</t>
+<t tx="felix.20201025144113.1">def test(self, p_package):
+    '''Utility test function for debugging'''
+    print("Called test")
 
 </t>
 </tnodes>

@@ -774,7 +774,7 @@ export class LeoIntegration {
      */
     private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent): void {
         // test
-        console.log('changed scroll', p_event.textEditor, p_event.visibleRanges[0].start, p_event.visibleRanges[0].end);
+        // console.log('changed scroll', p_event.textEditor, p_event.visibleRanges[0].start, p_event.visibleRanges[0].end);
 
     }
 

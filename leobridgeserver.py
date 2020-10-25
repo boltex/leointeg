@@ -420,6 +420,7 @@ class IntegTextWrapper:
 
     def __init__(self, c, name, g):
         """Ctor for the IntegTextWrapper class."""
+        print("CREATING WRAPPER")
         self.c = c
         self.name = name
         self.g = g  # Should g be totally global across all leoIntegration classes?
@@ -498,11 +499,13 @@ class IntegTextWrapper:
             j = i + 1
         j = self.toPythonIndex(j)
         s = self.s[i:j]
+        print("WRAPPER GET with self.s[i:j]: " + s)
         return self.g.toUnicode(s)
 
     def getAllText(self):
         """IntegTextWrapper getAllText"""
         s = self.s
+        print("WRAPPER getAllText  " + s)
         return self.g.checkUnicode(s)
 
     def getInsertPoint(self):
@@ -520,6 +523,7 @@ class IntegTextWrapper:
         """IntegTextWrapper getSelectedText"""
         i, j = self.sel
         s = self.s[i:j]
+        print("WRAPPER getSelectedText with self.s[i:j]: " + s)
         return self.g.checkUnicode(s)
 
     def getSelectionRange(self, sort=True):
@@ -553,6 +557,7 @@ class IntegTextWrapper:
 
     def setAllText(self, s):
         """IntegTextWrapper setAllText"""
+        print("WRAPPER setAllText: " + s)
         self.s = s
         i = len(self.s)
         self.ins = i
@@ -2313,6 +2318,10 @@ class LeoBridgeIntegController:
             print(str(e), flush=True)
         return self._outputPNode(self.commander.p)
 
+    def test(self, p_package):
+        '''Utility test function for debugging'''
+        print("Called test")
+
     def getStates(self, p_package):
         """
         Gets the currently opened file's general states for UI enabled/disabled states
@@ -2534,8 +2543,8 @@ class LeoBridgeIntegController:
             w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
             if w_v:
                 w_v.b = w_body
-        print("4 self.commander.p.v.b" + self.commander.p.v.b)                
-        return self._outputPNode(self.commander.p)  # return selected node 
+        print("4 self.commander.p.v.b" + self.commander.p.v.b)
+        return self._outputPNode(self.commander.p)  # return selected node
         # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def setSelection(self, p_package):
