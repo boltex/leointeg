@@ -1329,11 +1329,19 @@ export class LeoIntegration {
             // * body editor is opened with the right content - now set its other attributes for
             // * proper usage : set its language, and restore the proper cursor position
             if (this.lastSelectedNode) {
+                // this.lastSelectedNode MAY NOT BE VALID
                 this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
                     .then((p_result: LeoBridgePackage) => {
 
-                        let w_language: string = p_result.bodyStates!.language;
-                        const w_leoBodySel: BodySelectionInfo = p_result.bodyStates!.selection;
+                        const w_bodyStates = p_result.bodyStates!; // This answer has bodyStates member
+                        let w_language: string = w_bodyStates.language;
+                        const w_leoBodySel: BodySelectionInfo = w_bodyStates.selection;
+
+                        if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
+                            console.log('DIFFERENT GNX ' + w_leoBodySel.gnx + " " + this.lastSelectedNode!.gnx);
+                        } else {
+                            console.log('SAME GNX ' + w_leoBodySel.gnx);
+                        }
 
                         const w_activeRow: number = w_leoBodySel.activeLine;
                         const w_activeCol: number = w_leoBodySel.activeCol;
@@ -1364,7 +1372,7 @@ export class LeoIntegration {
                         });
 
                         // TODO : Move those exception in "constants.ts" as a mapping from string->string
-                        switch (p_result.bodyStates!.language) {
+                        switch (w_language) {
                             case "cplusplus":
                                 w_language = "cpp";
                                 break;
