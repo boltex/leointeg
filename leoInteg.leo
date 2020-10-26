@@ -12393,6 +12393,9 @@ def tag_configure(self, colorName, **keys): pass
         return self._outputError("Error in getLanguage, no param p_ap")
 
     w_p = self._ap_to_p(p_ap)
+    if not w_p:
+        w_p = self.commander.p
+
     w_wrapper = self.commander.frame.body.wrapper
 
     # interface BodySelectionInfo {
