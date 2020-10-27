@@ -2511,17 +2511,6 @@ class LeoBridgeIntegController:
         # TODO : May need to signal inexistent by self.sendLeoBridgePackage()
         return self.sendLeoBridgePackage("bodyLength", 0)  # empty as default
 
-    def setNewBody(self, p_body):
-        '''Change Body of selected node'''
-        print("    setNewBody")
-        # TODO : This method is unused for now? Remove if unnecessary.
-        # TODO : Does this support 'Undo'?
-        if self.commander.p:
-            self.commander.p.b = p_body['body']
-            return self._outputPNode(self.commander.p)
-        else:
-            return self._outputError("Error in setNewBody")
-
     def setBody(self, p_package):
         '''Change Body text of a node'''
         w_gnx = p_package['gnx']
@@ -2537,10 +2526,7 @@ class LeoBridgeIntegController:
                     self.commander.setChanged()
                 if not w_p.v.isDirty():
                     w_p.setDirty()
-                print("1 self.commander.p.v.b" + self.commander.p.v.b)
-                print("2 w_p.v.b" + w_p.v.b)
                 break
-        print("3 self.commander.p.v.b" + self.commander.p.v.b)
         # additional forced string setting
         if w_gnx:
             w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
@@ -2560,15 +2546,15 @@ class LeoBridgeIntegController:
         # TODO : Also save & restore scroll position
 
         # * This is sent as the package by the client IDE
-        #  gnx: selectionGnx,
-        #  selection: [
-        #    active.line || 0,
-        #    active.character || 0,
-        #    start.line || 0,
-        #    start.character || 0,
-        #    end.line || 0,
-        #    end.character || 0
-        #  ]
+        # interface BodySelectionInfo {
+        #     gnx: string;
+        #     activeLine: number;
+        #     activeCol: number;
+        #     startLine: number;
+        #     startCol: number;
+        #     endLine: number;
+        #     endCol: number;
+        # }
 
         w_same = False  # Flag for actually setting values in the wrapper, if same gnx.
         w_wrapper = self.commander.frame.body.wrapper
@@ -2584,22 +2570,18 @@ class LeoBridgeIntegController:
             w_v = self.commander.fileCommands.gnxDict.get(w_gnx)
 
         if not w_v:
-            print('Set Selection! NOT SAME Leo Document')
+            print('ERROR : Set Selection! NOT SAME Leo Document')
             return self._outputPNode(self.commander.p)  # ! FAILED (but return as normal)
 
         w_body = w_v.b
-        print("x for body"+ w_body)
+        f_convert = self.g.convertRowColToPythonIndex
 
-        print("1 COPY self.commander.p.v.b" + self.commander.p.v.b)
-        w_sel = p_package['selection']
-        w_insert =  self.g.convertRowColToPythonIndex(w_body, w_sel[0], w_sel[1])
-        w_startSel = self.g.convertRowColToPythonIndex(w_body, w_sel[2], w_sel[3])
-        w_endSel =  self.g.convertRowColToPythonIndex(w_body, w_sel[4], w_sel[5])
+        w_insert =  f_convert(w_body, p_package['activeLine'], p_package['activeCol'])
+        w_startSel = f_convert(w_body, p_package['startLine'], p_package['startCol'])
+        w_endSel =  f_convert(w_body, p_package['endLine'], p_package['endCol'])
 
-        # w_same
         print("w_same "+ str(w_same) +" w_insert " + str(w_insert) + " w_startSel " + str(w_startSel)+ " w_endSel " + str(w_endSel))
-        print("from "+ str(w_sel))
-        print("z for body"+ w_body)
+        print("for body"+ w_body)
 
         if w_same:
             w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
@@ -2825,7 +2807,7 @@ def main():
                 if w_param and w_param['action']:
                     w_action = w_param['action']
                     w_actionParam = w_param['param']
-                    print(f"action: {w_param['action']}", flush=True)
+                    print(f"*ACTION* {w_param['action']}", flush=True)
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'

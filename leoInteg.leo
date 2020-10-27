@@ -180,7 +180,6 @@
 <v t="felix.20191201194046.1"><vh>getAllGnx</vh></v>
 <v t="felix.20191126232434.19"><vh>getBody</vh></v>
 <v t="felix.20191126232434.20"><vh>getBodyLength</vh></v>
-<v t="felix.20191126232434.21"><vh>setNewBody</vh></v>
 <v t="felix.20191126232434.22"><vh>setBody</vh></v>
 <v t="felix.20200929230231.1"><vh>setSelection</vh></v>
 <v t="felix.20191126232434.23"><vh>setNewHeadline</vh></v>
@@ -4625,18 +4624,6 @@ if __name__ == '__main__':
     return self.sendLeoBridgePackage("bodyLength", 0)  # empty as default
 
 </t>
-<t tx="felix.20191126232434.21">def setNewBody(self, p_body):
-    '''Change Body of selected node'''
-    print("    setNewBody")
-    # TODO : This method is unused for now? Remove if unnecessary.
-    # TODO : Does this support 'Undo'?
-    if self.commander.p:
-        self.commander.p.b = p_body['body']
-        return self._outputPNode(self.commander.p)
-    else:
-        return self._outputError("Error in setNewBody")
-
-</t>
 <t tx="felix.20191126232434.22">def setBody(self, p_package):
     '''Change Body text of a node'''
     w_gnx = p_package['gnx']
@@ -4652,10 +4639,7 @@ if __name__ == '__main__':
                 self.commander.setChanged()
             if not w_p.v.isDirty():
                 w_p.setDirty()
-            print("1 self.commander.p.v.b" + self.commander.p.v.b)
-            print("2 w_p.v.b" + w_p.v.b)
             break
-    print("3 self.commander.p.v.b" + self.commander.p.v.b)
     # additional forced string setting
     if w_gnx:
         w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
@@ -4918,7 +4902,7 @@ if __name__ == '__main__':
                 if w_param and w_param['action']:
                     w_action = w_param['action']
                     w_actionParam = w_param['param']
-                    print(f"action: {w_param['action']}", flush=True)
+                    print(f"*ACTION* {w_param['action']}", flush=True)
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
@@ -12120,26 +12104,18 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
  * * Saves the cursor position along with the text selection states (start and end positions)
  */
 public _bodySaveSelection(): Thenable&lt;boolean&gt; {
-    if (this._selectionDirty) {
-        // console.log('sending selection for gnx ' + this._selectionGnx);
-        // TODO use BodySelectionInfo type interface instead
-        const w_param = {
+    if (this._selectionDirty &amp;&amp; this._selection) {
+        const w_param: BodySelectionInfo = {
             gnx: this._selectionGnx,
-            selection: [
-                this._selection?.active.line || 0,
-                this._selection?.active.character || 0,
-                this._selection?.start.line || 0,
-                this._selection?.start.character || 0,
-                this._selection?.end.line || 0,
-                this._selection?.end.character || 0
-            ]
+            activeLine: this._selection.active.line || 0,
+            activeCol: this._selection.active.character || 0,
+            startLine: this._selection.start.line || 0,
+            startCol: this._selection.start.character || 0,
+            endLine: this._selection.end.line || 0,
+            endCol: this._selection.end.character || 0
         };
-
+        this._selectionDirty = false; // don't wait for return of this call
         return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(p_result =&gt; {
-
-            // console.log('back from set selection: ', p_result);
-
-            this._selectionDirty = false;  // TODO : Maybe consider this false as action is sent?
             return Promise.resolve(true);
         });
     } else {
@@ -12481,15 +12457,15 @@ def tag_configure(self, colorName, **keys): pass
     # TODO : Also save &amp; restore scroll position
 
     # * This is sent as the package by the client IDE
-    #  gnx: selectionGnx,
-    #  selection: [
-    #    active.line || 0,
-    #    active.character || 0,
-    #    start.line || 0,
-    #    start.character || 0,
-    #    end.line || 0,
-    #    end.character || 0
-    #  ]
+    # interface BodySelectionInfo {
+    #     gnx: string;
+    #     activeLine: number;
+    #     activeCol: number;
+    #     startLine: number;
+    #     startCol: number;
+    #     endLine: number;
+    #     endCol: number;
+    # }
 
     w_same = False  # Flag for actually setting values in the wrapper, if same gnx.
     w_wrapper = self.commander.frame.body.wrapper
@@ -12505,22 +12481,18 @@ def tag_configure(self, colorName, **keys): pass
         w_v = self.commander.fileCommands.gnxDict.get(w_gnx)
 
     if not w_v:
-        print('Set Selection! NOT SAME Leo Document')
+        print('ERROR : Set Selection! NOT SAME Leo Document')
         return self._outputPNode(self.commander.p)  # ! FAILED (but return as normal)
 
     w_body = w_v.b
-    print("x for body"+ w_body)
+    f_convert = self.g.convertRowColToPythonIndex
 
-    print("1 COPY self.commander.p.v.b" + self.commander.p.v.b)
-    w_sel = p_package['selection']
-    w_insert =  self.g.convertRowColToPythonIndex(w_body, w_sel[0], w_sel[1])
-    w_startSel = self.g.convertRowColToPythonIndex(w_body, w_sel[2], w_sel[3])
-    w_endSel =  self.g.convertRowColToPythonIndex(w_body, w_sel[4], w_sel[5])
+    w_insert =  f_convert(w_body, p_package['activeLine'], p_package['activeCol'])
+    w_startSel = f_convert(w_body, p_package['startLine'], p_package['startCol'])
+    w_endSel =  f_convert(w_body, p_package['endLine'], p_package['endCol'])
 
-    # w_same
     print("w_same "+ str(w_same) +" w_insert " + str(w_insert) + " w_startSel " + str(w_startSel)+ " w_endSel " + str(w_endSel))
-    print("from "+ str(w_sel))
-    print("z for body"+ w_body)
+    print("for body"+ w_body)
 
     if w_same:
         w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)

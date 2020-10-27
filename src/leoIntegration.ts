@@ -830,26 +830,18 @@ export class LeoIntegration {
      * * Saves the cursor position along with the text selection states (start and end positions)
      */
     public _bodySaveSelection(): Thenable<boolean> {
-        if (this._selectionDirty) {
-            // console.log('sending selection for gnx ' + this._selectionGnx);
-            // TODO use BodySelectionInfo type interface instead
-            const w_param = {
+        if (this._selectionDirty && this._selection) {
+            const w_param: BodySelectionInfo = {
                 gnx: this._selectionGnx,
-                selection: [
-                    this._selection?.active.line || 0,
-                    this._selection?.active.character || 0,
-                    this._selection?.start.line || 0,
-                    this._selection?.start.character || 0,
-                    this._selection?.end.line || 0,
-                    this._selection?.end.character || 0
-                ]
+                activeLine: this._selection.active.line || 0,
+                activeCol: this._selection.active.character || 0,
+                startLine: this._selection.start.line || 0,
+                startCol: this._selection.start.character || 0,
+                endLine: this._selection.end.line || 0,
+                endCol: this._selection.end.character || 0
             };
-
+            this._selectionDirty = false; // don't wait for return of this call
             return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(p_result => {
-
-                // console.log('back from set selection: ', p_result);
-
-                this._selectionDirty = false;  // TODO : Maybe consider this false as action is sent?
                 return Promise.resolve(true);
             });
         } else {
