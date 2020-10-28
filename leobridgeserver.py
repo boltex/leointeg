@@ -725,6 +725,47 @@ class LeoBridgeIntegController:
         else:
             print('no loop in logSignon', flush=True)
 
+    def setActionId(self, p_id):
+        self.currentActionId = p_id
+
+    async def asyncOutput(self, p_json):
+        '''Output json string to the websocket'''
+        if self.webSocket:
+            await self.webSocket.send(p_json)
+        else:
+            print("websocket not ready yet", flush=True)
+
+    def sendLeoBridgePackage(self, p_key=False, p_any=None):
+        w_package = {"id": self.currentActionId}
+        if p_key:
+            w_package[p_key] = p_any  # add [key]?:any
+        return(json.dumps(w_package, separators=(',', ':')))  # send as json
+        # await self.webSocket.send(json.dumps(w_package, separators=(',', ':')))  # send as json
+
+    def _outputError(self, p_message="Unknown Error"):
+        print("ERROR: " + p_message, flush=True)  # Output to this server's running console
+        w_package = {"id": self.currentActionId}
+        w_package["error"] = p_message
+        return p_message
+
+    def _outputBodyData(self, p_bodyText=""):
+        return self.sendLeoBridgePackage("bodyData", p_bodyText)
+
+    def _outputSelectionData(self, p_bodySelection):
+        return self.sendLeoBridgePackage("bodySelection", p_bodySelection)
+
+    def _outputPNode(self, p_node=False):
+        if p_node:
+            return self.sendLeoBridgePackage("node", self._p_to_ap(p_node))  # Single node, singular
+        else:
+            return self.sendLeoBridgePackage("node", None)
+
+    def _outputPNodes(self, p_pList):
+        w_apList = []
+        for p in p_pList:
+            w_apList.append(self._p_to_ap(p))
+        return self.sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
+
     def es(self, * args, **keys):
         '''Output to the Log Pane'''
         d = {
@@ -2102,47 +2143,6 @@ class LeoBridgeIntegController:
         docstring = func.__doc__ if func else ''
         return docstring
 
-    def setActionId(self, p_id):
-        self.currentActionId = p_id
-
-    async def asyncOutput(self, p_json):
-        '''Output json string to the websocket'''
-        if self.webSocket:
-            await self.webSocket.send(p_json)
-        else:
-            print("websocket not ready yet", flush=True)
-
-    def sendLeoBridgePackage(self, p_key=False, p_any=None):
-        w_package = {"id": self.currentActionId}
-        if p_key:
-            w_package[p_key] = p_any  # add [key]?:any
-        return(json.dumps(w_package, separators=(',', ':')))  # send as json
-        # await self.webSocket.send(json.dumps(w_package, separators=(',', ':')))  # send as json
-
-    def _outputError(self, p_message="Unknown Error"):
-        print("ERROR: " + p_message, flush=True)  # Output to this server's running console
-        w_package = {"id": self.currentActionId}
-        w_package["error"] = p_message
-        return p_message
-
-    def _outputBodyData(self, p_bodyText=""):
-        return self.sendLeoBridgePackage("bodyData", p_bodyText)
-
-    def _outputSelectionData(self, p_bodySelection):
-        return self.sendLeoBridgePackage("bodySelection", p_bodySelection)
-
-    def _outputPNode(self, p_node=False):
-        if p_node:
-            return self.sendLeoBridgePackage("node", self._p_to_ap(p_node))  # Single node, singular
-        else:
-            return self.sendLeoBridgePackage("node", None)
-
-    def _outputPNodes(self, p_pList):
-        w_apList = []
-        for p in p_pList:
-            w_apList.append(self._p_to_ap(p))
-        return self.sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
-
     def markPNode(self, p_package):
         '''Mark a node, don't select it'''
         w_ap = p_package["node"]
@@ -2321,6 +2321,8 @@ class LeoBridgeIntegController:
     def test(self, p_package):
         '''Utility test function for debugging'''
         print("Called test")
+        return self.sendLeoBridgePackage('testReturnedKey', 'testReturnedValue')
+        # return self._outputPNode(self.commander.p)
 
     def getStates(self, p_package):
         """

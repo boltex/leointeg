@@ -1923,7 +1923,13 @@ export class LeoIntegration {
     }
 
     public test(p_fromOutline?: boolean): void {
-        this.statusBarOnClick(); // placeholder / test
+        // this.statusBarOnClick(); // placeholder / test
+        this.sendAction(Constants.LEOBRIDGE.TEST, JSON.stringify({ "testParam": "Some String" }))
+            .then((p_result: LeoBridgePackage) => {
+                // this.launchRefresh({ buttons: true }, false);
+
+                vscode.window.showInformationMessage('back from test with: ' + JSON.stringify(p_result));
+            });
     }
 
 }

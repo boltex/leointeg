@@ -122,6 +122,16 @@
 <v t="felix.20200304220844.1"><vh>askResult</vh></v>
 <v t="felix.20200312231358.1"><vh>applyConfig</vh></v>
 <v t="felix.20200219224515.1"><vh>logSignon</vh></v>
+<v t="felix.20200924224017.1"><vh>JSON Output Functions</vh>
+<v t="felix.20200924211032.1"><vh>setActionId</vh></v>
+<v t="felix.20200924211034.1"><vh>asyncOutput</vh></v>
+<v t="felix.20200924211037.1"><vh>sendLeoBridgePackage</vh></v>
+<v t="felix.20200924211041.1"><vh>_outputError</vh></v>
+<v t="felix.20200924211048.1"><vh>_outputBodyData</vh></v>
+<v t="felix.20200927224639.1"><vh>_outputSelectionData</vh></v>
+<v t="felix.20200924211051.1"><vh>_outputPNode</vh></v>
+<v t="felix.20200924211054.1"><vh>_outputPNodes</vh></v>
+</v>
 <v t="felix.20200219222712.1"><vh>es</vh></v>
 <v t="felix.20200211202929.1"><vh>initConnection</vh></v>
 <v t="felix.20200924205439.1"><vh>_get_commander_method</vh></v>
@@ -144,16 +154,6 @@
 <v t="felix.20200924210058.1"><vh>_bad_commands</vh></v>
 <v t="felix.20200924210112.1"><vh>_good_commands</vh></v>
 <v t="felix.20200924210952.1"><vh>_getDocstringForCommand</vh></v>
-</v>
-<v t="felix.20200924224017.1"><vh>JSON Output Functions</vh>
-<v t="felix.20200924211032.1"><vh>setActionId</vh></v>
-<v t="felix.20200924211034.1"><vh>asyncOutput</vh></v>
-<v t="felix.20200924211037.1"><vh>sendLeoBridgePackage</vh></v>
-<v t="felix.20200924211041.1"><vh>_outputError</vh></v>
-<v t="felix.20200924211048.1"><vh>_outputBodyData</vh></v>
-<v t="felix.20200927224639.1"><vh>_outputSelectionData</vh></v>
-<v t="felix.20200924211051.1"><vh>_outputPNode</vh></v>
-<v t="felix.20200924211054.1"><vh>_outputPNodes</vh></v>
 </v>
 <v t="felix.20200924224100.1"><vh>Overriden Leo Commands</vh>
 <v t="felix.20200924211057.1"><vh>markPNode</vh></v>
@@ -5596,6 +5596,7 @@ public static ASYNC_ASK_RETURN_CODES = {
  * * Commands for leobridgeserver.py
  */
 public static LEOBRIDGE = {
+    TEST: "test",
     APPLY_CONFIG: "applyConfig",
     ASK_RESULT: "askResult",
     GET_ALL_GNX: "getAllGnx",
@@ -10480,7 +10481,13 @@ public startServer(): void {
 
 </t>
 <t tx="felix.20200719025231.70">public test(p_fromOutline?: boolean): void {
-    this.statusBarOnClick(); // placeholder / test
+    // this.statusBarOnClick(); // placeholder / test
+    this.sendAction(Constants.LEOBRIDGE.TEST, JSON.stringify({ "testParam": "Some String" }))
+        .then((p_result: LeoBridgePackage) =&gt; {
+            // this.launchRefresh({ buttons: true }, false);
+
+            vscode.window.showInformationMessage('back from test with: ' + JSON.stringify(p_result));
+        });
 }
 
 </t>
@@ -12563,6 +12570,8 @@ export function getDurationMs(p_start: [number, number]): number {
 <t tx="felix.20201025144113.1">def test(self, p_package):
     '''Utility test function for debugging'''
     print("Called test")
+    return self.sendLeoBridgePackage('testReturnedKey', 'testReturnedValue')
+    # return self._outputPNode(self.commander.p)
 
 </t>
 </tnodes>

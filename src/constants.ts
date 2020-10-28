@@ -287,6 +287,7 @@ export class Constants {
      * * Commands for leobridgeserver.py
      */
     public static LEOBRIDGE = {
+        TEST: "test",
         APPLY_CONFIG: "applyConfig",
         ASK_RESULT: "askResult",
         GET_ALL_GNX: "getAllGnx",
