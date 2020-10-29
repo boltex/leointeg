@@ -214,6 +214,8 @@ export interface BodyTimeInfo {
  */
 export interface BodySelectionInfo {
     gnx: string;
+    scrollLine: number;
+    scrollCol: number;
     activeLine: number;
     activeCol: number;
     startLine: number;

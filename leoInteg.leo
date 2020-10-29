@@ -99,11 +99,13 @@
 <v t="felix.20200928174406.11"><vh>stw.getInsertPoint</vh></v>
 <v t="felix.20200928174406.12"><vh>stw.getSelectedText</vh></v>
 <v t="felix.20200928174406.13"><vh>stw.getSelectionRange</vh></v>
+<v t="felix.20201028223533.1"><vh>stw.getXScrollPosition</vh></v>
 <v t="felix.20200928174406.14"><vh>stw.hasSelection</vh></v>
 <v t="felix.20200928174406.15"><vh>stw.insert</vh></v>
 <v t="felix.20200928174406.16"><vh>stw.selectAllText</vh></v>
 <v t="felix.20200928174406.17"><vh>stw.setAllText</vh></v>
 <v t="felix.20200928174406.18"><vh>stw.setInsertPoint</vh></v>
+<v t="felix.20201028223434.1"><vh>stw.setXScrollPosition</vh></v>
 <v t="felix.20200928174406.19"><vh>stw.setSelectionRange</vh></v>
 <v t="felix.20200928174406.20"><vh>stw.toPythonIndex</vh></v>
 <v t="felix.20200928174406.21"><vh>stw.toPythonIndexRowCol</vh></v>
@@ -9244,6 +9246,8 @@ export class LeoIntegration {
     private _selectionDirty: boolean = false; // Flag set when cursor selection is changed
     private _selectionGnx: string = ""; // Packaged into 'BodySelectionInfo' structures, sent to Leo
     private _selection: vscode.Selection | undefined; // also packaged into 'BodySelectionInfo'
+    private _scroll: vscode.Range | undefined;
+    private _scrollGnx: string = "";
 
     private _bodyUri: vscode.Uri = utils.strToLeoUri("");
     get bodyUri(): vscode.Uri {
@@ -10487,6 +10491,7 @@ public startServer(): void {
             // this.launchRefresh({ buttons: true }, false);
 
             vscode.window.showInformationMessage('back from test with: ' + JSON.stringify(p_result));
+
         });
 }
 
@@ -12114,6 +12119,8 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
     if (this._selectionDirty &amp;&amp; this._selection) {
         const w_param: BodySelectionInfo = {
             gnx: this._selectionGnx,
+            scrollLine: this._scroll?.start.line || 0,
+            scrollCol: this._scroll?.start.character || 0,
             activeLine: this._selection.active.line || 0,
             activeCol: this._selection.active.character || 0,
             startLine: this._selection.start.line || 0,
@@ -12266,8 +12273,6 @@ def clipboard_append(self, s):
 </t>
 <t tx="felix.20200928174406.4">def flashCharacter(self, i, bg='white', fg='red', flashes=3, delay=75): pass
 
-def getXScrollPosition(self):
-    return 0
 
 def getYScrollPosition(self):
     return 0
@@ -12279,8 +12284,6 @@ def seeInsertPoint(self): pass
 def setFocus(self): pass
 
 def setStyleClass(self, name): pass
-
-def setXScrollPosition(self, i): pass # todo
 
 def setYScrollPosition(self, i): pass # todo
 
@@ -12389,20 +12392,13 @@ def tag_configure(self, colorName, **keys): pass
 
     w_wrapper = self.commander.frame.body.wrapper
 
-    # interface BodySelectionInfo {
-    #     gnx: string;
-    #     activeLine: number;
-    #     activeCol: number;
-    #     startLine: number;
-    #     startCol: number;
-    #     endLine: number;
-    #     endCol: number;
-    # }
-
+    # See BodySelectionInfo interface in types.d.ts
     states = {
         'language': 'plain',
         'selection': {
                         "gnx": w_p.v.gnx,
+                        "scrollLine": 0,
+                        "scrollCol": 0,
                         "activeLine": 0,
                         "activeCol": 0,
                         "startLine": 0,
@@ -12443,6 +12439,8 @@ def tag_configure(self, colorName, **keys): pass
             'language': language.lower(),
             'selection': {
                         "gnx": w_p.v.gnx,
+                        "scrollLine": 0, # TODO
+                        "scrollCol": 0, # TODO
                         "activeLine": w_activeRow,
                         "activeCol": w_activeCol,
                         "startLine": w_startRow,
@@ -12456,24 +12454,11 @@ def tag_configure(self, colorName, **keys): pass
 </t>
 <t tx="felix.20200929230231.1">def setSelection(self, p_package):
     '''
-    Set cursor position, along with selection start and end.
+    Set cursor position and scroll position along with selection start and end.
     (For the currently selected node's body, if gnx matches only)
     Save those values on the commander's body "wrapper"
+    See BodySelectionInfo interface in types.d.ts
     '''
-
-    # TODO : Also save &amp; restore scroll position
-
-    # * This is sent as the package by the client IDE
-    # interface BodySelectionInfo {
-    #     gnx: string;
-    #     activeLine: number;
-    #     activeCol: number;
-    #     startLine: number;
-    #     startCol: number;
-    #     endLine: number;
-    #     endCol: number;
-    # }
-
     w_same = False  # Flag for actually setting values in the wrapper, if same gnx.
     w_wrapper = self.commander.frame.body.wrapper
     w_gnx = p_package['gnx']
@@ -12531,6 +12516,8 @@ def tag_configure(self, colorName, **keys): pass
  */
 export interface BodySelectionInfo {
     gnx: string;
+    scrollLine: number;
+    scrollCol: number;
     activeLine: number;
     activeCol: number;
     startLine: number;
@@ -12544,9 +12531,13 @@ export interface BodySelectionInfo {
  * * Handles detection of the active editor's scroll position changes
  */
 private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent): void {
-    // test
-    // console.log('changed scroll', p_event.textEditor, p_event.visibleRanges[0].start, p_event.visibleRanges[0].end);
-
+    if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
+        if (p_event.visibleRanges.length) {
+            this._selectionDirty = true;
+            this._scroll = p_event.visibleRanges[0];
+            this._scrollGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
+        }
+    }
 }
 
 </t>
@@ -12572,6 +12563,17 @@ export function getDurationMs(p_start: [number, number]): number {
     print("Called test")
     return self.sendLeoBridgePackage('testReturnedKey', 'testReturnedValue')
     # return self._outputPNode(self.commander.p)
+
+</t>
+<t tx="felix.20201028223434.1">def setXScrollPosition(self, i):
+    pass
+    print("set scroll")
+    # todo
+
+</t>
+<t tx="felix.20201028223533.1">def getXScrollPosition(self):
+    return 0
+    # TODO
 
 </t>
 </tnodes>

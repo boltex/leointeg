@@ -446,8 +446,6 @@ class IntegTextWrapper:
 
     def flashCharacter(self, i, bg='white', fg='red', flashes=3, delay=75): pass
 
-    def getXScrollPosition(self):
-        return 0
 
     def getYScrollPosition(self):
         return 0
@@ -459,8 +457,6 @@ class IntegTextWrapper:
     def setFocus(self): pass
 
     def setStyleClass(self, name): pass
-
-    def setXScrollPosition(self, i): pass # todo
 
     def setYScrollPosition(self, i): pass # todo
 
@@ -537,6 +533,10 @@ class IntegTextWrapper:
         i = self.ins
         return i, i
 
+    def getXScrollPosition(self):
+        return 0
+        # TODO
+
     def hasSelection(self):
         """IntegTextWrapper hasSelection"""
         i, j = self.getSelectionRange()
@@ -568,6 +568,11 @@ class IntegTextWrapper:
         self.virtualInsertPoint = i = self.toPythonIndex(pos)
         self.ins = i
         self.sel = i, i
+
+    def setXScrollPosition(self, i):
+        pass
+        print("set scroll")
+        # todo
 
     def setSelectionRange(self, i, j, insert=None):
         """IntegTextWrapper setSelectionRange"""
@@ -2382,20 +2387,13 @@ class LeoBridgeIntegController:
 
         w_wrapper = self.commander.frame.body.wrapper
 
-        # interface BodySelectionInfo {
-        #     gnx: string;
-        #     activeLine: number;
-        #     activeCol: number;
-        #     startLine: number;
-        #     startCol: number;
-        #     endLine: number;
-        #     endCol: number;
-        # }
-
+        # See BodySelectionInfo interface in types.d.ts
         states = {
             'language': 'plain',
             'selection': {
                             "gnx": w_p.v.gnx,
+                            "scrollLine": 0,
+                            "scrollCol": 0,
                             "activeLine": 0,
                             "activeCol": 0,
                             "startLine": 0,
@@ -2436,6 +2434,8 @@ class LeoBridgeIntegController:
                 'language': language.lower(),
                 'selection': {
                             "gnx": w_p.v.gnx,
+                            "scrollLine": 0, # TODO
+                            "scrollCol": 0, # TODO
                             "activeLine": w_activeRow,
                             "activeCol": w_activeCol,
                             "startLine": w_startRow,
@@ -2540,24 +2540,11 @@ class LeoBridgeIntegController:
 
     def setSelection(self, p_package):
         '''
-        Set cursor position, along with selection start and end.
+        Set cursor position and scroll position along with selection start and end.
         (For the currently selected node's body, if gnx matches only)
         Save those values on the commander's body "wrapper"
+        See BodySelectionInfo interface in types.d.ts
         '''
-
-        # TODO : Also save & restore scroll position
-
-        # * This is sent as the package by the client IDE
-        # interface BodySelectionInfo {
-        #     gnx: string;
-        #     activeLine: number;
-        #     activeCol: number;
-        #     startLine: number;
-        #     startCol: number;
-        #     endLine: number;
-        #     endCol: number;
-        # }
-
         w_same = False  # Flag for actually setting values in the wrapper, if same gnx.
         w_wrapper = self.commander.frame.body.wrapper
         w_gnx = p_package['gnx']

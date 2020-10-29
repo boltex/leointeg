@@ -110,6 +110,8 @@ export class LeoIntegration {
     private _selectionDirty: boolean = false; // Flag set when cursor selection is changed
     private _selectionGnx: string = ""; // Packaged into 'BodySelectionInfo' structures, sent to Leo
     private _selection: vscode.Selection | undefined; // also packaged into 'BodySelectionInfo'
+    private _scroll: vscode.Range | undefined;
+    private _scrollGnx: string = "";
 
     private _bodyUri: vscode.Uri = utils.strToLeoUri("");
     get bodyUri(): vscode.Uri {
@@ -773,9 +775,13 @@ export class LeoIntegration {
      * * Handles detection of the active editor's scroll position changes
      */
     private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent): void {
-        // test
-        // console.log('changed scroll', p_event.textEditor, p_event.visibleRanges[0].start, p_event.visibleRanges[0].end);
-
+        if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
+            if (p_event.visibleRanges.length) {
+                this._selectionDirty = true;
+                this._scroll = p_event.visibleRanges[0];
+                this._scrollGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
+            }
+        }
     }
 
     /**
@@ -833,6 +839,8 @@ export class LeoIntegration {
         if (this._selectionDirty && this._selection) {
             const w_param: BodySelectionInfo = {
                 gnx: this._selectionGnx,
+                scrollLine: this._scroll?.start.line || 0,
+                scrollCol: this._scroll?.start.character || 0,
                 activeLine: this._selection.active.line || 0,
                 activeCol: this._selection.active.character || 0,
                 startLine: this._selection.start.line || 0,
@@ -1929,6 +1937,7 @@ export class LeoIntegration {
                 // this.launchRefresh({ buttons: true }, false);
 
                 vscode.window.showInformationMessage('back from test with: ' + JSON.stringify(p_result));
+
             });
     }
 
