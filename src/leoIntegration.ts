@@ -837,10 +837,20 @@ export class LeoIntegration {
      */
     public _bodySaveSelection(): Thenable<boolean> {
         if (this._selectionDirty && this._selection) {
+            // Prepare scroll data separately
+            // TODO : Improve scroll management
+            let w_scrollLine = 0;
+            let w_scrollCol = 0;
+            if (this._selectionGnx === this._scrollGnx) {
+                // for now just check if same as last selection change
+                w_scrollLine = this._scroll?.start.line || 0;
+                w_scrollCol = this._scroll?.start.character || 0;
+            }
+            // Send whole
             const w_param: BodySelectionInfo = {
                 gnx: this._selectionGnx,
-                scrollLine: this._scroll?.start.line || 0,
-                scrollCol: this._scroll?.start.character || 0,
+                scrollLine: w_scrollLine,
+                scrollCol: w_scrollCol,
                 activeLine: this._selection.active.line || 0,
                 activeCol: this._selection.active.character || 0,
                 startLine: this._selection.start.line || 0,
@@ -1343,6 +1353,11 @@ export class LeoIntegration {
                             console.log('SAME GNX ' + w_leoBodySel.gnx);
                         }
 
+                        // Scrolling position
+                        const w_scrollLine: number = w_leoBodySel.scrollLine;
+                        const w_scrollCol: number = w_leoBodySel.scrollCol;
+
+                        // Cursor position and selection range
                         const w_activeRow: number = w_leoBodySel.activeLine;
                         const w_activeCol: number = w_leoBodySel.activeCol;
                         let w_anchorLine: number = w_leoBodySel.startLine;
@@ -1368,6 +1383,9 @@ export class LeoIntegration {
                                 utils.leoUriToStr(p_document.uri) === w_leoBodySel.gnx
                             ) {
                                 p_textEditor.selection = w_selection;
+
+                                // TODO : Set scroll with w_scrollLine and w_scrollCol
+
                             }
                         });
 

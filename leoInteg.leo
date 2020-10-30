@@ -9917,6 +9917,11 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                         console.log('SAME GNX ' + w_leoBodySel.gnx);
                     }
 
+                    // Scrolling position
+                    const w_scrollLine: number = w_leoBodySel.scrollLine;
+                    const w_scrollCol: number = w_leoBodySel.scrollCol;
+
+                    // Cursor position and selection range
                     const w_activeRow: number = w_leoBodySel.activeLine;
                     const w_activeCol: number = w_leoBodySel.activeCol;
                     let w_anchorLine: number = w_leoBodySel.startLine;
@@ -9942,6 +9947,9 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                             utils.leoUriToStr(p_document.uri) === w_leoBodySel.gnx
                         ) {
                             p_textEditor.selection = w_selection;
+
+                            // TODO : Set scroll with w_scrollLine and w_scrollCol
+
                         }
                     });
 
@@ -12117,10 +12125,20 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
  */
 public _bodySaveSelection(): Thenable&lt;boolean&gt; {
     if (this._selectionDirty &amp;&amp; this._selection) {
+        // Prepare scroll data separately
+        // TODO : Improve scroll management
+        let w_scrollLine = 0;
+        let w_scrollCol = 0;
+        if (this._selectionGnx === this._scrollGnx) {
+            // for now just check if same as last selection change
+            w_scrollLine = this._scroll?.start.line || 0;
+            w_scrollCol = this._scroll?.start.character || 0;
+        }
+        // Send whole
         const w_param: BodySelectionInfo = {
             gnx: this._selectionGnx,
-            scrollLine: this._scroll?.start.line || 0,
-            scrollCol: this._scroll?.start.character || 0,
+            scrollLine: w_scrollLine,
+            scrollCol: w_scrollCol,
             activeLine: this._selection.active.line || 0,
             activeCol: this._selection.active.character || 0,
             startLine: this._selection.start.line || 0,
@@ -12421,6 +12439,7 @@ def tag_configure(self, colorName, **keys): pass
             'plain'
         )
 
+        w_Scroll = w_p.v.scrollBarSpot
         w_active = w_p.v.insertSpot
         w_start = w_p.v.selectionStart
         w_end =  w_p.v.selectionStart + w_p.v.selectionLength
@@ -12430,17 +12449,20 @@ def tag_configure(self, colorName, **keys): pass
             w_active = w_wrapper.getInsertPoint()
             w_start, w_end = w_wrapper.getSelectionRange(True)
 
+        # TODO : This conversion for scroll position may be unneeded (consider as lines only)
+        w_scrollI, w_scrollRow, w_scrollCol = c.frame.body.wrapper.toPythonIndexRowCol(w_Scroll)
         # compute line and column for the insertion point, and the start &amp; end of selection
         w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(w_active)
         w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(w_start)
         w_endI, w_endRow, w_endCol = c.frame.body.wrapper.toPythonIndexRowCol(w_end)
 
+
         states = {
             'language': language.lower(),
             'selection': {
                         "gnx": w_p.v.gnx,
-                        "scrollLine": 0, # TODO
-                        "scrollCol": 0, # TODO
+                        "scrollLine": w_scrollRow, # TODO Test this feature
+                        "scrollCol": w_scrollCol, # TODO Test this feature
                         "activeLine": w_activeRow,
                         "activeCol": w_activeCol,
                         "startLine": w_startRow,
@@ -12479,6 +12501,7 @@ def tag_configure(self, colorName, **keys): pass
     w_body = w_v.b
     f_convert = self.g.convertRowColToPythonIndex
 
+    w_scroll = f_convert(w_body, p_package['scrollLine'], p_package['scrollCol'])
     w_insert =  f_convert(w_body, p_package['activeLine'], p_package['activeCol'])
     w_startSel = f_convert(w_body, p_package['startLine'], p_package['startCol'])
     w_endSel =  f_convert(w_body, p_package['endLine'], p_package['endCol'])
@@ -12488,10 +12511,12 @@ def tag_configure(self, colorName, **keys): pass
 
     if w_same:
         w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
+        w_wrapper
     else:
         pass
 
     # Set for v node no matter what
+    w_v.scrollBarSpot = w_scroll;
     w_v.insertSpot = w_insert;
     w_v.selectionStart = w_startSel;
     w_v.selectionLength = (w_endSel - w_startSel) if w_endSel &gt; w_startSel else 0

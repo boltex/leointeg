@@ -2416,6 +2416,7 @@ class LeoBridgeIntegController:
                 'plain'
             )
 
+            w_Scroll = w_p.v.scrollBarSpot
             w_active = w_p.v.insertSpot
             w_start = w_p.v.selectionStart
             w_end =  w_p.v.selectionStart + w_p.v.selectionLength
@@ -2425,17 +2426,20 @@ class LeoBridgeIntegController:
                 w_active = w_wrapper.getInsertPoint()
                 w_start, w_end = w_wrapper.getSelectionRange(True)
 
+            # TODO : This conversion for scroll position may be unneeded (consider as lines only)
+            w_scrollI, w_scrollRow, w_scrollCol = c.frame.body.wrapper.toPythonIndexRowCol(w_Scroll)
             # compute line and column for the insertion point, and the start & end of selection
             w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(w_active)
             w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(w_start)
             w_endI, w_endRow, w_endCol = c.frame.body.wrapper.toPythonIndexRowCol(w_end)
 
+
             states = {
                 'language': language.lower(),
                 'selection': {
                             "gnx": w_p.v.gnx,
-                            "scrollLine": 0, # TODO
-                            "scrollCol": 0, # TODO
+                            "scrollLine": w_scrollRow, # TODO Test this feature
+                            "scrollCol": w_scrollCol, # TODO Test this feature
                             "activeLine": w_activeRow,
                             "activeCol": w_activeCol,
                             "startLine": w_startRow,
@@ -2565,6 +2569,7 @@ class LeoBridgeIntegController:
         w_body = w_v.b
         f_convert = self.g.convertRowColToPythonIndex
 
+        w_scroll = f_convert(w_body, p_package['scrollLine'], p_package['scrollCol'])
         w_insert =  f_convert(w_body, p_package['activeLine'], p_package['activeCol'])
         w_startSel = f_convert(w_body, p_package['startLine'], p_package['startCol'])
         w_endSel =  f_convert(w_body, p_package['endLine'], p_package['endCol'])
@@ -2574,10 +2579,12 @@ class LeoBridgeIntegController:
 
         if w_same:
             w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
+            w_wrapper
         else:
             pass
 
         # Set for v node no matter what
+        w_v.scrollBarSpot = w_scroll;
         w_v.insertSpot = w_insert;
         w_v.selectionStart = w_startSel;
         w_v.selectionLength = (w_endSel - w_startSel) if w_endSel > w_startSel else 0
