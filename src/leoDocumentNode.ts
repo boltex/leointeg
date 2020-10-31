@@ -35,12 +35,15 @@ export class LeoDocumentNode extends vscode.TreeItem {
         }
     }
 
+    // @ts-ignore
     public get iconPath(): Icon {
         return this._leoIntegration.documentIcons[this.documentEntry.changed ? 1 : 0];
     }
 
+    // @ts-ignore
     public get id(): string {
         // Add prefix and suffix salt to numeric index to prevent accidental duplicates
         return "p" + this.documentEntry.index + "s" + this.documentEntry.name;
     }
+
 }

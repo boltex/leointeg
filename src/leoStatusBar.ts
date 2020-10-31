@@ -112,4 +112,5 @@ export class LeoStatusBar {
             this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_OFF;
         }
     }
+
 }

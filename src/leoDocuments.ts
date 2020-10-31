@@ -61,4 +61,5 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
         // Leo documents are just a list, as such, entries are always child of root, so return null
         return null;
     }
+
 }

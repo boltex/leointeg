@@ -92,4 +92,5 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
             return null; // Default gives no parent
         }
     }
+
 }

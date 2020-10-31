@@ -111,6 +111,7 @@ export class LeoNode extends vscode.TreeItem {
         this.cursorSelection = p_cursorSelection;
     }
 
+    // @ts-ignore
     public get iconPath(): Icon {
         // From Leo's leoNodes.py computeIcon function
         // 1=has Body, 2=marked, 4=cloned, 8=dirty
@@ -127,8 +128,10 @@ export class LeoNode extends vscode.TreeItem {
     // The id is used to preserve the selection and expansion state of the tree item.
     // If not provided, an id is generated using the tree item's label.
     // Note that when labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
+    // @ts-ignore
     public get id(): string { return this._id; }
 
+    // @ts-ignore
     public get description(): string {
         // * some smaller grayed-out text accompanying the main label
         if (this.u) {
@@ -139,6 +142,7 @@ export class LeoNode extends vscode.TreeItem {
         }
     }
 
+    // @ts-ignore
     public get tooltip(): string {
         if (this.u) {
             //  "\ntotal keys is :" + Object.keys(this.u).length
@@ -148,4 +152,5 @@ export class LeoNode extends vscode.TreeItem {
             return this.label; // * Whole headline as tooltip
         }
     }
+
 }

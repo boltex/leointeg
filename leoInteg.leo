@@ -6690,10 +6690,11 @@ private _fireSoonHandle?: NodeJS.Timer;
         this._bufferedEvents.length = 0; // clearing events array
     }, 5);
 }
+
 </t>
 <t tx="felix.20200718040540.2">/**
  * * Body panes implementation as a file system using "leo" as a scheme identifier
- * TODO : Replace sae/rename procedure to overcome API change for undos.
+ * TODO : Replace save/rename procedure to overcome API change for undos.
  * Saving and renaming prevents flickering and prevents undos to 'traverse through' different gnx
  */
 export class LeoBodyProvider implements vscode.FileSystemProvider {
@@ -6900,6 +6901,7 @@ private _send(p_data: string): any {
         });
     }
 }
+
 </t>
 <t tx="felix.20200718153505.2">/**
  * * Handles communication with the leobridgeserver.py python script via websockets
@@ -7118,18 +7120,21 @@ export class LeoButtonNode extends vscode.TreeItem {
     @others
 }
 </t>
-<t tx="felix.20200718162435.1">public get iconPath(): Icon {
+<t tx="felix.20200718162435.1">// @ts-ignore
+public get iconPath(): Icon {
     return this._leoIntegration.buttonIcons[this._isAdd ? 1 : 0];
 }
 
 </t>
-<t tx="felix.20200718162442.1">public get id(): string {
+<t tx="felix.20200718162442.1">// @ts-ignore
+public get id(): string {
     // Add prefix and suffix salt to index to prevent accidental duplicates
     return "p" + this.button.index + "s" + this.button.name;
 }
 
 </t>
-<t tx="felix.20200718162452.1">public get tooltip(): string {
+<t tx="felix.20200718162452.1">// @ts-ignore
+public get tooltip(): string {
     if (this._isAdd) {
         return Constants.USER_MESSAGES.SCRIPT_BUTTON_TOOLTIP;
     } else {
@@ -7138,13 +7143,15 @@ export class LeoButtonNode extends vscode.TreeItem {
 }
 
 </t>
-<t tx="felix.20200718162459.1">public get description(): string | boolean {
+<t tx="felix.20200718162459.1">// @ts-ignore
+public get description(): string | boolean {
     if (this._isAdd) {
         return Constants.USER_MESSAGES.SCRIPT_BUTTON;
     } else {
         return false;
     }
 }
+
 </t>
 <t tx="felix.20200718164130.1">import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
@@ -7260,15 +7267,18 @@ export class LeoDocumentNode extends vscode.TreeItem {
     @others
 }
 </t>
-<t tx="felix.20200718164635.1">public get iconPath(): Icon {
+<t tx="felix.20200718164635.1">// @ts-ignore
+public get iconPath(): Icon {
     return this._leoIntegration.documentIcons[this.documentEntry.changed ? 1 : 0];
 }
 
 </t>
-<t tx="felix.20200718164638.1">public get id(): string {
+<t tx="felix.20200718164638.1">// @ts-ignore
+public get id(): string {
     // Add prefix and suffix salt to numeric index to prevent accidental duplicates
     return "p" + this.documentEntry.index + "s" + this.documentEntry.name;
 }
+
 </t>
 <t tx="felix.20200718165108.1">import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
@@ -7343,6 +7353,7 @@ public refreshTreeRoot(): void {
     // Leo documents are just a list, as such, entries are always child of root, so return null
     return null;
 }
+
 </t>
 <t tx="felix.20200718165721.1"></t>
 <t tx="felix.20200718170429.1">import * as vscode from "vscode";
@@ -7440,6 +7451,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
         }
     });
 }
+
 </t>
 <t tx="felix.20200718170712.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
@@ -7566,7 +7578,8 @@ public setRoot(): void {
 }
 
 </t>
-<t tx="felix.20200718171837.1">public get description(): string {
+<t tx="felix.20200718171837.1">// @ts-ignore
+public get description(): string {
     // * some smaller grayed-out text accompanying the main label
     if (this.u) {
         return "\u{1F4CE} (" + Object.keys(this.u).length + ")";
@@ -7577,7 +7590,8 @@ public setRoot(): void {
 }
 
 </t>
-<t tx="felix.20200718171849.1">public get tooltip(): string {
+<t tx="felix.20200718171849.1">// @ts-ignore
+public get tooltip(): string {
     if (this.u) {
         //  "\ntotal keys is :" + Object.keys(this.u).length
         return this.label + "\n" +
@@ -7586,15 +7600,18 @@ public setRoot(): void {
         return this.label; // * Whole headline as tooltip
     }
 }
+
 </t>
 <t tx="felix.20200718171854.1">// Optional id for the tree item that has to be unique across tree.
 // The id is used to preserve the selection and expansion state of the tree item.
 // If not provided, an id is generated using the tree item's label.
 // Note that when labels change, ids will change and that selection and expansion state cannot be kept stable anymore.
+// @ts-ignore
 public get id(): string { return this._id; }
 
 </t>
-<t tx="felix.20200718171904.1">public get iconPath(): Icon {
+<t tx="felix.20200718171904.1">// @ts-ignore
+public get iconPath(): Icon {
     // From Leo's leoNodes.py computeIcon function
     // 1=has Body, 2=marked, 4=cloned, 8=dirty
     let w_dirty: boolean = this._leoIntegration.config.invertNodeContrast ? !this.dirty : this.dirty;
@@ -7712,6 +7729,7 @@ public refreshTreeRoot(): void {
         return null; // Default gives no parent
     }
 }
+
 </t>
 <t tx="felix.20200718185403.1">import * as vscode from "vscode";
 import * as utils from "./utils";
@@ -7839,6 +7857,7 @@ private _updateLeoObjectIndicator(): void {
         this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_OFF;
     }
 }
+
 </t>
 <t tx="felix.20200718191946.1">import * as os from 'os';
 import * as child from 'child_process';
@@ -7957,6 +7976,7 @@ public startServer(p_leoPythonCommand: string): Promise&lt;any&gt; {
 
     return w_serverStartPromise;
 }
+
 </t>
 <t tx="felix.20200718192351.1">import * as vscode from "vscode";
 import * as utils from "./utils";

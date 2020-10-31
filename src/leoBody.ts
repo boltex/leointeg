@@ -7,7 +7,7 @@ import { BodyTimeInfo } from "./types";
 
 /**
  * * Body panes implementation as a file system using "leo" as a scheme identifier
- * TODO : Replace sae/rename procedure to overcome API change for undos.
+ * TODO : Replace save/rename procedure to overcome API change for undos.
  * Saving and renaming prevents flickering and prevents undos to 'traverse through' different gnx
  */
 export class LeoBodyProvider implements vscode.FileSystemProvider {
@@ -288,4 +288,5 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             this._bufferedEvents.length = 0; // clearing events array
         }, 5);
     }
+
 }
