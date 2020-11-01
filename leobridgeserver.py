@@ -2719,6 +2719,7 @@ class LeoBridgeIntegController:
             print('app.p_to_ap: no p.v: %r %s' % (p), flush=True)
             assert False
         p_gnx = p.v.gnx
+        # * Expand gnx-vnode translation table for any new node encountered
         if p_gnx not in self.gnx_to_vnode:
             self.gnx_to_vnode[p_gnx] = p.v
         # * necessary properties for outline
