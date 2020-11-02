@@ -2528,6 +2528,8 @@ class LeoBridgeIntegController:
                 w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
                 w_p.v.setBodyString(w_body)
                 self.commander.undoer.afterChangeNodeContents(w_p, "Body Text", w_bunch)
+                if self.commander.p.v.gnx == w_gnx:
+                    self.commander.frame.body.wrapper.setAllText(w_body);
                 if not self.commander.isChanged():
                     self.commander.setChanged()
                 if not w_p.v.isDirty():

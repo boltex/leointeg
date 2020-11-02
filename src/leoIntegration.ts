@@ -110,8 +110,9 @@ export class LeoIntegration {
     private _selectionDirty: boolean = false; // Flag set when cursor selection is changed
     private _selectionGnx: string = ""; // Packaged into 'BodySelectionInfo' structures, sent to Leo
     private _selection: vscode.Selection | undefined; // also packaged into 'BodySelectionInfo'
-    private _scroll: vscode.Range | undefined;
+    private _scrollDirty: boolean = false; // Flag set when cursor selection is changed
     private _scrollGnx: string = "";
+    private _scroll: vscode.Range | undefined;
 
     private _bodyUri: vscode.Uri = utils.strToLeoUri("");
     get bodyUri(): vscode.Uri {
@@ -742,7 +743,7 @@ export class LeoIntegration {
      */
     private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
         if (!p_internalCall) {
-            this.triggerBodySave(true);// Save in case edits were pending
+            this.triggerBodySave(true); // Save in case edits were pending
         }
         // * Status flag check
         if (!p_event && this._leoStatusBar.statusBarFlag) {
@@ -777,7 +778,7 @@ export class LeoIntegration {
     private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent): void {
         if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
             if (p_event.visibleRanges.length) {
-                this._selectionDirty = true;
+                this._scrollDirty = true;
                 this._scroll = p_event.visibleRanges[0];
                 this._scrollGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
             }
@@ -822,10 +823,7 @@ export class LeoIntegration {
         if (this._bodyLastChangedDocument && this._bodyLastChangedDocument.isDirty) {
             const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
             this._bodyLastChangedDocument = undefined; // reset to make falsy
-            return this._bodySaveDocument(w_document, p_forcedVsCodeSave)
-                .then(p_result => {
-                    return this._bodySaveSelection();
-                });
+            return this._bodySaveDocument(w_document, p_forcedVsCodeSave);
         } else {
             this._bodyLastChangedDocument = undefined;
             return this._bodySaveSelection();
@@ -834,6 +832,7 @@ export class LeoIntegration {
 
     /**
      * * Saves the cursor position along with the text selection states (start and end positions)
+     * TODO : Also save / restore editor window's scroll position
      */
     public _bodySaveSelection(): Thenable<boolean> {
         if (this._selectionDirty && this._selection) {
@@ -841,7 +840,7 @@ export class LeoIntegration {
             // TODO : Improve scroll management
             let w_scrollLine = 0;
             let w_scrollCol = 0;
-            if (this._selectionGnx === this._scrollGnx) {
+            if (this._selectionGnx === this._scrollGnx && this._scrollDirty) {
                 // for now just check if same as last selection change
                 w_scrollLine = this._scroll?.start.line || 0;
                 w_scrollCol = this._scroll?.start.character || 0;
@@ -858,11 +857,17 @@ export class LeoIntegration {
                 endLine: this._selection.end.line || 0,
                 endCol: this._selection.end.character || 0
             };
+            this._scrollDirty = false;
+            console.log('SETTING SELECTION resting dirty');
+
             this._selectionDirty = false; // don't wait for return of this call
             return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(p_result => {
                 return Promise.resolve(true);
             });
         } else {
+            console.log('selection was NOT DIRTY');
+            console.log('._selectionDirty', this._selectionDirty);
+            console.log(' ._selection', this._selection);
             return Promise.resolve(true);
         }
     }
@@ -879,14 +884,17 @@ export class LeoIntegration {
                 gnx: utils.leoUriToStr(p_document.uri),
                 body: p_document.getText()
             };
-            return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)).then(() => {
-                this._refreshType.states = true;
-                this.getStates();
-                if (p_forcedVsCodeSave) {
-                    return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
-                }
-                return Promise.resolve(p_document.isDirty);
-            });
+            this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)); // Don't wait for promise
+            // This bodySaveSelection is placed on the stack right after saving body, returns promise either way
+            return this._bodySaveSelection()
+                .then(() => {
+                    this._refreshType.states = true;
+                    this.getStates();
+                    if (p_forcedVsCodeSave) {
+                        return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
+                    }
+                    return Promise.resolve(p_document.isDirty);
+                });
         } else {
             return Promise.resolve(false);
         }
@@ -1494,6 +1502,7 @@ export class LeoIntegration {
     /**
      * * Launches the 'Execute Script' Leo command with the selected text, if any, otherwise the selected node itself is used
      * @returns True if the selection, or node, was started as a script
+     * TODO : REMOVE WHEN ISSUE #39 IS DONE
      */
     public executeScript(): boolean {
         // * Check if selected string in the focused leo body
@@ -1950,12 +1959,13 @@ export class LeoIntegration {
 
     public test(p_fromOutline?: boolean): void {
         // this.statusBarOnClick(); // placeholder / test
+        console.log('test ._selectionDirty', this._selectionDirty);
+        console.log('test ._selection', this._selection);
+        return;
         this.sendAction(Constants.LEOBRIDGE.TEST, JSON.stringify({ "testParam": "Some String" }))
             .then((p_result: LeoBridgePackage) => {
                 // this.launchRefresh({ buttons: true }, false);
-
                 vscode.window.showInformationMessage('back from test with: ' + JSON.stringify(p_result));
-
             });
     }
 

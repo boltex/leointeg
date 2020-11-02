@@ -647,6 +647,7 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
+<v t="felix.20191126232434.4"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -4637,6 +4638,8 @@ if __name__ == '__main__':
             w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
             w_p.v.setBodyString(w_body)
             self.commander.undoer.afterChangeNodeContents(w_p, "Body Text", w_bunch)
+            if self.commander.p.v.gnx == w_gnx:
+                self.commander.frame.body.wrapper.setAllText(w_body);
             if not self.commander.isChanged():
                 self.commander.setChanged()
             if not w_p.v.isDirty():
@@ -9267,8 +9270,9 @@ export class LeoIntegration {
     private _selectionDirty: boolean = false; // Flag set when cursor selection is changed
     private _selectionGnx: string = ""; // Packaged into 'BodySelectionInfo' structures, sent to Leo
     private _selection: vscode.Selection | undefined; // also packaged into 'BodySelectionInfo'
-    private _scroll: vscode.Range | undefined;
+    private _scrollDirty: boolean = false; // Flag set when cursor selection is changed
     private _scrollGnx: string = "";
+    private _scroll: vscode.Range | undefined;
 
     private _bodyUri: vscode.Uri = utils.strToLeoUri("");
     get bodyUri(): vscode.Uri {
@@ -9477,7 +9481,7 @@ private _onDocTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChange
  */
 private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
     if (!p_internalCall) {
-        this.triggerBodySave(true);// Save in case edits were pending
+        this.triggerBodySave(true); // Save in case edits were pending
     }
     // * Status flag check
     if (!p_event &amp;&amp; this._leoStatusBar.statusBarFlag) {
@@ -9626,10 +9630,7 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean): Thenable&lt;boolean&gt; {
     if (this._bodyLastChangedDocument &amp;&amp; this._bodyLastChangedDocument.isDirty) {
         const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
         this._bodyLastChangedDocument = undefined; // reset to make falsy
-        return this._bodySaveDocument(w_document, p_forcedVsCodeSave)
-            .then(p_result =&gt; {
-                return this._bodySaveSelection();
-            });
+        return this._bodySaveDocument(w_document, p_forcedVsCodeSave);
     } else {
         this._bodyLastChangedDocument = undefined;
         return this._bodySaveSelection();
@@ -9649,14 +9650,17 @@ private _bodySaveDocument(p_document: vscode.TextDocument, p_forcedVsCodeSave?: 
             gnx: utils.leoUriToStr(p_document.uri),
             body: p_document.getText()
         };
-        return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)).then(() =&gt; {
-            this._refreshType.states = true;
-            this.getStates();
-            if (p_forcedVsCodeSave) {
-                return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
-            }
-            return Promise.resolve(p_document.isDirty);
-        });
+        this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)); // Don't wait for promise
+        // This bodySaveSelection is placed on the stack right after saving body, returns promise either way
+        return this._bodySaveSelection()
+            .then(() =&gt; {
+                this._refreshType.states = true;
+                this.getStates();
+                if (p_forcedVsCodeSave) {
+                    return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
+                }
+                return Promise.resolve(p_document.isDirty);
+            });
     } else {
         return Promise.resolve(false);
     }
@@ -10062,6 +10066,7 @@ public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boole
 <t tx="felix.20200719025231.53">/**
  * * Launches the 'Execute Script' Leo command with the selected text, if any, otherwise the selected node itself is used
  * @returns True if the selection, or node, was started as a script
+ * TODO : REMOVE WHEN ISSUE #39 IS DONE
  */
 public executeScript(): boolean {
     // * Check if selected string in the focused leo body
@@ -10515,12 +10520,13 @@ public startServer(): void {
 </t>
 <t tx="felix.20200719025231.70">public test(p_fromOutline?: boolean): void {
     // this.statusBarOnClick(); // placeholder / test
+    console.log('test ._selectionDirty', this._selectionDirty);
+    console.log('test ._selection', this._selection);
+    return;
     this.sendAction(Constants.LEOBRIDGE.TEST, JSON.stringify({ "testParam": "Some String" }))
         .then((p_result: LeoBridgePackage) =&gt; {
             // this.launchRefresh({ buttons: true }, false);
-
             vscode.window.showInformationMessage('back from test with: ' + JSON.stringify(p_result));
-
         });
 }
 
@@ -12143,6 +12149,7 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
 </t>
 <t tx="felix.20200928133238.1">/**
  * * Saves the cursor position along with the text selection states (start and end positions)
+ * TODO : Also save / restore editor window's scroll position
  */
 public _bodySaveSelection(): Thenable&lt;boolean&gt; {
     if (this._selectionDirty &amp;&amp; this._selection) {
@@ -12150,7 +12157,7 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
         // TODO : Improve scroll management
         let w_scrollLine = 0;
         let w_scrollCol = 0;
-        if (this._selectionGnx === this._scrollGnx) {
+        if (this._selectionGnx === this._scrollGnx &amp;&amp; this._scrollDirty) {
             // for now just check if same as last selection change
             w_scrollLine = this._scroll?.start.line || 0;
             w_scrollCol = this._scroll?.start.character || 0;
@@ -12167,11 +12174,17 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
             endLine: this._selection.end.line || 0,
             endCol: this._selection.end.character || 0
         };
+        this._scrollDirty = false;
+        console.log('SETTING SELECTION resting dirty');
+
         this._selectionDirty = false; // don't wait for return of this call
         return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(p_result =&gt; {
             return Promise.resolve(true);
         });
     } else {
+        console.log('selection was NOT DIRTY');
+        console.log('._selectionDirty', this._selectionDirty);
+        console.log(' ._selection', this._selection);
         return Promise.resolve(true);
     }
 }
@@ -12579,7 +12592,7 @@ export interface BodySelectionInfo {
 private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent): void {
     if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
         if (p_event.visibleRanges.length) {
-            this._selectionDirty = true;
+            this._scrollDirty = true;
             this._scroll = p_event.visibleRanges[0];
             this._scrollGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
         }
