@@ -647,7 +647,6 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
-<v t="felix.20191126232434.4"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -4633,7 +4632,6 @@ if __name__ == '__main__':
     w_body = p_package['body']
     for w_p in self.commander.all_positions():
         if w_p.v.gnx == w_gnx:
-            print("for gnx " + w_gnx + " setting body to " + p_package['body'])
             # TODO : Before setting undo and trying to set body, first check if different than existing body
             w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
             w_p.v.setBodyString(w_body)
@@ -4650,7 +4648,6 @@ if __name__ == '__main__':
         w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
         if w_v:
             w_v.b = w_body
-    print("4 self.commander.p.v.b" + self.commander.p.v.b)
     return self._outputPNode(self.commander.p)  # return selected node
     # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
@@ -4908,7 +4905,7 @@ if __name__ == '__main__':
                 if w_param and w_param['action']:
                     w_action = w_param['action']
                     w_actionParam = w_param['param']
-                    print(f"*ACTION* {w_param['action']}", flush=True)
+                    # print(f"*ACTION* {w_param['action']}", flush=True)  # Debug output
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
@@ -10520,8 +10517,6 @@ public startServer(): void {
 </t>
 <t tx="felix.20200719025231.70">public test(p_fromOutline?: boolean): void {
     // this.statusBarOnClick(); // placeholder / test
-    console.log('test ._selectionDirty', this._selectionDirty);
-    console.log('test ._selection', this._selection);
     return;
     this.sendAction(Constants.LEOBRIDGE.TEST, JSON.stringify({ "testParam": "Some String" }))
         .then((p_result: LeoBridgePackage) =&gt; {
@@ -12138,10 +12133,6 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
             this._selectionDirty = true;
             this._selection = p_event.selections[0];
             this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
-            console.log("Got new selection from interface, gnx: " + this._selectionGnx +
-                ", start: " + this._selection.start.line + " " + this._selection.start.character +
-                ", end: " + this._selection.end.line + " " + this._selection.end.character
-            );
         }
     }
 }
@@ -12175,16 +12166,12 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
             endCol: this._selection.end.character || 0
         };
         this._scrollDirty = false;
-        console.log('SETTING SELECTION resting dirty');
-
         this._selectionDirty = false; // don't wait for return of this call
         return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(p_result =&gt; {
             return Promise.resolve(true);
         });
     } else {
-        console.log('selection was NOT DIRTY');
-        console.log('._selectionDirty', this._selectionDirty);
-        console.log(' ._selection', this._selection);
+
         return Promise.resolve(true);
     }
 }
@@ -12202,7 +12189,7 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 <t tx="felix.20200928174406.10">def getAllText(self):
     """IntegTextWrapper getAllText"""
     s = self.s
-    print("WRAPPER getAllText  " + s)
+    # print("WRAPPER getAllText  " + s)
     return self.g.checkUnicode(s)
 
 </t>
@@ -12222,7 +12209,7 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
     """IntegTextWrapper getSelectedText"""
     i, j = self.sel
     s = self.s[i:j]
-    print("WRAPPER getSelectedText with self.s[i:j]: " + s)
+    # print("WRAPPER getSelectedText with self.s[i:j]: " + s)
     return self.g.checkUnicode(s)
 
 </t>
@@ -12261,7 +12248,7 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 </t>
 <t tx="felix.20200928174406.17">def setAllText(self, s):
     """IntegTextWrapper setAllText"""
-    print("WRAPPER setAllText: " + s)
+    # print("WRAPPER setAllText: " + s)
     self.s = s
     i = len(self.s)
     self.ins = i
@@ -12284,7 +12271,6 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
 </t>
 <t tx="felix.20200928174406.2">def __init__(self, c, name, g):
     """Ctor for the IntegTextWrapper class."""
-    print("CREATING WRAPPER")
     self.c = c
     self.name = name
     self.g = g  # Should g be totally global across all leoIntegration classes?
@@ -12379,7 +12365,7 @@ def tag_configure(self, colorName, **keys): pass
         j = i + 1
     j = self.toPythonIndex(j)
     s = self.s[i:j]
-    print("WRAPPER GET with self.s[i:j]: " + s)
+    # print("WRAPPER GET with self.s[i:j]: " + s)
     return self.g.toUnicode(s)
 
 </t>
@@ -12540,8 +12526,8 @@ def tag_configure(self, colorName, **keys): pass
     w_startSel = f_convert(w_body, p_package['startLine'], p_package['startCol'])
     w_endSel =  f_convert(w_body, p_package['endLine'], p_package['endCol'])
 
-    print("w_same "+ str(w_same) +" w_insert " + str(w_insert) + " w_startSel " + str(w_startSel)+ " w_endSel " + str(w_endSel))
-    print("for body"+ w_body)
+    # print("w_same "+ str(w_same) +" w_insert " + str(w_insert) + " w_startSel " + str(w_startSel)+ " w_endSel " + str(w_endSel))
+    # print("for body"+ w_body)
 
     if w_same:
         w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)

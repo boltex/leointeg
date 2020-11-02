@@ -764,10 +764,6 @@ export class LeoIntegration {
                 this._selectionDirty = true;
                 this._selection = p_event.selections[0];
                 this._selectionGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
-                console.log("Got new selection from interface, gnx: " + this._selectionGnx +
-                    ", start: " + this._selection.start.line + " " + this._selection.start.character +
-                    ", end: " + this._selection.end.line + " " + this._selection.end.character
-                );
             }
         }
     }
@@ -858,16 +854,12 @@ export class LeoIntegration {
                 endCol: this._selection.end.character || 0
             };
             this._scrollDirty = false;
-            console.log('SETTING SELECTION resting dirty');
-
             this._selectionDirty = false; // don't wait for return of this call
             return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(p_result => {
                 return Promise.resolve(true);
             });
         } else {
-            console.log('selection was NOT DIRTY');
-            console.log('._selectionDirty', this._selectionDirty);
-            console.log(' ._selection', this._selection);
+
             return Promise.resolve(true);
         }
     }
@@ -1959,8 +1951,6 @@ export class LeoIntegration {
 
     public test(p_fromOutline?: boolean): void {
         // this.statusBarOnClick(); // placeholder / test
-        console.log('test ._selectionDirty', this._selectionDirty);
-        console.log('test ._selection', this._selection);
         return;
         this.sendAction(Constants.LEOBRIDGE.TEST, JSON.stringify({ "testParam": "Some String" }))
             .then((p_result: LeoBridgePackage) => {

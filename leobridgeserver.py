@@ -420,7 +420,6 @@ class IntegTextWrapper:
 
     def __init__(self, c, name, g):
         """Ctor for the IntegTextWrapper class."""
-        print("CREATING WRAPPER")
         self.c = c
         self.name = name
         self.g = g  # Should g be totally global across all leoIntegration classes?
@@ -495,13 +494,13 @@ class IntegTextWrapper:
             j = i + 1
         j = self.toPythonIndex(j)
         s = self.s[i:j]
-        print("WRAPPER GET with self.s[i:j]: " + s)
+        # print("WRAPPER GET with self.s[i:j]: " + s)
         return self.g.toUnicode(s)
 
     def getAllText(self):
         """IntegTextWrapper getAllText"""
         s = self.s
-        print("WRAPPER getAllText  " + s)
+        # print("WRAPPER getAllText  " + s)
         return self.g.checkUnicode(s)
 
     def getInsertPoint(self):
@@ -519,7 +518,7 @@ class IntegTextWrapper:
         """IntegTextWrapper getSelectedText"""
         i, j = self.sel
         s = self.s[i:j]
-        print("WRAPPER getSelectedText with self.s[i:j]: " + s)
+        # print("WRAPPER getSelectedText with self.s[i:j]: " + s)
         return self.g.checkUnicode(s)
 
     def getSelectionRange(self, sort=True):
@@ -557,7 +556,7 @@ class IntegTextWrapper:
 
     def setAllText(self, s):
         """IntegTextWrapper setAllText"""
-        print("WRAPPER setAllText: " + s)
+        # print("WRAPPER setAllText: " + s)
         self.s = s
         i = len(self.s)
         self.ins = i
@@ -2523,7 +2522,6 @@ class LeoBridgeIntegController:
         w_body = p_package['body']
         for w_p in self.commander.all_positions():
             if w_p.v.gnx == w_gnx:
-                print("for gnx " + w_gnx + " setting body to " + p_package['body'])
                 # TODO : Before setting undo and trying to set body, first check if different than existing body
                 w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
                 w_p.v.setBodyString(w_body)
@@ -2540,7 +2538,6 @@ class LeoBridgeIntegController:
             w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
             if w_v:
                 w_v.b = w_body
-        print("4 self.commander.p.v.b" + self.commander.p.v.b)
         return self._outputPNode(self.commander.p)  # return selected node
         # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
@@ -2576,8 +2573,8 @@ class LeoBridgeIntegController:
         w_startSel = f_convert(w_body, p_package['startLine'], p_package['startCol'])
         w_endSel =  f_convert(w_body, p_package['endLine'], p_package['endCol'])
 
-        print("w_same "+ str(w_same) +" w_insert " + str(w_insert) + " w_startSel " + str(w_startSel)+ " w_endSel " + str(w_endSel))
-        print("for body"+ w_body)
+        # print("w_same "+ str(w_same) +" w_insert " + str(w_insert) + " w_startSel " + str(w_startSel)+ " w_endSel " + str(w_endSel))
+        # print("for body"+ w_body)
 
         if w_same:
             w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
@@ -2806,7 +2803,7 @@ def main():
                 if w_param and w_param['action']:
                     w_action = w_param['action']
                     w_actionParam = w_param['param']
-                    print(f"*ACTION* {w_param['action']}", flush=True)
+                    # print(f"*ACTION* {w_param['action']}", flush=True)  # Debug output
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
