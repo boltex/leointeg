@@ -283,6 +283,17 @@ export class Constants {
         OK: '"ok"' // Quotes in string as a 'JSON parameter'
     };
 
+
+
+    /**
+     * * Table for converting Leo languages names for the currently opened body pane
+     * Used in showBody method of leoIntegration.ts
+     */
+    public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
+        cplusplus: 'cpp',
+        md: 'markdown'
+    };
+
     /**
      * * Commands for leobridgeserver.py
      */

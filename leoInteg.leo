@@ -100,12 +100,14 @@
 <v t="felix.20200928174406.12"><vh>stw.getSelectedText</vh></v>
 <v t="felix.20200928174406.13"><vh>stw.getSelectionRange</vh></v>
 <v t="felix.20201028223533.1"><vh>stw.getXScrollPosition</vh></v>
+<v t="felix.20201102223052.1"><vh>stw.getYScrollPosition</vh></v>
 <v t="felix.20200928174406.14"><vh>stw.hasSelection</vh></v>
 <v t="felix.20200928174406.15"><vh>stw.insert</vh></v>
 <v t="felix.20200928174406.16"><vh>stw.selectAllText</vh></v>
 <v t="felix.20200928174406.17"><vh>stw.setAllText</vh></v>
 <v t="felix.20200928174406.18"><vh>stw.setInsertPoint</vh></v>
 <v t="felix.20201028223434.1"><vh>stw.setXScrollPosition</vh></v>
+<v t="felix.20201102223046.1"><vh>stw.setYScrollPosition</vh></v>
 <v t="felix.20200928174406.19"><vh>stw.setSelectionRange</vh></v>
 <v t="felix.20200928174406.20"><vh>stw.toPythonIndex</vh></v>
 <v t="felix.20200928174406.21"><vh>stw.toPythonIndexRowCol</vh></v>
@@ -326,6 +328,7 @@
 <v t="felix.20200718020912.10"><vh>async actions</vh></v>
 <v t="felix.20200718020912.11"><vh>async info messages codes</vh></v>
 <v t="felix.20200718020912.12"><vh>async ask return codes</vh></v>
+<v t="felix.20201103000337.1"><vh>body language code strings</vh></v>
 <v t="felix.20200718020912.13"><vh>leoBridge action strings</vh></v>
 <v t="felix.20200718020912.15"><vh>commands strings</vh></v>
 </v>
@@ -5594,6 +5597,8 @@ public static ASYNC_ASK_RETURN_CODES = {
     OK: '"ok"' // Quotes in string as a 'JSON parameter'
 };
 
+
+
 </t>
 <t tx="felix.20200718020912.13">/**
  * * Commands for leobridgeserver.py
@@ -9052,6 +9057,7 @@ import { LeoDocumentNode } from "./leoDocumentNode";
 import { LeoStates } from "./leoStates";
 import { LeoButtonsProvider } from "./leoButtons";
 import { LeoButtonNode } from "./leoButtonNode";
+import { constants } from "buffer";
 
 @others
 @language typescript
@@ -9934,14 +9940,14 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                     const w_leoBodySel: BodySelectionInfo = w_bodyStates.selection;
 
                     if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
-                        console.log('DIFFERENT GNX ' + w_leoBodySel.gnx + " " + this.lastSelectedNode!.gnx);
+                        console.log('bodyStates from DIFFERENT GNX ' + w_leoBodySel.gnx + " " + this.lastSelectedNode!.gnx);
                     } else {
-                        console.log('SAME GNX ' + w_leoBodySel.gnx);
+                        console.log('bodyStates from SAME GNX ' + w_leoBodySel.gnx);
                     }
 
                     // Scrolling position
                     const w_scrollLine: number = w_leoBodySel.scrollLine;
-                    const w_scrollCol: number = w_leoBodySel.scrollCol;
+                    const w_scrollCol: number = w_leoBodySel.scrollCol; // Only Y position is used
 
                     // Cursor position and selection range
                     const w_activeRow: number = w_leoBodySel.activeLine;
@@ -9951,12 +9957,11 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
 
                     if (w_leoBodySel.activeLine === w_leoBodySel.startLine &amp;&amp;
                         w_leoBodySel.activeCol === w_leoBodySel.startCol) {
-                        // active insertion same as start selection, so use the other ones
+                        // Active insertion same as start selection, so use the other ones
                         w_anchorLine = w_leoBodySel.endLine;
                         w_anchorCharacter = w_leoBodySel.endCol;
                     }
 
-                    // constructor(anchorLine: number, anchorCharacter: number, activeLine: number, activeCharacter: number);
                     const w_selection = new vscode.Selection(
                         w_anchorLine,
                         w_anchorCharacter,
@@ -9968,24 +9973,16 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                         if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath &amp;&amp;
                             utils.leoUriToStr(p_document.uri) === w_leoBodySel.gnx
                         ) {
-                            p_textEditor.selection = w_selection;
-
-                            // TODO : Set scroll with w_scrollLine and w_scrollCol
-
+                            p_textEditor.selection = w_selection; // set cursor insertion point &amp; selection range
+                            const w_scrollRange: vscode.Range = p_textEditor.document.lineAt(w_scrollLine).range;
+                            p_textEditor.revealRange(w_scrollRange); // set
                         }
                     });
 
-                    // TODO : Move those exception in "constants.ts" as a mapping from string-&gt;string
-                    switch (w_language) {
-                        case "cplusplus":
-                            w_language = "cpp";
-                            break;
-                        case "md":
-                            w_language = "markdown";
-                            break;
-                    }
+                    // Replace language string if in 'exceptions' array
+                    w_language = Constants.LANGUAGE_CODES[w_language] || w_language;
 
-                    // Still the same ?
+                    // Apply language if the selected node is still the same after all those events
                     if (
                         this._bodyTextDocument &amp;&amp; this.lastSelectedNode &amp;&amp;
                         utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
@@ -12277,6 +12274,7 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
     self.ins = 0
     self.sel = 0, 0
     self.s = ''
+    self.yScroll = 0
     self.supportsHighLevelInterface = True
     self.widget = None  # This ivar must exist, and be None.
 
@@ -12311,10 +12309,6 @@ def clipboard_append(self, s):
 </t>
 <t tx="felix.20200928174406.4">def flashCharacter(self, i, bg='white', fg='red', flashes=3, delay=75): pass
 
-
-def getYScrollPosition(self):
-    return 0
-
 def see(self, i): pass
 
 def seeInsertPoint(self): pass
@@ -12322,8 +12316,6 @@ def seeInsertPoint(self): pass
 def setFocus(self): pass
 
 def setStyleClass(self, name): pass
-
-def setYScrollPosition(self, i): pass # todo
 
 def tag_configure(self, colorName, **keys): pass
 
@@ -12459,7 +12451,7 @@ def tag_configure(self, colorName, **keys): pass
             'plain'
         )
 
-        w_Scroll = w_p.v.scrollBarSpot
+        w_scrollRow = w_p.v.scrollBarSpot
         w_active = w_p.v.insertSpot
         w_start = w_p.v.selectionStart
         w_end =  w_p.v.selectionStart + w_p.v.selectionLength
@@ -12468,9 +12460,10 @@ def tag_configure(self, colorName, **keys): pass
         if self.commander.p.v.gnx == w_p.v.gnx:
             w_active = w_wrapper.getInsertPoint()
             w_start, w_end = w_wrapper.getSelectionRange(True)
+            w_scrollRow = w_wrapper.getYScrollPosition()
 
         # TODO : This conversion for scroll position may be unneeded (consider as lines only)
-        w_scrollI, w_scrollRow, w_scrollCol = c.frame.body.wrapper.toPythonIndexRowCol(w_Scroll)
+        # w_scrollI, w_scrollRow, w_scrollCol = c.frame.body.wrapper.toPythonIndexRowCol(w_Scroll)
         # compute line and column for the insertion point, and the start &amp; end of selection
         w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(w_active)
         w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(w_start)
@@ -12482,7 +12475,7 @@ def tag_configure(self, colorName, **keys): pass
             'selection': {
                         "gnx": w_p.v.gnx,
                         "scrollLine": w_scrollRow, # TODO Test this feature
-                        "scrollCol": w_scrollCol, # TODO Test this feature
+                        "scrollCol": 0,  # w_scrollCol, # TODO Test this feature
                         "activeLine": w_activeRow,
                         "activeCol": w_activeCol,
                         "startLine": w_startRow,
@@ -12521,17 +12514,18 @@ def tag_configure(self, colorName, **keys): pass
     w_body = w_v.b
     f_convert = self.g.convertRowColToPythonIndex
 
-    w_scroll = f_convert(w_body, p_package['scrollLine'], p_package['scrollCol'])
+    # w_scroll = f_convert(w_body, p_package['scrollLine'], p_package['scrollCol'])
+    w_scroll = p_package['scrollLine'] # no convertion necessary, its given back later
     w_insert =  f_convert(w_body, p_package['activeLine'], p_package['activeCol'])
     w_startSel = f_convert(w_body, p_package['startLine'], p_package['startCol'])
     w_endSel =  f_convert(w_body, p_package['endLine'], p_package['endCol'])
 
-    # print("w_same "+ str(w_same) +" w_insert " + str(w_insert) + " w_startSel " + str(w_startSel)+ " w_endSel " + str(w_endSel))
+    print("w_same "+ str(w_same) +" w_insert " + str(w_insert) + " w_startSel " + str(w_startSel)+ " w_endSel " + str(w_endSel))
     # print("for body"+ w_body)
 
     if w_same:
         w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
-        w_wrapper
+        w_wrapper.setYScrollPosition(w_scroll)
     else:
         pass
 
@@ -12581,6 +12575,7 @@ private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent
             this._scrollDirty = true;
             this._scroll = p_event.visibleRanges[0];
             this._scrollGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
+            console.log('scroll', JSON.stringify(this._scroll.start), JSON.stringify(this._scroll.end),);
         }
     }
 }
@@ -12612,13 +12607,32 @@ export function getDurationMs(p_start: [number, number]): number {
 </t>
 <t tx="felix.20201028223434.1">def setXScrollPosition(self, i):
     pass
-    print("set scroll")
-    # todo
+    # X axis ignored
 
 </t>
 <t tx="felix.20201028223533.1">def getXScrollPosition(self):
     return 0
-    # TODO
+    # X axis ignored
+
+</t>
+<t tx="felix.20201102223046.1">def setYScrollPosition(self, i):
+    self.yScroll = i
+    print("wrapper set y scroll" + str(self.yScroll))
+
+</t>
+<t tx="felix.20201102223052.1">def getYScrollPosition(self):
+    print("wrapper get y scroll" + str(self.yScroll))
+    return self.yScroll
+
+</t>
+<t tx="felix.20201103000337.1">/**
+ * * Table for converting Leo languages names for the currently opened body pane
+ * Used in showBody method of leoIntegration.ts
+ */
+public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
+    cplusplus: 'cpp',
+    md: 'markdown'
+};
 
 </t>
 </tnodes>

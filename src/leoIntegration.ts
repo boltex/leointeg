@@ -31,6 +31,7 @@ import { LeoDocumentNode } from "./leoDocumentNode";
 import { LeoStates } from "./leoStates";
 import { LeoButtonsProvider } from "./leoButtons";
 import { LeoButtonNode } from "./leoButtonNode";
+import { constants } from "buffer";
 
 /**
  * * Orchestrates Leo integration into vscode
@@ -777,6 +778,7 @@ export class LeoIntegration {
                 this._scrollDirty = true;
                 this._scroll = p_event.visibleRanges[0];
                 this._scrollGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
+                console.log('scroll', JSON.stringify(this._scroll.start), JSON.stringify(this._scroll.end),);
             }
         }
     }
@@ -1348,14 +1350,14 @@ export class LeoIntegration {
                         const w_leoBodySel: BodySelectionInfo = w_bodyStates.selection;
 
                         if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
-                            console.log('DIFFERENT GNX ' + w_leoBodySel.gnx + " " + this.lastSelectedNode!.gnx);
+                            console.log('bodyStates from DIFFERENT GNX ' + w_leoBodySel.gnx + " " + this.lastSelectedNode!.gnx);
                         } else {
-                            console.log('SAME GNX ' + w_leoBodySel.gnx);
+                            console.log('bodyStates from SAME GNX ' + w_leoBodySel.gnx);
                         }
 
                         // Scrolling position
                         const w_scrollLine: number = w_leoBodySel.scrollLine;
-                        const w_scrollCol: number = w_leoBodySel.scrollCol;
+                        const w_scrollCol: number = w_leoBodySel.scrollCol; // Only Y position is used
 
                         // Cursor position and selection range
                         const w_activeRow: number = w_leoBodySel.activeLine;
@@ -1365,12 +1367,11 @@ export class LeoIntegration {
 
                         if (w_leoBodySel.activeLine === w_leoBodySel.startLine &&
                             w_leoBodySel.activeCol === w_leoBodySel.startCol) {
-                            // active insertion same as start selection, so use the other ones
+                            // Active insertion same as start selection, so use the other ones
                             w_anchorLine = w_leoBodySel.endLine;
                             w_anchorCharacter = w_leoBodySel.endCol;
                         }
 
-                        // constructor(anchorLine: number, anchorCharacter: number, activeLine: number, activeCharacter: number);
                         const w_selection = new vscode.Selection(
                             w_anchorLine,
                             w_anchorCharacter,
@@ -1382,24 +1383,16 @@ export class LeoIntegration {
                             if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath &&
                                 utils.leoUriToStr(p_document.uri) === w_leoBodySel.gnx
                             ) {
-                                p_textEditor.selection = w_selection;
-
-                                // TODO : Set scroll with w_scrollLine and w_scrollCol
-
+                                p_textEditor.selection = w_selection; // set cursor insertion point & selection range
+                                const w_scrollRange: vscode.Range = p_textEditor.document.lineAt(w_scrollLine).range;
+                                p_textEditor.revealRange(w_scrollRange); // set
                             }
                         });
 
-                        // TODO : Move those exception in "constants.ts" as a mapping from string->string
-                        switch (w_language) {
-                            case "cplusplus":
-                                w_language = "cpp";
-                                break;
-                            case "md":
-                                w_language = "markdown";
-                                break;
-                        }
+                        // Replace language string if in 'exceptions' array
+                        w_language = Constants.LANGUAGE_CODES[w_language] || w_language;
 
-                        // Still the same ?
+                        // Apply language if the selected node is still the same after all those events
                         if (
                             this._bodyTextDocument && this.lastSelectedNode &&
                             utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx

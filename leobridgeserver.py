@@ -426,6 +426,7 @@ class IntegTextWrapper:
         self.ins = 0
         self.sel = 0, 0
         self.s = ''
+        self.yScroll = 0
         self.supportsHighLevelInterface = True
         self.widget = None  # This ivar must exist, and be None.
 
@@ -445,10 +446,6 @@ class IntegTextWrapper:
 
     def flashCharacter(self, i, bg='white', fg='red', flashes=3, delay=75): pass
 
-
-    def getYScrollPosition(self):
-        return 0
-
     def see(self, i): pass
 
     def seeInsertPoint(self): pass
@@ -456,8 +453,6 @@ class IntegTextWrapper:
     def setFocus(self): pass
 
     def setStyleClass(self, name): pass
-
-    def setYScrollPosition(self, i): pass # todo
 
     def tag_configure(self, colorName, **keys): pass
 
@@ -534,7 +529,11 @@ class IntegTextWrapper:
 
     def getXScrollPosition(self):
         return 0
-        # TODO
+        # X axis ignored
+
+    def getYScrollPosition(self):
+        print("wrapper get y scroll" + str(self.yScroll))
+        return self.yScroll
 
     def hasSelection(self):
         """IntegTextWrapper hasSelection"""
@@ -570,8 +569,11 @@ class IntegTextWrapper:
 
     def setXScrollPosition(self, i):
         pass
-        print("set scroll")
-        # todo
+        # X axis ignored
+
+    def setYScrollPosition(self, i):
+        self.yScroll = i
+        print("wrapper set y scroll" + str(self.yScroll))
 
     def setSelectionRange(self, i, j, insert=None):
         """IntegTextWrapper setSelectionRange"""
@@ -2415,7 +2417,7 @@ class LeoBridgeIntegController:
                 'plain'
             )
 
-            w_Scroll = w_p.v.scrollBarSpot
+            w_scrollRow = w_p.v.scrollBarSpot
             w_active = w_p.v.insertSpot
             w_start = w_p.v.selectionStart
             w_end =  w_p.v.selectionStart + w_p.v.selectionLength
@@ -2424,9 +2426,10 @@ class LeoBridgeIntegController:
             if self.commander.p.v.gnx == w_p.v.gnx:
                 w_active = w_wrapper.getInsertPoint()
                 w_start, w_end = w_wrapper.getSelectionRange(True)
+                w_scrollRow = w_wrapper.getYScrollPosition()
 
             # TODO : This conversion for scroll position may be unneeded (consider as lines only)
-            w_scrollI, w_scrollRow, w_scrollCol = c.frame.body.wrapper.toPythonIndexRowCol(w_Scroll)
+            # w_scrollI, w_scrollRow, w_scrollCol = c.frame.body.wrapper.toPythonIndexRowCol(w_Scroll)
             # compute line and column for the insertion point, and the start & end of selection
             w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(w_active)
             w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(w_start)
@@ -2438,7 +2441,7 @@ class LeoBridgeIntegController:
                 'selection': {
                             "gnx": w_p.v.gnx,
                             "scrollLine": w_scrollRow, # TODO Test this feature
-                            "scrollCol": w_scrollCol, # TODO Test this feature
+                            "scrollCol": 0,  # w_scrollCol, # TODO Test this feature
                             "activeLine": w_activeRow,
                             "activeCol": w_activeCol,
                             "startLine": w_startRow,
@@ -2568,17 +2571,18 @@ class LeoBridgeIntegController:
         w_body = w_v.b
         f_convert = self.g.convertRowColToPythonIndex
 
-        w_scroll = f_convert(w_body, p_package['scrollLine'], p_package['scrollCol'])
+        # w_scroll = f_convert(w_body, p_package['scrollLine'], p_package['scrollCol'])
+        w_scroll = p_package['scrollLine'] # no convertion necessary, its given back later
         w_insert =  f_convert(w_body, p_package['activeLine'], p_package['activeCol'])
         w_startSel = f_convert(w_body, p_package['startLine'], p_package['startCol'])
         w_endSel =  f_convert(w_body, p_package['endLine'], p_package['endCol'])
 
-        # print("w_same "+ str(w_same) +" w_insert " + str(w_insert) + " w_startSel " + str(w_startSel)+ " w_endSel " + str(w_endSel))
+        print("w_same "+ str(w_same) +" w_insert " + str(w_insert) + " w_startSel " + str(w_startSel)+ " w_endSel " + str(w_endSel))
         # print("for body"+ w_body)
 
         if w_same:
             w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
-            w_wrapper
+            w_wrapper.setYScrollPosition(w_scroll)
         else:
             pass
 
