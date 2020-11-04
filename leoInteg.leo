@@ -4494,7 +4494,8 @@ print('done')
                 self.commander = w_commander
 
     if not w_found:
-        self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+        self.commander = self.bridge.openLeoFile(
+            p_file)  # create self.commander
 
     # Leo at this point has done this too: g.app.windowList.append(c.frame)
     # and so, now, app.commanders() yields this: return [f.c for f in g.app.windowList]
@@ -4503,7 +4504,8 @@ print('done')
         self.commander.closed = False
         if not w_found:
             # is new so also replace wrapper
-            self.commander.frame.body.wrapper = IntegTextWrapper(self.commander, "integBody", self.g)
+            self.commander.frame.body.wrapper = IntegTextWrapper(
+                self.commander, "integBody", self.g)
             self.commander.selectPosition(self.commander.p)
 
         self._create_gnx_to_vnode()
@@ -4528,7 +4530,8 @@ print('done')
             self.commander.closed = True
             self.commander.close()
         else:
-            return self.sendLeoBridgePackage('closed', False)  # Cannot close, ask to save, ignore or cancel
+            # Cannot close, ask to save, ignore or cancel
+            return self.sendLeoBridgePackage('closed', False)
 
     # Switch commanders to first available
     w_total = self._getTotalOpened()
@@ -4571,7 +4574,8 @@ print('done')
         if self.commander.hoistStack:
             return self._outputPNodes([self.commander.hoistStack[-1].p])
         else:
-            return self._outputPNodes(self._yieldAllRootChildren())  # this outputs all Root Children
+            # this outputs all Root Children
+            return self._outputPNodes(self._yieldAllRootChildren())
 
 </t>
 <t tx="felix.20191126232434.17">def getParent(self, p_ap):
@@ -4601,7 +4605,8 @@ print('done')
                 return self._outputBodyData(w_v.b)
             else:
                 return self._outputBodyData()  # default "" empty string
-    return self._outputBodyData()  # Send as empty to fix unresolved promise if 'document switch' occurred shortly before
+    # Send as empty to fix unresolved promise if 'document switch' occurred shortly before
+    return self._outputBodyData()
     # return self.sendLeoBridgePackage()  # default as inexistent
 
 </t>
@@ -4636,11 +4641,13 @@ if __name__ == '__main__':
     for w_p in self.commander.all_positions():
         if w_p.v.gnx == w_gnx:
             # TODO : Before setting undo and trying to set body, first check if different than existing body
-            w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
+            w_bunch = self.commander.undoer.beforeChangeNodeContents(
+                w_p)  # setup undoable operation
             w_p.v.setBodyString(w_body)
-            self.commander.undoer.afterChangeNodeContents(w_p, "Body Text", w_bunch)
+            self.commander.undoer.afterChangeNodeContents(
+                w_p, "Body Text", w_bunch)
             if self.commander.p.v.gnx == w_gnx:
-                self.commander.frame.body.wrapper.setAllText(w_body);
+                self.commander.frame.body.wrapper.setAllText(w_body)
             if not self.commander.isChanged():
                 self.commander.setChanged()
             if not w_p.v.isDirty():
@@ -4665,7 +4672,8 @@ if __name__ == '__main__':
             # set this node's new headline
             w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)
             w_p.h = w_newHeadline
-            self.commander.undoer.afterChangeNodeContents(w_p, 'Change Headline', w_bunch)
+            self.commander.undoer.afterChangeNodeContents(
+                w_p, 'Change Headline', w_bunch)
             return self._outputPNode(w_p)
     return self._outputError("Error in setNewHeadline")
 
@@ -4683,7 +4691,8 @@ if __name__ == '__main__':
                 if w_foundPNode:
                     self.commander.selectPosition(w_foundPNode)
                 else:
-                    print("Set Selection node does not exist! ap was:" + json.dumps(p_ap), flush=True)
+                    print("Set Selection node does not exist! ap was:" +
+                          json.dumps(p_ap), flush=True)
     # * return the finally selected node
     if self.commander.p:
         return self._outputPNode(self.commander.p)
@@ -4712,7 +4721,8 @@ if __name__ == '__main__':
 <t tx="felix.20191126232434.27">def _create_gnx_to_vnode(self):
     '''Make the first gnx_to_vnode array with all unique nodes'''
     t1 = time.process_time()
-    self.gnx_to_vnode = {v.gnx: v for v in self.commander.all_unique_nodes()}
+    self.gnx_to_vnode = {
+        v.gnx: v for v in self.commander.all_unique_nodes()}
     # This is likely the only data that ever will be needed.
     if 0:
         print('app.create_all_data: %5.3f sec. %s entries' % (
@@ -4824,7 +4834,8 @@ if __name__ == '__main__':
         loadPlugins=True,   # True: attempt to load plugins.
         readSettings=True,  # True: read standard settings files.
         silent=True,        # True: don't print signon messages.
-        verbose=False,      # True: prints messages that would be sent to the log pane.
+        # True: prints messages that would be sent to the log pane.
+        verbose=False,
     )
     self.g = self.bridge.globals()
 
@@ -4851,7 +4862,8 @@ if __name__ == '__main__':
     # attach instance to g.app for calls to set_time, etc.
     self.g.app.externalFilesController = ExternalFilesController(self)
     # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
-    self.g.app.gui.runAskYesNoDialog = self._returnYes  # override for "revert to file" operation
+    # override for "revert to file" operation
+    self.g.app.gui.runAskYesNoDialog = self._returnYes
 
     # * setup leoBackground to get messages from leo
     try:
@@ -4868,7 +4880,8 @@ if __name__ == '__main__':
 
     args = None
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "ha:p:", ["help", "address=", "port="])
+        opts, args = getopt.getopt(sys.argv[1:], "ha:p:", [
+                                   "help", "address=", "port="])
     except getopt.GetoptError:
         print('leobridgeserver.py -a &lt;address&gt; -p &lt;port&gt;')
         print('defaults to localhost on port 32125', flush=True)
@@ -4901,7 +4914,8 @@ if __name__ == '__main__':
     async def leoBridgeServer(websocket, path):
         try:
             integController.initConnection(websocket)
-            await websocket.send(integController.sendLeoBridgePackage())  # * Start by sending empty as 'ok'
+            # * Start by sending empty as 'ok'
+            await websocket.send(integController.sendLeoBridgePackage())
             integController.logSignon()
             async for w_message in websocket:
                 w_param = json.loads(w_message)
@@ -4921,7 +4935,8 @@ if __name__ == '__main__':
                         w_answer = w_func(w_actionParam)
                     else:
                         # Attempt to execute the command directly on the commander/subcommander
-                        w_answer = integController.leoCommand(w_action, w_actionParam)
+                        w_answer = integController.leoCommand(
+                            w_action, w_actionParam)
                 else:
                     w_answer = "Error in processCommand"
                     print(w_answer, flush=True)
@@ -4941,7 +4956,8 @@ if __name__ == '__main__':
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
     # localLoop.create_task(asyncInterval(5)) # Starts a test loop of async communication
     localLoop.run_until_complete(start_server)
-    print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
+    print("LeoBridge started at " + wsHost + " on port: " +
+          str(wsPort) + " [ctrl+c] to break", flush=True)
     localLoop.run_forever()
     print("Stopping leobridge server", flush=True)
 
@@ -4968,7 +4984,8 @@ wsPort = 32125
 <t tx="felix.20191128003648.1"></t>
 <t tx="felix.20191201194046.1">def getAllGnx(self, p_unused):
     '''Get gnx array from all unique nodes'''
-    w_all_gnx = [p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
+    w_all_gnx = [
+        p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
     return self.sendLeoBridgePackage("allGnx", w_all_gnx)
 
 </t>
@@ -5117,7 +5134,8 @@ wsPort = 32125
     self.yesno_all_time = 0  # previous yes/no to all answer, time of answer
     self.yesno_all_answer = None  # answer, 'yes-all', or 'no-all'
 
-    self.infoMessage = None  # if yesAll/noAll forced, then just show info message after idle_check_commander
+    # if yesAll/noAll forced, then just show info message after idle_check_commander
+    self.infoMessage = None
     # False or "detected", "refreshed" or "ignored"
 
     self.integController.g.app.idleTimeManager.add_callback(self.on_idle)
@@ -5135,7 +5153,8 @@ wsPort = 32125
     '''
     # check with leoInteg's config first
     if self.integController.leoIntegConfig:
-        w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
+        w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower(
+        )
         if not bool('none' in w_check_config):
             if bool('yes' in w_check_config):
                 self.infoMessage = "refreshed"
@@ -5246,7 +5265,8 @@ wsPort = 32125
     '''Return the cached @bool check_for_changed_external_file setting.'''
     # check with leoInteg's config first
     if self.integController.leoIntegConfig:
-        w_check_config = self.integController.leoIntegConfig["checkForChangeExternalFiles"].lower()
+        w_check_config = self.integController.leoIntegConfig["checkForChangeExternalFiles"].lower(
+        )
         if bool('check' in w_check_config):
             return True
         if bool('ignore' in w_check_config):
@@ -5255,7 +5275,8 @@ wsPort = 32125
     d = self.enabled_d
     val = d.get(c)
     if val is None:
-        val = c.config.getBool('check-for-changed-external-files', default=False)
+        val = c.config.getBool(
+            'check-for-changed-external-files', default=False)
         d[c] = val
     return val
 
@@ -5291,7 +5312,8 @@ wsPort = 32125
     '''
     # check with leoInteg's config first
     if self.integController.leoIntegConfig:
-        w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
+        w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower(
+        )
 
         if w_check_config != "none":
             # if not 'none' then do not warn, just infoMessage 'warn' at most
@@ -5307,13 +5329,15 @@ wsPort = 32125
         return
 
     s = '\n'.join([
-        '%s has changed outside Leo.\n' % self.integController.g.splitLongFileName(path),
+        '%s has changed outside Leo.\n' % self.integController.g.splitLongFileName(
+            path),
         'Leo can not update this file automatically.\n',
         'This file was created from %s.\n' % p.h,
         'Warning: refresh-from-disk will destroy all children.'
     ])
 
-    w_package = {"async": "warn", "warn": 'External file changed', "message": s}
+    w_package = {"async": "warn",
+                 "warn": 'External file changed', "message": s}
 
     self.integController.sendAsyncOutput(w_package)
     self.waitingForAnswer = True
@@ -5421,7 +5445,8 @@ wsPort = 32125
     # check if p_resultwas from a warn (ok) or an ask ('yes','yes-all','no','no-all')
     # act accordingly
 
-    path = self.integController.g.fullPath(self.lastCommander, self.lastPNode)
+    path = self.integController.g.fullPath(
+        self.lastCommander, self.lastPNode)
 
     # 1- if ok, unblock 'warn'
     # 2- if no, unblock 'ask'
@@ -5444,7 +5469,8 @@ wsPort = 32125
     self.checksum_d[path] = self.checksum(path)
 
     self.waitingForAnswer = False  # unblock
-    self.idle_check_commander(self.lastCommander)  # unblock: run the loop as if timer had hit
+    # unblock: run the loop as if timer had hit
+    self.idle_check_commander(self.lastCommander)
 
 </t>
 <t tx="felix.20200304224909.1">def sendAsyncOutput(self, p_package):
@@ -5453,9 +5479,11 @@ wsPort = 32125
         print(json.dumps(p_package, separators=(',', ':')), flush=True)
         return
     if self.loop:
-        self.loop.create_task(self.asyncOutput(json.dumps(p_package, separators=(',', ':'))))
+        self.loop.create_task(self.asyncOutput(
+            json.dumps(p_package, separators=(',', ':'))))
     else:
-        print('[sendAsyncOutput] Error loop not ready' + json.dumps(p_package, separators=(',', ':')))
+        print('[sendAsyncOutput] Error loop not ready' +
+              json.dumps(p_package, separators=(',', ':')))
 
 </t>
 <t tx="felix.20200308145948.1"># Some methods are called in the usual (non-leoBridge without 'efc') save process.
@@ -5543,7 +5571,8 @@ wsPort = 32125
         self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                     "node": self._p_to_ap(self.commander.p)}
-        self.commander.selectPosition(self.commander.p) # maybe needed for frame wrapper
+        # maybe needed for frame wrapper
+        self.commander.selectPosition(self.commander.p)
         return self.sendLeoBridgePackage("setOpened", w_result)
     else:
         return self._outputError('Error in setOpenedFile')
@@ -8288,6 +8317,15 @@ export interface BodyTimeInfo {
     mtime: number;
 }
 
+/**
+ * * Body position
+ * Used in BodySelectionInfo interface
+ */
+export interface BodyPosition {
+    line: number;
+    col: number;
+}
+
 </t>
 <t tx="felix.20200718194857.15">/**
  * * Parameter structure used in the 'runSaveFileDialog' equivalent when asking user input
@@ -9041,7 +9079,8 @@ import {
     MinibufferCommand,
     UserCommand,
     ShowBodyParam,
-    BodySelectionInfo
+    BodySelectionInfo,
+    BodyPosition
 } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
@@ -9941,25 +9980,38 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
 
                     if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
                         console.log('bodyStates from DIFFERENT GNX ' + w_leoBodySel.gnx + " " + this.lastSelectedNode!.gnx);
+                    }
+                    const w_scroll = w_leoBodySel.scroll;
+                    let w_scrollRange: vscode.Range | undefined;
+                    if (w_scroll.start.line ||
+                        w_scroll.start.col ||
+                        w_scroll.end.line ||
+                        w_scroll.end.col) {
+                        w_scrollRange = new vscode.Range(
+                            w_scroll.start.line,
+                            w_scroll.start.col,
+                            w_scroll.end.line,
+                            w_scroll.end.col,
+                        );
                     } else {
-                        console.log('bodyStates from SAME GNX ' + w_leoBodySel.gnx);
+                        // w_scrollRange = new vscode.Range(0, 0, 0, 0); // try with p_textEditor.document.lineAt(0).range;
                     }
 
                     // Scrolling position
-                    const w_scrollLine: number = w_leoBodySel.scrollLine;
-                    const w_scrollCol: number = w_leoBodySel.scrollCol; // Only Y position is used
+                    // const w_scrollLine: number = w_leoBodySel.scrollLine;
+                    // const w_scrollCol: number = w_leoBodySel.scrollCol; // Only Y position is used
 
                     // Cursor position and selection range
-                    const w_activeRow: number = w_leoBodySel.activeLine;
-                    const w_activeCol: number = w_leoBodySel.activeCol;
-                    let w_anchorLine: number = w_leoBodySel.startLine;
-                    let w_anchorCharacter: number = w_leoBodySel.startCol;
+                    const w_activeRow: number = w_leoBodySel.active.line;
+                    const w_activeCol: number = w_leoBodySel.active.col;
+                    let w_anchorLine: number = w_leoBodySel.start.line;
+                    let w_anchorCharacter: number = w_leoBodySel.start.col;
 
-                    if (w_leoBodySel.activeLine === w_leoBodySel.startLine &amp;&amp;
-                        w_leoBodySel.activeCol === w_leoBodySel.startCol) {
+                    if (w_activeRow === w_anchorLine &amp;&amp;
+                        w_activeCol === w_anchorCharacter) {
                         // Active insertion same as start selection, so use the other ones
-                        w_anchorLine = w_leoBodySel.endLine;
-                        w_anchorCharacter = w_leoBodySel.endCol;
+                        w_anchorLine = w_leoBodySel.end.line;
+                        w_anchorCharacter = w_leoBodySel.end.col;
                     }
 
                     const w_selection = new vscode.Selection(
@@ -9974,7 +10026,9 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                             utils.leoUriToStr(p_document.uri) === w_leoBodySel.gnx
                         ) {
                             p_textEditor.selection = w_selection; // set cursor insertion point &amp; selection range
-                            const w_scrollRange: vscode.Range = p_textEditor.document.lineAt(w_scrollLine).range;
+                            if (!w_scrollRange) {
+                                w_scrollRange = p_textEditor.document.lineAt(0).range;
+                            }
                             p_textEditor.revealRange(w_scrollRange); // set
                         }
                     });
@@ -10716,10 +10770,12 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 
         if not w_found:
             if os.path.isfile(i_file):
-                self.commander = self.bridge.openLeoFile(i_file)  # create self.commander
+                self.commander = self.bridge.openLeoFile(
+                    i_file)  # create self.commander
         if self.commander:
             self.commander.closed = False
-            self.commander.frame.body.wrapper = IntegTextWrapper(self.commander, "integBody", self.g)
+            self.commander.frame.body.wrapper = IntegTextWrapper(
+                self.commander, "integBody", self.g)
             self.commander.selectPosition(self.commander.p)
 
     # Done with the last one, it's now the selected commander. Check again just in case.
@@ -10753,7 +10809,8 @@ public sendConfigToServer(p_config: ConfigMembers): void {
             w_key = i_key
     if w_key:
         del(w_dict[w_key])  # delete object member
-    return self._outputPNode(self.commander.p)  # return selected node when done
+    # return selected node when done
+    return self._outputPNode(self.commander.p)
 
 </t>
 <t tx="felix.20200924210029.1">def clickButton(self, p_package):
@@ -10766,7 +10823,8 @@ public sendConfigToServer(p_config: ConfigMembers): void {
             w_button = i_key
     if w_button:
         w_button.command()  # run clicked button command
-    return self._outputPNode(self.commander.p)  # return selected node when done
+    # return selected node when done
+    return self._outputPNode(self.commander.p)
 
 </t>
 <t tx="felix.20200924210036.1">def getCommands(self, p_package):
@@ -11872,7 +11930,8 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 
 </t>
 <t tx="felix.20200924211041.1">def _outputError(self, p_message="Unknown Error"):
-    print("ERROR: " + p_message, flush=True)  # Output to this server's running console
+    # Output to this server's running console
+    print("ERROR: " + p_message, flush=True)
     w_package = {"id": self.currentActionId}
     w_package["error"] = p_message
     return p_message
@@ -11884,7 +11943,8 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 </t>
 <t tx="felix.20200924211051.1">def _outputPNode(self, p_node=False):
     if p_node:
-        return self.sendLeoBridgePackage("node", self._p_to_ap(p_node))  # Single node, singular
+        # Single node, singular
+        return self.sendLeoBridgePackage("node", self._p_to_ap(p_node))
     else:
         return self.sendLeoBridgePackage("node", None)
 
@@ -11893,7 +11953,8 @@ public sendConfigToServer(p_config: ConfigMembers): void {
     w_apList = []
     for p in p_pList:
         w_apList.append(self._p_to_ap(p))
-    return self.sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
+    # Multiple nodes, plural
+    return self.sendLeoBridgePackage("nodes", w_apList)
 
 </t>
 <t tx="felix.20200924211057.1">def markPNode(self, p_package):
@@ -11903,7 +11964,8 @@ public sendConfigToServer(p_config: ConfigMembers): void {
         w_p = self._ap_to_p(w_ap)
         if w_p:
             w_p.setMarked()
-            return self._outputPNode(self.commander.p)  # return selected node when done (not w_p)
+            # return selected node when done (not w_p)
+            return self._outputPNode(self.commander.p)
         else:
             return self._outputError("Error in markPNode no w_p node found")
     else:
@@ -11917,7 +11979,8 @@ public sendConfigToServer(p_config: ConfigMembers): void {
         w_p = self._ap_to_p(w_ap)
         if w_p:
             w_p.clearMarked()
-            return self._outputPNode(self.commander.p)  # return selected node when done (not w_p)
+            # return selected node when done (not w_p)
+            return self._outputPNode(self.commander.p)
         else:
             return self._outputError("Error in unmarkPNode no w_p node found")
     else:
@@ -11931,7 +11994,8 @@ public sendConfigToServer(p_config: ConfigMembers): void {
         return self._outputError("Error in clonePNode function, no param p_ap")
     w_p = self._ap_to_p(w_ap)
     if not w_p:
-        return self._outputError("Error in clonePNode function, no w_p node found")  # default empty
+        # default empty
+        return self._outputError("Error in clonePNode function, no w_p node found")
     if w_p == self.commander.p:
         self.commander.clone()
     else:
@@ -11940,7 +12004,8 @@ public sendConfigToServer(p_config: ConfigMembers): void {
         self.commander.clone()
         if self.commander.positionExists(oldPosition):
             self.commander.selectPosition(oldPosition)
-    return self._outputPNode(self.commander.p)  # return selected node either ways
+    # return selected node either ways
+    return self._outputPNode(self.commander.p)
 
 </t>
 <t tx="felix.20200924211121.1">def cutPNode(self, p_package):
@@ -11956,15 +12021,19 @@ public sendConfigToServer(p_config: ConfigMembers): void {
                 self.commander.selectPosition(w_p)
                 self.commander.cutOutline()
                 if self.commander.positionExists(oldPosition):
-                    self.commander.selectPosition(oldPosition)  # select if old position still valid
+                    # select if old position still valid
+                    self.commander.selectPosition(oldPosition)
                 else:
                     oldPosition._childIndex = oldPosition._childIndex-1
                     # Try again with childIndex decremented
                     if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
-            return self._outputPNode(self.commander.p)  # in both cases, return selected node
+                        # additional try with lowered childIndex
+                        self.commander.selectPosition(oldPosition)
+            # in both cases, return selected node
+            return self._outputPNode(self.commander.p)
         else:
-            return self._outputError("Error in cutPNode no w_p node found")  # default empty
+            # default empty
+            return self._outputError("Error in cutPNode no w_p node found")
     else:
         return self._outputError("Error in cutPNode no param node")
 
@@ -11982,15 +12051,19 @@ public sendConfigToServer(p_config: ConfigMembers): void {
                 self.commander.selectPosition(w_p)
                 self.commander.deleteOutline()
                 if self.commander.positionExists(oldPosition):
-                    self.commander.selectPosition(oldPosition)  # select if old position still valid
+                    # select if old position still valid
+                    self.commander.selectPosition(oldPosition)
                 else:
                     oldPosition._childIndex = oldPosition._childIndex-1
                     # Try again with childIndex decremented
                     if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
-            return self._outputPNode(self.commander.p)  # in both cases, return selected node
+                        # additional try with lowered childIndex
+                        self.commander.selectPosition(oldPosition)
+            # in both cases, return selected node
+            return self._outputPNode(self.commander.p)
         else:
-            return self._outputError("Error in deletePNode no w_p node found")  # default empty
+            # default empty
+            return self._outputError("Error in deletePNode no w_p node found")
     else:
         return self._outputError("Error in deletePNode no param node")
 
@@ -12004,11 +12077,14 @@ public sendConfigToServer(p_config: ConfigMembers): void {
             w_bunch = self.commander.undoer.beforeInsertNode(w_p)
             w_newNode = w_p.insertAfter()
             w_newNode.setDirty()
-            self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_bunch)
+            self.commander.undoer.afterInsertNode(
+                w_newNode, 'Insert Node', w_bunch)
             self.commander.selectPosition(w_newNode)
-            return self._outputPNode(self.commander.p)  # in both cases, return selected node
+            # in both cases, return selected node
+            return self._outputPNode(self.commander.p)
         else:
-            return self._outputError("Error in insertPNode no w_p node found")  # default empty
+            # default empty
+            return self._outputError("Error in insertPNode no w_p node found")
     else:
         return self._outputError("Error in insertPNode no param node")
 
@@ -12025,11 +12101,14 @@ public sendConfigToServer(p_config: ConfigMembers): void {
             # set this node's new headline
             w_newNode.h = w_newHeadline
             w_newNode.setDirty()
-            self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_u)
+            self.commander.undoer.afterInsertNode(
+                w_newNode, 'Insert Node', w_u)
             self.commander.selectPosition(w_newNode)
-            return self._outputPNode(self.commander.p)  # in any case, return selected node
+            # in any case, return selected node
+            return self._outputPNode(self.commander.p)
         else:
-            return self._outputError("Error in insertNamedPNode no w_p node found")  # default empty
+            # default empty
+            return self._outputError("Error in insertNamedPNode no w_p node found")
     else:
         return self._outputError("Error in insertNamedPNode no param node")
 
@@ -12038,14 +12117,16 @@ public sendConfigToServer(p_config: ConfigMembers): void {
     '''Undo last un-doable operation'''
     if self.commander.undoer.canUndo():
         self.commander.undoer.undo()
-    return self._outputPNode(self.commander.p)  # return selected node when done
+    # return selected node when done
+    return self._outputPNode(self.commander.p)
 
 </t>
 <t tx="felix.20200924211138.1">def redo(self, p_paramUnused):
     '''Undo last un-doable operation'''
     if self.commander.undoer.canRedo():
         self.commander.undoer.redo()
-    return self._outputPNode(self.commander.p)  # return selected node when done
+    # return selected node when done
+    return self._outputPNode(self.commander.p)
 
 </t>
 <t tx="felix.20200924211142.1">def executeScriptPackage(self, p_package):
@@ -12136,31 +12217,50 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
 
 </t>
 <t tx="felix.20200928133238.1">/**
- * * Saves the cursor position along with the text selection states (start and end positions)
- * TODO : Also save / restore editor window's scroll position
+ * * Saves the cursor position along with the text selection range and scroll position
  */
 public _bodySaveSelection(): Thenable&lt;boolean&gt; {
     if (this._selectionDirty &amp;&amp; this._selection) {
         // Prepare scroll data separately
-        // TODO : Improve scroll management
-        let w_scrollLine = 0;
-        let w_scrollCol = 0;
+        let w_scroll: { start: BodyPosition; end: BodyPosition; };
         if (this._selectionGnx === this._scrollGnx &amp;&amp; this._scrollDirty) {
-            // for now just check if same as last selection change
-            w_scrollLine = this._scroll?.start.line || 0;
-            w_scrollCol = this._scroll?.start.character || 0;
+            w_scroll = {
+                start: {
+                    line: this._scroll?.start.line || 0,
+                    col: this._scroll?.start.character || 0
+                },
+                end: {
+                    line: this._scroll?.end.line || 0,
+                    col: this._scroll?.end.character || 0
+                }
+            };
+        } else {
+            w_scroll = {
+                start: {
+                    line: 0, col: 0
+                },
+                end: {
+                    line: 0, col: 0
+                }
+            };
         }
         // Send whole
         const w_param: BodySelectionInfo = {
             gnx: this._selectionGnx,
-            scrollLine: w_scrollLine,
-            scrollCol: w_scrollCol,
-            activeLine: this._selection.active.line || 0,
-            activeCol: this._selection.active.character || 0,
-            startLine: this._selection.start.line || 0,
-            startCol: this._selection.start.character || 0,
-            endLine: this._selection.end.line || 0,
-            endCol: this._selection.end.character || 0
+            scroll: w_scroll,
+            active: {
+                line: this._selection.active.line || 0,
+                col: this._selection.active.character || 0
+            },
+            start: {
+                line: this._selection.start.line || 0,
+                col: this._selection.start.character || 0
+            },
+            end: {
+                line: this._selection.end.line || 0,
+                col: this._selection.end.character || 0
+            }
+
         };
         this._scrollDirty = false;
         this._selectionDirty = false; // don't wait for return of this call
@@ -12307,7 +12407,8 @@ def clipboard_append(self, s):
     self.g.app.gui.replaceClipboardWith(s1 + s)
 
 </t>
-<t tx="felix.20200928174406.4">def flashCharacter(self, i, bg='white', fg='red', flashes=3, delay=75): pass
+<t tx="felix.20200928174406.4">def flashCharacter(self, i, bg='white', fg='red',
+                   flashes=3, delay=75): pass
 
 def see(self, i): pass
 
@@ -12369,7 +12470,8 @@ def tag_configure(self, colorName, **keys): pass
     w_states = {}
     if self.commander:
         try:
-            w_states["changed"] = self.commander.changed   # 'dirty/changed' member
+            # 'dirty/changed' member
+            w_states["changed"] = self.commander.changed
             w_states["canUndo"] = self.commander.canUndo()
             w_states["canRedo"] = self.commander.canRedo()
             w_states["canDemote"] = self.commander.canDemote()
@@ -12422,21 +12524,21 @@ def tag_configure(self, colorName, **keys): pass
 
     w_wrapper = self.commander.frame.body.wrapper
 
-    # See BodySelectionInfo interface in types.d.ts
+    defaultPosition = {"line": 0, "col": 0}
     states = {
         'language': 'plain',
+        # See BodySelectionInfo interface in types.d.ts
         'selection': {
-                        "gnx": w_p.v.gnx,
-                        "scrollLine": 0,
-                        "scrollCol": 0,
-                        "activeLine": 0,
-                        "activeCol": 0,
-                        "startLine": 0,
-                        "startCol": 0,
-                        "endLine": 0,
-                        "endCol": 0,
-                    }
+            "gnx": w_p.v.gnx,
+            "scroll": {
+                "start": defaultPosition,
+                "end": defaultPosition
+            },
+            "active": defaultPosition,
+            "start": defaultPosition,
+            "end": defaultPosition
         }
+    }
 
     if w_p:
 
@@ -12451,38 +12553,36 @@ def tag_configure(self, colorName, **keys): pass
             'plain'
         )
 
-        w_scrollRow = w_p.v.scrollBarSpot
+        w_scroll = w_p.v.scrollBarSpot
         w_active = w_p.v.insertSpot
         w_start = w_p.v.selectionStart
-        w_end =  w_p.v.selectionStart + w_p.v.selectionLength
+        w_end = w_p.v.selectionStart + w_p.v.selectionLength
 
         # get selection from wrapper instead if its the selected node
         if self.commander.p.v.gnx == w_p.v.gnx:
             w_active = w_wrapper.getInsertPoint()
             w_start, w_end = w_wrapper.getSelectionRange(True)
-            w_scrollRow = w_wrapper.getYScrollPosition()
+            w_scroll = w_wrapper.getYScrollPosition()
 
         # TODO : This conversion for scroll position may be unneeded (consider as lines only)
         # w_scrollI, w_scrollRow, w_scrollCol = c.frame.body.wrapper.toPythonIndexRowCol(w_Scroll)
         # compute line and column for the insertion point, and the start &amp; end of selection
-        w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(w_active)
-        w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(w_start)
-        w_endI, w_endRow, w_endCol = c.frame.body.wrapper.toPythonIndexRowCol(w_end)
-
+        w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(
+            w_active)
+        w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(
+            w_start)
+        w_endI, w_endRow, w_endCol = c.frame.body.wrapper.toPythonIndexRowCol(
+            w_end)
 
         states = {
             'language': language.lower(),
             'selection': {
-                        "gnx": w_p.v.gnx,
-                        "scrollLine": w_scrollRow, # TODO Test this feature
-                        "scrollCol": 0,  # w_scrollCol, # TODO Test this feature
-                        "activeLine": w_activeRow,
-                        "activeCol": w_activeCol,
-                        "startLine": w_startRow,
-                        "startCol": w_startCol,
-                        "endLine": w_endRow,
-                        "endCol": w_endCol,
-                    }
+                "gnx": w_p.v.gnx,
+                "scroll": w_scroll,  # w_scroll was kept as-is
+                "active": {"line": w_activeRow, "col": w_activeCol},
+                "start": {"line": w_startRow, "col": w_startCol},
+                "end": {"line": w_endRow, "col": w_endCol}
+            }
         }
     return self.sendLeoBridgePackage("bodyStates", states)
 
@@ -12509,18 +12609,26 @@ def tag_configure(self, colorName, **keys): pass
 
     if not w_v:
         print('ERROR : Set Selection! NOT SAME Leo Document')
-        return self._outputPNode(self.commander.p)  # ! FAILED (but return as normal)
+        # ! FAILED (but return as normal)
+        return self._outputPNode(self.commander.p)
 
     w_body = w_v.b
     f_convert = self.g.convertRowColToPythonIndex
+    w_active = p_package['active']
+    w_start = p_package['start']
+    w_end = p_package['end']
 
-    # w_scroll = f_convert(w_body, p_package['scrollLine'], p_package['scrollCol'])
-    w_scroll = p_package['scrollLine'] # no convertion necessary, its given back later
-    w_insert =  f_convert(w_body, p_package['activeLine'], p_package['activeCol'])
-    w_startSel = f_convert(w_body, p_package['startLine'], p_package['startCol'])
-    w_endSel =  f_convert(w_body, p_package['endLine'], p_package['endCol'])
+    # no convertion necessary, its given back later
+    w_scroll = p_package['scroll']
+    w_insert = f_convert(
+        w_body, w_active['line'], w_active['col'])
+    w_startSel = f_convert(
+        w_body, w_start['line'], w_start['col'])
+    w_endSel = f_convert(
+        w_body, w_end['line'], w_end['col'])
 
-    print("w_same "+ str(w_same) +" w_insert " + str(w_insert) + " w_startSel " + str(w_startSel)+ " w_endSel " + str(w_endSel))
+    print("w_same " + str(w_same) + " w_insert " + str(w_insert) +
+          " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
     # print("for body"+ w_body)
 
     if w_same:
@@ -12530,10 +12638,11 @@ def tag_configure(self, colorName, **keys): pass
         pass
 
     # Set for v node no matter what
-    w_v.scrollBarSpot = w_scroll;
-    w_v.insertSpot = w_insert;
-    w_v.selectionStart = w_startSel;
-    w_v.selectionLength = (w_endSel - w_startSel) if w_endSel &gt; w_startSel else 0
+    w_v.scrollBarSpot = w_scroll
+    w_v.insertSpot = w_insert
+    w_v.selectionStart = w_startSel
+    w_v.selectionLength = (
+        w_endSel - w_startSel) if w_endSel &gt; w_startSel else 0
 
     # When switching nodes, Leo's core saves the insert point, selection,
     # and vertical scroll position in the old (unselected) vnode. From v.init:
@@ -12547,7 +12656,8 @@ def tag_configure(self, colorName, **keys): pass
     # self.selectionStart = 0
     #         # The start of the selected body text.
 
-    return self._outputPNode(self.commander.p)  # output selected node as 'ok'
+    # output selected node as 'ok'
+    return self._outputPNode(self.commander.p)
 
 </t>
 <t tx="felix.20201006195046.1">/**
@@ -12555,14 +12665,14 @@ def tag_configure(self, colorName, **keys): pass
  */
 export interface BodySelectionInfo {
     gnx: string;
-    scrollLine: number;
-    scrollCol: number;
-    activeLine: number;
-    activeCol: number;
-    startLine: number;
-    startCol: number;
-    endLine: number;
-    endCol: number;
+    // scroll is stored as-is as the 'scrollBarSpot' in Leo
+    scroll: {
+        start: BodyPosition;
+        end: BodyPosition;
+    }
+    active: BodyPosition;
+    start: BodyPosition;
+    end: BodyPosition;
 }
 
 </t>
