@@ -9982,11 +9982,16 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                         console.log('bodyStates from DIFFERENT GNX ' + w_leoBodySel.gnx + " " + this.lastSelectedNode!.gnx);
                     }
                     const w_scroll = w_leoBodySel.scroll;
+                    console.log('SCROLL normal', w_scroll);
+                    console.log('SCROLL json' + JSON.stringify(w_scroll));
+
                     let w_scrollRange: vscode.Range | undefined;
-                    if (w_scroll.start.line ||
-                        w_scroll.start.col ||
-                        w_scroll.end.line ||
-                        w_scroll.end.col) {
+                    if (w_scroll &amp;&amp; w_scroll.start &amp;&amp; w_scroll.end &amp;&amp;
+                        (w_scroll.start.line ||
+                            w_scroll.start.col ||
+                            w_scroll.end.line ||
+                            w_scroll.end.col)
+                    ) {
                         w_scrollRange = new vscode.Range(
                             w_scroll.start.line,
                             w_scroll.start.col,
@@ -9996,10 +10001,6 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                     } else {
                         // w_scrollRange = new vscode.Range(0, 0, 0, 0); // try with p_textEditor.document.lineAt(0).range;
                     }
-
-                    // Scrolling position
-                    // const w_scrollLine: number = w_leoBodySel.scrollLine;
-                    // const w_scrollCol: number = w_leoBodySel.scrollCol; // Only Y position is used
 
                     // Cursor position and selection range
                     const w_activeRow: number = w_leoBodySel.active.line;
