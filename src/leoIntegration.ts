@@ -15,7 +15,8 @@ import {
     MinibufferCommand,
     UserCommand,
     ShowBodyParam,
-    BodySelectionInfo
+    BodySelectionInfo,
+    BodyPosition
 } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
@@ -829,31 +830,50 @@ export class LeoIntegration {
     }
 
     /**
-     * * Saves the cursor position along with the text selection states (start and end positions)
-     * TODO : Also save / restore editor window's scroll position
+     * * Saves the cursor position along with the text selection range and scroll position
      */
     public _bodySaveSelection(): Thenable<boolean> {
         if (this._selectionDirty && this._selection) {
             // Prepare scroll data separately
-            // TODO : Improve scroll management
-            let w_scrollLine = 0;
-            let w_scrollCol = 0;
+            let w_scroll: { start: BodyPosition; end: BodyPosition; };
             if (this._selectionGnx === this._scrollGnx && this._scrollDirty) {
-                // for now just check if same as last selection change
-                w_scrollLine = this._scroll?.start.line || 0;
-                w_scrollCol = this._scroll?.start.character || 0;
+                w_scroll = {
+                    start: {
+                        line: this._scroll?.start.line || 0,
+                        col: this._scroll?.start.character || 0
+                    },
+                    end: {
+                        line: this._scroll?.end.line || 0,
+                        col: this._scroll?.end.character || 0
+                    }
+                };
+            } else {
+                w_scroll = {
+                    start: {
+                        line: 0, col: 0
+                    },
+                    end: {
+                        line: 0, col: 0
+                    }
+                };
             }
             // Send whole
             const w_param: BodySelectionInfo = {
                 gnx: this._selectionGnx,
-                scrollLine: w_scrollLine,
-                scrollCol: w_scrollCol,
-                activeLine: this._selection.active.line || 0,
-                activeCol: this._selection.active.character || 0,
-                startLine: this._selection.start.line || 0,
-                startCol: this._selection.start.character || 0,
-                endLine: this._selection.end.line || 0,
-                endCol: this._selection.end.character || 0
+                scroll: w_scroll,
+                active: {
+                    line: this._selection.active.line || 0,
+                    col: this._selection.active.character || 0
+                },
+                start: {
+                    line: this._selection.start.line || 0,
+                    col: this._selection.start.character || 0
+                },
+                end: {
+                    line: this._selection.end.line || 0,
+                    col: this._selection.end.character || 0
+                }
+
             };
             this._scrollDirty = false;
             this._selectionDirty = false; // don't wait for return of this call
@@ -1351,25 +1371,38 @@ export class LeoIntegration {
 
                         if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
                             console.log('bodyStates from DIFFERENT GNX ' + w_leoBodySel.gnx + " " + this.lastSelectedNode!.gnx);
+                        }
+                        const w_scroll = w_leoBodySel.scroll;
+                        let w_scrollRange: vscode.Range | undefined;
+                        if (w_scroll.start.line ||
+                            w_scroll.start.col ||
+                            w_scroll.end.line ||
+                            w_scroll.end.col) {
+                            w_scrollRange = new vscode.Range(
+                                w_scroll.start.line,
+                                w_scroll.start.col,
+                                w_scroll.end.line,
+                                w_scroll.end.col,
+                            );
                         } else {
-                            console.log('bodyStates from SAME GNX ' + w_leoBodySel.gnx);
+                            // w_scrollRange = new vscode.Range(0, 0, 0, 0); // try with p_textEditor.document.lineAt(0).range;
                         }
 
                         // Scrolling position
-                        const w_scrollLine: number = w_leoBodySel.scrollLine;
-                        const w_scrollCol: number = w_leoBodySel.scrollCol; // Only Y position is used
+                        // const w_scrollLine: number = w_leoBodySel.scrollLine;
+                        // const w_scrollCol: number = w_leoBodySel.scrollCol; // Only Y position is used
 
                         // Cursor position and selection range
-                        const w_activeRow: number = w_leoBodySel.activeLine;
-                        const w_activeCol: number = w_leoBodySel.activeCol;
-                        let w_anchorLine: number = w_leoBodySel.startLine;
-                        let w_anchorCharacter: number = w_leoBodySel.startCol;
+                        const w_activeRow: number = w_leoBodySel.active.line;
+                        const w_activeCol: number = w_leoBodySel.active.col;
+                        let w_anchorLine: number = w_leoBodySel.start.line;
+                        let w_anchorCharacter: number = w_leoBodySel.start.col;
 
-                        if (w_leoBodySel.activeLine === w_leoBodySel.startLine &&
-                            w_leoBodySel.activeCol === w_leoBodySel.startCol) {
+                        if (w_activeRow === w_anchorLine &&
+                            w_activeCol === w_anchorCharacter) {
                             // Active insertion same as start selection, so use the other ones
-                            w_anchorLine = w_leoBodySel.endLine;
-                            w_anchorCharacter = w_leoBodySel.endCol;
+                            w_anchorLine = w_leoBodySel.end.line;
+                            w_anchorCharacter = w_leoBodySel.end.col;
                         }
 
                         const w_selection = new vscode.Selection(
@@ -1384,7 +1417,9 @@ export class LeoIntegration {
                                 utils.leoUriToStr(p_document.uri) === w_leoBodySel.gnx
                             ) {
                                 p_textEditor.selection = w_selection; // set cursor insertion point & selection range
-                                const w_scrollRange: vscode.Range = p_textEditor.document.lineAt(w_scrollLine).range;
+                                if (!w_scrollRange) {
+                                    w_scrollRange = p_textEditor.document.lineAt(0).range;
+                                }
                                 p_textEditor.revealRange(w_scrollRange); // set
                             }
                         });

@@ -210,18 +210,27 @@ export interface BodyTimeInfo {
 }
 
 /**
+ * * Body position
+ * Used in BodySelectionInfo interface
+ */
+export interface BodyPosition {
+    line: number;
+    col: number;
+}
+
+/**
  * * LeoBody cursor active position and text selection state, along with gnx
  */
 export interface BodySelectionInfo {
     gnx: string;
-    scrollLine: number;
-    scrollCol: number;
-    activeLine: number;
-    activeCol: number;
-    startLine: number;
-    startCol: number;
-    endLine: number;
-    endCol: number;
+    // scroll is stored as-is as the 'scrollBarSpot' in Leo
+    scroll: {
+        start: BodyPosition;
+        end: BodyPosition;
+    }
+    active: BodyPosition;
+    start: BodyPosition;
+    end: BodyPosition;
 }
 
 /**
