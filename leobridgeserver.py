@@ -2337,38 +2337,6 @@ class LeoBridgeIntegController:
         # return selected node when done
         return self._outputPNode(self.commander.p)
 
-    def executeScriptPackage(self, p_package):
-        '''Select a node and run its script'''
-        # TODO : Should be removed to finish #39
-        c, g = self.commander, self.g
-        if not 'node' in p_package:
-            return self._outputError("Error in executeScript no param node")
-        w_ap = p_package['node']
-        w_p = self._ap_to_p(w_ap)
-        if not w_p:
-            return self._outputError("Error in executeScript no w_p node found")
-        c.selectPosition(w_p)
-        w_script = ""
-        if 'text' in p_package:
-            w_script = str(p_package['text'])
-        if not w_script or w_script.isspace():
-            # Empty selection.
-            c.executeScript()
-            return self._outputPNode(self.commander.p)
-        # * Mimic getScript !!
-        try:
-            # Remove extra leading whitespace so the user may execute indented code.
-            w_script = g.removeExtraLws(w_script, c.tab_width)
-            w_script = g.extractExecutableString(c, w_p, w_script)
-            w_validScript = g.composeScript(
-                c, w_p, w_script, forcePythonSentinels=True, useSentinels=True)
-            c.executeScript(script=w_validScript)
-        except Exception as e:
-            g.trace('Error while executing script')
-            print('Error while executing script', flush=True)
-            print(str(e), flush=True)
-        return self._outputPNode(self.commander.p)
-
     def test(self, p_package):
         '''Utility test function for debugging'''
         print("Called test")

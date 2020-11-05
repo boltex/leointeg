@@ -54,7 +54,12 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         // * Define entries for all commands
         [CMD.MINIBUFFER, () => w_leo.minibuffer()], // Is referenced in package.json
-        [CMD.EXECUTE, () => w_leo.executeScript()],
+        [CMD.EXECUTE, () => w_leo.nodeCommand({
+            action: BRIDGE.EXECUTE_SCRIPT,
+            node: U,
+            refreshType: REFRESH_TREE_BODY,
+            fromOutline: false
+        })],
 
         [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leo.clickButton(p_node)], // Not referenced in package.json
         [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) => w_leo.removeButton(p_node)],
@@ -355,6 +360,19 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.UNMARK_SELECTION, () => w_leo.changeMark(false, U, false)],
         [CMD.UNMARK_SELECTION_FO, () => w_leo.changeMark(false, U, true)],
 
+        [CMD.EXTRACT, () => w_leo.nodeCommand({
+            action: BRIDGE.EXTRACT,
+            node: U,
+            refreshType: REFRESH_TREE_BODY,
+            fromOutline: false
+        })],
+        [CMD.EXTRACT_NAMES, () => w_leo.nodeCommand({
+            action: BRIDGE.EXTRACT_NAMES,
+            node: U,
+            refreshType: REFRESH_TREE_BODY,
+            fromOutline: false
+        })],
+
         [CMD.MOVE_DOWN, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_DOWN,
             node: p_node,
@@ -541,8 +559,6 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
         [CMD.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],
         [CMD.CLONE_FIND_FLATTENED_MARKED, () => showInfo("TODO: cloneFindFlattenedMarked command")],
-        [CMD.EXTRACT, () => showInfo("TODO: extract command")],
-        [CMD.EXTRACT_NAMES, () => showInfo("TODO: extractNames command")],
         [CMD.COPY_MARKED, () => showInfo("TODO: copyMarked command")],
         [CMD.DIFF_MARKED_NODES, () => showInfo("TODO: diffMarkedNodes command")],
         [CMD.MARK_CHANGED_ITEMS, () => showInfo("TODO: markChangedItems command")],

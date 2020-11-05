@@ -362,7 +362,7 @@ export class Constants {
         SORT_SIBLINGS: "sortSiblings", // was overridden as "sortSiblingsPNode"
         UNDO: "undo",
         REDO: "redo",
-        EXECUTE_SCRIPT: "executeScriptPackage",
+        EXECUTE_SCRIPT: "executeScript",
         GET_STATES: "getStates",
         HOIST_PNODE: "hoist",
         DEHOIST: "dehoist",
@@ -427,7 +427,7 @@ export class Constants {
         UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE
         REDO: Constants.NAME + ".redo", // From command Palette
         REDO_FO: Constants.NAME + ".redoFromOutline", // from button, return focus on OUTLINE
-        EXECUTE: Constants.NAME + ".executeScriptSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        EXECUTE: Constants.NAME + ".executeScript",
         SHOW_BODY: Constants.NAME + ".showBody",
         SHOW_OUTLINE: Constants.NAME + ".showOutline",
         SHOW_LOG: Constants.NAME + ".showLogPane",

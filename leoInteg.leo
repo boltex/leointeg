@@ -169,7 +169,6 @@
 <v t="felix.20200924211132.1"><vh>insertNamedPNode</vh></v>
 <v t="felix.20200924211135.1"><vh>undo</vh></v>
 <v t="felix.20200924211138.1"><vh>redo</vh></v>
-<v t="felix.20200924211142.1"><vh>executeScriptPackage</vh></v>
 <v t="felix.20201025144113.1"><vh>test</vh></v>
 </v>
 <v t="felix.20191128001054.1"><vh>Outline and Body Interaction</vh>
@@ -224,6 +223,7 @@
 <v t="ekr.20200815123601.19"><vh>Leo File Documents</vh></v>
 <v t="ekr.20200815123601.20"><vh>Tree View</vh></v>
 <v t="ekr.20200815123601.21"><vh>Node Editing</vh></v>
+<v t="felix.20201105010614.1"><vh>Text Editing</vh></v>
 <v t="ekr.20200815123601.22"><vh>Move Nodes</vh></v>
 <v t="ekr.20200815123601.23"><vh>Outline Editing</vh></v>
 <v t="ekr.20200815123601.24"><vh>Goto Nodes</vh></v>
@@ -285,6 +285,7 @@
 <v t="ekr.20200815123601.79"><vh>Leo File Documents</vh></v>
 <v t="ekr.20200815123601.80"><vh>Tree View</vh></v>
 <v t="ekr.20200815123601.81"><vh>Node Editing</vh></v>
+<v t="felix.20201105010253.1"><vh>Text Editing</vh></v>
 <v t="ekr.20200815123601.82"><vh>Move Nodes</vh>
 <v t="ekr.20200815123601.83"><vh>Move Down</vh></v>
 <v t="ekr.20200815123601.84"><vh>Move left</vh></v>
@@ -498,7 +499,6 @@
 <v t="felix.20200719025231.51"><vh>Outline Commands</vh>
 <v t="felix.20200719025231.52"><vh>selectTreeNode</vh></v>
 <v t="ekr.20200815090400.1"><vh>nodeCommand</vh></v>
-<v t="felix.20200719025231.53"><vh>executeScript</vh></v>
 <v t="felix.20200719025231.54"><vh>changeMark</vh></v>
 <v t="felix.20200719025231.55"><vh>editHeadline</vh></v>
 <v t="felix.20200719025231.56"><vh>insertNode</vh></v>
@@ -1393,7 +1393,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 </t>
 <t tx="ekr.20200815113156.1">// * Define entries for all commands
 [CMD.MINIBUFFER, () =&gt; w_leo.minibuffer()], // Is referenced in package.json
-[CMD.EXECUTE, () =&gt; w_leo.executeScript()],
+[CMD.EXECUTE, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.EXECUTE_SCRIPT,
+    node: U,
+    refreshType: REFRESH_TREE_BODY,
+    fromOutline: false
+})],
 
 [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.clickButton(p_node)], // Not referenced in package.json
 [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.removeButton(p_node)],
@@ -1694,6 +1699,19 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.UNMARK_SELECTION, () =&gt; w_leo.changeMark(false, U, false)],
 [CMD.UNMARK_SELECTION_FO, () =&gt; w_leo.changeMark(false, U, true)],
 
+[CMD.EXTRACT, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.EXTRACT,
+    node: U,
+    refreshType: REFRESH_TREE_BODY,
+    fromOutline: false
+})],
+[CMD.EXTRACT_NAMES, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.EXTRACT_NAMES,
+    node: U,
+    refreshType: REFRESH_TREE_BODY,
+    fromOutline: false
+})],
+
 [CMD.MOVE_DOWN, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.MOVE_PNODE_DOWN,
     node: p_node,
@@ -1880,8 +1898,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
 [CMD.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
 [CMD.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
-[CMD.EXTRACT, () =&gt; showInfo("TODO: extract command")],
-[CMD.EXTRACT_NAMES, () =&gt; showInfo("TODO: extractNames command")],
 [CMD.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
 [CMD.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
 [CMD.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
@@ -2315,7 +2331,7 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.17">{
-  "command": "leointeg.executeScriptSelection",
+  "command": "leointeg.executeScript",
   "category": "Leo",
   "title": "Execute Script"
 },
@@ -2923,16 +2939,6 @@ print('done')
   "title": "cffm - Clone Find Flattened Marked"
 },
 {
-  "command": "leointeg.extract",
-  "category": "Leo",
-  "title": "Extract"
-},
-{
-  "command": "leointeg.extractNames",
-  "category": "Leo",
-  "title": "Extract Names"
-},
-{
   "command": "leointeg.copyMarked",
   "category": "Leo",
   "title": "Copy Marked"
@@ -3180,7 +3186,7 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.45">{
-  "command": "leointeg.executeScriptSelection",
+  "command": "leointeg.executeScript",
   "when": "leoTreeOpened"
 },
 {
@@ -3960,13 +3966,13 @@ print('done')
 ],
 </t>
 <t tx="ekr.20200815123601.77">{
-  "command": "leointeg.executeScriptSelection",
+  "command": "leointeg.executeScript",
   "key": "ctrl+b",
   "mac": "cmd+b",
   "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
-  "command": "leointeg.executeScriptSelection",
+  "command": "leointeg.executeScript",
   "key": "ctrl+b",
   "mac": "cmd+b",
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
@@ -5697,7 +5703,7 @@ public static LEOBRIDGE = {
     SORT_SIBLINGS: "sortSiblings", // was overridden as "sortSiblingsPNode"
     UNDO: "undo",
     REDO: "redo",
-    EXECUTE_SCRIPT: "executeScriptPackage",
+    EXECUTE_SCRIPT: "executeScript",
     GET_STATES: "getStates",
     HOIST_PNODE: "hoist",
     DEHOIST: "dehoist",
@@ -5763,7 +5769,7 @@ public static COMMANDS = {
     UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE
     REDO: Constants.NAME + ".redo", // From command Palette
     REDO_FO: Constants.NAME + ".redoFromOutline", // from button, return focus on OUTLINE
-    EXECUTE: Constants.NAME + ".executeScriptSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+    EXECUTE: Constants.NAME + ".executeScript",
     SHOW_BODY: Constants.NAME + ".showBody",
     SHOW_OUTLINE: Constants.NAME + ".showOutline",
     SHOW_LOG: Constants.NAME + ".showLogPane",
@@ -9867,7 +9873,7 @@ private _showBodyIfRequired(p_aside: boolean, p_showBodyKeepFocus: boolean, p_fo
 </t>
 <t tx="felix.20200719025231.47">/**
  * * Save and rename from this.bodyUri to p_newGnx: This changes the body content &amp; blocks 'undos' from crossing over
- * ! BUG : UNDO NOW CROSS OVER !
+ * ! BUG : UNDO NOW CROSSES OVER SINCE vscode1.48 or so... !
  * @param p_newGnx New gnx body id to switch to
  */
 private _switchBody(p_newGnx: string): Thenable&lt;boolean&gt; {
@@ -10112,42 +10118,6 @@ public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boole
         }
     });
     this._tryApplyNodeToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
-}
-
-</t>
-<t tx="felix.20200719025231.53">/**
- * * Launches the 'Execute Script' Leo command with the selected text, if any, otherwise the selected node itself is used
- * @returns True if the selection, or node, was started as a script
- * TODO : REMOVE WHEN ISSUE #39 IS DONE
- */
-public executeScript(): boolean {
-    // * Check if selected string in the focused leo body
-    if (vscode.window.activeTextEditor &amp;&amp; vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-        // was active text editor leoBody, check if selection length
-        if (vscode.window.activeTextEditor.selections.length === 1 &amp;&amp; !vscode.window.activeTextEditor.selection.isEmpty) {
-            // Exactly one selection range, and is not empty, so try "executing" only the selected content.
-            let w_selection: vscode.Selection = vscode.window.activeTextEditor.selection;
-            let w_script: string = vscode.window.activeTextEditor.document.getText(w_selection);
-            if (w_script.length) {
-                return this.nodeCommand({
-                    action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
-                    node: undefined,
-                    refreshType: { tree: true, body: true, buttons: true, states: true, documents: true }, //
-                    fromOutline: false,
-                    text: w_script
-                });
-            }
-        }
-
-    }
-    // * Catch all call: execute selected node outline with a single space as script
-    return this.nodeCommand({
-        action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
-        node: undefined,
-        refreshType: { tree: true, body: true, buttons: true, states: true, documents: true }, //
-        fromOutline: false,
-        text: " "
-    });
 }
 
 </t>
@@ -12133,39 +12103,6 @@ public sendConfigToServer(p_config: ConfigMembers): void {
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924211142.1">def executeScriptPackage(self, p_package):
-    '''Select a node and run its script'''
-    # TODO : Should be removed to finish #39
-    c, g = self.commander, self.g
-    if not 'node' in p_package:
-        return self._outputError("Error in executeScript no param node")
-    w_ap = p_package['node']
-    w_p = self._ap_to_p(w_ap)
-    if not w_p:
-        return self._outputError("Error in executeScript no w_p node found")
-    c.selectPosition(w_p)
-    w_script = ""
-    if 'text' in p_package:
-        w_script = str(p_package['text'])
-    if not w_script or w_script.isspace():
-        # Empty selection.
-        c.executeScript()
-        return self._outputPNode(self.commander.p)
-    # * Mimic getScript !!
-    try:
-        # Remove extra leading whitespace so the user may execute indented code.
-        w_script = g.removeExtraLws(w_script, c.tab_width)
-        w_script = g.extractExecutableString(c, w_p, w_script)
-        w_validScript = g.composeScript(
-            c, w_p, w_script, forcePythonSentinels=True, useSentinels=True)
-        c.executeScript(script=w_validScript)
-    except Exception as e:
-        g.trace('Error while executing script')
-        print('Error while executing script', flush=True)
-        print(str(e), flush=True)
-    return self._outputPNode(self.commander.p)
-
-</t>
 <t tx="felix.20200924223845.1"></t>
 <t tx="felix.20200924223910.1"></t>
 <t tx="felix.20200924223945.1"></t>
@@ -12748,6 +12685,42 @@ public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
     md: 'markdown'
 };
 
+</t>
+<t tx="felix.20201105010253.1">{
+  "command": "leointeg.extract",
+  "key": "ctrl+shift+d",
+  "mac": "cmd+shift+d",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.extract",
+  "key": "ctrl+shift+d",
+  "mac": "cmd+shift+d",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.extractNames",
+  "key": "ctrl+shift+n",
+  "mac": "cmd++shift+n",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.extractNames",
+  "key": "ctrl+shift+n",
+  "mac": "cmd+shift+n",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+</t>
+<t tx="felix.20201105010614.1">{
+  "command": "leointeg.extract",
+  "category": "Leo",
+  "title": "Extract"
+},
+{
+  "command": "leointeg.extractNames",
+  "category": "Leo",
+  "title": "Extract Names"
+},
 </t>
 </tnodes>
 </leo_file>

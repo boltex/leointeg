@@ -1274,7 +1274,7 @@ export class LeoIntegration {
 
     /**
      * * Save and rename from this.bodyUri to p_newGnx: This changes the body content & blocks 'undos' from crossing over
-     * ! BUG : UNDO NOW CROSS OVER !
+     * ! BUG : UNDO NOW CROSSES OVER SINCE vscode1.48 or so... !
      * @param p_newGnx New gnx body id to switch to
      */
     private _switchBody(p_newGnx: string): Thenable<boolean> {
@@ -1521,41 +1521,6 @@ export class LeoIntegration {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.TOO_FAST + p_userCommand.action);
             return false;
         }
-    }
-
-    /**
-     * * Launches the 'Execute Script' Leo command with the selected text, if any, otherwise the selected node itself is used
-     * @returns True if the selection, or node, was started as a script
-     * TODO : REMOVE WHEN ISSUE #39 IS DONE
-     */
-    public executeScript(): boolean {
-        // * Check if selected string in the focused leo body
-        if (vscode.window.activeTextEditor && vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-            // was active text editor leoBody, check if selection length
-            if (vscode.window.activeTextEditor.selections.length === 1 && !vscode.window.activeTextEditor.selection.isEmpty) {
-                // Exactly one selection range, and is not empty, so try "executing" only the selected content.
-                let w_selection: vscode.Selection = vscode.window.activeTextEditor.selection;
-                let w_script: string = vscode.window.activeTextEditor.document.getText(w_selection);
-                if (w_script.length) {
-                    return this.nodeCommand({
-                        action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
-                        node: undefined,
-                        refreshType: { tree: true, body: true, buttons: true, states: true, documents: true }, //
-                        fromOutline: false,
-                        text: w_script
-                    });
-                }
-            }
-
-        }
-        // * Catch all call: execute selected node outline with a single space as script
-        return this.nodeCommand({
-            action: Constants.LEOBRIDGE.EXECUTE_SCRIPT,
-            node: undefined,
-            refreshType: { tree: true, body: true, buttons: true, states: true, documents: true }, //
-            fromOutline: false,
-            text: " "
-        });
     }
 
     /**
