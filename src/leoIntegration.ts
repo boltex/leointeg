@@ -163,6 +163,9 @@ export class LeoIntegration {
         flush(): void;
     };
 
+    // * test vars
+    private _testBodyUri: string = "";
+
     constructor(private _context: vscode.ExtensionContext) {
         // * Setup States
         this.leoStates = new LeoStates(_context, this);
@@ -779,7 +782,7 @@ export class LeoIntegration {
                 this._scrollDirty = true;
                 this._scroll = p_event.visibleRanges[0];
                 this._scrollGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
-                console.log('scroll', JSON.stringify(this._scroll.start), JSON.stringify(this._scroll.end),);
+                console.log('_onChangeEditorScroll: ', JSON.stringify(this._scroll.start), JSON.stringify(this._scroll.end),);
             }
         }
     }
@@ -1354,6 +1357,7 @@ export class LeoIntegration {
                 this._leoFileSystem.fireRefreshFile(utils.leoUriToStr(this.bodyUri));
             }, 0);
         }
+        this._testBodyUri = utils.leoUriToStr(this.bodyUri);
         return vscode.workspace.openTextDocument(this.bodyUri).then(p_document => {
 
             this._bodyTextDocument = p_document;
@@ -1370,11 +1374,10 @@ export class LeoIntegration {
                         const w_leoBodySel: BodySelectionInfo = w_bodyStates.selection;
 
                         if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
-                            console.log('bodyStates from DIFFERENT GNX ' + w_leoBodySel.gnx + " " + this.lastSelectedNode!.gnx);
+                            console.log('GOT STATES DIFFERENT GNX: ' + w_leoBodySel.gnx + ", last sel: " + this.lastSelectedNode!.gnx + ", bodyUri was: " + this._testBodyUri);
                         }
                         const w_scroll = w_leoBodySel.scroll;
-                        console.log('SCROLL normal', w_scroll);
-                        console.log('SCROLL json' + JSON.stringify(w_scroll));
+                        console.log('GET_BODY_STATES json' + JSON.stringify(w_scroll));
 
                         let w_scrollRange: vscode.Range | undefined;
                         if (w_scroll && w_scroll.start && w_scroll.end &&

@@ -2633,7 +2633,7 @@ class LeoBridgeIntegController:
         w_endSel = f_convert(
             w_body, w_end['line'], w_end['col'])
 
-        print("w_same " + str(w_same) + " w_insert " + str(w_insert) +
+        print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
               " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
         # print("for body"+ w_body)
 
