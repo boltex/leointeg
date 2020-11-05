@@ -9363,6 +9363,9 @@ export class LeoIntegration {
         flush(): void;
     };
 
+    // * test vars
+    private _testBodyUri: string = "";
+
     @others
 }
 </t>
@@ -9963,6 +9966,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
             this._leoFileSystem.fireRefreshFile(utils.leoUriToStr(this.bodyUri));
         }, 0);
     }
+    this._testBodyUri = utils.leoUriToStr(this.bodyUri);
     return vscode.workspace.openTextDocument(this.bodyUri).then(p_document =&gt; {
 
         this._bodyTextDocument = p_document;
@@ -9979,11 +9983,10 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
                     const w_leoBodySel: BodySelectionInfo = w_bodyStates.selection;
 
                     if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
-                        console.log('bodyStates from DIFFERENT GNX ' + w_leoBodySel.gnx + " " + this.lastSelectedNode!.gnx);
+                        console.log('GOT STATES DIFFERENT GNX: ' + w_leoBodySel.gnx + ", last sel: " + this.lastSelectedNode!.gnx + ", bodyUri was: " + this._testBodyUri);
                     }
                     const w_scroll = w_leoBodySel.scroll;
-                    console.log('SCROLL normal', w_scroll);
-                    console.log('SCROLL json' + JSON.stringify(w_scroll));
+                    console.log('GET_BODY_STATES json' + JSON.stringify(w_scroll));
 
                     let w_scrollRange: vscode.Range | undefined;
                     if (w_scroll &amp;&amp; w_scroll.start &amp;&amp; w_scroll.end &amp;&amp;
@@ -12628,7 +12631,7 @@ def tag_configure(self, colorName, **keys): pass
     w_endSel = f_convert(
         w_body, w_end['line'], w_end['col'])
 
-    print("w_same " + str(w_same) + " w_insert " + str(w_insert) +
+    print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
           " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
     # print("for body"+ w_body)
 
@@ -12686,7 +12689,7 @@ private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent
             this._scrollDirty = true;
             this._scroll = p_event.visibleRanges[0];
             this._scrollGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
-            console.log('scroll', JSON.stringify(this._scroll.start), JSON.stringify(this._scroll.end),);
+            console.log('_onChangeEditorScroll: ', JSON.stringify(this._scroll.start), JSON.stringify(this._scroll.end),);
         }
     }
 }
