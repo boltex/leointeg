@@ -440,7 +440,7 @@
 <v t="felix.20200719025231.14"><vh>_removeLastFile</vh></v>
 <v t="felix.20200719025231.15"><vh>showRecentLeoFiles</vh></v>
 </v>
-<v t="ekr.20200815085229.1"><vh>Terminal pane</vh>
+<v t="ekr.20200815085229.1"><vh>Log &amp; Terminal panes</vh>
 <v t="ekr.20200815085316.1"><vh>showTerminalPane</vh></v>
 <v t="ekr.20200815085316.2"><vh>hideTerminalPane</vh></v>
 <v t="ekr.20200815085316.3"><vh>addTerminalPaneEntry</vh></v>
@@ -448,7 +448,7 @@
 <v t="ekr.20200815085316.5"><vh>hideLogPane</vh></v>
 <v t="ekr.20200815085316.6"><vh>addLogPaneEntry</vh></v>
 </v>
-<v t="felix.20200719031802.1"><vh>States </vh>
+<v t="felix.20200719031802.1"><vh>Document States</vh>
 <v t="felix.20200719025231.19"><vh>_triggerGetStates</vh></v>
 <v t="felix.20200719025231.20"><vh>_isBusy</vh></v>
 <v t="felix.20200719025231.21"><vh>_isCurrentFileNamed</vh></v>
@@ -619,6 +619,8 @@
 <v t="felix.20200718195558.1"><vh>@clean src/utils.ts</vh>
 <v t="felix.20200718195558.2"><vh>padNumber2</vh></v>
 <v t="ekr.20200815091619.1"><vh>hashNode</vh></v>
+<v t="felix.20201106200100.1"><vh>addFileToGlobal</vh></v>
+<v t="felix.20201106200109.1"><vh>removeFileFromGlobal</vh></v>
 <v t="felix.20200718195558.3"><vh>buildNodeIconPaths</vh></v>
 <v t="felix.20200718195558.4"><vh>buildDocumentIconPaths</vh></v>
 <v t="ekr.20200815091945.1"><vh>buildButtonsIconPaths</vh></v>
@@ -954,7 +956,7 @@ public addLogPaneEntry(p_message: string): void {
 
 </t>
 <t tx="ekr.20200815085628.1">/**
- * * Handles the opening of a file in vscode, and check if it's a Leo file
+ * * Handles the opening of a file in vscode, and check if it's a Leo file to suggest opening options
  * @param p_event The opened document event passed by vscode
  */
 private _onDidOpenTextDocument(p_document: vscode.TextDocument): void {
@@ -1007,7 +1009,7 @@ public configTreeRefresh(): void {
         this._revealType = RevealType.RevealSelect;
         this._preventShowBody = true;
         this._treeId++;
-        this._leoTreeDataProvider.refreshTreeRoot();
+        this._leoTreeProvider.refreshTreeRoot();
     }
 }
 
@@ -1021,12 +1023,12 @@ private _refreshOutline(p_revealType?: RevealType): void {
         this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
     }
     // Force showing last used Leo outline first
-    if (this._lastSelectedNode &amp;&amp; !(this._leoTreeExplorerView.visible || this._leoTreeStandaloneView.visible)) {
-        this._lastVisibleTreeView.reveal(this._lastSelectedNode).then(() =&gt; {
-            this._leoTreeDataProvider.refreshTreeRoot();
+    if (this._lastSelectedNode &amp;&amp; !(this._leoTreeExView.visible || this._leoTreeView.visible)) {
+        this._lastTreeView.reveal(this._lastSelectedNode).then(() =&gt; {
+            this._leoTreeProvider.refreshTreeRoot();
         });
     } else {
-        this._leoTreeDataProvider.refreshTreeRoot();
+        this._leoTreeProvider.refreshTreeRoot();
     }
 }
 
@@ -1037,11 +1039,11 @@ private _refreshOutline(p_revealType?: RevealType): void {
  * @param p_options Options object for the revealed node to either also select it, focus it, and expand it
  */
 private _revealTreeViewNode(p_leoNode: LeoNode, p_options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): Thenable&lt;void&gt; {
-    if (this._leoTreeStandaloneView.visible) {
-        return this._leoTreeStandaloneView.reveal(p_leoNode, p_options);
+    if (this._leoTreeView.visible) {
+        return this._leoTreeView.reveal(p_leoNode, p_options);
     }
-    if (this._leoTreeExplorerView.visible &amp;&amp; this.config.treeInExplorer) {
-        return this._leoTreeExplorerView.reveal(p_leoNode, p_options);
+    if (this._leoTreeExView.visible &amp;&amp; this.config.treeInExplorer) {
+        return this._leoTreeExView.reveal(p_leoNode, p_options);
     }
     return Promise.resolve(); // Defaults to resolving even if both are hidden
 }
@@ -1067,7 +1069,6 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: A
         this._fromOutline = false;
         w_revealType = RevealType.RevealSelect;
     }
-    // Set this._needRefreshBody. Used when finding the selected node and showing the BODY to trigger a 'fireRefreshFile'
     if (this._refreshType.body) {
         // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
         if (this._bodyLastChangedDocument &amp;&amp; this._bodyLastChangedDocument.isDirty) {
@@ -1240,7 +1241,7 @@ public nodeCommand(p_userCommand: UserCommand): boolean {
 <t tx="ekr.20200815090517.1">/**
  * * Invoke an '@button' click directly by index string. Used by '@buttons' treeview.
  */
-public clickButton(p_node: LeoButtonNode): void {
+public clickAtButton(p_node: LeoButtonNode): void {
     if (this._isBusy()) { return; } // Warn user to wait for end of busy state
     this.sendAction(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
         .then((p_clickButtonResult: LeoBridgePackage) =&gt; {
@@ -1252,7 +1253,7 @@ public clickButton(p_node: LeoButtonNode): void {
 <t tx="ekr.20200815090517.2">/**
  * * Removes an '@button' from Leo's button dict, directly by index string. Used by '@buttons' treeview.
  */
-public removeButton(p_node: LeoButtonNode): void {
+public removeAtButton(p_node: LeoButtonNode): void {
     if (this._isBusy()) { return; } // Warn user to wait for end of busy state
     this.sendAction(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
         .then((p_removeButtonResult: LeoBridgePackage) =&gt; {
@@ -1400,8 +1401,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: false
 })],
 
-[CMD.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.clickButton(p_node)], // Not referenced in package.json
-[CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.removeButton(p_node)],
+[CMD.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.clickAtButton(p_node)], // Not referenced in package.json
+[CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.removeAtButton(p_node)],
 
 [CMD.CLOSE_FILE, () =&gt; w_leo.closeLeoFile()],
 [CMD.NEW_FILE, () =&gt; w_leo.newLeoFile()],
@@ -7708,6 +7709,7 @@ public refreshTreeNode(p_node: LeoNode): void {
  * * Refresh the whole outline
  */
 public refreshTreeRoot(): void {
+    // TODO : have this return a promise that resolves when the selected node is encountered by ap_to_p
     this._onDidChangeTreeData.fire(undefined);
 }
 
@@ -9102,7 +9104,6 @@ import { LeoDocumentNode } from "./leoDocumentNode";
 import { LeoStates } from "./leoStates";
 import { LeoButtonsProvider } from "./leoButtons";
 import { LeoButtonNode } from "./leoButtonNode";
-import { constants } from "buffer";
 
 @others
 @language typescript
@@ -9110,13 +9111,14 @@ import { constants } from "buffer";
 </t>
 <t tx="felix.20200719025231.10"></t>
 <t tx="felix.20200719025231.11">/**
- * * Open Leo files found in context.globalState.leoFiles
+ * * Open Leo files found in "context.globalState.leoFiles"
+ * @returns promise that resolves with editor of last opened from the list, or rejects if empty
  */
-private _openLastFiles(): void {
+private _openLastFiles(): Thenable&lt;vscode.TextEditor&gt; {
     // Loop through context.globalState.&lt;something&gt; and check if they exist: open them
     const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
     if (w_lastFiles.length) {
-        this.sendAction(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
+        return this.sendAction(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
             .then((p_openFileResult: LeoBridgePackage) =&gt; {
                 this.leoStates.leoBridgeReady = true;
                 return this._setupOpenedLeoDocument(p_openFileResult.opened!);
@@ -9125,6 +9127,8 @@ private _openLastFiles(): void {
                 console.log('in .then not opened or already opened');
                 return Promise.reject(p_errorOpen);
             });
+    } else {
+        return Promise.reject("Recent files list is empty");
     }
 }
 
@@ -9132,87 +9136,61 @@ private _openLastFiles(): void {
 <t tx="felix.20200719025231.12">/**
  * * Adds to the context.globalState.&lt;xxx&gt;files if not already in there (no duplicates)
  * @param p_file path+file name string
+ * @returns A promise that resolves when all global storage modifications are done
  */
-private _addRecentAndLastFile(p_file: string): void {
+private _addRecentAndLastFile(p_file: string): Thenable&lt;void&gt; {
     if (!p_file.length) {
-        return;
+        return Promise.reject();
     }
-    // just push that string into the context.globalState.&lt;something&gt; array
-    const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
-    if (w_recentFiles) {
-        if (!w_recentFiles.includes(p_file)) {
-            w_recentFiles.push(p_file);
-            if (w_recentFiles.length &gt; 10) {
-                w_recentFiles.shift();
-            }
-        }
-        this._context.globalState.update(Constants.RECENT_FILES_KEY, w_recentFiles); // update with added file
-    } else {
-        // First so create key entry
-        this._context.globalState.update(Constants.RECENT_FILES_KEY, [p_file]); // array of single file
-    }
-    // lastFiles too
-    // TODO : REFACTOR IF DUPLICATE CODE
-    const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
-    if (w_lastFiles) {
-        if (!w_lastFiles.includes(p_file)) {
-            w_lastFiles.push(p_file);
-            if (w_lastFiles.length &gt; 10) {
-                w_lastFiles.shift();
-            }
-        }
-        this._context.globalState.update(Constants.LAST_FILES_KEY, w_lastFiles); // update with added file
-    } else {
-        // First so create key entry
-        this._context.globalState.update(Constants.LAST_FILES_KEY, [p_file]); // array of single file
-    }
+    return Promise.all([
+        utils.addFileToGlobal(this._context, p_file, Constants.RECENT_FILES_KEY),
+        utils.addFileToGlobal(this._context, p_file, Constants.LAST_FILES_KEY)
+    ]).then(() =&gt; {
+        return Promise.resolve();
+    });
 }
 
 </t>
 <t tx="felix.20200719025231.13">/**
  * * Removes from context.globalState.leoRecentFiles if found (should not have duplicates)
  * @param p_file path+file name string
+ * @returns A promise that resolves when the global storage modification is done
  */
-private _removeRecentFile(p_file: string): void {
+private _removeRecentFile(p_file: string): Thenable&lt;void&gt; {
     // TODO : BEFORE SAVE-AS IF ALREADY SAVED
-    // Check if exist in context.globalState.&lt;something&gt; and remove if found
-    const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
-    if (w_recentFiles &amp;&amp; w_recentFiles.includes(p_file)) {
-        w_recentFiles.splice(w_recentFiles.indexOf(p_file), 1);
-        this._context.globalState.update(Constants.RECENT_FILES_KEY, w_recentFiles); // update with added file
-    }
+    return utils.removeFileFromGlobal(this._context, p_file, Constants.RECENT_FILES_KEY);
 }
 
 </t>
 <t tx="felix.20200719025231.14">/**
  * * Removes from context.globalState.leoLastFiles if found (should not have duplicates)
  * @param p_file path+file name string
+ * @returns A promise that resolves when the global storage modification is done
  */
-private _removeLastFile(p_file: string): void {
-    // Check if exist in context.globalState.&lt;something&gt; and remove if found
-    const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
-    if (w_lastFiles &amp;&amp; w_lastFiles.includes(p_file)) {
-        w_lastFiles.splice(w_lastFiles.indexOf(p_file), 1);
-        this._context.globalState.update(Constants.LAST_FILES_KEY, w_lastFiles); // update with added file
-    }
+private _removeLastFile(p_file: string): Thenable&lt;void&gt; {
+    return utils.removeFileFromGlobal(this._context, p_file, Constants.LAST_FILES_KEY);
 }
 
 </t>
 <t tx="felix.20200719025231.15">/**
  * * Shows the recent Leo files list, choosing one will open it
+ * @returns A promise that resolves when the a file is finally opened, rejected otherwise
  */
-public showRecentLeoFiles(): void {
+public showRecentLeoFiles(): Thenable&lt;vscode.TextEditor&gt; {
     const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
-    if (!w_recentFiles.length) { return; }
-    vscode.window.showQuickPick(
+    if (!w_recentFiles.length) {
+        return Promise.reject("Recent files list is empty");
+    }
+    return vscode.window.showQuickPick(
         w_recentFiles,
         { placeHolder: Constants.USER_MESSAGES.OPEN_RECENT_FILE }
-    )
-        .then(p_result =&gt; {
-            if (p_result) {
-                this.openLeoFile(vscode.Uri.file(p_result));
-            }
-        });
+    ).then(p_result =&gt; {
+        if (p_result) {
+            return this.openLeoFile(vscode.Uri.file(p_result));
+        } else {
+            return Promise.reject("Cancelled");
+        }
+    });
 }
 
 </t>
@@ -9246,9 +9224,9 @@ private _triggerGetStates(): void {
 export class LeoIntegration {
 
     // * Status Flags
-    private _leoIsConnecting: boolean = false; // Used in connect method to prevent other attempts while trying
-    private _leoBridgeReadyPromise: Promise&lt;LeoBridgePackage&gt; | undefined; // Set when leoBridge has a leo controller ready
-    private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Title has to be kept because it might need to be set (again) when either tree is first shown when switching visibility
+    private _leoIsConnecting: boolean = false; // Used in connect method, to prevent other attempts while trying
+    private _leoBridgeReadyPromise: Promise&lt;LeoBridgePackage&gt; | undefined; // Is set when leoBridge has a leo controller ready
+    private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Might need to be re-set when switching visibility
     private _hasShownContextOpenMessage: boolean = false; // Used to show this information only once if a Leo file is opened via the explorer
 
     // * State flags
@@ -9272,10 +9250,10 @@ export class LeoIntegration {
     private _leoBridge: LeoBridge; // Singleton service to access leobridgeserver
 
     // * Outline Pane
-    private _leoTreeDataProvider: LeoOutlineProvider; // TreeDataProvider single instance
-    private _leoTreeStandaloneView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Tree View Container with an Activity Bar icon
-    private _leoTreeExplorerView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Explorer Sidebar
-    private _lastVisibleTreeView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Explorer Sidebar
+    private _leoTreeProvider: LeoOutlineProvider; // TreeDataProvider single instance
+    private _leoTreeView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Tree View Container with an Activity Bar icon
+    private _leoTreeExView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Explorer Sidebar
+    private _lastTreeView: vscode.TreeView&lt;LeoNode&gt;; // Last visible treeview
     private _treeId: number = 0; // Starting salt for tree node murmurhash generated Ids
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
@@ -9301,7 +9279,6 @@ export class LeoIntegration {
     private _currentDocumentChanged: boolean = false; // if clean and an edit is done: refresh opened documents view
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
-    // TODO : REMOVE private _needRefreshBody: boolean = false; // Flag for commands that might change current body
     private _refreshType: ReqRefresh = {}; // Flags for commands to require parts of UI to refresh
     private _fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
     private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
@@ -9336,10 +9313,8 @@ export class LeoIntegration {
     private _leoButtons: vscode.TreeView&lt;LeoButtonNode&gt;;
     private _leoButtonsExplorer: vscode.TreeView&lt;LeoButtonNode&gt;;
 
-    // * Log Pane
+    // * Log and terminal Panes
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(Constants.GUI.LOG_PANE_TITLE);
-
-    // * Terminal Pane
     private _leoTerminalPane: vscode.OutputChannel | undefined;
 
     // * Status Bar
@@ -9370,7 +9345,7 @@ export class LeoIntegration {
     };
 
     // * test vars
-    private _testBodyUri: string = "";
+    private _testBodyUri: string = ""; // TODO : CLEANUP BEFORE RELEASES
 
     @others
 }
@@ -9378,6 +9353,8 @@ export class LeoIntegration {
 <t tx="felix.20200719025231.20">/**
  * * Returns the 'busy' state flag of the command stack, and leoBridge stack, while showing a message if it is.
  * Needed by special unstackable commands such as new, open,...
+ * @param p_all Flag to also return true if either front command stack or bridge stack is busy
+ * @returns true if command stack is busy, also returns true if p_all flag is set and bridge is busy
  */
 private _isBusy(p_all?: boolean): boolean {
     if (this._commandStack.size() || (p_all &amp;&amp; this._leoBridge.isBusy())) {
@@ -9411,6 +9388,8 @@ private _setupNoOpenedLeoDocument(): void {
 </t>
 <t tx="felix.20200719025231.23">/**
  * * A Leo file was opened: setup leoInteg's UI accordingly.
+ * @param p_openFileResult Returned info about currently opened and editing document
+ * @return a promise that resolves to an opened body pane text editor
  */
 private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackageOpenedInfo): Thenable&lt;vscode.TextEditor&gt; {
     const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
@@ -9500,7 +9479,7 @@ private _onChangeCollapsedState(p_event: vscode.TreeViewExpansionEvent&lt;LeoNod
  */
 private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
     if (p_event.visible) {
-        this._lastVisibleTreeView = p_explorerView ? this._leoTreeExplorerView : this._leoTreeStandaloneView;
+        this._lastTreeView = p_explorerView ? this._leoTreeExView : this._leoTreeView;
         this.setTreeViewTitle();
         this._needLastSelectedRefresh = true; // Its a new node in a new tree so refresh lastSelectedNode too
         this._treeId++;
@@ -9558,7 +9537,7 @@ private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_interna
     this.documentIcons = utils.buildDocumentIconPaths(_context);
     this.buttonIcons = utils.buildButtonsIconPaths(_context);
 
-    // * File Browser
+    // * Create file browser instance
     this._leoFilesBrowser = new LeoFilesBrowser(_context);
 
     // * Setup leoBridge
@@ -9567,39 +9546,40 @@ private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_interna
     // * Setup frontend command stack
     this._commandStack = new CommandStack(_context, this);
 
-    // * Same data provider for both outline trees, Leo view and Explorer view
-    this._leoTreeDataProvider = new LeoOutlineProvider(this);
+    // * Create a single data provider for both outline trees, Leo view and Explorer view
+    this._leoTreeProvider = new LeoOutlineProvider(this);
 
-    // * Leo view and Explorer view outline panes - Uses 'select node' command, so 'onDidChangeSelection' is not used
-    this._leoTreeStandaloneView = vscode.window.createTreeView(Constants.TREEVIEW_ID, { showCollapseAll: false, treeDataProvider: this._leoTreeDataProvider });
-    this._leoTreeStandaloneView.onDidExpandElement((p_event =&gt; this._onChangeCollapsedState(p_event, true, this._leoTreeStandaloneView)));
-    this._leoTreeStandaloneView.onDidCollapseElement((p_event =&gt; this._onChangeCollapsedState(p_event, false, this._leoTreeStandaloneView)));
-    this._leoTreeStandaloneView.onDidChangeVisibility((p_event =&gt; this._onTreeViewVisibilityChanged(p_event, false))); // * Trigger 'show tree in Leo's view'
-    this._leoTreeExplorerView = vscode.window.createTreeView(Constants.TREEVIEW_EXPLORER_ID, { showCollapseAll: false, treeDataProvider: this._leoTreeDataProvider });
-    this._leoTreeExplorerView.onDidExpandElement((p_event =&gt; this._onChangeCollapsedState(p_event, true, this._leoTreeExplorerView)));
-    this._leoTreeExplorerView.onDidCollapseElement((p_event =&gt; this._onChangeCollapsedState(p_event, false, this._leoTreeExplorerView)));
-    this._leoTreeExplorerView.onDidChangeVisibility((p_event =&gt; this._onTreeViewVisibilityChanged(p_event, true))); // * Trigger 'show tree in explorer view'
-    this._lastVisibleTreeView = this.config.treeInExplorer ? this._leoTreeExplorerView : this._leoTreeStandaloneView;
+    // * Create Leo stand-alone view and Explorer view outline panes
+    // Uses 'select node' command, so 'onDidChangeSelection' is not used
+    this._leoTreeView = vscode.window.createTreeView(Constants.TREEVIEW_ID, { showCollapseAll: false, treeDataProvider: this._leoTreeProvider });
+    this._leoTreeView.onDidExpandElement((p_event =&gt; this._onChangeCollapsedState(p_event, true, this._leoTreeView)));
+    this._leoTreeView.onDidCollapseElement((p_event =&gt; this._onChangeCollapsedState(p_event, false, this._leoTreeView)));
+    this._leoTreeView.onDidChangeVisibility((p_event =&gt; this._onTreeViewVisibilityChanged(p_event, false))); // * Trigger 'show tree in Leo's view'
+    this._leoTreeExView = vscode.window.createTreeView(Constants.TREEVIEW_EXPLORER_ID, { showCollapseAll: false, treeDataProvider: this._leoTreeProvider });
+    this._leoTreeExView.onDidExpandElement((p_event =&gt; this._onChangeCollapsedState(p_event, true, this._leoTreeExView)));
+    this._leoTreeExView.onDidCollapseElement((p_event =&gt; this._onChangeCollapsedState(p_event, false, this._leoTreeExView)));
+    this._leoTreeExView.onDidChangeVisibility((p_event =&gt; this._onTreeViewVisibilityChanged(p_event, true))); // * Trigger 'show tree in explorer view'
+    this._lastTreeView = this.config.treeInExplorer ? this._leoTreeExView : this._leoTreeView;
 
-    // * Leo Opened Documents Treeview Providers and tree views
+    // * Create Leo Opened Documents Treeview Providers and tree views
     this._leoDocumentsProvider = new LeoDocumentsProvider(this);
     this._leoDocuments = vscode.window.createTreeView(Constants.DOCUMENTS_ID, { showCollapseAll: false, treeDataProvider: this._leoDocumentsProvider });
     this._leoDocuments.onDidChangeVisibility((p_event =&gt; this._onDocTreeViewVisibilityChanged(p_event, false)));
     this._leoDocumentsExplorer = vscode.window.createTreeView(Constants.DOCUMENTS_EXPLORER_ID, { showCollapseAll: false, treeDataProvider: this._leoDocumentsProvider });
     this._leoDocumentsExplorer.onDidChangeVisibility((p_event =&gt; this._onDocTreeViewVisibilityChanged(p_event, true)));
 
-    // * '@buttons' Treeview Providers and tree views
+    // * Create '@buttons' Treeview Providers and tree views
     this._leoButtonsProvider = new LeoButtonsProvider(this);
     this._leoButtons = vscode.window.createTreeView(Constants.BUTTONS_ID, { showCollapseAll: false, treeDataProvider: this._leoButtonsProvider });
     this._leoButtons.onDidChangeVisibility((p_event =&gt; this._onButtonsTreeViewVisibilityChanged(p_event, false)));
     this._leoButtonsExplorer = vscode.window.createTreeView(Constants.BUTTONS_EXPLORER_ID, { showCollapseAll: false, treeDataProvider: this._leoButtonsProvider });
     this._leoButtonsExplorer.onDidChangeVisibility((p_event =&gt; this._onButtonsTreeViewVisibilityChanged(p_event, true)));
 
-    // * Body Pane
+    // * Create Body Pane
     this._leoFileSystem = new LeoBodyProvider(this);
     this._bodyMainSelectionColumn = 1;
 
-    // * Status bar: Show keyboard-Shortcut-Flag to signify Leo keyboard shortcuts are active
+    // * Create Status bar Entry
     this._leoStatusBar = new LeoStatusBar(_context, this);
 
     // * Automatic server start service
@@ -9608,32 +9588,23 @@ private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_interna
     // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
     vscode.window.onDidChangeActiveTextEditor(p_event =&gt; this._onActiveEditorChanged(p_event));
 
-    // * React to change in selection and cursor position
+    // * React to change in selection, cursor position and scroll position
     vscode.window.onDidChangeTextEditorSelection(p_event =&gt; this._onChangeEditorSelection(p_event));
-
-    // * React to change in scroll position and window size
     vscode.window.onDidChangeTextEditorVisibleRanges((p_event =&gt; this._onChangeEditorScroll(p_event)));
 
-    // * The view column of an editor has changed (when shifting editors through closing/inserting editors or closing columns)
-    // No effect when dragging editor tabs: it just closes and reopens in other column, see '_onChangeVisibleEditors'
-    vscode.window.onDidChangeTextEditorViewColumn(() =&gt; this.triggerBodySave());
-
-    // * Triggers when a different text editor in any column, either tab or body, is focused
+    // * Triggers when a different text editor/vscode window changed focus or visibility, or dragged
     // This is also what triggers after drag and drop, see '_onChangeEditorViewColumn'
+    vscode.window.onDidChangeTextEditorViewColumn(() =&gt; this.triggerBodySave());
     vscode.window.onDidChangeVisibleTextEditors(() =&gt; this.triggerBodySave());
-
-    // * Triggers when a vscode window have gained or lost focus
     vscode.window.onDidChangeWindowState(() =&gt; this.triggerBodySave());
 
-    // * Edited and saved the document, does it on any document in editor
-    // vscode.workspace.onDidSaveTextDocument(p_event =&gt; this._onDocumentSaved(p_event)); // ! Not used for now
-
     // * React when typing and changing body pane
-    vscode.workspace.onDidChangeTextDocument(p_event =&gt; this._onDocumentChanged(p_event)); // * Detect when user types in body pane here
+    vscode.workspace.onDidChangeTextDocument(p_event =&gt; this._onDocumentChanged(p_event));
 
     // * React to configuration settings events
     vscode.workspace.onDidChangeConfiguration(p_event =&gt; this._onChangeConfiguration(p_event));
 
+    // * React to opening of any file in vscode
     vscode.workspace.onDidOpenTextDocument(p_document =&gt; this._onDidOpenTextDocument(p_document));
 
     // * Debounced refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
@@ -9675,6 +9646,7 @@ private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
 <t tx="felix.20200719025231.32">/**
  * * Save body to Leo if its dirty. That is, only if a change has been made to the body 'document' so far
  * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
+ * @returns a promise that resolves when the possible saving process is finished
  */
 public triggerBodySave(p_forcedVsCodeSave?: boolean): Thenable&lt;boolean&gt; {
     // * Save body to Leo if a change has been made to the body 'document' so far
@@ -9693,6 +9665,7 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean): Thenable&lt;boolean&gt; {
  * * Sets new body text on leo's side, and may optionally save vsCode's body editor (which will trim spaces)
  * @param p_document Vscode's text document which content will be used to be the new node's body text in Leo
  * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
+ * @returns a promise that resolves when the complete saving process is finished
  */
 private _bodySaveDocument(p_document: vscode.TextDocument, p_forcedVsCodeSave?: boolean): Thenable&lt;boolean&gt; {
     if (p_document) {
@@ -9755,7 +9728,7 @@ public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
  */
 public showOutline(p_focusOutline: boolean): void {
     if (this._lastSelectedNode) {
-        this._lastVisibleTreeView.reveal(this._lastSelectedNode, {
+        this._lastTreeView.reveal(this._lastSelectedNode, {
             select: true,
             focus: p_focusOutline
         });
@@ -9862,7 +9835,7 @@ private _showBodyIfRequired(p_aside: boolean, p_showBodyKeepFocus: boolean, p_fo
         return Promise.resolve(vscode.window.activeTextEditor!);
     }
     // TODO : Find Better Conditions! Always true for now...
-    if (true || p_forceOpen || this._leoTreeStandaloneView.visible) {
+    if (true || p_forceOpen || this._leoTreeView.visible) {
         // ! Always true for now to stabilize refreshes after derived files refreshes and others.
         return this.showBody(p_aside, p_showBodyKeepFocus);
     } else {
@@ -9946,9 +9919,9 @@ public closeBody(): void {
 
 </t>
 <t tx="felix.20200719025231.5">/**
- * * Sends an action for leobridgeserver.py to run with Leo. This is used mostly by LeoAsync, leoOutline and leoBody.
+ * * Core of the integration of Leo into vscode: Sends an action to leobridgeserver.py, to run in Leo.
  * @param p_action is the action string constant, from Constants.LEOBRIDGE
- * @param p_jsonParam (optional, defaults to "null", which translates to None in python) a JSON string to be given to the python side, often built with JSON.stringify(object)
+ * @param p_jsonParam (optional) JSON string to be given to the python script action call
  * @param p_deferredPayload (optional) a pre-made package that will be given back as the response, instead of package coming back from python
  * @param p_preventCall (optional) Flag for special case, only used at startup
  * @returns a Promise that will contain the JSON package answered back by leobridgeserver.py
@@ -9972,7 +9945,9 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
             this._leoFileSystem.fireRefreshFile(utils.leoUriToStr(this.bodyUri));
         }, 0);
     }
-    this._testBodyUri = utils.leoUriToStr(this.bodyUri);
+
+    this._testBodyUri = utils.leoUriToStr(this.bodyUri); // TODO : Test
+
     return vscode.workspace.openTextDocument(this.bodyUri).then(p_document =&gt; {
 
         this._bodyTextDocument = p_document;
@@ -10274,7 +10249,8 @@ public saveLeoFile(p_fromOutline?: boolean): void {
 
 </t>
 <t tx="felix.20200719025231.6">/**
- * * leoInteg starting entry point: Start a leoBridge server, and/or establish a connection to a server, based on config settings.
+ * * leoInteg starting entry point
+ * Starts a leoBridge server, and/or establish a connection to a server, based on config settings.
  */
 public startNetworkServices(): void {
     // * Check settings and start a server accordingly
@@ -10456,30 +10432,27 @@ public newLeoFile(): void {
  * * Shows an 'Open Leo File' dialog window and opens the chosen file
  * * If not shown already, it also shows the outline, body and log panes along with leaving focus in the outline
  */
-public openLeoFile(p_leoFileUri?: vscode.Uri): void {
-    if (this._isBusy(true)) { return; } // Warn user to wait for end of busy state
+public openLeoFile(p_leoFileUri?: vscode.Uri): Thenable&lt;vscode.TextEditor&gt; {
+    if (this._isBusy(true)) {
+        return Promise.reject(Constants.USER_MESSAGES.TOO_FAST);
+    }
+    let q_openedFile: Promise&lt;LeoBridgePackage&gt;; // Promise for opening a file
     if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath.trim()) {
-        this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_leoFileUri.fsPath.replace(/\\/g, "/") + '"')
-            .then((p_openFileResult: LeoBridgePackage) =&gt; {
-                return this._setupOpenedLeoDocument(p_openFileResult.opened!);
-            }, p_errorOpen =&gt; {
-                console.log('in .then not opened or already opened');
-                return Promise.reject(p_errorOpen);
-            });
+        q_openedFile = this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_leoFileUri.fsPath.replace(/\\/g, "/") + '"');
     } else {
-        this._leoFilesBrowser.getLeoFileUrl()
+        q_openedFile = this._leoFilesBrowser.getLeoFileUrl()
             .then(p_chosenLeoFile =&gt; {
                 return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
             }, p_errorGetFile =&gt; {
                 return Promise.reject(p_errorGetFile);
-            })
-            .then((p_openFileResult: LeoBridgePackage) =&gt; {
-                return this._setupOpenedLeoDocument(p_openFileResult.opened!);
-            }, p_errorOpen =&gt; {
-                console.log('in .then not opened or already opened');
-                return Promise.reject(p_errorOpen);
             });
     }
+    return q_openedFile.then((p_openFileResult: LeoBridgePackage) =&gt; {
+        return this._setupOpenedLeoDocument(p_openFileResult.opened!);
+    }, p_errorOpen =&gt; {
+        console.log('in .then not opened or already opened');
+        return Promise.reject(p_errorOpen);
+    });
 }
 
 </t>
@@ -10492,11 +10465,11 @@ public setTreeViewTitle(p_title?: string): void {
         this._currentOutlineTitle = p_title;
     }
     // * Set/Change outline pane title e.g. "INTEGRATION", "OUTLINE"
-    if (this._leoTreeStandaloneView) {
-        this._leoTreeStandaloneView.title = this._currentOutlineTitle;
+    if (this._leoTreeView) {
+        this._leoTreeView.title = this._currentOutlineTitle;
     }
-    if (this._leoTreeExplorerView) {
-        this._leoTreeExplorerView.title = Constants.GUI.EXPLORER_TREEVIEW_PREFIX + this._currentOutlineTitle;
+    if (this._leoTreeExView) {
+        this._leoTreeExView.title = Constants.GUI.EXPLORER_TREEVIEW_PREFIX + this._currentOutlineTitle;
     }
 }
 
@@ -10621,14 +10594,15 @@ public cancelConnect(p_message?: string): void {
 <t tx="felix.20200719030909.1"></t>
 <t tx="felix.20200719031115.1"></t>
 <t tx="felix.20200719031346.1">/**
- * * Send configuration through leoBridge to the server script, mostly used when checking if refreshing derived files is optional.
+ * * Send user's configuration through leoBridge to the server script
  * @param p_config A config object containing all the configuration settings
+ * @returns promise that will resolves with the package from "applyConfig" call in Leo bridge server
  */
-public sendConfigToServer(p_config: ConfigMembers): void {
+public sendConfigToServer(p_config: ConfigMembers): Thenable&lt;LeoBridgePackage&gt; {
     if (this.leoStates.fileOpenedReady) {
-        this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, JSON.stringify(p_config)).then(p_package =&gt; {
-            // Back from applying configuration to leobridgeserver.py
-        });
+        return this.sendAction(Constants.LEOBRIDGE.APPLY_CONFIG, JSON.stringify(p_config));
+    } else {
+        return Promise.reject("Leo File Not Ready");
     }
 }
 
@@ -12145,6 +12119,7 @@ public sendConfigToServer(p_config: ConfigMembers): void {
 </t>
 <t tx="felix.20200928004727.1">/**
  * * Handles detection of the active editor's selection change or cursor position
+ * @param p_event a change event containing the active editor's selection, if any.
  */
 private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent): void {
     if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
@@ -12159,6 +12134,7 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
 </t>
 <t tx="felix.20200928133238.1">/**
  * * Saves the cursor position along with the text selection range and scroll position
+ * @returns Promise that resolves when the "setSelection" action returns from Leo's side
  */
 public _bodySaveSelection(): Thenable&lt;boolean&gt; {
     if (this._selectionDirty &amp;&amp; this._selection) {
@@ -12209,7 +12185,6 @@ public _bodySaveSelection(): Thenable&lt;boolean&gt; {
             return Promise.resolve(true);
         });
     } else {
-
         return Promise.resolve(true);
     }
 }
@@ -12721,6 +12696,49 @@ public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
   "category": "Leo",
   "title": "Extract Names"
 },
+</t>
+<t tx="felix.20201106200100.1">/**
+ * * Performs the actual addition into globalState context
+ * @param p_context Needed to get to vscode global storage
+ * @param p_file path+file name string
+ * @param p_key A constant string such as RECENT_FILES_KEY or LAST_FILES_KEY
+ * @returns A promise that resolves when the global storage modification is done
+ */
+export function addFileToGlobal(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable&lt;void&gt; {
+    // Just push that string into the context.globalState.&lt;something&gt; array
+    const w_contextEntry: string[] = p_context.globalState.get(p_key) || [];
+    if (w_contextEntry) {
+        if (!w_contextEntry.includes(p_file)) {
+            w_contextEntry.push(p_file);
+            if (w_contextEntry.length &gt; 10) {
+                w_contextEntry.shift();
+            }
+        }
+        return p_context.globalState.update(p_key, w_contextEntry); // Added file
+    } else {
+        // First so create key entry with an array of single file
+        return p_context.globalState.update(p_key, [p_file]);
+    }
+}
+
+</t>
+<t tx="felix.20201106200109.1">/**
+ * * Removes file entry from globalState context
+ * @param p_context Needed to get to vscode global storage
+ * @param p_file path+file name string
+ * @param p_key A constant string such as RECENT_FILES_KEY or LAST_FILES_KEY
+ * @returns A promise that resolves when the global storage modification is done
+  */
+export function removeFileFromGlobal(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable&lt;void&gt; {
+    // Check if exist in context.globalState.&lt;something&gt; and remove if found
+    const w_files: string[] = p_context.globalState.get(p_key) || [];
+    if (w_files &amp;&amp; w_files.includes(p_file)) {
+        w_files.splice(w_files.indexOf(p_file), 1); // Splice and update
+        return p_context.globalState.update(p_key, w_files);
+    }
+    return Promise.resolve(); // not even in list so just resolve
+}
+
 </t>
 </tnodes>
 </leo_file>

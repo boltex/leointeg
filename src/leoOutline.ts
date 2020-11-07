@@ -33,6 +33,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
+        // TODO : have this return a promise that resolves when the selected node is encountered by ap_to_p
         this._onDidChangeTreeData.fire(undefined);
     }
 

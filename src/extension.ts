@@ -61,8 +61,8 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: false
         })],
 
-        [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leo.clickButton(p_node)], // Not referenced in package.json
-        [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) => w_leo.removeButton(p_node)],
+        [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leo.clickAtButton(p_node)], // Not referenced in package.json
+        [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) => w_leo.removeAtButton(p_node)],
 
         [CMD.CLOSE_FILE, () => w_leo.closeLeoFile()],
         [CMD.NEW_FILE, () => w_leo.newLeoFile()],

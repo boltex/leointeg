@@ -31,6 +31,47 @@ export function hashNode(p_ap: ArchivedPosition, p_salt: string, p_withCollapse?
 }
 
 /**
+ * * Performs the actual addition into globalState context
+ * @param p_context Needed to get to vscode global storage
+ * @param p_file path+file name string
+ * @param p_key A constant string such as RECENT_FILES_KEY or LAST_FILES_KEY
+ * @returns A promise that resolves when the global storage modification is done
+ */
+export function addFileToGlobal(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable<void> {
+    // Just push that string into the context.globalState.<something> array
+    const w_contextEntry: string[] = p_context.globalState.get(p_key) || [];
+    if (w_contextEntry) {
+        if (!w_contextEntry.includes(p_file)) {
+            w_contextEntry.push(p_file);
+            if (w_contextEntry.length > 10) {
+                w_contextEntry.shift();
+            }
+        }
+        return p_context.globalState.update(p_key, w_contextEntry); // Added file
+    } else {
+        // First so create key entry with an array of single file
+        return p_context.globalState.update(p_key, [p_file]);
+    }
+}
+
+/**
+ * * Removes file entry from globalState context
+ * @param p_context Needed to get to vscode global storage
+ * @param p_file path+file name string
+ * @param p_key A constant string such as RECENT_FILES_KEY or LAST_FILES_KEY
+ * @returns A promise that resolves when the global storage modification is done
+  */
+export function removeFileFromGlobal(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable<void> {
+    // Check if exist in context.globalState.<something> and remove if found
+    const w_files: string[] = p_context.globalState.get(p_key) || [];
+    if (w_files && w_files.includes(p_file)) {
+        w_files.splice(w_files.indexOf(p_file), 1); // Splice and update
+        return p_context.globalState.update(p_key, w_files);
+    }
+    return Promise.resolve(); // not even in list so just resolve
+}
+
+/**
  * * Build all possible strings for node icons graphic file paths
  * @param p_context Needed to get to absolute paths on the system
  * @returns An array of the 16 vscode node icons used in this vscode expansion
