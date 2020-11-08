@@ -32,6 +32,7 @@ import { LeoDocumentNode } from "./leoDocumentNode";
 import { LeoStates } from "./leoStates";
 import { LeoButtonsProvider } from "./leoButtons";
 import { LeoButtonNode } from "./leoButtonNode";
+import { promises } from "fs";
 
 /**
  * * Orchestrates Leo integration into vscode
@@ -539,6 +540,18 @@ export class LeoIntegration {
     }
 
     /**
+     * * Promise that triggers body save (rejects if busy), and resolves when done
+     * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
+     * @returns a promise that resolves when the possible saving process is finished
+     */
+    private _isBusyTriggerSave(p_all: boolean, p_forcedVsCodeSave?: boolean): Thenable<boolean> {
+        if (this._isBusy(p_all)) {
+            return Promise.reject("Stack Busy"); // Warn user to wait for end of busy state
+        }
+        return this.triggerBodySave(p_forcedVsCodeSave);
+    }
+
+    /**
      * * Returns true if the current opened Leo document's filename has some content. (not a new unnamed file)
      */
     private _isCurrentFileNamed(): boolean {
@@ -650,6 +663,8 @@ export class LeoIntegration {
      */
     private _onChangeCollapsedState(p_event: vscode.TreeViewExpansionEvent<LeoNode>, p_expand: boolean, p_treeView: vscode.TreeView<LeoNode>): void {
         // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
+        console.log('calling trigger in _onChangeCollapsedState');
+
         this.triggerBodySave(true);
         if (p_treeView.selection[0] && p_treeView.selection[0] === p_event.element) {
             // * This happens if the tree selection is the same as the expanded/collapsed node: Just have Leo do the same
@@ -719,6 +734,9 @@ export class LeoIntegration {
      */
     private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
         if (!p_internalCall) {
+
+            console.log('calling trigger in _onActiveEditorChanged');
+
             this.triggerBodySave(true); // Save in case edits were pending
         }
         // * Status flag check
@@ -1182,6 +1200,9 @@ export class LeoIntegration {
      */
     private _applyNodeToBody(p_params: ShowBodyParam): Thenable<vscode.TextEditor> {
         // Check first if body needs refresh: if so we will voluntarily throw out any pending edits on body
+
+        console.log('calling trigger in _applyNodeToBody');
+
         this.triggerBodySave(); // Send body to Leo because we're about to (re)show a body of possibly different gnx
         this.lastSelectedNode = p_params.node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
         this._commandStack.newSelection();
@@ -1488,6 +1509,9 @@ export class LeoIntegration {
      * @returns True if added (see command stack 'rules' in commandStack.ts), false otherwise
      */
     public nodeCommand(p_userCommand: UserCommand): boolean {
+
+        console.log('calling trigger in nodeCommand');
+
         this.triggerBodySave(); // No forced vscode save
         if (this._commandStack.add(p_userCommand)) {
             return true;
@@ -1525,6 +1549,9 @@ export class LeoIntegration {
     public editHeadline(p_node?: LeoNode, p_fromOutline?: boolean): void {
         // * Only if no commands are waiting to finish because we need the exact label to show in the edit control for now, see TODO below
         if (this._isBusy()) { return; } // Warn user to wait for end of busy state
+
+        console.log('calling trigger in editHeadline');
+
         this.triggerBodySave(true);
         if (!p_node && this.lastSelectedNode) {
             p_node = this.lastSelectedNode; // Gets last selected node if called via keyboard shortcut or command palette (not set in command stack class)
@@ -1564,6 +1591,9 @@ export class LeoIntegration {
         }
         if (!p_node || !this._isBusy()) {
             // * Only if no parameters or no stack at all
+
+            console.log('calling trigger in insertNode');
+
             this.triggerBodySave(true);
             this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_NODE;
             this._headlineInputOptions.value = Constants.USER_MESSAGES.DEFAULT_HEADLINE;
@@ -1589,6 +1619,9 @@ export class LeoIntegration {
         if (!this.leoStates.fileOpenedReady || this._isBusy(true)) { return; } // Warn user to wait for end of busy state
         if (this.leoStates.fileOpenedReady) {
             if (this.lastSelectedNode) {
+
+                console.log('calling trigger in saveAsLeoFile');
+
                 this.triggerBodySave(true)
                     .then(() => {
                         return this._leoFilesBrowser.getLeoFileUrl(true);
@@ -1626,6 +1659,9 @@ export class LeoIntegration {
         if (!this.leoStates.fileOpenedReady || this._isBusy(true)) { return; } // Warn user to wait for end of busy state
         if (this.leoStates.fileOpenedReady) {
             if (this.lastSelectedNode && this._isCurrentFileNamed()) {
+
+                console.log('calling trigger in saveLeoFile');
+
                 this.triggerBodySave(true)
                     .then(() => {
                         this.nodeCommand({
@@ -1652,6 +1688,9 @@ export class LeoIntegration {
         // get list and show dialog to user, even if there's only one...but at least one!
         // TODO : p_package members names should be made into constants
         // TODO : Fix / Cleanup opened body panes close before reopening when switching
+
+        console.log('calling trigger in switchLeoFile');
+
         this.triggerBodySave(true)
             .then(() => {
                 return this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
@@ -1711,6 +1750,9 @@ export class LeoIntegration {
         if (this._isBusy(true)) { return; } // Warn user to wait for end of busy state
         if (this.leoStates.fileOpenedReady) {
             const w_removeLastFileName = this.leoStates.leoOpenedFileName;
+
+            console.log('calling trigger in closeLeoFile');
+
             this.triggerBodySave(true)
                 .then(() => {
                     return this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE, JSON.stringify({ forced: false }));
@@ -1788,17 +1830,16 @@ export class LeoIntegration {
      * * Creates a new untitled Leo document
      * * If not shown already, it also shows the outline, body and log panes along with leaving focus in the outline
      */
-    public newLeoFile(): void {
-        if (this._isBusy(true)) { return; } // Warn user to wait for end of busy state
-        this.triggerBodySave(true)
-            .then(() => {
+    public newLeoFile(): Thenable<vscode.TextEditor> {
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
                 return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '""');
             })
             .then((p_openFileResult: LeoBridgePackage) => {
                 if (p_openFileResult.opened) {
                     return this._setupOpenedLeoDocument(p_openFileResult.opened);
                 } else {
-                    console.log('New Leo File Error');
+                    return Promise.reject('New Leo File Error');
                 }
             });
     }
@@ -1808,83 +1849,94 @@ export class LeoIntegration {
      * * If not shown already, it also shows the outline, body and log panes along with leaving focus in the outline
      */
     public openLeoFile(p_leoFileUri?: vscode.Uri): Thenable<vscode.TextEditor> {
-        if (this._isBusy(true)) {
-            return Promise.reject(Constants.USER_MESSAGES.TOO_FAST);
-        }
-        let q_openedFile: Promise<LeoBridgePackage>; // Promise for opening a file
-        if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
-            q_openedFile = this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_leoFileUri.fsPath.replace(/\\/g, "/") + '"');
-        } else {
-            q_openedFile = this._leoFilesBrowser.getLeoFileUrl()
-                .then(p_chosenLeoFile => {
-                    return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
-                }, p_errorGetFile => {
-                    return Promise.reject(p_errorGetFile);
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
+                let q_openedFile: Promise<LeoBridgePackage>; // Promise for opening a file
+                if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
+                    const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, "/");
+                    q_openedFile = this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + w_fixedFilePath + '"');
+                } else {
+                    q_openedFile = this._leoFilesBrowser.getLeoFileUrl()
+                        .then(p_chosenLeoFile => {
+                            return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
+                        }, p_errorGetFile => {
+                            return Promise.reject(p_errorGetFile);
+                        });
+                }
+                return q_openedFile.then((p_openFileResult: LeoBridgePackage) => {
+                    return this._setupOpenedLeoDocument(p_openFileResult.opened!);
+                }, p_errorOpen => {
+                    console.log('in .then not opened or already opened');
+                    return Promise.reject(p_errorOpen);
                 });
-        }
-        return q_openedFile.then((p_openFileResult: LeoBridgePackage) => {
-            return this._setupOpenedLeoDocument(p_openFileResult.opened!);
-        }, p_errorOpen => {
-            console.log('in .then not opened or already opened');
-            return Promise.reject(p_errorOpen);
-        });
+            });
     }
 
     /**
      * * Invoke an '@button' click directly by index string. Used by '@buttons' treeview.
      */
-    public clickAtButton(p_node: LeoButtonNode): void {
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        this.sendAction(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
-            .then((p_clickButtonResult: LeoBridgePackage) => {
-                this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
+    public clickAtButton(p_node: LeoButtonNode): Thenable<boolean> {
+        return this._isBusyTriggerSave(false)
+            .then((p_saveResult) => {
+                return this.sendAction(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }))
+                    .then((p_clickButtonResult: LeoBridgePackage) => {
+                        this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
+                        return Promise.resolve(true); // TODO launchRefresh should be a returned promise
+                    });
             });
     }
 
     /**
      * * Removes an '@button' from Leo's button dict, directly by index string. Used by '@buttons' treeview.
      */
-    public removeAtButton(p_node: LeoButtonNode): void {
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        this.sendAction(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
-            .then((p_removeButtonResult: LeoBridgePackage) => {
-                this.launchRefresh({ buttons: true }, false);
+    public removeAtButton(p_node: LeoButtonNode): Thenable<boolean> {
+        return this._isBusyTriggerSave(false)
+            .then((p_saveResult) => {
+                return this.sendAction(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }))
+                    .then((p_removeButtonResult: LeoBridgePackage) => {
+                        this.launchRefresh({ buttons: true }, false);
+                        return Promise.resolve(true); // TODO launchRefresh should be a returned promise
+                    });
             });
     }
 
     /**
-     * * Open quickPick/inputBox minibuffer pallette.
-     * for the user to choose from all commands
-     * available in this file's commander
+     * * Opens quickPick minibuffer pallette to choose from all commands in this file's commander
      */
-    public minibuffer(): void {
-        if (this._isBusy()) { return; } // Warn user to wait for end of busy state
-        const w_promise: Thenable<MinibufferCommand[]> = this.sendAction(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
-            .then((p_result: LeoBridgePackage) => {
-                if (p_result.commands && p_result.commands.length) {
-                    return p_result.commands;
-                } else {
-                    return [];
-                }
-            });
-        const w_options: vscode.QuickPickOptions = {
-            placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
-            matchOnDetail: true
-        };
-        vscode.window.showQuickPick(w_promise, w_options).then((p_picked) => {
-            if (p_picked && p_picked.func) {
-                this.nodeCommand({
-                    action: p_picked.func,
-                    node: undefined,
-                    refreshType: { tree: true, body: true, documents: true, buttons: true, states: true },
-                    fromOutline: false // true
+    public minibuffer(): Thenable<boolean> {
+        return this._isBusyTriggerSave(false)
+            .then((p_saveResult) => {
+                const w_promise: Thenable<MinibufferCommand[]> = this.sendAction(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
+                    .then((p_result: LeoBridgePackage) => {
+                        if (p_result.commands && p_result.commands.length) {
+                            return p_result.commands;
+                        } else {
+                            return [];
+                        }
+                    });
+                const w_options: vscode.QuickPickOptions = {
+                    placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
+                    matchOnDetail: true
+                };
+                return vscode.window.showQuickPick(w_promise, w_options).then((p_picked) => {
+                    if (p_picked && p_picked.func) {
+                        return Promise.resolve(
+                            this.nodeCommand({
+                                action: p_picked.func,
+                                node: undefined,
+                                refreshType: { tree: true, body: true, documents: true, buttons: true, states: true },
+                                fromOutline: false // true // TODO : Differentiate from outline?
+                            })
+                        );
+                    } else {
+                        return Promise.reject("Canceled");
+                    }
                 });
-            }
-        });
+            });
     }
 
     /**
-     * * Set the outline pane top bar string message
+     * * Sets the outline pane top bar string message or refreshes with existing title if no title passed
      * @param p_title new string to replace the current title
      */
     public setTreeViewTitle(p_title?: string): void {
@@ -1901,7 +1953,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Offer all leo commands in the command palette (This opens the palette with string '>leo:' already typed)
+     * * Shows leoInteg's commands by opening command palette with string '>leo:' already typed in
      */
     public showLeoCommands(): void {
         vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.QUICK_OPEN, Constants.GUI.QUICK_OPEN_LEO_COMMANDS);
@@ -1918,6 +1970,9 @@ export class LeoIntegration {
         }
     }
 
+    /**
+     * * Test/Dummy command
+     */
     public test(p_fromOutline?: boolean): void {
         // this.statusBarOnClick(); // placeholder / test
         return;
