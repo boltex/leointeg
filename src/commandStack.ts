@@ -53,14 +53,18 @@ export class CommandStack {
      * @param p_command Object that has the action, targeted node (if any), refresh type and 'fromOutline' flag
      * @returns true if added, false if it could not (due to front end stack 'rules')
      */
-    public add(p_command: UserCommand): boolean {
+    public add(p_command: UserCommand): Thenable<LeoBridgePackage> | undefined {
         if (p_command.node && this.size()) {
-            return false; // Can only add a command which targets a node if the stack is empty
+            return undefined; // Can only add a command which targets a node if the stack is empty
         } else {
+            const q_promise = new Promise<LeoBridgePackage>((resolve, reject) => {
+                p_command.resolveFn = resolve;
+                p_command.rejectFn = reject;
+            });
             this._stack.push(p_command);
             this._finalFromOutline = p_command.fromOutline; // Set final "focus-placement"
             this._tryStart();
-            return true;
+            return q_promise;
         }
     }
 
@@ -110,7 +114,20 @@ export class CommandStack {
         Object.assign(this._finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)
 
         // Submit this action to Leo and return a promise of its packaged answer
-        return this._leoIntegration.sendAction(w_command.action, w_jsonParam);
+        return this._leoIntegration.sendAction(w_command.action, w_jsonParam)
+            .then((p_package) => {
+                if (w_command.resolveFn) {
+                    w_command.resolveFn(p_package);
+                }
+                return p_package;
+            },
+                (p_reason) => {
+                    if (w_command.rejectFn) {
+                        w_command.rejectFn(p_reason);
+                    }
+                    return p_reason;
+                }
+            );
     }
 
     /**
