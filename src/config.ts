@@ -150,7 +150,9 @@ export class Config implements ConfigMembers {
             this.connectionPort = GET(NAME).get(NAMES.IP_PORT, DEFAULTS.IP_PORT);
 
             // * Set context for tree items visibility that are based on config options
-            this._leoIntegration.sendConfigToServer(this.getConfig());
+            if (this._leoIntegration.leoStates.leoBridgeReady) {
+                this._leoIntegration.sendConfigToServer(this.getConfig());
+            }
             utils.setContext(FLAGS.LEO_TREE_BROWSE, this.leoTreeBrowse);
             utils.setContext(FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
             utils.setContext(FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);

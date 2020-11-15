@@ -53,7 +53,7 @@ export class CommandStack {
      * @param p_command Object that has the action, targeted node (if any), refresh type and 'fromOutline' flag
      * @returns true if added, false if it could not (due to front end stack 'rules')
      */
-    public add(p_command: UserCommand): Thenable<LeoBridgePackage> | undefined {
+    public add(p_command: UserCommand): Promise<LeoBridgePackage> | undefined {
         if (p_command.node && this.size()) {
             return undefined; // Can only add a command which targets a node if the stack is empty
         } else {
