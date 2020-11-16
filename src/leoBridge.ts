@@ -41,12 +41,12 @@ export class LeoBridge {
      * @returns a Promise that will contain the JSON package answered back by leobridgeserver.py
      */
     public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
-        return new Promise((resolve, reject) => {
+        return new Promise((p_resolve, p_reject) => {
             const w_action: LeoAction = {
                 parameter: this._buildActionParameter(p_action, p_jsonParam),
                 deferredPayload: p_deferredPayload ? p_deferredPayload : undefined,
-                resolveFn: resolve,
-                rejectFn: reject
+                resolveFn: p_resolve,
+                rejectFn: p_reject
             };
 
             this._callStack.push(w_action);

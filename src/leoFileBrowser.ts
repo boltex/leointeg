@@ -46,7 +46,7 @@ export class LeoFilesBrowser {
             return Promise.resolve("");
         }
         this._fileBrowserActive = true;
-        return new Promise((resolve, reject) => {
+        return new Promise((p_resolve, p_reject) => {
             const w_filters: { [name: string]: string[] } = {};
             w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [Constants.FILE_EXTENSION];
 
@@ -61,9 +61,9 @@ export class LeoFilesBrowser {
                         this._fileBrowserActive = false;
                         if (p_chosenLeoFile) {
                             // single string
-                            resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                            p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
                         } else {
-                            reject("");
+                            p_resolve(""); // not rejection - resolve empty string
                         }
                     });
             } else {
@@ -77,9 +77,9 @@ export class LeoFilesBrowser {
                         this._fileBrowserActive = false;
                         if (p_chosenLeoFile) {
                             // array instead of single string
-                            resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                            p_resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
                         } else {
-                            reject("");
+                            p_resolve("");
                         }
                     });
             }

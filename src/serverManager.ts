@@ -78,10 +78,10 @@ export class ServerService {
                 " " + w_serverScriptPath);
         }
 
-        const w_serverStartPromise = new Promise((p_resolve, w_reject) => {
+        const w_serverStartPromise = new Promise((p_resolve, p_reject) => {
             // * Spawn a python child process for a leoBridge server
             this._resolvePromise = p_resolve;
-            this._rejectPromise = w_reject;
+            this._rejectPromise = p_reject;
         });
 
         let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??

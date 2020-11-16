@@ -1175,9 +1175,6 @@ private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFoc
  */
 private _applyNodeToBody(p_params: ShowBodyParam): Thenable&lt;vscode.TextEditor&gt; {
     // Check first if body needs refresh: if so we will voluntarily throw out any pending edits on body
-
-    console.log('calling trigger in _applyNodeToBody');
-
     this.triggerBodySave(); // Send body to Leo because we're about to (re)show a body of possibly different gnx
     this.lastSelectedNode = p_params.node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
     this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
@@ -6140,9 +6137,9 @@ public add(p_command: UserCommand): Promise&lt;LeoBridgePackage&gt; | undefined 
     if (p_command.node &amp;&amp; this.size()) {
         return undefined; // Can only add a command which targets a node if the stack is empty
     } else {
-        const q_promise = new Promise&lt;LeoBridgePackage&gt;((resolve, reject) =&gt; {
-            p_command.resolveFn = resolve;
-            p_command.rejectFn = reject;
+        const q_promise = new Promise&lt;LeoBridgePackage&gt;((p_resolve, p_reject) =&gt; {
+            p_command.resolveFn = p_resolve;
+            p_command.rejectFn = p_reject;
         });
         this._stack.push(p_command);
         this._finalFromOutline = p_command.fromOutline; // Set final "focus-placement"
@@ -6987,12 +6984,12 @@ export class LeoBridge {
  * @returns a Promise that will contain the JSON package answered back by leobridgeserver.py
  */
 public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise&lt;LeoBridgePackage&gt; {
-    return new Promise((resolve, reject) =&gt; {
+    return new Promise((p_resolve, p_reject) =&gt; {
         const w_action: LeoAction = {
             parameter: this._buildActionParameter(p_action, p_jsonParam),
             deferredPayload: p_deferredPayload ? p_deferredPayload : undefined,
-            resolveFn: resolve,
-            rejectFn: reject
+            resolveFn: p_resolve,
+            rejectFn: p_reject
         };
 
         this._callStack.push(w_action);
@@ -7457,7 +7454,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
         return Promise.resolve("");
     }
     this._fileBrowserActive = true;
-    return new Promise((resolve, reject) =&gt; {
+    return new Promise((p_resolve, p_reject) =&gt; {
         const w_filters: { [name: string]: string[] } = {};
         w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [Constants.FILE_EXTENSION];
 
@@ -7472,9 +7469,9 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
                     this._fileBrowserActive = false;
                     if (p_chosenLeoFile) {
                         // single string
-                        resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                        p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
                     } else {
-                        reject("");
+                        p_resolve(""); // not rejection - resolve empty string
                     }
                 });
         } else {
@@ -7488,9 +7485,9 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
                     this._fileBrowserActive = false;
                     if (p_chosenLeoFile) {
                         // array instead of single string
-                        resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                        p_resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
                     } else {
-                        reject("");
+                        p_resolve("");
                     }
                 });
         }
@@ -7972,10 +7969,10 @@ public startServer(p_leoPythonCommand: string): Promise&lt;any&gt; {
             " " + w_serverScriptPath);
     }
 
-    const w_serverStartPromise = new Promise((p_resolve, w_reject) =&gt; {
+    const w_serverStartPromise = new Promise((p_resolve, p_reject) =&gt; {
         // * Spawn a python child process for a leoBridge server
         this._resolvePromise = p_resolve;
-        this._rejectPromise = w_reject;
+        this._rejectPromise = p_reject;
     });
 
     let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
@@ -9109,9 +9106,6 @@ import { LeoDocumentNode } from "./leoDocumentNode";
 import { LeoStates } from "./leoStates";
 import { LeoButtonsProvider } from "./leoButtons";
 import { LeoButtonNode } from "./leoButtonNode";
-import { promises } from "fs";
-import { resolve } from "path";
-import { rejects } from "assert";
 
 @others
 @language typescript
@@ -9184,19 +9178,24 @@ private _removeLastFile(p_file: string): Thenable&lt;void&gt; {
  * * Shows the recent Leo files list, choosing one will open it
  * @returns A promise that resolves when the a file is finally opened, rejected otherwise
  */
-public showRecentLeoFiles(): Thenable&lt;vscode.TextEditor&gt; {
+public showRecentLeoFiles(): Thenable&lt;vscode.TextEditor | undefined&gt; {
     const w_recentFiles: string[] = this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
-    if (!w_recentFiles.length) {
-        return Promise.reject("Recent files list is empty");
+    let q_chooseFile: Thenable&lt;string | undefined&gt;;
+    if (w_recentFiles.length) {
+        q_chooseFile = vscode.window.showQuickPick(
+            w_recentFiles,
+            { placeHolder: Constants.USER_MESSAGES.OPEN_RECENT_FILE }
+        );
+    } else {
+        // No file to list
+        return Promise.resolve(undefined);
     }
-    return vscode.window.showQuickPick(
-        w_recentFiles,
-        { placeHolder: Constants.USER_MESSAGES.OPEN_RECENT_FILE }
-    ).then(p_result =&gt; {
+    return q_chooseFile.then((p_result) =&gt; {
         if (p_result) {
             return this.openLeoFile(vscode.Uri.file(p_result));
         } else {
-            return Promise.reject("Cancelled");
+            // Canceled
+            return Promise.resolve(undefined);
         }
     });
 }
@@ -9395,6 +9394,7 @@ private _setupNoOpenedLeoDocument(): void {
     this._bodyTextDocument = undefined;
     this.lastSelectedNode = undefined;
     this._refreshOutline(RevealType.NoReveal);
+    // TODO : refresh leoDocuments and at buttons!
     this.closeBody();
 }
 
@@ -9404,7 +9404,7 @@ private _setupNoOpenedLeoDocument(): void {
  * @param p_openFileResult Returned info about currently opened and editing document
  * @return a promise that resolves to an opened body pane text editor
  */
-private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackageOpenedInfo): Thenable&lt;vscode.TextEditor&gt; {
+private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackageOpenedInfo): Promise&lt;vscode.TextEditor&gt; {
     const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
     this.leoStates.leoOpenedFileName = p_openFileResult.filename;
 
@@ -9465,8 +9465,6 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
  */
 private _onChangeCollapsedState(p_event: vscode.TreeViewExpansionEvent&lt;LeoNode&gt;, p_expand: boolean, p_treeView: vscode.TreeView&lt;LeoNode&gt;): void {
     // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
-    console.log('calling trigger in _onChangeCollapsedState');
-
     this.triggerBodySave(true);
     if (p_treeView.selection[0] &amp;&amp; p_treeView.selection[0] === p_event.element) {
         // * This happens if the tree selection is the same as the expanded/collapsed node: Just have Leo do the same
@@ -9525,9 +9523,6 @@ private _onDocTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChange
  */
 private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
     if (!p_internalCall) {
-
-        console.log('calling trigger in _onActiveEditorChanged');
-
         this.triggerBodySave(true); // Save in case edits were pending
     }
     // * Status flag check
@@ -9952,7 +9947,7 @@ public sendAction(p_action: string, p_jsonParam = "null", p_deferredPayload?: Le
  * @param p_aside Flag for opening the editor beside any currently opened and focused editor
  * @param p_preserveFocus flag that when true will stop the editor from taking focus once opened
  */
-public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode.TextEditor&gt; {
+public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.TextEditor&gt; {
     // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
     if (this._refreshType.body) {
         this._refreshType.body = false;
@@ -9964,7 +9959,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode
 
     this._testBodyUri = utils.leoUriToStr(this.bodyUri); // TODO : Test
 
-    return vscode.workspace.openTextDocument(this.bodyUri).then(p_document =&gt; {
+    return Promise.resolve(vscode.workspace.openTextDocument(this.bodyUri)).then(p_document =&gt; {
 
         this._bodyTextDocument = p_document;
 
@@ -10144,7 +10139,7 @@ public changeMark(p_isMark: boolean, p_node?: LeoNode, p_fromOutline?: boolean):
  * @param p_node Specifies which node to rename, or leave undefined to rename the currently selected node
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
  */
-public editHeadline(p_node?: LeoNode, p_fromOutline?: boolean): Promise&lt;LeoBridgePackage&gt; {
+public editHeadline(p_node?: LeoNode, p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undefined&gt; {
     return this._isBusyTriggerSave(false, true)
         .then(() =&gt; {
             if (!p_node &amp;&amp; this.lastSelectedNode) {
@@ -10171,10 +10166,11 @@ public editHeadline(p_node?: LeoNode, p_fromOutline?: boolean): Promise&lt;LeoBr
                 if (q_commandResult) {
                     return q_commandResult;
                 } else {
-                    return Promise.reject("Change mark on node not added on command stack");
+                    return Promise.reject("Edit Headline not added on command stack");
                 }
             } else {
-                return Promise.reject("Canceled");
+                // Canceled
+                return Promise.resolve(undefined);
             }
         });
 }
@@ -10197,7 +10193,7 @@ public insertNode(p_node?: LeoNode, p_fromOutline?: boolean, p_interrupt?: boole
         this.triggerBodySave(true); // Don't wait for saving to resolve because we're waiting for user input anyways
         this._headlineInputOptions.prompt = Constants.USER_MESSAGES.PROMPT_INSERT_NODE;
         this._headlineInputOptions.value = Constants.USER_MESSAGES.DEFAULT_HEADLINE;
-        return new Promise&lt;LeoBridgePackage&gt;((resolve, reject) =&gt; {
+        return new Promise&lt;LeoBridgePackage&gt;((p_resolve, p_reject) =&gt; {
             vscode.window.showInputBox(this._headlineInputOptions)
                 .then(p_newHeadline =&gt; {
                     const w_action = p_newHeadline ? Constants.LEOBRIDGE.INSERT_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_PNODE;
@@ -10209,9 +10205,9 @@ public insertNode(p_node?: LeoNode, p_fromOutline?: boolean, p_interrupt?: boole
                         text: p_newHeadline
                     });
                     if (q_commandResult) {
-                        q_commandResult.then(p_package =&gt; resolve(p_package));
+                        q_commandResult.then(p_package =&gt; p_resolve(p_package));
                     } else {
-                        reject(w_action + " not added on command stack");
+                        p_reject(w_action + " not added on command stack");
                     }
                 });
         });
@@ -10226,12 +10222,13 @@ public insertNode(p_node?: LeoNode, p_fromOutline?: boolean, p_interrupt?: boole
  * * Asks for file name and path, then saves the Leo file
  * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
  */
-public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage&gt; {
+public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undefined&gt; {
     return this._isBusyTriggerSave(true, true)
         .then((p_saveResult) =&gt; {
             if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
                 return this._leoFilesBrowser.getLeoFileUrl(true);
             } else {
+                // 'when-conditions' should prevent this
                 vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
                 return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
             }
@@ -10258,7 +10255,8 @@ public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage&gt; {
                     return Promise.reject("Save file not added on command stack");
                 }
             } else {
-                return Promise.reject("Cancelled");
+                // Canceled
+                return Promise.resolve(undefined);
             }
         });
 }
@@ -10269,7 +10267,7 @@ public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage&gt; {
  * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
  * @returns Promise that resolves when the save command is placed on the front-end command stack
  */
-public saveLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage&gt; {
+public saveLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undefined&gt; {
     return this._isBusyTriggerSave(true, true)
         .then((p_saveResult) =&gt; {
             if (this.leoStates.fileOpenedReady) {
@@ -10286,6 +10284,7 @@ public saveLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage&gt; {
                     return this.saveAsLeoFile(p_fromOutline); // Override this command call if file is unnamed!
                 }
             } else {
+                // 'when-conditions' should prevent this
                 vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
                 return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
             }
@@ -10315,12 +10314,12 @@ public startNetworkServices(): void {
  * * Show switch document 'QuickPick' dialog and switch file if selection is made, or just return if no files are opened.
  * @returns A promise that resolves with a textEditor of the selected node's body from the newly selected document
  */
-public switchLeoFile(): Promise&lt;vscode.TextEditor&gt; {
+public switchLeoFile(): Promise&lt;vscode.TextEditor | undefined&gt; {
     return this._isBusyTriggerSave(true, true)
         .then((p_saveResult) =&gt; {
             return this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
         })
-        .then(p_package =&gt; {
+        .then((p_package) =&gt; {
             const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
             const w_files: LeoDocument[] = p_package.openedFiles!.files;
             const w_selectedIndex: number = p_package.openedFiles!.index;
@@ -10345,14 +10344,17 @@ public switchLeoFile(): Promise&lt;vscode.TextEditor&gt; {
                 };
                 return vscode.window.showQuickPick(w_entries, w_pickOptions);
             } else {
-                return Promise.reject("No opened documents");
+                // "No opened documents"
+                return Promise.resolve(undefined);
             }
         })
         .then((p_chosenDocument) =&gt; {
             if (p_chosenDocument) {
-                return this.selectOpenedLeoDocument(p_chosenDocument.value);
+                return Promise.resolve(this.selectOpenedLeoDocument(p_chosenDocument.value));
             } else {
-                return Promise.reject("Cancelled");
+                // Canceled
+                return Promise.resolve(undefined);
+
             }
         });
 }
@@ -10362,7 +10364,7 @@ public switchLeoFile(): Promise&lt;vscode.TextEditor&gt; {
  * * Switches Leo document directly by index number. Used by document treeview and switchLeoFile command.
  * @returns A promise that resolves with a textEditor of the selected node's body from the newly opened document
  */
-public selectOpenedLeoDocument(p_index: number): Thenable&lt;vscode.TextEditor&gt; {
+public selectOpenedLeoDocument(p_index: number): Promise&lt;vscode.TextEditor&gt; {
     return this._isBusyTriggerSave(true, true)
         .then((p_saveResult) =&gt; {
             return this.sendAction(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_index }));
@@ -10415,18 +10417,12 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                     { modal: true },
                     ...Constants.ASK_SAVE_CHANGES_BUTTONS
                 );
-                return new Promise&lt;vscode.MessageItem | undefined&gt;((resolve, reject) =&gt; {
-                    // Convert thenable to promise // TODO : Maybe find more elegant way
-                    q_askSaveChangesInfoMessage
-                        .then((p_askThenableResult) =&gt; {
-                            resolve(p_askThenableResult);
-                        });
-                })
+                return Promise.resolve(q_askSaveChangesInfoMessage)
                     .then((p_askSaveResult: vscode.MessageItem | undefined) =&gt; {
                         if (p_askSaveResult) {
                             if (p_askSaveResult.title === Constants.USER_MESSAGES.YES) {
                                 // save and then force-close
-                                let w_savePromise: Promise&lt;LeoBridgePackage&gt;;
+                                let w_savePromise: Promise&lt;LeoBridgePackage | undefined&gt;;
                                 if (this._isCurrentFileNamed()) {
                                     w_savePromise = this.sendAction(Constants.LEOBRIDGE.SAVE_FILE, JSON.stringify({ text: "" }));
                                 } else {
@@ -10434,7 +10430,8 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                                         if (p_chosenLeoFile.trim()) {
                                             return this.sendAction(Constants.LEOBRIDGE.SAVE_FILE, JSON.stringify({ text: p_chosenLeoFile.trim() }));
                                         } else {
-                                            return Promise.reject("Canceled choosing filename");
+                                            // Canceled
+                                            return Promise.resolve(undefined);
                                         }
                                     });
                                 }
@@ -10447,23 +10444,34 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                             } else if (p_askSaveResult.title === Constants.USER_MESSAGES.NO) {
                                 // Don't want to save so just force-close directly
                                 return this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE, JSON.stringify({ forced: true }));
+                            } else {
+                                // Canceled
+                                return Promise.resolve(undefined);
                             }
                         } else {
-                            return Promise.reject("Canceled"); // canceled ask "save changes?"
+                            // Canceled
+                            return Promise.resolve(undefined);
                         }
                     })
                     .then((p_closeResult: LeoBridgePackage | undefined) =&gt; {
-                        // * back from CLOSE_FILE action, the last that can be performed (after saving if dirty or not)
-                        this.refreshDocumentsPane();
-                        this._leoButtonsProvider.refreshTreeRoot();
-                        this._removeLastFile(w_removeLastFileName);
-                        if (p_closeResult &amp;&amp; p_closeResult.closed &amp;&amp; p_closeResult.closed.total === 0) {
-                            this._setupNoOpenedLeoDocument();
-                            return Promise.resolve(true);
-                        } else {
-                            this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
-                            return Promise.resolve(true);
+                        if (p_closeResult) {
+                            // * back from CLOSE_FILE action, the last that can be performed (after saving if dirty or not)
+                            this.refreshDocumentsPane();
+                            this._leoButtonsProvider.refreshTreeRoot();
+                            this._removeLastFile(w_removeLastFileName);
+                            if (p_closeResult &amp;&amp; p_closeResult.closed &amp;&amp; p_closeResult.closed.total === 0) {
+                                this._setupNoOpenedLeoDocument();
+                                return Promise.resolve(true);
+                            } else {
+                                this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
+                                return Promise.resolve(true);
+                            }
                         }
+
+                        // Canceled
+                        console.log('canceled');
+
+                        return Promise.resolve(false);
                     });
             }
             // else 'close' is undefined
@@ -10497,25 +10505,33 @@ public newLeoFile(): Promise&lt;vscode.TextEditor&gt; {
  * * If not shown already, it also shows the outline, body and log panes along with leaving focus in the outline
  * @returns A promise that resolves with a textEditor of the chosen file
  */
-public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;vscode.TextEditor&gt; {
+public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;vscode.TextEditor | undefined&gt; {
     return this._isBusyTriggerSave(true, true)
         .then((p_saveResult) =&gt; {
-            let q_openedFile: Promise&lt;LeoBridgePackage&gt;; // Promise for opening a file
+            let q_openedFile: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
             if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath.trim()) {
                 const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, "/");
                 q_openedFile = this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + w_fixedFilePath + '"');
             } else {
                 q_openedFile = this._leoFilesBrowser.getLeoFileUrl()
                     .then(p_chosenLeoFile =&gt; {
-                        return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
+                        if (p_chosenLeoFile.trim()) {
+                            return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
+                        } else {
+                            return Promise.resolve(undefined);
+                        }
                     }, p_errorGetFile =&gt; {
                         return Promise.reject(p_errorGetFile);
                     });
             }
             return q_openedFile;
         })
-        .then((p_openFileResult: LeoBridgePackage) =&gt; {
-            return this._setupOpenedLeoDocument(p_openFileResult.opened!);
+        .then((p_openFileResult: LeoBridgePackage | undefined) =&gt; {
+            if (p_openFileResult) {
+                return this._setupOpenedLeoDocument(p_openFileResult.opened!);
+            } else {
+                return Promise.resolve(undefined);
+            }
         }, p_errorOpen =&gt; {
             console.log('in .then not opened or already opened'); // TODO : IS REJECTION BEHAVIOR NECESSARY HERE TOO?
             return Promise.reject(p_errorOpen);
@@ -10563,6 +10579,21 @@ public startServer(): void {
  */
 public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
     // return this.statusBarOnClick();
+    console.log('initial test call');
+
+
+    vscode.commands.executeCommand(Constants.COMMANDS.MARK_SELECTION)
+        .then((p_result) =&gt; {
+            console.log(
+                'BACK FROM EXEC COMMAND ' +
+                Constants.COMMANDS.MARK_SELECTION +
+                ', p_result: ',
+                JSON.stringify(p_result)
+            );
+
+        });
+
+
     return this.sendAction(Constants.LEOBRIDGE.TEST, JSON.stringify({ "testParam": "Some String" }))
         .then((p_result: LeoBridgePackage) =&gt; {
             // this.launchRefresh({ buttons: true }, false);
@@ -12653,7 +12684,6 @@ private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent
             this._scrollDirty = true;
             this._scroll = p_event.visibleRanges[0];
             this._scrollGnx = utils.leoUriToStr(p_event.textEditor.document.uri);
-            console.log('_onChangeEditorScroll: ', JSON.stringify(this._scroll.start), JSON.stringify(this._scroll.end),);
         }
     }
 }
@@ -12799,7 +12829,7 @@ export function removeFileFromGlobal(p_context: vscode.ExtensionContext, p_file:
  */
 private _isBusyTriggerSave(p_all: boolean, p_forcedVsCodeSave?: boolean): Promise&lt;boolean&gt; {
     if (this._isBusy(p_all)) {
-        return Promise.reject("Stack Busy"); // Warn user to wait for end of busy state
+        return Promise.reject("Command stack busy"); // Warn user to wait for end of busy state
     }
     return this.triggerBodySave(p_forcedVsCodeSave);
 }
@@ -12827,7 +12857,7 @@ public setTreeViewTitle(p_title?: string): void {
  * * Opens quickPick minibuffer pallette to choose from all commands in this file's commander
  * @returns Promise that resolves when the chosen command is placed on the front-end command stack
  */
-public minibuffer(): Thenable&lt;LeoBridgePackage&gt; {
+public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
     // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
@@ -12855,7 +12885,8 @@ public minibuffer(): Thenable&lt;LeoBridgePackage&gt; {
                 });
                 return w_commandResult ? w_commandResult : Promise.reject("Command not added");
             } else {
-                return Promise.reject("Canceled");
+                // Canceled
+                return Promise.resolve(undefined);
             }
         });
 }

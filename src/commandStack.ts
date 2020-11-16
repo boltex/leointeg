@@ -57,9 +57,9 @@ export class CommandStack {
         if (p_command.node && this.size()) {
             return undefined; // Can only add a command which targets a node if the stack is empty
         } else {
-            const q_promise = new Promise<LeoBridgePackage>((resolve, reject) => {
-                p_command.resolveFn = resolve;
-                p_command.rejectFn = reject;
+            const q_promise = new Promise<LeoBridgePackage>((p_resolve, p_reject) => {
+                p_command.resolveFn = p_resolve;
+                p_command.rejectFn = p_reject;
             });
             this._stack.push(p_command);
             this._finalFromOutline = p_command.fromOutline; // Set final "focus-placement"
