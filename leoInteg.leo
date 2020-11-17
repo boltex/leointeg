@@ -652,7 +652,6 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
-<v t="felix.20200719025231.2"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -10235,6 +10234,13 @@ public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | und
         })
         .then((p_chosenLeoFile) =&gt; {
             if (p_chosenLeoFile.trim()) {
+                const w_hasDot = p_chosenLeoFile.indexOf('.') !== -1;
+                if (!w_hasDot || (p_chosenLeoFile.split('.').pop() !== Constants.FILE_EXTENSION &amp;&amp; w_hasDot)) {
+                    if (!p_chosenLeoFile.endsWith(".")) {
+                        p_chosenLeoFile += "."; // Add dot if needed
+                    }
+                    p_chosenLeoFile += Constants.FILE_EXTENSION; // Add extension
+                }
                 if (this.leoStates.leoOpenedFileName) {
                     this._removeLastFile(this.leoStates.leoOpenedFileName);
                     this._removeRecentFile(this.leoStates.leoOpenedFileName);
@@ -10242,7 +10248,7 @@ public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | und
                 const q_commandResult = this.nodeCommand({
                     action: Constants.LEOBRIDGE.SAVE_FILE,
                     node: undefined,
-                    refreshType: { tree: true, states: true },
+                    refreshType: { tree: true, states: true, documents: true },
                     fromOutline: !!p_fromOutline,
                     text: p_chosenLeoFile
                 });
@@ -10467,10 +10473,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                                 return Promise.resolve(true);
                             }
                         }
-
                         // Canceled
-                        console.log('canceled');
-
                         return Promise.resolve(false);
                     });
             }

@@ -1698,6 +1698,13 @@ export class LeoIntegration {
             })
             .then((p_chosenLeoFile) => {
                 if (p_chosenLeoFile.trim()) {
+                    const w_hasDot = p_chosenLeoFile.indexOf('.') !== -1;
+                    if (!w_hasDot || (p_chosenLeoFile.split('.').pop() !== Constants.FILE_EXTENSION && w_hasDot)) {
+                        if (!p_chosenLeoFile.endsWith(".")) {
+                            p_chosenLeoFile += "."; // Add dot if needed
+                        }
+                        p_chosenLeoFile += Constants.FILE_EXTENSION; // Add extension
+                    }
                     if (this.leoStates.leoOpenedFileName) {
                         this._removeLastFile(this.leoStates.leoOpenedFileName);
                         this._removeRecentFile(this.leoStates.leoOpenedFileName);
@@ -1705,7 +1712,7 @@ export class LeoIntegration {
                     const q_commandResult = this.nodeCommand({
                         action: Constants.LEOBRIDGE.SAVE_FILE,
                         node: undefined,
-                        refreshType: { tree: true, states: true },
+                        refreshType: { tree: true, states: true, documents: true },
                         fromOutline: !!p_fromOutline,
                         text: p_chosenLeoFile
                     });
@@ -1909,10 +1916,7 @@ export class LeoIntegration {
                                     return Promise.resolve(true);
                                 }
                             }
-
                             // Canceled
-                            console.log('canceled');
-
                             return Promise.resolve(false);
                         });
                 }
