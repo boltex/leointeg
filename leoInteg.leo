@@ -607,6 +607,7 @@
 <v t="felix.20200718194857.12"><vh>LeoButton</vh></v>
 <v t="felix.20200718194857.13"><vh>Icon</vh></v>
 <v t="felix.20200718194857.14"><vh>BodyTimeInfo</vh></v>
+<v t="felix.20201119002510.1"><vh>BodyPosition</vh></v>
 <v t="felix.20201006195046.1"><vh>BodySelectionInfo</vh></v>
 <v t="felix.20200718194857.15"><vh>showSaveAsDialogParameters</vh></v>
 <v t="felix.20200718194857.16"><vh>runAskYesNoDialogParameters</vh></v>
@@ -8324,15 +8325,6 @@ export interface BodyTimeInfo {
     mtime: number;
 }
 
-/**
- * * Body position
- * Used in BodySelectionInfo interface
- */
-export interface BodyPosition {
-    line: number;
-    col: number;
-}
-
 </t>
 <t tx="felix.20200718194857.15">/**
  * * Parameter structure used in the 'runSaveFileDialog' equivalent when asking user input
@@ -8410,9 +8402,6 @@ export interface ConfigMembers {
     connectionPort: number;
 }
 
-/**
- * * Structure for configuration settings changes used along with welcome/settings webview.
- */
 </t>
 <t tx="felix.20200718194857.20">/**
  * * Used in switch Leo document to get answer from user interaction
@@ -9962,8 +9951,8 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
 
         this._bodyTextDocument = p_document;
 
-        // * body editor is opened with the right content - now set its other attributes for
-        // * proper usage : set its language, and restore the proper cursor position
+        // * body editor is opened with the right content so now set its language,
+        // * and restore the proper cursor position, selection range and scrolling position
         if (this.lastSelectedNode) {
             // this.lastSelectedNode MAY NOT BE VALID
             this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
@@ -12692,7 +12681,10 @@ private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent
 }
 
 </t>
-<t tx="felix.20201017224340.1">export interface ConfigSetting {
+<t tx="felix.20201017224340.1">/**
+ * * Structure for configuration settings changes used along with welcome/settings webview.
+ */
+export interface ConfigSetting {
     code: string;
     value: any;
 }
@@ -12892,6 +12884,16 @@ public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
                 return Promise.resolve(undefined);
             }
         });
+}
+
+</t>
+<t tx="felix.20201119002510.1">/**
+ * * Body position
+ * Used in BodySelectionInfo interface
+ */
+export interface BodyPosition {
+    line: number;
+    col: number;
 }
 
 </t>

@@ -1373,8 +1373,8 @@ export class LeoIntegration {
 
             this._bodyTextDocument = p_document;
 
-            // * body editor is opened with the right content - now set its other attributes for
-            // * proper usage : set its language, and restore the proper cursor position
+            // * body editor is opened with the right content so now set its language,
+            // * and restore the proper cursor position, selection range and scrolling position
             if (this.lastSelectedNode) {
                 // this.lastSelectedNode MAY NOT BE VALID
                 this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
