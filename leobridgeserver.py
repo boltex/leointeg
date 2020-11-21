@@ -542,7 +542,7 @@ class IntegTextWrapper:
         # X axis ignored
 
     def getYScrollPosition(self):
-        print("wrapper get y scroll" + str(self.yScroll))
+        # print("wrapper get y scroll" + str(self.yScroll))
         return self.yScroll
 
     def hasSelection(self):
@@ -583,7 +583,7 @@ class IntegTextWrapper:
 
     def setYScrollPosition(self, i):
         self.yScroll = i
-        print("wrapper set y scroll" + str(self.yScroll))
+        # print("wrapper set y scroll" + str(self.yScroll))
 
     def setSelectionRange(self, i, j, insert=None):
         """IntegTextWrapper setSelectionRange"""
@@ -2398,6 +2398,7 @@ class LeoBridgeIntegController:
 
         w_p = self._ap_to_p(p_ap)
         if not w_p:
+            print("in GBS -> P NOT FOUND using self.commander.p")
             w_p = self.commander.p
 
         w_wrapper = self.commander.frame.body.wrapper
@@ -2419,7 +2420,6 @@ class LeoBridgeIntegController:
         }
 
         if w_p:
-
             c, g = self.commander, self.g
             aList = g.get_directives_dict_list(w_p)
             d = g.scanAtCommentAndAtLanguageDirectives(aList)
@@ -2438,6 +2438,7 @@ class LeoBridgeIntegController:
 
             # get selection from wrapper instead if its the selected node
             if self.commander.p.v.gnx == w_p.v.gnx:
+                # print("in GBS -> SAME AS self.commander.p SO USING FROM WRAPPER")
                 w_active = w_wrapper.getInsertPoint()
                 w_start, w_end = w_wrapper.getSelectionRange(True)
                 w_scroll = w_wrapper.getYScrollPosition()
@@ -2574,11 +2575,12 @@ class LeoBridgeIntegController:
         w_body = ""
         w_v = None
         if self.commander.p.v.gnx == w_gnx:
-            # print('Set Selection! OK SAME GNX: '+ self.commander.p.v.gnx)
+            # print('Set Selection! OK SAME GNX: ' + self.commander.p.v.gnx)
             w_same = True
             w_v = self.commander.p.v
         else:
-            # print('Set Selection! NOT SAME GNX: selected:'+ self.commander.p.v.gnx + ', package:'+  w_gnx)
+            print('Set Selection! NOT SAME GNX: selected:' +
+                  self.commander.p.v.gnx + ', package:' + w_gnx)
             w_v = self.commander.fileCommands.gnxDict.get(w_gnx)
 
         if not w_v:
@@ -2601,9 +2603,8 @@ class LeoBridgeIntegController:
         w_endSel = f_convert(
             w_body, w_end['line'], w_end['col'])
 
-        print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
-              " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
-        # print("for body"+ w_body)
+        # print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
+        #       " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
 
         if w_same:
             w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)

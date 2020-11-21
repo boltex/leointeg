@@ -1388,7 +1388,7 @@ export class LeoIntegration {
                             console.log('GOT STATES DIFFERENT GNX: ' + w_leoBodySel.gnx + ", last sel: " + this.lastSelectedNode!.gnx + ", bodyUri was: " + this._testBodyUri);
                         }
                         const w_scroll = w_leoBodySel.scroll;
-                        console.log('GET_BODY_STATES json' + JSON.stringify(w_scroll));
+                        // console.log('GET_BODY_STATES json' + JSON.stringify(w_scroll));
 
                         let w_scrollRange: vscode.Range | undefined;
                         if (w_scroll && w_scroll.start && w_scroll.end &&

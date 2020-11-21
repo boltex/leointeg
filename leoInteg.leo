@@ -9966,7 +9966,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                         console.log('GOT STATES DIFFERENT GNX: ' + w_leoBodySel.gnx + ", last sel: " + this.lastSelectedNode!.gnx + ", bodyUri was: " + this._testBodyUri);
                     }
                     const w_scroll = w_leoBodySel.scroll;
-                    console.log('GET_BODY_STATES json' + JSON.stringify(w_scroll));
+                    // console.log('GET_BODY_STATES json' + JSON.stringify(w_scroll));
 
                     let w_scrollRange: vscode.Range | undefined;
                     if (w_scroll &amp;&amp; w_scroll.start &amp;&amp; w_scroll.end &amp;&amp;
@@ -12511,6 +12511,7 @@ def tag_configure(self, colorName, **keys): pass
 
     w_p = self._ap_to_p(p_ap)
     if not w_p:
+        print("in GBS -&gt; P NOT FOUND using self.commander.p")
         w_p = self.commander.p
 
     w_wrapper = self.commander.frame.body.wrapper
@@ -12532,7 +12533,6 @@ def tag_configure(self, colorName, **keys): pass
     }
 
     if w_p:
-
         c, g = self.commander, self.g
         aList = g.get_directives_dict_list(w_p)
         d = g.scanAtCommentAndAtLanguageDirectives(aList)
@@ -12551,6 +12551,7 @@ def tag_configure(self, colorName, **keys): pass
 
         # get selection from wrapper instead if its the selected node
         if self.commander.p.v.gnx == w_p.v.gnx:
+            # print("in GBS -&gt; SAME AS self.commander.p SO USING FROM WRAPPER")
             w_active = w_wrapper.getInsertPoint()
             w_start, w_end = w_wrapper.getSelectionRange(True)
             w_scroll = w_wrapper.getYScrollPosition()
@@ -12591,11 +12592,12 @@ def tag_configure(self, colorName, **keys): pass
     w_body = ""
     w_v = None
     if self.commander.p.v.gnx == w_gnx:
-        # print('Set Selection! OK SAME GNX: '+ self.commander.p.v.gnx)
+        # print('Set Selection! OK SAME GNX: ' + self.commander.p.v.gnx)
         w_same = True
         w_v = self.commander.p.v
     else:
-        # print('Set Selection! NOT SAME GNX: selected:'+ self.commander.p.v.gnx + ', package:'+  w_gnx)
+        print('Set Selection! NOT SAME GNX: selected:' +
+              self.commander.p.v.gnx + ', package:' + w_gnx)
         w_v = self.commander.fileCommands.gnxDict.get(w_gnx)
 
     if not w_v:
@@ -12618,9 +12620,8 @@ def tag_configure(self, colorName, **keys): pass
     w_endSel = f_convert(
         w_body, w_end['line'], w_end['col'])
 
-    print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
-          " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
-    # print("for body"+ w_body)
+    # print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
+    #       " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
 
     if w_same:
         w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
@@ -12720,11 +12721,11 @@ export function getDurationMs(p_start: [number, number]): number {
 </t>
 <t tx="felix.20201102223046.1">def setYScrollPosition(self, i):
     self.yScroll = i
-    print("wrapper set y scroll" + str(self.yScroll))
+    # print("wrapper set y scroll" + str(self.yScroll))
 
 </t>
 <t tx="felix.20201102223052.1">def getYScrollPosition(self):
-    print("wrapper get y scroll" + str(self.yScroll))
+    # print("wrapper get y scroll" + str(self.yScroll))
     return self.yScroll
 
 </t>
