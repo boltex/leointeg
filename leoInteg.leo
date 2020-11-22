@@ -8660,7 +8660,8 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 
 ---
 
-**🦁 Enjoy!**</t>
+**🦁 Enjoy!**
+</t>
 <t tx="felix.20200718220833.1">@language md
 @tabwidth -4
 # Change Log
@@ -8676,6 +8677,8 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 - Added (basic) unknown attributes support as hover tooltip and small description on node headlines.
 - Added a 'leoBridge Server Terminal Panel' to gather output of the leoBridge stdOut pipe. It's displayed among the 'output panels', along with the standard 'leo log window', when the server is started by leoInteg. (either with the auto-start config setting, or by calling the 'start server' command via buttons or the command-palette.)
 - Syntax coloring and Snippets are now enabled for those languages : C, C++, CSS, HTML, Java, Javascript, json, Markdown, PHP, Python, Rust and Typescript. They are taken from the default extension for that language, or if non-existent, from the most popular extension for that language
+- Recent files are now remembered and restored upon re-opening vscode.
+- Leo files can be opened from the explorer pane directly.
 - Added 'minibuffer' feature
 - Added cursor position, selected range and scrolling position to be captured and restored when navigating the outline. [#39](https://github.com/boltex/leointeg/issues/39) This allows for commands that use the currently selected text, [#61](https://github.com/boltex/leointeg/issues/61) such as run script and extract/extract name, etc.
 
@@ -8706,7 +8709,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 
 In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's next release), make sure you have Node.js and Git installed, then clone the sources and run `npm install` in a terminal to install the remaining development dependencies.
 
-![run extension](/resources/run-extension.png)
+![run extension](resources/run-extension.png)
 
 You can then run the **Run Extension** target, as shown above, in the **Debug View**.
 
@@ -8731,26 +8734,29 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 </t>
 <t tx="felix.20200718222043.1">## Keybindings
 
-&gt; _More commands are available by opening the **Command Palette** and typing 'Leo'_
-
-| Commands Keybinding        |     |                         | Command            |
-| :------------------------- | :-- | :---------------------- | :----------------- |
-| `Alt + -`                  |     |                         | Contract All       |
-| `Ctrl + I`                 |     |                         | Insert Node        |
-| `Ctrl + H`                 |     |                         | Edit Headline      |
-| `Ctrl + Backquote`         |     |                         | Clone Node         |
-| `Ctrl + Shift + C`         |     |                         | Copy Node          |
-| `Ctrl + Shift + X`         |     |                         | Cut Node           |
-| `Ctrl + Shift + V`         |     |                         | Paste Node         |
-| `Ctrl + Shift + Backspace` |     |                         | Delete Node        |
-| `Ctrl + B`                 |     |                         | Execute Script     |
-| `Ctrl + M`                 |     |                         | Mark / Unmark      |
-| `Ctrl + {`                 |     | `Ctrl + }`              | Promote / Demote   |
-| `Alt + A`                  |     |                         | Sort Siblings      |
-| `Ctrl + U`                 | or  | `Shift [+ Alt] + Up`    | Move Outline Up    |
-| `Ctrl + D`                 | or  | `Shift [+ Alt] + Down`  | Move Outline Down  |
-| `Ctrl + L`                 | or  | `Shift [+ Alt] + Left`  | Move Outline Left  |
-| `Ctrl + R`                 | or  | `Shift [+ Alt] + Right` | Move Outline Right |
+| Commands Keybinding        |     |                         | Command             |
+| :------------------------- | :-- | :---------------------- | :------------------ |
+| `Alt + -`                  |     |                         | Contract All        |
+| `Ctrl + I`                 |     |                         | Insert Node         |
+| `Ctrl + H`                 |     |                         | Edit Headline       |
+| `Ctrl + Backquote`         |     |                         | Clone Node          |
+| `Ctrl + Shift + C`         |     |                         | Copy Node           |
+| `Ctrl + Shift + X`         |     |                         | Cut Node            |
+| `Ctrl + Shift + V`         |     |                         | Paste Node          |
+| `Ctrl + Shift + Backspace` |     |                         | Delete Node         |
+| `Ctrl + B`                 |     |                         | Execute Script      |
+| `Ctrl + M`                 |     |                         | Mark / Unmark       |
+| `Ctrl + {`                 | and | `Ctrl + }`              | Promote / Demote    |
+| `Ctrl + T`                 |     |                         | Toggle Outline/Body |
+| `Tab`                      | or  | `Alt + D`               | Focus on Body       |
+| `Alt + T`                  |     |                         | Focus on Outline    |
+| `Ctrl + Shift + D`         |     |                         | Extract             |
+| `Ctrl + Shift + N`         |     |                         | Extract Names       |
+| `Alt + A`                  |     |                         | Sort Siblings       |
+| `Ctrl + U`                 | or  | `Shift [+ Alt] + Up`    | Move Outline Up     |
+| `Ctrl + D`                 | or  | `Shift [+ Alt] + Down`  | Move Outline Down   |
+| `Ctrl + L`                 | or  | `Shift [+ Alt] + Left`  | Move Outline Left   |
+| `Ctrl + R`                 | or  | `Shift [+ Alt] + Right` | Move Outline Right  |
 
 &gt; Move Outline commands only need the 'Alt' key modifier when focus is on body pane.
 
