@@ -554,7 +554,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.SHOW_WELCOME, () => w_leoSettingsWebview.openWebview()],
         [CMD.SHOW_SETTINGS, () => w_leoSettingsWebview.openWebview()], // Same as SHOW_WELCOME
 
-        // TODO : @boltex More commands for issues #15, #23, #24
+        // TODO : @boltex More commands for issues #23, #24
         [CMD.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
         [CMD.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
         [CMD.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],

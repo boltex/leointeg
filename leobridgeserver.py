@@ -2398,7 +2398,8 @@ class LeoBridgeIntegController:
 
         w_p = self._ap_to_p(p_ap)
         if not w_p:
-            print("in GBS -> P NOT FOUND using self.commander.p")
+            print(
+                "in GBS -> P NOT FOUND gnx:" + p_ap['gnx'] + " using self.commander.p gnx: " + self.commander.p.v.gnx)
             w_p = self.commander.p
 
         w_wrapper = self.commander.frame.body.wrapper

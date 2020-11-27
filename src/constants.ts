@@ -137,6 +137,16 @@ export class Constants {
     ];
 
     /**
+     * * Strings used in 'at-button' panel display in LeoButtonNode
+     */
+    public static BUTTON_STRINGS = {
+        NULL_WIDGET: "nullButtonWidget",
+        SCRIPT_BUTTON: "script-button",
+        ADD_BUTTON: "leoButtonAdd",
+        NORMAL_BUTTON: "leoButtonNode"
+    };
+
+    /**
      * * String for JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
      */
     public static CONFIG_NAMES = {
@@ -283,8 +293,6 @@ export class Constants {
         OK: '"ok"' // Quotes in string as a 'JSON parameter'
     };
 
-
-
     /**
      * * Table for converting Leo languages names for the currently opened body pane
      * Used in showBody method of leoIntegration.ts
@@ -366,18 +374,18 @@ export class Constants {
         GET_STATES: "getStates",
         HOIST_PNODE: "hoist",
         DEHOIST: "dehoist",
-        // TODO : @boltex More commands to implement #15, #23, #24
+        EXTRACT: "extract",
+        EXTRACT_NAMES: "extractNames",
+        // TODO : @boltex More commands to implement #23, #24
         CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
         CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
         CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex
         CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // #24 @boltex
-        EXTRACT: "extract", // #15 @boltex
-        EXTRACT_NAMES: "extractNames", // #15 @boltex
         COPY_MARKED: "copyMarked", // #23 @boltex
         DIFF_MARKED_NODES: "diffMarkedNodes", // #23 @boltex
         MARK_CHANGED_ITEMS: "markChangedItems", // #23 @boltex
         MARK_SUBHEADS: "markSubheads", // #23 @boltex
-        UNMARK_ALL: "unmarkAll", // TODO : #23 @boltex
+        UNMARK_ALL: "unmarkAll", // #23 @boltex
         CLONE_MARKED_NODES: "cloneMarkedNodes", // #23 @boltex
         DELETE_MARKED_NODES: "deleteMarkedNodes", // #23 @boltex
         MOVE_MARKED_NODES: "moveMarkedNodes" // #23 @boltex

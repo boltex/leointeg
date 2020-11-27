@@ -323,6 +323,7 @@
 <v t="felix.20200718020912.5"><vh>workbench interface panels</vh></v>
 <v t="felix.20200718020912.6"><vh>user messages</vh></v>
 <v t="felix.20200718020912.7"><vh>ask/save buttons</vh></v>
+<v t="felix.20201126235315.1"><vh>at-buttons strings</vh></v>
 <v t="felix.20200718020912.8"><vh>configuration keys</vh></v>
 <v t="ekr.20200815084016.1"><vh>config defaults</vh></v>
 <v t="felix.20200718020912.9"><vh>context flags</vh></v>
@@ -715,7 +716,6 @@ export class LeoAsync {
  * @param p_saveAsArg
  */
 public showSaveAsDialog(p_saveAsArg: showSaveAsDialogParameters): void {
-    // TODO : Check if needed
     console.log('TODO: SHOW SAVE AS DIALOG!');
 }
 
@@ -1024,10 +1024,11 @@ private _refreshOutline(p_revealType?: RevealType): void {
         this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
     }
     // Force showing last used Leo outline first
-    if (this._lastSelectedNode &amp;&amp; !(this._leoTreeExView.visible || this._leoTreeView.visible)) {
-        this._lastTreeView.reveal(this._lastSelectedNode).then(() =&gt; {
-            this._leoTreeProvider.refreshTreeRoot();
-        });
+    if (this.lastSelectedNode &amp;&amp; !(this._leoTreeExView.visible || this._leoTreeView.visible)) {
+        this._lastTreeView.reveal(this.lastSelectedNode)
+            .then(() =&gt; {
+                this._leoTreeProvider.refreshTreeRoot();
+            });
     } else {
         this._leoTreeProvider.refreshTreeRoot();
     }
@@ -1057,7 +1058,6 @@ private _revealTreeViewNode(p_leoNode: LeoNode, p_options?: { select?: boolean, 
  */
 public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: ArchivedPosition): void {
 
-    // * Rules not specified with ternary operator(s) for clarity
     // Set w_revealType, it will ultimately set this._revealType. Used when finding the OUTLINE's selected node and setting or preventing focus into it
     // Set this._fromOutline. Used when finding the selected node and showing the BODY to set or prevent focus in it
     this._refreshType = Object.assign({}, p_refreshType);
@@ -1096,10 +1096,8 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: A
         });
         if (this._refreshType.body) {
             this._refreshType.body = false;
-            // REFRESH BODY!!
             this._tryApplyNodeToBody(w_node, false, true); // ! NEEDS STACK AND THROTTLE!
         }
-
     } else {
         console.error('Unhandled Refresh Case'); // Example: body only without tree refresh, should not happen so far...
     }
@@ -1872,7 +1870,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
 [CMD.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()], // Same as SHOW_WELCOME
 
-// TODO : @boltex More commands for issues #15, #23, #24
+// TODO : @boltex More commands for issues #23, #24
 [CMD.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
 [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
 [CMD.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
@@ -5611,8 +5609,6 @@ public static ASYNC_ASK_RETURN_CODES = {
     OK: '"ok"' // Quotes in string as a 'JSON parameter'
 };
 
-
-
 </t>
 <t tx="felix.20200718020912.13">/**
  * * Commands for leobridgeserver.py
@@ -5686,18 +5682,18 @@ public static LEOBRIDGE = {
     GET_STATES: "getStates",
     HOIST_PNODE: "hoist",
     DEHOIST: "dehoist",
-    // TODO : @boltex More commands to implement #15, #23, #24
+    EXTRACT: "extract",
+    EXTRACT_NAMES: "extractNames",
+    // TODO : @boltex More commands to implement #23, #24
     CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
     CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
     CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex
     CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // #24 @boltex
-    EXTRACT: "extract", // #15 @boltex
-    EXTRACT_NAMES: "extractNames", // #15 @boltex
     COPY_MARKED: "copyMarked", // #23 @boltex
     DIFF_MARKED_NODES: "diffMarkedNodes", // #23 @boltex
     MARK_CHANGED_ITEMS: "markChangedItems", // #23 @boltex
     MARK_SUBHEADS: "markSubheads", // #23 @boltex
-    UNMARK_ALL: "unmarkAll", // TODO : #23 @boltex
+    UNMARK_ALL: "unmarkAll", // #23 @boltex
     CLONE_MARKED_NODES: "cloneMarkedNodes", // #23 @boltex
     DELETE_MARKED_NODES: "deleteMarkedNodes", // #23 @boltex
     MOVE_MARKED_NODES: "moveMarkedNodes" // #23 @boltex
@@ -7155,8 +7151,9 @@ export class LeoButtonNode extends vscode.TreeItem {
             arguments: [this]
         };
         // TODO : Add HARD CODED strings to constants.ts
-        this._isAdd = (this.button.index.startsWith("nullButtonWidget") &amp;&amp; this.button.name === "script-button");
-        this.contextValue = this._isAdd ? "leoButtonAdd" : "leoButtonNode";
+        this._isAdd = (this.button.index.startsWith(Constants.BUTTON_STRINGS.NULL_WIDGET) &amp;&amp;
+            this.button.name === Constants.BUTTON_STRINGS.SCRIPT_BUTTON);
+        this.contextValue = this._isAdd ? Constants.BUTTON_STRINGS.ADD_BUTTON : Constants.BUTTON_STRINGS.NORMAL_BUTTON;
     }
 
     @others
@@ -9211,16 +9208,17 @@ private _triggerGetStates(): void {
     }
     if (this._refreshType.states) {
         this._refreshType.states = false;
-        this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) =&gt; {
+        this.sendAction(Constants.LEOBRIDGE.GET_STATES)
+            .then((p_package: LeoBridgePackage) =&gt; {
 
-            //                            **********************************
-            //                             TODO : Check if still same GNX !
-            //                            **********************************
+                //                            **********************************
+                //                             TODO : Check if still same GNX !
+                //                            **********************************
 
-            if (p_package.states) {
-                this.leoStates.setLeoStateFlags(p_package.states);
-            }
-        });
+                if (p_package.states) {
+                    this.leoStates.setLeoStateFlags(p_package.states);
+                }
+            });
     }
 
 }
@@ -9390,7 +9388,8 @@ private _setupNoOpenedLeoDocument(): void {
     this._bodyTextDocument = undefined;
     this.lastSelectedNode = undefined;
     this._refreshOutline(RevealType.NoReveal);
-    // TODO : refresh leoDocuments and at buttons!
+    this.refreshDocumentsPane();
+    this._leoButtonsProvider.refreshTreeRoot();
     this.closeBody();
 }
 
@@ -9639,9 +9638,11 @@ private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
             if (utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody)) {
                 this._bodySaveDocument(p_event.document)
                     .then(() =&gt; {
-                        this.lastSelectedNode!.dirty = true;
-                        this.lastSelectedNode!.hasBody = w_hasBody;
-                        // NOT incrementing this.treeID to keep ids intact
+                        if (this.lastSelectedNode) {
+                            this.lastSelectedNode.dirty = true;
+                            this.lastSelectedNode.hasBody = w_hasBody;
+                            // NOT incrementing this.treeID to keep ids intact
+                        }
                         this._refreshOutline(RevealType.NoReveal); // NoReveal, keeping the same id anyways
                     });
                 return; // * Don't continue
@@ -9735,8 +9736,8 @@ public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
  * @param p_focusOutline Flag for focus to be placed in outline
  */
 public showOutline(p_focusOutline?: boolean): void {
-    if (this._lastSelectedNode) {
-        this._lastTreeView.reveal(this._lastSelectedNode, {
+    if (this.lastSelectedNode) {
+        this._lastTreeView.reveal(this.lastSelectedNode, {
             select: true,
             focus: p_focusOutline
         });
@@ -9797,7 +9798,7 @@ private _apToLeoNodeConvertReveal(p_leoNode: LeoNode): void {
     this._revealType = RevealType.NoReveal; // ok reset
     // If first time, or when treeview switched, lastSelectedNode will be undefined
     if (!this.lastSelectedNode || this._needLastSelectedRefresh) {
-        this._needLastSelectedRefresh = false;
+        this._needLastSelectedRefresh = false; // TODO : THIS SHOULD BE CHECKED AND SET FALSE WHEN REFRESHING BODY !
         this.lastSelectedNode = p_leoNode; // special case only: lastSelectedNode should be set in selectTreeNode
     }
     setTimeout(() =&gt; {
@@ -10079,7 +10080,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
  * @param p_aside Flag to force opening the body "Aside", i.e. when the selection was made from choosing "Open Aside"
  * @returns
  */
-public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Promise&lt;LeoBridgePackage&gt; {
+public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Promise&lt;LeoBridgePackage | vscode.TextEditor&gt; {
     // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
     if (p_aside &amp;&amp; p_node !== this.lastSelectedNode) {
         this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
@@ -10090,7 +10091,7 @@ public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boole
     // * Check if having already this exact node position selected : Just show the body and exit!
     if (p_node === this.lastSelectedNode) {
         this._locateOpenedBody(p_node.gnx);
-        this.showBody(!!p_aside, w_showBodyKeepFocus); // voluntary exit
+        return this.showBody(!!p_aside, w_showBodyKeepFocus); // Voluntary exit
     }
     // * Set selected node in Leo via leoBridge
     const q_setSelectedNode = this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson).then((p_setSelectedResult) =&gt; {
@@ -10401,16 +10402,13 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
         })
         .then((p_tryCloseResult =&gt; {
             if (p_tryCloseResult.closed) {
-                this.refreshDocumentsPane();
-                this._leoButtonsProvider.refreshTreeRoot();
                 this._removeLastFile(w_removeLastFileName);
                 if (p_tryCloseResult.closed.total === 0) {
                     this._setupNoOpenedLeoDocument();
-                    return Promise.resolve(true);
                 } else {
                     this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
-                    return Promise.resolve(true);
                 }
+                return Promise.resolve(true);
             } else if (p_tryCloseResult.closed === false) {
                 // Explicitly false and not just undefined : FILE IS DIRTY
                 const q_askSaveChangesInfoMessage: Thenable&lt;vscode.MessageItem | undefined&gt; = vscode.window.showInformationMessage(
@@ -10459,16 +10457,13 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                     .then((p_closeResult: LeoBridgePackage | undefined) =&gt; {
                         if (p_closeResult) {
                             // * back from CLOSE_FILE action, the last that can be performed (after saving if dirty or not)
-                            this.refreshDocumentsPane();
-                            this._leoButtonsProvider.refreshTreeRoot();
                             this._removeLastFile(w_removeLastFileName);
                             if (p_closeResult &amp;&amp; p_closeResult.closed &amp;&amp; p_closeResult.closed.total === 0) {
                                 this._setupNoOpenedLeoDocument();
-                                return Promise.resolve(true);
                             } else {
                                 this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
-                                return Promise.resolve(true);
                             }
+                            return Promise.resolve(true);
                         }
                         // Canceled
                         return Promise.resolve(false);
@@ -12519,7 +12514,8 @@ def tag_configure(self, colorName, **keys): pass
 
     w_p = self._ap_to_p(p_ap)
     if not w_p:
-        print("in GBS -&gt; P NOT FOUND using self.commander.p")
+        print(
+            "in GBS -&gt; P NOT FOUND gnx:" + p_ap['gnx'] + " using self.commander.p gnx: " + self.commander.p.v.gnx)
         w_p = self.commander.p
 
     w_wrapper = self.commander.frame.body.wrapper
@@ -12904,6 +12900,17 @@ export interface BodyPosition {
     line: number;
     col: number;
 }
+
+</t>
+<t tx="felix.20201126235315.1">/**
+ * * Strings used in 'at-button' panel display in LeoButtonNode
+ */
+public static BUTTON_STRINGS = {
+    NULL_WIDGET: "nullButtonWidget",
+    SCRIPT_BUTTON: "script-button",
+    ADD_BUTTON: "leoButtonAdd",
+    NORMAL_BUTTON: "leoButtonNode"
+};
 
 </t>
 </tnodes>

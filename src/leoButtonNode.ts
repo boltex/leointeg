@@ -25,8 +25,9 @@ export class LeoButtonNode extends vscode.TreeItem {
             arguments: [this]
         };
         // TODO : Add HARD CODED strings to constants.ts
-        this._isAdd = (this.button.index.startsWith("nullButtonWidget") && this.button.name === "script-button");
-        this.contextValue = this._isAdd ? "leoButtonAdd" : "leoButtonNode";
+        this._isAdd = (this.button.index.startsWith(Constants.BUTTON_STRINGS.NULL_WIDGET) &&
+            this.button.name === Constants.BUTTON_STRINGS.SCRIPT_BUTTON);
+        this.contextValue = this._isAdd ? Constants.BUTTON_STRINGS.ADD_BUTTON : Constants.BUTTON_STRINGS.NORMAL_BUTTON;
     }
 
     // @ts-ignore

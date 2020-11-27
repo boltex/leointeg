@@ -34,7 +34,6 @@ export class LeoAsync {
      * @param p_saveAsArg
      */
     public showSaveAsDialog(p_saveAsArg: showSaveAsDialogParameters): void {
-        // TODO : Check if needed
         console.log('TODO: SHOW SAVE AS DIALOG!');
     }
 
