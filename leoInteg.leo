@@ -7150,7 +7150,6 @@ export class LeoButtonNode extends vscode.TreeItem {
             title: '',
             arguments: [this]
         };
-        // TODO : Add HARD CODED strings to constants.ts
         this._isAdd = (this.button.index.startsWith(Constants.BUTTON_STRINGS.NULL_WIDGET) &amp;&amp;
             this.button.name === Constants.BUTTON_STRINGS.SCRIPT_BUTTON);
         this.contextValue = this._isAdd ? Constants.BUTTON_STRINGS.ADD_BUTTON : Constants.BUTTON_STRINGS.NORMAL_BUTTON;
@@ -10041,7 +10040,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                     }
                 });
         }
-
+        // Find body pane's position if already opened
         vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
             if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
                 this._bodyMainSelectionColumn = p_textEditor.viewColumn;

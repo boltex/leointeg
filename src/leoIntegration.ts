@@ -1456,7 +1456,7 @@ export class LeoIntegration {
                         }
                     });
             }
-
+            // Find body pane's position if already opened
             vscode.window.visibleTextEditors.forEach(p_textEditor => {
                 if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
                     this._bodyMainSelectionColumn = p_textEditor.viewColumn;
