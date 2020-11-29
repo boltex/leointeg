@@ -11,6 +11,7 @@ export class LeoButtonNode extends vscode.TreeItem {
     // Context string that is checked in package.json with 'when' clauses
     public contextValue: string;
 
+    // is the special 'add' button used to create button from a given node's script
     private _isAdd: boolean;
 
     constructor(

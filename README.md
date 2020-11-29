@@ -4,7 +4,8 @@
 
 ### Break your code down into sections structured as an outline, to derive or parse back your files
 
-> Leo is a fundamentally different way of using and organizing data, programs and scripts. [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4)
+> Leo is a fundamentally different way of using and organizing data, programs and scripts.\
+> [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4) 🎥
 
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
 or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.visualstudio.com](https://code.visualstudio.com/).

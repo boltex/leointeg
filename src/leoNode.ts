@@ -8,7 +8,6 @@ import { ArchivedPosition, Icon } from "./types"; // ArchivedPosition included t
  */
 export class LeoNode extends vscode.TreeItem {
 
-    public cursorSelection: any; // TODO : #39 @boltex Keep body's cursor and selection position from vscode to get it back
     public contextValue: string; // * Context string is checked in package.json with 'when' clauses
 
     public isRoot: boolean = false; // * for hoist/dehoist context flags purposes
@@ -101,14 +100,6 @@ export class LeoNode extends vscode.TreeItem {
             w_contextValue += Constants.CONTEXT_FLAGS.NODE_NOT_ROOT;
         }
         return w_contextValue;
-    }
-
-    public getCursorSelection(): any {
-        return this.cursorSelection;
-    }
-
-    public setCursorSelection(p_cursorSelection: any): void {
-        this.cursorSelection = p_cursorSelection;
     }
 
     // @ts-ignore

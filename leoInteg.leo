@@ -531,8 +531,6 @@
 <v t="felix.20200718170712.3"><vh>copyProperties</vh></v>
 <v t="felix.20200718170712.4"><vh>setRoot</vh></v>
 <v t="felix.20200718170712.5"><vh>_getNodeContextValue</vh></v>
-<v t="felix.20200718170712.6"><vh>getCursorSelection</vh></v>
-<v t="felix.20200718170712.7"><vh>setCursorSelection</vh></v>
 <v t="felix.20200718171904.1"><vh>get_iconPath</vh></v>
 <v t="felix.20200718171854.1"><vh>get_id</vh></v>
 <v t="felix.20200718171837.1"><vh>get_description</vh></v>
@@ -767,7 +765,7 @@ public showAskModalDialog(p_askArg: runAskYesNoDialogParameters): void {
         const w_sendResultPromise = this._leoIntegration.sendAction(Constants.LEOBRIDGE.ASK_RESULT, '"' + this._askResult + '"'); // Quotes in string as a 'JSON parameter'
         if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
             w_sendResultPromise.then(() =&gt; {
-                this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
+                this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
             });
         }
     });
@@ -989,12 +987,10 @@ private _onDidOpenTextDocument(p_document: vscode.TextDocument): void {
 <t tx="ekr.20200815085705.1">/**
  * * Handle the change of visibility of either outline treeview and refresh it if its visible
  * @param p_event The treeview-visibility-changed event passed by vscode
- * @param p_explorerView Flag to signify that the treeview who triggered this event is the one in the explorer view
+ * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
  */
 private _onButtonsTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
-    if (p_explorerView) {
-        // (Facultative/unused) Do something different if explorer view is used, instead of the standalone outline pane
-    }
+    if (p_explorerView) { } // (Facultative/unused) Do something different if explorer view is used
     if (p_event.visible) {
         this._leoButtonsProvider.refreshTreeRoot();
     }
@@ -1002,15 +998,12 @@ private _onButtonsTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityCh
 
 </t>
 <t tx="ekr.20200815085806.1">/**
- * * Refresh tree for 'node hover icons' refresh
- * only after changing settings
+ * * Refresh tree for 'node hover icons' to show up properly after changing their settings
  */
 public configTreeRefresh(): void {
     if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
-        this._revealType = RevealType.RevealSelect;
         this._preventShowBody = true;
-        this._treeId++;
-        this._leoTreeProvider.refreshTreeRoot();
+        this._refreshOutline(true, RevealType.RevealSelect);
     }
 }
 
@@ -1019,7 +1012,10 @@ public configTreeRefresh(): void {
  * * Refreshes the outline. A reveal type can be passed along to specify the reveal type for the selected node
  * @param p_revealType Facultative reveal type to specify type of reveal when the 'selected node' is encountered
  */
-private _refreshOutline(p_revealType?: RevealType): void {
+private _refreshOutline(p_incrementTreeID: boolean, p_revealType?: RevealType): void {
+    if (p_incrementTreeID) {
+        this._treeId++;
+    }
     if (p_revealType !== undefined) { // To check if selected node should self-select while redrawing whole tree
         this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
     }
@@ -1057,12 +1053,11 @@ private _revealTreeViewNode(p_leoNode: LeoNode, p_options?: { select?: boolean, 
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
  */
 public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: ArchivedPosition): void {
-
-    // Set w_revealType, it will ultimately set this._revealType. Used when finding the OUTLINE's selected node and setting or preventing focus into it
+    // Set w_revealType, it will ultimately set this._revealType.
+    // Used when finding the OUTLINE's selected node and setting or preventing focus into it
     // Set this._fromOutline. Used when finding the selected node and showing the BODY to set or prevent focus in it
     this._refreshType = Object.assign({}, p_refreshType);
-
-    let w_revealType: RevealType = RevealType.NoReveal;
+    let w_revealType: RevealType;
     if (p_fromOutline) {
         this._fromOutline = true;
         w_revealType = RevealType.RevealSelectFocus;
@@ -1070,13 +1065,12 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: A
         this._fromOutline = false;
         w_revealType = RevealType.RevealSelect;
     }
-    if (this._refreshType.body) {
+    if (this._refreshType.body &amp;&amp;
+        this._bodyLastChangedDocument &amp;&amp; this._bodyLastChangedDocument.isDirty) {
         // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
-        if (this._bodyLastChangedDocument &amp;&amp; this._bodyLastChangedDocument.isDirty) {
-            this._bodyLastChangedDocument.save(); // ! Voluntarily save to 'clean' any pending body (lose trailing whitespace)
-        }
+        this._bodyLastChangedDocument.save(); // Voluntarily save to 'clean' any pending body
     }
-    // * _focusInterrupt Override
+    // * _focusInterrupt insertNode Override
     if (this._focusInterrupt) {
         // this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
         w_revealType = RevealType.RevealSelect;
@@ -1084,22 +1078,19 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: A
     // * Either the whole tree refreshes, or a single tree node is revealed when just navigating
     if (this._refreshType.tree) {
         this._refreshType.tree = false;
-        this._treeId++;
-        this._refreshOutline(w_revealType);
+        this._refreshOutline(true, w_revealType);
     } else if (this._refreshType.node &amp;&amp; p_ap) {
         // * Force single node "refresh" by revealing it, instead of "refreshing" it
         this._refreshType.node = false;
         const w_node = this.apToLeoNode(p_ap);
         this.leoStates.setSelectedNodeFlags(w_node);
         this._revealTreeViewNode(w_node, {
-            select: true, focus: true // ! FOCUS FORCED TO TRUE always leave focus on tree when navigating
+            select: true, focus: true // FOCUS FORCED TO TRUE always leave focus on tree when navigating
         });
         if (this._refreshType.body) {
             this._refreshType.body = false;
             this._tryApplyNodeToBody(w_node, false, true); // ! NEEDS STACK AND THROTTLE!
         }
-    } else {
-        console.error('Unhandled Refresh Case'); // Example: body only without tree refresh, should not happen so far...
     }
     this.getStates();
 }
@@ -1917,7 +1908,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.50.0"
+    "vscode": "^1.51.0"
   },
   "keywords": [
     "leo",
@@ -1953,7 +1944,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.50.0",
+    "@types/vscode": "^1.51.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -5813,13 +5804,13 @@ public static COMMANDS = {
     HOIST_SELECTION_FO: Constants.NAME + ".hoistSelectionFromOutline",
     DEHOIST: Constants.NAME + ".deHoist",
     DEHOIST_FO: Constants.NAME + ".deHoistFromOutline",
+    EXTRACT: Constants.NAME + ".extract",
+    EXTRACT_NAMES: Constants.NAME + ".extractNames",
     // * - - - - - - - - - - - - - - - not implemented yet
     CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
     CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
     CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
     CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
-    EXTRACT: Constants.NAME + ".extract",
-    EXTRACT_NAMES: Constants.NAME + ".extractNames",
     COPY_MARKED: Constants.NAME + ".copyMarked",
     DIFF_MARKED_NODES: Constants.NAME + ".diffMarkedNodes",
     MARK_CHANGED_ITEMS: Constants.NAME + ".markChangedItems",
@@ -7137,6 +7128,7 @@ export class LeoButtonNode extends vscode.TreeItem {
     // Context string that is checked in package.json with 'when' clauses
     public contextValue: string;
 
+    // is the special 'add' button used to create button from a given node's script
     private _isAdd: boolean;
 
     constructor(
@@ -7505,7 +7497,6 @@ import { ArchivedPosition, Icon } from "./types"; // ArchivedPosition included t
  */
 export class LeoNode extends vscode.TreeItem {
 
-    public cursorSelection: any; // TODO : #39 @boltex Keep body's cursor and selection position from vscode to get it back
     public contextValue: string; // * Context string is checked in package.json with 'when' clauses
 
     public isRoot: boolean = false; // * for hoist/dehoist context flags purposes
@@ -7606,16 +7597,6 @@ public setRoot(): void {
 }
 
 </t>
-<t tx="felix.20200718170712.6">public getCursorSelection(): any {
-    return this.cursorSelection;
-}
-
-</t>
-<t tx="felix.20200718170712.7">public setCursorSelection(p_cursorSelection: any): void {
-    this.cursorSelection = p_cursorSelection;
-}
-
-</t>
 <t tx="felix.20200718171837.1">// @ts-ignore
 public get description(): string {
     // * some smaller grayed-out text accompanying the main label
@@ -7695,7 +7676,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider&lt;LeoNode&gt
  * @param p_node The outline's node itself as a LeoNode instance
  */
 public refreshTreeNode(p_node: LeoNode): void {
-    // We want to do a real refresh, not just giving back the same we've got as input in getTreeItem
+    // Do a real node refresh, not just giving back the same element: see getTreeItem(element) below
     this._refreshSingleNodeFlag = true;
     this._onDidChangeTreeData.fire(p_node);
 }
@@ -8645,7 +8626,8 @@ export function isHexColor(p_hexString: string): boolean {
 
 ### Break your code down into sections structured as an outline, to derive or parse back your files
 
-&gt; Leo is a fundamentally different way of using and organizing data, programs and scripts. [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4)
+&gt; Leo is a fundamentally different way of using and organizing data, programs and scripts.\
+&gt; [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4) 🎥
 
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
 or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.visualstudio.com](https://code.visualstudio.com/).
@@ -9151,7 +9133,6 @@ private _addRecentAndLastFile(p_file: string): Promise&lt;void&gt; {
  * @returns A promise that resolves when the global storage modification is done
  */
 private _removeRecentFile(p_file: string): Thenable&lt;void&gt; {
-    // TODO : BEFORE SAVE-AS IF ALREADY SAVED
     return utils.removeFileFromGlobal(this._context, p_file, Constants.RECENT_FILES_KEY);
 }
 
@@ -9386,7 +9367,7 @@ private _setupNoOpenedLeoDocument(): void {
     this.leoStates.fileOpenedReady = false;
     this._bodyTextDocument = undefined;
     this.lastSelectedNode = undefined;
-    this._refreshOutline(RevealType.NoReveal);
+    this._refreshOutline(false, RevealType.NoReveal);
     this.refreshDocumentsPane();
     this._leoButtonsProvider.refreshTreeRoot();
     this.closeBody();
@@ -9423,8 +9404,7 @@ private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackageOpenedInfo): P
     // * Startup flag
     this.leoStates.fileOpenedReady = true;
     // * Maybe first valid redraw of tree along with the selected node and its body
-    this._treeId++;
-    this._refreshOutline(RevealType.RevealSelectFocus); // p_revealSelection flag set
+    this._refreshOutline(true, RevealType.RevealSelectFocus); // p_revealSelection flag set
     // * Maybe first StatusBar appearance
     this._leoStatusBar.update(true, 0, true);
     this._leoStatusBar.show(); // Just selected a node
@@ -9471,8 +9451,7 @@ private _onChangeCollapsedState(p_event: vscode.TreeViewExpansionEvent&lt;LeoNod
     this.sendAction(p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE, p_event.element.apJson)
         .then(() =&gt; {
             if (this.config.leoTreeBrowse) {
-                this._treeId++;
-                this._refreshOutline(RevealType.RevealSelect);
+                this._refreshOutline(true, RevealType.RevealSelect);
             }
         });
 }
@@ -9488,8 +9467,7 @@ private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEve
         this._lastTreeView = p_explorerView ? this._leoTreeExView : this._leoTreeView;
         this.setTreeViewTitle();
         this._needLastSelectedRefresh = true; // Its a new node in a new tree so refresh lastSelectedNode too
-        this._treeId++;
-        this._refreshOutline(RevealType.RevealSelect);
+        this._refreshOutline(true, RevealType.RevealSelect);
     }
 }
 
@@ -9497,12 +9475,10 @@ private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEve
 <t tx="felix.20200719025231.27">/**
  * * Handle the change of visibility of either outline treeview and refresh it if its visible
  * @param p_event The treeview-visibility-changed event passed by vscode
- * @param p_explorerView Flag to signify that the treeview who triggered this event is the one in the explorer view
+ * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
  */
 private _onDocTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
-    if (p_explorerView) {
-        // (Facultative/unused) Do something different if explorer view is used, instead of the standalone outline pane
-    }
+    if (p_explorerView) { } // (Facultative/unused) Do something different if explorer view is used
     if (p_event.visible) {
         this.refreshDocumentsPane();
     }
@@ -9625,14 +9601,14 @@ private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_interna
  */
 private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
     // ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
-    if (p_event.contentChanges.length &amp;&amp; (p_event.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
+    if (this.lastSelectedNode &amp;&amp; p_event.contentChanges.length &amp;&amp; (p_event.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
 
         // * There was an actual change on a Leo Body by the user
         this._bodyLastChangedDocument = p_event.document;
         this._fromOutline = false; // Focus is on body pane
 
         // * If icon should change then do it now (if there's no document edit pending)
-        if (this.lastSelectedNode &amp;&amp; (!this._currentDocumentChanged || utils.leoUriToStr(p_event.document.uri) === this.lastSelectedNode.gnx)) {
+        if (!this._currentDocumentChanged || utils.leoUriToStr(p_event.document.uri) === this.lastSelectedNode.gnx) {
             const w_hasBody = !!(p_event.document.getText().length);
             if (utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody)) {
                 this._bodySaveDocument(p_event.document)
@@ -9642,9 +9618,9 @@ private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
                             this.lastSelectedNode.hasBody = w_hasBody;
                             // NOT incrementing this.treeID to keep ids intact
                         }
-                        this._refreshOutline(RevealType.NoReveal); // NoReveal, keeping the same id anyways
+                        // NoReveal since we're keeping the same id.
+                        this._refreshOutline(false, RevealType.NoReveal);
                     });
-                return; // * Don't continue
             }
         }
     }
@@ -10053,18 +10029,17 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                 viewColumn: vscode.ViewColumn.Beside,
                 preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
                 preview: true // should text document be in preview only? set false for fully opened
-                // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top otherwise
+                // selection is instead set when the GET_BODY_STATES above resolves
             } : {
                 viewColumn: this._bodyMainSelectionColumn ? this._bodyMainSelectionColumn : 1, // view column in which the editor should be shown
                 preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
                 preview: false // should text document be in preview only? set false for fully opened
-                // selection: new Range( new Position(0,0), new Position(0,0) ) // TODO : Set scroll position of node if known / or top otherwise
+                // selection is instead set when the GET_BODY_STATES above resolves
             };
 
         // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
         return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor =&gt; {
-            // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : if position is in an derived file node show relative position
-            // other possible interactions: revealRange / setDecorations / visibleRanges / options.cursorStyle / options.lineNumbers
+            // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : #38 if position is in an derived file node show relative position
             return Promise.resolve(w_bodyEditor);
         });
     });
@@ -10661,7 +10636,7 @@ public cancelConnect(p_message?: string): void {
     this.leoStates.leoBridgeReady = false;
     this._leoBridgeReadyPromise = undefined;
     this._leoStatusBar.update(false);
-    this._refreshOutline(RevealType.NoReveal);
+    this._refreshOutline(false, RevealType.NoReveal);
 }
 
 </t>
@@ -12673,6 +12648,7 @@ export interface BodySelectionInfo {
 </t>
 <t tx="felix.20201014020145.1">/**
  * * Handles detection of the active editor's scroll position changes
+ * @param p_event a change event containing the active editor's visible range, if any.
  */
 private _onChangeEditorScroll(p_event: vscode.TextEditorVisibleRangesChangeEvent): void {
     if ((p_event.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME)) {

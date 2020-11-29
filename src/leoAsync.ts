@@ -84,7 +84,7 @@ export class LeoAsync {
             const w_sendResultPromise = this._leoIntegration.sendAction(Constants.LEOBRIDGE.ASK_RESULT, '"' + this._askResult + '"'); // Quotes in string as a 'JSON parameter'
             if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
                 w_sendResultPromise.then(() => {
-                    this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
+                    this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
                 });
             }
         });
