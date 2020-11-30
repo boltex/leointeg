@@ -72,10 +72,10 @@ export class LeoIntegration {
     private _treeId: number = 0; // Starting salt for tree node murmurhash generated Ids
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
-    get lastSelectedNode(): LeoNode | undefined { // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
+    get lastSelectedNode(): LeoNode | undefined {
         return this._lastSelectedNode;
     }
-    set lastSelectedNode(p_leoNode: LeoNode | undefined) { // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
+    set lastSelectedNode(p_leoNode: LeoNode | undefined) { // Needs undefined type because it cannot be set in the constructor
         this._lastSelectedNode = p_leoNode;
         if (p_leoNode) {
             utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_leoNode.marked); // Global context to 'flag' the selected node's marked state
@@ -1137,7 +1137,7 @@ export class LeoIntegration {
         this._revealType = RevealType.NoReveal; // ok reset
         // If first time, or when treeview switched, lastSelectedNode will be undefined
         if (!this.lastSelectedNode || this._needLastSelectedRefresh) {
-            this._needLastSelectedRefresh = false; // TODO : THIS SHOULD BE CHECKED AND SET FALSE WHEN REFRESHING BODY !
+            this._needLastSelectedRefresh = false;
             this.lastSelectedNode = p_leoNode; // special case only: lastSelectedNode should be set in selectTreeNode
         }
         setTimeout(() => {
@@ -1178,7 +1178,7 @@ export class LeoIntegration {
             node: p_node,
             aside: p_aside,
             showBodyKeepFocus: p_showBodyKeepFocus,
-            force_open: p_force_open //  can be undefined
+            force_open: p_force_open // can be undefined
         };
         // Start it if possible, otherwise the last _showBodyParams will be used again right after
         if (!this._showBodyStarted) {
@@ -1252,7 +1252,6 @@ export class LeoIntegration {
     /**
      * * Show the body pane if not already opened, and if allowed by leoInteg's control logic.
      * Prevent opening the body editor unnecessarily when hiding and re(showing) the outline pane
-     * TODO : This is an intermediate / transition function, COMBINE IT OR ELIMINATE IT!
      * @param p_aside Flag for opening the editor beside any currently opened and focused editor
      * @param p_showBodyKeepFocus flag that when true will stop the editor from taking focus once opened
      * @param p_forceOpen Forces opening the body pane editor
@@ -1273,35 +1272,33 @@ export class LeoIntegration {
 
     /**
      * * Save and rename from this.bodyUri to p_newGnx: This changes the body content & blocks 'undos' from crossing over
-     * ! BUG : UNDO NOW CROSSES OVER SINCE vscode1.48 or so... !
+     * ! BUG : UNDO NOW CROSSES OVER SINCE vscode 1.48 - Fix with #107
      * @param p_newGnx New gnx body id to switch to
      */
     private _switchBody(p_newGnx: string): Thenable<boolean> {
         if (this._bodyTextDocument) {
-            return this._bodyTextDocument.save().then((p_result) => {
-
-                const w_edit = new vscode.WorkspaceEdit();
-                this._leoFileSystem.setRenameTime(p_newGnx);
-                w_edit.renameFile(
-                    this.bodyUri, // Old URI from last node
-                    utils.strToLeoUri(p_newGnx), // New URI from selected node
-                    { overwrite: true }
-                );
-                return vscode.workspace.applyEdit(w_edit).then(p_result => {
+            return this._bodyTextDocument.save()
+                .then((p_result) => {
+                    const w_edit = new vscode.WorkspaceEdit();
+                    this._leoFileSystem.setRenameTime(p_newGnx);
+                    w_edit.renameFile(
+                        this.bodyUri, // Old URI from last node
+                        utils.strToLeoUri(p_newGnx), // New URI from selected node
+                        { overwrite: true }
+                    );
+                    return vscode.workspace.applyEdit(w_edit);
+                })
+                .then(p_result => {
                     const w_oldUri: vscode.Uri = this.bodyUri;
                     // * Old is now set to new!
                     this.bodyUri = utils.strToLeoUri(p_newGnx);
 
                     // TODO : CLEAR UNDO HISTORY AND FILE HISTORY
                     if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
-
                         vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
-
                     }
-
                     return Promise.resolve(p_result);
                 });
-            });
         } else {
             return Promise.resolve(false);
         }
@@ -1481,6 +1478,7 @@ export class LeoIntegration {
      * @returns
      */
     public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Promise<LeoBridgePackage | vscode.TextEditor> {
+        this.triggerBodySave(true);
         // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
         if (p_aside && p_node !== this.lastSelectedNode) {
             this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position

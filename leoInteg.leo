@@ -199,6 +199,7 @@
 <v t="felix.20191126232434.31"><vh>_p_to_ap</vh></v>
 </v>
 </v>
+<v t="felix.20201129184357.1"><vh>printAction</vh></v>
 <v t="felix.20191126232435.1"><vh>main leoBridgeServer loop</vh></v>
 </v>
 <v t="ekr.20200815123601.1"><vh>@clean package.json</vh>
@@ -1133,7 +1134,7 @@ private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFoc
         node: p_node,
         aside: p_aside,
         showBodyKeepFocus: p_showBodyKeepFocus,
-        force_open: p_force_open //  can be undefined
+        force_open: p_force_open // can be undefined
     };
     // Start it if possible, otherwise the last _showBodyParams will be used again right after
     if (!this._showBodyStarted) {
@@ -4896,7 +4897,7 @@ if __name__ == '__main__':
                 if w_param and w_param['action']:
                     w_action = w_param['action']
                     w_actionParam = w_param['param']
-                    # print(f"*ACTION* {w_param['action']}", flush=True)  # Debug output
+                    # printAction(w_param)  # Debug output
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
@@ -4952,6 +4953,8 @@ import websockets
 <t tx="felix.20191128002417.1"># server defaults
 wsHost = "localhost"
 wsPort = 32125
+
+commonActions = ["getChildren", "getBody", "getBodyLength"]
 
 
 </t>
@@ -7604,6 +7607,7 @@ public get description(): string {
         return "\u{1F4CE} (" + Object.keys(this.u).length + ")";
     } else {
         // return "id:" + this.id; // ! debug test
+        // return "gnx:" + this.gnx; // ! debug test
         return ""; // Falsy will not be shown
     }
 }
@@ -9243,10 +9247,10 @@ export class LeoIntegration {
     private _treeId: number = 0; // Starting salt for tree node murmurhash generated Ids
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
-    get lastSelectedNode(): LeoNode | undefined { // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
+    get lastSelectedNode(): LeoNode | undefined {
         return this._lastSelectedNode;
     }
-    set lastSelectedNode(p_leoNode: LeoNode | undefined) { // TODO : REMOVE NEED FOR UNDEFINED SUB TYPE WITH _needLastSelectedRefresh
+    set lastSelectedNode(p_leoNode: LeoNode | undefined) { // Needs undefined type because it cannot be set in the constructor
         this._lastSelectedNode = p_leoNode;
         if (p_leoNode) {
             utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_leoNode.marked); // Global context to 'flag' the selected node's marked state
@@ -9773,7 +9777,7 @@ private _apToLeoNodeConvertReveal(p_leoNode: LeoNode): void {
     this._revealType = RevealType.NoReveal; // ok reset
     // If first time, or when treeview switched, lastSelectedNode will be undefined
     if (!this.lastSelectedNode || this._needLastSelectedRefresh) {
-        this._needLastSelectedRefresh = false; // TODO : THIS SHOULD BE CHECKED AND SET FALSE WHEN REFRESHING BODY !
+        this._needLastSelectedRefresh = false;
         this.lastSelectedNode = p_leoNode; // special case only: lastSelectedNode should be set in selectTreeNode
     }
     setTimeout(() =&gt; {
@@ -9807,7 +9811,6 @@ public arrayToLeoNodesArray(p_array: ArchivedPosition[]): LeoNode[] {
 <t tx="felix.20200719025231.46">/**
  * * Show the body pane if not already opened, and if allowed by leoInteg's control logic.
  * Prevent opening the body editor unnecessarily when hiding and re(showing) the outline pane
- * TODO : This is an intermediate / transition function, COMBINE IT OR ELIMINATE IT!
  * @param p_aside Flag for opening the editor beside any currently opened and focused editor
  * @param p_showBodyKeepFocus flag that when true will stop the editor from taking focus once opened
  * @param p_forceOpen Forces opening the body pane editor
@@ -9829,35 +9832,33 @@ private _showBodyIfRequired(p_aside: boolean, p_showBodyKeepFocus: boolean, p_fo
 </t>
 <t tx="felix.20200719025231.47">/**
  * * Save and rename from this.bodyUri to p_newGnx: This changes the body content &amp; blocks 'undos' from crossing over
- * ! BUG : UNDO NOW CROSSES OVER SINCE vscode1.48 or so... !
+ * ! BUG : UNDO NOW CROSSES OVER SINCE vscode 1.48 - Fix with #107
  * @param p_newGnx New gnx body id to switch to
  */
 private _switchBody(p_newGnx: string): Thenable&lt;boolean&gt; {
     if (this._bodyTextDocument) {
-        return this._bodyTextDocument.save().then((p_result) =&gt; {
-
-            const w_edit = new vscode.WorkspaceEdit();
-            this._leoFileSystem.setRenameTime(p_newGnx);
-            w_edit.renameFile(
-                this.bodyUri, // Old URI from last node
-                utils.strToLeoUri(p_newGnx), // New URI from selected node
-                { overwrite: true }
-            );
-            return vscode.workspace.applyEdit(w_edit).then(p_result =&gt; {
+        return this._bodyTextDocument.save()
+            .then((p_result) =&gt; {
+                const w_edit = new vscode.WorkspaceEdit();
+                this._leoFileSystem.setRenameTime(p_newGnx);
+                w_edit.renameFile(
+                    this.bodyUri, // Old URI from last node
+                    utils.strToLeoUri(p_newGnx), // New URI from selected node
+                    { overwrite: true }
+                );
+                return vscode.workspace.applyEdit(w_edit);
+            })
+            .then(p_result =&gt; {
                 const w_oldUri: vscode.Uri = this.bodyUri;
                 // * Old is now set to new!
                 this.bodyUri = utils.strToLeoUri(p_newGnx);
 
                 // TODO : CLEAR UNDO HISTORY AND FILE HISTORY
                 if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
-
                     vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
-
                 }
-
                 return Promise.resolve(p_result);
             });
-        });
     } else {
         return Promise.resolve(false);
     }
@@ -10055,6 +10056,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
  * @returns
  */
 public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Promise&lt;LeoBridgePackage | vscode.TextEditor&gt; {
+    this.triggerBodySave(true);
     // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
     if (p_aside &amp;&amp; p_node !== this.lastSelectedNode) {
         this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
@@ -12574,8 +12576,9 @@ def tag_configure(self, colorName, **keys): pass
         w_same = True
         w_v = self.commander.p.v
     else:
-        print('Set Selection! NOT SAME GNX: selected:' +
-              self.commander.p.v.gnx + ', package:' + w_gnx)
+        # ? When navigating rapidly - Check if this is a bug - how to improve
+        # print('Set Selection! NOT SAME GNX: selected:' +
+        #       self.commander.p.v.gnx + ', package:' + w_gnx)
         w_v = self.commander.fileCommands.gnxDict.get(w_gnx)
 
     if not w_v:
@@ -12886,6 +12889,16 @@ public static BUTTON_STRINGS = {
     ADD_BUTTON: "leoButtonAdd",
     NORMAL_BUTTON: "leoButtonNode"
 };
+
+</t>
+<t tx="felix.20201129184357.1">def printAction(p_param):
+    # print action if not getChild or getChildren
+    w_action = p_param["action"]
+    if w_action in commonActions:
+        pass
+    else:
+        print(f"*ACTION* {w_action}, id {p_param['id']}", flush=True)
+
 
 </t>
 </tnodes>

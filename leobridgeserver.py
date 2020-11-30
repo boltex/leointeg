@@ -13,6 +13,8 @@ import websockets
 wsHost = "localhost"
 wsPort = 32125
 
+commonActions = ["getChildren", "getBody", "getBodyLength"]
+
 
 class IdleTimeManager:
     """
@@ -2580,8 +2582,9 @@ class LeoBridgeIntegController:
             w_same = True
             w_v = self.commander.p.v
         else:
-            print('Set Selection! NOT SAME GNX: selected:' +
-                  self.commander.p.v.gnx + ', package:' + w_gnx)
+            # ? When navigating rapidly - Check if this is a bug - how to improve
+            # print('Set Selection! NOT SAME GNX: selected:' +
+            #       self.commander.p.v.gnx + ', package:' + w_gnx)
             w_v = self.commander.fileCommands.gnxDict.get(w_gnx)
 
         if not w_v:
@@ -2791,6 +2794,15 @@ class LeoBridgeIntegController:
         return w_ap
 
 
+def printAction(p_param):
+    # print action if not getChild or getChildren
+    w_action = p_param["action"]
+    if w_action in commonActions:
+        pass
+    else:
+        print(f"*ACTION* {w_action}, id {p_param['id']}", flush=True)
+
+
 def main():
     '''python script for leo integration via leoBridge'''
     global wsHost, wsPort
@@ -2841,7 +2853,7 @@ def main():
                 if w_param and w_param['action']:
                     w_action = w_param['action']
                     w_actionParam = w_param['param']
-                    # print(f"*ACTION* {w_param['action']}", flush=True)  # Debug output
+                    # printAction(w_param)  # Debug output
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
