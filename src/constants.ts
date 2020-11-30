@@ -376,19 +376,19 @@ export class Constants {
         DEHOIST: "dehoist",
         EXTRACT: "extract",
         EXTRACT_NAMES: "extractNames",
-        // TODO : @boltex More commands to implement #23, #24
+        COPY_MARKED: "copyMarked",
+        DIFF_MARKED_NODES: "deleteMarked",
+        MARK_CHANGED_ITEMS: "markChangedHeadlines",
+        MARK_SUBHEADS: "markSubheads",
+        UNMARK_ALL: "unmarkAll",
+        CLONE_MARKED_NODES: "cloneMarked",
+        DELETE_MARKED_NODES: "deleteMarked",
+        MOVE_MARKED_NODES: "moveMarked",
+        // TODO : @boltex More commands to implement #24
         CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
         CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
         CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex
         CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // #24 @boltex
-        COPY_MARKED: "copyMarked", // #23 @boltex
-        DIFF_MARKED_NODES: "diffMarkedNodes", // #23 @boltex
-        MARK_CHANGED_ITEMS: "markChangedItems", // #23 @boltex
-        MARK_SUBHEADS: "markSubheads", // #23 @boltex
-        UNMARK_ALL: "unmarkAll", // #23 @boltex
-        CLONE_MARKED_NODES: "cloneMarkedNodes", // #23 @boltex
-        DELETE_MARKED_NODES: "deleteMarkedNodes", // #23 @boltex
-        MOVE_MARKED_NODES: "moveMarkedNodes" // #23 @boltex
     };
 
     /**
@@ -506,11 +506,6 @@ export class Constants {
         DEHOIST_FO: Constants.NAME + ".deHoistFromOutline",
         EXTRACT: Constants.NAME + ".extract",
         EXTRACT_NAMES: Constants.NAME + ".extractNames",
-        // * - - - - - - - - - - - - - - - not implemented yet
-        CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
-        CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
-        CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
-        CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
         COPY_MARKED: Constants.NAME + ".copyMarked",
         DIFF_MARKED_NODES: Constants.NAME + ".diffMarkedNodes",
         MARK_CHANGED_ITEMS: Constants.NAME + ".markChangedItems",
@@ -518,7 +513,12 @@ export class Constants {
         UNMARK_ALL: Constants.NAME + ".unmarkAll",
         CLONE_MARKED_NODES: Constants.NAME + ".cloneMarkedNodes",
         DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
-        MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes"
+        MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes",
+        // * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - not implemented yet #24
+        CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
+        CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
+        CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
+        CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
     };
 
 }
