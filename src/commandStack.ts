@@ -4,34 +4,34 @@ import { UserCommand, LeoBridgePackage, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
- * * Front-facing, user command stack of actions.
- * Actions can also be added once started resolving.
+ * * Front-facing, user command stack of actions
+ * This implements a user-facing command stack, (push on top, remove bottom)
+ * Commands can also be added while this stack has started resolving.
+ * This 'stack' concept is similar to the 'LeoBridge' class used for interacting with Leo.
  */
 export class CommandStack {
 
-    private _stack: UserCommand[] = [];
-    private _busy: boolean = false;
+    private _stack: UserCommand[] = []; // Actual commands array
+    private _busy: boolean = false; // Flag stating commands started resolving
 
-    // Refresh type, for after the last command is done. (From highest so far)
+    // Refresh type, for use after the last command has done resolving (From highest so far)
     private _finalRefreshType: ReqRefresh = {}; // new empty ReqRefresh
 
-    // Flag indicating to set focus on outline when all done, instead of body. (From last one pushed)
+    // Flag used to set focus on outline instead of body when done resolving (From last pushed)
     private _finalFromOutline: boolean = false;
 
-    // * Received selection from the last command that finished.
-    // * Note: JSON string representation of a node, will be re-sent as node to leo instead of lastSelectedNode
-    private _receivedSelection: string = ""; // Selected node that was received from last command from a running stack. Empty string is used as 'false'.
+    // Received selection from the last command that finished as JSON string representation
+    // It will be re-sent as 'target node' instead of lastSelectedNode if present
+    private _selectedNode: string = ""; // Empty string is used as 'falsy'
 
     constructor(
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
-    ) {
-        this._busy = false;
-    }
+    ) { }
 
     /**
-     * * Get command stack size
-     * @returns the number of actions on the command stack
+     * * Returns the command stack size
+     * @returns number of actions on the command stack
      */
     public size(): number {
         return this._stack.length;
@@ -39,30 +39,32 @@ export class CommandStack {
 
     /**
      * * Signal to the command stack that a new selected node was received.
-     * This command stacks needs to know when to clear its own '_receivedSelection'
+     * Command stack needs to know when to clear its own '_receivedSelection'
      */
     public newSelection(): void {
         if (!this._busy) {
-            this._receivedSelection = "";
+            this._selectedNode = "";
         }
     }
 
     /**
      * * Adds on top and try to execute the bottom command if not already running
-     * @param p_command is an object that has the action, node, refresh type and 'fromOutline' flag
-     * @returns true if added, false if it could not due to stack 'rules':
-     *  - Targeted command (for a specific node) can only be added on an empty stack
+     * Targeted command (targeting a specific node) can only be added on an empty stack
+     * @param p_command Object that has the action, targeted node (if any), refresh type and 'fromOutline' flag
+     * @returns true if added, false if it could not (due to front end stack 'rules')
      */
-    public add(p_command: UserCommand): boolean {
-        if (this.size() && p_command.node) {
-            // If already started we only if if action requires generic selected node as param
-            return false;
+    public add(p_command: UserCommand): Promise<LeoBridgePackage> | undefined {
+        if (p_command.node && this.size()) {
+            return undefined; // Can only add a command which targets a node if the stack is empty
         } else {
+            const q_promise = new Promise<LeoBridgePackage>((p_resolve, p_reject) => {
+                p_command.resolveFn = p_resolve;
+                p_command.rejectFn = p_reject;
+            });
             this._stack.push(p_command);
-            // This flag is set on command entered, not when finally executed because a rapid type in editor can override focus
-            this._finalFromOutline = p_command.fromOutline; // use the last _finalFromOutline regardless of previous so change now
+            this._finalFromOutline = p_command.fromOutline; // Set final "focus-placement"
             this._tryStart();
-            return true;
+            return q_promise;
         }
     }
 
@@ -71,10 +73,8 @@ export class CommandStack {
      */
     private _tryStart(): void {
         if (this.size() && !this._busy) {
-
-            // actions have beed added and command stack instance is not busy, so set the busy flag and start from the bottom
+            // Ok to start, so set the busy flag and start from the bottom
             this._busy = true; // Cleared when the last command has returned (and the stack is empty)
-
             this._runStackCommand().then((p_package: LeoBridgePackage) => {
                 this._resolveResult(p_package);
             });
@@ -85,21 +85,22 @@ export class CommandStack {
      * * Run the command at index 0: The bottom of the stack.
      */
     private _runStackCommand(): Promise<LeoBridgePackage> {
-        const w_command: UserCommand = this._stack[0]; // Reference from bottom of stack, don't remove yet
+        // Reference from bottom of stack, but don't remove it yet!
+        const w_command: UserCommand = this._stack[0];
 
-        // Build parameter's json here - use text member if needed
         let w_nodeJson: string = ""; // ap json used in building w_jsonParam
         let w_jsonParam: string = ""; // Finished parameter that is sent
 
-        // First one uses given node or last selected node, other subsequent on stack will use _receivedSelection
-        // (Commands such as 'collapse all' will just ignore passed on node parameter)
-        // const w_text = w_command.text; // Can be undefined
+        // First command uses given node or last selected node.
+        // Other subsequent commands on stack will use _receivedSelection regardless.
+        // (Commands such as 'collapse all' just ignore node parameter)
         if (w_command.node) {
-            w_nodeJson = w_command.node.apJson; // Was node specific, so we are starting from a new stack of commands
+            // Was node specific, so starting a new stack of commands
+            w_nodeJson = w_command.node.apJson;
         } else {
-            // Use received "selected node" unless first, then use last selected node
-            if (this._receivedSelection) {
-                w_nodeJson = this._receivedSelection;
+            // Use received "selected node" unless first use, then use last selected node
+            if (this._selectedNode) {
+                w_nodeJson = this._selectedNode;
             } else {
                 w_nodeJson = this._leoIntegration.lastSelectedNode!.apJson;
             }
@@ -107,14 +108,26 @@ export class CommandStack {
                 console.log('ERROR NO ARCHIVED POSITION JSON');
             }
         }
-
         w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_command); // 'Insert Named Node' or 'Edit Headline'
 
         // Setup _finalRefreshType, if command requires higher than the one setup so far
         Object.assign(this._finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)
 
         // Submit this action to Leo and return a promise of its packaged answer
-        return this._leoIntegration.sendAction(w_command.action, w_jsonParam);
+        return this._leoIntegration.sendAction(w_command.action, w_jsonParam)
+            .then((p_package) => {
+                if (w_command.resolveFn) {
+                    w_command.resolveFn(p_package);
+                }
+                return p_package;
+            },
+                (p_reason) => {
+                    if (w_command.rejectFn) {
+                        w_command.rejectFn(p_reason);
+                    }
+                    return p_reason;
+                }
+            );
     }
 
     /**
@@ -122,17 +135,13 @@ export class CommandStack {
      * @param p_package is the json return 'package' that was just received back from Leo
      */
     private _resolveResult(p_package: LeoBridgePackage): void {
-        this._stack.shift();
-        // If last is done then do refresh outline and focus on outline, or body, as required
+        this._stack.shift(); // Finally remove resolved command from stack bottom
 
-        this._receivedSelection = JSON.stringify(p_package.node); // ! Maybe set this._receivedSelection to the last one anyways ?
+        this._selectedNode = JSON.stringify(p_package.node);
+
         if (!this.size()) {
-            // Reset 'received' selected node so that lastSelectedNode is used instead
-            // this._receivedSelection = ""; // ! Maybe not clear this here at this point!
-
-            this._busy = false; // We're not busy anymore // ! maybe keep using _receivedSelection instead of clearing it?
-            // console.log(`busy NOW FALSE :  ${this._busy}`);
-
+            // If last is done then do refresh outline and focus on outline, or body, as required
+            this._busy = false;
             if (Object.keys(this._finalRefreshType).length) {
                 // At least some type of refresh
                 this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline, p_package.node);
@@ -140,10 +149,8 @@ export class CommandStack {
             // Reset refresh type and focus flag nonetheless
             this._finalRefreshType = {};
             this._finalFromOutline = false;
-
         } else {
-            // size > 0, so call _runStackCommand again, keep _busy set to true
-            // console.log('Next!');
+            // Size > 0, so call _runStackCommand again, keep _busy set to true
             this._runStackCommand().then((p_package: LeoBridgePackage) => {
                 this._resolveResult(p_package);
             });

@@ -1,8 +1,10 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import {
-    AskMessageItem, ReqRefresh, runAskYesNoDialogParameters,
-    runWarnMessageDialogParameters, runInfoMessageDialogParameters,
+    AskMessageItem,
+    runAskYesNoDialogParameters,
+    runWarnMessageDialogParameters,
+    runInfoMessageDialogParameters,
     showSaveAsDialogParameters
 } from "./types";
 import { LeoIntegration } from "./leoIntegration";
@@ -32,7 +34,6 @@ export class LeoAsync {
      * @param p_saveAsArg
      */
     public showSaveAsDialog(p_saveAsArg: showSaveAsDialogParameters): void {
-        // TODO : Check if needed
         console.log('TODO: SHOW SAVE AS DIALOG!');
     }
 
@@ -83,7 +84,7 @@ export class LeoAsync {
             const w_sendResultPromise = this._leoIntegration.sendAction(Constants.LEOBRIDGE.ASK_RESULT, '"' + this._askResult + '"'); // Quotes in string as a 'JSON parameter'
             if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
                 w_sendResultPromise.then(() => {
-                    this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
+                    this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
                 });
             }
         });
@@ -126,7 +127,7 @@ export class LeoAsync {
 }
 
 /*
-    TODO : Should Reproduce those interactive controls that may be asked by Leo and redo a true UI bridge
+    TODO : Should Reproduce those interactive controls that may be asked by Leo, and redo a true UI bridge
 
 def runAboutLeoDialog(self, c, version, theCopyright, url, email):
     return self.simulateDialog("aboutLeoDialog", None)

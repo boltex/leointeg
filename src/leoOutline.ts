@@ -6,7 +6,7 @@ import { Constants } from "./constants";
 import { LeoBridgePackage } from "./types";
 
 /**
- * * Leo outline implemented as a tree view with this TreeDataProvider implementation
+ * * Leo outline implemented as a tree view with this TreeDataProvider
  */
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
@@ -24,7 +24,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
      * @param p_node The outline's node itself as a LeoNode instance
      */
     public refreshTreeNode(p_node: LeoNode): void {
-        // We want to do a real refresh, not just giving back the same we've got as input in getTreeItem
+        // Do a real node refresh, not just giving back the same element: see getTreeItem(element) below
         this._refreshSingleNodeFlag = true;
         this._onDidChangeTreeData.fire(p_node);
     }
@@ -33,6 +33,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
+        // TODO : have this return a promise that resolves when the selected node is encountered by ap_to_p
         this._onDidChangeTreeData.fire(undefined);
     }
 
@@ -92,4 +93,5 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
             return null; // Default gives no parent
         }
     }
+
 }

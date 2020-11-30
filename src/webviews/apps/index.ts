@@ -1,5 +1,6 @@
 import { initializeAndWatchThemeColors } from './theme';
 import { debounce } from "debounce";
+import { ConfigSetting } from '../../types';
 
 interface VsCodeApi {
     postMessage(msg: {}): void;
@@ -199,7 +200,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
     }
 
     var applyChanges = debounce(function () {
-        var w_changes = [];
+        var w_changes: ConfigSetting[] = [];
         if (frontConfig) {
             for (var prop in frontConfig) {
                 if (Object.prototype.hasOwnProperty.call(frontConfig, prop)) {

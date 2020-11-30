@@ -7,6 +7,7 @@ import { BodyTimeInfo } from "./types";
 
 /**
  * * Body panes implementation as a file system using "leo" as a scheme identifier
+ * TODO : Replace save/rename procedure to overcome API change for undos.
  * Saving and renaming prevents flickering and prevents undos to 'traverse through' different gnx
  */
 export class LeoBodyProvider implements vscode.FileSystemProvider {
@@ -48,7 +49,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     /**
      * * Sets renamed file modified time for this gnx, used for 'rename' hack to prevent text undos between gnx
-     * @param p_uri URI of file for which to set made-up modified time
+     * @param p_gnx gnx of file for which to set made-up modified time
      */
     public setRenameTime(p_gnx: string): void {
         this._renameBody = {
@@ -237,6 +238,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
+
+        console.log('trigger called in writeFile');
+
         this._leoIntegration.triggerBodySave(true);
         const w_gnx = utils.leoUriToStr(p_uri);
         const w_now = Date.now();
@@ -287,4 +291,5 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             this._bufferedEvents.length = 0; // clearing events array
         }, 5);
     }
+
 }

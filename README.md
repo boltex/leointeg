@@ -2,9 +2,10 @@
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
-### Break your code down into sections structured as an outline, to derive or parse back your files 
+### Break your code down into sections structured as an outline, to derive or parse back your files
 
-> Leo is a fundamentally different way of using and organizing data, programs and scripts. [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4)
+> Leo is a fundamentally different way of using and organizing data, programs and scripts.\
+> [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4) 🎥
 
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
 or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.visualstudio.com](https://code.visualstudio.com/).
@@ -27,7 +28,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 
 In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's next release), make sure you have Node.js and Git installed, then clone the sources and run `npm install` in a terminal to install the remaining development dependencies.
 
-![run extension](/resources/run-extension.png)
+![run extension](resources/run-extension.png)
 
 You can then run the **Run Extension** target, as shown above, in the **Debug View**.
 
@@ -50,26 +51,29 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 ## Keybindings
 
-> _More commands are available by opening the **Command Palette** and typing 'Leo'_
-
-| Commands Keybinding        |     |                         | Command            |
-| :------------------------- | :-- | :---------------------- | :----------------- |
-| `Alt + -`                  |     |                         | Contract All       |
-| `Ctrl + I`                 |     |                         | Insert Node        |
-| `Ctrl + H`                 |     |                         | Edit Headline      |
-| `Ctrl + Backquote`         |     |                         | Clone Node         |
-| `Ctrl + Shift + C`         |     |                         | Copy Node          |
-| `Ctrl + Shift + X`         |     |                         | Cut Node           |
-| `Ctrl + Shift + V`         |     |                         | Paste Node         |
-| `Ctrl + Shift + Backspace` |     |                         | Delete Node        |
-| `Ctrl + B`                 |     |                         | Execute Script     |
-| `Ctrl + M`                 |     |                         | Mark / Unmark      |
-| `Ctrl + {`                 |     | `Ctrl + }`              | Promote / Demote   |
-| `Alt + A`                  |     |                         | Sort Siblings      |
-| `Ctrl + U`                 | or  | `Shift [+ Alt] + Up`    | Move Outline Up    |
-| `Ctrl + D`                 | or  | `Shift [+ Alt] + Down`  | Move Outline Down  |
-| `Ctrl + L`                 | or  | `Shift [+ Alt] + Left`  | Move Outline Left  |
-| `Ctrl + R`                 | or  | `Shift [+ Alt] + Right` | Move Outline Right |
+| Commands Keybinding        |     |                         | Command             |
+| :------------------------- | :-- | :---------------------- | :------------------ |
+| `Alt + -`                  |     |                         | Contract All        |
+| `Ctrl + I`                 |     |                         | Insert Node         |
+| `Ctrl + H`                 |     |                         | Edit Headline       |
+| `Ctrl + Backquote`         |     |                         | Clone Node          |
+| `Ctrl + Shift + C`         |     |                         | Copy Node           |
+| `Ctrl + Shift + X`         |     |                         | Cut Node            |
+| `Ctrl + Shift + V`         |     |                         | Paste Node          |
+| `Ctrl + Shift + Backspace` |     |                         | Delete Node         |
+| `Ctrl + B`                 |     |                         | Execute Script      |
+| `Ctrl + M`                 |     |                         | Mark / Unmark       |
+| `Ctrl + {`                 | and | `Ctrl + }`              | Promote / Demote    |
+| `Ctrl + T`                 |     |                         | Toggle Outline/Body |
+| `Tab`                      | or  | `Alt + D`               | Focus on Body       |
+| `Alt + T`                  |     |                         | Focus on Outline    |
+| `Ctrl + Shift + D`         |     |                         | Extract             |
+| `Ctrl + Shift + N`         |     |                         | Extract Names       |
+| `Alt + A`                  |     |                         | Sort Siblings       |
+| `Ctrl + U`                 | or  | `Shift [+ Alt] + Up`    | Move Outline Up     |
+| `Ctrl + D`                 | or  | `Shift [+ Alt] + Down`  | Move Outline Down   |
+| `Ctrl + L`                 | or  | `Shift [+ Alt] + Left`  | Move Outline Left   |
+| `Ctrl + R`                 | or  | `Shift [+ Alt] + Right` | Move Outline Right  |
 
 > Move Outline commands only need the 'Alt' key modifier when focus is on body pane.
 
@@ -162,4 +166,4 @@ The outline pane is made by implementing a [TreeDataProvider for vscode's TreeVi
 
 ---
 
-**Enjoy!**
+**🦁 Enjoy!**

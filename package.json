@@ -13,7 +13,7 @@
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.47.0"
+    "vscode": "^1.51.0"
   },
   "keywords": [
     "leo",
@@ -549,7 +549,7 @@
         }
       },
       {
-        "command": "leointeg.executeScriptSelection",
+        "command": "leointeg.executeScript",
         "category": "Leo",
         "title": "Execute Script"
       },
@@ -828,6 +828,16 @@
         "command": "leointeg.deleteSelectionFromOutline",
         "category": "Leo",
         "title": "Delete Node"
+      },
+      {
+        "command": "leointeg.extract",
+        "category": "Leo",
+        "title": "Extract"
+      },
+      {
+        "command": "leointeg.extractNames",
+        "category": "Leo",
+        "title": "Extract Names"
       },
       {
         "command": "leointeg.moveOutlineDown",
@@ -1140,16 +1150,6 @@
         "title": "cffm - Clone Find Flattened Marked"
       },
       {
-        "command": "leointeg.extract",
-        "category": "Leo",
-        "title": "Extract"
-      },
-      {
-        "command": "leointeg.extractNames",
-        "category": "Leo",
-        "title": "Extract Names"
-      },
-      {
         "command": "leointeg.copyMarked",
         "category": "Leo",
         "title": "Copy Marked"
@@ -1323,7 +1323,7 @@
           "when": "!leoBridgeReady && !leoTreeOpened"
         },
         {
-          "command": "leointeg.executeScriptSelection",
+          "command": "leointeg.executeScript",
           "when": "leoTreeOpened"
         },
         {
@@ -1977,13 +1977,13 @@
     },
     "keybindings": [
       {
-        "command": "leointeg.executeScriptSelection",
+        "command": "leointeg.executeScript",
         "key": "ctrl+b",
         "mac": "cmd+b",
         "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
-        "command": "leointeg.executeScriptSelection",
+        "command": "leointeg.executeScript",
         "key": "ctrl+b",
         "mac": "cmd+b",
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
@@ -2082,6 +2082,30 @@
         "key": "ctrl+m",
         "mac": "cmd+m",
         "when": "leoTreeOpened && leoMarked && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.extract",
+        "key": "ctrl+shift+d",
+        "mac": "cmd+shift+d",
+        "when": "leoTreeOpened && editorTextFocus && editorHasSelection && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.extract",
+        "key": "ctrl+shift+d",
+        "mac": "cmd+shift+d",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.extractNames",
+        "key": "ctrl+shift+n",
+        "mac": "cmd++shift+n",
+        "when": "leoTreeOpened && editorTextFocus && editorHasSelection && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.extractNames",
+        "key": "ctrl+shift+n",
+        "mac": "cmd+shift+n",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineDownSelection",
@@ -2446,7 +2470,7 @@
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.49.0",
+    "@types/vscode": "^1.51.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",

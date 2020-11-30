@@ -13,6 +13,8 @@ import websockets
 wsHost = "localhost"
 wsPort = 32125
 
+commonActions = ["getChildren", "getBody", "getBodyLength"]
+
 
 class IdleTimeManager:
     """
@@ -96,7 +98,8 @@ class ExternalFilesController:
         self.yesno_all_time = 0  # previous yes/no to all answer, time of answer
         self.yesno_all_answer = None  # answer, 'yes-all', or 'no-all'
 
-        self.infoMessage = None  # if yesAll/noAll forced, then just show info message after idle_check_commander
+        # if yesAll/noAll forced, then just show info message after idle_check_commander
+        self.infoMessage = None
         # False or "detected", "refreshed" or "ignored"
 
         self.integController.g.app.idleTimeManager.add_callback(self.on_idle)
@@ -182,12 +185,13 @@ class ExternalFilesController:
         '''Received result from client'''
         # Got the result to an asked question/warning from the client
         if not self.waitingForAnswer:
-            print("ERROR: Received Result but no Asked Dialog")
+            print("ERROR: Received Result but no Asked Dialog", flush=True)
             return
         # check if p_resultwas from a warn (ok) or an ask ('yes','yes-all','no','no-all')
         # act accordingly
 
-        path = self.integController.g.fullPath(self.lastCommander, self.lastPNode)
+        path = self.integController.g.fullPath(
+            self.lastCommander, self.lastPNode)
 
         # 1- if ok, unblock 'warn'
         # 2- if no, unblock 'ask'
@@ -210,7 +214,8 @@ class ExternalFilesController:
         self.checksum_d[path] = self.checksum(path)
 
         self.waitingForAnswer = False  # unblock
-        self.idle_check_commander(self.lastCommander)  # unblock: run the loop as if timer had hit
+        # unblock: run the loop as if timer had hit
+        self.idle_check_commander(self.lastCommander)
 
     def ask(self, c, path, p=None):
         '''
@@ -219,7 +224,8 @@ class ExternalFilesController:
         '''
         # check with leoInteg's config first
         if self.integController.leoIntegConfig:
-            w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
+            w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower(
+            )
             if not bool('none' in w_check_config):
                 if bool('yes' in w_check_config):
                     self.infoMessage = "refreshed"
@@ -325,7 +331,8 @@ class ExternalFilesController:
         '''Return the cached @bool check_for_changed_external_file setting.'''
         # check with leoInteg's config first
         if self.integController.leoIntegConfig:
-            w_check_config = self.integController.leoIntegConfig["checkForChangeExternalFiles"].lower()
+            w_check_config = self.integController.leoIntegConfig["checkForChangeExternalFiles"].lower(
+            )
             if bool('check' in w_check_config):
                 return True
             if bool('ignore' in w_check_config):
@@ -334,7 +341,8 @@ class ExternalFilesController:
         d = self.enabled_d
         val = d.get(c)
         if val is None:
-            val = c.config.getBool('check-for-changed-external-files', default=False)
+            val = c.config.getBool(
+                'check-for-changed-external-files', default=False)
             d[c] = val
         return val
 
@@ -354,7 +362,7 @@ class ExternalFilesController:
         Hence the need to call realpath() here.
         '''
 
-        # print("called set_time for " + str(path))
+        # print("called set_time for " + str(path), flush=True)
 
         t = new_time or self.get_mtime(path)
         self._time_d[self.integController.g.os_path_realpath(path)] = t
@@ -367,7 +375,8 @@ class ExternalFilesController:
         '''
         # check with leoInteg's config first
         if self.integController.leoIntegConfig:
-            w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower()
+            w_check_config = self.integController.leoIntegConfig["defaultReloadIgnore"].lower(
+            )
 
             if w_check_config != "none":
                 # if not 'none' then do not warn, just infoMessage 'warn' at most
@@ -383,13 +392,15 @@ class ExternalFilesController:
             return
 
         s = '\n'.join([
-            '%s has changed outside Leo.\n' % self.integController.g.splitLongFileName(path),
+            '%s has changed outside Leo.\n' % self.integController.g.splitLongFileName(
+                path),
             'Leo can not update this file automatically.\n',
             'This file was created from %s.\n' % p.h,
             'Warning: refresh-from-disk will destroy all children.'
         ])
 
-        w_package = {"async": "warn", "warn": 'External file changed', "message": s}
+        w_package = {"async": "warn",
+                     "warn": 'External file changed', "message": s}
 
         self.integController.sendAsyncOutput(w_package)
         self.waitingForAnswer = True
@@ -402,7 +413,7 @@ class ExternalFilesController:
         return
 
     def check_overwrite(self, c, fn):
-        # print("check_overwrite!! ")
+        # print("check_overwrite!! ", flush=True)
         return True
 
     def shut_down(self):
@@ -410,6 +421,188 @@ class ExternalFilesController:
 
     def destroy_frame(self, f):
         return
+
+
+class IntegTextWrapper:
+    """
+    A class that represents text as a Python string.
+    Modified from Leo's StringTextWrapper class source
+    """
+
+    def __init__(self, c, name, g):
+        """Ctor for the IntegTextWrapper class."""
+        self.c = c
+        self.name = name
+        self.g = g  # Should g be totally global across all leoIntegration classes?
+        self.ins = 0
+        self.sel = 0, 0
+        self.s = ''
+        self.yScroll = 0
+        self.supportsHighLevelInterface = True
+        self.widget = None  # This ivar must exist, and be None.
+
+    def __repr__(self):
+        return f"<IntegTextWrapper: {id(self)} {self.name}>"
+
+    def getName(self):
+        """IntegTextWrapper."""
+        return self.name  # Essential.
+
+    def clipboard_clear(self):
+        self.g.app.gui.replaceClipboardWith('')
+
+    def clipboard_append(self, s):
+        s1 = self.g.app.gui.getTextFromClipboard()
+        self.g.app.gui.replaceClipboardWith(s1 + s)
+
+    def flashCharacter(self, i, bg='white', fg='red',
+                       flashes=3, delay=75): pass
+
+    def see(self, i): pass
+
+    def seeInsertPoint(self): pass
+
+    def setFocus(self): pass
+
+    def setStyleClass(self, name): pass
+
+    def tag_configure(self, colorName, **keys): pass
+
+    def appendText(self, s):
+        """IntegTextWrapper appendText"""
+        self.s = self.s + self.g.toUnicode(s)
+        # defensive
+        self.ins = len(self.s)
+        self.sel = self.ins, self.ins
+
+    def delete(self, i, j=None):
+        """IntegTextWrapper delete"""
+        i = self.toPythonIndex(i)
+        if j is None:
+            j = i + 1
+        j = self.toPythonIndex(j)
+        # This allows subclasses to use this base class method.
+        if i > j:
+            i, j = j, i
+        s = self.getAllText()
+        self.setAllText(s[:i] + s[j:])
+        # Bug fix: 2011/11/13: Significant in external tests.
+        self.setSelectionRange(i, i, insert=i)
+
+    def deleteTextSelection(self):
+        """IntegTextWrapper."""
+        i, j = self.getSelectionRange()
+        self.delete(i, j)
+
+    def get(self, i, j=None):
+        """IntegTextWrapper get"""
+        i = self.toPythonIndex(i)
+        if j is None:
+            j = i + 1
+        j = self.toPythonIndex(j)
+        s = self.s[i:j]
+        # print("WRAPPER GET with self.s[i:j]: " + s)
+        return self.g.toUnicode(s)
+
+    def getAllText(self):
+        """IntegTextWrapper getAllText"""
+        s = self.s
+        # print("WRAPPER getAllText  " + s)
+        return self.g.checkUnicode(s)
+
+    def getInsertPoint(self):
+        """IntegTextWrapper getInsertPoint"""
+        i = self.ins
+        if i is None:
+            if self.virtualInsertPoint is None:
+                i = 0
+            else:
+                i = self.virtualInsertPoint
+        self.virtualInsertPoint = i
+        return i
+
+    def getSelectedText(self):
+        """IntegTextWrapper getSelectedText"""
+        i, j = self.sel
+        s = self.s[i:j]
+        # print("WRAPPER getSelectedText with self.s[i:j]: " + s)
+        return self.g.checkUnicode(s)
+
+    def getSelectionRange(self, sort=True):
+        """Return the selected range of the widget."""
+        sel = self.sel
+        if len(sel) == 2 and sel[0] >= 0 and sel[1] >= 0:
+            i, j = sel
+            if sort and i > j:
+                sel = j, i  # Bug fix: 10/5/07
+            return sel
+        i = self.ins
+        return i, i
+
+    def getXScrollPosition(self):
+        return 0
+        # X axis ignored
+
+    def getYScrollPosition(self):
+        # print("wrapper get y scroll" + str(self.yScroll))
+        return self.yScroll
+
+    def hasSelection(self):
+        """IntegTextWrapper hasSelection"""
+        i, j = self.getSelectionRange()
+        return i != j
+
+    def insert(self, i, s):
+        """IntegTextWrapper insert"""
+        i = self.toPythonIndex(i)
+        s1 = s
+        self.s = self.s[:i] + s1 + self.s[i:]
+        i += len(s1)
+        self.ins = i
+        self.sel = i, i
+
+    def selectAllText(self, insert=None):
+        """IntegTextWrapper selectAllText"""
+        self.setSelectionRange(0, 'end', insert=insert)
+
+    def setAllText(self, s):
+        """IntegTextWrapper setAllText"""
+        # print("WRAPPER setAllText: " + s)
+        self.s = s
+        i = len(self.s)
+        self.ins = i
+        self.sel = i, i
+
+    def setInsertPoint(self, pos, s=None):
+        """IntegTextWrapper setInsertPoint"""
+        self.virtualInsertPoint = i = self.toPythonIndex(pos)
+        self.ins = i
+        self.sel = i, i
+
+    def setXScrollPosition(self, i):
+        pass
+        # X axis ignored
+
+    def setYScrollPosition(self, i):
+        self.yScroll = i
+        # print("wrapper set y scroll" + str(self.yScroll))
+
+    def setSelectionRange(self, i, j, insert=None):
+        """IntegTextWrapper setSelectionRange"""
+        i, j = self.toPythonIndex(i), self.toPythonIndex(j)
+        self.sel = i, j
+        self.ins = j if insert is None else self.toPythonIndex(insert)
+
+    def toPythonIndex(self, index):
+        """IntegTextWrapper toPythonIndex"""
+        return self.g.toPythonIndex(self.s, index)
+
+    def toPythonIndexRowCol(self, index):
+        """IntegTextWrapper toPythonIndexRowCol"""
+        s = self.getAllText()
+        i = self.toPythonIndex(index)
+        row, col = self.g.convertPythonIndexToRowCol(s, i)
+        return i, row, col
 
 
 class LeoBridgeIntegController:
@@ -424,7 +617,8 @@ class LeoBridgeIntegController:
             loadPlugins=True,   # True: attempt to load plugins.
             readSettings=True,  # True: read standard settings files.
             silent=True,        # True: don't print signon messages.
-            verbose=False,      # True: prints messages that would be sent to the log pane.
+            # True: prints messages that would be sent to the log pane.
+            verbose=False,
         )
         self.g = self.bridge.globals()
 
@@ -434,23 +628,25 @@ class LeoBridgeIntegController:
         # * Intercept Log Pane output: Sends to client's log pane
         self.g.es = self.es  # pointer - not a function call
 
-        # print(dir(self.g))
+        # print(dir(self.g), flush=True)
         self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
 
-        # * Currently Selected Commander (opened from leo.core.leoBridge or chosen via the g.app.windowList frame list)
+        # * Currently Selected Commander (opened from leo.core.leoBridge or chosen via the g.app.windowList 2 list)
         self.commander = None
 
         self.leoIntegConfig = None
         self.webSocket = None
         self.loop = None
 
-        # * Replacement instances to Leo's codebase : IdleTime, idleTimeManager and externalFilesController
+        # * Replacement instances to Leo's codebase : getScript, IdleTime, idleTimeManager and externalFilesController
+        self.g.getScript = self._getScript
         self.g.IdleTime = self._idleTime
         self.g.app.idleTimeManager = IdleTimeManager(self.g)
         # attach instance to g.app for calls to set_time, etc.
         self.g.app.externalFilesController = ExternalFilesController(self)
         # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
-        self.g.app.gui.runAskYesNoDialog = self._returnYes  # override for "revert to file" operation
+        # override for "revert to file" operation
+        self.g.app.gui.runAskYesNoDialog = self._returnYes
 
         # * setup leoBackground to get messages from leo
         try:
@@ -470,6 +666,36 @@ class LeoBridgeIntegController:
     def _returnYes(self, *arguments):
         '''Used to override g.app.gui.ask[XXX] dialogs answers'''
         return "yes"
+
+    def _getScript(self, c, p,
+                   useSelectedText=True,
+                   forcePythonSentinels=True,
+                   useSentinels=True,
+                   ):
+        """
+        Return the expansion of the selected text of node p.
+        Return the expansion of all of node p's body text if
+        p is not the current node or if there is no text selection.
+        """
+        w = c.frame.body.wrapper
+        if not p:
+            p = c.p
+        try:
+            if w and p == c.p and useSelectedText and w.hasSelection():
+                s = w.getSelectedText()
+            else:
+                s = p.b
+            # Remove extra leading whitespace so the user may execute indented code.
+            s = self.g.removeExtraLws(s, c.tab_width)
+            s = self.g.extractExecutableString(c, p, s)
+            script = self.g.composeScript(c, p, s,
+                                          forcePythonSentinels=forcePythonSentinels,
+                                          useSentinels=useSentinels)
+        except Exception:
+            self.g.es_print("unexpected exception in g.getScript")
+            self.g.es_exception()
+            script = ''
+        return script
 
     def _idleTime(self, fn, delay, tag):
         # TODO : REVISE/REPLACE WITH OWN SYSTEM
@@ -492,12 +718,15 @@ class LeoBridgeIntegController:
 
     def sendAsyncOutput(self, p_package):
         if "async" not in p_package:
-            print('[sendAsyncOutput] Error async member missing in package parameter' + json.dumps(p_package, separators=(',', ':')))
+            print('[sendAsyncOutput] Error async member missing in package parameter')
+            print(json.dumps(p_package, separators=(',', ':')), flush=True)
             return
         if self.loop:
-            self.loop.create_task(self.asyncOutput(json.dumps(p_package, separators=(',', ':'))))
+            self.loop.create_task(self.asyncOutput(
+                json.dumps(p_package, separators=(',', ':'))))
         else:
-            print('[sendAsyncOutput] Error loop not ready' + json.dumps(p_package, separators=(',', ':')))
+            print('[sendAsyncOutput] Error loop not ready' +
+                  json.dumps(p_package, separators=(',', ':')))
 
     def askResult(self, p_result):
         '''Got the result to an asked question/warning from client'''
@@ -516,7 +745,51 @@ class LeoBridgeIntegController:
             self.g.es(str(self.g.app.signon))
             self.g.es(str(self.g.app.signon1))
         else:
-            print('no loop in logSignon')
+            print('no loop in logSignon', flush=True)
+
+    def setActionId(self, p_id):
+        self.currentActionId = p_id
+
+    async def asyncOutput(self, p_json):
+        '''Output json string to the websocket'''
+        if self.webSocket:
+            await self.webSocket.send(p_json)
+        else:
+            print("websocket not ready yet", flush=True)
+
+    def sendLeoBridgePackage(self, p_key=False, p_any=None):
+        w_package = {"id": self.currentActionId}
+        if p_key:
+            w_package[p_key] = p_any  # add [key]?:any
+        return(json.dumps(w_package, separators=(',', ':')))  # send as json
+        # await self.webSocket.send(json.dumps(w_package, separators=(',', ':')))  # send as json
+
+    def _outputError(self, p_message="Unknown Error"):
+        # Output to this server's running console
+        print("ERROR: " + p_message, flush=True)
+        w_package = {"id": self.currentActionId}
+        w_package["error"] = p_message
+        return p_message
+
+    def _outputBodyData(self, p_bodyText=""):
+        return self.sendLeoBridgePackage("bodyData", p_bodyText)
+
+    def _outputSelectionData(self, p_bodySelection):
+        return self.sendLeoBridgePackage("bodySelection", p_bodySelection)
+
+    def _outputPNode(self, p_node=False):
+        if p_node:
+            # Single node, singular
+            return self.sendLeoBridgePackage("node", self._p_to_ap(p_node))
+        else:
+            return self.sendLeoBridgePackage("node", None)
+
+    def _outputPNodes(self, p_pList):
+        w_apList = []
+        for p in p_pList:
+            w_apList.append(self._p_to_ap(p))
+        # Multiple nodes, plural
+        return self.sendLeoBridgePackage("nodes", w_apList)
 
     def es(self, * args, **keys):
         '''Output to the Log Pane'''
@@ -599,9 +872,9 @@ class LeoBridgeIntegController:
         w_keepSelection = False  # Set default, optional component of package
         if "keep" in p_package:
             w_keepSelection = p_package["keep"]
-            print("have keep! " + str(w_keepSelection))
-        else:
-            print("NO keep!")
+        #     print("have keep! " + str(w_keepSelection), flush=True)
+        # else:
+        #     print("NO keep!", flush=True)
 
         w_ap = p_package["node"]  # At least node parameter is present
         if not w_ap:
@@ -662,6 +935,8 @@ class LeoBridgeIntegController:
             self._create_gnx_to_vnode()
             w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                         "node": self._p_to_ap(self.commander.p)}
+            # maybe needed for frame wrapper
+            self.commander.selectPosition(self.commander.p)
             return self.sendLeoBridgePackage("setOpened", w_result)
         else:
             return self._outputError('Error in setOpenedFile')
@@ -681,13 +956,20 @@ class LeoBridgeIntegController:
                     self.commander = w_commander
 
         if not w_found:
-            self.commander = self.bridge.openLeoFile(p_file)  # create self.commander
+            self.commander = self.bridge.openLeoFile(
+                p_file)  # create self.commander
 
         # Leo at this point has done this too: g.app.windowList.append(c.frame)
         # and so, now, app.commanders() yields this: return [f.c for f in g.app.windowList]
 
         if self.commander:
             self.commander.closed = False
+            if not w_found:
+                # is new so also replace wrapper
+                self.commander.frame.body.wrapper = IntegTextWrapper(
+                    self.commander, "integBody", self.g)
+                self.commander.selectPosition(self.commander.p)
+
             self._create_gnx_to_vnode()
             w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                         "node": self._p_to_ap(self.commander.p)}
@@ -715,13 +997,16 @@ class LeoBridgeIntegController:
 
             if not w_found:
                 if os.path.isfile(i_file):
-                    self.commander = self.bridge.openLeoFile(i_file)  # create self.commander
+                    self.commander = self.bridge.openLeoFile(
+                        i_file)  # create self.commander
             if self.commander:
                 self.commander.closed = False
+                self.commander.frame.body.wrapper = IntegTextWrapper(
+                    self.commander, "integBody", self.g)
+                self.commander.selectPosition(self.commander.p)
 
         # Done with the last one, it's now the selected commander. Check again just in case.
         if self.commander:
-            self.commander.closed = False
             self._create_gnx_to_vnode()
             w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                         "node": self._p_to_ap(self.commander.p)}
@@ -743,7 +1028,8 @@ class LeoBridgeIntegController:
                 self.commander.closed = True
                 self.commander.close()
             else:
-                return self.sendLeoBridgePackage('closed', False)  # Cannot close, ask to save, ignore or cancel
+                # Cannot close, ask to save, ignore or cancel
+                return self.sendLeoBridgePackage('closed', False)
 
         # Switch commanders to first available
         w_total = self._getTotalOpened()
@@ -771,8 +1057,8 @@ class LeoBridgeIntegController:
                     self.commander.save()
             except Exception as e:
                 self.g.trace('Error while saving')
-                print("Error while saving")
-                print(str(e))
+                print("Error while saving", flush=True)
+                print(str(e), flush=True)
 
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
@@ -796,7 +1082,8 @@ class LeoBridgeIntegController:
                 w_key = i_key
         if w_key:
             del(w_dict[w_key])  # delete object member
-        return self._outputPNode(self.commander.p)  # return selected node when done
+        # return selected node when done
+        return self._outputPNode(self.commander.p)
 
     def clickButton(self, p_package):
         '''Handles buttons clicked in client from the '@button' panel'''
@@ -808,7 +1095,8 @@ class LeoBridgeIntegController:
                 w_button = i_key
         if w_button:
             w_button.command()  # run clicked button command
-        return self._outputPNode(self.commander.p)  # return selected node when done
+        # return selected node when done
+        return self._outputPNode(self.commander.p)
 
     def getCommands(self, p_package):
         """Return a list of all Leo commands that make sense in leoInteg."""
@@ -818,7 +1106,7 @@ class LeoBridgeIntegController:
         good_names = self._good_commands()
         duplicates = set(bad_names).intersection(set(good_names))
         if duplicates:
-            print('duplicate command names...')
+            print('duplicate command names...', flush=True)
             for z in sorted(duplicates):
                 print(z)
         result = []
@@ -1888,44 +2176,6 @@ class LeoBridgeIntegController:
         docstring = func.__doc__ if func else ''
         return docstring
 
-    def setActionId(self, p_id):
-        self.currentActionId = p_id
-
-    async def asyncOutput(self, p_json):
-        '''Output json string to the websocket'''
-        if self.webSocket:
-            await self.webSocket.send(p_json)
-        else:
-            print("websocket not ready yet")
-
-    def sendLeoBridgePackage(self, p_key=False, p_any=None):
-        w_package = {"id": self.currentActionId}
-        if p_key:
-            w_package[p_key] = p_any  # add [key]?:any
-        return(json.dumps(w_package, separators=(',', ':')))  # send as json
-        # await self.webSocket.send(json.dumps(w_package, separators=(',', ':')))  # send as json
-
-    def _outputError(self, p_message="Unknown Error"):
-        print("ERROR: " + p_message)  # Output to this server's running console
-        w_package = {"id": self.currentActionId}
-        w_package["error"] = p_message
-        return p_message
-
-    def _outputBodyData(self, p_bodyText=""):
-        return self.sendLeoBridgePackage("bodyData", p_bodyText)
-
-    def _outputPNode(self, p_node=False):
-        if p_node:
-            return self.sendLeoBridgePackage("node", self._p_to_ap(p_node))  # Single node, singular
-        else:
-            return self.sendLeoBridgePackage("node", None)
-
-    def _outputPNodes(self, p_pList):
-        w_apList = []
-        for p in p_pList:
-            w_apList.append(self._p_to_ap(p))
-        return self.sendLeoBridgePackage("nodes", w_apList)  # Multiple nodes, plural
-
     def markPNode(self, p_package):
         '''Mark a node, don't select it'''
         w_ap = p_package["node"]
@@ -1933,7 +2183,8 @@ class LeoBridgeIntegController:
             w_p = self._ap_to_p(w_ap)
             if w_p:
                 w_p.setMarked()
-                return self._outputPNode(self.commander.p)  # return selected node when done (not w_p)
+                # return selected node when done (not w_p)
+                return self._outputPNode(self.commander.p)
             else:
                 return self._outputError("Error in markPNode no w_p node found")
         else:
@@ -1946,7 +2197,8 @@ class LeoBridgeIntegController:
             w_p = self._ap_to_p(w_ap)
             if w_p:
                 w_p.clearMarked()
-                return self._outputPNode(self.commander.p)  # return selected node when done (not w_p)
+                # return selected node when done (not w_p)
+                return self._outputPNode(self.commander.p)
             else:
                 return self._outputError("Error in unmarkPNode no w_p node found")
         else:
@@ -1959,7 +2211,8 @@ class LeoBridgeIntegController:
             return self._outputError("Error in clonePNode function, no param p_ap")
         w_p = self._ap_to_p(w_ap)
         if not w_p:
-            return self._outputError("Error in clonePNode function, no w_p node found")  # default empty
+            # default empty
+            return self._outputError("Error in clonePNode function, no w_p node found")
         if w_p == self.commander.p:
             self.commander.clone()
         else:
@@ -1968,7 +2221,8 @@ class LeoBridgeIntegController:
             self.commander.clone()
             if self.commander.positionExists(oldPosition):
                 self.commander.selectPosition(oldPosition)
-        return self._outputPNode(self.commander.p)  # return selected node either ways
+        # return selected node either ways
+        return self._outputPNode(self.commander.p)
 
     def cutPNode(self, p_package):
         '''Cut a node, don't select it. Try to keep selection, then return the selected node that remains'''
@@ -1983,15 +2237,19 @@ class LeoBridgeIntegController:
                     self.commander.selectPosition(w_p)
                     self.commander.cutOutline()
                     if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
+                        # select if old position still valid
+                        self.commander.selectPosition(oldPosition)
                     else:
                         oldPosition._childIndex = oldPosition._childIndex-1
                         # Try again with childIndex decremented
                         if self.commander.positionExists(oldPosition):
-                            self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
-                return self._outputPNode(self.commander.p)  # in both cases, return selected node
+                            # additional try with lowered childIndex
+                            self.commander.selectPosition(oldPosition)
+                # in both cases, return selected node
+                return self._outputPNode(self.commander.p)
             else:
-                return self._outputError("Error in cutPNode no w_p node found")  # default empty
+                # default empty
+                return self._outputError("Error in cutPNode no w_p node found")
         else:
             return self._outputError("Error in cutPNode no param node")
 
@@ -2008,15 +2266,19 @@ class LeoBridgeIntegController:
                     self.commander.selectPosition(w_p)
                     self.commander.deleteOutline()
                     if self.commander.positionExists(oldPosition):
-                        self.commander.selectPosition(oldPosition)  # select if old position still valid
+                        # select if old position still valid
+                        self.commander.selectPosition(oldPosition)
                     else:
                         oldPosition._childIndex = oldPosition._childIndex-1
                         # Try again with childIndex decremented
                         if self.commander.positionExists(oldPosition):
-                            self.commander.selectPosition(oldPosition)  # additional try with lowered childIndex
-                return self._outputPNode(self.commander.p)  # in both cases, return selected node
+                            # additional try with lowered childIndex
+                            self.commander.selectPosition(oldPosition)
+                # in both cases, return selected node
+                return self._outputPNode(self.commander.p)
             else:
-                return self._outputError("Error in deletePNode no w_p node found")  # default empty
+                # default empty
+                return self._outputError("Error in deletePNode no w_p node found")
         else:
             return self._outputError("Error in deletePNode no param node")
 
@@ -2029,11 +2291,14 @@ class LeoBridgeIntegController:
                 w_bunch = self.commander.undoer.beforeInsertNode(w_p)
                 w_newNode = w_p.insertAfter()
                 w_newNode.setDirty()
-                self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_bunch)
+                self.commander.undoer.afterInsertNode(
+                    w_newNode, 'Insert Node', w_bunch)
                 self.commander.selectPosition(w_newNode)
-                return self._outputPNode(self.commander.p)  # in both cases, return selected node
+                # in both cases, return selected node
+                return self._outputPNode(self.commander.p)
             else:
-                return self._outputError("Error in insertPNode no w_p node found")  # default empty
+                # default empty
+                return self._outputError("Error in insertPNode no w_p node found")
         else:
             return self._outputError("Error in insertPNode no param node")
 
@@ -2049,11 +2314,14 @@ class LeoBridgeIntegController:
                 # set this node's new headline
                 w_newNode.h = w_newHeadline
                 w_newNode.setDirty()
-                self.commander.undoer.afterInsertNode(w_newNode, 'Insert Node', w_u)
+                self.commander.undoer.afterInsertNode(
+                    w_newNode, 'Insert Node', w_u)
                 self.commander.selectPosition(w_newNode)
-                return self._outputPNode(self.commander.p)  # in any case, return selected node
+                # in any case, return selected node
+                return self._outputPNode(self.commander.p)
             else:
-                return self._outputError("Error in insertNamedPNode no w_p node found")  # default empty
+                # default empty
+                return self._outputError("Error in insertNamedPNode no w_p node found")
         else:
             return self._outputError("Error in insertNamedPNode no param node")
 
@@ -2061,44 +2329,21 @@ class LeoBridgeIntegController:
         '''Undo last un-doable operation'''
         if self.commander.undoer.canUndo():
             self.commander.undoer.undo()
-        return self._outputPNode(self.commander.p)  # return selected node when done
+        # return selected node when done
+        return self._outputPNode(self.commander.p)
 
     def redo(self, p_paramUnused):
         '''Undo last un-doable operation'''
         if self.commander.undoer.canRedo():
             self.commander.undoer.redo()
-        return self._outputPNode(self.commander.p)  # return selected node when done
-
-    def executeScriptPackage(self, p_package):
-        '''Select a node and run its script'''
-        c, g = self.commander, self.g
-        if not 'node' in p_package:
-            return self._outputError("Error in executeScript no param node")
-        w_ap = p_package['node']
-        w_p = self._ap_to_p(w_ap)
-        if not w_p:
-            return self._outputError("Error in executeScript no w_p node found")
-        c.selectPosition(w_p)
-        w_script = ""
-        if 'text' in p_package:
-            w_script = str(p_package['text'])
-        if not w_script or w_script.isspace():
-            # Empty selection.
-            c.executeScript()
-            return self._outputPNode(self.commander.p)
-        # * Mimic getScript !!
-        try:
-            # Remove extra leading whitespace so the user may execute indented code.
-            w_script = g.removeExtraLws(w_script, c.tab_width)
-            w_script = g.extractExecutableString(c, w_p, w_script)
-            w_validScript = g.composeScript(
-                c, w_p, w_script, forcePythonSentinels=True, useSentinels=True)
-            c.executeScript(script=w_validScript)
-        except Exception as e:
-            g.trace('Error while executing script')
-            print('Error while executing script')
-            print(str(e))
+        # return selected node when done
         return self._outputPNode(self.commander.p)
+
+    def test(self, p_package):
+        '''Utility test function for debugging'''
+        print("Called test")
+        return self.sendLeoBridgePackage('testReturnedKey', 'testReturnedValue')
+        # return self._outputPNode(self.commander.p)
 
     def getStates(self, p_package):
         """
@@ -2108,7 +2353,8 @@ class LeoBridgeIntegController:
         w_states = {}
         if self.commander:
             try:
-                w_states["changed"] = self.commander.changed   # 'dirty/changed' member
+                # 'dirty/changed' member
+                w_states["changed"] = self.commander.changed
                 w_states["canUndo"] = self.commander.canUndo()
                 w_states["canRedo"] = self.commander.canRedo()
                 w_states["canDemote"] = self.commander.canDemote()
@@ -2117,8 +2363,8 @@ class LeoBridgeIntegController:
 
             except Exception as e:
                 self.g.trace('Error while getting states')
-                print("Error while getting states")
-                print(str(e))
+                print("Error while getting states", flush=True)
+                print(str(e), flush=True)
         else:
             w_states["changed"] = False
             w_states["canUndo"] = False
@@ -2143,38 +2389,84 @@ class LeoBridgeIntegController:
         self.commander.selectVisNext()
         return self._outputPNode(self.commander.p)
 
-    def getLanguage(self, p_ap):
+    def getBodyStates(self, p_ap):
         """
-        Finds the language in effect at top of body for position p.
-
-        Return type is lowercase 'language' non-empty string.
+        Finds the language in effect at top of body for position p,
+        return type is lowercase 'language' non-empty string.
+        Also returns the saved cursor position from last time node was accessed.
         """
         if not p_ap:
             return self._outputError("Error in getLanguage, no param p_ap")
+
         w_p = self._ap_to_p(p_ap)
         if not w_p:
-            return self.sendLeoBridgePackage("language", "plain")
+            print(
+                "in GBS -> P NOT FOUND gnx:" + p_ap['gnx'] + " using self.commander.p gnx: " + self.commander.p.v.gnx)
+            w_p = self.commander.p
 
-        c, g = self.commander, self.g
-        aList = g.get_directives_dict_list(w_p)
-        d = g.scanAtCommentAndAtLanguageDirectives(aList)
-        # TODO : Remove one of those branch after finishing color-syntax features
-        if 1:  # Exactly as in Leo.
+        w_wrapper = self.commander.frame.body.wrapper
+
+        defaultPosition = {"line": 0, "col": 0}
+        states = {
+            'language': 'plain',
+            # See BodySelectionInfo interface in types.d.ts
+            'selection': {
+                "gnx": w_p.v.gnx,
+                "scroll": {
+                    "start": defaultPosition,
+                    "end": defaultPosition
+                },
+                "active": defaultPosition,
+                "start": defaultPosition,
+                "end": defaultPosition
+            }
+        }
+
+        if w_p:
+            c, g = self.commander, self.g
+            aList = g.get_directives_dict_list(w_p)
+            d = g.scanAtCommentAndAtLanguageDirectives(aList)
+
             language = (
                 d and d.get('language') or
                 g.getLanguageFromAncestorAtFileNode(w_p) or
                 c.config.getString('target-language') or
                 'plain'
             )
-            return self.sendLeoBridgePackage("language", language.lower())
-        else:  # Return both an explicit language and a default language.
-            language = d and d.get('language') or g.getLanguageFromAncestorAtFileNode(w_p) or 'none'
-            default = c.config.getString('target-language').lower() or 'none'  # or 'typescript' ??
-            result = {
+
+            w_scroll = w_p.v.scrollBarSpot
+            w_active = w_p.v.insertSpot
+            w_start = w_p.v.selectionStart
+            w_end = w_p.v.selectionStart + w_p.v.selectionLength
+
+            # get selection from wrapper instead if its the selected node
+            if self.commander.p.v.gnx == w_p.v.gnx:
+                # print("in GBS -> SAME AS self.commander.p SO USING FROM WRAPPER")
+                w_active = w_wrapper.getInsertPoint()
+                w_start, w_end = w_wrapper.getSelectionRange(True)
+                w_scroll = w_wrapper.getYScrollPosition()
+
+            # TODO : This conversion for scroll position may be unneeded (consider as lines only)
+            # w_scrollI, w_scrollRow, w_scrollCol = c.frame.body.wrapper.toPythonIndexRowCol(w_Scroll)
+            # compute line and column for the insertion point, and the start & end of selection
+            w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(
+                w_active)
+            w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(
+                w_start)
+            w_endI, w_endRow, w_endCol = c.frame.body.wrapper.toPythonIndexRowCol(
+                w_end)
+
+            states = {
                 'language': language.lower(),
-                'default': default,
+                'selection': {
+                    "gnx": w_p.v.gnx,
+                    "scroll": w_scroll,  # w_scroll was kept as-is
+                    "active": {"line": w_activeRow, "col": w_activeCol},
+                    "start": {"line": w_startRow, "col": w_startCol},
+                    "end": {"line": w_endRow, "col": w_endCol}
+                }
             }
-            return self.sendLeoBridgePackage("result", result)
+        return self.sendLeoBridgePackage("bodyStates", states)
 
     def getPNode(self, p_ap):
         '''EMIT OUT a node, don't select it'''
@@ -2199,7 +2491,8 @@ class LeoBridgeIntegController:
             if self.commander.hoistStack:
                 return self._outputPNodes([self.commander.hoistStack[-1].p])
             else:
-                return self._outputPNodes(self._yieldAllRootChildren())  # this outputs all Root Children
+                # this outputs all Root Children
+                return self._outputPNodes(self._yieldAllRootChildren())
 
     def getParent(self, p_ap):
         '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
@@ -2218,11 +2511,13 @@ class LeoBridgeIntegController:
 
     def getAllGnx(self, p_unused):
         '''Get gnx array from all unique nodes'''
-        w_all_gnx = [p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
+        w_all_gnx = [
+            p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
         return self.sendLeoBridgePackage("allGnx", w_all_gnx)
 
     def getBody(self, p_gnx):
         '''EMIT OUT body of a node'''
+        # TODO : if not found, send code to prevent unresolved promise if 'document switch' occurred shortly before
         if p_gnx:
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
             if w_v:
@@ -2230,7 +2525,9 @@ class LeoBridgeIntegController:
                     return self._outputBodyData(w_v.b)
                 else:
                     return self._outputBodyData()  # default "" empty string
-        return self.sendLeoBridgePackage()  # default as inexistent
+        # Send as empty to fix unresolved promise if 'document switch' occurred shortly before
+        return self._outputBodyData()
+        # return self.sendLeoBridgePackage()  # default as inexistent
 
     def getBodyLength(self, p_gnx):
         '''EMIT OUT body string length of a node'''
@@ -2241,30 +2538,105 @@ class LeoBridgeIntegController:
         # TODO : May need to signal inexistent by self.sendLeoBridgePackage()
         return self.sendLeoBridgePackage("bodyLength", 0)  # empty as default
 
-    def setNewBody(self, p_body):
-        '''Change Body of selected node'''
-        # TODO : This method is unused for now? Remove if unnecessary.
-        # TODO : Does this support 'Undo'?
-        if self.commander.p:
-            self.commander.p.b = p_body['body']
-            return self._outputPNode(self.commander.p)
-        else:
-            return self._outputError("Error in setNewBody")
-
     def setBody(self, p_package):
         '''Change Body text of a node'''
+        w_gnx = p_package['gnx']
+        w_body = p_package['body']
         for w_p in self.commander.all_positions():
-            if w_p.v.gnx == p_package['gnx']:
+            if w_p.v.gnx == w_gnx:
                 # TODO : Before setting undo and trying to set body, first check if different than existing body
-                w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)  # setup undoable operation
-                w_p.v.setBodyString(p_package['body'])
-                self.commander.undoer.afterChangeNodeContents(w_p, "Body Text", w_bunch)
+                w_bunch = self.commander.undoer.beforeChangeNodeContents(
+                    w_p)  # setup undoable operation
+                w_p.v.setBodyString(w_body)
+                self.commander.undoer.afterChangeNodeContents(
+                    w_p, "Body Text", w_bunch)
+                if self.commander.p.v.gnx == w_gnx:
+                    self.commander.frame.body.wrapper.setAllText(w_body)
                 if not self.commander.isChanged():
                     self.commander.setChanged()
                 if not w_p.v.isDirty():
                     w_p.setDirty()
                 break
-        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+        # additional forced string setting
+        if w_gnx:
+            w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
+            if w_v:
+                w_v.b = w_body
+        return self._outputPNode(self.commander.p)  # return selected node
+        # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+    def setSelection(self, p_package):
+        '''
+        Set cursor position and scroll position along with selection start and end.
+        (For the currently selected node's body, if gnx matches only)
+        Save those values on the commander's body "wrapper"
+        See BodySelectionInfo interface in types.d.ts
+        '''
+        w_same = False  # Flag for actually setting values in the wrapper, if same gnx.
+        w_wrapper = self.commander.frame.body.wrapper
+        w_gnx = p_package['gnx']
+        w_body = ""
+        w_v = None
+        if self.commander.p.v.gnx == w_gnx:
+            # print('Set Selection! OK SAME GNX: ' + self.commander.p.v.gnx)
+            w_same = True
+            w_v = self.commander.p.v
+        else:
+            # ? When navigating rapidly - Check if this is a bug - how to improve
+            # print('Set Selection! NOT SAME GNX: selected:' +
+            #       self.commander.p.v.gnx + ', package:' + w_gnx)
+            w_v = self.commander.fileCommands.gnxDict.get(w_gnx)
+
+        if not w_v:
+            print('ERROR : Set Selection! NOT SAME Leo Document')
+            # ! FAILED (but return as normal)
+            return self._outputPNode(self.commander.p)
+
+        w_body = w_v.b
+        f_convert = self.g.convertRowColToPythonIndex
+        w_active = p_package['active']
+        w_start = p_package['start']
+        w_end = p_package['end']
+
+        # no convertion necessary, its given back later
+        w_scroll = p_package['scroll']
+        w_insert = f_convert(
+            w_body, w_active['line'], w_active['col'])
+        w_startSel = f_convert(
+            w_body, w_start['line'], w_start['col'])
+        w_endSel = f_convert(
+            w_body, w_end['line'], w_end['col'])
+
+        # print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
+        #       " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
+
+        if w_same:
+            w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
+            w_wrapper.setYScrollPosition(w_scroll)
+        else:
+            pass
+
+        # Set for v node no matter what
+        w_v.scrollBarSpot = w_scroll
+        w_v.insertSpot = w_insert
+        w_v.selectionStart = w_startSel
+        w_v.selectionLength = (
+            w_endSel - w_startSel) if w_endSel > w_startSel else 0
+
+        # When switching nodes, Leo's core saves the insert point, selection,
+        # and vertical scroll position in the old (unselected) vnode. From v.init:
+
+        # self.insertSpot = None
+        #     # Location of previous insert point.
+        # self.scrollBarSpot = None
+        #     # Previous value of scrollbar position.
+        # self.selectionLength = 0
+        #     # The length of the selected body text.
+        # self.selectionStart = 0
+        #         # The start of the selected body text.
+
+        # output selected node as 'ok'
+        return self._outputPNode(self.commander.p)
 
     def setNewHeadline(self, p_package):
         '''Change Headline of a node'''
@@ -2276,7 +2648,8 @@ class LeoBridgeIntegController:
                 # set this node's new headline
                 w_bunch = self.commander.undoer.beforeChangeNodeContents(w_p)
                 w_p.h = w_newHeadline
-                self.commander.undoer.afterChangeNodeContents(w_p, 'Change Headline', w_bunch)
+                self.commander.undoer.afterChangeNodeContents(
+                    w_p, 'Change Headline', w_bunch)
                 return self._outputPNode(w_p)
         return self._outputError("Error in setNewHeadline")
 
@@ -2293,7 +2666,8 @@ class LeoBridgeIntegController:
                     if w_foundPNode:
                         self.commander.selectPosition(w_foundPNode)
                     else:
-                        print("Set Selection node does not exist! ap was:" + json.dumps(p_ap))
+                        print("Set Selection node does not exist! ap was:" +
+                              json.dumps(p_ap), flush=True)
         # * return the finally selected node
         if self.commander.p:
             return self._outputPNode(self.commander.p)
@@ -2333,11 +2707,12 @@ class LeoBridgeIntegController:
     def _create_gnx_to_vnode(self):
         '''Make the first gnx_to_vnode array with all unique nodes'''
         t1 = time.process_time()
-        self.gnx_to_vnode = {v.gnx: v for v in self.commander.all_unique_nodes()}
+        self.gnx_to_vnode = {
+            v.gnx: v for v in self.commander.all_unique_nodes()}
         # This is likely the only data that ever will be needed.
         if 0:
             print('app.create_all_data: %5.3f sec. %s entries' % (
-                (time.process_time()-t1), len(list(self.gnx_to_vnode.keys()))))
+                (time.process_time()-t1), len(list(self.gnx_to_vnode.keys()))), flush=True)
         self._test_round_trip_positions()
 
     def _test_round_trip_positions(self):
@@ -2355,8 +2730,8 @@ class LeoBridgeIntegController:
         gnx_to_vnode = old_d
         new_len = len(list(gnx_to_vnode.keys()))
         assert old_len == new_len, (old_len, new_len)
-        # print('Leo file opened. Its outline contains ' + str(qtyAllPositions) + " nodes positions.")
-        # print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)))
+        # print('Leo file opened. Its outline contains ' + str(qtyAllPositions) + " nodes positions.", flush=True)
+        # print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)), flush=True)
 
     def _ap_to_p(self, ap):
         '''
@@ -2379,9 +2754,10 @@ class LeoBridgeIntegController:
     def _p_to_ap(self, p):
         '''(From Leo plugin leoflexx.py) Converts Leo position to a serializable archived position.'''
         if not p.v:
-            print('app.p_to_ap: no p.v: %r %s' % (p))
+            print('app.p_to_ap: no p.v: %r %s' % (p), flush=True)
             assert False
         p_gnx = p.v.gnx
+        # * Expand gnx-vnode translation table for any new node encountered
         if p_gnx not in self.gnx_to_vnode:
             self.gnx_to_vnode[p_gnx] = p.v
         # * necessary properties for outline
@@ -2418,14 +2794,25 @@ class LeoBridgeIntegController:
         return w_ap
 
 
+def printAction(p_param):
+    # print action if not getChild or getChildren
+    w_action = p_param["action"]
+    if w_action in commonActions:
+        pass
+    else:
+        print(f"*ACTION* {w_action}, id {p_param['id']}", flush=True)
+
+
 def main():
     '''python script for leo integration via leoBridge'''
     global wsHost, wsPort
     print("Starting LeoBridge... (Launch with -h for help)", flush=True)
     # replace default host address and port if provided as arguments
 
+    args = None
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "ha:p:", ["help", "address=", "port="])
+        opts, args = getopt.getopt(sys.argv[1:], "ha:p:", [
+                                   "help", "address=", "port="])
     except getopt.GetoptError:
         print('leobridgeserver.py -a <address> -p <port>')
         print('defaults to localhost on port 32125', flush=True)
@@ -2458,25 +2845,29 @@ def main():
     async def leoBridgeServer(websocket, path):
         try:
             integController.initConnection(websocket)
-            await websocket.send(integController.sendLeoBridgePackage())  # * Start by sending empty as 'ok'
+            # * Start by sending empty as 'ok'
+            await websocket.send(integController.sendLeoBridgePackage())
             integController.logSignon()
             async for w_message in websocket:
                 w_param = json.loads(w_message)
                 if w_param and w_param['action']:
-                    # print(f"action: {w_param['action']}", flush=True)
+                    w_action = w_param['action']
+                    w_actionParam = w_param['param']
+                    # printAction(w_param)  # Debug output
                     # * Storing id of action in global var instead of passing as parameter
                     integController.setActionId(w_param['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
                     #
-                    w_func = getattr(integController, w_param['action'], None)
+                    w_func = getattr(integController, w_action, None)  # crux
                     if w_func:
                         # Is Filtered by Leo Bridge Integration Controller
-                        w_answer = w_func(w_param['param'])
+                        w_answer = w_func(w_actionParam)
                     else:
                         # Attempt to execute the command directly on the commander/subcommander
-                        w_answer = integController.leoCommand(w_param['action'], w_param['param'])
+                        w_answer = integController.leoCommand(
+                            w_action, w_actionParam)
                 else:
                     w_answer = "Error in processCommand"
                     print(w_answer, flush=True)
@@ -2496,7 +2887,8 @@ def main():
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
     # localLoop.create_task(asyncInterval(5)) # Starts a test loop of async communication
     localLoop.run_until_complete(start_server)
-    print("LeoBridge started at " + wsHost + " on port: " + str(wsPort) + " [ctrl+c] to break", flush=True)
+    print("LeoBridge started at " + wsHost + " on port: " +
+          str(wsPort) + " [ctrl+c] to break", flush=True)
     localLoop.run_forever()
     print("Stopping leobridge server", flush=True)
 

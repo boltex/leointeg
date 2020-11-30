@@ -11,6 +11,7 @@ export class LeoButtonNode extends vscode.TreeItem {
     // Context string that is checked in package.json with 'when' clauses
     public contextValue: string;
 
+    // is the special 'add' button used to create button from a given node's script
     private _isAdd: boolean;
 
     constructor(
@@ -24,20 +25,23 @@ export class LeoButtonNode extends vscode.TreeItem {
             title: '',
             arguments: [this]
         };
-        // TODO : Add HARD CODED strings to constants.ts
-        this._isAdd = (this.button.index.startsWith("nullButtonWidget") && this.button.name === "script-button");
-        this.contextValue = this._isAdd ? "leoButtonAdd" : "leoButtonNode";
+        this._isAdd = (this.button.index.startsWith(Constants.BUTTON_STRINGS.NULL_WIDGET) &&
+            this.button.name === Constants.BUTTON_STRINGS.SCRIPT_BUTTON);
+        this.contextValue = this._isAdd ? Constants.BUTTON_STRINGS.ADD_BUTTON : Constants.BUTTON_STRINGS.NORMAL_BUTTON;
     }
 
+    // @ts-ignore
     public get iconPath(): Icon {
         return this._leoIntegration.buttonIcons[this._isAdd ? 1 : 0];
     }
 
+    // @ts-ignore
     public get id(): string {
-        // Add prefix and suffix salt to index prevent accidental duplicates
+        // Add prefix and suffix salt to index to prevent accidental duplicates
         return "p" + this.button.index + "s" + this.button.name;
     }
 
+    // @ts-ignore
     public get tooltip(): string {
         if (this._isAdd) {
             return Constants.USER_MESSAGES.SCRIPT_BUTTON_TOOLTIP;
@@ -46,6 +50,7 @@ export class LeoButtonNode extends vscode.TreeItem {
         }
     }
 
+    // @ts-ignore
     public get description(): string | boolean {
         if (this._isAdd) {
             return Constants.USER_MESSAGES.SCRIPT_BUTTON;
@@ -53,4 +58,5 @@ export class LeoButtonNode extends vscode.TreeItem {
             return false;
         }
     }
+
 }

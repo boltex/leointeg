@@ -29,6 +29,14 @@ export interface ConfigMembers {
 }
 
 /**
+ * * Structure for configuration settings changes used along with welcome/settings webview.
+ */
+export interface ConfigSetting {
+    code: string;
+    value: any;
+}
+
+/**
  * * When refreshing the outline and getting to Leo's selected node
  */
 export const enum RevealType {
@@ -40,7 +48,6 @@ export const enum RevealType {
 
 /**
  * * Required Refresh Dictionary of "elements to refresh" flags
- * TODO : Replace RefreshType with ReqRefresh : "Required Refresh" collection of flag dictionary
  */
 export interface ReqRefresh {
     node?: boolean; // Reveal received selected node (Navigation only, no tree change)
@@ -55,12 +62,14 @@ export interface ReqRefresh {
  * * Stackable front end commands
  */
 export interface UserCommand {
-    action: string; // String from Constants.LEOBRIDGE, which are commands for leobridgeserver.py
+    action: string; // String from Constants.LEOBRIDGE, which are commands for leobridgeserver
     node?: LeoNode | undefined;  // We can START a stack with a targeted command
     text?: string | undefined; // If a string is required, for headline, etc.
     refreshType: ReqRefresh; // Minimal refresh level required by this command
     fromOutline: boolean; // Focus back on outline instead of body
     keepSelection?: boolean; // Should bring back selection on node prior to command
+    resolveFn?: (result: any) => void; // call that with an answer from python's (or other) side
+    rejectFn?: (reason: any) => void; // call if problem is encountered
 }
 
 /**
@@ -115,7 +124,7 @@ export interface ArchivedPosition {
 }
 
 /**
- * * Items in the package object gotten back from 'getStates'
+ * * Object sent back from leoInteg's 'getStates' command
  */
 export interface LeoPackageStates {
     changed: boolean; // Leo document has changed (is dirty)
@@ -128,7 +137,7 @@ export interface LeoPackageStates {
 
 /**
  * * Returned info about currently opened and editing document
- * after opening or switching/setting the opened document
+ * Used after opening, switching or setting the opened document
  */
 export interface LeoBridgePackageOpenedInfo {
     total: number;
@@ -137,15 +146,18 @@ export interface LeoBridgePackageOpenedInfo {
 }
 
 /**
- * * Main JSON information package format used between leointeg and Leo
+ * * Main interface for JSON sent from Leo back to leoInteg
  */
 export interface LeoBridgePackage {
     id: number; // TODO : Could be used for error checking
-    // * Each of those top level member is an answer from a Constants.LEOBRIDGE command
+    // * Each of those top level member is an answer from a "Constants.LEOBRIDGE" command
     allGnx?: string[];
     bodyLength?: number;
     bodyData?: string;
-    language?: string;
+    bodyStates?: {
+        language: string;
+        selection: BodySelectionInfo;
+    }
     node?: ArchivedPosition;
     nodes?: ArchivedPosition[];
     states?: LeoPackageStates;
@@ -197,6 +209,30 @@ export interface BodyTimeInfo {
     gnx: string;
     ctime: number;
     mtime: number;
+}
+
+/**
+ * * Body position
+ * Used in BodySelectionInfo interface
+ */
+export interface BodyPosition {
+    line: number;
+    col: number;
+}
+
+/**
+ * * LeoBody cursor active position and text selection state, along with gnx
+ */
+export interface BodySelectionInfo {
+    gnx: string;
+    // scroll is stored as-is as the 'scrollBarSpot' in Leo
+    scroll: {
+        start: BodyPosition;
+        end: BodyPosition;
+    }
+    active: BodyPosition;
+    start: BodyPosition;
+    end: BodyPosition;
 }
 
 /**
@@ -252,7 +288,7 @@ export interface ChooseDocumentItem extends vscode.QuickPickItem {
 
 /**
  * * Used by the minibuffer command pallette
- * Gotten from the getCommands method in leobridgeserver.py
+ * Acquired from the getCommands method in leobridgeserver.py
  */
 export interface MinibufferCommand extends vscode.QuickPickItem {
     func: string;

@@ -4,7 +4,7 @@ import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
- * * Statusbar indicator controller object
+ * * Statusbar indicator controller service
  */
 export class LeoStatusBar {
 
@@ -93,18 +93,18 @@ export class LeoStatusBar {
      */
     private _updateLeoObjectIndicator(): void {
         // Can be called directly, so clear timer if any
-        if (this._updateStatusBarTimeout) { 
+        if (this._updateStatusBarTimeout) {
             clearTimeout(this._updateStatusBarTimeout);
         }
-        
+
         utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
-        
+
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
             (this._string ? this._string : this._leoIntegration.config.statusBarString) + " " +
             (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
-            
+
         // Also check in constructor for statusBar properties (the createStatusBarItem call itself)
-        if (this.statusBarFlag && this._leoIntegration.leoStates.fileOpenedReady) { 
+        if (this.statusBarFlag && this._leoIntegration.leoStates.fileOpenedReady) {
             this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
             this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
         } else {
@@ -112,4 +112,5 @@ export class LeoStatusBar {
             this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_OFF;
         }
     }
+
 }

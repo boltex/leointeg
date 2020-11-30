@@ -137,6 +137,16 @@ export class Constants {
     ];
 
     /**
+     * * Strings used in 'at-button' panel display in LeoButtonNode
+     */
+    public static BUTTON_STRINGS = {
+        NULL_WIDGET: "nullButtonWidget",
+        SCRIPT_BUTTON: "script-button",
+        ADD_BUTTON: "leoButtonAdd",
+        NORMAL_BUTTON: "leoButtonNode"
+    };
+
+    /**
      * * String for JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
      */
     public static CONFIG_NAMES = {
@@ -165,7 +175,7 @@ export class Constants {
 
     /**
      * * Configuration Defaults used in config.ts
-     * used when setting itself and getting parameters from vscode
+     * Used when setting itself and getting parameters from vscode
      */
     public static CONFIG_DEFAULTS = {
         CHECK_FOR_CHANGE_EXTERNAL_FILES: "none",  // Used in leoBridge scrip,
@@ -284,28 +294,38 @@ export class Constants {
     };
 
     /**
+     * * Table for converting Leo languages names for the currently opened body pane
+     * Used in showBody method of leoIntegration.ts
+     */
+    public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
+        cplusplus: 'cpp',
+        md: 'markdown'
+    };
+
+    /**
      * * Commands for leobridgeserver.py
-     * TODO : Proof of concept leoCommand
      */
     public static LEOBRIDGE = {
+        TEST: "test",
         APPLY_CONFIG: "applyConfig",
         ASK_RESULT: "askResult",
         GET_ALL_GNX: "getAllGnx",
         GET_BODY_LENGTH: "getBodyLength",
+        GET_BODY_STATES: "getBodyStates",
         GET_BODY: "getBody",
         GET_PNODE: "getPNode",
         GET_PARENT: "getParent",
         GET_CHILDREN: "getChildren",
-        GET_LANGUAGE: "getLanguage",
         GET_SELECTED_NODE: "getSelectedNode",
         SET_SELECTED_NODE: "setSelectedNode",
         SET_BODY: "setBody",
+        SET_SELECTION: "setSelection",
         SET_HEADLINE: "setNewHeadline",
         EXPAND_NODE: "expandNode",
         COLLAPSE_NODE: "collapseNode",
         CONTRACT_ALL: "contractAllHeadlines",
         GET_OPENED_FILES: "getOpenedFiles",
-        SET_OPENED_FILE: "setOpenedFile", // Pass index ? name to validate / error check, only index when stable
+        SET_OPENED_FILE: "setOpenedFile",
         OPEN_FILE: "openFile",
         OPEN_FILES: "openFiles", // Sends an array of paths instead: for opening many files at once
         CLOSE_FILE: "closeFile",
@@ -350,17 +370,17 @@ export class Constants {
         SORT_SIBLINGS: "sortSiblings", // was overridden as "sortSiblingsPNode"
         UNDO: "undo",
         REDO: "redo",
-        EXECUTE_SCRIPT: "executeScriptPackage",
+        EXECUTE_SCRIPT: "executeScript",
         GET_STATES: "getStates",
         HOIST_PNODE: "hoist",
         DEHOIST: "dehoist",
-        // TODO : @boltex More commands to implement #15, #23, #24
+        EXTRACT: "extract",
+        EXTRACT_NAMES: "extractNames",
+        // TODO : @boltex More commands to implement #23, #24
         CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
         CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
         CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex
         CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // #24 @boltex
-        EXTRACT: "extract", // #15 @boltex
-        EXTRACT_NAMES: "extractNames", // #15 @boltex
         COPY_MARKED: "copyMarked", // #23 @boltex
         DIFF_MARKED_NODES: "diffMarkedNodes", // #23 @boltex
         MARK_CHANGED_ITEMS: "markChangedItems", // #23 @boltex
@@ -415,7 +435,7 @@ export class Constants {
         UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE
         REDO: Constants.NAME + ".redo", // From command Palette
         REDO_FO: Constants.NAME + ".redoFromOutline", // from button, return focus on OUTLINE
-        EXECUTE: Constants.NAME + ".executeScriptSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        EXECUTE: Constants.NAME + ".executeScript",
         SHOW_BODY: Constants.NAME + ".showBody",
         SHOW_OUTLINE: Constants.NAME + ".showOutline",
         SHOW_LOG: Constants.NAME + ".showLogPane",
@@ -455,8 +475,8 @@ export class Constants {
         MOVE_LEFT_SELECTION: Constants.NAME + ".moveOutlineLeftSelection",
         MOVE_RIGHT_SELECTION: Constants.NAME + ".moveOutlineRightSelection",
         MOVE_UP_SELECTION: Constants.NAME + ".moveOutlineUpSelection",
-        INSERT_SELECTION: Constants.NAME + ".insertNodeSelection",
-        INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Headline input box can be interrupted with another insert
+        INSERT_SELECTION: Constants.NAME + ".insertNodeSelection", // Can be interrupted
+        INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Interrupted version
         CLONE_SELECTION: Constants.NAME + ".cloneNodeSelection",
         PROMOTE_SELECTION: Constants.NAME + ".promoteSelection",
         DEMOTE_SELECTION: Constants.NAME + ".demoteSelection",
@@ -464,7 +484,7 @@ export class Constants {
         // * Commands from keyboard, while focus on OUTLINE
         MARK_SELECTION_FO: Constants.NAME + ".markSelectionFromOutline",
         UNMARK_SELECTION_FO: Constants.NAME + ".unmarkSelectionFromOutline",
-        // COPY_SELECTION Nothing to refresh/focus for "copy a node" so no entry here
+        // COPY_SELECTION Nothing to refresh/focus for "copy a node" so no "FO" version
         CUT_SELECTION_FO: Constants.NAME + ".cutNodeSelectionFromOutline",
         PASTE_SELECTION_FO: Constants.NAME + ".pasteNodeAtSelectionFromOutline",
         PASTE_CLONE_SELECTION_FO: Constants.NAME + ".pasteNodeAsCloneAtSelectionFromOutline",
@@ -484,13 +504,13 @@ export class Constants {
         HOIST_SELECTION_FO: Constants.NAME + ".hoistSelectionFromOutline",
         DEHOIST: Constants.NAME + ".deHoist",
         DEHOIST_FO: Constants.NAME + ".deHoistFromOutline",
+        EXTRACT: Constants.NAME + ".extract",
+        EXTRACT_NAMES: Constants.NAME + ".extractNames",
         // * - - - - - - - - - - - - - - - not implemented yet
         CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
         CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
         CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
         CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
-        EXTRACT: Constants.NAME + ".extract",
-        EXTRACT_NAMES: Constants.NAME + ".extractNames",
         COPY_MARKED: Constants.NAME + ".copyMarked",
         DIFF_MARKED_NODES: Constants.NAME + ".diffMarkedNodes",
         MARK_CHANGED_ITEMS: Constants.NAME + ".markChangedItems",

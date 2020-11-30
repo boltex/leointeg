@@ -1,13 +1,14 @@
 import * as os from 'os';
 import * as child from 'child_process';
-import * as path from "path"; // TODO : Use this library to have reliable support for window-vs-linux file-paths
+import * as path from "path"; // TODO : Use this to have reliable support for window-vs-linux file-paths
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
 
 /**
- * * Provides simple automatic leo bridge server startup
+ * * Leo bridge server service
+ * Provides simple automatic leo bridge server startup functionality
  */
 export class ServerService {
     // TODO : See #10 @boltex Problem starting the leo-bridge server automatically with anaconda/miniconda on windows
@@ -77,10 +78,10 @@ export class ServerService {
                 " " + w_serverScriptPath);
         }
 
-        const w_serverStartPromise = new Promise((p_resolve, w_reject) => {
+        const w_serverStartPromise = new Promise((p_resolve, p_reject) => {
             // * Spawn a python child process for a leoBridge server
             this._resolvePromise = p_resolve;
-            this._rejectPromise = w_reject;
+            this._rejectPromise = p_reject;
         });
 
         let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
@@ -127,4 +128,5 @@ export class ServerService {
 
         return w_serverStartPromise;
     }
+
 }
