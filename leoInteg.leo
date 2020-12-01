@@ -5596,12 +5596,12 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
         return self._outputError('Error in setOpenedFile')
 
 </t>
-<t tx="felix.20200626012709.1">def _returnNo(self, *arguments):
+<t tx="felix.20200626012709.1">def _returnNo(self, *arguments, **kwargs):
     '''Used to override g.app.gui.ask[XXX] dialogs answers'''
     return "no"
 
 </t>
-<t tx="felix.20200626030820.1">def _returnYes(self, *arguments):
+<t tx="felix.20200626030820.1">def _returnYes(self, *arguments, **kwargs):
     '''Used to override g.app.gui.ask[XXX] dialogs answers'''
     return "yes"
 

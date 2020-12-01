@@ -659,11 +659,11 @@ class LeoBridgeIntegController:
             await asyncio.sleep(p_seconds)
             p_fn(self)
 
-    def _returnNo(self, *arguments):
+    def _returnNo(self, *arguments, **kwargs):
         '''Used to override g.app.gui.ask[XXX] dialogs answers'''
         return "no"
 
-    def _returnYes(self, *arguments):
+    def _returnYes(self, *arguments, **kwargs):
         '''Used to override g.app.gui.ask[XXX] dialogs answers'''
         return "yes"
 
