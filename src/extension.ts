@@ -554,19 +554,60 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.SHOW_WELCOME, () => w_leoSettingsWebview.openWebview()],
         [CMD.SHOW_SETTINGS, () => w_leoSettingsWebview.openWebview()], // Same as SHOW_WELCOME
 
-        // TODO : @boltex More commands for issues #23, #24
-        [CMD.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
-        [CMD.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
-        [CMD.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],
-        [CMD.CLONE_FIND_FLATTENED_MARKED, () => showInfo("TODO: cloneFindFlattenedMarked command")],
-        [CMD.COPY_MARKED, () => showInfo("TODO: copyMarked command")],
-        [CMD.DIFF_MARKED_NODES, () => showInfo("TODO: diffMarkedNodes command")],
-        [CMD.MARK_CHANGED_ITEMS, () => showInfo("TODO: markChangedItems command")],
-        [CMD.MARK_SUBHEADS, () => showInfo("TODO: markSubheads command")],
-        [CMD.UNMARK_ALL, () => showInfo("TODO: unmarkAll command")],
-        [CMD.CLONE_MARKED_NODES, () => showInfo("TODO: cloneMarkedNodes command")],
-        [CMD.DELETE_MARKED_NODES, () => showInfo("TODO: deleteMarkedNodes command")],
-        [CMD.MOVE_MARKED_NODES, () => showInfo("TODO: moveMarkedNode command")]
+        [CMD.COPY_MARKED, () => w_leo.nodeCommand({
+            action: BRIDGE.COPY_MARKED,
+            node: U,
+            refreshType: REFRESH_TREE_BODY,
+            fromOutline: true
+        })],
+        [CMD.DIFF_MARKED_NODES, () => w_leo.nodeCommand({
+            action: BRIDGE.DIFF_MARKED_NODES,
+            node: U,
+            refreshType: REFRESH_TREE_BODY,
+            fromOutline: true
+        })],
+        [CMD.MARK_CHANGED_ITEMS, () => w_leo.nodeCommand({
+            action: BRIDGE.MARK_CHANGED_ITEMS,
+            node: U,
+            refreshType: REFRESH_TREE_BODY,
+            fromOutline: true
+        })],
+        [CMD.MARK_SUBHEADS, () => w_leo.nodeCommand({
+            action: BRIDGE.MARK_SUBHEADS,
+            node: U,
+            refreshType: REFRESH_TREE_BODY,
+            fromOutline: true
+        })],
+        [CMD.UNMARK_ALL, () => w_leo.nodeCommand({
+            action: BRIDGE.UNMARK_ALL,
+            node: U,
+            refreshType: REFRESH_TREE_BODY,
+            fromOutline: true
+        })],
+        [CMD.CLONE_MARKED_NODES, () => w_leo.nodeCommand({
+            action: BRIDGE.CLONE_MARKED_NODES,
+            node: U,
+            refreshType: REFRESH_TREE_BODY,
+            fromOutline: true
+        })],
+        [CMD.DELETE_MARKED_NODES, () => w_leo.nodeCommand({
+            action: BRIDGE.DELETE_MARKED_NODES,
+            node: U,
+            refreshType: REFRESH_TREE_BODY,
+            fromOutline: true
+        })],
+        [CMD.MOVE_MARKED_NODES, () => w_leo.nodeCommand({
+            action: BRIDGE.MOVE_MARKED_NODES,
+            node: U,
+            refreshType: REFRESH_TREE_BODY,
+            fromOutline: true
+        })],
+
+        // TODO : @boltex More commands for issue #24
+        // [CMD.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
+        // [CMD.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
+        // [CMD.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],
+        // [CMD.CLONE_FIND_FLATTENED_MARKED, () => showInfo("TODO: cloneFindFlattenedMarked command")],
 
     ];
 

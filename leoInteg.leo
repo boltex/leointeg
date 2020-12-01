@@ -1862,19 +1862,60 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SHOW_WELCOME, () =&gt; w_leoSettingsWebview.openWebview()],
 [CMD.SHOW_SETTINGS, () =&gt; w_leoSettingsWebview.openWebview()], // Same as SHOW_WELCOME
 
-// TODO : @boltex More commands for issues #23, #24
-[CMD.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
-[CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
-[CMD.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
-[CMD.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
-[CMD.COPY_MARKED, () =&gt; showInfo("TODO: copyMarked command")],
-[CMD.DIFF_MARKED_NODES, () =&gt; showInfo("TODO: diffMarkedNodes command")],
-[CMD.MARK_CHANGED_ITEMS, () =&gt; showInfo("TODO: markChangedItems command")],
-[CMD.MARK_SUBHEADS, () =&gt; showInfo("TODO: markSubheads command")],
-[CMD.UNMARK_ALL, () =&gt; showInfo("TODO: unmarkAll command")],
-[CMD.CLONE_MARKED_NODES, () =&gt; showInfo("TODO: cloneMarkedNodes command")],
-[CMD.DELETE_MARKED_NODES, () =&gt; showInfo("TODO: deleteMarkedNodes command")],
-[CMD.MOVE_MARKED_NODES, () =&gt; showInfo("TODO: moveMarkedNode command")]
+[CMD.COPY_MARKED, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.COPY_MARKED,
+    node: U,
+    refreshType: REFRESH_TREE_BODY,
+    fromOutline: true
+})],
+[CMD.DIFF_MARKED_NODES, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.DIFF_MARKED_NODES,
+    node: U,
+    refreshType: REFRESH_TREE_BODY,
+    fromOutline: true
+})],
+[CMD.MARK_CHANGED_ITEMS, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.MARK_CHANGED_ITEMS,
+    node: U,
+    refreshType: REFRESH_TREE_BODY,
+    fromOutline: true
+})],
+[CMD.MARK_SUBHEADS, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.MARK_SUBHEADS,
+    node: U,
+    refreshType: REFRESH_TREE_BODY,
+    fromOutline: true
+})],
+[CMD.UNMARK_ALL, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.UNMARK_ALL,
+    node: U,
+    refreshType: REFRESH_TREE_BODY,
+    fromOutline: true
+})],
+[CMD.CLONE_MARKED_NODES, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.CLONE_MARKED_NODES,
+    node: U,
+    refreshType: REFRESH_TREE_BODY,
+    fromOutline: true
+})],
+[CMD.DELETE_MARKED_NODES, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.DELETE_MARKED_NODES,
+    node: U,
+    refreshType: REFRESH_TREE_BODY,
+    fromOutline: true
+})],
+[CMD.MOVE_MARKED_NODES, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.MOVE_MARKED_NODES,
+    node: U,
+    refreshType: REFRESH_TREE_BODY,
+    fromOutline: true
+})],
+
+// TODO : @boltex More commands for issue #24
+// [CMD.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
+// [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
+// [CMD.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
+// [CMD.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
 
 </t>
 <t tx="ekr.20200815113508.1">@language python
@@ -5555,12 +5596,12 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
         return self._outputError('Error in setOpenedFile')
 
 </t>
-<t tx="felix.20200626012709.1">def _returnNo(self, *arguments):
+<t tx="felix.20200626012709.1">def _returnNo(self, *arguments, **kwargs):
     '''Used to override g.app.gui.ask[XXX] dialogs answers'''
     return "no"
 
 </t>
-<t tx="felix.20200626030820.1">def _returnYes(self, *arguments):
+<t tx="felix.20200626030820.1">def _returnYes(self, *arguments, **kwargs):
     '''Used to override g.app.gui.ask[XXX] dialogs answers'''
     return "yes"
 
@@ -5678,19 +5719,19 @@ public static LEOBRIDGE = {
     DEHOIST: "dehoist",
     EXTRACT: "extract",
     EXTRACT_NAMES: "extractNames",
-    // TODO : @boltex More commands to implement #23, #24
+    COPY_MARKED: "copyMarked",
+    DIFF_MARKED_NODES: "deleteMarked",
+    MARK_CHANGED_ITEMS: "markChangedHeadlines",
+    MARK_SUBHEADS: "markSubheads",
+    UNMARK_ALL: "unmarkAll",
+    CLONE_MARKED_NODES: "cloneMarked",
+    DELETE_MARKED_NODES: "deleteMarked",
+    MOVE_MARKED_NODES: "moveMarked",
+    // TODO : @boltex More commands to implement #24
     CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
     CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
     CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex
     CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // #24 @boltex
-    COPY_MARKED: "copyMarked", // #23 @boltex
-    DIFF_MARKED_NODES: "diffMarkedNodes", // #23 @boltex
-    MARK_CHANGED_ITEMS: "markChangedItems", // #23 @boltex
-    MARK_SUBHEADS: "markSubheads", // #23 @boltex
-    UNMARK_ALL: "unmarkAll", // #23 @boltex
-    CLONE_MARKED_NODES: "cloneMarkedNodes", // #23 @boltex
-    DELETE_MARKED_NODES: "deleteMarkedNodes", // #23 @boltex
-    MOVE_MARKED_NODES: "moveMarkedNodes" // #23 @boltex
 };
 
 </t>
@@ -5809,11 +5850,6 @@ public static COMMANDS = {
     DEHOIST_FO: Constants.NAME + ".deHoistFromOutline",
     EXTRACT: Constants.NAME + ".extract",
     EXTRACT_NAMES: Constants.NAME + ".extractNames",
-    // * - - - - - - - - - - - - - - - not implemented yet
-    CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
-    CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
-    CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
-    CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
     COPY_MARKED: Constants.NAME + ".copyMarked",
     DIFF_MARKED_NODES: Constants.NAME + ".diffMarkedNodes",
     MARK_CHANGED_ITEMS: Constants.NAME + ".markChangedItems",
@@ -5821,7 +5857,12 @@ public static COMMANDS = {
     UNMARK_ALL: Constants.NAME + ".unmarkAll",
     CLONE_MARKED_NODES: Constants.NAME + ".cloneMarkedNodes",
     DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
-    MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes"
+    MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes",
+    // * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - not implemented yet #24
+    CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
+    CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
+    CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
+    CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
 };
 
 </t>
