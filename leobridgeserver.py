@@ -862,7 +862,8 @@ class LeoBridgeIntegController:
         Generic call to a method in Leo's Commands class or any subcommander class.
 
         The p_ap position node is to be selected before having the command run,
-        while the p_keepSelection parameter specifies wether the original position should be re-selected.
+        while the p_keepSelection parameter specifies wether the original position
+        should be re-selected afterward.
         The whole of those operations is to be undoable as one undo step.
 
         p_command: a method name (a string).

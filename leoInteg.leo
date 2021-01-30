@@ -328,6 +328,7 @@
 <v t="felix.20200718020912.8"><vh>configuration keys</vh></v>
 <v t="ekr.20200815084016.1"><vh>config defaults</vh></v>
 <v t="felix.20200718020912.9"><vh>context flags</vh></v>
+<v t="felix.20201208235246.1"><vh>vscode commands</vh></v>
 <v t="felix.20200718020912.10"><vh>async actions</vh></v>
 <v t="felix.20200718020912.11"><vh>async info messages codes</vh></v>
 <v t="felix.20200718020912.12"><vh>async ask return codes</vh></v>
@@ -6087,16 +6088,6 @@ public static CONTEXT_FLAGS = {
     SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
     AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
     AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT              // Used at startup
-};
-
-/**
- * * Command strings to be used with vscode.commands.executeCommand
- * See https://code.visualstudio.com/api/extension-guides/command#programmatically-executing-a-command
- */
-public static VSCODE_COMMANDS = {
-    SET_CONTEXT: "setContext",
-    CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
-    QUICK_OPEN: "workbench.action.quickOpen"
 };
 
 </t>
@@ -12940,6 +12931,17 @@ public static BUTTON_STRINGS = {
     else:
         print(f"*ACTION* {w_action}, id {p_param['id']}", flush=True)
 
+
+</t>
+<t tx="felix.20201208235246.1">/**
+ * * Command strings to be used with vscode.commands.executeCommand
+ * See https://code.visualstudio.com/api/extension-guides/command#programmatically-executing-a-command
+ */
+public static VSCODE_COMMANDS = {
+    SET_CONTEXT: "setContext",
+    CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
+    QUICK_OPEN: "workbench.action.quickOpen"
+};
 
 </t>
 </tnodes>
