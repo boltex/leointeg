@@ -279,6 +279,8 @@
 </v>
 </v>
 <v t="ekr.20200815123601.68"><vh>explorer/context</vh></v>
+<v t="felix.20201215210439.1"><vh>view/title</vh></v>
+<v t="felix.20201215210510.1"><vh>view/item/context</vh></v>
 </v>
 <v t="ekr.20200815123601.76"><vh>keybindings</vh>
 <v t="ekr.20200815123601.77"><vh>Scripting</vh></v>
@@ -650,6 +652,7 @@
 <v t="felix.20200718170429.2"></v>
 <v t="felix.20200719025231.2"></v>
 <v t="felix.20200718170712.2"></v>
+<v t="felix.20200718192411.1"></v>
 <v t="felix.20200718180428.2"></v>
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
@@ -3734,210 +3737,6 @@ print('done')
     "group": "navigation@1"
   }
 ],
-"view/title": [
-  {
-    "command": "leointeg.openLeoFile",
-    "when": "view =~ /leoDocuments/ &amp;&amp; leoBridgeReady",
-    "group": "navigation@1"
-  },
-  {
-    "command": "leointeg.newLeoFile",
-    "when": "view =~ /leoDocuments/ &amp;&amp; leoBridgeReady",
-    "group": "navigation@1"
-  },
-  {
-    "command": "leointeg.showSettingsPage",
-    "when": "view =~ /leoIntegration/ &amp;&amp; !leoTreeOpened",
-    "group": "navigation@1"
-  },
-  {
-    "command": "leointeg.connectToServer",
-    "when": "view =~ /leoIntegration/ &amp;&amp; !leoBridgeReady &amp;&amp; !leoTreeOpened",
-    "group": "navigation@1"
-  },
-  {
-    "command": "leointeg.openLeoFile",
-    "when": "view =~ /leoIntegration/ &amp;&amp; leoBridgeReady",
-    "group": "navigation@1"
-  },
-  {
-    "command": "leointeg.newLeoFile",
-    "when": "view =~ /leoIntegration/ &amp;&amp; leoBridgeReady",
-    "group": "navigation@1"
-  },
-  {
-    "command": "leointeg.saveLeoFileFromOutline",
-    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled &amp;&amp; leoChanged",
-    "group": "navigation@2"
-  },
-  {
-    "command": "leointeg.saveAsLeoFile",
-    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
-    "group": "navigation@2"
-  },
-  {
-    "command": "leointeg.undoFromOutline",
-    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanUndo",
-    "group": "navigation@3"
-  },
-  {
-    "command": "leointeg.redoFromOutline",
-    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanRedo",
-    "group": "navigation@4"
-  },
-  {
-    "command": "leointeg.deHoistFromOutline",
-    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanDehoist",
-    "group": "navigation@5"
-  },
-  {
-    "command": "leointeg.contractAllFromOutline",
-    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@6"
-  }
-],
-"view/item/context": [
-  {
-    "command": "leointeg.saveLeoFileFromOutline",
-    "when": "viewItem =~ /leoDocumentSelectedTitled/ &amp;&amp; leoChanged",
-    "group": "inline@1"
-  },
-  {
-    "command": "leointeg.saveAsLeoFile",
-    "when": "viewItem =~ /leoDocumentSelectedUntitled/",
-    "group": "inline@1"
-  },
-  {
-    "command": "leointeg.closeLeoFile",
-    "when": "viewItem =~ /leoDocumentSelected/",
-    "group": "inline@2"
-  },
-  {
-    "command": "leointeg.editHeadline",
-    "when": "showEditOnNodes &amp;&amp; viewItem =~ /leoNode/",
-    "group": "inline@1"
-  },
-  {
-    "command": "leointeg.insertNode",
-    "when": "showAddOnNodes &amp;&amp; viewItem =~ /leoNode/",
-    "group": "inline@2"
-  },
-  {
-    "command": "leointeg.moveOutlineDown",
-    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /leoNode/",
-    "group": "inline@3"
-  },
-  {
-    "command": "leointeg.moveOutlineLeft",
-    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /leoNode/",
-    "group": "inline@3"
-  },
-  {
-    "command": "leointeg.moveOutlineRight",
-    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /leoNode/",
-    "group": "inline@3"
-  },
-  {
-    "command": "leointeg.moveOutlineUp",
-    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /leoNode/",
-    "group": "inline@3"
-  },
-  {
-    "command": "leointeg.copyNode",
-    "when": "showCopyOnNodes &amp;&amp; viewItem =~ /leoNode/",
-    "group": "inline@4"
-  },
-  {
-    "command": "leointeg.cloneNode",
-    "when": "showCloneOnNodes &amp;&amp; viewItem =~ /leoNode/",
-    "group": "inline@4"
-  },
-  {
-    "command": "leointeg.mark",
-    "when": "showMarkOnNodes &amp;&amp; viewItem =~ /leoNodeUnmarked/",
-    "group": "inline@5"
-  },
-  {
-    "command": "leointeg.unmark",
-    "when": "showMarkOnNodes &amp;&amp; viewItem =~ /leoNodeMarked/",
-    "group": "inline@5"
-  },
-  {
-    "command": "leointeg.openAside",
-    "when": "showOpenAside &amp;&amp; viewItem =~ /leoNode/",
-    "group": "leoNodeContext1@1"
-  },
-  {
-    "command": "leointeg.hoistNode",
-    "when": "viewItem =~ /leoNodeNotRoot/",
-    "group": "leoNodeContext1@2"
-  },
-  {
-    "command": "leointeg.deHoist",
-    "when": "leoCanDehoist &amp;&amp; viewItem =~ /leoNodeRoot/",
-    "group": "leoNodeContext1@2"
-  },
-  {
-    "command": "leointeg.refreshFromDisk",
-    "when": "viewItem =~ /leoNodeAtFile/",
-    "group": "leoNodeContext1@3"
-  },
-  {
-    "command": "leointeg.mark",
-    "when": "viewItem =~ /leoNodeUnmarked/",
-    "group": "leoNodeContext2@1"
-  },
-  {
-    "command": "leointeg.unmark",
-    "when": "viewItem =~ /leoNodeMarked/",
-    "group": "leoNodeContext2@2"
-  },
-  {
-    "command": "leointeg.copyNode",
-    "when": "viewItem =~ /leoNode/",
-    "group": "leoNodeContext2@3"
-  },
-  {
-    "command": "leointeg.cutNode",
-    "when": "viewItem =~ /leoNode/",
-    "group": "leoNodeContext2@4"
-  },
-  {
-    "command": "leointeg.pasteNode",
-    "when": "viewItem =~ /leoNode/",
-    "group": "leoNodeContext2@5"
-  },
-  {
-    "command": "leointeg.pasteNodeAsClone",
-    "when": "viewItem =~ /leoNode/",
-    "group": "leoNodeContext2@6"
-  },
-  {
-    "command": "leointeg.delete",
-    "when": "viewItem =~ /leoNode/",
-    "group": "leoNodeContext2@7"
-  },
-  {
-    "command": "leointeg.insertNode",
-    "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoNode/",
-    "group": "leoNodeContext3@1"
-  },
-  {
-    "command": "leointeg.cloneNode",
-    "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoNode/",
-    "group": "leoNodeContext3@2"
-  },
-  {
-    "command": "leointeg.gotoNextClone",
-    "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoNodeCloned/",
-    "group": "leoNodeContext3@3"
-  },
-  {
-    "command": "leointeg.removeButton",
-    "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoButtonNode/",
-    "group": "leoButtonContext1@1"
-  }
-]
 </t>
 <t tx="ekr.20200815123601.7">"leoIntegration.leoPythonCommand": {
   "scope": "application",
@@ -6077,7 +5876,7 @@ public static CONTEXT_FLAGS = {
     DOCUMENT_SELECTED_UNTITLED: "leoDocumentSelectedUntitled",
     DOCUMENT_UNTITLED: "leoDocumentUntitled",
     // Flags that match specific LeoInteg config settings
-    LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Leo outline also in the explorer view
+    LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
     TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER, // Leo outline also in the explorer view
     SHOW_OPEN_ASIDE: Constants.CONFIG_NAMES.SHOW_OPEN_ASIDE,   // Show 'open aside' in context menu
     SHOW_EDIT: Constants.CONFIG_NAMES.SHOW_EDIT,              // Hover Icons on outline nodes
@@ -10749,7 +10548,8 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     Generic call to a method in Leo's Commands class or any subcommander class.
 
     The p_ap position node is to be selected before having the command run,
-    while the p_keepSelection parameter specifies wether the original position should be re-selected.
+    while the p_keepSelection parameter specifies wether the original position
+    should be re-selected afterward.
     The whole of those operations is to be undoable as one undo step.
 
     p_command: a method name (a string).
@@ -12943,6 +12743,212 @@ public static VSCODE_COMMANDS = {
     QUICK_OPEN: "workbench.action.quickOpen"
 };
 
+</t>
+<t tx="felix.20201215210439.1">"view/title": [
+  {
+    "command": "leointeg.openLeoFile",
+    "when": "view =~ /leoDocuments/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.newLeoFile",
+    "when": "view =~ /leoDocuments/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.showSettingsPage",
+    "when": "view =~ /leoIntegration/ &amp;&amp; !leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.connectToServer",
+    "when": "view =~ /leoIntegration/ &amp;&amp; !leoBridgeReady &amp;&amp; !leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.openLeoFile",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.newLeoFile",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.saveLeoFileFromOutline",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled &amp;&amp; leoChanged",
+    "group": "navigation@2"
+  },
+  {
+    "command": "leointeg.saveAsLeoFile",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
+    "group": "navigation@2"
+  },
+  {
+    "command": "leointeg.undoFromOutline",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanUndo",
+    "group": "navigation@3"
+  },
+  {
+    "command": "leointeg.redoFromOutline",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanRedo",
+    "group": "navigation@4"
+  },
+  {
+    "command": "leointeg.deHoistFromOutline",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanDehoist",
+    "group": "navigation@5"
+  },
+  {
+    "command": "leointeg.contractAllFromOutline",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@6"
+  }
+],
+</t>
+<t tx="felix.20201215210510.1">"view/item/context": [
+  {
+    "command": "leointeg.saveLeoFileFromOutline",
+    "when": "viewItem =~ /leoDocumentSelectedTitled/ &amp;&amp; leoChanged",
+    "group": "inline@1"
+  },
+  {
+    "command": "leointeg.saveAsLeoFile",
+    "when": "viewItem =~ /leoDocumentSelectedUntitled/",
+    "group": "inline@1"
+  },
+  {
+    "command": "leointeg.closeLeoFile",
+    "when": "viewItem =~ /leoDocumentSelected/",
+    "group": "inline@2"
+  },
+  {
+    "command": "leointeg.editHeadline",
+    "when": "showEditOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@1"
+  },
+  {
+    "command": "leointeg.insertNode",
+    "when": "showAddOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@2"
+  },
+  {
+    "command": "leointeg.moveOutlineDown",
+    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@3"
+  },
+  {
+    "command": "leointeg.moveOutlineLeft",
+    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@3"
+  },
+  {
+    "command": "leointeg.moveOutlineRight",
+    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@3"
+  },
+  {
+    "command": "leointeg.moveOutlineUp",
+    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@3"
+  },
+  {
+    "command": "leointeg.copyNode",
+    "when": "showCopyOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@4"
+  },
+  {
+    "command": "leointeg.cloneNode",
+    "when": "showCloneOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@4"
+  },
+  {
+    "command": "leointeg.mark",
+    "when": "showMarkOnNodes &amp;&amp; viewItem =~ /leoNodeUnmarked/",
+    "group": "inline@5"
+  },
+  {
+    "command": "leointeg.unmark",
+    "when": "showMarkOnNodes &amp;&amp; viewItem =~ /leoNodeMarked/",
+    "group": "inline@5"
+  },
+  {
+    "command": "leointeg.openAside",
+    "when": "showOpenAside &amp;&amp; viewItem =~ /leoNode/",
+    "group": "leoNodeContext1@1"
+  },
+  {
+    "command": "leointeg.hoistNode",
+    "when": "viewItem =~ /leoNodeNotRoot/",
+    "group": "leoNodeContext1@2"
+  },
+  {
+    "command": "leointeg.deHoist",
+    "when": "leoCanDehoist &amp;&amp; viewItem =~ /leoNodeRoot/",
+    "group": "leoNodeContext1@2"
+  },
+  {
+    "command": "leointeg.refreshFromDisk",
+    "when": "viewItem =~ /leoNodeAtFile/",
+    "group": "leoNodeContext1@3"
+  },
+  {
+    "command": "leointeg.mark",
+    "when": "viewItem =~ /leoNodeUnmarked/",
+    "group": "leoNodeContext2@1"
+  },
+  {
+    "command": "leointeg.unmark",
+    "when": "viewItem =~ /leoNodeMarked/",
+    "group": "leoNodeContext2@2"
+  },
+  {
+    "command": "leointeg.copyNode",
+    "when": "viewItem =~ /leoNode/",
+    "group": "leoNodeContext2@3"
+  },
+  {
+    "command": "leointeg.cutNode",
+    "when": "viewItem =~ /leoNode/",
+    "group": "leoNodeContext2@4"
+  },
+  {
+    "command": "leointeg.pasteNode",
+    "when": "viewItem =~ /leoNode/",
+    "group": "leoNodeContext2@5"
+  },
+  {
+    "command": "leointeg.pasteNodeAsClone",
+    "when": "viewItem =~ /leoNode/",
+    "group": "leoNodeContext2@6"
+  },
+  {
+    "command": "leointeg.delete",
+    "when": "viewItem =~ /leoNode/",
+    "group": "leoNodeContext2@7"
+  },
+  {
+    "command": "leointeg.insertNode",
+    "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoNode/",
+    "group": "leoNodeContext3@1"
+  },
+  {
+    "command": "leointeg.cloneNode",
+    "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoNode/",
+    "group": "leoNodeContext3@2"
+  },
+  {
+    "command": "leointeg.gotoNextClone",
+    "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoNodeCloned/",
+    "group": "leoNodeContext3@3"
+  },
+  {
+    "command": "leointeg.removeButton",
+    "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoButtonNode/",
+    "group": "leoButtonContext1@1"
+  }
+]
 </t>
 </tnodes>
 </leo_file>
