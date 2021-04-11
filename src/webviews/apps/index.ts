@@ -219,6 +219,9 @@ declare function acquireVsCodeApi(): VsCodeApi;
                 command: "config",
                 changes: w_changes
             });
+        } else {
+            // Still have to remove 'modified' popup
+            dirty!.className = dirty!.className.replace("show", "");
         }
     }, 1500);
 

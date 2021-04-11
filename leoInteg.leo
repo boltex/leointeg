@@ -6499,7 +6499,7 @@ import { BodyTimeInfo } from "./types";
 
     console.log('trigger called in writeFile');
 
-    this._leoIntegration.triggerBodySave(true);
+    this._leoIntegration.triggerBodySave(); // should not recall forced
     const w_gnx = utils.leoUriToStr(p_uri);
     const w_now = Date.now();
     if (this._selectedBody.gnx === w_gnx) {
@@ -6537,11 +6537,6 @@ import { BodyTimeInfo } from "./types";
     console.warn('Called copy on ', p_uri.fsPath); // should not happen
     throw vscode.FileSystemError.NoPermissions();
 }
-
-private _emitter = new vscode.EventEmitter&lt;vscode.FileChangeEvent[]&gt;();
-private _bufferedEvents: vscode.FileChangeEvent[] = [];
-private _fireSoonHandle?: NodeJS.Timer;
-
 </t>
 <t tx="felix.20200718040540.18">private _fireSoon(...p_events: vscode.FileChangeEvent[]): void {
     this._bufferedEvents.push(...p_events);
@@ -6549,7 +6544,7 @@ private _fireSoonHandle?: NodeJS.Timer;
         clearTimeout(this._fireSoonHandle);
     }
     this._fireSoonHandle = setTimeout(() =&gt; {
-        this._emitter.fire(this._bufferedEvents);
+        this._onDidChangeFileEmitter.fire(this._bufferedEvents);
         this._bufferedEvents.length = 0; // clearing events array
     }, 5);
 }
@@ -6581,6 +6576,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * It should fire for resources that are being [watched](#FileSystemProvider.watch) by clients of this provider
     private _onDidChangeFileEmitter = new vscode.EventEmitter&lt;vscode.FileChangeEvent[]&gt;();
     readonly onDidChangeFile: vscode.Event&lt;vscode.FileChangeEvent[]&gt; = this._onDidChangeFileEmitter.event;
+    private _bufferedEvents: vscode.FileChangeEvent[] = [];
+    private _fireSoonHandle?: NodeJS.Timer;
 
     constructor(private _leoIntegration: LeoIntegration) { }
 
@@ -8321,6 +8318,7 @@ import { LeoNode } from "./leoNode";
 </t>
 <t tx="felix.20200718195558.10">/**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
+ * with a scheme header like "leo:/" or 'more:/' 
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */
@@ -8514,7 +8512,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
   (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
 
 </t>
-<t tx="felix.20200718222026.1">## Development version installation
+<t tx="felix.20200718222026.1">## Development Version Installation
 
 [Video tutorial of installation and startup](https://www.youtube.com/watch?v=rutt11xL54I):
 
@@ -8641,7 +8639,7 @@ use **"keyboard.dispatch": "keyCode"** in your settings and restart vscode.
 See [Troubleshoot Linux Keybindings](https://github.com/microsoft/vscode/wiki/Keybinding-Issues#troubleshoot-linux-keybindings)
 for more information.
 
-### Move outline keyboard commands
+### Move Outline Keyboard Commands
 
 For some users, the **`Alt+[Arrow Keys]`**, **`Ctrl+D`** and **`Ctrl+T`** keybinding are already assigned.
 To help with this conflict, tree-browsing, outline-move keyboard commands, and switch focus command will only trigger
@@ -8651,7 +8649,7 @@ So select at least one character to use the previously assigned original keyboar
 &gt; This extension is still in development, so please refer to its [issue tracker](https://github.com/boltex/leointeg/issues) to learn more about its intended features, or to contribute with additional information if you encounter other issues yourself.
 
 </t>
-<t tx="felix.20200718222113.1">## How it works
+<t tx="felix.20200718222113.1">## How It Works
 
 Integration is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
 
@@ -9871,7 +9869,8 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
 
         // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
         return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor =&gt; {
-            // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : #38 if position is in an derived file node show relative position
+            // TODO : #38 if position is in an derived file node show relative position
+            // w_bodyEditor.options.lineNumbers = OFFSET ; 
             return Promise.resolve(w_bodyEditor);
         });
     });

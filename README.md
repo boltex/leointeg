@@ -20,7 +20,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
 
-## Development version installation
+## Development Version Installation
 
 [Video tutorial of installation and startup](https://www.youtube.com/watch?v=rutt11xL54I):
 
@@ -140,7 +140,7 @@ use **"keyboard.dispatch": "keyCode"** in your settings and restart vscode.
 See [Troubleshoot Linux Keybindings](https://github.com/microsoft/vscode/wiki/Keybinding-Issues#troubleshoot-linux-keybindings)
 for more information.
 
-### Move outline keyboard commands
+### Move Outline Keyboard Commands
 
 For some users, the **`Alt+[Arrow Keys]`**, **`Ctrl+D`** and **`Ctrl+T`** keybinding are already assigned.
 To help with this conflict, tree-browsing, outline-move keyboard commands, and switch focus command will only trigger
@@ -149,7 +149,7 @@ So select at least one character to use the previously assigned original keyboar
 
 > This extension is still in development, so please refer to its [issue tracker](https://github.com/boltex/leointeg/issues) to learn more about its intended features, or to contribute with additional information if you encounter other issues yourself.
 
-## How it works
+## How It Works
 
 Integration is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
 
