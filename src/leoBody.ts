@@ -31,6 +31,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * It should fire for resources that are being [watched](#FileSystemProvider.watch) by clients of this provider
     private _onDidChangeFileEmitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
     readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> = this._onDidChangeFileEmitter.event;
+    private _bufferedEvents: vscode.FileChangeEvent[] = [];
+    private _fireSoonHandle?: NodeJS.Timer;
 
     constructor(private _leoIntegration: LeoIntegration) { }
 
@@ -241,7 +243,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
         console.log('trigger called in writeFile');
 
-        this._leoIntegration.triggerBodySave(true);
+        this._leoIntegration.triggerBodySave(); // should not recall forced
         const w_gnx = utils.leoUriToStr(p_uri);
         const w_now = Date.now();
         if (this._selectedBody.gnx === w_gnx) {
@@ -276,18 +278,13 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         console.warn('Called copy on ', p_uri.fsPath); // should not happen
         throw vscode.FileSystemError.NoPermissions();
     }
-
-    private _emitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
-    private _bufferedEvents: vscode.FileChangeEvent[] = [];
-    private _fireSoonHandle?: NodeJS.Timer;
-
     private _fireSoon(...p_events: vscode.FileChangeEvent[]): void {
         this._bufferedEvents.push(...p_events);
         if (this._fireSoonHandle) {
             clearTimeout(this._fireSoonHandle);
         }
         this._fireSoonHandle = setTimeout(() => {
-            this._emitter.fire(this._bufferedEvents);
+            this._onDidChangeFileEmitter.fire(this._bufferedEvents);
             this._bufferedEvents.length = 0; // clearing events array
         }, 5);
     }
