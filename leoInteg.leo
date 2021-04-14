@@ -1124,8 +1124,10 @@ private _gotSelection(p_node: LeoNode): void {
  * @param p_showBodyKeepFocus Flag used to keep focus where it was instead of forcing in body
  * @param p_force_open Flag to force opening the body pane editor
  */
-private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable&lt;vscode.TextEditor&gt;  {
+private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable&lt;vscode.TextEditor&gt; {
 
+    this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
+    this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
 
     if (this._bodyTextDocument) {
         if (!this._bodyTextDocument.isClosed &amp;&amp; this._locateOpenedBody(p_node.gnx)) {
@@ -1139,40 +1141,40 @@ private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFoc
                     });
             }
         }
-    }else {
+    } else {
         // first time?
         this.bodyUri = utils.strToLeoUri(p_node.gnx);
     }
     return this.showBody(p_aside, p_showBodyKeepFocus);
 
-/*
-    this._showBodyParams = {
-        node: p_node,
-        aside: p_aside,
-        showBodyKeepFocus: p_showBodyKeepFocus,
-        force_open: p_force_open // can be undefined
-    };
-    // Start it if possible, otherwise the last _showBodyParams will be used again right after
-    if (!this._showBodyStarted) {
-        this._showBodyStarted = true;
-        this._applyNodeToBody(this._showBodyParams)
-            .then((p_textEditor: vscode.TextEditor) =&gt; {
-                // finished
-                this._showBodyStarted = false;
-                if (this._showBodyParams) {
-                    // New node to show again! Call itself faking params from the specified ones.
-                    this._tryApplyNodeToBody(
-                        this._showBodyParams.node,
-                        this._showBodyParams.aside,
-                        this._showBodyParams.showBodyKeepFocus,
-                        this._showBodyParams.force_open
-                    );
-                }
-            });
-        // Clear global body params, will get refilled if needed
-        this._showBodyParams = undefined;
-    }
-    */
+    /*
+        this._showBodyParams = {
+            node: p_node,
+            aside: p_aside,
+            showBodyKeepFocus: p_showBodyKeepFocus,
+            force_open: p_force_open // can be undefined
+        };
+        // Start it if possible, otherwise the last _showBodyParams will be used again right after
+        if (!this._showBodyStarted) {
+            this._showBodyStarted = true;
+            this._applyNodeToBody(this._showBodyParams)
+                .then((p_textEditor: vscode.TextEditor) =&gt; {
+                    // finished
+                    this._showBodyStarted = false;
+                    if (this._showBodyParams) {
+                        // New node to show again! Call itself faking params from the specified ones.
+                        this._tryApplyNodeToBody(
+                            this._showBodyParams.node,
+                            this._showBodyParams.aside,
+                            this._showBodyParams.showBodyKeepFocus,
+                            this._showBodyParams.force_open
+                        );
+                    }
+                });
+            // Clear global body params, will get refilled if needed
+            this._showBodyParams = undefined;
+        }
+        */
 }
 
 </t>
@@ -7598,7 +7600,7 @@ public get description(): string {
         return "\u{1F4CE} (" + Object.keys(this.u).length + ")";
     } else {
         // return "id:" + this.id; // ! debug test
-        // return "gnx:" + this.gnx; // ! debug test
+        return "gnx:" + this.gnx; // ! debug test
         return ""; // Falsy will not be shown
     }
 }
@@ -9855,7 +9857,7 @@ private _switchBody(p_newGnx: string): Thenable&lt;boolean&gt; {
         return Promise.resolve(false);
     }
     */
-    
+
 }
 
 </t>
@@ -9949,6 +9951,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                     if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
                         console.log('GOT STATES DIFFERENT GNX: ' + w_leoBodySel.gnx + ", last sel: " + this.lastSelectedNode!.gnx + ", bodyUri was: " + this._testBodyUri);
                     }
+
                     const w_scroll = w_leoBodySel.scroll;
                     // console.log('GET_BODY_STATES json' + JSON.stringify(w_scroll));
 
@@ -10049,7 +10052,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
 <t tx="felix.20200719025231.51"></t>
 <t tx="felix.20200719025231.52">/**
  * * Select a tree node. Either called from user interaction, or used internally (p_internalCall flag)
- * @param p_node Node that was just selected 
+ * @param p_node Node that was just selected
  * @param p_internalCall Flag used to indicate the selection is forced, and NOT originating from user interaction
  * @param p_aside Flag to force opening the body "Aside", i.e. when the selection was made from choosing "Open Aside"
  * @returns a promise with the package gotten back from Leo when asked to select the tree node
@@ -10077,7 +10080,7 @@ public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boole
         }
         return p_setSelectedResult;
     });
-    
+
     // * Apply the node to the body text without waiting for the selection promise to resolve
     this._tryApplyNodeToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
     return q_setSelectedNode;

@@ -1175,6 +1175,9 @@ export class LeoIntegration {
      */
     private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable<vscode.TextEditor> {
 
+        this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
+        this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
+
         if (this._bodyTextDocument) {
             if (!this._bodyTextDocument.isClosed && this._locateOpenedBody(p_node.gnx)) {
                 // if needs switching
