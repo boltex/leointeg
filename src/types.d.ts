@@ -206,7 +206,6 @@ export interface Icon {
  * * LeoBody virtual file time information object
  */
 export interface BodyTimeInfo {
-    gnx: string;
     ctime: number;
     mtime: number;
 }

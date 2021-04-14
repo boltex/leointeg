@@ -1173,101 +1173,54 @@ export class LeoIntegration {
      * @param p_showBodyKeepFocus Flag used to keep focus where it was instead of forcing in body
      * @param p_force_open Flag to force opening the body pane editor
      */
-    private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): void {
-        this._showBodyParams = {
-            node: p_node,
-            aside: p_aside,
-            showBodyKeepFocus: p_showBodyKeepFocus,
-            force_open: p_force_open // can be undefined
-        };
-        // Start it if possible, otherwise the last _showBodyParams will be used again right after
-        if (!this._showBodyStarted) {
-            this._showBodyStarted = true;
-            this._applyNodeToBody(this._showBodyParams)
-                .then((p_textEditor: vscode.TextEditor) => {
-                    // finished
-                    this._showBodyStarted = false;
-                    if (this._showBodyParams) {
-                        // New node to show again! Call itself faking params from the specified ones.
-                        this._tryApplyNodeToBody(
-                            this._showBodyParams.node,
-                            this._showBodyParams.aside,
-                            this._showBodyParams.showBodyKeepFocus,
-                            this._showBodyParams.force_open
-                        );
-                    }
-                });
-            // Clear global body params, will get refilled if needed
-            this._showBodyParams = undefined;
-        }
-    }
+    private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable<vscode.TextEditor> {
 
-    /**
-     * * Actually performs the 'throttled' version of applying the selection to the body pane
-     * @param p_params contains the node, as a LeoNode, and the aside, showBodyKeepFocus and force_open flags
-     */
-    private _applyNodeToBody(p_params: ShowBodyParam): Thenable<vscode.TextEditor> {
-        // Check first if body needs refresh: if so we will voluntarily throw out any pending edits on body
-        this.triggerBodySave(); // Send body to Leo because we're about to (re)show a body of possibly different gnx
-        this.lastSelectedNode = p_params.node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
-        this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
-        // * Is the last opened body still opened? If not the new gnx then make the body pane switch and show itself if needed,
-        /*
-        if (this._bodyTextDocument && !this._bodyTextDocument.isClosed) {
-            // * Check if already opened and visible, _locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
-            if (this._locateOpenedBody(p_params.node.gnx)) {
-                // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
-                this.bodyUri = utils.strToLeoUri(p_params.node.gnx);
-                return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // already opened in a column so just tell vscode to show it
-            } else {
-                // * So far, _bodyTextDocument is still opened and different from new selection: so "save & rename" to block undo/redos
-                return this._switchBody(p_params.node.gnx)
-                    .then(() => {
-                        return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // Also finish by showing it if not already visible
-                    });
-            }
-        } else {
-            // * Is the last opened body is closed so just open the newly selected one
-            this.bodyUri = utils.strToLeoUri(p_params.node.gnx);
-            return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open);
-        }
-         */
         if (this._bodyTextDocument) {
-            if (!this._bodyTextDocument.isClosed && this._locateOpenedBody(p_params.node.gnx)) {
-                // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
-                this.bodyUri = utils.strToLeoUri(p_params.node.gnx); // ? Should already be this same string / remove if unnecessary ?
-                return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // already opened in a column so just tell vscode to show it
-            } else {
-                return this._switchBody(p_params.node.gnx)
-                    .then(() => {
-                        return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // Also finish by showing it if not already visible
-                    });
+            if (!this._bodyTextDocument.isClosed && this._locateOpenedBody(p_node.gnx)) {
+                // if needs switching
+                if (utils.leoUriToStr(this.bodyUri) !== p_node.gnx) {
+                    return this._bodyTextDocument.save()
+                        .then(() => {
+                            return this._switchBody(p_node.gnx);
+                        }).then(() => {
+                            return this.showBody(p_aside, p_showBodyKeepFocus);
+                        });
+                }
             }
         } else {
-            this.bodyUri = utils.strToLeoUri(p_params.node.gnx);
-            return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open);
+            // first time?
+            this.bodyUri = utils.strToLeoUri(p_node.gnx);
         }
-    }
+        return this.showBody(p_aside, p_showBodyKeepFocus);
 
-    /**
-     * * Show the body pane if not already opened, and if allowed by leoInteg's control logic.
-     * Prevent opening the body editor unnecessarily when hiding and re(showing) the outline pane
-     * @param p_aside Flag for opening the editor beside any currently opened and focused editor
-     * @param p_showBodyKeepFocus flag that when true will stop the editor from taking focus once opened
-     * @param p_forceOpen Forces opening the body pane editor
-     */
-    private _showBodyIfRequired(p_aside: boolean, p_showBodyKeepFocus: boolean, p_forceOpen?: boolean): Thenable<vscode.TextEditor> {
-        if (this._preventShowBody) {
-            this._preventShowBody = false;
-            return Promise.resolve(vscode.window.activeTextEditor!);
-        }
-        // TODO : Find Better Conditions! Always true for now...
-        if (true || p_forceOpen || this._leoTreeView.visible) {
-            // ! Always true for now to stabilize refreshes after derived files refreshes and others.
-            return this.showBody(p_aside, p_showBodyKeepFocus);
-        } else {
-            return Promise.resolve(vscode.window.activeTextEditor!);
-        }
+        /*
+            this._showBodyParams = {
+                node: p_node,
+                aside: p_aside,
+                showBodyKeepFocus: p_showBodyKeepFocus,
+                force_open: p_force_open // can be undefined
+            };
+            // Start it if possible, otherwise the last _showBodyParams will be used again right after
+            if (!this._showBodyStarted) {
+                this._showBodyStarted = true;
+                this._applyNodeToBody(this._showBodyParams)
+                    .then((p_textEditor: vscode.TextEditor) => {
+                        // finished
+                        this._showBodyStarted = false;
+                        if (this._showBodyParams) {
+                            // New node to show again! Call itself faking params from the specified ones.
+                            this._tryApplyNodeToBody(
+                                this._showBodyParams.node,
+                                this._showBodyParams.aside,
+                                this._showBodyParams.showBodyKeepFocus,
+                                this._showBodyParams.force_open
+                            );
+                        }
+                    });
+                // Clear global body params, will get refilled if needed
+                this._showBodyParams = undefined;
+            }
+            */
     }
 
     /**
@@ -1276,6 +1229,30 @@ export class LeoIntegration {
      * @param p_newGnx New gnx body id to switch to
      */
     private _switchBody(p_newGnx: string): Thenable<boolean> {
+
+        const w_oldUri: vscode.Uri = this.bodyUri;
+
+        const w_edit = new vscode.WorkspaceEdit();
+
+        // * Set timestamps ?
+        // this._leoFileSystem.setRenameTime(p_newGnx);
+
+        w_edit.deleteFile(w_oldUri, { ignoreIfNotExists: true });
+
+        // Promise to Delete first sync (as thenable),
+        // tagged along with automatically removeFromRecentlyOpened in parallel
+        return vscode.workspace.applyEdit(w_edit)
+            .then(() => {
+                // Set new uri and remove from 'Recently opened'
+                this.bodyUri = utils.strToLeoUri(p_newGnx);
+                // async, so don't wait for this to finish
+                if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
+                    vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
+                }
+                return Promise.resolve(true); // Resolving right away
+            });
+
+        /*
         if (this._bodyTextDocument) {
             return this._bodyTextDocument.save()
                 .then((p_result) => {
@@ -1302,6 +1279,8 @@ export class LeoIntegration {
         } else {
             return Promise.resolve(false);
         }
+        */
+
     }
 
     /**
@@ -1354,6 +1333,11 @@ export class LeoIntegration {
             }, 0);
         }
 
+        if (this._preventShowBody) {
+            this._preventShowBody = false;
+            return Promise.resolve(vscode.window.activeTextEditor!);
+        }
+
         this._testBodyUri = utils.leoUriToStr(this.bodyUri); // TODO : Test
 
         return Promise.resolve(vscode.workspace.openTextDocument(this.bodyUri)).then(p_document => {
@@ -1374,6 +1358,7 @@ export class LeoIntegration {
                         if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
                             console.log('GOT STATES DIFFERENT GNX: ' + w_leoBodySel.gnx + ", last sel: " + this.lastSelectedNode!.gnx + ", bodyUri was: " + this._testBodyUri);
                         }
+
                         const w_scroll = w_leoBodySel.scroll;
                         // console.log('GET_BODY_STATES json' + JSON.stringify(w_scroll));
 
@@ -1471,11 +1456,11 @@ export class LeoIntegration {
     }
 
     /**
-     * * User has selected a node via mouse click or via 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
+     * * Select a tree node. Either called from user interaction, or used internally (p_internalCall flag)
      * @param p_node Node that was just selected
      * @param p_internalCall Flag used to indicate the selection is forced, and NOT originating from user interaction
      * @param p_aside Flag to force opening the body "Aside", i.e. when the selection was made from choosing "Open Aside"
-     * @returns
+     * @returns a promise with the package gotten back from Leo when asked to select the tree node
      */
     public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Promise<LeoBridgePackage | vscode.TextEditor> {
         this.triggerBodySave(true);
@@ -1486,7 +1471,8 @@ export class LeoIntegration {
         this.leoStates.setSelectedNodeFlags(p_node);
         this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
         const w_showBodyKeepFocus = p_aside ? this.config.treeKeepFocusWhenAside : this.config.treeKeepFocus;
-        // * Check if having already this exact node position selected : Just show the body and exit!
+        // * Check if having already this exact node position selected : Just show the body and exit
+        // (other tree nodes with same gnx may have different syntax language coloring because of parents lineage)
         if (p_node === this.lastSelectedNode) {
             this._locateOpenedBody(p_node.gnx);
             return this.showBody(!!p_aside, w_showBodyKeepFocus); // Voluntary exit
@@ -1499,6 +1485,8 @@ export class LeoIntegration {
             }
             return p_setSelectedResult;
         });
+
+        // * Apply the node to the body text without waiting for the selection promise to resolve
         this._tryApplyNodeToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
         return q_setSelectedNode;
     }
