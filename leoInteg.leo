@@ -1093,8 +1093,7 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: A
 
 </t>
 <t tx="ekr.20200815085830.4">/**
- * * Public method to refresh the documents pane
- *  Document Panel May be refreshed by other services (states service, ...)
+ * * Refresh the documents pane
  */
 private _refreshDocumentsPane(): void {
     this._leoDocumentsProvider.refreshTreeRoot();
@@ -1126,12 +1125,15 @@ private _gotSelection(p_node: LeoNode): void {
  */
 private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable&lt;vscode.TextEditor&gt; {
 
+    console.log('try to apply node -&gt; ', p_node.gnx);
+
     this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
     this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
 
     if (this._bodyTextDocument) {
-        if (!this._bodyTextDocument.isClosed &amp;&amp; this._locateOpenedBody(p_node.gnx)) {
-            // if needs switching
+        // if not first time and still opened - also not somewhat exactly opened somewhere.
+        if (!this._bodyTextDocument.isClosed &amp;&amp; !this._locateOpenedBody(p_node.gnx)) {
+            // if needs switching by actually having different gnx
             if (utils.leoUriToStr(this.bodyUri) !== p_node.gnx) {
                 return this._bodyTextDocument.save()
                     .then(() =&gt; {
@@ -9319,7 +9321,7 @@ export class LeoIntegration {
         flush(): void;
     };
 
-    // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
+    // * Debounced method used to get opened Leo Files for the documents pane
     public refreshDocumentsPane: (() =&gt; void) &amp; {
         clear(): void;
     } &amp; {
@@ -9801,8 +9803,8 @@ public arrayToLeoNodesArray(p_array: ArchivedPosition[]): LeoNode[] {
 
 </t>
 <t tx="felix.20200719025231.47">/**
- * * Save and rename from this.bodyUri to p_newGnx: This changes the body content &amp; blocks 'undos' from crossing over
- * ! BUG : UNDO NOW CROSSES OVER SINCE vscode 1.48 - Fix with #107
+ * * Close body pane document and change the bodyUri
+ * This blocks 'undos' from crossing over
  * @param p_newGnx New gnx body id to switch to
  */
 private _switchBody(p_newGnx: string): Thenable&lt;boolean&gt; {
@@ -9821,6 +9823,8 @@ private _switchBody(p_newGnx: string): Thenable&lt;boolean&gt; {
     return vscode.workspace.applyEdit(w_edit)
         .then(() =&gt; {
             // Set new uri and remove from 'Recently opened'
+            console.log('SETTING NEW GNX:', p_newGnx);
+
             this.bodyUri = utils.strToLeoUri(p_newGnx);
             // async, so don't wait for this to finish
             if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
@@ -9828,35 +9832,6 @@ private _switchBody(p_newGnx: string): Thenable&lt;boolean&gt; {
             }
             return Promise.resolve(true); // Resolving right away
         });
-
-    /*
-    if (this._bodyTextDocument) {
-        return this._bodyTextDocument.save()
-            .then((p_result) =&gt; {
-                const w_edit = new vscode.WorkspaceEdit();
-                this._leoFileSystem.setRenameTime(p_newGnx);
-                w_edit.renameFile(
-                    this.bodyUri, // Old URI from last node
-                    utils.strToLeoUri(p_newGnx), // New URI from selected node
-                    { overwrite: true }
-                );
-                return vscode.workspace.applyEdit(w_edit);
-            })
-            .then(p_result =&gt; {
-                const w_oldUri: vscode.Uri = this.bodyUri;
-                // * Old is now set to new!
-                this.bodyUri = utils.strToLeoUri(p_newGnx);
-
-                // TODO : CLEAR UNDO HISTORY AND FILE HISTORY
-                if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
-                    vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
-                }
-                return Promise.resolve(p_result);
-            });
-    } else {
-        return Promise.resolve(false);
-    }
-    */
 
 }
 
@@ -9917,6 +9892,10 @@ public sendAction(p_action: string, p_jsonParam = "null", p_deferredPayload?: Le
  * @param p_preserveFocus flag that when true will stop the editor from taking focus once opened
  */
 public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.TextEditor&gt; {
+
+    console.log('SHOW BODY: ', this.bodyUri.fsPath);
+
+
     // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
     if (this._refreshType.body) {
         this._refreshType.body = false;
@@ -9947,6 +9926,8 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                     const w_bodyStates = p_result.bodyStates!; // This answer has bodyStates member
                     let w_language: string = w_bodyStates.language;
                     const w_leoBodySel: BodySelectionInfo = w_bodyStates.selection;
+
+                    console.log('GOT BACK STATES FOR BODY: ', w_leoBodySel.gnx);
 
                     if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
                         console.log('GOT STATES DIFFERENT GNX: ' + w_leoBodySel.gnx + ", last sel: " + this.lastSelectedNode!.gnx + ", bodyUri was: " + this._testBodyUri);
@@ -10058,28 +10039,34 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
  * @returns a promise with the package gotten back from Leo when asked to select the tree node
  */
 public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Promise&lt;LeoBridgePackage | vscode.TextEditor&gt; {
+
     this.triggerBodySave(true);
+
     // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
     if (p_aside &amp;&amp; p_node !== this.lastSelectedNode) {
         this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
     }
+
     this.leoStates.setSelectedNodeFlags(p_node);
     this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
     const w_showBodyKeepFocus = p_aside ? this.config.treeKeepFocusWhenAside : this.config.treeKeepFocus;
+
     // * Check if having already this exact node position selected : Just show the body and exit
     // (other tree nodes with same gnx may have different syntax language coloring because of parents lineage)
     if (p_node === this.lastSelectedNode) {
         this._locateOpenedBody(p_node.gnx);
         return this.showBody(!!p_aside, w_showBodyKeepFocus); // Voluntary exit
     }
+
     // * Set selected node in Leo via leoBridge
-    const q_setSelectedNode = this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson).then((p_setSelectedResult) =&gt; {
-        if (!p_internalCall) {
-            this._refreshType.states = true;
-            this.getStates();
-        }
-        return p_setSelectedResult;
-    });
+    const q_setSelectedNode = this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson)
+        .then((p_setSelectedResult) =&gt; {
+            if (!p_internalCall) {
+                this._refreshType.states = true;
+                this.getStates();
+            }
+            return p_setSelectedResult;
+        });
 
     // * Apply the node to the body text without waiting for the selection promise to resolve
     this._tryApplyNodeToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
