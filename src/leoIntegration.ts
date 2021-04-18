@@ -103,6 +103,9 @@ export class LeoIntegration {
     private _leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
     private _bodyTextDocument: vscode.TextDocument | undefined; // Set when selected in tree by user, or opening a Leo file in showBody. and by _locateOpenedBody.
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
+
+    private _bodyPreviewMode: boolean = true;
+
     private _showBodyStarted: boolean = false; // Flag for when _applySelectionToBody 'show body' cycle is busy
     private _showBodyParams: ShowBodyParam | undefined; // _applySelectionToBody parameters, may be overwritten at each call if not finished
 
@@ -232,9 +235,10 @@ export class LeoIntegration {
 
         // * Triggers when a different text editor/vscode window changed focus or visibility, or dragged
         // This is also what triggers after drag and drop, see '_onChangeEditorViewColumn'
-        vscode.window.onDidChangeTextEditorViewColumn(() => this.triggerBodySave());
-        vscode.window.onDidChangeVisibleTextEditors(() => this.triggerBodySave());
-        vscode.window.onDidChangeWindowState(() => this.triggerBodySave());
+        vscode.window.onDidChangeTextEditorViewColumn((p_event) => this._changedTextEditorViewColumn(p_event)); // Also triggers after drag and drop
+        vscode.window.onDidChangeVisibleTextEditors((p_event) => this._changedVisibleTextEditors(p_event)); // Window.visibleTextEditors changed
+        vscode.window.onDidChangeWindowState((p_event) => this._changedWindowState(p_event)); // Focus state of the current window changes
+
 
         // * React when typing and changing body pane
         vscode.workspace.onDidChangeTextDocument(p_event => this._onDocumentChanged(p_event));
@@ -595,7 +599,7 @@ export class LeoIntegration {
         // * Could be already opened, so perform 'rename hack' as if another node was selected
         if (this._bodyTextDocument && this.bodyUri) {
             // TODO : BUG WHEN SWITCHING LEO DOCUMENT : NEED CROSSOVER LOGIC!
-            this._switchBody(w_selectedLeoNode.gnx);
+            this._switchBody(w_selectedLeoNode.gnx, false, true);
         } else {
             this.bodyUri = utils.strToLeoUri(w_selectedLeoNode.gnx);
         }
@@ -734,6 +738,11 @@ export class LeoIntegration {
      * @param p_internalCall Flag used to signify the it was called voluntarily by leoInteg itself
      */
     private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
+        if (p_event && p_event.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+            if (this.bodyUri.fsPath !== p_event.document.uri.fsPath) {
+                this._hideDeleteBody(p_event);
+            }
+        }
         if (!p_internalCall) {
             this.triggerBodySave(true); // Save in case edits were pending
         }
@@ -745,6 +754,41 @@ export class LeoIntegration {
         if (vscode.window.activeTextEditor) {
             this._leoStatusBar.update(vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME);
         }
+    }
+
+    /**
+     * * Moved a document to anlther column
+     */
+    public _changedTextEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void {
+        if (p_event && p_event.textEditor.document.uri.scheme === 'more') {
+            console.log('changedTextEditorViewColumn: gnx', p_event.textEditor.document.uri.fsPath);
+        }
+        this.triggerBodySave(true);
+    }
+
+    /**
+     * * Tabbed on another editor
+     */
+    public _changedVisibleTextEditors(p_event: vscode.TextEditor[]): void {
+        if (p_event && p_event.length) {
+            p_event.forEach(p_textEditor => {
+                if (p_textEditor && p_textEditor.document.uri.scheme === 'more') {
+                    console.log('changedVisibleTextEditors: gnx', p_textEditor.document.uri.fsPath);
+                    if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
+                        this._hideDeleteBody(p_textEditor);
+                    }
+                }
+            });
+        }
+        this.triggerBodySave(true);
+    }
+
+    /**
+     * * Whole window has been minimiized/restored
+     */
+    public _changedWindowState(p_event: vscode.WindowState): void {
+        // no other action
+        this.triggerBodySave(true);
     }
 
     /**
@@ -785,6 +829,7 @@ export class LeoIntegration {
 
             // * There was an actual change on a Leo Body by the user
             this._bodyLastChangedDocument = p_event.document;
+            this._bodyPreviewMode = false;
             this._fromOutline = false; // Focus is on body pane
 
             // * If icon should change then do it now (if there's no document edit pending)
@@ -1186,9 +1231,7 @@ export class LeoIntegration {
                 if (utils.leoUriToStr(this.bodyUri) !== p_node.gnx) {
                     return this._bodyTextDocument.save()
                         .then(() => {
-                            return this._switchBody(p_node.gnx);
-                        }).then(() => {
-                            return this.showBody(p_aside, p_showBodyKeepFocus);
+                            return this._switchBody(p_node.gnx, p_aside, p_showBodyKeepFocus);
                         });
                 }
             }
@@ -1233,32 +1276,37 @@ export class LeoIntegration {
      * This blocks 'undos' from crossing over
      * @param p_newGnx New gnx body id to switch to
      */
-    private _switchBody(p_newGnx: string): Thenable<boolean> {
+    private _switchBody(p_newGnx: string, p_aside: boolean, p_preserveFocus?: boolean): Thenable<vscode.TextEditor> {
 
         const w_oldUri: vscode.Uri = this.bodyUri;
 
-        const w_edit = new vscode.WorkspaceEdit();
-
-        // * Set timestamps ?
+        // ? Set timestamps ?
         // this._leoFileSystem.setRenameTime(p_newGnx);
 
-        w_edit.deleteFile(w_oldUri, { ignoreIfNotExists: true });
-
-        // Promise to Delete first sync (as thenable),
-        // tagged along with automatically removeFromRecentlyOpened in parallel
-        return vscode.workspace.applyEdit(w_edit)
-            .then(() => {
-                // Set new uri and remove from 'Recently opened'
-                console.log('SETTING NEW GNX:', p_newGnx);
-
-                this.bodyUri = utils.strToLeoUri(p_newGnx);
-                // async, so don't wait for this to finish
-                if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
-                    vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
-                }
-                return Promise.resolve(true); // Resolving right away
-            });
-
+        if (this._bodyPreviewMode) {
+            // just show in same column and delete after
+            this.bodyUri = utils.strToLeoUri(p_newGnx);
+            const q_showBody = this.showBody(p_aside, p_preserveFocus);
+            vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
+            return q_showBody;
+        } else {
+            // Gotta delete to close all and re-open, so:
+            // Promise to Delete first, synchronously (as thenable),
+            // tagged along with automatically removeFromRecentlyOpened in parallel
+            const w_edit = new vscode.WorkspaceEdit();
+            w_edit.deleteFile(w_oldUri, { ignoreIfNotExists: true });
+            return vscode.workspace.applyEdit(w_edit)
+                .then(() => {
+                    // Set new uri and remove from 'Recently opened'
+                    this._bodyPreviewMode = true;
+                    this.bodyUri = utils.strToLeoUri(p_newGnx);
+                    // async, so don't wait for this to finish
+                    if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
+                        vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
+                    }
+                    return this.showBody(p_aside, p_preserveFocus);
+                });
+        }
     }
 
     /**
@@ -1276,6 +1324,16 @@ export class LeoIntegration {
             }
         });
         return w_found;
+    }
+
+    private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
+        console.log('DELETE EXTRANEOUS:', p_textEditor.document.uri.fsPath);
+        const w_edit = new vscode.WorkspaceEdit();
+        w_edit.deleteFile(p_textEditor.document.uri, { ignoreIfNotExists: true });
+        if (p_textEditor.hide) {
+            p_textEditor.hide();
+        }
+        vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.path);
     }
 
     /**
@@ -1424,7 +1482,7 @@ export class LeoIntegration {
                 } : {
                     viewColumn: this._bodyMainSelectionColumn ? this._bodyMainSelectionColumn : 1, // view column in which the editor should be shown
                     preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
-                    preview: false // should text document be in preview only? set false for fully opened
+                    preview: true // should text document be in preview only? set false for fully opened
                     // selection is instead set when the GET_BODY_STATES above resolves
                 };
 
