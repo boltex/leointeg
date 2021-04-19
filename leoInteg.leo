@@ -495,7 +495,10 @@
 <v t="ekr.20200815090152.1"><vh>_tryApplyNodeToBody</vh></v>
 <v t="felix.20200719025231.47"><vh>_switchBody</vh></v>
 <v t="felix.20200719025231.48"><vh>_locateOpenedBody</vh></v>
+<v t="felix.20210418230204.1"><vh>_findUriColumn</vh></v>
+<v t="felix.20210418230204.2"><vh>_findGnxColumn</vh></v>
 <v t="felix.20210418013332.1"><vh>_hideDeleteBody</vh></v>
+<v t="felix.20210418220343.1"><vh>_checkPreviewMode</vh></v>
 <v t="felix.20200719025231.49"><vh>closeBody</vh></v>
 <v t="felix.20200719025231.50"><vh>showBody</vh></v>
 </v>
@@ -1136,9 +1139,13 @@ private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFoc
 
     if (this._bodyTextDocument) {
         // if not first time and still opened - also not somewhat exactly opened somewhere.
-        if (!this._bodyTextDocument.isClosed &amp;&amp; !this._locateOpenedBody(p_node.gnx)) {
+        if (
+            !this._bodyTextDocument.isClosed &amp;&amp;
+            !this._locateOpenedBody(p_node.gnx) // LOCATE NEW GNX
+        ) {
             // if needs switching by actually having different gnx
             if (utils.leoUriToStr(this.bodyUri) !== p_node.gnx) {
+                this._locateOpenedBody(utils.leoUriToStr(this.bodyUri)); // * LOCATE OLD GNX FOR PROPER COLUMN*
                 return this._bodyTextDocument.save()
                     .then(() =&gt; {
                         return this._switchBody(p_node.gnx, p_aside, p_showBodyKeepFocus);
@@ -9491,20 +9498,21 @@ private _onDocTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChange
 <t tx="felix.20200719025231.29">/**
  * * Handles detection of the active editor having changed from one to another, or closed
  * TODO : Make sure the selection in tree if highlighted when a body pane is selected
- * @param p_event The editor itself that is now active
+ * @param p_editor The editor itself that is now active
  * @param p_internalCall Flag used to signify the it was called voluntarily by leoInteg itself
  */
-private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
-    if (p_event &amp;&amp; p_event.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-        if (this.bodyUri.fsPath !== p_event.document.uri.fsPath) {
-            this._hideDeleteBody(p_event);
+private _onActiveEditorChanged(p_editor: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
+    if (p_editor &amp;&amp; p_editor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+        if (this.bodyUri.fsPath !== p_editor.document.uri.fsPath) {
+            this._hideDeleteBody(p_editor);
         }
+        this._checkPreviewMode(p_editor);
     }
     if (!p_internalCall) {
         this.triggerBodySave(true); // Save in case edits were pending
     }
     // * Status flag check
-    if (!p_event &amp;&amp; this._leoStatusBar.statusBarFlag) {
+    if (!p_editor &amp;&amp; this._leoStatusBar.statusBarFlag) {
         return;
     }
     // * Status flag check
@@ -9576,7 +9584,7 @@ private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_interna
     this._serverService = new ServerService(_context, this);
 
     // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
-    vscode.window.onDidChangeActiveTextEditor(p_event =&gt; this._onActiveEditorChanged(p_event));
+    vscode.window.onDidChangeActiveTextEditor(p_editor =&gt; this._onActiveEditorChanged(p_editor));
 
     // * React to change in selection, cursor position and scroll position
     vscode.window.onDidChangeTextEditorSelection(p_event =&gt; this._onChangeEditorSelection(p_event));
@@ -9584,16 +9592,15 @@ private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_interna
 
     // * Triggers when a different text editor/vscode window changed focus or visibility, or dragged
     // This is also what triggers after drag and drop, see '_onChangeEditorViewColumn'
-    vscode.window.onDidChangeTextEditorViewColumn((p_event) =&gt; this._changedTextEditorViewColumn(p_event)); // Also triggers after drag and drop
-    vscode.window.onDidChangeVisibleTextEditors((p_event) =&gt; this._changedVisibleTextEditors(p_event)); // Window.visibleTextEditors changed
-    vscode.window.onDidChangeWindowState((p_event) =&gt; this._changedWindowState(p_event)); // Focus state of the current window changes
-
+    vscode.window.onDidChangeTextEditorViewColumn((p_columnChangeEvent) =&gt; this._changedTextEditorViewColumn(p_columnChangeEvent)); // Also triggers after drag and drop
+    vscode.window.onDidChangeVisibleTextEditors((p_editors) =&gt; this._changedVisibleTextEditors(p_editors)); // Window.visibleTextEditors changed
+    vscode.window.onDidChangeWindowState((p_windowState) =&gt; this._changedWindowState(p_windowState)); // Focus state of the current window changes
 
     // * React when typing and changing body pane
-    vscode.workspace.onDidChangeTextDocument(p_event =&gt; this._onDocumentChanged(p_event));
+    vscode.workspace.onDidChangeTextDocument(p_textDocumentChange =&gt; this._onDocumentChanged(p_textDocumentChange));
 
     // * React to configuration settings events
-    vscode.workspace.onDidChangeConfiguration(p_event =&gt; this._onChangeConfiguration(p_event));
+    vscode.workspace.onDidChangeConfiguration(p_configChange =&gt; this._onChangeConfiguration(p_configChange));
 
     // * React to opening of any file in vscode
     vscode.workspace.onDidOpenTextDocument(p_document =&gt; this._onDidOpenTextDocument(p_document));
@@ -9606,22 +9613,22 @@ private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_interna
 </t>
 <t tx="felix.20200719025231.31">/**
  * * Handle typing that was detected in a document
- * @param p_event Text changed event passed by vscode
+ * @param p_textDocumentChange Text changed event passed by vscode
  */
-private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
+private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent): void {
     // ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
-    if (this.lastSelectedNode &amp;&amp; p_event.contentChanges.length &amp;&amp; (p_event.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
+    if (this.lastSelectedNode &amp;&amp; p_textDocumentChange.contentChanges.length &amp;&amp; (p_textDocumentChange.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
 
         // * There was an actual change on a Leo Body by the user
-        this._bodyLastChangedDocument = p_event.document;
+        this._bodyLastChangedDocument = p_textDocumentChange.document;
         this._bodyPreviewMode = false;
         this._fromOutline = false; // Focus is on body pane
 
         // * If icon should change then do it now (if there's no document edit pending)
-        if (!this._currentDocumentChanged || utils.leoUriToStr(p_event.document.uri) === this.lastSelectedNode.gnx) {
-            const w_hasBody = !!(p_event.document.getText().length);
+        if (!this._currentDocumentChanged || utils.leoUriToStr(p_textDocumentChange.document.uri) === this.lastSelectedNode.gnx) {
+            const w_hasBody = !!(p_textDocumentChange.document.getText().length);
             if (utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody)) {
-                this._bodySaveDocument(p_event.document)
+                this._bodySaveDocument(p_textDocumentChange.document)
                     .then(() =&gt; {
                         if (this.lastSelectedNode) {
                             this.lastSelectedNode.dirty = true;
@@ -10068,7 +10075,7 @@ public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boole
     // * Check if having already this exact node position selected : Just show the body and exit
     // (other tree nodes with same gnx may have different syntax language coloring because of parents lineage)
     if (p_node === this.lastSelectedNode) {
-        this._locateOpenedBody(p_node.gnx);
+        this._locateOpenedBody(p_node.gnx); // LOCATE NEW GNX
         return this.showBody(!!p_aside, w_showBodyKeepFocus); // Voluntary exit
     }
 
@@ -12919,11 +12926,12 @@ public static BUTTON_STRINGS = {
 
 </t>
 <t tx="felix.20210418014039.1">/**
- * * Moved a document to anlther column
+ * * Moved a document to another column
  */
-public _changedTextEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void {
-    if (p_event &amp;&amp; p_event.textEditor.document.uri.scheme === 'more') {
-        console.log('changedTextEditorViewColumn: gnx', p_event.textEditor.document.uri.fsPath);
+public _changedTextEditorViewColumn(p_columnChangeEvent: vscode.TextEditorViewColumnChangeEvent): void {
+    if (p_columnChangeEvent &amp;&amp; p_columnChangeEvent.textEditor.document.uri.scheme === 'more') {
+        console.log('changedTextEditorViewColumn: gnx', p_columnChangeEvent.textEditor.document.uri.fsPath);
+        this._checkPreviewMode(p_columnChangeEvent.textEditor);
     }
     this.triggerBodySave(true);
 }
@@ -12932,14 +12940,15 @@ public _changedTextEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEv
 <t tx="felix.20210418014040.1">/**
  * * Tabbed on another editor
  */
-public _changedVisibleTextEditors(p_event: vscode.TextEditor[]): void {
-    if (p_event &amp;&amp; p_event.length) {
-        p_event.forEach(p_textEditor =&gt; {
+public _changedVisibleTextEditors(p_editors: vscode.TextEditor[]): void {
+    if (p_editors &amp;&amp; p_editors.length) {
+        p_editors.forEach(p_textEditor =&gt; {
             if (p_textEditor &amp;&amp; p_textEditor.document.uri.scheme === 'more') {
                 console.log('changedVisibleTextEditors: gnx', p_textEditor.document.uri.fsPath);
                 if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
                     this._hideDeleteBody(p_textEditor);
                 }
+                this._checkPreviewMode(p_textEditor);
             }
         });
     }
@@ -12948,11 +12957,46 @@ public _changedVisibleTextEditors(p_event: vscode.TextEditor[]): void {
 
 </t>
 <t tx="felix.20210418014040.2">/**
- * * Whole window has been minimiized/restored
+ * * Whole window has been minimized/restored
  */
-public _changedWindowState(p_event: vscode.WindowState): void {
+public _changedWindowState(p_windowState: vscode.WindowState): void {
     // no other action
     this.triggerBodySave(true);
+}
+
+</t>
+<t tx="felix.20210418220343.1">private _checkPreviewMode(p_editor: vscode.TextEditor): void {
+    // if selected gnx but in another column
+    if (
+        p_editor.document.uri.fsPath === this.bodyUri.fsPath &amp;&amp;
+        p_editor.viewColumn !== this._bodyMainSelectionColumn
+    ) {
+        console.log('************NO MORE PREVIEW!!');
+        this._bodyPreviewMode = false;
+        this._bodyMainSelectionColumn = p_editor.viewColumn;
+    }
+}
+
+</t>
+<t tx="felix.20210418230204.1">private _findUriColumn(p_uri: vscode.Uri): vscode.ViewColumn | undefined {
+    let w_column: vscode.ViewColumn | undefined;
+    vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
+        if (p_textEditor.document.uri.fsPath === p_uri.fsPath) {
+            w_column = p_textEditor.viewColumn;
+        }
+    });
+    return w_column;
+}
+
+</t>
+<t tx="felix.20210418230204.2">private findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
+    let w_column: vscode.ViewColumn | undefined;
+    vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
+        if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {
+            w_column = p_textEditor.viewColumn;
+        }
+    });
+    return w_column;
 }
 
 </t>

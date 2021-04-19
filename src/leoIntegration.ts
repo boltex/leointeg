@@ -227,7 +227,7 @@ export class LeoIntegration {
         this._serverService = new ServerService(_context, this);
 
         // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
-        vscode.window.onDidChangeActiveTextEditor(p_event => this._onActiveEditorChanged(p_event));
+        vscode.window.onDidChangeActiveTextEditor(p_editor => this._onActiveEditorChanged(p_editor));
 
         // * React to change in selection, cursor position and scroll position
         vscode.window.onDidChangeTextEditorSelection(p_event => this._onChangeEditorSelection(p_event));
@@ -235,16 +235,15 @@ export class LeoIntegration {
 
         // * Triggers when a different text editor/vscode window changed focus or visibility, or dragged
         // This is also what triggers after drag and drop, see '_onChangeEditorViewColumn'
-        vscode.window.onDidChangeTextEditorViewColumn((p_event) => this._changedTextEditorViewColumn(p_event)); // Also triggers after drag and drop
-        vscode.window.onDidChangeVisibleTextEditors((p_event) => this._changedVisibleTextEditors(p_event)); // Window.visibleTextEditors changed
-        vscode.window.onDidChangeWindowState((p_event) => this._changedWindowState(p_event)); // Focus state of the current window changes
-
+        vscode.window.onDidChangeTextEditorViewColumn((p_columnChangeEvent) => this._changedTextEditorViewColumn(p_columnChangeEvent)); // Also triggers after drag and drop
+        vscode.window.onDidChangeVisibleTextEditors((p_editors) => this._changedVisibleTextEditors(p_editors)); // Window.visibleTextEditors changed
+        vscode.window.onDidChangeWindowState((p_windowState) => this._changedWindowState(p_windowState)); // Focus state of the current window changes
 
         // * React when typing and changing body pane
-        vscode.workspace.onDidChangeTextDocument(p_event => this._onDocumentChanged(p_event));
+        vscode.workspace.onDidChangeTextDocument(p_textDocumentChange => this._onDocumentChanged(p_textDocumentChange));
 
         // * React to configuration settings events
-        vscode.workspace.onDidChangeConfiguration(p_event => this._onChangeConfiguration(p_event));
+        vscode.workspace.onDidChangeConfiguration(p_configChange => this._onChangeConfiguration(p_configChange));
 
         // * React to opening of any file in vscode
         vscode.workspace.onDidOpenTextDocument(p_document => this._onDidOpenTextDocument(p_document));
@@ -734,20 +733,21 @@ export class LeoIntegration {
     /**
      * * Handles detection of the active editor having changed from one to another, or closed
      * TODO : Make sure the selection in tree if highlighted when a body pane is selected
-     * @param p_event The editor itself that is now active
+     * @param p_editor The editor itself that is now active
      * @param p_internalCall Flag used to signify the it was called voluntarily by leoInteg itself
      */
-    private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
-        if (p_event && p_event.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-            if (this.bodyUri.fsPath !== p_event.document.uri.fsPath) {
-                this._hideDeleteBody(p_event);
+    private _onActiveEditorChanged(p_editor: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
+        if (p_editor && p_editor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+            if (this.bodyUri.fsPath !== p_editor.document.uri.fsPath) {
+                this._hideDeleteBody(p_editor);
             }
+            this._checkPreviewMode(p_editor);
         }
         if (!p_internalCall) {
             this.triggerBodySave(true); // Save in case edits were pending
         }
         // * Status flag check
-        if (!p_event && this._leoStatusBar.statusBarFlag) {
+        if (!p_editor && this._leoStatusBar.statusBarFlag) {
             return;
         }
         // * Status flag check
@@ -757,11 +757,12 @@ export class LeoIntegration {
     }
 
     /**
-     * * Moved a document to anlther column
+     * * Moved a document to another column
      */
-    public _changedTextEditorViewColumn(p_event: vscode.TextEditorViewColumnChangeEvent): void {
-        if (p_event && p_event.textEditor.document.uri.scheme === 'more') {
-            console.log('changedTextEditorViewColumn: gnx', p_event.textEditor.document.uri.fsPath);
+    public _changedTextEditorViewColumn(p_columnChangeEvent: vscode.TextEditorViewColumnChangeEvent): void {
+        if (p_columnChangeEvent && p_columnChangeEvent.textEditor.document.uri.scheme === 'more') {
+            console.log('changedTextEditorViewColumn: gnx', p_columnChangeEvent.textEditor.document.uri.fsPath);
+            this._checkPreviewMode(p_columnChangeEvent.textEditor);
         }
         this.triggerBodySave(true);
     }
@@ -769,14 +770,15 @@ export class LeoIntegration {
     /**
      * * Tabbed on another editor
      */
-    public _changedVisibleTextEditors(p_event: vscode.TextEditor[]): void {
-        if (p_event && p_event.length) {
-            p_event.forEach(p_textEditor => {
+    public _changedVisibleTextEditors(p_editors: vscode.TextEditor[]): void {
+        if (p_editors && p_editors.length) {
+            p_editors.forEach(p_textEditor => {
                 if (p_textEditor && p_textEditor.document.uri.scheme === 'more') {
                     console.log('changedVisibleTextEditors: gnx', p_textEditor.document.uri.fsPath);
                     if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
                         this._hideDeleteBody(p_textEditor);
                     }
+                    this._checkPreviewMode(p_textEditor);
                 }
             });
         }
@@ -784,9 +786,9 @@ export class LeoIntegration {
     }
 
     /**
-     * * Whole window has been minimiized/restored
+     * * Whole window has been minimized/restored
      */
-    public _changedWindowState(p_event: vscode.WindowState): void {
+    public _changedWindowState(p_windowState: vscode.WindowState): void {
         // no other action
         this.triggerBodySave(true);
     }
@@ -821,22 +823,22 @@ export class LeoIntegration {
 
     /**
      * * Handle typing that was detected in a document
-     * @param p_event Text changed event passed by vscode
+     * @param p_textDocumentChange Text changed event passed by vscode
      */
-    private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
+    private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent): void {
         // ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
-        if (this.lastSelectedNode && p_event.contentChanges.length && (p_event.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
+        if (this.lastSelectedNode && p_textDocumentChange.contentChanges.length && (p_textDocumentChange.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
 
             // * There was an actual change on a Leo Body by the user
-            this._bodyLastChangedDocument = p_event.document;
+            this._bodyLastChangedDocument = p_textDocumentChange.document;
             this._bodyPreviewMode = false;
             this._fromOutline = false; // Focus is on body pane
 
             // * If icon should change then do it now (if there's no document edit pending)
-            if (!this._currentDocumentChanged || utils.leoUriToStr(p_event.document.uri) === this.lastSelectedNode.gnx) {
-                const w_hasBody = !!(p_event.document.getText().length);
+            if (!this._currentDocumentChanged || utils.leoUriToStr(p_textDocumentChange.document.uri) === this.lastSelectedNode.gnx) {
+                const w_hasBody = !!(p_textDocumentChange.document.getText().length);
                 if (utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody)) {
-                    this._bodySaveDocument(p_event.document)
+                    this._bodySaveDocument(p_textDocumentChange.document)
                         .then(() => {
                             if (this.lastSelectedNode) {
                                 this.lastSelectedNode.dirty = true;
@@ -1226,9 +1228,13 @@ export class LeoIntegration {
 
         if (this._bodyTextDocument) {
             // if not first time and still opened - also not somewhat exactly opened somewhere.
-            if (!this._bodyTextDocument.isClosed && !this._locateOpenedBody(p_node.gnx)) {
+            if (
+                !this._bodyTextDocument.isClosed &&
+                !this._locateOpenedBody(p_node.gnx) // LOCATE NEW GNX
+            ) {
                 // if needs switching by actually having different gnx
                 if (utils.leoUriToStr(this.bodyUri) !== p_node.gnx) {
+                    this._locateOpenedBody(utils.leoUriToStr(this.bodyUri)); // * LOCATE OLD GNX FOR PROPER COLUMN*
                     return this._bodyTextDocument.save()
                         .then(() => {
                             return this._switchBody(p_node.gnx, p_aside, p_showBodyKeepFocus);
@@ -1326,6 +1332,26 @@ export class LeoIntegration {
         return w_found;
     }
 
+    private _findUriColumn(p_uri: vscode.Uri): vscode.ViewColumn | undefined {
+        let w_column: vscode.ViewColumn | undefined;
+        vscode.window.visibleTextEditors.forEach(p_textEditor => {
+            if (p_textEditor.document.uri.fsPath === p_uri.fsPath) {
+                w_column = p_textEditor.viewColumn;
+            }
+        });
+        return w_column;
+    }
+
+    private findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
+        let w_column: vscode.ViewColumn | undefined;
+        vscode.window.visibleTextEditors.forEach(p_textEditor => {
+            if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {
+                w_column = p_textEditor.viewColumn;
+            }
+        });
+        return w_column;
+    }
+
     private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
         console.log('DELETE EXTRANEOUS:', p_textEditor.document.uri.fsPath);
         const w_edit = new vscode.WorkspaceEdit();
@@ -1334,6 +1360,18 @@ export class LeoIntegration {
             p_textEditor.hide();
         }
         vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.path);
+    }
+
+    private _checkPreviewMode(p_editor: vscode.TextEditor): void {
+        // if selected gnx but in another column
+        if (
+            p_editor.document.uri.fsPath === this.bodyUri.fsPath &&
+            p_editor.viewColumn !== this._bodyMainSelectionColumn
+        ) {
+            console.log('************NO MORE PREVIEW!!');
+            this._bodyPreviewMode = false;
+            this._bodyMainSelectionColumn = p_editor.viewColumn;
+        }
     }
 
     /**
@@ -1517,7 +1555,7 @@ export class LeoIntegration {
         // * Check if having already this exact node position selected : Just show the body and exit
         // (other tree nodes with same gnx may have different syntax language coloring because of parents lineage)
         if (p_node === this.lastSelectedNode) {
-            this._locateOpenedBody(p_node.gnx);
+            this._locateOpenedBody(p_node.gnx); // LOCATE NEW GNX
             return this.showBody(!!p_aside, w_showBodyKeepFocus); // Voluntary exit
         }
 
