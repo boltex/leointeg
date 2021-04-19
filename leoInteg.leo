@@ -1132,7 +1132,7 @@ private _gotSelection(p_node: LeoNode): void {
  */
 private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable&lt;vscode.TextEditor&gt; {
 
-    console.log('try to apply node -&gt; ', p_node.gnx);
+    // console.log('try to apply node -&gt; ', p_node.gnx);
 
     this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
     this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
@@ -6589,7 +6589,7 @@ import { BodyTimeInfo } from "./types";
 
             // If same as last checked, sending back time at absolute past
             // ? VERIFY this._selectedBody.mtime we get file changed on disk error??
-            console.log('VERIFY this._selectedBody.mtime we get file changed on disk error :', p_uri);
+           // console.log('VERIFY this._selectedBody.mtime we get file changed on disk error :', p_uri);
             return {
                 type: vscode.FileType.File,
                 ctime: this._openedBodiesInfo[this._lastGnx].ctime,
@@ -6679,7 +6679,7 @@ import { BodyTimeInfo } from "./types";
 
 </t>
 <t tx="felix.20200718040540.14">public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
-    console.log('trigger called in writeFile');
+    // console.log('trigger called in writeFile');
 
     this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
     const w_gnx = utils.leoUriToStr(p_uri);
@@ -6708,7 +6708,7 @@ import { BodyTimeInfo } from "./types";
 
 </t>
 <t tx="felix.20200718040540.16">public delete(p_uri: vscode.Uri): void {
-    console.log("delete", p_uri.fsPath);
+    // console.log("delete", p_uri.fsPath);
     const w_gnx = utils.leoUriToStr(p_uri);
     if (this._openedBodiesGnx.includes(w_gnx)) {
         this._openedBodiesGnx.splice(this._openedBodiesGnx.indexOf(w_gnx), 1);
@@ -6789,7 +6789,7 @@ public setBodyTime(p_uri: vscode.Uri): void {
 
     const w_gnx = utils.leoUriToStr(p_uri);
 
-    console.log('Selected', w_gnx, ' total:', this._openedBodiesGnx.length);
+    // console.log('Selected', w_gnx, ' total:', this._openedBodiesGnx.length);
 
     if (!this._openedBodiesGnx.includes(w_gnx)) {
         this._openedBodiesGnx.push(w_gnx);
@@ -6846,16 +6846,16 @@ public refreshPossibleGnxList(): Thenable&lt;string[]&gt; {
     const w_gnx = utils.leoUriToStr(p_resource);
 
     if (!this._watchedBodiesGnx.includes(w_gnx)) {
-        console.log('MORE fs watch put in _openedBodiesGnx:', p_resource.fsPath);
+        // console.log('MORE fs watch put in _openedBodiesGnx:', p_resource.fsPath);
         this._watchedBodiesGnx.push(w_gnx); // add gnx
     } else {
-        console.warn('MORE fs watch: already in _openedBodiesGnx:', p_resource.fsPath);
+        // console.warn('MORE fs watch: already in _openedBodiesGnx:', p_resource.fsPath);
 
     }
     return new vscode.Disposable(() =&gt; {
         const w_position = this._watchedBodiesGnx.indexOf(w_gnx); // find and remove it
         if (w_position &gt; -1) {
-            console.log('MORE fs removed from _openedBodiesGnx: ', w_gnx);
+            // console.log('MORE fs removed from _openedBodiesGnx: ', w_gnx);
             this._watchedBodiesGnx.splice(w_position, 1);
         }
     });
@@ -7611,7 +7611,7 @@ public get description(): string {
         return "\u{1F4CE} (" + Object.keys(this.u).length + ")";
     } else {
         // return "id:" + this.id; // ! debug test
-        return "gnx:" + this.gnx; // ! debug test
+        // return "gnx:" + this.gnx; // ! debug test
         return ""; // Falsy will not be shown
     }
 }
@@ -9917,7 +9917,7 @@ public sendAction(p_action: string, p_jsonParam = "null", p_deferredPayload?: Le
  */
 public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.TextEditor&gt; {
 
-    console.log('SHOW BODY: ', this.bodyUri.fsPath);
+    // console.log('SHOW BODY: ', this.bodyUri.fsPath);
 
     // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
     if (this._refreshType.body) {

@@ -1221,7 +1221,7 @@ export class LeoIntegration {
      */
     private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable<vscode.TextEditor> {
 
-        console.log('try to apply node -> ', p_node.gnx);
+        // console.log('try to apply node -> ', p_node.gnx);
 
         this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
         this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
@@ -1399,7 +1399,7 @@ export class LeoIntegration {
      */
     public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise<vscode.TextEditor> {
 
-        console.log('SHOW BODY: ', this.bodyUri.fsPath);
+        // console.log('SHOW BODY: ', this.bodyUri.fsPath);
 
         // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
         if (this._refreshType.body) {
