@@ -60,15 +60,28 @@ export class LeoSettingsWebview {
                             case 'alert':
                                 vscode.window.showErrorMessage(message.text);
                                 break;
+                            case 'chooseLeoServerPath':
+                                this._leoIntegration.config.chooseLeoServerPath();
+                                break;
                             case 'getNewConfig':
                                 if (this._panel && !this._waitingForUpdate) {
-                                    this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
+                                    this._panel.webview.postMessage(
+                                        {
+                                            command: 'newConfig',
+                                            config: this._leoIntegration.config.getConfig()
+                                        }
+                                    );
                                 }
                                 break;
                             case 'config':
                                 this._waitingForUpdate = true;
                                 this._leoIntegration.config.setLeoIntegSettings(message.changes).then(() => {
-                                    this._panel!.webview.postMessage({ command: 'vscodeConfig', config: this._leoIntegration.config.getConfig() });
+                                    this._panel!.webview.postMessage(
+                                        {
+                                            command: 'vscodeConfig',
+                                            config: this._leoIntegration.config.getConfig()
+                                        }
+                                    );
                                     this._waitingForUpdate = false;
                                 });
                                 break;

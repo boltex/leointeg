@@ -77,11 +77,11 @@ export class Config implements ConfigMembers {
     public chooseLeoServerPath(): void {
         vscode.window.showOpenDialog(
             {
+                title: "Locate Leo Server Script",
                 canSelectMany: false,
                 openLabel: "Choose",
                 filters: { 'script': ['py'] }
             }
-
         )
             .then(p_chosenFile => {
                 console.log(p_chosenFile);

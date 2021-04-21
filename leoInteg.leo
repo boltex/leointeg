@@ -13029,11 +13029,11 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
 public chooseLeoServerPath(): void {
     vscode.window.showOpenDialog(
         {
+            title: "Locate Leo Server Script",
             canSelectMany: false,
             openLabel: "Choose",
             filters: { 'script': ['py'] }
         }
-
     )
         .then(p_chosenFile =&gt; {
             console.log(p_chosenFile);
