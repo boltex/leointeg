@@ -3721,6 +3721,210 @@ print('done')
     "group": "navigation@1"
   }
 ],
+"view/title": [
+  {
+    "command": "leointeg.openLeoFile",
+    "when": "view =~ /leoDocuments/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.newLeoFile",
+    "when": "view =~ /leoDocuments/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.showSettingsPage",
+    "when": "view =~ /leoIntegration/ &amp;&amp; !leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.connectToServer",
+    "when": "view =~ /leoIntegration/ &amp;&amp; !leoBridgeReady &amp;&amp; !leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.openLeoFile",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.newLeoFile",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.saveLeoFileFromOutline",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled &amp;&amp; leoChanged",
+    "group": "navigation@2"
+  },
+  {
+    "command": "leointeg.saveAsLeoFile",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
+    "group": "navigation@2"
+  },
+  {
+    "command": "leointeg.undoFromOutline",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanUndo",
+    "group": "navigation@3"
+  },
+  {
+    "command": "leointeg.redoFromOutline",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanRedo",
+    "group": "navigation@4"
+  },
+  {
+    "command": "leointeg.deHoistFromOutline",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanDehoist",
+    "group": "navigation@5"
+  },
+  {
+    "command": "leointeg.contractAllFromOutline",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@6"
+  }
+],
+"view/item/context": [
+  {
+    "command": "leointeg.saveLeoFileFromOutline",
+    "when": "viewItem =~ /leoDocumentSelectedTitled/ &amp;&amp; leoChanged",
+    "group": "inline@1"
+  },
+  {
+    "command": "leointeg.saveAsLeoFile",
+    "when": "viewItem =~ /leoDocumentSelectedUntitled/",
+    "group": "inline@1"
+  },
+  {
+    "command": "leointeg.closeLeoFile",
+    "when": "viewItem =~ /leoDocumentSelected/",
+    "group": "inline@2"
+  },
+  {
+    "command": "leointeg.editHeadline",
+    "when": "showEditOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@1"
+  },
+  {
+    "command": "leointeg.insertNode",
+    "when": "showAddOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@2"
+  },
+  {
+    "command": "leointeg.moveOutlineDown",
+    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@3"
+  },
+  {
+    "command": "leointeg.moveOutlineLeft",
+    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@3"
+  },
+  {
+    "command": "leointeg.moveOutlineRight",
+    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@3"
+  },
+  {
+    "command": "leointeg.moveOutlineUp",
+    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@3"
+  },
+  {
+    "command": "leointeg.copyNode",
+    "when": "showCopyOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@4"
+  },
+  {
+    "command": "leointeg.cloneNode",
+    "when": "showCloneOnNodes &amp;&amp; viewItem =~ /leoNode/",
+    "group": "inline@4"
+  },
+  {
+    "command": "leointeg.mark",
+    "when": "showMarkOnNodes &amp;&amp; viewItem =~ /leoNodeUnmarked/",
+    "group": "inline@5"
+  },
+  {
+    "command": "leointeg.unmark",
+    "when": "showMarkOnNodes &amp;&amp; viewItem =~ /leoNodeMarked/",
+    "group": "inline@5"
+  },
+  {
+    "command": "leointeg.openAside",
+    "when": "showOpenAside &amp;&amp; viewItem =~ /leoNode/",
+    "group": "leoNodeContext1@1"
+  },
+  {
+    "command": "leointeg.hoistNode",
+    "when": "viewItem =~ /leoNodeNotRoot/",
+    "group": "leoNodeContext1@2"
+  },
+  {
+    "command": "leointeg.deHoist",
+    "when": "leoCanDehoist &amp;&amp; viewItem =~ /leoNodeRoot/",
+    "group": "leoNodeContext1@2"
+  },
+  {
+    "command": "leointeg.refreshFromDisk",
+    "when": "viewItem =~ /leoNodeAtFile/",
+    "group": "leoNodeContext1@3"
+  },
+  {
+    "command": "leointeg.mark",
+    "when": "viewItem =~ /leoNodeUnmarked/",
+    "group": "leoNodeContext2@1"
+  },
+  {
+    "command": "leointeg.unmark",
+    "when": "viewItem =~ /leoNodeMarked/",
+    "group": "leoNodeContext2@2"
+  },
+  {
+    "command": "leointeg.copyNode",
+    "when": "viewItem =~ /leoNode/",
+    "group": "leoNodeContext2@3"
+  },
+  {
+    "command": "leointeg.cutNode",
+    "when": "viewItem =~ /leoNode/",
+    "group": "leoNodeContext2@4"
+  },
+  {
+    "command": "leointeg.pasteNode",
+    "when": "viewItem =~ /leoNode/",
+    "group": "leoNodeContext2@5"
+  },
+  {
+    "command": "leointeg.pasteNodeAsClone",
+    "when": "viewItem =~ /leoNode/",
+    "group": "leoNodeContext2@6"
+  },
+  {
+    "command": "leointeg.delete",
+    "when": "viewItem =~ /leoNode/",
+    "group": "leoNodeContext2@7"
+  },
+  {
+    "command": "leointeg.insertNode",
+    "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoNode/",
+    "group": "leoNodeContext3@1"
+  },
+  {
+    "command": "leointeg.cloneNode",
+    "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoNode/",
+    "group": "leoNodeContext3@2"
+  },
+  {
+    "command": "leointeg.gotoNextClone",
+    "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoNodeCloned/",
+    "group": "leoNodeContext3@3"
+  },
+  {
+    "command": "leointeg.removeButton",
+    "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoButtonNode/",
+    "group": "leoButtonContext1@1"
+  }
+]
 </t>
 <t tx="ekr.20200815123601.7">"leoIntegration.leoPythonCommand": {
   "scope": "application",
@@ -5874,6 +6078,16 @@ public static CONTEXT_FLAGS = {
     AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT              // Used at startup
 };
 
+/**
+ * * Command strings to be used with vscode.commands.executeCommand
+ * See https://code.visualstudio.com/api/extension-guides/command#programmatically-executing-a-command
+ */
+public static VSCODE_COMMANDS = {
+    SET_CONTEXT: "setContext",
+    CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
+    QUICK_OPEN: "workbench.action.quickOpen"
+};
+
 </t>
 <t tx="felix.20200718024635.1">import * as vscode from "vscode";
 import * as utils from "./utils";
@@ -6381,7 +6595,7 @@ import { BodyTimeInfo } from "./types";
 
             // If same as last checked, sending back time at absolute past
             // ? VERIFY this._selectedBody.mtime we get file changed on disk error??
-           // console.log('VERIFY this._selectedBody.mtime we get file changed on disk error :', p_uri);
+            // console.log('VERIFY this._selectedBody.mtime we get file changed on disk error :', p_uri);
             return {
                 type: vscode.FileType.File,
                 ctime: this._openedBodiesInfo[this._lastGnx].ctime,
@@ -6521,6 +6735,7 @@ import { BodyTimeInfo } from "./types";
     console.warn('Called copy on ', p_uri.fsPath); // should not happen
     throw vscode.FileSystemError.NoPermissions();
 }
+
 </t>
 <t tx="felix.20200718040540.18">private _fireSoon(...p_events: vscode.FileChangeEvent[]): void {
     this._bufferedEvents.push(...p_events);
@@ -8283,7 +8498,7 @@ import { LeoNode } from "./leoNode";
 </t>
 <t tx="felix.20200718195558.10">/**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
- * with a scheme header like "leo:/" or 'more:/'
+ * with a scheme header like "leo:/" or 'more:/' 
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */
@@ -9766,7 +9981,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
         // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
         return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor =&gt; {
             // TODO : #38 if position is in an derived file node show relative position
-            // w_bodyEditor.options.lineNumbers = OFFSET ;
+            // w_bodyEditor.options.lineNumbers = OFFSET ; 
             return Promise.resolve(w_bodyEditor);
         });
     });
@@ -12637,6 +12852,9 @@ public static BUTTON_STRINGS = {
 
 
 </t>
+<t tx="felix.20201208235246.1"></t>
+<t tx="felix.20201215210439.1"></t>
+<t tx="felix.20201215210510.1"></t>
 <t tx="felix.20210418013332.1">private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
     console.log('DELETE EXTRANEOUS:', p_textEditor.document.uri.fsPath);
     const w_edit = new vscode.WorkspaceEdit();
