@@ -185,6 +185,7 @@ export function isHexColor(p_hexString: string): boolean {
 
 /**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
+ * with a scheme header like "leo:/" or 'more:/' 
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */

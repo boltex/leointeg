@@ -1439,7 +1439,8 @@ export class LeoIntegration {
 
             // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
             return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor => {
-                // w_bodyEditor.options.lineNumbers = OFFSET ; // TODO : #38 if position is in an derived file node show relative position
+                // TODO : #38 if position is in an derived file node show relative position
+                // w_bodyEditor.options.lineNumbers = OFFSET ; 
                 return Promise.resolve(w_bodyEditor);
             });
         });

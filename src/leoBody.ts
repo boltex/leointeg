@@ -34,6 +34,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * It should fire for resources that are being [watched](#FileSystemProvider.watch) by clients of this provider
     private _onDidChangeFileEmitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
     readonly onDidChangeFile: vscode.Event<vscode.FileChangeEvent[]> = this._onDidChangeFileEmitter.event;
+    private _bufferedEvents: vscode.FileChangeEvent[] = [];
+    private _fireSoonHandle?: NodeJS.Timer;
 
     constructor(private _leoIntegration: LeoIntegration) { }
 
@@ -127,7 +129,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
                 // If same as last checked, sending back time at absolute past
                 // ? VERIFY this._selectedBody.mtime we get file changed on disk error??
-               // console.log('VERIFY this._selectedBody.mtime we get file changed on disk error :', p_uri);
+                // console.log('VERIFY this._selectedBody.mtime we get file changed on disk error :', p_uri);
                 return {
                     type: vscode.FileType.File,
                     ctime: this._openedBodiesInfo[this._lastGnx].ctime,
@@ -260,9 +262,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         console.warn('Called copy on ', p_uri.fsPath); // should not happen
         throw vscode.FileSystemError.NoPermissions();
     }
-    // 'fire soon' logic
-    private _bufferedEvents: vscode.FileChangeEvent[] = [];
-    private _fireSoonHandle?: NodeJS.Timer;
 
     private _fireSoon(...p_events: vscode.FileChangeEvent[]): void {
         this._bufferedEvents.push(...p_events);
