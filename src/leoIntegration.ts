@@ -1365,7 +1365,6 @@ export class LeoIntegration {
             p_editor.document.uri.fsPath === this.bodyUri.fsPath &&
             p_editor.viewColumn !== this._bodyMainSelectionColumn
         ) {
-            console.log('************NO MORE PREVIEW!!');
             this._bodyPreviewMode = false;
             this._bodyMainSelectionColumn = p_editor.viewColumn;
         }

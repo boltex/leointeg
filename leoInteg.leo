@@ -314,6 +314,7 @@
 <v t="felix.20200718030926.1"><vh>@clean src/config.ts</vh>
 <v t="felix.20200718030926.2"><vh>class Config</vh>
 <v t="felix.20200718030926.3"><vh>getConfig</vh></v>
+<v t="felix.20210420215230.1"><vh>chooseLeoServerPath</vh></v>
 <v t="felix.20200718030926.4"><vh>setLeoIntegSettings</vh></v>
 <v t="felix.20200718030926.5"><vh>buildFromSavedSettings</vh></v>
 </v>
@@ -12902,7 +12903,6 @@ public _changedWindowState(p_windowState: vscode.WindowState): void {
         p_editor.document.uri.fsPath === this.bodyUri.fsPath &amp;&amp;
         p_editor.viewColumn !== this._bodyMainSelectionColumn
     ) {
-        console.log('************NO MORE PREVIEW!!');
         this._bodyPreviewMode = false;
         this._bodyMainSelectionColumn = p_editor.viewColumn;
     }
@@ -13020,6 +13020,14 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
                 }
             });
     }
+}
+
+</t>
+<t tx="felix.20210420215230.1">/**
+ * Show file browser to find leoserver.py. Save it's path in the config or cancel.
+ */
+public chooseLeoServerPath():void {
+
 }
 
 </t>
