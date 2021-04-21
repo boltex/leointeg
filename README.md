@@ -64,7 +64,7 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 | `Ctrl + Backquote`         |     |            | Clone Node       |
 | `Ctrl + {`                 | and | `Ctrl + }` | Promote / Demote |
 
-### Moving Nodes
+### Moving Outline Nodes
 
 |            |     |                         |                    |
 | :--------- | :-- | :---------------------- | :----------------- |
@@ -73,7 +73,7 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 | `Ctrl + L` | or  | `Shift [+ Alt] + Left`  | Move Outline Left  |
 | `Ctrl + R` | or  | `Shift [+ Alt] + Right` | Move Outline Right |
 
-_Move Outline commands only need the 'Alt' key modifier when focus is on body pane._
+_Move Outline commands need the 'Alt' key modifier only when focus is on body pane._
 
 ### Common Operations
 
@@ -91,17 +91,17 @@ _Move Outline commands only need the 'Alt' key modifier when focus is on body pa
 
 ### Tree Navigation
 
-|                    |     | With **'Leo Tree Browsing'** enabled |                          |
-| :----------------- | :-- | :----------------------------------- | :----------------------- |
-| `Alt + Home`       | or  | `Home`                               | Go To First Visible Node |
-| `Alt + End`        |     |                                      | Go To Last Sibling       |
-|                    |     | `End`                                | Go To Last Visible Node  |
-| `Alt + N`          |     |                                      | Go To Next Clone         |
-| `Alt + Arrow Keys` | or  | `Arrow Keys`                         | Browse Tree              |
-| `Ctrl + T`         |     |                                      | Switch Tree/Body Focus   |
-| `Tab`              |     |                                      | Focus from Tree to Body  |
+|                    |     |                 |                          |
+| :----------------- | :-- | :-------------- | :----------------------- |
+| `Alt + Home`       | or  | `Home` \*       | Go To First Visible Node |
+| `Alt + End`        |     |                 | Go To Last Sibling       |
+|                    |     | `End` \*        | Go To Last Visible Node  |
+| `Alt + N`          |     |                 | Go To Next Clone         |
+| `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree              |
+| `Ctrl + T`         |     |                 | Switch Tree/Body Focus   |
+| `Tab`              |     |                 | Focus from Tree to Body  |
 
-_With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
+\* _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
 
 #
 
