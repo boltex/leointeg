@@ -5662,6 +5662,7 @@ export class Constants {
 <t tx="felix.20200718020912.3">public static PUBLISHER: string = "boltex";
 public static NAME: string = "leointeg";
 public static CONFIG_NAME: string = "leoIntegration";
+public static CONFIG_WORKBENCH_ENABLED_PREVIEW: string = "workbench.editor.enablePreview";
 public static CONFIG_REFRESH_MATCH: string = "OnNodes"; // substring to distinguish 'on-hover' icon commands
 
 public static TREEVIEW_ID: string = Constants.CONFIG_NAME;
@@ -9244,7 +9245,8 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
     if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
         this.config.buildFromSavedSettings();
     }
-    // if workbench.editor.enablePreview
+    // also check if workbench.editor.enablePreview
+    this._bodyEnablePreview = !!vscode.workspace.getConfiguration('workbench.editor').get("enablePreview");
 }
 
 </t>
@@ -9335,9 +9337,10 @@ private _onActiveEditorChanged(p_editor: vscode.TextEditor | undefined, p_intern
 
     // * Get configuration settings
     this.config = new Config(_context, this);
-    // also check workbench.editor.enablePreview
-    
+
+    // * also check workbench.editor.enablePreview
     this.config.buildFromSavedSettings();
+    this._bodyEnablePreview = !!vscode.workspace.getConfiguration('workbench.editor').get("enablePreview");
 
     // * Build Icon filename paths
     this.nodeIcons = utils.buildNodeIconPaths(_context);
@@ -9642,7 +9645,7 @@ private _switchBody(p_newGnx: string, p_aside: boolean, p_preserveFocus?: boolea
     // ? Set timestamps ?
     // this._leoFileSystem.setRenameTime(p_newGnx);
 
-    if (this._bodyPreviewMode) {
+    if (this._bodyPreviewMode &amp;&amp; this._bodyEnablePreview) {
         // just show in same column and delete after
         this.bodyUri = utils.strToLeoUri(p_newGnx);
         const q_showBody = this.showBody(p_aside, p_preserveFocus);
