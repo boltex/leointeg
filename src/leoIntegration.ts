@@ -100,6 +100,7 @@ export class LeoIntegration {
 
     // * Body Pane
     private _bodyFileSystemStarted: boolean = false;
+    private _bodyEnablePreview: boolean = true;
     private _leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
     private _bodyTextDocument: vscode.TextDocument | undefined; // Set when selected in tree by user, or opening a Leo file in showBody. and by _locateOpenedBody.
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
@@ -168,7 +169,10 @@ export class LeoIntegration {
 
         // * Get configuration settings
         this.config = new Config(_context, this);
+
+        // * also check workbench.editor.enablePreview
         this.config.buildFromSavedSettings();
+        this._bodyEnablePreview = !!vscode.workspace.getConfiguration('workbench.editor').get("enablePreview");
 
         // * Build Icon filename paths
         this.nodeIcons = utils.buildNodeIconPaths(_context);
@@ -633,6 +637,8 @@ export class LeoIntegration {
         if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
             this.config.buildFromSavedSettings();
         }
+        // also check if workbench.editor.enablePreview
+        this._bodyEnablePreview = !!vscode.workspace.getConfiguration('workbench.editor').get("enablePreview");
     }
 
     /**
@@ -1286,7 +1292,7 @@ export class LeoIntegration {
         // ? Set timestamps ?
         // this._leoFileSystem.setRenameTime(p_newGnx);
 
-        if (this._bodyPreviewMode) {
+        if (this._bodyPreviewMode && this._bodyEnablePreview) {
             // just show in same column and delete after
             this.bodyUri = utils.strToLeoUri(p_newGnx);
             const q_showBody = this.showBody(p_aside, p_preserveFocus);

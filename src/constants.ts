@@ -8,6 +8,7 @@ export class Constants {
     public static PUBLISHER: string = "boltex";
     public static NAME: string = "leointeg";
     public static CONFIG_NAME: string = "leoIntegration";
+    public static CONFIG_WORKBENCH_ENABLED_PREVIEW: string = "workbench.editor.enablePreview";
     public static CONFIG_REFRESH_MATCH: string = "OnNodes"; // substring to distinguish 'on-hover' icon commands
 
     public static TREEVIEW_ID: string = Constants.CONFIG_NAME;

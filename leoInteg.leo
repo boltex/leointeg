@@ -9086,6 +9086,7 @@ export class LeoIntegration {
 
     // * Body Pane
     private _bodyFileSystemStarted: boolean = false;
+    private _bodyEnablePreview: boolean = true;
     private _leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
     private _bodyTextDocument: vscode.TextDocument | undefined; // Set when selected in tree by user, or opening a Leo file in showBody. and by _locateOpenedBody.
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
@@ -9243,6 +9244,7 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
     if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
         this.config.buildFromSavedSettings();
     }
+    // if workbench.editor.enablePreview
 }
 
 </t>
@@ -9333,6 +9335,8 @@ private _onActiveEditorChanged(p_editor: vscode.TextEditor | undefined, p_intern
 
     // * Get configuration settings
     this.config = new Config(_context, this);
+    // also check workbench.editor.enablePreview
+    
     this.config.buildFromSavedSettings();
 
     // * Build Icon filename paths
