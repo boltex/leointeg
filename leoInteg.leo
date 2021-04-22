@@ -5874,16 +5874,6 @@ public static CONTEXT_FLAGS = {
     AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT              // Used at startup
 };
 
-/**
- * * Command strings to be used with vscode.commands.executeCommand
- * See https://code.visualstudio.com/api/extension-guides/command#programmatically-executing-a-command
- */
-public static VSCODE_COMMANDS = {
-    SET_CONTEXT: "setContext",
-    CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
-    QUICK_OPEN: "workbench.action.quickOpen"
-};
-
 </t>
 <t tx="felix.20200718024635.1">import * as vscode from "vscode";
 import * as utils from "./utils";
@@ -9777,7 +9767,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
         // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
         return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor =&gt; {
             // TODO : #38 if position is in an derived file node show relative position
-            // w_bodyEditor.options.lineNumbers = OFFSET ; 
+            // w_bodyEditor.options.lineNumbers = OFFSET;
             return Promise.resolve(w_bodyEditor);
         });
     });
@@ -12648,7 +12638,17 @@ public static BUTTON_STRINGS = {
 
 
 </t>
-<t tx="felix.20201208235246.1"></t>
+<t tx="felix.20201208235246.1">/**
+ * * Command strings to be used with vscode.commands.executeCommand
+ * See https://code.visualstudio.com/api/extension-guides/command#programmatically-executing-a-command
+ */
+public static VSCODE_COMMANDS = {
+    SET_CONTEXT: "setContext",
+    CLOSE_ACTIVE_EDITOR: "workbench.action.closeActiveEditor",
+    QUICK_OPEN: "workbench.action.quickOpen"
+};
+
+</t>
 <t tx="felix.20201215210439.1">"view/title": [
   {
     "command": "leointeg.openLeoFile",
