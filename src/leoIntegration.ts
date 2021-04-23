@@ -1292,7 +1292,14 @@ export class LeoIntegration {
         // ? Set timestamps ?
         // this._leoFileSystem.setRenameTime(p_newGnx);
 
-        if (this._bodyPreviewMode && this._bodyEnablePreview) {
+        let w_visibleCount = 0;
+        vscode.window.visibleTextEditors.forEach(p_editor => {
+            if (p_editor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+                w_visibleCount++;
+            }
+        });
+
+        if (this._bodyPreviewMode && this._bodyEnablePreview && w_visibleCount < 2) {
             // just show in same column and delete after
             this.bodyUri = utils.strToLeoUri(p_newGnx);
             const q_showBody = this.showBody(p_aside, p_preserveFocus);
