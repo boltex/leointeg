@@ -289,7 +289,7 @@ export class LeoIntegration {
         if (!this._leoTerminalPane) {
             this._leoTerminalPane = vscode.window.createOutputChannel(Constants.GUI.TERMINAL_PANE_TITLE);
         }
-        this._serverService.startServer(this.config.leoPythonCommand)
+        this._serverService.startServer(this.config.leoPythonCommand, this.config.leoServerPath)
             .then((p_message) => {
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                 if (this.config.connectToServerAutomatically) {
