@@ -2535,7 +2535,8 @@ class LeoBridgeIntegController:
         if p_gnx:
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
             if w_v and w_v.b:
-                return self.sendLeoBridgePackage("bodyLength", len(w_v.b))
+                # Length in bytes, not just by character count.
+                return self.sendLeoBridgePackage("bodyLength", len(w_v.b.encode('utf-8')))
         # TODO : May need to signal inexistent by self.sendLeoBridgePackage()
         return self.sendLeoBridgePackage("bodyLength", 0)  # empty as default
 

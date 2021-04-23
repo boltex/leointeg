@@ -72,6 +72,12 @@ declare function acquireVsCodeApi(): VsCodeApi;
         }
     }
 
+    function chooseLeoServerPath() {
+        vscode.postMessage({
+            command: "chooseLeoServerPath"
+        });
+    }
+
     function onBind() {
         listenAll('input[type=checkbox][data-setting]', 'change', function (this: HTMLInputElement) {
             return onInputChecked(this);
@@ -142,6 +148,10 @@ declare function acquireVsCodeApi(): VsCodeApi;
                     console.log('ERROR : w_element', key, ' is ', w_element);
                 }
             }
+        }
+        const w_button: HTMLElement | null = document.getElementById('chooseLeoServerPath');
+        if (w_button) {
+            w_button.onclick = chooseLeoServerPath;
         }
     }
 

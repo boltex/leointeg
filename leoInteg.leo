@@ -316,6 +316,7 @@
 <v t="felix.20200718030926.1"><vh>@clean src/config.ts</vh>
 <v t="felix.20200718030926.2"><vh>class Config</vh>
 <v t="felix.20200718030926.3"><vh>getConfig</vh></v>
+<v t="felix.20210420215230.1"><vh>chooseLeoServerPath</vh></v>
 <v t="felix.20200718030926.4"><vh>setLeoIntegSettings</vh></v>
 <v t="felix.20200718030926.5"><vh>buildFromSavedSettings</vh></v>
 </v>
@@ -359,12 +360,9 @@
 <v t="felix.20200718040540.1"><vh>@clean src/leoBody.ts</vh>
 <v t="felix.20200718040540.2"><vh>class LeoBodyProvider</vh>
 <v t="felix.20200718040540.3"><vh>setBodyTime</vh></v>
-<v t="felix.20200718040540.4"><vh>setRenameTime</vh></v>
 <v t="felix.20200718040540.5"><vh>fireRefreshFile</vh></v>
 <v t="felix.20200718040540.6"><vh>refreshPossibleGnxList</vh></v>
-<v t="felix.20200718040540.7"><vh>getExpiredGnxList</vh></v>
 <v t="felix.20200718040540.8"><vh>watch</vh></v>
-<v t="felix.20200718040540.9"><vh>fireDeleteExpiredGnx</vh></v>
 <v t="felix.20200718040540.10"><vh>stat</vh></v>
 <v t="felix.20200718040540.11"><vh>readFile</vh></v>
 <v t="felix.20200718040540.12"><vh>readDirectory</vh></v>
@@ -469,6 +467,9 @@
 <v t="felix.20200719025231.27"><vh>_onDocTreeViewVisibilityChanged</vh></v>
 <v t="ekr.20200815085705.1"><vh>_onButtonsTreeViewVisibilityChanged</vh></v>
 <v t="felix.20200719025231.29"><vh>_onActiveEditorChanged</vh></v>
+<v t="felix.20210418014039.1"><vh>_changedTextEditorViewColumn</vh></v>
+<v t="felix.20210418014040.1"><vh>_changedVisibleTextEditors</vh></v>
+<v t="felix.20210418014040.2"><vh>_changedWindowState</vh></v>
 <v t="felix.20200928004727.1"><vh>_onChangeEditorSelection</vh></v>
 <v t="felix.20201014020145.1"><vh>_onChangeEditorScroll</vh></v>
 <v t="felix.20200719025231.31"><vh>_onDocumentChanged</vh></v>
@@ -496,12 +497,15 @@
 </v>
 <v t="felix.20200719031115.1"><vh>Body Pane Management</vh>
 <v t="ekr.20200815090152.1"><vh>_tryApplyNodeToBody</vh></v>
-<v t="ekr.20200815090152.2"><vh>_applyNodeToBody</vh></v>
-<v t="felix.20200719025231.46"><vh>_showBodyIfRequired</vh></v>
 <v t="felix.20200719025231.47"><vh>_switchBody</vh></v>
 <v t="felix.20200719025231.48"><vh>_locateOpenedBody</vh></v>
+<v t="felix.20210418230204.1"><vh>_findUriColumn</vh></v>
+<v t="felix.20210418230204.2"><vh>_findGnxColumn</vh></v>
+<v t="felix.20210418013332.1"><vh>_hideDeleteBody</vh></v>
+<v t="felix.20210418220343.1"><vh>_checkPreviewMode</vh></v>
 <v t="felix.20200719025231.49"><vh>closeBody</vh></v>
 <v t="felix.20200719025231.50"><vh>showBody</vh></v>
+<v t="felix.20210420004713.1"><vh>_setLanguageAndSelection</vh></v>
 </v>
 <v t="felix.20200719025231.51"><vh>Commands</vh>
 <v t="felix.20200719025231.52"><vh>selectTreeNode</vh></v>
@@ -1102,8 +1106,7 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: A
 
 </t>
 <t tx="ekr.20200815085830.4">/**
- * * Public method to refresh the documents pane
- *  Document Panel May be refreshed by other services (states service, ...)
+ * * Refresh the documents pane
  */
 private _refreshDocumentsPane(): void {
     this._leoDocumentsProvider.refreshTreeRoot();
@@ -1133,81 +1136,62 @@ private _gotSelection(p_node: LeoNode): void {
  * @param p_showBodyKeepFocus Flag used to keep focus where it was instead of forcing in body
  * @param p_force_open Flag to force opening the body pane editor
  */
-private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): void {
-    this._showBodyParams = {
-        node: p_node,
-        aside: p_aside,
-        showBodyKeepFocus: p_showBodyKeepFocus,
-        force_open: p_force_open // can be undefined
-    };
-    // Start it if possible, otherwise the last _showBodyParams will be used again right after
-    if (!this._showBodyStarted) {
-        this._showBodyStarted = true;
-        this._applyNodeToBody(this._showBodyParams)
-            .then((p_textEditor: vscode.TextEditor) =&gt; {
-                // finished
-                this._showBodyStarted = false;
-                if (this._showBodyParams) {
-                    // New node to show again! Call itself faking params from the specified ones.
-                    this._tryApplyNodeToBody(
-                        this._showBodyParams.node,
-                        this._showBodyParams.aside,
-                        this._showBodyParams.showBodyKeepFocus,
-                        this._showBodyParams.force_open
-                    );
-                }
-            });
-        // Clear global body params, will get refilled if needed
-        this._showBodyParams = undefined;
-    }
-}
+private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFocus: boolean, p_force_open?: boolean): Thenable&lt;vscode.TextEditor&gt; {
 
-</t>
-<t tx="ekr.20200815090152.2">/**
- * * Actually performs the 'throttled' version of applying the selection to the body pane
- * @param p_params contains the node, as a LeoNode, and the aside, showBodyKeepFocus and force_open flags
- */
-private _applyNodeToBody(p_params: ShowBodyParam): Thenable&lt;vscode.TextEditor&gt; {
-    // Check first if body needs refresh: if so we will voluntarily throw out any pending edits on body
-    this.triggerBodySave(); // Send body to Leo because we're about to (re)show a body of possibly different gnx
-    this.lastSelectedNode = p_params.node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
+    // console.log('try to apply node -&gt; ', p_node.gnx);
+
+    this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
     this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
-    // * Is the last opened body still opened? If not the new gnx then make the body pane switch and show itself if needed,
-    /*
-    if (this._bodyTextDocument &amp;&amp; !this._bodyTextDocument.isClosed) {
-        // * Check if already opened and visible, _locateOpenedBody also sets bodyTextDocumentSameUri, bodyMainSelectionColumn, bodyTextDocument
-        if (this._locateOpenedBody(p_params.node.gnx)) {
-            // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
-            this.bodyUri = utils.strToLeoUri(p_params.node.gnx);
-            return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // already opened in a column so just tell vscode to show it
-        } else {
-            // * So far, _bodyTextDocument is still opened and different from new selection: so "save &amp; rename" to block undo/redos
-            return this._switchBody(p_params.node.gnx)
-                .then(() =&gt; {
-                    return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // Also finish by showing it if not already visible
-                });
-        }
-    } else {
-        // * Is the last opened body is closed so just open the newly selected one
-        this.bodyUri = utils.strToLeoUri(p_params.node.gnx);
-        return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open);
-    }
-     */
+
     if (this._bodyTextDocument) {
-        if (!this._bodyTextDocument.isClosed &amp;&amp; this._locateOpenedBody(p_params.node.gnx)) {
-            // * Here we really tested _bodyTextDocumentSameUri set from _locateOpenedBody, (means we found the same already opened) so just show it
-            this.bodyUri = utils.strToLeoUri(p_params.node.gnx); // ? Should already be this same string / remove if unnecessary ?
-            return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // already opened in a column so just tell vscode to show it
-        } else {
-            return this._switchBody(p_params.node.gnx)
-                .then(() =&gt; {
-                    return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open); // Also finish by showing it if not already visible
-                });
+        // if not first time and still opened - also not somewhat exactly opened somewhere.
+        if (
+            !this._bodyTextDocument.isClosed &amp;&amp;
+            !this._locateOpenedBody(p_node.gnx) // LOCATE NEW GNX
+        ) {
+            // if needs switching by actually having different gnx
+            if (utils.leoUriToStr(this.bodyUri) !== p_node.gnx) {
+                this._locateOpenedBody(utils.leoUriToStr(this.bodyUri)); // * LOCATE OLD GNX FOR PROPER COLUMN*
+                return this._bodyTextDocument.save()
+                    .then(() =&gt; {
+                        return this._switchBody(p_node.gnx, p_aside, p_showBodyKeepFocus);
+                    });
+            }
         }
     } else {
-        this.bodyUri = utils.strToLeoUri(p_params.node.gnx);
-        return this._showBodyIfRequired(p_params.aside, p_params.showBodyKeepFocus, p_params.force_open);
+        // first time?
+        this.bodyUri = utils.strToLeoUri(p_node.gnx);
     }
+    return this.showBody(p_aside, p_showBodyKeepFocus);
+
+    /*
+        this._showBodyParams = {
+            node: p_node,
+            aside: p_aside,
+            showBodyKeepFocus: p_showBodyKeepFocus,
+            force_open: p_force_open // can be undefined
+        };
+        // Start it if possible, otherwise the last _showBodyParams will be used again right after
+        if (!this._showBodyStarted) {
+            this._showBodyStarted = true;
+            this._applyNodeToBody(this._showBodyParams)
+                .then((p_textEditor: vscode.TextEditor) =&gt; {
+                    // finished
+                    this._showBodyStarted = false;
+                    if (this._showBodyParams) {
+                        // New node to show again! Call itself faking params from the specified ones.
+                        this._tryApplyNodeToBody(
+                            this._showBodyParams.node,
+                            this._showBodyParams.aside,
+                            this._showBodyParams.showBodyKeepFocus,
+                            this._showBodyParams.force_open
+                        );
+                    }
+                });
+            // Clear global body params, will get refilled if needed
+            this._showBodyParams = undefined;
+        }
+        */
 }
 
 </t>
@@ -4445,7 +4429,8 @@ if __name__ == '__main__':
     if p_gnx:
         w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
         if w_v and w_v.b:
-            return self.sendLeoBridgePackage("bodyLength", len(w_v.b))
+            # Length in bytes, not just by character count.
+            return self.sendLeoBridgePackage("bodyLength", len(w_v.b.encode('utf-8')))
     # TODO : May need to signal inexistent by self.sendLeoBridgePackage()
     return self.sendLeoBridgePackage("bodyLength", 0)  # empty as default
 
@@ -5677,6 +5662,7 @@ export class Constants {
 <t tx="felix.20200718020912.3">public static PUBLISHER: string = "boltex";
 public static NAME: string = "leointeg";
 public static CONFIG_NAME: string = "leoIntegration";
+public static CONFIG_WORKBENCH_ENABLED_PREVIEW: string = "workbench.editor.enablePreview";
 public static CONFIG_REFRESH_MATCH: string = "OnNodes"; // substring to distinguish 'on-hover' icon commands
 
 public static TREEVIEW_ID: string = Constants.CONFIG_NAME;
@@ -6384,50 +6370,42 @@ import { BodyTimeInfo } from "./types";
 @others
 </t>
 <t tx="felix.20200718040540.10">public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable&lt;vscode.FileStat&gt; {
-    // TODO : Fix extraneous stat(...) call(s)
+    // TODO : Fix/Check extraneous stat(...) call(s)
+
     if (this._leoIntegration.leoStates.fileOpenedReady) {
+        const w_gnx = utils.leoUriToStr(p_uri);
         if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
             // console.log('called stat on root');
             return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-        } else if (utils.leoUriToStr(p_uri) === this._lastGnx) {
+
+        } else if (w_gnx === this._lastGnx &amp;&amp; this._openedBodiesGnx.includes(this._lastGnx)) {
+
             // If same as last checked, sending back time at absolute past
+            // ? VERIFY this._selectedBody.mtime we get file changed on disk error??
+            // console.log('VERIFY this._selectedBody.mtime we get file changed on disk error :', p_uri);
             return {
                 type: vscode.FileType.File,
-                ctime: 0,
-                mtime: 0, // this._selectedBody.mtime, // IF this._selectedBody.mtime we get file changed on disk error!!
-                size: this._lastGnxBodyLength
+                ctime: this._openedBodiesInfo[this._lastGnx].ctime,
+                mtime: this._openedBodiesInfo[this._lastGnx].mtime,
+                size: this._lastBodyLength
             };
-        } else {
-            const w_gnx = utils.leoUriToStr(p_uri);
-            if (false &amp;&amp; this._selectedBody.gnx !== w_gnx &amp;&amp; this._renameBody.gnx !== w_gnx) {
-                // ! TEST IF NEEDED !
-                console.log('ERROR File not in list selected: ' + this._selectedBody.gnx +
-                    " renamed: " + this._renameBody.gnx +
-                    " stat asked on w_gnx: " + w_gnx);
-                throw vscode.FileSystemError.FileNotFound();
-            } else {
-                return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY_LENGTH, '"' + w_gnx + '"')
-                    .then((p_result) =&gt; {
-                        let w_mtime: number = 0;
-                        if (this._renameBody.gnx === w_gnx) {
-                            w_mtime = this._renameBody.mtime;
-                        } else {
-                            w_mtime = this._selectedBody.mtime;
+
+        } else if (this._openedBodiesGnx.includes(w_gnx)) {
+
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY_LENGTH, '"' + w_gnx + '"')
+                .then((p_result) =&gt; {
+                    return Promise.resolve(
+                        {
+                            type: vscode.FileType.File,
+                            ctime: this._openedBodiesInfo[w_gnx].ctime,
+                            mtime: this._openedBodiesInfo[w_gnx].mtime,
+                            size: p_result.bodyLength ? p_result.bodyLength : 0
                         }
-                        return Promise.resolve(
-                            {
-                                type: vscode.FileType.File,
-                                ctime: 0,
-                                mtime: w_mtime,
-                                size: p_result.bodyLength ? p_result.bodyLength : 0
-                            }
-                        );
-                    });
-            }
+                    );
+                });
         }
-    } else {
-        throw vscode.FileSystemError.FileNotFound(); // console.log("not ready");
     }
+    throw vscode.FileSystemError.FileNotFound();
 }
 
 </t>
@@ -6438,12 +6416,8 @@ import { BodyTimeInfo } from "./types";
         } else {
             const w_gnx = utils.leoUriToStr(p_uri);
             // if (!this._possibleGnxList.includes(w_gnx)) {
-            if (this._selectedBody.gnx !== w_gnx &amp;&amp; this._renameBody.gnx !== w_gnx) {
-                console.error("TODO : PREVENT UNDO ACROSS FILES");
-                console.error("readFile: ERROR File not in list! readFile missing refreshes?");
-                console.log(this._renameBody.gnx, this._renameBody.gnx);
-                console.log(this._selectedBody.gnx, this._selectedBody.gnx);
-
+            if (!this._openedBodiesGnx.includes(w_gnx)) {
+                console.error("readFile: ERROR File not in _openedBodiesGnx! readFile missing refreshes?");
                 throw vscode.FileSystemError.FileNotFound();
             } else {
                 return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY, '"' + w_gnx + '"')
@@ -6451,11 +6425,12 @@ import { BodyTimeInfo } from "./types";
                         if (p_result.bodyData) {
                             this._lastGnx = w_gnx;
                             this._lastBodyData = p_result.bodyData;
-                            this._lastGnxBodyLength = p_result.bodyData.length;
-                            return Promise.resolve(Buffer.from(p_result.bodyData));
+                            const w_buffer: Uint8Array = Buffer.from(p_result.bodyData);
+                            this._lastBodyLength = w_buffer.byteLength;
+                            return Promise.resolve(w_buffer);
                         } else if (p_result.bodyData === "") {
                             this._lastGnx = w_gnx;
-                            this._lastGnxBodyLength = 0;
+                            this._lastBodyLength = 0;
                             this._lastBodyData = "";
                             return Promise.resolve(Buffer.from(""));
                         } else {
@@ -6479,9 +6454,10 @@ import { BodyTimeInfo } from "./types";
 
 </t>
 <t tx="felix.20200718040540.12">public readDirectory(p_uri: vscode.Uri): Thenable&lt;[string, vscode.FileType][]&gt; {
+    console.warn('Called readDirectory with ', p_uri.fsPath); // should not happen
     if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
         const w_directory: [string, vscode.FileType][] = [];
-        w_directory.push([this._selectedBody.gnx, vscode.FileType.File]);
+        w_directory.push([this._selectedBody, vscode.FileType.File]);
         return Promise.resolve(w_directory);
     } else {
         throw vscode.FileSystemError.FileNotFound();
@@ -6496,30 +6472,27 @@ import { BodyTimeInfo } from "./types";
 
 </t>
 <t tx="felix.20200718040540.14">public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
+    // console.log('trigger called in writeFile');
 
-    console.log('trigger called in writeFile');
-
-    this._leoIntegration.triggerBodySave(); // should not recall forced
+    this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
     const w_gnx = utils.leoUriToStr(p_uri);
-    const w_now = Date.now();
-    if (this._selectedBody.gnx === w_gnx) {
-        this._selectedBody.mtime = w_now;
+
+    if (!this._openedBodiesGnx.includes(w_gnx)) {
+        console.error("ASKED TO REFRESH NOT EVEN IN SELECTED BODY: ", w_gnx);
+        this._openedBodiesGnx.push(w_gnx);
     }
-    if (this._renameBody.gnx === w_gnx) {
-        this._renameBody.mtime = w_now;
-    }
+    const w_now = new Date().getTime();
+    this._openedBodiesInfo[w_gnx] = {
+        ctime: w_now,
+        mtime: w_now
+    };
+
     this._fireSoon({ type: vscode.FileChangeType.Changed, uri: p_uri });
 }
 
 </t>
 <t tx="felix.20200718040540.15">public rename(p_oldUri: vscode.Uri, p_newUri: vscode.Uri, p_options: { overwrite: boolean }): void {
-    const w_gnx = utils.leoUriToStr(p_newUri);
-    if (this._selectedBody.gnx === w_gnx) {
-        this._selectedBody.mtime = Date.now();
-    }
-    if (this._renameBody.gnx === w_gnx) {
-        this._renameBody.mtime = Date.now();
-    }
+    console.warn('Called rename on ', p_oldUri.fsPath, p_newUri.fsPath); // should not happen
     this._fireSoon(
         { type: vscode.FileChangeType.Deleted, uri: p_oldUri },
         { type: vscode.FileChangeType.Created, uri: p_newUri }
@@ -6527,9 +6500,21 @@ import { BodyTimeInfo } from "./types";
 }
 
 </t>
-<t tx="felix.20200718040540.16">public delete(uri: vscode.Uri): void {
-    let w_dirname = uri.with({ path: path.posix.dirname(uri.path) }); // dirname is just a slash "/"
-    this._fireSoon({ type: vscode.FileChangeType.Changed, uri: w_dirname }, { uri, type: vscode.FileChangeType.Deleted });
+<t tx="felix.20200718040540.16">public delete(p_uri: vscode.Uri): void {
+    // console.log("delete", p_uri.fsPath);
+    const w_gnx = utils.leoUriToStr(p_uri);
+    if (this._openedBodiesGnx.includes(w_gnx)) {
+        this._openedBodiesGnx.splice(this._openedBodiesGnx.indexOf(w_gnx), 1);
+        delete this._openedBodiesInfo[w_gnx];
+    }
+
+    // dirname is just a slash "/"
+    let w_dirname = p_uri.with({ path: path.posix.dirname(p_uri.path) });
+
+    this._fireSoon(
+        { type: vscode.FileChangeType.Changed, uri: w_dirname },
+        { uri: p_uri, type: vscode.FileChangeType.Deleted }
+    );
 }
 
 </t>
@@ -6537,6 +6522,7 @@ import { BodyTimeInfo } from "./types";
     console.warn('Called copy on ', p_uri.fsPath); // should not happen
     throw vscode.FileSystemError.NoPermissions();
 }
+
 </t>
 <t tx="felix.20200718040540.18">private _fireSoon(...p_events: vscode.FileChangeEvent[]): void {
     this._bufferedEvents.push(...p_events);
@@ -6558,19 +6544,22 @@ import { BodyTimeInfo } from "./types";
 export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     // * Simple structure to keep mtime of selected and renamed body virtual files
-    private _selectedBody: BodyTimeInfo = { gnx: "", ctime: 0, mtime: 0 };
-    private _renameBody: BodyTimeInfo = { gnx: "", ctime: 0, mtime: 0 };
+    private _selectedBody: string = "";
 
     // * Last file read data with the readFile method
     private _lastGnx: string = ""; // gnx of last file read
     private _lastBodyData: string = ""; // body content of last file read
-    private _lastGnxBodyLength: number = 0; // length of last file read
+    private _lastBodyLength: number = 0; // length of last file read
 
     // * List of currently opened body panes gnx (from 'watch' &amp; 'dispose' methods)
+    private _watchedBodiesGnx: string[] = [];
+
+    // * List of gnx that should be available (from more.selectNode and fs.delete)
     private _openedBodiesGnx: string[] = [];
+    private _openedBodiesInfo: { [key: string]: BodyTimeInfo } = {};
 
     // * List of all possible vNodes gnx in the currently opened leo file (since last refresh/tree operation)
-    private _possibleGnxList: string[] = [];
+    private _possibleGnxList: string[] = []; // Maybe deprecated
 
     // * An event to signal that a resource has been changed
     // * It should fire for resources that are being [watched](#FileSystemProvider.watch) by clients of this provider
@@ -6589,24 +6578,18 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
  * @param p_uri URI of file for which to set made-up modified time
  */
 public setBodyTime(p_uri: vscode.Uri): void {
-    const w_gnx = utils.leoUriToStr(p_uri);
-    this._selectedBody = {
-        gnx: w_gnx,
-        ctime: 0,
-        mtime: (w_gnx === this._renameBody.gnx &amp;&amp; this._selectedBody.gnx === this._renameBody.gnx) ? this._renameBody.mtime : Date.now(),
-    };
-}
 
-</t>
-<t tx="felix.20200718040540.4">/**
- * * Sets renamed file modified time for this gnx, used for 'rename' hack to prevent text undos between gnx
- * @param p_gnx gnx of file for which to set made-up modified time
- */
-public setRenameTime(p_gnx: string): void {
-    this._renameBody = {
-        gnx: p_gnx,
-        ctime: 0,
-        mtime: Date.now(),
+    const w_gnx = utils.leoUriToStr(p_uri);
+
+    // console.log('Selected', w_gnx, ' total:', this._openedBodiesGnx.length);
+
+    if (!this._openedBodiesGnx.includes(w_gnx)) {
+        this._openedBodiesGnx.push(w_gnx);
+    }
+    const w_now = new Date().getTime();
+    this._openedBodiesInfo[w_gnx] = {
+        ctime: w_now,
+        mtime: w_now
     };
 }
 
@@ -6616,10 +6599,15 @@ public setRenameTime(p_gnx: string): void {
  * @param p_gnx Gnx of body associated with this virtual file, mostly Leo's selected node
  */
 public fireRefreshFile(p_gnx: string): void {
-    this._selectedBody = {
-        gnx: p_gnx,
-        ctime: 0,
-        mtime: Date.now(),
+    this._selectedBody = p_gnx;
+    if (!this._openedBodiesGnx.includes(p_gnx)) {
+        console.error("ASKED TO REFRESH NOT EVEN IN SELECTED BODY: ", p_gnx);
+        this._openedBodiesGnx.push(p_gnx);
+    }
+    const w_now = new Date().getTime();
+    this._openedBodiesInfo[p_gnx] = {
+        ctime: w_now,
+        mtime: w_now
     };
     this._onDidChangeFileEmitter.fire([{
         type: vscode.FileChangeType.Changed,
@@ -6629,6 +6617,7 @@ public fireRefreshFile(p_gnx: string): void {
 
 </t>
 <t tx="felix.20200718040540.6">/**
+ * Maybe deprecated
  * * Refreshes the '_possibleGnxList' list of all unique gnx from Leo
  * @returns a promise that resolves to the fresh gnx string array
  */
@@ -6645,43 +6634,22 @@ public refreshPossibleGnxList(): Thenable&lt;string[]&gt; {
 }
 
 </t>
-<t tx="felix.20200718040540.7">/**
- * * Get list of bodies that should be closed: gnx from openedBodiesGnx that are not in possibleGnxList
- * @returns Promise that resolves in a string array
- */
-public getExpiredGnxList(): Thenable&lt;string[]&gt; {
-    return this.refreshPossibleGnxList()
-        .then(p_possibleGnxList =&gt; {
-            const w_gnxToClose: string[] = [];
-            this._openedBodiesGnx.forEach(p_openedGnx =&gt; {
-                if (!p_possibleGnxList.includes(p_openedGnx)) {
-                    w_gnxToClose.push(p_openedGnx);
-                }
-            });
-            this.fireDeleteExpiredGnx(w_gnxToClose);
-            return Promise.resolve(w_gnxToClose);
-        });
-}
-
-</t>
 <t tx="felix.20200718040540.8">public watch(p_resource: vscode.Uri): vscode.Disposable {
     const w_gnx = utils.leoUriToStr(p_resource);
-    if (!this._openedBodiesGnx.includes(w_gnx)) {
-        this._openedBodiesGnx.push(w_gnx); // add gnx
+
+    if (!this._watchedBodiesGnx.includes(w_gnx)) {
+        // console.log('MORE fs watch put in _openedBodiesGnx:', p_resource.fsPath);
+        this._watchedBodiesGnx.push(w_gnx); // add gnx
+    } else {
+        // console.warn('MORE fs watch: already in _openedBodiesGnx:', p_resource.fsPath);
+
     }
     return new vscode.Disposable(() =&gt; {
-        const w_position = this._openedBodiesGnx.indexOf(w_gnx); // find and remove it
+        const w_position = this._watchedBodiesGnx.indexOf(w_gnx); // find and remove it
         if (w_position &gt; -1) {
-            this._openedBodiesGnx.splice(w_position, 1);
+            // console.log('MORE fs removed from _openedBodiesGnx: ', w_gnx);
+            this._watchedBodiesGnx.splice(w_position, 1);
         }
-    });
-}
-
-</t>
-<t tx="felix.20200718040540.9">public fireDeleteExpiredGnx(p_gnxList: string[]): void {
-    p_gnxList.forEach(p_gnx =&gt; {
-        const w_uri: vscode.Uri = utils.strToLeoUri(p_gnx);
-        this._fireSoon({ uri: w_uri, type: vscode.FileChangeType.Deleted });
     });
 }
 
@@ -8129,7 +8097,6 @@ export interface Icon {
  * * LeoBody virtual file time information object
  */
 export interface BodyTimeInfo {
-    gnx: string;
     ctime: number;
     mtime: number;
 }
@@ -8479,19 +8446,19 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 
 ## 0.1.13
 
-- Added support for precise focus placement, focus switch between tree/body.
-- Made the extension more aware of the current selection state, to have strictly relevant buttons visible shown only.
-- Made the 'edit headline' hover icon removable, in order to enable 'Tab' keybinding to go from tree to body directly.
-- Added commands and keybindings for 'goto' operations 'hoist/dehoist' [#25](https://github.com/boltex/leointeg/issues/25) and other commands. [#30](https://github.com/boltex/leointeg/issues/30)
-- Added support for Leo-Style outline navigation. [#43](https://github.com/boltex/leointeg/issues/43) Has to be enabled with an option in the config settings: "Use Leo Tree Browsing" which makes the arrow keys, pgUp/pgDn, home/end move the selection instead of a cursor when focus is on Leo's outline.
-- Implemented @buttons in it's own panel, visible where the already existing 'outline' and 'opened leo documents' panels reside.
-- Added (basic) unknown attributes support as hover tooltip and small description on node headlines.
-- Added a 'leoBridge Server Terminal Panel' to gather output of the leoBridge stdOut pipe. It's displayed among the 'output panels', along with the standard 'leo log window', when the server is started by leoInteg. (either with the auto-start config setting, or by calling the 'start server' command via buttons or the command-palette.)
-- Syntax coloring and Snippets are now enabled for those languages : C, C++, CSS, HTML, Java, Javascript, json, Markdown, PHP, Python, Rust and Typescript. They are taken from the default extension for that language, or if non-existent, from the most popular extension for that language
-- Recent files are now remembered and restored upon re-opening vscode.
-- Leo files can be opened from the explorer pane directly.
-- Added 'minibuffer' feature
-- Added cursor position, selected range and scrolling position to be captured and restored when navigating the outline. [#39](https://github.com/boltex/leointeg/issues/39) This allows for commands that use the currently selected text, [#61](https://github.com/boltex/leointeg/issues/61) such as run script and extract/extract name, etc.
+-   Added support for precise focus placement, focus switch between tree/body.
+-   Made the extension more aware of the current selection state, to have strictly relevant buttons visible shown only.
+-   Made the 'edit headline' hover icon removable, in order to enable 'Tab' keybinding to go from tree to body directly.
+-   Added commands and keybindings for 'goto' operations 'hoist/dehoist' [#25](https://github.com/boltex/leointeg/issues/25) and other commands. [#30](https://github.com/boltex/leointeg/issues/30)
+-   Added support for Leo-Style outline navigation. [#43](https://github.com/boltex/leointeg/issues/43) Has to be enabled with an option in the config settings: "Use Leo Tree Browsing" which makes the arrow keys, pgUp/pgDn, home/end move the selection instead of a cursor when focus is on Leo's outline.
+-   Implemented @buttons in it's own panel, visible where the already existing 'outline' and 'opened leo documents' panels reside.
+-   Added (basic) unknown attributes support as hover tooltip and small description on node headlines.
+-   Added a 'leoBridge Server Terminal Panel' to gather output of the leoBridge stdOut pipe. It's displayed among the 'output panels', along with the standard 'leo log window', when the server is started by leoInteg. (either with the auto-start config setting, or by calling the 'start server' command via buttons or the command-palette.)
+-   Syntax coloring and Snippets are now enabled for those languages : C, C++, CSS, HTML, Java, Javascript, json, Markdown, PHP, Python, Rust and Typescript. They are taken from the default extension for that language, or if non-existent, from the most popular extension for that language
+-   Recent files are now remembered and restored upon re-opening vscode.
+-   Leo files can be opened from the explorer pane directly.
+-   Added 'minibuffer' feature with the usual alt-x command from Leo.
+-   Added cursor position, selected range and scrolling position to be captured and restored when navigating the outline. [#39](https://github.com/boltex/leointeg/issues/39) This allows for commands that use the currently selected text, [#61](https://github.com/boltex/leointeg/issues/61) such as run script and extract/extract name, etc.
 
 @others
 </t>
@@ -8505,11 +8472,11 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Having [Leo's path made available in the \$PYTHONPATH environment variable](https://docs.python.org/2/using/windows.html#excursus-setting-environment-variables)\
-  ([More info](https://docs.python.org/2/using/cmdline.html#environment-variables))
-- Having the Websocket Python Library installed.
-  _Install with :_ `pip install websockets`\
-  (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
+-   Having [Leo's path made available in the \$PYTHONPATH environment variable](https://docs.python.org/2/using/windows.html#excursus-setting-environment-variables)\
+    ([More info](https://docs.python.org/2/using/cmdline.html#environment-variables))
+-   Having the Websocket Python Library installed.
+    _Install with :_ `pip install websockets`\
+    (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
 
 </t>
 <t tx="felix.20200718222026.1">## Development Version Installation
@@ -8529,61 +8496,75 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 </t>
 <t tx="felix.20200718222035.1">## Features
 
-- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes**, **opened documents selector** along with **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
-- Keybindings that match those from Leo, and a **'Leo Tree Browsing'** switch that enables Leo-style arrow keys behavior, for outline keyboard navigation.
-- A **welcome screen** that also gives access to this extension's **settings**.
-- **Derived files change detection**. See [External Files](#derive-external-files) below for more details
-- **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
-- Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
-  - Open body panes to the side
-  - Outline edition commands
-  - Clipboard operations
-  - Undo/Redo commands
+-   UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes**, **opened documents selector** along with **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
+-   Keybindings that match those of Leo, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
+-   A **welcome screen** that also gives access to this extension's **settings**.
+-   **Derived files change detection**. See [External Files](#derive-external-files) below for more details
+-   **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
+-   Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
+    -   Open body panes to the side
+    -   Outline edition commands
+    -   Clipboard operations
+    -   Undo/Redo commands
 
 ![Menu](resources/context-hover-menus.png)
 
 </t>
 <t tx="felix.20200718222043.1">## Keybindings
 
-| Commands Keybinding        |     |                         | Command             |
-| :------------------------- | :-- | :---------------------- | :------------------ |
-| `Alt + -`                  |     |                         | Contract All        |
-| `Ctrl + I`                 |     |                         | Insert Node         |
-| `Ctrl + H`                 |     |                         | Edit Headline       |
-| `Ctrl + Backquote`         |     |                         | Clone Node          |
-| `Ctrl + Shift + C`         |     |                         | Copy Node           |
-| `Ctrl + Shift + X`         |     |                         | Cut Node            |
-| `Ctrl + Shift + V`         |     |                         | Paste Node          |
-| `Ctrl + Shift + Backspace` |     |                         | Delete Node         |
-| `Ctrl + B`                 |     |                         | Execute Script      |
-| `Ctrl + M`                 |     |                         | Mark / Unmark       |
-| `Ctrl + {`                 | and | `Ctrl + }`              | Promote / Demote    |
-| `Ctrl + T`                 |     |                         | Toggle Outline/Body |
-| `Tab`                      | or  | `Alt + D`               | Focus on Body       |
-| `Alt + T`                  |     |                         | Focus on Outline    |
-| `Ctrl + Shift + D`         |     |                         | Extract             |
-| `Ctrl + Shift + N`         |     |                         | Extract Names       |
-| `Alt + A`                  |     |                         | Sort Siblings       |
-| `Ctrl + U`                 | or  | `Shift [+ Alt] + Up`    | Move Outline Up     |
-| `Ctrl + D`                 | or  | `Shift [+ Alt] + Down`  | Move Outline Down   |
-| `Ctrl + L`                 | or  | `Shift [+ Alt] + Left`  | Move Outline Left   |
-| `Ctrl + R`                 | or  | `Shift [+ Alt] + Right` | Move Outline Right  |
+### Outline Commands
 
-&gt; Move Outline commands only need the 'Alt' key modifier when focus is on body pane.
+|                            |     |            |                  |
+| :------------------------- | :-- | :--------- | :--------------- |
+| `Ctrl + I`                 |     |            | Insert Node      |
+| `Ctrl + H`                 |     |            | Edit Headline    |
+| `Ctrl + Shift + C`         |     |            | Copy Node        |
+| `Ctrl + Shift + X`         |     |            | Cut Node         |
+| `Ctrl + Shift + V`         |     |            | Paste Node       |
+| `Ctrl + Shift + Backspace` |     |            | Delete Node      |
+| `Ctrl + Backquote`         |     |            | Clone Node       |
+| `Ctrl + {`                 | and | `Ctrl + }` | Promote / Demote |
 
-### Tree Browsing Keybindings
+### Moving Outline Nodes
 
-&gt; _With the **'Leo Tree Browsing'** setting enabled, all arrows and numeric keypad keys change the outline's selection directly_
+|            |     |                         |                    |
+| :--------- | :-- | :---------------------- | :----------------- |
+| `Ctrl + U` | or  | `Shift [+ Alt] + Up`    | Move Outline Up    |
+| `Ctrl + D` | or  | `Shift [+ Alt] + Down`  | Move Outline Down  |
+| `Ctrl + L` | or  | `Shift [+ Alt] + Left`  | Move Outline Left  |
+| `Ctrl + R` | or  | `Shift [+ Alt] + Right` | Move Outline Right |
 
-| Tree Browsing Keybinding |     | With **'Leo Tree Browsing'** enabled | Command                  |
-| :----------------------- | :-- | :----------------------------------- | :----------------------- |
-| `Alt + Home`             | or  | `Home`                               | Go To First Visible Node |
-| `Alt + End`              |     |                                      | Go To Last Sibling       |
-|                          |     | `End`                                | Go To Last Visible Node  |
-| `Alt + N`                |     |                                      | Go To Next Clone         |
-| `Alt + Arrow Keys`       | or  | `Arrow Keys`                         | Browse Tree              |
-| `Ctrl + T`               |     |                                      | Switch Tree/Body Focus   |
-| `Tab`                    |     |                                      | Focus from Tree to Body  |
+_Move Outline commands need the 'Alt' key modifier only when focus is on body pane._
+
+### Common Operations
+
+|                    |     |           |                     |
+| :----------------- | :-- | :-------- | :------------------ |
+| `Alt + -`          |     |           | Contract All        |
+| `Ctrl + M`         |     |           | Mark / Unmark       |
+| `Ctrl + B`         |     |           | Execute Script      |
+| `Ctrl + T`         |     |           | Toggle Outline/Body |
+| `Tab`              | or  | `Alt + D` | Focus on Body       |
+| `Alt + T`          |     |           | Focus on Outline    |
+| `Ctrl + Shift + D` |     |           | Extract             |
+| `Ctrl + Shift + N` |     |           | Extract Names       |
+| `Alt + A`          |     |           | Sort Siblings       |
+
+### Tree Navigation
+
+|                    |     |                 |                          |
+| :----------------- | :-- | :-------------- | :----------------------- |
+| `Alt + Home`       | or  | `Home` \*       | Go To First Visible Node |
+| `Alt + End`        |     |                 | Go To Last Sibling       |
+|                    |     | `End` \*        | Go To Last Visible Node  |
+| `Alt + N`          |     |                 | Go To Next Clone         |
+| `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree              |
+| `Ctrl + T`         |     |                 | Switch Tree/Body Focus   |
+| `Tab`              |     |                 | Focus from Tree to Body  |
+
+\* _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
+
+#
 
 </t>
 <t tx="felix.20200718222048.1">## Derive External Files
@@ -8617,12 +8598,12 @@ This occurs when an outline node or a body pane has focus:
 
 &gt; _(Changes are auto-saved to the user's profile after 0.5 seconds)_
 
-- Control the visibility of the outline pane in the explorer view.
-- Decide how and when to refresh and synchronize content when derived (external) file are modified.
-- Show additional icons on outline nodes (Move, delete, mark, copy, paste...)
-- Choose to either focus on the body pane, or keep focus in the outline when a node is selected.
-- Hide or show the "Open on the side" command in the context menu to open a node beside the active editor
-- Set preferences for setting the address and port, and for automatically starting, and/or connecting, to a Leo Bridge server.
+-   Control the visibility of the outline pane in the explorer view.
+-   Decide how and when to refresh and synchronize content when derived (external) file are modified.
+-   Show additional icons on outline nodes (Move, delete, mark, copy, paste...)
+-   Choose to either focus on the body pane, or keep focus in the outline when a node is selected.
+-   Hide or show the "Open on the side" command in the context menu to open a node beside the active editor
+-   Set preferences for setting the address and port, and for automatically starting, and/or connecting, to a Leo Bridge server.
 
 ![Settings](resources/welcome-settings.gif)
 
@@ -8655,117 +8636,119 @@ Integration is done by starting a python server script and connecting to it via 
 
 The outline pane is made by implementing a [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics), while the body panes _virtual documents_ are made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api) and using the node's gnx as identifiers.
 
+#
+
 </t>
 <t tx="felix.20200718222118.1">## Acknowledgments
 
 ### _Thanks to_
 
-- [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
-- [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
-- [Vitalije](https://github.com/vitalije) for his contributions and support
-- [Arjan](https://github.com/ar-jan) for his suggestions and ideas
+-   [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
+-   [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
+-   [Vitalije](https://github.com/vitalije) for his contributions and support
+-   [Arjan](https://github.com/ar-jan) for his suggestions and ideas
 </t>
 <t tx="felix.20200718222417.1">## 0.1.12
 
-- Added support for multiple opened files along with the 'new', 'Close', 'Save-As' commands.
-- Improved the icons and commands, which are visible, or invisible depending on context.
-- Added 'tree view' listing the opened Leo documents which is available in the Leo view, and the explorer view.
-- Added basic leonine syntax coloring. (No specific \@languages yet)
-- Added selection support to the 'Execute-Script' command.
+-   Added support for multiple opened files along with the 'new', 'Close', 'Save-As' commands.
+-   Improved the icons and commands, which are visible, or invisible depending on context.
+-   Added 'tree view' listing the opened Leo documents which is available in the Leo view, and the explorer view.
+-   Added basic leonine syntax coloring. (No specific \@languages yet)
+-   Added selection support to the 'Execute-Script' command.
 
 </t>
 <t tx="felix.20200718222419.1">## 0.1.11
 
-- Fixed undo operation for the _insert_ and _rename_ commands (Some other commands may still need fixes to their 'undo' support)
-- Fixed crashing when editing body pane under Leo 6.2.
+-   Fixed undo operation for the _insert_ and _rename_ commands (Some other commands may still need fixes to their 'undo' support)
+-   Fixed crashing when editing body pane under Leo 6.2.
 
 </t>
 <t tx="felix.20200718222422.1">## 0.1.10
 
-- Added more [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree for starting a server, connecting to it, and added content to help with automation settings.
-- Changed the starting default configuration setting for starting and connecting to the leoBridge server script to false.
-- Made starting and connecting to the leoBridge server script easier to access in the interface, and in the welcome/settings webview.
-- Added new CONTRIBUTING.md markdown file for running the development version of the leoInteg extension.
-- Closes [#44](https://github.com/boltex/leointeg/issues/44)
+-   Added more [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree for starting a server, connecting to it, and added content to help with automation settings.
+-   Changed the starting default configuration setting for starting and connecting to the leoBridge server script to false.
+-   Made starting and connecting to the leoBridge server script easier to access in the interface, and in the welcome/settings webview.
+-   Added new CONTRIBUTING.md markdown file for running the development version of the leoInteg extension.
+-   Closes [#44](https://github.com/boltex/leointeg/issues/44)
 
 </t>
 <t tx="felix.20200718222425.1">## 0.1.9
 
-- Added new compilation configuration (server, extension, or both) to help debugging.
-- Support async output from leoBridge, for log pane and other events.
-- External file change detection with modal dialogs matching Leo's gui dialogs.
-- Added config options to bypass derived files change detection dialogs with defaults, allowing automatic synchronization of derived files in both directions.
-- Added support for redo, refresh from disk and many any other core Leo commands and operations.
-- Added support for rapid outline edition command entry, including 'insert node' command **`Ctrl+I`** and for replacing focus on relevant elements to mimic actual Leo interface workflow.
-- Added [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree to help with connecting and opening
-- Replaced body-editor content transfer logic and removed the related option in the expansion's settings. The body is sent to Leo when appropriate without need of a timed delay.
-- _REMOVED FEATURE_ Rolled back 'multi-body' feature for simultaneous body panes from different gnx. Body panes from the same gnx are still available.
+-   Added new compilation configuration (server, extension, or both) to help debugging.
+-   Support async output from leoBridge, for log pane and other events.
+-   External file change detection with modal dialogs matching Leo's gui dialogs.
+-   Added config options to bypass derived files change detection dialogs with defaults, allowing automatic synchronization of derived files in both directions.
+-   Added support for redo, refresh from disk and many any other core Leo commands and operations.
+-   Added support for rapid outline edition command entry, including 'insert node' command **`Ctrl+I`** and for replacing focus on relevant elements to mimic actual Leo interface workflow.
+-   Added [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree to help with connecting and opening
+-   Replaced body-editor content transfer logic and removed the related option in the expansion's settings. The body is sent to Leo when appropriate without need of a timed delay.
+-   _REMOVED FEATURE_ Rolled back 'multi-body' feature for simultaneous body panes from different gnx. Body panes from the same gnx are still available.
 
 </t>
 <t tx="felix.20200718222427.1">## 0.1.8
 
-- Extension now built with webpack. [As recommended by vsCode's extension guidelines](https://code.visualstudio.com/api/working-with-extensions/bundling-extension#using-webpack)
-- Added a 'Welcome Screen' webview (also compiled by webpack from html, scss and ts files) to show a greeting with basic info, and provide an easy way to change the configuration settings.
-- Added commands accessible via either tree menu, context menu, and 'standard' Leo keyboard shortcuts:
-  - Insert, delete
-  - Cut/Copy/Paste/Clone/Paste as clone
-  - Move, promote, demote node operations
-  - Mark, unmark, sort children, sort siblings and undo
+-   Extension now built with webpack. [As recommended by vsCode's extension guidelines](https://code.visualstudio.com/api/working-with-extensions/bundling-extension#using-webpack)
+-   Added a 'Welcome Screen' webview (also compiled by webpack from html, scss and ts files) to show a greeting with basic info, and provide an easy way to change the configuration settings.
+-   Added commands accessible via either tree menu, context menu, and 'standard' Leo keyboard shortcuts:
+    -   Insert, delete
+    -   Cut/Copy/Paste/Clone/Paste as clone
+    -   Move, promote, demote node operations
+    -   Mark, unmark, sort children, sort siblings and undo
 
 </t>
 <t tx="felix.20200718222429.1">## 0.1.7
 
-- Changed main mode of communication from stdin/out to tcp/ip websockets.
-- Made a standalone 'Leo Server' python script.
+-   Changed main mode of communication from stdin/out to tcp/ip websockets.
+-   Made a standalone 'Leo Server' python script.
 
 </t>
 <t tx="felix.20200718222433.1">## 0.1.6
 
-- Major 'Browsing' update before adding outline editing and file saving &amp; derivation (Thanks for testing!)
-- Refactored and simplified communication between vscode and leoBridge.
-- Stabilized browsing with multiple simultaneous body panes.
-- Added Leo Outline into explorer view.
-- Supports new command to open a node on the side from the context menu.
-- Multiple configuration options: Open Settings with CTRL+',' type 'leo', or look for 'leo integration' in extensions.
+-   Major 'Browsing' update before adding outline editing and file saving &amp; derivation (Thanks for testing!)
+-   Refactored and simplified communication between vscode and leoBridge.
+-   Stabilized browsing with multiple simultaneous body panes.
+-   Added Leo Outline into explorer view.
+-   Supports new command to open a node on the side from the context menu.
+-   Multiple configuration options: Open Settings with CTRL+',' type 'leo', or look for 'leo integration' in extensions.
 
 _Note: Headline and body edition does not affect the Leo file yet._
 
 </t>
 <t tx="felix.20200718222435.1">## 0.1.5
 
-- Stabilized tree browsing, along with headline and body editing.
+-   Stabilized tree browsing, along with headline and body editing.
 
 </t>
 <t tx="felix.20200718222437.1">## 0.1.4
 
-- Major Refactor to streamline codebase; Eliminated code duplication.
-- Complete rewrite after going trying out most of what is possible with both vscode and leo APIs.
-- New body pane system that prevents corrupting undos across different positions: It uses the node's actual gnx instead of a generic "body" string as a file path for the custom filesystem.
+-   Major Refactor to streamline codebase; Eliminated code duplication.
+-   Complete rewrite after going trying out most of what is possible with both vscode and leo APIs.
+-   New body pane system that prevents corrupting undos across different positions: It uses the node's actual gnx instead of a generic "body" string as a file path for the custom filesystem.
 
 </t>
 <t tx="felix.20200718222439.1">## 0.1.3
 
-- This version creates a body panel via a custom filesystem: 'leo'. It only has a file, "leo:/body", the body of the currently selected node.
+-   This version creates a body panel via a custom filesystem: 'leo'. It only has a file, "leo:/body", the body of the currently selected node.
 
 _Note: This editable body panel does not affect Leo file yet._
 
 </t>
 <t tx="felix.20200718222440.1">## 0.1.2
 
-- Prototype Goal Achieved!
-- Browsing Now shows body text too, just like browsing in Leo without editing body nor headlines. (read only for now)
+-   Prototype Goal Achieved!
+-   Browsing Now shows body text too, just like browsing in Leo without editing body nor headlines. (read only for now)
 
 </t>
 <t tx="felix.20200718222442.1">## 0.1.1
 
-- Leo File Opening.
-- Basic outline browsing, along with the recognizable node icons.
+-   Leo File Opening.
+-   Basic outline browsing, along with the recognizable node icons.
 
 </t>
 <t tx="felix.20200718222445.1">## 0.0.1
 
-- Initial basic skeleton of this extension. Press F5 to view icon and test the startup of the extension!
-- Implemented [leoBridge](https://leoeditor.com/leoBridge.html) interaction.
+-   Initial basic skeleton of this extension. Press F5 to view icon and test the startup of the extension!
+-   Implemented [leoBridge](https://leoeditor.com/leoBridge.html) interaction.
 
 ![LeoEditor](resources/leoapp96px.png)
 </t>
@@ -9104,9 +9087,13 @@ export class LeoIntegration {
 
     // * Body Pane
     private _bodyFileSystemStarted: boolean = false;
+    private _bodyEnablePreview: boolean = true;
     private _leoFileSystem: LeoBodyProvider; // as per https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api
     private _bodyTextDocument: vscode.TextDocument | undefined; // Set when selected in tree by user, or opening a Leo file in showBody. and by _locateOpenedBody.
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
+
+    private _bodyPreviewMode: boolean = true;
+
     private _showBodyStarted: boolean = false; // Flag for when _applySelectionToBody 'show body' cycle is busy
     private _showBodyParams: ShowBodyParam | undefined; // _applySelectionToBody parameters, may be overwritten at each call if not finished
 
@@ -9156,15 +9143,12 @@ export class LeoIntegration {
         flush(): void;
     };
 
-    // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
+    // * Debounced method used to get opened Leo Files for the documents pane
     public refreshDocumentsPane: (() =&gt; void) &amp; {
         clear(): void;
     } &amp; {
         flush(): void;
     };
-
-    // * test vars
-    private _testBodyUri: string = ""; // TODO : CLEANUP BEFORE RELEASES
 
     @others
 }
@@ -9222,7 +9206,7 @@ private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackageOpenedInfo): P
     // * Could be already opened, so perform 'rename hack' as if another node was selected
     if (this._bodyTextDocument &amp;&amp; this.bodyUri) {
         // TODO : BUG WHEN SWITCHING LEO DOCUMENT : NEED CROSSOVER LOGIC!
-        this._switchBody(w_selectedLeoNode.gnx);
+        this._switchBody(w_selectedLeoNode.gnx, false, true);
     } else {
         this.bodyUri = utils.strToLeoUri(w_selectedLeoNode.gnx);
     }
@@ -9261,6 +9245,8 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
     if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
         this.config.buildFromSavedSettings();
     }
+    // also check if workbench.editor.enablePreview
+    this._bodyEnablePreview = !!vscode.workspace.getConfiguration('workbench.editor').get("enablePreview");
 }
 
 </t>
@@ -9321,15 +9307,21 @@ private _onDocTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChange
 <t tx="felix.20200719025231.29">/**
  * * Handles detection of the active editor having changed from one to another, or closed
  * TODO : Make sure the selection in tree if highlighted when a body pane is selected
- * @param p_event The editor itself that is now active
+ * @param p_editor The editor itself that is now active
  * @param p_internalCall Flag used to signify the it was called voluntarily by leoInteg itself
  */
-private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
+private _onActiveEditorChanged(p_editor: vscode.TextEditor | undefined, p_internalCall?: boolean): void {
+    if (p_editor &amp;&amp; p_editor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+        if (this.bodyUri.fsPath !== p_editor.document.uri.fsPath) {
+            this._hideDeleteBody(p_editor);
+        }
+        this._checkPreviewMode(p_editor);
+    }
     if (!p_internalCall) {
         this.triggerBodySave(true); // Save in case edits were pending
     }
     // * Status flag check
-    if (!p_event &amp;&amp; this._leoStatusBar.statusBarFlag) {
+    if (!p_editor &amp;&amp; this._leoStatusBar.statusBarFlag) {
         return;
     }
     // * Status flag check
@@ -9345,7 +9337,10 @@ private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_interna
 
     // * Get configuration settings
     this.config = new Config(_context, this);
+
+    // * also check workbench.editor.enablePreview
     this.config.buildFromSavedSettings();
+    this._bodyEnablePreview = !!vscode.workspace.getConfiguration('workbench.editor').get("enablePreview");
 
     // * Build Icon filename paths
     this.nodeIcons = utils.buildNodeIconPaths(_context);
@@ -9401,7 +9396,7 @@ private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_interna
     this._serverService = new ServerService(_context, this);
 
     // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
-    vscode.window.onDidChangeActiveTextEditor(p_event =&gt; this._onActiveEditorChanged(p_event));
+    vscode.window.onDidChangeActiveTextEditor(p_editor =&gt; this._onActiveEditorChanged(p_editor));
 
     // * React to change in selection, cursor position and scroll position
     vscode.window.onDidChangeTextEditorSelection(p_event =&gt; this._onChangeEditorSelection(p_event));
@@ -9409,15 +9404,15 @@ private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_interna
 
     // * Triggers when a different text editor/vscode window changed focus or visibility, or dragged
     // This is also what triggers after drag and drop, see '_onChangeEditorViewColumn'
-    vscode.window.onDidChangeTextEditorViewColumn(() =&gt; this.triggerBodySave());
-    vscode.window.onDidChangeVisibleTextEditors(() =&gt; this.triggerBodySave());
-    vscode.window.onDidChangeWindowState(() =&gt; this.triggerBodySave());
+    vscode.window.onDidChangeTextEditorViewColumn((p_columnChangeEvent) =&gt; this._changedTextEditorViewColumn(p_columnChangeEvent)); // Also triggers after drag and drop
+    vscode.window.onDidChangeVisibleTextEditors((p_editors) =&gt; this._changedVisibleTextEditors(p_editors)); // Window.visibleTextEditors changed
+    vscode.window.onDidChangeWindowState((p_windowState) =&gt; this._changedWindowState(p_windowState)); // Focus state of the current window changes
 
     // * React when typing and changing body pane
-    vscode.workspace.onDidChangeTextDocument(p_event =&gt; this._onDocumentChanged(p_event));
+    vscode.workspace.onDidChangeTextDocument(p_textDocumentChange =&gt; this._onDocumentChanged(p_textDocumentChange));
 
     // * React to configuration settings events
-    vscode.workspace.onDidChangeConfiguration(p_event =&gt; this._onChangeConfiguration(p_event));
+    vscode.workspace.onDidChangeConfiguration(p_configChange =&gt; this._onChangeConfiguration(p_configChange));
 
     // * React to opening of any file in vscode
     vscode.workspace.onDidOpenTextDocument(p_document =&gt; this._onDidOpenTextDocument(p_document));
@@ -9430,21 +9425,22 @@ private _onActiveEditorChanged(p_event: vscode.TextEditor | undefined, p_interna
 </t>
 <t tx="felix.20200719025231.31">/**
  * * Handle typing that was detected in a document
- * @param p_event Text changed event passed by vscode
+ * @param p_textDocumentChange Text changed event passed by vscode
  */
-private _onDocumentChanged(p_event: vscode.TextDocumentChangeEvent): void {
+private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent): void {
     // ".length" check necessary, see https://github.com/microsoft/vscode/issues/50344
-    if (this.lastSelectedNode &amp;&amp; p_event.contentChanges.length &amp;&amp; (p_event.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
+    if (this.lastSelectedNode &amp;&amp; p_textDocumentChange.contentChanges.length &amp;&amp; (p_textDocumentChange.document.uri.scheme === Constants.URI_LEO_SCHEME)) {
 
         // * There was an actual change on a Leo Body by the user
-        this._bodyLastChangedDocument = p_event.document;
+        this._bodyLastChangedDocument = p_textDocumentChange.document;
+        this._bodyPreviewMode = false;
         this._fromOutline = false; // Focus is on body pane
 
         // * If icon should change then do it now (if there's no document edit pending)
-        if (!this._currentDocumentChanged || utils.leoUriToStr(p_event.document.uri) === this.lastSelectedNode.gnx) {
-            const w_hasBody = !!(p_event.document.getText().length);
+        if (!this._currentDocumentChanged || utils.leoUriToStr(p_textDocumentChange.document.uri) === this.lastSelectedNode.gnx) {
+            const w_hasBody = !!(p_textDocumentChange.document.getText().length);
             if (utils.isIconChangedByEdit(this.lastSelectedNode, w_hasBody)) {
-                this._bodySaveDocument(p_event.document)
+                this._bodySaveDocument(p_textDocumentChange.document)
                     .then(() =&gt; {
                         if (this.lastSelectedNode) {
                             this.lastSelectedNode.dirty = true;
@@ -9637,59 +9633,48 @@ public arrayToLeoNodesArray(p_array: ArchivedPosition[]): LeoNode[] {
 }
 
 </t>
-<t tx="felix.20200719025231.46">/**
- * * Show the body pane if not already opened, and if allowed by leoInteg's control logic.
- * Prevent opening the body editor unnecessarily when hiding and re(showing) the outline pane
- * @param p_aside Flag for opening the editor beside any currently opened and focused editor
- * @param p_showBodyKeepFocus flag that when true will stop the editor from taking focus once opened
- * @param p_forceOpen Forces opening the body pane editor
- */
-private _showBodyIfRequired(p_aside: boolean, p_showBodyKeepFocus: boolean, p_forceOpen?: boolean): Thenable&lt;vscode.TextEditor&gt; {
-    if (this._preventShowBody) {
-        this._preventShowBody = false;
-        return Promise.resolve(vscode.window.activeTextEditor!);
-    }
-    // TODO : Find Better Conditions! Always true for now...
-    if (true || p_forceOpen || this._leoTreeView.visible) {
-        // ! Always true for now to stabilize refreshes after derived files refreshes and others.
-        return this.showBody(p_aside, p_showBodyKeepFocus);
-    } else {
-        return Promise.resolve(vscode.window.activeTextEditor!);
-    }
-}
-
-</t>
 <t tx="felix.20200719025231.47">/**
- * * Save and rename from this.bodyUri to p_newGnx: This changes the body content &amp; blocks 'undos' from crossing over
- * ! BUG : UNDO NOW CROSSES OVER SINCE vscode 1.48 - Fix with #107
+ * * Close body pane document and change the bodyUri
+ * This blocks 'undos' from crossing over
  * @param p_newGnx New gnx body id to switch to
  */
-private _switchBody(p_newGnx: string): Thenable&lt;boolean&gt; {
-    if (this._bodyTextDocument) {
-        return this._bodyTextDocument.save()
-            .then((p_result) =&gt; {
-                const w_edit = new vscode.WorkspaceEdit();
-                this._leoFileSystem.setRenameTime(p_newGnx);
-                w_edit.renameFile(
-                    this.bodyUri, // Old URI from last node
-                    utils.strToLeoUri(p_newGnx), // New URI from selected node
-                    { overwrite: true }
-                );
-                return vscode.workspace.applyEdit(w_edit);
-            })
-            .then(p_result =&gt; {
-                const w_oldUri: vscode.Uri = this.bodyUri;
-                // * Old is now set to new!
-                this.bodyUri = utils.strToLeoUri(p_newGnx);
+private _switchBody(p_newGnx: string, p_aside: boolean, p_preserveFocus?: boolean): Thenable&lt;vscode.TextEditor&gt; {
 
-                // TODO : CLEAR UNDO HISTORY AND FILE HISTORY
+    const w_oldUri: vscode.Uri = this.bodyUri;
+
+    // ? Set timestamps ?
+    // this._leoFileSystem.setRenameTime(p_newGnx);
+
+    let w_visibleCount = 0;
+    vscode.window.visibleTextEditors.forEach(p_editor =&gt; {
+        if (p_editor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+            w_visibleCount++;
+        }
+    });
+
+    if (this._bodyPreviewMode &amp;&amp; this._bodyEnablePreview &amp;&amp; w_visibleCount &lt; 2) {
+        // just show in same column and delete after
+        this.bodyUri = utils.strToLeoUri(p_newGnx);
+        const q_showBody = this.showBody(p_aside, p_preserveFocus);
+        vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
+        return q_showBody;
+    } else {
+        // Gotta delete to close all and re-open, so:
+        // Promise to Delete first, synchronously (as thenable),
+        // tagged along with automatically removeFromRecentlyOpened in parallel
+        const w_edit = new vscode.WorkspaceEdit();
+        w_edit.deleteFile(w_oldUri, { ignoreIfNotExists: true });
+        return vscode.workspace.applyEdit(w_edit)
+            .then(() =&gt; {
+                // Set new uri and remove from 'Recently opened'
+                this._bodyPreviewMode = true;
+                this.bodyUri = utils.strToLeoUri(p_newGnx);
+                // async, so don't wait for this to finish
                 if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
                     vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
                 }
-                return Promise.resolve(p_result);
+                return this.showBody(p_aside, p_preserveFocus);
             });
-    } else {
-        return Promise.resolve(false);
     }
 }
 
@@ -9750,6 +9735,7 @@ public sendAction(p_action: string, p_jsonParam = "null", p_deferredPayload?: Le
  * @param p_preserveFocus flag that when true will stop the editor from taking focus once opened
  */
 public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.TextEditor&gt; {
+
     // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
     if (this._refreshType.body) {
         this._refreshType.body = false;
@@ -9759,93 +9745,18 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
         }, 0);
     }
 
-    this._testBodyUri = utils.leoUriToStr(this.bodyUri); // TODO : Test
+    if (this._preventShowBody) {
+        this._preventShowBody = false;
+        return Promise.resolve(vscode.window.activeTextEditor!);
+    }
 
     return Promise.resolve(vscode.workspace.openTextDocument(this.bodyUri)).then(p_document =&gt; {
 
         this._bodyTextDocument = p_document;
 
-        // * body editor is opened with the right content so now set its language,
-        // * and restore the proper cursor position, selection range and scrolling position
-        if (this.lastSelectedNode) {
-            // this.lastSelectedNode MAY NOT BE VALID
-            this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
-                .then((p_result: LeoBridgePackage) =&gt; {
+        // * Set document language along with the proper cursor position, selection range and scrolling position
+        this._setLanguageAndSelection(this._bodyTextDocument);
 
-                    const w_bodyStates = p_result.bodyStates!; // This answer has bodyStates member
-                    let w_language: string = w_bodyStates.language;
-                    const w_leoBodySel: BodySelectionInfo = w_bodyStates.selection;
-
-                    if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
-                        console.log('GOT STATES DIFFERENT GNX: ' + w_leoBodySel.gnx + ", last sel: " + this.lastSelectedNode!.gnx + ", bodyUri was: " + this._testBodyUri);
-                    }
-                    const w_scroll = w_leoBodySel.scroll;
-                    // console.log('GET_BODY_STATES json' + JSON.stringify(w_scroll));
-
-                    let w_scrollRange: vscode.Range | undefined;
-                    if (w_scroll &amp;&amp; w_scroll.start &amp;&amp; w_scroll.end &amp;&amp;
-                        (w_scroll.start.line ||
-                            w_scroll.start.col ||
-                            w_scroll.end.line ||
-                            w_scroll.end.col)
-                    ) {
-                        w_scrollRange = new vscode.Range(
-                            w_scroll.start.line,
-                            w_scroll.start.col,
-                            w_scroll.end.line,
-                            w_scroll.end.col,
-                        );
-                    } else {
-                        // w_scrollRange = new vscode.Range(0, 0, 0, 0); // try with p_textEditor.document.lineAt(0).range;
-                    }
-
-                    // Cursor position and selection range
-                    const w_activeRow: number = w_leoBodySel.active.line;
-                    const w_activeCol: number = w_leoBodySel.active.col;
-                    let w_anchorLine: number = w_leoBodySel.start.line;
-                    let w_anchorCharacter: number = w_leoBodySel.start.col;
-
-                    if (w_activeRow === w_anchorLine &amp;&amp;
-                        w_activeCol === w_anchorCharacter) {
-                        // Active insertion same as start selection, so use the other ones
-                        w_anchorLine = w_leoBodySel.end.line;
-                        w_anchorCharacter = w_leoBodySel.end.col;
-                    }
-
-                    const w_selection = new vscode.Selection(
-                        w_anchorLine,
-                        w_anchorCharacter,
-                        w_activeRow,
-                        w_activeCol
-                    );
-
-                    vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
-                        if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath &amp;&amp;
-                            utils.leoUriToStr(p_document.uri) === w_leoBodySel.gnx
-                        ) {
-                            p_textEditor.selection = w_selection; // set cursor insertion point &amp; selection range
-                            if (!w_scrollRange) {
-                                w_scrollRange = p_textEditor.document.lineAt(0).range;
-                            }
-                            p_textEditor.revealRange(w_scrollRange); // set
-                        }
-                    });
-
-                    // Replace language string if in 'exceptions' array
-                    w_language = Constants.LANGUAGE_CODES[w_language] || w_language;
-
-                    // Apply language if the selected node is still the same after all those events
-                    if (
-                        this._bodyTextDocument &amp;&amp; this.lastSelectedNode &amp;&amp;
-                        utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
-                    ) {
-                        vscode.languages.setTextDocumentLanguage(
-                            this._bodyTextDocument,
-                            "leobody." + w_language
-                        );
-                    }
-                });
-        }
         // Find body pane's position if already opened
         vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
             if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
@@ -9863,14 +9774,14 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
             } : {
                 viewColumn: this._bodyMainSelectionColumn ? this._bodyMainSelectionColumn : 1, // view column in which the editor should be shown
                 preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
-                preview: false // should text document be in preview only? set false for fully opened
+                preview: true // should text document be in preview only? set false for fully opened
                 // selection is instead set when the GET_BODY_STATES above resolves
             };
 
         // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
         return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor =&gt; {
             // TODO : #38 if position is in an derived file node show relative position
-            // w_bodyEditor.options.lineNumbers = OFFSET ; 
+            // w_bodyEditor.options.lineNumbers = OFFSET;
             return Promise.resolve(w_bodyEditor);
         });
     });
@@ -9879,34 +9790,43 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
 </t>
 <t tx="felix.20200719025231.51"></t>
 <t tx="felix.20200719025231.52">/**
- * * User has selected a node via mouse click or via 'enter' keypress in the outline, otherwise flag p_internalCall if used internally
+ * * Select a tree node. Either called from user interaction, or used internally (p_internalCall flag)
  * @param p_node Node that was just selected
  * @param p_internalCall Flag used to indicate the selection is forced, and NOT originating from user interaction
  * @param p_aside Flag to force opening the body "Aside", i.e. when the selection was made from choosing "Open Aside"
- * @returns
+ * @returns a promise with the package gotten back from Leo when asked to select the tree node
  */
 public selectTreeNode(p_node: LeoNode, p_internalCall?: boolean, p_aside?: boolean): Promise&lt;LeoBridgePackage | vscode.TextEditor&gt; {
+
     this.triggerBodySave(true);
+
     // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
     if (p_aside &amp;&amp; p_node !== this.lastSelectedNode) {
         this._revealTreeViewNode(p_node, { select: true, focus: false }); // no need to set focus: tree selection is set to right-click position
     }
+
     this.leoStates.setSelectedNodeFlags(p_node);
     this._leoStatusBar.update(true); // Just selected a node directly, or via expand/collapse
     const w_showBodyKeepFocus = p_aside ? this.config.treeKeepFocusWhenAside : this.config.treeKeepFocus;
-    // * Check if having already this exact node position selected : Just show the body and exit!
+
+    // * Check if having already this exact node position selected : Just show the body and exit
+    // (other tree nodes with same gnx may have different syntax language coloring because of parents lineage)
     if (p_node === this.lastSelectedNode) {
-        this._locateOpenedBody(p_node.gnx);
+        this._locateOpenedBody(p_node.gnx); // LOCATE NEW GNX
         return this.showBody(!!p_aside, w_showBodyKeepFocus); // Voluntary exit
     }
+
     // * Set selected node in Leo via leoBridge
-    const q_setSelectedNode = this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson).then((p_setSelectedResult) =&gt; {
-        if (!p_internalCall) {
-            this._refreshType.states = true;
-            this.getStates();
-        }
-        return p_setSelectedResult;
-    });
+    const q_setSelectedNode = this.sendAction(Constants.LEOBRIDGE.SET_SELECTED_NODE, p_node.apJson)
+        .then((p_setSelectedResult) =&gt; {
+            if (!p_internalCall) {
+                this._refreshType.states = true;
+                this.getStates();
+            }
+            return p_setSelectedResult;
+        });
+
+    // * Apply the node to the body text without waiting for the selection promise to resolve
     this._tryApplyNodeToBody(p_node, !!p_aside, w_showBodyKeepFocus, true);
     return q_setSelectedNode;
 }
@@ -12947,7 +12867,202 @@ public static VSCODE_COMMANDS = {
     "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoButtonNode/",
     "group": "leoButtonContext1@1"
   }
-]
+]</t>
+<t tx="felix.20210418013332.1">private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
+    console.log('DELETE EXTRANEOUS:', p_textEditor.document.uri.fsPath);
+    const w_edit = new vscode.WorkspaceEdit();
+    w_edit.deleteFile(p_textEditor.document.uri, { ignoreIfNotExists: true });
+    if (p_textEditor.hide) {
+        p_textEditor.hide();
+    }
+    vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', p_textEditor.document.uri.path);
+}
+
+</t>
+<t tx="felix.20210418014039.1">/**
+ * * Moved a document to another column
+ */
+public _changedTextEditorViewColumn(p_columnChangeEvent: vscode.TextEditorViewColumnChangeEvent): void {
+    if (p_columnChangeEvent &amp;&amp; p_columnChangeEvent.textEditor.document.uri.scheme === 'more') {
+        console.log('changedTextEditorViewColumn: gnx', p_columnChangeEvent.textEditor.document.uri.fsPath);
+        this._checkPreviewMode(p_columnChangeEvent.textEditor);
+    }
+    this.triggerBodySave(true);
+}
+
+</t>
+<t tx="felix.20210418014040.1">/**
+ * * Tabbed on another editor
+ */
+public _changedVisibleTextEditors(p_editors: vscode.TextEditor[]): void {
+    if (p_editors &amp;&amp; p_editors.length) {
+        p_editors.forEach(p_textEditor =&gt; {
+            if (p_textEditor &amp;&amp; p_textEditor.document.uri.scheme === 'more') {
+                console.log('changedVisibleTextEditors: gnx', p_textEditor.document.uri.fsPath);
+                if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
+                    this._hideDeleteBody(p_textEditor);
+                }
+                this._checkPreviewMode(p_textEditor);
+            }
+        });
+    }
+    this.triggerBodySave(true);
+}
+
+</t>
+<t tx="felix.20210418014040.2">/**
+ * * Whole window has been minimized/restored
+ */
+public _changedWindowState(p_windowState: vscode.WindowState): void {
+    // no other action
+    this.triggerBodySave(true);
+}
+
+</t>
+<t tx="felix.20210418220343.1">private _checkPreviewMode(p_editor: vscode.TextEditor): void {
+    // if selected gnx but in another column
+    if (
+        p_editor.document.uri.fsPath === this.bodyUri.fsPath &amp;&amp;
+        p_editor.viewColumn !== this._bodyMainSelectionColumn
+    ) {
+        this._bodyPreviewMode = false;
+        this._bodyMainSelectionColumn = p_editor.viewColumn;
+    }
+}
+
+</t>
+<t tx="felix.20210418230204.1">private _findUriColumn(p_uri: vscode.Uri): vscode.ViewColumn | undefined {
+    let w_column: vscode.ViewColumn | undefined;
+    vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
+        if (p_textEditor.document.uri.fsPath === p_uri.fsPath) {
+            w_column = p_textEditor.viewColumn;
+        }
+    });
+    return w_column;
+}
+
+</t>
+<t tx="felix.20210418230204.2">private findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
+    let w_column: vscode.ViewColumn | undefined;
+    vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
+        if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {
+            w_column = p_textEditor.viewColumn;
+        }
+    });
+    return w_column;
+}
+
+</t>
+<t tx="felix.20210420004713.1">/**
+ * Fetch language, cursor position and text selection for the current selected tree node,
+ * then apply it to the text document given as parameter when the fetch resolves,
+ * but only if it's still the same gnx/node as the currently selected node.
+ * @param p_document text document opened for which the language and cursor has to be set
+ */
+private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
+    if (this.lastSelectedNode) {
+        // this.lastSelectedNode MAY NOT BE VALID
+        this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
+            .then((p_result: LeoBridgePackage) =&gt; {
+
+                const w_bodyStates = p_result.bodyStates!; // This answer has bodyStates member
+                let w_language: string = w_bodyStates.language;
+                const w_leoBodySel: BodySelectionInfo = w_bodyStates.selection;
+
+                if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
+                    console.error(
+                        'GOT STATES FOR DIFFERENT GNX: ' + w_leoBodySel.gnx +
+                        ", last sel node is now: " + this.lastSelectedNode!.gnx
+                    );
+                }
+
+                const w_scroll = w_leoBodySel.scroll;
+
+                let w_scrollRange: vscode.Range | undefined;
+                if (w_scroll &amp;&amp; w_scroll.start &amp;&amp; w_scroll.end &amp;&amp;
+                    (w_scroll.start.line ||
+                        w_scroll.start.col ||
+                        w_scroll.end.line ||
+                        w_scroll.end.col)
+                ) {
+                    w_scrollRange = new vscode.Range(
+                        w_scroll.start.line,
+                        w_scroll.start.col,
+                        w_scroll.end.line,
+                        w_scroll.end.col,
+                    );
+                } else {
+                    // w_scrollRange = new vscode.Range(0, 0, 0, 0); // try with p_textEditor.document.lineAt(0).range;
+                }
+
+                // Cursor position and selection range
+                const w_activeRow: number = w_leoBodySel.active.line;
+                const w_activeCol: number = w_leoBodySel.active.col;
+                let w_anchorLine: number = w_leoBodySel.start.line;
+                let w_anchorCharacter: number = w_leoBodySel.start.col;
+
+                if (w_activeRow === w_anchorLine &amp;&amp;
+                    w_activeCol === w_anchorCharacter) {
+                    // Active insertion same as start selection, so use the other ones
+                    w_anchorLine = w_leoBodySel.end.line;
+                    w_anchorCharacter = w_leoBodySel.end.col;
+                }
+
+                const w_selection = new vscode.Selection(
+                    w_anchorLine,
+                    w_anchorCharacter,
+                    w_activeRow,
+                    w_activeCol
+                );
+
+                const w_documentGnx = utils.leoUriToStr(p_document.uri);
+
+                // if any editors now have gnx match of the selections that was just fetched
+                vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
+                    if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath &amp;&amp;
+                        w_documentGnx === w_leoBodySel.gnx
+                    ) {
+                        p_textEditor.selection = w_selection; // set cursor insertion point &amp; selection range
+                        if (!w_scrollRange) {
+                            w_scrollRange = p_textEditor.document.lineAt(0).range;
+                        }
+                        p_textEditor.revealRange(w_scrollRange); // set
+                    }
+                });
+
+                // Replace language string if in 'exceptions' array
+                w_language = "leobody." + (Constants.LANGUAGE_CODES[w_language] || w_language);
+
+                // Apply language if the selected node is still the same after all those events
+                if (
+                    !p_document.isClosed &amp;&amp; this.lastSelectedNode &amp;&amp;
+                    w_documentGnx === this.lastSelectedNode.gnx
+                ) {
+                    vscode.languages.setTextDocumentLanguage(p_document, w_language);
+                }
+            });
+    }
+}
+
+</t>
+<t tx="felix.20210420215230.1">/**
+ * Show file browser to find leoserver.py. Save it's path in the config or cancel.
+ */
+public chooseLeoServerPath(): void {
+    vscode.window.showOpenDialog(
+        {
+            title: "Locate Leo Server Script",
+            canSelectMany: false,
+            openLabel: "Choose",
+            filters: { 'script': ['py'] }
+        }
+    )
+        .then(p_chosenFile =&gt; {
+            console.log(p_chosenFile);
+
+        });
+}
+
 </t>
 </tnodes>
 </leo_file>
