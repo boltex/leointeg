@@ -60,8 +60,10 @@ export class ServerService {
      * @param p_leoPythonCommand String command to start python on this computer
      * @returns A promise that resolves when the server is started, or that is rejected in case of problem while starting
      */
-    public startServer(p_leoPythonCommand: string): Promise<any> {
+    public startServer(p_leoPythonCommand: string, p_leoServerPath: string): Promise<any> {
+        console.log('p_leoServerPath', p_leoServerPath);
         let w_pythonPath = "";
+
         this._leoIntegration.showTerminalPane();
         const w_serverScriptPath = this._context.extensionPath + Constants.SERVER_PATH;
         if (p_leoPythonCommand && p_leoPythonCommand.length) {

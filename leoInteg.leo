@@ -839,6 +839,7 @@ public static CONFIG_DEFAULTS = {
     SHOW_COPY: false,
     INVERT_NODES: false,
     LEO_PYTHON_COMMAND: "",
+    LEO_SERVER_PATH: "",
     AUTO_START_SERVER: false,
     AUTO_CONNECT: false,
     IP_ADDRESS: "localhost",
@@ -3722,7 +3723,13 @@ print('done')
   }
 ],
 </t>
-<t tx="ekr.20200815123601.7">"leoIntegration.leoPythonCommand": {
+<t tx="ekr.20200815123601.7">"leoIntegration.leoServerPath": {
+  "scope": "application",
+  "default": "",
+  "type": "string",
+  "description": "Specifies the location of the Leo server script"
+},
+"leoIntegration.leoPythonCommand": {
   "scope": "application",
   "default": "",
   "type": "string",
@@ -3732,7 +3739,7 @@ print('done')
   "scope": "application",
   "default": false,
   "type": "boolean",
-  "description": "Starts a LeoBridge server automatically, by running the leobridgeserver.py python script"
+  "description": "Starts a LeoBridge server automatically, by running the Leo server script"
 },
 "leoIntegration.connectToServerAutomatically": {
   "scope": "application",
@@ -5815,6 +5822,7 @@ public static CONFIG_NAMES = {
     SHOW_CLONE: "showCloneOnNodes",
     SHOW_COPY: "showCopyOnNodes",
     INVERT_NODES: "invertNodeContrast",
+    LEO_SERVER_PATH: "leoServerPath",
     LEO_PYTHON_COMMAND: "leoPythonCommand",
     AUTO_START_SERVER: "startServerAutomatically",
     AUTO_CONNECT: "connectToServerAutomatically",
@@ -6082,6 +6090,7 @@ export class Config implements ConfigMembers {
     public showCopyOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_COPY;
     public invertNodeContrast: boolean = Constants.CONFIG_DEFAULTS.INVERT_NODES;
     public leoPythonCommand: string = Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND;
+    public leoServerPath: string = Constants.CONFIG_DEFAULTS.LEO_SERVER_PATH;
     public startServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_START_SERVER;
     public connectToServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_CONNECT;
     public connectionAddress: string = Constants.CONFIG_DEFAULTS.IP_ADDRESS;
@@ -6121,6 +6130,7 @@ public getConfig(): ConfigMembers {
         showCopyOnNodes: this.showCopyOnNodes,
         invertNodeContrast: this.invertNodeContrast,
         leoPythonCommand: this.leoPythonCommand,
+        leoServerPath: this.leoServerPath,
         startServerAutomatically: this.startServerAutomatically,
         connectToServerAutomatically: this.connectToServerAutomatically,
         connectionAddress: this.connectionAddress,
@@ -6202,6 +6212,7 @@ public buildFromSavedSettings(): void {
         this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
         this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
         this.invertNodeContrast = GET(NAME).get(NAMES.INVERT_NODES, DEFAULTS.INVERT_NODES);
+        this.leoServerPath = GET(NAME).get(NAMES.LEO_SERVER_PATH, DEFAULTS.LEO_SERVER_PATH);
         this.leoPythonCommand = GET(NAME).get(NAMES.LEO_PYTHON_COMMAND, DEFAULTS.LEO_PYTHON_COMMAND);
         this.startServerAutomatically = GET(NAME).get(NAMES.AUTO_START_SERVER, DEFAULTS.AUTO_START_SERVER);
         this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);
@@ -7728,8 +7739,10 @@ export class ServerService {
  * @param p_leoPythonCommand String command to start python on this computer
  * @returns A promise that resolves when the server is started, or that is rejected in case of problem while starting
  */
-public startServer(p_leoPythonCommand: string): Promise&lt;any&gt; {
+public startServer(p_leoPythonCommand: string, p_leoServerPath: string): Promise&lt;any&gt; {
+    console.log('p_leoServerPath', p_leoServerPath);
     let w_pythonPath = "";
+
     this._leoIntegration.showTerminalPane();
     const w_serverScriptPath = this._context.extensionPath + Constants.SERVER_PATH;
     if (p_leoPythonCommand &amp;&amp; p_leoPythonCommand.length) {
@@ -8171,6 +8184,7 @@ export interface ConfigMembers {
     showCloneOnNodes: boolean;
     showCopyOnNodes: boolean;
     invertNodeContrast: boolean;
+    leoServerPath: string;
     leoPythonCommand: string;
     startServerAutomatically: boolean;
     connectToServerAutomatically: boolean;
@@ -10281,7 +10295,7 @@ public startServer(): void {
     if (!this._leoTerminalPane) {
         this._leoTerminalPane = vscode.window.createOutputChannel(Constants.GUI.TERMINAL_PANE_TITLE);
     }
-    this._serverService.startServer(this.config.leoPythonCommand)
+    this._serverService.startServer(this.config.leoPythonCommand, this.config.leoServerPath)
         .then((p_message) =&gt; {
             utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
             if (this.config.connectToServerAutomatically) {
