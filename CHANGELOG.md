@@ -15,6 +15,7 @@
 -   Leo files can be opened from the explorer pane directly.
 -   Added 'minibuffer' feature with the usual alt-x command from Leo.
 -   Added cursor position, selected range and scrolling position to be captured and restored when navigating the outline. [#39](https://github.com/boltex/leointeg/issues/39) This allows for commands that use the currently selected text, [#61](https://github.com/boltex/leointeg/issues/61) such as run script and extract/extract name, etc.
+-   Redid the body display and switchig logic to support new vscode API features. (vscode now does not block 'undo' operations between file-rename operations, that were used to switch body pane content.)
 
 ## 0.1.12
 
