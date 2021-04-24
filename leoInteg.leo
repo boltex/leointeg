@@ -6282,8 +6282,8 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
 
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        ["leointeg.test", () =&gt; w_leo.test()], // Test function useful when debugging
-        ["leointeg.testFromOutline", () =&gt; w_leo.test(true)], // Test function useful when debugging.
+        // ["leointeg.test", () =&gt; w_leo.test()], // Test function useful when debugging
+        // ["leointeg.testFromOutline", () =&gt; w_leo.test(true)], // Test function useful when debugging.
 
         &lt;&lt; Define entries for all commands &gt;&gt;
     ];
