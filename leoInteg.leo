@@ -1938,7 +1938,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.51.0"
+    "vscode": "^1.55.0"
   },
   "keywords": [
     "leo",
@@ -1974,7 +1974,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.51.0",
+    "@types/vscode": "^1.55.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -12868,7 +12868,8 @@ public static VSCODE_COMMANDS = {
     "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoButtonNode/",
     "group": "leoButtonContext1@1"
   }
-]</t>
+]
+</t>
 <t tx="felix.20210418013332.1">private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
     console.log('DELETE EXTRANEOUS:', p_textEditor.document.uri.fsPath);
     const w_edit = new vscode.WorkspaceEdit();
