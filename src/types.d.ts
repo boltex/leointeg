@@ -7,12 +7,14 @@ import { LeoNode } from "./leoNode";
 export interface ConfigMembers {
     checkForChangeExternalFiles: string;
     defaultReloadIgnore: string;
+    leoTreeBrowse: boolean;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
     statusBarString: string;
     statusBarColor: string;
     treeInExplorer: boolean;
     showOpenAside: boolean;
+    showEditOnNodes: boolean;
     showArrowsOnNodes: boolean;
     showAddOnNodes: boolean;
     showMarkOnNodes: boolean;
@@ -27,6 +29,14 @@ export interface ConfigMembers {
 }
 
 /**
+ * * Structure for configuration settings changes used along with welcome/settings webview.
+ */
+export interface ConfigSetting {
+    code: string;
+    value: any;
+}
+
+/**
  * * When refreshing the outline and getting to Leo's selected node
  */
 export const enum RevealType {
@@ -37,27 +47,43 @@ export const enum RevealType {
 }
 
 /**
- * * User command's refresh-type for when coming back from executing the command
+ * * Required Refresh Dictionary of "elements to refresh" flags
  */
-export const enum RefreshType {
-    NoRefresh = 0, // only for 'copy-node' so far
-    RefreshTree,   // Refresh tree and show body pane if not already opened, but no need to refresh it
-    RefreshTreeAndBody // undo, redo, execute and others can also modify the current body, so refresh the filesystem gnx too
+export interface ReqRefresh {
+    node?: boolean; // Reveal received selected node (Navigation only, no tree change)
+    tree?: boolean; // Tree needs refresh
+    body?: boolean; // Body needs refresh
+    states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
+    buttons?: boolean; // Buttons needs refresh
+    documents?: boolean; // Documents needs refresh
 }
 
 /**
- * * Command parameter for when 'stacking' front end commands
+ * * Stackable front end commands
  */
 export interface UserCommand {
-    action: string;
+    action: string; // String from Constants.LEOBRIDGE, which are commands for leobridgeserver
     node?: LeoNode | undefined;  // We can START a stack with a targeted command
-    providedHeadline?: string | undefined;
-    refreshType: RefreshType;
-    fromOutline: boolean;
+    text?: string | undefined; // If a string is required, for headline, etc.
+    refreshType: ReqRefresh; // Minimal refresh level required by this command
+    fromOutline: boolean; // Focus back on outline instead of body
+    keepSelection?: boolean; // Should bring back selection on node prior to command
+    resolveFn?: (result: any) => void; // call that with an answer from python's (or other) side
+    rejectFn?: (reason: any) => void; // call if problem is encountered
 }
 
 /**
- * * Actions to be performed by Leo, pushed and resolved as a stack
+ * * Object container for parameters of leoIntegration's "apply-selected-node-to-body" method
+ */
+export interface ShowBodyParam {
+    node: LeoNode,
+    aside: boolean,
+    showBodyKeepFocus: boolean,
+    force_open?: boolean
+}
+
+/**
+ * * Stackable leoBridge actions to be performed by Leo
  */
 export interface LeoAction {
     parameter: string; // to pass along with action to python's side
@@ -89,6 +115,7 @@ export interface ArchivedPosition {
     marked: boolean;        // p.isMarked()
     atFile: boolean         // p.isAnyAtFileNode():
     selected: boolean;      // p == commander.p
+    u?: any;               // User Attributes
     stack: {
         gnx: string;        // stack_v.gnx
         childIndex: number; // stack_childIndex
@@ -97,47 +124,56 @@ export interface ArchivedPosition {
 }
 
 /**
- * * Main JSON information package format used between leointeg and Leo
+ * * Object sent back from leoInteg's 'getStates' command
+ */
+export interface LeoPackageStates {
+    changed: boolean; // Leo document has changed (is dirty)
+    canUndo: boolean; // Leo document can undo the last operation done
+    canRedo: boolean; // Leo document can redo the last operation 'undone'
+    canDemote: boolean; // Currently selected node can have its siblings demoted
+    canPromote: boolean; // Currently selected node can have its children promoted
+    canDehoist: boolean; // Leo Document is currently hoisted and can be de-hoisted
+}
+
+/**
+ * * Returned info about currently opened and editing document
+ * Used after opening, switching or setting the opened document
+ */
+export interface LeoBridgePackageOpenedInfo {
+    total: number;
+    filename: string;
+    node: ArchivedPosition;
+}
+
+/**
+ * * Main interface for JSON sent from Leo back to leoInteg
  */
 export interface LeoBridgePackage {
     id: number; // TODO : Could be used for error checking
-    // * Each of those top level member is an answer from a Constants.LEOBRIDGE command
+    // * Each of those top level member is an answer from a "Constants.LEOBRIDGE" command
     allGnx?: string[];
     bodyLength?: number;
     bodyData?: string;
+    bodyStates?: {
+        language: string;
+        selection: BodySelectionInfo;
+    }
     node?: ArchivedPosition;
     nodes?: ArchivedPosition[];
-    states?: {
-        changed: boolean;
-        canUndo: boolean;
-        canRedo: boolean;
-        canDemote: boolean;
-        canDehoist: boolean;
-    },
+    states?: LeoPackageStates;
     closed?: {
         total: number;
         filename?: string;
         node?: ArchivedPosition;
     },
-    opened?: {
-        total: number;
-        filename: string;
-        node: ArchivedPosition;
-    },
-    setOpened?: {
-        total: number;
-        filename: string;
-        node: ArchivedPosition
-    },
+    opened?: LeoBridgePackageOpenedInfo,
+    setOpened?: LeoBridgePackageOpenedInfo,
     openedFiles?: {
         index: number;
-        files: {
-            name: string;
-            index: number;
-            changed: boolean;
-            selected: boolean;
-        }[]
+        files: LeoDocument[];
     }
+    buttons?: LeoButton[];
+    commands?: MinibufferCommand[];
 }
 
 /**
@@ -145,9 +181,17 @@ export interface LeoBridgePackage {
  */
 export interface LeoDocument {
     name: string;
-    index: number,
+    index: number;
     changed: boolean;
-    selected: boolean
+    selected: boolean;
+}
+
+/**
+ * * Leo '@button' structure used in the '@buttons' tree view provider sent back by the server
+ */
+export interface LeoButton {
+    name: string;
+    index: string; // STRING KEY
 }
 
 /**
@@ -162,9 +206,32 @@ export interface Icon {
  * * LeoBody virtual file time information object
  */
 export interface BodyTimeInfo {
-    gnx: string;
     ctime: number;
     mtime: number;
+}
+
+/**
+ * * Body position
+ * Used in BodySelectionInfo interface
+ */
+export interface BodyPosition {
+    line: number;
+    col: number;
+}
+
+/**
+ * * LeoBody cursor active position and text selection state, along with gnx
+ */
+export interface BodySelectionInfo {
+    gnx: string;
+    // scroll is stored as-is as the 'scrollBarSpot' in Leo
+    scroll: {
+        start: BodyPosition;
+        end: BodyPosition;
+    }
+    active: BodyPosition;
+    start: BodyPosition;
+    end: BodyPosition;
 }
 
 /**
@@ -216,4 +283,12 @@ export interface AskMessageItem extends vscode.MessageItem {
  */
 export interface ChooseDocumentItem extends vscode.QuickPickItem {
     value: number;
+}
+
+/**
+ * * Used by the minibuffer command pallette
+ * Acquired from the getCommands method in leobridgeserver.py
+ */
+export interface MinibufferCommand extends vscode.QuickPickItem {
+    func: string;
 }

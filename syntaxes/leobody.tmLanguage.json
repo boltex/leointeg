@@ -1,25 +1,26 @@
 {
-	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "Leo Body",
+	"scopeName": "leo.injection",
+	"injectionSelector": "L:source.leobody",
 	"patterns": [
 		{
-			"include": "#comments"
+			"include": "#leo-comments"
 		},
 		{
-			"include": "#raw"
+			"include": "#leo-raw"
 		},
 		{
-			"include": "#sectionref"
+			"include": "#leo-sectionref"
 		},
 		{
-			"include": "#keywords"
+			"include": "#leo-keywords"
 		},
 		{
-			"include": "#strings"
+			"include": "#leo-languages"
 		}
 	],
 	"repository": {
-		"comments": {
+		"leo-comments": {
 			"patterns": [
 				{
 					"begin": "^(@doc|@)($|\\s+)",
@@ -38,7 +39,7 @@
 				}
 			]
 		},
-		"raw": {
+		"leo-raw": {
 			"patterns": [
 				{
 					"begin": "^(@raw)($|\\s+)",
@@ -57,7 +58,7 @@
 				}
 			]
 		},
-		"sectionref": {
+		"leo-sectionref": {
 			"patterns": [
 				{
 					"match": "(<<)([\\sa-zA-Z0-9_\\-]+)(>>)",
@@ -75,14 +76,14 @@
 				}
 			]
 		},
-		"keywords": {
+		"leo-keywords": {
 			"patterns": [
 				{
 					"match": "^\\s*(@others|@all)($|\\s+)",
 					"name": "keyword"
 				},
 				{
-					"match": "^(@language)\\s+\\b(batch|c|cplusplus|csharp|css|fortran|haskell|html|java|javascript|latex|lua|makefile|matlab|pascal|perl|php|python|ruby)\\b",
+					"match": "^(@language)\\s+\\b(batch|c|cplusplus|csharp|css|fortran|haskell|html|java|javascript|json|latex|lua|makefile|matlab|md|pascal|perl|php|python|ruby|rust|typescript)\\b",
 					"name": "keyword"
 				},
 				{
@@ -132,7 +133,41 @@
 					]
 				}
 			]
+		},
+		"leo-languages": {
+			"patterns": [],
+			"// TEST patterns": [
+				{
+					"begin": "^(@language python)($|\\s+)",
+					"end": "^(@language)($|\\s+)",
+					"beginCaptures": {
+						"0": {
+							"name": "keyword"
+						}
+					},
+					"endCaptures": {
+						"0": {
+							"name": "keyword"
+						}
+					},
+					"name": "meta.embedded.block.leobody.python"
+				},
+				{
+					"begin": "^(@language typescript)($|\\s+)",
+					"end": "^(@language)($|\\s+)",
+					"beginCaptures": {
+						"0": {
+							"name": "keyword"
+						}
+					},
+					"endCaptures": {
+						"0": {
+							"name": "keyword"
+						}
+					},
+					"name": "meta.embedded.block.leobody.typescript"
+				}
+			]
 		}
-	},
-	"scopeName": "source.leobody"
+	}
 }

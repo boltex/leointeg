@@ -55,11 +55,64 @@
   }
 }
 
+#dirty-config-toast {
+  box-shadow: 0px 0px 28px 0 rgba(0, 0, 0, 0.5);
+  // background-color: #000 !important;
+
+  cursor: default;
+  display: block;
+  padding: 1em 0.5rem;
+  position: fixed;
+  text-align: center;
+  width: 60%;
+  // height: 200px;
+  top: 50px;
+  left: 50%;
+  border-radius: 12px;
+  // margin-top: -100px; /* Negative half of height. */
+  margin-left: -30%; /* Negative half of width. */
+  visibility: hidden;
+  font-size: 2rem;
+  z-index: 100;
+
+  &.show {
+    visibility: visible; /* Show the snackbar */
+  }
+
+  &:before {
+    // background: transparent;
+    // border: 12px solid transparent;
+    // content: '';
+    // left: 50%;
+    // position: absolute;
+    // pointer-events: none;
+    // top: -24px;
+    // z-index: 1001;
+
+    .vscode-light & {
+      border-bottom-color: var(--color-background--darken-075);
+    }
+
+    .vscode-dark & {
+      border-bottom-color: var(--color-background--lighten-075);
+    }
+  }
+  .vscode-light & {
+    background-color: #cc5d1a;
+    color: #f2f2f2;
+  }
+
+  .vscode-dark & {
+    background-color: #cc5d1a;
+    color: #f2f2f2;
+  }
+}
+
 /* Animations to fade the snackbar in and out */
 @keyframes fadein {
   from {
     // top: 0;
-    opacity: 0;
+    opacity: 0.8;
   }
   to {
     // top: 30px;

@@ -1,5 +1,6 @@
 import { initializeAndWatchThemeColors } from './theme';
 import { debounce } from "debounce";
+import { ConfigSetting } from '../../types';
 
 interface VsCodeApi {
     postMessage(msg: {}): void;
@@ -14,6 +15,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
     initializeAndWatchThemeColors();
 
     const toast = document.getElementById("saved-config-toast");
+    const dirty = document.getElementById("dirty-config-toast");
 
     // * TEST
     const oldState = vscode.getState();
@@ -49,6 +51,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
                     setControls();
                     break;
                 case "vscodeConfig":
+                    dirty!.className = dirty!.className.replace("show", "");
                     toast!.className = "show";
                     setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
                     vscodeConfig = message.config; // next changes will be confronted to those settings
@@ -67,6 +70,12 @@ declare function acquireVsCodeApi(): VsCodeApi;
         for (const el of els) {
             el.addEventListener(name, listener, false);
         }
+    }
+
+    function chooseLeoServerPath() {
+        vscode.postMessage({
+            command: "chooseLeoServerPath"
+        });
     }
 
     function onBind() {
@@ -104,6 +113,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
     function onInputChecked(element: HTMLInputElement) {
         frontConfig[element.id] = element.checked;
         setVisibility(frontConfig);
+        dirty!.className = "show";
         applyChanges();
     }
     function onInputBlurred(element: HTMLInputElement) {
@@ -122,6 +132,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
         } else if (element.type === 'text' && element.value.length <= element.maxLength) {
             frontConfig[element.id] = element.value;
         }
+        dirty!.className = "show";
         applyChanges();
     }
 
@@ -137,6 +148,10 @@ declare function acquireVsCodeApi(): VsCodeApi;
                     console.log('ERROR : w_element', key, ' is ', w_element);
                 }
             }
+        }
+        const w_button: HTMLElement | null = document.getElementById('chooseLeoServerPath');
+        if (w_button) {
+            w_button.onclick = chooseLeoServerPath;
         }
     }
 
@@ -195,7 +210,7 @@ declare function acquireVsCodeApi(): VsCodeApi;
     }
 
     var applyChanges = debounce(function () {
-        var w_changes = [];
+        var w_changes: ConfigSetting[] = [];
         if (frontConfig) {
             for (var prop in frontConfig) {
                 if (Object.prototype.hasOwnProperty.call(frontConfig, prop)) {
@@ -214,6 +229,9 @@ declare function acquireVsCodeApi(): VsCodeApi;
                 command: "config",
                 changes: w_changes
             });
+        } else {
+            // Still have to remove 'modified' popup
+            dirty!.className = dirty!.className.replace("show", "");
         }
     }, 1500);
 

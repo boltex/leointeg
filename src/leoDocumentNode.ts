@@ -9,20 +9,20 @@ import { LeoIntegration } from "./leoIntegration";
  */
 export class LeoDocumentNode extends vscode.TreeItem {
 
-    public contextValue: string; // * Context string is checked in package.json with 'when' clauses
+    // Context string is checked in package.json with 'when' clauses
+    public contextValue: string;
 
     constructor(
         public documentEntry: LeoDocument,
         private _leoIntegration: LeoIntegration
     ) {
         super(documentEntry.name);
-        // * Setup this instance
+        // Setup this instance
         const w_isNamed: boolean = !!this.documentEntry.name;
         this.label = w_isNamed ? utils.getFileFromPath(this.documentEntry.name) : Constants.UNTITLED_FILE_NAME;
         this.tooltip = w_isNamed ? this.documentEntry.name : Constants.UNTITLED_FILE_NAME;
-        this.description = false;
         this.command = {
-            command: Constants.NAME + "." + Constants.COMMANDS.SET_OPENED_FILE, // unexposed command test
+            command: Constants.COMMANDS.SET_OPENED_FILE,
             title: '',
             arguments: [this.documentEntry.index]
         };
@@ -35,12 +35,15 @@ export class LeoDocumentNode extends vscode.TreeItem {
         }
     }
 
+    // @ts-ignore
     public get iconPath(): Icon {
         return this._leoIntegration.documentIcons[this.documentEntry.changed ? 1 : 0];
     }
 
+    // @ts-ignore
     public get id(): string {
-        // Add prefix and suffix salt to numeric index prevent accidental duplicates
+        // Add prefix and suffix salt to numeric index to prevent accidental duplicates
         return "p" + this.documentEntry.index + "s" + this.documentEntry.name;
     }
+
 }

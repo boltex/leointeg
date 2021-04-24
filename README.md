@@ -4,7 +4,8 @@
 
 ### Break your code down into sections structured as an outline, to derive or parse back your files
 
-> Leo is a fundamentally different way of using and organizing data, programs and scripts.
+> Leo is a fundamentally different way of using and organizing data, programs and scripts.\
+> [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4) 🎥
 
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
 or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.visualstudio.com](https://code.visualstudio.com/).
@@ -19,11 +20,15 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
 
-## Development version installation
+## Development Version Installation
 
-In addition to the above requirements, make sure you have Node.js and Git installed, then clone the sources and run `npm install` in a terminal to install the remaining development dependencies.
+[Video tutorial of installation and startup](https://www.youtube.com/watch?v=rutt11xL54I):
 
-![run extension](/resources/run-extension.png)
+[![Installation and startup video](https://img.youtube.com/vi/rutt11xL54I/0.jpg)](https://www.youtube.com/watch?v=rutt11xL54I)
+
+In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's next release), make sure you have Node.js and Git installed, then clone the sources and run `npm install` in a terminal to install the remaining development dependencies.
+
+![run extension](resources/run-extension.png)
 
 You can then run the **Run Extension** target, as shown above, in the **Debug View**.
 
@@ -31,9 +36,11 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 ## Features
 
-- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes**, **opened documents selector** and **Log Window**.
+- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes**, **opened documents selector** along with **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
+- Keybindings that match those of Leo, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
+- **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
 - Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
   - Open body panes to the side
   - Outline edition commands
@@ -44,25 +51,59 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 ## Keybindings
 
-> _More commands are available by opening the **Command Palette** and typing 'Leo'_
+### Outline Commands
 
-| Keybinding                 |     |                       | Command            |
-| :------------------------- | :-- | :-------------------- | :----------------- |
-| `Alt + -`                  |     |                       | Contract All       |
-| `Ctrl + I`                 |     |                       | Insert Node        |
-| `Ctrl + H`                 |     |                       | Edit Headline      |
-| `Ctrl + Backquote`         |     |                       | Clone Node         |
-| `Ctrl + Shift + C`         |     |                       | Copy Node          |
-| `Ctrl + Shift + X`         |     |                       | Cut Node           |
-| `Ctrl + Shift + V`         |     |                       | Paste Node         |
-| `Ctrl + Shift + Backspace` |     |                       | Delete Node        |
-| `Ctrl + B`                 |     |                       | Execute Script     |
-| `Ctrl + M`                 |     |                       | Mark / Unmark      |
-| `Ctrl + {`                 |     | `Ctrl + }`            | Promote / Demote   |
-| `Ctrl + U`                 | or  | `Shift + Alt + Up`    | Move Outline Up    |
-| `Ctrl + D`                 | or  | `Shift + Alt + Down`  | Move Outline Down  |
-| `Ctrl + L`                 | or  | `Shift + Alt + Left`  | Move Outline Left  |
-| `Ctrl + R`                 | or  | `Shift + Alt + Right` | Move Outline Right |
+|                            |     |            |                  |
+| :------------------------- | :-- | :--------- | :--------------- |
+| `Ctrl + I`                 |     |            | Insert Node      |
+| `Ctrl + H`                 |     |            | Edit Headline    |
+| `Ctrl + Shift + C`         |     |            | Copy Node        |
+| `Ctrl + Shift + X`         |     |            | Cut Node         |
+| `Ctrl + Shift + V`         |     |            | Paste Node       |
+| `Ctrl + Shift + Backspace` |     |            | Delete Node      |
+| `Ctrl + Backquote`         |     |            | Clone Node       |
+| `Ctrl + {`                 | and | `Ctrl + }` | Promote / Demote |
+
+### Moving Outline Nodes
+
+|            |     |                         |                    |
+| :--------- | :-- | :---------------------- | :----------------- |
+| `Ctrl + U` | or  | `Shift [+ Alt] + Up`    | Move Outline Up    |
+| `Ctrl + D` | or  | `Shift [+ Alt] + Down`  | Move Outline Down  |
+| `Ctrl + L` | or  | `Shift [+ Alt] + Left`  | Move Outline Left  |
+| `Ctrl + R` | or  | `Shift [+ Alt] + Right` | Move Outline Right |
+
+_Move Outline commands need the 'Alt' key modifier only when focus is on body pane._
+
+### Common Operations
+
+|                    |     |           |                     |
+| :----------------- | :-- | :-------- | :------------------ |
+| `Alt + -`          |     |           | Contract All        |
+| `Ctrl + M`         |     |           | Mark / Unmark       |
+| `Ctrl + B`         |     |           | Execute Script      |
+| `Ctrl + T`         |     |           | Toggle Outline/Body |
+| `Tab`              | or  | `Alt + D` | Focus on Body       |
+| `Alt + T`          |     |           | Focus on Outline    |
+| `Ctrl + Shift + D` |     |           | Extract             |
+| `Ctrl + Shift + N` |     |           | Extract Names       |
+| `Alt + A`          |     |           | Sort Siblings       |
+
+### Tree Navigation
+
+|                    |     |                 |                          |
+| :----------------- | :-- | :-------------- | :----------------------- |
+| `Alt + Home`       | or  | `Home` \*       | Go To First Visible Node |
+| `Alt + End`        |     |                 | Go To Last Sibling       |
+|                    |     | `End` \*        | Go To Last Visible Node  |
+| `Alt + N`          |     |                 | Go To Next Clone         |
+| `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree              |
+| `Ctrl + T`         |     |                 | Switch Tree/Body Focus   |
+| `Tab`              |     |                 | Focus from Tree to Body  |
+
+\* _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
+
+---
 
 ## Derive External Files
 
@@ -110,22 +151,25 @@ Main issues are listed below. See the repository's [Issues Page](https://github.
 If you're experiencing trouble with the keyboard shortcuts for
 the 'Clone Node' or the 'Promote' and 'Demote' commands,
 use **"keyboard.dispatch": "keyCode"** in your settings and restart vscode.
-See [Troubleshoot Linux Keybindings](https://github.com/microsoft/vscode/wiki/Keybinding-Issues#troubleshoot-linux-keybindings) for more information.
+See [Troubleshoot Linux Keybindings](https://github.com/microsoft/vscode/wiki/Keybinding-Issues#troubleshoot-linux-keybindings)
+for more information.
 
-### Move outline keyboard commands
+### Move Outline Keyboard Commands
 
-For some users, the **`Ctrl+D`** keybinding is already assigned.
-To help with this conflict, outline-move keyboard commands will only trigger
+For some users, the **`Alt+[Arrow Keys]`**, **`Ctrl+D`** and **`Ctrl+T`** keybinding are already assigned.
+To help with this conflict, tree-browsing, outline-move keyboard commands, and switch focus command will only trigger
 with the additional condition of having no text selection in the editor.
-So select at least one character to use the previously assigned **`Ctrl+D`** command in body panes.
+So select at least one character to use the previously assigned original keyboard commands while focus is in the body pane.
 
 > This extension is still in development, so please refer to its [issue tracker](https://github.com/boltex/leointeg/issues) to learn more about its intended features, or to contribute with additional information if you encounter other issues yourself.
 
-## How it works
+## How It Works
 
 Integration is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
 
 The outline pane is made by implementing a [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics), while the body panes _virtual documents_ are made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api) and using the node's gnx as identifiers.
+
+---
 
 ## Acknowledgments
 
@@ -134,7 +178,8 @@ The outline pane is made by implementing a [TreeDataProvider for vscode's TreeVi
 - [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
 - [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
 - [Vitalije](https://github.com/vitalije) for his contributions and support
+- [Arjan](https://github.com/ar-jan) for his suggestions and ideas
 
 ---
 
-**Enjoy!**
+**🦁 Enjoy!**

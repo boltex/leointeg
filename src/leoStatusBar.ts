@@ -4,7 +4,7 @@ import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
- * * Statusbar indicator controller object
+ * * Statusbar indicator controller service
  */
 export class LeoStatusBar {
 
@@ -13,12 +13,13 @@ export class LeoStatusBar {
     private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
     private _string: string = ""; // Use this string with indicator, using this will replace the default from config
 
-    private _leoObjectSelected: boolean = false; // Represents having focus on a leo body
-    set leoObjectSelected(p_value: boolean) {
-        this._leoObjectSelected = p_value;
+    // * Represents having focus on a leo tree, body or document panel to enable leo keybindings
+    private _statusBarFlag: boolean = false;
+    set statusBarFlag(p_value: boolean) {
+        this._statusBarFlag = p_value;
     }
-    get leoObjectSelected(): boolean {
-        return this._leoObjectSelected;
+    get statusBarFlag(): boolean {
+        return this._statusBarFlag;
     }
 
     constructor(
@@ -63,9 +64,9 @@ export class LeoStatusBar {
      * @param p_state True/False flag for On or Off status
      * @param p_debounceDelay Optional, in milliseconds
      */
-    public update(p_state: boolean, p_debounceDelay?: number): void {
-        if (p_state !== this.leoObjectSelected) {
-            this.leoObjectSelected = p_state;
+    public update(p_state: boolean, p_debounceDelay?: number, p_forced?: boolean): void {
+        if (p_forced || (p_state !== this.statusBarFlag)) {
+            this.statusBarFlag = p_state;
             if (p_debounceDelay) {
                 this._updateLeoObjectIndicatorDebounced(p_debounceDelay);
             } else {
@@ -91,12 +92,19 @@ export class LeoStatusBar {
      * * Updates the status bar visual indicator flag directly
      */
     private _updateLeoObjectIndicator(): void {
-        if (this._updateStatusBarTimeout) { // Can be called directly, so clear timer if any
+        // Can be called directly, so clear timer if any
+        if (this._updateStatusBarTimeout) {
             clearTimeout(this._updateStatusBarTimeout);
         }
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.leoObjectSelected);
-        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + (this._string ? this._string : this._leoIntegration.config.statusBarString);
-        if (this.leoObjectSelected && this._leoIntegration.fileOpenedReady) { // * Also check in constructor for statusBar properties (the createStatusBarItem call itself)
+
+        utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
+
+        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
+            (this._string ? this._string : this._leoIntegration.config.statusBarString) + " " +
+            (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
+
+        // Also check in constructor for statusBar properties (the createStatusBarItem call itself)
+        if (this.statusBarFlag && this._leoIntegration.leoStates.fileOpenedReady) {
             this._leoStatusBarItem.color = "#" + this._leoIntegration.config.statusBarColor;
             this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
         } else {
@@ -104,4 +112,5 @@ export class LeoStatusBar {
             this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_OFF;
         }
     }
+
 }

@@ -7,18 +7,23 @@ import { LeoAsync } from "./leoAsync";
 
 /**
  * * Handles communication with the leobridgeserver.py python script via websockets
+ * This implements a bridge-facing action stack, (push on top, remove bottom)
+ * 'actions' get sent to Leo, and resolve a promise with the result when the answer comes back.
+ * This 'stack' concept is similar to the 'CommandStack' class used for vscode's user interactions.
  */
 export class LeoBridge {
 
-    private _actionBusy: boolean = false; // A busy state meaning an action was started from the bottom but has yet to resolve
-
-    private _leoBridgeSerialId: number = 0; // TODO : When doing error checking, see if this should be Constants.STARTING_PACKAGE_ID or 0 or 2... ?
     private _callStack: LeoAction[] = [];
+    private _actionBusy: boolean = false; // Action was started from the bottom, but has yet to resolve
+
+    private _leoBridgeSerialId: number = 0; // TODO : Error checking (should be Constants.STARTING_PACKAGE_ID or 0 or 2...?)
     private _readyPromise: Promise<LeoBridgePackage> | undefined;
 
-    // private _hasbin = require('hasbin'); // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
     private _websocket: WebSocket | null = null;
     private _leoAsync: LeoAsync;
+
+    // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
+    // private _hasbin = require('hasbin');
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -36,12 +41,12 @@ export class LeoBridge {
      * @returns a Promise that will contain the JSON package answered back by leobridgeserver.py
      */
     public action(p_action: string, p_jsonParam = "null", p_deferredPayload?: LeoBridgePackage, p_preventCall?: boolean): Promise<LeoBridgePackage> {
-        return new Promise((resolve, reject) => {
+        return new Promise((p_resolve, p_reject) => {
             const w_action: LeoAction = {
                 parameter: this._buildActionParameter(p_action, p_jsonParam),
                 deferredPayload: p_deferredPayload ? p_deferredPayload : undefined,
-                resolveFn: resolve,
-                rejectFn: reject
+                resolveFn: p_resolve,
+                rejectFn: p_reject
             };
 
             this._callStack.push(w_action);
@@ -52,8 +57,16 @@ export class LeoBridge {
     }
 
     /**
+     * * Busy state of the leoBridge's command stack
+     */
+    public isBusy(): boolean {
+        return this._actionBusy || !!this._callStack.length;
+    }
+
+    /**
      * * Actions invoked by Leo that can be called asynchronously at any time
-     * @param w_parsedData Object that contains an 'async' string member that was parsed from a _websocket.onmessage JSON package
+     * @param w_parsedData that contains an 'async' string member,
+     * that was parsed from a _websocket.onmessage package
      */
     private _asyncAction(w_parsedData: any): void {
         if (w_parsedData && w_parsedData.async && (typeof w_parsedData.async === "string")) {
@@ -200,7 +213,7 @@ export class LeoBridge {
             console.log(`Websocket closed, code: ${p_event.code}`);
             this._rejectAction(`Websocket closed, code: ${p_event.code}`);
             // TODO : Implement a better connection error handling
-            if (this._leoIntegration.leoBridgeReady) {
+            if (this._leoIntegration.leoStates.leoBridgeReady) {
                 this._leoIntegration.cancelConnect(`Websocket closed, code: ${p_event.code}`);
             }
         };
@@ -222,4 +235,5 @@ export class LeoBridge {
             });
         }
     }
+
 }

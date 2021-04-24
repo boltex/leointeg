@@ -30,7 +30,7 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
     public getChildren(element?: LeoDocumentNode): Thenable<LeoDocumentNode[]> {
 
         // if called with element, or not ready, give back empty array as there won't be any children
-        if (this._leoIntegration.fileOpenedReady && !element) {
+        if (this._leoIntegration.leoStates.fileOpenedReady && !element) {
 
             // call action to get get list, and convert to LeoDocumentNode(s) array
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package => {
@@ -41,8 +41,8 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
                     let w_index: number = 0;
 
                     if (w_files && w_files.length) {
-                        w_files.forEach((p_fileEntry: LeoDocument) => {
-                            w_list.push(new LeoDocumentNode(p_fileEntry, this._leoIntegration));
+                        w_files.forEach((i_file: LeoDocument) => {
+                            w_list.push(new LeoDocumentNode(i_file, this._leoIntegration));
                             w_index++;
                         });
                     }
@@ -58,6 +58,8 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
     }
 
     public getParent(element: LeoDocumentNode): ProviderResult<LeoDocumentNode> | null {
-        return null; // A list, as such, entries are always child of root, so return null
+        // Leo documents are just a list, as such, entries are always child of root, so return null
+        return null;
     }
+
 }

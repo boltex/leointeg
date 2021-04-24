@@ -1,12 +1,14 @@
 import * as os from 'os';
 import * as child from 'child_process';
-import * as path from "path"; // TODO : Use this library to have reliable support for window-vs-linux file-paths
+import * as path from "path"; // TODO : Use this to have reliable support for window-vs-linux file-paths
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
+import { LeoIntegration } from './leoIntegration';
 
 /**
- * * Provides simple automatic leo bridge server startup
+ * * Leo bridge server service
+ * Provides simple automatic leo bridge server startup functionality
  */
 export class ServerService {
     // TODO : See #10 @boltex Problem starting the leo-bridge server automatically with anaconda/miniconda on windows
@@ -20,9 +22,37 @@ export class ServerService {
      */
     private _serverProcess: child.ChildProcess | undefined;
 
-    constructor(private _context: vscode.ExtensionContext) {
+    private _resolvePromise: ((value?: unknown) => void) | undefined;
+    private _rejectPromise: ((reason?: any) => void) | undefined;
+
+    private _isStarted: boolean = false;
+
+    constructor(
+        private _context: vscode.ExtensionContext,
+        private _leoIntegration: LeoIntegration
+    ) {
         this._platform = os.platform();
         this._isWin32 = this._platform === "win32";
+    }
+
+    /**
+     * * Splits the received data into lines and parses output to detect server start event
+     * * Otherwise just outputs lines to the terminal Output
+     * @param p_data Data object (not pure string)
+     */
+    private _gotTerminalData(p_data: string): void {
+        p_data.toString().split("\n").forEach(p_line => {
+            p_line = p_line.trim();
+            if (p_line) { // * std out process line by line: json shouldn't have line breaks
+                if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
+                    if (this._resolvePromise && !this._isStarted) {
+                        this._isStarted = true;
+                        this._resolvePromise(p_line); // * Server confirmed started
+                    }
+                }
+                this._leoIntegration.addTerminalPaneEntry(p_line); // Output message anyways
+            }
+        });
     }
 
     /**
@@ -32,63 +62,71 @@ export class ServerService {
      */
     public startServer(p_leoPythonCommand: string): Promise<any> {
         let w_pythonPath = "";
+        this._leoIntegration.showTerminalPane();
         const w_serverScriptPath = this._context.extensionPath + Constants.SERVER_PATH;
         if (p_leoPythonCommand && p_leoPythonCommand.length) {
             // Start by running command (see executeCommand for multiple useful snippets)
             w_pythonPath = p_leoPythonCommand; // Set path
-            console.log('Starting server with command: ' + p_leoPythonCommand);
+            this._leoIntegration.addTerminalPaneEntry('Starting server with command: ' + p_leoPythonCommand);
         } else {
             w_pythonPath = Constants.DEFAULT_PYTHON;
             if (this._isWin32) {
                 w_pythonPath = Constants.WIN32_PYTHON;
             }
-            console.log('Starting server with command : ' +
+            this._leoIntegration.addTerminalPaneEntry('Starting server with command : ' +
                 w_pythonPath + ((this._isWin32 && w_pythonPath === "py") ? " -3 " : "") +
                 " " + w_serverScriptPath);
         }
 
-        const w_serverStartPromise = new Promise((p_resolve, w_reject) => {
+        const w_serverStartPromise = new Promise((p_resolve, p_reject) => {
             // * Spawn a python child process for a leoBridge server
-            let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
-            if (this._isWin32 && w_pythonPath === "py") {
-                w_args.push("-3");
-            }
-            w_args.push(w_serverScriptPath);
-            this._serverProcess = child.spawn(w_pythonPath, w_args);
-            if (this._serverProcess && this._serverProcess.stdout) {
-                // * Capture the python process output
-                this._serverProcess.stdout.on("data", (p_data: string) => {
-                    p_data.toString().split("\n").forEach(p_line => {
-                        p_line = p_line.trim();
-                        if (p_line) { // * std out process line by line: json shouldn't have line breaks
-                            if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
-                                p_resolve(p_line); // * Server confirmed started
-                            }
-                            console.log("leoBridge: ", p_line); // Output message anyways
-                        }
-                    });
-                });
-            } else {
-                console.error("No stdout");
-            }
-            if (this._serverProcess && this._serverProcess.stderr) {
-                // * Capture other python process outputs
-                this._serverProcess.stderr.on("data", (p_data: string) => {
-                    console.log(`stderr: ${p_data}`);
-                    utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
-                    this._serverProcess = undefined;
-                    w_reject(`stderr: ${p_data}`);
-                });
-            } else {
-                console.error("No stderr");
-            }
-            this._serverProcess.on("close", (p_code: any) => {
-                console.log(`leoBridge exited with code ${p_code}`);
+            this._resolvePromise = p_resolve;
+            this._rejectPromise = p_reject;
+        });
+
+        let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
+
+        if (this._isWin32 && w_pythonPath === "py") {
+            w_args.push("-3");
+        }
+        w_args.push(w_serverScriptPath);
+        this._serverProcess = child.spawn(w_pythonPath, w_args);
+
+        if (this._serverProcess && this._serverProcess.stdout) {
+            // * Capture the python process output
+            this._serverProcess.stdout.on("data", (p_data: string) => {
+                this._gotTerminalData(p_data);
+            });
+        } else {
+            console.error("No stdout");
+        }
+        if (this._serverProcess && this._serverProcess.stderr) {
+            // * Capture other python process outputs
+            this._serverProcess.stderr.on("data", (p_data: string) => {
+                console.log(`stderr: ${p_data}`);
+                this._isStarted = false;
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                 this._serverProcess = undefined;
-                w_reject(`leoBridge exited with code ${p_code}`);
+                if (this._rejectPromise) {
+                    this._rejectPromise(`stderr: ${p_data}`);
+                }
             });
-        });
+        } else {
+            console.error("No stderr");
+        }
+        if (this._serverProcess) {
+            this._serverProcess!.on("close", (p_code: any) => {
+                console.log(`leoBridge exited with code ${p_code}`);
+                this._isStarted = false;
+                utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+                this._serverProcess = undefined;
+                if (this._rejectPromise) {
+                    this._rejectPromise(`leoBridge exited with code ${p_code}`);
+                }
+            });
+        }
+
         return w_serverStartPromise;
     }
+
 }

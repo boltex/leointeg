@@ -13,7 +13,7 @@ const HtmlPlugin = require("html-webpack-plugin");
 const ImageminPlugin = require("imagemin-webpack-plugin").default;
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-module.exports = function(env, argv) {
+module.exports = function (env, argv) {
   env = env || {};
   env.analyzeBundle = Boolean(env.analyzeBundle);
   env.analyzeDeps = Boolean(env.analyzeDeps);
@@ -33,15 +33,15 @@ function getExtensionConfig() {
       path: path.resolve(__dirname, "dist"),
       filename: "extension.js",
       libraryTarget: "commonjs2",
-      devtoolModuleFilenameTemplate: "../[resource-path]"
+      devtoolModuleFilenameTemplate: "../[resource-path]",
     },
     devtool: "source-map",
     externals: {
-      vscode: "commonjs vscode" // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
+      vscode: "commonjs vscode", // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
     },
     resolve: {
       // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
-      extensions: [".ts", ".js"]
+      extensions: [".ts", ".js"],
     },
     module: {
       rules: [
@@ -53,14 +53,14 @@ function getExtensionConfig() {
               loader: "ts-loader",
               options: {
                 compilerOptions: {
-                  module: "es6" // override `tsconfig.json` so that TypeScript emits native JavaScript modules.
-                }
-              }
-            }
-          ]
-        }
-      ]
-    }
+                  module: "es6", // override `tsconfig.json` so that TypeScript emits native JavaScript modules.
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
   };
   return configExtension;
 }
@@ -72,7 +72,7 @@ function getWebviewsConfig(env) {
     "default-src": "'none'",
     "img-src": ["vscode-resource:", "https:", "data:"],
     "script-src": ["vscode-resource:", "'nonce-Z2l0bGV1cy1ib290c3RyYXA='"],
-    "style-src": ["vscode-resource:"]
+    "style-src": ["vscode-resource:"],
   };
   if (!env.production) {
     cspPolicy["script-src"].push("'unsafe-eval'");
@@ -83,10 +83,10 @@ function getWebviewsConfig(env) {
     new ForkTsCheckerPlugin({
       tsconfig: path.resolve(__dirname, "tsconfig.webviews.json"),
       async: false,
-      eslint: true
+      eslint: true,
     }),
     new MiniCssExtractPlugin({
-      filename: "[name].css"
+      filename: "[name].css",
     }),
     new HtmlPlugin({
       excludeAssets: [/.+-styles\.js/],
@@ -99,8 +99,8 @@ function getWebviewsConfig(env) {
         policy: cspPolicy,
         nonceEnabled: {
           "script-src": true,
-          "style-src": true
-        }
+          "style-src": true,
+        },
       },
       minify: env.production
         ? {
@@ -111,10 +111,11 @@ function getWebviewsConfig(env) {
             removeEmptyAttributes: true,
             removeStyleLinkTypeAttributes: true,
             keepClosingSlash: true,
-            minifyCSS: true
+            minifyCSS: true,
           }
-        : false
+        : false,
     }),
+    // @ts-ignore
     new HtmlExcludeAssetsPlugin(),
     new CspHtmlPlugin(),
     new ImageminPlugin({
@@ -122,7 +123,7 @@ function getWebviewsConfig(env) {
       externalImages: {
         context: path.resolve(__dirname, "src/webviews/apps/images"),
         sources: glob.sync("src/webviews/apps/images/*.png"),
-        destination: path.resolve(__dirname, "resources")
+        destination: path.resolve(__dirname, "resources"),
       },
       cacheFolder: path.resolve(__dirname, "node_modules", ".cache", "imagemin-webpack-plugin"),
       gifsicle: null,
@@ -130,10 +131,10 @@ function getWebviewsConfig(env) {
       optipng: null,
       pngquant: {
         quality: "85-100",
-        speed: true ? 1 : 10 // 1 is prod
+        speed: true ? 1 : 10, // 1 is prod
       },
-      svgo: null
-    })
+      svgo: null,
+    }),
   ];
 
   /**@type {import('webpack').Configuration}*/
@@ -141,14 +142,14 @@ function getWebviewsConfig(env) {
     context: path.resolve(__dirname, "src/webviews/apps"),
     entry: {
       "main-styles": ["./scss/main.scss"],
-      settings: ["./index.ts"]
+      settings: ["./index.ts"],
     },
     mode: env.production ? "production" : "development",
     devtool: env.production ? undefined : "eval-source-map",
     output: {
       filename: "[name].js",
       path: path.resolve(__dirname, "dist/webviews"),
-      publicPath: "#{root}/dist/webviews/"
+      publicPath: "#{root}/dist/webviews/",
     },
     module: {
       rules: [
@@ -159,38 +160,39 @@ function getWebviewsConfig(env) {
             loader: "ts-loader",
             options: {
               configFile: "tsconfig.webviews.json",
-              transpileOnly: true
-            }
-          }
+              transpileOnly: true,
+            },
+          },
         },
         {
           test: /\.scss$/,
           use: [
             {
-              loader: MiniCssExtractPlugin.loader
+              loader: MiniCssExtractPlugin.loader,
             },
             {
               loader: "css-loader",
               options: {
                 sourceMap: true,
-                url: false
-              }
+                url: false,
+              },
             },
             {
               loader: "sass-loader",
               options: {
-                sourceMap: true
-              }
-            }
+                sourceMap: true,
+              },
+            },
           ],
-          exclude: /node_modules/
-        }
-      ]
+          exclude: /node_modules/,
+        },
+      ],
     },
     resolve: {
       extensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
-      modules: [path.resolve(__dirname, "src/webviews/apps"), "node_modules"]
+      modules: [path.resolve(__dirname, "src/webviews/apps"), "node_modules"],
     },
+    // @ts-ignore
     plugins: plugins,
     stats: {
       all: false,
@@ -199,8 +201,8 @@ function getWebviewsConfig(env) {
       env: true,
       errors: true,
       timings: true,
-      warnings: true
-    }
+      warnings: true,
+    },
   };
   return configWebview;
 }

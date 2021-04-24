@@ -3,19 +3,19 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
+import { LeoBridgePackage } from "./types";
 
 /**
- * * Leo outline implemented as a tree view with this TreeDataProvider implementation
+ * * Leo outline implemented as a tree view with this TreeDataProvider
  */
 export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
-
-    // TODO : p_package members names should be made into constants
 
     private _onDidChangeTreeData: vscode.EventEmitter<LeoNode | undefined> = new vscode.EventEmitter<LeoNode | undefined>();
 
     readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
 
-    private _refreshSingleNodeFlag: boolean = false; // used in leoOutline.ts to check if getTreeItem(element: LeoNode) should fetch from Leo, or return as-is
+    // used in leoOutline.ts to check if getTreeItem(element: LeoNode) should fetch from Leo, or return as-is
+    private _refreshSingleNodeFlag: boolean = false;
 
     constructor(private _leoIntegration: LeoIntegration) { }
 
@@ -24,7 +24,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
      * @param p_node The outline's node itself as a LeoNode instance
      */
     public refreshTreeNode(p_node: LeoNode): void {
-        this._refreshSingleNodeFlag = true; // We want to do a real refresh, not just giving back the same we've got as input in getTreeItem
+        // Do a real node refresh, not just giving back the same element: see getTreeItem(element) below
+        this._refreshSingleNodeFlag = true;
         this._onDidChangeTreeData.fire(p_node);
     }
 
@@ -32,6 +33,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
+        // TODO : have this return a promise that resolves when the selected node is encountered by ap_to_p
         this._onDidChangeTreeData.fire(undefined);
     }
 
@@ -39,7 +41,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         if (this._refreshSingleNodeFlag) {
             this._refreshSingleNodeFlag = false;
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PNODE, element.apJson)
-                .then((p_package) => {
+                .then((p_package: LeoBridgePackage) => {
                     const w_node = this._leoIntegration.apToLeoNode(p_package.node!, true, element);
                     return element.copyProperties(w_node);
                 });
@@ -49,31 +51,47 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     }
 
     public getChildren(element?: LeoNode): Thenable<LeoNode[]> {
-        if (this._leoIntegration.fileOpenedReady) {
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element ? element.apJson : "null").then((p_package) => {
-                return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
-            });
-        } else {
+        if (!this._leoIntegration.leoStates.fileOpenedReady) {
             return Promise.resolve([]); // Defaults to an empty list of children
+        }
+        if (element) {
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element.apJson)
+                .then((p_package: LeoBridgePackage) => {
+                    return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+                });
+        } else {
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, "null")
+                .then((p_package: LeoBridgePackage) => {
+                    const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+                    if (w_nodes && w_nodes.length === 1) {
+                        w_nodes[0].setRoot();
+                    }
+                    return w_nodes;
+                });
         }
     }
 
     public getParent(element: LeoNode): ProviderResult<LeoNode> | null {
         // * This method should be implemented in order to access reveal API.
-        // ! But it should NOT have to be called because we will only try to 'select' already revealed nodes
+        // ! But it should NOT have to be called if only trying to 'select' already revealed nodes
+        // ! Called when revealing single nodes
 
-        console.log('ERROR! GET PARENT CALLED! on: ', element.label);
+        // ! Might be called if nodes are revealed while in vscode's refresh process
+        // ! Parent asked for this way will go up till root and effectively refresh whole tree.
+        // console.log('ERROR! GET PARENT CALLED! on: ', element.label);
 
-        if (this._leoIntegration.fileOpenedReady) {
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PARENT, element ? element.apJson : "null").then((p_package) => {
-                if (p_package.node === null) {
-                    return null;
-                } else {
-                    return this._leoIntegration.apToLeoNode(p_package.node!);
-                }
-            });
+        if (this._leoIntegration.leoStates.fileOpenedReady) {
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PARENT, element ? element.apJson : "null")
+                .then((p_package: LeoBridgePackage) => {
+                    if (p_package.node === null) {
+                        return null;
+                    } else {
+                        return this._leoIntegration.apToLeoNode(p_package.node!);
+                    }
+                });
         } else {
             return null; // Default gives no parent
         }
     }
+
 }
