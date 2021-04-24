@@ -1939,7 +1939,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.51.0"
+    "vscode": "^1.55.0"
   },
   "keywords": [
     "leo",
@@ -1975,7 +1975,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.51.0",
+    "@types/vscode": "^1.55.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -6293,8 +6293,8 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
 
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        ["leointeg.test", () =&gt; w_leo.test()], // Test function useful when debugging
-        ["leointeg.testFromOutline", () =&gt; w_leo.test(true)], // Test function useful when debugging.
+        // ["leointeg.test", () =&gt; w_leo.test()], // Test function useful when debugging
+        // ["leointeg.testFromOutline", () =&gt; w_leo.test(true)], // Test function useful when debugging.
 
         &lt;&lt; Define entries for all commands &gt;&gt;
     ];
@@ -8473,6 +8473,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 -   Leo files can be opened from the explorer pane directly.
 -   Added 'minibuffer' feature with the usual alt-x command from Leo.
 -   Added cursor position, selected range and scrolling position to be captured and restored when navigating the outline. [#39](https://github.com/boltex/leointeg/issues/39) This allows for commands that use the currently selected text, [#61](https://github.com/boltex/leointeg/issues/61) such as run script and extract/extract name, etc.
+-   Redid the body display and switching logic to support new vscode API features. (vscode now does not block 'undo' operations between file-rename operations, which were used to switch body pane content.)
 
 @others
 </t>
@@ -8486,11 +8487,11 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
--   Having [Leo's path made available in the \$PYTHONPATH environment variable](https://docs.python.org/2/using/windows.html#excursus-setting-environment-variables)\
-    ([More info](https://docs.python.org/2/using/cmdline.html#environment-variables))
--   Having the Websocket Python Library installed.
-    _Install with :_ `pip install websockets`\
-    (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
+- Having [Leo's path made available in the \$PYTHONPATH environment variable](https://docs.python.org/2/using/windows.html#excursus-setting-environment-variables)\
+  ([More info](https://docs.python.org/2/using/cmdline.html#environment-variables))
+- Having the Websocket Python Library installed.
+  _Install with :_ `pip install websockets`\
+  (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
 
 </t>
 <t tx="felix.20200718222026.1">## Development Version Installation
@@ -8510,16 +8511,16 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 </t>
 <t tx="felix.20200718222035.1">## Features
 
--   UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes**, **opened documents selector** along with **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
--   Keybindings that match those of Leo, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
--   A **welcome screen** that also gives access to this extension's **settings**.
--   **Derived files change detection**. See [External Files](#derive-external-files) below for more details
--   **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
--   Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
-    -   Open body panes to the side
-    -   Outline edition commands
-    -   Clipboard operations
-    -   Undo/Redo commands
+- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes**, **opened documents selector** along with **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
+- Keybindings that match those of Leo, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
+- A **welcome screen** that also gives access to this extension's **settings**.
+- **Derived files change detection**. See [External Files](#derive-external-files) below for more details
+- **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
+- Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
+  - Open body panes to the side
+  - Outline edition commands
+  - Clipboard operations
+  - Undo/Redo commands
 
 ![Menu](resources/context-hover-menus.png)
 
@@ -8578,7 +8579,7 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 \* _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
 
-#
+---
 
 </t>
 <t tx="felix.20200718222048.1">## Derive External Files
@@ -8612,12 +8613,12 @@ This occurs when an outline node or a body pane has focus:
 
 &gt; _(Changes are auto-saved to the user's profile after 0.5 seconds)_
 
--   Control the visibility of the outline pane in the explorer view.
--   Decide how and when to refresh and synchronize content when derived (external) file are modified.
--   Show additional icons on outline nodes (Move, delete, mark, copy, paste...)
--   Choose to either focus on the body pane, or keep focus in the outline when a node is selected.
--   Hide or show the "Open on the side" command in the context menu to open a node beside the active editor
--   Set preferences for setting the address and port, and for automatically starting, and/or connecting, to a Leo Bridge server.
+- Control the visibility of the outline pane in the explorer view.
+- Decide how and when to refresh and synchronize content when derived (external) file are modified.
+- Show additional icons on outline nodes (Move, delete, mark, copy, paste...)
+- Choose to either focus on the body pane, or keep focus in the outline when a node is selected.
+- Hide or show the "Open on the side" command in the context menu to open a node beside the active editor
+- Set preferences for setting the address and port, and for automatically starting, and/or connecting, to a Leo Bridge server.
 
 ![Settings](resources/welcome-settings.gif)
 
@@ -8650,17 +8651,17 @@ Integration is done by starting a python server script and connecting to it via 
 
 The outline pane is made by implementing a [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics), while the body panes _virtual documents_ are made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api) and using the node's gnx as identifiers.
 
-#
+---
 
 </t>
 <t tx="felix.20200718222118.1">## Acknowledgments
 
 ### _Thanks to_
 
--   [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
--   [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
--   [Vitalije](https://github.com/vitalije) for his contributions and support
--   [Arjan](https://github.com/ar-jan) for his suggestions and ideas
+- [Edward K. Ream](https://github.com/edreamleo) creator of the [Leo Editor](https://leoeditor.com/)
+- [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
+- [Vitalije](https://github.com/vitalije) for his contributions and support
+- [Arjan](https://github.com/ar-jan) for his suggestions and ideas
 </t>
 <t tx="felix.20200718222417.1">## 0.1.12
 
@@ -12881,7 +12882,8 @@ public static VSCODE_COMMANDS = {
     "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoButtonNode/",
     "group": "leoButtonContext1@1"
   }
-]</t>
+]
+</t>
 <t tx="felix.20210418013332.1">private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
     console.log('DELETE EXTRANEOUS:', p_textEditor.document.uri.fsPath);
     const w_edit = new vscode.WorkspaceEdit();
