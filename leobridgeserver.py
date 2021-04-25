@@ -2808,7 +2808,7 @@ def printAction(p_param):
 def main():
     '''python script for leo integration via leoBridge'''
     global wsHost, wsPort
-    print("Starting LeoBridge... (Launch with -h for help)", flush=True)
+    print("Starting LeoBridge IN LEOINTEG... (Launch with -h for help)", flush=True)
     # replace default host address and port if provided as arguments
 
     args = None

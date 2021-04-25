@@ -39,6 +39,7 @@ import { LeoButtonNode } from "./leoButtonNode";
 export class LeoIntegration {
 
     // * Status Flags
+    public finishedStartup: boolean = false;
     private _leoIsConnecting: boolean = false; // Used in connect method, to prevent other attempts while trying
     private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Is set when leoBridge has a leo controller ready
     private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Might need to be re-set when switching visibility
@@ -274,11 +275,11 @@ export class LeoIntegration {
         // * Check settings and start a server accordingly
         if (this.config.startServerAutomatically) {
             this.startServer();
-        } else {
+        } else if (this.config.connectToServerAutomatically) {
             // * (via settings) Connect to Leo Bridge server automatically without starting one first
-            if (this.config.connectToServerAutomatically) {
-                this.connect();
-            }
+            this.connect();
+        } else {
+            this.finishedStartup = true;
         }
     }
 
@@ -294,6 +295,8 @@ export class LeoIntegration {
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                 if (this.config.connectToServerAutomatically) {
                     this.connect();
+                } else {
+                    this.finishedStartup = true;
                 }
             }, (p_reason) => {
                 vscode.window.showErrorMessage(Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason);
@@ -318,14 +321,17 @@ export class LeoIntegration {
                 } else {
                     const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
                     if (w_lastFiles.length) {
+
                         // This context flag will trigger 'Connecting...' placeholder
                         utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
+
                         setTimeout(() => {
                             this._openLastFiles(); // Try to open last opened files, if any
                         }, 0);
 
                     } else {
                         this.leoStates.leoBridgeReady = true;
+                        this.finishedStartup = true;
                     }
 
                     this.showLogPane();
@@ -340,12 +346,13 @@ export class LeoIntegration {
             },
             (p_reason) => {
                 this._leoIsConnecting = false;
-                this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + p_reason);
+                this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + ': ' + p_reason);
             });
     }
 
     /**
-     * * Cancels websocket connection and reverts context flags. Called from leoBridge.ts when its websocket reports disconnection.
+     * * Cancels websocket connection and reverts context flags.
+     * Called from leoBridge.ts when its websocket reports disconnection.
      * @param p_message
      */
     public cancelConnect(p_message?: string): void {
@@ -355,6 +362,13 @@ export class LeoIntegration {
         } else {
             vscode.window.showInformationMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
         }
+
+        // to change the 'viewsWelcome' content.
+        // bring back to !leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
+        utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
+        utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
+        this.finishedStartup = true;
+
         this.leoStates.fileOpenedReady = false;
         this.leoStates.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
@@ -386,9 +400,11 @@ export class LeoIntegration {
             return this.sendAction(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
                 .then((p_openFileResult: LeoBridgePackage) => {
                     this.leoStates.leoBridgeReady = true;
+                    this.finishedStartup = true;
                     return this._setupOpenedLeoDocument(p_openFileResult.opened!);
                 }, p_errorOpen => {
                     this.leoStates.leoBridgeReady = true;
+                    this.finishedStartup = true;
                     console.log('in .then not opened or already opened');
                     return Promise.reject(p_errorOpen);
                 });

@@ -165,8 +165,11 @@ export class Config implements ConfigMembers {
             utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
             utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
             utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
-            utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
-            utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
+            if (!this._leoIntegration.finishedStartup) {
+                // Only relevant 'viewWelcome' content at startup.
+                utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
+                utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
+            }
         }
     }
 
