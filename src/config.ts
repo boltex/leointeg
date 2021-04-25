@@ -74,24 +74,6 @@ export class Config implements ConfigMembers {
     }
 
     /**
-     * Show file browser to find leoserver.py. Save it's path in the config or cancel.
-     */
-    public chooseLeoServerPath(): void {
-        vscode.window.showOpenDialog(
-            {
-                title: "Locate Leo Server Script",
-                canSelectMany: false,
-                openLabel: "Choose",
-                filters: { 'script': ['py'] }
-            }
-        )
-            .then(p_chosenFile => {
-                console.log(p_chosenFile);
-
-            });
-    }
-
-    /**
      * * Apply changes to the expansion config settings and save them in ser settings.
      * @param p_changes is an array of codes and values to be changed
      * @returns a promise that resolves upon completion

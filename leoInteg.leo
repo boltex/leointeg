@@ -316,7 +316,6 @@
 <v t="felix.20200718030926.1"><vh>@clean src/config.ts</vh>
 <v t="felix.20200718030926.2"><vh>class Config</vh>
 <v t="felix.20200718030926.3"><vh>getConfig</vh></v>
-<v t="felix.20210420215230.1"><vh>chooseLeoServerPath</vh></v>
 <v t="felix.20200718030926.4"><vh>setLeoIntegSettings</vh></v>
 <v t="felix.20200718030926.5"><vh>buildFromSavedSettings</vh></v>
 </v>
@@ -7741,9 +7740,31 @@ export class ServerService {
  */
 public startServer(p_leoPythonCommand: string, p_leoServerPath: string): Promise&lt;any&gt; {
     console.log('p_leoServerPath', p_leoServerPath);
-    let w_pythonPath = "";
 
-    this._leoIntegration.showTerminalPane();
+    let w_pythonPath = ""; // Command of child.spawn call
+
+    /*
+        * For child_process.spawn(command[, args][, options])
+
+        The child_process.spawn() method spawns a new process
+        using the given command, with command-line arguments in args.
+        If omitted, args defaults to an empty array.
+
+        If the shell option is enabled, do not pass unsanitized
+        user input to this function. Any input containing shell
+        metacharacters may be used to trigger arbitrary command execution.
+
+        A third argument may be used to specify additional options, with these defaults:
+
+        const defaults = {
+            cwd: undefined,
+            env: process.env
+        };
+
+    */
+
+    this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
+
     const w_serverScriptPath = this._context.extensionPath + Constants.SERVER_PATH;
     if (p_leoPythonCommand &amp;&amp; p_leoPythonCommand.length) {
         // Start by running command (see executeCommand for multiple useful snippets)
@@ -13058,25 +13079,6 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
                 }
             });
     }
-}
-
-</t>
-<t tx="felix.20210420215230.1">/**
- * Show file browser to find leoserver.py. Save it's path in the config or cancel.
- */
-public chooseLeoServerPath(): void {
-    vscode.window.showOpenDialog(
-        {
-            title: "Locate Leo Server Script",
-            canSelectMany: false,
-            openLabel: "Choose",
-            filters: { 'script': ['py'] }
-        }
-    )
-        .then(p_chosenFile =&gt; {
-            console.log(p_chosenFile);
-
-        });
 }
 
 </t>

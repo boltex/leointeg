@@ -56,6 +56,13 @@ declare function acquireVsCodeApi(): VsCodeApi;
                     setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
                     vscodeConfig = message.config; // next changes will be confronted to those settings
                     break;
+                case "newServerPath":
+                    const w_element: HTMLElement | null = document.getElementById("leoServerPath");
+                    if (w_element) {
+                        (w_element as HTMLInputElement).value = message.serverPath;
+                        onInputChanged(w_element as HTMLInputElement);
+                    }
+                    break;
                 default:
                     console.log("got message: ", message.command);
                     break;
