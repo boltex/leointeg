@@ -7768,7 +7768,10 @@ public startServer(p_leoPythonCommand: string, p_leoServerPath: string): Promise
 
     this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
 
-    const w_serverScriptPath = this._context.extensionPath + Constants.SERVER_PATH;
+    // If a leo server path is set then use it - otherwise use old script for now
+    // TODO: popup settings to force user to set a "Leo server path" !
+    const w_serverScriptPath = p_leoServerPath ? p_leoServerPath : this._context.extensionPath + Constants.SERVER_PATH;
+
     if (p_leoPythonCommand &amp;&amp; p_leoPythonCommand.length) {
         // Start by running command (see executeCommand for multiple useful snippets)
         w_pythonPath = p_leoPythonCommand; // Set path
@@ -10435,7 +10438,6 @@ public cancelConnect(p_message?: string): void {
 
     // to change the 'viewsWelcome' content.
     // bring back to !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically"
-    //utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
     utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
     utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
     this.finishedStartup = true;
