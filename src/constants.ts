@@ -310,84 +310,85 @@ export class Constants {
      */
     public static LEOBRIDGE = {
         TEST: "test",
-        APPLY_CONFIG: "applyConfig",
-        ASK_RESULT: "askResult",
-        GET_ALL_GNX: "getAllGnx",
-        GET_BODY_LENGTH: "getBodyLength",
-        GET_BODY_STATES: "getBodyStates",
-        GET_BODY: "getBody",
-        GET_PNODE: "getPNode",
-        GET_PARENT: "getParent",
-        GET_CHILDREN: "getChildren",
-        GET_SELECTED_NODE: "getSelectedNode",
-        SET_SELECTED_NODE: "setSelectedNode",
-        SET_BODY: "setBody",
-        SET_SELECTION: "setSelection",
-        SET_HEADLINE: "setNewHeadline",
-        EXPAND_NODE: "expandNode",
-        COLLAPSE_NODE: "collapseNode",
-        CONTRACT_ALL: "contractAllHeadlines",
-        GET_OPENED_FILES: "getOpenedFiles",
-        SET_OPENED_FILE: "setOpenedFile",
-        OPEN_FILE: "openFile",
-        OPEN_FILES: "openFiles", // Sends an array of paths instead: for opening many files at once
-        CLOSE_FILE: "closeFile",
-        SAVE_FILE: "saveFile",
-        SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
-        GET_BUTTONS: "getButtons",
-        REMOVE_BUTTON: "removeButton",
-        CLICK_BUTTON: "clickButton",
-        GET_COMMANDS: "getCommands", // ask leoBridge for the list of known commands, (starting with text string)
-        GIT_DIFF: "gitDiff", // TODO : Proof of concept leoCommand
+        // * Server Commands
+        GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
+        APPLY_CONFIG: "!set_config", // "applyConfig",
+        ASK_RESULT: "!set_ask_result", // "askResult",
+        // * GUI
+        GET_ALL_GNX: "!get_all_gnx", // "getAllGnx",
+        GET_BODY_LENGTH: "!get_body_length", // "getBodyLength",
+        GET_BODY_STATES: "!get_body_states", // "getBodyStates",
+        GET_BODY: "!get_body", // "getBody",
+        GET_PARENT: "!get_parent", // "getParent",
+        GET_CHILDREN: "!get_children", // "getChildren",
+        SET_SELECTED_NODE: "!set_current_position", // "setSelectedNode",
+        SET_BODY: "!set_body", // "setBody",
+        SET_SELECTION: "!set_selection", // "setSelection",
+        SET_HEADLINE: "!set_headline", // "setNewHeadline",
+        EXPAND_NODE: "!expand_node", // "expandNode",
+        COLLAPSE_NODE: "!contract_node", // "collapseNode",
+        CONTRACT_ALL: "contractAllHeadlines", // * Direct Leo Command
+        GET_STATES: "!get_ui_states", // "getStates",
+        // * Leo Documents
+        GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles", // TODO : contains selection
+        SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile", // TODO : use index instead of filename
+        OPEN_FILE: "!open_file", // "openFile",
+        OPEN_FILES: "!open_files", //  "openFiles", // TODO : Sends an array of paths instead: for opening many files at once
+        CLOSE_FILE: "!close_file", // "closeFile",
+        SAVE_FILE: "!save_file", // "saveFile",
+        // * @-Buttons
+        GET_BUTTONS: "!get_buttons", // "getButtons",
+        REMOVE_BUTTON: "!remove_button", // "removeButton",
+        CLICK_BUTTON: "!click_button", // "clickButton",
         // * Goto operations
-        PAGE_UP: "pageUp",
-        PAGE_DOWN: "pageDown",
-        GOTO_FIRST_VISIBLE: "goToFirstVisibleNode",
-        GOTO_LAST_VISIBLE: "goToLastVisibleNode",
-        GOTO_LAST_SIBLING: "goToLastSibling",
-        GOTO_NEXT_VISIBLE: "selectVisNext",
-        GOTO_PREV_VISIBLE: "selectVisBack",
-        GOTO_NEXT_MARKED: "goToNextMarkedHeadline",
-        GOTO_NEXT_CLONE: "goToNextClone",
-        CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent",
-        EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild",
+        PAGE_UP: "!page_up", // "pageUp",
+        PAGE_DOWN: "!page_down", // "pageDown",
+        GOTO_FIRST_VISIBLE: "goToFirstVisibleNode", // * Direct Leo Command
+        GOTO_LAST_VISIBLE: "goToLastVisibleNode", // * Direct Leo Command
+        GOTO_LAST_SIBLING: "goToLastSibling", // * Direct Leo Command
+        GOTO_NEXT_VISIBLE: "selectVisNext", // * Direct Leo Command
+        GOTO_PREV_VISIBLE: "selectVisBack", // * Direct Leo Command
+        GOTO_NEXT_MARKED: "goToNextMarkedHeadline", // * Direct Leo Command
+        GOTO_NEXT_CLONE: "goToNextClone", // * Direct Leo Command
+        CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent", // * Direct Leo Command
+        EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild", // * Direct Leo Command
         // * Leo Operations
-        MARK_PNODE: "markPNode",
-        UNMARK_PNODE: "unmarkPNode",
-        COPY_PNODE: "copyOutline", // was overridden as "copyPNode"
-        CUT_PNODE: "cutPNode",
-        PASTE_PNODE: "pasteOutline", // was overridden as "pastePNode"
-        PASTE_CLONE_PNODE: "pasteOutlineRetainingClones", // was overridden as "pasteAsClonePNode"
-        DELETE_PNODE: "deletePNode",
-        MOVE_PNODE_DOWN: "moveOutlineDown", // was overridden as "movePNodeDown"
-        MOVE_PNODE_LEFT: "moveOutlineLeft", // was overridden as "movePNodeLeft"
-        MOVE_PNODE_RIGHT: "moveOutlineRight", // was overridden as "movePNodeRight"
-        MOVE_PNODE_UP: "moveOutlineUp", // was overridden as "movePNodeUp"
-        INSERT_PNODE: "insertPNode",
-        INSERT_NAMED_PNODE: "insertNamedPNode",
-        CLONE_PNODE: "clonePNode",
-        PROMOTE_PNODE: "promote", // was overridden as "promotePNode"
-        DEMOTE_PNODE: "demote", // was overridden as "demotePNode"
-        REFRESH_FROM_DISK_PNODE: "refreshFromDisk", // was overridden as "refreshFromDiskPNode"
-        SORT_CHILDREN: "sortChildren", // was overridden as "sortChildrenPNode"
-        SORT_SIBLINGS: "sortSiblings", // was overridden as "sortSiblingsPNode"
-        UNDO: "undo",
-        REDO: "redo",
-        EXECUTE_SCRIPT: "executeScript",
-        GET_STATES: "getStates",
-        HOIST_PNODE: "hoist",
-        DEHOIST: "dehoist",
-        EXTRACT: "extract",
-        EXTRACT_NAMES: "extractNames",
-        COPY_MARKED: "copyMarked",
-        DIFF_MARKED_NODES: "deleteMarked",
-        MARK_CHANGED_ITEMS: "markChangedHeadlines",
-        MARK_SUBHEADS: "markSubheads",
-        UNMARK_ALL: "unmarkAll",
-        CLONE_MARKED_NODES: "cloneMarked",
-        DELETE_MARKED_NODES: "deleteMarked",
-        MOVE_MARKED_NODES: "moveMarked",
+        MARK_PNODE: "mark_node", // "markPNode",
+        UNMARK_PNODE: "unmark_node", // "unmarkPNode",
+        COPY_PNODE: "copyOutline", // * Direct Leo Command
+        CUT_PNODE: "cut_node", // "cutPNode",
+        PASTE_PNODE: "pasteOutline", // * Direct Leo Command
+        PASTE_CLONE_PNODE: "pasteOutlineRetainingClones", // * Direct Leo Command
+        DELETE_PNODE: "delete_node", // "deletePNode",
+        MOVE_PNODE_DOWN: "moveOutlineDown", // * Direct Leo Command
+        MOVE_PNODE_LEFT: "moveOutlineLeft", // * Direct Leo Command
+        MOVE_PNODE_RIGHT: "moveOutlineRight", // * Direct Leo Command
+        MOVE_PNODE_UP: "moveOutlineUp", // * Direct Leo Command
+        INSERT_PNODE: "!insert_node", // "insertPNode",
+        INSERT_NAMED_PNODE: "!insert_named_node", // "insertNamedPNode",
+        CLONE_PNODE: "!clone_node", // "clonePNode",
+        PROMOTE_PNODE: "promote", // * Direct Leo Command
+        DEMOTE_PNODE: "demote", // * Direct Leo Command
+        REFRESH_FROM_DISK_PNODE: "refreshFromDisk", // * Direct Leo Command
+        SORT_CHILDREN: "sortChildren", // * Direct Leo Command
+        SORT_SIBLINGS: "sortSiblings", // * Direct Leo Command
+        UNDO: "!undo",
+        REDO: "!redo",
+        EXECUTE_SCRIPT: "executeScript", // * Direct Leo Command
+        HOIST_PNODE: "hoist", // * Direct Leo Command
+        DEHOIST: "dehoist", // * Direct Leo Command
+        EXTRACT: "extract", // * Direct Leo Command
+        EXTRACT_NAMES: "extractNames", // * Direct Leo Command
+        COPY_MARKED: "copyMarked", // * Direct Leo Command
+        DIFF_MARKED_NODES: "deleteMarked", // * Direct Leo Command
+        MARK_CHANGED_ITEMS: "markChangedHeadlines", // * Direct Leo Command
+        MARK_SUBHEADS: "markSubheads", // * Direct Leo Command
+        UNMARK_ALL: "unmarkAll", // * Direct Leo Command
+        CLONE_MARKED_NODES: "cloneMarked", // * Direct Leo Command
+        DELETE_MARKED_NODES: "deleteMarked", // * Direct Leo Command
+        MOVE_MARKED_NODES: "moveMarked", // * Direct Leo Command
         // TODO : @boltex More commands to implement #24
+        GIT_DIFF: "gitDiff", // * Direct Leo Command
         CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
         CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
         CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex

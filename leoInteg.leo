@@ -123,8 +123,8 @@
 <v t="felix.20200623201853.1"><vh>_getTotalOpened</vh></v>
 <v t="felix.20200623215904.1"><vh>_getFirstOpenedCommander</vh></v>
 <v t="felix.20200304224909.1"><vh>sendAsyncOutput</vh></v>
-<v t="felix.20200304220844.1"><vh>askResult</vh></v>
-<v t="felix.20200312231358.1"><vh>applyConfig</vh></v>
+<v t="felix.20200304220844.1"><vh>set_ask_result</vh></v>
+<v t="felix.20200312231358.1"><vh>set_config</vh></v>
 <v t="felix.20200219224515.1"><vh>logSignon</vh></v>
 <v t="felix.20200924224017.1"><vh>JSON Output Functions</vh>
 <v t="felix.20200924211032.1"><vh>setActionId</vh></v>
@@ -141,12 +141,12 @@
 <v t="felix.20200924205439.1"><vh>_get_commander_method</vh></v>
 <v t="felix.20200924205503.1"><vh>leoCommand</vh></v>
 <v t="felix.20200924223845.1"><vh>Leo Documents</vh>
-<v t="felix.20200622230608.1"><vh>getOpenedFiles</vh></v>
-<v t="felix.20200624172552.1"><vh>setOpenedFile</vh></v>
-<v t="felix.20191126232434.13"><vh>openFile</vh></v>
-<v t="felix.20200924205915.1"><vh>openFiles</vh></v>
-<v t="felix.20191126232434.14"><vh>closeFile</vh></v>
-<v t="felix.20200216160305.1"><vh>saveFile</vh></v>
+<v t="felix.20200622230608.1"><vh>get_all_open_commanders</vh></v>
+<v t="felix.20200624172552.1"><vh>set_opened_file</vh></v>
+<v t="felix.20191126232434.13"><vh>open_file</vh></v>
+<v t="felix.20200924205915.1"><vh>open_files</vh></v>
+<v t="felix.20191126232434.14"><vh>close_file</vh></v>
+<v t="felix.20200216160305.1"><vh>save_file</vh></v>
 </v>
 <v t="felix.20200924223910.1"><vh>At Buttons</vh>
 <v t="felix.20200924210020.1"><vh>getButtons</vh></v>
@@ -160,37 +160,37 @@
 <v t="felix.20200924210952.1"><vh>_getDocstringForCommand</vh></v>
 </v>
 <v t="felix.20200924224100.1"><vh>Overriden Leo Commands</vh>
-<v t="felix.20200924211057.1"><vh>markPNode</vh></v>
-<v t="felix.20200924211100.1"><vh>unmarkPNode</vh></v>
-<v t="felix.20200924211104.1"><vh>clonePNode</vh></v>
-<v t="felix.20200924211121.1"><vh>cutPNode</vh></v>
-<v t="felix.20200924211125.1"><vh>deletePNode</vh></v>
-<v t="felix.20200924211127.1"><vh>insertPNode</vh></v>
-<v t="felix.20200924211132.1"><vh>insertNamedPNode</vh></v>
+<v t="felix.20200924211057.1"><vh>mark_node</vh></v>
+<v t="felix.20200924211100.1"><vh>unmark_node</vh></v>
+<v t="felix.20200924211104.1"><vh>clone_node</vh></v>
+<v t="felix.20200924211121.1"><vh>cut_node</vh></v>
+<v t="felix.20200924211125.1"><vh>delete_node</vh></v>
+<v t="felix.20200924211127.1"><vh>insert_node</vh></v>
+<v t="felix.20200924211132.1"><vh>insert_named_node</vh></v>
 <v t="felix.20200924211135.1"><vh>undo</vh></v>
 <v t="felix.20200924211138.1"><vh>redo</vh></v>
 <v t="felix.20201025144113.1"><vh>test</vh></v>
 </v>
 <v t="felix.20191128001054.1"><vh>Outline and Body Interaction</vh>
-<v t="felix.20200929215102.2"><vh>getStates</vh></v>
-<v t="felix.20200929215102.3"><vh>pageUp</vh></v>
-<v t="felix.20200929215102.4"><vh>pageDown</vh></v>
-<v t="felix.20200929215102.5"><vh>getBodyStates</vh></v>
-<v t="felix.20191126232434.15"><vh>getPNode</vh></v>
-<v t="felix.20191126232434.16"><vh>getChildren</vh></v>
-<v t="felix.20191126232434.17"><vh>getParent</vh></v>
-<v t="felix.20191126232434.18"><vh>getSelectedNode</vh></v>
-<v t="felix.20191201194046.1"><vh>getAllGnx</vh></v>
-<v t="felix.20191126232434.19"><vh>getBody</vh></v>
-<v t="felix.20191126232434.20"><vh>getBodyLength</vh></v>
-<v t="felix.20191126232434.22"><vh>setBody</vh></v>
-<v t="felix.20200929230231.1"><vh>setSelection</vh></v>
-<v t="felix.20191126232434.23"><vh>setNewHeadline</vh></v>
-<v t="felix.20191126232434.24"><vh>setSelectedNode</vh></v>
-<v t="felix.20191126232434.25"><vh>expandNode</vh></v>
-<v t="felix.20191126232434.26"><vh>collapseNode</vh></v>
+<v t="felix.20200929215102.2"><vh>get_ui_states</vh></v>
+<v t="felix.20200929215102.3"><vh>page_up</vh></v>
+<v t="felix.20200929215102.4"><vh>page_down</vh></v>
+<v t="felix.20200929215102.5"><vh>get_body_states</vh></v>
+<v t="felix.20191126232434.16"><vh>get_children &amp; helper</vh>
 <v t="felix.20191126232434.29"><vh>_yieldAllRootChildren</vh></v>
+</v>
+<v t="felix.20191126232434.17"><vh>get_parent</vh></v>
+<v t="felix.20191201194046.1"><vh>get_all_gnx</vh></v>
+<v t="felix.20191126232434.19"><vh>get_body</vh></v>
+<v t="felix.20191126232434.20"><vh>get_body_length</vh></v>
+<v t="felix.20191126232434.22"><vh>set_body</vh></v>
+<v t="felix.20200929230231.1"><vh>set_selection</vh></v>
+<v t="felix.20191126232434.23"><vh>set_headline</vh></v>
+<v t="felix.20191126232434.24"><vh>set_current_position &amp; helper</vh>
 <v t="felix.20191216195906.1"><vh>_findPNodeFromGnx</vh></v>
+</v>
+<v t="felix.20191126232434.25"><vh>expand_node</vh></v>
+<v t="felix.20191126232434.26"><vh>contract_node</vh></v>
 </v>
 <v t="felix.20191128003648.1"><vh>leoFlexx Conversion Functions</vh>
 <v t="felix.20191126232434.27"><vh>_create_gnx_to_vnode</vh></v>
@@ -535,7 +535,6 @@
 </v>
 <v t="felix.20200718170712.1"><vh>@clean src/leoNode.ts</vh>
 <v t="felix.20200718170712.2"><vh>class LeoNode</vh>
-<v t="felix.20200718170712.3"><vh>copyProperties</vh></v>
 <v t="felix.20200718170712.4"><vh>setRoot</vh></v>
 <v t="felix.20200718170712.5"><vh>_getNodeContextValue</vh></v>
 <v t="felix.20200718171904.1"><vh>get_iconPath</vh></v>
@@ -546,7 +545,6 @@
 </v>
 <v t="felix.20200718180428.1"><vh>@clean src/leoOutline.ts</vh>
 <v t="felix.20200718180428.2"><vh>class LeoOutlineProvider</vh>
-<v t="felix.20200718180428.3"><vh>refreshTreeNode</vh></v>
 <v t="felix.20200718180428.4"><vh>refreshTreeRoot</vh></v>
 <v t="felix.20200718180428.5"><vh>getTreeItem</vh></v>
 <v t="felix.20200718180428.6"><vh>getChildren</vh></v>
@@ -660,6 +658,7 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
+<v t="felix.20191126232434.4"></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -4285,7 +4284,7 @@ print('done')
   ]
 },
 </t>
-<t tx="felix.20191126232434.13">def openFile(self, p_file):
+<t tx="felix.20191126232434.13">def open_file(self, p_file):
     """
     Open a leo file via leoBridge controller, or create a new document if empty string.
     Returns an object that contains a 'opened' member.
@@ -4322,7 +4321,7 @@ print('done')
         return self._outputError('Error in openFile')
 
 </t>
-<t tx="felix.20191126232434.14">def closeFile(self, p_package):
+<t tx="felix.20191126232434.14">def close_file(self, p_package):
     """
     Closes a leo file. A file can then be opened with "openFile"
     Returns an object that contains a 'closed' member
@@ -4356,19 +4355,7 @@ print('done')
         return self.sendLeoBridgePackage("closed", w_result)
 
 </t>
-<t tx="felix.20191126232434.15">def getPNode(self, p_ap):
-    '''EMIT OUT a node, don't select it'''
-    if p_ap:
-        w_p = self._ap_to_p(p_ap)
-        if w_p:
-            return self._outputPNode(w_p)
-        else:
-            return self._outputError("Error in getPNode no w_p node found")
-    else:
-        return self._outputError("Error in getPNode no param p_ap")
-
-</t>
-<t tx="felix.20191126232434.16">def getChildren(self, p_ap):
+<t tx="felix.20191126232434.16">def get_children(self, p_ap):
     '''EMIT OUT list of children of a node'''
     if p_ap:
         w_p = self._ap_to_p(p_ap)
@@ -4384,7 +4371,7 @@ print('done')
             return self._outputPNodes(self._yieldAllRootChildren())
 
 </t>
-<t tx="felix.20191126232434.17">def getParent(self, p_ap):
+<t tx="felix.20191126232434.17">def get_parent(self, p_ap):
     '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
     if p_ap:
         w_p = self._ap_to_p(p_ap)
@@ -4393,15 +4380,7 @@ print('done')
     return self._outputPNode()  # default empty for root as default
 
 </t>
-<t tx="felix.20191126232434.18">def getSelectedNode(self, p_unused):
-    '''EMIT OUT Selected Position as an array, even if unique'''
-    if self.commander.p:
-        return self._outputPNode(self.commander.p)
-    else:
-        return self._outputPNode()
-
-</t>
-<t tx="felix.20191126232434.19">def getBody(self, p_gnx):
+<t tx="felix.20191126232434.19">def get_body(self, p_gnx):
     '''EMIT OUT body of a node'''
     # TODO : if not found, send code to prevent unresolved promise if 'document switch' occurred shortly before
     if p_gnx:
@@ -4430,7 +4409,7 @@ if __name__ == '__main__':
         print("\nKeyboard Interupt: Stopping leobridge server", flush=True)
         sys.exit()
 </t>
-<t tx="felix.20191126232434.20">def getBodyLength(self, p_gnx):
+<t tx="felix.20191126232434.20">def get_body_length(self, p_gnx):
     '''EMIT OUT body string length of a node'''
     if p_gnx:
         w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
@@ -4441,7 +4420,7 @@ if __name__ == '__main__':
     return self.sendLeoBridgePackage("bodyLength", 0)  # empty as default
 
 </t>
-<t tx="felix.20191126232434.22">def setBody(self, p_package):
+<t tx="felix.20191126232434.22">def set_body(self, p_package):
     '''Change Body text of a node'''
     w_gnx = p_package['gnx']
     w_body = p_package['body']
@@ -4469,7 +4448,7 @@ if __name__ == '__main__':
     # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20191126232434.23">def setNewHeadline(self, p_package):
+<t tx="felix.20191126232434.23">def set_headline(self, p_package):
     '''Change Headline of a node'''
     w_newHeadline = p_package['text']
     w_ap = p_package['node']
@@ -4485,7 +4464,7 @@ if __name__ == '__main__':
     return self._outputError("Error in setNewHeadline")
 
 </t>
-<t tx="felix.20191126232434.24">def setSelectedNode(self, p_ap):
+<t tx="felix.20191126232434.24">def set_current_position(self, p_ap):
     '''Select a node, or the first one found with its GNX'''
     if p_ap:
         w_p = self._ap_to_p(p_ap)
@@ -4507,7 +4486,7 @@ if __name__ == '__main__':
         return self._outputPNode()
 
 </t>
-<t tx="felix.20191126232434.25">def expandNode(self, p_ap):
+<t tx="felix.20191126232434.25">def expand_node(self, p_ap):
     '''Expand a node'''
     if p_ap:
         w_p = self._ap_to_p(p_ap)
@@ -4516,7 +4495,7 @@ if __name__ == '__main__':
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20191126232434.26">def collapseNode(self, p_ap):
+<t tx="felix.20191126232434.26">def contract_node(self, p_ap):
     '''Collapse a node'''
     if p_ap:
         w_p = self._ap_to_p(p_ap)
@@ -4791,7 +4770,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
 
 </t>
 <t tx="felix.20191128003648.1"></t>
-<t tx="felix.20191201194046.1">def getAllGnx(self, p_unused):
+<t tx="felix.20191201194046.1">def get_all_gnx(self, p_unused):
     '''Get gnx array from all unique nodes'''
     w_all_gnx = [
         p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
@@ -4811,7 +4790,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     self.loop = asyncio.get_event_loop()
 
 </t>
-<t tx="felix.20200216160305.1">def saveFile(self, p_package):
+<t tx="felix.20200216160305.1">def save_file(self, p_package):
     '''Saves the leo file. New or dirty derived files are rewritten'''
     if self.commander:
         try:
@@ -5239,7 +5218,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
 
 </t>
-<t tx="felix.20200304220844.1">def askResult(self, p_result):
+<t tx="felix.20200304220844.1">def set_ask_result(self, p_result):
     '''Got the result to an asked question/warning from client'''
     self.g.app.externalFilesController.integResult(p_result)
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
@@ -5317,13 +5296,13 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     return
 
 </t>
-<t tx="felix.20200312231358.1">def applyConfig(self, p_config):
+<t tx="felix.20200312231358.1">def set_config(self, p_config):
     '''Got leoInteg's config from client'''
     self.leoIntegConfig = p_config
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20200622230608.1">def getOpenedFiles(self, p_package):
+<t tx="felix.20200622230608.1">def get_all_open_commanders(self, p_package):
     '''Return array of opened file path/names to be used as openFile parameters to switch files'''
     w_files = []
     w_index = 0
@@ -5362,7 +5341,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     return False
 
 </t>
-<t tx="felix.20200624172552.1">def setOpenedFile(self, p_package):
+<t tx="felix.20200624172552.1">def set_opened_file(self, p_package):
     '''Choose the new active commander from array of opened file path/names by numeric index'''
     w_openedCommanders = []
 
@@ -5441,84 +5420,85 @@ public static ASYNC_ASK_RETURN_CODES = {
  */
 public static LEOBRIDGE = {
     TEST: "test",
-    APPLY_CONFIG: "applyConfig",
-    ASK_RESULT: "askResult",
-    GET_ALL_GNX: "getAllGnx",
-    GET_BODY_LENGTH: "getBodyLength",
-    GET_BODY_STATES: "getBodyStates",
-    GET_BODY: "getBody",
-    GET_PNODE: "getPNode",
-    GET_PARENT: "getParent",
-    GET_CHILDREN: "getChildren",
-    GET_SELECTED_NODE: "getSelectedNode",
-    SET_SELECTED_NODE: "setSelectedNode",
-    SET_BODY: "setBody",
-    SET_SELECTION: "setSelection",
-    SET_HEADLINE: "setNewHeadline",
-    EXPAND_NODE: "expandNode",
-    COLLAPSE_NODE: "collapseNode",
-    CONTRACT_ALL: "contractAllHeadlines",
-    GET_OPENED_FILES: "getOpenedFiles",
-    SET_OPENED_FILE: "setOpenedFile",
-    OPEN_FILE: "openFile",
-    OPEN_FILES: "openFiles", // Sends an array of paths instead: for opening many files at once
-    CLOSE_FILE: "closeFile",
-    SAVE_FILE: "saveFile",
-    SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
-    GET_BUTTONS: "getButtons",
-    REMOVE_BUTTON: "removeButton",
-    CLICK_BUTTON: "clickButton",
-    GET_COMMANDS: "getCommands", // ask leoBridge for the list of known commands, (starting with text string)
-    GIT_DIFF: "gitDiff", // TODO : Proof of concept leoCommand
+    // * Server Commands
+    GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
+    APPLY_CONFIG: "!set_config", // "applyConfig",
+    ASK_RESULT: "!set_ask_result", // "askResult",
+    // * GUI
+    GET_ALL_GNX: "!get_all_gnx", // "getAllGnx",
+    GET_BODY_LENGTH: "!get_body_length", // "getBodyLength",
+    GET_BODY_STATES: "!get_body_states", // "getBodyStates",
+    GET_BODY: "!get_body", // "getBody",
+    GET_PARENT: "!get_parent", // "getParent",
+    GET_CHILDREN: "!get_children", // "getChildren",
+    SET_SELECTED_NODE: "!set_current_position", // "setSelectedNode",
+    SET_BODY: "!set_body", // "setBody",
+    SET_SELECTION: "!set_selection", // "setSelection",
+    SET_HEADLINE: "!set_headline", // "setNewHeadline",
+    EXPAND_NODE: "!expand_node", // "expandNode",
+    COLLAPSE_NODE: "!contract_node", // "collapseNode",
+    CONTRACT_ALL: "contractAllHeadlines", // * Direct Leo Command
+    GET_STATES: "!get_ui_states", // "getStates",
+    // * Leo Documents
+    GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles", // TODO : contains selection
+    SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile", // TODO : use index instead of filename
+    OPEN_FILE: "!open_file", // "openFile",
+    OPEN_FILES: "!open_files", //  "openFiles", // TODO : Sends an array of paths instead: for opening many files at once
+    CLOSE_FILE: "!close_file", // "closeFile",
+    SAVE_FILE: "!save_file", // "saveFile",
+    // * @-Buttons
+    GET_BUTTONS: "!get_buttons", // "getButtons",
+    REMOVE_BUTTON: "!remove_button", // "removeButton",
+    CLICK_BUTTON: "!click_button", // "clickButton",
     // * Goto operations
-    PAGE_UP: "pageUp",
-    PAGE_DOWN: "pageDown",
-    GOTO_FIRST_VISIBLE: "goToFirstVisibleNode",
-    GOTO_LAST_VISIBLE: "goToLastVisibleNode",
-    GOTO_LAST_SIBLING: "goToLastSibling",
-    GOTO_NEXT_VISIBLE: "selectVisNext",
-    GOTO_PREV_VISIBLE: "selectVisBack",
-    GOTO_NEXT_MARKED: "goToNextMarkedHeadline",
-    GOTO_NEXT_CLONE: "goToNextClone",
-    CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent",
-    EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild",
+    PAGE_UP: "!page_up", // "pageUp",
+    PAGE_DOWN: "!page_down", // "pageDown",
+    GOTO_FIRST_VISIBLE: "goToFirstVisibleNode", // * Direct Leo Command
+    GOTO_LAST_VISIBLE: "goToLastVisibleNode", // * Direct Leo Command
+    GOTO_LAST_SIBLING: "goToLastSibling", // * Direct Leo Command
+    GOTO_NEXT_VISIBLE: "selectVisNext", // * Direct Leo Command
+    GOTO_PREV_VISIBLE: "selectVisBack", // * Direct Leo Command
+    GOTO_NEXT_MARKED: "goToNextMarkedHeadline", // * Direct Leo Command
+    GOTO_NEXT_CLONE: "goToNextClone", // * Direct Leo Command
+    CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent", // * Direct Leo Command
+    EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild", // * Direct Leo Command
     // * Leo Operations
-    MARK_PNODE: "markPNode",
-    UNMARK_PNODE: "unmarkPNode",
-    COPY_PNODE: "copyOutline", // was overridden as "copyPNode"
-    CUT_PNODE: "cutPNode",
-    PASTE_PNODE: "pasteOutline", // was overridden as "pastePNode"
-    PASTE_CLONE_PNODE: "pasteOutlineRetainingClones", // was overridden as "pasteAsClonePNode"
-    DELETE_PNODE: "deletePNode",
-    MOVE_PNODE_DOWN: "moveOutlineDown", // was overridden as "movePNodeDown"
-    MOVE_PNODE_LEFT: "moveOutlineLeft", // was overridden as "movePNodeLeft"
-    MOVE_PNODE_RIGHT: "moveOutlineRight", // was overridden as "movePNodeRight"
-    MOVE_PNODE_UP: "moveOutlineUp", // was overridden as "movePNodeUp"
-    INSERT_PNODE: "insertPNode",
-    INSERT_NAMED_PNODE: "insertNamedPNode",
-    CLONE_PNODE: "clonePNode",
-    PROMOTE_PNODE: "promote", // was overridden as "promotePNode"
-    DEMOTE_PNODE: "demote", // was overridden as "demotePNode"
-    REFRESH_FROM_DISK_PNODE: "refreshFromDisk", // was overridden as "refreshFromDiskPNode"
-    SORT_CHILDREN: "sortChildren", // was overridden as "sortChildrenPNode"
-    SORT_SIBLINGS: "sortSiblings", // was overridden as "sortSiblingsPNode"
-    UNDO: "undo",
-    REDO: "redo",
-    EXECUTE_SCRIPT: "executeScript",
-    GET_STATES: "getStates",
-    HOIST_PNODE: "hoist",
-    DEHOIST: "dehoist",
-    EXTRACT: "extract",
-    EXTRACT_NAMES: "extractNames",
-    COPY_MARKED: "copyMarked",
-    DIFF_MARKED_NODES: "deleteMarked",
-    MARK_CHANGED_ITEMS: "markChangedHeadlines",
-    MARK_SUBHEADS: "markSubheads",
-    UNMARK_ALL: "unmarkAll",
-    CLONE_MARKED_NODES: "cloneMarked",
-    DELETE_MARKED_NODES: "deleteMarked",
-    MOVE_MARKED_NODES: "moveMarked",
+    MARK_PNODE: "mark_node", // "markPNode",
+    UNMARK_PNODE: "unmark_node", // "unmarkPNode",
+    COPY_PNODE: "copyOutline", // * Direct Leo Command
+    CUT_PNODE: "cut_node", // "cutPNode",
+    PASTE_PNODE: "pasteOutline", // * Direct Leo Command
+    PASTE_CLONE_PNODE: "pasteOutlineRetainingClones", // * Direct Leo Command
+    DELETE_PNODE: "delete_node", // "deletePNode",
+    MOVE_PNODE_DOWN: "moveOutlineDown", // * Direct Leo Command
+    MOVE_PNODE_LEFT: "moveOutlineLeft", // * Direct Leo Command
+    MOVE_PNODE_RIGHT: "moveOutlineRight", // * Direct Leo Command
+    MOVE_PNODE_UP: "moveOutlineUp", // * Direct Leo Command
+    INSERT_PNODE: "!insert_node", // "insertPNode",
+    INSERT_NAMED_PNODE: "!insert_named_node", // "insertNamedPNode",
+    CLONE_PNODE: "!clone_node", // "clonePNode",
+    PROMOTE_PNODE: "promote", // * Direct Leo Command
+    DEMOTE_PNODE: "demote", // * Direct Leo Command
+    REFRESH_FROM_DISK_PNODE: "refreshFromDisk", // * Direct Leo Command
+    SORT_CHILDREN: "sortChildren", // * Direct Leo Command
+    SORT_SIBLINGS: "sortSiblings", // * Direct Leo Command
+    UNDO: "!undo",
+    REDO: "!redo",
+    EXECUTE_SCRIPT: "executeScript", // * Direct Leo Command
+    HOIST_PNODE: "hoist", // * Direct Leo Command
+    DEHOIST: "dehoist", // * Direct Leo Command
+    EXTRACT: "extract", // * Direct Leo Command
+    EXTRACT_NAMES: "extractNames", // * Direct Leo Command
+    COPY_MARKED: "copyMarked", // * Direct Leo Command
+    DIFF_MARKED_NODES: "deleteMarked", // * Direct Leo Command
+    MARK_CHANGED_ITEMS: "markChangedHeadlines", // * Direct Leo Command
+    MARK_SUBHEADS: "markSubheads", // * Direct Leo Command
+    UNMARK_ALL: "unmarkAll", // * Direct Leo Command
+    CLONE_MARKED_NODES: "cloneMarked", // * Direct Leo Command
+    DELETE_MARKED_NODES: "deleteMarked", // * Direct Leo Command
+    MOVE_MARKED_NODES: "moveMarked", // * Direct Leo Command
     // TODO : @boltex More commands to implement #24
+    GIT_DIFF: "gitDiff", // * Direct Leo Command
     CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
     CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
     CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex
@@ -7352,29 +7332,6 @@ export class LeoNode extends vscode.TreeItem {
     @others
 }
 </t>
-<t tx="felix.20200718170712.3">/**
- * * Sets this node properties (dirty, marked, etc.) by copying from a given node.
- * * This is needed by the outline provider when refreshing a single node.
- * @param p_node Node to copy properties from.
- * @returns Node itself with the new properties applied
- */
-public copyProperties(p_node: LeoNode): LeoNode {
-    this.label = p_node.label;
-    this.gnx = p_node.gnx;
-    this.collapsibleState = p_node.collapsibleState;
-    this.apJson = p_node.apJson;
-    this.childIndex = p_node.childIndex;
-    this.cloned = p_node.cloned;
-    this.dirty = p_node.dirty;
-    this.marked = p_node.marked;
-    this.atFile = p_node.atFile;
-    this.hasBody = p_node.hasBody;
-    this.isRoot = p_node.isRoot;
-    this.contextValue = this._getNodeContextValue();
-    return this;
-}
-
-</t>
 <t tx="felix.20200718170712.4">/**
  * * Set this node as the root for hoist/dehoist context flags purposes
  */
@@ -7476,24 +7433,10 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider&lt;LeoNode&gt
 
     readonly onDidChangeTreeData: vscode.Event&lt;LeoNode | undefined&gt; = this._onDidChangeTreeData.event;
 
-    // used in leoOutline.ts to check if getTreeItem(element: LeoNode) should fetch from Leo, or return as-is
-    private _refreshSingleNodeFlag: boolean = false;
-
     constructor(private _leoIntegration: LeoIntegration) { }
 
     @others
 }
-</t>
-<t tx="felix.20200718180428.3">/**
- * * Refresh a single node
- * @param p_node The outline's node itself as a LeoNode instance
- */
-public refreshTreeNode(p_node: LeoNode): void {
-    // Do a real node refresh, not just giving back the same element: see getTreeItem(element) below
-    this._refreshSingleNodeFlag = true;
-    this._onDidChangeTreeData.fire(p_node);
-}
-
 </t>
 <t tx="felix.20200718180428.4">/**
  * * Refresh the whole outline
@@ -7505,16 +7448,7 @@ public refreshTreeRoot(): void {
 
 </t>
 <t tx="felix.20200718180428.5">public getTreeItem(element: LeoNode): Thenable&lt;LeoNode&gt; | LeoNode {
-    if (this._refreshSingleNodeFlag) {
-        this._refreshSingleNodeFlag = false;
-        return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PNODE, element.apJson)
-            .then((p_package: LeoBridgePackage) =&gt; {
-                const w_node = this._leoIntegration.apToLeoNode(p_package.node!, true, element);
-                return element.copyProperties(w_node);
-            });
-    } else {
-        return element;
-    }
+    return element;
 }
 
 </t>
@@ -10561,7 +10495,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924205915.1">def openFiles(self, p_package):
+<t tx="felix.20200924205915.1">def open_files(self, p_package):
     """
     Opens an array of leo files
     Returns an object that contains the last 'opened' member.
@@ -11768,7 +11702,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self.sendLeoBridgePackage("nodes", w_apList)
 
 </t>
-<t tx="felix.20200924211057.1">def markPNode(self, p_package):
+<t tx="felix.20200924211057.1">def mark_node(self, p_package):
     '''Mark a node, don't select it'''
     w_ap = p_package["node"]
     if w_ap:
@@ -11783,7 +11717,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in markPNode no param node")
 
 </t>
-<t tx="felix.20200924211100.1">def unmarkPNode(self, p_package):
+<t tx="felix.20200924211100.1">def unmark_node(self, p_package):
     '''Unmark a node, don't select it'''
     w_ap = p_package["node"]
     if w_ap:
@@ -11798,7 +11732,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in unmarkPNode no param node")
 
 </t>
-<t tx="felix.20200924211104.1">def clonePNode(self, p_package):
+<t tx="felix.20200924211104.1">def clone_node(self, p_package):
     '''Clone a node, return it, if it was also the current selection, otherwise try not to select it'''
     w_ap = p_package["node"]
     if not w_ap:
@@ -11819,7 +11753,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924211121.1">def cutPNode(self, p_package):
+<t tx="felix.20200924211121.1">def cut_node(self, p_package):
     '''Cut a node, don't select it. Try to keep selection, then return the selected node that remains'''
     w_ap = p_package["node"]
     if w_ap:
@@ -11849,7 +11783,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in cutPNode no param node")
 
 </t>
-<t tx="felix.20200924211125.1">def deletePNode(self, p_package):
+<t tx="felix.20200924211125.1">def delete_node(self, p_package):
     '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
     w_ap = p_package["node"]
     if w_ap:
@@ -11879,7 +11813,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in deletePNode no param node")
 
 </t>
-<t tx="felix.20200924211127.1">def insertPNode(self, p_package):
+<t tx="felix.20200924211127.1">def insert_node(self, p_package):
     '''Insert a node at given node, then select it once created, and finally return it'''
     w_ap = p_package["node"]
     if w_ap:
@@ -11900,7 +11834,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in insertPNode no param node")
 
 </t>
-<t tx="felix.20200924211132.1">def insertNamedPNode(self, p_package):
+<t tx="felix.20200924211132.1">def insert_named_node(self, p_package):
     '''Insert a node at given node, set its headline, select it and finally return it'''
     w_newHeadline = p_package['text']
     w_ap = p_package['node']
@@ -12241,7 +12175,7 @@ def tag_configure(self, colorName, **keys): pass
     return self.g.toUnicode(s)
 
 </t>
-<t tx="felix.20200929215102.2">def getStates(self, p_package):
+<t tx="felix.20200929215102.2">def get_ui_states(self, p_package):
     """
     Gets the currently opened file's general states for UI enabled/disabled states
     such as undo available, file changed/unchanged
@@ -12272,7 +12206,7 @@ def tag_configure(self, colorName, **keys): pass
     return self.sendLeoBridgePackage("states", w_states)
 
 </t>
-<t tx="felix.20200929215102.3">def pageUp(self, p_unused):
+<t tx="felix.20200929215102.3">def page_up(self, p_unused):
     """Selects a node a couple of steps up in the tree to simulate page up"""
     self.commander.selectVisBack()
     self.commander.selectVisBack()
@@ -12280,7 +12214,7 @@ def tag_configure(self, colorName, **keys): pass
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200929215102.4">def pageDown(self, p_unused):
+<t tx="felix.20200929215102.4">def page_down(self, p_unused):
     """Selects a node a couple of steps down in the tree to simulate page down"""
     self.commander.selectVisNext()
     self.commander.selectVisNext()
@@ -12288,7 +12222,7 @@ def tag_configure(self, colorName, **keys): pass
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200929215102.5">def getBodyStates(self, p_ap):
+<t tx="felix.20200929215102.5">def get_body_states(self, p_ap):
     """
     Finds the language in effect at top of body for position p,
     return type is lowercase 'language' non-empty string.
@@ -12368,7 +12302,7 @@ def tag_configure(self, colorName, **keys): pass
     return self.sendLeoBridgePackage("bodyStates", states)
 
 </t>
-<t tx="felix.20200929230231.1">def setSelection(self, p_package):
+<t tx="felix.20200929230231.1">def set_selection(self, p_package):
     '''
     Set cursor position and scroll position along with selection start and end.
     (For the currently selected node's body, if gnx matches only)

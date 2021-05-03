@@ -728,12 +728,12 @@ class LeoBridgeIntegController:
             print('[sendAsyncOutput] Error loop not ready' +
                   json.dumps(p_package, separators=(',', ':')))
 
-    def askResult(self, p_result):
+    def set_ask_result(self, p_result):
         '''Got the result to an asked question/warning from client'''
         self.g.app.externalFilesController.integResult(p_result)
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
-    def applyConfig(self, p_config):
+    def set_config(self, p_config):
         '''Got leoInteg's config from client'''
         self.leoIntegConfig = p_config
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
@@ -897,7 +897,7 @@ class LeoBridgeIntegController:
                 self.commander.selectPosition(oldPosition)
         return self._outputPNode(self.commander.p)
 
-    def getOpenedFiles(self, p_package):
+    def get_all_open_commanders(self, p_package):
         '''Return array of opened file path/names to be used as openFile parameters to switch files'''
         w_files = []
         w_index = 0
@@ -918,7 +918,7 @@ class LeoBridgeIntegController:
 
         return self.sendLeoBridgePackage("openedFiles", w_openedFiles)
 
-    def setOpenedFile(self, p_package):
+    def set_opened_file(self, p_package):
         '''Choose the new active commander from array of opened file path/names by numeric index'''
         w_openedCommanders = []
 
@@ -942,7 +942,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError('Error in setOpenedFile')
 
-    def openFile(self, p_file):
+    def open_file(self, p_file):
         """
         Open a leo file via leoBridge controller, or create a new document if empty string.
         Returns an object that contains a 'opened' member.
@@ -978,7 +978,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError('Error in openFile')
 
-    def openFiles(self, p_package):
+    def open_files(self, p_package):
         """
         Opens an array of leo files
         Returns an object that contains the last 'opened' member.
@@ -1015,7 +1015,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError('Error in openFiles')
 
-    def closeFile(self, p_package):
+    def close_file(self, p_package):
         """
         Closes a leo file. A file can then be opened with "openFile"
         Returns an object that contains a 'closed' member
@@ -1048,7 +1048,7 @@ class LeoBridgeIntegController:
             w_result = {"total": 0}
             return self.sendLeoBridgePackage("closed", w_result)
 
-    def saveFile(self, p_package):
+    def save_file(self, p_package):
         '''Saves the leo file. New or dirty derived files are rewritten'''
         if self.commander:
             try:
@@ -2177,7 +2177,7 @@ class LeoBridgeIntegController:
         docstring = func.__doc__ if func else ''
         return docstring
 
-    def markPNode(self, p_package):
+    def mark_node(self, p_package):
         '''Mark a node, don't select it'''
         w_ap = p_package["node"]
         if w_ap:
@@ -2191,7 +2191,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError("Error in markPNode no param node")
 
-    def unmarkPNode(self, p_package):
+    def unmark_node(self, p_package):
         '''Unmark a node, don't select it'''
         w_ap = p_package["node"]
         if w_ap:
@@ -2205,7 +2205,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError("Error in unmarkPNode no param node")
 
-    def clonePNode(self, p_package):
+    def clone_node(self, p_package):
         '''Clone a node, return it, if it was also the current selection, otherwise try not to select it'''
         w_ap = p_package["node"]
         if not w_ap:
@@ -2225,7 +2225,7 @@ class LeoBridgeIntegController:
         # return selected node either ways
         return self._outputPNode(self.commander.p)
 
-    def cutPNode(self, p_package):
+    def cut_node(self, p_package):
         '''Cut a node, don't select it. Try to keep selection, then return the selected node that remains'''
         w_ap = p_package["node"]
         if w_ap:
@@ -2254,7 +2254,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError("Error in cutPNode no param node")
 
-    def deletePNode(self, p_package):
+    def delete_node(self, p_package):
         '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
         w_ap = p_package["node"]
         if w_ap:
@@ -2283,7 +2283,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError("Error in deletePNode no param node")
 
-    def insertPNode(self, p_package):
+    def insert_node(self, p_package):
         '''Insert a node at given node, then select it once created, and finally return it'''
         w_ap = p_package["node"]
         if w_ap:
@@ -2303,7 +2303,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError("Error in insertPNode no param node")
 
-    def insertNamedPNode(self, p_package):
+    def insert_named_node(self, p_package):
         '''Insert a node at given node, set its headline, select it and finally return it'''
         w_newHeadline = p_package['text']
         w_ap = p_package['node']
@@ -2346,7 +2346,7 @@ class LeoBridgeIntegController:
         return self.sendLeoBridgePackage('testReturnedKey', 'testReturnedValue')
         # return self._outputPNode(self.commander.p)
 
-    def getStates(self, p_package):
+    def get_ui_states(self, p_package):
         """
         Gets the currently opened file's general states for UI enabled/disabled states
         such as undo available, file changed/unchanged
@@ -2376,21 +2376,21 @@ class LeoBridgeIntegController:
 
         return self.sendLeoBridgePackage("states", w_states)
 
-    def pageUp(self, p_unused):
+    def page_up(self, p_unused):
         """Selects a node a couple of steps up in the tree to simulate page up"""
         self.commander.selectVisBack()
         self.commander.selectVisBack()
         self.commander.selectVisBack()
         return self._outputPNode(self.commander.p)
 
-    def pageDown(self, p_unused):
+    def page_down(self, p_unused):
         """Selects a node a couple of steps down in the tree to simulate page down"""
         self.commander.selectVisNext()
         self.commander.selectVisNext()
         self.commander.selectVisNext()
         return self._outputPNode(self.commander.p)
 
-    def getBodyStates(self, p_ap):
+    def get_body_states(self, p_ap):
         """
         Finds the language in effect at top of body for position p,
         return type is lowercase 'language' non-empty string.
@@ -2469,18 +2469,7 @@ class LeoBridgeIntegController:
             }
         return self.sendLeoBridgePackage("bodyStates", states)
 
-    def getPNode(self, p_ap):
-        '''EMIT OUT a node, don't select it'''
-        if p_ap:
-            w_p = self._ap_to_p(p_ap)
-            if w_p:
-                return self._outputPNode(w_p)
-            else:
-                return self._outputError("Error in getPNode no w_p node found")
-        else:
-            return self._outputError("Error in getPNode no param p_ap")
-
-    def getChildren(self, p_ap):
+    def get_children(self, p_ap):
         '''EMIT OUT list of children of a node'''
         if p_ap:
             w_p = self._ap_to_p(p_ap)
@@ -2495,7 +2484,14 @@ class LeoBridgeIntegController:
                 # this outputs all Root Children
                 return self._outputPNodes(self._yieldAllRootChildren())
 
-    def getParent(self, p_ap):
+    def _yieldAllRootChildren(self):
+        '''Return all root children P nodes'''
+        p = self.commander.rootPosition()
+        while p:
+            yield p
+            p.moveToNext()
+
+    def get_parent(self, p_ap):
         '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
         if p_ap:
             w_p = self._ap_to_p(p_ap)
@@ -2503,20 +2499,13 @@ class LeoBridgeIntegController:
                 return self._outputPNode(w_p.getParent())  # if not root
         return self._outputPNode()  # default empty for root as default
 
-    def getSelectedNode(self, p_unused):
-        '''EMIT OUT Selected Position as an array, even if unique'''
-        if self.commander.p:
-            return self._outputPNode(self.commander.p)
-        else:
-            return self._outputPNode()
-
-    def getAllGnx(self, p_unused):
+    def get_all_gnx(self, p_unused):
         '''Get gnx array from all unique nodes'''
         w_all_gnx = [
             p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
         return self.sendLeoBridgePackage("allGnx", w_all_gnx)
 
-    def getBody(self, p_gnx):
+    def get_body(self, p_gnx):
         '''EMIT OUT body of a node'''
         # TODO : if not found, send code to prevent unresolved promise if 'document switch' occurred shortly before
         if p_gnx:
@@ -2530,7 +2519,7 @@ class LeoBridgeIntegController:
         return self._outputBodyData()
         # return self.sendLeoBridgePackage()  # default as inexistent
 
-    def getBodyLength(self, p_gnx):
+    def get_body_length(self, p_gnx):
         '''EMIT OUT body string length of a node'''
         if p_gnx:
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
@@ -2540,7 +2529,7 @@ class LeoBridgeIntegController:
         # TODO : May need to signal inexistent by self.sendLeoBridgePackage()
         return self.sendLeoBridgePackage("bodyLength", 0)  # empty as default
 
-    def setBody(self, p_package):
+    def set_body(self, p_package):
         '''Change Body text of a node'''
         w_gnx = p_package['gnx']
         w_body = p_package['body']
@@ -2567,7 +2556,7 @@ class LeoBridgeIntegController:
         return self._outputPNode(self.commander.p)  # return selected node
         # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
-    def setSelection(self, p_package):
+    def set_selection(self, p_package):
         '''
         Set cursor position and scroll position along with selection start and end.
         (For the currently selected node's body, if gnx matches only)
@@ -2640,7 +2629,7 @@ class LeoBridgeIntegController:
         # output selected node as 'ok'
         return self._outputPNode(self.commander.p)
 
-    def setNewHeadline(self, p_package):
+    def set_headline(self, p_package):
         '''Change Headline of a node'''
         w_newHeadline = p_package['text']
         w_ap = p_package['node']
@@ -2655,7 +2644,7 @@ class LeoBridgeIntegController:
                 return self._outputPNode(w_p)
         return self._outputError("Error in setNewHeadline")
 
-    def setSelectedNode(self, p_ap):
+    def set_current_position(self, p_ap):
         '''Select a node, or the first one found with its GNX'''
         if p_ap:
             w_p = self._ap_to_p(p_ap)
@@ -2676,7 +2665,14 @@ class LeoBridgeIntegController:
         else:
             return self._outputPNode()
 
-    def expandNode(self, p_ap):
+    def _findPNodeFromGnx(self, p_gnx):
+        '''Return first p node with this gnx or false'''
+        for p in self.commander.all_unique_positions():
+            if p.v.gnx == p_gnx:
+                return p
+        return False
+
+    def expand_node(self, p_ap):
         '''Expand a node'''
         if p_ap:
             w_p = self._ap_to_p(p_ap)
@@ -2684,27 +2680,13 @@ class LeoBridgeIntegController:
                 w_p.expand()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
-    def collapseNode(self, p_ap):
+    def contract_node(self, p_ap):
         '''Collapse a node'''
         if p_ap:
             w_p = self._ap_to_p(p_ap)
             if w_p:
                 w_p.contract()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
-
-    def _yieldAllRootChildren(self):
-        '''Return all root children P nodes'''
-        p = self.commander.rootPosition()
-        while p:
-            yield p
-            p.moveToNext()
-
-    def _findPNodeFromGnx(self, p_gnx):
-        '''Return first p node with this gnx or false'''
-        for p in self.commander.all_unique_positions():
-            if p.v.gnx == p_gnx:
-                return p
-        return False
 
     def _create_gnx_to_vnode(self):
         '''Make the first gnx_to_vnode array with all unique nodes'''
