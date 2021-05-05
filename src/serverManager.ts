@@ -84,7 +84,6 @@ export class ServerService {
             };
 
         */
-
         this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
 
         // If a leo server path is set then use it - otherwise use old script for now

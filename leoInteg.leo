@@ -149,9 +149,9 @@
 <v t="felix.20200216160305.1"><vh>save_file</vh></v>
 </v>
 <v t="felix.20200924223910.1"><vh>At Buttons</vh>
-<v t="felix.20200924210020.1"><vh>getButtons</vh></v>
-<v t="felix.20200924210024.1"><vh>removeButton</vh></v>
-<v t="felix.20200924210029.1"><vh>clickButton</vh></v>
+<v t="felix.20200924210020.1"><vh>get_buttons</vh></v>
+<v t="felix.20200924210024.1"><vh>remove_button</vh></v>
+<v t="felix.20200924210029.1"><vh>click_button</vh></v>
 </v>
 <v t="felix.20200924223945.1"><vh>Minibuffer</vh>
 <v t="felix.20200924210036.1"><vh>getCommands</vh></v>
@@ -4714,10 +4714,10 @@ if __name__ == '__main__':
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
-                    #
-                    w_func = getattr(integController, w_action, None)  # crux
-                    if w_func:
-                        # Is Filtered by Leo Bridge Integration Controller
+                    if w_action[0] == "!":
+                        w_func = getattr(integController, w_action[1:], None)
+                        if not w_func:
+                            print(w_action)
                         w_answer = w_func(w_actionParam)
                     else:
                         # Attempt to execute the command directly on the commander/subcommander
@@ -7699,7 +7699,6 @@ public startServer(p_leoPythonCommand: string, p_leoServerPath: string): Promise
         };
 
     */
-
     this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
 
     // If a leo server path is set then use it - otherwise use old script for now
@@ -10533,7 +10532,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError('Error in openFiles')
 
 </t>
-<t tx="felix.20200924210020.1">def getButtons(self, p_package):
+<t tx="felix.20200924210020.1">def get_buttons(self, p_package):
     '''Gets the currently opened file's @buttons list'''
     w_buttons = []
     if self.commander and self.commander.theScriptingController and self.commander.theScriptingController.buttonsDict:
@@ -10544,7 +10543,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self.sendLeoBridgePackage("buttons", w_buttons)
 
 </t>
-<t tx="felix.20200924210024.1">def removeButton(self, p_package):
+<t tx="felix.20200924210024.1">def remove_button(self, p_package):
     '''Removes an entry from the buttonsDict by index string'''
     w_index = p_package['index']
     w_dict = self.commander.theScriptingController.buttonsDict
@@ -10558,7 +10557,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924210029.1">def clickButton(self, p_package):
+<t tx="felix.20200924210029.1">def click_button(self, p_package):
     '''Handles buttons clicked in client from the '@button' panel'''
     w_index = p_package['index']
     w_dict = self.commander.theScriptingController.buttonsDict

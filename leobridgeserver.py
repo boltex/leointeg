@@ -1063,7 +1063,7 @@ class LeoBridgeIntegController:
 
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
-    def getButtons(self, p_package):
+    def get_buttons(self, p_package):
         '''Gets the currently opened file's @buttons list'''
         w_buttons = []
         if self.commander and self.commander.theScriptingController and self.commander.theScriptingController.buttonsDict:
@@ -1073,7 +1073,7 @@ class LeoBridgeIntegController:
                 w_buttons.append(w_entry)
         return self.sendLeoBridgePackage("buttons", w_buttons)
 
-    def removeButton(self, p_package):
+    def remove_button(self, p_package):
         '''Removes an entry from the buttonsDict by index string'''
         w_index = p_package['index']
         w_dict = self.commander.theScriptingController.buttonsDict
@@ -1086,7 +1086,7 @@ class LeoBridgeIntegController:
         # return selected node when done
         return self._outputPNode(self.commander.p)
 
-    def clickButton(self, p_package):
+    def click_button(self, p_package):
         '''Handles buttons clicked in client from the '@button' panel'''
         w_index = p_package['index']
         w_dict = self.commander.theScriptingController.buttonsDict
@@ -2843,10 +2843,10 @@ def main():
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
-                    #
-                    w_func = getattr(integController, w_action, None)  # crux
-                    if w_func:
-                        # Is Filtered by Leo Bridge Integration Controller
+                    if w_action[0] == "!":
+                        w_func = getattr(integController, w_action[1:], None)
+                        if not w_func:
+                            print(w_action)
                         w_answer = w_func(w_actionParam)
                     else:
                         # Attempt to execute the command directly on the commander/subcommander
