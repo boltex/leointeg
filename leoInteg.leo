@@ -8080,11 +8080,11 @@ export interface BodyTimeInfo {
  */
 export interface showSaveAsDialogParameters {
     // See TODO in leoAsync.ts
-    "initialFile": string;
-    "title": string;
-    "message": string;
-    "filetypes": string[];
-    "defaultExtension": string;
+    initialFile: string;
+    title: string;
+    message: string;
+    filetypes: string[];
+    defaultExtension: string;
 }
 
 </t>
@@ -8092,10 +8092,10 @@ export interface showSaveAsDialogParameters {
  * * Parameter structure used in the 'runAskYesNoDialog' equivalent when asking user input
  */
 export interface runAskYesNoDialogParameters {
-    "ask": string;
-    "message": string;
-    "yes_all": boolean;
-    "no_all": boolean;
+    ask: string;
+    message: string;
+    yes_all: boolean;
+    no_all: boolean;
 }
 
 </t>
@@ -8103,8 +8103,8 @@ export interface runAskYesNoDialogParameters {
  * * Parameter structure used in the 'runAskOkDialog' equivalent when showing a warning
  */
 export interface runWarnMessageDialogParameters {
-    "warn": string;
-    "message": string;
+    warn: string;
+    message: string;
 }
 
 </t>
@@ -8112,7 +8112,7 @@ export interface runWarnMessageDialogParameters {
  * * Parameter structure for non-blocking info message about detected file changes
  */
 export interface runInfoMessageDialogParameters {
-    "message": string;
+    message: string;
 }
 
 </t>

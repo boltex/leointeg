@@ -240,36 +240,36 @@ export interface BodySelectionInfo {
  */
 export interface showSaveAsDialogParameters {
     // See TODO in leoAsync.ts
-    "initialFile": string;
-    "title": string;
-    "message": string;
-    "filetypes": string[];
-    "defaultExtension": string;
+    initialFile: string;
+    title: string;
+    message: string;
+    filetypes: string[];
+    defaultExtension: string;
 }
 
 /**
  * * Parameter structure used in the 'runAskYesNoDialog' equivalent when asking user input
  */
 export interface runAskYesNoDialogParameters {
-    "ask": string;
-    "message": string;
-    "yes_all": boolean;
-    "no_all": boolean;
+    ask: string;
+    message: string;
+    yes_all: boolean;
+    no_all: boolean;
 }
 
 /**
  * * Parameter structure used in the 'runAskOkDialog' equivalent when showing a warning
  */
 export interface runWarnMessageDialogParameters {
-    "warn": string;
-    "message": string;
+    warn: string;
+    message: string;
 }
 
 /**
  * * Parameter structure for non-blocking info message about detected file changes
  */
 export interface runInfoMessageDialogParameters {
-    "message": string;
+    message: string;
 }
 
 /**
