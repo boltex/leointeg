@@ -61,7 +61,6 @@ export class ServerService {
      * @returns A promise that resolves when the server is started, or that is rejected in case of problem while starting
      */
     public startServer(p_leoPythonCommand: string, p_leoServerPath: string): Promise<any> {
-        console.log('p_leoServerPath', p_leoServerPath);
 
         let w_pythonPath = ""; // Command of child.spawn call
 

@@ -4420,10 +4420,10 @@ if __name__ == '__main__':
     return self.sendLeoBridgePackage("bodyLength", 0)  # empty as default
 
 </t>
-<t tx="felix.20191126232434.22">def set_body(self, p_package):
+<t tx="felix.20191126232434.22">def set_body(self, param):
     '''Change Body text of a node'''
-    w_gnx = p_package['gnx']
-    w_body = p_package['body']
+    w_gnx = param['gnx']
+    w_body = param['body']
     for w_p in self.commander.all_positions():
         if w_p.v.gnx == w_gnx:
             # TODO : Before setting undo and trying to set body, first check if different than existing body
@@ -4448,10 +4448,10 @@ if __name__ == '__main__':
     # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20191126232434.23">def set_headline(self, p_package):
+<t tx="felix.20191126232434.23">def set_headline(self, param):
     '''Change Headline of a node'''
-    w_newHeadline = p_package['text']
-    w_ap = p_package['node']
+    w_newHeadline = param['text']
+    w_ap = param['node']
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -4703,26 +4703,26 @@ if __name__ == '__main__':
             # * Start by sending empty as 'ok'
             await websocket.send(integController.sendLeoBridgePackage())
             integController.logSignon()
-            async for w_message in websocket:
-                w_param = json.loads(w_message)
-                if w_param and w_param['action']:
-                    w_action = w_param['action']
-                    w_actionParam = w_param['param']
+            async for json_string_message in websocket:
+                messageObject = json.loads(json_string_message)
+                if messageObject and messageObject['action']:
+                    action = messageObject['action']
+                    param = messageObject['param']
                     # printAction(w_param)  # Debug output
                     # * Storing id of action in global var instead of passing as parameter
-                    integController.setActionId(w_param['id'])
+                    integController.setActionId(messageObject['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
                     # TODO : Block attempts to call functions starting with underscore or reserved
-                    if w_action[0] == "!":
-                        w_func = getattr(integController, w_action[1:], None)
+                    if action[0] == "!":
+                        w_func = getattr(integController, action[1:], None)
                         if not w_func:
-                            print(w_action)
-                        w_answer = w_func(w_actionParam)
+                            print(action)
+                        w_answer = w_func(param)
                     else:
                         # Attempt to execute the command directly on the commander/subcommander
                         w_answer = integController.leoCommand(
-                            w_action, w_actionParam)
+                            action, param)
                 else:
                     w_answer = "Error in processCommand"
                     print(w_answer, flush=True)
@@ -4770,7 +4770,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
 
 </t>
 <t tx="felix.20191128003648.1"></t>
-<t tx="felix.20191201194046.1">def get_all_gnx(self, p_unused):
+<t tx="felix.20191201194046.1">def get_all_gnx(self, param):
     '''Get gnx array from all unique nodes'''
     w_all_gnx = [
         p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
@@ -7676,7 +7676,6 @@ export class ServerService {
  * @returns A promise that resolves when the server is started, or that is rejected in case of problem while starting
  */
 public startServer(p_leoPythonCommand: string, p_leoServerPath: string): Promise&lt;any&gt; {
-    console.log('p_leoServerPath', p_leoServerPath);
 
     let w_pythonPath = ""; // Command of child.spawn call
 
@@ -11701,9 +11700,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self.sendLeoBridgePackage("nodes", w_apList)
 
 </t>
-<t tx="felix.20200924211057.1">def mark_node(self, p_package):
+<t tx="felix.20200924211057.1">def mark_node(self, param):
     '''Mark a node, don't select it'''
-    w_ap = p_package["node"]
+    w_ap = param["node"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11716,9 +11715,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in markPNode no param node")
 
 </t>
-<t tx="felix.20200924211100.1">def unmark_node(self, p_package):
+<t tx="felix.20200924211100.1">def unmark_node(self, param):
     '''Unmark a node, don't select it'''
-    w_ap = p_package["node"]
+    w_ap = param["node"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11731,9 +11730,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in unmarkPNode no param node")
 
 </t>
-<t tx="felix.20200924211104.1">def clone_node(self, p_package):
+<t tx="felix.20200924211104.1">def clone_node(self, param):
     '''Clone a node, return it, if it was also the current selection, otherwise try not to select it'''
-    w_ap = p_package["node"]
+    w_ap = param["node"]
     if not w_ap:
         return self._outputError("Error in clonePNode function, no param p_ap")
     w_p = self._ap_to_p(w_ap)
@@ -11752,9 +11751,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924211121.1">def cut_node(self, p_package):
+<t tx="felix.20200924211121.1">def cut_node(self, param):
     '''Cut a node, don't select it. Try to keep selection, then return the selected node that remains'''
-    w_ap = p_package["node"]
+    w_ap = param["node"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11782,9 +11781,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in cutPNode no param node")
 
 </t>
-<t tx="felix.20200924211125.1">def delete_node(self, p_package):
+<t tx="felix.20200924211125.1">def delete_node(self, param):
     '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
-    w_ap = p_package["node"]
+    w_ap = param["node"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11812,9 +11811,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in deletePNode no param node")
 
 </t>
-<t tx="felix.20200924211127.1">def insert_node(self, p_package):
+<t tx="felix.20200924211127.1">def insert_node(self, param):
     '''Insert a node at given node, then select it once created, and finally return it'''
-    w_ap = p_package["node"]
+    w_ap = param["node"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11833,10 +11832,10 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in insertPNode no param node")
 
 </t>
-<t tx="felix.20200924211132.1">def insert_named_node(self, p_package):
+<t tx="felix.20200924211132.1">def insert_named_node(self, param):
     '''Insert a node at given node, set its headline, select it and finally return it'''
-    w_newHeadline = p_package['text']
-    w_ap = p_package['node']
+    w_newHeadline = param['text']
+    w_ap = param['node']
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11857,7 +11856,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in insertNamedPNode no param node")
 
 </t>
-<t tx="felix.20200924211135.1">def undo(self, p_paramUnused):
+<t tx="felix.20200924211135.1">def undo(self, param):
     '''Undo last un-doable operation'''
     if self.commander.undoer.canUndo():
         self.commander.undoer.undo()
@@ -11865,7 +11864,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924211138.1">def redo(self, p_paramUnused):
+<t tx="felix.20200924211138.1">def redo(self, param):
     '''Undo last un-doable operation'''
     if self.commander.undoer.canRedo():
         self.commander.undoer.redo()
@@ -12174,7 +12173,7 @@ def tag_configure(self, colorName, **keys): pass
     return self.g.toUnicode(s)
 
 </t>
-<t tx="felix.20200929215102.2">def get_ui_states(self, p_package):
+<t tx="felix.20200929215102.2">def get_ui_states(self, param):
     """
     Gets the currently opened file's general states for UI enabled/disabled states
     such as undo available, file changed/unchanged
@@ -12205,7 +12204,7 @@ def tag_configure(self, colorName, **keys): pass
     return self.sendLeoBridgePackage("states", w_states)
 
 </t>
-<t tx="felix.20200929215102.3">def page_up(self, p_unused):
+<t tx="felix.20200929215102.3">def page_up(self, param):
     """Selects a node a couple of steps up in the tree to simulate page up"""
     self.commander.selectVisBack()
     self.commander.selectVisBack()
@@ -12213,7 +12212,7 @@ def tag_configure(self, colorName, **keys): pass
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200929215102.4">def page_down(self, p_unused):
+<t tx="felix.20200929215102.4">def page_down(self, param):
     """Selects a node a couple of steps down in the tree to simulate page down"""
     self.commander.selectVisNext()
     self.commander.selectVisNext()
@@ -12301,7 +12300,7 @@ def tag_configure(self, colorName, **keys): pass
     return self.sendLeoBridgePackage("bodyStates", states)
 
 </t>
-<t tx="felix.20200929230231.1">def set_selection(self, p_package):
+<t tx="felix.20200929230231.1">def set_selection(self, param):
     '''
     Set cursor position and scroll position along with selection start and end.
     (For the currently selected node's body, if gnx matches only)
@@ -12310,7 +12309,7 @@ def tag_configure(self, colorName, **keys): pass
     '''
     w_same = False  # Flag for actually setting values in the wrapper, if same gnx.
     w_wrapper = self.commander.frame.body.wrapper
-    w_gnx = p_package['gnx']
+    w_gnx = param['gnx']
     w_body = ""
     w_v = None
     if self.commander.p.v.gnx == w_gnx:
@@ -12330,12 +12329,12 @@ def tag_configure(self, colorName, **keys): pass
 
     w_body = w_v.b
     f_convert = self.g.convertRowColToPythonIndex
-    w_active = p_package['active']
-    w_start = p_package['start']
-    w_end = p_package['end']
+    w_active = param['active']
+    w_start = param['start']
+    w_end = param['end']
 
     # no convertion necessary, its given back later
-    w_scroll = p_package['scroll']
+    w_scroll = param['scroll']
     w_insert = f_convert(
         w_body, w_active['line'], w_active['col'])
     w_startSel = f_convert(
@@ -12426,7 +12425,7 @@ export function getDurationMs(p_start: [number, number]): number {
 }
 
 </t>
-<t tx="felix.20201025144113.1">def test(self, p_package):
+<t tx="felix.20201025144113.1">def test(self, param):
     '''Utility test function for debugging'''
     print("Called test")
     return self.sendLeoBridgePackage('testReturnedKey', 'testReturnedValue')
@@ -12633,13 +12632,13 @@ public static BUTTON_STRINGS = {
 };
 
 </t>
-<t tx="felix.20201129184357.1">def printAction(p_param):
+<t tx="felix.20201129184357.1">def printAction(param):
     # print action if not getChild or getChildren
-    w_action = p_param["action"]
+    w_action = param["action"]
     if w_action in commonActions:
         pass
     else:
-        print(f"*ACTION* {w_action}, id {p_param['id']}", flush=True)
+        print(f"*ACTION* {w_action}, id {param['id']}", flush=True)
 
 
 </t>
