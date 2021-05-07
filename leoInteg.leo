@@ -4321,17 +4321,17 @@ print('done')
         return self._outputError('Error in openFile')
 
 </t>
-<t tx="felix.20191126232434.14">def close_file(self, p_package):
+<t tx="felix.20191126232434.14">def close_file(self, param):
     """
     Closes a leo file. A file can then be opened with "openFile"
     Returns an object that contains a 'closed' member
     """
     # TODO : Specify which file to support multiple opened files
     if self.commander:
-        if p_package["forced"] and self.commander.changed:
+        if param["forced"] and self.commander.changed:
             # return "no" g.app.gui.runAskYesNoDialog  and g.app.gui.runAskYesNoCancelDialog
             self.commander.revert()
-        if p_package["forced"] or not self.commander.changed:
+        if param["forced"] or not self.commander.changed:
             self.commander.closed = True
             self.commander.close()
         else:
@@ -4790,12 +4790,12 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     self.loop = asyncio.get_event_loop()
 
 </t>
-<t tx="felix.20200216160305.1">def save_file(self, p_package):
+<t tx="felix.20200216160305.1">def save_file(self, param):
     '''Saves the leo file. New or dirty derived files are rewritten'''
     if self.commander:
         try:
-            if "text" in p_package:
-                self.commander.save(fileName=p_package['text'])
+            if "text" in param:
+                self.commander.save(fileName=param['text'])
             else:
                 self.commander.save()
         except Exception as e:
@@ -5302,7 +5302,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20200622230608.1">def get_all_open_commanders(self, p_package):
+<t tx="felix.20200622230608.1">def get_all_open_commanders(self, param):
     '''Return array of opened file path/names to be used as openFile parameters to switch files'''
     w_files = []
     w_index = 0
@@ -5341,7 +5341,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     return False
 
 </t>
-<t tx="felix.20200624172552.1">def set_opened_file(self, p_package):
+<t tx="felix.20200624172552.1">def set_opened_file(self, param):
     '''Choose the new active commander from array of opened file path/names by numeric index'''
     w_openedCommanders = []
 
@@ -5349,7 +5349,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
         if not w_commander.closed:
             w_openedCommanders.append(w_commander)
 
-    w_index = p_package['index']
+    w_index = param['index']  # index in param
 
     if w_openedCommanders[w_index]:
         self.commander = w_openedCommanders[w_index]
@@ -10452,7 +10452,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return None
 
 </t>
-<t tx="felix.20200924205503.1">def leoCommand(self, p_command, p_package):
+<t tx="felix.20200924205503.1">def leoCommand(self, p_command, param):
     '''
     Generic call to a method in Leo's Commands class or any subcommander class.
 
@@ -10465,14 +10465,14 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     p_ap: an archived position.
     p_keepSelection: preserve the current selection, if possible.
     '''
-    w_keepSelection = False  # Set default, optional component of package
-    if "keep" in p_package:
-        w_keepSelection = p_package["keep"]
+    w_keepSelection = False  # Set default, optional component of param
+    if "keep" in param:
+        w_keepSelection = param["keep"]
     #     print("have keep! " + str(w_keepSelection), flush=True)
     # else:
     #     print("NO keep!", flush=True)
 
-    w_ap = p_package["node"]  # At least node parameter is present
+    w_ap = param["node"]  # At least node parameter is present
     if not w_ap:
         return self._outputError(f"Error in {p_command}: no param node")
     w_p = self._ap_to_p(w_ap)
@@ -10493,14 +10493,14 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924205915.1">def open_files(self, p_package):
+<t tx="felix.20200924205915.1">def open_files(self, param):
     """
     Opens an array of leo files
     Returns an object that contains the last 'opened' member.
     """
     w_files = []
-    if "files" in p_package:
-        w_files = p_package["files"]
+    if "files" in param:
+        w_files = param["files"]
 
     for i_file in w_files:
         w_found = False
@@ -10531,7 +10531,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError('Error in openFiles')
 
 </t>
-<t tx="felix.20200924210020.1">def get_buttons(self, p_package):
+<t tx="felix.20200924210020.1">def get_buttons(self, param):
     '''Gets the currently opened file's @buttons list'''
     w_buttons = []
     if self.commander and self.commander.theScriptingController and self.commander.theScriptingController.buttonsDict:
@@ -10542,9 +10542,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self.sendLeoBridgePackage("buttons", w_buttons)
 
 </t>
-<t tx="felix.20200924210024.1">def remove_button(self, p_package):
+<t tx="felix.20200924210024.1">def remove_button(self, param):
     '''Removes an entry from the buttonsDict by index string'''
-    w_index = p_package['index']
+    w_index = param['index']
     w_dict = self.commander.theScriptingController.buttonsDict
     w_key = None
     for i_key in w_dict:
@@ -10556,9 +10556,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924210029.1">def click_button(self, p_package):
+<t tx="felix.20200924210029.1">def click_button(self, param):
     '''Handles buttons clicked in client from the '@button' panel'''
-    w_index = p_package['index']
+    w_index = param['index']
     w_dict = self.commander.theScriptingController.buttonsDict
     w_button = None
     for i_key in w_dict:
@@ -10570,7 +10570,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924210036.1">def getCommands(self, p_package):
+<t tx="felix.20200924210036.1">def getCommands(self, param):
     """Return a list of all Leo commands that make sense in leoInteg."""
     c = self.commander
     d = c.commandsDict  # keys are command names, values are functions.
