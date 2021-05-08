@@ -128,7 +128,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
 export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand): string {
-    let w_json = "{\"node\":" + p_nodeJson; // already json
+    let w_json = "{\"ap\":" + p_nodeJson; // already json
     if (p_command.text) {
         w_json += ", \"text\": " + JSON.stringify(p_command.text);
     }
@@ -185,7 +185,7 @@ export function isHexColor(p_hexString: string): boolean {
 
 /**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
- * with a scheme header like "leo:/" or 'more:/' 
+ * with a scheme header like "leo:/" or 'more:/'
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */

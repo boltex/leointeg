@@ -877,12 +877,12 @@ class LeoBridgeIntegController:
         # else:
         #     print("NO keep!", flush=True)
 
-        w_ap = param["node"]  # At least node parameter is present
+        w_ap = param["ap"]  # At least node parameter is present
         if not w_ap:
-            return self._outputError(f"Error in {p_command}: no param node")
+            return self._outputError(f"Error in {p_command}: no param ap")
         w_p = self._ap_to_p(w_ap)
         if not w_p:
-            return self._outputError(f"Error in {p_command}: no w_p node found")
+            return self._outputError(f"Error in {p_command}: no w_p position found")
         w_func = self._get_commander_method(p_command)
         if not w_func:
             return self._outputError(f"Error in {p_command}: no method found")
@@ -2179,7 +2179,7 @@ class LeoBridgeIntegController:
 
     def mark_node(self, param):
         '''Mark a node, don't select it'''
-        w_ap = param["node"]
+        w_ap = param["ap"]
         if w_ap:
             w_p = self._ap_to_p(w_ap)
             if w_p:
@@ -2193,7 +2193,7 @@ class LeoBridgeIntegController:
 
     def unmark_node(self, param):
         '''Unmark a node, don't select it'''
-        w_ap = param["node"]
+        w_ap = param["ap"]
         if w_ap:
             w_p = self._ap_to_p(w_ap)
             if w_p:
@@ -2207,7 +2207,7 @@ class LeoBridgeIntegController:
 
     def clone_node(self, param):
         '''Clone a node, return it, if it was also the current selection, otherwise try not to select it'''
-        w_ap = param["node"]
+        w_ap = param["ap"]
         if not w_ap:
             return self._outputError("Error in clonePNode function, no param p_ap")
         w_p = self._ap_to_p(w_ap)
@@ -2227,7 +2227,7 @@ class LeoBridgeIntegController:
 
     def cut_node(self, param):
         '''Cut a node, don't select it. Try to keep selection, then return the selected node that remains'''
-        w_ap = param["node"]
+        w_ap = param["ap"]
         if w_ap:
             w_p = self._ap_to_p(w_ap)
             if w_p:
@@ -2256,7 +2256,7 @@ class LeoBridgeIntegController:
 
     def delete_node(self, param):
         '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
-        w_ap = param["node"]
+        w_ap = param["ap"]
         if w_ap:
             w_p = self._ap_to_p(w_ap)
             if w_p:
@@ -2285,7 +2285,7 @@ class LeoBridgeIntegController:
 
     def insert_node(self, param):
         '''Insert a node at given node, then select it once created, and finally return it'''
-        w_ap = param["node"]
+        w_ap = param["ap"]
         if w_ap:
             w_p = self._ap_to_p(w_ap)
             if w_p:
@@ -2306,7 +2306,7 @@ class LeoBridgeIntegController:
     def insert_named_node(self, param):
         '''Insert a node at given node, set its headline, select it and finally return it'''
         w_newHeadline = param['text']
-        w_ap = param['node']
+        w_ap = param["ap"]
         if w_ap:
             w_p = self._ap_to_p(w_ap)
             if w_p:
@@ -2632,7 +2632,7 @@ class LeoBridgeIntegController:
     def set_headline(self, param):
         '''Change Headline of a node'''
         w_newHeadline = param['text']
-        w_ap = param['node']
+        w_ap = param["ap"]
         if w_ap:
             w_p = self._ap_to_p(w_ap)
             if w_p:

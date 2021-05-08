@@ -572,12 +572,12 @@
       {
         "command": "leointeg.showBody",
         "category": "Leo",
-        "title": "Focus to Body"
+        "title": "Focus on Body"
       },
       {
         "command": "leointeg.showOutline",
         "category": "Leo",
-        "title": "Focus to Tree"
+        "title": "Focus on Tree"
       },
       {
         "command": "leointeg.showLogPane",
@@ -2008,13 +2008,13 @@
         "command": "leointeg.showOutline",
         "key": "ctrl+t",
         "mac": "cmd+t",
-        "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.showBody",
         "key": "ctrl+t",
         "mac": "cmd+t",
-        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
       },
       {
         "command": "leointeg.showBody",

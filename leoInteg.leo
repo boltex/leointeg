@@ -2346,12 +2346,12 @@ print('done')
 <t tx="ekr.20200815123601.18">{
   "command": "leointeg.showBody",
   "category": "Leo",
-  "title": "Focus to Body"
+  "title": "Focus on Body"
 },
 {
   "command": "leointeg.showOutline",
   "category": "Leo",
-  "title": "Focus to Tree"
+  "title": "Focus on Tree"
 },
 {
   "command": "leointeg.showLogPane",
@@ -3791,13 +3791,13 @@ print('done')
   "command": "leointeg.showOutline",
   "key": "ctrl+t",
   "mac": "cmd+t",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.showBody",
   "key": "ctrl+t",
   "mac": "cmd+t",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
 },
 {
   "command": "leointeg.showBody",
@@ -4451,7 +4451,7 @@ if __name__ == '__main__':
 <t tx="felix.20191126232434.23">def set_headline(self, param):
     '''Change Headline of a node'''
     w_newHeadline = param['text']
-    w_ap = param['node']
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -8258,7 +8258,7 @@ import { LeoNode } from "./leoNode";
 </t>
 <t tx="felix.20200718195558.10">/**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
- * with a scheme header like "leo:/" or 'more:/' 
+ * with a scheme header like "leo:/" or 'more:/'
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */
@@ -8341,7 +8341,7 @@ export function buildDocumentIconPaths(p_context: vscode.ExtensionContext): Icon
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
 export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand): string {
-    let w_json = "{\"node\":" + p_nodeJson; // already json
+    let w_json = "{\"ap\":" + p_nodeJson; // already json
     if (p_command.text) {
         w_json += ", \"text\": " + JSON.stringify(p_command.text);
     }
@@ -10472,12 +10472,12 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     # else:
     #     print("NO keep!", flush=True)
 
-    w_ap = param["node"]  # At least node parameter is present
+    w_ap = param["ap"]  # At least node parameter is present
     if not w_ap:
-        return self._outputError(f"Error in {p_command}: no param node")
+        return self._outputError(f"Error in {p_command}: no param ap")
     w_p = self._ap_to_p(w_ap)
     if not w_p:
-        return self._outputError(f"Error in {p_command}: no w_p node found")
+        return self._outputError(f"Error in {p_command}: no w_p position found")
     w_func = self._get_commander_method(p_command)
     if not w_func:
         return self._outputError(f"Error in {p_command}: no method found")
@@ -11702,7 +11702,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 </t>
 <t tx="felix.20200924211057.1">def mark_node(self, param):
     '''Mark a node, don't select it'''
-    w_ap = param["node"]
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11717,7 +11717,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 </t>
 <t tx="felix.20200924211100.1">def unmark_node(self, param):
     '''Unmark a node, don't select it'''
-    w_ap = param["node"]
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11732,7 +11732,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 </t>
 <t tx="felix.20200924211104.1">def clone_node(self, param):
     '''Clone a node, return it, if it was also the current selection, otherwise try not to select it'''
-    w_ap = param["node"]
+    w_ap = param["ap"]
     if not w_ap:
         return self._outputError("Error in clonePNode function, no param p_ap")
     w_p = self._ap_to_p(w_ap)
@@ -11753,7 +11753,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 </t>
 <t tx="felix.20200924211121.1">def cut_node(self, param):
     '''Cut a node, don't select it. Try to keep selection, then return the selected node that remains'''
-    w_ap = param["node"]
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11783,7 +11783,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 </t>
 <t tx="felix.20200924211125.1">def delete_node(self, param):
     '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
-    w_ap = param["node"]
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11813,7 +11813,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 </t>
 <t tx="felix.20200924211127.1">def insert_node(self, param):
     '''Insert a node at given node, then select it once created, and finally return it'''
-    w_ap = param["node"]
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11835,7 +11835,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 <t tx="felix.20200924211132.1">def insert_named_node(self, param):
     '''Insert a node at given node, set its headline, select it and finally return it'''
     w_newHeadline = param['text']
-    w_ap = param['node']
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
