@@ -137,44 +137,26 @@ export interface LeoPackageStates {
 }
 
 /**
- * * Returned info about currently opened and editing document
- * Used after opening, switching or setting the opened document
- */
-export interface LeoBridgePackageOpenedInfo {
-    total: number;
-    filename: string;
-    node: ArchivedPosition;
-}
-
-/**
  * * Main interface for JSON sent from Leo back to leoInteg
  */
 export interface LeoBridgePackage {
-    id: number; // TODO : Could be used for error checking
-    // * Each of those top level member is an answer from a "Constants.LEOBRIDGE" command
-    allGnx?: string[];
-    bodyLength?: number;
-    bodyData?: string;
-    bodyStates?: {
-        language: string;
-        selection: BodySelectionInfo;
-    }
-    node?: ArchivedPosition;
-    nodes?: ArchivedPosition[];
-    states?: LeoPackageStates;
-    closed?: {
-        total: number;
-        filename?: string;
-        node?: ArchivedPosition;
-    },
-    opened?: LeoBridgePackageOpenedInfo,
-    setOpened?: LeoBridgePackageOpenedInfo,
-    openedFiles?: {
-        index: number;
-        files: LeoDocument[];
-    }
-    buttons?: LeoButton[];
-    commands?: MinibufferCommand[];
+    // * Common to all result packages
+    id: number;
+    // * Possible answers from a "Constants.LEOBRIDGE" command
+    allGnx?: string[]; // get_all_gnx
+    bodyLength?: number; // get_body_length
+    bodyData?: string; // get_body
+    buttons?: LeoButton[]; // get_buttons
+    commands?: MinibufferCommand[]; // getCommands
+    filename?: string; // set_opened_file, open_file(s), ?close_file
+    files?: LeoDocument[]; // get_all_open_commanders
+    index?: number; // get_all_open_commanders
+    language?: string; // get_body_states
+    node?: ArchivedPosition; // set_opened_file, open_file(s), ?close_file
+    nodes?: ArchivedPosition[]; // get_children
+    selection?: BodySelectionInfo; // get_body_states
+    states?: LeoPackageStates; // get_ui_states
+    total?: number; // set_opened_file, open_file(s), close_file
 }
 
 /**

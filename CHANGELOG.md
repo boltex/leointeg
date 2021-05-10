@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.1.14
+
+-   Rewrite of the leobridgeserver.py and made compatible with leoserver.py from Leo itself.
+-   (...)
+
 ## 0.1.13
 
 -   Added support for precise focus placement, focus switch between tree/body.

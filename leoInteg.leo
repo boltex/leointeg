@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20210509210502.1"><vh>0.1.13</vh></v>
 <v t="felix.20200718222417.1"><vh>0.1.12</vh></v>
 <v t="felix.20200718222419.1"><vh>0.1.11</vh></v>
 <v t="felix.20200718222422.1"><vh>0.1.10</vh></v>
@@ -154,7 +155,7 @@
 <v t="felix.20200924210029.1"><vh>click_button</vh></v>
 </v>
 <v t="felix.20200924223945.1"><vh>Minibuffer</vh>
-<v t="felix.20200924210036.1"><vh>getCommands</vh></v>
+<v t="felix.20200924210036.1"><vh>get_all_leo_commands</vh></v>
 <v t="felix.20200924210058.1"><vh>_bad_commands</vh></v>
 <v t="felix.20200924210112.1"><vh>_good_commands</vh></v>
 <v t="felix.20200924210952.1"><vh>_getDocstringForCommand</vh></v>
@@ -605,7 +606,6 @@
 <v t="felix.20200718194857.7"><vh>LeoLogEntry</vh></v>
 <v t="felix.20200718194857.8"><vh>ArchivedPosition</vh></v>
 <v t="ekr.20200815091408.1"><vh>LeoPackageStates</vh></v>
-<v t="ekr.20200815091439.1"><vh>LeoBridgePackageOpenedInfo</vh></v>
 <v t="felix.20200718194857.10"><vh>LeoBridgePackage</vh></v>
 <v t="felix.20200718194857.11"><vh>LeoDocument</vh></v>
 <v t="felix.20200718194857.12"><vh>LeoButton</vh></v>
@@ -1293,17 +1293,6 @@ export interface LeoPackageStates {
 }
 
 </t>
-<t tx="ekr.20200815091439.1">/**
- * * Returned info about currently opened and editing document
- * Used after opening, switching or setting the opened document
- */
-export interface LeoBridgePackageOpenedInfo {
-    total: number;
-    filename: string;
-    node: ArchivedPosition;
-}
-
-</t>
 <t tx="ekr.20200815091534.1">/**
  * * Used by the minibuffer command pallette
  * Acquired from the getCommands method in leobridgeserver.py
@@ -1926,7 +1915,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "author": {
     "name": "Félix"
   },
@@ -1937,7 +1926,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.55.0"
+    "vscode": "^1.56.0"
   },
   "keywords": [
     "leo",
@@ -1973,7 +1962,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.55.0",
+    "@types/vscode": "^1.56.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -4316,7 +4305,7 @@ print('done')
         self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                     "node": self._p_to_ap(self.commander.p)}
-        return self.sendLeoBridgePackage("opened", w_result)
+        return self.sendLeoBridgePackage(w_result)
     else:
         return self._outputError('Error in openFile')
 
@@ -4324,19 +4313,21 @@ print('done')
 <t tx="felix.20191126232434.14">def close_file(self, param):
     """
     Closes a leo file. A file can then be opened with "openFile"
-    Returns an object that contains a 'closed' member
+    returns a 'total' member in the package if close is successful
+
     """
     # TODO : Specify which file to support multiple opened files
     if self.commander:
+        # First, revert to prevent asking user.
         if param["forced"] and self.commander.changed:
-            # return "no" g.app.gui.runAskYesNoDialog  and g.app.gui.runAskYesNoCancelDialog
             self.commander.revert()
+        # Then, if still possible, close it.
         if param["forced"] or not self.commander.changed:
             self.commander.closed = True
             self.commander.close()
         else:
             # Cannot close, ask to save, ignore or cancel
-            return self.sendLeoBridgePackage('closed', False)
+            return self.sendLeoBridgePackage()
 
     # Switch commanders to first available
     w_total = self._getTotalOpened()
@@ -4349,10 +4340,10 @@ print('done')
         self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                     "node": self._p_to_ap(self.commander.p)}
-        return self.sendLeoBridgePackage("closed", w_result)
     else:
         w_result = {"total": 0}
-        return self.sendLeoBridgePackage("closed", w_result)
+
+    return self.sendLeoBridgePackage({"closed": w_result})
 
 </t>
 <t tx="felix.20191126232434.16">def get_children(self, p_ap):
@@ -4392,7 +4383,6 @@ print('done')
                 return self._outputBodyData()  # default "" empty string
     # Send as empty to fix unresolved promise if 'document switch' occurred shortly before
     return self._outputBodyData()
-    # return self.sendLeoBridgePackage()  # default as inexistent
 
 </t>
 <t tx="felix.20191126232434.2">#! python3
@@ -4415,9 +4405,9 @@ if __name__ == '__main__':
         w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
         if w_v and w_v.b:
             # Length in bytes, not just by character count.
-            return self.sendLeoBridgePackage("bodyLength", len(w_v.b.encode('utf-8')))
+            return self.sendLeoBridgePackage({"bodyLength": len(w_v.b.encode('utf-8'))})
     # TODO : May need to signal inexistent by self.sendLeoBridgePackage()
-    return self.sendLeoBridgePackage("bodyLength", 0)  # empty as default
+    return self.sendLeoBridgePackage({"bodyLength": 0})  # empty as default
 
 </t>
 <t tx="felix.20191126232434.22">def set_body(self, param):
@@ -4445,7 +4435,6 @@ if __name__ == '__main__':
         if w_v:
             w_v.b = w_body
     return self._outputPNode(self.commander.p)  # return selected node
-    # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
 <t tx="felix.20191126232434.23">def set_headline(self, param):
@@ -4774,7 +4763,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     '''Get gnx array from all unique nodes'''
     w_all_gnx = [
         p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
-    return self.sendLeoBridgePackage("allGnx", w_all_gnx)
+    return self.sendLeoBridgePackage({"allGnx": w_all_gnx})
 
 </t>
 <t tx="felix.20191216195906.1">def _findPNodeFromGnx(self, p_gnx):
@@ -5321,7 +5310,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
 
     w_openedFiles = {"files": w_files, "index": w_indexFound}
 
-    return self.sendLeoBridgePackage("openedFiles", w_openedFiles)
+    return self.sendLeoBridgePackage({"openedFiles": w_openedFiles})
 
 </t>
 <t tx="felix.20200623201853.1">def _getTotalOpened(self):
@@ -5361,7 +5350,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
                     "node": self._p_to_ap(self.commander.p)}
         # maybe needed for frame wrapper
         self.commander.selectPosition(self.commander.p)
-        return self.sendLeoBridgePackage("setOpened", w_result)
+        return self.sendLeoBridgePackage(w_result)
     else:
         return self._outputError('Error in setOpenedFile')
 
@@ -7149,7 +7138,7 @@ public refreshTreeRoot(): void {
         return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package =&gt; {
             if (p_package &amp;&amp; p_package) {
                 const w_list: LeoDocumentNode[] = [];
-                const w_files: LeoDocument[] = p_package.openedFiles!.files;
+                const w_files: LeoDocument[] = p_package.files!;
 
                 let w_index: number = 0;
 
@@ -8008,31 +7997,23 @@ import { LeoNode } from "./leoNode";
  * * Main interface for JSON sent from Leo back to leoInteg
  */
 export interface LeoBridgePackage {
-    id: number; // TODO : Could be used for error checking
-    // * Each of those top level member is an answer from a "Constants.LEOBRIDGE" command
-    allGnx?: string[];
-    bodyLength?: number;
-    bodyData?: string;
-    bodyStates?: {
-        language: string;
-        selection: BodySelectionInfo;
-    }
-    node?: ArchivedPosition;
-    nodes?: ArchivedPosition[];
-    states?: LeoPackageStates;
-    closed?: {
-        total: number;
-        filename?: string;
-        node?: ArchivedPosition;
-    },
-    opened?: LeoBridgePackageOpenedInfo,
-    setOpened?: LeoBridgePackageOpenedInfo,
-    openedFiles?: {
-        index: number;
-        files: LeoDocument[];
-    }
-    buttons?: LeoButton[];
-    commands?: MinibufferCommand[];
+    // * Common to all result packages
+    id: number;
+    // * Possible answers from a "Constants.LEOBRIDGE" command
+    allGnx?: string[]; // get_all_gnx
+    bodyLength?: number; // get_body_length
+    bodyData?: string; // get_body
+    buttons?: LeoButton[]; // get_buttons
+    commands?: MinibufferCommand[]; // getCommands
+    filename?: string; // set_opened_file, open_file(s), ?close_file
+    files?: LeoDocument[]; // get_all_open_commanders
+    index?: number; // get_all_open_commanders
+    language?: string; // get_body_states
+    node?: ArchivedPosition; // set_opened_file, open_file(s), ?close_file
+    nodes?: ArchivedPosition[]; // get_children
+    selection?: BodySelectionInfo; // get_body_states
+    states?: LeoPackageStates; // get_ui_states
+    total?: number; // set_opened_file, open_file(s), close_file
 }
 
 </t>
@@ -8417,22 +8398,10 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 @tabwidth -4
 # Change Log
 
-## 0.1.13
+## 0.1.14
 
--   Added support for precise focus placement, focus switch between tree/body.
--   Made the extension more aware of the current selection state, to have strictly relevant buttons visible shown only.
--   Made the 'edit headline' hover icon removable, in order to enable 'Tab' keybinding to go from tree to body directly.
--   Added commands and keybindings for 'goto' operations 'hoist/dehoist' [#25](https://github.com/boltex/leointeg/issues/25) and other commands. [#30](https://github.com/boltex/leointeg/issues/30)
--   Added support for Leo-Style outline navigation. [#43](https://github.com/boltex/leointeg/issues/43) Has to be enabled with an option in the config settings: "Use Leo Tree Browsing" which makes the arrow keys, pgUp/pgDn, home/end move the selection instead of a cursor when focus is on Leo's outline.
--   Implemented @buttons in it's own panel, visible where the already existing 'outline' and 'opened leo documents' panels reside.
--   Added (basic) unknown attributes support as hover tooltip and small description on node headlines.
--   Added a 'leoBridge Server Terminal Panel' to gather output of the leoBridge stdOut pipe. It's displayed among the 'output panels', along with the standard 'leo log window', when the server is started by leoInteg. (either with the auto-start config setting, or by calling the 'start server' command via buttons or the command-palette.)
--   Syntax coloring and Snippets are now enabled for those languages : C, C++, CSS, HTML, Java, Javascript, json, Markdown, PHP, Python, Rust and Typescript. They are taken from the default extension for that language, or if non-existent, from the most popular extension for that language
--   Recent files are now remembered and restored upon re-opening vscode.
--   Leo files can be opened from the explorer pane directly.
--   Added 'minibuffer' feature with the usual alt-x command from Leo.
--   Added cursor position, selected range and scrolling position to be captured and restored when navigating the outline. [#39](https://github.com/boltex/leointeg/issues/39) This allows for commands that use the currently selected text, [#61](https://github.com/boltex/leointeg/issues/61) such as run script and extract/extract name, etc.
--   Redid the body display and switching logic to support new vscode API features. (vscode now does not block 'undo' operations between file-rename operations, which were used to switch body pane content.)
+-   Rewrite of the leobridgeserver.py and made compatible with leoserver.py from Leo itself.
+-   (...)
 
 @others
 </t>
@@ -8849,7 +8818,6 @@ import {
     ReqRefresh,
     ChooseDocumentItem,
     LeoDocument,
-    LeoBridgePackageOpenedInfo,
     MinibufferCommand,
     UserCommand,
     ShowBodyParam,
@@ -8888,7 +8856,7 @@ private _openLastFiles(): Promise&lt;vscode.TextEditor&gt; {
             .then((p_openFileResult: LeoBridgePackage) =&gt; {
                 this.leoStates.leoBridgeReady = true;
                 this.finishedStartup = true;
-                return this._setupOpenedLeoDocument(p_openFileResult.opened!);
+                return this._setupOpenedLeoDocument(p_openFileResult);
             }, p_errorOpen =&gt; {
                 this.leoStates.leoBridgeReady = true;
                 this.finishedStartup = true;
@@ -9173,12 +9141,12 @@ private _setupNoOpenedLeoDocument(): void {
  * @param p_openFileResult Returned info about currently opened and editing document
  * @return a promise that resolves to an opened body pane text editor
  */
-private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackageOpenedInfo): Promise&lt;vscode.TextEditor&gt; {
-    const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
-    this.leoStates.leoOpenedFileName = p_openFileResult.filename;
+private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackage): Promise&lt;vscode.TextEditor&gt; {
+    const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node!, false); // Just to get gnx for the body's fist appearance
+    this.leoStates.leoOpenedFileName = p_openFileResult.filename!;
 
     // * If not unnamed file add to recent list &amp; last opened list
-    this._addRecentAndLastFile(p_openFileResult.filename);
+    this._addRecentAndLastFile(p_openFileResult.filename!);
 
     // * Could be already opened, so perform 'rename hack' as if another node was selected
     if (this._bodyTextDocument &amp;&amp; this.bodyUri) {
@@ -10028,8 +9996,8 @@ public switchLeoFile(): Promise&lt;vscode.TextEditor | undefined&gt; {
         })
         .then((p_package) =&gt; {
             const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
-            const w_files: LeoDocument[] = p_package.openedFiles!.files;
-            const w_selectedIndex: number = p_package.openedFiles!.index;
+            const w_files: LeoDocument[] = p_package.files!;
+            const w_selectedIndex: number = p_package.index!;
             let w_index: number = 0;
             let w_currentlySelected = "";  // ? not used elsewhere ?
             if (w_files &amp;&amp; w_files.length) {
@@ -10078,8 +10046,8 @@ public selectOpenedLeoDocument(p_index: number): Promise&lt;vscode.TextEditor&gt
         })
         .then((p_openFileResult: LeoBridgePackage) =&gt; {
             // Like we just opened or made a new file
-            if (p_openFileResult.setOpened) {
-                return this._setupOpenedLeoDocument(p_openFileResult.setOpened);
+            if (p_openFileResult.filename) {
+                return this._setupOpenedLeoDocument(p_openFileResult);
             } else {
                 console.log('Select Opened Leo File Error');
                 return Promise.reject('Select Opened Leo File Error');
@@ -10104,16 +10072,17 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
             return this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE, JSON.stringify({ forced: false }));
         })
         .then((p_tryCloseResult =&gt; {
-            if (p_tryCloseResult.closed) {
+            // Has a total member: closed file
+            if (p_tryCloseResult.total || p_tryCloseResult.total === 0) {
                 this._removeLastFile(w_removeLastFileName);
-                if (p_tryCloseResult.closed.total === 0) {
+                if (p_tryCloseResult.total === 0) {
                     this._setupNoOpenedLeoDocument();
                 } else {
                     this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
                 }
                 return Promise.resolve(true);
-            } else if (p_tryCloseResult.closed === false) {
-                // Explicitly false and not just undefined : FILE IS DIRTY
+            } else {
+                // No total member: did not close file
                 const q_askSaveChangesInfoMessage: Thenable&lt;vscode.MessageItem | undefined&gt; = vscode.window.showInformationMessage(
                     Constants.USER_MESSAGES.SAVE_CHANGES + ' ' +
                     this.leoStates.leoOpenedFileName + ' ' +
@@ -10161,7 +10130,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                         if (p_closeResult) {
                             // * back from CLOSE_FILE action, the last that can be performed (after saving if dirty or not)
                             this._removeLastFile(w_removeLastFileName);
-                            if (p_closeResult &amp;&amp; p_closeResult.closed &amp;&amp; p_closeResult.closed.total === 0) {
+                            if (p_closeResult &amp;&amp; p_closeResult.total === 0) {
                                 this._setupNoOpenedLeoDocument();
                             } else {
                                 this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
@@ -10172,8 +10141,6 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                         return Promise.resolve(false);
                     });
             }
-            // else 'close' is undefined
-            return Promise.reject("Close command failed");
         }));
 }
 
@@ -10189,8 +10156,8 @@ public newLeoFile(): Promise&lt;vscode.TextEditor&gt; {
             return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '""');
         })
         .then((p_openFileResult: LeoBridgePackage) =&gt; {
-            if (p_openFileResult.opened) {
-                return this._setupOpenedLeoDocument(p_openFileResult.opened);
+            if (p_openFileResult.filename) {
+                return this._setupOpenedLeoDocument(p_openFileResult);
             } else {
                 return Promise.reject('New Leo File Error');
             }
@@ -10226,7 +10193,7 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;vscode.TextEditor | un
         })
         .then((p_openFileResult: LeoBridgePackage | undefined) =&gt; {
             if (p_openFileResult) {
-                return this._setupOpenedLeoDocument(p_openFileResult.opened!);
+                return this._setupOpenedLeoDocument(p_openFileResult);
             } else {
                 return Promise.resolve(undefined);
             }
@@ -10456,28 +10423,28 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     '''
     Generic call to a method in Leo's Commands class or any subcommander class.
 
-    The p_ap position node is to be selected before having the command run,
-    while the p_keepSelection parameter specifies wether the original position
+    The param["ap"] position is to be selected before having the command run,
+    while the param["keep"] parameter specifies wether the original position
     should be re-selected afterward.
+
     The whole of those operations is to be undoable as one undo step.
 
-    p_command: a method name (a string).
-    p_ap: an archived position.
-    p_keepSelection: preserve the current selection, if possible.
+    command: a method name (a string).
+    param["ap"]: an archived position.
+    param["keep"]: preserve the current selection, if possible.
     '''
     w_keepSelection = False  # Set default, optional component of param
     if "keep" in param:
         w_keepSelection = param["keep"]
-    #     print("have keep! " + str(w_keepSelection), flush=True)
-    # else:
-    #     print("NO keep!", flush=True)
 
     w_ap = param["ap"]  # At least node parameter is present
     if not w_ap:
         return self._outputError(f"Error in {p_command}: no param ap")
+
     w_p = self._ap_to_p(w_ap)
     if not w_p:
         return self._outputError(f"Error in {p_command}: no w_p position found")
+
     w_func = self._get_commander_method(p_command)
     if not w_func:
         return self._outputError(f"Error in {p_command}: no method found")
@@ -10485,11 +10452,12 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     if w_p == self.commander.p:
         w_func(event=None)
     else:
-        oldPosition = self.commander.p
+        w_oldPosition = self.commander.p
         self.commander.selectPosition(w_p)
         w_func(event=None)
-        if w_keepSelection and self.commander.positionExists(oldPosition):
-            self.commander.selectPosition(oldPosition)
+        if w_keepSelection and self.commander.positionExists(w_oldPosition):
+            self.commander.selectPosition(w_oldPosition)
+
     return self._outputPNode(self.commander.p)
 
 </t>
@@ -10526,7 +10494,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                     "node": self._p_to_ap(self.commander.p)}
-        return self.sendLeoBridgePackage("opened", w_result)
+        return self.sendLeoBridgePackage(w_result)
     else:
         return self._outputError('Error in openFiles')
 
@@ -10539,7 +10507,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         for w_key in w_dict:
             w_entry = {"name": w_dict[w_key], "index": str(w_key)}
             w_buttons.append(w_entry)
-    return self.sendLeoBridgePackage("buttons", w_buttons)
+    return self.sendLeoBridgePackage({"buttons": w_buttons})
 
 </t>
 <t tx="felix.20200924210024.1">def remove_button(self, param):
@@ -10570,7 +10538,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924210036.1">def getCommands(self, param):
+<t tx="felix.20200924210036.1">def get_all_leo_commands(self, param):
     """Return a list of all Leo commands that make sense in leoInteg."""
     c = self.commander
     d = c.commandsDict  # keys are command names, values are functions.
@@ -10604,7 +10572,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         # print(f"__doc__: {len(doc):4} {command_name:40} {func_name} ", flush=True)
         # print(f"{func_name} ", flush=True)
 
-    return self.sendLeoBridgePackage("commands", result)
+    return self.sendLeoBridgePackage({"commands": result})
 
 </t>
 <t tx="felix.20200924210058.1">def _bad_commands(self):
@@ -11664,12 +11632,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         print("websocket not ready yet", flush=True)
 
 </t>
-<t tx="felix.20200924211037.1">def sendLeoBridgePackage(self, p_key=False, p_any=None):
-    w_package = {"id": self.currentActionId}
-    if p_key:
-        w_package[p_key] = p_any  # add [key]?:any
-    return(json.dumps(w_package, separators=(',', ':')))  # send as json
-    # await self.webSocket.send(json.dumps(w_package, separators=(',', ':')))  # send as json
+<t tx="felix.20200924211037.1">def sendLeoBridgePackage(self, p_package = {}):
+    p_package["id"] = self.currentActionId
+    return(json.dumps(p_package, separators=(',', ':')))  # send as json
 
 </t>
 <t tx="felix.20200924211041.1">def _outputError(self, p_message="Unknown Error"):
@@ -11681,15 +11646,15 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 
 </t>
 <t tx="felix.20200924211048.1">def _outputBodyData(self, p_bodyText=""):
-    return self.sendLeoBridgePackage("bodyData", p_bodyText)
+    return self.sendLeoBridgePackage({"bodyData": p_bodyText})
 
 </t>
 <t tx="felix.20200924211051.1">def _outputPNode(self, p_node=False):
     if p_node:
         # Single node, singular
-        return self.sendLeoBridgePackage("node", self._p_to_ap(p_node))
+        return self.sendLeoBridgePackage({"node": self._p_to_ap(p_node)})
     else:
-        return self.sendLeoBridgePackage("node", None)
+        return self.sendLeoBridgePackage({"node": None})
 
 </t>
 <t tx="felix.20200924211054.1">def _outputPNodes(self, p_pList):
@@ -11697,7 +11662,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     for p in p_pList:
         w_apList.append(self._p_to_ap(p))
     # Multiple nodes, plural
-    return self.sendLeoBridgePackage("nodes", w_apList)
+    return self.sendLeoBridgePackage({"nodes": w_apList})
 
 </t>
 <t tx="felix.20200924211057.1">def mark_node(self, param):
@@ -11909,7 +11874,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 
 </t>
 <t tx="felix.20200927224639.1">def _outputSelectionData(self, p_bodySelection):
-    return self.sendLeoBridgePackage("bodySelection", p_bodySelection)
+    return self.sendLeoBridgePackage({"bodySelection": p_bodySelection})
 
 </t>
 <t tx="felix.20200928004727.1">/**
@@ -12201,7 +12166,7 @@ def tag_configure(self, colorName, **keys): pass
         w_states["canPromote"] = False
         w_states["canDehoist"] = False
 
-    return self.sendLeoBridgePackage("states", w_states)
+    return self.sendLeoBridgePackage({"states": w_states})
 
 </t>
 <t tx="felix.20200929215102.3">def page_up(self, param):
@@ -12297,7 +12262,7 @@ def tag_configure(self, colorName, **keys): pass
                 "end": {"line": w_endRow, "col": w_endCol}
             }
         }
-    return self.sendLeoBridgePackage("bodyStates", states)
+    return self.sendLeoBridgePackage({"bodyStates": states})
 
 </t>
 <t tx="felix.20200929230231.1">def set_selection(self, param):
@@ -12428,7 +12393,7 @@ export function getDurationMs(p_start: [number, number]): number {
 <t tx="felix.20201025144113.1">def test(self, param):
     '''Utility test function for debugging'''
     print("Called test")
-    return self.sendLeoBridgePackage('testReturnedKey', 'testReturnedValue')
+    return self.sendLeoBridgePackage({'testReturnedKey': 'testReturnedValue'})
     # return self._outputPNode(self.commander.p)
 
 </t>
@@ -12956,9 +12921,8 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
             .then((p_result: LeoBridgePackage) =&gt; {
 
-                const w_bodyStates = p_result.bodyStates!; // This answer has bodyStates member
-                let w_language: string = w_bodyStates.language;
-                const w_leoBodySel: BodySelectionInfo = w_bodyStates.selection;
+                let w_language: string = p_result.language!;
+                const w_leoBodySel: BodySelectionInfo = p_result.selection!;
 
                 if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
                     console.error(
@@ -13034,6 +12998,24 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
             });
     }
 }
+
+</t>
+<t tx="felix.20210509210502.1">## 0.1.13
+
+-   Added support for precise focus placement, focus switch between tree/body.
+-   Made the extension more aware of the current selection state, to have strictly relevant buttons visible shown only.
+-   Made the 'edit headline' hover icon removable, in order to enable 'Tab' keybinding to go from tree to body directly.
+-   Added commands and keybindings for 'goto' operations 'hoist/dehoist' [#25](https://github.com/boltex/leointeg/issues/25) and other commands. [#30](https://github.com/boltex/leointeg/issues/30)
+-   Added support for Leo-Style outline navigation. [#43](https://github.com/boltex/leointeg/issues/43) Has to be enabled with an option in the config settings: "Use Leo Tree Browsing" which makes the arrow keys, pgUp/pgDn, home/end move the selection instead of a cursor when focus is on Leo's outline.
+-   Implemented @buttons in it's own panel, visible where the already existing 'outline' and 'opened leo documents' panels reside.
+-   Added (basic) unknown attributes support as hover tooltip and small description on node headlines.
+-   Added a 'leoBridge Server Terminal Panel' to gather output of the leoBridge stdOut pipe. It's displayed among the 'output panels', along with the standard 'leo log window', when the server is started by leoInteg. (either with the auto-start config setting, or by calling the 'start server' command via buttons or the command-palette.)
+-   Syntax coloring and Snippets are now enabled for those languages : C, C++, CSS, HTML, Java, Javascript, json, Markdown, PHP, Python, Rust and Typescript. They are taken from the default extension for that language, or if non-existent, from the most popular extension for that language
+-   Recent files are now remembered and restored upon re-opening vscode.
+-   Leo files can be opened from the explorer pane directly.
+-   Added 'minibuffer' feature with the usual alt-x command from Leo.
+-   Added cursor position, selected range and scrolling position to be captured and restored when navigating the outline. [#39](https://github.com/boltex/leointeg/issues/39) This allows for commands that use the currently selected text, [#61](https://github.com/boltex/leointeg/issues/61) such as run script and extract/extract name, etc.
+-   Redid the body display and switching logic to support new vscode API features. (vscode now does not block 'undo' operations between file-rename operations, which were used to switch body pane content.)
 
 </t>
 </tnodes>

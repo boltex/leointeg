@@ -11,7 +11,6 @@ import {
     ReqRefresh,
     ChooseDocumentItem,
     LeoDocument,
-    LeoBridgePackageOpenedInfo,
     MinibufferCommand,
     UserCommand,
     ShowBodyParam,
@@ -401,7 +400,7 @@ export class LeoIntegration {
                 .then((p_openFileResult: LeoBridgePackage) => {
                     this.leoStates.leoBridgeReady = true;
                     this.finishedStartup = true;
-                    return this._setupOpenedLeoDocument(p_openFileResult.opened!);
+                    return this._setupOpenedLeoDocument(p_openFileResult);
                 }, p_errorOpen => {
                     this.leoStates.leoBridgeReady = true;
                     this.finishedStartup = true;
@@ -605,12 +604,12 @@ export class LeoIntegration {
      * @param p_openFileResult Returned info about currently opened and editing document
      * @return a promise that resolves to an opened body pane text editor
      */
-    private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackageOpenedInfo): Promise<vscode.TextEditor> {
-        const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
-        this.leoStates.leoOpenedFileName = p_openFileResult.filename;
+    private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackage): Promise<vscode.TextEditor> {
+        const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node!, false); // Just to get gnx for the body's fist appearance
+        this.leoStates.leoOpenedFileName = p_openFileResult.filename!;
 
         // * If not unnamed file add to recent list & last opened list
-        this._addRecentAndLastFile(p_openFileResult.filename);
+        this._addRecentAndLastFile(p_openFileResult.filename!);
 
         // * Could be already opened, so perform 'rename hack' as if another node was selected
         if (this._bodyTextDocument && this.bodyUri) {
@@ -1487,9 +1486,8 @@ export class LeoIntegration {
             this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
                 .then((p_result: LeoBridgePackage) => {
 
-                    const w_bodyStates = p_result.bodyStates!; // This answer has bodyStates member
-                    let w_language: string = w_bodyStates.language;
-                    const w_leoBodySel: BodySelectionInfo = w_bodyStates.selection;
+                    let w_language: string = p_result.language!;
+                    const w_leoBodySel: BodySelectionInfo = p_result.selection!;
 
                     if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
                         console.error(
@@ -1864,8 +1862,8 @@ export class LeoIntegration {
             })
             .then((p_package) => {
                 const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
-                const w_files: LeoDocument[] = p_package.openedFiles!.files;
-                const w_selectedIndex: number = p_package.openedFiles!.index;
+                const w_files: LeoDocument[] = p_package.files!;
+                const w_selectedIndex: number = p_package.index!;
                 let w_index: number = 0;
                 let w_currentlySelected = "";  // ? not used elsewhere ?
                 if (w_files && w_files.length) {
@@ -1913,8 +1911,8 @@ export class LeoIntegration {
             })
             .then((p_openFileResult: LeoBridgePackage) => {
                 // Like we just opened or made a new file
-                if (p_openFileResult.setOpened) {
-                    return this._setupOpenedLeoDocument(p_openFileResult.setOpened);
+                if (p_openFileResult.filename) {
+                    return this._setupOpenedLeoDocument(p_openFileResult);
                 } else {
                     console.log('Select Opened Leo File Error');
                     return Promise.reject('Select Opened Leo File Error');
@@ -1938,16 +1936,17 @@ export class LeoIntegration {
                 return this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE, JSON.stringify({ forced: false }));
             })
             .then((p_tryCloseResult => {
-                if (p_tryCloseResult.closed) {
+                // Has a total member: closed file
+                if (p_tryCloseResult.total || p_tryCloseResult.total === 0) {
                     this._removeLastFile(w_removeLastFileName);
-                    if (p_tryCloseResult.closed.total === 0) {
+                    if (p_tryCloseResult.total === 0) {
                         this._setupNoOpenedLeoDocument();
                     } else {
                         this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
                     }
                     return Promise.resolve(true);
-                } else if (p_tryCloseResult.closed === false) {
-                    // Explicitly false and not just undefined : FILE IS DIRTY
+                } else {
+                    // No total member: did not close file
                     const q_askSaveChangesInfoMessage: Thenable<vscode.MessageItem | undefined> = vscode.window.showInformationMessage(
                         Constants.USER_MESSAGES.SAVE_CHANGES + ' ' +
                         this.leoStates.leoOpenedFileName + ' ' +
@@ -1995,7 +1994,7 @@ export class LeoIntegration {
                             if (p_closeResult) {
                                 // * back from CLOSE_FILE action, the last that can be performed (after saving if dirty or not)
                                 this._removeLastFile(w_removeLastFileName);
-                                if (p_closeResult && p_closeResult.closed && p_closeResult.closed.total === 0) {
+                                if (p_closeResult && p_closeResult.total === 0) {
                                     this._setupNoOpenedLeoDocument();
                                 } else {
                                     this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
@@ -2006,8 +2005,6 @@ export class LeoIntegration {
                             return Promise.resolve(false);
                         });
                 }
-                // else 'close' is undefined
-                return Promise.reject("Close command failed");
             }));
     }
 
@@ -2022,8 +2019,8 @@ export class LeoIntegration {
                 return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '""');
             })
             .then((p_openFileResult: LeoBridgePackage) => {
-                if (p_openFileResult.opened) {
-                    return this._setupOpenedLeoDocument(p_openFileResult.opened);
+                if (p_openFileResult.filename) {
+                    return this._setupOpenedLeoDocument(p_openFileResult);
                 } else {
                     return Promise.reject('New Leo File Error');
                 }
@@ -2058,7 +2055,7 @@ export class LeoIntegration {
             })
             .then((p_openFileResult: LeoBridgePackage | undefined) => {
                 if (p_openFileResult) {
-                    return this._setupOpenedLeoDocument(p_openFileResult.opened!);
+                    return this._setupOpenedLeoDocument(p_openFileResult);
                 } else {
                     return Promise.resolve(undefined);
                 }
