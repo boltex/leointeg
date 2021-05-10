@@ -165,7 +165,7 @@ class ExternalFilesController:
         # Matt, set this to True, but only for the file that interests you.\
         # trace = p.h == '@file unregister-leo.leox'
         path = self.integController.g.fullPath(c, p)
-        has_changed = self.has_changed(c, path)
+        has_changed = self.has_changed(path)
         if trace:
             self.integController.g.trace('changed', has_changed, p.h)
         if has_changed:
@@ -291,8 +291,10 @@ class ExternalFilesController:
         '''
         return self._time_d.get(self.integController.g.os_path_realpath(path))
 
-    def has_changed(self, c, path):
+    def has_changed(self, path):
         '''Return True if p's external file has changed outside of Leo.'''
+        if not path:
+            return False
         if not self.integController.g.os_path_exists(path):
             return False
         if self.integController.g.os_path_isdir(path):
@@ -757,7 +759,7 @@ class LeoBridgeIntegController:
         else:
             print("websocket not ready yet", flush=True)
 
-    def sendLeoBridgePackage(self, p_package = {}):
+    def sendLeoBridgePackage(self, p_package={}):
         p_package["id"] = self.currentActionId
         return(json.dumps(p_package, separators=(',', ':')))  # send as json
 
@@ -1058,8 +1060,8 @@ class LeoBridgeIntegController:
                     self.commander.save()
             except Exception as e:
                 self.g.trace('Error while saving')
-                print("Error while saving", flush=True)
-                print(str(e), flush=True)
+                print("Error while saving", param['text'], flush=True)
+                print(str(e),  param['text'],  flush=True)
 
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
