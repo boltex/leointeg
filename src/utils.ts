@@ -122,15 +122,15 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 }
 
 /**
- * * Builds and returns a JSON string with 'node' and 'text' members
+ * * Builds and returns a JSON string with 'node' and 'name' members
  * @param p_nodeJson Targeted tree node in the proper JSON format
- * @param p_text Desired text sent along with node in the parameters of the action to be 'called'
+ * @param p_command from which to extract possible name and 'keep selection' flag
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
 export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand): string {
     let w_json = "{\"ap\":" + p_nodeJson; // already json
-    if (p_command.text) {
-        w_json += ", \"text\": " + JSON.stringify(p_command.text);
+    if (p_command.name) {
+        w_json += ", \"name\": " + JSON.stringify(p_command.name);
     }
     if (p_command.keepSelection) {
         w_json += ", \"keep\": true";

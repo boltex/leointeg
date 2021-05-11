@@ -1224,7 +1224,7 @@ public nodeCommand(p_userCommand: UserCommand): Promise&lt;LeoBridgePackage&gt; 
 public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
-            return this.sendAction(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }));
+            return this.sendAction(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ index: p_node.button.index }));
         })
         .then((p_clickButtonResult: LeoBridgePackage) =&gt; {
             this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
@@ -1240,7 +1240,7 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
 public removeAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
-            return this.sendAction(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }));
+            return this.sendAction(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ index: p_node.button.index }));
         })
         .then((p_removeButtonResult: LeoBridgePackage) =&gt; {
             this.launchRefresh({ buttons: true }, false);
@@ -4273,23 +4273,23 @@ print('done')
   ]
 },
 </t>
-<t tx="felix.20191126232434.13">def open_file(self, p_file):
+<t tx="felix.20191126232434.13">def open_file(self, param):
     """
     Open a leo file via leoBridge controller, or create a new document if empty string.
     Returns an object that contains a 'opened' member.
     """
     w_found = False
-
+    w_filename = param.get('filename')  # Optional.
     # If not empty string (asking for New file) then check if already opened
-    if p_file:
+    if w_filename:
         for w_commander in self.g.app.commanders():
-            if w_commander.fileName() == p_file:
+            if w_commander.fileName() == w_filename:
                 w_found = True
                 self.commander = w_commander
 
     if not w_found:
         self.commander = self.bridge.openLeoFile(
-            p_file)  # create self.commander
+            w_filename)  # create self.commander
 
     # Leo at this point has done this too: g.app.windowList.append(c.frame)
     # and so, now, app.commanders() yields this: return [f.c for f in g.app.windowList]
@@ -4312,11 +4312,10 @@ print('done')
 </t>
 <t tx="felix.20191126232434.14">def close_file(self, param):
     """
-    Closes a leo file. A file can then be opened with "openFile"
-    returns a 'total' member in the package if close is successful
+    Closes a leo file. A file can then be opened with "openFile".
+    Returns a 'total' member in the package if close is successful
 
     """
-    # TODO : Specify which file to support multiple opened files
     if self.commander:
         # First, revert to prevent asking user.
         if param["forced"] and self.commander.changed:
@@ -4343,7 +4342,7 @@ print('done')
     else:
         w_result = {"total": 0}
 
-    return self.sendLeoBridgePackage({"closed": w_result})
+    return self.sendLeoBridgePackage(w_result)
 
 </t>
 <t tx="felix.20191126232434.16">def get_children(self, p_ap):
@@ -4789,8 +4788,8 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
                 self.commander.save()
         except Exception as e:
             self.g.trace('Error while saving')
-            print("Error while saving", flush=True)
-            print(str(e), flush=True)
+            print("Error while saving", param['text'], flush=True)
+            print(str(e),  param['text'],  flush=True)
 
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
@@ -5001,8 +5000,10 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     return self._time_d.get(self.integController.g.os_path_realpath(path))
 
 </t>
-<t tx="felix.20200302205810.27">def has_changed(self, c, path):
+<t tx="felix.20200302205810.27">def has_changed(self, path):
     '''Return True if p's external file has changed outside of Leo.'''
+    if not path:
+        return False
     if not self.integController.g.os_path_exists(path):
         return False
     if self.integController.g.os_path_isdir(path):
@@ -5179,7 +5180,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     # Matt, set this to True, but only for the file that interests you.\
     # trace = p.h == '@file unregister-leo.leox'
     path = self.integController.g.fullPath(c, p)
-    has_changed = self.has_changed(c, path)
+    has_changed = self.has_changed(path)
     if trace:
         self.integController.g.trace('changed', has_changed, p.h)
     if has_changed:
@@ -5294,23 +5295,17 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
 <t tx="felix.20200622230608.1">def get_all_open_commanders(self, param):
     '''Return array of opened file path/names to be used as openFile parameters to switch files'''
     w_files = []
-    w_index = 0
-    w_indexFound = 0
     for w_commander in self.g.app.commanders():
         if not w_commander.closed:
             w_isSelected = False
             w_isChanged = w_commander.changed
             if self.commander == w_commander:
-                w_indexFound = w_index
                 w_isSelected = True
-            w_entry = {"name": w_commander.mFileName, "index": w_index,
+            w_entry = {"name": w_commander.mFileName,
                        "changed": w_isChanged, "selected": w_isSelected}
             w_files.append(w_entry)
-            w_index = w_index + 1
 
-    w_openedFiles = {"files": w_files, "index": w_indexFound}
-
-    return self.sendLeoBridgePackage({"openedFiles": w_openedFiles})
+    return self.sendLeoBridgePackage({"files": w_files})
 
 </t>
 <t tx="felix.20200623201853.1">def _getTotalOpened(self):
@@ -7136,14 +7131,15 @@ public refreshTreeRoot(): void {
 
         // call action to get get list, and convert to LeoDocumentNode(s) array
         return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package =&gt; {
-            if (p_package &amp;&amp; p_package) {
+            if (p_package &amp;&amp; p_package.files) {
                 const w_list: LeoDocumentNode[] = [];
-                const w_files: LeoDocument[] = p_package.files!;
+                const w_files: LeoDocument[] = p_package.files;
 
                 let w_index: number = 0;
 
                 if (w_files &amp;&amp; w_files.length) {
                     w_files.forEach((i_file: LeoDocument) =&gt; {
+                        i_file.index = w_index;
                         w_list.push(new LeoDocumentNode(i_file, this._leoIntegration));
                         w_index++;
                     });
@@ -8171,7 +8167,7 @@ export interface ReqRefresh {
 export interface UserCommand {
     action: string; // String from Constants.LEOBRIDGE, which are commands for leobridgeserver
     node?: LeoNode | undefined;  // We can START a stack with a targeted command
-    text?: string | undefined; // If a string is required, for headline, etc.
+    name?: string | undefined; // If a string is required, for headline, etc.
     refreshType: ReqRefresh; // Minimal refresh level required by this command
     fromOutline: boolean; // Focus back on outline instead of body
     keepSelection?: boolean; // Should bring back selection on node prior to command
@@ -8316,15 +8312,15 @@ export function buildDocumentIconPaths(p_context: vscode.ExtensionContext): Icon
 
 </t>
 <t tx="felix.20200718195558.6">/**
- * * Builds and returns a JSON string with 'node' and 'text' members
+ * * Builds and returns a JSON string with 'node' and 'name' members
  * @param p_nodeJson Targeted tree node in the proper JSON format
- * @param p_text Desired text sent along with node in the parameters of the action to be 'called'
+ * @param p_command from which to extract possible name and 'keep selection' flag
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
 export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand): string {
     let w_json = "{\"ap\":" + p_nodeJson; // already json
-    if (p_command.text) {
-        w_json += ", \"text\": " + JSON.stringify(p_command.text);
+    if (p_command.name) {
+        w_json += ", \"name\": " + JSON.stringify(p_command.name);
     }
     if (p_command.keepSelection) {
         w_json += ", \"keep\": true";
@@ -8852,7 +8848,7 @@ private _openLastFiles(): Promise&lt;vscode.TextEditor&gt; {
     // Loop through context.globalState.&lt;something&gt; and check if they exist: open them
     const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
     if (w_lastFiles.length) {
-        return this.sendAction(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
+        return this.sendAction(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ files: w_lastFiles }))
             .then((p_openFileResult: LeoBridgePackage) =&gt; {
                 this.leoStates.leoBridgeReady = true;
                 this.finishedStartup = true;
@@ -9829,7 +9825,7 @@ public editHeadline(p_node?: LeoNode, p_fromOutline?: boolean): Promise&lt;LeoBr
                     node: p_node,
                     refreshType: { tree: true, states: true },
                     fromOutline: !!p_fromOutline,
-                    text: p_newHeadline
+                    name: p_newHeadline
                 });
                 if (q_commandResult) {
                     return q_commandResult;
@@ -9870,7 +9866,7 @@ public insertNode(p_node?: LeoNode, p_fromOutline?: boolean, p_interrupt?: boole
                         node: p_node,
                         refreshType: { tree: true, states: true },
                         fromOutline: w_fromOutline,
-                        text: p_newHeadline
+                        name: p_newHeadline
                     });
                     if (q_commandResult) {
                         q_commandResult.then(p_package =&gt; p_resolve(p_package));
@@ -9919,7 +9915,7 @@ public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | und
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
                     fromOutline: !!p_fromOutline,
-                    text: p_chosenLeoFile
+                    name: p_chosenLeoFile
                 });
                 this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
                 this._leoStatusBar.update(true, 0, true);
@@ -9952,7 +9948,7 @@ public saveLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undef
                         node: undefined,
                         refreshType: { tree: true, states: true, documents: true },
                         fromOutline: !!p_fromOutline,
-                        text: ""
+                        name: ""
                     });
                     return q_commandResult ? q_commandResult : Promise.reject("Save file not added on command stack");
                 } else {
@@ -9997,14 +9993,9 @@ public switchLeoFile(): Promise&lt;vscode.TextEditor | undefined&gt; {
         .then((p_package) =&gt; {
             const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
             const w_files: LeoDocument[] = p_package.files!;
-            const w_selectedIndex: number = p_package.index!;
             let w_index: number = 0;
-            let w_currentlySelected = "";  // ? not used elsewhere ?
             if (w_files &amp;&amp; w_files.length) {
                 w_files.forEach(function (p_filePath: LeoDocument) {
-                    if (w_index === w_selectedIndex) {
-                        w_currentlySelected = p_filePath.name; // ? not used elsewhere ?
-                    }
                     w_entries.push({
                         label: w_index.toString(),
                         description: p_filePath.name ? p_filePath.name : Constants.UNTITLED_FILE_NAME,
@@ -10042,7 +10033,7 @@ public switchLeoFile(): Promise&lt;vscode.TextEditor | undefined&gt; {
 public selectOpenedLeoDocument(p_index: number): Promise&lt;vscode.TextEditor&gt; {
     return this._isBusyTriggerSave(true, true)
         .then((p_saveResult) =&gt; {
-            return this.sendAction(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_index }));
+            return this.sendAction(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ index: p_index }));
         })
         .then((p_openFileResult: LeoBridgePackage) =&gt; {
             // Like we just opened or made a new file
@@ -10097,11 +10088,11 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                                 // save and then force-close
                                 let w_savePromise: Promise&lt;LeoBridgePackage | undefined&gt;;
                                 if (this._isCurrentFileNamed()) {
-                                    w_savePromise = this.sendAction(Constants.LEOBRIDGE.SAVE_FILE, JSON.stringify({ text: "" }));
+                                    w_savePromise = this.sendAction(Constants.LEOBRIDGE.SAVE_FILE, JSON.stringify({ name: "" }));
                                 } else {
                                     w_savePromise = this._leoFilesBrowser.getLeoFileUrl(true).then((p_chosenLeoFile) =&gt; {
                                         if (p_chosenLeoFile.trim()) {
-                                            return this.sendAction(Constants.LEOBRIDGE.SAVE_FILE, JSON.stringify({ text: p_chosenLeoFile.trim() }));
+                                            return this.sendAction(Constants.LEOBRIDGE.SAVE_FILE, JSON.stringify({ name: p_chosenLeoFile.trim() }));
                                         } else {
                                             // Canceled
                                             return Promise.resolve(undefined);
@@ -10176,12 +10167,12 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;vscode.TextEditor | un
             let q_openedFile: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
             if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath.trim()) {
                 const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, "/");
-                q_openedFile = this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + w_fixedFilePath + '"');
+                q_openedFile = this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, JSON.stringify({ filename: w_fixedFilePath }));
             } else {
                 q_openedFile = this._leoFilesBrowser.getLeoFileUrl()
                     .then(p_chosenLeoFile =&gt; {
                         if (p_chosenLeoFile.trim()) {
-                            return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
+                            return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, JSON.stringify({ filename: p_chosenLeoFile }));
                         } else {
                             return Promise.resolve(undefined);
                         }
@@ -10261,7 +10252,7 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
         });
 
 
-    return this.sendAction(Constants.LEOBRIDGE.TEST, JSON.stringify({ "testParam": "Some String" }))
+    return this.sendAction(Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" }))
         .then((p_result: LeoBridgePackage) =&gt; {
             // this.launchRefresh({ buttons: true }, false);
             return vscode.window.showInformationMessage(
@@ -11632,7 +11623,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         print("websocket not ready yet", flush=True)
 
 </t>
-<t tx="felix.20200924211037.1">def sendLeoBridgePackage(self, p_package = {}):
+<t tx="felix.20200924211037.1">def sendLeoBridgePackage(self, p_package={}):
     p_package["id"] = self.currentActionId
     return(json.dumps(p_package, separators=(',', ':')))  # send as json
 
@@ -11941,9 +11932,10 @@ private _bodySaveSelection(): Promise&lt;boolean&gt; {
         };
         this._scrollDirty = false;
         this._selectionDirty = false; // don't wait for return of this call
-        return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(p_result =&gt; {
-            return Promise.resolve(true);
-        });
+        return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param))
+            .then(p_result =&gt; {
+                return Promise.resolve(true);
+            });
     } else {
         return Promise.resolve(true);
     }
@@ -12262,7 +12254,7 @@ def tag_configure(self, colorName, **keys): pass
                 "end": {"line": w_endRow, "col": w_endCol}
             }
         }
-    return self.sendLeoBridgePackage({"bodyStates": states})
+    return self.sendLeoBridgePackage(states)
 
 </t>
 <t tx="felix.20200929230231.1">def set_selection(self, param):
@@ -12545,7 +12537,7 @@ public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
     // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
-            const q_commandList: Thenable&lt;MinibufferCommand[]&gt; = this.sendAction(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
+            const q_commandList: Thenable&lt;MinibufferCommand[]&gt; = this.sendAction(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ name: "" }))
                 .then((p_result: LeoBridgePackage) =&gt; {
                     if (p_result.commands &amp;&amp; p_result.commands.length) {
                         return p_result.commands;

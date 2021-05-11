@@ -900,23 +900,17 @@ class LeoBridgeIntegController:
     def get_all_open_commanders(self, param):
         '''Return array of opened file path/names to be used as openFile parameters to switch files'''
         w_files = []
-        w_index = 0
-        w_indexFound = 0
         for w_commander in self.g.app.commanders():
             if not w_commander.closed:
                 w_isSelected = False
                 w_isChanged = w_commander.changed
                 if self.commander == w_commander:
-                    w_indexFound = w_index
                     w_isSelected = True
-                w_entry = {"name": w_commander.mFileName, "index": w_index,
+                w_entry = {"name": w_commander.mFileName,
                            "changed": w_isChanged, "selected": w_isSelected}
                 w_files.append(w_entry)
-                w_index = w_index + 1
 
-        w_openedFiles = {"files": w_files, "index": w_indexFound}
-
-        return self.sendLeoBridgePackage(w_openedFiles)
+        return self.sendLeoBridgePackage({"files": w_files})
 
     def set_opened_file(self, param):
         '''Choose the new active commander from array of opened file path/names by numeric index'''
@@ -942,23 +936,23 @@ class LeoBridgeIntegController:
         else:
             return self._outputError('Error in setOpenedFile')
 
-    def open_file(self, p_file):
+    def open_file(self, param):
         """
         Open a leo file via leoBridge controller, or create a new document if empty string.
         Returns an object that contains a 'opened' member.
         """
         w_found = False
-
+        w_filename = param.get('filename')  # Optional.
         # If not empty string (asking for New file) then check if already opened
-        if p_file:
+        if w_filename:
             for w_commander in self.g.app.commanders():
-                if w_commander.fileName() == p_file:
+                if w_commander.fileName() == w_filename:
                     w_found = True
                     self.commander = w_commander
 
         if not w_found:
             self.commander = self.bridge.openLeoFile(
-                p_file)  # create self.commander
+                w_filename)  # create self.commander
 
         # Leo at this point has done this too: g.app.windowList.append(c.frame)
         # and so, now, app.commanders() yields this: return [f.c for f in g.app.windowList]
@@ -1017,11 +1011,10 @@ class LeoBridgeIntegController:
 
     def close_file(self, param):
         """
-        Closes a leo file. A file can then be opened with "openFile"
-        returns a 'total' member in the package if close is successful
+        Closes a leo file. A file can then be opened with "openFile".
+        Returns a 'total' member in the package if close is successful
 
         """
-        # TODO : Specify which file to support multiple opened files
         if self.commander:
             # First, revert to prevent asking user.
             if param["forced"] and self.commander.changed:
@@ -1048,20 +1041,20 @@ class LeoBridgeIntegController:
         else:
             w_result = {"total": 0}
 
-        return self.sendLeoBridgePackage({"closed": w_result})
+        return self.sendLeoBridgePackage(w_result)
 
     def save_file(self, param):
         '''Saves the leo file. New or dirty derived files are rewritten'''
         if self.commander:
             try:
-                if "text" in param:
-                    self.commander.save(fileName=param['text'])
+                if "name" in param:
+                    self.commander.save(fileName=param['name'])
                 else:
                     self.commander.save()
             except Exception as e:
                 self.g.trace('Error while saving')
-                print("Error while saving", param['text'], flush=True)
-                print(str(e),  param['text'],  flush=True)
+                print("Error while saving", param['name'], flush=True)
+                print(str(e),  param['name'],  flush=True)
 
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
@@ -2307,7 +2300,7 @@ class LeoBridgeIntegController:
 
     def insert_named_node(self, param):
         '''Insert a node at given node, set its headline, select it and finally return it'''
-        w_newHeadline = param['text']
+        w_newHeadline = param['name']
         w_ap = param["ap"]
         if w_ap:
             w_p = self._ap_to_p(w_ap)
@@ -2631,7 +2624,7 @@ class LeoBridgeIntegController:
 
     def set_headline(self, param):
         '''Change Headline of a node'''
-        w_newHeadline = param['text']
+        w_newHeadline = param['name']
         w_ap = param["ap"]
         if w_ap:
             w_p = self._ap_to_p(w_ap)
