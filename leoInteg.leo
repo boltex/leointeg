@@ -4438,7 +4438,7 @@ if __name__ == '__main__':
 </t>
 <t tx="felix.20191126232434.23">def set_headline(self, param):
     '''Change Headline of a node'''
-    w_newHeadline = param['text']
+    w_newHeadline = param['name']
     w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
@@ -4762,7 +4762,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     '''Get gnx array from all unique nodes'''
     w_all_gnx = [
         p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
-    return self.sendLeoBridgePackage({"allGnx": w_all_gnx})
+    return self.sendLeoBridgePackage({"gnx": w_all_gnx})
 
 </t>
 <t tx="felix.20191216195906.1">def _findPNodeFromGnx(self, p_gnx):
@@ -4782,14 +4782,14 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     '''Saves the leo file. New or dirty derived files are rewritten'''
     if self.commander:
         try:
-            if "text" in param:
-                self.commander.save(fileName=param['text'])
+            if "name" in param:
+                self.commander.save(fileName=param['name'])
             else:
                 self.commander.save()
         except Exception as e:
             self.g.trace('Error while saving')
-            print("Error while saving", param['text'], flush=True)
-            print(str(e),  param['text'],  flush=True)
+            print("Error while saving", param['name'], flush=True)
+            print(str(e),  param['name'],  flush=True)
 
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
@@ -5301,8 +5301,11 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
             w_isChanged = w_commander.changed
             if self.commander == w_commander:
                 w_isSelected = True
-            w_entry = {"name": w_commander.mFileName,
-                       "changed": w_isChanged, "selected": w_isSelected}
+            w_entry = {
+                "name": w_commander.mFileName,
+                "changed": w_isChanged,
+                "selected": w_isSelected
+            }
             w_files.append(w_entry)
 
     return self.sendLeoBridgePackage({"files": w_files})
@@ -6399,13 +6402,13 @@ import { BodyTimeInfo } from "./types";
             } else {
                 return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY, '"' + w_gnx + '"')
                     .then((p_result) =&gt; {
-                        if (p_result.bodyData) {
+                        if (p_result.body) {
                             this._lastGnx = w_gnx;
-                            this._lastBodyData = p_result.bodyData;
-                            const w_buffer: Uint8Array = Buffer.from(p_result.bodyData);
+                            this._lastBodyData = p_result.body;
+                            const w_buffer: Uint8Array = Buffer.from(p_result.body);
                             this._lastBodyLength = w_buffer.byteLength;
                             return Promise.resolve(w_buffer);
-                        } else if (p_result.bodyData === "") {
+                        } else if (p_result.body === "") {
                             this._lastGnx = w_gnx;
                             this._lastBodyLength = 0;
                             this._lastBodyData = "";
@@ -6601,11 +6604,7 @@ public fireRefreshFile(p_gnx: string): void {
 public refreshPossibleGnxList(): Thenable&lt;string[]&gt; {
     // * Get updated list of possible gnx
     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_ALL_GNX).then((p_result) =&gt; {
-        if (p_result.allGnx) {
-            this._possibleGnxList = p_result.allGnx;
-        } else {
-            this._possibleGnxList = [];
-        }
+        this._possibleGnxList = p_result.gnx || [];
         return Promise.resolve(this._possibleGnxList);
     });
 }
@@ -7996,9 +7995,9 @@ export interface LeoBridgePackage {
     // * Common to all result packages
     id: number;
     // * Possible answers from a "Constants.LEOBRIDGE" command
-    allGnx?: string[]; // get_all_gnx
+    gnx?: string[]; // get_all_gnx
     bodyLength?: number; // get_body_length
-    bodyData?: string; // get_body
+    body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
     commands?: MinibufferCommand[]; // getCommands
     filename?: string; // set_opened_file, open_file(s), ?close_file
@@ -11637,7 +11636,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 
 </t>
 <t tx="felix.20200924211048.1">def _outputBodyData(self, p_bodyText=""):
-    return self.sendLeoBridgePackage({"bodyData": p_bodyText})
+    return self.sendLeoBridgePackage({"body": p_bodyText})
 
 </t>
 <t tx="felix.20200924211051.1">def _outputPNode(self, p_node=False):
@@ -11790,7 +11789,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 </t>
 <t tx="felix.20200924211132.1">def insert_named_node(self, param):
     '''Insert a node at given node, set its headline, select it and finally return it'''
-    w_newHeadline = param['text']
+    w_newHeadline = param['name']
     w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)

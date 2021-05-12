@@ -143,9 +143,9 @@ export interface LeoBridgePackage {
     // * Common to all result packages
     id: number;
     // * Possible answers from a "Constants.LEOBRIDGE" command
-    allGnx?: string[]; // get_all_gnx
+    gnx?: string[]; // get_all_gnx
     bodyLength?: number; // get_body_length
-    bodyData?: string; // get_body
+    body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
     commands?: MinibufferCommand[]; // getCommands
     filename?: string; // set_opened_file, open_file(s), ?close_file

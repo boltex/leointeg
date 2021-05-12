@@ -771,7 +771,7 @@ class LeoBridgeIntegController:
         return p_message
 
     def _outputBodyData(self, p_bodyText=""):
-        return self.sendLeoBridgePackage({"bodyData": p_bodyText})
+        return self.sendLeoBridgePackage({"body": p_bodyText})
 
     def _outputSelectionData(self, p_bodySelection):
         return self.sendLeoBridgePackage({"bodySelection": p_bodySelection})
@@ -906,8 +906,11 @@ class LeoBridgeIntegController:
                 w_isChanged = w_commander.changed
                 if self.commander == w_commander:
                     w_isSelected = True
-                w_entry = {"name": w_commander.mFileName,
-                           "changed": w_isChanged, "selected": w_isSelected}
+                w_entry = {
+                    "name": w_commander.mFileName,
+                    "changed": w_isChanged,
+                    "selected": w_isSelected
+                }
                 w_files.append(w_entry)
 
         return self.sendLeoBridgePackage({"files": w_files})
@@ -2498,7 +2501,7 @@ class LeoBridgeIntegController:
         '''Get gnx array from all unique nodes'''
         w_all_gnx = [
             p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
-        return self.sendLeoBridgePackage({"allGnx": w_all_gnx})
+        return self.sendLeoBridgePackage({"gnx": w_all_gnx})
 
     def get_body(self, p_gnx):
         '''EMIT OUT body of a node'''

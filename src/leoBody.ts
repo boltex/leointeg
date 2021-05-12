@@ -88,11 +88,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public refreshPossibleGnxList(): Thenable<string[]> {
         // * Get updated list of possible gnx
         return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_ALL_GNX).then((p_result) => {
-            if (p_result.allGnx) {
-                this._possibleGnxList = p_result.allGnx;
-            } else {
-                this._possibleGnxList = [];
-            }
+            this._possibleGnxList = p_result.gnx || [];
             return Promise.resolve(this._possibleGnxList);
         });
     }
@@ -168,13 +164,13 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 } else {
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY, '"' + w_gnx + '"')
                         .then((p_result) => {
-                            if (p_result.bodyData) {
+                            if (p_result.body) {
                                 this._lastGnx = w_gnx;
-                                this._lastBodyData = p_result.bodyData;
-                                const w_buffer: Uint8Array = Buffer.from(p_result.bodyData);
+                                this._lastBodyData = p_result.body;
+                                const w_buffer: Uint8Array = Buffer.from(p_result.body);
                                 this._lastBodyLength = w_buffer.byteLength;
                                 return Promise.resolve(w_buffer);
-                            } else if (p_result.bodyData === "") {
+                            } else if (p_result.body === "") {
                                 this._lastGnx = w_gnx;
                                 this._lastBodyLength = 0;
                                 this._lastBodyData = "";
