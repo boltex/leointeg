@@ -35,12 +35,12 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         if (element) {
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element.apJson)
                 .then((p_package: LeoBridgePackage) => {
-                    return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+                    return this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
                 });
         } else {
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, "null")
                 .then((p_package: LeoBridgePackage) => {
-                    const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+                    const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
                     if (w_nodes && w_nodes.length === 1) {
                         w_nodes[0].setRoot();
                     }

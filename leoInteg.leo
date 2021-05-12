@@ -185,6 +185,7 @@
 <v t="felix.20191126232434.19"><vh>get_body</vh></v>
 <v t="felix.20191126232434.20"><vh>get_body_length</vh></v>
 <v t="felix.20191126232434.22"><vh>set_body</vh></v>
+<v t="felix.20210512000301.1"><vh>get_focus</vh></v>
 <v t="felix.20200929230231.1"><vh>set_selection</vh></v>
 <v t="felix.20191126232434.23"><vh>set_headline</vh></v>
 <v t="felix.20191126232434.24"><vh>set_current_position &amp; helper</vh>
@@ -4404,9 +4405,9 @@ if __name__ == '__main__':
         w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
         if w_v and w_v.b:
             # Length in bytes, not just by character count.
-            return self.sendLeoBridgePackage({"bodyLength": len(w_v.b.encode('utf-8'))})
+            return self.sendLeoBridgePackage({"len": len(w_v.b.encode('utf-8'))})
     # TODO : May need to signal inexistent by self.sendLeoBridgePackage()
-    return self.sendLeoBridgePackage({"bodyLength": 0})  # empty as default
+    return self.sendLeoBridgePackage({"len": 0})  # empty as default
 
 </t>
 <t tx="felix.20191126232434.22">def set_body(self, param):
@@ -6379,7 +6380,7 @@ import { BodyTimeInfo } from "./types";
                             type: vscode.FileType.File,
                             ctime: this._openedBodiesInfo[w_gnx].ctime,
                             mtime: this._openedBodiesInfo[w_gnx].mtime,
-                            size: p_result.bodyLength ? p_result.bodyLength : 0
+                            size: p_result.len ? p_result.len : 0
                         }
                     );
                 });
@@ -7443,12 +7444,12 @@ public refreshTreeRoot(): void {
     if (element) {
         return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element.apJson)
             .then((p_package: LeoBridgePackage) =&gt; {
-                return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+                return this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
             });
     } else {
         return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, "null")
             .then((p_package: LeoBridgePackage) =&gt; {
-                const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+                const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
                 if (w_nodes &amp;&amp; w_nodes.length === 1) {
                     w_nodes[0].setRoot();
                 }
@@ -7996,7 +7997,7 @@ export interface LeoBridgePackage {
     id: number;
     // * Possible answers from a "Constants.LEOBRIDGE" command
     gnx?: string[]; // get_all_gnx
-    bodyLength?: number; // get_body_length
+    len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
     commands?: MinibufferCommand[]; // getCommands
@@ -8005,7 +8006,7 @@ export interface LeoBridgePackage {
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
     node?: ArchivedPosition; // set_opened_file, open_file(s), ?close_file
-    nodes?: ArchivedPosition[]; // get_children
+    children?: ArchivedPosition[]; // get_children
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
     total?: number; // set_opened_file, open_file(s), close_file
@@ -11652,7 +11653,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     for p in p_pList:
         w_apList.append(self._p_to_ap(p))
     # Multiple nodes, plural
-    return self.sendLeoBridgePackage({"nodes": w_apList})
+    return self.sendLeoBridgePackage({"children": w_apList})
 
 </t>
 <t tx="felix.20200924211057.1">def mark_node(self, param):
@@ -13007,6 +13008,16 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
 -   Added 'minibuffer' feature with the usual alt-x command from Leo.
 -   Added cursor position, selected range and scrolling position to be captured and restored when navigating the outline. [#39](https://github.com/boltex/leointeg/issues/39) This allows for commands that use the currently selected text, [#61](https://github.com/boltex/leointeg/issues/61) such as run script and extract/extract name, etc.
 -   Redid the body display and switching logic to support new vscode API features. (vscode now does not block 'undo' operations between file-rename operations, which were used to switch body pane content.)
+
+</t>
+<t tx="felix.20210512000301.1">def get_focus(self, param):
+    """
+    Return a representation of the focused widget,
+    one of ("body", "tree", "headline", repr(the_widget)).
+    """
+    w = self.g.app.gui.get_focus()
+    focus = self.g.app.gui.widget_name(w)
+    return self.sendLeoBridgePackage({"focus": focus})
 
 </t>
 </tnodes>

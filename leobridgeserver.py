@@ -788,7 +788,7 @@ class LeoBridgeIntegController:
         for p in p_pList:
             w_apList.append(self._p_to_ap(p))
         # Multiple nodes, plural
-        return self.sendLeoBridgePackage({"nodes": w_apList})
+        return self.sendLeoBridgePackage({"children": w_apList})
 
     def es(self, * args, **keys):
         '''Output to the Log Pane'''
@@ -2522,9 +2522,9 @@ class LeoBridgeIntegController:
             w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
             if w_v and w_v.b:
                 # Length in bytes, not just by character count.
-                return self.sendLeoBridgePackage({"bodyLength": len(w_v.b.encode('utf-8'))})
+                return self.sendLeoBridgePackage({"len": len(w_v.b.encode('utf-8'))})
         # TODO : May need to signal inexistent by self.sendLeoBridgePackage()
-        return self.sendLeoBridgePackage({"bodyLength": 0})  # empty as default
+        return self.sendLeoBridgePackage({"len": 0})  # empty as default
 
     def set_body(self, param):
         '''Change Body text of a node'''
@@ -2551,6 +2551,15 @@ class LeoBridgeIntegController:
             if w_v:
                 w_v.b = w_body
         return self._outputPNode(self.commander.p)  # return selected node
+
+    def get_focus(self, param):
+        """
+        Return a representation of the focused widget,
+        one of ("body", "tree", "headline", repr(the_widget)).
+        """
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        return self.sendLeoBridgePackage({"focus": focus})
 
     def set_selection(self, param):
         '''

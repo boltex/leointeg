@@ -144,7 +144,7 @@ export interface LeoBridgePackage {
     id: number;
     // * Possible answers from a "Constants.LEOBRIDGE" command
     gnx?: string[]; // get_all_gnx
-    bodyLength?: number; // get_body_length
+    len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
     commands?: MinibufferCommand[]; // getCommands
@@ -152,8 +152,8 @@ export interface LeoBridgePackage {
     files?: LeoDocument[]; // get_all_open_commanders
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
-    node?: ArchivedPosition; // set_opened_file, open_file(s), ?close_file
-    nodes?: ArchivedPosition[]; // get_children
+    node?: ArchivedPosition; // get_parent, set_opened_file, open_file(s), ?close_file
+    children?: ArchivedPosition[]; // get_children
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
     total?: number; // set_opened_file, open_file(s), close_file

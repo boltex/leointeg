@@ -142,7 +142,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                                 type: vscode.FileType.File,
                                 ctime: this._openedBodiesInfo[w_gnx].ctime,
                                 mtime: this._openedBodiesInfo[w_gnx].mtime,
-                                size: p_result.bodyLength ? p_result.bodyLength : 0
+                                size: p_result.len ? p_result.len : 0
                             }
                         );
                     });
