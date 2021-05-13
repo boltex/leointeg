@@ -4411,7 +4411,7 @@ if __name__ == '__main__':
 
 </t>
 <t tx="felix.20191126232434.22">def set_body(self, param):
-    '''Change Body text of a node'''
+    '''Change Body text of a v node'''
     w_gnx = param['gnx']
     w_body = param['body']
     for w_p in self.commander.all_positions():
@@ -11795,13 +11795,13 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
-            w_u = self.commander.undoer.beforeInsertNode(w_p)
+            w_bunch = self.commander.undoer.beforeInsertNode(w_p)
             w_newNode = w_p.insertAfter()
             # set this node's new headline
             w_newNode.h = w_newHeadline
             w_newNode.setDirty()
             self.commander.undoer.afterInsertNode(
-                w_newNode, 'Insert Node', w_u)
+                w_newNode, 'Insert Node', w_bunch)
             self.commander.selectPosition(w_newNode)
             # in any case, return selected node
             return self._outputPNode(self.commander.p)
@@ -12163,17 +12163,17 @@ def tag_configure(self, colorName, **keys): pass
 </t>
 <t tx="felix.20200929215102.3">def page_up(self, param):
     """Selects a node a couple of steps up in the tree to simulate page up"""
-    self.commander.selectVisBack()
-    self.commander.selectVisBack()
-    self.commander.selectVisBack()
+    n = param.get("n", 3)
+    for z in range(n):
+        self.commander.selectVisBack()
     return self._outputPNode(self.commander.p)
 
 </t>
 <t tx="felix.20200929215102.4">def page_down(self, param):
     """Selects a node a couple of steps down in the tree to simulate page down"""
-    self.commander.selectVisNext()
-    self.commander.selectVisNext()
-    self.commander.selectVisNext()
+    n = param.get("n", 3)
+    for z in range(n):
+        self.commander.selectVisNext()
     return self._outputPNode(self.commander.p)
 
 </t>
