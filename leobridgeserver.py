@@ -2448,6 +2448,8 @@ class LeoBridgeIntegController:
             # TODO : This conversion for scroll position may be unneeded (consider as lines only)
             # w_scrollI, w_scrollRow, w_scrollCol = c.frame.body.wrapper.toPythonIndexRowCol(w_Scroll)
             # compute line and column for the insertion point, and the start & end of selection
+            # BUG: this uses current selection wrapper only, use
+            # g.convertPythonIndexToRowCol instead !
             w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(
                 w_active)
             w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(

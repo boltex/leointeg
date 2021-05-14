@@ -660,101 +660,101 @@
 <v t="felix.20200718191946.2"></v>
 </v>
 <v t="felix.20191126232434.4"></v>
-<v t="felix.20210513003941.1"><vh>class LeoServer backup</vh>
-<v t="felix.20210513003941.2"><vh>server.__init__ (load bridge)</vh></v>
-<v t="felix.20210513003941.3"><vh>server:public commands</vh>
-<v t="felix.20210513003941.4"><vh>server:button commands</vh>
-<v t="felix.20210513003941.5"><vh>_check_button_command</vh></v>
-<v t="felix.20210513003941.6"><vh>server.click_button</vh></v>
-<v t="felix.20210513003941.7"><vh>server.get_buttons</vh></v>
-<v t="felix.20210513003941.8"><vh>server.remove_button</vh></v>
+<v t="felix.20210514001326.1"><vh>class LeoServer</vh>
+<v t="felix.20210514001326.2"><vh>server.__init__ (load bridge)</vh></v>
+<v t="felix.20210514001326.3"><vh>server:public commands</vh>
+<v t="felix.20210514001326.4"><vh>server:button commands</vh>
+<v t="felix.20210514001326.5"><vh>_check_button_command</vh></v>
+<v t="felix.20210514001326.6"><vh>server.click_button</vh></v>
+<v t="felix.20210514001326.7"><vh>server.get_buttons</vh></v>
+<v t="felix.20210514001326.8"><vh>server.remove_button</vh></v>
 </v>
-<v t="felix.20210513003941.9"><vh>server:file commands</vh>
-<v t="felix.20210513003941.10"><vh>server.open_file</vh></v>
-<v t="felix.20210513003941.11"><vh>server.open_files</vh></v>
-<v t="felix.20210513003941.12"><vh>server.set_opened_file</vh></v>
-<v t="felix.20210513003941.13"><vh>server.close_file</vh></v>
-<v t="felix.20210513003941.14"><vh>server.save_file</vh></v>
+<v t="felix.20210514001326.9"><vh>server:file commands</vh>
+<v t="felix.20210514001326.10"><vh>server.open_file</vh></v>
+<v t="felix.20210514001326.11"><vh>server.open_files</vh></v>
+<v t="felix.20210514001326.12"><vh>server.set_opened_file</vh></v>
+<v t="felix.20210514001326.13"><vh>server.close_file</vh></v>
+<v t="felix.20210514001326.14"><vh>server.save_file</vh></v>
 </v>
-<v t="felix.20210513003941.15"><vh>server:find commands</vh>
-<v t="felix.20210513003941.16"><vh>server._get_find_settings</vh></v>
-<v t="felix.20210513003941.17"><vh>server.find_all</vh></v>
-<v t="felix.20210513003941.18"><vh>server.change_all</vh></v>
-<v t="felix.20210513003941.19"><vh>server.change_then_find</vh></v>
-<v t="felix.20210513003941.20"><vh>server.clone_find_all</vh></v>
-<v t="felix.20210513003941.21"><vh>server.clone_find_all_flattened</vh></v>
-<v t="felix.20210513003941.22"><vh>server.clone_find_tag</vh></v>
-<v t="felix.20210513003941.23"><vh>server.find_def</vh></v>
-<v t="felix.20210513003941.24"><vh>server.find_next</vh></v>
-<v t="felix.20210513003941.25"><vh>server.find_previous</vh></v>
-<v t="felix.20210513003941.26"><vh>server.find_var</vh></v>
-<v t="felix.20210513003941.27"><vh>server.tag_children</vh></v>
+<v t="felix.20210514001326.15"><vh>server:find commands</vh>
+<v t="felix.20210514001326.16"><vh>server._get_find_settings</vh></v>
+<v t="felix.20210514001326.17"><vh>server.find_all</vh></v>
+<v t="felix.20210514001326.18"><vh>server.change_all</vh></v>
+<v t="felix.20210514001326.19"><vh>server.change_then_find</vh></v>
+<v t="felix.20210514001326.20"><vh>server.clone_find_all</vh></v>
+<v t="felix.20210514001326.21"><vh>server.clone_find_all_flattened</vh></v>
+<v t="felix.20210514001326.22"><vh>server.clone_find_tag</vh></v>
+<v t="felix.20210514001326.23"><vh>server.find_def</vh></v>
+<v t="felix.20210514001326.24"><vh>server.find_next</vh></v>
+<v t="felix.20210514001326.25"><vh>server.find_previous</vh></v>
+<v t="felix.20210514001326.26"><vh>server.find_var</vh></v>
+<v t="felix.20210514001326.27"><vh>server.tag_children</vh></v>
 </v>
-<v t="felix.20210513003941.28"><vh>server:getter commands</vh>
-<v t="felix.20210513003941.29"><vh>server.get_all_open_commanders</vh></v>
-<v t="felix.20210513003941.30"><vh>server.get_all_positions</vh></v>
-<v t="felix.20210513003941.31"><vh>server.get_all_gnx</vh></v>
-<v t="felix.20210513003941.32"><vh>server.get_body</vh></v>
-<v t="felix.20210513003941.33"><vh>server.get_body_length</vh></v>
-<v t="felix.20210513003941.34"><vh>server.get_body_states</vh></v>
-<v t="felix.20210513003941.35"><vh>server.get_children</vh></v>
-<v t="felix.20210513003941.36"><vh>server.get_focus</vh></v>
-<v t="felix.20210513003941.37"><vh>server.get_parent</vh></v>
-<v t="felix.20210513003941.38"><vh>server.get_position_dict</vh></v>
-<v t="felix.20210513003941.39"><vh>server.get_ua</vh></v>
-<v t="felix.20210513003941.40"><vh>server.get_sign_on</vh></v>
-<v t="felix.20210513003941.41"><vh>server.get_ui_states</vh></v>
+<v t="felix.20210514001326.28"><vh>server:getter commands</vh>
+<v t="felix.20210514001326.29"><vh>server.get_all_open_commanders</vh></v>
+<v t="felix.20210514001326.30"><vh>server.get_all_positions</vh></v>
+<v t="felix.20210514001326.31"><vh>server.get_all_gnx</vh></v>
+<v t="felix.20210514001326.32"><vh>server.get_body</vh></v>
+<v t="felix.20210514001326.33"><vh>server.get_body_length</vh></v>
+<v t="felix.20210514001326.34"><vh>server.get_body_states</vh></v>
+<v t="felix.20210514001326.35"><vh>server.get_children</vh></v>
+<v t="felix.20210514001326.36"><vh>server.get_focus</vh></v>
+<v t="felix.20210514001326.37"><vh>server.get_parent</vh></v>
+<v t="felix.20210514001326.38"><vh>server.get_position_dict</vh></v>
+<v t="felix.20210514001326.39"><vh>server.get_ua</vh></v>
+<v t="felix.20210514001326.40"><vh>server.get_sign_on</vh></v>
+<v t="felix.20210514001326.41"><vh>server.get_ui_states</vh></v>
 </v>
-<v t="felix.20210513003941.42"><vh>server:node commands</vh>
-<v t="felix.20210513003941.43"><vh>server.clone_node</vh></v>
-<v t="felix.20210513003941.44"><vh>server.contract_node</vh></v>
-<v t="felix.20210513003941.45"><vh>server.cut_node</vh></v>
-<v t="felix.20210513003941.46"><vh>server.delete_node</vh></v>
-<v t="felix.20210513003941.47"><vh>server.expand_node</vh></v>
-<v t="felix.20210513003941.48"><vh>server.insert_node</vh></v>
-<v t="felix.20210513003941.49"><vh>server.insert_named_node</vh></v>
-<v t="felix.20210513003941.50"><vh>server.page_down</vh></v>
-<v t="felix.20210513003941.51"><vh>server.page_up</vh></v>
-<v t="felix.20210513003941.52"><vh>server.redo</vh></v>
-<v t="felix.20210513003941.53"><vh>server.set_body</vh></v>
-<v t="felix.20210513003941.54"><vh>server.set_current_position</vh></v>
-<v t="felix.20210513003941.55"><vh>server.set_headline</vh></v>
-<v t="felix.20210513003941.56"><vh>server.set_selection</vh></v>
-<v t="felix.20210513003941.57"><vh>server.mark_node</vh></v>
-<v t="felix.20210513003941.58"><vh>server.unmark_node</vh></v>
-<v t="felix.20210513003941.59"><vh>server.undo</vh></v>
+<v t="felix.20210514001326.42"><vh>server:node commands</vh>
+<v t="felix.20210514001326.43"><vh>server.clone_node</vh></v>
+<v t="felix.20210514001326.44"><vh>server.contract_node</vh></v>
+<v t="felix.20210514001326.45"><vh>server.cut_node</vh></v>
+<v t="felix.20210514001326.46"><vh>server.delete_node</vh></v>
+<v t="felix.20210514001326.47"><vh>server.expand_node</vh></v>
+<v t="felix.20210514001326.48"><vh>server.insert_node</vh></v>
+<v t="felix.20210514001326.49"><vh>server.insert_named_node</vh></v>
+<v t="felix.20210514001326.50"><vh>server.page_down</vh></v>
+<v t="felix.20210514001326.51"><vh>server.page_up</vh></v>
+<v t="felix.20210514001326.52"><vh>server.redo</vh></v>
+<v t="felix.20210514001326.53"><vh>server.set_body</vh></v>
+<v t="felix.20210514001326.54"><vh>server.set_current_position</vh></v>
+<v t="felix.20210514001326.55"><vh>server.set_headline</vh></v>
+<v t="felix.20210514001326.56"><vh>server.set_selection</vh></v>
+<v t="felix.20210514001326.57"><vh>server.mark_node</vh></v>
+<v t="felix.20210514001326.58"><vh>server.unmark_node</vh></v>
+<v t="felix.20210514001326.59"><vh>server.undo</vh></v>
 </v>
-<v t="felix.20210513003941.60"><vh>server:server commands</vh>
-<v t="felix.20210513003941.61"><vh>server.error</vh></v>
-<v t="felix.20210513003941.62"><vh>server.get_all_leo_commands &amp; helper</vh>
-<v t="felix.20210513003941.63"><vh>server._bad_commands</vh></v>
-<v t="felix.20210513003941.64"><vh>server._good_commands</vh></v>
+<v t="felix.20210514001326.60"><vh>server:server commands</vh>
+<v t="felix.20210514001326.61"><vh>server.error</vh></v>
+<v t="felix.20210514001326.62"><vh>server.get_all_leo_commands &amp; helper</vh>
+<v t="felix.20210514001326.63"><vh>server._bad_commands</vh></v>
+<v t="felix.20210514001326.64"><vh>server._good_commands</vh></v>
 </v>
-<v t="felix.20210513003941.65"><vh>server.get_all_server_commands</vh></v>
-<v t="felix.20210513003941.66"><vh>server.init_connection</vh></v>
-<v t="felix.20210513003941.67"><vh>server.set_ask_result</vh></v>
-<v t="felix.20210513003941.68"><vh>server.set_config</vh></v>
-<v t="felix.20210513003941.69"><vh>server.shut_down</vh></v>
+<v t="felix.20210514001326.65"><vh>server.get_all_server_commands</vh></v>
+<v t="felix.20210514001326.66"><vh>server.init_connection</vh></v>
+<v t="felix.20210514001326.67"><vh>server.set_ask_result</vh></v>
+<v t="felix.20210514001326.68"><vh>server.set_config</vh></v>
+<v t="felix.20210514001326.69"><vh>server.shut_down</vh></v>
 </v>
 </v>
-<v t="felix.20210513003941.70"><vh>server:server utils</vh>
-<v t="felix.20210513003941.71"><vh>server._ap_to_p</vh></v>
-<v t="felix.20210513003941.72"><vh>server._check_c</vh></v>
-<v t="felix.20210513003941.73"><vh>server._check_outline</vh></v>
-<v t="felix.20210513003941.74"><vh>server._check_outline_positions</vh></v>
-<v t="felix.20210513003941.75"><vh>server._do_leo_command</vh></v>
-<v t="felix.20210513003941.76"><vh>server._do_message</vh></v>
-<v t="felix.20210513003941.77"><vh>server._do_server_command</vh></v>
-<v t="felix.20210513003941.78"><vh>server._dump_*</vh></v>
-<v t="felix.20210513003941.79"><vh>server._es &amp; helper</vh>
-<v t="felix.20210513003941.80"><vh>server._async_output</vh></v>
+<v t="felix.20210514001326.70"><vh>server:server utils</vh>
+<v t="felix.20210514001326.71"><vh>server._ap_to_p</vh></v>
+<v t="felix.20210514001326.72"><vh>server._check_c</vh></v>
+<v t="felix.20210514001326.73"><vh>server._check_outline</vh></v>
+<v t="felix.20210514001326.74"><vh>server._check_outline_positions</vh></v>
+<v t="felix.20210514001326.75"><vh>server._do_leo_command</vh></v>
+<v t="felix.20210514001326.76"><vh>server._do_message</vh></v>
+<v t="felix.20210514001326.77"><vh>server._do_server_command</vh></v>
+<v t="felix.20210514001326.78"><vh>server._dump_*</vh></v>
+<v t="felix.20210514001326.79"><vh>server._es &amp; helper</vh>
+<v t="felix.20210514001326.80"><vh>server._async_output</vh></v>
 </v>
-<v t="felix.20210513003941.81"><vh>server._get_p</vh></v>
-<v t="felix.20210513003941.82"><vh>server._get_position_d</vh></v>
-<v t="felix.20210513003941.83"><vh>server._make_response</vh></v>
-<v t="felix.20210513003941.84"><vh>server._make_minimal_response</vh></v>
-<v t="felix.20210513003941.85"><vh>server._p_to_ap</vh></v>
-<v t="felix.20210513003941.86"><vh>serverver._test_round_trip_positions</vh></v>
+<v t="felix.20210514001326.81"><vh>server._get_p</vh></v>
+<v t="felix.20210514001326.82"><vh>server._get_position_d</vh></v>
+<v t="felix.20210514001326.83"><vh>server._make_response</vh></v>
+<v t="felix.20210514001326.84"><vh>server._make_minimal_response</vh></v>
+<v t="felix.20210514001326.85"><vh>server._p_to_ap</vh></v>
+<v t="felix.20210514001326.86"><vh>serverver._test_round_trip_positions</vh></v>
 </v>
 </v>
 </vnodes>
@@ -12334,6 +12334,8 @@ def tag_configure(self, colorName, **keys): pass
         # TODO : This conversion for scroll position may be unneeded (consider as lines only)
         # w_scrollI, w_scrollRow, w_scrollCol = c.frame.body.wrapper.toPythonIndexRowCol(w_Scroll)
         # compute line and column for the insertion point, and the start &amp; end of selection
+        # BUG: this uses current selection wrapper only, use
+        # g.convertPythonIndexToRowCol instead !
         w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(
             w_active)
         w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(
@@ -13117,11 +13119,11 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     return self.sendLeoBridgePackage({"focus": focus})
 
 </t>
-<t tx="felix.20210513003941.1">class LeoServer:
+<t tx="felix.20210514001326.1">class LeoServer:
     """Leo Server Controller"""
     @others
 </t>
-<t tx="felix.20210513003941.10">def open_file(self, param):
+<t tx="felix.20210514001326.10">def open_file(self, param):
     """
     Open a leo file with the given filename.
     Create a new document if no name.
@@ -13151,7 +13153,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
 
     return self._make_response(result)
 </t>
-<t tx="felix.20210513003941.11">def open_files(self, param):
+<t tx="felix.20210514001326.11">def open_files(self, param):
     """
     Opens an array of leo files.
     Returns an object with total opened files
@@ -13168,7 +13170,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     result = {"total": total, "filename": filename}
     return self._make_response(result)
 </t>
-<t tx="felix.20210513003941.12">def set_opened_file(self, param):
+<t tx="felix.20210514001326.12">def set_opened_file(self, param):
     '''
     Choose the new active commander from array of opened files.
     Returns an object with total opened files
@@ -13187,7 +13189,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     else:
         raise ServerError(f"{tag}: commander at index {index} does not exist")
 </t>
-<t tx="felix.20210513003941.13">def close_file(self, param):
+<t tx="felix.20210514001326.13">def close_file(self, param):
     """
     Closes an outline opened with open_file.
     Use a 'forced' flag to force close.
@@ -13217,7 +13219,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         w_result = {"total": 0}
     return self._make_response(w_result)
 </t>
-<t tx="felix.20210513003941.14">def save_file(self, param):  # pragma: no cover (too dangerous).
+<t tx="felix.20210514001326.14">def save_file(self, param):  # pragma: no cover (too dangerous).
     """Save the leo outline."""
     tag = 'close_file'
     c = self._check_c()
@@ -13232,8 +13234,8 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
 
     return self._make_response()  # Just send empty as 'ok'
 </t>
-<t tx="felix.20210513003941.15"></t>
-<t tx="felix.20210513003941.16">def _get_find_settings(self, c):
+<t tx="felix.20210514001326.15"></t>
+<t tx="felix.20210514001326.16">def _get_find_settings(self, c):
     """Return a g.Bunch containing the present find settings settings."""
     return c.findCommands.ftm.get_settings()
     ###
@@ -13247,7 +13249,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
             # entry_focus=None,
         # )  
 </t>
-<t tx="felix.20210513003941.17">def find_all(self, param):
+<t tx="felix.20210514001326.17">def find_all(self, param):
     """Run Leo's find-all command and return results."""
     tag = 'find_all'
     c = self._check_c()
@@ -13264,7 +13266,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         g.printObj(answer, tag=f"{tag}: answer")
     return self._make_response({"answer": answer})
 </t>
-<t tx="felix.20210513003941.18">def change_all(self, param):
+<t tx="felix.20210514001326.18">def change_all(self, param):
     """Run Leo's change-all command and return results."""
     tag = 'change_all'
     c = self._check_c()
@@ -13285,7 +13287,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         g.printObj(answer, tag=f"{tag}: answer")
     return self._make_response({"answer": answer})
 </t>
-<t tx="felix.20210513003941.19">def change_then_find(self, param):
+<t tx="felix.20210514001326.19">def change_then_find(self, param):
     """Run Leo's change-then-find command and return results."""
     tag = 'change_then_find'
     c = self._check_c()
@@ -13302,7 +13304,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         g.printObj(answer, tag=f"{tag}: answer")
     return self._make_response({"answer": answer})
 </t>
-<t tx="felix.20210513003941.2">def __init__(self, testing=False):
+<t tx="felix.20210514001326.2">def __init__(self, testing=False):
 
     import leo.core.leoApp as leoApp
     import leo.core.leoBridge as leoBridge
@@ -13338,7 +13340,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     t2 = time.process_time()
     print(f"LeoServer: init leoBridge in {t2-t1:4.2} sec.")
 </t>
-<t tx="felix.20210513003941.20">def clone_find_all(self, param):
+<t tx="felix.20210514001326.20">def clone_find_all(self, param):
     """Run Leo's clone-find-all command and return results."""
     tag = 'clone_find_all'
     c = self._check_c()
@@ -13355,7 +13357,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         g.printObj(answer, tag=f"{tag}: answer")
     return self._make_response({"answer": answer})
 </t>
-<t tx="felix.20210513003941.21">def clone_find_all_flattened(self, param):
+<t tx="felix.20210514001326.21">def clone_find_all_flattened(self, param):
     """Run Leo's clone-find-all-flattened command and return results."""
     tag = 'clone_find_all_flattened'
     c = self._check_c()
@@ -13372,7 +13374,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         g.printObj(answer, tag=f"{tag}: answer")
     return self._make_response({"answer": answer})
 </t>
-<t tx="felix.20210513003941.22">def clone_find_tag(self, param):
+<t tx="felix.20210514001326.22">def clone_find_tag(self, param):
     """Run Leo's clone-find-tag command and return results."""
     tag = 'clone_find_tag'
     c = self._check_c()
@@ -13388,7 +13390,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         g.trace("tag: {the_tag} n: {n} p: {p and p.h!r}")
     return self._make_response({"n": n, "p": p})
 </t>
-<t tx="felix.20210513003941.23">def find_def(self, param):
+<t tx="felix.20210514001326.23">def find_def(self, param):
     """Run Leo's find-def command and return results."""
     tag = 'find_def'
     c = self._check_c()
@@ -13405,7 +13407,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         g.trace(f"p: {p and p.h!r} pos: {pos!r} newpos {newpos!r}")
     return self._make_response({"p": p, "pos": pos, "newpos": newpos})
 </t>
-<t tx="felix.20210513003941.24">def find_next(self, param):
+<t tx="felix.20210514001326.24">def find_next(self, param):
     """Run Leo's find-next command and return results."""
     tag = 'find_next'
     c = self._check_c()
@@ -13422,7 +13424,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         g.trace(f"p: {p and p.h!r} pos: {pos!r} newpos {newpos!r}")
     return self._make_response({"p": p, "pos": pos, "newpos": newpos})
 </t>
-<t tx="felix.20210513003941.25">def find_previous(self, param):
+<t tx="felix.20210514001326.25">def find_previous(self, param):
     """Run Leo's find-previous command and return results."""
     tag = 'find_previous'
     c = self._check_c()
@@ -13439,7 +13441,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         g.trace(f"p: {p and p.h!r} pos: {pos!r} newpos {newpos!r}")
     return self._make_response({"p": p, "pos": pos, "newpos": newpos})
 </t>
-<t tx="felix.20210513003941.26">def find_var(self, param):
+<t tx="felix.20210514001326.26">def find_var(self, param):
     """Run Leo's find-var command and return results."""
     tag = 'find_var'
     c = self._check_c()
@@ -13456,7 +13458,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         g.trace(f"p: {p and p.h!r} pos: {pos!r} newpos {newpos!r}")
     return self._make_response({"p": p, "pos": pos, "newpos": newpos})
 </t>
-<t tx="felix.20210513003941.27">def tag_children(self, param):
+<t tx="felix.20210514001326.27">def tag_children(self, param):
     """Run Leo's tag-children command and return results."""
     # This is not a find command!
     tag = 'tag_children'
@@ -13469,8 +13471,8 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     fc.do_tag_children(c.p, the_tag)
     return self._make_response({})
 </t>
-<t tx="felix.20210513003941.28"></t>
-<t tx="felix.20210513003941.29">def get_all_open_commanders(self, param):
+<t tx="felix.20210514001326.28"></t>
+<t tx="felix.20210514001326.29">def get_all_open_commanders(self, param):
     """Return array describing each commander in g.app.commanders()."""
     files = [
         {
@@ -13481,8 +13483,8 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     ]
     return self._make_minimal_response({"files": files})
 </t>
-<t tx="felix.20210513003941.3"></t>
-<t tx="felix.20210513003941.30">def get_all_positions(self, param):
+<t tx="felix.20210514001326.3"></t>
+<t tx="felix.20210514001326.30">def get_all_positions(self, param):
     """
     Return a list of position data for all positions.
     
@@ -13494,7 +13496,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     ]
     return self._make_minimal_response({"position-data-list": result})
 </t>
-<t tx="felix.20210513003941.31">def get_all_gnx(self, param):
+<t tx="felix.20210514001326.31">def get_all_gnx(self, param):
     '''Get gnx array from all unique nodes'''    
     if self.log_flag:  # pragma: no cover
         print(f"\nget_all_gnx\n")
@@ -13503,7 +13505,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     all_gnx = [p.v.gnx for p in c.all_unique_positions(copy=False)]
     return self._make_minimal_response({"gnx": all_gnx}, True)
 </t>
-<t tx="felix.20210513003941.32">def get_body(self, param):
+<t tx="felix.20210514001326.32">def get_body(self, param):
     """
     Return p.b, where p is c.p if param["ap"] is missing.
     
@@ -13515,7 +13517,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     # _make_response adds all the cheap redraw data, including "body-length"
     return self._make_minimal_response({"body": p.b})
 </t>
-<t tx="felix.20210513003941.33">def get_body_length(self, param):
+<t tx="felix.20210514001326.33">def get_body_length(self, param):
     """
     Return p.b's length in bytes, where p is c.p if param["ap"] is missing.
     """
@@ -13526,7 +13528,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         return self._make_minimal_response({"len": len(p.b.encode('utf-8'))}, True)
     return self._make_minimal_response({"len": 0}, True)  # empty as default
 </t>
-<t tx="felix.20210513003941.34">def get_body_states(self, param):
+<t tx="felix.20210514001326.34">def get_body_states(self, param):
     """
     Return body data for p, where p is c.p if param["ap"] is missing.
     """
@@ -13534,7 +13536,9 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     p = self._get_p(param)
     wrapper = c.frame.body.wrapper
     
-    def row_col_dict(i):
+    def row_col_dict(i):  
+        # BUG: this uses current selection wrapper only, use 
+        # g.convertPythonIndexToRowCol instead !
         junk, line, col = wrapper.toPythonIndexRowCol(i)
         return {"line": line, "col": col}
         
@@ -13569,7 +13573,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     }
     return self._make_minimal_response(states)
 </t>
-<t tx="felix.20210513003941.35">def get_children(self, param):
+<t tx="felix.20210514001326.35">def get_children(self, param):
     """
     Return the node data for children of p, where p is c.p if param["ap"] is missing.
     """
@@ -13580,7 +13584,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         "children": [self._get_position_d(child) for child in p.children()]
     })
 </t>
-<t tx="felix.20210513003941.36">def get_focus(self, param):
+<t tx="felix.20210514001326.36">def get_focus(self, param):
     """
     Return a representation of the focused widget,
     one of ("body", "tree", "headline", repr(the_widget)).
@@ -13589,7 +13593,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     focus = g.app.gui.widget_name(w)
     return self._make_minimal_response({"focus": focus})
 </t>
-<t tx="felix.20210513003941.37">def get_parent(self, param):
+<t tx="felix.20210514001326.37">def get_parent(self, param):
     """Return the node data for the parent of position p, where p is c.p if param["ap"] is missing."""
     self._check_c()
     p = self._get_p(param)
@@ -13597,7 +13601,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     data = self._get_position_d(parent) if parent else None
     return self._make_minimal_response({"node": data})
 </t>
-<t tx="felix.20210513003941.38">def get_position_data_dict(self, param):
+<t tx="felix.20210514001326.38">def get_position_data_dict(self, param):
     """
     Return a dict of position data for all positions.
     
@@ -13610,7 +13614,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     }
     return self._make_minimal_response({"position-data-dict": result})
 </t>
-<t tx="felix.20210513003941.39">def get_ua(self, param):
+<t tx="felix.20210514001326.39">def get_ua(self, param):
     """Return p.v.u, making sure it can be serialized."""
     self._check_c()
     p = self._get_p(param)
@@ -13623,9 +13627,9 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     # _make_response adds all the cheap redraw data.
     return self._make_minimal_response(response)
 </t>
-<t tx="felix.20210513003941.4"># These will fail unless the open_file inits c.theScriptingController.
+<t tx="felix.20210514001326.4"># These will fail unless the open_file inits c.theScriptingController.
 </t>
-<t tx="felix.20210513003941.40">def get_sign_on(self, param):
+<t tx="felix.20210514001326.40">def get_sign_on(self, param):
     """Synchronous version of _sign_on"""
     g.app.computeSignon()
     signon = []
@@ -13634,7 +13638,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
             signon.append(z2.strip())
     return self._make_minimal_response({"sign-on": "\n".join(signon)})
 </t>
-<t tx="felix.20210513003941.41">def get_ui_states(self, param):
+<t tx="felix.20210514001326.41">def get_ui_states(self, param):
     """
     Return the enabled/disabled UI states for the open commander, or defaults if None.
     """
@@ -13653,8 +13657,8 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         raise ServerError(f"{tag}: Exception setting state: {e}")
     return self._make_minimal_response({"states": states})
 </t>
-<t tx="felix.20210513003941.42"></t>
-<t tx="felix.20210513003941.43">def clone_node(self, param):
+<t tx="felix.20210514001326.42"></t>
+<t tx="felix.20210514001326.43">def clone_node(self, param):
     """
     Clone the node at position p, where p is c.p if param["ap"] is missing.
     Try to restore selection on the node that was originally selected
@@ -13672,7 +13676,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
             c.selectPosition(oldPosition)
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.44">def contract_node(self, param):
+<t tx="felix.20210514001326.44">def contract_node(self, param):
     """
     Contract the node at position p, where p is c.p if param["ap"] is missing.
 
@@ -13682,7 +13686,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     p.contract()
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.45">def cut_node(self, param):  # pragma: no cover (too dangerous, for now)
+<t tx="felix.20210514001326.45">def cut_node(self, param):  # pragma: no cover (too dangerous, for now)
     """
     Cut the node (and its descendants) at position p, where p is c.p if param["ap"] is missing.
     Try to restore selection on the node that was originally selected
@@ -13703,7 +13707,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
                 c.selectPosition(oldPosition)
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.46">def delete_node(self, param):  # pragma: no cover (too dangerous, for now)
+<t tx="felix.20210514001326.46">def delete_node(self, param):  # pragma: no cover (too dangerous, for now)
     """
     Delete the node (and its descendants) at position p, where p is c.p if param["ap"] is missing.
     Try to restore selection on the node that was originally selected
@@ -13724,7 +13728,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
                 c.selectPosition(oldPosition)
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.47">def expand_node(self, param):
+<t tx="felix.20210514001326.47">def expand_node(self, param):
     """
     Expand the node at position p, where p is c.p if param["ap"] is missing.
     """
@@ -13733,7 +13737,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     p.expand()
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.48">def insert_node(self, param):
+<t tx="felix.20210514001326.48">def insert_node(self, param):
     """
     Insert a new node at position p, where p is c.p if param["ap"] is missing.
 
@@ -13747,7 +13751,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     c.insertHeadline()  # Handles undo, sets c.p
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.49">def insert_named_node(self, param):
+<t tx="felix.20210514001326.49">def insert_named_node(self, param):
     """
     Insert a new node at position p, where p is c.p if param["ap"] is missing.
     Also set its headline, select it and finally return it
@@ -13765,7 +13769,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     c.selectPosition(newNode)
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.5">def _check_button_command(self, tag):  # pragma: no cover (no scripting controller)
+<t tx="felix.20210514001326.5">def _check_button_command(self, tag):  # pragma: no cover (no scripting controller)
     """
     Check that a button command is possible.
     Raise ServerError if not. Otherwise, return sc.buttonsDict.
@@ -13778,7 +13782,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         raise ServerError(f"{tag}: no scripting controller")
     return sc.buttonsDict
 </t>
-<t tx="felix.20210513003941.50">def page_down(self, param):
+<t tx="felix.20210514001326.50">def page_down(self, param):
     """
     Selects a node "n" steps down in the tree to simulate page down.
     """
@@ -13788,7 +13792,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         c.selectVisNext()
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.51">def page_up(self, param):
+<t tx="felix.20210514001326.51">def page_up(self, param):
     """
     Selects a node "N" steps up in the tree to simulate page up.
     """
@@ -13798,7 +13802,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         c.selectVisBack()
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.52">def redo(self, param):
+<t tx="felix.20210514001326.52">def redo(self, param):
     """Undo last un-doable operation"""
     c = self._check_c()
     u = c.undoer
@@ -13806,7 +13810,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         u.redo()
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.53">def set_body(self, param):
+<t tx="felix.20210514001326.53">def set_body(self, param):
     """
     Undoably set body of a v node from a gnx parameter.
     """
@@ -13834,14 +13838,14 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
             break  # one is enough
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.54">def set_current_position(self, param):
+<t tx="felix.20210514001326.54">def set_current_position(self, param):
     """Select position p, where p is c.p if param["ap"] is missing."""
     c = self._check_c()
     p = self._get_p(param)
     c.selectPosition(p)
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.55">def set_headline(self, param):
+<t tx="felix.20210514001326.55">def set_headline(self, param):
     """
     Undoably set p.h, where p is c.p if param["ap"] is missing.
     """
@@ -13857,7 +13861,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     u.afterChangeNodeContents(p, 'Change Headline', bunch)
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.56">def set_selection(self, param):
+<t tx="felix.20210514001326.56">def set_selection(self, param):
     """
     Set the selection range for p.b, where p is c.p if param["ap"] is missing.
     
@@ -13870,6 +13874,14 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     - "end":    The end of the selection.
     - "insert": The insert point. Must be either start or end.
     - "scroll": An optional scroll position.
+    
+    Two functions in leoGlobals.py support conversions
+    from Python indices to the row/column indices used by Tkinter.
+    
+    - g.convertPythonIndexToRowCol converts a Python index to a row/column
+      index used by Tkinter.
+    
+    - g.convertRowColToPythonIndex does the reverse.
     """
     c = self._check_c()
     p = self._get_p(param)  # Will raise ServerError if p does not exist.
@@ -13889,7 +13901,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     v.selectionLength = abs(start - end)
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.57">def mark_node(self, param):
+<t tx="felix.20210514001326.57">def mark_node(self, param):
     """
     Mark a node, don't select it
     """
@@ -13898,7 +13910,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     p.setMarked()
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.58">def unmark_node(self, param):
+<t tx="felix.20210514001326.58">def unmark_node(self, param):
     """
     Unmark a node, don't select it
     """
@@ -13908,7 +13920,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         p.clearMarked()
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.59">def undo(self, param):
+<t tx="felix.20210514001326.59">def undo(self, param):
     """Undo last un-doable operation"""
     c = self._check_c()
     u = c.undoer
@@ -13917,7 +13929,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     # Félix: Caller can get focus using other calls.
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.6">def click_button(self, param):  # pragma: no cover (no scripting controller)
+<t tx="felix.20210514001326.6">def click_button(self, param):  # pragma: no cover (no scripting controller)
     """Handles buttons clicked in client from the '@button' panel"""
     tag = 'click_button'
     index = param.get("index")
@@ -13940,12 +13952,12 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     # Tag along a possible return value with info sent back by _make_response
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.60"></t>
-<t tx="felix.20210513003941.61">def error(self, param):
+<t tx="felix.20210514001326.60"></t>
+<t tx="felix.20210514001326.61">def error(self, param):
     """For unit testing. Raise ServerError"""
     raise ServerError("error called")
 </t>
-<t tx="felix.20210513003941.62">def get_all_leo_commands(self, param):
+<t tx="felix.20210514001326.62">def get_all_leo_commands(self, param):
     """Return a list of all Leo commands that make sense in leoInteg."""
     tag = 'get_all_leo_commands'
     c = self.dummy_c  # Use the dummy commander.
@@ -13981,7 +13993,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         g.printObj([z.get("command-name") for z in result], tag=tag)
     return self._make_response({"commands": result})
 </t>
-<t tx="felix.20210513003941.63">def _bad_commands(self, c):
+<t tx="felix.20210514001326.63">def _bad_commands(self, c):
     """Return the list of Leo's command names that leoInteg should ignore."""
     d = c.commandsDict  # keys are command names, values are functions.
     bad = []
@@ -14586,7 +14598,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     return result
 
 </t>
-<t tx="felix.20210513003941.64">def _good_commands(self):
+<t tx="felix.20210514001326.64">def _good_commands(self):
     """Defined commands that definitely should be included in leoInteg."""
     good_list = [
 
@@ -15017,7 +15029,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
     return good_list
 
 </t>
-<t tx="felix.20210513003941.65">def get_all_server_commands(self, param):
+<t tx="felix.20210514001326.65">def get_all_server_commands(self, param):
     """
     Public server method:
     Return the names of all callable public methods of the server.
@@ -15037,22 +15049,22 @@ def _get_all_server_commands(self):
     members = inspect.getmembers(self, inspect.ismethod)
     return sorted([name for (name, value) in members if not name.startswith('_')])
 </t>
-<t tx="felix.20210513003941.66">def _init_connection(self, web_socket):  # pragma: no cover (tested in client).
+<t tx="felix.20210514001326.66">def _init_connection(self, web_socket):  # pragma: no cover (tested in client).
     """Begin the connection."""
     self.web_socket = web_socket
     self.loop = asyncio.get_event_loop()
 </t>
-<t tx="felix.20210513003941.67">def set_ask_result(self, param):
+<t tx="felix.20210514001326.67">def set_ask_result(self, param):
     if self.log_flag:  # pragma: no cover
         print(f"\nask result\n")
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.68">def set_config(self, param):
+<t tx="felix.20210514001326.68">def set_config(self, param):
     if self.log_flag:  # pragma: no cover
         print(f"\nset gonfig\n")
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.69">def shut_down(self, param):
+<t tx="felix.20210514001326.69">def shut_down(self, param):
     """Shut down the server."""
     tag = 'shut_down'
     n = len(g.app.commanders())
@@ -15060,7 +15072,7 @@ def _get_all_server_commands(self):
         raise ServerError(f"{tag}: {n} open outlines")
     raise TerminateServer("client requested shut down")
 </t>
-<t tx="felix.20210513003941.7">def get_buttons(self, param):  # pragma: no cover (no scripting controller)
+<t tx="felix.20210514001326.7">def get_buttons(self, param):  # pragma: no cover (no scripting controller)
     """
     Gets the currently opened file's @buttons list
     as an array of dict. 
@@ -15081,8 +15093,8 @@ def _get_all_server_commands(self):
         "buttons": buttons
     })
 </t>
-<t tx="felix.20210513003941.70"></t>
-<t tx="felix.20210513003941.71">def _ap_to_p(self, ap):
+<t tx="felix.20210514001326.70"></t>
+<t tx="felix.20210514001326.71">def _ap_to_p(self, ap):
     """
     Convert ap (archived position, a dict) to a valid Leo position.
     Raise ServerError on any kind of error.
@@ -15133,7 +15145,7 @@ def _get_all_server_commands(self):
         raise ServerError(f"{tag}: p does not exist in {c.shortFileName()}")
     return p
 </t>
-<t tx="felix.20210513003941.72">def _check_c(self):
+<t tx="felix.20210514001326.72">def _check_c(self):
     """Return self.c or raise ServerError if self.c is None."""
     tag = '_check_c'
     c = self.c
@@ -15141,14 +15153,14 @@ def _get_all_server_commands(self):
         raise ServerError(f"{tag}: no open commander")
     return c
 </t>
-<t tx="felix.20210513003941.73">def _check_outline(self, c):
+<t tx="felix.20210514001326.73">def _check_outline(self, c):
     """Check self.c for consistency."""
     # Check that all positions exist.
     self._check_outline_positions(c)
     # Test round-tripping.
     self._test_round_trip_positions(c)
 </t>
-<t tx="felix.20210513003941.74">def _check_outline_positions(self, c):
+<t tx="felix.20210514001326.74">def _check_outline_positions(self, c):
     """Verify that all positions in c exist."""
     tag = '_check_outline_positions'
     for p in c.all_positions(copy=False):
@@ -15158,7 +15170,7 @@ def _get_all_server_commands(self):
             self._dump_position(p)
             raise ServerError(message)
 </t>
-<t tx="felix.20210513003941.75">def _do_leo_command(self, command, param):
+<t tx="felix.20210514001326.75">def _do_leo_command(self, command, param):
     """
     Generic call to a method in Leo's Commands class or any subcommander class.
     
@@ -15204,7 +15216,7 @@ def _get_all_server_commands(self):
     # Tag along a possible return value with info sent back by _make_response
     return self._make_response({"return-value": value})
 </t>
-<t tx="felix.20210513003941.76">def _do_message(self, d):
+<t tx="felix.20210514001326.76">def _do_message(self, d):
     """
     Handle d, a python dict representing the incoming request.
     The d dict must have the three (3) following keys:
@@ -15251,7 +15263,7 @@ def _get_all_server_commands(self):
         raise ServerError(f"{tag}: no response: {action!r}")
     return result
 </t>
-<t tx="felix.20210513003941.77">def _do_server_command(self, action, param):
+<t tx="felix.20210514001326.77">def _do_server_command(self, action, param):
     tag = '_do_server_command'
     # Disallow hidden methods.
     if action.startswith('_'):  # pragma: no cover
@@ -15264,7 +15276,7 @@ def _get_all_server_commands(self):
         raise ServerError(f"{tag}: not callable: {func!r}")  # pragma: no cover
     return func(param)
 </t>
-<t tx="felix.20210513003941.78">def _dump_outline(self, c):  # pragma: no cover
+<t tx="felix.20210514001326.78">def _dump_outline(self, c):  # pragma: no cover
     """Dump the outline."""
     tag = '_dump_outline'
     print(f"{tag}: {c.shortFileName()}...\n")
@@ -15276,7 +15288,7 @@ def _dump_position(self, p):  # pragma: no cover
     level_s = ' ' * 2 * p.level()
     print(f"{level_s}{p.childIndex():2} {p.v.gnx} {p.h}")
 </t>
-<t tx="felix.20210513003941.79">def _es(self, s):  # pragma: no cover (tested in client).
+<t tx="felix.20210514001326.79">def _es(self, s):  # pragma: no cover (tested in client).
     """
     Send a response that does not correspond to a request.
     
@@ -15291,7 +15303,7 @@ def _dump_position(self, p):  # pragma: no cover
     else:
         print(f"{tag}: Error loop not ready {message}")
 </t>
-<t tx="felix.20210513003941.8">def remove_button(self, param):  # pragma: no cover (no scripting controller)
+<t tx="felix.20210514001326.8">def remove_button(self, param):  # pragma: no cover (no scripting controller)
     """Remove button by index 'key string'."""
     tag = 'remove_button'
     index = param.get("index")
@@ -15314,7 +15326,7 @@ def _dump_position(self, p):  # pragma: no cover
 
     return self._make_response()
 </t>
-<t tx="felix.20210513003941.80">async def _async_output(self, json):  # pragma: no cover (tested in server)
+<t tx="felix.20210514001326.80">async def _async_output(self, json):  # pragma: no cover (tested in server)
     """Output json string to the web_socket"""
     tag = '_async_output'
     if self.web_socket:
@@ -15322,7 +15334,7 @@ def _dump_position(self, p):  # pragma: no cover
     else:
         g.trace(f"{tag}: no web socket. json: {json!r}")
 </t>
-<t tx="felix.20210513003941.81">def _get_p(self, param):
+<t tx="felix.20210514001326.81">def _get_p(self, param):
     """Return _ap_to_p(param["ap"]) or c.p."""
     
     tag = '_get_ap'
@@ -15344,7 +15356,7 @@ def _dump_position(self, p):  # pragma: no cover
         
     return c.p
 </t>
-<t tx="felix.20210513003941.82">def _get_position_d(self, p):
+<t tx="felix.20210514001326.82">def _get_position_d(self, p):
     """
     Return a python dict containing:
     - "node": self._p_to_ap(p).
@@ -15371,7 +15383,7 @@ def _dump_position(self, p):  # pragma: no cover
         "level": p.level(),  # Useful for debugging.
     }
 </t>
-<t tx="felix.20210513003941.83">def _make_response(self, package=None):
+<t tx="felix.20210514001326.83">def _make_response(self, package=None):
     """
     Return a json string representing a response dict.
     
@@ -15429,7 +15441,7 @@ def _dump_position(self, p):  # pragma: no cover
         g.printObj(package, tag=f"{tag} returns")
     return json.dumps(package, separators=(',', ':')) 
 </t>
-<t tx="felix.20210513003941.84">def _make_minimal_response(self, package=None, minimal=False):
+<t tx="felix.20210514001326.84">def _make_minimal_response(self, package=None, minimal=False):
     """
     Return a json string representing a response dict.
     
@@ -15456,7 +15468,7 @@ def _dump_position(self, p):  # pragma: no cover
 
     return json.dumps(package, separators=(',', ':'))
 </t>
-<t tx="felix.20210513003941.85">def _p_to_ap(self, p):
+<t tx="felix.20210514001326.85">def _p_to_ap(self, p):
     """
     Convert Leo position p to a serializable archived position.
     
@@ -15472,7 +15484,7 @@ def _dump_position(self, p):  # pragma: no cover
         'stack': stack,
     }
 </t>
-<t tx="felix.20210513003941.86">def _test_round_trip_positions(self, c):  # pragma: no cover (tested in client).
+<t tx="felix.20210514001326.86">def _test_round_trip_positions(self, c):  # pragma: no cover (tested in client).
     """Test the round tripping of p_to_ap and ap_to_p."""
     tag = '_test_round_trip_positions'
     for p in c.all_unique_positions():
@@ -15482,6 +15494,6 @@ def _dump_position(self, p):  # pragma: no cover
             self._dump_outline(c)
             raise ServerError(f"{tag}: round-trip failed: ap: {ap!r}, p: {p!r}, p2: {p2!r}")
 </t>
-<t tx="felix.20210513003941.9"></t>
+<t tx="felix.20210514001326.9"></t>
 </tnodes>
 </leo_file>
