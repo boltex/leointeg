@@ -2393,6 +2393,9 @@ class LeoBridgeIntegController:
         Finds the language in effect at top of body for position p,
         return type is lowercase 'language' non-empty string.
         Also returns the saved cursor position from last time node was accessed.
+
+        The cursor positions are given as {"line": line, "col": col, "index": i}
+        with line and col along with a redundant index for convenience and flexibility.
         """
         if not p_ap:
             return self._outputError("Error in getLanguage, no param p_ap")
@@ -2405,7 +2408,7 @@ class LeoBridgeIntegController:
 
         w_wrapper = self.commander.frame.body.wrapper
 
-        defaultPosition = {"line": 0, "col": 0}
+        defaultPosition = {"line": 0, "col": 0, "index": 0}
         states = {
             'language': 'plain',
             # See BodySelectionInfo interface in types.d.ts
@@ -2415,7 +2418,7 @@ class LeoBridgeIntegController:
                     "start": defaultPosition,
                     "end": defaultPosition
                 },
-                "active": defaultPosition,
+                "insert": defaultPosition,
                 "start": defaultPosition,
                 "end": defaultPosition
             }
@@ -2445,26 +2448,26 @@ class LeoBridgeIntegController:
                 w_start, w_end = w_wrapper.getSelectionRange(True)
                 w_scroll = w_wrapper.getYScrollPosition()
 
-            # TODO : This conversion for scroll position may be unneeded (consider as lines only)
-            # w_scrollI, w_scrollRow, w_scrollCol = c.frame.body.wrapper.toPythonIndexRowCol(w_Scroll)
-            # compute line and column for the insertion point, and the start & end of selection
-            # BUG: this uses current selection wrapper only, use
-            # g.convertPythonIndexToRowCol instead !
-            w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(
-                w_active)
-            w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(
-                w_start)
-            w_endI, w_endRow, w_endCol = c.frame.body.wrapper.toPythonIndexRowCol(
-                w_end)
+                w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(
+                    w_active)
+                w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(
+                    w_start)
+                w_endI, w_endRow, w_endCol = c.frame.body.wrapper.toPythonIndexRowCol(
+                    w_end)
+            else:
+                w_activeI, w_startI, w_endI  = w_active, w_start, w_end
+                w_activeRow, w_activeCol = g.convertPythonIndexToRowCol(w_p.v.b, w_active)
+                w_startRow, w_startCol = g.convertPythonIndexToRowCol(w_p.v.b, w_start)
+                w_endRow, w_endCol = g.convertPythonIndexToRowCol(w_p.v.b, w_end)
 
             states = {
                 'language': language.lower(),
                 'selection': {
                     "gnx": w_p.v.gnx,
-                    "scroll": w_scroll,  # w_scroll was kept as-is
-                    "active": {"line": w_activeRow, "col": w_activeCol},
-                    "start": {"line": w_startRow, "col": w_startCol},
-                    "end": {"line": w_endRow, "col": w_endCol}
+                    "scroll": w_scroll,  # w_scroll was kept as-is ?
+                    "active": {"line": w_activeRow, "col": w_activeCol, "index": w_activeI},
+                    "start": {"line": w_startRow, "col": w_startCol, "index": w_startI},
+                    "end": {"line": w_endRow, "col": w_endCol, "index": w_endI}
                 }
             }
         return self.sendLeoBridgePackage(states)
@@ -2566,6 +2569,10 @@ class LeoBridgeIntegController:
     def set_selection(self, param):
         '''
         Set cursor position and scroll position along with selection start and end.
+
+        Positions can be sent as {"col":int, "line" int} dict
+        or as numbers directly for convenience.
+
         (For the currently selected node's body, if gnx matches only)
         Save those values on the commander's body "wrapper"
         See BodySelectionInfo interface in types.d.ts
@@ -2592,22 +2599,30 @@ class LeoBridgeIntegController:
 
         w_body = w_v.b
         f_convert = self.g.convertRowColToPythonIndex
-        w_active = param['active']
+        w_active = param['insert']
         w_start = param['start']
         w_end = param['end']
 
         # no convertion necessary, its given back later
         w_scroll = param['scroll']
-        w_insert = f_convert(
-            w_body, w_active['line'], w_active['col'])
-        w_startSel = f_convert(
-            w_body, w_start['line'], w_start['col'])
-        w_endSel = f_convert(
-            w_body, w_end['line'], w_end['col'])
+
+        # IF sent as number use as is - no conversion needed
+        if type(w_active)==int:
+            w_insert = w_active
+            w_startSel = w_start
+            w_endSel = w_end
+        else:
+            w_insert = f_convert(
+                w_body, w_active['line'], w_active['col'])
+            w_startSel = f_convert(
+                w_body, w_start['line'], w_start['col'])
+            w_endSel = f_convert(
+                w_body, w_end['line'], w_end['col'])
 
         # print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
         #       " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
 
+        # If it's the currently selected node set the wrapper's states too
         if w_same:
             w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
             w_wrapper.setYScrollPosition(w_scroll)
