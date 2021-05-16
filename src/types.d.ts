@@ -208,11 +208,13 @@ export interface BodyPosition {
 export interface BodySelectionInfo {
     gnx: string;
     // scroll is stored as-is as the 'scrollBarSpot' in Leo
-    scroll: {
-        start: BodyPosition;
-        end: BodyPosition;
-    }
-    active: BodyPosition;
+    // ! TEST scroll as single number only (for Leo vertical scroll value)
+    scroll: number;
+    // scroll: {
+    //     start: BodyPosition;
+    //     end: BodyPosition;
+    // }
+    insert: BodyPosition;
     start: BodyPosition;
     end: BodyPosition;
 }

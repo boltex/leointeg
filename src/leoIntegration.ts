@@ -895,33 +895,40 @@ export class LeoIntegration {
     private _bodySaveSelection(): Promise<boolean> {
         if (this._selectionDirty && this._selection) {
             // Prepare scroll data separately
-            let w_scroll: { start: BodyPosition; end: BodyPosition; };
+            // ! TEST NEW SCROLL WITH SINGLE LINE NUMBER
+            let w_scroll: number;
             if (this._selectionGnx === this._scrollGnx && this._scrollDirty) {
-                w_scroll = {
-                    start: {
-                        line: this._scroll?.start.line || 0,
-                        col: this._scroll?.start.character || 0
-                    },
-                    end: {
-                        line: this._scroll?.end.line || 0,
-                        col: this._scroll?.end.character || 0
-                    }
-                };
+                w_scroll = this._scroll?.start.line || 0;
             } else {
-                w_scroll = {
-                    start: {
-                        line: 0, col: 0
-                    },
-                    end: {
-                        line: 0, col: 0
-                    }
-                };
+                w_scroll = 0;
             }
+            // let w_scroll: { start: BodyPosition; end: BodyPosition; };
+            // if (this._selectionGnx === this._scrollGnx && this._scrollDirty) {
+            //     w_scroll = {
+            //         start: {
+            //             line: this._scroll?.start.line || 0,
+            //             col: this._scroll?.start.character || 0
+            //         },
+            //         end: {
+            //             line: this._scroll?.end.line || 0,
+            //             col: this._scroll?.end.character || 0
+            //         }
+            //     };
+            // } else {
+            //     w_scroll = {
+            //         start: {
+            //             line: 0, col: 0
+            //         },
+            //         end: {
+            //             line: 0, col: 0
+            //         }
+            //     };
+            // }
             // Send whole
             const w_param: BodySelectionInfo = {
                 gnx: this._selectionGnx,
                 scroll: w_scroll,
-                active: {
+                insert: {
                     line: this._selection.active.line || 0,
                     col: this._selection.active.character || 0
                 },
@@ -1497,28 +1504,39 @@ export class LeoIntegration {
                         );
                     }
 
-                    const w_scroll = w_leoBodySel.scroll;
+                    console.log('got scroll', w_leoBodySel.scroll);
 
                     let w_scrollRange: vscode.Range | undefined;
-                    if (w_scroll && w_scroll.start && w_scroll.end &&
-                        (w_scroll.start.line ||
-                            w_scroll.start.col ||
-                            w_scroll.end.line ||
-                            w_scroll.end.col)
-                    ) {
+
+                    // ! TEST scroll as single number instead.
+                    const w_scroll: number = w_leoBodySel.scroll;
+                    if (w_scroll) {
                         w_scrollRange = new vscode.Range(
-                            w_scroll.start.line,
-                            w_scroll.start.col,
-                            w_scroll.end.line,
-                            w_scroll.end.col,
+                            w_scroll,
+                            0,
+                            w_scroll,
+                            0
                         );
-                    } else {
-                        // w_scrollRange = new vscode.Range(0, 0, 0, 0); // try with p_textEditor.document.lineAt(0).range;
                     }
 
+                    // if (w_scroll && w_scroll.start && w_scroll.end &&
+                    //     (w_scroll.start.line ||
+                    //         w_scroll.start.col ||
+                    //         w_scroll.end.line ||
+                    //         w_scroll.end.col)
+                    // ) {
+                    //     w_scrollRange = new vscode.Range(
+                    //         w_scroll.start.line,
+                    //         w_scroll.start.col,
+                    //         w_scroll.end.line,
+                    //         w_scroll.end.col,
+                    //     );
+                    // }
+
                     // Cursor position and selection range
-                    const w_activeRow: number = w_leoBodySel.active.line;
-                    const w_activeCol: number = w_leoBodySel.active.col;
+
+                    const w_activeRow: number = w_leoBodySel.insert.line;
+                    const w_activeCol: number = w_leoBodySel.insert.col;
                     let w_anchorLine: number = w_leoBodySel.start.line;
                     let w_anchorCharacter: number = w_leoBodySel.start.col;
 

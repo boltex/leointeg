@@ -2414,10 +2414,11 @@ class LeoBridgeIntegController:
             # See BodySelectionInfo interface in types.d.ts
             'selection': {
                 "gnx": w_p.v.gnx,
-                "scroll": {
-                    "start": defaultPosition,
-                    "end": defaultPosition
-                },
+                "scroll": 0,
+                # "scroll": {
+                #     "start": defaultPosition,
+                #     "end": defaultPosition
+                # },
                 "insert": defaultPosition,
                 "start": defaultPosition,
                 "end": defaultPosition
@@ -2436,10 +2437,26 @@ class LeoBridgeIntegController:
                 'plain'
             )
 
-            w_scroll = w_p.v.scrollBarSpot
-            w_active = w_p.v.insertSpot
-            w_start = w_p.v.selectionStart
-            w_end = w_p.v.selectionStart + w_p.v.selectionLength
+            if w_p.v.scrollBarSpot is None:
+                w_scroll = 0
+            else:
+                w_scroll = w_p.v.scrollBarSpot
+
+            if w_p.v.insertSpot is None:
+                w_active = 0
+            else:
+                w_active = w_p.v.insertSpot
+            if w_p.v.selectionStart is None:
+                w_start = 0
+            else:
+                w_start = w_p.v.selectionStart
+
+            if w_p.v.selectionLength is None:
+                w_length = 0
+            else:
+                w_length = w_p.v.selectionLength
+
+            w_end = w_start + w_length
 
             # get selection from wrapper instead if its the selected node
             if self.commander.p.v.gnx == w_p.v.gnx:
@@ -2455,17 +2472,20 @@ class LeoBridgeIntegController:
                 w_endI, w_endRow, w_endCol = c.frame.body.wrapper.toPythonIndexRowCol(
                     w_end)
             else:
-                w_activeI, w_startI, w_endI  = w_active, w_start, w_end
-                w_activeRow, w_activeCol = g.convertPythonIndexToRowCol(w_p.v.b, w_active)
-                w_startRow, w_startCol = g.convertPythonIndexToRowCol(w_p.v.b, w_start)
-                w_endRow, w_endCol = g.convertPythonIndexToRowCol(w_p.v.b, w_end)
+                w_activeI, w_startI, w_endI = w_active, w_start, w_end
+                w_activeRow, w_activeCol = g.convertPythonIndexToRowCol(
+                    w_p.v.b, w_active)
+                w_startRow, w_startCol = g.convertPythonIndexToRowCol(
+                    w_p.v.b, w_start)
+                w_endRow, w_endCol = g.convertPythonIndexToRowCol(
+                    w_p.v.b, w_end)
 
             states = {
                 'language': language.lower(),
                 'selection': {
                     "gnx": w_p.v.gnx,
                     "scroll": w_scroll,  # w_scroll was kept as-is ?
-                    "active": {"line": w_activeRow, "col": w_activeCol, "index": w_activeI},
+                    "insert": {"line": w_activeRow, "col": w_activeCol, "index": w_activeI},
                     "start": {"line": w_startRow, "col": w_startCol, "index": w_startI},
                     "end": {"line": w_endRow, "col": w_endCol, "index": w_endI}
                 }
@@ -2607,7 +2627,7 @@ class LeoBridgeIntegController:
         w_scroll = param['scroll']
 
         # IF sent as number use as is - no conversion needed
-        if type(w_active)==int:
+        if type(w_active) == int:
             w_insert = w_active
             w_startSel = w_start
             w_endSel = w_end
