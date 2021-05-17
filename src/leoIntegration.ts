@@ -942,6 +942,8 @@ export class LeoIntegration {
                 }
 
             };
+            console.log("set scroll: " + w_scroll + " starHeM't:" + this._selection.start.line);
+
             this._scrollDirty = false;
             this._selectionDirty = false; // don't wait for return of this call
             return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param))
@@ -1504,7 +1506,7 @@ export class LeoIntegration {
                         );
                     }
 
-                    console.log('got scroll', w_leoBodySel.scroll);
+                    console.log('id: ' + p_result.id + ' - got scroll: ', w_leoBodySel.scroll);
 
                     let w_scrollRange: vscode.Range | undefined;
 
@@ -1561,11 +1563,11 @@ export class LeoIntegration {
                         if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath &&
                             w_documentGnx === w_leoBodySel.gnx
                         ) {
-                            p_textEditor.selection = w_selection; // set cursor insertion point & selection range
+                            // p_textEditor.selection = w_selection; // set cursor insertion point & selection range
                             if (!w_scrollRange) {
                                 w_scrollRange = p_textEditor.document.lineAt(0).range;
                             }
-                            p_textEditor.revealRange(w_scrollRange); // set
+                            // p_textEditor.revealRange(w_scrollRange); // set
                         }
                     });
 
@@ -1750,6 +1752,18 @@ export class LeoIntegration {
         } else {
             return Promise.reject("Insert node not added on command stack");
         }
+    }
+
+    public startSearch(): void {
+        vscode.window.showInformationMessage("startSearch command");
+    }
+
+    public findNext(): void {
+        vscode.window.showInformationMessage("findNext command");
+    }
+
+    public findPrevious(): void {
+        vscode.window.showInformationMessage("findPrevious command");
     }
 
     /**

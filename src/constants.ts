@@ -387,12 +387,15 @@ export class Constants {
         CLONE_MARKED_NODES: "cloneMarked", // * Direct Leo Command
         DELETE_MARKED_NODES: "deleteMarked", // * Direct Leo Command
         MOVE_MARKED_NODES: "moveMarked", // * Direct Leo Command
-        // TODO : @boltex More commands to implement #24
         GIT_DIFF: "gitDiff", // * Direct Leo Command
-        CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
-        CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
-        CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex
-        CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // #24 @boltex
+        // TODO : @boltex More commands to implement #24
+        START_SEARCH: "!start_search",
+        FIND_NEXT: "!find_next",
+        FIND_PREVIOUS: "!find_previous",
+        CLONE_FIND_ALL: "!clone_find_all",
+        CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
+        CLONE_FIND_MARKED: "cloneFindMarked", // * Direct Leo Command
+        CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // * Direct Leo Command
     };
 
     /**
@@ -519,6 +522,9 @@ export class Constants {
         DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
         MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes",
         // * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - not implemented yet #24
+        START_SEARCH: ".startSearch",
+        FIND_NEXT: ".findNext",
+        FIND_PREVIOUS: ".findPrevious",
         CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
         CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
         CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",

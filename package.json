@@ -720,44 +720,6 @@
         "title": "Edit Headline"
       },
       {
-        "command": "leointeg.mark",
-        "category": "Leo",
-        "title": "Mark",
-        "icon": {
-          "light": "resources/light/mark.svg",
-          "dark": "resources/dark/mark.svg"
-        }
-      },
-      {
-        "command": "leointeg.markSelection",
-        "category": "Leo",
-        "title": "Mark"
-      },
-      {
-        "command": "leointeg.markSelectionFromOutline",
-        "category": "Leo",
-        "title": "Mark"
-      },
-      {
-        "command": "leointeg.unmark",
-        "category": "Leo",
-        "title": "Unmark",
-        "icon": {
-          "light": "resources/light/unmark.svg",
-          "dark": "resources/dark/unmark.svg"
-        }
-      },
-      {
-        "command": "leointeg.unmarkSelection",
-        "category": "Leo",
-        "title": "Unmark"
-      },
-      {
-        "command": "leointeg.unmarkSelectionFromOutline",
-        "category": "Leo",
-        "title": "Unmark"
-      },
-      {
         "command": "leointeg.copyNode",
         "category": "Leo",
         "title": "Copy Node",
@@ -1067,6 +1029,26 @@
         "title": "Expand And Go Right"
       },
       {
+        "command": "leointeg.gotoNextMarked",
+        "category": "Leo",
+        "title": "Goto Next Marked"
+      },
+      {
+        "command": "leointeg.gotoNextClone",
+        "category": "Leo",
+        "title": "Goto Next Clone"
+      },
+      {
+        "command": "leointeg.gotoNextCloneSelection",
+        "category": "Leo",
+        "title": "Goto Next Clone"
+      },
+      {
+        "command": "leointeg.gotoNextCloneSelectionFromOutline",
+        "category": "Leo",
+        "title": "Goto Next Clone"
+      },
+      {
         "command": "leointeg.hoistNode",
         "category": "Leo",
         "title": "Hoist"
@@ -1136,6 +1118,21 @@
         }
       },
       {
+        "command": "leointeg.startSearch",
+        "category": "Leo",
+        "title": "Start Search"
+      },
+      {
+        "command": "leointeg.findNext",
+        "category": "Leo",
+        "title": "Find Next"
+      },
+      {
+        "command": "leointeg.findPrevious",
+        "category": "Leo",
+        "title": "Find Previous"
+      },
+      {
         "command": "leointeg.cloneFindAll",
         "category": "Leo",
         "title": "Clone Find All"
@@ -1146,54 +1143,42 @@
         "title": "Clone Find All Flattened"
       },
       {
-        "command": "leointeg.cloneFindMarked",
+        "command": "leointeg.mark",
         "category": "Leo",
-        "title": "Clone Find Marked"
+        "title": "Mark",
+        "icon": {
+          "light": "resources/light/mark.svg",
+          "dark": "resources/dark/mark.svg"
+        }
       },
       {
-        "command": "leointeg.cloneFindFlattenedMarked",
+        "command": "leointeg.markSelection",
         "category": "Leo",
-        "title": "cffm - Clone Find Flattened Marked"
+        "title": "Mark"
       },
       {
-        "command": "leointeg.copyMarked",
+        "command": "leointeg.markSelectionFromOutline",
         "category": "Leo",
-        "title": "Copy Marked"
+        "title": "Mark"
       },
       {
-        "command": "leointeg.diffMarkedNodes",
+        "command": "leointeg.unmark",
         "category": "Leo",
-        "title": "Diff Marked Nodes"
+        "title": "Unmark",
+        "icon": {
+          "light": "resources/light/unmark.svg",
+          "dark": "resources/dark/unmark.svg"
+        }
       },
       {
-        "command": "leointeg.gotoNextMarked",
+        "command": "leointeg.unmarkSelection",
         "category": "Leo",
-        "title": "Goto Next Marked"
+        "title": "Unmark"
       },
       {
-        "command": "leointeg.gotoNextClone",
+        "command": "leointeg.unmarkSelectionFromOutline",
         "category": "Leo",
-        "title": "Goto Next Clone"
-      },
-      {
-        "command": "leointeg.gotoNextCloneSelection",
-        "category": "Leo",
-        "title": "Goto Next Clone"
-      },
-      {
-        "command": "leointeg.gotoNextCloneSelectionFromOutline",
-        "category": "Leo",
-        "title": "Goto Next Clone"
-      },
-      {
-        "command": "leointeg.markChangedItems",
-        "category": "Leo",
-        "title": "Mark Changed Items"
-      },
-      {
-        "command": "leointeg.markSubheads",
-        "category": "Leo",
-        "title": "Mark Subheads"
+        "title": "Unmark"
       },
       {
         "command": "leointeg.unmarkAll",
@@ -1201,9 +1186,29 @@
         "title": "Unmark All"
       },
       {
+        "command": "leointeg.markSubheads",
+        "category": "Leo",
+        "title": "Mark Subheads"
+      },
+      {
+        "command": "leointeg.markChangedItems",
+        "category": "Leo",
+        "title": "Mark Changed Items"
+      },
+      {
+        "command": "leointeg.copyMarked",
+        "category": "Leo",
+        "title": "Copy Marked"
+      },
+      {
         "command": "leointeg.cloneMarkedNodes",
         "category": "Leo",
         "title": "Clone Marked Nodes"
+      },
+      {
+        "command": "leointeg.diffMarkedNodes",
+        "category": "Leo",
+        "title": "Diff Marked Nodes"
       },
       {
         "command": "leointeg.deleteMarkedNodes",
@@ -1214,6 +1219,16 @@
         "command": "leointeg.moveMarkedNodes",
         "category": "Leo",
         "title": "Move Marked Nodes"
+      },
+      {
+        "command": "leointeg.cloneFindMarked",
+        "category": "Leo",
+        "title": "Clone Find Marked"
+      },
+      {
+        "command": "leointeg.cloneFindFlattenedMarked",
+        "category": "Leo",
+        "title": "cffm - Clone Find Flattened Marked"
       }
     ],
     "viewsWelcome": [
@@ -2452,6 +2467,38 @@
         "command": "leointeg.expandAndGoRight",
         "key": "alt+right",
         "when": "leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.startSearch",
+        "key": "ctrl+f",
+        "mac": "cmd+f",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.startSearch",
+        "key": "ctrl+f",
+        "mac": "cmd+f",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.findNext",
+        "key": "f3",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.findNext",
+        "key": "f3",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.findPrevious",
+        "key": "f2",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.findPrevious",
+        "key": "f2",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
       }
     ],
     "resourceLabelFormatters": [

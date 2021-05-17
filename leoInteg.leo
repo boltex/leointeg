@@ -232,7 +232,8 @@
 <v t="ekr.20200815123601.24"><vh>Goto Nodes</vh></v>
 <v t="ekr.20200815123601.25"><vh>Hoist/Dehoist</vh></v>
 <v t="ekr.20200815123601.26"><vh>Undo/Redo</vh></v>
-<v t="ekr.20200815123601.27"><vh>TODO</vh></v>
+<v t="felix.20210517001143.1"><vh>Search</vh></v>
+<v t="felix.20210517001459.1"><vh>Mark Nodes</vh></v>
 </v>
 <v t="ekr.20200815123601.28"><vh>viewsWelcome</vh>
 <v t="ekr.20200815123601.29"><vh>Leo Integration Panel</vh>
@@ -299,6 +300,7 @@
 </v>
 <v t="ekr.20200815123601.87"><vh>Outline Editing</vh></v>
 <v t="ekr.20200815123601.88"><vh>Goto Nodes</vh></v>
+<v t="felix.20210517004335.1"><vh>Search</vh></v>
 </v>
 <v t="ekr.20200815123601.89"><vh>resourceLabelFormatters</vh></v>
 </v>
@@ -514,6 +516,9 @@
 <v t="felix.20200719025231.54"><vh>changeMark</vh></v>
 <v t="felix.20200719025231.55"><vh>editHeadline</vh></v>
 <v t="felix.20200719025231.56"><vh>insertNode</vh></v>
+<v t="felix.20210516233931.1"><vh>startSearch</vh></v>
+<v t="felix.20210516234059.1"><vh>findNext</vh></v>
+<v t="felix.20210516234104.1"><vh>findPrevious</vh></v>
 <v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
@@ -1986,6 +1991,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 })],
 
 // TODO : @boltex More commands for issue #24
+[CMD.START_SEARCH, () =&gt; w_leo.startSearch()],
+[CMD.FIND_NEXT, () =&gt; w_leo.findNext()],
+[CMD.FIND_PREVIOUS, () =&gt; w_leo.findPrevious()],
+
 // [CMD.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
 // [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
 // [CMD.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
@@ -2591,44 +2600,6 @@ print('done')
   "title": "Edit Headline"
 },
 {
-  "command": "leointeg.mark",
-  "category": "Leo",
-  "title": "Mark",
-  "icon": {
-    "light": "resources/light/mark.svg",
-    "dark": "resources/dark/mark.svg"
-  }
-},
-{
-  "command": "leointeg.markSelection",
-  "category": "Leo",
-  "title": "Mark"
-},
-{
-  "command": "leointeg.markSelectionFromOutline",
-  "category": "Leo",
-  "title": "Mark"
-},
-{
-  "command": "leointeg.unmark",
-  "category": "Leo",
-  "title": "Unmark",
-  "icon": {
-    "light": "resources/light/unmark.svg",
-    "dark": "resources/dark/unmark.svg"
-  }
-},
-{
-  "command": "leointeg.unmarkSelection",
-  "category": "Leo",
-  "title": "Unmark"
-},
-{
-  "command": "leointeg.unmarkSelectionFromOutline",
-  "category": "Leo",
-  "title": "Unmark"
-},
-{
   "command": "leointeg.copyNode",
   "category": "Leo",
   "title": "Copy Node",
@@ -2930,6 +2901,26 @@ print('done')
   "category": "Leo",
   "title": "Expand And Go Right"
 },
+{
+  "command": "leointeg.gotoNextMarked",
+  "category": "Leo",
+  "title": "Goto Next Marked"
+},
+{
+  "command": "leointeg.gotoNextClone",
+  "category": "Leo",
+  "title": "Goto Next Clone"
+},
+{
+  "command": "leointeg.gotoNextCloneSelection",
+  "category": "Leo",
+  "title": "Goto Next Clone"
+},
+{
+  "command": "leointeg.gotoNextCloneSelectionFromOutline",
+  "category": "Leo",
+  "title": "Goto Next Clone"
+},
 </t>
 <t tx="ekr.20200815123601.25">{
   "command": "leointeg.hoistNode",
@@ -3001,87 +2992,6 @@ print('done')
     "dark": "resources/dark/redo.svg"
   }
 },
-</t>
-<t tx="ekr.20200815123601.27">{
-  "command": "leointeg.cloneFindAll",
-  "category": "Leo",
-  "title": "Clone Find All"
-},
-{
-  "command": "leointeg.cloneFindAllFlattened",
-  "category": "Leo",
-  "title": "Clone Find All Flattened"
-},
-{
-  "command": "leointeg.cloneFindMarked",
-  "category": "Leo",
-  "title": "Clone Find Marked"
-},
-{
-  "command": "leointeg.cloneFindFlattenedMarked",
-  "category": "Leo",
-  "title": "cffm - Clone Find Flattened Marked"
-},
-{
-  "command": "leointeg.copyMarked",
-  "category": "Leo",
-  "title": "Copy Marked"
-},
-{
-  "command": "leointeg.diffMarkedNodes",
-  "category": "Leo",
-  "title": "Diff Marked Nodes"
-},
-{
-  "command": "leointeg.gotoNextMarked",
-  "category": "Leo",
-  "title": "Goto Next Marked"
-},
-{
-  "command": "leointeg.gotoNextClone",
-  "category": "Leo",
-  "title": "Goto Next Clone"
-},
-{
-  "command": "leointeg.gotoNextCloneSelection",
-  "category": "Leo",
-  "title": "Goto Next Clone"
-},
-{
-  "command": "leointeg.gotoNextCloneSelectionFromOutline",
-  "category": "Leo",
-  "title": "Goto Next Clone"
-},
-{
-  "command": "leointeg.markChangedItems",
-  "category": "Leo",
-  "title": "Mark Changed Items"
-},
-{
-  "command": "leointeg.markSubheads",
-  "category": "Leo",
-  "title": "Mark Subheads"
-},
-{
-  "command": "leointeg.unmarkAll",
-  "category": "Leo",
-  "title": "Unmark All"
-},
-{
-  "command": "leointeg.cloneMarkedNodes",
-  "category": "Leo",
-  "title": "Clone Marked Nodes"
-},
-{
-  "command": "leointeg.deleteMarkedNodes",
-  "category": "Leo",
-  "title": "Delete Marked Nodes"
-},
-{
-  "command": "leointeg.moveMarkedNodes",
-  "category": "Leo",
-  "title": "Move Marked Nodes"
-}
 </t>
 <t tx="ekr.20200815123601.28">"viewsWelcome": [
   @others
@@ -4318,7 +4228,7 @@ print('done')
   "command": "leointeg.expandAndGoRight",
   "key": "alt+right",
   "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-}
+},
 </t>
 <t tx="ekr.20200815123601.89">"resourceLabelFormatters": [
   {
@@ -5582,12 +5492,15 @@ public static LEOBRIDGE = {
     CLONE_MARKED_NODES: "cloneMarked", // * Direct Leo Command
     DELETE_MARKED_NODES: "deleteMarked", // * Direct Leo Command
     MOVE_MARKED_NODES: "moveMarked", // * Direct Leo Command
-    // TODO : @boltex More commands to implement #24
     GIT_DIFF: "gitDiff", // * Direct Leo Command
-    CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
-    CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
-    CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex
-    CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // #24 @boltex
+    // TODO : @boltex More commands to implement #24
+    START_SEARCH: "!start_search",
+    FIND_NEXT: "!find_next",
+    FIND_PREVIOUS: "!find_previous",
+    CLONE_FIND_ALL: "!clone_find_all",
+    CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
+    CLONE_FIND_MARKED: "cloneFindMarked", // * Direct Leo Command
+    CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // * Direct Leo Command
 };
 
 </t>
@@ -5715,6 +5628,9 @@ public static COMMANDS = {
     DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
     MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes",
     // * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - not implemented yet #24
+    START_SEARCH: ".startSearch",
+    FIND_NEXT: ".findNext",
+    FIND_PREVIOUS: ".findPrevious",
     CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
     CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
     CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
@@ -6360,7 +6276,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
 
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        // ["leointeg.test", () =&gt; w_leo.test()], // Test function useful when debugging
+        ["leointeg.test", () =&gt; w_leo.test()], // Test function useful when debugging
         // ["leointeg.testFromOutline", () =&gt; w_leo.test(true)], // Test function useful when debugging.
 
         &lt;&lt; Define entries for all commands &gt;&gt;
@@ -7455,7 +7371,7 @@ public get description(): string {
         return "\u{1F4CE} (" + Object.keys(this.u).length + ")";
     } else {
         // return "id:" + this.id; // ! debug test
-        // return "gnx:" + this.gnx; // ! debug test
+        return "gnx:" + this.gnx; // ! debug test
         return ""; // Falsy will not be shown
     }
 }
@@ -12034,6 +11950,8 @@ private _bodySaveSelection(): Promise&lt;boolean&gt; {
             }
 
         };
+        console.log("set scroll: " + w_scroll + " starHeM't:" + this._selection.start.line);
+
         this._scrollDirty = false;
         this._selectionDirty = false; // don't wait for return of this call
         return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param))
@@ -12353,7 +12271,7 @@ def tag_configure(self, colorName, **keys): pass
 
         # get selection from wrapper instead if its the selected node
         if self.commander.p.v.gnx == w_p.v.gnx:
-            # print("in GBS -&gt; SAME AS self.commander.p SO USING FROM WRAPPER")
+            print("in GBS -&gt; SAME AS self.commander.p SO USING FROM WRAPPER")
             w_active = w_wrapper.getInsertPoint()
             w_start, w_end = w_wrapper.getSelectionRange(True)
             w_scroll = w_wrapper.getYScrollPosition()
@@ -12365,6 +12283,7 @@ def tag_configure(self, colorName, **keys): pass
             w_endI, w_endRow, w_endCol = c.frame.body.wrapper.toPythonIndexRowCol(
                 w_end)
         else:
+            print("NOT SAME AS self.commander.p SO USING FROM w_p.v")
             w_activeI, w_startI, w_endI = w_active, w_start, w_end
             w_activeRow, w_activeCol = g.convertPythonIndexToRowCol(
                 w_p.v.b, w_active)
@@ -12403,13 +12322,13 @@ def tag_configure(self, colorName, **keys): pass
     w_body = ""
     w_v = None
     if self.commander.p.v.gnx == w_gnx:
-        # print('Set Selection! OK SAME GNX: ' + self.commander.p.v.gnx)
+        print('Set Selection! OK SAME GNX: ' + self.commander.p.v.gnx)
         w_same = True
         w_v = self.commander.p.v
     else:
         # ? When navigating rapidly - Check if this is a bug - how to improve
-        # print('Set Selection! NOT SAME GNX: selected:' +
-        #       self.commander.p.v.gnx + ', package:' + w_gnx)
+        print('Set Selection! NOT SAME GNX: selected:' +
+              self.commander.p.v.gnx + ', package:' + w_gnx)
         w_v = self.commander.fileCommands.gnxDict.get(w_gnx)
 
     if not w_v:
@@ -12439,10 +12358,11 @@ def tag_configure(self, colorName, **keys): pass
         w_endSel = f_convert(
             w_body, w_end['line'], w_end['col'])
 
-    # print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
-    #       " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
+    print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
+          " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
 
     # If it's the currently selected node set the wrapper's states too
+
     if w_same:
         w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
         w_wrapper.setYScrollPosition(w_scroll)
@@ -13066,7 +12986,7 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
                     );
                 }
 
-                console.log('got scroll', w_leoBodySel.scroll);
+                console.log('id: ' + p_result.id + ' - got scroll: ', w_leoBodySel.scroll);
 
                 let w_scrollRange: vscode.Range | undefined;
 
@@ -13123,11 +13043,11 @@ private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
                     if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath &amp;&amp;
                         w_documentGnx === w_leoBodySel.gnx
                     ) {
-                        p_textEditor.selection = w_selection; // set cursor insertion point &amp; selection range
+                        // p_textEditor.selection = w_selection; // set cursor insertion point &amp; selection range
                         if (!w_scrollRange) {
                             w_scrollRange = p_textEditor.document.lineAt(0).range;
                         }
-                        p_textEditor.revealRange(w_scrollRange); // set
+                        // p_textEditor.revealRange(w_scrollRange); // set
                     }
                 });
 
@@ -15586,5 +15506,168 @@ def _dump_position(self, p):  # pragma: no cover
             raise ServerError(f"{tag}: round-trip failed: ap: {ap!r}, p: {p!r}, p2: {p2!r}")
 </t>
 <t tx="felix.20210516004048.9"></t>
+<t tx="felix.20210516233931.1">public startSearch(): void {
+    vscode.window.showInformationMessage("startSearch command");
+}
+
+</t>
+<t tx="felix.20210516234059.1">public findNext(): void {
+    vscode.window.showInformationMessage("findNext command");
+}
+
+</t>
+<t tx="felix.20210516234104.1">public findPrevious(): void {
+    vscode.window.showInformationMessage("findPrevious command");
+}
+
+</t>
+<t tx="felix.20210517001143.1">{
+  "command": "leointeg.startSearch",
+  "category": "Leo",
+  "title": "Start Search"
+},
+{
+  "command": "leointeg.findNext",
+  "category": "Leo",
+  "title": "Find Next"
+},
+{
+  "command": "leointeg.findPrevious",
+  "category": "Leo",
+  "title": "Find Previous"
+},
+{
+  "command": "leointeg.cloneFindAll",
+  "category": "Leo",
+  "title": "Clone Find All"
+},
+{
+  "command": "leointeg.cloneFindAllFlattened",
+  "category": "Leo",
+  "title": "Clone Find All Flattened"
+},
+</t>
+<t tx="felix.20210517001459.1">{
+  "command": "leointeg.mark",
+  "category": "Leo",
+  "title": "Mark",
+  "icon": {
+    "light": "resources/light/mark.svg",
+    "dark": "resources/dark/mark.svg"
+  }
+},
+{
+  "command": "leointeg.markSelection",
+  "category": "Leo",
+  "title": "Mark"
+},
+{
+  "command": "leointeg.markSelectionFromOutline",
+  "category": "Leo",
+  "title": "Mark"
+},
+{
+  "command": "leointeg.unmark",
+  "category": "Leo",
+  "title": "Unmark",
+  "icon": {
+    "light": "resources/light/unmark.svg",
+    "dark": "resources/dark/unmark.svg"
+  }
+},
+{
+  "command": "leointeg.unmarkSelection",
+  "category": "Leo",
+  "title": "Unmark"
+},
+{
+  "command": "leointeg.unmarkSelectionFromOutline",
+  "category": "Leo",
+  "title": "Unmark"
+},
+{
+  "command": "leointeg.unmarkAll",
+  "category": "Leo",
+  "title": "Unmark All"
+},
+{
+  "command": "leointeg.markSubheads",
+  "category": "Leo",
+  "title": "Mark Subheads"
+},
+{
+  "command": "leointeg.markChangedItems",
+  "category": "Leo",
+  "title": "Mark Changed Items"
+},
+{
+  "command": "leointeg.copyMarked",
+  "category": "Leo",
+  "title": "Copy Marked"
+},
+{
+  "command": "leointeg.cloneMarkedNodes",
+  "category": "Leo",
+  "title": "Clone Marked Nodes"
+},
+{
+  "command": "leointeg.diffMarkedNodes",
+  "category": "Leo",
+  "title": "Diff Marked Nodes"
+},
+{
+  "command": "leointeg.deleteMarkedNodes",
+  "category": "Leo",
+  "title": "Delete Marked Nodes"
+},
+{
+  "command": "leointeg.moveMarkedNodes",
+  "category": "Leo",
+  "title": "Move Marked Nodes"
+},
+{
+  "command": "leointeg.cloneFindMarked",
+  "category": "Leo",
+  "title": "Clone Find Marked"
+},
+{
+  "command": "leointeg.cloneFindFlattenedMarked",
+  "category": "Leo",
+  "title": "cffm - Clone Find Flattened Marked"
+}
+</t>
+<t tx="felix.20210517004335.1">{
+  "command": "leointeg.startSearch",
+  "key": "ctrl+f",
+  "mac": "cmd+f",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.startSearch",
+  "key": "ctrl+f",
+  "mac": "cmd+f",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.findNext",
+  "key": "f3",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.findNext",
+  "key": "f3",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.findPrevious",
+  "key": "f2",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.findPrevious",
+  "key": "f2",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+}
+</t>
 </tnodes>
 </leo_file>

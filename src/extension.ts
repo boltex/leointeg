@@ -49,7 +49,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_commands: [string, (...args: any[]) => any][] = [
 
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        // ["leointeg.test", () => w_leo.test()], // Test function useful when debugging
+        ["leointeg.test", () => w_leo.test()], // Test function useful when debugging
         // ["leointeg.testFromOutline", () => w_leo.test(true)], // Test function useful when debugging.
 
         // * Define entries for all commands
@@ -604,6 +604,10 @@ export function activate(p_context: vscode.ExtensionContext) {
         })],
 
         // TODO : @boltex More commands for issue #24
+        [CMD.START_SEARCH, () => w_leo.startSearch()],
+        [CMD.FIND_NEXT, () => w_leo.findNext()],
+        [CMD.FIND_PREVIOUS, () => w_leo.findPrevious()],
+
         // [CMD.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
         // [CMD.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
         // [CMD.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],
