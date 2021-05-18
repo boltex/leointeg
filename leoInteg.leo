@@ -5414,7 +5414,7 @@ public static ASYNC_ASK_RETURN_CODES = {
  * * Commands for leobridgeserver.py
  */
 public static LEOBRIDGE = {
-    TEST: "test",
+    TEST: "!test",
     // * Server Commands
     GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
     APPLY_CONFIG: "!set_config", // "applyConfig",
@@ -5458,13 +5458,13 @@ public static LEOBRIDGE = {
     CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent", // * Direct Leo Command
     EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild", // * Direct Leo Command
     // * Leo Operations
-    MARK_PNODE: "mark_node", // "markPNode",
-    UNMARK_PNODE: "unmark_node", // "unmarkPNode",
+    MARK_PNODE: "!mark_node", // "markPNode",
+    UNMARK_PNODE: "!unmark_node", // "unmarkPNode",
     COPY_PNODE: "copyOutline", // * Direct Leo Command
-    CUT_PNODE: "cut_node", // "cutPNode",
+    CUT_PNODE: "!cut_node", // "cutPNode",
     PASTE_PNODE: "pasteOutline", // * Direct Leo Command
     PASTE_CLONE_PNODE: "pasteOutlineRetainingClones", // * Direct Leo Command
-    DELETE_PNODE: "delete_node", // "deletePNode",
+    DELETE_PNODE: "!delete_node", // "deletePNode",
     MOVE_PNODE_DOWN: "moveOutlineDown", // * Direct Leo Command
     MOVE_PNODE_LEFT: "moveOutlineLeft", // * Direct Leo Command
     MOVE_PNODE_RIGHT: "moveOutlineRight", // * Direct Leo Command
