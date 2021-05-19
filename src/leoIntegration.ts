@@ -1452,9 +1452,24 @@ export class LeoIntegration {
             this._bodyTextDocument = p_document;
 
             // * Set document language along with the proper cursor position, selection range and scrolling position
+            const q_bodyStates: Promise<LeoBridgePackage> = this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode!.apJson);
 
-            
-            this._setLanguageAndSelection(this._bodyTextDocument);
+            q_bodyStates.then(
+                (p_result: LeoBridgePackage) => {
+                    let w_language: string = p_result.language!;
+                    // Replace language string if in 'exceptions' array
+                    w_language = "leobody." + (Constants.LANGUAGE_CODES[w_language] || w_language);
+                    // Apply language if the selected node is still the same after all those events
+                    if (
+                        !p_document.isClosed && this.lastSelectedNode &&
+                        utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
+                    ) {
+                        vscode.languages.setTextDocumentLanguage(p_document, w_language);
+                    }
+                }
+            );
+
+            // this._setLanguageAndSelection(this._bodyTextDocument); // ! REPLACE THIS
 
             // Find body pane's position if already opened
             vscode.window.visibleTextEditors.forEach(p_textEditor => {
@@ -1478,48 +1493,23 @@ export class LeoIntegration {
                 };
 
             // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
-            return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor => {
-                if(this._bodyTextDocument){
-                    this._setSelection(this._bodyTextDocument);
-                }
+            const q_showTextDocument = vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions);
 
-                // TODO : #38 if position is in an derived file node show relative position
-                // w_bodyEditor.options.lineNumbers = OFFSET;
-                return Promise.resolve(w_bodyEditor);
-            });
+            Promise.all([q_bodyStates, q_showTextDocument])
+                .then((p_values: [LeoBridgePackage, vscode.TextEditor]) => {
+                    const w_resultBodyStates = p_values[0];
+                    const w_bodyTextEditor = p_values[1];
+                    const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
 
-            // TODO : setlanguage sould be preceded by 'getBodyStates' and its promise should be waited along with showTextDocument
-            // TODO : to set sclections range, insert spot, and scroll position... but language can be done first right away with document. 
-            // TODO : as it does not require the textEditor, juste the document
+                    console.log("got states for same gnx", w_leoBodySel.gnx === this.lastSelectedNode!.gnx);
+                    // if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
+                    //     console.error(
+                    //         'GOT STATES FOR DIFFERENT GNX: ' + w_leoBodySel.gnx +
+                    //         ", last sel node is now: " + this.lastSelectedNode!.gnx
+                    //     );
+                    // }
 
-        });
-    }
-
-    /**
-     * Fetch language, cursor position and text selection for the current selected tree node,
-     * then apply it to the text document given as parameter when the fetch resolves,
-     * but only if it's still the same gnx/node as the currently selected node.
-     * @param p_document text document opened for which the language and cursor has to be set
-     */
-    private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
-        if (this.lastSelectedNode) {
-            // this.lastSelectedNode MAY NOT BE VALID
-            console.log('starting setlanguage and selection for ', p_document.uri.fsPath + " _");
-
-            this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
-                .then((p_result: LeoBridgePackage) => {
-
-                    let w_language: string = p_result.language!;
-                    const w_leoBodySel: BodySelectionInfo = p_result.selection!;
-
-                    if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
-                        console.error(
-                            'GOT STATES FOR DIFFERENT GNX: ' + w_leoBodySel.gnx +
-                            ", last sel node is now: " + this.lastSelectedNode!.gnx
-                        );
-                    }
-
-                    console.log('id: ' + p_result.id + ' - got scroll: ', w_leoBodySel.scroll);
+                    console.log('id: ' + w_resultBodyStates.id + ' - got scroll: ', w_leoBodySel.scroll);
 
                     let w_scrollRange: vscode.Range | undefined;
 
@@ -1549,7 +1539,6 @@ export class LeoIntegration {
                     // }
 
                     // Cursor position and selection range
-
                     const w_activeRow: number = w_leoBodySel.insert.line;
                     const w_activeCol: number = w_leoBodySel.insert.col;
                     let w_anchorLine: number = w_leoBodySel.start.line;
@@ -1569,48 +1558,15 @@ export class LeoIntegration {
                         w_activeCol
                     );
 
-                    const w_documentGnx = utils.leoUriToStr(p_document.uri);
-
-
-                    console.log(' looking for: ', p_document.uri.fsPath);
-
-                    // if any editors now have gnx match of the selections that was just fetched
-                    vscode.window.visibleTextEditors.forEach(p_textEditor => {
-                        console.log('p_textEditor fspath:  ', p_textEditor.document.uri.fsPath);
-
-                        if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath &&
-                            w_documentGnx === w_leoBodySel.gnx
-                        ) {
-                            console.log('found');
-                            // p_textEditor.selection = w_selection; // set cursor insertion point & selection range
-                            if (!w_scrollRange) {
-                                w_scrollRange = p_textEditor.document.lineAt(0).range;
-                            }
-                            // p_textEditor.revealRange(w_scrollRange); // set
-                        }
-                    });
-
-                    // Replace language string if in 'exceptions' array
-                    w_language = "leobody." + (Constants.LANGUAGE_CODES[w_language] || w_language);
-
-                    // Apply language if the selected node is still the same after all those events
-                    if (
-                        !p_document.isClosed && this.lastSelectedNode &&
-                        w_documentGnx === this.lastSelectedNode.gnx
-                    ) {
-                        console.log('setting language:', w_language);
-
-                        vscode.languages.setTextDocumentLanguage(p_document, w_language);
+                    w_bodyTextEditor.selection = w_selection; // set cursor insertion point & selection range
+                    if (!w_scrollRange) {
+                        w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
                     }
+                    w_bodyTextEditor.revealRange(w_scrollRange); // set
                 });
-        }
-    }
 
-    /**
-     * set cursor selection range, insertion splot and scroll position
-     */
-    private _setSelection(p_document: vscode.TextDocument): void {
-        // fill me
+            return q_showTextDocument;
+        });
     }
 
     /**
