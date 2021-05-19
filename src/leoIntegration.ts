@@ -661,7 +661,7 @@ export class LeoIntegration {
      * @param p_event The opened document event passed by vscode
      */
     private _onDidOpenTextDocument(p_document: vscode.TextDocument): void {
-        if (this.leoStates.leoBridgeReady && p_document.uri.scheme === Constants.URI_FILE_SCHEME && p_document.uri.fsPath.toLowerCase().endsWith(".leo")) {
+        if (this.leoStates.leoBridgeReady && p_document.uri.scheme === Constants.URI_LEO_SCHEME && p_document.uri.fsPath.toLowerCase().endsWith(".leo")) {
             if (!this._hasShownContextOpenMessage) {
                 vscode.window.showInformationMessage(Constants.USER_MESSAGES.RIGHT_CLICK_TO_OPEN);
                 this._hasShownContextOpenMessage = true;
@@ -1493,6 +1493,8 @@ export class LeoIntegration {
     private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
         if (this.lastSelectedNode) {
             // this.lastSelectedNode MAY NOT BE VALID
+            console.log('starting setlanguage and selection for ', p_document.uri.fsPath + " _");
+
             this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
                 .then((p_result: LeoBridgePackage) => {
 
@@ -1558,11 +1560,17 @@ export class LeoIntegration {
 
                     const w_documentGnx = utils.leoUriToStr(p_document.uri);
 
+
+                    console.log(' looking for: ', p_document.uri.fsPath);
+
                     // if any editors now have gnx match of the selections that was just fetched
                     vscode.window.visibleTextEditors.forEach(p_textEditor => {
+                        console.log('p_textEditor fspath:  ', p_textEditor.document.uri.fsPath);
+
                         if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath &&
                             w_documentGnx === w_leoBodySel.gnx
                         ) {
+                            console.log('found');
                             // p_textEditor.selection = w_selection; // set cursor insertion point & selection range
                             if (!w_scrollRange) {
                                 w_scrollRange = p_textEditor.document.lineAt(0).range;
@@ -1579,6 +1587,8 @@ export class LeoIntegration {
                         !p_document.isClosed && this.lastSelectedNode &&
                         w_documentGnx === this.lastSelectedNode.gnx
                     ) {
+                        console.log('setting language:', w_language);
+
                         vscode.languages.setTextDocumentLanguage(p_document, w_language);
                     }
                 });
@@ -2146,27 +2156,54 @@ export class LeoIntegration {
         console.log('initial test call');
 
 
-        vscode.commands.executeCommand(Constants.COMMANDS.MARK_SELECTION)
-            .then((p_result) => {
-                console.log(
-                    'BACK FROM EXEC COMMAND ' +
-                    Constants.COMMANDS.MARK_SELECTION +
-                    ', p_result: ',
-                    JSON.stringify(p_result)
-                );
+        // vscode.commands.executeCommand(Constants.COMMANDS.MARK_SELECTION)
+        //     .then((p_result) => {
+        //         console.log(
+        //             'BACK FROM EXEC COMMAND ' +
+        //             Constants.COMMANDS.MARK_SELECTION +
+        //             ', p_result: ',
+        //             JSON.stringify(p_result)
+        //         );
 
+        //     });
+
+        // Test setting scroll / selection range
+        vscode.window.showQuickPick(["1-1 1-6", "2-2 3-3"]).then(p_results => {
+            console.log('quick pick result:', p_results);
+            let w_selection: vscode.Selection;
+            if (p_results === "1-1 1-6") {
+                w_selection = new vscode.Selection(1, 1, 1, 6);
+            } else {
+                w_selection = new vscode.Selection(2, 2, 3, 3);
+            }
+
+            vscode.window.visibleTextEditors.forEach(p_textEditor => {
+                console.log('p_textEditor.document.uri.scheme ', p_textEditor.document.uri.scheme);
+
+                if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+                    console.log('found');
+
+                    p_textEditor.selection = w_selection; // set cursor insertion point & selection range
+                    // if (!w_scrollRange) {
+                    //     w_scrollRange = p_textEditor.document.lineAt(0).range;
+                    // }
+                    // p_textEditor.revealRange(w_scrollRange); // set
+                }
             });
 
+        });
 
-        return this.sendAction(Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" }))
-            .then((p_result: LeoBridgePackage) => {
+        return this.sendAction(
+            Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+        ).then((p_result: LeoBridgePackage) => {
+
                 // this.launchRefresh({ buttons: true }, false);
-                return vscode.window.showInformationMessage(
-                    ' back from test, called from ' +
-                    (p_fromOutline ? "outline" : "body") +
-                    ', with result: ' +
-                    JSON.stringify(p_result)
-                );
+                // return vscode.window.showInformationMessage(
+                //     ' back from test, called from ' +
+                //     (p_fromOutline ? "outline" : "body") +
+                //     ', with result: ' +
+                //     JSON.stringify(p_result)
+                // );
             });
     }
 
