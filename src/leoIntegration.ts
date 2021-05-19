@@ -1452,6 +1452,8 @@ export class LeoIntegration {
             this._bodyTextDocument = p_document;
 
             // * Set document language along with the proper cursor position, selection range and scrolling position
+
+            
             this._setLanguageAndSelection(this._bodyTextDocument);
 
             // Find body pane's position if already opened
@@ -1477,10 +1479,19 @@ export class LeoIntegration {
 
             // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
             return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor => {
+                if(this._bodyTextDocument){
+                    this._setSelection(this._bodyTextDocument);
+                }
+
                 // TODO : #38 if position is in an derived file node show relative position
                 // w_bodyEditor.options.lineNumbers = OFFSET;
                 return Promise.resolve(w_bodyEditor);
             });
+
+            // TODO : setlanguage sould be preceded by 'getBodyStates' and its promise should be waited along with showTextDocument
+            // TODO : to set sclections range, insert spot, and scroll position... but language can be done first right away with document. 
+            // TODO : as it does not require the textEditor, juste the document
+
         });
     }
 
@@ -1593,6 +1604,13 @@ export class LeoIntegration {
                     }
                 });
         }
+    }
+
+    /**
+     * set cursor selection range, insertion splot and scroll position
+     */
+    private _setSelection(p_document: vscode.TextDocument): void {
+        // fill me
     }
 
     /**
