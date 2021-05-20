@@ -1284,12 +1284,12 @@
       },
       {
         "view": "leoDocuments",
-        "contents": "LeoInteg is not connected",
+        "contents": "Not connected",
         "when": "!leoBridgeReady"
       },
       {
         "view": "leoDocumentsExplorer",
-        "contents": "LeoInteg is not connected",
+        "contents": "Not connected",
         "when": "!leoBridgeReady"
       },
       {
@@ -1304,12 +1304,12 @@
       },
       {
         "view": "leoButtons",
-        "contents": "LeoInteg is not connected",
+        "contents": "Not connected",
         "when": "!leoBridgeReady"
       },
       {
         "view": "leoButtonsExplorer",
-        "contents": "LeoInteg is not connected",
+        "contents": "Not connected",
         "when": "!leoBridgeReady"
       },
       {

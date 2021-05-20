@@ -522,9 +522,9 @@ export class Constants {
         DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
         MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes",
         // * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - not implemented yet #24
-        START_SEARCH: ".startSearch",
-        FIND_NEXT: ".findNext",
-        FIND_PREVIOUS: ".findPrevious",
+        START_SEARCH: Constants.NAME + ".startSearch",
+        FIND_NEXT: Constants.NAME + ".findNext",
+        FIND_PREVIOUS: Constants.NAME + ".findPrevious",
         CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
         CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
         CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",

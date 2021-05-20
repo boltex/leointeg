@@ -880,10 +880,8 @@ export class LeoIntegration {
         // * Save body to Leo if a change has been made to the body 'document' so far
         if (this._bodyLastChangedDocument && this._bodyLastChangedDocument.isDirty) {
             const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
-            this._bodyLastChangedDocument = undefined; // reset to make falsy
             return this._bodySaveDocument(w_document, p_forcedVsCodeSave);
         } else {
-            this._bodyLastChangedDocument = undefined;
             return this._bodySaveSelection();
         }
     }
@@ -1108,10 +1106,13 @@ export class LeoIntegration {
             this._fromOutline = false;
             w_revealType = RevealType.RevealSelect;
         }
-        if (this._refreshType.body &&
+        if (p_ap && this._refreshType.body &&
             this._bodyLastChangedDocument && this._bodyLastChangedDocument.isDirty) {
             // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
-            this._bodyLastChangedDocument.save(); // Voluntarily save to 'clean' any pending body
+            // do this only if gnx is different from what is coming from Leo in this refresh cycle
+            if (p_ap.gnx !== utils.leoUriToStr(this._bodyLastChangedDocument.uri)) {
+                this._bodyLastChangedDocument.save(); // Voluntarily save to 'clean' any pending body
+            }
         }
         // * _focusInterrupt insertNode Override
         if (this._focusInterrupt) {
@@ -1471,7 +1472,7 @@ export class LeoIntegration {
 
             // this._setLanguageAndSelection(this._bodyTextDocument); // ! REPLACE THIS
 
-            // Find body pane's position if already opened
+            // Find body pane's position if already opened with same gnx (language still needs to be set per position)
             vscode.window.visibleTextEditors.forEach(p_textEditor => {
                 if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
                     this._bodyMainSelectionColumn = p_textEditor.viewColumn;
@@ -1502,12 +1503,6 @@ export class LeoIntegration {
                     const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
 
                     console.log("got states for same gnx", w_leoBodySel.gnx === this.lastSelectedNode!.gnx);
-                    // if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
-                    //     console.error(
-                    //         'GOT STATES FOR DIFFERENT GNX: ' + w_leoBodySel.gnx +
-                    //         ", last sel node is now: " + this.lastSelectedNode!.gnx
-                    //     );
-                    // }
 
                     console.log('id: ' + w_resultBodyStates.id + ' - got scroll: ', w_leoBodySel.scroll);
 
@@ -1523,20 +1518,6 @@ export class LeoIntegration {
                             0
                         );
                     }
-
-                    // if (w_scroll && w_scroll.start && w_scroll.end &&
-                    //     (w_scroll.start.line ||
-                    //         w_scroll.start.col ||
-                    //         w_scroll.end.line ||
-                    //         w_scroll.end.col)
-                    // ) {
-                    //     w_scrollRange = new vscode.Range(
-                    //         w_scroll.start.line,
-                    //         w_scroll.start.col,
-                    //         w_scroll.end.line,
-                    //         w_scroll.end.col,
-                    //     );
-                    // }
 
                     // Cursor position and selection range
                     const w_activeRow: number = w_leoBodySel.insert.line;
@@ -1559,10 +1540,14 @@ export class LeoIntegration {
                     );
 
                     w_bodyTextEditor.selection = w_selection; // set cursor insertion point & selection range
+
                     if (!w_scrollRange) {
                         w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
                     }
-                    w_bodyTextEditor.revealRange(w_scrollRange); // set
+
+                    // TODO : SEE IF NEEDED OR EVEN IF SHOULD BE SET AT w_selection RANGE INSTEAD!
+                    // ? does Leo even ever tries to set scroll away from selection after a search result?
+                    // w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
                 });
 
             return q_showTextDocument;
@@ -1622,7 +1607,9 @@ export class LeoIntegration {
      * (see command stack 'rules' in commandStack.ts)
      */
     public nodeCommand(p_userCommand: UserCommand): Promise<LeoBridgePackage> | undefined {
-        this.triggerBodySave(); // No forced vscode save-triggers for direct calls from extension.js
+        // No forced vscode save-triggers for direct calls from extension.js
+        // unless body refresh is required
+        this.triggerBodySave(p_userCommand.refreshType.body);
         const q_result = this._commandStack.add(p_userCommand);
         if (q_result) {
             return q_result;
