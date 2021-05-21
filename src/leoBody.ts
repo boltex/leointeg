@@ -12,6 +12,9 @@ import { BodyTimeInfo } from "./types";
  */
 export class LeoBodyProvider implements vscode.FileSystemProvider {
 
+    // * Flag normally false
+    public preventSaveToLeo: boolean = false;
+
     // * Simple structure to keep mtime of selected and renamed body virtual files
     private _selectedBody: string = "";
 
@@ -213,13 +216,22 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
         // console.log('trigger called in writeFile');
 
-        this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
+        if (!this.preventSaveToLeo) {
+            this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
+        } else {
+            console.log('PREVENTED SAVE BODY TO LEO');
+
+            this.preventSaveToLeo = false;
+        }
+
+
         const w_gnx = utils.leoUriToStr(p_uri);
 
         if (!this._openedBodiesGnx.includes(w_gnx)) {
-            console.error("ASKED TO REFRESH NOT EVEN IN SELECTED BODY: ", w_gnx);
+            console.error("ASKED TO SAVE NOT EVEN IN SELECTED BODY: ", w_gnx);
             this._openedBodiesGnx.push(w_gnx);
         }
+
         const w_now = new Date().getTime();
         this._openedBodiesInfo[w_gnx] = {
             ctime: w_now,

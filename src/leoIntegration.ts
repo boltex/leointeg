@@ -148,6 +148,7 @@ export class LeoIntegration {
     // * Timing
     private _needLastSelectedRefresh = false;
     private _bodyLastChangedDocument: vscode.TextDocument | undefined; // Only set in _onDocumentChanged
+    private _bodyLastChangedDocumentSaved: boolean = true; // don't use 'isDirty' of the document!
 
     // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
     public getStates: (() => void) & {
@@ -849,6 +850,7 @@ export class LeoIntegration {
 
             // * There was an actual change on a Leo Body by the user
             this._bodyLastChangedDocument = p_textDocumentChange.document;
+            this._bodyLastChangedDocumentSaved = false;
             this._bodyPreviewMode = false;
             this._fromOutline = false; // Focus is on body pane
 
@@ -878,10 +880,18 @@ export class LeoIntegration {
      */
     public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise<boolean> {
         // * Save body to Leo if a change has been made to the body 'document' so far
-        if (this._bodyLastChangedDocument && this._bodyLastChangedDocument.isDirty) {
+        if (this._bodyLastChangedDocument &&
+            this._bodyLastChangedDocument.isDirty &&
+            !this._bodyLastChangedDocumentSaved) {
             const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
+            if (p_forcedVsCodeSave) {
+                console.log('FORCED SAVE');
+            }
+            this._bodyLastChangedDocumentSaved = true;
             return this._bodySaveDocument(w_document, p_forcedVsCodeSave);
+
         } else {
+            this._bodyLastChangedDocumentSaved = true;
             return this._bodySaveSelection();
         }
     }
@@ -1107,11 +1117,25 @@ export class LeoIntegration {
             w_revealType = RevealType.RevealSelect;
         }
         if (p_ap && this._refreshType.body &&
-            this._bodyLastChangedDocument && this._bodyLastChangedDocument.isDirty) {
+            this._bodyLastChangedDocument &&
+            this._bodyLastChangedDocument.isDirty
+        ) {
             // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
             // do this only if gnx is different from what is coming from Leo in this refresh cycle
-            if (p_ap.gnx !== utils.leoUriToStr(this._bodyLastChangedDocument.uri)) {
+            if (
+                p_ap.gnx !== utils.leoUriToStr(this._bodyLastChangedDocument.uri) &&
+                !this._bodyLastChangedDocumentSaved
+            ) {
                 this._bodyLastChangedDocument.save(); // Voluntarily save to 'clean' any pending body
+                this._bodyLastChangedDocumentSaved = true;
+            }
+
+            if (p_ap.gnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)) {
+                this._leoFileSystem.preventSaveToLeo = true;
+                this._bodyLastChangedDocument.save();
+                console.log('*************************');
+                console.log('IS SAME GNX AND IS DIRTY!');
+                console.log('*************************');
             }
         }
         // * _focusInterrupt insertNode Override
@@ -1608,8 +1632,7 @@ export class LeoIntegration {
      */
     public nodeCommand(p_userCommand: UserCommand): Promise<LeoBridgePackage> | undefined {
         // No forced vscode save-triggers for direct calls from extension.js
-        // unless body refresh is required
-        this.triggerBodySave(p_userCommand.refreshType.body);
+        this.triggerBodySave();
         const q_result = this._commandStack.add(p_userCommand);
         if (q_result) {
             return q_result;
