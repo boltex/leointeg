@@ -2915,7 +2915,7 @@ def main():
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
     # localLoop.create_task(asyncInterval(5)) # Starts a test loop of async communication
     localLoop.run_until_complete(start_server)
-    print("LeoBridge started at " + wsHost + " on port: " +
+    print("leointeg's LeoBridge server started at " + wsHost + " on port: " +
           str(wsPort) + " [ctrl+c] to break", flush=True)
     localLoop.run_forever()
     print("Stopping leobridge server", flush=True)
