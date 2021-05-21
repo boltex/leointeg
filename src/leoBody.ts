@@ -214,16 +214,12 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
-        // console.log('trigger called in writeFile');
 
         if (!this.preventSaveToLeo) {
             this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
         } else {
-            console.log('PREVENTED SAVE BODY TO LEO');
-
             this.preventSaveToLeo = false;
         }
-
 
         const w_gnx = utils.leoUriToStr(p_uri);
 

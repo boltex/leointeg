@@ -294,7 +294,10 @@ export class LeoIntegration {
             .then((p_message) => {
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                 if (this.config.connectToServerAutomatically) {
-                    this.connect();
+                    setTimeout(() => {
+                        // Wait a full second
+                        this.connect();
+                    }, 1000);
                 } else {
                     this.finishedStartup = true;
                 }
@@ -1133,9 +1136,6 @@ export class LeoIntegration {
             if (p_ap.gnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)) {
                 this._leoFileSystem.preventSaveToLeo = true;
                 this._bodyLastChangedDocument.save();
-                console.log('*************************');
-                console.log('IS SAME GNX AND IS DIRTY!');
-                console.log('*************************');
             }
         }
         // * _focusInterrupt insertNode Override
@@ -1480,8 +1480,8 @@ export class LeoIntegration {
             const q_bodyStates: Promise<LeoBridgePackage> = this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode!.apJson);
 
             q_bodyStates.then(
-                (p_result: LeoBridgePackage) => {
-                    let w_language: string = p_result.language!;
+                (p_bodyStates: LeoBridgePackage) => {
+                    let w_language: string = p_bodyStates.language!;
                     // Replace language string if in 'exceptions' array
                     w_language = "leobody." + (Constants.LANGUAGE_CODES[w_language] || w_language);
                     // Apply language if the selected node is still the same after all those events
@@ -1493,8 +1493,6 @@ export class LeoIntegration {
                     }
                 }
             );
-
-            // this._setLanguageAndSelection(this._bodyTextDocument); // ! REPLACE THIS
 
             // Find body pane's position if already opened with same gnx (language still needs to be set per position)
             vscode.window.visibleTextEditors.forEach(p_textEditor => {

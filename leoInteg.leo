@@ -1192,9 +1192,6 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: A
         if (p_ap.gnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)) {
             this._leoFileSystem.preventSaveToLeo = true;
             this._bodyLastChangedDocument.save();
-            console.log('*************************');
-            console.log('IS SAME GNX AND IS DIRTY!');
-            console.log('*************************');
         }
     }
     // * _focusInterrupt insertNode Override
@@ -6483,16 +6480,12 @@ import { BodyTimeInfo } from "./types";
 
 </t>
 <t tx="felix.20200718040540.14">public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
-    // console.log('trigger called in writeFile');
 
     if (!this.preventSaveToLeo) {
         this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
     } else {
-        console.log('PREVENTED SAVE BODY TO LEO');
-
         this.preventSaveToLeo = false;
     }
-
 
     const w_gnx = utils.leoUriToStr(p_uri);
 
@@ -7400,7 +7393,7 @@ public get description(): string {
         return "\u{1F4CE} (" + Object.keys(this.u).length + ")";
     } else {
         // return "id:" + this.id; // ! debug test
-        return "gnx:" + this.gnx; // ! debug test
+        // return "gnx:" + this.gnx; // ! debug test
         return ""; // Falsy will not be shown
     }
 }
@@ -7728,7 +7721,6 @@ public startServer(p_leoPythonCommand: string, p_leoServerPath: string): Promise
     this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
 
     // If a leo server path is set then use it - otherwise use old script for now
-    // TODO: popup settings to force user to set a "Leo server path" !
     const w_serverScriptPath = p_leoServerPath ? p_leoServerPath : this._context.extensionPath + Constants.SERVER_PATH;
 
     if (p_leoPythonCommand &amp;&amp; p_leoPythonCommand.length) {
@@ -9749,8 +9741,8 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
         const q_bodyStates: Promise&lt;LeoBridgePackage&gt; = this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode!.apJson);
 
         q_bodyStates.then(
-            (p_result: LeoBridgePackage) =&gt; {
-                let w_language: string = p_result.language!;
+            (p_bodyStates: LeoBridgePackage) =&gt; {
+                let w_language: string = p_bodyStates.language!;
                 // Replace language string if in 'exceptions' array
                 w_language = "leobody." + (Constants.LANGUAGE_CODES[w_language] || w_language);
                 // Apply language if the selected node is still the same after all those events
@@ -9762,8 +9754,6 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                 }
             }
         );
-
-        // this._setLanguageAndSelection(this._bodyTextDocument); // ! REPLACE THIS
 
         // Find body pane's position if already opened with same gnx (language still needs to be set per position)
         vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
@@ -10339,7 +10329,10 @@ public startServer(): void {
         .then((p_message) =&gt; {
             utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
             if (this.config.connectToServerAutomatically) {
-                this.connect();
+                setTimeout(() =&gt; {
+                    // Wait a full second
+                    this.connect();
+                }, 1000);
             } else {
                 this.finishedStartup = true;
             }

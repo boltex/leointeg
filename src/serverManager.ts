@@ -86,7 +86,6 @@ export class ServerService {
         this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
 
         // If a leo server path is set then use it - otherwise use old script for now
-        // TODO: popup settings to force user to set a "Leo server path" !
         const w_serverScriptPath = p_leoServerPath ? p_leoServerPath : this._context.extensionPath + Constants.SERVER_PATH;
 
         if (p_leoPythonCommand && p_leoPythonCommand.length) {
