@@ -146,6 +146,10 @@ This occurs when an outline node or a body pane has focus:
 
 Main issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
 
+### Keybindings Conflicts Resolution
+
+If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane, add **`&& resourceScheme != 'leo'`** to the keybinding's "*when*" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
+
 ### Linux Keybindings
 
 If you're experiencing trouble with the keyboard shortcuts for

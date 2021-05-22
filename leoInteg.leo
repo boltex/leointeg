@@ -4710,7 +4710,7 @@ if __name__ == '__main__':
     async def leoBridgeServer(websocket, path):
         try:
             integController.initConnection(websocket)
-            # * Start by sending empty as 'ok'
+            # * Start by sending empty as 'ok'.
             await websocket.send(integController.sendLeoBridgePackage())
             integController.logSignon()
             async for json_string_message in websocket:
@@ -4719,18 +4719,18 @@ if __name__ == '__main__':
                     action = messageObject['action']
                     param = messageObject['param']
                     # printAction(w_param)  # Debug output
-                    # * Storing id of action in global var instead of passing as parameter
+                    # * Storing id of action in global var instead of passing as parameter.
                     integController.setActionId(messageObject['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
-                    # TODO : Block attempts to call functions starting with underscore or reserved
+                    # TODO : Block attempts to call functions starting with underscore or reserved.
                     if action[0] == "!":
                         w_func = getattr(integController, action[1:], None)
                         if not w_func:
                             print(action)
                         w_answer = w_func(param)
                     else:
-                        # Attempt to execute the command directly on the commander/subcommander
+                        # Attempt to execute the command directly on the commander/subcommander.
                         w_answer = integController.leoCommand(
                             action, param)
                 else:
@@ -4750,13 +4750,13 @@ if __name__ == '__main__':
 
     localLoop = asyncio.get_event_loop()
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
-    # localLoop.create_task(asyncInterval(5)) # Starts a test loop of async communication
+    # localLoop.create_task(asyncInterval(5)) # Starts a test loop of async communication.
     localLoop.run_until_complete(start_server)
-    print("leointeg's LeoBridge server started at " + wsHost + " on port: " +
+    # This SERVER_STARTED_TOKEN special string signals server startup success.
+    print(SERVER_STARTED_TOKEN + " at " + wsHost + " on port: " +
           str(wsPort) + " [ctrl+c] to break", flush=True)
     localLoop.run_forever()
     print("Stopping leobridge server", flush=True)
-
 
 </t>
 <t tx="felix.20191128001054.1"></t>
@@ -4775,8 +4775,11 @@ import websockets
 wsHost = "localhost"
 wsPort = 32125
 
+# To help in printout
 commonActions = ["getChildren", "getBody", "getBodyLength"]
 
+# Special string signals server startup success
+SERVER_STARTED_TOKEN = "LeoBridge started"
 
 </t>
 <t tx="felix.20191128003648.1"></t>
@@ -8431,6 +8434,9 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 ## 0.1.14
 
 -   Rewrite of the leobridgeserver.py and made compatible with leoserver.py from Leo itself.
+-   Added option for specifying server file and path. Defaults to the internal leobridgeserver.py server.
+-   Fixed cursor position and selection bugs. 
+-   Fixed automatic server startup and connection bugs.
 -   (...)
 
 @others
@@ -8584,6 +8590,10 @@ This occurs when an outline node or a body pane has focus:
 <t tx="felix.20200718222108.1">## Issues
 
 Main issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
+
+### Keybindings Conflicts Resolution
+
+If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane, add **`&amp;&amp; resourceScheme != 'leo'`** to the keybinding's "*when*" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Linux Keybindings
 
