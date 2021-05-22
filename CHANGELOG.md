@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.1.14
+
+-   Rewrite of the leobridgeserver.py and made compatible with leoserver.py from Leo itself.
+-   Added option for specifying server file and path. Defaults to the internal leobridgeserver.py server.
+-   Fixed cursor position and selection bugs. 
+-   Fixed automatic server startup and connection bugs.
+-   (...)
+
 ## 0.1.13
 
 -   Added support for precise focus placement, focus switch between tree/body.

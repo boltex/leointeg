@@ -61,7 +61,23 @@ export class LeoSettingsWebview {
                                 vscode.window.showErrorMessage(message.text);
                                 break;
                             case 'chooseLeoServerPath':
-                                this._leoIntegration.config.chooseLeoServerPath();
+                                vscode.window.showOpenDialog(
+                                    {
+                                        title: "Locate Leo Server Script",
+                                        canSelectMany: false,
+                                        openLabel: "Choose",
+                                        filters: { 'script': ['py'] }
+                                    }
+                                ).then(p_chosenFile => {
+                                    if (p_chosenFile && p_chosenFile.length) {
+                                        this._panel!.webview.postMessage(
+                                            {
+                                                command: 'newServerPath',
+                                                serverPath: p_chosenFile[0].fsPath
+                                            }
+                                        );
+                                    }
+                                });
                                 break;
                             case 'getNewConfig':
                                 if (this._panel && !this._waitingForUpdate) {

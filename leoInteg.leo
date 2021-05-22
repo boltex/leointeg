@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20210509210502.1"><vh>0.1.13</vh></v>
 <v t="felix.20200718222417.1"><vh>0.1.12</vh></v>
 <v t="felix.20200718222419.1"><vh>0.1.11</vh></v>
 <v t="felix.20200718222422.1"><vh>0.1.10</vh></v>
@@ -123,8 +124,8 @@
 <v t="felix.20200623201853.1"><vh>_getTotalOpened</vh></v>
 <v t="felix.20200623215904.1"><vh>_getFirstOpenedCommander</vh></v>
 <v t="felix.20200304224909.1"><vh>sendAsyncOutput</vh></v>
-<v t="felix.20200304220844.1"><vh>askResult</vh></v>
-<v t="felix.20200312231358.1"><vh>applyConfig</vh></v>
+<v t="felix.20200304220844.1"><vh>set_ask_result</vh></v>
+<v t="felix.20200312231358.1"><vh>set_config</vh></v>
 <v t="felix.20200219224515.1"><vh>logSignon</vh></v>
 <v t="felix.20200924224017.1"><vh>JSON Output Functions</vh>
 <v t="felix.20200924211032.1"><vh>setActionId</vh></v>
@@ -141,56 +142,57 @@
 <v t="felix.20200924205439.1"><vh>_get_commander_method</vh></v>
 <v t="felix.20200924205503.1"><vh>leoCommand</vh></v>
 <v t="felix.20200924223845.1"><vh>Leo Documents</vh>
-<v t="felix.20200622230608.1"><vh>getOpenedFiles</vh></v>
-<v t="felix.20200624172552.1"><vh>setOpenedFile</vh></v>
-<v t="felix.20191126232434.13"><vh>openFile</vh></v>
-<v t="felix.20200924205915.1"><vh>openFiles</vh></v>
-<v t="felix.20191126232434.14"><vh>closeFile</vh></v>
-<v t="felix.20200216160305.1"><vh>saveFile</vh></v>
+<v t="felix.20200622230608.1"><vh>get_all_open_commanders</vh></v>
+<v t="felix.20200624172552.1"><vh>set_opened_file</vh></v>
+<v t="felix.20191126232434.13"><vh>open_file</vh></v>
+<v t="felix.20200924205915.1"><vh>open_files</vh></v>
+<v t="felix.20191126232434.14"><vh>close_file</vh></v>
+<v t="felix.20200216160305.1"><vh>save_file</vh></v>
 </v>
 <v t="felix.20200924223910.1"><vh>At Buttons</vh>
-<v t="felix.20200924210020.1"><vh>getButtons</vh></v>
-<v t="felix.20200924210024.1"><vh>removeButton</vh></v>
-<v t="felix.20200924210029.1"><vh>clickButton</vh></v>
+<v t="felix.20200924210020.1"><vh>get_buttons</vh></v>
+<v t="felix.20200924210024.1"><vh>remove_button</vh></v>
+<v t="felix.20200924210029.1"><vh>click_button</vh></v>
 </v>
 <v t="felix.20200924223945.1"><vh>Minibuffer</vh>
-<v t="felix.20200924210036.1"><vh>getCommands</vh></v>
+<v t="felix.20200924210036.1"><vh>get_all_leo_commands</vh></v>
 <v t="felix.20200924210058.1"><vh>_bad_commands</vh></v>
 <v t="felix.20200924210112.1"><vh>_good_commands</vh></v>
 <v t="felix.20200924210952.1"><vh>_getDocstringForCommand</vh></v>
 </v>
 <v t="felix.20200924224100.1"><vh>Overriden Leo Commands</vh>
-<v t="felix.20200924211057.1"><vh>markPNode</vh></v>
-<v t="felix.20200924211100.1"><vh>unmarkPNode</vh></v>
-<v t="felix.20200924211104.1"><vh>clonePNode</vh></v>
-<v t="felix.20200924211121.1"><vh>cutPNode</vh></v>
-<v t="felix.20200924211125.1"><vh>deletePNode</vh></v>
-<v t="felix.20200924211127.1"><vh>insertPNode</vh></v>
-<v t="felix.20200924211132.1"><vh>insertNamedPNode</vh></v>
+<v t="felix.20200924211057.1"><vh>mark_node</vh></v>
+<v t="felix.20200924211100.1"><vh>unmark_node</vh></v>
+<v t="felix.20200924211104.1"><vh>clone_node</vh></v>
+<v t="felix.20200924211121.1"><vh>cut_node</vh></v>
+<v t="felix.20200924211125.1"><vh>delete_node</vh></v>
+<v t="felix.20200924211127.1"><vh>insert_node</vh></v>
+<v t="felix.20200924211132.1"><vh>insert_named_node</vh></v>
 <v t="felix.20200924211135.1"><vh>undo</vh></v>
 <v t="felix.20200924211138.1"><vh>redo</vh></v>
 <v t="felix.20201025144113.1"><vh>test</vh></v>
 </v>
 <v t="felix.20191128001054.1"><vh>Outline and Body Interaction</vh>
-<v t="felix.20200929215102.2"><vh>getStates</vh></v>
-<v t="felix.20200929215102.3"><vh>pageUp</vh></v>
-<v t="felix.20200929215102.4"><vh>pageDown</vh></v>
-<v t="felix.20200929215102.5"><vh>getBodyStates</vh></v>
-<v t="felix.20191126232434.15"><vh>getPNode</vh></v>
-<v t="felix.20191126232434.16"><vh>getChildren</vh></v>
-<v t="felix.20191126232434.17"><vh>getParent</vh></v>
-<v t="felix.20191126232434.18"><vh>getSelectedNode</vh></v>
-<v t="felix.20191201194046.1"><vh>getAllGnx</vh></v>
-<v t="felix.20191126232434.19"><vh>getBody</vh></v>
-<v t="felix.20191126232434.20"><vh>getBodyLength</vh></v>
-<v t="felix.20191126232434.22"><vh>setBody</vh></v>
-<v t="felix.20200929230231.1"><vh>setSelection</vh></v>
-<v t="felix.20191126232434.23"><vh>setNewHeadline</vh></v>
-<v t="felix.20191126232434.24"><vh>setSelectedNode</vh></v>
-<v t="felix.20191126232434.25"><vh>expandNode</vh></v>
-<v t="felix.20191126232434.26"><vh>collapseNode</vh></v>
+<v t="felix.20200929215102.2"><vh>get_ui_states</vh></v>
+<v t="felix.20200929215102.3"><vh>page_up</vh></v>
+<v t="felix.20200929215102.4"><vh>page_down</vh></v>
+<v t="felix.20200929215102.5"><vh>get_body_states</vh></v>
+<v t="felix.20191126232434.16"><vh>get_children &amp; helper</vh>
 <v t="felix.20191126232434.29"><vh>_yieldAllRootChildren</vh></v>
+</v>
+<v t="felix.20191126232434.17"><vh>get_parent</vh></v>
+<v t="felix.20191201194046.1"><vh>get_all_gnx</vh></v>
+<v t="felix.20191126232434.19"><vh>get_body</vh></v>
+<v t="felix.20191126232434.20"><vh>get_body_length</vh></v>
+<v t="felix.20191126232434.22"><vh>set_body</vh></v>
+<v t="felix.20210512000301.1"><vh>get_focus</vh></v>
+<v t="felix.20200929230231.1"><vh>set_selection</vh></v>
+<v t="felix.20191126232434.23"><vh>set_headline</vh></v>
+<v t="felix.20191126232434.24"><vh>set_current_position &amp; helper</vh>
 <v t="felix.20191216195906.1"><vh>_findPNodeFromGnx</vh></v>
+</v>
+<v t="felix.20191126232434.25"><vh>expand_node</vh></v>
+<v t="felix.20191126232434.26"><vh>contract_node</vh></v>
 </v>
 <v t="felix.20191128003648.1"><vh>leoFlexx Conversion Functions</vh>
 <v t="felix.20191126232434.27"><vh>_create_gnx_to_vnode</vh></v>
@@ -230,7 +232,8 @@
 <v t="ekr.20200815123601.24"><vh>Goto Nodes</vh></v>
 <v t="ekr.20200815123601.25"><vh>Hoist/Dehoist</vh></v>
 <v t="ekr.20200815123601.26"><vh>Undo/Redo</vh></v>
-<v t="ekr.20200815123601.27"><vh>TODO</vh></v>
+<v t="felix.20210517001143.1"><vh>Search</vh></v>
+<v t="felix.20210517001459.1"><vh>Mark Nodes</vh></v>
 </v>
 <v t="ekr.20200815123601.28"><vh>viewsWelcome</vh>
 <v t="ekr.20200815123601.29"><vh>Leo Integration Panel</vh>
@@ -297,6 +300,7 @@
 </v>
 <v t="ekr.20200815123601.87"><vh>Outline Editing</vh></v>
 <v t="ekr.20200815123601.88"><vh>Goto Nodes</vh></v>
+<v t="felix.20210517004335.1"><vh>Search</vh></v>
 </v>
 <v t="ekr.20200815123601.89"><vh>resourceLabelFormatters</vh></v>
 </v>
@@ -316,7 +320,6 @@
 <v t="felix.20200718030926.1"><vh>@clean src/config.ts</vh>
 <v t="felix.20200718030926.2"><vh>class Config</vh>
 <v t="felix.20200718030926.3"><vh>getConfig</vh></v>
-<v t="felix.20210420215230.1"><vh>chooseLeoServerPath</vh></v>
 <v t="felix.20200718030926.4"><vh>setLeoIntegSettings</vh></v>
 <v t="felix.20200718030926.5"><vh>buildFromSavedSettings</vh></v>
 </v>
@@ -505,7 +508,6 @@
 <v t="felix.20210418220343.1"><vh>_checkPreviewMode</vh></v>
 <v t="felix.20200719025231.49"><vh>closeBody</vh></v>
 <v t="felix.20200719025231.50"><vh>showBody</vh></v>
-<v t="felix.20210420004713.1"><vh>_setLanguageAndSelection</vh></v>
 </v>
 <v t="felix.20200719025231.51"><vh>Commands</vh>
 <v t="felix.20200719025231.52"><vh>selectTreeNode</vh></v>
@@ -513,6 +515,9 @@
 <v t="felix.20200719025231.54"><vh>changeMark</vh></v>
 <v t="felix.20200719025231.55"><vh>editHeadline</vh></v>
 <v t="felix.20200719025231.56"><vh>insertNode</vh></v>
+<v t="felix.20210516233931.1"><vh>startSearch</vh></v>
+<v t="felix.20210516234059.1"><vh>findNext</vh></v>
+<v t="felix.20210516234104.1"><vh>findPrevious</vh></v>
 <v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
@@ -536,7 +541,6 @@
 </v>
 <v t="felix.20200718170712.1"><vh>@clean src/leoNode.ts</vh>
 <v t="felix.20200718170712.2"><vh>class LeoNode</vh>
-<v t="felix.20200718170712.3"><vh>copyProperties</vh></v>
 <v t="felix.20200718170712.4"><vh>setRoot</vh></v>
 <v t="felix.20200718170712.5"><vh>_getNodeContextValue</vh></v>
 <v t="felix.20200718171904.1"><vh>get_iconPath</vh></v>
@@ -547,7 +551,6 @@
 </v>
 <v t="felix.20200718180428.1"><vh>@clean src/leoOutline.ts</vh>
 <v t="felix.20200718180428.2"><vh>class LeoOutlineProvider</vh>
-<v t="felix.20200718180428.3"><vh>refreshTreeNode</vh></v>
 <v t="felix.20200718180428.4"><vh>refreshTreeRoot</vh></v>
 <v t="felix.20200718180428.5"><vh>getTreeItem</vh></v>
 <v t="felix.20200718180428.6"><vh>getChildren</vh></v>
@@ -608,7 +611,6 @@
 <v t="felix.20200718194857.7"><vh>LeoLogEntry</vh></v>
 <v t="felix.20200718194857.8"><vh>ArchivedPosition</vh></v>
 <v t="ekr.20200815091408.1"><vh>LeoPackageStates</vh></v>
-<v t="ekr.20200815091439.1"><vh>LeoBridgePackageOpenedInfo</vh></v>
 <v t="felix.20200718194857.10"><vh>LeoBridgePackage</vh></v>
 <v t="felix.20200718194857.11"><vh>LeoDocument</vh></v>
 <v t="felix.20200718194857.12"><vh>LeoButton</vh></v>
@@ -660,6 +662,104 @@
 <v t="felix.20200718180428.2"></v>
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
+</v>
+<v t="felix.20191126232434.4"></v>
+<v t="felix.20210516004048.1"><vh>class LeoServer</vh>
+<v t="felix.20210516004048.2"><vh>server.__init__ (load bridge)</vh></v>
+<v t="felix.20210516004048.3"><vh>server:public commands</vh>
+<v t="felix.20210516004048.4"><vh>server:button commands</vh>
+<v t="felix.20210516004048.5"><vh>_check_button_command</vh></v>
+<v t="felix.20210516004048.6"><vh>server.click_button</vh></v>
+<v t="felix.20210516004048.7"><vh>server.get_buttons</vh></v>
+<v t="felix.20210516004048.8"><vh>server.remove_button</vh></v>
+</v>
+<v t="felix.20210516004048.9"><vh>server:file commands</vh>
+<v t="felix.20210516004048.10"><vh>server.open_file</vh></v>
+<v t="felix.20210516004048.11"><vh>server.open_files</vh></v>
+<v t="felix.20210516004048.12"><vh>server.set_opened_file</vh></v>
+<v t="felix.20210516004048.13"><vh>server.close_file</vh></v>
+<v t="felix.20210516004048.14"><vh>server.save_file</vh></v>
+</v>
+<v t="felix.20210516004048.15"><vh>server:find commands</vh>
+<v t="felix.20210516004048.16"><vh>server._get_find_settings</vh></v>
+<v t="felix.20210516004048.17"><vh>server.find_all</vh></v>
+<v t="felix.20210516004048.18"><vh>server.change_all</vh></v>
+<v t="felix.20210516004048.19"><vh>server.change_then_find</vh></v>
+<v t="felix.20210516004048.20"><vh>server.clone_find_all</vh></v>
+<v t="felix.20210516004048.21"><vh>server.clone_find_all_flattened</vh></v>
+<v t="felix.20210516004048.22"><vh>server.clone_find_tag</vh></v>
+<v t="felix.20210516004048.23"><vh>server.find_def</vh></v>
+<v t="felix.20210516004048.24"><vh>server.find_next</vh></v>
+<v t="felix.20210516004048.25"><vh>server.find_previous</vh></v>
+<v t="felix.20210516004048.26"><vh>server.find_var</vh></v>
+<v t="felix.20210516004048.27"><vh>server.tag_children</vh></v>
+</v>
+<v t="felix.20210516004048.28"><vh>server:getter commands</vh>
+<v t="felix.20210516004048.29"><vh>server.get_all_open_commanders</vh></v>
+<v t="felix.20210516004048.30"><vh>server.get_all_positions</vh></v>
+<v t="felix.20210516004048.31"><vh>server.get_all_gnx</vh></v>
+<v t="felix.20210516004048.32"><vh>server.get_body</vh></v>
+<v t="felix.20210516004048.33"><vh>server.get_body_length</vh></v>
+<v t="felix.20210516004048.34"><vh>server.get_body_states</vh></v>
+<v t="felix.20210516004048.35"><vh>server.get_children</vh></v>
+<v t="felix.20210516004048.36"><vh>server.get_focus</vh></v>
+<v t="felix.20210516004048.37"><vh>server.get_parent</vh></v>
+<v t="felix.20210516004048.38"><vh>server.get_position_dict</vh></v>
+<v t="felix.20210516004048.39"><vh>server.get_ua</vh></v>
+<v t="felix.20210516004048.40"><vh>server.get_sign_on</vh></v>
+<v t="felix.20210516004048.41"><vh>server.get_ui_states</vh></v>
+</v>
+<v t="felix.20210516004048.42"><vh>server:node commands</vh>
+<v t="felix.20210516004048.43"><vh>server.clone_node</vh></v>
+<v t="felix.20210516004048.44"><vh>server.contract_node</vh></v>
+<v t="felix.20210516004048.45"><vh>server.cut_node</vh></v>
+<v t="felix.20210516004048.46"><vh>server.delete_node</vh></v>
+<v t="felix.20210516004048.47"><vh>server.expand_node</vh></v>
+<v t="felix.20210516004048.48"><vh>server.insert_node</vh></v>
+<v t="felix.20210516004048.49"><vh>server.insert_named_node</vh></v>
+<v t="felix.20210516004048.50"><vh>server.page_down</vh></v>
+<v t="felix.20210516004048.51"><vh>server.page_up</vh></v>
+<v t="felix.20210516004048.52"><vh>server.redo</vh></v>
+<v t="felix.20210516004048.53"><vh>server.set_body</vh></v>
+<v t="felix.20210516004048.54"><vh>server.set_current_position</vh></v>
+<v t="felix.20210516004048.55"><vh>server.set_headline</vh></v>
+<v t="felix.20210516004048.56"><vh>server.set_selection</vh></v>
+<v t="felix.20210516004048.57"><vh>server.mark_node</vh></v>
+<v t="felix.20210516004048.58"><vh>server.unmark_node</vh></v>
+<v t="felix.20210516004048.59"><vh>server.undo</vh></v>
+</v>
+<v t="felix.20210516004048.60"><vh>server:server commands</vh>
+<v t="felix.20210516004048.61"><vh>server.error</vh></v>
+<v t="felix.20210516004048.62"><vh>server.get_all_leo_commands &amp; helper</vh>
+<v t="felix.20210516004048.63"><vh>server._bad_commands</vh></v>
+<v t="felix.20210516004048.64"><vh>server._good_commands</vh></v>
+</v>
+<v t="felix.20210516004048.65"><vh>server.get_all_server_commands</vh></v>
+<v t="felix.20210516004048.66"><vh>server.init_connection</vh></v>
+<v t="felix.20210516004048.67"><vh>server.set_ask_result</vh></v>
+<v t="felix.20210516004048.68"><vh>server.set_config</vh></v>
+<v t="felix.20210516004048.69"><vh>server.shut_down</vh></v>
+</v>
+</v>
+<v t="felix.20210516004048.70"><vh>server:server utils</vh>
+<v t="felix.20210516004048.71"><vh>server._ap_to_p</vh></v>
+<v t="felix.20210516004048.72"><vh>server._check_c</vh></v>
+<v t="felix.20210516004048.73"><vh>server._check_outline</vh></v>
+<v t="felix.20210516004048.74"><vh>server._check_outline_positions</vh></v>
+<v t="felix.20210516004048.75"><vh>server._do_leo_command</vh></v>
+<v t="felix.20210516004048.76"><vh>server._do_message</vh></v>
+<v t="felix.20210516004048.77"><vh>server._do_server_command</vh></v>
+<v t="felix.20210516004048.78"><vh>server._dump_*</vh></v>
+<v t="felix.20210516004048.79"><vh>server._es &amp; helper</vh>
+<v t="felix.20210516004048.80"><vh>server._async_output</vh></v>
+</v>
+<v t="felix.20210516004048.81"><vh>server._get_p</vh></v>
+<v t="felix.20210516004048.82"><vh>server._get_position_d</vh></v>
+<v t="felix.20210516004048.83"><vh>server._make_response</vh></v>
+<v t="felix.20210516004048.84"><vh>server._make_minimal_response</vh></v>
+<v t="felix.20210516004048.85"><vh>server._p_to_ap</vh></v>
+<v t="felix.20210516004048.86"><vh>serverver._test_round_trip_positions</vh></v>
+</v>
 </v>
 </vnodes>
 <tnodes>
@@ -839,6 +939,7 @@ public static CONFIG_DEFAULTS = {
     SHOW_COPY: false,
     INVERT_NODES: false,
     LEO_PYTHON_COMMAND: "",
+    LEO_SERVER_PATH: "",
     AUTO_START_SERVER: false,
     AUTO_CONNECT: false,
     IP_ADDRESS: "localhost",
@@ -968,7 +1069,7 @@ public addLogPaneEntry(p_message: string): void {
  * @param p_event The opened document event passed by vscode
  */
 private _onDidOpenTextDocument(p_document: vscode.TextDocument): void {
-    if (this.leoStates.leoBridgeReady &amp;&amp; p_document.uri.scheme === Constants.URI_FILE_SCHEME &amp;&amp; p_document.uri.fsPath.toLowerCase().endsWith(".leo")) {
+    if (this.leoStates.leoBridgeReady &amp;&amp; p_document.uri.scheme === Constants.URI_LEO_SCHEME &amp;&amp; p_document.uri.fsPath.toLowerCase().endsWith(".leo")) {
         if (!this._hasShownContextOpenMessage) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.RIGHT_CLICK_TO_OPEN);
             this._hasShownContextOpenMessage = true;
@@ -1074,10 +1175,24 @@ public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: A
         this._fromOutline = false;
         w_revealType = RevealType.RevealSelect;
     }
-    if (this._refreshType.body &amp;&amp;
-        this._bodyLastChangedDocument &amp;&amp; this._bodyLastChangedDocument.isDirty) {
+    if (p_ap &amp;&amp; this._refreshType.body &amp;&amp;
+        this._bodyLastChangedDocument &amp;&amp;
+        this._bodyLastChangedDocument.isDirty
+    ) {
         // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
-        this._bodyLastChangedDocument.save(); // Voluntarily save to 'clean' any pending body
+        // do this only if gnx is different from what is coming from Leo in this refresh cycle
+        if (
+            p_ap.gnx !== utils.leoUriToStr(this._bodyLastChangedDocument.uri) &amp;&amp;
+            !this._bodyLastChangedDocumentSaved
+        ) {
+            this._bodyLastChangedDocument.save(); // Voluntarily save to 'clean' any pending body
+            this._bodyLastChangedDocumentSaved = true;
+        }
+
+        if (p_ap.gnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)) {
+            this._leoFileSystem.preventSaveToLeo = true;
+            this._bodyLastChangedDocument.save();
+        }
     }
     // * _focusInterrupt insertNode Override
     if (this._focusInterrupt) {
@@ -1206,7 +1321,8 @@ private _tryApplyNodeToBody(p_node: LeoNode, p_aside: boolean, p_showBodyKeepFoc
  * (see command stack 'rules' in commandStack.ts)
  */
 public nodeCommand(p_userCommand: UserCommand): Promise&lt;LeoBridgePackage&gt; | undefined {
-    this.triggerBodySave(); // No forced vscode save-triggers for direct calls from extension.js
+    // No forced vscode save-triggers for direct calls from extension.js
+    this.triggerBodySave();
     const q_result = this._commandStack.add(p_userCommand);
     if (q_result) {
         return q_result;
@@ -1225,7 +1341,7 @@ public nodeCommand(p_userCommand: UserCommand): Promise&lt;LeoBridgePackage&gt; 
 public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
-            return this.sendAction(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ "index": p_node.button.index }));
+            return this.sendAction(Constants.LEOBRIDGE.CLICK_BUTTON, JSON.stringify({ index: p_node.button.index }));
         })
         .then((p_clickButtonResult: LeoBridgePackage) =&gt; {
             this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
@@ -1241,7 +1357,7 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
 public removeAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
-            return this.sendAction(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ "index": p_node.button.index }));
+            return this.sendAction(Constants.LEOBRIDGE.REMOVE_BUTTON, JSON.stringify({ index: p_node.button.index }));
         })
         .then((p_removeButtonResult: LeoBridgePackage) =&gt; {
             this.launchRefresh({ buttons: true }, false);
@@ -1291,17 +1407,6 @@ export interface LeoPackageStates {
     canDemote: boolean; // Currently selected node can have its siblings demoted
     canPromote: boolean; // Currently selected node can have its children promoted
     canDehoist: boolean; // Leo Document is currently hoisted and can be de-hoisted
-}
-
-</t>
-<t tx="ekr.20200815091439.1">/**
- * * Returned info about currently opened and editing document
- * Used after opening, switching or setting the opened document
- */
-export interface LeoBridgePackageOpenedInfo {
-    total: number;
-    filename: string;
-    node: ArchivedPosition;
 }
 
 </t>
@@ -1900,6 +2005,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 })],
 
 // TODO : @boltex More commands for issue #24
+[CMD.START_SEARCH, () =&gt; w_leo.startSearch()],
+[CMD.FIND_NEXT, () =&gt; w_leo.findNext()],
+[CMD.FIND_PREVIOUS, () =&gt; w_leo.findPrevious()],
+
 // [CMD.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
 // [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
 // [CMD.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
@@ -1927,7 +2036,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "author": {
     "name": "Félix"
   },
@@ -1938,7 +2047,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.55.0"
+    "vscode": "^1.56.0"
   },
   "keywords": [
     "leo",
@@ -1974,7 +2083,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.55.0",
+    "@types/vscode": "^1.56.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -2347,12 +2456,12 @@ print('done')
 <t tx="ekr.20200815123601.18">{
   "command": "leointeg.showBody",
   "category": "Leo",
-  "title": "Focus to Body"
+  "title": "Focus on Body"
 },
 {
   "command": "leointeg.showOutline",
   "category": "Leo",
-  "title": "Focus to Tree"
+  "title": "Focus on Tree"
 },
 {
   "command": "leointeg.showLogPane",
@@ -2503,44 +2612,6 @@ print('done')
   "command": "leointeg.editSelectedHeadlineFromOutline",
   "category": "Leo",
   "title": "Edit Headline"
-},
-{
-  "command": "leointeg.mark",
-  "category": "Leo",
-  "title": "Mark",
-  "icon": {
-    "light": "resources/light/mark.svg",
-    "dark": "resources/dark/mark.svg"
-  }
-},
-{
-  "command": "leointeg.markSelection",
-  "category": "Leo",
-  "title": "Mark"
-},
-{
-  "command": "leointeg.markSelectionFromOutline",
-  "category": "Leo",
-  "title": "Mark"
-},
-{
-  "command": "leointeg.unmark",
-  "category": "Leo",
-  "title": "Unmark",
-  "icon": {
-    "light": "resources/light/unmark.svg",
-    "dark": "resources/dark/unmark.svg"
-  }
-},
-{
-  "command": "leointeg.unmarkSelection",
-  "category": "Leo",
-  "title": "Unmark"
-},
-{
-  "command": "leointeg.unmarkSelectionFromOutline",
-  "category": "Leo",
-  "title": "Unmark"
 },
 {
   "command": "leointeg.copyNode",
@@ -2844,6 +2915,26 @@ print('done')
   "category": "Leo",
   "title": "Expand And Go Right"
 },
+{
+  "command": "leointeg.gotoNextMarked",
+  "category": "Leo",
+  "title": "Goto Next Marked"
+},
+{
+  "command": "leointeg.gotoNextClone",
+  "category": "Leo",
+  "title": "Goto Next Clone"
+},
+{
+  "command": "leointeg.gotoNextCloneSelection",
+  "category": "Leo",
+  "title": "Goto Next Clone"
+},
+{
+  "command": "leointeg.gotoNextCloneSelectionFromOutline",
+  "category": "Leo",
+  "title": "Goto Next Clone"
+},
 </t>
 <t tx="ekr.20200815123601.25">{
   "command": "leointeg.hoistNode",
@@ -2915,87 +3006,6 @@ print('done')
     "dark": "resources/dark/redo.svg"
   }
 },
-</t>
-<t tx="ekr.20200815123601.27">{
-  "command": "leointeg.cloneFindAll",
-  "category": "Leo",
-  "title": "Clone Find All"
-},
-{
-  "command": "leointeg.cloneFindAllFlattened",
-  "category": "Leo",
-  "title": "Clone Find All Flattened"
-},
-{
-  "command": "leointeg.cloneFindMarked",
-  "category": "Leo",
-  "title": "Clone Find Marked"
-},
-{
-  "command": "leointeg.cloneFindFlattenedMarked",
-  "category": "Leo",
-  "title": "cffm - Clone Find Flattened Marked"
-},
-{
-  "command": "leointeg.copyMarked",
-  "category": "Leo",
-  "title": "Copy Marked"
-},
-{
-  "command": "leointeg.diffMarkedNodes",
-  "category": "Leo",
-  "title": "Diff Marked Nodes"
-},
-{
-  "command": "leointeg.gotoNextMarked",
-  "category": "Leo",
-  "title": "Goto Next Marked"
-},
-{
-  "command": "leointeg.gotoNextClone",
-  "category": "Leo",
-  "title": "Goto Next Clone"
-},
-{
-  "command": "leointeg.gotoNextCloneSelection",
-  "category": "Leo",
-  "title": "Goto Next Clone"
-},
-{
-  "command": "leointeg.gotoNextCloneSelectionFromOutline",
-  "category": "Leo",
-  "title": "Goto Next Clone"
-},
-{
-  "command": "leointeg.markChangedItems",
-  "category": "Leo",
-  "title": "Mark Changed Items"
-},
-{
-  "command": "leointeg.markSubheads",
-  "category": "Leo",
-  "title": "Mark Subheads"
-},
-{
-  "command": "leointeg.unmarkAll",
-  "category": "Leo",
-  "title": "Unmark All"
-},
-{
-  "command": "leointeg.cloneMarkedNodes",
-  "category": "Leo",
-  "title": "Clone Marked Nodes"
-},
-{
-  "command": "leointeg.deleteMarkedNodes",
-  "category": "Leo",
-  "title": "Delete Marked Nodes"
-},
-{
-  "command": "leointeg.moveMarkedNodes",
-  "category": "Leo",
-  "title": "Move Marked Nodes"
-}
 </t>
 <t tx="ekr.20200815123601.28">"viewsWelcome": [
   @others
@@ -3093,12 +3103,12 @@ print('done')
 <t tx="ekr.20200815123601.35"></t>
 <t tx="ekr.20200815123601.36">{
   "view": "leoDocuments",
-  "contents": "LeoInteg is not connected",
+  "contents": "Not connected",
   "when": "!leoBridgeReady"
 },
 {
   "view": "leoDocumentsExplorer",
-  "contents": "LeoInteg is not connected",
+  "contents": "Not connected",
   "when": "!leoBridgeReady"
 },
 </t>
@@ -3116,12 +3126,12 @@ print('done')
 <t tx="ekr.20200815123601.38"></t>
 <t tx="ekr.20200815123601.39">{
   "view": "leoButtons",
-  "contents": "LeoInteg is not connected",
+  "contents": "Not connected",
   "when": "!leoBridgeReady"
 },
 {
   "view": "leoButtonsExplorer",
-  "contents": "LeoInteg is not connected",
+  "contents": "Not connected",
   "when": "!leoBridgeReady"
 },
 </t>
@@ -3722,7 +3732,13 @@ print('done')
   }
 ],
 </t>
-<t tx="ekr.20200815123601.7">"leoIntegration.leoPythonCommand": {
+<t tx="ekr.20200815123601.7">"leoIntegration.leoServerPath": {
+  "scope": "application",
+  "default": "",
+  "type": "string",
+  "description": "Specifies the location of the Leo server script"
+},
+"leoIntegration.leoPythonCommand": {
   "scope": "application",
   "default": "",
   "type": "string",
@@ -3732,7 +3748,7 @@ print('done')
   "scope": "application",
   "default": false,
   "type": "boolean",
-  "description": "Starts a LeoBridge server automatically, by running the leobridgeserver.py python script"
+  "description": "Starts a LeoBridge server automatically, by running the Leo server script"
 },
 "leoIntegration.connectToServerAutomatically": {
   "scope": "application",
@@ -3786,13 +3802,13 @@ print('done')
   "command": "leointeg.showOutline",
   "key": "ctrl+t",
   "mac": "cmd+t",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.showBody",
   "key": "ctrl+t",
   "mac": "cmd+t",
-  "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
 },
 {
   "command": "leointeg.showBody",
@@ -4226,7 +4242,7 @@ print('done')
   "command": "leointeg.expandAndGoRight",
   "key": "alt+right",
   "when": "leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-}
+},
 </t>
 <t tx="ekr.20200815123601.89">"resourceLabelFormatters": [
   {
@@ -4279,23 +4295,23 @@ print('done')
   ]
 },
 </t>
-<t tx="felix.20191126232434.13">def openFile(self, p_file):
+<t tx="felix.20191126232434.13">def open_file(self, param):
     """
     Open a leo file via leoBridge controller, or create a new document if empty string.
     Returns an object that contains a 'opened' member.
     """
     w_found = False
-
+    w_filename = param.get('filename')  # Optional.
     # If not empty string (asking for New file) then check if already opened
-    if p_file:
+    if w_filename:
         for w_commander in self.g.app.commanders():
-            if w_commander.fileName() == p_file:
+            if w_commander.fileName() == w_filename:
                 w_found = True
                 self.commander = w_commander
 
     if not w_found:
         self.commander = self.bridge.openLeoFile(
-            p_file)  # create self.commander
+            w_filename)  # create self.commander
 
     # Leo at this point has done this too: g.app.windowList.append(c.frame)
     # and so, now, app.commanders() yields this: return [f.c for f in g.app.windowList]
@@ -4311,27 +4327,28 @@ print('done')
         self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                     "node": self._p_to_ap(self.commander.p)}
-        return self.sendLeoBridgePackage("opened", w_result)
+        return self.sendLeoBridgePackage(w_result)
     else:
         return self._outputError('Error in openFile')
 
 </t>
-<t tx="felix.20191126232434.14">def closeFile(self, p_package):
+<t tx="felix.20191126232434.14">def close_file(self, param):
     """
-    Closes a leo file. A file can then be opened with "openFile"
-    Returns an object that contains a 'closed' member
+    Closes a leo file. A file can then be opened with "openFile".
+    Returns a 'total' member in the package if close is successful
+
     """
-    # TODO : Specify which file to support multiple opened files
     if self.commander:
-        if p_package["forced"] and self.commander.changed:
-            # return "no" g.app.gui.runAskYesNoDialog  and g.app.gui.runAskYesNoCancelDialog
+        # First, revert to prevent asking user.
+        if param["forced"] and self.commander.changed:
             self.commander.revert()
-        if p_package["forced"] or not self.commander.changed:
+        # Then, if still possible, close it.
+        if param["forced"] or not self.commander.changed:
             self.commander.closed = True
             self.commander.close()
         else:
             # Cannot close, ask to save, ignore or cancel
-            return self.sendLeoBridgePackage('closed', False)
+            return self.sendLeoBridgePackage()
 
     # Switch commanders to first available
     w_total = self._getTotalOpened()
@@ -4344,25 +4361,13 @@ print('done')
         self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                     "node": self._p_to_ap(self.commander.p)}
-        return self.sendLeoBridgePackage("closed", w_result)
     else:
         w_result = {"total": 0}
-        return self.sendLeoBridgePackage("closed", w_result)
+
+    return self.sendLeoBridgePackage(w_result)
 
 </t>
-<t tx="felix.20191126232434.15">def getPNode(self, p_ap):
-    '''EMIT OUT a node, don't select it'''
-    if p_ap:
-        w_p = self._ap_to_p(p_ap)
-        if w_p:
-            return self._outputPNode(w_p)
-        else:
-            return self._outputError("Error in getPNode no w_p node found")
-    else:
-        return self._outputError("Error in getPNode no param p_ap")
-
-</t>
-<t tx="felix.20191126232434.16">def getChildren(self, p_ap):
+<t tx="felix.20191126232434.16">def get_children(self, p_ap):
     '''EMIT OUT list of children of a node'''
     if p_ap:
         w_p = self._ap_to_p(p_ap)
@@ -4378,7 +4383,7 @@ print('done')
             return self._outputPNodes(self._yieldAllRootChildren())
 
 </t>
-<t tx="felix.20191126232434.17">def getParent(self, p_ap):
+<t tx="felix.20191126232434.17">def get_parent(self, p_ap):
     '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
     if p_ap:
         w_p = self._ap_to_p(p_ap)
@@ -4387,15 +4392,7 @@ print('done')
     return self._outputPNode()  # default empty for root as default
 
 </t>
-<t tx="felix.20191126232434.18">def getSelectedNode(self, p_unused):
-    '''EMIT OUT Selected Position as an array, even if unique'''
-    if self.commander.p:
-        return self._outputPNode(self.commander.p)
-    else:
-        return self._outputPNode()
-
-</t>
-<t tx="felix.20191126232434.19">def getBody(self, p_gnx):
+<t tx="felix.20191126232434.19">def get_body(self, p_gnx):
     '''EMIT OUT body of a node'''
     # TODO : if not found, send code to prevent unresolved promise if 'document switch' occurred shortly before
     if p_gnx:
@@ -4407,7 +4404,6 @@ print('done')
                 return self._outputBodyData()  # default "" empty string
     # Send as empty to fix unresolved promise if 'document switch' occurred shortly before
     return self._outputBodyData()
-    # return self.sendLeoBridgePackage()  # default as inexistent
 
 </t>
 <t tx="felix.20191126232434.2">#! python3
@@ -4424,21 +4420,21 @@ if __name__ == '__main__':
         print("\nKeyboard Interupt: Stopping leobridge server", flush=True)
         sys.exit()
 </t>
-<t tx="felix.20191126232434.20">def getBodyLength(self, p_gnx):
+<t tx="felix.20191126232434.20">def get_body_length(self, p_gnx):
     '''EMIT OUT body string length of a node'''
     if p_gnx:
         w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
         if w_v and w_v.b:
             # Length in bytes, not just by character count.
-            return self.sendLeoBridgePackage("bodyLength", len(w_v.b.encode('utf-8')))
+            return self.sendLeoBridgePackage({"len": len(w_v.b.encode('utf-8'))})
     # TODO : May need to signal inexistent by self.sendLeoBridgePackage()
-    return self.sendLeoBridgePackage("bodyLength", 0)  # empty as default
+    return self.sendLeoBridgePackage({"len": 0})  # empty as default
 
 </t>
-<t tx="felix.20191126232434.22">def setBody(self, p_package):
-    '''Change Body text of a node'''
-    w_gnx = p_package['gnx']
-    w_body = p_package['body']
+<t tx="felix.20191126232434.22">def set_body(self, param):
+    '''Change Body text of a v node'''
+    w_gnx = param['gnx']
+    w_body = param['body']
     for w_p in self.commander.all_positions():
         if w_p.v.gnx == w_gnx:
             # TODO : Before setting undo and trying to set body, first check if different than existing body
@@ -4460,13 +4456,12 @@ if __name__ == '__main__':
         if w_v:
             w_v.b = w_body
     return self._outputPNode(self.commander.p)  # return selected node
-    # return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20191126232434.23">def setNewHeadline(self, p_package):
+<t tx="felix.20191126232434.23">def set_headline(self, param):
     '''Change Headline of a node'''
-    w_newHeadline = p_package['text']
-    w_ap = p_package['node']
+    w_newHeadline = param['name']
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -4479,7 +4474,7 @@ if __name__ == '__main__':
     return self._outputError("Error in setNewHeadline")
 
 </t>
-<t tx="felix.20191126232434.24">def setSelectedNode(self, p_ap):
+<t tx="felix.20191126232434.24">def set_current_position(self, p_ap):
     '''Select a node, or the first one found with its GNX'''
     if p_ap:
         w_p = self._ap_to_p(p_ap)
@@ -4501,7 +4496,7 @@ if __name__ == '__main__':
         return self._outputPNode()
 
 </t>
-<t tx="felix.20191126232434.25">def expandNode(self, p_ap):
+<t tx="felix.20191126232434.25">def expand_node(self, p_ap):
     '''Expand a node'''
     if p_ap:
         w_p = self._ap_to_p(p_ap)
@@ -4510,7 +4505,7 @@ if __name__ == '__main__':
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20191126232434.26">def collapseNode(self, p_ap):
+<t tx="felix.20191126232434.26">def contract_node(self, p_ap):
     '''Collapse a node'''
     if p_ap:
         w_p = self._ap_to_p(p_ap)
@@ -4676,7 +4671,7 @@ if __name__ == '__main__':
 <t tx="felix.20191126232435.1">def main():
     '''python script for leo integration via leoBridge'''
     global wsHost, wsPort
-    print("Starting LeoBridge... (Launch with -h for help)", flush=True)
+    print("Starting LeoBridge IN LEOINTEG... (Launch with -h for help)", flush=True)
     # replace default host address and port if provided as arguments
 
     args = None
@@ -4715,29 +4710,29 @@ if __name__ == '__main__':
     async def leoBridgeServer(websocket, path):
         try:
             integController.initConnection(websocket)
-            # * Start by sending empty as 'ok'
+            # * Start by sending empty as 'ok'.
             await websocket.send(integController.sendLeoBridgePackage())
             integController.logSignon()
-            async for w_message in websocket:
-                w_param = json.loads(w_message)
-                if w_param and w_param['action']:
-                    w_action = w_param['action']
-                    w_actionParam = w_param['param']
+            async for json_string_message in websocket:
+                messageObject = json.loads(json_string_message)
+                if messageObject and messageObject['action']:
+                    action = messageObject['action']
+                    param = messageObject['param']
                     # printAction(w_param)  # Debug output
-                    # * Storing id of action in global var instead of passing as parameter
-                    integController.setActionId(w_param['id'])
+                    # * Storing id of action in global var instead of passing as parameter.
+                    integController.setActionId(messageObject['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
-                    # TODO : Block attempts to call functions starting with underscore or reserved
-                    #
-                    w_func = getattr(integController, w_action, None)  # crux
-                    if w_func:
-                        # Is Filtered by Leo Bridge Integration Controller
-                        w_answer = w_func(w_actionParam)
+                    # TODO : Block attempts to call functions starting with underscore or reserved.
+                    if action[0] == "!":
+                        w_func = getattr(integController, action[1:], None)
+                        if not w_func:
+                            print(action)
+                        w_answer = w_func(param)
                     else:
-                        # Attempt to execute the command directly on the commander/subcommander
+                        # Attempt to execute the command directly on the commander/subcommander.
                         w_answer = integController.leoCommand(
-                            w_action, w_actionParam)
+                            action, param)
                 else:
                     w_answer = "Error in processCommand"
                     print(w_answer, flush=True)
@@ -4755,13 +4750,13 @@ if __name__ == '__main__':
 
     localLoop = asyncio.get_event_loop()
     start_server = websockets.serve(leoBridgeServer, wsHost, wsPort)
-    # localLoop.create_task(asyncInterval(5)) # Starts a test loop of async communication
+    # localLoop.create_task(asyncInterval(5)) # Starts a test loop of async communication.
     localLoop.run_until_complete(start_server)
-    print("LeoBridge started at " + wsHost + " on port: " +
+    # This SERVER_STARTED_TOKEN special string signals server startup success.
+    print(SERVER_STARTED_TOKEN + " at " + wsHost + " on port: " +
           str(wsPort) + " [ctrl+c] to break", flush=True)
     localLoop.run_forever()
     print("Stopping leobridge server", flush=True)
-
 
 </t>
 <t tx="felix.20191128001054.1"></t>
@@ -4780,16 +4775,19 @@ import websockets
 wsHost = "localhost"
 wsPort = 32125
 
+# To help in printout
 commonActions = ["getChildren", "getBody", "getBodyLength"]
 
+# Special string signals server startup success
+SERVER_STARTED_TOKEN = "LeoBridge started"
 
 </t>
 <t tx="felix.20191128003648.1"></t>
-<t tx="felix.20191201194046.1">def getAllGnx(self, p_unused):
+<t tx="felix.20191201194046.1">def get_all_gnx(self, param):
     '''Get gnx array from all unique nodes'''
     w_all_gnx = [
         p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
-    return self.sendLeoBridgePackage("allGnx", w_all_gnx)
+    return self.sendLeoBridgePackage({"gnx": w_all_gnx})
 
 </t>
 <t tx="felix.20191216195906.1">def _findPNodeFromGnx(self, p_gnx):
@@ -4805,18 +4803,18 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     self.loop = asyncio.get_event_loop()
 
 </t>
-<t tx="felix.20200216160305.1">def saveFile(self, p_package):
+<t tx="felix.20200216160305.1">def save_file(self, param):
     '''Saves the leo file. New or dirty derived files are rewritten'''
     if self.commander:
         try:
-            if "text" in p_package:
-                self.commander.save(fileName=p_package['text'])
+            if "name" in param:
+                self.commander.save(fileName=param['name'])
             else:
                 self.commander.save()
         except Exception as e:
             self.g.trace('Error while saving')
-            print("Error while saving", flush=True)
-            print(str(e), flush=True)
+            print("Error while saving", param['name'], flush=True)
+            print(str(e),  param['name'],  flush=True)
 
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
@@ -5027,8 +5025,10 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     return self._time_d.get(self.integController.g.os_path_realpath(path))
 
 </t>
-<t tx="felix.20200302205810.27">def has_changed(self, c, path):
+<t tx="felix.20200302205810.27">def has_changed(self, path):
     '''Return True if p's external file has changed outside of Leo.'''
+    if not path:
+        return False
     if not self.integController.g.os_path_exists(path):
         return False
     if self.integController.g.os_path_isdir(path):
@@ -5205,7 +5205,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     # Matt, set this to True, but only for the file that interests you.\
     # trace = p.h == '@file unregister-leo.leox'
     path = self.integController.g.fullPath(c, p)
-    has_changed = self.has_changed(c, path)
+    has_changed = self.has_changed(path)
     if trace:
         self.integController.g.trace('changed', has_changed, p.h)
     if has_changed:
@@ -5233,7 +5233,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
 
 </t>
-<t tx="felix.20200304220844.1">def askResult(self, p_result):
+<t tx="felix.20200304220844.1">def set_ask_result(self, p_result):
     '''Got the result to an asked question/warning from client'''
     self.g.app.externalFilesController.integResult(p_result)
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
@@ -5311,32 +5311,29 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     return
 
 </t>
-<t tx="felix.20200312231358.1">def applyConfig(self, p_config):
+<t tx="felix.20200312231358.1">def set_config(self, p_config):
     '''Got leoInteg's config from client'''
     self.leoIntegConfig = p_config
     return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
 </t>
-<t tx="felix.20200622230608.1">def getOpenedFiles(self, p_package):
+<t tx="felix.20200622230608.1">def get_all_open_commanders(self, param):
     '''Return array of opened file path/names to be used as openFile parameters to switch files'''
     w_files = []
-    w_index = 0
-    w_indexFound = 0
     for w_commander in self.g.app.commanders():
         if not w_commander.closed:
             w_isSelected = False
             w_isChanged = w_commander.changed
             if self.commander == w_commander:
-                w_indexFound = w_index
                 w_isSelected = True
-            w_entry = {"name": w_commander.mFileName, "index": w_index,
-                       "changed": w_isChanged, "selected": w_isSelected}
+            w_entry = {
+                "name": w_commander.mFileName,
+                "changed": w_isChanged,
+                "selected": w_isSelected
+            }
             w_files.append(w_entry)
-            w_index = w_index + 1
 
-    w_openedFiles = {"files": w_files, "index": w_indexFound}
-
-    return self.sendLeoBridgePackage("openedFiles", w_openedFiles)
+    return self.sendLeoBridgePackage({"files": w_files})
 
 </t>
 <t tx="felix.20200623201853.1">def _getTotalOpened(self):
@@ -5356,7 +5353,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
     return False
 
 </t>
-<t tx="felix.20200624172552.1">def setOpenedFile(self, p_package):
+<t tx="felix.20200624172552.1">def set_opened_file(self, param):
     '''Choose the new active commander from array of opened file path/names by numeric index'''
     w_openedCommanders = []
 
@@ -5364,7 +5361,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
         if not w_commander.closed:
             w_openedCommanders.append(w_commander)
 
-    w_index = p_package['index']
+    w_index = param['index']  # index in param
 
     if w_openedCommanders[w_index]:
         self.commander = w_openedCommanders[w_index]
@@ -5376,7 +5373,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
                     "node": self._p_to_ap(self.commander.p)}
         # maybe needed for frame wrapper
         self.commander.selectPosition(self.commander.p)
-        return self.sendLeoBridgePackage("setOpened", w_result)
+        return self.sendLeoBridgePackage(w_result)
     else:
         return self._outputError('Error in setOpenedFile')
 
@@ -5434,89 +5431,93 @@ public static ASYNC_ASK_RETURN_CODES = {
  * * Commands for leobridgeserver.py
  */
 public static LEOBRIDGE = {
-    TEST: "test",
-    APPLY_CONFIG: "applyConfig",
-    ASK_RESULT: "askResult",
-    GET_ALL_GNX: "getAllGnx",
-    GET_BODY_LENGTH: "getBodyLength",
-    GET_BODY_STATES: "getBodyStates",
-    GET_BODY: "getBody",
-    GET_PNODE: "getPNode",
-    GET_PARENT: "getParent",
-    GET_CHILDREN: "getChildren",
-    GET_SELECTED_NODE: "getSelectedNode",
-    SET_SELECTED_NODE: "setSelectedNode",
-    SET_BODY: "setBody",
-    SET_SELECTION: "setSelection",
-    SET_HEADLINE: "setNewHeadline",
-    EXPAND_NODE: "expandNode",
-    COLLAPSE_NODE: "collapseNode",
-    CONTRACT_ALL: "contractAllHeadlines",
-    GET_OPENED_FILES: "getOpenedFiles",
-    SET_OPENED_FILE: "setOpenedFile",
-    OPEN_FILE: "openFile",
-    OPEN_FILES: "openFiles", // Sends an array of paths instead: for opening many files at once
-    CLOSE_FILE: "closeFile",
-    SAVE_FILE: "saveFile",
-    SAVE_CLOSE_FILE: "saveCloseFile", // Save and close current document
-    GET_BUTTONS: "getButtons",
-    REMOVE_BUTTON: "removeButton",
-    CLICK_BUTTON: "clickButton",
-    GET_COMMANDS: "getCommands", // ask leoBridge for the list of known commands, (starting with text string)
-    GIT_DIFF: "gitDiff", // TODO : Proof of concept leoCommand
+    TEST: "!test",
+    // * Server Commands
+    GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
+    APPLY_CONFIG: "!set_config", // "applyConfig",
+    ASK_RESULT: "!set_ask_result", // "askResult",
+    // * GUI
+    GET_ALL_GNX: "!get_all_gnx", // "getAllGnx",
+    GET_BODY_LENGTH: "!get_body_length", // "getBodyLength",
+    GET_BODY_STATES: "!get_body_states", // "getBodyStates",
+    GET_BODY: "!get_body", // "getBody",
+    GET_PARENT: "!get_parent", // "getParent",
+    GET_CHILDREN: "!get_children", // "getChildren",
+    SET_SELECTED_NODE: "!set_current_position", // "setSelectedNode",
+    SET_BODY: "!set_body", // "setBody",
+    SET_SELECTION: "!set_selection", // "setSelection",
+    SET_HEADLINE: "!set_headline", // "setNewHeadline",
+    EXPAND_NODE: "!expand_node", // "expandNode",
+    COLLAPSE_NODE: "!contract_node", // "collapseNode",
+    CONTRACT_ALL: "contractAllHeadlines", // * Direct Leo Command
+    GET_STATES: "!get_ui_states", // "getStates",
+    // * Leo Documents
+    GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles", // TODO : contains selection
+    SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile", // TODO : use index instead of filename
+    OPEN_FILE: "!open_file", // "openFile",
+    OPEN_FILES: "!open_files", //  "openFiles", // TODO : Sends an array of paths instead: for opening many files at once
+    CLOSE_FILE: "!close_file", // "closeFile",
+    SAVE_FILE: "!save_file", // "saveFile",
+    // * @-Buttons
+    GET_BUTTONS: "!get_buttons", // "getButtons",
+    REMOVE_BUTTON: "!remove_button", // "removeButton",
+    CLICK_BUTTON: "!click_button", // "clickButton",
     // * Goto operations
-    PAGE_UP: "pageUp",
-    PAGE_DOWN: "pageDown",
-    GOTO_FIRST_VISIBLE: "goToFirstVisibleNode",
-    GOTO_LAST_VISIBLE: "goToLastVisibleNode",
-    GOTO_LAST_SIBLING: "goToLastSibling",
-    GOTO_NEXT_VISIBLE: "selectVisNext",
-    GOTO_PREV_VISIBLE: "selectVisBack",
-    GOTO_NEXT_MARKED: "goToNextMarkedHeadline",
-    GOTO_NEXT_CLONE: "goToNextClone",
-    CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent",
-    EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild",
+    PAGE_UP: "!page_up", // "pageUp",
+    PAGE_DOWN: "!page_down", // "pageDown",
+    GOTO_FIRST_VISIBLE: "goToFirstVisibleNode", // * Direct Leo Command
+    GOTO_LAST_VISIBLE: "goToLastVisibleNode", // * Direct Leo Command
+    GOTO_LAST_SIBLING: "goToLastSibling", // * Direct Leo Command
+    GOTO_NEXT_VISIBLE: "selectVisNext", // * Direct Leo Command
+    GOTO_PREV_VISIBLE: "selectVisBack", // * Direct Leo Command
+    GOTO_NEXT_MARKED: "goToNextMarkedHeadline", // * Direct Leo Command
+    GOTO_NEXT_CLONE: "goToNextClone", // * Direct Leo Command
+    CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent", // * Direct Leo Command
+    EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild", // * Direct Leo Command
     // * Leo Operations
-    MARK_PNODE: "markPNode",
-    UNMARK_PNODE: "unmarkPNode",
-    COPY_PNODE: "copyOutline", // was overridden as "copyPNode"
-    CUT_PNODE: "cutPNode",
-    PASTE_PNODE: "pasteOutline", // was overridden as "pastePNode"
-    PASTE_CLONE_PNODE: "pasteOutlineRetainingClones", // was overridden as "pasteAsClonePNode"
-    DELETE_PNODE: "deletePNode",
-    MOVE_PNODE_DOWN: "moveOutlineDown", // was overridden as "movePNodeDown"
-    MOVE_PNODE_LEFT: "moveOutlineLeft", // was overridden as "movePNodeLeft"
-    MOVE_PNODE_RIGHT: "moveOutlineRight", // was overridden as "movePNodeRight"
-    MOVE_PNODE_UP: "moveOutlineUp", // was overridden as "movePNodeUp"
-    INSERT_PNODE: "insertPNode",
-    INSERT_NAMED_PNODE: "insertNamedPNode",
-    CLONE_PNODE: "clonePNode",
-    PROMOTE_PNODE: "promote", // was overridden as "promotePNode"
-    DEMOTE_PNODE: "demote", // was overridden as "demotePNode"
-    REFRESH_FROM_DISK_PNODE: "refreshFromDisk", // was overridden as "refreshFromDiskPNode"
-    SORT_CHILDREN: "sortChildren", // was overridden as "sortChildrenPNode"
-    SORT_SIBLINGS: "sortSiblings", // was overridden as "sortSiblingsPNode"
-    UNDO: "undo",
-    REDO: "redo",
-    EXECUTE_SCRIPT: "executeScript",
-    GET_STATES: "getStates",
-    HOIST_PNODE: "hoist",
-    DEHOIST: "dehoist",
-    EXTRACT: "extract",
-    EXTRACT_NAMES: "extractNames",
-    COPY_MARKED: "copyMarked",
-    DIFF_MARKED_NODES: "deleteMarked",
-    MARK_CHANGED_ITEMS: "markChangedHeadlines",
-    MARK_SUBHEADS: "markSubheads",
-    UNMARK_ALL: "unmarkAll",
-    CLONE_MARKED_NODES: "cloneMarked",
-    DELETE_MARKED_NODES: "deleteMarked",
-    MOVE_MARKED_NODES: "moveMarked",
+    MARK_PNODE: "!mark_node", // "markPNode",
+    UNMARK_PNODE: "!unmark_node", // "unmarkPNode",
+    COPY_PNODE: "copyOutline", // * Direct Leo Command
+    CUT_PNODE: "!cut_node", // "cutPNode",
+    PASTE_PNODE: "pasteOutline", // * Direct Leo Command
+    PASTE_CLONE_PNODE: "pasteOutlineRetainingClones", // * Direct Leo Command
+    DELETE_PNODE: "!delete_node", // "deletePNode",
+    MOVE_PNODE_DOWN: "moveOutlineDown", // * Direct Leo Command
+    MOVE_PNODE_LEFT: "moveOutlineLeft", // * Direct Leo Command
+    MOVE_PNODE_RIGHT: "moveOutlineRight", // * Direct Leo Command
+    MOVE_PNODE_UP: "moveOutlineUp", // * Direct Leo Command
+    INSERT_PNODE: "!insert_node", // "insertPNode",
+    INSERT_NAMED_PNODE: "!insert_named_node", // "insertNamedPNode",
+    CLONE_PNODE: "!clone_node", // "clonePNode",
+    PROMOTE_PNODE: "promote", // * Direct Leo Command
+    DEMOTE_PNODE: "demote", // * Direct Leo Command
+    REFRESH_FROM_DISK_PNODE: "refreshFromDisk", // * Direct Leo Command
+    SORT_CHILDREN: "sortChildren", // * Direct Leo Command
+    SORT_SIBLINGS: "sortSiblings", // * Direct Leo Command
+    UNDO: "!undo",
+    REDO: "!redo",
+    EXECUTE_SCRIPT: "executeScript", // * Direct Leo Command
+    HOIST_PNODE: "hoist", // * Direct Leo Command
+    DEHOIST: "dehoist", // * Direct Leo Command
+    EXTRACT: "extract", // * Direct Leo Command
+    EXTRACT_NAMES: "extractNames", // * Direct Leo Command
+    COPY_MARKED: "copyMarked", // * Direct Leo Command
+    DIFF_MARKED_NODES: "deleteMarked", // * Direct Leo Command
+    MARK_CHANGED_ITEMS: "markChangedHeadlines", // * Direct Leo Command
+    MARK_SUBHEADS: "markSubheads", // * Direct Leo Command
+    UNMARK_ALL: "unmarkAll", // * Direct Leo Command
+    CLONE_MARKED_NODES: "cloneMarked", // * Direct Leo Command
+    DELETE_MARKED_NODES: "deleteMarked", // * Direct Leo Command
+    MOVE_MARKED_NODES: "moveMarked", // * Direct Leo Command
+    GIT_DIFF: "gitDiff", // * Direct Leo Command
     // TODO : @boltex More commands to implement #24
-    CLONE_FIND_ALL: "cloneFindAll", // #24 @boltex
-    CLONE_FIND_ALL_FLATTENED: "cloneFindAllFlattened", // #24 @boltex
-    CLONE_FIND_MARKED: "cloneFindMarked", // #24 @boltex
-    CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // #24 @boltex
+    START_SEARCH: "!start_search",
+    FIND_NEXT: "!find_next",
+    FIND_PREVIOUS: "!find_previous",
+    CLONE_FIND_ALL: "!clone_find_all",
+    CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
+    CLONE_FIND_MARKED: "cloneFindMarked", // * Direct Leo Command
+    CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // * Direct Leo Command
 };
 
 </t>
@@ -5644,6 +5645,9 @@ public static COMMANDS = {
     DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
     MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes",
     // * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - not implemented yet #24
+    START_SEARCH: Constants.NAME + ".startSearch",
+    FIND_NEXT: Constants.NAME + ".findNext",
+    FIND_PREVIOUS: Constants.NAME + ".findPrevious",
     CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
     CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
     CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
@@ -5815,6 +5819,7 @@ public static CONFIG_NAMES = {
     SHOW_CLONE: "showCloneOnNodes",
     SHOW_COPY: "showCopyOnNodes",
     INVERT_NODES: "invertNodeContrast",
+    LEO_SERVER_PATH: "leoServerPath",
     LEO_PYTHON_COMMAND: "leoPythonCommand",
     AUTO_START_SERVER: "startServerAutomatically",
     AUTO_CONNECT: "connectToServerAutomatically",
@@ -6082,6 +6087,7 @@ export class Config implements ConfigMembers {
     public showCopyOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_COPY;
     public invertNodeContrast: boolean = Constants.CONFIG_DEFAULTS.INVERT_NODES;
     public leoPythonCommand: string = Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND;
+    public leoServerPath: string = Constants.CONFIG_DEFAULTS.LEO_SERVER_PATH;
     public startServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_START_SERVER;
     public connectToServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_CONNECT;
     public connectionAddress: string = Constants.CONFIG_DEFAULTS.IP_ADDRESS;
@@ -6121,6 +6127,7 @@ public getConfig(): ConfigMembers {
         showCopyOnNodes: this.showCopyOnNodes,
         invertNodeContrast: this.invertNodeContrast,
         leoPythonCommand: this.leoPythonCommand,
+        leoServerPath: this.leoServerPath,
         startServerAutomatically: this.startServerAutomatically,
         connectToServerAutomatically: this.connectToServerAutomatically,
         connectionAddress: this.connectionAddress,
@@ -6202,6 +6209,7 @@ public buildFromSavedSettings(): void {
         this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
         this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
         this.invertNodeContrast = GET(NAME).get(NAMES.INVERT_NODES, DEFAULTS.INVERT_NODES);
+        this.leoServerPath = GET(NAME).get(NAMES.LEO_SERVER_PATH, DEFAULTS.LEO_SERVER_PATH);
         this.leoPythonCommand = GET(NAME).get(NAMES.LEO_PYTHON_COMMAND, DEFAULTS.LEO_PYTHON_COMMAND);
         this.startServerAutomatically = GET(NAME).get(NAMES.AUTO_START_SERVER, DEFAULTS.AUTO_START_SERVER);
         this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);
@@ -6221,8 +6229,11 @@ public buildFromSavedSettings(): void {
         utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
         utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
         utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
-        utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
-        utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
+        if (!this._leoIntegration.finishedStartup) {
+            // Only relevant 'viewWelcome' content at startup.
+            utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
+            utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
+        }
     }
 }
 
@@ -6282,7 +6293,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
 
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        // ["leointeg.test", () =&gt; w_leo.test()], // Test function useful when debugging
+        ["leointeg.test", () =&gt; w_leo.test()], // Test function useful when debugging
         // ["leointeg.testFromOutline", () =&gt; w_leo.test(true)], // Test function useful when debugging.
 
         &lt;&lt; Define entries for all commands &gt;&gt;
@@ -6399,7 +6410,7 @@ import { BodyTimeInfo } from "./types";
                             type: vscode.FileType.File,
                             ctime: this._openedBodiesInfo[w_gnx].ctime,
                             mtime: this._openedBodiesInfo[w_gnx].mtime,
-                            size: p_result.bodyLength ? p_result.bodyLength : 0
+                            size: p_result.len ? p_result.len : 0
                         }
                     );
                 });
@@ -6422,13 +6433,13 @@ import { BodyTimeInfo } from "./types";
             } else {
                 return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY, '"' + w_gnx + '"')
                     .then((p_result) =&gt; {
-                        if (p_result.bodyData) {
+                        if (p_result.body) {
                             this._lastGnx = w_gnx;
-                            this._lastBodyData = p_result.bodyData;
-                            const w_buffer: Uint8Array = Buffer.from(p_result.bodyData);
+                            this._lastBodyData = p_result.body;
+                            const w_buffer: Uint8Array = Buffer.from(p_result.body);
                             this._lastBodyLength = w_buffer.byteLength;
                             return Promise.resolve(w_buffer);
-                        } else if (p_result.bodyData === "") {
+                        } else if (p_result.body === "") {
                             this._lastGnx = w_gnx;
                             this._lastBodyLength = 0;
                             this._lastBodyData = "";
@@ -6472,15 +6483,20 @@ import { BodyTimeInfo } from "./types";
 
 </t>
 <t tx="felix.20200718040540.14">public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
-    // console.log('trigger called in writeFile');
 
-    this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
+    if (!this.preventSaveToLeo) {
+        this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
+    } else {
+        this.preventSaveToLeo = false;
+    }
+
     const w_gnx = utils.leoUriToStr(p_uri);
 
     if (!this._openedBodiesGnx.includes(w_gnx)) {
-        console.error("ASKED TO REFRESH NOT EVEN IN SELECTED BODY: ", w_gnx);
+        console.error("ASKED TO SAVE NOT EVEN IN SELECTED BODY: ", w_gnx);
         this._openedBodiesGnx.push(w_gnx);
     }
+
     const w_now = new Date().getTime();
     this._openedBodiesInfo[w_gnx] = {
         ctime: w_now,
@@ -6542,6 +6558,9 @@ import { BodyTimeInfo } from "./types";
  * Saving and renaming prevents flickering and prevents undos to 'traverse through' different gnx
  */
 export class LeoBodyProvider implements vscode.FileSystemProvider {
+
+    // * Flag normally false
+    public preventSaveToLeo: boolean = false;
 
     // * Simple structure to keep mtime of selected and renamed body virtual files
     private _selectedBody: string = "";
@@ -6624,11 +6643,7 @@ public fireRefreshFile(p_gnx: string): void {
 public refreshPossibleGnxList(): Thenable&lt;string[]&gt; {
     // * Get updated list of possible gnx
     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_ALL_GNX).then((p_result) =&gt; {
-        if (p_result.allGnx) {
-            this._possibleGnxList = p_result.allGnx;
-        } else {
-            this._possibleGnxList = [];
-        }
+        this._possibleGnxList = p_result.gnx || [];
         return Promise.resolve(this._possibleGnxList);
     });
 }
@@ -7154,14 +7169,15 @@ public refreshTreeRoot(): void {
 
         // call action to get get list, and convert to LeoDocumentNode(s) array
         return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package =&gt; {
-            if (p_package &amp;&amp; p_package) {
+            if (p_package &amp;&amp; p_package.files) {
                 const w_list: LeoDocumentNode[] = [];
-                const w_files: LeoDocument[] = p_package.openedFiles!.files;
+                const w_files: LeoDocument[] = p_package.files;
 
                 let w_index: number = 0;
 
                 if (w_files &amp;&amp; w_files.length) {
                     w_files.forEach((i_file: LeoDocument) =&gt; {
+                        i_file.index = w_index;
                         w_list.push(new LeoDocumentNode(i_file, this._leoIntegration));
                         w_index++;
                     });
@@ -7339,29 +7355,6 @@ export class LeoNode extends vscode.TreeItem {
     @others
 }
 </t>
-<t tx="felix.20200718170712.3">/**
- * * Sets this node properties (dirty, marked, etc.) by copying from a given node.
- * * This is needed by the outline provider when refreshing a single node.
- * @param p_node Node to copy properties from.
- * @returns Node itself with the new properties applied
- */
-public copyProperties(p_node: LeoNode): LeoNode {
-    this.label = p_node.label;
-    this.gnx = p_node.gnx;
-    this.collapsibleState = p_node.collapsibleState;
-    this.apJson = p_node.apJson;
-    this.childIndex = p_node.childIndex;
-    this.cloned = p_node.cloned;
-    this.dirty = p_node.dirty;
-    this.marked = p_node.marked;
-    this.atFile = p_node.atFile;
-    this.hasBody = p_node.hasBody;
-    this.isRoot = p_node.isRoot;
-    this.contextValue = this._getNodeContextValue();
-    return this;
-}
-
-</t>
 <t tx="felix.20200718170712.4">/**
  * * Set this node as the root for hoist/dehoist context flags purposes
  */
@@ -7463,24 +7456,10 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider&lt;LeoNode&gt
 
     readonly onDidChangeTreeData: vscode.Event&lt;LeoNode | undefined&gt; = this._onDidChangeTreeData.event;
 
-    // used in leoOutline.ts to check if getTreeItem(element: LeoNode) should fetch from Leo, or return as-is
-    private _refreshSingleNodeFlag: boolean = false;
-
     constructor(private _leoIntegration: LeoIntegration) { }
 
     @others
 }
-</t>
-<t tx="felix.20200718180428.3">/**
- * * Refresh a single node
- * @param p_node The outline's node itself as a LeoNode instance
- */
-public refreshTreeNode(p_node: LeoNode): void {
-    // Do a real node refresh, not just giving back the same element: see getTreeItem(element) below
-    this._refreshSingleNodeFlag = true;
-    this._onDidChangeTreeData.fire(p_node);
-}
-
 </t>
 <t tx="felix.20200718180428.4">/**
  * * Refresh the whole outline
@@ -7492,16 +7471,7 @@ public refreshTreeRoot(): void {
 
 </t>
 <t tx="felix.20200718180428.5">public getTreeItem(element: LeoNode): Thenable&lt;LeoNode&gt; | LeoNode {
-    if (this._refreshSingleNodeFlag) {
-        this._refreshSingleNodeFlag = false;
-        return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PNODE, element.apJson)
-            .then((p_package: LeoBridgePackage) =&gt; {
-                const w_node = this._leoIntegration.apToLeoNode(p_package.node!, true, element);
-                return element.copyProperties(w_node);
-            });
-    } else {
-        return element;
-    }
+    return element;
 }
 
 </t>
@@ -7512,12 +7482,12 @@ public refreshTreeRoot(): void {
     if (element) {
         return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element.apJson)
             .then((p_package: LeoBridgePackage) =&gt; {
-                return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+                return this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
             });
     } else {
         return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, "null")
             .then((p_package: LeoBridgePackage) =&gt; {
-                const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+                const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
                 if (w_nodes &amp;&amp; w_nodes.length === 1) {
                     w_nodes[0].setRoot();
                 }
@@ -7728,10 +7698,34 @@ export class ServerService {
  * @param p_leoPythonCommand String command to start python on this computer
  * @returns A promise that resolves when the server is started, or that is rejected in case of problem while starting
  */
-public startServer(p_leoPythonCommand: string): Promise&lt;any&gt; {
-    let w_pythonPath = "";
-    this._leoIntegration.showTerminalPane();
-    const w_serverScriptPath = this._context.extensionPath + Constants.SERVER_PATH;
+public startServer(p_leoPythonCommand: string, p_leoServerPath: string): Promise&lt;any&gt; {
+
+    let w_pythonPath = ""; // Command of child.spawn call
+
+    /*
+        * For child_process.spawn(command[, args][, options])
+
+        The child_process.spawn() method spawns a new process
+        using the given command, with command-line arguments in args.
+        If omitted, args defaults to an empty array.
+
+        If the shell option is enabled, do not pass unsanitized
+        user input to this function. Any input containing shell
+        metacharacters may be used to trigger arbitrary command execution.
+
+        A third argument may be used to specify additional options, with these defaults:
+
+        const defaults = {
+            cwd: undefined,
+            env: process.env
+        };
+
+    */
+    this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
+
+    // If a leo server path is set then use it - otherwise use old script for now
+    const w_serverScriptPath = p_leoServerPath ? p_leoServerPath : this._context.extensionPath + Constants.SERVER_PATH;
+
     if (p_leoPythonCommand &amp;&amp; p_leoPythonCommand.length) {
         // Start by running command (see executeCommand for multiple useful snippets)
         w_pythonPath = p_leoPythonCommand; // Set path
@@ -8036,31 +8030,23 @@ import { LeoNode } from "./leoNode";
  * * Main interface for JSON sent from Leo back to leoInteg
  */
 export interface LeoBridgePackage {
-    id: number; // TODO : Could be used for error checking
-    // * Each of those top level member is an answer from a "Constants.LEOBRIDGE" command
-    allGnx?: string[];
-    bodyLength?: number;
-    bodyData?: string;
-    bodyStates?: {
-        language: string;
-        selection: BodySelectionInfo;
-    }
-    node?: ArchivedPosition;
-    nodes?: ArchivedPosition[];
-    states?: LeoPackageStates;
-    closed?: {
-        total: number;
-        filename?: string;
-        node?: ArchivedPosition;
-    },
-    opened?: LeoBridgePackageOpenedInfo,
-    setOpened?: LeoBridgePackageOpenedInfo,
-    openedFiles?: {
-        index: number;
-        files: LeoDocument[];
-    }
-    buttons?: LeoButton[];
-    commands?: MinibufferCommand[];
+    // * Common to all result packages
+    id: number;
+    // * Possible answers from a "Constants.LEOBRIDGE" command
+    gnx?: string[]; // get_all_gnx
+    len?: number; // get_body_length
+    body?: string; // get_body
+    buttons?: LeoButton[]; // get_buttons
+    commands?: MinibufferCommand[]; // getCommands
+    filename?: string; // set_opened_file, open_file(s), ?close_file
+    files?: LeoDocument[]; // get_all_open_commanders
+    index?: number; // get_all_open_commanders
+    language?: string; // get_body_states
+    node?: ArchivedPosition; // get_parent, set_opened_file, open_file(s), ?close_file
+    children?: ArchivedPosition[]; // get_children
+    selection?: BodySelectionInfo; // get_body_states
+    states?: LeoPackageStates; // get_ui_states
+    total?: number; // set_opened_file, open_file(s), close_file
 }
 
 </t>
@@ -8107,11 +8093,11 @@ export interface BodyTimeInfo {
  */
 export interface showSaveAsDialogParameters {
     // See TODO in leoAsync.ts
-    "initialFile": string;
-    "title": string;
-    "message": string;
-    "filetypes": string[];
-    "defaultExtension": string;
+    initialFile: string;
+    title: string;
+    message: string;
+    filetypes: string[];
+    defaultExtension: string;
 }
 
 </t>
@@ -8119,10 +8105,10 @@ export interface showSaveAsDialogParameters {
  * * Parameter structure used in the 'runAskYesNoDialog' equivalent when asking user input
  */
 export interface runAskYesNoDialogParameters {
-    "ask": string;
-    "message": string;
-    "yes_all": boolean;
-    "no_all": boolean;
+    ask: string;
+    message: string;
+    yes_all: boolean;
+    no_all: boolean;
 }
 
 </t>
@@ -8130,8 +8116,8 @@ export interface runAskYesNoDialogParameters {
  * * Parameter structure used in the 'runAskOkDialog' equivalent when showing a warning
  */
 export interface runWarnMessageDialogParameters {
-    "warn": string;
-    "message": string;
+    warn: string;
+    message: string;
 }
 
 </t>
@@ -8139,7 +8125,7 @@ export interface runWarnMessageDialogParameters {
  * * Parameter structure for non-blocking info message about detected file changes
  */
 export interface runInfoMessageDialogParameters {
-    "message": string;
+    message: string;
 }
 
 </t>
@@ -8171,6 +8157,7 @@ export interface ConfigMembers {
     showCloneOnNodes: boolean;
     showCopyOnNodes: boolean;
     invertNodeContrast: boolean;
+    leoServerPath: string;
     leoPythonCommand: string;
     startServerAutomatically: boolean;
     connectToServerAutomatically: boolean;
@@ -8217,7 +8204,7 @@ export interface ReqRefresh {
 export interface UserCommand {
     action: string; // String from Constants.LEOBRIDGE, which are commands for leobridgeserver
     node?: LeoNode | undefined;  // We can START a stack with a targeted command
-    text?: string | undefined; // If a string is required, for headline, etc.
+    name?: string | undefined; // If a string is required, for headline, etc.
     refreshType: ReqRefresh; // Minimal refresh level required by this command
     fromOutline: boolean; // Focus back on outline instead of body
     keepSelection?: boolean; // Should bring back selection on node prior to command
@@ -8285,7 +8272,7 @@ import { LeoNode } from "./leoNode";
 </t>
 <t tx="felix.20200718195558.10">/**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
- * with a scheme header like "leo:/" or 'more:/' 
+ * with a scheme header like "leo:/" or 'more:/'
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */
@@ -8362,15 +8349,15 @@ export function buildDocumentIconPaths(p_context: vscode.ExtensionContext): Icon
 
 </t>
 <t tx="felix.20200718195558.6">/**
- * * Builds and returns a JSON string with 'node' and 'text' members
+ * * Builds and returns a JSON string with 'node' and 'name' members
  * @param p_nodeJson Targeted tree node in the proper JSON format
- * @param p_text Desired text sent along with node in the parameters of the action to be 'called'
+ * @param p_command from which to extract possible name and 'keep selection' flag
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
 export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand): string {
-    let w_json = "{\"node\":" + p_nodeJson; // already json
-    if (p_command.text) {
-        w_json += ", \"text\": " + JSON.stringify(p_command.text);
+    let w_json = "{\"ap\":" + p_nodeJson; // already json
+    if (p_command.name) {
+        w_json += ", \"name\": " + JSON.stringify(p_command.name);
     }
     if (p_command.keepSelection) {
         w_json += ", \"keep\": true";
@@ -8444,22 +8431,13 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 @tabwidth -4
 # Change Log
 
-## 0.1.13
+## 0.1.14
 
--   Added support for precise focus placement, focus switch between tree/body.
--   Made the extension more aware of the current selection state, to have strictly relevant buttons visible shown only.
--   Made the 'edit headline' hover icon removable, in order to enable 'Tab' keybinding to go from tree to body directly.
--   Added commands and keybindings for 'goto' operations 'hoist/dehoist' [#25](https://github.com/boltex/leointeg/issues/25) and other commands. [#30](https://github.com/boltex/leointeg/issues/30)
--   Added support for Leo-Style outline navigation. [#43](https://github.com/boltex/leointeg/issues/43) Has to be enabled with an option in the config settings: "Use Leo Tree Browsing" which makes the arrow keys, pgUp/pgDn, home/end move the selection instead of a cursor when focus is on Leo's outline.
--   Implemented @buttons in it's own panel, visible where the already existing 'outline' and 'opened leo documents' panels reside.
--   Added (basic) unknown attributes support as hover tooltip and small description on node headlines.
--   Added a 'leoBridge Server Terminal Panel' to gather output of the leoBridge stdOut pipe. It's displayed among the 'output panels', along with the standard 'leo log window', when the server is started by leoInteg. (either with the auto-start config setting, or by calling the 'start server' command via buttons or the command-palette.)
--   Syntax coloring and Snippets are now enabled for those languages : C, C++, CSS, HTML, Java, Javascript, json, Markdown, PHP, Python, Rust and Typescript. They are taken from the default extension for that language, or if non-existent, from the most popular extension for that language
--   Recent files are now remembered and restored upon re-opening vscode.
--   Leo files can be opened from the explorer pane directly.
--   Added 'minibuffer' feature with the usual alt-x command from Leo.
--   Added cursor position, selected range and scrolling position to be captured and restored when navigating the outline. [#39](https://github.com/boltex/leointeg/issues/39) This allows for commands that use the currently selected text, [#61](https://github.com/boltex/leointeg/issues/61) such as run script and extract/extract name, etc.
--   Redid the body display and switching logic to support new vscode API features. (vscode now does not block 'undo' operations between file-rename operations, which were used to switch body pane content.)
+-   Rewrite of the leobridgeserver.py and made compatible with leoserver.py from Leo itself.
+-   Added option for specifying server file and path. Defaults to the internal leobridgeserver.py server.
+-   Fixed cursor position and selection bugs. 
+-   Fixed automatic server startup and connection bugs.
+-   (...)
 
 @others
 </t>
@@ -8612,6 +8590,10 @@ This occurs when an outline node or a body pane has focus:
 <t tx="felix.20200718222108.1">## Issues
 
 Main issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
+
+### Keybindings Conflicts Resolution
+
+If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane, add **`&amp;&amp; resourceScheme != 'leo'`** to the keybinding's "*when*" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Linux Keybindings
 
@@ -8876,7 +8858,6 @@ import {
     ReqRefresh,
     ChooseDocumentItem,
     LeoDocument,
-    LeoBridgePackageOpenedInfo,
     MinibufferCommand,
     UserCommand,
     ShowBodyParam,
@@ -8911,12 +8892,14 @@ private _openLastFiles(): Promise&lt;vscode.TextEditor&gt; {
     // Loop through context.globalState.&lt;something&gt; and check if they exist: open them
     const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
     if (w_lastFiles.length) {
-        return this.sendAction(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ "files": w_lastFiles }))
+        return this.sendAction(Constants.LEOBRIDGE.OPEN_FILES, JSON.stringify({ files: w_lastFiles }))
             .then((p_openFileResult: LeoBridgePackage) =&gt; {
                 this.leoStates.leoBridgeReady = true;
-                return this._setupOpenedLeoDocument(p_openFileResult.opened!);
+                this.finishedStartup = true;
+                return this._setupOpenedLeoDocument(p_openFileResult);
             }, p_errorOpen =&gt; {
                 this.leoStates.leoBridgeReady = true;
+                this.finishedStartup = true;
                 console.log('in .then not opened or already opened');
                 return Promise.reject(p_errorOpen);
             });
@@ -9027,6 +9010,7 @@ private _triggerGetStates(): void {
 export class LeoIntegration {
 
     // * Status Flags
+    public finishedStartup: boolean = false;
     private _leoIsConnecting: boolean = false; // Used in connect method, to prevent other attempts while trying
     private _leoBridgeReadyPromise: Promise&lt;LeoBridgePackage&gt; | undefined; // Is set when leoBridge has a leo controller ready
     private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Might need to be re-set when switching visibility
@@ -9136,6 +9120,7 @@ export class LeoIntegration {
     // * Timing
     private _needLastSelectedRefresh = false;
     private _bodyLastChangedDocument: vscode.TextDocument | undefined; // Only set in _onDocumentChanged
+    private _bodyLastChangedDocumentSaved: boolean = true; // don't use 'isDirty' of the document!
 
     // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
     public getStates: (() =&gt; void) &amp; {
@@ -9197,12 +9182,12 @@ private _setupNoOpenedLeoDocument(): void {
  * @param p_openFileResult Returned info about currently opened and editing document
  * @return a promise that resolves to an opened body pane text editor
  */
-private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackageOpenedInfo): Promise&lt;vscode.TextEditor&gt; {
-    const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node, false); // Just to get gnx for the body's fist appearance
-    this.leoStates.leoOpenedFileName = p_openFileResult.filename;
+private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackage): Promise&lt;vscode.TextEditor&gt; {
+    const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node!, false); // Just to get gnx for the body's fist appearance
+    this.leoStates.leoOpenedFileName = p_openFileResult.filename!;
 
     // * If not unnamed file add to recent list &amp; last opened list
-    this._addRecentAndLastFile(p_openFileResult.filename);
+    this._addRecentAndLastFile(p_openFileResult.filename!);
 
     // * Could be already opened, so perform 'rename hack' as if another node was selected
     if (this._bodyTextDocument &amp;&amp; this.bodyUri) {
@@ -9434,6 +9419,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
 
         // * There was an actual change on a Leo Body by the user
         this._bodyLastChangedDocument = p_textDocumentChange.document;
+        this._bodyLastChangedDocumentSaved = false;
         this._bodyPreviewMode = false;
         this._fromOutline = false; // Focus is on body pane
 
@@ -9464,12 +9450,18 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
  */
 public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise&lt;boolean&gt; {
     // * Save body to Leo if a change has been made to the body 'document' so far
-    if (this._bodyLastChangedDocument &amp;&amp; this._bodyLastChangedDocument.isDirty) {
+    if (this._bodyLastChangedDocument &amp;&amp;
+        this._bodyLastChangedDocument.isDirty &amp;&amp;
+        !this._bodyLastChangedDocumentSaved) {
         const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
-        this._bodyLastChangedDocument = undefined; // reset to make falsy
+        if (p_forcedVsCodeSave) {
+            console.log('FORCED SAVE');
+        }
+        this._bodyLastChangedDocumentSaved = true;
         return this._bodySaveDocument(w_document, p_forcedVsCodeSave);
+
     } else {
-        this._bodyLastChangedDocument = undefined;
+        this._bodyLastChangedDocumentSaved = true;
         return this._bodySaveSelection();
     }
 }
@@ -9756,9 +9748,24 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
         this._bodyTextDocument = p_document;
 
         // * Set document language along with the proper cursor position, selection range and scrolling position
-        this._setLanguageAndSelection(this._bodyTextDocument);
+        const q_bodyStates: Promise&lt;LeoBridgePackage&gt; = this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode!.apJson);
 
-        // Find body pane's position if already opened
+        q_bodyStates.then(
+            (p_bodyStates: LeoBridgePackage) =&gt; {
+                let w_language: string = p_bodyStates.language!;
+                // Replace language string if in 'exceptions' array
+                w_language = "leobody." + (Constants.LANGUAGE_CODES[w_language] || w_language);
+                // Apply language if the selected node is still the same after all those events
+                if (
+                    !p_document.isClosed &amp;&amp; this.lastSelectedNode &amp;&amp;
+                    utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
+                ) {
+                    vscode.languages.setTextDocumentLanguage(p_document, w_language);
+                }
+            }
+        );
+
+        // Find body pane's position if already opened with same gnx (language still needs to be set per position)
         vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
             if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
                 this._bodyMainSelectionColumn = p_textEditor.viewColumn;
@@ -9780,11 +9787,63 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
             };
 
         // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
-        return vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions).then(w_bodyEditor =&gt; {
-            // TODO : #38 if position is in an derived file node show relative position
-            // w_bodyEditor.options.lineNumbers = OFFSET;
-            return Promise.resolve(w_bodyEditor);
-        });
+        const q_showTextDocument = vscode.window.showTextDocument(this._bodyTextDocument, w_showOptions);
+
+        Promise.all([q_bodyStates, q_showTextDocument])
+            .then((p_values: [LeoBridgePackage, vscode.TextEditor]) =&gt; {
+                const w_resultBodyStates = p_values[0];
+                const w_bodyTextEditor = p_values[1];
+                const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
+
+                console.log("got states for same gnx", w_leoBodySel.gnx === this.lastSelectedNode!.gnx);
+
+                console.log('id: ' + w_resultBodyStates.id + ' - got scroll: ', w_leoBodySel.scroll);
+
+                let w_scrollRange: vscode.Range | undefined;
+
+                // ! TEST scroll as single number instead.
+                const w_scroll: number = w_leoBodySel.scroll;
+                if (w_scroll) {
+                    w_scrollRange = new vscode.Range(
+                        w_scroll,
+                        0,
+                        w_scroll,
+                        0
+                    );
+                }
+
+                // Cursor position and selection range
+                const w_activeRow: number = w_leoBodySel.insert.line;
+                const w_activeCol: number = w_leoBodySel.insert.col;
+                let w_anchorLine: number = w_leoBodySel.start.line;
+                let w_anchorCharacter: number = w_leoBodySel.start.col;
+
+                if (w_activeRow === w_anchorLine &amp;&amp;
+                    w_activeCol === w_anchorCharacter) {
+                    // Active insertion same as start selection, so use the other ones
+                    w_anchorLine = w_leoBodySel.end.line;
+                    w_anchorCharacter = w_leoBodySel.end.col;
+                }
+
+                const w_selection = new vscode.Selection(
+                    w_anchorLine,
+                    w_anchorCharacter,
+                    w_activeRow,
+                    w_activeCol
+                );
+
+                w_bodyTextEditor.selection = w_selection; // set cursor insertion point &amp; selection range
+
+                if (!w_scrollRange) {
+                    w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
+                }
+
+                // TODO : SEE IF NEEDED OR EVEN IF SHOULD BE SET AT w_selection RANGE INSTEAD!
+                // ? does Leo even ever tries to set scroll away from selection after a search result?
+                // w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
+            });
+
+        return q_showTextDocument;
     });
 }
 
@@ -9885,7 +9944,7 @@ public editHeadline(p_node?: LeoNode, p_fromOutline?: boolean): Promise&lt;LeoBr
                     node: p_node,
                     refreshType: { tree: true, states: true },
                     fromOutline: !!p_fromOutline,
-                    text: p_newHeadline
+                    name: p_newHeadline
                 });
                 if (q_commandResult) {
                     return q_commandResult;
@@ -9926,7 +9985,7 @@ public insertNode(p_node?: LeoNode, p_fromOutline?: boolean, p_interrupt?: boole
                         node: p_node,
                         refreshType: { tree: true, states: true },
                         fromOutline: w_fromOutline,
-                        text: p_newHeadline
+                        name: p_newHeadline
                     });
                     if (q_commandResult) {
                         q_commandResult.then(p_package =&gt; p_resolve(p_package));
@@ -9975,7 +10034,7 @@ public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | und
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
                     fromOutline: !!p_fromOutline,
-                    text: p_chosenLeoFile
+                    name: p_chosenLeoFile
                 });
                 this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
                 this._leoStatusBar.update(true, 0, true);
@@ -10008,7 +10067,7 @@ public saveLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undef
                         node: undefined,
                         refreshType: { tree: true, states: true, documents: true },
                         fromOutline: !!p_fromOutline,
-                        text: ""
+                        name: ""
                     });
                     return q_commandResult ? q_commandResult : Promise.reject("Save file not added on command stack");
                 } else {
@@ -10032,11 +10091,11 @@ public startNetworkServices(): void {
     // * Check settings and start a server accordingly
     if (this.config.startServerAutomatically) {
         this.startServer();
-    } else {
+    } else if (this.config.connectToServerAutomatically) {
         // * (via settings) Connect to Leo Bridge server automatically without starting one first
-        if (this.config.connectToServerAutomatically) {
-            this.connect();
-        }
+        this.connect();
+    } else {
+        this.finishedStartup = true;
     }
 }
 
@@ -10052,15 +10111,10 @@ public switchLeoFile(): Promise&lt;vscode.TextEditor | undefined&gt; {
         })
         .then((p_package) =&gt; {
             const w_entries: ChooseDocumentItem[] = []; // Entries to offer as choices.
-            const w_files: LeoDocument[] = p_package.openedFiles!.files;
-            const w_selectedIndex: number = p_package.openedFiles!.index;
+            const w_files: LeoDocument[] = p_package.files!;
             let w_index: number = 0;
-            let w_currentlySelected = "";  // ? not used elsewhere ?
             if (w_files &amp;&amp; w_files.length) {
                 w_files.forEach(function (p_filePath: LeoDocument) {
-                    if (w_index === w_selectedIndex) {
-                        w_currentlySelected = p_filePath.name; // ? not used elsewhere ?
-                    }
                     w_entries.push({
                         label: w_index.toString(),
                         description: p_filePath.name ? p_filePath.name : Constants.UNTITLED_FILE_NAME,
@@ -10098,12 +10152,12 @@ public switchLeoFile(): Promise&lt;vscode.TextEditor | undefined&gt; {
 public selectOpenedLeoDocument(p_index: number): Promise&lt;vscode.TextEditor&gt; {
     return this._isBusyTriggerSave(true, true)
         .then((p_saveResult) =&gt; {
-            return this.sendAction(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ "index": p_index }));
+            return this.sendAction(Constants.LEOBRIDGE.SET_OPENED_FILE, JSON.stringify({ index: p_index }));
         })
         .then((p_openFileResult: LeoBridgePackage) =&gt; {
             // Like we just opened or made a new file
-            if (p_openFileResult.setOpened) {
-                return this._setupOpenedLeoDocument(p_openFileResult.setOpened);
+            if (p_openFileResult.filename) {
+                return this._setupOpenedLeoDocument(p_openFileResult);
             } else {
                 console.log('Select Opened Leo File Error');
                 return Promise.reject('Select Opened Leo File Error');
@@ -10128,16 +10182,17 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
             return this.sendAction(Constants.LEOBRIDGE.CLOSE_FILE, JSON.stringify({ forced: false }));
         })
         .then((p_tryCloseResult =&gt; {
-            if (p_tryCloseResult.closed) {
+            // Has a total member: closed file
+            if (p_tryCloseResult.total || p_tryCloseResult.total === 0) {
                 this._removeLastFile(w_removeLastFileName);
-                if (p_tryCloseResult.closed.total === 0) {
+                if (p_tryCloseResult.total === 0) {
                     this._setupNoOpenedLeoDocument();
                 } else {
                     this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
                 }
                 return Promise.resolve(true);
-            } else if (p_tryCloseResult.closed === false) {
-                // Explicitly false and not just undefined : FILE IS DIRTY
+            } else {
+                // No total member: did not close file
                 const q_askSaveChangesInfoMessage: Thenable&lt;vscode.MessageItem | undefined&gt; = vscode.window.showInformationMessage(
                     Constants.USER_MESSAGES.SAVE_CHANGES + ' ' +
                     this.leoStates.leoOpenedFileName + ' ' +
@@ -10152,11 +10207,11 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                                 // save and then force-close
                                 let w_savePromise: Promise&lt;LeoBridgePackage | undefined&gt;;
                                 if (this._isCurrentFileNamed()) {
-                                    w_savePromise = this.sendAction(Constants.LEOBRIDGE.SAVE_FILE, JSON.stringify({ text: "" }));
+                                    w_savePromise = this.sendAction(Constants.LEOBRIDGE.SAVE_FILE, JSON.stringify({ name: "" }));
                                 } else {
                                     w_savePromise = this._leoFilesBrowser.getLeoFileUrl(true).then((p_chosenLeoFile) =&gt; {
                                         if (p_chosenLeoFile.trim()) {
-                                            return this.sendAction(Constants.LEOBRIDGE.SAVE_FILE, JSON.stringify({ text: p_chosenLeoFile.trim() }));
+                                            return this.sendAction(Constants.LEOBRIDGE.SAVE_FILE, JSON.stringify({ name: p_chosenLeoFile.trim() }));
                                         } else {
                                             // Canceled
                                             return Promise.resolve(undefined);
@@ -10185,7 +10240,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                         if (p_closeResult) {
                             // * back from CLOSE_FILE action, the last that can be performed (after saving if dirty or not)
                             this._removeLastFile(w_removeLastFileName);
-                            if (p_closeResult &amp;&amp; p_closeResult.closed &amp;&amp; p_closeResult.closed.total === 0) {
+                            if (p_closeResult &amp;&amp; p_closeResult.total === 0) {
                                 this._setupNoOpenedLeoDocument();
                             } else {
                                 this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
@@ -10196,8 +10251,6 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                         return Promise.resolve(false);
                     });
             }
-            // else 'close' is undefined
-            return Promise.reject("Close command failed");
         }));
 }
 
@@ -10213,8 +10266,8 @@ public newLeoFile(): Promise&lt;vscode.TextEditor&gt; {
             return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '""');
         })
         .then((p_openFileResult: LeoBridgePackage) =&gt; {
-            if (p_openFileResult.opened) {
-                return this._setupOpenedLeoDocument(p_openFileResult.opened);
+            if (p_openFileResult.filename) {
+                return this._setupOpenedLeoDocument(p_openFileResult);
             } else {
                 return Promise.reject('New Leo File Error');
             }
@@ -10233,12 +10286,12 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;vscode.TextEditor | un
             let q_openedFile: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
             if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath.trim()) {
                 const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, "/");
-                q_openedFile = this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + w_fixedFilePath + '"');
+                q_openedFile = this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, JSON.stringify({ filename: w_fixedFilePath }));
             } else {
                 q_openedFile = this._leoFilesBrowser.getLeoFileUrl()
                     .then(p_chosenLeoFile =&gt; {
                         if (p_chosenLeoFile.trim()) {
-                            return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '"' + p_chosenLeoFile + '"');
+                            return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, JSON.stringify({ filename: p_chosenLeoFile }));
                         } else {
                             return Promise.resolve(undefined);
                         }
@@ -10250,7 +10303,7 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;vscode.TextEditor | un
         })
         .then((p_openFileResult: LeoBridgePackage | undefined) =&gt; {
             if (p_openFileResult) {
-                return this._setupOpenedLeoDocument(p_openFileResult.opened!);
+                return this._setupOpenedLeoDocument(p_openFileResult);
             } else {
                 return Promise.resolve(undefined);
             }
@@ -10282,11 +10335,16 @@ public startServer(): void {
     if (!this._leoTerminalPane) {
         this._leoTerminalPane = vscode.window.createOutputChannel(Constants.GUI.TERMINAL_PANE_TITLE);
     }
-    this._serverService.startServer(this.config.leoPythonCommand)
+    this._serverService.startServer(this.config.leoPythonCommand, this.config.leoServerPath)
         .then((p_message) =&gt; {
             utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
             if (this.config.connectToServerAutomatically) {
-                this.connect();
+                setTimeout(() =&gt; {
+                    // Wait a full second
+                    this.connect();
+                }, 1000);
+            } else {
+                this.finishedStartup = true;
             }
         }, (p_reason) =&gt; {
             vscode.window.showErrorMessage(Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason);
@@ -10304,27 +10362,54 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
     console.log('initial test call');
 
 
-    vscode.commands.executeCommand(Constants.COMMANDS.MARK_SELECTION)
-        .then((p_result) =&gt; {
-            console.log(
-                'BACK FROM EXEC COMMAND ' +
-                Constants.COMMANDS.MARK_SELECTION +
-                ', p_result: ',
-                JSON.stringify(p_result)
-            );
+    // vscode.commands.executeCommand(Constants.COMMANDS.MARK_SELECTION)
+    //     .then((p_result) =&gt; {
+    //         console.log(
+    //             'BACK FROM EXEC COMMAND ' +
+    //             Constants.COMMANDS.MARK_SELECTION +
+    //             ', p_result: ',
+    //             JSON.stringify(p_result)
+    //         );
 
+    //     });
+
+    // Test setting scroll / selection range
+    vscode.window.showQuickPick(["1-1 1-6", "2-2 3-3"]).then(p_results =&gt; {
+        console.log('quick pick result:', p_results);
+        let w_selection: vscode.Selection;
+        if (p_results === "1-1 1-6") {
+            w_selection = new vscode.Selection(1, 1, 1, 6);
+        } else {
+            w_selection = new vscode.Selection(2, 2, 3, 3);
+        }
+
+        vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
+            console.log('p_textEditor.document.uri.scheme ', p_textEditor.document.uri.scheme);
+
+            if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+                console.log('found');
+
+                p_textEditor.selection = w_selection; // set cursor insertion point &amp; selection range
+                // if (!w_scrollRange) {
+                //     w_scrollRange = p_textEditor.document.lineAt(0).range;
+                // }
+                // p_textEditor.revealRange(w_scrollRange); // set
+            }
         });
 
+    });
 
-    return this.sendAction(Constants.LEOBRIDGE.TEST, JSON.stringify({ "testParam": "Some String" }))
-        .then((p_result: LeoBridgePackage) =&gt; {
+    return this.sendAction(
+        Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+    ).then((p_result: LeoBridgePackage) =&gt; {
+
             // this.launchRefresh({ buttons: true }, false);
-            return vscode.window.showInformationMessage(
-                ' back from test, called from ' +
-                (p_fromOutline ? "outline" : "body") +
-                ', with result: ' +
-                JSON.stringify(p_result)
-            );
+            // return vscode.window.showInformationMessage(
+            //     ' back from test, called from ' +
+            //     (p_fromOutline ? "outline" : "body") +
+            //     ', with result: ' +
+            //     JSON.stringify(p_result)
+            // );
         });
 }
 
@@ -10347,14 +10432,17 @@ public connect(): void {
             } else {
                 const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
                 if (w_lastFiles.length) {
+
                     // This context flag will trigger 'Connecting...' placeholder
                     utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
+
                     setTimeout(() =&gt; {
                         this._openLastFiles(); // Try to open last opened files, if any
                     }, 0);
 
                 } else {
                     this.leoStates.leoBridgeReady = true;
+                    this.finishedStartup = true;
                 }
 
                 this.showLogPane();
@@ -10369,13 +10457,14 @@ public connect(): void {
         },
         (p_reason) =&gt; {
             this._leoIsConnecting = false;
-            this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + p_reason);
+            this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + ': ' + p_reason);
         });
 }
 
 </t>
 <t tx="felix.20200719025231.9">/**
- * * Cancels websocket connection and reverts context flags. Called from leoBridge.ts when its websocket reports disconnection.
+ * * Cancels websocket connection and reverts context flags.
+ * Called from leoBridge.ts when its websocket reports disconnection.
  * @param p_message
  */
 public cancelConnect(p_message?: string): void {
@@ -10385,6 +10474,13 @@ public cancelConnect(p_message?: string): void {
     } else {
         vscode.window.showInformationMessage(p_message ? p_message : Constants.USER_MESSAGES.DISCONNECTED);
     }
+
+    // to change the 'viewsWelcome' content.
+    // bring back to !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically"
+    utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
+    utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
+    this.finishedStartup = true;
+
     this.leoStates.fileOpenedReady = false;
     this.leoStates.leoBridgeReady = false;
     this._leoBridgeReadyPromise = undefined;
@@ -10463,32 +10559,32 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return None
 
 </t>
-<t tx="felix.20200924205503.1">def leoCommand(self, p_command, p_package):
+<t tx="felix.20200924205503.1">def leoCommand(self, p_command, param):
     '''
     Generic call to a method in Leo's Commands class or any subcommander class.
 
-    The p_ap position node is to be selected before having the command run,
-    while the p_keepSelection parameter specifies wether the original position
+    The param["ap"] position is to be selected before having the command run,
+    while the param["keep"] parameter specifies wether the original position
     should be re-selected afterward.
+
     The whole of those operations is to be undoable as one undo step.
 
-    p_command: a method name (a string).
-    p_ap: an archived position.
-    p_keepSelection: preserve the current selection, if possible.
+    command: a method name (a string).
+    param["ap"]: an archived position.
+    param["keep"]: preserve the current selection, if possible.
     '''
-    w_keepSelection = False  # Set default, optional component of package
-    if "keep" in p_package:
-        w_keepSelection = p_package["keep"]
-    #     print("have keep! " + str(w_keepSelection), flush=True)
-    # else:
-    #     print("NO keep!", flush=True)
+    w_keepSelection = False  # Set default, optional component of param
+    if "keep" in param:
+        w_keepSelection = param["keep"]
 
-    w_ap = p_package["node"]  # At least node parameter is present
+    w_ap = param["ap"]  # At least node parameter is present
     if not w_ap:
-        return self._outputError(f"Error in {p_command}: no param node")
+        return self._outputError(f"Error in {p_command}: no param ap")
+
     w_p = self._ap_to_p(w_ap)
     if not w_p:
-        return self._outputError(f"Error in {p_command}: no w_p node found")
+        return self._outputError(f"Error in {p_command}: no w_p position found")
+
     w_func = self._get_commander_method(p_command)
     if not w_func:
         return self._outputError(f"Error in {p_command}: no method found")
@@ -10496,22 +10592,23 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     if w_p == self.commander.p:
         w_func(event=None)
     else:
-        oldPosition = self.commander.p
+        w_oldPosition = self.commander.p
         self.commander.selectPosition(w_p)
         w_func(event=None)
-        if w_keepSelection and self.commander.positionExists(oldPosition):
-            self.commander.selectPosition(oldPosition)
+        if w_keepSelection and self.commander.positionExists(w_oldPosition):
+            self.commander.selectPosition(w_oldPosition)
+
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924205915.1">def openFiles(self, p_package):
+<t tx="felix.20200924205915.1">def open_files(self, param):
     """
     Opens an array of leo files
     Returns an object that contains the last 'opened' member.
     """
     w_files = []
-    if "files" in p_package:
-        w_files = p_package["files"]
+    if "files" in param:
+        w_files = param["files"]
 
     for i_file in w_files:
         w_found = False
@@ -10537,12 +10634,12 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         self._create_gnx_to_vnode()
         w_result = {"total": self._getTotalOpened(), "filename": self.commander.fileName(),
                     "node": self._p_to_ap(self.commander.p)}
-        return self.sendLeoBridgePackage("opened", w_result)
+        return self.sendLeoBridgePackage(w_result)
     else:
         return self._outputError('Error in openFiles')
 
 </t>
-<t tx="felix.20200924210020.1">def getButtons(self, p_package):
+<t tx="felix.20200924210020.1">def get_buttons(self, param):
     '''Gets the currently opened file's @buttons list'''
     w_buttons = []
     if self.commander and self.commander.theScriptingController and self.commander.theScriptingController.buttonsDict:
@@ -10550,12 +10647,12 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         for w_key in w_dict:
             w_entry = {"name": w_dict[w_key], "index": str(w_key)}
             w_buttons.append(w_entry)
-    return self.sendLeoBridgePackage("buttons", w_buttons)
+    return self.sendLeoBridgePackage({"buttons": w_buttons})
 
 </t>
-<t tx="felix.20200924210024.1">def removeButton(self, p_package):
+<t tx="felix.20200924210024.1">def remove_button(self, param):
     '''Removes an entry from the buttonsDict by index string'''
-    w_index = p_package['index']
+    w_index = param['index']
     w_dict = self.commander.theScriptingController.buttonsDict
     w_key = None
     for i_key in w_dict:
@@ -10567,9 +10664,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924210029.1">def clickButton(self, p_package):
+<t tx="felix.20200924210029.1">def click_button(self, param):
     '''Handles buttons clicked in client from the '@button' panel'''
-    w_index = p_package['index']
+    w_index = param['index']
     w_dict = self.commander.theScriptingController.buttonsDict
     w_button = None
     for i_key in w_dict:
@@ -10581,7 +10678,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924210036.1">def getCommands(self, p_package):
+<t tx="felix.20200924210036.1">def get_all_leo_commands(self, param):
     """Return a list of all Leo commands that make sense in leoInteg."""
     c = self.commander
     d = c.commandsDict  # keys are command names, values are functions.
@@ -10615,7 +10712,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         # print(f"__doc__: {len(doc):4} {command_name:40} {func_name} ", flush=True)
         # print(f"{func_name} ", flush=True)
 
-    return self.sendLeoBridgePackage("commands", result)
+    return self.sendLeoBridgePackage({"commands": result})
 
 </t>
 <t tx="felix.20200924210058.1">def _bad_commands(self):
@@ -11675,12 +11772,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         print("websocket not ready yet", flush=True)
 
 </t>
-<t tx="felix.20200924211037.1">def sendLeoBridgePackage(self, p_key=False, p_any=None):
-    w_package = {"id": self.currentActionId}
-    if p_key:
-        w_package[p_key] = p_any  # add [key]?:any
-    return(json.dumps(w_package, separators=(',', ':')))  # send as json
-    # await self.webSocket.send(json.dumps(w_package, separators=(',', ':')))  # send as json
+<t tx="felix.20200924211037.1">def sendLeoBridgePackage(self, p_package={}):
+    p_package["id"] = self.currentActionId
+    return(json.dumps(p_package, separators=(',', ':')))  # send as json
 
 </t>
 <t tx="felix.20200924211041.1">def _outputError(self, p_message="Unknown Error"):
@@ -11692,15 +11786,15 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 
 </t>
 <t tx="felix.20200924211048.1">def _outputBodyData(self, p_bodyText=""):
-    return self.sendLeoBridgePackage("bodyData", p_bodyText)
+    return self.sendLeoBridgePackage({"body": p_bodyText})
 
 </t>
 <t tx="felix.20200924211051.1">def _outputPNode(self, p_node=False):
     if p_node:
         # Single node, singular
-        return self.sendLeoBridgePackage("node", self._p_to_ap(p_node))
+        return self.sendLeoBridgePackage({"node": self._p_to_ap(p_node)})
     else:
-        return self.sendLeoBridgePackage("node", None)
+        return self.sendLeoBridgePackage({"node": None})
 
 </t>
 <t tx="felix.20200924211054.1">def _outputPNodes(self, p_pList):
@@ -11708,12 +11802,12 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     for p in p_pList:
         w_apList.append(self._p_to_ap(p))
     # Multiple nodes, plural
-    return self.sendLeoBridgePackage("nodes", w_apList)
+    return self.sendLeoBridgePackage({"children": w_apList})
 
 </t>
-<t tx="felix.20200924211057.1">def markPNode(self, p_package):
+<t tx="felix.20200924211057.1">def mark_node(self, param):
     '''Mark a node, don't select it'''
-    w_ap = p_package["node"]
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11726,9 +11820,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in markPNode no param node")
 
 </t>
-<t tx="felix.20200924211100.1">def unmarkPNode(self, p_package):
+<t tx="felix.20200924211100.1">def unmark_node(self, param):
     '''Unmark a node, don't select it'''
-    w_ap = p_package["node"]
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11741,9 +11835,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in unmarkPNode no param node")
 
 </t>
-<t tx="felix.20200924211104.1">def clonePNode(self, p_package):
+<t tx="felix.20200924211104.1">def clone_node(self, param):
     '''Clone a node, return it, if it was also the current selection, otherwise try not to select it'''
-    w_ap = p_package["node"]
+    w_ap = param["ap"]
     if not w_ap:
         return self._outputError("Error in clonePNode function, no param p_ap")
     w_p = self._ap_to_p(w_ap)
@@ -11762,9 +11856,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924211121.1">def cutPNode(self, p_package):
+<t tx="felix.20200924211121.1">def cut_node(self, param):
     '''Cut a node, don't select it. Try to keep selection, then return the selected node that remains'''
-    w_ap = p_package["node"]
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11792,9 +11886,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in cutPNode no param node")
 
 </t>
-<t tx="felix.20200924211125.1">def deletePNode(self, p_package):
+<t tx="felix.20200924211125.1">def delete_node(self, param):
     '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
-    w_ap = p_package["node"]
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11822,9 +11916,9 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in deletePNode no param node")
 
 </t>
-<t tx="felix.20200924211127.1">def insertPNode(self, p_package):
+<t tx="felix.20200924211127.1">def insert_node(self, param):
     '''Insert a node at given node, then select it once created, and finally return it'''
-    w_ap = p_package["node"]
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
@@ -11843,20 +11937,20 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in insertPNode no param node")
 
 </t>
-<t tx="felix.20200924211132.1">def insertNamedPNode(self, p_package):
+<t tx="felix.20200924211132.1">def insert_named_node(self, param):
     '''Insert a node at given node, set its headline, select it and finally return it'''
-    w_newHeadline = p_package['text']
-    w_ap = p_package['node']
+    w_newHeadline = param['name']
+    w_ap = param["ap"]
     if w_ap:
         w_p = self._ap_to_p(w_ap)
         if w_p:
-            w_u = self.commander.undoer.beforeInsertNode(w_p)
+            w_bunch = self.commander.undoer.beforeInsertNode(w_p)
             w_newNode = w_p.insertAfter()
             # set this node's new headline
             w_newNode.h = w_newHeadline
             w_newNode.setDirty()
             self.commander.undoer.afterInsertNode(
-                w_newNode, 'Insert Node', w_u)
+                w_newNode, 'Insert Node', w_bunch)
             self.commander.selectPosition(w_newNode)
             # in any case, return selected node
             return self._outputPNode(self.commander.p)
@@ -11867,7 +11961,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         return self._outputError("Error in insertNamedPNode no param node")
 
 </t>
-<t tx="felix.20200924211135.1">def undo(self, p_paramUnused):
+<t tx="felix.20200924211135.1">def undo(self, param):
     '''Undo last un-doable operation'''
     if self.commander.undoer.canUndo():
         self.commander.undoer.undo()
@@ -11875,7 +11969,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200924211138.1">def redo(self, p_paramUnused):
+<t tx="felix.20200924211138.1">def redo(self, param):
     '''Undo last un-doable operation'''
     if self.commander.undoer.canRedo():
         self.commander.undoer.redo()
@@ -11920,7 +12014,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 
 </t>
 <t tx="felix.20200927224639.1">def _outputSelectionData(self, p_bodySelection):
-    return self.sendLeoBridgePackage("bodySelection", p_bodySelection)
+    return self.sendLeoBridgePackage({"bodySelection": p_bodySelection})
 
 </t>
 <t tx="felix.20200928004727.1">/**
@@ -11945,33 +12039,40 @@ private _onChangeEditorSelection(p_event: vscode.TextEditorSelectionChangeEvent)
 private _bodySaveSelection(): Promise&lt;boolean&gt; {
     if (this._selectionDirty &amp;&amp; this._selection) {
         // Prepare scroll data separately
-        let w_scroll: { start: BodyPosition; end: BodyPosition; };
+        // ! TEST NEW SCROLL WITH SINGLE LINE NUMBER
+        let w_scroll: number;
         if (this._selectionGnx === this._scrollGnx &amp;&amp; this._scrollDirty) {
-            w_scroll = {
-                start: {
-                    line: this._scroll?.start.line || 0,
-                    col: this._scroll?.start.character || 0
-                },
-                end: {
-                    line: this._scroll?.end.line || 0,
-                    col: this._scroll?.end.character || 0
-                }
-            };
+            w_scroll = this._scroll?.start.line || 0;
         } else {
-            w_scroll = {
-                start: {
-                    line: 0, col: 0
-                },
-                end: {
-                    line: 0, col: 0
-                }
-            };
+            w_scroll = 0;
         }
+        // let w_scroll: { start: BodyPosition; end: BodyPosition; };
+        // if (this._selectionGnx === this._scrollGnx &amp;&amp; this._scrollDirty) {
+        //     w_scroll = {
+        //         start: {
+        //             line: this._scroll?.start.line || 0,
+        //             col: this._scroll?.start.character || 0
+        //         },
+        //         end: {
+        //             line: this._scroll?.end.line || 0,
+        //             col: this._scroll?.end.character || 0
+        //         }
+        //     };
+        // } else {
+        //     w_scroll = {
+        //         start: {
+        //             line: 0, col: 0
+        //         },
+        //         end: {
+        //             line: 0, col: 0
+        //         }
+        //     };
+        // }
         // Send whole
         const w_param: BodySelectionInfo = {
             gnx: this._selectionGnx,
             scroll: w_scroll,
-            active: {
+            insert: {
                 line: this._selection.active.line || 0,
                 col: this._selection.active.character || 0
             },
@@ -11985,11 +12086,14 @@ private _bodySaveSelection(): Promise&lt;boolean&gt; {
             }
 
         };
+        console.log("set scroll: " + w_scroll + " starHeM't:" + this._selection.start.line);
+
         this._scrollDirty = false;
         this._selectionDirty = false; // don't wait for return of this call
-        return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param)).then(p_result =&gt; {
-            return Promise.resolve(true);
-        });
+        return this.sendAction(Constants.LEOBRIDGE.SET_SELECTION, JSON.stringify(w_param))
+            .then(p_result =&gt; {
+                return Promise.resolve(true);
+            });
     } else {
         return Promise.resolve(true);
     }
@@ -12184,7 +12288,7 @@ def tag_configure(self, colorName, **keys): pass
     return self.g.toUnicode(s)
 
 </t>
-<t tx="felix.20200929215102.2">def getStates(self, p_package):
+<t tx="felix.20200929215102.2">def get_ui_states(self, param):
     """
     Gets the currently opened file's general states for UI enabled/disabled states
     such as undo available, file changed/unchanged
@@ -12212,30 +12316,33 @@ def tag_configure(self, colorName, **keys): pass
         w_states["canPromote"] = False
         w_states["canDehoist"] = False
 
-    return self.sendLeoBridgePackage("states", w_states)
+    return self.sendLeoBridgePackage({"states": w_states})
 
 </t>
-<t tx="felix.20200929215102.3">def pageUp(self, p_unused):
+<t tx="felix.20200929215102.3">def page_up(self, param):
     """Selects a node a couple of steps up in the tree to simulate page up"""
-    self.commander.selectVisBack()
-    self.commander.selectVisBack()
-    self.commander.selectVisBack()
+    n = param.get("n", 3)
+    for z in range(n):
+        self.commander.selectVisBack()
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200929215102.4">def pageDown(self, p_unused):
+<t tx="felix.20200929215102.4">def page_down(self, param):
     """Selects a node a couple of steps down in the tree to simulate page down"""
-    self.commander.selectVisNext()
-    self.commander.selectVisNext()
-    self.commander.selectVisNext()
+    n = param.get("n", 3)
+    for z in range(n):
+        self.commander.selectVisNext()
     return self._outputPNode(self.commander.p)
 
 </t>
-<t tx="felix.20200929215102.5">def getBodyStates(self, p_ap):
+<t tx="felix.20200929215102.5">def get_body_states(self, p_ap):
     """
     Finds the language in effect at top of body for position p,
     return type is lowercase 'language' non-empty string.
     Also returns the saved cursor position from last time node was accessed.
+
+    The cursor positions are given as {"line": line, "col": col, "index": i}
+    with line and col along with a redundant index for convenience and flexibility.
     """
     if not p_ap:
         return self._outputError("Error in getLanguage, no param p_ap")
@@ -12248,17 +12355,18 @@ def tag_configure(self, colorName, **keys): pass
 
     w_wrapper = self.commander.frame.body.wrapper
 
-    defaultPosition = {"line": 0, "col": 0}
+    defaultPosition = {"line": 0, "col": 0, "index": 0}
     states = {
         'language': 'plain',
         # See BodySelectionInfo interface in types.d.ts
         'selection': {
             "gnx": w_p.v.gnx,
-            "scroll": {
-                "start": defaultPosition,
-                "end": defaultPosition
-            },
-            "active": defaultPosition,
+            "scroll": 0,
+            # "scroll": {
+            #     "start": defaultPosition,
+            #     "end": defaultPosition
+            # },
+            "insert": defaultPosition,
             "start": defaultPosition,
             "end": defaultPosition
         }
@@ -12276,61 +12384,87 @@ def tag_configure(self, colorName, **keys): pass
             'plain'
         )
 
-        w_scroll = w_p.v.scrollBarSpot
-        w_active = w_p.v.insertSpot
-        w_start = w_p.v.selectionStart
-        w_end = w_p.v.selectionStart + w_p.v.selectionLength
+        if w_p.v.scrollBarSpot is None:
+            w_scroll = 0
+        else:
+            w_scroll = w_p.v.scrollBarSpot
+
+        if w_p.v.insertSpot is None:
+            w_active = 0
+        else:
+            w_active = w_p.v.insertSpot
+        if w_p.v.selectionStart is None:
+            w_start = 0
+        else:
+            w_start = w_p.v.selectionStart
+
+        if w_p.v.selectionLength is None:
+            w_length = 0
+        else:
+            w_length = w_p.v.selectionLength
+
+        w_end = w_start + w_length
 
         # get selection from wrapper instead if its the selected node
         if self.commander.p.v.gnx == w_p.v.gnx:
-            # print("in GBS -&gt; SAME AS self.commander.p SO USING FROM WRAPPER")
+            print("in GBS -&gt; SAME AS self.commander.p SO USING FROM WRAPPER")
             w_active = w_wrapper.getInsertPoint()
             w_start, w_end = w_wrapper.getSelectionRange(True)
             w_scroll = w_wrapper.getYScrollPosition()
 
-        # TODO : This conversion for scroll position may be unneeded (consider as lines only)
-        # w_scrollI, w_scrollRow, w_scrollCol = c.frame.body.wrapper.toPythonIndexRowCol(w_Scroll)
-        # compute line and column for the insertion point, and the start &amp; end of selection
-        w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(
-            w_active)
-        w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(
-            w_start)
-        w_endI, w_endRow, w_endCol = c.frame.body.wrapper.toPythonIndexRowCol(
-            w_end)
+            w_activeI, w_activeRow, w_activeCol = c.frame.body.wrapper.toPythonIndexRowCol(
+                w_active)
+            w_startI, w_startRow, w_startCol = c.frame.body.wrapper.toPythonIndexRowCol(
+                w_start)
+            w_endI, w_endRow, w_endCol = c.frame.body.wrapper.toPythonIndexRowCol(
+                w_end)
+        else:
+            print("NOT SAME AS self.commander.p SO USING FROM w_p.v")
+            w_activeI, w_startI, w_endI = w_active, w_start, w_end
+            w_activeRow, w_activeCol = g.convertPythonIndexToRowCol(
+                w_p.v.b, w_active)
+            w_startRow, w_startCol = g.convertPythonIndexToRowCol(
+                w_p.v.b, w_start)
+            w_endRow, w_endCol = g.convertPythonIndexToRowCol(
+                w_p.v.b, w_end)
 
         states = {
             'language': language.lower(),
             'selection': {
                 "gnx": w_p.v.gnx,
-                "scroll": w_scroll,  # w_scroll was kept as-is
-                "active": {"line": w_activeRow, "col": w_activeCol},
-                "start": {"line": w_startRow, "col": w_startCol},
-                "end": {"line": w_endRow, "col": w_endCol}
+                "scroll": w_scroll,  # w_scroll was kept as-is ?
+                "insert": {"line": w_activeRow, "col": w_activeCol, "index": w_activeI},
+                "start": {"line": w_startRow, "col": w_startCol, "index": w_startI},
+                "end": {"line": w_endRow, "col": w_endCol, "index": w_endI}
             }
         }
-    return self.sendLeoBridgePackage("bodyStates", states)
+    return self.sendLeoBridgePackage(states)
 
 </t>
-<t tx="felix.20200929230231.1">def setSelection(self, p_package):
+<t tx="felix.20200929230231.1">def set_selection(self, param):
     '''
     Set cursor position and scroll position along with selection start and end.
+
+    Positions can be sent as {"col":int, "line" int} dict
+    or as numbers directly for convenience.
+
     (For the currently selected node's body, if gnx matches only)
     Save those values on the commander's body "wrapper"
     See BodySelectionInfo interface in types.d.ts
     '''
     w_same = False  # Flag for actually setting values in the wrapper, if same gnx.
     w_wrapper = self.commander.frame.body.wrapper
-    w_gnx = p_package['gnx']
+    w_gnx = param['gnx']
     w_body = ""
     w_v = None
     if self.commander.p.v.gnx == w_gnx:
-        # print('Set Selection! OK SAME GNX: ' + self.commander.p.v.gnx)
+        print('Set Selection! OK SAME GNX: ' + self.commander.p.v.gnx)
         w_same = True
         w_v = self.commander.p.v
     else:
         # ? When navigating rapidly - Check if this is a bug - how to improve
-        # print('Set Selection! NOT SAME GNX: selected:' +
-        #       self.commander.p.v.gnx + ', package:' + w_gnx)
+        print('Set Selection! NOT SAME GNX: selected:' +
+              self.commander.p.v.gnx + ', package:' + w_gnx)
         w_v = self.commander.fileCommands.gnxDict.get(w_gnx)
 
     if not w_v:
@@ -12340,21 +12474,30 @@ def tag_configure(self, colorName, **keys): pass
 
     w_body = w_v.b
     f_convert = self.g.convertRowColToPythonIndex
-    w_active = p_package['active']
-    w_start = p_package['start']
-    w_end = p_package['end']
+    w_active = param['insert']
+    w_start = param['start']
+    w_end = param['end']
 
     # no convertion necessary, its given back later
-    w_scroll = p_package['scroll']
-    w_insert = f_convert(
-        w_body, w_active['line'], w_active['col'])
-    w_startSel = f_convert(
-        w_body, w_start['line'], w_start['col'])
-    w_endSel = f_convert(
-        w_body, w_end['line'], w_end['col'])
+    w_scroll = param['scroll']
 
-    # print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
-    #       " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
+    # IF sent as number use as is - no conversion needed
+    if type(w_active) == int:
+        w_insert = w_active
+        w_startSel = w_start
+        w_endSel = w_end
+    else:
+        w_insert = f_convert(
+            w_body, w_active['line'], w_active['col'])
+        w_startSel = f_convert(
+            w_body, w_start['line'], w_start['col'])
+        w_endSel = f_convert(
+            w_body, w_end['line'], w_end['col'])
+
+    print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
+          " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
+
+    # If it's the currently selected node set the wrapper's states too
 
     if w_same:
         w_wrapper.setSelectionRange(w_startSel, w_endSel, w_insert)
@@ -12391,11 +12534,13 @@ def tag_configure(self, colorName, **keys): pass
 export interface BodySelectionInfo {
     gnx: string;
     // scroll is stored as-is as the 'scrollBarSpot' in Leo
-    scroll: {
-        start: BodyPosition;
-        end: BodyPosition;
-    }
-    active: BodyPosition;
+    // ! TEST scroll as single number only (for Leo vertical scroll value)
+    scroll: number;
+    // scroll: {
+    //     start: BodyPosition;
+    //     end: BodyPosition;
+    // }
+    insert: BodyPosition;
     start: BodyPosition;
     end: BodyPosition;
 }
@@ -12436,10 +12581,10 @@ export function getDurationMs(p_start: [number, number]): number {
 }
 
 </t>
-<t tx="felix.20201025144113.1">def test(self, p_package):
+<t tx="felix.20201025144113.1">def test(self, param):
     '''Utility test function for debugging'''
     print("Called test")
-    return self.sendLeoBridgePackage('testReturnedKey', 'testReturnedValue')
+    return self.sendLeoBridgePackage({'testReturnedKey': 'testReturnedValue'})
     # return self._outputPNode(self.commander.p)
 
 </t>
@@ -12591,7 +12736,7 @@ public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
     // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
-            const q_commandList: Thenable&lt;MinibufferCommand[]&gt; = this.sendAction(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ "text": "" }))
+            const q_commandList: Thenable&lt;MinibufferCommand[]&gt; = this.sendAction(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ name: "" }))
                 .then((p_result: LeoBridgePackage) =&gt; {
                     if (p_result.commands &amp;&amp; p_result.commands.length) {
                         return p_result.commands;
@@ -12643,13 +12788,13 @@ public static BUTTON_STRINGS = {
 };
 
 </t>
-<t tx="felix.20201129184357.1">def printAction(p_param):
+<t tx="felix.20201129184357.1">def printAction(param):
     # print action if not getChild or getChildren
-    w_action = p_param["action"]
+    w_action = param["action"]
     if w_action in commonActions:
         pass
     else:
-        print(f"*ACTION* {w_action}, id {p_param['id']}", flush=True)
+        print(f"*ACTION* {w_action}, id {param['id']}", flush=True)
 
 
 </t>
@@ -12955,116 +13100,2608 @@ public _changedWindowState(p_windowState: vscode.WindowState): void {
 }
 
 </t>
-<t tx="felix.20210420004713.1">/**
- * Fetch language, cursor position and text selection for the current selected tree node,
- * then apply it to the text document given as parameter when the fetch resolves,
- * but only if it's still the same gnx/node as the currently selected node.
- * @param p_document text document opened for which the language and cursor has to be set
- */
-private _setLanguageAndSelection(p_document: vscode.TextDocument): void {
-    if (this.lastSelectedNode) {
-        // this.lastSelectedNode MAY NOT BE VALID
-        this.sendAction(Constants.LEOBRIDGE.GET_BODY_STATES, this.lastSelectedNode.apJson)
-            .then((p_result: LeoBridgePackage) =&gt; {
+<t tx="felix.20210509210502.1">## 0.1.13
 
-                const w_bodyStates = p_result.bodyStates!; // This answer has bodyStates member
-                let w_language: string = w_bodyStates.language;
-                const w_leoBodySel: BodySelectionInfo = w_bodyStates.selection;
+-   Added support for precise focus placement, focus switch between tree/body.
+-   Made the extension more aware of the current selection state, to have strictly relevant buttons visible shown only.
+-   Made the 'edit headline' hover icon removable, in order to enable 'Tab' keybinding to go from tree to body directly.
+-   Added commands and keybindings for 'goto' operations 'hoist/dehoist' [#25](https://github.com/boltex/leointeg/issues/25) and other commands. [#30](https://github.com/boltex/leointeg/issues/30)
+-   Added support for Leo-Style outline navigation. [#43](https://github.com/boltex/leointeg/issues/43) Has to be enabled with an option in the config settings: "Use Leo Tree Browsing" which makes the arrow keys, pgUp/pgDn, home/end move the selection instead of a cursor when focus is on Leo's outline.
+-   Implemented @buttons in it's own panel, visible where the already existing 'outline' and 'opened leo documents' panels reside.
+-   Added (basic) unknown attributes support as hover tooltip and small description on node headlines.
+-   Added a 'leoBridge Server Terminal Panel' to gather output of the leoBridge stdOut pipe. It's displayed among the 'output panels', along with the standard 'leo log window', when the server is started by leoInteg. (either with the auto-start config setting, or by calling the 'start server' command via buttons or the command-palette.)
+-   Syntax coloring and Snippets are now enabled for those languages : C, C++, CSS, HTML, Java, Javascript, json, Markdown, PHP, Python, Rust and Typescript. They are taken from the default extension for that language, or if non-existent, from the most popular extension for that language
+-   Recent files are now remembered and restored upon re-opening vscode.
+-   Leo files can be opened from the explorer pane directly.
+-   Added 'minibuffer' feature with the usual alt-x command from Leo.
+-   Added cursor position, selected range and scrolling position to be captured and restored when navigating the outline. [#39](https://github.com/boltex/leointeg/issues/39) This allows for commands that use the currently selected text, [#61](https://github.com/boltex/leointeg/issues/61) such as run script and extract/extract name, etc.
+-   Redid the body display and switching logic to support new vscode API features. (vscode now does not block 'undo' operations between file-rename operations, which were used to switch body pane content.)
 
-                if (w_leoBodySel.gnx !== this.lastSelectedNode!.gnx) {
-                    console.error(
-                        'GOT STATES FOR DIFFERENT GNX: ' + w_leoBodySel.gnx +
-                        ", last sel node is now: " + this.lastSelectedNode!.gnx
-                    );
-                }
+</t>
+<t tx="felix.20210512000301.1">def get_focus(self, param):
+    """
+    Return a representation of the focused widget,
+    one of ("body", "tree", "headline", repr(the_widget)).
+    """
+    w = self.g.app.gui.get_focus()
+    focus = self.g.app.gui.widget_name(w)
+    return self.sendLeoBridgePackage({"focus": focus})
 
-                const w_scroll = w_leoBodySel.scroll;
+</t>
+<t tx="felix.20210516004048.1">class LeoServer:
+    """Leo Server Controller"""
+    @others
+</t>
+<t tx="felix.20210516004048.10">def open_file(self, param):
+    """
+    Open a leo file with the given filename.
+    Create a new document if no name.
+    """
+    found, tag = False, 'open_file'
+    filename = param.get('filename')  # Optional.
+    if filename:
+        for c in g.app.commanders():
+             if c.fileName() == filename:
+                found = True
+    if not found:
+        c = self.bridge.openLeoFile(filename)
+        c.findCommands.ftm = StringFindTabManager(c)
+    if not c:  # pragma: no cover
+        raise ServerError(f"{tag}: bridge did not open {filename!r}")
+    if not c.frame.body.wrapper:  # pragma: no cover
+        raise ServerError(f"{tag}: no wrapper")
+    # Assign self.c
+    self.c = c
+    c.selectPosition(c.rootPosition())  # Required.
+    # Check the outline!
+    self._check_outline(c)
+    if self.log_flag:  # pragma: no cover
+        self._dump_outline(c)
 
-                let w_scrollRange: vscode.Range | undefined;
-                if (w_scroll &amp;&amp; w_scroll.start &amp;&amp; w_scroll.end &amp;&amp;
-                    (w_scroll.start.line ||
-                        w_scroll.start.col ||
-                        w_scroll.end.line ||
-                        w_scroll.end.col)
-                ) {
-                    w_scrollRange = new vscode.Range(
-                        w_scroll.start.line,
-                        w_scroll.start.col,
-                        w_scroll.end.line,
-                        w_scroll.end.col,
-                    );
-                } else {
-                    // w_scrollRange = new vscode.Range(0, 0, 0, 0); // try with p_textEditor.document.lineAt(0).range;
-                }
+    result = {"total": len(g.app.commanders()), "filename": self.c.fileName()}
 
-                // Cursor position and selection range
-                const w_activeRow: number = w_leoBodySel.active.line;
-                const w_activeCol: number = w_leoBodySel.active.col;
-                let w_anchorLine: number = w_leoBodySel.start.line;
-                let w_anchorCharacter: number = w_leoBodySel.start.col;
+    return self._make_response(result)
+</t>
+<t tx="felix.20210516004048.11">def open_files(self, param):
+    """
+    Opens an array of leo files.
+    Returns an object with total opened files
+    and name of currently last opened &amp; selected document.
+    """
+    tag = 'open_files'
+    files = param.get('files')  # Optional.
+    if files:
+        for i_file in files:
+            if os.path.isfile(i_file):
+                self.open_file({"filename": i_file})
+    total = len(g.app.commanders())
+    filename = self.c.fileName() if total else ""
+    result = {"total": total, "filename": filename}
+    return self._make_response(result)
+</t>
+<t tx="felix.20210516004048.12">def set_opened_file(self, param):
+    '''
+    Choose the new active commander from array of opened files.
+    Returns an object with total opened files
+    and name of currently last opened &amp; selected document.
+    '''
+    tag = 'set_opened_file'
+    index = param.get('index')
+    total = len(g.app.commanders())
+    if total and w_index &lt; total:
+        self.c = g.app.commanders()[w_index]
+        # maybe needed for frame wrapper
+        self.c.selectPosition(self.c.p)
+        self._check_outline(self.c)
+        result = {"total": total, "filename": self.c.fileName()}
+        return self._make_response(result)
+    else:
+        raise ServerError(f"{tag}: commander at index {index} does not exist")
+</t>
+<t tx="felix.20210516004048.13">def close_file(self, param):
+    """
+    Closes an outline opened with open_file.
+    Use a 'forced' flag to force close.
+    Returns a 'total' member in the package if close is successful.
+    """
+    tag = 'close_file'
+    c = self._check_c()
+    if c:
+        # First, revert to prevent asking user.
+        if param["forced"] and c.changed:
+            c.revert()
+        # Then, if still possible, close it.
+        if param["forced"] or not c.changed:
+            # c.closed = True # maybe useless flag from leobridgeserver,py
+            c.close()
+        else:
+            # Cannot close, return empty response without 'total' (ask to save, ignore or cancel) 
+            return self._make_response()
 
-                if (w_activeRow === w_anchorLine &amp;&amp;
-                    w_activeCol === w_anchorCharacter) {
-                    // Active insertion same as start selection, so use the other ones
-                    w_anchorLine = w_leoBodySel.end.line;
-                    w_anchorCharacter = w_leoBodySel.end.col;
-                }
+    # Select the first open outline, if any.
+    commanders = g.app.commanders()
+    self.c = commanders and commanders[0] or None
 
-                const w_selection = new vscode.Selection(
-                    w_anchorLine,
-                    w_anchorCharacter,
-                    w_activeRow,
-                    w_activeCol
-                );
+    if self.c:
+        w_result = {"total": len(g.app.commanders()), "filename": self.c.fileName()}
+    else:
+        w_result = {"total": 0}
+    return self._make_response(w_result)
+</t>
+<t tx="felix.20210516004048.14">def save_file(self, param):  # pragma: no cover (too dangerous).
+    """Save the leo outline."""
+    tag = 'close_file'
+    c = self._check_c()
+    if c:
+        try:
+            if "name" in param:
+                c.save(fileName=param['name'])
+            else:
+                c.save()
+        except Exception as e:
+            print("Error while saving", param['name'], flush=True)
 
-                const w_documentGnx = utils.leoUriToStr(p_document.uri);
+    return self._make_response()  # Just send empty as 'ok'
+</t>
+<t tx="felix.20210516004048.15"></t>
+<t tx="felix.20210516004048.16">def _get_find_settings(self, c):
+    """Return a g.Bunch containing the present find settings settings."""
+    return c.findCommands.ftm.get_settings()
+    ###
+        # # For now, return EKR defaults.
+        # return g.Bunch(
+            # find_text=None, change_text=None,
+            # search_body=True, search_headline=True,
+            # ignore_case=True, pattern_match=False, whole_word=True,
+            # mark_changes=False, mark_finds=False,
+            # node_only=False, suboutline_only=False,
+            # entry_focus=None,
+        # )  
+</t>
+<t tx="felix.20210516004048.17">def find_all(self, param):
+    """Run Leo's find-all command and return results."""
+    tag = 'find_all'
+    c = self._check_c()
+    fc = c.findCommands
+    find_text = param.get("find_text")
+    if find_text is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no find pattern")
+    settings = self._get_find_settings(c)
+    settings.find_text = find_text
+    if self.log_flag:  # pragma: no cover
+        g.printObj(settings, tag=f"{tag}: settings for {c.shortFileName()}")
+    answer = fc.do_find_all(settings)
+    if self.log_flag:  # pragma: no cover
+        g.printObj(answer, tag=f"{tag}: answer")
+    return self._make_response({"answer": answer})
+</t>
+<t tx="felix.20210516004048.18">def change_all(self, param):
+    """Run Leo's change-all command and return results."""
+    tag = 'change_all'
+    c = self._check_c()
+    fc = c.findCommands
+    find_text = param.get("find_text")
+    if find_text is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no find pattern")
+    change_text = param.get("change_text")
+    if change_text is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no change text")
+    settings = self._get_find_settings(c)
+    settings.find_text = find_text
+    settings.change_text = change_text
+    if self.log_flag:  # pragma: no cover
+        g.printObj(settings, tag=f"{tag}: settings for {c.shortFileName()}")
+    answer = fc.do_change_all(settings)
+    if self.log_flag:  # pragma: no cover
+        g.printObj(answer, tag=f"{tag}: answer")
+    return self._make_response({"answer": answer})
+</t>
+<t tx="felix.20210516004048.19">def change_then_find(self, param):
+    """Run Leo's change-then-find command and return results."""
+    tag = 'change_then_find'
+    c = self._check_c()
+    fc = c.findCommands
+    find_text = param.get("find_text")
+    if find_text is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no find pattern")
+    settings = self._get_find_settings(c)
+    settings.find_text = find_text
+    if self.log_flag:  # pragma: no cover
+        g.printObj(settings, tag=f"{tag}: settings for {c.shortFileName()}")
+    answer = fc.do_change_then_find(settings)
+    if self.log_flag:  # pragma: no cover
+        g.printObj(answer, tag=f"{tag}: answer")
+    return self._make_response({"answer": answer})
+</t>
+<t tx="felix.20210516004048.2">def __init__(self, testing=False):
 
-                // if any editors now have gnx match of the selections that was just fetched
-                vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
-                    if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath &amp;&amp;
-                        w_documentGnx === w_leoBodySel.gnx
-                    ) {
-                        p_textEditor.selection = w_selection; // set cursor insertion point &amp; selection range
-                        if (!w_scrollRange) {
-                            w_scrollRange = p_textEditor.document.lineAt(0).range;
-                        }
-                        p_textEditor.revealRange(w_scrollRange); // set
-                    }
-                });
-
-                // Replace language string if in 'exceptions' array
-                w_language = "leobody." + (Constants.LANGUAGE_CODES[w_language] || w_language);
-
-                // Apply language if the selected node is still the same after all those events
-                if (
-                    !p_document.isClosed &amp;&amp; this.lastSelectedNode &amp;&amp;
-                    w_documentGnx === this.lastSelectedNode.gnx
-                ) {
-                    vscode.languages.setTextDocumentLanguage(p_document, w_language);
-                }
-            });
+    import leo.core.leoApp as leoApp
+    import leo.core.leoBridge as leoBridge
+    import leo.core.leoExternalFiles as leoExternalFiles
+    global g
+    t1 = time.process_time()
+    #
+    # Init ivars first.
+    self.c = None  # Currently Selected Commander.
+    self.dummy_c = None  # Set below, after we set g.
+    self.action = None
+    self.bad_commands_list = []  # Set below.
+    self.config = None
+    self.current_id = 0  # Id of action being processed.
+    self.log_flag = False  # set by "log" key
+    #
+    # Start the bridge.
+    self.bridge = leoBridge.controller(
+        gui='nullGui',
+        loadPlugins=False,   # True: attempt to load plugins.
+        readSettings=False,  # True: read standard settings files.
+        silent=True,         # True: don't print signon messages.
+        verbose=False,       # True: prints messages that would be sent to the log pane.
+    )
+    self.g = g = self.bridge.globals()
+    self.dummy_c = g.app.newCommander(fileName=None)  # To inspect commands
+    self.bad_commands_list = self._bad_commands(self.dummy_c)
+    #
+    # Complete the initialization, as in LeoApp.initApp.
+    g.app.idleTimeManager = leoApp.IdleTimeManager()
+    g.app.idleTimeManager.start()
+    g.app.externalFilesController = leoExternalFiles.ExternalFilesController(None)
+    t2 = time.process_time()
+    print(f"LeoServer: init leoBridge in {t2-t1:4.2} sec.")
+</t>
+<t tx="felix.20210516004048.20">def clone_find_all(self, param):
+    """Run Leo's clone-find-all command and return results."""
+    tag = 'clone_find_all'
+    c = self._check_c()
+    fc = c.findCommands
+    find_text = param.get("find_text")
+    if find_text is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no find pattern")
+    settings = self._get_find_settings(c)
+    settings.find_text = find_text
+    if self.log_flag:  # pragma: no cover
+        g.printObj(settings, tag=f"{tag}: settings for {c.shortFileName()}")
+    answer = fc.do_clone_find_all(settings)
+    if self.log_flag:  # pragma: no cover
+        g.printObj(answer, tag=f"{tag}: answer")
+    return self._make_response({"answer": answer})
+</t>
+<t tx="felix.20210516004048.21">def clone_find_all_flattened(self, param):
+    """Run Leo's clone-find-all-flattened command and return results."""
+    tag = 'clone_find_all_flattened'
+    c = self._check_c()
+    fc = c.findCommands
+    find_text = param.get("find_text")
+    if find_text is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no find pattern")
+    settings = self._get_find_settings(c)
+    settings.find_text = find_text
+    if self.log_flag:  # pragma: no cover
+        g.printObj(settings, tag=f"{tag}: settings for {c.shortFileName()}")
+    answer = fc.do_clone_find_all_flattened(settings)
+    if self.log_flag:  # pragma: no cover
+        g.printObj(answer, tag=f"{tag}: answer")
+    return self._make_response({"answer": answer})
+</t>
+<t tx="felix.20210516004048.22">def clone_find_tag(self, param):
+    """Run Leo's clone-find-tag command and return results."""
+    tag = 'clone_find_tag'
+    c = self._check_c()
+    fc = c.findCommands
+    the_tag = param.get("tag")
+    if not the_tag:  # pragma: no cover
+        raise ServerError(f"{tag}: no tag")
+    settings = self._get_find_settings(c)
+    if self.log_flag:  # pragma: no cover
+        g.printObj(settings, tag=f"{tag}: settings for {c.shortFileName()}")
+    n, p = fc.do_clone_find_tag(settings)
+    if self.log_flag:  # pragma: no cover
+        g.trace("tag: {the_tag} n: {n} p: {p and p.h!r}")
+    return self._make_response({"n": n, "p": p})
+</t>
+<t tx="felix.20210516004048.23">def find_def(self, param):
+    """Run Leo's find-def command and return results."""
+    tag = 'find_def'
+    c = self._check_c()
+    fc = c.findCommands
+    find_text = param.get("find_text")
+    if find_text is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no find pattern")
+    settings = self._get_find_settings(c)
+    settings.find_text = find_text
+    if self.log_flag:  # pragma: no cover
+        g.printObj(settings, tag=f"{tag}: settings for {c.shortFileName()}")
+    p, pos, newpos = fc.do_find_def(settings, word=find_text, strict=False)
+    if self.log_flag:  # pragma: no cover
+        g.trace(f"p: {p and p.h!r} pos: {pos!r} newpos {newpos!r}")
+    return self._make_response({"p": p, "pos": pos, "newpos": newpos})
+</t>
+<t tx="felix.20210516004048.24">def find_next(self, param):
+    """Run Leo's find-next command and return results."""
+    tag = 'find_next'
+    c = self._check_c()
+    fc = c.findCommands
+    find_text = param.get("find_text")
+    if find_text is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no find pattern")
+    settings = self._get_find_settings(c)
+    settings.find_text = find_text
+    if self.log_flag:  # pragma: no cover
+        g.printObj(settings, tag=f"{tag}: settings for {c.shortFileName()}")
+    p, pos, newpos = fc.do_find_next(settings)
+    if self.log_flag:  # pragma: no cover
+        g.trace(f"p: {p and p.h!r} pos: {pos!r} newpos {newpos!r}")
+    return self._make_response({"p": p, "pos": pos, "newpos": newpos})
+</t>
+<t tx="felix.20210516004048.25">def find_previous(self, param):
+    """Run Leo's find-previous command and return results."""
+    tag = 'find_previous'
+    c = self._check_c()
+    fc = c.findCommands
+    find_text = param.get("find_text")
+    if find_text is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no find pattern")
+    settings = self._get_find_settings(c)
+    settings.find_text = find_text
+    if self.log_flag:  # pragma: no cover
+        g.printObj(settings, tag=f"{tag}: settings for {c.shortFileName()}")
+    p, pos, newpos = fc.do_find_prev(settings)
+    if self.log_flag:  # pragma: no cover
+        g.trace(f"p: {p and p.h!r} pos: {pos!r} newpos {newpos!r}")
+    return self._make_response({"p": p, "pos": pos, "newpos": newpos})
+</t>
+<t tx="felix.20210516004048.26">def find_var(self, param):
+    """Run Leo's find-var command and return results."""
+    tag = 'find_var'
+    c = self._check_c()
+    fc = c.findCommands
+    find_text = param.get("find_text")
+    if find_text is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no find pattern")
+    settings = self._get_find_settings(c)
+    settings.find_text = find_text
+    if self.log_flag:  # pragma: no cover
+        g.printObj(settings, tag=f"{tag}: settings for {c.shortFileName()}")
+    p, pos, newpos = fc.do_find_var(settings, word=find_text)
+    if self.log_flag:  # pragma: no cover
+        g.trace(f"p: {p and p.h!r} pos: {pos!r} newpos {newpos!r}")
+    return self._make_response({"p": p, "pos": pos, "newpos": newpos})
+</t>
+<t tx="felix.20210516004048.27">def tag_children(self, param):
+    """Run Leo's tag-children command and return results."""
+    # This is not a find command!
+    tag = 'tag_children'
+    c = self._check_c()
+    fc = c.findCommands
+    the_tag = param.get("tag")
+    if the_tag is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no tag")
+    # Unlike find commands, do_tag_children does not use a settings dict.
+    fc.do_tag_children(c.p, the_tag)
+    return self._make_response({})
+</t>
+<t tx="felix.20210516004048.28"></t>
+<t tx="felix.20210516004048.29">def get_all_open_commanders(self, param):
+    """Return array describing each commander in g.app.commanders()."""
+    files = [
+        {
+            "changed": c.isChanged(),
+            "name": c.fileName(),
+            "selected": c == self.c,
+        } for c in g.app.commanders()
+    ]
+    return self._make_minimal_response({"files": files})
+</t>
+<t tx="felix.20210516004048.3"></t>
+<t tx="felix.20210516004048.30">def get_all_positions(self, param):
+    """
+    Return a list of position data for all positions.
+    
+    Useful as a sanity check for debugging.
+    """
+    c = self._check_c()
+    result = [
+        self._get_position_d(p) for p in c.all_positions(copy=False)
+    ]
+    return self._make_minimal_response({"position-data-list": result})
+</t>
+<t tx="felix.20210516004048.31">def get_all_gnx(self, param):
+    '''Get gnx array from all unique nodes'''    
+    if self.log_flag:  # pragma: no cover
+        print(f"\nget_all_gnx\n")
+    
+    c = self._check_c()
+    all_gnx = [p.v.gnx for p in c.all_unique_positions(copy=False)]
+    return self._make_minimal_response({"gnx": all_gnx}, True)
+</t>
+<t tx="felix.20210516004048.32">def get_body(self, param):
+    """
+    Return p.b, where p is c.p if param["ap"] is missing.
+    
+    Note: There is no need for a separate get_body_length command,
+          because _make_response always adds "body-length": len(p.b)
+    """
+    self._check_c()
+    p = self._get_p(param)
+    # _make_response adds all the cheap redraw data, including "body-length"
+    return self._make_minimal_response({"body": p.b})
+</t>
+<t tx="felix.20210516004048.33">def get_body_length(self, param):
+    """
+    Return p.b's length in bytes, where p is c.p if param["ap"] is missing.
+    """
+    self._check_c()
+    p = self._get_p(param)
+    if p and p.b:
+        # Length in bytes, not just by character count.
+        return self._make_minimal_response({"len": len(p.b.encode('utf-8'))}, True)
+    return self._make_minimal_response({"len": 0}, True)  # empty as default
+</t>
+<t tx="felix.20210516004048.34">def get_body_states(self, param):
+    """
+    Return body data for p, where p is c.p if param["ap"] is missing.
+    The cursor positions are given as {"line": line, "col": col, "index": i} 
+    with line and col along with a redundant index for conveniance and flexibility.
+    """
+    c = self._check_c()
+    p = self._get_p(param)
+    wrapper = c.frame.body.wrapper
+    
+    def row_col_wrapper_dict(i):  
+        # BUG: this uses current selection wrapper only, use 
+        # g.convertPythonIndexToRowCol instead !
+        junk, line, col = wrapper.toPythonIndexRowCol(i)
+        return {"line": line, "col": col, "index": i}
+        
+    def row_col_pv_dict(i, s):  
+        # BUG: this uses current selection wrapper only, use 
+        # g.convertPythonIndexToRowCol instead !
+        line, col = g.convertPythonIndexToRowCol(s, i)
+        return {"line": line, "col": col, "index": i}
+        
+    # Get the language.
+    aList = g.get_directives_dict_list(p)
+    d = g.scanAtCommentAndAtLanguageDirectives(aList)
+    language = (
+        d and d.get('language')
+        or g.getLanguageFromAncestorAtFileNode(p)
+        or c.config.getLanguage('target-language')
+        or 'plain'
+    )
+    # get values from wrapper if it's the selected node.
+    if c.p.v.gnx == p.v.gnx:
+        active = wrapper.getInsertPoint()
+        start, end = wrapper.getSelectionRange(True)
+        scroll = wrapper.getYScrollPosition()
+        states = {
+            'language': language.lower(),
+            'selection': {
+                "gnx": p.v.gnx,
+                "scroll": scroll,
+                "active": row_col_wrapper_dict(active),
+                "start": row_col_wrapper_dict(start),
+                "end": row_col_wrapper_dict(end)
+            }
+        }
+    else:  # pragma: no cover
+        active = p.v.insertSpot
+        start = p.v.selectionStart
+        end = p.v.selectionStart + p.v.selectionLength
+        scroll = p.v.scrollBarSpot
+        states = {
+            'language': language.lower(),
+            'selection': {
+                "gnx": p.v.gnx,
+                "scroll": scroll,
+                "active": row_col_pv_dict(active, p.v.b),
+                "start": row_col_pv_dict(start, p.v.b),
+                "end": row_col_pv_dict(end, p.v.b)
+            }
+        }
+    return self._make_minimal_response(states)
+</t>
+<t tx="felix.20210516004048.35">def get_children(self, param):
+    """
+    Return the node data for children of p, where p is c.p if param["ap"] is missing.
+    """
+    self._check_c()
+    p = self._get_p(param)
+    return self._make_minimal_response({
+        # "children": [self._p_to_ap(child) for child in p.children()]
+        "children": [self._get_position_d(child) for child in p.children()]
+    })
+</t>
+<t tx="felix.20210516004048.36">def get_focus(self, param):
+    """
+    Return a representation of the focused widget,
+    one of ("body", "tree", "headline", repr(the_widget)).
+    """
+    w = g.app.gui.get_focus()
+    focus = g.app.gui.widget_name(w)
+    return self._make_minimal_response({"focus": focus})
+</t>
+<t tx="felix.20210516004048.37">def get_parent(self, param):
+    """Return the node data for the parent of position p, where p is c.p if param["ap"] is missing."""
+    self._check_c()
+    p = self._get_p(param)
+    parent = p.parent()
+    data = self._get_position_d(parent) if parent else None
+    return self._make_minimal_response({"node": data})
+</t>
+<t tx="felix.20210516004048.38">def get_position_data_dict(self, param):
+    """
+    Return a dict of position data for all positions.
+    
+    Useful as a sanity check for debugging.
+    """
+    c = self._check_c()
+    result = {
+        p.v.gnx: self._get_position_d(p)
+            for p in c.all_unique_positions(copy=False)
     }
+    return self._make_minimal_response({"position-data-dict": result})
+</t>
+<t tx="felix.20210516004048.39">def get_ua(self, param):
+    """Return p.v.u, making sure it can be serialized."""
+    self._check_c()
+    p = self._get_p(param)
+    try:
+        ua = {"ua": p.v.u}
+        json.dumps(ua, separators=(',', ':'))
+        response = {"p": p, "ua": p.v.u} 
+    except Exception:  # pragma: no cover
+        response = {"p": p, "bad-ua": repr(p.v.u)} 
+    # _make_response adds all the cheap redraw data.
+    return self._make_minimal_response(response)
+</t>
+<t tx="felix.20210516004048.4"># These will fail unless the open_file inits c.theScriptingController.
+</t>
+<t tx="felix.20210516004048.40">def get_sign_on(self, param):
+    """Synchronous version of _sign_on"""
+    g.app.computeSignon()
+    signon = []
+    for z in (g.app.signon, g.app.signon1):
+        for z2 in z.split('\n'):
+            signon.append(z2.strip())
+    return self._make_minimal_response({"sign-on": "\n".join(signon)})
+</t>
+<t tx="felix.20210516004048.41">def get_ui_states(self, param):
+    """
+    Return the enabled/disabled UI states for the open commander, or defaults if None.
+    """
+    c = self._check_c()
+    tag = 'get_ui_states'
+    try:
+        states = {
+            "changed": c and c.changed,
+            "canUndo": c and c.canUndo(),
+            "canRedo": c and c.canRedo(),
+            "canDemote": c and c.canDemote(),
+            "canPromote": c and c.canPromote(),
+            "canDehoist": c and c.canDehoist(),
+        }
+    except Exception as e:  # pragma: no cover
+        raise ServerError(f"{tag}: Exception setting state: {e}")
+    return self._make_minimal_response({"states": states})
+</t>
+<t tx="felix.20210516004048.42"></t>
+<t tx="felix.20210516004048.43">def clone_node(self, param):
+    """
+    Clone the node at position p, where p is c.p if param["ap"] is missing.
+    Try to restore selection on the node that was originally selected
+
+    """
+    c = self._check_c()
+    p = self._get_p(param)
+    if p == c.p:
+        c.clone()
+    else:
+        oldPosition = c.p
+        c.selectPosition(p)
+        c.clone()
+        if c.positionExists(oldPosition):
+            c.selectPosition(oldPosition)
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.44">def contract_node(self, param):
+    """
+    Contract the node at position p, where p is c.p if param["ap"] is missing.
+
+    """
+    self._check_c()
+    p = self._get_p(param)
+    p.contract()
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.45">def cut_node(self, param):  # pragma: no cover (too dangerous, for now)
+    """
+    Cut the node (and its descendants) at position p, where p is c.p if param["ap"] is missing.
+    Try to restore selection on the node that was originally selected
+    """
+    c = self._check_c()
+    p = self._get_p(param)
+    if p == c.p:
+        c.cutOutline()
+    else:
+        oldPosition = c.p
+        c.selectPosition(p)
+        c.cutOutline()
+        if c.positionExists(oldPosition):
+            c.selectPosition(oldPosition)
+        else:
+            oldPosition._childIndex = oldPosition._childIndex-1
+            if c.positionExists(oldPosition):
+                c.selectPosition(oldPosition)
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.46">def delete_node(self, param):  # pragma: no cover (too dangerous, for now)
+    """
+    Delete the node (and its descendants) at position p, where p is c.p if param["ap"] is missing.
+    Try to restore selection on the node that was originally selected
+    """
+    c = self._check_c()
+    p = self._get_p(param)
+    if p == c.p:
+        c.deleteOutline()
+    else:
+        oldPosition = c.p
+        c.selectPosition(p)
+        c.deleteOutline()
+        if c.positionExists(oldPosition):
+            c.selectPosition(oldPosition)
+        else:
+            oldPosition._childIndex = oldPosition._childIndex-1
+            if c.positionExists(oldPosition):
+                c.selectPosition(oldPosition)
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.47">def expand_node(self, param):
+    """
+    Expand the node at position p, where p is c.p if param["ap"] is missing.
+    """
+    self._check_c()
+    p = self._get_p(param)
+    p.expand()
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.48">def insert_node(self, param):
+    """
+    Insert a new node at position p, where p is c.p if param["ap"] is missing.
+
+    This node has 'newHeadline' as its headline.
+    
+    Use the 'set_headline' method to undoably set any node's headlines.
+    """
+    c = self._check_c()
+    p = self._get_p(param)
+    c.selectPosition(p)
+    c.insertHeadline()  # Handles undo, sets c.p
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.49">def insert_named_node(self, param):
+    """
+    Insert a new node at position p, where p is c.p if param["ap"] is missing.
+    Also set its headline, select it and finally return it
+    """
+    c = self._check_c()
+    p = self._get_p(param)
+    headline = param.get('name')
+    # We're going to have to handle the undo ourselves
+    bunch = c.undoer.beforeInsertNode(w_p)
+    newNode = p.insertAfter()
+    # set this node's new headline
+    newNode.h = headline
+    newNode.setDirty()
+    c.undoer.afterInsertNode(newNode, 'Insert Node', bunch)
+    c.selectPosition(newNode)
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.5">def _check_button_command(self, tag):  # pragma: no cover (no scripting controller)
+    """
+    Check that a button command is possible.
+    Raise ServerError if not. Otherwise, return sc.buttonsDict.
+    
+    """
+    c = self._check_c()
+    sc = getattr(c, "theScriptingController", None)
+    if not sc:
+        # This will happen unless mod_scripting is loaded!
+        raise ServerError(f"{tag}: no scripting controller")
+    return sc.buttonsDict
+</t>
+<t tx="felix.20210516004048.50">def page_down(self, param):
+    """
+    Selects a node "n" steps down in the tree to simulate page down.
+    """
+    c = self._check_c()
+    n = param.get("n", 3)
+    for z in range(n):
+        c.selectVisNext()
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.51">def page_up(self, param):
+    """
+    Selects a node "N" steps up in the tree to simulate page up.
+    """
+    c = self._check_c()
+    n = param.get("n", 3)
+    for z in range(n):
+        c.selectVisBack()
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.52">def redo(self, param):
+    """Undo last un-doable operation"""
+    c = self._check_c()
+    u = c.undoer
+    if u.canRedo():
+        u.redo()
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.53">def set_body(self, param):
+    """
+    Undoably set body of a v node from a gnx parameter.
+    """
+    tag = 'set_body'
+    c = self._check_c()
+    u, wrapper = c.undoer, c.frame.body.wrapper
+    body = param.get('body')
+    gnx = param.get('gnx')
+    if body is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no body given")
+    if gnx is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no gnx given")
+
+    for p in c.all_positions():
+        if p.v.gnx == gnx:
+            bunch = u.beforeChangeNodeContents(p)
+            p.v.setBodyString(body)
+            u.afterChangeNodeContents(p, "Body Text", bunch)
+            if c.p.v.gnx == gnx:
+                wrapper.setAllText(body)
+            if not self.c.isChanged():  # pragma: no cover
+                c.setChanged()
+            if not p.v.isDirty():  # pragma: no cover
+                p.setDirty()
+            break  # one is enough
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.54">def set_current_position(self, param):
+    """Select position p, where p is c.p if param["ap"] is missing."""
+    c = self._check_c()
+    p = self._get_p(param)
+    c.selectPosition(p)
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.55">def set_headline(self, param):
+    """
+    Undoably set p.h, where p is c.p if param["ap"] is missing.
+    """
+    tag = 'set_headline'
+    c = self._check_c()
+    p = self._get_p(param)
+    u = c.undoer
+    h = param.get('name')
+    if not h:  # pragma: no cover
+        raise ServerError(f"{tag}: no headline")
+    bunch = u.beforeChangeNodeContents(p)
+    p.h = h
+    u.afterChangeNodeContents(p, 'Change Headline', bunch)
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.56">def set_selection(self, param):
+    """
+    Set the selection range for p.b, where p is c.p if param["ap"] is missing.
+    
+    Set the selection in the wrapper if p == c.p
+    
+    param has these keys:
+        
+    - "ap":     An archived position for position p.
+    - "start":  The start of the selection.
+    - "end":    The end of the selection.
+    - "insert": The insert point. Must be either start or end.
+    - "scroll": An optional scroll position.
+    
+    Positions can be sent as {"col":int, "line" int} dict
+    or as numbers directly for convenience.
+    
+    Two functions in leoGlobals.py support conversions
+    from Python indices to the row/column indices used by Tkinter.
+    
+    - g.convertPythonIndexToRowCol converts a Python index to a row/column
+      index used by Tkinter.
+    
+    - g.convertRowColToPythonIndex does the reverse.
+    """
+    g = self.g
+    c = self._check_c()
+    p = self._get_p(param)  # Will raise ServerError if p does not exist.
+    v = p.v
+    body = p.v.b
+    wrapper = c.frame.body.wrapper
+    
+    scroll = param.get('scroll') # kept as vertical scroll integer
+
+    start = param.get('start')  # as integer or {"col":int, "line" int} dict
+    end = param.get('end')  # as integer or {"col":int, "line" int} dict
+    insert = param.get('insert')  # as integer or {"col":int, "line" int} dict
+    
+    if type(start)==int:
+        pass # keep all as number
+    else:
+        w_insert = g.convertRowColToPythonIndex(
+            body, insert.get('line', 0), insert.get('col', 0))
+        w_startSel = g.convertRowColToPythonIndex(
+            body, start.get('line', 0), start.get('col', 0))
+        w_endSel = g.convertRowColToPythonIndex(
+            body, end.get('line', 0), end.get('col', 0))
+
+    if p == c.p:
+        wrapper.setSelectionRange(start, end, insert)
+        wrapper.setYScrollPosition(scroll)
+    # Always set vnode attrs.
+    v.scrollBarSpot = scroll
+    v.insertSpot = insert
+    v.selectionStart = start
+    v.selectionLength = abs(start - end)
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.57">def mark_node(self, param):
+    """
+    Mark a node, don't select it
+    """
+    self._check_c()
+    p = self._get_p(param)
+    p.setMarked()
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.58">def unmark_node(self, param):
+    """
+    Unmark a node, don't select it
+    """
+    self._check_c()
+    p = self._get_p(param)
+    if p.isMarked():
+        p.clearMarked()
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.59">def undo(self, param):
+    """Undo last un-doable operation"""
+    c = self._check_c()
+    u = c.undoer
+    if u.canUndo():
+        u.undo()
+    # Félix: Caller can get focus using other calls.
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.6">def click_button(self, param):  # pragma: no cover (no scripting controller)
+    """Handles buttons clicked in client from the '@button' panel"""
+    tag = 'click_button'
+    index = param.get("index")
+    if not index:
+        raise ServerError(f"{tag}: no button index given")
+    d = self._check_button_command(tag)
+    button = None
+    for key in d:
+        # Some button keys are objects so we have to convert first
+        if(str(key) == index):
+            button = key
+
+    if not button:
+        raise ServerError(f"{tag}: button {index!r} does not exist")
+
+    try:
+        button.command()
+    except Exception as e:
+        raise ServerError(f"{tag}: exception clicking button {index!r}: {e}")
+    # Tag along a possible return value with info sent back by _make_response
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.60"></t>
+<t tx="felix.20210516004048.61">def error(self, param):
+    """For unit testing. Raise ServerError"""
+    raise ServerError("error called")
+</t>
+<t tx="felix.20210516004048.62">def get_all_leo_commands(self, param):
+    """Return a list of all Leo commands that make sense in leoInteg."""
+    tag = 'get_all_leo_commands'
+    c = self.dummy_c  # Use the dummy commander.
+    d = c.commandsDict  # keys are command names, values are functions.
+    bad_names = self._bad_commands(c)  # #92.
+    good_names = self._good_commands()
+    duplicates = set(bad_names).intersection(set(good_names))
+    if duplicates:  # pragma: no cover
+        print('duplicate command names...')
+        for z in sorted(duplicates):
+            print(z)
+    result = []
+    for command_name in sorted(d):
+        func = d.get(command_name)
+        if not func:  # pragma: no cover
+            print('no func:', command_name)
+            continue
+        if command_name in bad_names:  # #92.
+            continue
+        # Prefer func.__func_name__ to func.__name__: Leo's decorators change func.__name__!
+        func_name = getattr(func, '__func_name__', func.__name__)
+        if not func_name:  # pragma: no cover
+            print('no name', command_name)
+            continue
+        doc = func.__doc__ or ''
+        result.append({
+            "command-name": command_name,
+            "func":  func_name,
+            "detail": doc,
+        })
+    if self.log_flag:  # pragma: no cover
+        print(f"\n{tag}: {len(result)} leo commands\n")
+        g.printObj([z.get("command-name") for z in result], tag=tag)
+    return self._make_response({"commands": result})
+</t>
+<t tx="felix.20210516004048.63">def _bad_commands(self, c):
+    """Return the list of Leo's command names that leoInteg should ignore."""
+    d = c.commandsDict  # keys are command names, values are functions.
+    bad = []
+    #
+    # First, remove @button, @command and vim commands.
+    for command_name in sorted(d):
+        if command_name.startswith((':', '@')):
+            # print('ignore', command_name)
+            bad.append(command_name)
+    # Second, remove other commands.
+    # This is a hand-curated list.
+    bad_list = [
+
+        # Abbreviations...
+        'abbrev-kill-all',
+        'abbrev-list',
+        'dabbrev-completion',
+        'dabbrev-expands',
+
+        # Autocompletion...
+        'auto-complete',
+        'auto-complete-force',
+        'disable-autocompleter',
+        'disable-calltips',
+        'enable-autocompleter',
+        'enable-calltips',
+
+        # Debugger...
+        'debug',
+        'db-again',
+        'db-b',
+        'db-c',
+        'db-h',
+        'db-input',
+        'db-l',
+        'db-n',
+        'db-q',
+        'db-r',
+        'db-s',
+        'db-status',
+        'db-w',
+
+        # File operations...
+        'directory-make',
+        'directory-remove',
+        'file-delete',
+        'file-diff-files',
+        'file-insert',
+        'file-new',
+        'file-open-by-name',
+
+        # All others...
+        'shell-command',
+        'shell-command-on-region',
+        'cheat-sheet',
+        'dehoist',  # Duplicates of de-hoist.
+        'find-clone-all',
+        'find-clone-all-flattened',
+        'find-clone-tag',
+        'find-all',
+        'find-all-unique-regex',
+        'find-character',
+        'find-character-extend-selection',
+        'find-next',
+        'find-prev',
+        'find-word',
+        'find-word-in-line',
+
+        'global-search',
+
+        'isearch-backward',
+        'isearch-backward-regexp',
+        'isearch-forward',
+        'isearch-forward-regexp',
+        'isearch-with-present-options',
+
+        'replace',
+        'replace-all',
+        'replace-current-character',
+        'replace-then-find',
+
+        're-search-backward',
+        're-search-forward',
+
+        'search-backward',
+        'search-forward',
+        'search-return-to-origin',
+
+        'set-find-everywhere',
+        'set-find-node-only',
+        'set-find-suboutline-only',
+        'set-replace-string',
+        'set-search-string',
+
+        'show-find-options',
+
+        'start-search',
+
+        'toggle-find-collapses-nodes',
+        'toggle-find-ignore-case-option',
+        'toggle-find-in-body-option',
+        'toggle-find-in-headline-option',
+        'toggle-find-mark-changes-option',
+        'toggle-find-mark-finds-option',
+        'toggle-find-regex-option',
+        'toggle-find-word-option',
+        'toggle-find-wrap-around-option',
+
+        'word-search-backward',
+        'word-search-forward',
+
+        # Buttons...
+        'delete-script-button-button',
+
+        # Clicks...
+        'click-click-box',
+        'click-icon-box',
+        'ctrl-click-at-cursor',
+        'ctrl-click-icon',
+        'double-click-icon-box',
+        'right-click-icon',
+
+        # Editors...
+        'add-editor', 'editor-add',
+        'delete-editor', 'editor-delete',
+        'detach-editor-toggle',
+        'detach-editor-toggle-max',
+
+        # Focus...
+        'cycle-editor-focus', 'editor-cycle-focus',
+        'focus-to-body',
+        'focus-to-find',
+        'focus-to-log',
+        'focus-to-minibuffer',
+        'focus-to-nav',
+        'focus-to-spell-tab',
+        'focus-to-tree',
+
+        'tab-cycle-next',
+        'tab-cycle-previous',
+        'tab-detach',
+
+        # Headlines..
+        'abort-edit-headline',
+        'edit-headline',
+        'end-edit-headline',
+
+        # Layout and panes...
+        'adoc',
+        'adoc-with-preview',
+
+        'contract-body-pane',
+        'contract-log-pane',
+        'contract-outline-pane',
+
+        'edit-pane-csv',
+        'edit-pane-test-open',
+        'equal-sized-panes',
+        'expand-log-pane',
+        'expand-body-pane',
+        'expand-outline-pane',
+
+        'free-layout-context-menu',
+        'free-layout-load',
+        'free-layout-restore',
+        'free-layout-zoom',
+
+        'zoom-in',
+        'zoom-out'
+
+        # Log
+        'clear-log',
+
+        # Menus...
+        'activate-cmds-menu',
+        'activate-edit-menu',
+        'activate-file-menu',
+        'activate-help-menu',
+        'activate-outline-menu',
+        'activate-plugins-menu',
+        'activate-window-menu',
+        'context-menu-open',
+        'menu-shortcut',
+
+        # Modes...
+        'clear-extend-mode',
+
+        # Outline...
+        'contract-or-go-left',
+        'contract-node',
+        'contract-parent',
+
+        # Scrolling...
+        'scroll-down-half-page',
+        'scroll-down-line',
+        'scroll-down-page',
+        'scroll-outline-down-line',
+        'scroll-outline-down-page',
+        'scroll-outline-left',
+        'scroll-outline-right',
+        'scroll-outline-up-line',
+        'scroll-outline-up-page',
+        'scroll-up-half-page',
+        'scroll-up-line',
+        'scroll-up-page',
+
+        # Windows...
+        'about-leo',
+
+        'cascade-windows',
+        'close-others',
+        'close-window',
+
+        'iconify-frame',
+
+        'find-tab-hide',
+        'find-tab-open',
+
+        'hide-body-dock',
+        'hide-body-pane',
+        'hide-invisibles',
+        'hide-log-pane',
+        'hide-outline-dock',
+        'hide-outline-pane',
+        'hide-tabs-dock',
+
+        'minimize-all',
+
+        'resize-to-screen',
+
+        'show-body-dock',
+        'show-hide-body-dock',
+        'show-hide-outline-dock',
+        'show-hide-render-dock',
+        'show-hide-tabs-dock',
+        'show-tabs-dock',
+        'clean-diff',
+        'cm-external-editor',
+
+        'delete-@button-parse-json-button',
+        'delete-trace-statements',
+
+        'disable-idle-time-events',
+        'do-nothing',
+
+        'enable-idle-time-events',
+        'enter-quick-command-mode',
+        'exit-named-mode',
+
+        'F6-open-console',
+
+        'flush-lines',
+        'full-command',
+
+        'get-child-headlines',
+
+        'history',
+
+        'insert-file-name',
+
+        'justify-toggle-auto',
+
+        'keep-lines',
+        'keyboard-quit',
+
+        'line-number',
+        'line-numbering-toggle',
+        'line-to-headline',
+
+        'marked-list',
+
+        'mode-help',
+
+        'open-python-window',
+
+        'open-with-idle',
+        'open-with-open-office',
+        'open-with-scite',
+        'open-with-word',
+
+        'recolor',
+        'redraw',
+
+        'repeat-complex-command',
+
+        'session-clear',
+        'session-create',
+        'session-refresh',
+        'session-restore',
+        'session-snapshot-load',
+        'session-snapshot-save',
+
+        'set-colors',
+        'set-command-state',
+        'set-comment-column',
+        'set-extend-mode',
+        'set-fill-column',
+        'set-fill-prefix',
+        'set-font',
+        'set-insert-state',
+        'set-overwrite-state',
+        'set-silent-mode',
+
+        'show-buttons',
+        'show-calltips',
+        'show-calltips-force',
+        'show-color-names',
+        'show-color-wheel',
+        'show-commands',
+        'show-file-line',
+
+        'show-focus',
+        'show-fonts',
+
+        'show-invisibles',
+        'show-next-tip',
+        'show-node-uas',
+        'show-outline-dock',
+        'show-plugin-handlers',
+        'show-plugins-info',
+        'show-settings',
+        'show-settings-outline',
+        'show-spell-info',
+        'show-stats',
+
+        'style-set-selected',
+
+        'suspend',
+
+        'toggle-abbrev-mode',
+        'toggle-active-pane',
+        'toggle-angle-brackets',
+        'toggle-at-auto-at-edit',
+        'toggle-autocompleter',
+        'toggle-calltips',
+        'toggle-case-region',
+        'toggle-extend-mode',
+        'toggle-idle-time-events',
+        'toggle-input-state',
+        'toggle-invisibles',
+        'toggle-line-numbering-root',
+        'toggle-sparse-move',
+        'toggle-split-direction',
+
+        'what-line',
+        'eval',
+        'eval-block',
+        'eval-last',
+        'eval-last-pretty',
+        'eval-replace',
+
+        'find-quick',
+        'find-quick-changed',
+        'find-quick-selected',
+        'find-quick-test-failures',
+        'find-quick-timeline',
+
+        'goto-next-history-node',
+        'goto-prev-history-node',
+
+        'preview',
+        'preview-body',
+        'preview-expanded-body',
+        'preview-expanded-html',
+        'preview-html',
+        'preview-marked-bodies',
+        'preview-marked-html',
+        'preview-marked-nodes',
+        'preview-node',
+        'preview-tree-bodies',
+        'preview-tree-html',
+        'preview-tree-nodes',
+
+        'spell-add',
+        'spell-as-you-type-next',
+        'spell-as-you-type-toggle',
+        'spell-as-you-type-undo',
+        'spell-as-you-type-wrap',
+        'spell-change',
+        'spell-change-then-find',
+        'spell-find',
+        'spell-ignore',
+        'spell-tab-hide',
+        'spell-tab-open',
+
+        'tag-children',
+
+        'todo-children-todo',
+        'todo-dec-pri',
+        'todo-find-todo',
+        'todo-fix-datetime',
+        'todo-inc-pri',
+
+        'vr',
+        'vr-contract',
+        'vr-expand',
+        'vr-hide',
+        'vr-lock',
+        'vr-pause-play-movie',
+        'vr-show',
+        'vr-toggle',
+        'vr-unlock',
+        'vr-update',
+        'vr-zoom',
+
+        'vs-create-tree',
+        'vs-dump',
+        'vs-reset',
+        'vs-update',
+        # vs code's text editing commands should cover all of these...
+        'add-comments',
+        'add-space-to-lines',
+        'add-tab-to-lines',
+        'align-eq-signs',
+
+        'back-char',
+        'back-char-extend-selection',
+        'back-page',
+        'back-page-extend-selection',
+        'back-paragraph',
+        'back-paragraph-extend-selection',
+        'back-sentence',
+        'back-sentence-extend-selection',
+        'back-to-home',
+        'back-to-home-extend-selection',
+        'back-to-indentation',
+        'back-word',
+        'back-word-extend-selection',
+        'back-word-smart',
+        'back-word-smart-extend-selection',
+        'backward-delete-char',
+        'backward-delete-word',
+        'backward-delete-word-smart',
+        'backward-find-character',
+        'backward-find-character-extend-selection',
+        'backward-kill-paragraph',
+        'backward-kill-sentence',
+        'backward-kill-word',
+        'beginning-of-buffer',
+        'beginning-of-buffer-extend-selection',
+        'beginning-of-line',
+        'beginning-of-line-extend-selection',
+
+        'capitalize-word',
+        'center-line',
+        'center-region',
+        'clean-all-blank-lines',
+        'clean-all-lines',
+        'clean-body',
+        'clean-lines',
+        'clear-kill-ring',
+        'clear-selected-text',
+        'convert-blanks',
+        'convert-tabs',
+        'copy-text',
+        'cut-text',
+
+        'delete-char',
+        'delete-comments',
+        'delete-indentation',
+        'delete-spaces',
+        'delete-word',
+        'delete-word-smart',
+        'downcase-region',
+        'downcase-word',
+
+        'end-of-buffer',
+        'end-of-buffer-extend-selection',
+        'end-of-line',
+        'end-of-line-extend-selection',
+
+        'exchange-point-mark',
+
+        'extend-to-line',
+        'extend-to-paragraph',
+        'extend-to-sentence',
+        'extend-to-word',
+
+        'fill-paragraph',
+        'fill-region',
+        'fill-region-as-paragraph',
+
+        'finish-of-line',
+        'finish-of-line-extend-selection',
+
+        'forward-char',
+        'forward-char-extend-selection',
+        'forward-end-word',
+        'forward-end-word-extend-selection',
+        'forward-page',
+        'forward-page-extend-selection',
+        'forward-paragraph',
+        'forward-paragraph-extend-selection',
+        'forward-sentence',
+        'forward-sentence-extend-selection',
+        'forward-word',
+        'forward-word-extend-selection',
+        'forward-word-smart',
+        'forward-word-smart-extend-selection',
+
+        'go-anywhere',
+        'go-back',
+        'go-forward',
+        'goto-char',
+
+        'indent-region',
+        'indent-relative',
+        'indent-rigidly',
+        'indent-to-comment-column',
+
+        'insert-hard-tab',
+        'insert-newline',
+        'insert-parentheses',
+        'insert-soft-tab',
+
+        'kill-line',
+        'kill-paragraph',
+        'kill-pylint',
+        'kill-region',
+        'kill-region-save',
+        'kill-sentence',
+        'kill-to-end-of-line',
+        'kill-word',
+        'kill-ws',
+
+        'match-brackets',
+
+        'move-lines-down',
+        'move-lines-up',
+        'move-past-close',
+        'move-past-close-extend-selection',
+
+        'newline-and-indent',
+        'next-line',
+        'next-line-extend-selection',
+        'next-or-end-of-line',
+        'next-or-end-of-line-extend-selection',
+
+        'previous-line',
+        'previous-line-extend-selection',
+        'previous-or-beginning-of-line',
+        'previous-or-beginning-of-line-extend-selection',
+
+        'rectangle-clear',
+        'rectangle-close',
+        'rectangle-delete',
+        'rectangle-kill',
+        'rectangle-open',
+        'rectangle-string',
+        'rectangle-yank',
+
+        'remove-blank-lines',
+        'remove-newlines',
+        'remove-space-from-lines',
+        'remove-tab-from-lines',
+
+        'reverse-region',
+        'reverse-sort-lines',
+        'reverse-sort-lines-ignoring-case',
+
+        'paste-text',
+        'pop-cursor',
+        'push-cursor',
+
+        'select-all',
+        'select-next-trace-statement',
+        'select-to-matching-bracket',
+
+        'sort-columns',
+        'sort-fields',
+        'sort-lines',
+        'sort-lines-ignoring-case',
+
+        'split-defs',
+        'split-line',
+
+        'start-of-line',
+        'start-of-line-extend-selection',
+
+        'tabify',
+        'transpose-chars',
+        'transpose-lines',
+        'transpose-words',
+
+        'unformat-paragraph',
+        'unindent-region',
+
+        'untabify',
+
+        'upcase-region',
+        'upcase-word',
+        'update-ref-file',
+
+        'yank',
+        'yank-pop',
+
+        'zap-to-character',
+
+    ]
+    bad.extend(bad_list)
+    result = list(sorted(bad))
+    return result
+
+</t>
+<t tx="felix.20210516004048.64">def _good_commands(self):
+    """Defined commands that definitely should be included in leoInteg."""
+    good_list = [
+
+        'contract-all',
+        'contract-all-other-nodes',
+        'clone-node',
+        'copy-node',
+        'copy-marked-nodes',
+        'cut-node',
+
+        'de-hoist',
+        'delete-marked-nodes',
+        'delete-node',
+        'demangle-recent-files',
+        'demote',
+
+        'expand-and-go-right',
+        'expand-next-level',
+        'expand-node',
+        'expand-or-go-right',
+        'expand-prev-level',
+        'expand-to-level-1',
+        'expand-to-level-2',
+        'expand-to-level-3',
+        'expand-to-level-4',
+        'expand-to-level-5',
+        'expand-to-level-6',
+        'expand-to-level-7',
+        'expand-to-level-8',
+        'expand-to-level-9',
+        'expand-all',
+        'expand-all-subheads',
+        'expand-ancestors-only',
+
+        'find-next-clone',
+
+        'goto-first-node',
+        'goto-first-sibling',
+        'goto-first-visible-node',
+        'goto-last-node',
+        'goto-last-sibling',
+        'goto-last-visible-node',
+        'goto-next-changed',
+        'goto-next-clone',
+        'goto-next-marked',
+        'goto-next-node',
+        'goto-next-sibling',
+        'goto-next-visible',
+        'goto-parent',
+        'goto-prev-marked',
+        'goto-prev-node',
+        'goto-prev-sibling',
+        'goto-prev-visible',
+
+        'hoist',
+
+        'insert-node',
+        'insert-node-before',
+        'insert-as-first-child',
+        'insert-as-last-child',
+        'insert-child',
+
+        'mark',
+        'mark-changed-items',
+        'mark-first-parents',
+        'mark-subheads',
+
+        'move-marked-nodes',
+        'move-outline-down',
+        'move-outline-left',
+        'move-outline-right',
+        'move-outline-up',
+
+        'paste-node',
+        'paste-retaining-clones',
+        'promote',
+        'promote-bodies',
+        'promote-headlines',
+
+        'sort-children',
+        'sort-siblings',
+
+        'tangle',
+        'tangle-all',
+        'tangle-marked',
+
+        'unmark-all',
+        'unmark-first-parents',
+        'clean-main-spell-dict',
+        'clean-persistence',
+        'clean-recent-files',
+        'clean-spellpyx',
+        'clean-user-spell-dict',
+
+        'clear-all-caches',
+        'clear-all-hoists',
+        'clear-all-uas',
+        'clear-cache',
+        'clear-node-uas',
+        'clear-recent-files',
+
+        'delete-first-icon',
+        'delete-last-icon',
+        'delete-node-icons',
+
+        'dump-caches',
+        'dump-clone-parents',
+        'dump-expanded',
+        'dump-node',
+        'dump-outline',
+
+        'insert-icon',
+
+        'set-ua',
+
+        'show-all-uas',
+        'show-bindings',
+        'show-clone-ancestors',
+        'show-clone-parents',
+        # Export files...
+        'export-headlines',
+        'export-jupyter-notebook',
+        'outline-to-cweb',
+        'outline-to-noweb',
+        'remove-sentinels',
+        'typescript-to-py',
+
+        # Import files...
+        'import-MORE-files',
+        'import-file',
+        'import-free-mind-files',
+        'import-jupyter-notebook',
+        'import-legacy-external-files',
+        'import-mind-jet-files',
+        'import-tabbed-files',
+        'import-todo-text-files',
+        'import-zim-folder',
+
+        # Open specific files...
+        # 'ekr-projects',
+        'leo-cheat-sheet',  # These duplicates are useful.
+        'leo-dist-leo',
+        'leo-docs-leo',
+        'leo-plugins-leo',
+        'leo-py-leo',
+        'leo-quickstart-leo',
+        'leo-scripts-leo',
+        'leo-settings',
+        'leo-unittest-leo',
+        'my-leo-settings',
+        # 'scripts',
+        'settings',
+
+        'open-cheat-sheet-leo',
+        'open-desktop-integration-leo',
+        'open-leo-dist-leo',
+        'open-leo-docs-leo',
+        'open-leo-plugins-leo',
+        'open-leo-py-leo',
+        'open-leo-settings',
+        'open-leo-settings-leo',
+        'open-local-settings',
+        'open-my-leo-settings',
+        'open-my-leo-settings-leo',
+        'open-quickstart-leo',
+        'open-scripts-leo',
+        'open-unittest-leo',
+
+        # Open other places...
+        'open-offline-tutorial',
+        'open-online-home',
+        'open-online-toc',
+        'open-online-tutorials',
+        'open-online-videos',
+        'open-recent-file',
+        'open-theme-file',
+        'open-url',
+        'open-url-under-cursor',
+        'open-users-guide',
+
+        # Read outlines...
+        'read-at-auto-nodes',
+        'read-at-file-nodes',
+        'read-at-shadow-nodes',
+        'read-file-into-node',
+        'read-outline-only',
+        'read-ref-file',
+
+        # Save Files.
+        'file-save',
+        'file-save-as',
+        'file-save-as-unzipped',
+        'file-save-by-name',
+        'file-save-to',
+        'save',  # Some may not be needed.
+        'save-all',
+        'save-as',
+        'save-file',
+        'save-file-as',
+        'save-file-as-unzipped',
+        'save-file-as-zipped',
+        'save-file-by-name',
+        'save-file-to',
+        'save-to',
+
+        # Write parts of outlines...
+        'write-at-auto-nodes',
+        'write-at-file-nodes',
+        'write-at-shadow-nodes',
+        'write-dirty-at-auto-nodes',
+        'write-dirty-at-file-nodes',
+        'write-dirty-at-shadow-nodes',
+        'write-edited-recent-files',
+        'write-file-from-node',
+        'write-missing-at-file-nodes',
+        'write-outline-only',
+
+        'clone-find-all',
+        'clone-find-all-flattened',
+        'clone-find-all-flattened-marked',
+        'clone-find-all-marked',
+        'clone-find-parents',
+        'clone-find-tag',
+        'clone-marked-nodes',
+        'clone-node-to-last-node',
+        'clone-to-at-spot',
+
+        'edit-setting',
+        'edit-shortcut',
+
+        'execute-pytest',
+        'execute-script',
+        'extract',
+        'extract-names',
+
+        'goto-any-clone',
+        'goto-global-line',
+        'goto-line',
+        'git-diff', 'gd',
+
+        'log-kill-listener', 'kill-log-listener',
+        'log-listen', 'listen-to-log',
+
+        'make-stub-files',
+
+        'pdb',
+
+        'redo',
+        'rst3',
+        'run-all-unit-tests-externally',
+        'run-all-unit-tests-locally',
+        'run-marked-unit-tests-externally',
+        'run-marked-unit-tests-locally',
+        'run-selected-unit-tests-externally',
+        'run-selected-unit-tests-locally',
+        'run-tests',
+
+        'undo',
+
+        'xdb',
+        # Beautify, blacken, fstringify...
+        'beautify-files',
+        'beautify-files-diff',
+        'blacken-files',
+        'blacken-files-diff',
+        'diff-and-open-leo-files',
+        'diff-beautify-files',
+        'diff-fstringify-files',
+        'diff-leo-files',
+        'diff-marked-nodes',
+        'fstringify-files',
+        'fstringify-files-diff',
+        'fstringify-files-silent',
+        'pretty-print-c',
+        'silent-fstringify-files',
+
+        # All other commands...
+        'at-file-to-at-auto',
+
+        'beautify-c',
+
+        'cls',
+        'c-to-python',
+        'c-to-python-clean-docs',
+        'check-derived-file',
+        'check-outline',
+        'code-to-rst',
+        'compare-two-leo-files',
+        'convert-all-blanks',
+        'convert-all-tabs',
+        'count-children',
+        'count-pages',
+        'count-region',
+
+        'desktop-integration-leo',
+
+        'edit-recent-files',
+        'exit-leo',
+
+        'file-compare-two-leo-files',
+        'find-def',
+        'find-long-lines',
+        'find-missing-docstrings',
+        'flake8',
+        'flatten-outline',
+        'flatten-outline-to-node',
+        'flatten-script',
+
+        'gc-collect-garbage',
+        'gc-dump-all-objects',
+        'gc-dump-new-objects',
+        'gc-dump-objects-verbose',
+        'gc-show-summary',
+
+        'help',  # To do.
+        'help-for-abbreviations',
+        'help-for-autocompletion',
+        'help-for-bindings',
+        'help-for-command',
+        'help-for-creating-external-files',
+        'help-for-debugging-commands',
+        'help-for-drag-and-drop',
+        'help-for-dynamic-abbreviations',
+        'help-for-find-commands',
+        'help-for-keystroke',
+        'help-for-minibuffer',
+        'help-for-python',
+        'help-for-regular-expressions',
+        'help-for-scripting',
+        'help-for-settings',
+
+        'insert-body-time',  # ?
+        'insert-headline-time',
+        'insert-jupyter-toc',
+        'insert-markdown-toc',
+
+        'find-var',
+
+        'join-leo-irc',
+        'join-node-above',
+        'join-node-below',
+        'join-selection-to-node-below',
+
+        'move-lines-to-next-node',
+
+        'new',
+
+        'open-outline',
+
+        'parse-body',
+        'parse-json',
+        'pandoc',
+        'pandoc-with-preview',
+        'paste-as-template',
+
+        'print-body',
+        'print-cmd-docstrings',
+        'print-expanded-body',
+        'print-expanded-html',
+        'print-html',
+        'print-marked-bodies',
+        'print-marked-html',
+        'print-marked-nodes',
+        'print-node',
+        'print-sep',
+        'print-tree-bodies',
+        'print-tree-html',
+        'print-tree-nodes',
+        'print-window-state',
+
+        'pyflakes',
+        'pylint',
+        'pylint-kill',
+        'python-to-coffeescript',
+
+        'quit-leo',
+
+        'reformat-body',
+        'reformat-paragraph',
+        'refresh-from-disk',
+        'reload-settings',
+        'reload-style-sheets',
+        'revert',
+
+        'save-buffers-kill-leo',
+        'screen-capture-5sec',
+        'screen-capture-now',
+        'script-button',  # ?
+        'set-reference-file',
+        'show-style-sheet',
+        'sort-recent-files',
+        'sphinx',
+        'sphinx-with-preview',
+        'style-reload',  # ?
+
+        'untangle',
+        'untangle-all',
+        'untangle-marked',
+
+        'view-lossage',  # ?
+
+        'weave',
+
+        # Dubious commands (to do)...
+        'act-on-node',
+
+        'cfa',  # Do we need abbreviations?
+        'cfam',
+        'cff',
+        'cffm',
+        'cft',
+
+        'buffer-append-to',
+        'buffer-copy',
+        'buffer-insert',
+        'buffer-kill',
+        'buffer-prepend-to',
+        'buffer-switch-to',
+        'buffers-list',
+        'buffers-list-alphabetically',
+
+        'chapter-back',
+        'chapter-next',
+        'chapter-select',
+        'chapter-select-main',
+        'create-def-list',  # ?
+    ]
+    return good_list
+
+</t>
+<t tx="felix.20210516004048.65">def get_all_server_commands(self, param):
+    """
+    Public server method:
+    Return the names of all callable public methods of the server.
+    """
+    tag = 'get_all_server_commands'
+    names = self._get_all_server_commands()
+    if self.log_flag:  # pragma: no cover
+        print(f"\n{tag}: {len(names)} server commands\n")
+        g.printObj(names, tag=tag)
+    return self._make_response({"server-commands": names})
+
+def _get_all_server_commands(self):
+    """
+    Private server method:
+    Return the names of all callable public methods of the server.
+    """
+    members = inspect.getmembers(self, inspect.ismethod)
+    return sorted([name for (name, value) in members if not name.startswith('_')])
+</t>
+<t tx="felix.20210516004048.66">def _init_connection(self, web_socket):  # pragma: no cover (tested in client).
+    """Begin the connection."""
+    self.web_socket = web_socket
+    self.loop = asyncio.get_event_loop()
+</t>
+<t tx="felix.20210516004048.67">def set_ask_result(self, param):
+    if self.log_flag:  # pragma: no cover
+        print(f"\nask result\n")
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.68">def set_config(self, param):
+    if self.log_flag:  # pragma: no cover
+        print(f"\nset gonfig\n")
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.69">def shut_down(self, param):
+    """Shut down the server."""
+    tag = 'shut_down'
+    n = len(g.app.commanders())
+    if n:  # pragma: no cover
+        raise ServerError(f"{tag}: {n} open outlines")
+    raise TerminateServer("client requested shut down")
+</t>
+<t tx="felix.20210516004048.7">def get_buttons(self, param):  # pragma: no cover (no scripting controller)
+    """
+    Gets the currently opened file's @buttons list
+    as an array of dict. 
+    
+    Typescript interface:
+        {
+            name: string;
+            index: string;
+        }[]
+    """
+    d = self._check_button_command('get_buttons')
+    buttons = []
+    # Some button keys are objects so we have to convert first
+    for key in d:
+        entry = {"name": d[key], "index": str(key)}
+        buttons.append(entry)
+    return self._make_minimal_response({
+        "buttons": buttons
+    })
+</t>
+<t tx="felix.20210516004048.70"></t>
+<t tx="felix.20210516004048.71">def _ap_to_p(self, ap):
+    """
+    Convert ap (archived position, a dict) to a valid Leo position.
+    Raise ServerError on any kind of error.
+    """
+    tag = '_ap_to_p'
+    c = self._check_c()
+    gnx_d = c.fileCommands.gnxDict
+    outer_stack = ap.get('stack')
+    if outer_stack is None:  # pragma: no cover.
+        raise ServerError(f"{tag}: no stack in ap: {ap!r}")
+    if not isinstance(outer_stack, (list, tuple)):  # pragma: no cover.
+        raise ServerError(f"{tag}: stack must be tuple or list: {outer_stack}")
+    
+    def d_to_childIndex_v (d):
+        """Helper: return childIndex and v from d ["childIndex"] and d["gnx"]."""
+        childIndex = d.get('childIndex')
+        if childIndex is None:  # pragma: no cover.
+            raise ServerError(f"{tag}: no childIndex in {d}")
+        try:
+            childIndex = int(childIndex)
+        except Exception:  # pragma: no cover.
+            raise ServerError(f"{tag}: bad childIndex: {childIndex!r}")
+        gnx = d.get('gnx')
+        if gnx is None:  # pragma: no cover.
+            raise ServerError(f"{tag}: no gnx in {d}.")
+        v = gnx_d.get(gnx)
+        if v is None:  # pragma: no cover.
+            raise ServerError(f"{tag}: gnx not found: {gnx!r}")
+        return childIndex, v
+    #
+    # Compute p.childIndex and p.v.
+    childIndex, v = d_to_childIndex_v(ap)
+    #
+    # Create p.stack.
+    stack = []
+    for stack_d in outer_stack:
+        stack_childIndex, stack_v = d_to_childIndex_v(stack_d)
+        stack.append((stack_v, stack_childIndex))
+    #
+    # Make p and check p.
+    p = Position(v, childIndex, stack)
+    if not c.positionExists(p):  # pragma: no cover.
+        print(
+            f"{tag}: Bad ap: {ap!r}\n"
+            # f"{tag}: position: {p!r}\n"
+            f"{tag}: v {v!r} childIndex: {childIndex!r}\n"
+            f"{tag}: stack: {stack!r}")
+        raise ServerError(f"{tag}: p does not exist in {c.shortFileName()}")
+    return p
+</t>
+<t tx="felix.20210516004048.72">def _check_c(self):
+    """Return self.c or raise ServerError if self.c is None."""
+    tag = '_check_c'
+    c = self.c
+    if not c:  # pragma: no cover
+        raise ServerError(f"{tag}: no open commander")
+    return c
+</t>
+<t tx="felix.20210516004048.73">def _check_outline(self, c):
+    """Check self.c for consistency."""
+    # Check that all positions exist.
+    self._check_outline_positions(c)
+    # Test round-tripping.
+    self._test_round_trip_positions(c)
+</t>
+<t tx="felix.20210516004048.74">def _check_outline_positions(self, c):
+    """Verify that all positions in c exist."""
+    tag = '_check_outline_positions'
+    for p in c.all_positions(copy=False):
+        if not c.positionExists(p):  # pragma: no cover
+            message = f"{tag}: position {p!r} does not exist in {c.shortFileName()}"
+            print(message)
+            self._dump_position(p)
+            raise ServerError(message)
+</t>
+<t tx="felix.20210516004048.75">def _do_leo_command(self, command, param):
+    """
+    Generic call to a method in Leo's Commands class or any subcommander class.
+    
+    The param["ap"] position is to be selected before having the command run,
+    while the param["keep"] parameter specifies wether the original position
+    should be re-selected afterward.
+    
+    TODO: The whole of those operations is to be undoable as one undo step.
+
+    command: a method name (a string).
+    param["ap"]: an archived position.
+    param["keep"]: preserve the current selection, if possible.
+    
+    """
+    tag = '_do_leo_command'
+    c = self._check_c()
+        
+    if command in self.bad_commands_list:  # pragma: no cover
+        raise ServerError(f"{tag}: disallowed command: {command_name!r}")
+        
+    keepSelection = False  # Set default, optional component of param
+    if "keep" in param:
+        keepSelection = param["keep"]
+        
+    func = c.commandsDict.get(command)
+    
+    if not func:  # pragma: no cover
+        raise ServerError(f"{tag}: Leo command not found: {command!r}")
+
+    p = self._get_p(param)
+    
+    if p == c.p:
+        value = func(event={"c":c})  # no need for re-selection
+    else:
+        old_p = c.p
+        c.selectPosition(p)
+        value = func(event={"c":c})
+        if keepSelection and c.positionExists(old_p):
+            c.selectPosition(old_p)
+
+    value = func(event={"c":c})
+    
+    # Tag along a possible return value with info sent back by _make_response
+    return self._make_response({"return-value": value})
+</t>
+<t tx="felix.20210516004048.76">def _do_message(self, d):
+    """
+    Handle d, a python dict representing the incoming request.
+    The d dict must have the three (3) following keys:
+    
+    "id": A positive integer.
+    
+    "action": A string, which is either:
+        - The name of public method of this class, prefixed with a '!'.
+        - The name of a leo command, without prefix, to be run by _do_leo_command
+        
+    "param": A dict to be passed to the called "action" method. 
+        (Passed to the public method, or the _do_leo_command. Often contains ap, text &amp; keep)
+    
+    Return a dict, created by _make_response or _make_minimal_response
+    that contains at least an 'id' key.
+    
+    """
+    tag = '_do_message'
+    
+    # Require "id" and "action" keys
+    id_ = d.get("id")
+    if id_ is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no id")
+    action = d.get("action")
+    if action is None:  # pragma: no cover
+        raise ServerError("f{tag}: no action")
+        
+    param = d.get('param', {})
+    # Set log flag.
+    self.log_flag = param.get("log")
+    
+    # Set the current_id and action ivars for _make_response.
+    self.current_id = id_
+    self.action = action
+    
+    # Execute the requested action.
+    if action[0] == "!":
+        func = self._do_server_command  # Server has this method.
+    else:
+        func = self._do_leo_command  # No prefix, so it's a Leo command.
+        
+    result = func(action, param)
+    if result is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no response: {action!r}")
+    return result
+</t>
+<t tx="felix.20210516004048.77">def _do_server_command(self, action, param):
+    tag = '_do_server_command'
+    # Disallow hidden methods.
+    if action.startswith('_'):  # pragma: no cover
+        raise ServerError(f"{tag}: action starts with '_': {action!r}")
+    # Find and execute the server method.
+    func = getattr(self, action, None)
+    if not func:
+        raise ServerError(f"{tag}: action not found: {action!r}")  # pragma: no cover
+    if not callable(func):
+        raise ServerError(f"{tag}: not callable: {func!r}")  # pragma: no cover
+    return func(param)
+</t>
+<t tx="felix.20210516004048.78">def _dump_outline(self, c):  # pragma: no cover
+    """Dump the outline."""
+    tag = '_dump_outline'
+    print(f"{tag}: {c.shortFileName()}...\n")
+    for p in c.all_positions():
+        self._dump_position(p)
+    print('')
+
+def _dump_position(self, p):  # pragma: no cover
+    level_s = ' ' * 2 * p.level()
+    print(f"{level_s}{p.childIndex():2} {p.v.gnx} {p.h}")
+</t>
+<t tx="felix.20210516004048.79">def _es(self, s):  # pragma: no cover (tested in client).
+    """
+    Send a response that does not correspond to a request.
+    
+    The response *must* have an "async" key, but *not* an "id" key.
+    """
+    tag = '_es'
+    message = g.toUnicode(s)
+    package = {"async": "", "s": message}
+    response = json.dumps(package, separators=(',', ':'))
+    if self.loop:
+        self.loop.create_task(self._async_output(response))
+    else:
+        print(f"{tag}: Error loop not ready {message}")
+</t>
+<t tx="felix.20210516004048.8">def remove_button(self, param):  # pragma: no cover (no scripting controller)
+    """Remove button by index 'key string'."""
+    tag = 'remove_button'
+    index = param.get("index")
+    if not index:
+        raise ServerError(f"{tag}: no button index given")
+    d = self._check_button_command(tag)
+    
+    # Some button keys are objects so we have to convert first
+    key = None
+    for i_key in d:
+        if(str(i_key) == index):
+            key = i_key
+    if key:
+        try:
+            del d [index]
+        except Exception as e:
+            raise ServerError(f"{tag}: exception removing button {index!r}: {e}")
+    else:
+        raise ServerError(f"{tag}: button {index!r} does not exist")
+
+    return self._make_response()
+</t>
+<t tx="felix.20210516004048.80">async def _async_output(self, json):  # pragma: no cover (tested in server)
+    """Output json string to the web_socket"""
+    tag = '_async_output'
+    if self.web_socket:
+        await self.web_socket.send(bytes(json, 'utf-8'))
+    else:
+        g.trace(f"{tag}: no web socket. json: {json!r}")
+</t>
+<t tx="felix.20210516004048.81">def _get_p(self, param):
+    """Return _ap_to_p(param["ap"]) or c.p."""
+    
+    tag = '_get_ap'
+    c = self.c
+    if not c:  # pragma: no cover
+        raise ServerError(f"{tag}: no c")
+        
+    ap = param.get("ap")
+    if ap:
+        p = self._ap_to_p(ap)  # Convertion
+        if p:
+            if not c.positionExists(p):  # pragma: no cover
+                raise ServerError(f"{tag}: position does not exist. ap: {ap!r}")
+            return p  # Return the position 
+
+    # Fallback to c.p
+    if not c.p:  # pragma: no cover
+        raise ServerError(f"{tag}: no c.p")
+        
+    return c.p
+</t>
+<t tx="felix.20210516004048.82">def _get_position_d(self, p):
+    """
+    Return a python dict containing:
+    - "node": self._p_to_ap(p).
+    - All *cheap* redraw data..
+    
+    Use get_ua to get p.ua *plus* all this redraw data.
+    
+    Note: v.computeIcon sets iconVal as follows:
+        v, val = self, 0
+        if v.hasBody(): val += 1
+        if v.isMarked(): val += 2
+        if v.isCloned(): val += 4
+        if v.isDirty(): val += 8
+    """
+    return {
+        "node": self._p_to_ap(p), # Contains p.gnx, p.childIndex and p.stack.
+        # The cheap redraw data...
+        "body-length": len(p.b),  # *Not* p.b.
+        "has-children": p.hasChildren(),  # *Not* p.children().
+        "has-ua": bool(p.v.u),  # *Not* p.v.u.
+        "headline": p.h,
+        "icon-val": p.v.iconVal,  # An int between 0 and 15.
+        "is-at-file": p.isAnyAtFileNode(),
+        "level": p.level(),  # Useful for debugging.
+    }
+</t>
+<t tx="felix.20210516004048.83">def _make_response(self, package=None):
+    """
+    Return a json string representing a response dict.
+    
+    The 'package' kwarg, if present, must be a python dict describing a
+    response. package may be an empty dict or None.
+    
+    The 'p' kwarg, if present, must be a position.
+    
+    First, this method creates a response (a python dict) containing all
+    the keys in the 'package' dict, with the following added keys:
+        
+    - "id":         The incoming id.
+    - "commander":  A dict describing self.c.
+    - "node":       None, or an archived position describing self.c.p.
+    
+    Finally, this method returns the json string corresponding to the
+    response.
+    """
+    tag = '_make_response'
+    c = self.c  # It is valid for c to be None.
+    if package is None:
+        package = {}
+    p = package.get("p")
+    if p:
+        del package ["p"]
+    # Raise an *internal* error if checks fail.
+    if isinstance(package, str):  # pragma: no cover
+        raise InternalServerError(f"{tag}: bad package kwarg: {package!r}")
+    if p and not isinstance(p, Position):  # pragma: no cover
+        raise InternalServerError(f"{tag}: bad p kwarg: {p!r}")
+    if p and not c:  # pragma: no cover
+        raise InternalServerError(f"{tag}: p but not c")
+    if p and not c.positionExists(p):  # pragma: no cover
+        raise InternalServerError(f"{tag}: p does not exist: {p!r}")
+    if c and not c.p:  # pragma: no cover
+        raise InternalServerError(f"{tag}: empty c.p")
+
+    # Always add id
+    package ["id"] = self.current_id
+
+    # The following keys are relevant only if there is an open commander.
+    if c:
+        # Allow commands, especially _get_redraw_d, to specify p!
+        p = p or c.p
+        package ["commander"] = {
+            "changed": c.isChanged(),
+            "file_name": c.fileName(), # Can be None for new files.
+        }
+        # Add all the node data, including:
+        # - "node": self._p_to_ap(p) # Contains p.gnx, p.childIndex and p.stack.
+        # - All the *cheap* redraw data for p.
+        redraw_d = self._get_position_d(p)
+        package ["node"] = redraw_d
+    if self.log_flag:  # pragma: no cover
+        g.printObj(package, tag=f"{tag} returns")
+    return json.dumps(package, separators=(',', ':')) 
+</t>
+<t tx="felix.20210516004048.84">def _make_minimal_response(self, package=None, minimal=False):
+    """
+    Return a json string representing a response dict.
+    
+    The 'package' kwarg, if present, must be a python dict describing a
+    response. package may be an empty dict or None.
+    
+    The 'p' kwarg, if present, must be a position.
+    
+    First, this method creates a response (a python dict) containing all
+    the keys in the 'package' dict.
+    
+    Then it adds 'id' to the package.
+    
+    Finally, this method returns the json string corresponding to the
+    response.
+    """
+    tag = '_make_response'
+    c = self.c  # It is valid for c to be None.
+    if package is None:
+        package = {}
+
+    # Always add id.        
+    package ["id"] = self.current_id
+
+    return json.dumps(package, separators=(',', ':'))
+</t>
+<t tx="felix.20210516004048.85">def _p_to_ap(self, p):
+    """
+    Convert Leo position p to a serializable archived position.
+    
+    This returns only position-related data.
+    get_position_data returns all data needed to redraw the screen.
+    """
+    self._check_c()
+    stack = [{'gnx': v.gnx, 'childIndex': childIndex}
+        for (v, childIndex) in p.stack]
+    return {
+        'childIndex': p._childIndex,
+        'gnx': p.v.gnx,
+        'stack': stack,
+    }
+</t>
+<t tx="felix.20210516004048.86">def _test_round_trip_positions(self, c):  # pragma: no cover (tested in client).
+    """Test the round tripping of p_to_ap and ap_to_p."""
+    tag = '_test_round_trip_positions'
+    for p in c.all_unique_positions():
+        ap = self._p_to_ap(p)
+        p2 = self._ap_to_p(ap)
+        if p != p2:
+            self._dump_outline(c)
+            raise ServerError(f"{tag}: round-trip failed: ap: {ap!r}, p: {p!r}, p2: {p2!r}")
+</t>
+<t tx="felix.20210516004048.9"></t>
+<t tx="felix.20210516233931.1">public startSearch(): void {
+    vscode.window.showInformationMessage("startSearch command");
 }
 
 </t>
-<t tx="felix.20210420215230.1">/**
- * Show file browser to find leoserver.py. Save it's path in the config or cancel.
- */
-public chooseLeoServerPath(): void {
-    vscode.window.showOpenDialog(
-        {
-            title: "Locate Leo Server Script",
-            canSelectMany: false,
-            openLabel: "Choose",
-            filters: { 'script': ['py'] }
-        }
-    )
-        .then(p_chosenFile =&gt; {
-            console.log(p_chosenFile);
-
-        });
+<t tx="felix.20210516234059.1">public findNext(): void {
+    vscode.window.showInformationMessage("findNext command");
 }
 
+</t>
+<t tx="felix.20210516234104.1">public findPrevious(): void {
+    vscode.window.showInformationMessage("findPrevious command");
+}
+
+</t>
+<t tx="felix.20210517001143.1">{
+  "command": "leointeg.startSearch",
+  "category": "Leo",
+  "title": "Start Search"
+},
+{
+  "command": "leointeg.findNext",
+  "category": "Leo",
+  "title": "Find Next"
+},
+{
+  "command": "leointeg.findPrevious",
+  "category": "Leo",
+  "title": "Find Previous"
+},
+{
+  "command": "leointeg.cloneFindAll",
+  "category": "Leo",
+  "title": "Clone Find All"
+},
+{
+  "command": "leointeg.cloneFindAllFlattened",
+  "category": "Leo",
+  "title": "Clone Find All Flattened"
+},
+</t>
+<t tx="felix.20210517001459.1">{
+  "command": "leointeg.mark",
+  "category": "Leo",
+  "title": "Mark",
+  "icon": {
+    "light": "resources/light/mark.svg",
+    "dark": "resources/dark/mark.svg"
+  }
+},
+{
+  "command": "leointeg.markSelection",
+  "category": "Leo",
+  "title": "Mark"
+},
+{
+  "command": "leointeg.markSelectionFromOutline",
+  "category": "Leo",
+  "title": "Mark"
+},
+{
+  "command": "leointeg.unmark",
+  "category": "Leo",
+  "title": "Unmark",
+  "icon": {
+    "light": "resources/light/unmark.svg",
+    "dark": "resources/dark/unmark.svg"
+  }
+},
+{
+  "command": "leointeg.unmarkSelection",
+  "category": "Leo",
+  "title": "Unmark"
+},
+{
+  "command": "leointeg.unmarkSelectionFromOutline",
+  "category": "Leo",
+  "title": "Unmark"
+},
+{
+  "command": "leointeg.unmarkAll",
+  "category": "Leo",
+  "title": "Unmark All"
+},
+{
+  "command": "leointeg.markSubheads",
+  "category": "Leo",
+  "title": "Mark Subheads"
+},
+{
+  "command": "leointeg.markChangedItems",
+  "category": "Leo",
+  "title": "Mark Changed Items"
+},
+{
+  "command": "leointeg.copyMarked",
+  "category": "Leo",
+  "title": "Copy Marked"
+},
+{
+  "command": "leointeg.cloneMarkedNodes",
+  "category": "Leo",
+  "title": "Clone Marked Nodes"
+},
+{
+  "command": "leointeg.diffMarkedNodes",
+  "category": "Leo",
+  "title": "Diff Marked Nodes"
+},
+{
+  "command": "leointeg.deleteMarkedNodes",
+  "category": "Leo",
+  "title": "Delete Marked Nodes"
+},
+{
+  "command": "leointeg.moveMarkedNodes",
+  "category": "Leo",
+  "title": "Move Marked Nodes"
+},
+{
+  "command": "leointeg.cloneFindMarked",
+  "category": "Leo",
+  "title": "Clone Find Marked"
+},
+{
+  "command": "leointeg.cloneFindFlattenedMarked",
+  "category": "Leo",
+  "title": "cffm - Clone Find Flattened Marked"
+}
+</t>
+<t tx="felix.20210517004335.1">{
+  "command": "leointeg.startSearch",
+  "key": "ctrl+f",
+  "mac": "cmd+f",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.startSearch",
+  "key": "ctrl+f",
+  "mac": "cmd+f",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.findNext",
+  "key": "f3",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.findNext",
+  "key": "f3",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.findPrevious",
+  "key": "f2",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.findPrevious",
+  "key": "f2",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+}
 </t>
 </tnodes>
 </leo_file>

@@ -55,13 +55,13 @@
       <section id="welcome"
                class="section--full mb-0">
         <h2 class="section__title section__title--primary">
-          Welcome to <span class="highlight">LeoInteg 0.1.13</span>
+          Welcome to <span class="highlight">LeoInteg 0.1.14</span>
         </h2>
         <div class="center mt-1">
           <a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features">
-            See What's New in LeoInteg 0.1.13
+            See What's New in LeoInteg 0.1.14
           </a>
         </div>
         <p class="blurb center ml-0 mr-0">
@@ -106,11 +106,11 @@
               </div>
               <span class="setting__hint">Connects automatically to a LeoBridge server</span>
             </div>
-            <!-- <div class="setting">
+            <div class="setting">
               <div class="setting__input">
-                <label for="leoServerPathCommand">Leo&nbsp;Server&nbsp;Path&nbsp;&nbsp;&nbsp;&nbsp;</label>
-                <input id="serverPath"
-                       name="serverPath"
+                <label for="leoServerPath">Leo&nbsp;Server&nbsp;Path&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                <input id="leoServerPath"
+                       name="leoServerPath"
                        type="text"
                        maxlength="256"
                        placeholder="leoserver.py location"
@@ -118,12 +118,12 @@
                 <button type="button"
                         id="chooseLeoServerPath"
                         name="chooseLeoServerPath"
-                        class="button btn button--flat">
+                        class="button btn button--flat button--flat-primary button--choose-path">
                   Choose...
                 </button>
               </div>
               <span class="setting__hint">Leo server script 'leoserver.py' file location</span>
-            </div> -->
+            </div>
             <div class="setting">
               <div class="setting__input">
                 <label for="leoPythonCommand">Python&nbsp;Command&nbsp;&nbsp;&nbsp;&nbsp;</label>
@@ -228,7 +228,8 @@
                        data-setting />
                 <label for="leoTreeBrowse">Use Leo Tree Browsing</label>
               </div>
-              <span class="setting__hint">Navigate Leo's outline with Leo's shortcuts and behavior instead of the default vscode
+              <span class="setting__hint">Navigate Leo's outline with Leo's shortcuts and behavior instead of the
+                default vscode
                 method<br>(Arrow keys move selection instead of moving a cursor when focus is on Leo's outline)</span>
             </div>
 
@@ -240,7 +241,8 @@
                        data-setting />
                 <label for="treeKeepFocus">Keep focus on Outline</label>
               </div>
-              <span class="setting__hint">Keep focus in the outline when selecting a node - overridden by "<strong>Leo Tree
+              <span class="setting__hint">Keep focus in the outline when selecting a node - overridden by "<strong>Leo
+                  Tree
                   Browsing"</strong></span>
             </div>
 
@@ -560,7 +562,7 @@
     </div>
 
   </div>
-  <div id="dirty-config-toast">Modified</div>
+  <div id="dirty-config-toast">Saving...</div>
   <div id="saved-config-toast">Settings Saved</div>
   #{endOfBody}
 </body>

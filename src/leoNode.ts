@@ -49,28 +49,6 @@ export class LeoNode extends vscode.TreeItem {
     // }
 
     /**
-     * * Sets this node properties (dirty, marked, etc.) by copying from a given node.
-     * * This is needed by the outline provider when refreshing a single node.
-     * @param p_node Node to copy properties from.
-     * @returns Node itself with the new properties applied
-     */
-    public copyProperties(p_node: LeoNode): LeoNode {
-        this.label = p_node.label;
-        this.gnx = p_node.gnx;
-        this.collapsibleState = p_node.collapsibleState;
-        this.apJson = p_node.apJson;
-        this.childIndex = p_node.childIndex;
-        this.cloned = p_node.cloned;
-        this.dirty = p_node.dirty;
-        this.marked = p_node.marked;
-        this.atFile = p_node.atFile;
-        this.hasBody = p_node.hasBody;
-        this.isRoot = p_node.isRoot;
-        this.contextValue = this._getNodeContextValue();
-        return this;
-    }
-
-    /**
      * * Set this node as the root for hoist/dehoist context flags purposes
      */
     public setRoot(): void {

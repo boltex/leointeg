@@ -34,14 +34,15 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
 
             // call action to get get list, and convert to LeoDocumentNode(s) array
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES).then(p_package => {
-                if (p_package && p_package) {
+                if (p_package && p_package.files) {
                     const w_list: LeoDocumentNode[] = [];
-                    const w_files: LeoDocument[] = p_package.openedFiles!.files;
+                    const w_files: LeoDocument[] = p_package.files;
 
                     let w_index: number = 0;
 
                     if (w_files && w_files.length) {
                         w_files.forEach((i_file: LeoDocument) => {
+                            i_file.index = w_index;
                             w_list.push(new LeoDocumentNode(i_file, this._leoIntegration));
                             w_index++;
                         });

@@ -21,6 +21,7 @@ export interface ConfigMembers {
     showCloneOnNodes: boolean;
     showCopyOnNodes: boolean;
     invertNodeContrast: boolean;
+    leoServerPath: string;
     leoPythonCommand: string;
     startServerAutomatically: boolean;
     connectToServerAutomatically: boolean;
@@ -64,7 +65,7 @@ export interface ReqRefresh {
 export interface UserCommand {
     action: string; // String from Constants.LEOBRIDGE, which are commands for leobridgeserver
     node?: LeoNode | undefined;  // We can START a stack with a targeted command
-    text?: string | undefined; // If a string is required, for headline, etc.
+    name?: string | undefined; // If a string is required, for headline, etc.
     refreshType: ReqRefresh; // Minimal refresh level required by this command
     fromOutline: boolean; // Focus back on outline instead of body
     keepSelection?: boolean; // Should bring back selection on node prior to command
@@ -136,44 +137,26 @@ export interface LeoPackageStates {
 }
 
 /**
- * * Returned info about currently opened and editing document
- * Used after opening, switching or setting the opened document
- */
-export interface LeoBridgePackageOpenedInfo {
-    total: number;
-    filename: string;
-    node: ArchivedPosition;
-}
-
-/**
  * * Main interface for JSON sent from Leo back to leoInteg
  */
 export interface LeoBridgePackage {
-    id: number; // TODO : Could be used for error checking
-    // * Each of those top level member is an answer from a "Constants.LEOBRIDGE" command
-    allGnx?: string[];
-    bodyLength?: number;
-    bodyData?: string;
-    bodyStates?: {
-        language: string;
-        selection: BodySelectionInfo;
-    }
-    node?: ArchivedPosition;
-    nodes?: ArchivedPosition[];
-    states?: LeoPackageStates;
-    closed?: {
-        total: number;
-        filename?: string;
-        node?: ArchivedPosition;
-    },
-    opened?: LeoBridgePackageOpenedInfo,
-    setOpened?: LeoBridgePackageOpenedInfo,
-    openedFiles?: {
-        index: number;
-        files: LeoDocument[];
-    }
-    buttons?: LeoButton[];
-    commands?: MinibufferCommand[];
+    // * Common to all result packages
+    id: number;
+    // * Possible answers from a "Constants.LEOBRIDGE" command
+    gnx?: string[]; // get_all_gnx
+    len?: number; // get_body_length
+    body?: string; // get_body
+    buttons?: LeoButton[]; // get_buttons
+    commands?: MinibufferCommand[]; // getCommands
+    filename?: string; // set_opened_file, open_file(s), ?close_file
+    files?: LeoDocument[]; // get_all_open_commanders
+    index?: number; // get_all_open_commanders
+    language?: string; // get_body_states
+    node?: ArchivedPosition; // get_parent, set_opened_file, open_file(s), ?close_file
+    children?: ArchivedPosition[]; // get_children
+    selection?: BodySelectionInfo; // get_body_states
+    states?: LeoPackageStates; // get_ui_states
+    total?: number; // set_opened_file, open_file(s), close_file
 }
 
 /**
@@ -225,11 +208,13 @@ export interface BodyPosition {
 export interface BodySelectionInfo {
     gnx: string;
     // scroll is stored as-is as the 'scrollBarSpot' in Leo
-    scroll: {
-        start: BodyPosition;
-        end: BodyPosition;
-    }
-    active: BodyPosition;
+    // ! TEST scroll as single number only (for Leo vertical scroll value)
+    scroll: number;
+    // scroll: {
+    //     start: BodyPosition;
+    //     end: BodyPosition;
+    // }
+    insert: BodyPosition;
     start: BodyPosition;
     end: BodyPosition;
 }
@@ -239,36 +224,36 @@ export interface BodySelectionInfo {
  */
 export interface showSaveAsDialogParameters {
     // See TODO in leoAsync.ts
-    "initialFile": string;
-    "title": string;
-    "message": string;
-    "filetypes": string[];
-    "defaultExtension": string;
+    initialFile: string;
+    title: string;
+    message: string;
+    filetypes: string[];
+    defaultExtension: string;
 }
 
 /**
  * * Parameter structure used in the 'runAskYesNoDialog' equivalent when asking user input
  */
 export interface runAskYesNoDialogParameters {
-    "ask": string;
-    "message": string;
-    "yes_all": boolean;
-    "no_all": boolean;
+    ask: string;
+    message: string;
+    yes_all: boolean;
+    no_all: boolean;
 }
 
 /**
  * * Parameter structure used in the 'runAskOkDialog' equivalent when showing a warning
  */
 export interface runWarnMessageDialogParameters {
-    "warn": string;
-    "message": string;
+    warn: string;
+    message: string;
 }
 
 /**
  * * Parameter structure for non-blocking info message about detected file changes
  */
 export interface runInfoMessageDialogParameters {
-    "message": string;
+    message: string;
 }
 
 /**
