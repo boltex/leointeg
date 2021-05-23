@@ -603,15 +603,15 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true
         })],
 
-        // TODO : @boltex More commands for issue #24
         [CMD.START_SEARCH, () => w_leo.startSearch()],
         [CMD.FIND_NEXT, () => w_leo.findNext()],
         [CMD.FIND_PREVIOUS, () => w_leo.findPrevious()],
 
-        // [CMD.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
-        // [CMD.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
-        // [CMD.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],
-        // [CMD.CLONE_FIND_FLATTENED_MARKED, () => showInfo("TODO: cloneFindFlattenedMarked command")],
+        // TODO : @boltex More commands for issue #24
+        [CMD.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
+        [CMD.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
+        [CMD.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],
+        [CMD.CLONE_FIND_FLATTENED_MARKED, () => showInfo("TODO: cloneFindFlattenedMarked command")],
 
     ];
 

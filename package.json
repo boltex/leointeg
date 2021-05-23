@@ -223,6 +223,11 @@
           "name": "Leo Buttons",
           "contextualTitle": "Leo",
           "when": "treeInExplorer"
+        },
+        {
+          "type": "webview",
+          "id": "leoFindPanelExplorer",
+          "name": "Leo Find"
         }
       ],
       "leoIntegrationView": [
@@ -240,6 +245,11 @@
           "id": "leoButtons",
           "contextualTitle": "Leo",
           "name": "Buttons"
+        },
+        {
+          "type": "webview",
+          "id": "leoFindPanel",
+          "name": "Find"
         }
       ]
     },
@@ -1331,6 +1341,16 @@
         "view": "leoButtonsExplorer",
         "contents": "There are no @buttons in this outline",
         "when": "leoBridgeReady && leoTreeOpened"
+      },
+      {
+        "view": "leoFindPanel",
+        "contents": "Not connected",
+        "when": "!leoBridgeReady"
+      },
+      {
+        "view": "leoFindPanelExplorer",
+        "contents": "Not connected",
+        "when": "!leoBridgeReady"
       }
     ],
     "menus": {

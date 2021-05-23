@@ -1,18 +1,19 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
+import { LeoIntegration } from "./leoIntegration";
 
 /**
  * Leo Find Panel provider
  */
 export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 
-	public static readonly viewType = 'calicoColors.colorsView';
-
 	private _view?: vscode.WebviewView;
 
 	constructor(
 		private readonly _extensionUri: vscode.Uri,
+		private _context: vscode.ExtensionContext,
+		private _leoIntegration: LeoIntegration
 	) { }
 
 	public resolveWebviewView(
@@ -35,19 +36,26 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 
 		webviewView.webview.onDidReceiveMessage(data => {
 			switch (data.type) {
-				case 'colorSelected':
+				case 'leoFindNext':
 					{
-						vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(`#${data.value}`));
+						// TODO : MAYBE ALWAYS PASS CONFIG ALONG ??
+						vscode.commands.executeCommand(Constants.COMMANDS.FIND_NEXT);
 						break;
 					}
 			}
 		});
 	}
 
-	public addColor() {
+	public selectFindField() {
 		if (this._view) {
 			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
-			this._view.webview.postMessage({ type: 'addColor' });
+			this._view.webview.postMessage({ type: 'selectFindField' });
+		}
+	}
+	public selectReplaceField() {
+		if (this._view) {
+			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
+			this._view.webview.postMessage({ type: 'selectReplaceField' });
 		}
 	}
 
@@ -67,45 +75,63 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 		const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'main.css'));
 
 		// Use a nonce to only allow a specific script to be run.
-		const nonce = getNonce();
+		const nonce = this.getNonce();
 
 		return `<!DOCTYPE html>
 			<html lang="en">
 			<head>
 				<meta charset="UTF-8">
-
-				<!--
-					Use a content security policy to only allow loading images from https or from our extension directory,
-					and only allow scripts that have a specific nonce.
-				-->
 				<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
-
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 				<link href="${styleResetUri}" rel="stylesheet">
 				<link href="${styleVSCodeUri}" rel="stylesheet">
 				<link href="${styleMainUri}" rel="stylesheet">
-				
-				<title>Cat Colors</title>
+
+				<title>Leo Find Panel</title>
 			</head>
 			<body>
-				<ul class="color-list">
-				</ul>
-
-				<button class="add-color-button">Add Color</button>
-
+				<label for="find">Find:</label>
+				<input type="text" id="find" name="find" >
+				<label for="replace">Replace:</label>
+				<input type="text" id="replace" name="replace" >
+				<div class="row">
+					<div class="col">
+						<input type="checkbox" id="wholeWord" name="wholeWord" >
+						<label for="wholeWord">whole Word</label><br>
+						<input type="checkbox" id="ignoreCase" name="ignoreCase" >
+						<label for="ignoreCase">Ignore case</label><br>
+						<input type="checkbox" id="regExp" name="regExp" >
+						<label for="regExp">regeXp</label><br>
+						<input type="checkbox" id="markFinds" name="markFinds" >
+						<label for="markFinds">mark Finds</label><br>
+						<input type="checkbox" id="markChanges" name="markChanges" >
+						<label for="markChanges">mark Changes</label>
+					</div>
+					<div class="col">
+						<input type="radio" id="entireOutline" name="searchScope" value="0">
+						<label for="entireOutline">entireOutline</label><br>
+						<input type="radio" id="subOutlineOnly" name="searchScope" value="1">
+						<label for="subOutlineOnly">subOutlineOnly</label><br>
+						<input type="radio" id="nodeOnly" name="searchScope" value="2">
+						<label for="nodeOnly">nodeOnly</label><br>
+						<input type="checkbox" id="searchHeadline" name="searchHeadline" >
+						<label for="searchHeadline">search Headline</label><br>
+						<input type="checkbox" id="searchBody" name="searchBody" >
+						<label for="searchBody">search Body</label>
+					</div>
+				</div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>
 			</body>
 			</html>`;
 	}
-    private getNonce() {
-	let text = '';
-	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	for (let i = 0; i < 32; i++) {
-		text += possible.charAt(Math.floor(Math.random() * possible.length));
+	private getNonce() {
+		let text = '';
+		const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		for (let i = 0; i < 32; i++) {
+			text += possible.charAt(Math.floor(Math.random() * possible.length));
+		}
+		return text;
 	}
-	return text;
-}
 
 
 }

@@ -31,6 +31,7 @@ import { LeoDocumentNode } from "./leoDocumentNode";
 import { LeoStates } from "./leoStates";
 import { LeoButtonsProvider } from "./leoButtons";
 import { LeoButtonNode } from "./leoButtonNode";
+import { LeoFindPanelProvider } from "./leoFindPanel";
 
 /**
  * * Orchestrates Leo integration into vscode
@@ -132,6 +133,9 @@ export class LeoIntegration {
     private _leoButtons: vscode.TreeView<LeoButtonNode>;
     private _leoButtonsExplorer: vscode.TreeView<LeoButtonNode>;
 
+    // * Leo Find Panel
+    private _leoFindPanelProvider: vscode.WebviewViewProvider;
+
     // * Log and terminal Panes
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(Constants.GUI.LOG_PANE_TITLE);
     private _leoTerminalPane: vscode.OutputChannel | undefined;
@@ -227,6 +231,13 @@ export class LeoIntegration {
 
         // * Automatic server start service
         this._serverService = new ServerService(_context, this);
+
+        // * Leo Find Panel
+        this._leoFindPanelProvider = new LeoFindPanelProvider(_context.extensionUri, _context, this);
+        this._context.subscriptions.push(
+            vscode.window.registerWebviewViewProvider(Constants.FIND_ID, this._leoFindPanelProvider));
+        this._context.subscriptions.push(
+            vscode.window.registerWebviewViewProvider(Constants.FIND_EXPLORER_ID, this._leoFindPanelProvider));
 
         // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
         vscode.window.onDidChangeActiveTextEditor(p_editor => this._onActiveEditorChanged(p_editor));

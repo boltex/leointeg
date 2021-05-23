@@ -20,6 +20,9 @@ export class Constants {
     public static BUTTONS_ID: string = "leoButtons";
     public static BUTTONS_EXPLORER_ID: string = "leoButtonsExplorer";
 
+    public static FIND_ID: string = "leoFindPanel";
+    public static FIND_EXPLORER_ID: string = "leoFindPanelExplorer";
+
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";

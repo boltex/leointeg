@@ -236,7 +236,7 @@
 <v t="felix.20210517001459.1"><vh>Mark Nodes</vh></v>
 </v>
 <v t="ekr.20200815123601.28"><vh>viewsWelcome</vh>
-<v t="ekr.20200815123601.29"><vh>Leo Integration Panel</vh>
+<v t="ekr.20200815123601.29"><vh>Leo Integration</vh>
 <v t="ekr.20200815123601.30"><vh>Not Ready: [start], [connect] and settings</vh></v>
 <v t="ekr.20200815123601.31"><vh>Not Ready Auto Start: [connect] and settings</vh></v>
 <v t="ekr.20200815123601.32"><vh>Not Ready Server Started: [connect] and settings</vh></v>
@@ -251,6 +251,9 @@
 <v t="ekr.20200815123601.39"><vh>Not Ready</vh></v>
 <v t="ekr.20200815123601.40"><vh>Ready: No Opened Files</vh></v>
 <v t="ekr.20200815123601.41"><vh>Ready: No Buttons</vh></v>
+</v>
+<v t="felix.20210522233604.1"><vh>leoFind</vh>
+<v t="felix.20210522233744.1"><vh>Not Ready</vh></v>
 </v>
 </v>
 <v t="ekr.20200815123601.42"><vh>menus</vh>
@@ -428,6 +431,9 @@
 <v t="felix.20200718170429.4"><vh>getLeoFileUrl</vh></v>
 </v>
 </v>
+<v t="felix.20210522001751.1"><vh>@clean src/leoFindPanel.ts</vh>
+<v t="felix.20210522001814.1"><vh>class LeoFindPanelProvider</vh></v>
+</v>
 <v t="felix.20200719025231.1"><vh>@clean src/leoIntegration.ts</vh>
 <v t="felix.20200719025231.2"><vh>class LeoIntegration</vh>
 <v t="felix.20200719025231.3"><vh>Constructor</vh></v>
@@ -594,9 +600,6 @@
 <v t="felix.20200718185403.8"><vh>_updateLeoObjectIndicator</vh></v>
 </v>
 </v>
-<v t="felix.20210522001751.1"><vh>@clean src/leoFindPanel.ts</vh>
-<v t="felix.20210522001814.1"><vh>class LeoFindPanelProvider</vh></v>
-</v>
 <v t="felix.20200718191946.1"><vh>@clean src/serverManager.ts</vh>
 <v t="felix.20200718191946.2"><vh>class ServerService</vh>
 <v t="ekr.20200815091220.1"><vh>_gotTerminalData</vh></v>
@@ -617,6 +620,8 @@
 <v t="felix.20200718194857.10"><vh>LeoBridgePackage</vh></v>
 <v t="felix.20200718194857.11"><vh>LeoDocument</vh></v>
 <v t="felix.20200718194857.12"><vh>LeoButton</vh></v>
+<v t="felix.20210522152922.1"><vh>LeoSearchScope</vh></v>
+<v t="felix.20210522152739.1"><vh>LeoSearchSettings</vh></v>
 <v t="felix.20200718194857.13"><vh>Icon</vh></v>
 <v t="felix.20200718194857.14"><vh>BodyTimeInfo</vh></v>
 <v t="felix.20201119002510.1"><vh>BodyPosition</vh></v>
@@ -659,6 +664,7 @@
 <v t="felix.20200718164509.2"></v>
 <v t="felix.20200718165108.2"></v>
 <v t="felix.20200718170429.2"></v>
+<v t="felix.20210522001814.1"></v>
 <v t="felix.20200719025231.2"></v>
 <v t="felix.20200718170712.2"></v>
 <v t="felix.20200718192411.1"></v>
@@ -667,7 +673,7 @@
 <v t="felix.20200718191946.2"></v>
 </v>
 <v t="felix.20191126232434.4"></v>
-<v t="felix.20210516004048.1"><vh>class LeoServer</vh>
+<v t="felix.20210516004048.1"><vh>BACKUP WIP class LeoServer</vh>
 <v t="felix.20210516004048.2"><vh>server.__init__ (load bridge)</vh></v>
 <v t="felix.20210516004048.3"><vh>server:public commands</vh>
 <v t="felix.20210516004048.4"><vh>server:button commands</vh>
@@ -2007,15 +2013,15 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: true
 })],
 
-// TODO : @boltex More commands for issue #24
 [CMD.START_SEARCH, () =&gt; w_leo.startSearch()],
 [CMD.FIND_NEXT, () =&gt; w_leo.findNext()],
 [CMD.FIND_PREVIOUS, () =&gt; w_leo.findPrevious()],
 
-// [CMD.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
-// [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
-// [CMD.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
-// [CMD.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
+// TODO : @boltex More commands for issue #24
+[CMD.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
+[CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
+[CMD.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
+[CMD.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
 
 </t>
 <t tx="ekr.20200815113508.1">@language python
@@ -3177,7 +3183,7 @@ print('done')
   "view": "leoButtonsExplorer",
   "contents": "There are no @buttons in this outline",
   "when": "leoBridgeReady &amp;&amp; leoTreeOpened"
-}
+},
 </t>
 <t tx="ekr.20200815123601.42">"menus": {
   @others
@@ -4277,6 +4283,11 @@ print('done')
       "name": "Leo Buttons",
       "contextualTitle": "Leo",
       "when": "treeInExplorer"
+    },
+    {
+      "type": "webview",
+      "id": "leoFindPanelExplorer",
+      "name": "Leo Find"
     }
   ],
   "leoIntegrationView": [
@@ -4294,6 +4305,11 @@ print('done')
       "id": "leoButtons",
       "contextualTitle": "Leo",
       "name": "Buttons"
+    },
+    {
+      "type": "webview",
+      "id": "leoFindPanel",
+      "name": "Find"
     }
   ]
 },
@@ -5681,6 +5697,9 @@ public static DOCUMENTS_EXPLORER_ID: string = "leoDocumentsExplorer";
 public static BUTTONS_ID: string = "leoButtons";
 public static BUTTONS_EXPLORER_ID: string = "leoButtonsExplorer";
 
+public static FIND_ID: string = "leoFindPanel";
+public static FIND_EXPLORER_ID: string = "leoFindPanelExplorer";
+
 public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
 public static FILE_EXTENSION: string = "leo";
@@ -5999,7 +6018,7 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
         if (this._selectedNode) {
             w_nodeJson = this._selectedNode;
         } else {
-            w_nodeJson = this._leoIntegration.lastSelectedNode!.apJson;
+            w_nodeJson = this._leoIntegration.lastSelectedNode ? this._leoIntegration.lastSelectedNode.apJson : "";
         }
         if (!w_nodeJson) {
             console.log('ERROR NO ARCHIVED POSITION JSON');
@@ -8881,6 +8900,7 @@ import { LeoDocumentNode } from "./leoDocumentNode";
 import { LeoStates } from "./leoStates";
 import { LeoButtonsProvider } from "./leoButtons";
 import { LeoButtonNode } from "./leoButtonNode";
+import { LeoFindPanelProvider } from "./leoFindPanel";
 
 @others
 @language typescript
@@ -9106,6 +9126,9 @@ export class LeoIntegration {
     private _leoButtonsProvider: LeoButtonsProvider;
     private _leoButtons: vscode.TreeView&lt;LeoButtonNode&gt;;
     private _leoButtonsExplorer: vscode.TreeView&lt;LeoButtonNode&gt;;
+
+    // * Leo Find Panel
+    private _leoFindPanelProvider: vscode.WebviewViewProvider;
 
     // * Log and terminal Panes
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(Constants.GUI.LOG_PANE_TITLE);
@@ -9383,6 +9406,13 @@ private _onActiveEditorChanged(p_editor: vscode.TextEditor | undefined, p_intern
 
     // * Automatic server start service
     this._serverService = new ServerService(_context, this);
+
+    // * Leo Find Panel
+    this._leoFindPanelProvider = new LeoFindPanelProvider(_context.extensionUri, _context, this);
+    this._context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(Constants.FIND_ID, this._leoFindPanelProvider));
+    this._context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(Constants.FIND_EXPLORER_ID, this._leoFindPanelProvider));
 
     // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
     vscode.window.onDidChangeActiveTextEditor(p_editor =&gt; this._onActiveEditorChanged(p_editor));
@@ -15709,6 +15739,7 @@ def _dump_position(self, p):  # pragma: no cover
 <t tx="felix.20210522001751.1">import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
+import { LeoIntegration } from "./leoIntegration";
 
 @language typescript
 @tabwidth -4
@@ -15719,12 +15750,12 @@ import { Constants } from "./constants";
  */
 export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 
-	public static readonly viewType = 'calicoColors.colorsView';
-
 	private _view?: vscode.WebviewView;
 
 	constructor(
 		private readonly _extensionUri: vscode.Uri,
+		private _context: vscode.ExtensionContext,
+		private _leoIntegration: LeoIntegration
 	) { }
 
 	public resolveWebviewView(
@@ -15747,19 +15778,26 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 
 		webviewView.webview.onDidReceiveMessage(data =&gt; {
 			switch (data.type) {
-				case 'colorSelected':
+				case 'leoFindNext':
 					{
-						vscode.window.activeTextEditor?.insertSnippet(new vscode.SnippetString(`#${data.value}`));
+						// TODO : MAYBE ALWAYS PASS CONFIG ALONG ??
+						vscode.commands.executeCommand(Constants.COMMANDS.FIND_NEXT);
 						break;
 					}
 			}
 		});
 	}
 
-	public addColor() {
+	public selectFindField() {
 		if (this._view) {
 			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
-			this._view.webview.postMessage({ type: 'addColor' });
+			this._view.webview.postMessage({ type: 'selectFindField' });
+		}
+	}
+	public selectReplaceField() {
+		if (this._view) {
+			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
+			this._view.webview.postMessage({ type: 'selectReplaceField' });
 		}
 	}
 
@@ -15779,50 +15817,105 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 		const styleMainUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'main.css'));
 
 		// Use a nonce to only allow a specific script to be run.
-		const nonce = getNonce();
+		const nonce = this.getNonce();
 
 		return `&lt;!DOCTYPE html&gt;
 			&lt;html lang="en"&gt;
 			&lt;head&gt;
 				&lt;meta charset="UTF-8"&gt;
-
-				&lt;!--
-					Use a content security policy to only allow loading images from https or from our extension directory,
-					and only allow scripts that have a specific nonce.
-				--&gt;
 				&lt;meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';"&gt;
-
 				&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-
 				&lt;link href="${styleResetUri}" rel="stylesheet"&gt;
 				&lt;link href="${styleVSCodeUri}" rel="stylesheet"&gt;
 				&lt;link href="${styleMainUri}" rel="stylesheet"&gt;
-				
-				&lt;title&gt;Cat Colors&lt;/title&gt;
+
+				&lt;title&gt;Leo Find Panel&lt;/title&gt;
 			&lt;/head&gt;
 			&lt;body&gt;
-				&lt;ul class="color-list"&gt;
-				&lt;/ul&gt;
-
-				&lt;button class="add-color-button"&gt;Add Color&lt;/button&gt;
-
+				&lt;label for="find"&gt;Find:&lt;/label&gt;
+				&lt;input type="text" id="find" name="find" &gt;
+				&lt;label for="replace"&gt;Replace:&lt;/label&gt;
+				&lt;input type="text" id="replace" name="replace" &gt;
+				&lt;div class="row"&gt;
+					&lt;div class="col"&gt;
+						&lt;input type="checkbox" id="wholeWord" name="wholeWord" &gt;
+						&lt;label for="wholeWord"&gt;whole Word&lt;/label&gt;&lt;br&gt;
+						&lt;input type="checkbox" id="ignoreCase" name="ignoreCase" &gt;
+						&lt;label for="ignoreCase"&gt;Ignore case&lt;/label&gt;&lt;br&gt;
+						&lt;input type="checkbox" id="regExp" name="regExp" &gt;
+						&lt;label for="regExp"&gt;regeXp&lt;/label&gt;&lt;br&gt;
+						&lt;input type="checkbox" id="markFinds" name="markFinds" &gt;
+						&lt;label for="markFinds"&gt;mark Finds&lt;/label&gt;&lt;br&gt;
+						&lt;input type="checkbox" id="markChanges" name="markChanges" &gt;
+						&lt;label for="markChanges"&gt;mark Changes&lt;/label&gt;
+					&lt;/div&gt;
+					&lt;div class="col"&gt;
+						&lt;input type="radio" id="entireOutline" name="searchScope" value="0"&gt;
+						&lt;label for="entireOutline"&gt;entireOutline&lt;/label&gt;&lt;br&gt;
+						&lt;input type="radio" id="subOutlineOnly" name="searchScope" value="1"&gt;
+						&lt;label for="subOutlineOnly"&gt;subOutlineOnly&lt;/label&gt;&lt;br&gt;
+						&lt;input type="radio" id="nodeOnly" name="searchScope" value="2"&gt;
+						&lt;label for="nodeOnly"&gt;nodeOnly&lt;/label&gt;&lt;br&gt;
+						&lt;input type="checkbox" id="searchHeadline" name="searchHeadline" &gt;
+						&lt;label for="searchHeadline"&gt;search Headline&lt;/label&gt;&lt;br&gt;
+						&lt;input type="checkbox" id="searchBody" name="searchBody" &gt;
+						&lt;label for="searchBody"&gt;search Body&lt;/label&gt;
+					&lt;/div&gt;
+				&lt;/div&gt;
 				&lt;script nonce="${nonce}" src="${scriptUri}"&gt;&lt;/script&gt;
 			&lt;/body&gt;
 			&lt;/html&gt;`;
 	}
-    private getNonce() {
-	let text = '';
-	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	for (let i = 0; i &lt; 32; i++) {
-		text += possible.charAt(Math.floor(Math.random() * possible.length));
+	private getNonce() {
+		let text = '';
+		const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+		for (let i = 0; i &lt; 32; i++) {
+			text += possible.charAt(Math.floor(Math.random() * possible.length));
+		}
+		return text;
 	}
-	return text;
-}
 
 
 }
 
 
+</t>
+<t tx="felix.20210522152739.1">/**
+ * * Leo search settings structure.
+ */
+export interface LeoSearchSettings {
+    wholeWord: boolean;
+    ignoreCase: boolean;
+    regExp: boolean;
+    markFinds: boolean;
+    markChanges: boolean;
+    searchHeadline: boolean;
+    searchBody: boolean;
+    searchScope: LeoSearchScope; // 0, 1 or 2 for outline, sub-outline, or node.
+}
+
+</t>
+<t tx="felix.20210522152922.1">/**
+ * * Enum type for the search scope radio buttons of the find panel.
+ */
+export const enum LeoSearchScope {
+    entireOutline = 0,
+    subOutlineOnly,
+    nodeOnly
+}
+
+</t>
+<t tx="felix.20210522233604.1"></t>
+<t tx="felix.20210522233744.1">{
+  "view": "leoFindPanel",
+  "contents": "Not connected",
+  "when": "!leoBridgeReady"
+},
+{
+  "view": "leoFindPanelExplorer",
+  "contents": "Not connected",
+  "when": "!leoBridgeReady"
+}
 </t>
 </tnodes>
 </leo_file>

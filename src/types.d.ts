@@ -178,6 +178,29 @@ export interface LeoButton {
 }
 
 /**
+ * * Enum type for the search scope radio buttons of the find panel.
+ */
+export const enum LeoSearchScope {
+    entireOutline = 0,
+    subOutlineOnly,
+    nodeOnly
+}
+
+/**
+ * * Leo search settings structure.
+ */
+export interface LeoSearchSettings {
+    wholeWord: boolean;
+    ignoreCase: boolean;
+    regExp: boolean;
+    markFinds: boolean;
+    markChanges: boolean;
+    searchHeadline: boolean;
+    searchBody: boolean;
+    searchScope: LeoSearchScope; // 0, 1 or 2 for outline, sub-outline, or node.
+}
+
+/**
  * * Icon path names used in leoNodes for rendering in treeview
  */
 export interface Icon {
