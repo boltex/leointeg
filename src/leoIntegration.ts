@@ -15,7 +15,8 @@ import {
     UserCommand,
     ShowBodyParam,
     BodySelectionInfo,
-    BodyPosition
+    BodyPosition,
+    LeoGuiFindTabManagerSettings
 } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
@@ -2168,16 +2169,55 @@ export class LeoIntegration {
         //     });
 
         // Test setting scroll / selection range
-        /*
-        vscode.window.showQuickPick(["1-1 1-6", "2-2 3-3"]).then(p_results => {
+
+        vscode.window.showQuickPick(["get", "set"]).then(p_results => {
             console.log('quick pick result:', p_results);
             let w_selection: vscode.Selection;
-            if (p_results === "1-1 1-6") {
-                w_selection = new vscode.Selection(1, 1, 1, 6);
+            let w_action = "";
+            if (p_results === "get") {
+                w_action = Constants.LEOBRIDGE.GET_SEARCH_SETTINGS;
+                // w_selection = new vscode.Selection(1, 1, 1, 6);
             } else {
-                w_selection = new vscode.Selection(2, 2, 3, 3);
+                w_action = Constants.LEOBRIDGE.SET_SEARCH_SETTINGS;
+                // w_selection = new vscode.Selection(2, 2, 3, 3);
             }
 
+            console.log('w_action', w_action);
+
+            const searchSettings: LeoGuiFindTabManagerSettings = {
+                //Find/change strings...
+                find_text: "new find text",
+                change_text: "",
+                // Find options...
+                ignore_case: false, // diff
+                mark_changes: false,
+                mark_finds: true, // diff
+                node_only: false,
+                pattern_match: false,
+                search_body: true,
+                search_headline: true,
+                suboutline_only: false,
+                whole_word: false
+            };
+
+            this.sendAction(
+                // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+                w_action, JSON.stringify({ searchSettings: searchSettings })
+            ).then((p_result: LeoBridgePackage) => {
+                console.log('got back settings: ', p_result);
+
+                // this.launchRefresh({ buttons: true }, false);
+                // return vscode.window.showInformationMessage(
+                //     ' back from test, called from ' +
+                //     (p_fromOutline ? "outline" : "body") +
+                //     ', with result: ' +
+                //     JSON.stringify(p_result)
+                // );
+            });
+
+
+
+            /*
             vscode.window.visibleTextEditors.forEach(p_textEditor => {
                 console.log('p_textEditor.document.uri.scheme ', p_textEditor.document.uri.scheme);
 
@@ -2191,11 +2231,12 @@ export class LeoIntegration {
                     // p_textEditor.revealRange(w_scrollRange); // set
                 }
             });
+            */
         });
-        */
 
-        // GET_FOCUS
-        this.sendAction(
+
+        // GET_FOCUS AS A TEST
+        return this.sendAction(
             // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
             Constants.LEOBRIDGE.GET_FOCUS, JSON.stringify({ testParam: "Some String" })
         ).then((p_result: LeoBridgePackage) => {
@@ -2211,20 +2252,7 @@ export class LeoIntegration {
         });
 
 
-        return this.sendAction(
-            // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
-            Constants.LEOBRIDGE.GET_SEARCH_SETTINGS, JSON.stringify({ testParam: "Some String" })
-        ).then((p_result: LeoBridgePackage) => {
-            console.log('get search settings: ', p_result);
 
-                // this.launchRefresh({ buttons: true }, false);
-                // return vscode.window.showInformationMessage(
-                //     ' back from test, called from ' +
-                //     (p_fromOutline ? "outline" : "body") +
-                //     ', with result: ' +
-                //     JSON.stringify(p_result)
-                // );
-            });
     }
 
 }

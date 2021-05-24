@@ -5551,6 +5551,7 @@ public static LEOBRIDGE = {
     GIT_DIFF: "gitDiff", // * Direct Leo Command
     GET_FOCUS: "!get_focus",
     GET_SEARCH_SETTINGS: "!get_search_settings",
+    SET_SEARCH_SETTINGS: "!set_search_settings",
     START_SEARCH: "!start_search",
     FIND_NEXT: "!find_next",
     FIND_PREVIOUS: "!find_previous",
@@ -8905,7 +8906,8 @@ import {
     UserCommand,
     ShowBodyParam,
     BodySelectionInfo,
-    BodyPosition
+    BodyPosition,
+    LeoGuiFindTabManagerSettings
 } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
@@ -10428,16 +10430,55 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
     //     });
 
     // Test setting scroll / selection range
-    /*
-    vscode.window.showQuickPick(["1-1 1-6", "2-2 3-3"]).then(p_results =&gt; {
+
+    vscode.window.showQuickPick(["get", "set"]).then(p_results =&gt; {
         console.log('quick pick result:', p_results);
         let w_selection: vscode.Selection;
-        if (p_results === "1-1 1-6") {
-            w_selection = new vscode.Selection(1, 1, 1, 6);
+        let w_action = "";
+        if (p_results === "get") {
+            w_action = Constants.LEOBRIDGE.GET_SEARCH_SETTINGS;
+            // w_selection = new vscode.Selection(1, 1, 1, 6);
         } else {
-            w_selection = new vscode.Selection(2, 2, 3, 3);
+            w_action = Constants.LEOBRIDGE.SET_SEARCH_SETTINGS;
+            // w_selection = new vscode.Selection(2, 2, 3, 3);
         }
 
+        console.log('w_action', w_action);
+
+        const searchSettings: LeoGuiFindTabManagerSettings = {
+            //Find/change strings...
+            find_text: "new find text",
+            change_text: "",
+            // Find options...
+            ignore_case: false, // diff
+            mark_changes: false,
+            mark_finds: true, // diff
+            node_only: false,
+            pattern_match: false,
+            search_body: true,
+            search_headline: true,
+            suboutline_only: false,
+            whole_word: false
+        };
+
+        this.sendAction(
+            // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+            w_action, JSON.stringify({ searchSettings: searchSettings })
+        ).then((p_result: LeoBridgePackage) =&gt; {
+            console.log('got back settings: ', p_result);
+
+            // this.launchRefresh({ buttons: true }, false);
+            // return vscode.window.showInformationMessage(
+            //     ' back from test, called from ' +
+            //     (p_fromOutline ? "outline" : "body") +
+            //     ', with result: ' +
+            //     JSON.stringify(p_result)
+            // );
+        });
+
+
+
+        /*
         vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
             console.log('p_textEditor.document.uri.scheme ', p_textEditor.document.uri.scheme);
 
@@ -10451,11 +10492,12 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
                 // p_textEditor.revealRange(w_scrollRange); // set
             }
         });
+        */
     });
-    */
 
-    // GET_FOCUS
-    this.sendAction(
+
+    // GET_FOCUS AS A TEST
+    return this.sendAction(
         // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
         Constants.LEOBRIDGE.GET_FOCUS, JSON.stringify({ testParam: "Some String" })
     ).then((p_result: LeoBridgePackage) =&gt; {
@@ -10471,20 +10513,7 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
     });
 
 
-    return this.sendAction(
-        // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
-        Constants.LEOBRIDGE.GET_SEARCH_SETTINGS, JSON.stringify({ testParam: "Some String" })
-    ).then((p_result: LeoBridgePackage) =&gt; {
-        console.log('get search settings: ', p_result);
 
-            // this.launchRefresh({ buttons: true }, false);
-            // return vscode.window.showInformationMessage(
-            //     ' back from test, called from ' +
-            //     (p_fromOutline ? "outline" : "body") +
-            //     ', with result: ' +
-            //     JSON.stringify(p_result)
-            // );
-        });
 }
 
 </t>
@@ -15901,7 +15930,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 
 </t>
 <t tx="felix.20210522152739.1">/**
- * * LeoInteg search settings structure.
+ * * LeoInteg search settings structure for use with the 'find' webview
  */
 export interface LeoSearchSettings {
     //Find/change strings...
@@ -15977,26 +16006,102 @@ export const enum LeoSearchScope {
     """
     Gets search options
     """
-    w_result = {
-        "find_text": self.commander.config.settingsDict.get("findtext").val,
-        "change_text": self.commander.config.settingsDict.get("changetext").val,
-        "ignore_case": self.commander.config.settingsDict.get("ignorecase").val,
-        "mark_changes": self.commander.config.settingsDict.get("markchanges").val,
-        "mark_finds": self.commander.config.settingsDict.get("markfinds").val,
-        "node_only": self.commander.config.settingsDict.get("nodeonly").val,
-        "pattern_match": self.commander.config.settingsDict.get("patternmatch").val,
-        "search_body": self.commander.config.settingsDict.get("searchbody").val,
-        "search_headline": self.commander.config.settingsDict.get("searchheadline").val,
-        "suboutline_only": self.commander.config.settingsDict.get("suboutlineonly").val,
-        "whole_word": self.commander.config.settingsDict.get("wholeword").val
-    }
-    w_result2 = self.commander.findCommands.ftm.get_settings()
-    return self.sendLeoBridgePackage({"fromConfig": w_result, "fromFtm": w_result2.__dict__ })
+    # * To Verify with leoSettings themselves
+    # w_result = {
+    #     "find_text": self.commander.config.settingsDict.get("findtext").val,
+    #     "change_text": self.commander.config.settingsDict.get("changetext").val,
+    #     "ignore_case": self.commander.config.settingsDict.get("ignorecase").val,
+    #     "mark_changes": self.commander.config.settingsDict.get("markchanges").val,
+    #     "mark_finds": self.commander.config.settingsDict.get("markfinds").val,
+    #     "node_only": self.commander.config.settingsDict.get("nodeonly").val,
+    #     "pattern_match": self.commander.config.settingsDict.get("patternmatch").val,
+    #     "search_body": self.commander.config.settingsDict.get("searchbody").val,
+    #     "search_headline": self.commander.config.settingsDict.get("searchheadline").val,
+    #     "suboutline_only": self.commander.config.settingsDict.get("suboutlineonly").val,
+    #     "whole_word": self.commander.config.settingsDict.get("wholeword").val
+    # }
+    w_result = self.commander.findCommands.ftm.get_settings()
+    return self.sendLeoBridgePackage({"searchSettings": w_result.__dict__})
 
 </t>
-<t tx="felix.20210523154352.1"></t>
+<t tx="felix.20210523154352.1">def set_search_settings(self, param):
+    """
+    Sets search options
+    """
+
+    # param.searchSettings should be the LeoGuiFindTabManagerSettings interface from types.d.ts:
+    # {
+    #     //Find/change strings...
+    #     find_text: string,
+    #     change_text: string,
+    #     // Find options...
+    #     ignore_case: boolean,
+    #     mark_changes: boolean,
+    #     mark_finds: boolean,
+    #     node_only: boolean,
+    #     pattern_match: boolean,
+    #     search_body: boolean,
+    #     search_headline: boolean,
+    #     suboutline_only: boolean,
+    #     whole_word: boolean
+    # }
+
+    # * Init widgets and ivars from param.searchSettings
+
+    c = self.commander
+    find = c.findCommands
+    ftm = c.findCommands.ftm
+    # Find/change text boxes.
+    table = (
+        ('find_findbox', 'find_text', '&lt;find pattern here&gt;'),
+        ('find_replacebox', 'change_text', ''),
+    )
+    for widget_ivar, setting_name, default in table:
+        w = getattr(ftm, widget_ivar)
+        s = param.searchSettings.get(setting_name) or default
+        w.insert(s)
+    # Check boxes.
+    table = (
+        ('ignore_case', 'check_box_ignore_case'),
+        ('mark_changes', 'check_box_mark_changes'),
+        ('mark_finds', 'check_box_mark_finds'),
+        ('pattern_match', 'check_box_regexp'),
+        ('search_body', 'check_box_search_body'),
+        ('search_headline', 'check_box_search_headline'),
+        ('whole_word', 'check_box_whole_word'),
+    )
+    for setting_name, widget_ivar in table:
+        w = getattr(ftm, widget_ivar)
+        val = param.searchSettings.get(setting_name)
+        setattr(find, setting_name, val)
+        if val != w.isChecked():
+            w.toggle()
+    # Radio buttons
+    table = (
+        ('node_only', 'node_only', 'radio_button_node_only'),
+        ('entire_outline', None, 'radio_button_entire_outline'),
+        ('suboutline_only', 'suboutline_only', 'radio_button_suboutline_only'),
+    )
+    for setting_name, ivar, widget_ivar in table:
+        w = getattr(ftm, widget_ivar)
+        val = param.searchSettings.get(setting_name, False)
+        if ivar is not None:
+            assert hasattr(find, setting_name), setting_name
+            setattr(find, setting_name, val)
+            if val != w.isChecked():
+                w.toggle()
+    # Ensure one radio button is set.
+    if not find.node_only and not find.suboutline_only:
+        w = ftm.radio_button_entire_outline
+        w.setCheckState(True)
+
+    # Confirm by sending back the settings to leointeg
+    w_result = ftm.get_settings()
+    return self.sendLeoBridgePackage({"searchSettings": w_result.__dict__})
+
+</t>
 <t tx="felix.20210523162125.1">/**
- * Leo's GUI search settings internal structure
+ * * Leo's GUI search settings internal structure
  */
 export interface LeoGuiFindTabManagerSettings {
     //Find/change strings...

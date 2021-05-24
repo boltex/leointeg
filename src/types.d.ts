@@ -187,7 +187,7 @@ export const enum LeoSearchScope {
 }
 
 /**
- * * LeoInteg search settings structure.
+ * * LeoInteg search settings structure for use with the 'find' webview
  */
 export interface LeoSearchSettings {
     //Find/change strings...
@@ -205,7 +205,7 @@ export interface LeoSearchSettings {
 }
 
 /**
- * Leo's GUI search settings internal structure
+ * * Leo's GUI search settings internal structure
  */
 export interface LeoGuiFindTabManagerSettings {
     //Find/change strings...

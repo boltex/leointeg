@@ -393,6 +393,7 @@ export class Constants {
         GIT_DIFF: "gitDiff", // * Direct Leo Command
         GET_FOCUS: "!get_focus",
         GET_SEARCH_SETTINGS: "!get_search_settings",
+        SET_SEARCH_SETTINGS: "!set_search_settings",
         START_SEARCH: "!start_search",
         FIND_NEXT: "!find_next",
         FIND_PREVIOUS: "!find_previous",
