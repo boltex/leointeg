@@ -1758,6 +1758,13 @@ export class LeoIntegration {
     }
 
     public startSearch(): void {
+        // if () {
+
+        // } else {
+        //     vscode.commands.executeCommand('workbench.view.extension.leoIntegrationView');
+        // }
+
+
         vscode.window.showInformationMessage("startSearch command");
     }
 
@@ -2186,6 +2193,23 @@ export class LeoIntegration {
             });
         });
         */
+
+        // GET_FOCUS
+        this.sendAction(
+            // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+            Constants.LEOBRIDGE.GET_FOCUS, JSON.stringify({ testParam: "Some String" })
+        ).then((p_result: LeoBridgePackage) => {
+            console.log('get focus: ', p_result);
+
+            // this.launchRefresh({ buttons: true }, false);
+            // return vscode.window.showInformationMessage(
+            //     ' back from test, called from ' +
+            //     (p_fromOutline ? "outline" : "body") +
+            //     ', with result: ' +
+            //     JSON.stringify(p_result)
+            // );
+        });
+
 
         return this.sendAction(
             // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })

@@ -216,19 +216,23 @@
           "id": "leoDocumentsExplorer",
           "name": "Leo Documents",
           "contextualTitle": "Leo",
-          "when": "treeInExplorer"
+          "when": "treeInExplorer",
+          "visibility": "collapsed"
         },
         {
           "id": "leoButtonsExplorer",
           "name": "Leo Buttons",
           "contextualTitle": "Leo",
-          "when": "treeInExplorer"
+          "when": "treeInExplorer",
+          "visibility": "collapsed"
         },
         {
           "type": "webview",
           "id": "leoFindPanelExplorer",
+          "contextualTitle": "Leo",
           "name": "Leo Find",
-          "when": "treeInExplorer && leoTreeOpened"
+          "when": "treeInExplorer && leoTreeOpened",
+          "visibility": "collapsed"
         }
       ],
       "leoIntegrationView": [
@@ -240,18 +244,22 @@
         {
           "id": "leoDocuments",
           "contextualTitle": "Leo",
-          "name": "Documents"
+          "name": "Documents",
+          "visibility": "collapsed"
         },
         {
           "id": "leoButtons",
           "contextualTitle": "Leo",
-          "name": "Buttons"
+          "name": "Buttons",
+          "visibility": "collapsed"
         },
         {
           "type": "webview",
+          "contextualTitle": "Leo",
           "id": "leoFindPanel",
           "name": "Find",
-          "when": "leoTreeOpened"
+          "when": "leoTreeOpened",
+          "visibility": "collapsed"
         }
       ]
     },

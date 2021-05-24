@@ -4281,19 +4281,23 @@ print('done')
       "id": "leoDocumentsExplorer",
       "name": "Leo Documents",
       "contextualTitle": "Leo",
-      "when": "treeInExplorer"
+      "when": "treeInExplorer",
+      "visibility": "collapsed"
     },
     {
       "id": "leoButtonsExplorer",
       "name": "Leo Buttons",
       "contextualTitle": "Leo",
-      "when": "treeInExplorer"
+      "when": "treeInExplorer",
+      "visibility": "collapsed"
     },
     {
       "type": "webview",
       "id": "leoFindPanelExplorer",
+      "contextualTitle": "Leo",
       "name": "Leo Find",
-      "when": "treeInExplorer &amp;&amp; leoTreeOpened"
+      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
+      "visibility": "collapsed"
     }
   ],
   "leoIntegrationView": [
@@ -4305,18 +4309,22 @@ print('done')
     {
       "id": "leoDocuments",
       "contextualTitle": "Leo",
-      "name": "Documents"
+      "name": "Documents",
+      "visibility": "collapsed"
     },
     {
       "id": "leoButtons",
       "contextualTitle": "Leo",
-      "name": "Buttons"
+      "name": "Buttons",
+      "visibility": "collapsed"
     },
     {
       "type": "webview",
+      "contextualTitle": "Leo",
       "id": "leoFindPanel",
       "name": "Find",
-      "when": "leoTreeOpened"
+      "when": "leoTreeOpened",
+      "visibility": "collapsed"
     }
   ]
 },
@@ -5541,7 +5549,7 @@ public static LEOBRIDGE = {
     DELETE_MARKED_NODES: "deleteMarked", // * Direct Leo Command
     MOVE_MARKED_NODES: "moveMarked", // * Direct Leo Command
     GIT_DIFF: "gitDiff", // * Direct Leo Command
-    // TODO : @boltex More commands to implement #24
+    GET_FOCUS: "!get_focus",
     GET_SEARCH_SETTINGS: "!get_search_settings",
     START_SEARCH: "!start_search",
     FIND_NEXT: "!find_next",
@@ -10445,6 +10453,23 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
         });
     });
     */
+
+    // GET_FOCUS
+    this.sendAction(
+        // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+        Constants.LEOBRIDGE.GET_FOCUS, JSON.stringify({ testParam: "Some String" })
+    ).then((p_result: LeoBridgePackage) =&gt; {
+        console.log('get focus: ', p_result);
+
+        // this.launchRefresh({ buttons: true }, false);
+        // return vscode.window.showInformationMessage(
+        //     ' back from test, called from ' +
+        //     (p_fromOutline ? "outline" : "body") +
+        //     ', with result: ' +
+        //     JSON.stringify(p_result)
+        // );
+    });
+
 
     return this.sendAction(
         // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
@@ -15562,6 +15587,13 @@ def _dump_position(self, p):  # pragma: no cover
 </t>
 <t tx="felix.20210516004048.9"></t>
 <t tx="felix.20210516233931.1">public startSearch(): void {
+    // if () {
+
+    // } else {
+    //     vscode.commands.executeCommand('workbench.view.extension.leoIntegrationView');
+    // }
+
+
     vscode.window.showInformationMessage("startSearch command");
 }
 

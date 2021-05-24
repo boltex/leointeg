@@ -391,7 +391,7 @@ export class Constants {
         DELETE_MARKED_NODES: "deleteMarked", // * Direct Leo Command
         MOVE_MARKED_NODES: "moveMarked", // * Direct Leo Command
         GIT_DIFF: "gitDiff", // * Direct Leo Command
-        // TODO : @boltex More commands to implement #24
+        GET_FOCUS: "!get_focus",
         GET_SEARCH_SETTINGS: "!get_search_settings",
         START_SEARCH: "!start_search",
         FIND_NEXT: "!find_next",
