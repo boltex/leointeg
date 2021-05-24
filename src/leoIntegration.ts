@@ -2161,6 +2161,7 @@ export class LeoIntegration {
         //     });
 
         // Test setting scroll / selection range
+        /*
         vscode.window.showQuickPick(["1-1 1-6", "2-2 3-3"]).then(p_results => {
             console.log('quick pick result:', p_results);
             let w_selection: vscode.Selection;
@@ -2183,12 +2184,14 @@ export class LeoIntegration {
                     // p_textEditor.revealRange(w_scrollRange); // set
                 }
             });
-
         });
+        */
 
         return this.sendAction(
-            Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+            // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+            Constants.LEOBRIDGE.GET_SEARCH_SETTINGS, JSON.stringify({ testParam: "Some String" })
         ).then((p_result: LeoBridgePackage) => {
+            console.log('get search settings: ', p_result);
 
                 // this.launchRefresh({ buttons: true }, false);
                 // return vscode.window.showInformationMessage(

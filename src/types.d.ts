@@ -178,7 +178,7 @@ export interface LeoButton {
 }
 
 /**
- * * Enum type for the search scope radio buttons of the find panel.
+ * * LeoInteg's Enum type for the search scope radio buttons of the find panel.
  */
 export const enum LeoSearchScope {
     entireOutline = 0,
@@ -187,9 +187,13 @@ export const enum LeoSearchScope {
 }
 
 /**
- * * Leo search settings structure.
+ * * LeoInteg search settings structure.
  */
 export interface LeoSearchSettings {
+    //Find/change strings...
+    findText: string;
+    replaceText: string;
+    // Find options...
     wholeWord: boolean;
     ignoreCase: boolean;
     regExp: boolean;
@@ -198,6 +202,25 @@ export interface LeoSearchSettings {
     searchHeadline: boolean;
     searchBody: boolean;
     searchScope: LeoSearchScope; // 0, 1 or 2 for outline, sub-outline, or node.
+}
+
+/**
+ * Leo's GUI search settings internal structure
+ */
+export interface LeoGuiFindTabManagerSettings {
+    //Find/change strings...
+    find_text: string,
+    change_text: string,
+    // Find options...
+    ignore_case: boolean,
+    mark_changes: boolean,
+    mark_finds: boolean,
+    node_only: boolean,
+    pattern_match: boolean,
+    search_body: boolean,
+    search_headline: boolean,
+    suboutline_only: boolean,
+    whole_word: boolean
 }
 
 /**

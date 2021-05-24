@@ -1,6 +1,7 @@
 #! python3
 import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
+from leo.core.leoGui import StringFindTabManager
 import asyncio
 import getopt
 import json
@@ -18,6 +19,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
 
 # Special string signals server startup success
 SERVER_STARTED_TOKEN = "LeoBridge started"
+
 
 class IdleTimeManager:
     """
@@ -918,6 +920,36 @@ class LeoBridgeIntegController:
 
         return self.sendLeoBridgePackage({"files": w_files})
 
+    def get_ui_states(self, param):
+        """
+        Gets the currently opened file's general states for UI enabled/disabled states
+        such as undo available, file changed/unchanged
+        """
+        w_states = {}
+        if self.commander:
+            try:
+                # 'dirty/changed' member
+                w_states["changed"] = self.commander.changed
+                w_states["canUndo"] = self.commander.canUndo()
+                w_states["canRedo"] = self.commander.canRedo()
+                w_states["canDemote"] = self.commander.canDemote()
+                w_states["canPromote"] = self.commander.canPromote()
+                w_states["canDehoist"] = self.commander.canDehoist()
+
+            except Exception as e:
+                self.g.trace('Error while getting states')
+                print("Error while getting states", flush=True)
+                print(str(e), flush=True)
+        else:
+            w_states["changed"] = False
+            w_states["canUndo"] = False
+            w_states["canRedo"] = False
+            w_states["canDemote"] = False
+            w_states["canPromote"] = False
+            w_states["canDehoist"] = False
+
+        return self.sendLeoBridgePackage({"states": w_states})
+
     def set_opened_file(self, param):
         '''Choose the new active commander from array of opened file path/names by numeric index'''
         w_openedCommanders = []
@@ -959,6 +991,8 @@ class LeoBridgeIntegController:
         if not w_found:
             self.commander = self.bridge.openLeoFile(
                 w_filename)  # create self.commander
+            self.commander.findCommands.ftm = StringFindTabManager(
+                self.commander)
 
         # Leo at this point has done this too: g.app.windowList.append(c.frame)
         # and so, now, app.commanders() yields this: return [f.c for f in g.app.windowList]
@@ -988,6 +1022,7 @@ class LeoBridgeIntegController:
             w_files = param["files"]
 
         for i_file in w_files:
+            self.commander = None
             w_found = False
             # If not empty string (asking for New file) then check if already opened
             if i_file:
@@ -1000,6 +1035,8 @@ class LeoBridgeIntegController:
                 if os.path.isfile(i_file):
                     self.commander = self.bridge.openLeoFile(
                         i_file)  # create self.commander
+                    self.commander.findCommands.ftm = StringFindTabManager(
+                        self.commander)
             if self.commander:
                 self.commander.closed = False
                 self.commander.frame.body.wrapper = IntegTextWrapper(
@@ -1063,6 +1100,26 @@ class LeoBridgeIntegController:
                 print(str(e),  param['name'],  flush=True)
 
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+    def get_search_settings(self, param):
+        """
+        Gets search options
+        """
+        w_result = {
+            "find_text": self.commander.config.settingsDict.get("findtext").val,
+            "change_text": self.commander.config.settingsDict.get("changetext").val,
+            "ignore_case": self.commander.config.settingsDict.get("ignorecase").val,
+            "mark_changes": self.commander.config.settingsDict.get("markchanges").val,
+            "mark_finds": self.commander.config.settingsDict.get("markfinds").val,
+            "node_only": self.commander.config.settingsDict.get("nodeonly").val,
+            "pattern_match": self.commander.config.settingsDict.get("patternmatch").val,
+            "search_body": self.commander.config.settingsDict.get("searchbody").val,
+            "search_headline": self.commander.config.settingsDict.get("searchheadline").val,
+            "suboutline_only": self.commander.config.settingsDict.get("suboutlineonly").val,
+            "whole_word": self.commander.config.settingsDict.get("wholeword").val
+        }
+        w_result2 = self.commander.findCommands.ftm.get_settings()
+        return self.sendLeoBridgePackage({"fromConfig": w_result, "fromFtm": w_result2.__dict__ })
 
     def get_buttons(self, param):
         '''Gets the currently opened file's @buttons list'''
@@ -2347,36 +2404,6 @@ class LeoBridgeIntegController:
         return self.sendLeoBridgePackage({'testReturnedKey': 'testReturnedValue'})
         # return self._outputPNode(self.commander.p)
 
-    def get_ui_states(self, param):
-        """
-        Gets the currently opened file's general states for UI enabled/disabled states
-        such as undo available, file changed/unchanged
-        """
-        w_states = {}
-        if self.commander:
-            try:
-                # 'dirty/changed' member
-                w_states["changed"] = self.commander.changed
-                w_states["canUndo"] = self.commander.canUndo()
-                w_states["canRedo"] = self.commander.canRedo()
-                w_states["canDemote"] = self.commander.canDemote()
-                w_states["canPromote"] = self.commander.canPromote()
-                w_states["canDehoist"] = self.commander.canDehoist()
-
-            except Exception as e:
-                self.g.trace('Error while getting states')
-                print("Error while getting states", flush=True)
-                print(str(e), flush=True)
-        else:
-            w_states["changed"] = False
-            w_states["canUndo"] = False
-            w_states["canRedo"] = False
-            w_states["canDemote"] = False
-            w_states["canPromote"] = False
-            w_states["canDehoist"] = False
-
-        return self.sendLeoBridgePackage({"states": w_states})
-
     def page_up(self, param):
         """Selects a node a couple of steps up in the tree to simulate page up"""
         n = param.get("n", 3)
@@ -2923,6 +2950,7 @@ def main():
           str(wsPort) + " [ctrl+c] to break", flush=True)
     localLoop.run_forever()
     print("Stopping leobridge server", flush=True)
+
 
 if __name__ == '__main__':
     # Startup
