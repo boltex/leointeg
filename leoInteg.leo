@@ -529,6 +529,7 @@
 <v t="felix.20210516234059.1"><vh>findNext</vh></v>
 <v t="felix.20210516234104.1"><vh>findPrevious</vh></v>
 <v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
+<v t="felix.20210524215215.1"><vh>saveSearchSettings</vh></v>
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
 <v t="felix.20200719025231.58"><vh>saveAsLeoFile</vh></v>
@@ -544,6 +545,7 @@
 <v t="ekr.20200815090517.2"><vh>removeAtButton</vh></v>
 </v>
 <v t="felix.20200719033511.1"><vh>Other</vh>
+<v t="felix.20210524231157.1"><vh>setFindPanel</vh></v>
 <v t="felix.20200719025231.69"><vh>statusBarOnClick</vh></v>
 <v t="felix.20200719025231.70"><vh>test</vh></v>
 </v>
@@ -2061,7 +2063,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.56.0"
+    "vscode": "^1.56.2"
   },
   "keywords": [
     "leo",
@@ -4275,7 +4277,8 @@ print('done')
       "id": "leoIntegrationExplorer",
       "name": "Leo Integration",
       "contextualTitle": "Leo",
-      "when": "treeInExplorer"
+      "when": "treeInExplorer",
+      "visibility": "visible"
     },
     {
       "id": "leoDocumentsExplorer",
@@ -4296,6 +4299,7 @@ print('done')
       "id": "leoFindPanelExplorer",
       "contextualTitle": "Leo",
       "name": "Leo Find",
+      "title": "Leo Find",
       "when": "treeInExplorer &amp;&amp; leoTreeOpened",
       "visibility": "collapsed"
     }
@@ -4304,7 +4308,8 @@ print('done')
     {
       "id": "leoIntegration",
       "contextualTitle": "Leo",
-      "name": "Integration"
+      "name": "Integration",
+      "visibility": "visible"
     },
     {
       "id": "leoDocuments",
@@ -4323,6 +4328,7 @@ print('done')
       "contextualTitle": "Leo",
       "id": "leoFindPanel",
       "name": "Find",
+      "title": "Find",
       "when": "leoTreeOpened",
       "visibility": "collapsed"
     }
@@ -8907,7 +8913,8 @@ import {
     ShowBodyParam,
     BodySelectionInfo,
     BodyPosition,
-    LeoGuiFindTabManagerSettings
+    LeoGuiFindTabManagerSettings,
+    LeoSearchSettings
 } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
@@ -9127,6 +9134,10 @@ export class LeoIntegration {
 
     private _showBodyStarted: boolean = false; // Flag for when _applySelectionToBody 'show body' cycle is busy
     private _showBodyParams: ShowBodyParam | undefined; // _applySelectionToBody parameters, may be overwritten at each call if not finished
+
+    // * Find panel
+    private _findPanelWebviewView: vscode.WebviewView | undefined;
+    private _findPanelWebviewExplorerView: vscode.WebviewView | undefined;
 
     // * Selection
     private _selectionDirty: boolean = false; // Flag set when cursor selection is changed
@@ -9433,9 +9444,9 @@ private _onActiveEditorChanged(p_editor: vscode.TextEditor | undefined, p_intern
     // * Leo Find Panel
     this._leoFindPanelProvider = new LeoFindPanelProvider(_context.extensionUri, _context, this);
     this._context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider(Constants.FIND_ID, this._leoFindPanelProvider));
+        vscode.window.registerWebviewViewProvider(Constants.FIND_ID, this._leoFindPanelProvider, { webviewOptions: { retainContextWhenHidden: true } }));
     this._context.subscriptions.push(
-        vscode.window.registerWebviewViewProvider(Constants.FIND_EXPLORER_ID, this._leoFindPanelProvider));
+        vscode.window.registerWebviewViewProvider(Constants.FIND_EXPLORER_ID, this._leoFindPanelProvider, { webviewOptions: { retainContextWhenHidden: true } }));
 
     // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
     vscode.window.onDidChangeActiveTextEditor(p_editor =&gt; this._onActiveEditorChanged(p_editor));
@@ -9511,7 +9522,7 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise&lt;boolean&gt; {
         !this._bodyLastChangedDocumentSaved) {
         const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
         if (p_forcedVsCodeSave) {
-            console.log('FORCED SAVE');
+            // console.log('FORCED SAVE');
         }
         this._bodyLastChangedDocumentSaved = true;
         return this._bodySaveDocument(w_document, p_forcedVsCodeSave);
@@ -9851,9 +9862,8 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                 const w_bodyTextEditor = p_values[1];
                 const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
 
-                console.log("got states for same gnx", w_leoBodySel.gnx === this.lastSelectedNode!.gnx);
-
-                console.log('id: ' + w_resultBodyStates.id + ' - got scroll: ', w_leoBodySel.scroll);
+                // console.log("got states for same gnx", w_leoBodySel.gnx === this.lastSelectedNode!.gnx);
+                // console.log('id: ' + w_resultBodyStates.id + ' - got scroll: ', w_leoBodySel.scroll);
 
                 let w_scrollRange: vscode.Range | undefined;
 
@@ -12192,7 +12202,7 @@ private _bodySaveSelection(): Promise&lt;boolean&gt; {
             }
 
         };
-        console.log("set scroll: " + w_scroll + " starHeM't:" + this._selection.start.line);
+        // console.log("set scroll to leo: " + w_scroll + " start:" + this._selection.start.line);
 
         this._scrollDirty = false;
         this._selectionDirty = false; // don't wait for return of this call
@@ -13106,7 +13116,6 @@ public static VSCODE_COMMANDS = {
  */
 public _changedTextEditorViewColumn(p_columnChangeEvent: vscode.TextEditorViewColumnChangeEvent): void {
     if (p_columnChangeEvent &amp;&amp; p_columnChangeEvent.textEditor.document.uri.scheme === 'more') {
-        console.log('changedTextEditorViewColumn: gnx', p_columnChangeEvent.textEditor.document.uri.fsPath);
         this._checkPreviewMode(p_columnChangeEvent.textEditor);
     }
     this.triggerBodySave(true);
@@ -13120,7 +13129,6 @@ public _changedVisibleTextEditors(p_editors: vscode.TextEditor[]): void {
     if (p_editors &amp;&amp; p_editors.length) {
         p_editors.forEach(p_textEditor =&gt; {
             if (p_textEditor &amp;&amp; p_textEditor.document.uri.scheme === 'more') {
-                console.log('changedVisibleTextEditors: gnx', p_textEditor.document.uri.fsPath);
                 if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
                     this._hideDeleteBody(p_textEditor);
                 }
@@ -15616,14 +15624,27 @@ def _dump_position(self, p):  # pragma: no cover
 </t>
 <t tx="felix.20210516004048.9"></t>
 <t tx="felix.20210516233931.1">public startSearch(): void {
-    // if () {
+    let w_panelID = '';
+    let w_panel: vscode.WebviewView | undefined;
+    if (this._lastTreeView === this._leoTreeExView) {
+        w_panelID = Constants.FIND_EXPLORER_ID;
+        w_panel = this._findPanelWebviewExplorerView;
+    } else {
+        w_panelID = Constants.FIND_ID;
+        w_panel = this._findPanelWebviewView;
+    }
 
-    // } else {
-    //     vscode.commands.executeCommand('workbench.view.extension.leoIntegrationView');
-    // }
+    vscode.commands.executeCommand(w_panelID + ".focus")
+        .then(p_result =&gt; {
+            if (w_panel &amp;&amp;
+                w_panel.show &amp;&amp;
+                !w_panel.visible) {
+                w_panel.show(false);
+            }
+            w_panel?.webview.postMessage({ type: 'selectFind' });
+        });
 
-
-    vscode.window.showInformationMessage("startSearch command");
+    // vscode.window.showInformationMessage("startSearch command");
 }
 
 </t>
@@ -15756,7 +15777,7 @@ def _dump_position(self, p):  # pragma: no cover
   "command": "leointeg.startSearch",
   "key": "ctrl+f",
   "mac": "cmd+f",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leo/"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
 },
 {
   "command": "leointeg.startSearch",
@@ -15767,7 +15788,7 @@ def _dump_position(self, p):  # pragma: no cover
 {
   "command": "leointeg.findNext",
   "key": "f3",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leo/"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
 },
 {
   "command": "leointeg.findNext",
@@ -15777,7 +15798,7 @@ def _dump_position(self, p):  # pragma: no cover
 {
   "command": "leointeg.findPrevious",
   "key": "f2",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leo/"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
 },
 {
   "command": "leointeg.findPrevious",
@@ -15786,7 +15807,6 @@ def _dump_position(self, p):  # pragma: no cover
 }
 </t>
 <t tx="felix.20210522001751.1">import * as vscode from "vscode";
-import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -15829,30 +15849,29 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 			switch (data.type) {
 				case 'leoFindNext':
 					{
-						// TODO : MAYBE ALWAYS PASS CONFIG ALONG ??
 						vscode.commands.executeCommand(Constants.COMMANDS.FIND_NEXT);
+						break;
+					}
+				case 'searchConfig':
+					{
+						this._leoIntegration.saveSearchSettings(data.value);
 						break;
 					}
 			}
 		});
+		this._leoIntegration.setFindPanel(this._view);
 	}
 
 	public selectFindField() {
 		if (this._view) {
-			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
+			this._view.show?.(true);
 			this._view.webview.postMessage({ type: 'selectFindField' });
 		}
 	}
 	public selectReplaceField() {
 		if (this._view) {
-			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
+			this._view.show?.(true);
 			this._view.webview.postMessage({ type: 'selectReplaceField' });
-		}
-	}
-
-	public clearColors() {
-		if (this._view) {
-			this._view.webview.postMessage({ type: 'clearColors' });
 		}
 	}
 
@@ -15881,10 +15900,10 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 				&lt;title&gt;Leo Find Panel&lt;/title&gt;
 			&lt;/head&gt;
 			&lt;body&gt;
-				&lt;label for="find"&gt;Find:&lt;/label&gt;
-				&lt;input type="text" id="find" name="find" placeholder="&lt;find pattern here&gt;" &gt;
-				&lt;label for="replace"&gt;Replace:&lt;/label&gt;
-				&lt;input type="text" id="replace" name="replace" &gt;
+				&lt;label for="findText"&gt;Find:&lt;/label&gt;
+				&lt;input type="text" id="findText" name="findText" placeholder="&lt;find pattern here&gt;" &gt;
+				&lt;label for="replaceText"&gt;Replace:&lt;/label&gt;
+				&lt;input type="text" id="replaceText" name="replaceText" &gt;
 				&lt;div class="row"&gt;
 					&lt;div class="col"&gt;
 						&lt;input type="checkbox" id="wholeWord" name="wholeWord" &gt;
@@ -15924,10 +15943,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 		return text;
 	}
 
-
 }
-
-
 </t>
 <t tx="felix.20210522152739.1">/**
  * * LeoInteg search settings structure for use with the 'find' webview
@@ -16006,48 +16022,14 @@ export const enum LeoSearchScope {
     """
     Gets search options
     """
-    # * To Verify with leoSettings themselves
-    # w_result = {
-    #     "find_text": self.commander.config.settingsDict.get("findtext").val,
-    #     "change_text": self.commander.config.settingsDict.get("changetext").val,
-    #     "ignore_case": self.commander.config.settingsDict.get("ignorecase").val,
-    #     "mark_changes": self.commander.config.settingsDict.get("markchanges").val,
-    #     "mark_finds": self.commander.config.settingsDict.get("markfinds").val,
-    #     "node_only": self.commander.config.settingsDict.get("nodeonly").val,
-    #     "pattern_match": self.commander.config.settingsDict.get("patternmatch").val,
-    #     "search_body": self.commander.config.settingsDict.get("searchbody").val,
-    #     "search_headline": self.commander.config.settingsDict.get("searchheadline").val,
-    #     "suboutline_only": self.commander.config.settingsDict.get("suboutlineonly").val,
-    #     "whole_word": self.commander.config.settingsDict.get("wholeword").val
-    # }
     w_result = self.commander.findCommands.ftm.get_settings()
     return self.sendLeoBridgePackage({"searchSettings": w_result.__dict__})
 
 </t>
 <t tx="felix.20210523154352.1">def set_search_settings(self, param):
     """
-    Sets search options
+    Sets search options. Init widgets and ivars from param.searchSettings
     """
-
-    # param.searchSettings should be the LeoGuiFindTabManagerSettings interface from types.d.ts:
-    # {
-    #     //Find/change strings...
-    #     find_text: string,
-    #     change_text: string,
-    #     // Find options...
-    #     ignore_case: boolean,
-    #     mark_changes: boolean,
-    #     mark_finds: boolean,
-    #     node_only: boolean,
-    #     pattern_match: boolean,
-    #     search_body: boolean,
-    #     search_headline: boolean,
-    #     suboutline_only: boolean,
-    #     whole_word: boolean
-    # }
-
-    # * Init widgets and ivars from param.searchSettings
-
     c = self.commander
     find = c.findCommands
     ftm = c.findCommands.ftm
@@ -16119,6 +16101,32 @@ export interface LeoGuiFindTabManagerSettings {
     search_headline: boolean,
     suboutline_only: boolean,
     whole_word: boolean
+}
+
+</t>
+<t tx="felix.20210524215215.1">/**
+ * * Send the settings to the Leo Bridge Server
+ */
+public saveSearchSettings(p_settings: LeoSearchSettings): void {
+    console.log("saveSearchSettings");
+}
+
+</t>
+<t tx="felix.20210524231157.1">/**
+ * * Capture instance for further calls on find panel webview
+ */
+public setFindPanel(p_panel: vscode.WebviewView) {
+
+    if (this._lastTreeView === this._leoTreeExView) {
+        this._findPanelWebviewExplorerView = p_panel;
+    } else {
+        this._findPanelWebviewView = p_panel;
+    }
+
+    // TODO :
+    // action get search settings
+    //  .THEN
+    // this._findPanelWebviewView?.webview.postMessage({ type: 'setSettings' , value: ''});
 }
 
 </t>

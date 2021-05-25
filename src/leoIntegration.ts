@@ -16,7 +16,8 @@ import {
     ShowBodyParam,
     BodySelectionInfo,
     BodyPosition,
-    LeoGuiFindTabManagerSettings
+    LeoGuiFindTabManagerSettings,
+    LeoSearchSettings
 } from "./types";
 import { Config } from "./config";
 import { LeoFilesBrowser } from "./leoFileBrowser";
@@ -111,6 +112,10 @@ export class LeoIntegration {
 
     private _showBodyStarted: boolean = false; // Flag for when _applySelectionToBody 'show body' cycle is busy
     private _showBodyParams: ShowBodyParam | undefined; // _applySelectionToBody parameters, may be overwritten at each call if not finished
+
+    // * Find panel
+    private _findPanelWebviewView: vscode.WebviewView | undefined;
+    private _findPanelWebviewExplorerView: vscode.WebviewView | undefined;
 
     // * Selection
     private _selectionDirty: boolean = false; // Flag set when cursor selection is changed
@@ -236,9 +241,9 @@ export class LeoIntegration {
         // * Leo Find Panel
         this._leoFindPanelProvider = new LeoFindPanelProvider(_context.extensionUri, _context, this);
         this._context.subscriptions.push(
-            vscode.window.registerWebviewViewProvider(Constants.FIND_ID, this._leoFindPanelProvider));
+            vscode.window.registerWebviewViewProvider(Constants.FIND_ID, this._leoFindPanelProvider, { webviewOptions: { retainContextWhenHidden: true } }));
         this._context.subscriptions.push(
-            vscode.window.registerWebviewViewProvider(Constants.FIND_EXPLORER_ID, this._leoFindPanelProvider));
+            vscode.window.registerWebviewViewProvider(Constants.FIND_EXPLORER_ID, this._leoFindPanelProvider, { webviewOptions: { retainContextWhenHidden: true } }));
 
         // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
         vscode.window.onDidChangeActiveTextEditor(p_editor => this._onActiveEditorChanged(p_editor));
@@ -795,7 +800,6 @@ export class LeoIntegration {
      */
     public _changedTextEditorViewColumn(p_columnChangeEvent: vscode.TextEditorViewColumnChangeEvent): void {
         if (p_columnChangeEvent && p_columnChangeEvent.textEditor.document.uri.scheme === 'more') {
-            console.log('changedTextEditorViewColumn: gnx', p_columnChangeEvent.textEditor.document.uri.fsPath);
             this._checkPreviewMode(p_columnChangeEvent.textEditor);
         }
         this.triggerBodySave(true);
@@ -808,7 +812,6 @@ export class LeoIntegration {
         if (p_editors && p_editors.length) {
             p_editors.forEach(p_textEditor => {
                 if (p_textEditor && p_textEditor.document.uri.scheme === 'more') {
-                    console.log('changedVisibleTextEditors: gnx', p_textEditor.document.uri.fsPath);
                     if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
                         this._hideDeleteBody(p_textEditor);
                     }
@@ -900,7 +903,7 @@ export class LeoIntegration {
             !this._bodyLastChangedDocumentSaved) {
             const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
             if (p_forcedVsCodeSave) {
-                console.log('FORCED SAVE');
+                // console.log('FORCED SAVE');
             }
             this._bodyLastChangedDocumentSaved = true;
             return this._bodySaveDocument(w_document, p_forcedVsCodeSave);
@@ -965,7 +968,7 @@ export class LeoIntegration {
                 }
 
             };
-            console.log("set scroll: " + w_scroll + " starHeM't:" + this._selection.start.line);
+            // console.log("set scroll to leo: " + w_scroll + " start:" + this._selection.start.line);
 
             this._scrollDirty = false;
             this._selectionDirty = false; // don't wait for return of this call
@@ -1536,9 +1539,8 @@ export class LeoIntegration {
                     const w_bodyTextEditor = p_values[1];
                     const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
 
-                    console.log("got states for same gnx", w_leoBodySel.gnx === this.lastSelectedNode!.gnx);
-
-                    console.log('id: ' + w_resultBodyStates.id + ' - got scroll: ', w_leoBodySel.scroll);
+                    // console.log("got states for same gnx", w_leoBodySel.gnx === this.lastSelectedNode!.gnx);
+                    // console.log('id: ' + w_resultBodyStates.id + ' - got scroll: ', w_leoBodySel.scroll);
 
                     let w_scrollRange: vscode.Range | undefined;
 
@@ -1759,14 +1761,27 @@ export class LeoIntegration {
     }
 
     public startSearch(): void {
-        // if () {
+        let w_panelID = '';
+        let w_panel: vscode.WebviewView | undefined;
+        if (this._lastTreeView === this._leoTreeExView) {
+            w_panelID = Constants.FIND_EXPLORER_ID;
+            w_panel = this._findPanelWebviewExplorerView;
+        } else {
+            w_panelID = Constants.FIND_ID;
+            w_panel = this._findPanelWebviewView;
+        }
 
-        // } else {
-        //     vscode.commands.executeCommand('workbench.view.extension.leoIntegrationView');
-        // }
+        vscode.commands.executeCommand(w_panelID + ".focus")
+            .then(p_result => {
+                if (w_panel &&
+                    w_panel.show &&
+                    !w_panel.visible) {
+                    w_panel.show(false);
+                }
+                w_panel?.webview.postMessage({ type: 'selectFind' });
+            });
 
-
-        vscode.window.showInformationMessage("startSearch command");
+        // vscode.window.showInformationMessage("startSearch command");
     }
 
     public findNext(): void {
@@ -1813,6 +1828,13 @@ export class LeoIntegration {
                     return Promise.resolve(undefined);
                 }
             });
+    }
+
+    /**
+     * * Send the settings to the Leo Bridge Server
+     */
+    public saveSearchSettings(p_settings: LeoSearchSettings): void {
+        console.log("saveSearchSettings");
     }
 
     /**
@@ -2132,6 +2154,23 @@ export class LeoIntegration {
                 this.launchRefresh({ buttons: true }, false);
                 return Promise.resolve(true); // TODO launchRefresh should be a returned promise
             });
+    }
+
+    /**
+     * * Capture instance for further calls on find panel webview
+     */
+    public setFindPanel(p_panel: vscode.WebviewView) {
+
+        if (this._lastTreeView === this._leoTreeExView) {
+            this._findPanelWebviewExplorerView = p_panel;
+        } else {
+            this._findPanelWebviewView = p_panel;
+        }
+
+        // TODO :
+        // action get search settings
+        //  .THEN
+        // this._findPanelWebviewView?.webview.postMessage({ type: 'setSettings' , value: ''});
     }
 
     /**

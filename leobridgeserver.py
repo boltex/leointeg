@@ -1105,47 +1105,13 @@ class LeoBridgeIntegController:
         """
         Gets search options
         """
-        # * To Verify with leoSettings themselves
-        # w_result = {
-        #     "find_text": self.commander.config.settingsDict.get("findtext").val,
-        #     "change_text": self.commander.config.settingsDict.get("changetext").val,
-        #     "ignore_case": self.commander.config.settingsDict.get("ignorecase").val,
-        #     "mark_changes": self.commander.config.settingsDict.get("markchanges").val,
-        #     "mark_finds": self.commander.config.settingsDict.get("markfinds").val,
-        #     "node_only": self.commander.config.settingsDict.get("nodeonly").val,
-        #     "pattern_match": self.commander.config.settingsDict.get("patternmatch").val,
-        #     "search_body": self.commander.config.settingsDict.get("searchbody").val,
-        #     "search_headline": self.commander.config.settingsDict.get("searchheadline").val,
-        #     "suboutline_only": self.commander.config.settingsDict.get("suboutlineonly").val,
-        #     "whole_word": self.commander.config.settingsDict.get("wholeword").val
-        # }
         w_result = self.commander.findCommands.ftm.get_settings()
         return self.sendLeoBridgePackage({"searchSettings": w_result.__dict__})
 
     def set_search_settings(self, param):
         """
-        Sets search options
+        Sets search options. Init widgets and ivars from param.searchSettings
         """
-
-        # param.searchSettings should be the LeoGuiFindTabManagerSettings interface from types.d.ts:
-        # {
-        #     //Find/change strings...
-        #     find_text: string,
-        #     change_text: string,
-        #     // Find options...
-        #     ignore_case: boolean,
-        #     mark_changes: boolean,
-        #     mark_finds: boolean,
-        #     node_only: boolean,
-        #     pattern_match: boolean,
-        #     search_body: boolean,
-        #     search_headline: boolean,
-        #     suboutline_only: boolean,
-        #     whole_word: boolean
-        # }
-
-        # * Init widgets and ivars from param.searchSettings
-
         c = self.commander
         find = c.findCommands
         ftm = c.findCommands.ftm

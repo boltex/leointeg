@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -38,30 +37,29 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 			switch (data.type) {
 				case 'leoFindNext':
 					{
-						// TODO : MAYBE ALWAYS PASS CONFIG ALONG ??
 						vscode.commands.executeCommand(Constants.COMMANDS.FIND_NEXT);
+						break;
+					}
+				case 'searchConfig':
+					{
+						this._leoIntegration.saveSearchSettings(data.value);
 						break;
 					}
 			}
 		});
+		this._leoIntegration.setFindPanel(this._view);
 	}
 
 	public selectFindField() {
 		if (this._view) {
-			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
+			this._view.show?.(true);
 			this._view.webview.postMessage({ type: 'selectFindField' });
 		}
 	}
 	public selectReplaceField() {
 		if (this._view) {
-			this._view.show?.(true); // `show` is not implemented in 1.49 but is for 1.50 insiders
+			this._view.show?.(true);
 			this._view.webview.postMessage({ type: 'selectReplaceField' });
-		}
-	}
-
-	public clearColors() {
-		if (this._view) {
-			this._view.webview.postMessage({ type: 'clearColors' });
 		}
 	}
 
@@ -90,10 +88,10 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 				<title>Leo Find Panel</title>
 			</head>
 			<body>
-				<label for="find">Find:</label>
-				<input type="text" id="find" name="find" placeholder="<find pattern here>" >
-				<label for="replace">Replace:</label>
-				<input type="text" id="replace" name="replace" >
+				<label for="findText">Find:</label>
+				<input type="text" id="findText" name="findText" placeholder="<find pattern here>" >
+				<label for="replaceText">Replace:</label>
+				<input type="text" id="replaceText" name="replaceText" >
 				<div class="row">
 					<div class="col">
 						<input type="checkbox" id="wholeWord" name="wholeWord" >
@@ -133,7 +131,4 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 		return text;
 	}
 
-
 }
-
-

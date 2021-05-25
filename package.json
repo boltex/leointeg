@@ -13,7 +13,7 @@
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.56.0"
+    "vscode": "^1.56.2"
   },
   "keywords": [
     "leo",
@@ -210,7 +210,8 @@
           "id": "leoIntegrationExplorer",
           "name": "Leo Integration",
           "contextualTitle": "Leo",
-          "when": "treeInExplorer"
+          "when": "treeInExplorer",
+          "visibility": "visible"
         },
         {
           "id": "leoDocumentsExplorer",
@@ -231,6 +232,7 @@
           "id": "leoFindPanelExplorer",
           "contextualTitle": "Leo",
           "name": "Leo Find",
+          "title": "Leo Find",
           "when": "treeInExplorer && leoTreeOpened",
           "visibility": "collapsed"
         }
@@ -239,7 +241,8 @@
         {
           "id": "leoIntegration",
           "contextualTitle": "Leo",
-          "name": "Integration"
+          "name": "Integration",
+          "visibility": "visible"
         },
         {
           "id": "leoDocuments",
@@ -258,6 +261,7 @@
           "contextualTitle": "Leo",
           "id": "leoFindPanel",
           "name": "Find",
+          "title": "Find",
           "when": "leoTreeOpened",
           "visibility": "collapsed"
         }
@@ -2502,7 +2506,7 @@
         "command": "leointeg.startSearch",
         "key": "ctrl+f",
         "mac": "cmd+f",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
       },
       {
         "command": "leointeg.startSearch",
@@ -2513,7 +2517,7 @@
       {
         "command": "leointeg.findNext",
         "key": "f3",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
       },
       {
         "command": "leointeg.findNext",
@@ -2523,7 +2527,7 @@
       {
         "command": "leointeg.findPrevious",
         "key": "f2",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
       },
       {
         "command": "leointeg.findPrevious",
