@@ -16051,6 +16051,7 @@ export const enum LeoSearchScope {
     c = self.commander
     find = c.findCommands
     ftm = c.findCommands.ftm
+    searchSettings = param['searchSettings']
     # Find/change text boxes.
     table = (
         ('find_findbox', 'find_text', '&lt;find pattern here&gt;'),
@@ -16058,7 +16059,7 @@ export const enum LeoSearchScope {
     )
     for widget_ivar, setting_name, default in table:
         w = getattr(ftm, widget_ivar)
-        s = param.searchSettings.get(setting_name) or default
+        s = searchSettings.get(setting_name) or default
         w.insert(s)
     # Check boxes.
     table = (
@@ -16072,7 +16073,7 @@ export const enum LeoSearchScope {
     )
     for setting_name, widget_ivar in table:
         w = getattr(ftm, widget_ivar)
-        val = param.searchSettings.get(setting_name)
+        val = searchSettings.get(setting_name)
         setattr(find, setting_name, val)
         if val != w.isChecked():
             w.toggle()
@@ -16084,7 +16085,7 @@ export const enum LeoSearchScope {
     )
     for setting_name, ivar, widget_ivar in table:
         w = getattr(ftm, widget_ivar)
-        val = param.searchSettings.get(setting_name, False)
+        val = searchSettings.get(setting_name, False)
         if ivar is not None:
             assert hasattr(find, setting_name), setting_name
             setattr(find, setting_name, val)
@@ -16093,7 +16094,8 @@ export const enum LeoSearchScope {
     # Ensure one radio button is set.
     if not find.node_only and not find.suboutline_only:
         w = ftm.radio_button_entire_outline
-        w.setCheckState(True)
+        if not w.isChecked():
+            w.toggle()
 
     # Confirm by sending back the settings to leointeg
     w_result = ftm.get_settings()

@@ -1149,6 +1149,7 @@ class LeoBridgeIntegController:
         c = self.commander
         find = c.findCommands
         ftm = c.findCommands.ftm
+        searchSettings = param['searchSettings']
         # Find/change text boxes.
         table = (
             ('find_findbox', 'find_text', '<find pattern here>'),
@@ -1156,7 +1157,7 @@ class LeoBridgeIntegController:
         )
         for widget_ivar, setting_name, default in table:
             w = getattr(ftm, widget_ivar)
-            s = param.searchSettings.get(setting_name) or default
+            s = searchSettings.get(setting_name) or default
             w.insert(s)
         # Check boxes.
         table = (
@@ -1170,7 +1171,7 @@ class LeoBridgeIntegController:
         )
         for setting_name, widget_ivar in table:
             w = getattr(ftm, widget_ivar)
-            val = param.searchSettings.get(setting_name)
+            val = searchSettings.get(setting_name)
             setattr(find, setting_name, val)
             if val != w.isChecked():
                 w.toggle()
@@ -1182,7 +1183,7 @@ class LeoBridgeIntegController:
         )
         for setting_name, ivar, widget_ivar in table:
             w = getattr(ftm, widget_ivar)
-            val = param.searchSettings.get(setting_name, False)
+            val = searchSettings.get(setting_name, False)
             if ivar is not None:
                 assert hasattr(find, setting_name), setting_name
                 setattr(find, setting_name, val)
@@ -1191,7 +1192,8 @@ class LeoBridgeIntegController:
         # Ensure one radio button is set.
         if not find.node_only and not find.suboutline_only:
             w = ftm.radio_button_entire_outline
-            w.setCheckState(True)
+            if not w.isChecked():
+                w.toggle()
 
         # Confirm by sending back the settings to leointeg
         w_result = ftm.get_settings()
