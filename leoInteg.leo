@@ -529,6 +529,7 @@
 <v t="felix.20210516234059.1"><vh>findNext</vh></v>
 <v t="felix.20210516234104.1"><vh>findPrevious</vh></v>
 <v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
+<v t="felix.20210525232728.1"><vh>loadSearchSettings</vh></v>
 <v t="felix.20210524215215.1"><vh>saveSearchSettings</vh></v>
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
@@ -8090,10 +8091,12 @@ export interface LeoBridgePackage {
     commands?: MinibufferCommand[]; // getCommands
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
+
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
     node?: ArchivedPosition; // get_parent, set_opened_file, open_file(s), ?close_file
     children?: ArchivedPosition[]; // get_children
+    searchSettings?: LeoGuiFindTabManagerSettings // get_search_settings
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
     total?: number; // set_opened_file, open_file(s), close_file
@@ -10446,8 +10449,9 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
         let w_selection: vscode.Selection;
         let w_action = "";
         if (p_results === "get") {
-            w_action = Constants.LEOBRIDGE.GET_SEARCH_SETTINGS;
+           //  w_action = Constants.LEOBRIDGE.GET_SEARCH_SETTINGS;
             // w_selection = new vscode.Selection(1, 1, 1, 6);
+            this.loadSearchSettings();
         } else {
             w_action = Constants.LEOBRIDGE.SET_SEARCH_SETTINGS;
             // w_selection = new vscode.Selection(2, 2, 3, 3);
@@ -10471,21 +10475,24 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
             whole_word: false
         };
 
-        this.sendAction(
-            // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
-            w_action, JSON.stringify({ searchSettings: searchSettings })
-        ).then((p_result: LeoBridgePackage) =&gt; {
-            console.log('got back settings: ', p_result);
+        if (w_action) {
 
-            // this.launchRefresh({ buttons: true }, false);
-            // return vscode.window.showInformationMessage(
-            //     ' back from test, called from ' +
-            //     (p_fromOutline ? "outline" : "body") +
-            //     ', with result: ' +
-            //     JSON.stringify(p_result)
-            // );
-        });
+            this.sendAction(
+                // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+                w_action, JSON.stringify({ searchSettings: searchSettings })
+            ).then((p_result: LeoBridgePackage) =&gt; {
+                console.log('got back settings: ', p_result);
 
+                // this.launchRefresh({ buttons: true }, false);
+                // return vscode.window.showInformationMessage(
+                //     ' back from test, called from ' +
+                //     (p_fromOutline ? "outline" : "body") +
+                //     ', with result: ' +
+                //     JSON.stringify(p_result)
+                // );
+            });
+
+        }
 
 
         /*
@@ -15809,6 +15816,7 @@ def _dump_position(self, p):  # pragma: no cover
 <t tx="felix.20210522001751.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
+import { LeoGuiFindTabManagerSettings, LeoSearchSettings } from "./types";
 
 @language typescript
 @tabwidth -4
@@ -15838,9 +15846,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 			// Allow scripts in the webview
 			enableScripts: true,
 
-			localResourceRoots: [
-				this._extensionUri
-			]
+			localResourceRoots: [this._extensionUri]
 		};
 
 		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
@@ -16036,12 +16042,13 @@ export const enum LeoSearchScope {
     searchSettings = param['searchSettings']
     # Find/change text boxes.
     table = (
-        ('find_findbox', 'find_text', '&lt;find pattern here&gt;'),
+        ('find_findbox', 'find_text', ''),
         ('find_replacebox', 'change_text', ''),
     )
     for widget_ivar, setting_name, default in table:
         w = getattr(ftm, widget_ivar)
         s = searchSettings.get(setting_name) or default
+        w.clear()
         w.insert(s)
     # Check boxes.
     table = (
@@ -16108,7 +16115,24 @@ export interface LeoGuiFindTabManagerSettings {
  * * Send the settings to the Leo Bridge Server
  */
 public saveSearchSettings(p_settings: LeoSearchSettings): void {
-    console.log("saveSearchSettings");
+    console.log("saveSearchSettings", p_settings);
+    // convert to LeoGuiFindTabManagerSettings
+    const w_settings: LeoGuiFindTabManagerSettings = {
+        //Find/change strings...
+        find_text: p_settings.findText,
+        change_text: p_settings.replaceText,
+        // Find options...
+        ignore_case: p_settings.ignoreCase,
+        mark_changes: p_settings.markChanges,
+        mark_finds: p_settings.markFinds,
+        node_only: p_settings.searchScope === 2,
+        pattern_match: p_settings.regExp,
+        search_body: p_settings.searchBody,
+        search_headline: p_settings.searchHeadline,
+        suboutline_only: p_settings.searchScope === 1,
+        whole_word: p_settings.wholeWord
+    };
+    this.sendAction(Constants.LEOBRIDGE.SET_SEARCH_SETTINGS, JSON.stringify({ searchSettings: w_settings }));
 }
 
 </t>
@@ -16127,6 +16151,44 @@ public setFindPanel(p_panel: vscode.WebviewView) {
     // action get search settings
     //  .THEN
     // this._findPanelWebviewView?.webview.postMessage({ type: 'setSettings' , value: ''});
+}
+
+</t>
+<t tx="felix.20210525232728.1">/**
+ * * Get settings from Leo and apply them to the find panel webview
+ */
+public loadSearchSettings(): void {
+    console.log("loadSearchSettings");
+
+    this.sendAction(Constants.LEOBRIDGE.GET_SEARCH_SETTINGS)
+        .then((p_result: LeoBridgePackage) =&gt; {
+            console.log('got back settings: ', p_result);
+            const w_searchSettings: LeoGuiFindTabManagerSettings = p_result.searchSettings!;
+            const w_settings: LeoSearchSettings = {
+                //Find/change strings...
+                findText: w_searchSettings.find_text,
+                replaceText: w_searchSettings.change_text,
+                // Find options...
+                wholeWord: w_searchSettings.whole_word,
+                ignoreCase: w_searchSettings.ignore_case,
+                regExp: w_searchSettings.pattern_match,
+                markFinds: w_searchSettings.mark_finds,
+                markChanges: w_searchSettings.mark_changes,
+                searchHeadline: w_searchSettings.search_headline,
+                searchBody: w_searchSettings.search_body,
+                // 0, 1 or 2 for outline, sub-outline, or node.
+                searchScope: 0 + (w_searchSettings.suboutline_only ? 1 : 0) + (w_searchSettings.node_only ? 2 : 0)
+            };
+            if (w_settings.searchScope &gt; 2) {
+                console.error('searchScope SHOULD BE 0,1,2 only: ', w_settings.searchScope);
+            }
+            if (this._findPanelWebviewExplorerView) {
+                this._findPanelWebviewExplorerView.webview.postMessage({ type: 'setSettings', value: w_settings });
+            }
+            if (this._findPanelWebviewView) {
+                this._findPanelWebviewView.webview.postMessage({ type: 'setSettings', value: w_settings });
+            }
+        });
 }
 
 </t>

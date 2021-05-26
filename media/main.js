@@ -66,6 +66,25 @@
         "nodeOnly"
     ];
 
+    function setSettings(p_settings) {
+        // When opening a Leo document, set default values of fields
+        console.log('SET SETTINGS from inside webview', p_settings);
+        inputIds.forEach(p_inputId => {
+            //@ts-expect-error
+            document.getElementById(p_inputId).value = p_settings[p_inputId];
+        })
+        checkboxIds.forEach(p_inputId => {
+            //@ts-expect-error
+            document.getElementById(p_inputId).checked = p_settings[p_inputId];
+        })
+        radioIds.forEach(p_inputId => {
+            //@ts-expect-error
+            document.getElementById(p_inputId).checked = false;
+        })
+        //@ts-expect-error
+        document.getElementById(radioIds[p_settings["searchScope"]]).checked = true;
+    }
+
     function sendSearchConfig() {
         dirty = false; // clear dirty flag
         console.log(searchSettings);
@@ -144,13 +163,7 @@
         inputField.select();
     }
 
-    function setSettings(p_settings) {
-        // When opening a Leo document, set default values of fields
-        console.log('SET SETTINGS');
 
-
-
-    }
 
     function getSettings() {
         // clear dirty, clear timer,

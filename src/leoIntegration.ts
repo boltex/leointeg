@@ -1831,10 +1831,64 @@ export class LeoIntegration {
     }
 
     /**
+     * * Get settings from Leo and apply them to the find panel webview
+     */
+    public loadSearchSettings(): void {
+        console.log("loadSearchSettings");
+
+        this.sendAction(Constants.LEOBRIDGE.GET_SEARCH_SETTINGS)
+            .then((p_result: LeoBridgePackage) => {
+                console.log('got back settings: ', p_result);
+                const w_searchSettings: LeoGuiFindTabManagerSettings = p_result.searchSettings!;
+                const w_settings: LeoSearchSettings = {
+                    //Find/change strings...
+                    findText: w_searchSettings.find_text,
+                    replaceText: w_searchSettings.change_text,
+                    // Find options...
+                    wholeWord: w_searchSettings.whole_word,
+                    ignoreCase: w_searchSettings.ignore_case,
+                    regExp: w_searchSettings.pattern_match,
+                    markFinds: w_searchSettings.mark_finds,
+                    markChanges: w_searchSettings.mark_changes,
+                    searchHeadline: w_searchSettings.search_headline,
+                    searchBody: w_searchSettings.search_body,
+                    // 0, 1 or 2 for outline, sub-outline, or node.
+                    searchScope: 0 + (w_searchSettings.suboutline_only ? 1 : 0) + (w_searchSettings.node_only ? 2 : 0)
+                };
+                if (w_settings.searchScope > 2) {
+                    console.error('searchScope SHOULD BE 0,1,2 only: ', w_settings.searchScope);
+                }
+                if (this._findPanelWebviewExplorerView) {
+                    this._findPanelWebviewExplorerView.webview.postMessage({ type: 'setSettings', value: w_settings });
+                }
+                if (this._findPanelWebviewView) {
+                    this._findPanelWebviewView.webview.postMessage({ type: 'setSettings', value: w_settings });
+                }
+            });
+    }
+
+    /**
      * * Send the settings to the Leo Bridge Server
      */
     public saveSearchSettings(p_settings: LeoSearchSettings): void {
-        console.log("saveSearchSettings");
+        console.log("saveSearchSettings", p_settings);
+        // convert to LeoGuiFindTabManagerSettings
+        const w_settings: LeoGuiFindTabManagerSettings = {
+            //Find/change strings...
+            find_text: p_settings.findText,
+            change_text: p_settings.replaceText,
+            // Find options...
+            ignore_case: p_settings.ignoreCase,
+            mark_changes: p_settings.markChanges,
+            mark_finds: p_settings.markFinds,
+            node_only: p_settings.searchScope === 2,
+            pattern_match: p_settings.regExp,
+            search_body: p_settings.searchBody,
+            search_headline: p_settings.searchHeadline,
+            suboutline_only: p_settings.searchScope === 1,
+            whole_word: p_settings.wholeWord
+        };
+        this.sendAction(Constants.LEOBRIDGE.SET_SEARCH_SETTINGS, JSON.stringify({ searchSettings: w_settings }));
     }
 
     /**
@@ -2214,8 +2268,9 @@ export class LeoIntegration {
             let w_selection: vscode.Selection;
             let w_action = "";
             if (p_results === "get") {
-                w_action = Constants.LEOBRIDGE.GET_SEARCH_SETTINGS;
+               //  w_action = Constants.LEOBRIDGE.GET_SEARCH_SETTINGS;
                 // w_selection = new vscode.Selection(1, 1, 1, 6);
+                this.loadSearchSettings();
             } else {
                 w_action = Constants.LEOBRIDGE.SET_SEARCH_SETTINGS;
                 // w_selection = new vscode.Selection(2, 2, 3, 3);
@@ -2239,21 +2294,24 @@ export class LeoIntegration {
                 whole_word: false
             };
 
-            this.sendAction(
-                // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
-                w_action, JSON.stringify({ searchSettings: searchSettings })
-            ).then((p_result: LeoBridgePackage) => {
-                console.log('got back settings: ', p_result);
+            if (w_action) {
 
-                // this.launchRefresh({ buttons: true }, false);
-                // return vscode.window.showInformationMessage(
-                //     ' back from test, called from ' +
-                //     (p_fromOutline ? "outline" : "body") +
-                //     ', with result: ' +
-                //     JSON.stringify(p_result)
-                // );
-            });
+                this.sendAction(
+                    // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+                    w_action, JSON.stringify({ searchSettings: searchSettings })
+                ).then((p_result: LeoBridgePackage) => {
+                    console.log('got back settings: ', p_result);
 
+                    // this.launchRefresh({ buttons: true }, false);
+                    // return vscode.window.showInformationMessage(
+                    //     ' back from test, called from ' +
+                    //     (p_fromOutline ? "outline" : "body") +
+                    //     ', with result: ' +
+                    //     JSON.stringify(p_result)
+                    // );
+                });
+
+            }
 
 
             /*

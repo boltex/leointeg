@@ -1118,12 +1118,13 @@ class LeoBridgeIntegController:
         searchSettings = param['searchSettings']
         # Find/change text boxes.
         table = (
-            ('find_findbox', 'find_text', '<find pattern here>'),
+            ('find_findbox', 'find_text', ''),
             ('find_replacebox', 'change_text', ''),
         )
         for widget_ivar, setting_name, default in table:
             w = getattr(ftm, widget_ivar)
             s = searchSettings.get(setting_name) or default
+            w.clear()
             w.insert(s)
         # Check boxes.
         table = (

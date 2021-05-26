@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
+import { LeoGuiFindTabManagerSettings, LeoSearchSettings } from "./types";
 
 /**
  * Leo Find Panel provider
@@ -26,9 +27,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 			// Allow scripts in the webview
 			enableScripts: true,
 
-			localResourceRoots: [
-				this._extensionUri
-			]
+			localResourceRoots: [this._extensionUri]
 		};
 
 		webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
