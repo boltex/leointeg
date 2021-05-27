@@ -661,6 +661,7 @@ export class LeoIntegration {
         // * Refresh Opened tree views
         this.refreshDocumentsPane();
         this._leoButtonsProvider.refreshTreeRoot();
+        this.loadSearchSettings();
         // * Maybe first Body appearance
         return this.showBody(false);
     }
@@ -741,6 +742,9 @@ export class LeoIntegration {
             this._lastTreeView = p_explorerView ? this._leoTreeExView : this._leoTreeView;
             this.setTreeViewTitle();
             this._needLastSelectedRefresh = true; // Its a new node in a new tree so refresh lastSelectedNode too
+            if (this.leoStates.fileOpenedReady) {
+                this.loadSearchSettings();
+            }
             this._refreshOutline(true, RevealType.RevealSelect);
         }
     }
@@ -1831,14 +1835,11 @@ export class LeoIntegration {
     }
 
     /**
-     * * Get settings from Leo and apply them to the find panel webview
+     * * Get settings from Leo and apply them to the find panel webviews
      */
     public loadSearchSettings(): void {
-        console.log("loadSearchSettings");
-
         this.sendAction(Constants.LEOBRIDGE.GET_SEARCH_SETTINGS)
             .then((p_result: LeoBridgePackage) => {
-                console.log('got back settings: ', p_result);
                 const w_searchSettings: LeoGuiFindTabManagerSettings = p_result.searchSettings!;
                 const w_settings: LeoSearchSettings = {
                     //Find/change strings...
@@ -1871,7 +1872,6 @@ export class LeoIntegration {
      * * Send the settings to the Leo Bridge Server
      */
     public saveSearchSettings(p_settings: LeoSearchSettings): void {
-        console.log("saveSearchSettings", p_settings);
         // convert to LeoGuiFindTabManagerSettings
         const w_settings: LeoGuiFindTabManagerSettings = {
             //Find/change strings...
@@ -1881,11 +1881,11 @@ export class LeoIntegration {
             ignore_case: p_settings.ignoreCase,
             mark_changes: p_settings.markChanges,
             mark_finds: p_settings.markFinds,
-            node_only: p_settings.searchScope === 2,
+            node_only: !!(p_settings.searchScope === 2),
             pattern_match: p_settings.regExp,
             search_body: p_settings.searchBody,
             search_headline: p_settings.searchHeadline,
-            suboutline_only: p_settings.searchScope === 1,
+            suboutline_only: !!(p_settings.searchScope === 1),
             whole_word: p_settings.wholeWord
         };
         this.sendAction(Constants.LEOBRIDGE.SET_SEARCH_SETTINGS, JSON.stringify({ searchSettings: w_settings }));
@@ -2057,6 +2057,7 @@ export class LeoIntegration {
                     if (p_tryCloseResult.total === 0) {
                         this._setupNoOpenedLeoDocument();
                     } else {
+                        this.loadSearchSettings();
                         this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
                     }
                     return Promise.resolve(true);
@@ -2112,6 +2113,7 @@ export class LeoIntegration {
                                 if (p_closeResult && p_closeResult.total === 0) {
                                     this._setupNoOpenedLeoDocument();
                                 } else {
+                                    this.loadSearchSettings();
                                     this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
                                 }
                                 return Promise.resolve(true);
@@ -2247,8 +2249,6 @@ export class LeoIntegration {
      */
     public test(p_fromOutline?: boolean): Thenable<unknown> {
         // return this.statusBarOnClick();
-        console.log('initial test call');
-
 
         // vscode.commands.executeCommand(Constants.COMMANDS.MARK_SELECTION)
         //     .then((p_result) => {
@@ -2263,6 +2263,7 @@ export class LeoIntegration {
 
         // Test setting scroll / selection range
 
+        /*
         vscode.window.showQuickPick(["get", "set"]).then(p_results => {
             console.log('quick pick result:', p_results);
             let w_selection: vscode.Selection;
@@ -2275,14 +2276,10 @@ export class LeoIntegration {
                 w_action = Constants.LEOBRIDGE.SET_SEARCH_SETTINGS;
                 // w_selection = new vscode.Selection(2, 2, 3, 3);
             }
-
             console.log('w_action', w_action);
-
             const searchSettings: LeoGuiFindTabManagerSettings = {
-                //Find/change strings...
                 find_text: "new find text",
                 change_text: "",
-                // Find options...
                 ignore_case: false, // diff
                 mark_changes: false,
                 mark_finds: true, // diff
@@ -2295,42 +2292,30 @@ export class LeoIntegration {
             };
 
             if (w_action) {
-
                 this.sendAction(
-                    // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
                     w_action, JSON.stringify({ searchSettings: searchSettings })
                 ).then((p_result: LeoBridgePackage) => {
                     console.log('got back settings: ', p_result);
-
-                    // this.launchRefresh({ buttons: true }, false);
-                    // return vscode.window.showInformationMessage(
-                    //     ' back from test, called from ' +
-                    //     (p_fromOutline ? "outline" : "body") +
-                    //     ', with result: ' +
-                    //     JSON.stringify(p_result)
-                    // );
                 });
-
             }
-
-
-            /*
-            vscode.window.visibleTextEditors.forEach(p_textEditor => {
-                console.log('p_textEditor.document.uri.scheme ', p_textEditor.document.uri.scheme);
-
-                if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-                    console.log('found');
-
-                    p_textEditor.selection = w_selection; // set cursor insertion point & selection range
-                    // if (!w_scrollRange) {
-                    //     w_scrollRange = p_textEditor.document.lineAt(0).range;
-                    // }
-                    // p_textEditor.revealRange(w_scrollRange); // set
-                }
-            });
-            */
         });
+        */
 
+        /*
+        vscode.window.visibleTextEditors.forEach(p_textEditor => {
+            console.log('p_textEditor.document.uri.scheme ', p_textEditor.document.uri.scheme);
+
+            if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+                console.log('found');
+
+                p_textEditor.selection = w_selection; // set cursor insertion point & selection range
+                // if (!w_scrollRange) {
+                //     w_scrollRange = p_textEditor.document.lineAt(0).range;
+                // }
+                // p_textEditor.revealRange(w_scrollRange); // set
+            }
+        });
+        */
 
         // GET_FOCUS AS A TEST
         return this.sendAction(
@@ -2347,9 +2332,6 @@ export class LeoIntegration {
             //     JSON.stringify(p_result)
             // );
         });
-
-
-
     }
 
 }

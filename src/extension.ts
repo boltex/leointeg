@@ -648,7 +648,7 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
         w_showWelcomeScreen = true;
     } else {
         if (p_previousVersion !== p_version) {
-            console.log(`leoInteg upgraded from v${p_previousVersion} to v${p_version}`);
+            vscode.window.showInformationMessage(`leoInteg upgraded from v${p_previousVersion} to v${p_version}`);
         }
         const [w_major, w_minor] = p_version.split('.').map(p_stringVal => parseInt(p_stringVal, 10));
         const [w_prevMajor, w_prevMinor] = p_previousVersion.split('.').map(p_stringVal => parseInt(p_stringVal, 10));

@@ -1157,9 +1157,14 @@ class LeoBridgeIntegController:
                 if val != w.isChecked():
                     w.toggle()
         # Ensure one radio button is set.
-        if not find.node_only and not find.suboutline_only:
-            w = ftm.radio_button_entire_outline
+        w = ftm.radio_button_entire_outline
+        if not searchSettings.get('node_only', False) and not searchSettings.get('suboutline_only', False):
+            setattr(find, 'entire_outline', True)
             if not w.isChecked():
+                w.toggle()
+        else:
+            setattr(find, 'entire_outline', False)
+            if w.isChecked():
                 w.toggle()
 
         # Confirm by sending back the settings to leointeg

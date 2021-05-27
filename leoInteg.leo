@@ -6385,7 +6385,7 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
         w_showWelcomeScreen = true;
     } else {
         if (p_previousVersion !== p_version) {
-            console.log(`leoInteg upgraded from v${p_previousVersion} to v${p_version}`);
+            vscode.window.showInformationMessage(`leoInteg upgraded from v${p_previousVersion} to v${p_version}`);
         }
         const [w_major, w_minor] = p_version.split('.').map(p_stringVal =&gt; parseInt(p_stringVal, 10));
         const [w_prevMajor, w_prevMinor] = p_previousVersion.split('.').map(p_stringVal =&gt; parseInt(p_stringVal, 10));
@@ -9281,6 +9281,7 @@ private _setupOpenedLeoDocument(p_openFileResult: LeoBridgePackage): Promise&lt;
     // * Refresh Opened tree views
     this.refreshDocumentsPane();
     this._leoButtonsProvider.refreshTreeRoot();
+    this.loadSearchSettings();
     // * Maybe first Body appearance
     return this.showBody(false);
 }
@@ -9335,6 +9336,9 @@ private _onTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEve
         this._lastTreeView = p_explorerView ? this._leoTreeExView : this._leoTreeView;
         this.setTreeViewTitle();
         this._needLastSelectedRefresh = true; // Its a new node in a new tree so refresh lastSelectedNode too
+        if (this.leoStates.fileOpenedReady) {
+            this.loadSearchSettings();
+        }
         this._refreshOutline(true, RevealType.RevealSelect);
     }
 }
@@ -10257,6 +10261,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                 if (p_tryCloseResult.total === 0) {
                     this._setupNoOpenedLeoDocument();
                 } else {
+                    this.loadSearchSettings();
                     this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
                 }
                 return Promise.resolve(true);
@@ -10312,6 +10317,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                             if (p_closeResult &amp;&amp; p_closeResult.total === 0) {
                                 this._setupNoOpenedLeoDocument();
                             } else {
+                                this.loadSearchSettings();
                                 this.launchRefresh({ tree: true, body: true, documents: true, buttons: true, states: true }, false);
                             }
                             return Promise.resolve(true);
@@ -10428,8 +10434,6 @@ public startServer(): void {
  */
 public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
     // return this.statusBarOnClick();
-    console.log('initial test call');
-
 
     // vscode.commands.executeCommand(Constants.COMMANDS.MARK_SELECTION)
     //     .then((p_result) =&gt; {
@@ -10444,6 +10448,7 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
 
     // Test setting scroll / selection range
 
+    /*
     vscode.window.showQuickPick(["get", "set"]).then(p_results =&gt; {
         console.log('quick pick result:', p_results);
         let w_selection: vscode.Selection;
@@ -10456,14 +10461,10 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
             w_action = Constants.LEOBRIDGE.SET_SEARCH_SETTINGS;
             // w_selection = new vscode.Selection(2, 2, 3, 3);
         }
-
         console.log('w_action', w_action);
-
         const searchSettings: LeoGuiFindTabManagerSettings = {
-            //Find/change strings...
             find_text: "new find text",
             change_text: "",
-            // Find options...
             ignore_case: false, // diff
             mark_changes: false,
             mark_finds: true, // diff
@@ -10476,42 +10477,30 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
         };
 
         if (w_action) {
-
             this.sendAction(
-                // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
                 w_action, JSON.stringify({ searchSettings: searchSettings })
             ).then((p_result: LeoBridgePackage) =&gt; {
                 console.log('got back settings: ', p_result);
-
-                // this.launchRefresh({ buttons: true }, false);
-                // return vscode.window.showInformationMessage(
-                //     ' back from test, called from ' +
-                //     (p_fromOutline ? "outline" : "body") +
-                //     ', with result: ' +
-                //     JSON.stringify(p_result)
-                // );
             });
-
         }
-
-
-        /*
-        vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
-            console.log('p_textEditor.document.uri.scheme ', p_textEditor.document.uri.scheme);
-
-            if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-                console.log('found');
-
-                p_textEditor.selection = w_selection; // set cursor insertion point &amp; selection range
-                // if (!w_scrollRange) {
-                //     w_scrollRange = p_textEditor.document.lineAt(0).range;
-                // }
-                // p_textEditor.revealRange(w_scrollRange); // set
-            }
-        });
-        */
     });
+    */
 
+    /*
+    vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
+        console.log('p_textEditor.document.uri.scheme ', p_textEditor.document.uri.scheme);
+
+        if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+            console.log('found');
+
+            p_textEditor.selection = w_selection; // set cursor insertion point &amp; selection range
+            // if (!w_scrollRange) {
+            //     w_scrollRange = p_textEditor.document.lineAt(0).range;
+            // }
+            // p_textEditor.revealRange(w_scrollRange); // set
+        }
+    });
+    */
 
     // GET_FOCUS AS A TEST
     return this.sendAction(
@@ -10528,9 +10517,6 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
         //     JSON.stringify(p_result)
         // );
     });
-
-
-
 }
 
 </t>
@@ -16081,9 +16067,14 @@ export const enum LeoSearchScope {
             if val != w.isChecked():
                 w.toggle()
     # Ensure one radio button is set.
-    if not find.node_only and not find.suboutline_only:
-        w = ftm.radio_button_entire_outline
+    w = ftm.radio_button_entire_outline
+    if not searchSettings.get('node_only', False) and not searchSettings.get('suboutline_only', False):
+        setattr(find, 'entire_outline', True)
         if not w.isChecked():
+            w.toggle()
+    else:
+        setattr(find, 'entire_outline', False)
+        if w.isChecked():
             w.toggle()
 
     # Confirm by sending back the settings to leointeg
@@ -16115,7 +16106,6 @@ export interface LeoGuiFindTabManagerSettings {
  * * Send the settings to the Leo Bridge Server
  */
 public saveSearchSettings(p_settings: LeoSearchSettings): void {
-    console.log("saveSearchSettings", p_settings);
     // convert to LeoGuiFindTabManagerSettings
     const w_settings: LeoGuiFindTabManagerSettings = {
         //Find/change strings...
@@ -16125,11 +16115,11 @@ public saveSearchSettings(p_settings: LeoSearchSettings): void {
         ignore_case: p_settings.ignoreCase,
         mark_changes: p_settings.markChanges,
         mark_finds: p_settings.markFinds,
-        node_only: p_settings.searchScope === 2,
+        node_only: !!(p_settings.searchScope === 2),
         pattern_match: p_settings.regExp,
         search_body: p_settings.searchBody,
         search_headline: p_settings.searchHeadline,
-        suboutline_only: p_settings.searchScope === 1,
+        suboutline_only: !!(p_settings.searchScope === 1),
         whole_word: p_settings.wholeWord
     };
     this.sendAction(Constants.LEOBRIDGE.SET_SEARCH_SETTINGS, JSON.stringify({ searchSettings: w_settings }));
@@ -16155,14 +16145,11 @@ public setFindPanel(p_panel: vscode.WebviewView) {
 
 </t>
 <t tx="felix.20210525232728.1">/**
- * * Get settings from Leo and apply them to the find panel webview
+ * * Get settings from Leo and apply them to the find panel webviews
  */
 public loadSearchSettings(): void {
-    console.log("loadSearchSettings");
-
     this.sendAction(Constants.LEOBRIDGE.GET_SEARCH_SETTINGS)
         .then((p_result: LeoBridgePackage) =&gt; {
-            console.log('got back settings: ', p_result);
             const w_searchSettings: LeoGuiFindTabManagerSettings = p_result.searchSettings!;
             const w_settings: LeoSearchSettings = {
                 //Find/change strings...
