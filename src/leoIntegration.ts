@@ -1204,6 +1204,23 @@ export class LeoIntegration {
     }
 
     /**
+     * * Check if Leo should be focused on outline
+     */
+    public getBridgeFocus(): void {
+        this.sendAction(Constants.LEOBRIDGE.GET_FOCUS)
+            .then((p_resultFocus: LeoBridgePackage) => {
+                if (p_resultFocus.focus) {
+                    const w_focus = p_resultFocus.focus.toLowerCase();
+                    if (w_focus.includes("tree") ||
+                        w_focus.includes("head")) {
+                        this._fromOutline = true;
+                        // this.showOutline(true);
+                    }
+                }
+            });
+    }
+
+    /**
      * * Converts an archived position object to a LeoNode instance
      * @param p_ap The archived position to convert
      * @param p_revealSelected Flag that will trigger the node to reveal, select, and focus if its selected node in Leo
@@ -1794,11 +1811,13 @@ export class LeoIntegration {
             fromOutline: false
         });
         if (w_command) {
-            w_command.then((p_result: LeoBridgePackage) => {
-                this.sendAction(Constants.LEOBRIDGE.GET_FOCUS)
-                    .then((p_result: LeoBridgePackage) => {
-                        vscode.window.showInformationMessage('Set focus on ' + p_result.focus);
-                    });
+            w_command.then((p_resultFind: LeoBridgePackage) => {
+                // console.log(JSON.stringify(p_resultFind, undefined, 4));
+                if (!p_resultFind.found) {
+                    vscode.window.showInformationMessage('Not found');
+                } else {
+                    this.getBridgeFocus();
+                }
             });
         }
     }
@@ -1811,11 +1830,13 @@ export class LeoIntegration {
             fromOutline: false
         });
         if (w_command) {
-            w_command.then((p_result: LeoBridgePackage) => {
-                this.sendAction(Constants.LEOBRIDGE.GET_FOCUS)
-                    .then((p_result: LeoBridgePackage) => {
-                        vscode.window.showInformationMessage('Set focus on ' + p_result.focus);
-                    });
+            w_command.then((p_resultFind: LeoBridgePackage) => {
+                // console.log(JSON.stringify(p_resultFind, undefined, 4));
+                if (!p_resultFind.found) {
+                    vscode.window.showInformationMessage('Not found');
+                } else {
+                    this.getBridgeFocus();
+                }
             });
         }
     }

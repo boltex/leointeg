@@ -123,6 +123,7 @@
 <v t="felix.20200303214255.1"><vh>_idleTime</vh></v>
 <v t="felix.20200623201853.1"><vh>_getTotalOpened</vh></v>
 <v t="felix.20200623215904.1"><vh>_getFirstOpenedCommander</vh></v>
+<v t="felix.20210528000603.1"><vh>_show_find_success</vh></v>
 <v t="felix.20200304224909.1"><vh>sendAsyncOutput</vh></v>
 <v t="felix.20200304220844.1"><vh>set_ask_result</vh></v>
 <v t="felix.20200312231358.1"><vh>set_config</vh></v>
@@ -504,6 +505,7 @@
 <v t="ekr.20200815085830.3"><vh>launchRefresh</vh></v>
 <v t="ekr.20200815085830.4"><vh>_refreshDocumentsPane</vh></v>
 <v t="ekr.20200815085830.5"><vh>_gotSelection</vh></v>
+<v t="felix.20210528012836.1"><vh>getBridgeFocus</vh></v>
 </v>
 <v t="felix.20200719030909.1"><vh>Conversion</vh>
 <v t="felix.20200719025231.38"><vh>apToLeoNode</vh></v>
@@ -4705,6 +4707,8 @@ if __name__ == '__main__':
     # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
     # override for "revert to file" operation
     self.g.app.gui.runAskYesNoDialog = self._returnYes
+    self.g.app.gui.show_find_success = self._show_find_success
+    self.headlineWidget = self.g.bunch(_name='tree')
 
     # * setup leoBackground to get messages from leo
     try:
@@ -8094,6 +8098,7 @@ export interface LeoBridgePackage {
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // get_focus
+    found?: boolean // find_next, find_previous
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
     node?: ArchivedPosition; // get_parent, set_opened_file, open_file(s), ?close_file
@@ -15649,11 +15654,13 @@ def _dump_position(self, p):  # pragma: no cover
         fromOutline: false
     });
     if (w_command) {
-        w_command.then((p_result: LeoBridgePackage) =&gt; {
-            this.sendAction(Constants.LEOBRIDGE.GET_FOCUS)
-                .then((p_result: LeoBridgePackage) =&gt; {
-                    vscode.window.showInformationMessage('Set focus on ' + p_result.focus);
-                });
+        w_command.then((p_resultFind: LeoBridgePackage) =&gt; {
+            // console.log(JSON.stringify(p_resultFind, undefined, 4));
+            if (!p_resultFind.found) {
+                vscode.window.showInformationMessage('Not found');
+            } else {
+                this.getBridgeFocus();
+            }
         });
     }
 }
@@ -15667,11 +15674,13 @@ def _dump_position(self, p):  # pragma: no cover
         fromOutline: false
     });
     if (w_command) {
-        w_command.then((p_result: LeoBridgePackage) =&gt; {
-            this.sendAction(Constants.LEOBRIDGE.GET_FOCUS)
-                .then((p_result: LeoBridgePackage) =&gt; {
-                    vscode.window.showInformationMessage('Set focus on ' + p_result.focus);
-                });
+        w_command.then((p_resultFind: LeoBridgePackage) =&gt; {
+            // console.log(JSON.stringify(p_resultFind, undefined, 4));
+            if (!p_resultFind.found) {
+                vscode.window.showInformationMessage('Not found');
+            } else {
+                this.getBridgeFocus();
+            }
         });
     }
 }
@@ -16214,7 +16223,10 @@ public loadSearchSettings(): void {
     #     return self._outputError("Error no find pattern")
     settings = fc.ftm.get_settings()
     p, pos, newpos = fc.do_find_next(settings)
-    w_result = {"pos": pos, "newpos": newpos,
+    found = True
+    if not p:
+        found = False
+    w_result = {"found": found, "pos": pos, "newpos": newpos,
                 "node": self._p_to_ap(c.p)}
     return self.sendLeoBridgePackage(w_result)
 
@@ -16228,10 +16240,38 @@ public loadSearchSettings(): void {
     #     return self._outputError("Error no find pattern")
     settings = fc.ftm.get_settings()
     p, pos, newpos = fc.do_find_prev(settings)
-    w_result = {"pos": pos, "newpos": newpos,
+    found = True
+    if not p:
+        found = False
+    w_result = {"found": found, "pos": pos, "newpos": newpos,
                 "node": self._p_to_ap(c.p)}
     return self.sendLeoBridgePackage(w_result)
 
+
+</t>
+<t tx="felix.20210528000603.1">def _show_find_success(self, c, in_headline, insert, p):
+    '''Handle a successful find match.'''
+    if in_headline:
+        self.g.app.gui.set_focus(c, self.headlineWidget)
+    # no return
+
+</t>
+<t tx="felix.20210528012836.1">/**
+ * * Check if Leo should be focused on outline
+ */
+public getBridgeFocus(): void {
+    this.sendAction(Constants.LEOBRIDGE.GET_FOCUS)
+        .then((p_resultFocus: LeoBridgePackage) =&gt; {
+            if (p_resultFocus.focus) {
+                const w_focus = p_resultFocus.focus.toLowerCase();
+                if (w_focus.includes("tree") ||
+                    w_focus.includes("head")) {
+                    this._fromOutline = true;
+                    // this.showOutline(true);
+                }
+            }
+        });
+}
 
 </t>
 </tnodes>

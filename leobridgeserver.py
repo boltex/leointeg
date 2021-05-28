@@ -654,6 +654,8 @@ class LeoBridgeIntegController:
         # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
         # override for "revert to file" operation
         self.g.app.gui.runAskYesNoDialog = self._returnYes
+        self.g.app.gui.show_find_success = self._show_find_success
+        self.headlineWidget = self.g.bunch(_name='tree')
 
         # * setup leoBackground to get messages from leo
         try:
@@ -722,6 +724,12 @@ class LeoBridgeIntegController:
             if not w_commander.closed:
                 return w_commander
         return False
+
+    def _show_find_success(self, c, in_headline, insert, p):
+        '''Handle a successful find match.'''
+        if in_headline:
+            self.g.app.gui.set_focus(c, self.headlineWidget)
+        # no return
 
     def sendAsyncOutput(self, p_package):
         if "async" not in p_package:
@@ -1180,7 +1188,10 @@ class LeoBridgeIntegController:
         #     return self._outputError("Error no find pattern")
         settings = fc.ftm.get_settings()
         p, pos, newpos = fc.do_find_next(settings)
-        w_result = {"pos": pos, "newpos": newpos,
+        found = True
+        if not p:
+            found = False
+        w_result = {"found": found, "pos": pos, "newpos": newpos,
                     "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
@@ -1193,7 +1204,10 @@ class LeoBridgeIntegController:
         #     return self._outputError("Error no find pattern")
         settings = fc.ftm.get_settings()
         p, pos, newpos = fc.do_find_prev(settings)
-        w_result = {"pos": pos, "newpos": newpos,
+        found = True
+        if not p:
+            found = False
+        w_result = {"found": found, "pos": pos, "newpos": newpos,
                     "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
