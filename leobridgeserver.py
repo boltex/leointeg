@@ -1171,6 +1171,33 @@ class LeoBridgeIntegController:
         w_result = ftm.get_settings()
         return self.sendLeoBridgePackage({"searchSettings": w_result.__dict__})
 
+    def find_next(self, param):
+        """Run Leo's find-next command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        # find_text = param.get("find_text")
+        # if find_text is None:  # pragma: no cover
+        #     return self._outputError("Error no find pattern")
+        settings = fc.ftm.get_settings()
+        p, pos, newpos = fc.do_find_next(settings)
+        w_result = {"pos": pos, "newpos": newpos,
+                    "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def find_previous(self, param):
+        """Run Leo's find-previous command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        # find_text = param.get("find_text")
+        # if find_text is None:  # pragma: no cover
+        #     return self._outputError("Error no find pattern")
+        settings = fc.ftm.get_settings()
+        p, pos, newpos = fc.do_find_prev(settings)
+        w_result = {"pos": pos, "newpos": newpos,
+                    "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+
     def get_buttons(self, param):
         '''Gets the currently opened file's @buttons list'''
         w_buttons = []

@@ -1784,16 +1784,40 @@ export class LeoIntegration {
                 }
                 w_panel?.webview.postMessage({ type: 'selectFind' });
             });
-
-        // vscode.window.showInformationMessage("startSearch command");
     }
 
     public findNext(): void {
-        vscode.window.showInformationMessage("findNext command");
+        const w_command = this.nodeCommand({
+            action: Constants.LEOBRIDGE.FIND_NEXT,
+            node: undefined,
+            refreshType: { tree: true, body: true, documents: false, buttons: false, states: true },
+            fromOutline: false
+        });
+        if (w_command) {
+            w_command.then((p_result: LeoBridgePackage) => {
+                this.sendAction(Constants.LEOBRIDGE.GET_FOCUS)
+                    .then((p_result: LeoBridgePackage) => {
+                        vscode.window.showInformationMessage('Set focus on ' + p_result.focus);
+                    });
+            });
+        }
     }
 
     public findPrevious(): void {
-        vscode.window.showInformationMessage("findPrevious command");
+        const w_command = this.nodeCommand({
+            action: Constants.LEOBRIDGE.FIND_PREVIOUS,
+            node: undefined,
+            refreshType: { tree: true, body: true, documents: false, buttons: false, states: true },
+            fromOutline: false
+        });
+        if (w_command) {
+            w_command.then((p_result: LeoBridgePackage) => {
+                this.sendAction(Constants.LEOBRIDGE.GET_FOCUS)
+                    .then((p_result: LeoBridgePackage) => {
+                        vscode.window.showInformationMessage('Set focus on ' + p_result.focus);
+                    });
+            });
+        }
     }
 
     /**

@@ -153,6 +153,8 @@
 <v t="felix.20210523154320.1"><vh>Search</vh>
 <v t="felix.20210523154326.1"><vh>get_search_settings</vh></v>
 <v t="felix.20210523154352.1"><vh>set_search_settings</vh></v>
+<v t="felix.20210527225925.1"><vh>find_next</vh></v>
+<v t="felix.20210527225930.1"><vh>find_previous</vh></v>
 </v>
 <v t="felix.20200924223910.1"><vh>At Buttons</vh>
 <v t="felix.20200924210020.1"><vh>get_buttons</vh></v>
@@ -8091,7 +8093,7 @@ export interface LeoBridgePackage {
     commands?: MinibufferCommand[]; // getCommands
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
-
+    focus?: string; // get_focus
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
     node?: ArchivedPosition; // get_parent, set_opened_file, open_file(s), ?close_file
@@ -15636,18 +15638,42 @@ def _dump_position(self, p):  # pragma: no cover
             }
             w_panel?.webview.postMessage({ type: 'selectFind' });
         });
-
-    // vscode.window.showInformationMessage("startSearch command");
 }
 
 </t>
 <t tx="felix.20210516234059.1">public findNext(): void {
-    vscode.window.showInformationMessage("findNext command");
+    const w_command = this.nodeCommand({
+        action: Constants.LEOBRIDGE.FIND_NEXT,
+        node: undefined,
+        refreshType: { tree: true, body: true, documents: false, buttons: false, states: true },
+        fromOutline: false
+    });
+    if (w_command) {
+        w_command.then((p_result: LeoBridgePackage) =&gt; {
+            this.sendAction(Constants.LEOBRIDGE.GET_FOCUS)
+                .then((p_result: LeoBridgePackage) =&gt; {
+                    vscode.window.showInformationMessage('Set focus on ' + p_result.focus);
+                });
+        });
+    }
 }
 
 </t>
 <t tx="felix.20210516234104.1">public findPrevious(): void {
-    vscode.window.showInformationMessage("findPrevious command");
+    const w_command = this.nodeCommand({
+        action: Constants.LEOBRIDGE.FIND_PREVIOUS,
+        node: undefined,
+        refreshType: { tree: true, body: true, documents: false, buttons: false, states: true },
+        fromOutline: false
+    });
+    if (w_command) {
+        w_command.then((p_result: LeoBridgePackage) =&gt; {
+            this.sendAction(Constants.LEOBRIDGE.GET_FOCUS)
+                .then((p_result: LeoBridgePackage) =&gt; {
+                    vscode.window.showInformationMessage('Set focus on ' + p_result.focus);
+                });
+        });
+    }
 }
 
 </t>
@@ -16177,6 +16203,35 @@ public loadSearchSettings(): void {
             }
         });
 }
+
+</t>
+<t tx="felix.20210527225925.1">def find_next(self, param):
+    """Run Leo's find-next command and return results."""
+    c = self.commander
+    fc = c.findCommands
+    # find_text = param.get("find_text")
+    # if find_text is None:  # pragma: no cover
+    #     return self._outputError("Error no find pattern")
+    settings = fc.ftm.get_settings()
+    p, pos, newpos = fc.do_find_next(settings)
+    w_result = {"pos": pos, "newpos": newpos,
+                "node": self._p_to_ap(c.p)}
+    return self.sendLeoBridgePackage(w_result)
+
+</t>
+<t tx="felix.20210527225930.1">def find_previous(self, param):
+    """Run Leo's find-previous command and return results."""
+    c = self.commander
+    fc = c.findCommands
+    # find_text = param.get("find_text")
+    # if find_text is None:  # pragma: no cover
+    #     return self._outputError("Error no find pattern")
+    settings = fc.ftm.get_settings()
+    p, pos, newpos = fc.do_find_prev(settings)
+    w_result = {"pos": pos, "newpos": newpos,
+                "node": self._p_to_ap(c.p)}
+    return self.sendLeoBridgePackage(w_result)
+
 
 </t>
 </tnodes>
