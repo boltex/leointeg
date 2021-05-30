@@ -2525,12 +2525,12 @@
         "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
-        "command": "leointeg.findPrevious",
+        "command": "leointeg.findPreviousFromOutline",
         "key": "f2",
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
       },
       {
-        "command": "leointeg.findPreviousFromOutline",
+        "command": "leointeg.findPrevious",
         "key": "f2",
         "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
       }

@@ -15819,12 +15819,12 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
-  "command": "leointeg.findPrevious",
+  "command": "leointeg.findPreviousFromOutline",
   "key": "f2",
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
 },
 {
-  "command": "leointeg.findPreviousFromOutline",
+  "command": "leointeg.findPrevious",
   "key": "f2",
   "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 }
