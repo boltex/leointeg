@@ -36,14 +36,15 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 ## Features
 
-- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes**, **opened documents selector** along with **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
-- Keybindings that match those of Leo, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
+- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body pane**, **opened documents selector**, **find panel**, along with a **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
+- Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
 - Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
-  - Open body panes to the side
+  - Open body panes to the side in any 'column'
   - Outline edition commands
+  - Find operations
   - Clipboard operations
   - Undo/Redo commands
 
@@ -88,6 +89,9 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | `Ctrl + Shift + D` |     |           | Extract             |
 | `Ctrl + Shift + N` |     |           | Extract Names       |
 | `Alt + A`          |     |           | Sort Siblings       |
+| `Ctrl + F`         |     |           | Start Search       |
+| `F3`               |     |           | Find Next           |
+| `F2`               |     |           | Find Previous       |
 
 ### Tree Navigation
 

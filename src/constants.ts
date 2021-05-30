@@ -397,10 +397,14 @@ export class Constants {
         START_SEARCH: "!start_search",
         FIND_NEXT: "!find_next",
         FIND_PREVIOUS: "!find_previous",
+        // TODO : NEEDS TESTING!!
         CLONE_FIND_ALL: "!clone_find_all",
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
         CLONE_FIND_MARKED: "cloneFindMarked", // * Direct Leo Command
         CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // * Direct Leo Command
+        REPLACE: "!replace",
+        REPLACE_THEN_FIND: "!replaceThenFind",
+        REPLACE_ALL: "!replaceAll",
     };
 
     /**
@@ -526,16 +530,28 @@ export class Constants {
         CLONE_MARKED_NODES: Constants.NAME + ".cloneMarkedNodes",
         DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
         MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes",
-        // * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - not implemented yet #24
         START_SEARCH: Constants.NAME + ".startSearch",
         FIND_NEXT: Constants.NAME + ".findNext",
         FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
         FIND_PREVIOUS: Constants.NAME + ".findPrevious",
         FIND_PREVIOUS_FO: Constants.NAME + ".findPreviousFromOutline",
+        // * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - not implemented yet #24
+        REPLACE: Constants.NAME + ".replace",
+        REPLACE_THEN_FIND: Constants.NAME + ".replaceThenFind",
+        REPLACE_ALL: Constants.NAME + ".replaceAll",
         CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
         CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
         CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
         CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
+        // SET_FIND_EVERYWHERE_OPTION
+        // SET_FIND_NODE_ONLY_OPTION
+        // SET_FIND_SUBOUTLINE_ONLY_OPTION
+        // TOGGLE_FIND_IGNORE_CASE_OPTION
+        // TOGGLE_FIND_MARK_CHANGES_OPTION
+        // TOGGLE_FIND_MARK_FINDS_OPTION
+        // TOGGLE_FIND_REGEXP_OPTION
+        // TOGGLE_FIND_WORD_OPTION
+
     };
 
 }
