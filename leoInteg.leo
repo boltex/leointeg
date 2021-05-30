@@ -530,8 +530,7 @@
 <v t="felix.20200719025231.55"><vh>editHeadline</vh></v>
 <v t="felix.20200719025231.56"><vh>insertNode</vh></v>
 <v t="felix.20210516233931.1"><vh>startSearch</vh></v>
-<v t="felix.20210516234059.1"><vh>findNext</vh></v>
-<v t="felix.20210516234104.1"><vh>findPrevious</vh></v>
+<v t="felix.20210516234059.1"><vh>find</vh></v>
 <v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
 <v t="felix.20210525232728.1"><vh>loadSearchSettings</vh></v>
 <v t="felix.20210524215215.1"><vh>saveSearchSettings</vh></v>
@@ -1182,6 +1181,7 @@ private _revealTreeViewNode(p_leoNode: LeoNode, p_options?: { select?: boolean, 
  * * Launches refresh for UI components and states
  * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
+ * @param p_ap // TODO ! DOCUMENT !
  */
 public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: ArchivedPosition): void {
     // Set w_revealType, it will ultimately set this._revealType.
@@ -2026,8 +2026,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 })],
 
 [CMD.START_SEARCH, () =&gt; w_leo.startSearch()],
-[CMD.FIND_NEXT, () =&gt; w_leo.findNext()],
-[CMD.FIND_PREVIOUS, () =&gt; w_leo.findPrevious()],
+[CMD.FIND_NEXT, () =&gt; w_leo.find(false, false)],
+[CMD.FIND_NEXT_FO, () =&gt; w_leo.find(true, false)],
+[CMD.FIND_PREVIOUS, () =&gt; w_leo.find(false, true)],
+[CMD.FIND_PREVIOUS_FO, () =&gt; w_leo.find(true, true)],
 
 // TODO : @boltex More commands for issue #24
 [CMD.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
@@ -5701,7 +5703,9 @@ public static COMMANDS = {
     // * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - not implemented yet #24
     START_SEARCH: Constants.NAME + ".startSearch",
     FIND_NEXT: Constants.NAME + ".findNext",
+    FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
     FIND_PREVIOUS: Constants.NAME + ".findPrevious",
+    FIND_PREVIOUS_FO: Constants.NAME + ".findPreviousFromOutline",
     CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
     CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
     CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
@@ -8097,7 +8101,7 @@ export interface LeoBridgePackage {
     commands?: MinibufferCommand[]; // getCommands
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
-    focus?: string; // get_focus
+    focus?: string; // find_next, find_previous
     found?: boolean // find_next, find_previous
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
@@ -15623,7 +15627,10 @@ def _dump_position(self, p):  # pragma: no cover
             raise ServerError(f"{tag}: round-trip failed: ap: {ap!r}, p: {p!r}, p2: {p2!r}")
 </t>
 <t tx="felix.20210516004048.9"></t>
-<t tx="felix.20210516233931.1">public startSearch(): void {
+<t tx="felix.20210516233931.1">/**
+ * * Opens the find panel and selects all &amp; focuses on the find field.
+ */
+public startSearch(): void {
     let w_panelID = '';
     let w_panel: vscode.WebviewView | undefined;
     if (this._lastTreeView === this._leoTreeExView) {
@@ -15633,7 +15640,6 @@ def _dump_position(self, p):  # pragma: no cover
         w_panelID = Constants.FIND_ID;
         w_panel = this._findPanelWebviewView;
     }
-
     vscode.commands.executeCommand(w_panelID + ".focus")
         .then(p_result =&gt; {
             if (w_panel &amp;&amp;
@@ -15646,43 +15652,32 @@ def _dump_position(self, p):  # pragma: no cover
 }
 
 </t>
-<t tx="felix.20210516234059.1">public findNext(): void {
-    const w_command = this.nodeCommand({
-        action: Constants.LEOBRIDGE.FIND_NEXT,
-        node: undefined,
-        refreshType: { tree: true, body: true, documents: false, buttons: false, states: true },
-        fromOutline: false
-    });
-    if (w_command) {
-        w_command.then((p_resultFind: LeoBridgePackage) =&gt; {
-            // console.log(JSON.stringify(p_resultFind, undefined, 4));
-            if (!p_resultFind.found) {
+<t tx="felix.20210516234059.1">/**
+ * * Find next / previous commands
+ * @param p_fromOutline
+ * @param p_reverse
+ * @returns Promise that resolves when the
+ */
+public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
+    const w_action: string = p_reverse ? Constants.LEOBRIDGE.FIND_PREVIOUS : Constants.LEOBRIDGE.FIND_NEXT;
+    return this._isBusyTriggerSave(false, true)
+        .then((p_saveResult) =&gt; {
+            return this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline, }));
+        })
+        .then((p_findResult: LeoBridgePackage) =&gt; {
+            if (!p_findResult.found || !p_findResult.focus) {
                 vscode.window.showInformationMessage('Not found');
             } else {
-                this.getBridgeFocus();
+                let w_focusOnOutline = false;
+                const w_focus = p_findResult.focus.toLowerCase();
+                if (w_focus.includes("tree") ||
+                    w_focus.includes("head")) {
+                    // tree
+                    w_focusOnOutline = true;
+                }
+                this.launchRefresh({ tree: true, body: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
             }
         });
-    }
-}
-
-</t>
-<t tx="felix.20210516234104.1">public findPrevious(): void {
-    const w_command = this.nodeCommand({
-        action: Constants.LEOBRIDGE.FIND_PREVIOUS,
-        node: undefined,
-        refreshType: { tree: true, body: true, documents: false, buttons: false, states: true },
-        fromOutline: false
-    });
-    if (w_command) {
-        w_command.then((p_resultFind: LeoBridgePackage) =&gt; {
-            // console.log(JSON.stringify(p_resultFind, undefined, 4));
-            if (!p_resultFind.found) {
-                vscode.window.showInformationMessage('Not found');
-            } else {
-                this.getBridgeFocus();
-            }
-        });
-    }
 }
 
 </t>
@@ -15814,7 +15809,7 @@ def _dump_position(self, p):  # pragma: no cover
   "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
-  "command": "leointeg.findNext",
+  "command": "leointeg.findNextFromOutline",
   "key": "f3",
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
 },
@@ -15829,7 +15824,7 @@ def _dump_position(self, p):  # pragma: no cover
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
 },
 {
-  "command": "leointeg.findPrevious",
+  "command": "leointeg.findPreviousFromOutline",
   "key": "f2",
   "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 }
@@ -16226,8 +16221,10 @@ public loadSearchSettings(): void {
     found = True
     if not p:
         found = False
+    w = self.g.app.gui.get_focus()
+    focus = self.g.app.gui.widget_name(w)
     w_result = {"found": found, "pos": pos, "newpos": newpos,
-                "node": self._p_to_ap(c.p)}
+                "focus": focus, "node": self._p_to_ap(c.p)}
     return self.sendLeoBridgePackage(w_result)
 
 </t>
@@ -16243,8 +16240,10 @@ public loadSearchSettings(): void {
     found = True
     if not p:
         found = False
+    w = self.g.app.gui.get_focus()
+    focus = self.g.app.gui.widget_name(w)
     w_result = {"found": found, "pos": pos, "newpos": newpos,
-                "node": self._p_to_ap(c.p)}
+                "focus": focus, "node": self._p_to_ap(c.p)}
     return self.sendLeoBridgePackage(w_result)
 
 

@@ -1191,8 +1191,10 @@ class LeoBridgeIntegController:
         found = True
         if not p:
             found = False
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
         w_result = {"found": found, "pos": pos, "newpos": newpos,
-                    "node": self._p_to_ap(c.p)}
+                    "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
     def find_previous(self, param):
@@ -1207,8 +1209,10 @@ class LeoBridgeIntegController:
         found = True
         if not p:
             found = False
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
         w_result = {"found": found, "pos": pos, "newpos": newpos,
-                    "node": self._p_to_ap(c.p)}
+                    "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
 

@@ -529,7 +529,9 @@ export class Constants {
         // * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - not implemented yet #24
         START_SEARCH: Constants.NAME + ".startSearch",
         FIND_NEXT: Constants.NAME + ".findNext",
+        FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
         FIND_PREVIOUS: Constants.NAME + ".findPrevious",
+        FIND_PREVIOUS_FO: Constants.NAME + ".findPreviousFromOutline",
         CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
         CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
         CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",

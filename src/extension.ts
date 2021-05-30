@@ -604,8 +604,10 @@ export function activate(p_context: vscode.ExtensionContext) {
         })],
 
         [CMD.START_SEARCH, () => w_leo.startSearch()],
-        [CMD.FIND_NEXT, () => w_leo.findNext()],
-        [CMD.FIND_PREVIOUS, () => w_leo.findPrevious()],
+        [CMD.FIND_NEXT, () => w_leo.find(false, false)],
+        [CMD.FIND_NEXT_FO, () => w_leo.find(true, false)],
+        [CMD.FIND_PREVIOUS, () => w_leo.find(false, true)],
+        [CMD.FIND_PREVIOUS_FO, () => w_leo.find(true, true)],
 
         // TODO : @boltex More commands for issue #24
         [CMD.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],

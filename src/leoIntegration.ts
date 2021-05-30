@@ -1124,6 +1124,7 @@ export class LeoIntegration {
      * * Launches refresh for UI components and states
      * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
+     * @param p_ap // TODO ! DOCUMENT !
      */
     public launchRefresh(p_refreshType: ReqRefresh, p_fromOutline: boolean, p_ap?: ArchivedPosition): void {
         // Set w_revealType, it will ultimately set this._revealType.
@@ -1781,6 +1782,9 @@ export class LeoIntegration {
         }
     }
 
+    /**
+     * * Opens the find panel and selects all & focuses on the find field.
+     */
     public startSearch(): void {
         let w_panelID = '';
         let w_panel: vscode.WebviewView | undefined;
@@ -1791,7 +1795,6 @@ export class LeoIntegration {
             w_panelID = Constants.FIND_ID;
             w_panel = this._findPanelWebviewView;
         }
-
         vscode.commands.executeCommand(w_panelID + ".focus")
             .then(p_result => {
                 if (w_panel &&
@@ -1803,42 +1806,32 @@ export class LeoIntegration {
             });
     }
 
-    public findNext(): void {
-        const w_command = this.nodeCommand({
-            action: Constants.LEOBRIDGE.FIND_NEXT,
-            node: undefined,
-            refreshType: { tree: true, body: true, documents: false, buttons: false, states: true },
-            fromOutline: false
-        });
-        if (w_command) {
-            w_command.then((p_resultFind: LeoBridgePackage) => {
-                // console.log(JSON.stringify(p_resultFind, undefined, 4));
-                if (!p_resultFind.found) {
+    /**
+     * * Find next / previous commands
+     * @param p_fromOutline
+     * @param p_reverse
+     * @returns Promise that resolves when the
+     */
+    public find(p_fromOutline: boolean, p_reverse: boolean): Promise<any> {
+        const w_action: string = p_reverse ? Constants.LEOBRIDGE.FIND_PREVIOUS : Constants.LEOBRIDGE.FIND_NEXT;
+        return this._isBusyTriggerSave(false, true)
+            .then((p_saveResult) => {
+                return this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline, }));
+            })
+            .then((p_findResult: LeoBridgePackage) => {
+                if (!p_findResult.found || !p_findResult.focus) {
                     vscode.window.showInformationMessage('Not found');
                 } else {
-                    this.getBridgeFocus();
+                    let w_focusOnOutline = false;
+                    const w_focus = p_findResult.focus.toLowerCase();
+                    if (w_focus.includes("tree") ||
+                        w_focus.includes("head")) {
+                        // tree
+                        w_focusOnOutline = true;
+                    }
+                    this.launchRefresh({ tree: true, body: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
                 }
             });
-        }
-    }
-
-    public findPrevious(): void {
-        const w_command = this.nodeCommand({
-            action: Constants.LEOBRIDGE.FIND_PREVIOUS,
-            node: undefined,
-            refreshType: { tree: true, body: true, documents: false, buttons: false, states: true },
-            fromOutline: false
-        });
-        if (w_command) {
-            w_command.then((p_resultFind: LeoBridgePackage) => {
-                // console.log(JSON.stringify(p_resultFind, undefined, 4));
-                if (!p_resultFind.found) {
-                    vscode.window.showInformationMessage('Not found');
-                } else {
-                    this.getBridgeFocus();
-                }
-            });
-        }
     }
 
     /**
