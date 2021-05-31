@@ -608,13 +608,25 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.FIND_NEXT_FO, () => w_leo.find(true, false)],
         [CMD.FIND_PREVIOUS, () => w_leo.find(false, true)],
         [CMD.FIND_PREVIOUS_FO, () => w_leo.find(true, true)],
+        [CMD.REPLACE, () => w_leo.replace(false, false)],
+        [CMD.REPLACE_FO, () => w_leo.replace(true, false)],
+        [CMD.REPLACE_THEN_FIND, () => w_leo.replace(false, true)],
+        [CMD.REPLACE_THEN_FIND_FO, () => w_leo.replace(true, true)],
+        [CMD.REPLACE_ALL, () => w_leo.replaceAll()],
 
-        // TODO : @boltex More commands for issue #24
-        [CMD.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
-        [CMD.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
-        [CMD.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],
-        [CMD.CLONE_FIND_FLATTENED_MARKED, () => showInfo("TODO: cloneFindFlattenedMarked command")],
+        [CMD.CLONE_FIND_ALL, () => w_leo.cloneFind(false, false)],
+        [CMD.CLONE_FIND_ALL_FLATTENED, () => w_leo.cloneFind(false, true)],
+        [CMD.CLONE_FIND_MARKED, () => w_leo.cloneFind(true, false)],
+        [CMD.CLONE_FIND_FLATTENED_MARKED, () => w_leo.cloneFind(true, true)],
 
+        [CMD.SET_FIND_EVERYWHERE_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.ENTIRE_OUTLINE)],
+        [CMD.SET_FIND_NODE_ONLY_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.NODE_ONLY)],
+        [CMD.SET_FIND_SUBOUTLINE_ONLY_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SUBOUTLINE_ONLY)],
+        [CMD.TOGGLE_FIND_IGNORE_CASE_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.IGNORE_CASE)],
+        [CMD.TOGGLE_FIND_MARK_CHANGES_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.MARK_CHANGES)],
+        [CMD.TOGGLE_FIND_MARK_FINDS_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.MARK_FINDS)],
+        [CMD.TOGGLE_FIND_REGEXP_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.REG_EXP)],
+        [CMD.TOGGLE_FIND_WORD_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.WHOLE_WORD)],
     ];
 
     w_commands.map(function (p_command) {

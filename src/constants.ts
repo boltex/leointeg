@@ -47,6 +47,21 @@ export class Constants {
     public static STATES_DEBOUNCE_DELAY: number = 100;
 
     /**
+     * * Find panel controls ids
+     */
+    public static FIND_INPUTS_IDS = {
+        FIND_TEXT: "findText",
+        REPLACE_TEXT: "replaceText",
+        ENTIRE_OUTLINE: "entireOutline",
+        NODE_ONLY: "nodeOnly",
+        SUBOUTLINE_ONLY: "subOutlineOnly",
+        IGNORE_CASE: "ignoreCase",
+        MARK_CHANGES: "markChanges",
+        MARK_FINDS: "markFinds",
+        REG_EXP: "regExp",
+        WHOLE_WORD: "wholeWord"
+    };
+    /**
      * * Strings used in the workbench interface panels (not for messages or dialogs)
      */
     public static GUI = {
@@ -535,23 +550,23 @@ export class Constants {
         FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
         FIND_PREVIOUS: Constants.NAME + ".findPrevious",
         FIND_PREVIOUS_FO: Constants.NAME + ".findPreviousFromOutline",
-        // * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - not implemented yet #24
         REPLACE: Constants.NAME + ".replace",
+        REPLACE_FO: Constants.NAME + ".replaceFromOutline",
         REPLACE_THEN_FIND: Constants.NAME + ".replaceThenFind",
+        REPLACE_THEN_FIND_FO: Constants.NAME + ".replaceThenFindFromOutline",
         REPLACE_ALL: Constants.NAME + ".replaceAll",
         CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
         CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
         CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
         CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
-        // SET_FIND_EVERYWHERE_OPTION
-        // SET_FIND_NODE_ONLY_OPTION
-        // SET_FIND_SUBOUTLINE_ONLY_OPTION
-        // TOGGLE_FIND_IGNORE_CASE_OPTION
-        // TOGGLE_FIND_MARK_CHANGES_OPTION
-        // TOGGLE_FIND_MARK_FINDS_OPTION
-        // TOGGLE_FIND_REGEXP_OPTION
-        // TOGGLE_FIND_WORD_OPTION
-
+        SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
+        SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
+        SET_FIND_SUBOUTLINE_ONLY_OPTION: Constants.NAME + ".setFindSuboutlineOnlyOption",
+        TOGGLE_FIND_IGNORE_CASE_OPTION: Constants.NAME + ".toggleFindIgnoreCaseOption",
+        TOGGLE_FIND_MARK_CHANGES_OPTION: Constants.NAME + ".toggleFindMarkChangesOption",
+        TOGGLE_FIND_MARK_FINDS_OPTION: Constants.NAME + ".toggleFindMarkFindsOption",
+        TOGGLE_FIND_REGEXP_OPTION: Constants.NAME + ".toggleFindRegexpOption",
+        TOGGLE_FIND_WORD_OPTION: Constants.NAME + ".toggleFindWordOption",
     };
 
 }

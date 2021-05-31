@@ -156,6 +156,9 @@
 <v t="felix.20210523154352.1"><vh>set_search_settings</vh></v>
 <v t="felix.20210527225925.1"><vh>find_next</vh></v>
 <v t="felix.20210527225930.1"><vh>find_previous</vh></v>
+<v t="felix.20210531011702.1"><vh>replace</vh></v>
+<v t="felix.20210531011713.1"><vh>replaceThenFind</vh></v>
+<v t="felix.20210531011822.1"><vh>replaceAll</vh></v>
 </v>
 <v t="felix.20200924223910.1"><vh>At Buttons</vh>
 <v t="felix.20200924210020.1"><vh>get_buttons</vh></v>
@@ -271,12 +274,14 @@
 <v t="ekr.20200815123601.47"><vh>Leo File Documents</vh></v>
 <v t="ekr.20200815123601.48"><vh>Tree View</vh></v>
 <v t="ekr.20200815123601.49"><vh>Node Editing</vh></v>
+<v t="felix.20210530160638.1"><vh>Text Editing</vh></v>
 <v t="ekr.20200815123601.50"><vh>Move Nodes</vh></v>
 <v t="ekr.20200815123601.51"><vh>Outline Editing</vh></v>
 <v t="ekr.20200815123601.52"><vh>Goto Nodes</vh></v>
 <v t="ekr.20200815123601.53"><vh>Hoist/Dehoist</vh></v>
 <v t="ekr.20200815123601.54"><vh>Undo/Redo</vh></v>
-<v t="ekr.20200815123601.55"><vh>TODO</vh></v>
+<v t="felix.20210530153353.1"><vh>Search</vh></v>
+<v t="felix.20210530153359.1"><vh>Mark Nodes</vh></v>
 <v t="ekr.20200815123601.56"><vh>Hidden Commands</vh>
 <v t="ekr.20200815123601.57"><vh>Tests</vh></v>
 <v t="ekr.20200815123601.58"><vh>Scripting &amp; @buttons</vh></v>
@@ -289,6 +294,7 @@
 <v t="ekr.20200815123601.65"><vh>Goto Nodes</vh></v>
 <v t="ekr.20200815123601.66"><vh>Hoist/Dehoist</vh></v>
 <v t="ekr.20200815123601.67"><vh>Undo/Redo</vh></v>
+<v t="felix.20210530161800.1"><vh>Search</vh></v>
 </v>
 </v>
 <v t="ekr.20200815123601.68"><vh>explorer/context</vh></v>
@@ -337,6 +343,7 @@
 <v t="felix.20200718020912.1"><vh>@clean src/constants.ts</vh>
 <v t="felix.20200718020912.2"><vh>class Constants</vh>
 <v t="felix.20200718020912.3"><vh>general constants</vh></v>
+<v t="felix.20210530233134.1"><vh>find panel ids</vh></v>
 <v t="felix.20200718020912.5"><vh>workbench interface panels</vh></v>
 <v t="felix.20200718020912.6"><vh>user messages</vh></v>
 <v t="felix.20200718020912.7"><vh>ask/save buttons</vh></v>
@@ -524,14 +531,20 @@
 <v t="felix.20200719025231.50"><vh>showBody</vh></v>
 </v>
 <v t="felix.20200719025231.51"><vh>Commands</vh>
+<v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
 <v t="felix.20200719025231.52"><vh>selectTreeNode</vh></v>
 <v t="ekr.20200815090400.1"><vh>nodeCommand</vh></v>
 <v t="felix.20200719025231.54"><vh>changeMark</vh></v>
 <v t="felix.20200719025231.55"><vh>editHeadline</vh></v>
 <v t="felix.20200719025231.56"><vh>insertNode</vh></v>
+</v>
+<v t="felix.20210530225640.1"><vh>Search</vh>
 <v t="felix.20210516233931.1"><vh>startSearch</vh></v>
 <v t="felix.20210516234059.1"><vh>find</vh></v>
-<v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
+<v t="felix.20210530223726.1"><vh>replace</vh></v>
+<v t="felix.20210530230354.1"><vh>replaceAll</vh></v>
+<v t="felix.20210530230400.1"><vh>cloneFind</vh></v>
+<v t="felix.20210530225306.1"><vh>setSearchOption</vh></v>
 <v t="felix.20210525232728.1"><vh>loadSearchSettings</vh></v>
 <v t="felix.20210524215215.1"><vh>saveSearchSettings</vh></v>
 </v>
@@ -2030,13 +2043,25 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.FIND_NEXT_FO, () =&gt; w_leo.find(true, false)],
 [CMD.FIND_PREVIOUS, () =&gt; w_leo.find(false, true)],
 [CMD.FIND_PREVIOUS_FO, () =&gt; w_leo.find(true, true)],
+[CMD.REPLACE, () =&gt; w_leo.replace(false, false)],
+[CMD.REPLACE_FO, () =&gt; w_leo.replace(true, false)],
+[CMD.REPLACE_THEN_FIND, () =&gt; w_leo.replace(false, true)],
+[CMD.REPLACE_THEN_FIND_FO, () =&gt; w_leo.replace(true, true)],
+[CMD.REPLACE_ALL, () =&gt; w_leo.replaceAll()],
 
-// TODO : @boltex More commands for issue #24
-[CMD.CLONE_FIND_ALL, () =&gt; showInfo("TODO: cloneFindAll command")],
-[CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; showInfo("TODO: cloneFindAllFlattened command")],
-[CMD.CLONE_FIND_MARKED, () =&gt; showInfo("TODO: cloneFindMarked command")],
-[CMD.CLONE_FIND_FLATTENED_MARKED, () =&gt; showInfo("TODO: cloneFindFlattenedMarked command")],
+[CMD.CLONE_FIND_ALL, () =&gt; w_leo.cloneFind(false, false)],
+[CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; w_leo.cloneFind(false, true)],
+[CMD.CLONE_FIND_MARKED, () =&gt; w_leo.cloneFind(true, false)],
+[CMD.CLONE_FIND_FLATTENED_MARKED, () =&gt; w_leo.cloneFind(true, true)],
 
+[CMD.SET_FIND_EVERYWHERE_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.ENTIRE_OUTLINE)],
+[CMD.SET_FIND_NODE_ONLY_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.NODE_ONLY)],
+[CMD.SET_FIND_SUBOUTLINE_ONLY_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SUBOUTLINE_ONLY)],
+[CMD.TOGGLE_FIND_IGNORE_CASE_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.IGNORE_CASE)],
+[CMD.TOGGLE_FIND_MARK_CHANGES_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.MARK_CHANGES)],
+[CMD.TOGGLE_FIND_MARK_FINDS_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.MARK_FINDS)],
+[CMD.TOGGLE_FIND_REGEXP_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.REG_EXP)],
+[CMD.TOGGLE_FIND_WORD_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.WHOLE_WORD)],
 </t>
 <t tx="ekr.20200815113508.1">@language python
 g.cls()
@@ -3387,63 +3412,6 @@ print('done')
   "when": "leoTreeOpened"
 },
 </t>
-<t tx="ekr.20200815123601.55">{
-  "command": "leointeg.cloneFindAll",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.cloneFindAllFlattened",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.cloneFindMarked",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.cloneFindFlattenedMarked",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.extract",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.extractNames",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.copyMarked",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.diffMarkedNodes",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.markChangedItems",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.markSubheads",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.unmarkAll",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.cloneMarkedNodes",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.deleteMarkedNodes",
-  "when": "leoTreeOpened"
-},
-{
-  "command": "leointeg.moveMarkedNodes",
-  "when": "leoTreeOpened"
-},
-</t>
 <t tx="ekr.20200815123601.56"></t>
 <t tx="ekr.20200815123601.57">{
   "command": "leointeg.test",
@@ -3745,7 +3713,7 @@ print('done')
 {
   "command": "leointeg.redoFromOutline",
   "when": "false"
-}
+},
 </t>
 <t tx="ekr.20200815123601.68">"explorer/context": [
   {
@@ -5709,23 +5677,23 @@ public static COMMANDS = {
     FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
     FIND_PREVIOUS: Constants.NAME + ".findPrevious",
     FIND_PREVIOUS_FO: Constants.NAME + ".findPreviousFromOutline",
-    // * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - not implemented yet #24
     REPLACE: Constants.NAME + ".replace",
+    REPLACE_FO: Constants.NAME + ".replaceFromOutline",
     REPLACE_THEN_FIND: Constants.NAME + ".replaceThenFind",
+    REPLACE_THEN_FIND_FO: Constants.NAME + ".replaceThenFindFromOutline",
     REPLACE_ALL: Constants.NAME + ".replaceAll",
     CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
     CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
     CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
     CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
-    // SET_FIND_EVERYWHERE_OPTION
-    // SET_FIND_NODE_ONLY_OPTION
-    // SET_FIND_SUBOUTLINE_ONLY_OPTION
-    // TOGGLE_FIND_IGNORE_CASE_OPTION
-    // TOGGLE_FIND_MARK_CHANGES_OPTION
-    // TOGGLE_FIND_MARK_FINDS_OPTION
-    // TOGGLE_FIND_REGEXP_OPTION
-    // TOGGLE_FIND_WORD_OPTION
-
+    SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
+    SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
+    SET_FIND_SUBOUTLINE_ONLY_OPTION: Constants.NAME + ".setFindSuboutlineOnlyOption",
+    TOGGLE_FIND_IGNORE_CASE_OPTION: Constants.NAME + ".toggleFindIgnoreCaseOption",
+    TOGGLE_FIND_MARK_CHANGES_OPTION: Constants.NAME + ".toggleFindMarkChangesOption",
+    TOGGLE_FIND_MARK_FINDS_OPTION: Constants.NAME + ".toggleFindMarkFindsOption",
+    TOGGLE_FIND_REGEXP_OPTION: Constants.NAME + ".toggleFindRegexpOption",
+    TOGGLE_FIND_WORD_OPTION: Constants.NAME + ".toggleFindWordOption",
 };
 
 </t>
@@ -15677,7 +15645,7 @@ public startSearch(): void {
  * * Find next / previous commands
  * @param p_fromOutline
  * @param p_reverse
- * @returns Promise that resolves when the
+ * @returns Promise that resolves when the "launch refresh" is started
  */
 public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
     const w_action: string = p_reverse ? Constants.LEOBRIDGE.FIND_PREVIOUS : Constants.LEOBRIDGE.FIND_NEXT;
@@ -15713,9 +15681,44 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "title": "Find Next"
 },
 {
+  "command": "leointeg.findNextFromOutline",
+  "category": "Leo",
+  "title": "Find Next"
+},
+{
   "command": "leointeg.findPrevious",
   "category": "Leo",
   "title": "Find Previous"
+},
+{
+  "command": "leointeg.findPreviousFromOutline",
+  "category": "Leo",
+  "title": "Find Previous"
+},
+{
+  "command": "leointeg.replace",
+  "category": "Leo",
+  "title": "Find Next"
+},
+{
+  "command": "leointeg.replaceFromOutline",
+  "category": "Leo",
+  "title": "Find Next"
+},
+{
+  "command": "leointeg.replaceThenFind",
+  "category": "Leo",
+  "title": "Find Next"
+},
+{
+  "command": "leointeg.replaceThenFindFromOutline",
+  "category": "Leo",
+  "title": "Find Next"
+},
+{
+  "command": "leointeg.replaceAll",
+  "category": "Leo",
+  "title": "Find Next"
 },
 {
   "command": "leointeg.cloneFindAll",
@@ -15726,6 +15729,56 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.cloneFindAllFlattened",
   "category": "Leo",
   "title": "Clone Find All Flattened"
+},
+{
+  "command": "leointeg.cloneFindMarked",
+  "category": "Leo",
+  "title": "Clone Find Marked"
+},
+{
+  "command": "leointeg.cloneFindFlattenedMarked",
+  "category": "Leo",
+  "title": "cffm - Clone Find Flattened Marked"
+},
+{
+  "command": "leointeg.setFindEverywhereOption",
+  "category": "Leo",
+  "title": "Set Find Everywhere Option"
+},
+{
+  "command": "leointeg.setFindNodeOnlyOption",
+  "category": "Leo",
+  "title": "Set Find in Node Only Option"
+},
+{
+  "command": "leointeg.setFindSuboutlineOnlyOption",
+  "category": "Leo",
+  "title": "Set Find in SubOutline Only Option"
+},
+{
+  "command": "leointeg.toggleFindIgnoreCaseOption",
+  "category": "Leo",
+  "title": "Toggle Find Ignore Case Option"
+},
+{
+  "command": "leointeg.toggleFindMarkChangesOption",
+  "category": "Leo",
+  "title": "Toggle Find Mark Changes Option"
+},
+{
+  "command": "leointeg.toggleFindMarkFindsOption",
+  "category": "Leo",
+  "title": "Toggle Find Mark Finds Option"
+},
+{
+  "command": "leointeg.toggleFindRegexpOption",
+  "category": "Leo",
+  "title": "Toggle Find RegExp Option"
+},
+{
+  "command": "leointeg.toggleFindWordOption",
+  "category": "Leo",
+  "title": "Toggle Find Whole Word Option"
 },
 </t>
 <t tx="felix.20210517001459.1">{
@@ -15805,16 +15858,6 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.moveMarkedNodes",
   "category": "Leo",
   "title": "Move Marked Nodes"
-},
-{
-  "command": "leointeg.cloneFindMarked",
-  "category": "Leo",
-  "title": "Clone Find Marked"
-},
-{
-  "command": "leointeg.cloneFindFlattenedMarked",
-  "category": "Leo",
-  "title": "cffm - Clone Find Flattened Marked"
 }
 </t>
 <t tx="felix.20210517004335.1">{
@@ -15847,6 +15890,126 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.findPrevious",
   "key": "f2",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.replace",
+  "key": "ctrl+=",
+  "mac": "cmd+=",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.replaceFromOutline",
+  "key": "ctrl+=",
+  "mac": "cmd+=",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.replaceThenFind",
+  "key": "ctrl+=",
+  "mac": "cmd+=",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.replaceThenFindFromOutline",
+  "key": "ctrl+=",
+  "mac": "cmd+=",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.setFindEverywhereOption",
+  "key": "ctrl+alt+e",
+  "mac": "cmd+alt+e",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.setFindEverywhereOption",
+  "key": "ctrl+alt+e",
+  "mac": "cmd+alt+e",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.setFindNodeOnlyOption",
+  "key": "ctrl+alt+n",
+  "mac": "cmd+alt+n",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.setFindNodeOnlyOption",
+  "key": "ctrl+alt+n",
+  "mac": "cmd+alt+n",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.setFindSuboutlineOnlyOption",
+  "key": "ctrl+alt+s",
+  "mac": "cmd+alt+s",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.setFindSuboutlineOnlyOption",
+  "key": "ctrl+alt+s",
+  "mac": "cmd+alt+s",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.toggleFindIgnoreCaseOption",
+  "key": "ctrl+alt+i",
+  "mac": "cmd+alt+i",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.toggleFindIgnoreCaseOption",
+  "key": "ctrl+alt+i",
+  "mac": "cmd+alt+i",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.toggleFindMarkChangesOption",
+  "key": "ctrl+alt+c",
+  "mac": "cmd+alt+c",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.toggleFindMarkChangesOption",
+  "key": "ctrl+alt+c",
+  "mac": "cmd+alt+c",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.toggleFindMarkFindsOption",
+  "key": "ctrl+alt+f",
+  "mac": "cmd+alt+f",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.toggleFindMarkFindsOption",
+  "key": "ctrl+alt+f",
+  "mac": "cmd+alt+f",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.toggleFindRegexpOption",
+  "key": "ctrl+alt+x",
+  "mac": "cmd+alt+x",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.toggleFindRegexpOption",
+  "key": "ctrl+alt+x",
+  "mac": "cmd+alt+x",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.toggleFindWordOption",
+  "key": "ctrl+alt+w",
+  "mac": "cmd+alt+w",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.toggleFindWordOption",
+  "key": "ctrl+alt+w",
+  "mac": "cmd+alt+w",
   "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 }
 </t>
@@ -16294,5 +16457,210 @@ public getBridgeFocus(): void {
 }
 
 </t>
+<t tx="felix.20210530153353.1">{
+  "command": "leointeg.startSearch",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.findNext",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.findPrevious",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.replace",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.replaceThenFind",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.replaceAll",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.setFindEverywhereOption",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.setFindNodeOnlyOption",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.setFindSuboutlineOnlyOption",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.toggleFindIgnoreCaseOption",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.toggleFindMarkChangesOption",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.toggleFindMarkFindsOption",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.toggleFindRegexpOption",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.toggleFindWordOption",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.cloneFindAll",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.cloneFindAllFlattened",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.cloneFindMarked",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.cloneFindFlattenedMarked",
+  "when": "leoTreeOpened"
+},
+</t>
+<t tx="felix.20210530153359.1">{
+  "command": "leointeg.copyMarked",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.diffMarkedNodes",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.markChangedItems",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.markSubheads",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.unmarkAll",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.cloneMarkedNodes",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.deleteMarkedNodes",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.moveMarkedNodes",
+  "when": "leoTreeOpened"
+},
+</t>
+<t tx="felix.20210530160638.1">{
+  "command": "leointeg.extract",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.extractNames",
+  "when": "leoTreeOpened"
+},
+</t>
+<t tx="felix.20210530161800.1">{
+  "command": "leointeg.findNextFromOutline",
+  "when": "false"
+},
+{
+  "command": "leointeg.findPreviousFromOutline",
+  "when": "false"
+},
+{
+  "command": "leointeg.replaceFromOutline",
+  "when": "false"
+},
+{
+  "command": "leointeg.replaceThenFindFromOutline",
+  "when": "false"
+}
+</t>
+<t tx="felix.20210530223726.1">/**
+ * * Replace / Replace-Then-Find commands
+ * @param p_fromOutline
+ * @param p_thenFind
+ * @returns Promise that resolves when the "launch refresh" is started
+ */
+public replace(p_fromOutline: boolean, p_thenFind: boolean): Promise&lt;any&gt; {
+    const w_action: string = p_thenFind ? Constants.LEOBRIDGE.FIND_PREVIOUS : Constants.LEOBRIDGE.FIND_NEXT;
+    return this._isBusyTriggerSave(false, true)
+        .then((p_saveResult) =&gt; {
+            return this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline, }));
+        })
+        .then((p_findResult: LeoBridgePackage) =&gt; {
+            if (!p_findResult.found || !p_findResult.focus) {
+                vscode.window.showInformationMessage('Not found');
+            } else {
+                let w_focusOnOutline = false;
+                const w_focus = p_findResult.focus.toLowerCase();
+                if (w_focus.includes("tree") ||
+                    w_focus.includes("head")) {
+                    // tree
+                    w_focusOnOutline = true;
+                }
+                this.launchRefresh({ tree: true, body: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
+            }
+        });
+}
+
+</t>
+<t tx="felix.20210530225306.1">/**
+ *
+ */
+public setSearchSetting(p_id: string): void {
+  //
+}
+
+</t>
+<t tx="felix.20210530225640.1"></t>
+<t tx="felix.20210530230354.1">/*
+ * * Replace All
+ */
+public replaceAll(): void {
+    //
+}
+
+</t>
+<t tx="felix.20210530230400.1">/**
+ * * Clone Find All / Marked / Flattened
+ */
+public cloneFind(p_marked: boolean, p_flat: boolean): void {
+    //
+}
+
+</t>
+<t tx="felix.20210530233134.1">/**
+ * * Find panel controls ids
+ */
+public static FIND_INPUTS_IDS = {
+    FIND_TEXT: "findText",
+    REPLACE_TEXT: "replaceText",
+    ENTIRE_OUTLINE: "entireOutline",
+    NODE_ONLY: "nodeOnly",
+    SUBOUTLINE_ONLY: "subOutlineOnly",
+    IGNORE_CASE: "ignoreCase",
+    MARK_CHANGES: "markChanges",
+    MARK_FINDS: "markFinds",
+    REG_EXP: "regExp",
+    WHOLE_WORD: "wholeWord"
+};
+</t>
+<t tx="felix.20210531011702.1"></t>
+<t tx="felix.20210531011713.1"></t>
+<t tx="felix.20210531011822.1"></t>
 </tnodes>
 </leo_file>

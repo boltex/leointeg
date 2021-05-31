@@ -1152,9 +1152,44 @@
         "title": "Find Next"
       },
       {
+        "command": "leointeg.findNextFromOutline",
+        "category": "Leo",
+        "title": "Find Next"
+      },
+      {
         "command": "leointeg.findPrevious",
         "category": "Leo",
         "title": "Find Previous"
+      },
+      {
+        "command": "leointeg.findPreviousFromOutline",
+        "category": "Leo",
+        "title": "Find Previous"
+      },
+      {
+        "command": "leointeg.replace",
+        "category": "Leo",
+        "title": "Find Next"
+      },
+      {
+        "command": "leointeg.replaceFromOutline",
+        "category": "Leo",
+        "title": "Find Next"
+      },
+      {
+        "command": "leointeg.replaceThenFind",
+        "category": "Leo",
+        "title": "Find Next"
+      },
+      {
+        "command": "leointeg.replaceThenFindFromOutline",
+        "category": "Leo",
+        "title": "Find Next"
+      },
+      {
+        "command": "leointeg.replaceAll",
+        "category": "Leo",
+        "title": "Find Next"
       },
       {
         "command": "leointeg.cloneFindAll",
@@ -1165,6 +1200,56 @@
         "command": "leointeg.cloneFindAllFlattened",
         "category": "Leo",
         "title": "Clone Find All Flattened"
+      },
+      {
+        "command": "leointeg.cloneFindMarked",
+        "category": "Leo",
+        "title": "Clone Find Marked"
+      },
+      {
+        "command": "leointeg.cloneFindFlattenedMarked",
+        "category": "Leo",
+        "title": "cffm - Clone Find Flattened Marked"
+      },
+      {
+        "command": "leointeg.setFindEverywhereOption",
+        "category": "Leo",
+        "title": "Set Find Everywhere Option"
+      },
+      {
+        "command": "leointeg.setFindNodeOnlyOption",
+        "category": "Leo",
+        "title": "Set Find in Node Only Option"
+      },
+      {
+        "command": "leointeg.setFindSuboutlineOnlyOption",
+        "category": "Leo",
+        "title": "Set Find in SubOutline Only Option"
+      },
+      {
+        "command": "leointeg.toggleFindIgnoreCaseOption",
+        "category": "Leo",
+        "title": "Toggle Find Ignore Case Option"
+      },
+      {
+        "command": "leointeg.toggleFindMarkChangesOption",
+        "category": "Leo",
+        "title": "Toggle Find Mark Changes Option"
+      },
+      {
+        "command": "leointeg.toggleFindMarkFindsOption",
+        "category": "Leo",
+        "title": "Toggle Find Mark Finds Option"
+      },
+      {
+        "command": "leointeg.toggleFindRegexpOption",
+        "category": "Leo",
+        "title": "Toggle Find RegExp Option"
+      },
+      {
+        "command": "leointeg.toggleFindWordOption",
+        "category": "Leo",
+        "title": "Toggle Find Whole Word Option"
       },
       {
         "command": "leointeg.mark",
@@ -1243,16 +1328,6 @@
         "command": "leointeg.moveMarkedNodes",
         "category": "Leo",
         "title": "Move Marked Nodes"
-      },
-      {
-        "command": "leointeg.cloneFindMarked",
-        "category": "Leo",
-        "title": "Clone Find Marked"
-      },
-      {
-        "command": "leointeg.cloneFindFlattenedMarked",
-        "category": "Leo",
-        "title": "cffm - Clone Find Flattened Marked"
       }
     ],
     "viewsWelcome": [
@@ -1462,6 +1537,14 @@
           "when": "leoTreeOpened"
         },
         {
+          "command": "leointeg.extract",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.extractNames",
+          "when": "leoTreeOpened"
+        },
+        {
           "command": "leointeg.moveOutlineDownSelection",
           "when": "leoTreeOpened"
         },
@@ -1526,6 +1609,62 @@
           "when": "leoTreeOpened"
         },
         {
+          "command": "leointeg.startSearch",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.findNext",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.findPrevious",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.replace",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.replaceThenFind",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.replaceAll",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.setFindEverywhereOption",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.setFindNodeOnlyOption",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.setFindSuboutlineOnlyOption",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.toggleFindIgnoreCaseOption",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.toggleFindMarkChangesOption",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.toggleFindMarkFindsOption",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.toggleFindRegexpOption",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.toggleFindWordOption",
+          "when": "leoTreeOpened"
+        },
+        {
           "command": "leointeg.cloneFindAll",
           "when": "leoTreeOpened"
         },
@@ -1539,14 +1678,6 @@
         },
         {
           "command": "leointeg.cloneFindFlattenedMarked",
-          "when": "leoTreeOpened"
-        },
-        {
-          "command": "leointeg.extract",
-          "when": "leoTreeOpened"
-        },
-        {
-          "command": "leointeg.extractNames",
           "when": "leoTreeOpened"
         },
         {
@@ -1815,6 +1946,22 @@
         },
         {
           "command": "leointeg.redoFromOutline",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.findNextFromOutline",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.findPreviousFromOutline",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.replaceFromOutline",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.replaceThenFindFromOutline",
           "when": "false"
         }
       ],
@@ -2532,6 +2679,126 @@
       {
         "command": "leointeg.findPrevious",
         "key": "f2",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.replace",
+        "key": "ctrl+=",
+        "mac": "cmd+=",
+        "when": "leoTreeOpened && editorTextFocus && editorHasSelection && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.replaceFromOutline",
+        "key": "ctrl+=",
+        "mac": "cmd+=",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.replaceThenFind",
+        "key": "ctrl+=",
+        "mac": "cmd+=",
+        "when": "leoTreeOpened && editorTextFocus && editorHasSelection && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.replaceThenFindFromOutline",
+        "key": "ctrl+=",
+        "mac": "cmd+=",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.setFindEverywhereOption",
+        "key": "ctrl+alt+e",
+        "mac": "cmd+alt+e",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.setFindEverywhereOption",
+        "key": "ctrl+alt+e",
+        "mac": "cmd+alt+e",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.setFindNodeOnlyOption",
+        "key": "ctrl+alt+n",
+        "mac": "cmd+alt+n",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.setFindNodeOnlyOption",
+        "key": "ctrl+alt+n",
+        "mac": "cmd+alt+n",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.setFindSuboutlineOnlyOption",
+        "key": "ctrl+alt+s",
+        "mac": "cmd+alt+s",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.setFindSuboutlineOnlyOption",
+        "key": "ctrl+alt+s",
+        "mac": "cmd+alt+s",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.toggleFindIgnoreCaseOption",
+        "key": "ctrl+alt+i",
+        "mac": "cmd+alt+i",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.toggleFindIgnoreCaseOption",
+        "key": "ctrl+alt+i",
+        "mac": "cmd+alt+i",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.toggleFindMarkChangesOption",
+        "key": "ctrl+alt+c",
+        "mac": "cmd+alt+c",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.toggleFindMarkChangesOption",
+        "key": "ctrl+alt+c",
+        "mac": "cmd+alt+c",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.toggleFindMarkFindsOption",
+        "key": "ctrl+alt+f",
+        "mac": "cmd+alt+f",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.toggleFindMarkFindsOption",
+        "key": "ctrl+alt+f",
+        "mac": "cmd+alt+f",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.toggleFindRegexpOption",
+        "key": "ctrl+alt+x",
+        "mac": "cmd+alt+x",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.toggleFindRegexpOption",
+        "key": "ctrl+alt+x",
+        "mac": "cmd+alt+x",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.toggleFindWordOption",
+        "key": "ctrl+alt+w",
+        "mac": "cmd+alt+w",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.toggleFindWordOption",
+        "key": "ctrl+alt+w",
+        "mac": "cmd+alt+w",
         "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
       }
     ],

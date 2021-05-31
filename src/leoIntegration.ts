@@ -1613,6 +1613,44 @@ export class LeoIntegration {
     }
 
     /**
+     * * Opens quickPick minibuffer pallette to choose from all commands in this file's commander
+     * @returns Promise that resolves when the chosen command is placed on the front-end command stack
+     */
+    public minibuffer(): Thenable<LeoBridgePackage | undefined> {
+        // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
+        return this._isBusyTriggerSave(false)
+            .then((p_saveResult) => {
+                const q_commandList: Thenable<MinibufferCommand[]> = this.sendAction(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ name: "" }))
+                    .then((p_result: LeoBridgePackage) => {
+                        if (p_result.commands && p_result.commands.length) {
+                            return p_result.commands;
+                        } else {
+                            return [];
+                        }
+                    });
+                const w_options: vscode.QuickPickOptions = {
+                    placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
+                    matchOnDetail: true
+                };
+                return vscode.window.showQuickPick(q_commandList, w_options);
+            })
+            .then((p_picked) => {
+                if (p_picked && p_picked.func) {
+                    const w_commandResult = this.nodeCommand({
+                        action: p_picked.func,
+                        node: undefined,
+                        refreshType: { tree: true, body: true, documents: true, buttons: true, states: true },
+                        fromOutline: false // true // TODO : Differentiate from outline?
+                    });
+                    return w_commandResult ? w_commandResult : Promise.reject("Command not added");
+                } else {
+                    // Canceled
+                    return Promise.resolve(undefined);
+                }
+            });
+    }
+
+    /**
      * * Select a tree node. Either called from user interaction, or used internally (p_internalCall flag)
      * @param p_node Node that was just selected
      * @param p_internalCall Flag used to indicate the selection is forced, and NOT originating from user interaction
@@ -1810,7 +1848,7 @@ export class LeoIntegration {
      * * Find next / previous commands
      * @param p_fromOutline
      * @param p_reverse
-     * @returns Promise that resolves when the
+     * @returns Promise that resolves when the "launch refresh" is started
      */
     public find(p_fromOutline: boolean, p_reverse: boolean): Promise<any> {
         const w_action: string = p_reverse ? Constants.LEOBRIDGE.FIND_PREVIOUS : Constants.LEOBRIDGE.FIND_NEXT;
@@ -1835,41 +1873,52 @@ export class LeoIntegration {
     }
 
     /**
-     * * Opens quickPick minibuffer pallette to choose from all commands in this file's commander
-     * @returns Promise that resolves when the chosen command is placed on the front-end command stack
+     * * Replace / Replace-Then-Find commands
+     * @param p_fromOutline
+     * @param p_thenFind
+     * @returns Promise that resolves when the "launch refresh" is started
      */
-    public minibuffer(): Thenable<LeoBridgePackage | undefined> {
-        // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
-        return this._isBusyTriggerSave(false)
+    public replace(p_fromOutline: boolean, p_thenFind: boolean): Promise<any> {
+        const w_action: string = p_thenFind ? Constants.LEOBRIDGE.FIND_PREVIOUS : Constants.LEOBRIDGE.FIND_NEXT;
+        return this._isBusyTriggerSave(false, true)
             .then((p_saveResult) => {
-                const q_commandList: Thenable<MinibufferCommand[]> = this.sendAction(Constants.LEOBRIDGE.GET_COMMANDS, JSON.stringify({ name: "" }))
-                    .then((p_result: LeoBridgePackage) => {
-                        if (p_result.commands && p_result.commands.length) {
-                            return p_result.commands;
-                        } else {
-                            return [];
-                        }
-                    });
-                const w_options: vscode.QuickPickOptions = {
-                    placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
-                    matchOnDetail: true
-                };
-                return vscode.window.showQuickPick(q_commandList, w_options);
+                return this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline, }));
             })
-            .then((p_picked) => {
-                if (p_picked && p_picked.func) {
-                    const w_commandResult = this.nodeCommand({
-                        action: p_picked.func,
-                        node: undefined,
-                        refreshType: { tree: true, body: true, documents: true, buttons: true, states: true },
-                        fromOutline: false // true // TODO : Differentiate from outline?
-                    });
-                    return w_commandResult ? w_commandResult : Promise.reject("Command not added");
+            .then((p_findResult: LeoBridgePackage) => {
+                if (!p_findResult.found || !p_findResult.focus) {
+                    vscode.window.showInformationMessage('Not found');
                 } else {
-                    // Canceled
-                    return Promise.resolve(undefined);
+                    let w_focusOnOutline = false;
+                    const w_focus = p_findResult.focus.toLowerCase();
+                    if (w_focus.includes("tree") ||
+                        w_focus.includes("head")) {
+                        // tree
+                        w_focusOnOutline = true;
+                    }
+                    this.launchRefresh({ tree: true, body: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
                 }
             });
+    }
+
+    /*
+     * * Replace All
+     */
+    public replaceAll(): void {
+        //
+    }
+
+    /**
+     * * Clone Find All / Marked / Flattened
+     */
+    public cloneFind(p_marked: boolean, p_flat: boolean): void {
+        //
+    }
+
+    /**
+     *
+     */
+    public setSearchSetting(p_id: string): void {
+      //
     }
 
     /**

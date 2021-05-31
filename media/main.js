@@ -46,6 +46,55 @@
             case 'setSettings':
                 {
                     setSettings(message.value);
+                    break;
+                }
+            case 'setFindEverywhereOption':
+                {
+                    setRadio('entireOutline');
+                    console.log('setFindEverywhereOption');
+                    break;
+                }
+            case 'setFindNodeOnlyOption':
+                {
+                    setRadio('nodeOnly');
+                    console.log('setFindNodeOnlyOption');
+                    break;
+                }
+            case 'setFindSuboutlineOnlyOption':
+                {
+                    setRadio('subOutlineOnly');
+                    console.log('setFindSuboutlineOnlyOption');
+                    break;
+                }
+            case 'toggleFindIgnoreCaseOption':
+                {
+                    toggleCheckbox('ignoreCase');
+                    console.log('toggleFindIgnoreCaseOption');
+                    break;
+                }
+            case 'toggleFindMarkChangesOption':
+                {
+                    toggleCheckbox('markChanges');
+                    console.log('toggleFindMarkChangesOption');
+                    break;
+                }
+            case 'toggleFindMarkFindsOption':
+                {
+                    toggleCheckbox('markFinds');
+                    console.log('toggleFindMarkFindsOption');
+                    break;
+                }
+            case 'toggleFindRegexpOption':
+                {
+                    toggleCheckbox('regExp');
+                    console.log('toggleFindRegexpOption');
+                    break;
+                }
+            case 'toggleFindWordOption':
+                {
+                    toggleCheckbox('wholeWord');
+                    console.log('toggleFindWordOption');
+                    break;
                 }
         }
     });
@@ -66,6 +115,9 @@
         "nodeOnly"
     ];
 
+    /**
+     * @param {any} p_settings
+     */
     function setSettings(p_settings) {
         // When opening a Leo document, set default values of fields
         inputIds.forEach(p_inputId => {
@@ -135,6 +187,29 @@
     });
 
     /**
+     * @param {string} p_inputId
+     */
+    function toggleCheckbox(p_inputId) {
+        let w_checkbox = document.getElementById(p_inputId)
+        //@ts-expect-error
+        if (w_checkbox.checked) {
+            //@ts-expect-error
+            w_checkbox.checked = false;
+        } else {
+            //@ts-expect-error
+            w_checkbox.checked = true;
+        }
+    }
+
+    /**
+     * @param {string} p_inputId
+     */
+    function setRadio(p_inputId) {
+        //@ts-expect-error
+        document.getElementById(p_inputId).checked = true;
+    }
+
+    /**
      *
      * @param {KeyboardEvent} p_event
      */
@@ -148,6 +223,13 @@
             focusOnField('findText');
         };
     }
+
+    // TODO : CHECK FOR ALT+CTRL+SHORTCUTS FOR TOGGLES AND RADIOS
+    // document.addEventListener ("keydown", function (zEvent) {
+    //     if (zEvent.ctrlKey  &&  zEvent.altKey  &&  zEvent.key === "e") {  // case sensitive
+    //         // DO YOUR STUFF HERE
+    //     }
+    // } );
 
     document.onkeydown = checkKeyPress;
 
