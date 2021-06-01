@@ -15914,7 +15914,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.replace",
   "key": "ctrl+=",
   "mac": "cmd+=",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.replaceFromOutline",
@@ -15926,7 +15926,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.replaceThenFind",
   "key": "ctrl+-",
   "mac": "cmd+-",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.replaceThenFindFromOutline",
@@ -16098,6 +16098,11 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 				case 'leoFindNext':
 					{
 						vscode.commands.executeCommand(Constants.COMMANDS.FIND_NEXT);
+						break;
+					}
+				case 'leoFindPrevious':
+					{
+						vscode.commands.executeCommand(Constants.COMMANDS.FIND_PREVIOUS);
 						break;
 					}
 				case 'searchConfig':
