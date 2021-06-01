@@ -197,6 +197,21 @@
         if (!p_event) p_event = window.event;
         var keyCode = p_event.code || p_event.key;
 
+        if (keyCode === "F2") {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            p_event.stopImmediatePropagation();
+            vscode.postMessage({ type: 'leoFindPrevious' });
+            return;
+        }
+        if (keyCode === "F3") {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            p_event.stopImmediatePropagation();
+            vscode.postMessage({ type: 'leoFindNext' });
+            return;
+        }
+
         if (keyCode === "f" && p_event.ctrlKey) {
             p_event.preventDefault();
             p_event.stopPropagation();
