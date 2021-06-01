@@ -520,6 +520,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: false
         })],
+        [CMD.REDO_DISABLED, () => { }],
         [CMD.REDO_FO, () => w_leo.nodeCommand({
             action: BRIDGE.REDO,
             node: U,
@@ -532,6 +533,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: false
         })],
+        [CMD.UNDO_DISABLED, () => { }],
         [CMD.UNDO_FO, () => w_leo.nodeCommand({
             action: BRIDGE.UNDO,
             node: U,
@@ -614,6 +616,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.REPLACE_THEN_FIND, () => w_leo.replace(false, true)],
         [CMD.REPLACE_THEN_FIND_FO, () => w_leo.replace(true, true)],
         [CMD.REPLACE_ALL, () => w_leo.findAll(true)],
+        [CMD.GOTO_GLOBAL_LINE, () => w_leo.gotoGlobalLine()],
 
         [CMD.CLONE_FIND_ALL, () => w_leo.cloneFind(false, false)],
         [CMD.CLONE_FIND_ALL_FLATTENED, () => w_leo.cloneFind(false, true)],

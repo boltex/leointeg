@@ -162,6 +162,9 @@
 <v t="felix.20210531011822.1"><vh>replace_all</vh></v>
 <v t="felix.20210531214057.1"><vh>clone_find_all</vh></v>
 <v t="felix.20210531214103.1"><vh>clone_find_all_flattened</vh></v>
+<v t="felix.20210601151758.1"><vh>find_var</vh></v>
+<v t="felix.20210601151804.1"><vh>find_def</vh></v>
+<v t="felix.20210601152841.1"><vh>goto_global_line</vh></v>
 </v>
 <v t="felix.20200924223910.1"><vh>At Buttons</vh>
 <v t="felix.20200924210020.1"><vh>get_buttons</vh></v>
@@ -550,6 +553,7 @@
 <v t="felix.20210530225306.1"><vh>setSearchOption</vh></v>
 <v t="felix.20210525232728.1"><vh>loadSearchSettings</vh></v>
 <v t="felix.20210524215215.1"><vh>saveSearchSettings</vh></v>
+<v t="felix.20210601164915.1"><vh>gotoGlobalLine</vh></v>
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
 <v t="felix.20200719025231.58"><vh>saveAsLeoFile</vh></v>
@@ -1958,6 +1962,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
+[CMD.REDO_DISABLED, () =&gt; { }],
 [CMD.REDO_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REDO,
     node: U,
@@ -1970,6 +1975,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
+[CMD.UNDO_DISABLED, () =&gt; { }],
 [CMD.UNDO_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.UNDO,
     node: U,
@@ -3034,6 +3040,15 @@ print('done')
   }
 },
 {
+  "command": "leointeg.undoDisabled",
+  "category": "Leo",
+  "title": "Can't Undo",
+  "icon": {
+    "light": "resources/light/undo-disabled.svg",
+    "dark": "resources/dark/undo-disabled.svg"
+  }
+},
+{
   "command": "leointeg.undoFromOutline",
   "category": "Leo",
   "title": "Undo",
@@ -3049,6 +3064,15 @@ print('done')
   "icon": {
     "light": "resources/light/redo.svg",
     "dark": "resources/dark/redo.svg"
+  }
+},
+{
+  "command": "leointeg.redoDisabled",
+  "category": "Leo",
+  "title": "Can't Redo",
+  "icon": {
+    "light": "resources/light/redo-disabled.svg",
+    "dark": "resources/dark/redo-disabled.svg"
   }
 },
 {
@@ -3718,6 +3742,14 @@ print('done')
 },
 {
   "command": "leointeg.redoFromOutline",
+  "when": "false"
+},
+{
+  "command": "leointeg.undoDisabled",
+  "when": "false"
+},
+{
+  "command": "leointeg.redoDisabled",
   "when": "false"
 },
 </t>
@@ -5548,6 +5580,7 @@ public static LEOBRIDGE = {
     REPLACE: "!replace",
     REPLACE_THEN_FIND: "!replace_then_find",
     REPLACE_ALL: "!replace_all",
+    GOTO_GLOBAL_LINE: "!goto_global_line",
     CLONE_FIND_ALL: "!clone_find_all",
     CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
     CLONE_FIND_MARKED: "cloneFindMarked", // * Direct Leo Command
@@ -5597,8 +5630,10 @@ public static COMMANDS = {
     // * Leo Operations
     UNDO: Constants.NAME + ".undo", // From command Palette
     UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE
+    UNDO_DISABLED: Constants.NAME + ".undoDisabled", // Disabled - nop
     REDO: Constants.NAME + ".redo", // From command Palette
     REDO_FO: Constants.NAME + ".redoFromOutline", // from button, return focus on OUTLINE
+    REDO_DISABLED: Constants.NAME + ".redoDisabled", // Disabled - nop
     EXECUTE: Constants.NAME + ".executeScript",
     SHOW_BODY: Constants.NAME + ".showBody",
     SHOW_OUTLINE: Constants.NAME + ".showOutline",
@@ -5693,6 +5728,7 @@ public static COMMANDS = {
     CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
     CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
     CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
+    GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
     SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
     SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
     SET_FIND_SUBOUTLINE_ONLY_OPTION: Constants.NAME + ".setFindSuboutlineOnlyOption",
@@ -5814,6 +5850,7 @@ public static USER_MESSAGES = {
     STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
     PROMPT_EDIT_HEADLINE: "Edit Headline",
     PROMPT_INSERT_NODE: "Insert Node",
+    PROMPT_GOTO_GLOBAL_LINE: "Goto global line",
     DEFAULT_HEADLINE: "New Headline",
     START_SERVER_ERROR: "Error - Cannot start server: ",
     CONNECT_FAILED: "Leo Bridge Connection Failed",
@@ -12948,8 +12985,18 @@ public static VSCODE_COMMANDS = {
     "group": "navigation@3"
   },
   {
+    "command": "leointeg.undoDisabled",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanUndo",
+    "group": "navigation@3"
+  },
+  {
     "command": "leointeg.redoFromOutline",
     "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanRedo",
+    "group": "navigation@4"
+  },
+    {
+    "command": "leointeg.redoDisabled",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanRedo",
     "group": "navigation@4"
   },
   {
@@ -15747,6 +15794,11 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "title": "Replace All"
 },
 {
+  "command": "leointeg.gotoGlobalLine",
+  "category": "Leo",
+  "title": "Goto Global Line"
+},
+{
   "command": "leointeg.cloneFindAll",
   "category": "Leo",
   "title": "Clone Find All"
@@ -15952,6 +16004,16 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "key": "ctrl+-",
   "mac": "cmd+-",
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.gotoGlobalLine",
+  "key": "alt+g",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.gotoGlobalLine",
+  "key": "alt+g",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.setFindEverywhereOption",
@@ -16586,6 +16648,10 @@ public getBridgeFocus(): void {
   "when": "leoTreeOpened"
 },
 {
+  "command": "leointeg.gotoGlobalLine",
+  "when": "leoTreeOpened"
+},
+{
   "command": "leointeg.cloneFindAll",
   "when": "leoTreeOpened"
 },
@@ -16847,6 +16913,56 @@ public static FIND_INPUTS_IDS = {
     w_result = {"found": result,
                 "focus": focus, "node": self._p_to_ap(c.p)}
     return self.sendLeoBridgePackage(w_result)
+
+</t>
+<t tx="felix.20210601151758.1">def find_var(self, package):
+    """Run Leo's find-var command and return results."""
+    c = self.commander
+    fc = c.findCommands
+    settings = fc.ftm.get_settings()
+    # todo : find var implementation
+    print("todo : find var implementation")
+    # result = fc.do_clone_find_all_flattened(settings)
+    w = self.g.app.gui.get_focus()
+    focus = self.g.app.gui.widget_name(w)
+    w_result = {"node": self._p_to_ap(c.p)}
+    return self.sendLeoBridgePackage(w_result)
+
+</t>
+<t tx="felix.20210601151804.1">def find_def(self, package):
+    """Run Leo's find-def command and return results."""
+    c = self.commander
+    fc = c.findCommands
+    settings = fc.ftm.get_settings()
+    # todo : find def implementation
+    print("todo : find def implementation")
+    # result = fc.do_clone_find_all_flattened(settings)
+    w = self.g.app.gui.get_focus()
+    focus = self.g.app.gui.widget_name(w)
+    w_result = {"node": self._p_to_ap(c.p)}
+    return self.sendLeoBridgePackage(w_result)
+
+</t>
+<t tx="felix.20210601152841.1">def goto_global_line(self, package):
+    """Run Leo's goto-global-line command and return results."""
+    c = self.commander
+    fc = c.findCommands
+    settings = fc.ftm.get_settings()
+    # todo : Goto Global Line implementation
+    print("todo : Goto Global Line implementation")
+    # result = fc.do_clone_find_all_flattened(settings)
+    w = self.g.app.gui.get_focus()
+    focus = self.g.app.gui.widget_name(w)
+    w_result = {"node": self._p_to_ap(c.p)}
+    return self.sendLeoBridgePackage(w_result)
+
+</t>
+<t tx="felix.20210601164915.1">/**
+ * * Goto Global Line
+ */
+public gotoGlobalLine(): void {
+    //
+}
 
 </t>
 </tnodes>

@@ -1115,6 +1115,15 @@
         }
       },
       {
+        "command": "leointeg.undoDisabled",
+        "category": "Leo",
+        "title": "Can't Undo",
+        "icon": {
+          "light": "resources/light/undo-disabled.svg",
+          "dark": "resources/dark/undo-disabled.svg"
+        }
+      },
+      {
         "command": "leointeg.undoFromOutline",
         "category": "Leo",
         "title": "Undo",
@@ -1130,6 +1139,15 @@
         "icon": {
           "light": "resources/light/redo.svg",
           "dark": "resources/dark/redo.svg"
+        }
+      },
+      {
+        "command": "leointeg.redoDisabled",
+        "category": "Leo",
+        "title": "Can't Redo",
+        "icon": {
+          "light": "resources/light/redo-disabled.svg",
+          "dark": "resources/dark/redo-disabled.svg"
         }
       },
       {
@@ -1195,6 +1213,11 @@
         "command": "leointeg.replaceAll",
         "category": "Leo",
         "title": "Replace All"
+      },
+      {
+        "command": "leointeg.gotoGlobalLine",
+        "category": "Leo",
+        "title": "Goto Global Line"
       },
       {
         "command": "leointeg.cloneFindAll",
@@ -1693,6 +1716,10 @@
           "when": "leoTreeOpened"
         },
         {
+          "command": "leointeg.gotoGlobalLine",
+          "when": "leoTreeOpened"
+        },
+        {
           "command": "leointeg.cloneFindAll",
           "when": "leoTreeOpened"
         },
@@ -1977,6 +2004,14 @@
           "when": "false"
         },
         {
+          "command": "leointeg.undoDisabled",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.redoDisabled",
+          "when": "false"
+        },
+        {
           "command": "leointeg.findNextFromOutline",
           "when": "false"
         },
@@ -2047,8 +2082,18 @@
           "group": "navigation@3"
         },
         {
+          "command": "leointeg.undoDisabled",
+          "when": "view =~ /leoIntegration/ && leoTreeOpened && !leoCanUndo",
+          "group": "navigation@3"
+        },
+        {
           "command": "leointeg.redoFromOutline",
           "when": "view =~ /leoIntegration/ && leoTreeOpened && leoCanRedo",
+          "group": "navigation@4"
+        },
+          {
+          "command": "leointeg.redoDisabled",
+          "when": "view =~ /leoIntegration/ && leoTreeOpened && !leoCanRedo",
           "group": "navigation@4"
         },
         {
@@ -2732,6 +2777,16 @@
         "key": "ctrl+-",
         "mac": "cmd+-",
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.gotoGlobalLine",
+        "key": "alt+g",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.gotoGlobalLine",
+        "key": "alt+g",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.setFindEverywhereOption",

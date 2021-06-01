@@ -120,6 +120,7 @@ export class Constants {
         STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
         PROMPT_EDIT_HEADLINE: "Edit Headline",
         PROMPT_INSERT_NODE: "Insert Node",
+        PROMPT_GOTO_GLOBAL_LINE: "Goto global line",
         DEFAULT_HEADLINE: "New Headline",
         START_SERVER_ERROR: "Error - Cannot start server: ",
         CONNECT_FAILED: "Leo Bridge Connection Failed",
@@ -418,6 +419,7 @@ export class Constants {
         REPLACE: "!replace",
         REPLACE_THEN_FIND: "!replace_then_find",
         REPLACE_ALL: "!replace_all",
+        GOTO_GLOBAL_LINE: "!goto_global_line",
         CLONE_FIND_ALL: "!clone_find_all",
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
         CLONE_FIND_MARKED: "cloneFindMarked", // * Direct Leo Command
@@ -466,8 +468,10 @@ export class Constants {
         // * Leo Operations
         UNDO: Constants.NAME + ".undo", // From command Palette
         UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE
+        UNDO_DISABLED: Constants.NAME + ".undoDisabled", // Disabled - nop
         REDO: Constants.NAME + ".redo", // From command Palette
         REDO_FO: Constants.NAME + ".redoFromOutline", // from button, return focus on OUTLINE
+        REDO_DISABLED: Constants.NAME + ".redoDisabled", // Disabled - nop
         EXECUTE: Constants.NAME + ".executeScript",
         SHOW_BODY: Constants.NAME + ".showBody",
         SHOW_OUTLINE: Constants.NAME + ".showOutline",
@@ -562,6 +566,7 @@ export class Constants {
         CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
         CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
         CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
+        GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
         SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
         SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
         SET_FIND_SUBOUTLINE_ONLY_OPTION: Constants.NAME + ".setFindSuboutlineOnlyOption",

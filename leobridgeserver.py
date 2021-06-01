@@ -1281,6 +1281,45 @@ class LeoBridgeIntegController:
         w_result = {"found": result,
                     "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
+    def find_var(self, package):
+        """Run Leo's find-var command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        # todo : find var implementation
+        print("todo : find var implementation")
+        # result = fc.do_clone_find_all_flattened(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def find_def(self, package):
+        """Run Leo's find-def command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        # todo : find def implementation
+        print("todo : find def implementation")
+        # result = fc.do_clone_find_all_flattened(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def goto_global_line(self, package):
+        """Run Leo's goto-global-line command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        # todo : Goto Global Line implementation
+        print("todo : Goto Global Line implementation")
+        # result = fc.do_clone_find_all_flattened(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
     def get_buttons(self, param):
         '''Gets the currently opened file's @buttons list'''
         w_buttons = []

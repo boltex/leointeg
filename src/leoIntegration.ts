@@ -2029,6 +2029,13 @@ export class LeoIntegration {
     }
 
     /**
+     * * Goto Global Line
+     */
+    public gotoGlobalLine(): void {
+        //
+    }
+
+    /**
      * * Asks for file name and path, then saves the Leo file
      * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
      */
