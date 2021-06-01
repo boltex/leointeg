@@ -54,6 +54,7 @@ export interface ReqRefresh {
     node?: boolean; // Reveal received selected node (Navigation only, no tree change)
     tree?: boolean; // Tree needs refresh
     body?: boolean; // Body needs refresh
+    scroll?: boolean; // Body needs to scroll to selection
     states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
     buttons?: boolean; // Buttons needs refresh
     documents?: boolean; // Documents needs refresh

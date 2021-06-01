@@ -8245,6 +8245,7 @@ export interface ReqRefresh {
     node?: boolean; // Reveal received selected node (Navigation only, no tree change)
     tree?: boolean; // Tree needs refresh
     body?: boolean; // Body needs refresh
+    scroll?: boolean; // Body needs to scroll to selection
     states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
     buttons?: boolean; // Buttons needs refresh
     documents?: boolean; // Documents needs refresh
@@ -9876,22 +9877,6 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                 const w_bodyTextEditor = p_values[1];
                 const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
 
-                // console.log("got states for same gnx", w_leoBodySel.gnx === this.lastSelectedNode!.gnx);
-                // console.log('id: ' + w_resultBodyStates.id + ' - got scroll: ', w_leoBodySel.scroll);
-
-                let w_scrollRange: vscode.Range | undefined;
-
-                // ! TEST scroll as single number instead.
-                const w_scroll: number = w_leoBodySel.scroll;
-                if (w_scroll) {
-                    w_scrollRange = new vscode.Range(
-                        w_scroll,
-                        0,
-                        w_scroll,
-                        0
-                    );
-                }
-
                 // Cursor position and selection range
                 const w_activeRow: number = w_leoBodySel.insert.line;
                 const w_activeCol: number = w_leoBodySel.insert.col;
@@ -9912,15 +9897,33 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                     w_activeCol
                 );
 
+                let w_scrollRange: vscode.Range | undefined;
+
+
+                // ! Test scroll position from selection range instead
+                // const w_scroll: number = w_leoBodySel.scroll;
+                // if (w_scroll) {
+                // w_scrollRange = new vscode.Range(w_scroll, 0, w_scroll, 0);
+                // }
+
+                // Build scroll position from selection range.
+                w_scrollRange = new vscode.Range(
+                    w_activeRow,
+                    w_activeCol,
+                    w_activeRow,
+                    w_activeCol
+                );
+
                 w_bodyTextEditor.selection = w_selection; // set cursor insertion point &amp; selection range
 
                 if (!w_scrollRange) {
                     w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
                 }
 
-                // TODO : SEE IF NEEDED OR EVEN IF SHOULD BE SET AT w_selection RANGE INSTEAD!
-                // ? does Leo even ever tries to set scroll away from selection after a search result?
-                // w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
+                if (this._refreshType.scroll) {
+                    this._refreshType.scroll = false;
+                    w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
+                }
             });
 
         return q_showTextDocument;
@@ -15671,7 +15674,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
                     // tree
                     w_focusOnOutline = true;
                 }
-                this.launchRefresh({ tree: true, body: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
+                this.launchRefresh({ tree: true, body: true, scroll: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
             }
         });
 }
@@ -16661,7 +16664,7 @@ public replace(p_fromOutline: boolean, p_thenFind: boolean): Promise&lt;any&gt; 
                     // tree
                     w_focusOnOutline = true;
                 }
-                this.launchRefresh({ tree: true, body: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
+                this.launchRefresh({ tree: true, body: true, scroll: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
             }
         });
 }
