@@ -98,7 +98,7 @@ textarea::placeholder {
 }
 
 u {
-	color:var(--vscode-button-secondaryForeground);
+	color:var(--vscode-editor-foreground);
 	text-decoration-color: var(--vscode-foreground);
 	text-underline-offset: 0.04em;
 }
