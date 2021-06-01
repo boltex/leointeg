@@ -1183,9 +1183,6 @@ class LeoBridgeIntegController:
         """Run Leo's find-next command and return results."""
         c = self.commander
         fc = c.findCommands
-        # find_text = param.get("find_text")
-        # if find_text is None:  # pragma: no cover
-        #     return self._outputError("Error no find pattern")
         settings = fc.ftm.get_settings()
         p, pos, newpos = fc.do_find_next(settings)
         found = True
@@ -1201,9 +1198,6 @@ class LeoBridgeIntegController:
         """Run Leo's find-previous command and return results."""
         c = self.commander
         fc = c.findCommands
-        # find_text = param.get("find_text")
-        # if find_text is None:  # pragma: no cover
-        #     return self._outputError("Error no find pattern")
         settings = fc.ftm.get_settings()
         p, pos, newpos = fc.do_find_prev(settings)
         found = True
@@ -1216,6 +1210,65 @@ class LeoBridgeIntegController:
         return self.sendLeoBridgePackage(w_result)
 
 
+    def replace(self, param):
+        """Run Leo's replace command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        fc.change(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": True,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def replace_then_find(self, param):
+        """Run Leo's replace then find next command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        result = fc.do_change_then_find(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": result,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def replace_all(self, param):
+        """Run Leo's replace all command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        result = fc.do_change_all(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": result,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def clone_find_all(self, param):
+        """Run Leo's clone-find-all command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        result = fc.do_clone_find_all(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": result,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def clone_find_all_flattened(self, param):
+        """Run Leo's clone-find-all-flattened command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        result = fc.do_clone_find_all_flattened(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": result,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
     def get_buttons(self, param):
         '''Gets the currently opened file's @buttons list'''
         w_buttons = []

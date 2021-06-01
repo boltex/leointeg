@@ -890,6 +890,8 @@ export class LeoIntegration {
                             // NoReveal since we're keeping the same id.
                             this._refreshOutline(false, RevealType.NoReveal);
                         });
+                    // also refresh document panel (icon may be dirty now)
+                    this._refreshDocumentsPane();
                 }
             }
         }
@@ -1879,17 +1881,17 @@ export class LeoIntegration {
      * @returns Promise that resolves when the "launch refresh" is started
      */
     public replace(p_fromOutline: boolean, p_thenFind: boolean): Promise<any> {
-        const w_action: string = p_thenFind ? Constants.LEOBRIDGE.FIND_PREVIOUS : Constants.LEOBRIDGE.FIND_NEXT;
+        const w_action: string = p_thenFind ? Constants.LEOBRIDGE.REPLACE_THEN_FIND : Constants.LEOBRIDGE.REPLACE;
         return this._isBusyTriggerSave(false, true)
             .then((p_saveResult) => {
-                return this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline, }));
+                return this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline }));
             })
-            .then((p_findResult: LeoBridgePackage) => {
-                if (!p_findResult.found || !p_findResult.focus) {
+            .then((p_replaceResult: LeoBridgePackage) => {
+                if (!p_replaceResult.found || !p_replaceResult.focus) {
                     vscode.window.showInformationMessage('Not found');
                 } else {
                     let w_focusOnOutline = false;
-                    const w_focus = p_findResult.focus.toLowerCase();
+                    const w_focus = p_replaceResult.focus.toLowerCase();
                     if (w_focus.includes("tree") ||
                         w_focus.includes("head")) {
                         // tree
@@ -1903,22 +1905,60 @@ export class LeoIntegration {
     /*
      * * Replace All
      */
-    public replaceAll(): void {
-        //
+    public replaceAll(): Promise<any> {
+        return this._isBusyTriggerSave(false, true)
+            .then((p_saveResult) => {
+                return this.sendAction(Constants.LEOBRIDGE.REPLACE_ALL);
+            })
+            .then((p_findResult: LeoBridgePackage) => {
+                let w_focusOnOutline = false;
+                const w_focus = p_findResult.focus!.toLowerCase();
+                if (w_focus.includes("tree") ||
+                    w_focus.includes("head")) {
+                    // tree
+                    w_focusOnOutline = true;
+                }
+                this.launchRefresh({ tree: true, body: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
+            });
     }
 
     /**
      * * Clone Find All / Marked / Flattened
      */
-    public cloneFind(p_marked: boolean, p_flat: boolean): void {
-        //
+    public cloneFind(p_marked: boolean, p_flat: boolean): Promise<any> {
+        let w_action: string;
+        if (p_marked) {
+            w_action = p_flat ? Constants.LEOBRIDGE.CLONE_FIND_FLATTENED_MARKED : Constants.LEOBRIDGE.CLONE_FIND_MARKED;
+        } else {
+            w_action = p_flat ? Constants.LEOBRIDGE.CLONE_FIND_ALL_FLATTENED : Constants.LEOBRIDGE.CLONE_FIND_ALL;
+        }
+        return this._isBusyTriggerSave(false, true)
+            .then((p_saveResult) => {
+                return this.sendAction(w_action);
+            })
+            .then((p_cloneFindResult: LeoBridgePackage) => {
+                let w_focusOnOutline = false;
+                const w_focus = p_cloneFindResult.focus!.toLowerCase();
+                if (w_focus.includes("tree") ||
+                    w_focus.includes("head")) {
+                    // tree
+                    w_focusOnOutline = true;
+                }
+                this.launchRefresh({ tree: true, body: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
+            });
     }
 
     /**
      *
      */
     public setSearchSetting(p_id: string): void {
-      //
+        let w_panel: vscode.WebviewView | undefined;
+        if (this._lastTreeView === this._leoTreeExView) {
+            w_panel = this._findPanelWebviewExplorerView;
+        } else {
+            w_panel = this._findPanelWebviewView;
+        }
+        w_panel!.webview.postMessage({ type: 'setSearchSetting', id: p_id });
     }
 
     /**
@@ -2309,11 +2349,6 @@ export class LeoIntegration {
         } else {
             this._findPanelWebviewView = p_panel;
         }
-
-        // TODO :
-        // action get search settings
-        //  .THEN
-        // this._findPanelWebviewView?.webview.postMessage({ type: 'setSettings' , value: ''});
     }
 
     /**

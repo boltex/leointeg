@@ -44,22 +44,27 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 						this._leoIntegration.saveSearchSettings(data.value);
 						break;
 					}
+				case 'replace':
+					{
+						this._leoIntegration.replace(true, false);
+						break;
+					}
+				case 'replaceThenFind':
+					{
+						this._leoIntegration.replace(true, true);
+						break;
+					}
+				case 'refreshSearchConfig':
+					{
+						// Leave a cycle before getting settings
+						setTimeout(() => {
+							this._leoIntegration.loadSearchSettings();
+						}, 0);
+						break;
+					}
 			}
 		});
 		this._leoIntegration.setFindPanel(this._view);
-	}
-
-	public selectFindField() {
-		if (this._view) {
-			this._view.show?.(true);
-			this._view.webview.postMessage({ type: 'selectFindField' });
-		}
-	}
-	public selectReplaceField() {
-		if (this._view) {
-			this._view.show?.(true);
-			this._view.webview.postMessage({ type: 'selectReplaceField' });
-		}
 	}
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
@@ -94,27 +99,27 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 				<div class="row">
 					<div class="col">
 						<input type="checkbox" id="wholeWord" name="wholeWord" >
-						<label for="wholeWord">whole Word</label><br>
+						<label for="wholeWord">Whole <u>w</u>ord</label><br>
 						<input type="checkbox" id="ignoreCase" name="ignoreCase" >
-						<label for="ignoreCase">Ignore case</label><br>
+						<label for="ignoreCase"><u>I</u>gnore case</label><br>
 						<input type="checkbox" id="regExp" name="regExp" >
-						<label for="regExp">regeXp</label><br>
+						<label for="regExp">Rege<u>x</u>p</label><br>
 						<input type="checkbox" id="markFinds" name="markFinds" >
-						<label for="markFinds">mark Finds</label><br>
+						<label for="markFinds">Mark <u>f</u>inds</label><br>
 						<input type="checkbox" id="markChanges" name="markChanges" >
-						<label for="markChanges">mark Changes</label>
+						<label for="markChanges">Mark <u>c</u>hanges</label>
 					</div>
 					<div class="col">
 						<input type="radio" id="entireOutline" name="searchScope" value="0">
-						<label for="entireOutline">entireOutline</label><br>
+						<label for="entireOutline"><u>E</u>ntire outline</label><br>
 						<input type="radio" id="subOutlineOnly" name="searchScope" value="1">
-						<label for="subOutlineOnly">subOutlineOnly</label><br>
+						<label for="subOutlineOnly"><u>S</u>uboutline Only</label><br>
 						<input type="radio" id="nodeOnly" name="searchScope" value="2">
-						<label for="nodeOnly">nodeOnly</label><br>
+						<label for="nodeOnly"><u>N</u>ode only</label><br>
 						<input type="checkbox" id="searchHeadline" name="searchHeadline" >
-						<label for="searchHeadline">search Headline</label><br>
+						<label for="searchHeadline">Search <u>h</u>eadline</label><br>
 						<input type="checkbox" id="searchBody" name="searchBody" >
-						<label for="searchBody">search Body</label>
+						<label for="searchBody">Search <u>b</u>ody</label>
 					</div>
 				</div>
 				<script nonce="${nonce}" src="${scriptUri}"></script>

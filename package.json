@@ -1251,6 +1251,17 @@
         "category": "Leo",
         "title": "Toggle Find Whole Word Option"
       },
+
+      {
+        "command": "leointeg.toggleFindSearchBodyOption",
+        "category": "Leo",
+        "title": "Toggle Find Search Body Option"
+      },
+      {
+        "command": "leointeg.toggleFindSearchHeadlineOption",
+        "category": "Leo",
+        "title": "Toggle Find Search Headline Option"
+      },
       {
         "command": "leointeg.mark",
         "category": "Leo",
@@ -1662,6 +1673,14 @@
         },
         {
           "command": "leointeg.toggleFindWordOption",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.toggleFindSearchBodyOption",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.toggleFindSearchHeadlineOption",
           "when": "leoTreeOpened"
         },
         {
@@ -2695,14 +2714,14 @@
       },
       {
         "command": "leointeg.replaceThenFind",
-        "key": "ctrl+=",
-        "mac": "cmd+=",
+        "key": "ctrl+-",
+        "mac": "cmd+-",
         "when": "leoTreeOpened && editorTextFocus && editorHasSelection && resourceScheme == leo"
       },
       {
         "command": "leointeg.replaceThenFindFromOutline",
-        "key": "ctrl+=",
-        "mac": "cmd+=",
+        "key": "ctrl+-",
+        "mac": "cmd+-",
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
       },
       {
@@ -2799,6 +2818,30 @@
         "command": "leointeg.toggleFindWordOption",
         "key": "ctrl+alt+w",
         "mac": "cmd+alt+w",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.toggleFindSearchBodyOption",
+        "key": "ctrl+alt+b",
+        "mac": "cmd+alt+b",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.toggleFindSearchBodyOption",
+        "key": "ctrl+alt+b",
+        "mac": "cmd+alt+b",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.toggleFindSearchHeadlineOption",
+        "key": "ctrl+alt+h",
+        "mac": "cmd+alt+h",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+      },
+      {
+        "command": "leointeg.toggleFindSearchHeadlineOption",
+        "key": "ctrl+alt+h",
+        "mac": "cmd+alt+h",
         "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
       }
     ],

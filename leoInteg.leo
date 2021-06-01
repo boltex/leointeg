@@ -157,8 +157,10 @@
 <v t="felix.20210527225925.1"><vh>find_next</vh></v>
 <v t="felix.20210527225930.1"><vh>find_previous</vh></v>
 <v t="felix.20210531011702.1"><vh>replace</vh></v>
-<v t="felix.20210531011713.1"><vh>replaceThenFind</vh></v>
-<v t="felix.20210531011822.1"><vh>replaceAll</vh></v>
+<v t="felix.20210531011713.1"><vh>replace_then_find</vh></v>
+<v t="felix.20210531011822.1"><vh>replace_all</vh></v>
+<v t="felix.20210531214057.1"><vh>clone_find_all</vh></v>
+<v t="felix.20210531214103.1"><vh>clone_find_all_flattened</vh></v>
 </v>
 <v t="felix.20200924223910.1"><vh>At Buttons</vh>
 <v t="felix.20200924210020.1"><vh>get_buttons</vh></v>
@@ -2062,6 +2064,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.TOGGLE_FIND_MARK_FINDS_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.MARK_FINDS)],
 [CMD.TOGGLE_FIND_REGEXP_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.REG_EXP)],
 [CMD.TOGGLE_FIND_WORD_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.WHOLE_WORD)],
+[CMD.TOGGLE_FIND_SEARCH_BODY_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_BODY)],
+[CMD.TOGGLE_FIND_SEARCH_HEADLINE_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_HEADLINE)],
 </t>
 <t tx="ekr.20200815113508.1">@language python
 g.cls()
@@ -5538,14 +5542,13 @@ public static LEOBRIDGE = {
     START_SEARCH: "!start_search",
     FIND_NEXT: "!find_next",
     FIND_PREVIOUS: "!find_previous",
-    // TODO : NEEDS TESTING!!
+    REPLACE: "!replace",
+    REPLACE_THEN_FIND: "!replace_then_find",
+    REPLACE_ALL: "!replace_all",
     CLONE_FIND_ALL: "!clone_find_all",
     CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
     CLONE_FIND_MARKED: "cloneFindMarked", // * Direct Leo Command
-    CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // * Direct Leo Command
-    REPLACE: "!replace",
-    REPLACE_THEN_FIND: "!replaceThenFind",
-    REPLACE_ALL: "!replaceAll",
+    CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked" // * Direct Leo Command
 };
 
 </t>
@@ -5694,6 +5697,8 @@ public static COMMANDS = {
     TOGGLE_FIND_MARK_FINDS_OPTION: Constants.NAME + ".toggleFindMarkFindsOption",
     TOGGLE_FIND_REGEXP_OPTION: Constants.NAME + ".toggleFindRegexpOption",
     TOGGLE_FIND_WORD_OPTION: Constants.NAME + ".toggleFindWordOption",
+    TOGGLE_FIND_SEARCH_BODY_OPTION: Constants.NAME + ".toggleFindSearchBodyOption",
+    TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
 };
 
 </t>
@@ -9511,6 +9516,8 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
                         // NoReveal since we're keeping the same id.
                         this._refreshOutline(false, RevealType.NoReveal);
                     });
+                // also refresh document panel (icon may be dirty now)
+                this._refreshDocumentsPane();
             }
         }
     }
@@ -15780,6 +15787,17 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "category": "Leo",
   "title": "Toggle Find Whole Word Option"
 },
+
+{
+  "command": "leointeg.toggleFindSearchBodyOption",
+  "category": "Leo",
+  "title": "Toggle Find Search Body Option"
+},
+{
+  "command": "leointeg.toggleFindSearchHeadlineOption",
+  "category": "Leo",
+  "title": "Toggle Find Search Headline Option"
+},
 </t>
 <t tx="felix.20210517001459.1">{
   "command": "leointeg.mark",
@@ -15906,14 +15924,14 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 },
 {
   "command": "leointeg.replaceThenFind",
-  "key": "ctrl+=",
-  "mac": "cmd+=",
+  "key": "ctrl+-",
+  "mac": "cmd+-",
   "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.replaceThenFindFromOutline",
-  "key": "ctrl+=",
-  "mac": "cmd+=",
+  "key": "ctrl+-",
+  "mac": "cmd+-",
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
 },
 {
@@ -16010,6 +16028,30 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.toggleFindWordOption",
   "key": "ctrl+alt+w",
   "mac": "cmd+alt+w",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.toggleFindSearchBodyOption",
+  "key": "ctrl+alt+b",
+  "mac": "cmd+alt+b",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.toggleFindSearchBodyOption",
+  "key": "ctrl+alt+b",
+  "mac": "cmd+alt+b",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.toggleFindSearchHeadlineOption",
+  "key": "ctrl+alt+h",
+  "mac": "cmd+alt+h",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.toggleFindSearchHeadlineOption",
+  "key": "ctrl+alt+h",
+  "mac": "cmd+alt+h",
   "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 }
 </t>
@@ -16063,22 +16105,27 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 						this._leoIntegration.saveSearchSettings(data.value);
 						break;
 					}
+				case 'replace':
+					{
+						this._leoIntegration.replace(true, false);
+						break;
+					}
+				case 'replaceThenFind':
+					{
+						this._leoIntegration.replace(true, true);
+						break;
+					}
+				case 'refreshSearchConfig':
+					{
+						// Leave a cycle before getting settings
+						setTimeout(() =&gt; {
+							this._leoIntegration.loadSearchSettings();
+						}, 0);
+						break;
+					}
 			}
 		});
 		this._leoIntegration.setFindPanel(this._view);
-	}
-
-	public selectFindField() {
-		if (this._view) {
-			this._view.show?.(true);
-			this._view.webview.postMessage({ type: 'selectFindField' });
-		}
-	}
-	public selectReplaceField() {
-		if (this._view) {
-			this._view.show?.(true);
-			this._view.webview.postMessage({ type: 'selectReplaceField' });
-		}
 	}
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
@@ -16113,27 +16160,27 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 				&lt;div class="row"&gt;
 					&lt;div class="col"&gt;
 						&lt;input type="checkbox" id="wholeWord" name="wholeWord" &gt;
-						&lt;label for="wholeWord"&gt;whole Word&lt;/label&gt;&lt;br&gt;
+						&lt;label for="wholeWord"&gt;Whole &lt;u&gt;w&lt;/u&gt;ord&lt;/label&gt;&lt;br&gt;
 						&lt;input type="checkbox" id="ignoreCase" name="ignoreCase" &gt;
-						&lt;label for="ignoreCase"&gt;Ignore case&lt;/label&gt;&lt;br&gt;
+						&lt;label for="ignoreCase"&gt;&lt;u&gt;I&lt;/u&gt;gnore case&lt;/label&gt;&lt;br&gt;
 						&lt;input type="checkbox" id="regExp" name="regExp" &gt;
-						&lt;label for="regExp"&gt;regeXp&lt;/label&gt;&lt;br&gt;
+						&lt;label for="regExp"&gt;Rege&lt;u&gt;x&lt;/u&gt;p&lt;/label&gt;&lt;br&gt;
 						&lt;input type="checkbox" id="markFinds" name="markFinds" &gt;
-						&lt;label for="markFinds"&gt;mark Finds&lt;/label&gt;&lt;br&gt;
+						&lt;label for="markFinds"&gt;Mark &lt;u&gt;f&lt;/u&gt;inds&lt;/label&gt;&lt;br&gt;
 						&lt;input type="checkbox" id="markChanges" name="markChanges" &gt;
-						&lt;label for="markChanges"&gt;mark Changes&lt;/label&gt;
+						&lt;label for="markChanges"&gt;Mark &lt;u&gt;c&lt;/u&gt;hanges&lt;/label&gt;
 					&lt;/div&gt;
 					&lt;div class="col"&gt;
 						&lt;input type="radio" id="entireOutline" name="searchScope" value="0"&gt;
-						&lt;label for="entireOutline"&gt;entireOutline&lt;/label&gt;&lt;br&gt;
+						&lt;label for="entireOutline"&gt;&lt;u&gt;E&lt;/u&gt;ntire outline&lt;/label&gt;&lt;br&gt;
 						&lt;input type="radio" id="subOutlineOnly" name="searchScope" value="1"&gt;
-						&lt;label for="subOutlineOnly"&gt;subOutlineOnly&lt;/label&gt;&lt;br&gt;
+						&lt;label for="subOutlineOnly"&gt;&lt;u&gt;S&lt;/u&gt;uboutline Only&lt;/label&gt;&lt;br&gt;
 						&lt;input type="radio" id="nodeOnly" name="searchScope" value="2"&gt;
-						&lt;label for="nodeOnly"&gt;nodeOnly&lt;/label&gt;&lt;br&gt;
+						&lt;label for="nodeOnly"&gt;&lt;u&gt;N&lt;/u&gt;ode only&lt;/label&gt;&lt;br&gt;
 						&lt;input type="checkbox" id="searchHeadline" name="searchHeadline" &gt;
-						&lt;label for="searchHeadline"&gt;search Headline&lt;/label&gt;&lt;br&gt;
+						&lt;label for="searchHeadline"&gt;Search &lt;u&gt;h&lt;/u&gt;eadline&lt;/label&gt;&lt;br&gt;
 						&lt;input type="checkbox" id="searchBody" name="searchBody" &gt;
-						&lt;label for="searchBody"&gt;search Body&lt;/label&gt;
+						&lt;label for="searchBody"&gt;Search &lt;u&gt;b&lt;/u&gt;ody&lt;/label&gt;
 					&lt;/div&gt;
 				&lt;/div&gt;
 				&lt;script nonce="${nonce}" src="${scriptUri}"&gt;&lt;/script&gt;
@@ -16350,11 +16397,6 @@ public setFindPanel(p_panel: vscode.WebviewView) {
     } else {
         this._findPanelWebviewView = p_panel;
     }
-
-    // TODO :
-    // action get search settings
-    //  .THEN
-    // this._findPanelWebviewView?.webview.postMessage({ type: 'setSettings' , value: ''});
 }
 
 </t>
@@ -16397,9 +16439,6 @@ public loadSearchSettings(): void {
     """Run Leo's find-next command and return results."""
     c = self.commander
     fc = c.findCommands
-    # find_text = param.get("find_text")
-    # if find_text is None:  # pragma: no cover
-    #     return self._outputError("Error no find pattern")
     settings = fc.ftm.get_settings()
     p, pos, newpos = fc.do_find_next(settings)
     found = True
@@ -16416,9 +16455,6 @@ public loadSearchSettings(): void {
     """Run Leo's find-previous command and return results."""
     c = self.commander
     fc = c.findCommands
-    # find_text = param.get("find_text")
-    # if find_text is None:  # pragma: no cover
-    #     return self._outputError("Error no find pattern")
     settings = fc.ftm.get_settings()
     p, pos, newpos = fc.do_find_prev(settings)
     found = True
@@ -16514,6 +16550,14 @@ public getBridgeFocus(): void {
   "when": "leoTreeOpened"
 },
 {
+  "command": "leointeg.toggleFindSearchBodyOption",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.toggleFindSearchHeadlineOption",
+  "when": "leoTreeOpened"
+},
+{
   "command": "leointeg.cloneFindAll",
   "when": "leoTreeOpened"
 },
@@ -16596,17 +16640,17 @@ public getBridgeFocus(): void {
  * @returns Promise that resolves when the "launch refresh" is started
  */
 public replace(p_fromOutline: boolean, p_thenFind: boolean): Promise&lt;any&gt; {
-    const w_action: string = p_thenFind ? Constants.LEOBRIDGE.FIND_PREVIOUS : Constants.LEOBRIDGE.FIND_NEXT;
+    const w_action: string = p_thenFind ? Constants.LEOBRIDGE.REPLACE_THEN_FIND : Constants.LEOBRIDGE.REPLACE;
     return this._isBusyTriggerSave(false, true)
         .then((p_saveResult) =&gt; {
-            return this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline, }));
+            return this.sendAction(w_action, JSON.stringify({ fromOutline: !!p_fromOutline }));
         })
-        .then((p_findResult: LeoBridgePackage) =&gt; {
-            if (!p_findResult.found || !p_findResult.focus) {
+        .then((p_replaceResult: LeoBridgePackage) =&gt; {
+            if (!p_replaceResult.found || !p_replaceResult.focus) {
                 vscode.window.showInformationMessage('Not found');
             } else {
                 let w_focusOnOutline = false;
-                const w_focus = p_findResult.focus.toLowerCase();
+                const w_focus = p_replaceResult.focus.toLowerCase();
                 if (w_focus.includes("tree") ||
                     w_focus.includes("head")) {
                     // tree
@@ -16622,7 +16666,13 @@ public replace(p_fromOutline: boolean, p_thenFind: boolean): Promise&lt;any&gt; 
  *
  */
 public setSearchSetting(p_id: string): void {
-  //
+    let w_panel: vscode.WebviewView | undefined;
+    if (this._lastTreeView === this._leoTreeExView) {
+        w_panel = this._findPanelWebviewExplorerView;
+    } else {
+        w_panel = this._findPanelWebviewView;
+    }
+    w_panel!.webview.postMessage({ type: 'setSearchSetting', id: p_id });
 }
 
 </t>
@@ -16630,16 +16680,48 @@ public setSearchSetting(p_id: string): void {
 <t tx="felix.20210530230354.1">/*
  * * Replace All
  */
-public replaceAll(): void {
-    //
+public replaceAll(): Promise&lt;any&gt; {
+    return this._isBusyTriggerSave(false, true)
+        .then((p_saveResult) =&gt; {
+            return this.sendAction(Constants.LEOBRIDGE.REPLACE_ALL);
+        })
+        .then((p_findResult: LeoBridgePackage) =&gt; {
+            let w_focusOnOutline = false;
+            const w_focus = p_findResult.focus!.toLowerCase();
+            if (w_focus.includes("tree") ||
+                w_focus.includes("head")) {
+                // tree
+                w_focusOnOutline = true;
+            }
+            this.launchRefresh({ tree: true, body: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
+        });
 }
 
 </t>
 <t tx="felix.20210530230400.1">/**
  * * Clone Find All / Marked / Flattened
  */
-public cloneFind(p_marked: boolean, p_flat: boolean): void {
-    //
+public cloneFind(p_marked: boolean, p_flat: boolean): Promise&lt;any&gt; {
+    let w_action: string;
+    if (p_marked) {
+        w_action = p_flat ? Constants.LEOBRIDGE.CLONE_FIND_FLATTENED_MARKED : Constants.LEOBRIDGE.CLONE_FIND_MARKED;
+    } else {
+        w_action = p_flat ? Constants.LEOBRIDGE.CLONE_FIND_ALL_FLATTENED : Constants.LEOBRIDGE.CLONE_FIND_ALL;
+    }
+    return this._isBusyTriggerSave(false, true)
+        .then((p_saveResult) =&gt; {
+            return this.sendAction(w_action);
+        })
+        .then((p_cloneFindResult: LeoBridgePackage) =&gt; {
+            let w_focusOnOutline = false;
+            const w_focus = p_cloneFindResult.focus!.toLowerCase();
+            if (w_focus.includes("tree") ||
+                w_focus.includes("head")) {
+                // tree
+                w_focusOnOutline = true;
+            }
+            this.launchRefresh({ tree: true, body: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
+        });
 }
 
 </t>
@@ -16656,11 +16738,74 @@ public static FIND_INPUTS_IDS = {
     MARK_CHANGES: "markChanges",
     MARK_FINDS: "markFinds",
     REG_EXP: "regExp",
-    WHOLE_WORD: "wholeWord"
+    WHOLE_WORD: "wholeWord",
+    SEARCH_BODY: "searchBody",
+    SEARCH_HEADLINE: "searchHeadline"
 };
 </t>
-<t tx="felix.20210531011702.1"></t>
-<t tx="felix.20210531011713.1"></t>
-<t tx="felix.20210531011822.1"></t>
+<t tx="felix.20210531011702.1">def replace(self, param):
+    """Run Leo's replace command and return results."""
+    c = self.commander
+    fc = c.findCommands
+    settings = fc.ftm.get_settings()
+    fc.change(settings)
+    w = self.g.app.gui.get_focus()
+    focus = self.g.app.gui.widget_name(w)
+    w_result = {"found": True,
+                "focus": focus, "node": self._p_to_ap(c.p)}
+    return self.sendLeoBridgePackage(w_result)
+
+</t>
+<t tx="felix.20210531011713.1">def replace_then_find(self, param):
+    """Run Leo's replace then find next command and return results."""
+    c = self.commander
+    fc = c.findCommands
+    settings = fc.ftm.get_settings()
+    result = fc.do_change_then_find(settings)
+    w = self.g.app.gui.get_focus()
+    focus = self.g.app.gui.widget_name(w)
+    w_result = {"found": result,
+                "focus": focus, "node": self._p_to_ap(c.p)}
+    return self.sendLeoBridgePackage(w_result)
+
+</t>
+<t tx="felix.20210531011822.1">def replace_all(self, param):
+    """Run Leo's replace all command and return results."""
+    c = self.commander
+    fc = c.findCommands
+    settings = fc.ftm.get_settings()
+    result = fc.do_change_all(settings)
+    w = self.g.app.gui.get_focus()
+    focus = self.g.app.gui.widget_name(w)
+    w_result = {"found": result,
+                "focus": focus, "node": self._p_to_ap(c.p)}
+    return self.sendLeoBridgePackage(w_result)
+
+</t>
+<t tx="felix.20210531214057.1">def clone_find_all(self, param):
+    """Run Leo's clone-find-all command and return results."""
+    c = self.commander
+    fc = c.findCommands
+    settings = fc.ftm.get_settings()
+    result = fc.do_clone_find_all(settings)
+    w = self.g.app.gui.get_focus()
+    focus = self.g.app.gui.widget_name(w)
+    w_result = {"found": result,
+                "focus": focus, "node": self._p_to_ap(c.p)}
+    return self.sendLeoBridgePackage(w_result)
+
+</t>
+<t tx="felix.20210531214103.1">def clone_find_all_flattened(self, param):
+    """Run Leo's clone-find-all-flattened command and return results."""
+    c = self.commander
+    fc = c.findCommands
+    settings = fc.ftm.get_settings()
+    result = fc.do_clone_find_all_flattened(settings)
+    w = self.g.app.gui.get_focus()
+    focus = self.g.app.gui.widget_name(w)
+    w_result = {"found": result,
+                "focus": focus, "node": self._p_to_ap(c.p)}
+    return self.sendLeoBridgePackage(w_result)
+</t>
 </tnodes>
 </leo_file>

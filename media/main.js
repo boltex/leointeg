@@ -48,54 +48,12 @@
                     setSettings(message.value);
                     break;
                 }
-            case 'setFindEverywhereOption':
+            case 'setSearchSetting':
                 {
-                    setRadio('entireOutline');
-                    console.log('setFindEverywhereOption');
+                    setSearchSetting(message.id);
                     break;
                 }
-            case 'setFindNodeOnlyOption':
-                {
-                    setRadio('nodeOnly');
-                    console.log('setFindNodeOnlyOption');
-                    break;
-                }
-            case 'setFindSuboutlineOnlyOption':
-                {
-                    setRadio('subOutlineOnly');
-                    console.log('setFindSuboutlineOnlyOption');
-                    break;
-                }
-            case 'toggleFindIgnoreCaseOption':
-                {
-                    toggleCheckbox('ignoreCase');
-                    console.log('toggleFindIgnoreCaseOption');
-                    break;
-                }
-            case 'toggleFindMarkChangesOption':
-                {
-                    toggleCheckbox('markChanges');
-                    console.log('toggleFindMarkChangesOption');
-                    break;
-                }
-            case 'toggleFindMarkFindsOption':
-                {
-                    toggleCheckbox('markFinds');
-                    console.log('toggleFindMarkFindsOption');
-                    break;
-                }
-            case 'toggleFindRegexpOption':
-                {
-                    toggleCheckbox('regExp');
-                    console.log('toggleFindRegexpOption');
-                    break;
-                }
-            case 'toggleFindWordOption':
-                {
-                    toggleCheckbox('wholeWord');
-                    console.log('toggleFindWordOption');
-                    break;
-                }
+
         }
     });
 
@@ -114,6 +72,17 @@
         "subOutlineOnly",
         "nodeOnly"
     ];
+
+    /**
+     * @param {string} p_id
+     */
+    function setSearchSetting(p_id) {
+        if (checkboxIds.includes(p_id)) {
+            toggleCheckbox(p_id);
+        } else if (radioIds.includes(p_id)) {
+            setRadio(p_id);
+        }
+    }
 
     /**
      * @param {any} p_settings
@@ -191,14 +160,18 @@
      */
     function toggleCheckbox(p_inputId) {
         let w_checkbox = document.getElementById(p_inputId)
+        let w_setTo = true;
         //@ts-expect-error
         if (w_checkbox.checked) {
-            //@ts-expect-error
-            w_checkbox.checked = false;
-        } else {
-            //@ts-expect-error
-            w_checkbox.checked = true;
+            w_setTo = false;
         }
+        //@ts-expect-error
+        w_checkbox.checked = w_setTo;
+        searchSettings[p_inputId] = w_setTo;
+        if (timer) {
+            clearTimeout(timer);
+        }
+        sendSearchConfig();
     }
 
     /**
@@ -207,22 +180,120 @@
     function setRadio(p_inputId) {
         //@ts-expect-error
         document.getElementById(p_inputId).checked = true;
+        //@ts-expect-error
+        searchSettings["searchScope"] = parseInt(document.querySelector('input[name="searchScope"]:checked').value);
+        if (timer) {
+            clearTimeout(timer);
+        }
+        sendSearchConfig();
     }
 
     /**
      *
      * @param {KeyboardEvent} p_event
      */
-    function checkKeyPress(p_event) {
+    function checkKeyDown(p_event) {
         //@ts-expect-error
         if (!p_event) p_event = window.event;
-        if (p_event.keyCode == 70 && p_event.ctrlKey) {
+        var keyCode = p_event.code || p_event.key;
+
+        if (keyCode === "f" && p_event.ctrlKey) {
             p_event.preventDefault();
             p_event.stopPropagation();
             p_event.stopImmediatePropagation();
             focusOnField('findText');
+            return;
         };
+        if (keyCode === "t" && p_event.ctrlKey) {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            p_event.stopImmediatePropagation();
+            vscode.postMessage({ type: 'focusOnTree' });
+            return;
+        };
+        if (keyCode === "=" && p_event.ctrlKey) {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            p_event.stopImmediatePropagation();
+            vscode.postMessage({ type: 'replace' });
+            return;
+        };
+        if (keyCode === "-" && p_event.ctrlKey) {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            p_event.stopImmediatePropagation();
+            vscode.postMessage({ type: 'replaceThenFind' });
+            return;
+        };
+
+        if (keyCode === "Tab") {
+            var actEl = document.activeElement;
+            if (p_event.shiftKey) {
+                var firstEl = document.getElementById('findText');
+                if (actEl === firstEl) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    document.getElementById('searchBody').focus();
+                    return;
+                }
+            } else {
+                var lastEl = document.getElementById('searchBody');
+                if (actEl === lastEl) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    focusOnField('findText');
+                    return;
+                }
+            }
+        }
+
+        if (p_event.ctrlKey && p_event.altKey) {
+            switch (keyCode) {
+                case "w":
+                    toggleCheckbox("wholeWord");
+                    return;
+                case "i":
+                    toggleCheckbox("ignoreCase");
+                    return;
+                case "x":
+                    toggleCheckbox("regExp");
+                    return;
+                case "f":
+                    toggleCheckbox("markFinds");
+                    return;
+                case "c":
+                    toggleCheckbox("markChanges");
+                    return;
+                case "h":
+                    toggleCheckbox("searchHeadline");
+                    return;
+                case "b":
+                    toggleCheckbox("searchBody");
+                    return;
+
+                case "e":
+                    setRadio("entireOutline");
+                    return;
+                case "s":
+                    setRadio("subOutlineOnly");
+                    return;
+                case "n":
+                    setRadio("nodeOnly");
+                    return;
+                default:
+                    break;
+            }
+
+        }
+
     }
+
+    // TODO :  CAPTURE FOCUS IN OVERALL PANEL AND SET CONTEXT-VAR OF 'FOCUSED PANEL'
+
+    // TODO : ALSO CYCLE TABS !!
+    // TODO : ALSO CAPTURE CTRL+T TO FOCUS OUT OF HERE
 
     // TODO : CHECK FOR ALT+CTRL+SHORTCUTS FOR TOGGLES AND RADIOS
     // document.addEventListener ("keydown", function (zEvent) {
@@ -231,7 +302,7 @@
     //     }
     // } );
 
-    document.onkeydown = checkKeyPress;
+    document.onkeydown = checkKeyDown;
 
     /**
      * @param {string} p_id
@@ -240,6 +311,11 @@
         const inputField = document.querySelector('#' + p_id);
         //@ts-expect-error
         inputField.select();
+        // TODO : TEST IF NEEDED TO PREVENT FLICKER ON FIRST TRY?
+        setTimeout(() => {
+            //@ts-expect-error
+            inputField.select();
+        }, 0);
     }
 
     function getSettings() {
@@ -250,6 +326,9 @@
             sendSearchConfig(); // just trigger send settings
         }
     }
+
+    // FINISH STARTUP
+    vscode.postMessage({ type: 'refreshSearchConfig' });
 
 }());
 

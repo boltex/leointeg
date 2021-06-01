@@ -59,7 +59,9 @@ export class Constants {
         MARK_CHANGES: "markChanges",
         MARK_FINDS: "markFinds",
         REG_EXP: "regExp",
-        WHOLE_WORD: "wholeWord"
+        WHOLE_WORD: "wholeWord",
+        SEARCH_BODY: "searchBody",
+        SEARCH_HEADLINE: "searchHeadline"
     };
     /**
      * * Strings used in the workbench interface panels (not for messages or dialogs)
@@ -412,14 +414,13 @@ export class Constants {
         START_SEARCH: "!start_search",
         FIND_NEXT: "!find_next",
         FIND_PREVIOUS: "!find_previous",
-        // TODO : NEEDS TESTING!!
+        REPLACE: "!replace",
+        REPLACE_THEN_FIND: "!replace_then_find",
+        REPLACE_ALL: "!replace_all",
         CLONE_FIND_ALL: "!clone_find_all",
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
         CLONE_FIND_MARKED: "cloneFindMarked", // * Direct Leo Command
-        CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // * Direct Leo Command
-        REPLACE: "!replace",
-        REPLACE_THEN_FIND: "!replaceThenFind",
-        REPLACE_ALL: "!replaceAll",
+        CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked" // * Direct Leo Command
     };
 
     /**
@@ -567,6 +568,8 @@ export class Constants {
         TOGGLE_FIND_MARK_FINDS_OPTION: Constants.NAME + ".toggleFindMarkFindsOption",
         TOGGLE_FIND_REGEXP_OPTION: Constants.NAME + ".toggleFindRegexpOption",
         TOGGLE_FIND_WORD_OPTION: Constants.NAME + ".toggleFindWordOption",
+        TOGGLE_FIND_SEARCH_BODY_OPTION: Constants.NAME + ".toggleFindSearchBodyOption",
+        TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
     };
 
 }

@@ -85,7 +85,20 @@ textarea {
 	background-color: var(--vscode-input-background);
 }
 
+input[type="checkbox"]:focus + label {
+	border: 1px solid var(--vscode-button-background);
+  }
+input[type="radio"]:focus + label {
+	border: 1px solid var(--vscode-button-background);
+  }
+
 input::placeholder,
 textarea::placeholder {
 	color: var(--vscode-input-placeholderForeground);
+}
+
+u {
+	color:var(--vscode-button-secondaryForeground);
+	text-decoration-color: var(--vscode-foreground);
+	text-underline-offset: 0.04em;
 }

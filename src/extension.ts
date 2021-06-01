@@ -627,6 +627,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.TOGGLE_FIND_MARK_FINDS_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.MARK_FINDS)],
         [CMD.TOGGLE_FIND_REGEXP_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.REG_EXP)],
         [CMD.TOGGLE_FIND_WORD_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.WHOLE_WORD)],
+        [CMD.TOGGLE_FIND_SEARCH_BODY_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_BODY)],
+        [CMD.TOGGLE_FIND_SEARCH_HEADLINE_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_HEADLINE)],
     ];
 
     w_commands.map(function (p_command) {
