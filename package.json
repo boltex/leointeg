@@ -1169,27 +1169,27 @@
       {
         "command": "leointeg.replace",
         "category": "Leo",
-        "title": "Find Next"
+        "title": "Replace"
       },
       {
         "command": "leointeg.replaceFromOutline",
         "category": "Leo",
-        "title": "Find Next"
+        "title": "Replace"
       },
       {
         "command": "leointeg.replaceThenFind",
         "category": "Leo",
-        "title": "Find Next"
+        "title": "Replace Then Find"
       },
       {
         "command": "leointeg.replaceThenFindFromOutline",
         "category": "Leo",
-        "title": "Find Next"
+        "title": "Replace Then Find"
       },
       {
         "command": "leointeg.replaceAll",
         "category": "Leo",
-        "title": "Find Next"
+        "title": "Replace All"
       },
       {
         "command": "leointeg.cloneFindAll",

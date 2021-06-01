@@ -1871,7 +1871,14 @@ export class LeoIntegration {
                         // tree
                         w_focusOnOutline = true;
                     }
-                    this.launchRefresh({ tree: true, body: true, scroll: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
+                    this.launchRefresh({
+                        tree: true,
+                        body: true,
+                        scroll: p_findResult.found && !w_focusOnOutline,
+                        documents: false,
+                        buttons: false,
+                        states: true
+                    }, w_focusOnOutline);
                 }
             });
     }

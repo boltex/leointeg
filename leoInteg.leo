@@ -15674,7 +15674,14 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
                     // tree
                     w_focusOnOutline = true;
                 }
-                this.launchRefresh({ tree: true, body: true, scroll: true, documents: false, buttons: false, states: true }, w_focusOnOutline);
+                this.launchRefresh({
+                    tree: true,
+                    body: true,
+                    scroll: p_findResult.found &amp;&amp; !w_focusOnOutline,
+                    documents: false,
+                    buttons: false,
+                    states: true
+                }, w_focusOnOutline);
             }
         });
 }
@@ -15708,27 +15715,27 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.replace",
   "category": "Leo",
-  "title": "Find Next"
+  "title": "Replace"
 },
 {
   "command": "leointeg.replaceFromOutline",
   "category": "Leo",
-  "title": "Find Next"
+  "title": "Replace"
 },
 {
   "command": "leointeg.replaceThenFind",
   "category": "Leo",
-  "title": "Find Next"
+  "title": "Replace Then Find"
 },
 {
   "command": "leointeg.replaceThenFindFromOutline",
   "category": "Leo",
-  "title": "Find Next"
+  "title": "Replace Then Find"
 },
 {
   "command": "leointeg.replaceAll",
   "category": "Leo",
-  "title": "Find Next"
+  "title": "Replace All"
 },
 {
   "command": "leointeg.cloneFindAll",
