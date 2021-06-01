@@ -15759,7 +15759,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.cloneFindMarked",
   "category": "Leo",
-  "title": "Clone Find Marked"
+  "title": "Clone Marked Nodes"
 },
 {
   "command": "leointeg.cloneFindFlattenedMarked",
