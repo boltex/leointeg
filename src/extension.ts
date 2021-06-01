@@ -604,6 +604,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         })],
 
         [CMD.START_SEARCH, () => w_leo.startSearch()],
+        [CMD.FIND_ALL, () => w_leo.findAll(false)],
         [CMD.FIND_NEXT, () => w_leo.find(false, false)],
         [CMD.FIND_NEXT_FO, () => w_leo.find(true, false)],
         [CMD.FIND_PREVIOUS, () => w_leo.find(false, true)],
@@ -612,7 +613,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.REPLACE_FO, () => w_leo.replace(true, false)],
         [CMD.REPLACE_THEN_FIND, () => w_leo.replace(false, true)],
         [CMD.REPLACE_THEN_FIND_FO, () => w_leo.replace(true, true)],
-        [CMD.REPLACE_ALL, () => w_leo.replaceAll()],
+        [CMD.REPLACE_ALL, () => w_leo.findAll(true)],
 
         [CMD.CLONE_FIND_ALL, () => w_leo.cloneFind(false, false)],
         [CMD.CLONE_FIND_ALL_FLATTENED, () => w_leo.cloneFind(false, true)],

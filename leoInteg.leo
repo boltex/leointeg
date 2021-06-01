@@ -154,6 +154,7 @@
 <v t="felix.20210523154320.1"><vh>Search</vh>
 <v t="felix.20210523154326.1"><vh>get_search_settings</vh></v>
 <v t="felix.20210523154352.1"><vh>set_search_settings</vh></v>
+<v t="felix.20210601005209.1"><vh>find_all</vh></v>
 <v t="felix.20210527225925.1"><vh>find_next</vh></v>
 <v t="felix.20210527225930.1"><vh>find_previous</vh></v>
 <v t="felix.20210531011702.1"><vh>replace</vh></v>
@@ -2041,6 +2042,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 })],
 
 [CMD.START_SEARCH, () =&gt; w_leo.startSearch()],
+[CMD.FIND_ALL, () =&gt; w_leo.findAll(false)],
 [CMD.FIND_NEXT, () =&gt; w_leo.find(false, false)],
 [CMD.FIND_NEXT_FO, () =&gt; w_leo.find(true, false)],
 [CMD.FIND_PREVIOUS, () =&gt; w_leo.find(false, true)],
@@ -2049,7 +2051,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.REPLACE_FO, () =&gt; w_leo.replace(true, false)],
 [CMD.REPLACE_THEN_FIND, () =&gt; w_leo.replace(false, true)],
 [CMD.REPLACE_THEN_FIND_FO, () =&gt; w_leo.replace(true, true)],
-[CMD.REPLACE_ALL, () =&gt; w_leo.replaceAll()],
+[CMD.REPLACE_ALL, () =&gt; w_leo.findAll(true)],
 
 [CMD.CLONE_FIND_ALL, () =&gt; w_leo.cloneFind(false, false)],
 [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; w_leo.cloneFind(false, true)],
@@ -5540,6 +5542,7 @@ public static LEOBRIDGE = {
     GET_SEARCH_SETTINGS: "!get_search_settings",
     SET_SEARCH_SETTINGS: "!set_search_settings",
     START_SEARCH: "!start_search",
+    FIND_ALL: "!find_all",
     FIND_NEXT: "!find_next",
     FIND_PREVIOUS: "!find_previous",
     REPLACE: "!replace",
@@ -5676,6 +5679,7 @@ public static COMMANDS = {
     DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
     MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes",
     START_SEARCH: Constants.NAME + ".startSearch",
+    FIND_ALL: Constants.NAME + ".findAll",
     FIND_NEXT: Constants.NAME + ".findNext",
     FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
     FIND_PREVIOUS: Constants.NAME + ".findPrevious",
@@ -15693,6 +15697,11 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "title": "Start Search"
 },
 {
+  "command": "leointeg.findAll",
+  "category": "Leo",
+  "title": "Find All"
+},
+{
   "command": "leointeg.findNext",
   "category": "Leo",
   "title": "Find Next"
@@ -16513,6 +16522,10 @@ public getBridgeFocus(): void {
   "when": "leoTreeOpened"
 },
 {
+  "command": "leointeg.findAll",
+  "when": "leoTreeOpened"
+},
+{
   "command": "leointeg.findNext",
   "when": "leoTreeOpened"
 },
@@ -16693,12 +16706,13 @@ public setSearchSetting(p_id: string): void {
 </t>
 <t tx="felix.20210530225640.1"></t>
 <t tx="felix.20210530230354.1">/*
- * * Replace All
+ * * Find / Replace All
  */
-public replaceAll(): Promise&lt;any&gt; {
+public findAll(p_replace: boolean): Promise&lt;any&gt; {
+    const w_action: string = p_replace ? Constants.LEOBRIDGE.REPLACE_ALL : Constants.LEOBRIDGE.FIND_ALL;
     return this._isBusyTriggerSave(false, true)
         .then((p_saveResult) =&gt; {
-            return this.sendAction(Constants.LEOBRIDGE.REPLACE_ALL);
+            return this.sendAction(w_action);
         })
         .then((p_findResult: LeoBridgePackage) =&gt; {
             let w_focusOnOutline = false;
@@ -16821,6 +16835,19 @@ public static FIND_INPUTS_IDS = {
     w_result = {"found": result,
                 "focus": focus, "node": self._p_to_ap(c.p)}
     return self.sendLeoBridgePackage(w_result)
+</t>
+<t tx="felix.20210601005209.1">def find_all(self, param):
+    """Run Leo's find all command and return results."""
+    c = self.commander
+    fc = c.findCommands
+    settings = fc.ftm.get_settings()
+    result = fc.do_find_all(settings)
+    w = self.g.app.gui.get_focus()
+    focus = self.g.app.gui.widget_name(w)
+    w_result = {"found": result,
+                "focus": focus, "node": self._p_to_ap(c.p)}
+    return self.sendLeoBridgePackage(w_result)
+
 </t>
 </tnodes>
 </leo_file>

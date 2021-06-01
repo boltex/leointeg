@@ -1179,6 +1179,18 @@ class LeoBridgeIntegController:
         w_result = ftm.get_settings()
         return self.sendLeoBridgePackage({"searchSettings": w_result.__dict__})
 
+    def find_all(self, param):
+        """Run Leo's find all command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        result = fc.do_find_all(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": result,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
     def find_next(self, param):
         """Run Leo's find-next command and return results."""
         c = self.commander

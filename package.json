@@ -1147,6 +1147,11 @@
         "title": "Start Search"
       },
       {
+        "command": "leointeg.findAll",
+        "category": "Leo",
+        "title": "Find All"
+      },
+      {
         "command": "leointeg.findNext",
         "category": "Leo",
         "title": "Find Next"
@@ -1621,6 +1626,10 @@
         },
         {
           "command": "leointeg.startSearch",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.findAll",
           "when": "leoTreeOpened"
         },
         {

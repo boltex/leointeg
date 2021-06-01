@@ -1912,12 +1912,13 @@ export class LeoIntegration {
     }
 
     /*
-     * * Replace All
+     * * Find / Replace All
      */
-    public replaceAll(): Promise<any> {
+    public findAll(p_replace: boolean): Promise<any> {
+        const w_action: string = p_replace ? Constants.LEOBRIDGE.REPLACE_ALL : Constants.LEOBRIDGE.FIND_ALL;
         return this._isBusyTriggerSave(false, true)
             .then((p_saveResult) => {
-                return this.sendAction(Constants.LEOBRIDGE.REPLACE_ALL);
+                return this.sendAction(w_action);
             })
             .then((p_findResult: LeoBridgePackage) => {
                 let w_focusOnOutline = false;
