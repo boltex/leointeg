@@ -7,6 +7,7 @@
 - Fixed cursor position and selection bugs.
 - Fixed automatic server startup and connection bugs.
 - Added Search functionality along with a 'find' panel.
+- Added goto global line and other clone-find related commands from Leo's 'Search' menu.
 - (...)
 
 ## 0.1.13

@@ -6559,10 +6559,14 @@ import { BodyTimeInfo } from "./types";
 
 </t>
 <t tx="felix.20200718040540.12">public readDirectory(p_uri: vscode.Uri): Thenable&lt;[string, vscode.FileType][]&gt; {
-    console.warn('Called readDirectory with ', p_uri.fsPath); // should not happen
+    // console.warn('Called readDirectory with ', p_uri.fsPath); // should not happen
     if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
         const w_directory: [string, vscode.FileType][] = [];
-        w_directory.push([this._selectedBody, vscode.FileType.File]);
+
+        this._openedBodiesGnx.forEach(p_file =&gt; {
+            w_directory.push([p_file, vscode.FileType.File]);
+        });
+
         return Promise.resolve(w_directory);
     } else {
         throw vscode.FileSystemError.FileNotFound();
@@ -6616,6 +6620,8 @@ import { BodyTimeInfo } from "./types";
     if (this._openedBodiesGnx.includes(w_gnx)) {
         this._openedBodiesGnx.splice(this._openedBodiesGnx.indexOf(w_gnx), 1);
         delete this._openedBodiesInfo[w_gnx];
+    } else {
+        // console.log("not deleted");
     }
 
     // dirname is just a slash "/"
@@ -6758,6 +6764,12 @@ public refreshPossibleGnxList(): Thenable&lt;string[]&gt; {
         if (w_position &gt; -1) {
             // console.log('MORE fs removed from _openedBodiesGnx: ', w_gnx);
             this._watchedBodiesGnx.splice(w_position, 1);
+        }
+        if (this._openedBodiesGnx.includes(w_gnx)) {
+            this._openedBodiesGnx.splice(this._openedBodiesGnx.indexOf(w_gnx), 1);
+            delete this._openedBodiesInfo[w_gnx];
+        } else {
+            // console.log("not unwatched");
         }
     });
 }
@@ -8505,7 +8517,7 @@ export function isHexColor(p_hexString: string): boolean {
 <t tx="felix.20200718220811.1"></t>
 <t tx="felix.20200718220818.1">@language md
 @tabwidth -4
-# ![LeoEditor](resources/leoapp.png) Leo Editor Integration with Visual Studio Code
+# ![LeoEditor](resources/leoapp.png) Leo for VS Code
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
@@ -8536,6 +8548,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 - Fixed cursor position and selection bugs.
 - Fixed automatic server startup and connection bugs.
 - Added Search functionality along with a 'find' panel.
+- Added goto global line and other clone-find related commands from Leo's 'Search' menu.
 - (...)
 
 @others
@@ -8628,7 +8641,7 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | `Ctrl + Shift + D` |     |           | Extract             |
 | `Ctrl + Shift + N` |     |           | Extract Names       |
 | `Alt + A`          |     |           | Sort Siblings       |
-| `Ctrl + F`         |     |           | Start Search       |
+| `Ctrl + F`         |     |           | Start Search        |
 | `F3`               |     |           | Find Next           |
 | `F2`               |     |           | Find Previous       |
 
@@ -8643,6 +8656,7 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree              |
 | `Ctrl + T`         |     |                 | Switch Tree/Body Focus   |
 | `Tab`              |     |                 | Focus from Tree to Body  |
+| `Alt + G`          |     |                 | Go To Global Line        |
 
 \* _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
 
@@ -8718,7 +8732,7 @@ So select at least one character to use the previously assigned original keyboar
 </t>
 <t tx="felix.20200718222113.1">## How It Works
 
-Integration is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
+Leo integration into VS Code is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
 
 The outline pane is made by implementing a [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics), while the body panes _virtual documents_ are made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api) and using the node's gnx as identifiers.
 

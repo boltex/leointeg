@@ -1,4 +1,4 @@
-# ![LeoEditor](resources/leoapp.png) Leo Editor Integration with Visual Studio Code
+# ![LeoEditor](resources/leoapp.png) Leo for VS Code
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
@@ -89,7 +89,7 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | `Ctrl + Shift + D` |     |           | Extract             |
 | `Ctrl + Shift + N` |     |           | Extract Names       |
 | `Alt + A`          |     |           | Sort Siblings       |
-| `Ctrl + F`         |     |           | Start Search       |
+| `Ctrl + F`         |     |           | Start Search        |
 | `F3`               |     |           | Find Next           |
 | `F2`               |     |           | Find Previous       |
 
@@ -104,6 +104,7 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree              |
 | `Ctrl + T`         |     |                 | Switch Tree/Body Focus   |
 | `Tab`              |     |                 | Focus from Tree to Body  |
+| `Alt + G`          |     |                 | Go To Global Line        |
 
 \* _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
 
@@ -173,7 +174,7 @@ So select at least one character to use the previously assigned original keyboar
 
 ## How It Works
 
-Integration is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
+Leo integration into VS Code is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
 
 The outline pane is made by implementing a [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics), while the body panes _virtual documents_ are made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api) and using the node's gnx as identifiers.
 
