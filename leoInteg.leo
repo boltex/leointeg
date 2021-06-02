@@ -2058,6 +2058,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.REPLACE_THEN_FIND, () =&gt; w_leo.replace(false, true)],
 [CMD.REPLACE_THEN_FIND_FO, () =&gt; w_leo.replace(true, true)],
 [CMD.REPLACE_ALL, () =&gt; w_leo.findAll(true)],
+[CMD.GOTO_GLOBAL_LINE, () =&gt; w_leo.gotoGlobalLine()],
 
 [CMD.CLONE_FIND_ALL, () =&gt; w_leo.cloneFind(false, false)],
 [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; w_leo.cloneFind(false, true)],
@@ -5850,8 +5851,10 @@ public static USER_MESSAGES = {
     STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
     PROMPT_EDIT_HEADLINE: "Edit Headline",
     PROMPT_INSERT_NODE: "Insert Node",
-    PROMPT_GOTO_GLOBAL_LINE: "Goto global line",
     DEFAULT_HEADLINE: "New Headline",
+    TITLE_GOTO_GLOBAL_LINE: "Goto global line",
+    PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
+    PROMPT_GOTO_GLOBAL_LINE: "Line number",
     START_SERVER_ERROR: "Error - Cannot start server: ",
     CONNECT_FAILED: "Leo Bridge Connection Failed",
     CONNECT_ERROR: "Leo Bridge Connection Error: Incorrect id",
@@ -16915,7 +16918,8 @@ public static FIND_INPUTS_IDS = {
     return self.sendLeoBridgePackage(w_result)
 
 </t>
-<t tx="felix.20210601151758.1">def find_var(self, package):
+<t tx="felix.20210601151758.1">
+def find_var(self, param):
     """Run Leo's find-var command and return results."""
     c = self.commander
     fc = c.findCommands
@@ -16929,7 +16933,7 @@ public static FIND_INPUTS_IDS = {
     return self.sendLeoBridgePackage(w_result)
 
 </t>
-<t tx="felix.20210601151804.1">def find_def(self, package):
+<t tx="felix.20210601151804.1">def find_def(self, param):
     """Run Leo's find-def command and return results."""
     c = self.commander
     fc = c.findCommands
@@ -16943,17 +16947,12 @@ public static FIND_INPUTS_IDS = {
     return self.sendLeoBridgePackage(w_result)
 
 </t>
-<t tx="felix.20210601152841.1">def goto_global_line(self, package):
+<t tx="felix.20210601152841.1">def goto_global_line(self, param):
     """Run Leo's goto-global-line command and return results."""
     c = self.commander
-    fc = c.findCommands
-    settings = fc.ftm.get_settings()
-    # todo : Goto Global Line implementation
-    print("todo : Goto Global Line implementation")
-    # result = fc.do_clone_find_all_flattened(settings)
-    w = self.g.app.gui.get_focus()
-    focus = self.g.app.gui.widget_name(w)
-    w_result = {"node": self._p_to_ap(c.p)}
+    junk_p, junk_offset, found = c.gotoCommands.find_file_line(
+        n=int(param['line']))
+    w_result = {"found": found, "node": self._p_to_ap(c.p)}
     return self.sendLeoBridgePackage(w_result)
 
 </t>
@@ -16961,7 +16960,37 @@ public static FIND_INPUTS_IDS = {
  * * Goto Global Line
  */
 public gotoGlobalLine(): void {
-    //
+    this.triggerBodySave(false)
+        .then((p_saveResult: boolean) =&gt; {
+            return vscode.window.showInputBox({
+                title: Constants.USER_MESSAGES.TITLE_GOTO_GLOBAL_LINE,
+                placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_GOTO_GLOBAL_LINE,
+                prompt: Constants.USER_MESSAGES.PROMPT_GOTO_GLOBAL_LINE
+            });
+
+        }).then((p_inputResult?: string) =&gt; {
+            if (p_inputResult) {
+                const w_line = parseInt(p_inputResult);
+                if (!isNaN(w_line)) {
+                    this.sendAction(
+                        Constants.LEOBRIDGE.GOTO_GLOBAL_LINE,
+                        JSON.stringify({ line: w_line })
+                    ).then((p_resultGoto: LeoBridgePackage) =&gt; {
+                        if (!p_resultGoto.found) {
+                            // Not found
+                        }
+                        this.launchRefresh({
+                            tree: true,
+                            body: true,
+                            documents: false,
+                            buttons: false,
+                            states: true
+                        },
+                            false);
+                    });
+                }
+            }
+        });
 }
 
 </t>

@@ -120,8 +120,10 @@ export class Constants {
         STATUSBAR_TOOLTIP_OFF: "Leo Key Bindings off", // TODO : Add description of what happens if clicked
         PROMPT_EDIT_HEADLINE: "Edit Headline",
         PROMPT_INSERT_NODE: "Insert Node",
-        PROMPT_GOTO_GLOBAL_LINE: "Goto global line",
         DEFAULT_HEADLINE: "New Headline",
+        TITLE_GOTO_GLOBAL_LINE: "Goto global line",
+        PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
+        PROMPT_GOTO_GLOBAL_LINE: "Line number",
         START_SERVER_ERROR: "Error - Cannot start server: ",
         CONNECT_FAILED: "Leo Bridge Connection Failed",
         CONNECT_ERROR: "Leo Bridge Connection Error: Incorrect id",

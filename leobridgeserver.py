@@ -1281,7 +1281,8 @@ class LeoBridgeIntegController:
         w_result = {"found": result,
                     "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
-    def find_var(self, package):
+
+    def find_var(self, param):
         """Run Leo's find-var command and return results."""
         c = self.commander
         fc = c.findCommands
@@ -1294,7 +1295,7 @@ class LeoBridgeIntegController:
         w_result = {"node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
-    def find_def(self, package):
+    def find_def(self, param):
         """Run Leo's find-def command and return results."""
         c = self.commander
         fc = c.findCommands
@@ -1307,17 +1308,12 @@ class LeoBridgeIntegController:
         w_result = {"node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
-    def goto_global_line(self, package):
+    def goto_global_line(self, param):
         """Run Leo's goto-global-line command and return results."""
         c = self.commander
-        fc = c.findCommands
-        settings = fc.ftm.get_settings()
-        # todo : Goto Global Line implementation
-        print("todo : Goto Global Line implementation")
-        # result = fc.do_clone_find_all_flattened(settings)
-        w = self.g.app.gui.get_focus()
-        focus = self.g.app.gui.widget_name(w)
-        w_result = {"node": self._p_to_ap(c.p)}
+        junk_p, junk_offset, found = c.gotoCommands.find_file_line(
+            n=int(param['line']))
+        w_result = {"found": found, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
     def get_buttons(self, param):

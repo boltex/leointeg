@@ -2032,7 +2032,37 @@ export class LeoIntegration {
      * * Goto Global Line
      */
     public gotoGlobalLine(): void {
-        //
+        this.triggerBodySave(false)
+            .then((p_saveResult: boolean) => {
+                return vscode.window.showInputBox({
+                    title: Constants.USER_MESSAGES.TITLE_GOTO_GLOBAL_LINE,
+                    placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_GOTO_GLOBAL_LINE,
+                    prompt: Constants.USER_MESSAGES.PROMPT_GOTO_GLOBAL_LINE
+                });
+
+            }).then((p_inputResult?: string) => {
+                if (p_inputResult) {
+                    const w_line = parseInt(p_inputResult);
+                    if (!isNaN(w_line)) {
+                        this.sendAction(
+                            Constants.LEOBRIDGE.GOTO_GLOBAL_LINE,
+                            JSON.stringify({ line: w_line })
+                        ).then((p_resultGoto: LeoBridgePackage) => {
+                            if (!p_resultGoto.found) {
+                                // Not found
+                            }
+                            this.launchRefresh({
+                                tree: true,
+                                body: true,
+                                documents: false,
+                                buttons: false,
+                                states: true
+                            },
+                                false);
+                        });
+                    }
+                }
+            });
     }
 
     /**
