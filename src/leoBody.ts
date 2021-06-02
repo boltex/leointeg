@@ -112,6 +112,12 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 // console.log('MORE fs removed from _openedBodiesGnx: ', w_gnx);
                 this._watchedBodiesGnx.splice(w_position, 1);
             }
+            if (this._openedBodiesGnx.includes(w_gnx)) {
+                this._openedBodiesGnx.splice(this._openedBodiesGnx.indexOf(w_gnx), 1);
+                delete this._openedBodiesInfo[w_gnx];
+            } else {
+                // console.log("not unwatched");
+            }
         });
     }
 
@@ -198,10 +204,14 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public readDirectory(p_uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
-        console.warn('Called readDirectory with ', p_uri.fsPath); // should not happen
+        // console.warn('Called readDirectory with ', p_uri.fsPath); // should not happen
         if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
             const w_directory: [string, vscode.FileType][] = [];
-            w_directory.push([this._selectedBody, vscode.FileType.File]);
+
+            this._openedBodiesGnx.forEach(p_file => {
+                w_directory.push([p_file, vscode.FileType.File]);
+            });
+
             return Promise.resolve(w_directory);
         } else {
             throw vscode.FileSystemError.FileNotFound();
@@ -251,6 +261,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         if (this._openedBodiesGnx.includes(w_gnx)) {
             this._openedBodiesGnx.splice(this._openedBodiesGnx.indexOf(w_gnx), 1);
             delete this._openedBodiesInfo[w_gnx];
+        } else {
+            // console.log("not deleted");
         }
 
         // dirname is just a slash "/"
