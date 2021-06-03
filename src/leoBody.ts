@@ -7,7 +7,6 @@ import { BodyTimeInfo } from "./types";
 
 /**
  * * Body panes implementation as a file system using "leo" as a scheme identifier
- * TODO : Replace save/rename procedure to overcome API change for undos.
  * Saving and renaming prevents flickering and prevents undos to 'traverse through' different gnx
  */
 export class LeoBodyProvider implements vscode.FileSystemProvider {
@@ -33,6 +32,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * List of all possible vNodes gnx in the currently opened leo file (since last refresh/tree operation)
     private _possibleGnxList: string[] = []; // Maybe deprecated
 
+    private _lastBodyTimeGnx: string = "";
+
     // * An event to signal that a resource has been changed
     // * It should fire for resources that are being [watched](#FileSystemProvider.watch) by clients of this provider
     private _onDidChangeFileEmitter = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
@@ -49,6 +50,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public setBodyTime(p_uri: vscode.Uri): void {
 
         const w_gnx = utils.leoUriToStr(p_uri);
+        this._lastBodyTimeGnx = w_gnx;
 
         // console.log('Selected', w_gnx, ' total:', this._openedBodiesGnx.length);
 
@@ -198,10 +200,10 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public readDirectory(p_uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
-        console.warn('Called readDirectory with ', p_uri.fsPath); // should not happen
+        // console.warn('Called readDirectory with ', p_uri.fsPath); // should not happen
         if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
             const w_directory: [string, vscode.FileType][] = [];
-            w_directory.push([this._selectedBody, vscode.FileType.File]);
+            w_directory.push([this._lastBodyTimeGnx, vscode.FileType.File]);
             return Promise.resolve(w_directory);
         } else {
             throw vscode.FileSystemError.FileNotFound();
@@ -251,6 +253,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         if (this._openedBodiesGnx.includes(w_gnx)) {
             this._openedBodiesGnx.splice(this._openedBodiesGnx.indexOf(w_gnx), 1);
             delete this._openedBodiesInfo[w_gnx];
+        } else {
+            // console.log("not deleted");
         }
 
         // dirname is just a slash "/"

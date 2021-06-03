@@ -1,6 +1,7 @@
 #! python3
 import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
+from leo.core.leoGui import StringFindTabManager
 import asyncio
 import getopt
 import json
@@ -18,6 +19,7 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
 
 # Special string signals server startup success
 SERVER_STARTED_TOKEN = "LeoBridge started"
+
 
 class IdleTimeManager:
     """
@@ -621,8 +623,8 @@ class LeoBridgeIntegController:
             gui='nullGui',
             loadPlugins=True,   # True: attempt to load plugins.
             readSettings=True,  # True: read standard settings files.
-            silent=True,        # True: don't print signon messages.
-            # True: prints messages that would be sent to the log pane.
+            silent=True,       # True: don't print signon messages.
+            # True: prints what would be sent to the log pane.
             verbose=False,
         )
         self.g = self.bridge.globals()
@@ -652,6 +654,10 @@ class LeoBridgeIntegController:
         # TODO : Maybe use those yes/no replacement right before actual usage instead of in init. (to allow re-use/switching)
         # override for "revert to file" operation
         self.g.app.gui.runAskYesNoDialog = self._returnYes
+        self.g.app.gui.show_find_success = self._show_find_success
+        self.headlineWidget = self.g.bunch(_name='tree')
+
+        self.g.app.loadManager.createAllImporterData()
 
         # * setup leoBackground to get messages from leo
         try:
@@ -720,6 +726,12 @@ class LeoBridgeIntegController:
             if not w_commander.closed:
                 return w_commander
         return False
+
+    def _show_find_success(self, c, in_headline, insert, p):
+        '''Handle a successful find match.'''
+        if in_headline:
+            self.g.app.gui.set_focus(c, self.headlineWidget)
+        # no return
 
     def sendAsyncOutput(self, p_package):
         if "async" not in p_package:
@@ -918,6 +930,36 @@ class LeoBridgeIntegController:
 
         return self.sendLeoBridgePackage({"files": w_files})
 
+    def get_ui_states(self, param):
+        """
+        Gets the currently opened file's general states for UI enabled/disabled states
+        such as undo available, file changed/unchanged
+        """
+        w_states = {}
+        if self.commander:
+            try:
+                # 'dirty/changed' member
+                w_states["changed"] = self.commander.changed
+                w_states["canUndo"] = self.commander.canUndo()
+                w_states["canRedo"] = self.commander.canRedo()
+                w_states["canDemote"] = self.commander.canDemote()
+                w_states["canPromote"] = self.commander.canPromote()
+                w_states["canDehoist"] = self.commander.canDehoist()
+
+            except Exception as e:
+                self.g.trace('Error while getting states')
+                print("Error while getting states", flush=True)
+                print(str(e), flush=True)
+        else:
+            w_states["changed"] = False
+            w_states["canUndo"] = False
+            w_states["canRedo"] = False
+            w_states["canDemote"] = False
+            w_states["canPromote"] = False
+            w_states["canDehoist"] = False
+
+        return self.sendLeoBridgePackage({"states": w_states})
+
     def set_opened_file(self, param):
         '''Choose the new active commander from array of opened file path/names by numeric index'''
         w_openedCommanders = []
@@ -959,6 +1001,8 @@ class LeoBridgeIntegController:
         if not w_found:
             self.commander = self.bridge.openLeoFile(
                 w_filename)  # create self.commander
+            self.commander.findCommands.ftm = StringFindTabManager(
+                self.commander)
 
         # Leo at this point has done this too: g.app.windowList.append(c.frame)
         # and so, now, app.commanders() yields this: return [f.c for f in g.app.windowList]
@@ -988,6 +1032,7 @@ class LeoBridgeIntegController:
             w_files = param["files"]
 
         for i_file in w_files:
+            self.commander = None
             w_found = False
             # If not empty string (asking for New file) then check if already opened
             if i_file:
@@ -1000,6 +1045,8 @@ class LeoBridgeIntegController:
                 if os.path.isfile(i_file):
                     self.commander = self.bridge.openLeoFile(
                         i_file)  # create self.commander
+                    self.commander.findCommands.ftm = StringFindTabManager(
+                        self.commander)
             if self.commander:
                 self.commander.closed = False
                 self.commander.frame.body.wrapper = IntegTextWrapper(
@@ -1063,6 +1110,267 @@ class LeoBridgeIntegController:
                 print(str(e),  param['name'],  flush=True)
 
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+    def import_any_file(self, param):
+        """
+        Import file(s) from array of file names
+        """
+        c = self.commander
+        g = self.g
+        ic = c.importCommands
+        names = param.get('filenames')
+        if names:
+            g.chdir(names[0])
+        if not names:
+            return self._outputError("Error in import_any_file no filenames found")
+
+        # New in Leo 4.9: choose the type of import based on the extension.
+        derived = [z for z in names if c.looksLikeDerivedFile(z)]
+        others = [z for z in names if z not in derived]
+        if derived:
+            ic.importDerivedFiles(parent=c.p, paths=derived)
+        for fn in others:
+            junk, ext = g.os_path_splitext(fn)
+            ext = ext.lower()  # #1522
+            if ext.startswith('.'):
+                ext = ext[1:]
+            if ext == 'csv':
+                ic.importMindMap([fn])
+            elif ext in ('cw', 'cweb'):
+                ic.importWebCommand([fn], "cweb")
+            # Not useful. Use @auto x.json instead.
+            # elif ext == 'json':
+                # ic.importJSON([fn])
+            elif fn.endswith('mm.html'):
+                ic.importFreeMind([fn])
+            elif ext in ('nw', 'noweb'):
+                ic.importWebCommand([fn], "noweb")
+            elif ext == 'more':
+                # (Félix) leoImport Should be on c?
+                c.leoImport.MORE_Importer(c).import_file(fn)  # #1522.
+            elif ext == 'txt':
+                # (Félix) import_txt_file Should be on c?
+                # #1522: Create an @edit node.
+                c.import_txt_file(c, fn)
+            else:
+                # Make *sure* that parent.b is empty.
+                last = c.lastTopLevel()
+                parent = last.insertAfter()
+                parent.v.h = 'Imported Files'
+                ic.importFilesCommand(
+                    files=[fn],
+                    parent=parent,
+                    treeType='@auto',  # was '@clean'
+                    # Experimental: attempt to use permissive section ref logic.
+                )
+        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+    def get_search_settings(self, param):
+        """
+        Gets search options
+        """
+        w_result = self.commander.findCommands.ftm.get_settings()
+        return self.sendLeoBridgePackage({"searchSettings": w_result.__dict__})
+
+    def set_search_settings(self, param):
+        """
+        Sets search options. Init widgets and ivars from param.searchSettings
+        """
+        c = self.commander
+        find = c.findCommands
+        ftm = c.findCommands.ftm
+        searchSettings = param['searchSettings']
+        # Find/change text boxes.
+        table = (
+            ('find_findbox', 'find_text', ''),
+            ('find_replacebox', 'change_text', ''),
+        )
+        for widget_ivar, setting_name, default in table:
+            w = getattr(ftm, widget_ivar)
+            s = searchSettings.get(setting_name) or default
+            w.clear()
+            w.insert(s)
+        # Check boxes.
+        table = (
+            ('ignore_case', 'check_box_ignore_case'),
+            ('mark_changes', 'check_box_mark_changes'),
+            ('mark_finds', 'check_box_mark_finds'),
+            ('pattern_match', 'check_box_regexp'),
+            ('search_body', 'check_box_search_body'),
+            ('search_headline', 'check_box_search_headline'),
+            ('whole_word', 'check_box_whole_word'),
+        )
+        for setting_name, widget_ivar in table:
+            w = getattr(ftm, widget_ivar)
+            val = searchSettings.get(setting_name)
+            setattr(find, setting_name, val)
+            if val != w.isChecked():
+                w.toggle()
+        # Radio buttons
+        table = (
+            ('node_only', 'node_only', 'radio_button_node_only'),
+            ('entire_outline', None, 'radio_button_entire_outline'),
+            ('suboutline_only', 'suboutline_only', 'radio_button_suboutline_only'),
+        )
+        for setting_name, ivar, widget_ivar in table:
+            w = getattr(ftm, widget_ivar)
+            val = searchSettings.get(setting_name, False)
+            if ivar is not None:
+                assert hasattr(find, setting_name), setting_name
+                setattr(find, setting_name, val)
+                if val != w.isChecked():
+                    w.toggle()
+        # Ensure one radio button is set.
+        w = ftm.radio_button_entire_outline
+        if not searchSettings.get('node_only', False) and not searchSettings.get('suboutline_only', False):
+            setattr(find, 'entire_outline', True)
+            if not w.isChecked():
+                w.toggle()
+        else:
+            setattr(find, 'entire_outline', False)
+            if w.isChecked():
+                w.toggle()
+
+        # Confirm by sending back the settings to leointeg
+        w_result = ftm.get_settings()
+        return self.sendLeoBridgePackage({"searchSettings": w_result.__dict__})
+
+    def find_all(self, param):
+        """Run Leo's find all command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        result = fc.do_find_all(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": result,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def find_next(self, param):
+        """Run Leo's find-next command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        p, pos, newpos = fc.do_find_next(settings)
+        found = True
+        if not p:
+            found = False
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": found, "pos": pos, "newpos": newpos,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def find_previous(self, param):
+        """Run Leo's find-previous command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        p, pos, newpos = fc.do_find_prev(settings)
+        found = True
+        if not p:
+            found = False
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": found, "pos": pos, "newpos": newpos,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+
+    def replace(self, param):
+        """Run Leo's replace command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        fc.change(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": True,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def replace_then_find(self, param):
+        """Run Leo's replace then find next command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        result = fc.do_change_then_find(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": result,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def replace_all(self, param):
+        """Run Leo's replace all command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        result = fc.do_change_all(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": result,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def clone_find_all(self, param):
+        """Run Leo's clone-find-all command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        result = fc.do_clone_find_all(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": result,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def clone_find_all_flattened(self, param):
+        """Run Leo's clone-find-all-flattened command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        result = fc.do_clone_find_all_flattened(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"found": result,
+                    "focus": focus, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def find_var(self, param):
+        """Run Leo's find-var command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        # todo : find var implementation
+        print("todo : find var implementation")
+        # result = fc.do_clone_find_all_flattened(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def find_def(self, param):
+        """Run Leo's find-def command and return results."""
+        c = self.commander
+        fc = c.findCommands
+        settings = fc.ftm.get_settings()
+        # todo : find def implementation
+        print("todo : find def implementation")
+        # result = fc.do_clone_find_all_flattened(settings)
+        w = self.g.app.gui.get_focus()
+        focus = self.g.app.gui.widget_name(w)
+        w_result = {"node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
+
+    def goto_global_line(self, param):
+        """Run Leo's goto-global-line command and return results."""
+        c = self.commander
+        junk_p, junk_offset, found = c.gotoCommands.find_file_line(
+            n=int(param['line']))
+        w_result = {"found": found, "node": self._p_to_ap(c.p)}
+        return self.sendLeoBridgePackage(w_result)
 
     def get_buttons(self, param):
         '''Gets the currently opened file's @buttons list'''
@@ -1959,8 +2267,8 @@ class LeoBridgeIntegController:
             'write-missing-at-file-nodes',
             'write-outline-only',
 
-            'clone-find-all',
-            'clone-find-all-flattened',
+            'clone-find-all',  # Should be overridden by leointeg
+            'clone-find-all-flattened',   # Should be overridden by leointeg
             'clone-find-all-flattened-marked',
             'clone-find-all-marked',
             'clone-find-parents',
@@ -1989,7 +2297,7 @@ class LeoBridgeIntegController:
 
             'pdb',
 
-            'redo',
+            'redo',  # Should be overridden by leointeg
             'rst3',
             'run-all-unit-tests-externally',
             'run-all-unit-tests-locally',
@@ -1999,7 +2307,7 @@ class LeoBridgeIntegController:
             'run-selected-unit-tests-locally',
             'run-tests',
 
-            'undo',
+            'undo',  # Should be overridden by leointeg
 
             'xdb',
             # Beautify, blacken, fstringify...
@@ -2347,36 +2655,6 @@ class LeoBridgeIntegController:
         return self.sendLeoBridgePackage({'testReturnedKey': 'testReturnedValue'})
         # return self._outputPNode(self.commander.p)
 
-    def get_ui_states(self, param):
-        """
-        Gets the currently opened file's general states for UI enabled/disabled states
-        such as undo available, file changed/unchanged
-        """
-        w_states = {}
-        if self.commander:
-            try:
-                # 'dirty/changed' member
-                w_states["changed"] = self.commander.changed
-                w_states["canUndo"] = self.commander.canUndo()
-                w_states["canRedo"] = self.commander.canRedo()
-                w_states["canDemote"] = self.commander.canDemote()
-                w_states["canPromote"] = self.commander.canPromote()
-                w_states["canDehoist"] = self.commander.canDehoist()
-
-            except Exception as e:
-                self.g.trace('Error while getting states')
-                print("Error while getting states", flush=True)
-                print(str(e), flush=True)
-        else:
-            w_states["changed"] = False
-            w_states["canUndo"] = False
-            w_states["canRedo"] = False
-            w_states["canDemote"] = False
-            w_states["canPromote"] = False
-            w_states["canDehoist"] = False
-
-        return self.sendLeoBridgePackage({"states": w_states})
-
     def page_up(self, param):
         """Selects a node a couple of steps up in the tree to simulate page up"""
         n = param.get("n", 3)
@@ -2463,7 +2741,7 @@ class LeoBridgeIntegController:
 
             # get selection from wrapper instead if its the selected node
             if self.commander.p.v.gnx == w_p.v.gnx:
-                print("in GBS -> SAME AS self.commander.p SO USING FROM WRAPPER")
+                # print("in GBS -> SAME AS self.commander.p SO USING FROM WRAPPER")
                 w_active = w_wrapper.getInsertPoint()
                 w_start, w_end = w_wrapper.getSelectionRange(True)
                 w_scroll = w_wrapper.getYScrollPosition()
@@ -2607,7 +2885,7 @@ class LeoBridgeIntegController:
         w_body = ""
         w_v = None
         if self.commander.p.v.gnx == w_gnx:
-            print('Set Selection! OK SAME GNX: ' + self.commander.p.v.gnx)
+            # print('Set Selection! OK SAME GNX: ' + self.commander.p.v.gnx)
             w_same = True
             w_v = self.commander.p.v
         else:
@@ -2643,8 +2921,8 @@ class LeoBridgeIntegController:
             w_endSel = f_convert(
                 w_body, w_end['line'], w_end['col'])
 
-        print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
-              " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
+        # print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
+        #       " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
 
         # If it's the currently selected node set the wrapper's states too
 
@@ -2923,6 +3201,7 @@ def main():
           str(wsPort) + " [ctrl+c] to break", flush=True)
     localLoop.run_forever()
     print("Stopping leobridge server", flush=True)
+
 
 if __name__ == '__main__':
     # Startup

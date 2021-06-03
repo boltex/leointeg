@@ -1,4 +1,4 @@
-# ![LeoEditor](resources/leoapp.png) Leo Editor Integration with Visual Studio Code
+# ![LeoEditor](resources/leoapp.png) Leo for VS Code
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
@@ -36,14 +36,15 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 ## Features
 
-- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body panes**, **opened documents selector** along with **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
-- Keybindings that match those of Leo, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
+- UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body pane**, **opened documents selector**, **find panel**, along with a **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
+- Keybindings that match those of the Leo editor, including arrow keys behavior for outline keyboard navigation. (Can be turned off with the **'Leo Tree Browsing'** option setting)
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
 - Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
-  - Open body panes to the side
+  - Open body panes to the side in any 'column'
   - Outline edition commands
+  - Find operations
   - Clipboard operations
   - Undo/Redo commands
 
@@ -88,6 +89,9 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | `Ctrl + Shift + D` |     |           | Extract             |
 | `Ctrl + Shift + N` |     |           | Extract Names       |
 | `Alt + A`          |     |           | Sort Siblings       |
+| `Ctrl + F`         |     |           | Start Search        |
+| `F3`               |     |           | Find Next           |
+| `F2`               |     |           | Find Previous       |
 
 ### Tree Navigation
 
@@ -100,6 +104,7 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree              |
 | `Ctrl + T`         |     |                 | Switch Tree/Body Focus   |
 | `Tab`              |     |                 | Focus from Tree to Body  |
+| `Alt + G`          |     |                 | Go To Global Line        |
 
 \* _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
 
@@ -169,7 +174,7 @@ So select at least one character to use the previously assigned original keyboar
 
 ## How It Works
 
-Integration is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
+Leo integration into VS Code is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
 
 The outline pane is made by implementing a [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics), while the body panes _virtual documents_ are made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api) and using the node's gnx as identifiers.
 

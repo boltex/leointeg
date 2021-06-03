@@ -1,0 +1,13 @@
+body {
+	background-color: transparent;
+}
+
+div.row {
+	overflow-x: hidden;
+	white-space: nowrap;
+}
+
+div.col {
+	width: 9.5em;
+	display: inline-block;
+}

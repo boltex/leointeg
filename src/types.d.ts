@@ -54,6 +54,7 @@ export interface ReqRefresh {
     node?: boolean; // Reveal received selected node (Navigation only, no tree change)
     tree?: boolean; // Tree needs refresh
     body?: boolean; // Body needs refresh
+    scroll?: boolean; // Body needs to scroll to selection
     states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
     buttons?: boolean; // Buttons needs refresh
     documents?: boolean; // Documents needs refresh
@@ -150,10 +151,13 @@ export interface LeoBridgePackage {
     commands?: MinibufferCommand[]; // getCommands
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
+    focus?: string; // find_next, find_previous
+    found?: boolean // find_next, find_previous
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
     node?: ArchivedPosition; // get_parent, set_opened_file, open_file(s), ?close_file
     children?: ArchivedPosition[]; // get_children
+    searchSettings?: LeoGuiFindTabManagerSettings // get_search_settings
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
     total?: number; // set_opened_file, open_file(s), close_file
@@ -175,6 +179,52 @@ export interface LeoDocument {
 export interface LeoButton {
     name: string;
     index: string; // STRING KEY
+}
+
+/**
+ * * LeoInteg's Enum type for the search scope radio buttons of the find panel.
+ */
+export const enum LeoSearchScope {
+    entireOutline = 0,
+    subOutlineOnly,
+    nodeOnly
+}
+
+/**
+ * * LeoInteg search settings structure for use with the 'find' webview
+ */
+export interface LeoSearchSettings {
+    //Find/change strings...
+    findText: string;
+    replaceText: string;
+    // Find options...
+    wholeWord: boolean;
+    ignoreCase: boolean;
+    regExp: boolean;
+    markFinds: boolean;
+    markChanges: boolean;
+    searchHeadline: boolean;
+    searchBody: boolean;
+    searchScope: LeoSearchScope; // 0, 1 or 2 for outline, sub-outline, or node.
+}
+
+/**
+ * * Leo's GUI search settings internal structure
+ */
+export interface LeoGuiFindTabManagerSettings {
+    //Find/change strings...
+    find_text: string,
+    change_text: string,
+    // Find options...
+    ignore_case: boolean,
+    mark_changes: boolean,
+    mark_finds: boolean,
+    node_only: boolean,
+    pattern_match: boolean,
+    search_body: boolean,
+    search_headline: boolean,
+    suboutline_only: boolean,
+    whole_word: boolean
 }
 
 /**

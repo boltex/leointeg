@@ -20,6 +20,9 @@ export class Constants {
     public static BUTTONS_ID: string = "leoButtons";
     public static BUTTONS_EXPLORER_ID: string = "leoButtonsExplorer";
 
+    public static FIND_ID: string = "leoFindPanel";
+    public static FIND_EXPLORER_ID: string = "leoFindPanelExplorer";
+
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";
@@ -43,6 +46,23 @@ export class Constants {
     public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
     public static STATES_DEBOUNCE_DELAY: number = 100;
 
+    /**
+     * * Find panel controls ids
+     */
+    public static FIND_INPUTS_IDS = {
+        FIND_TEXT: "findText",
+        REPLACE_TEXT: "replaceText",
+        ENTIRE_OUTLINE: "entireOutline",
+        NODE_ONLY: "nodeOnly",
+        SUBOUTLINE_ONLY: "subOutlineOnly",
+        IGNORE_CASE: "ignoreCase",
+        MARK_CHANGES: "markChanges",
+        MARK_FINDS: "markFinds",
+        REG_EXP: "regExp",
+        WHOLE_WORD: "wholeWord",
+        SEARCH_BODY: "searchBody",
+        SEARCH_HEADLINE: "searchHeadline"
+    };
     /**
      * * Strings used in the workbench interface panels (not for messages or dialogs)
      */
@@ -101,6 +121,9 @@ export class Constants {
         PROMPT_EDIT_HEADLINE: "Edit Headline",
         PROMPT_INSERT_NODE: "Insert Node",
         DEFAULT_HEADLINE: "New Headline",
+        TITLE_GOTO_GLOBAL_LINE: "Goto global line",
+        PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
+        PROMPT_GOTO_GLOBAL_LINE: "Line number",
         START_SERVER_ERROR: "Error - Cannot start server: ",
         CONNECT_FAILED: "Leo Bridge Connection Failed",
         CONNECT_ERROR: "Leo Bridge Connection Error: Incorrect id",
@@ -117,6 +140,24 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with voluntary leading space
         IGNORED: " They were ignored.", // with voluntary leading space
         TOO_FAST: "leoInteg is busy! " // with voluntary trailing space
+    };
+
+    /**
+     * * Possible import file types
+     */
+    public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
+        "All files": ["*"],
+        "C/C++ files": ["c", "cpp", "h", "hpp"],
+        "FreeMind files": ["mm.html"],
+        "Java files": ["java"],
+        "JavaScript files": ["js"],
+        // "JSON files": ["json"],
+        "Mindjet files": ["csv"],
+        "MORE files": ["MORE"],
+        "Lua files": ["lua"],
+        "Pascal files": ["pas"],
+        "Python files": ["py"],
+        "Text files": ["txt"],
     };
 
     /**
@@ -330,10 +371,11 @@ export class Constants {
         CONTRACT_ALL: "contractAllHeadlines", // * Direct Leo Command
         GET_STATES: "!get_ui_states", // "getStates",
         // * Leo Documents
-        GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles", // TODO : contains selection
-        SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile", // TODO : use index instead of filename
+        GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles",
+        SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile",
         OPEN_FILE: "!open_file", // "openFile",
-        OPEN_FILES: "!open_files", //  "openFiles", // TODO : Sends an array of paths instead: for opening many files at once
+        IMPORT_ANY_FILE: "!import_any_file", // "importAnyFile",
+        OPEN_FILES: "!open_files", //  "openFiles",
         CLOSE_FILE: "!close_file", // "closeFile",
         SAVE_FILE: "!save_file", // "saveFile",
         // * @-Buttons
@@ -388,14 +430,21 @@ export class Constants {
         DELETE_MARKED_NODES: "deleteMarked", // * Direct Leo Command
         MOVE_MARKED_NODES: "moveMarked", // * Direct Leo Command
         GIT_DIFF: "gitDiff", // * Direct Leo Command
-        // TODO : @boltex More commands to implement #24
+        GET_FOCUS: "!get_focus",
+        GET_SEARCH_SETTINGS: "!get_search_settings",
+        SET_SEARCH_SETTINGS: "!set_search_settings",
         START_SEARCH: "!start_search",
+        FIND_ALL: "!find_all",
         FIND_NEXT: "!find_next",
         FIND_PREVIOUS: "!find_previous",
+        REPLACE: "!replace",
+        REPLACE_THEN_FIND: "!replace_then_find",
+        REPLACE_ALL: "!replace_all",
+        GOTO_GLOBAL_LINE: "!goto_global_line",
         CLONE_FIND_ALL: "!clone_find_all",
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
         CLONE_FIND_MARKED: "cloneFindMarked", // * Direct Leo Command
-        CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked", // * Direct Leo Command
+        CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked" // * Direct Leo Command
     };
 
     /**
@@ -409,17 +458,18 @@ export class Constants {
         CONNECT: Constants.NAME + ".connectToServer",
         SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
         OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
+        IMPORT_ANY_FILE: Constants.NAME + ".importAnyFile",
         RECENT_FILES: Constants.NAME + ".recentLeoFiles", // shows recent Leo files, opens one on selection
         SWITCH_FILE: Constants.NAME + ".switchLeoFile",
         NEW_FILE: Constants.NAME + ".newLeoFile",
-        SAVE_FILE: Constants.NAME + ".saveLeoFile", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
-        SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SAVE_FILE: Constants.NAME + ".saveLeoFile",
+        SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline",
         SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
         CLOSE_FILE: Constants.NAME + ".closeLeoFile",
         CLICK_BUTTON: Constants.NAME + ".clickButton",
         REMOVE_BUTTON: Constants.NAME + ".removeButton",
         MINIBUFFER: Constants.NAME + ".minibuffer",
-        GIT_DIFF: Constants.NAME + ".gitDiff", // TODO : Proof of concept leoCommand
+        GIT_DIFF: Constants.NAME + ".gitDiff", // TODO : Test & Fix this Proof of concept leoCommand
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",
         OPEN_ASIDE: Constants.NAME + ".openAside",
@@ -440,13 +490,16 @@ export class Constants {
         // * Leo Operations
         UNDO: Constants.NAME + ".undo", // From command Palette
         UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE
+        UNDO_DISABLED: Constants.NAME + ".undoDisabled", // Disabled - nop
         REDO: Constants.NAME + ".redo", // From command Palette
         REDO_FO: Constants.NAME + ".redoFromOutline", // from button, return focus on OUTLINE
+        REDO_DISABLED: Constants.NAME + ".redoDisabled", // Disabled - nop
         EXECUTE: Constants.NAME + ".executeScript",
         SHOW_BODY: Constants.NAME + ".showBody",
         SHOW_OUTLINE: Constants.NAME + ".showOutline",
         SHOW_LOG: Constants.NAME + ".showLogPane",
-        SORT_CHILDREN: Constants.NAME + ".sortChildrenSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SORT_CHILDREN: Constants.NAME + ".sortChildrenSelection",
+        SORT_CHILDREN_FO: Constants.NAME + ".sortChildrenSelectionFromOutline",
         SORT_SIBLING: Constants.NAME + ".sortSiblingsSelection",
         SORT_SIBLING_FO: Constants.NAME + ".sortSiblingsSelectionFromOutline",
         CONTRACT_ALL: Constants.NAME + ".contractAll", // From command Palette
@@ -521,14 +574,43 @@ export class Constants {
         CLONE_MARKED_NODES: Constants.NAME + ".cloneMarkedNodes",
         DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
         MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes",
-        // * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - not implemented yet #24
         START_SEARCH: Constants.NAME + ".startSearch",
+        FIND_ALL: Constants.NAME + ".findAll",
         FIND_NEXT: Constants.NAME + ".findNext",
+        FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
         FIND_PREVIOUS: Constants.NAME + ".findPrevious",
+        FIND_PREVIOUS_FO: Constants.NAME + ".findPreviousFromOutline",
+        REPLACE: Constants.NAME + ".replace",
+        REPLACE_FO: Constants.NAME + ".replaceFromOutline",
+        REPLACE_THEN_FIND: Constants.NAME + ".replaceThenFind",
+        REPLACE_THEN_FIND_FO: Constants.NAME + ".replaceThenFindFromOutline",
+        REPLACE_ALL: Constants.NAME + ".replaceAll",
         CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
         CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
         CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
         CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
+        GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
+        SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
+        SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
+        SET_FIND_SUBOUTLINE_ONLY_OPTION: Constants.NAME + ".setFindSuboutlineOnlyOption",
+        TOGGLE_FIND_IGNORE_CASE_OPTION: Constants.NAME + ".toggleFindIgnoreCaseOption",
+        TOGGLE_FIND_MARK_CHANGES_OPTION: Constants.NAME + ".toggleFindMarkChangesOption",
+        TOGGLE_FIND_MARK_FINDS_OPTION: Constants.NAME + ".toggleFindMarkFindsOption",
+        TOGGLE_FIND_REGEXP_OPTION: Constants.NAME + ".toggleFindRegexpOption",
+        TOGGLE_FIND_WORD_OPTION: Constants.NAME + ".toggleFindWordOption",
+        TOGGLE_FIND_SEARCH_BODY_OPTION: Constants.NAME + ".toggleFindSearchBodyOption",
+        TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
+    };
+
+    /**
+     * * Overridden 'good' minibuffer commands
+     */
+    public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
+        "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
+        "redo": Constants.COMMANDS.REDO,
+        "undo": Constants.COMMANDS.UNDO,
+        "clone-find-all": Constants.COMMANDS.CLONE_FIND_ALL,
+        "clone-find-all-flattened": Constants.COMMANDS.CLONE_FIND_ALL_FLATTENED
     };
 
 }
