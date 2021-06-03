@@ -2741,7 +2741,7 @@ class LeoBridgeIntegController:
 
             # get selection from wrapper instead if its the selected node
             if self.commander.p.v.gnx == w_p.v.gnx:
-                print("in GBS -> SAME AS self.commander.p SO USING FROM WRAPPER")
+                # print("in GBS -> SAME AS self.commander.p SO USING FROM WRAPPER")
                 w_active = w_wrapper.getInsertPoint()
                 w_start, w_end = w_wrapper.getSelectionRange(True)
                 w_scroll = w_wrapper.getYScrollPosition()
@@ -2885,7 +2885,7 @@ class LeoBridgeIntegController:
         w_body = ""
         w_v = None
         if self.commander.p.v.gnx == w_gnx:
-            print('Set Selection! OK SAME GNX: ' + self.commander.p.v.gnx)
+            # print('Set Selection! OK SAME GNX: ' + self.commander.p.v.gnx)
             w_same = True
             w_v = self.commander.p.v
         else:
@@ -2921,8 +2921,8 @@ class LeoBridgeIntegController:
             w_endSel = f_convert(
                 w_body, w_end['line'], w_end['col'])
 
-        print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
-              " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
+        # print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
+        #       " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
 
         # If it's the currently selected node set the wrapper's states too
 

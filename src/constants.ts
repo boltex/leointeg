@@ -371,11 +371,11 @@ export class Constants {
         CONTRACT_ALL: "contractAllHeadlines", // * Direct Leo Command
         GET_STATES: "!get_ui_states", // "getStates",
         // * Leo Documents
-        GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles", // TODO : contains selection
-        SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile", // TODO : use index instead of filename
+        GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles",
+        SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile",
         OPEN_FILE: "!open_file", // "openFile",
         IMPORT_ANY_FILE: "!import_any_file", // "importAnyFile",
-        OPEN_FILES: "!open_files", //  "openFiles", // TODO : Sends an array of paths instead: for opening many files at once
+        OPEN_FILES: "!open_files", //  "openFiles",
         CLOSE_FILE: "!close_file", // "closeFile",
         SAVE_FILE: "!save_file", // "saveFile",
         // * @-Buttons
@@ -462,14 +462,14 @@ export class Constants {
         RECENT_FILES: Constants.NAME + ".recentLeoFiles", // shows recent Leo files, opens one on selection
         SWITCH_FILE: Constants.NAME + ".switchLeoFile",
         NEW_FILE: Constants.NAME + ".newLeoFile",
-        SAVE_FILE: Constants.NAME + ".saveLeoFile", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
-        SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SAVE_FILE: Constants.NAME + ".saveLeoFile",
+        SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline",
         SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
         CLOSE_FILE: Constants.NAME + ".closeLeoFile",
         CLICK_BUTTON: Constants.NAME + ".clickButton",
         REMOVE_BUTTON: Constants.NAME + ".removeButton",
         MINIBUFFER: Constants.NAME + ".minibuffer",
-        GIT_DIFF: Constants.NAME + ".gitDiff", // TODO : Proof of concept leoCommand
+        GIT_DIFF: Constants.NAME + ".gitDiff", // TODO : Test & Fix this Proof of concept leoCommand
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",
         OPEN_ASIDE: Constants.NAME + ".openAside",
@@ -498,7 +498,8 @@ export class Constants {
         SHOW_BODY: Constants.NAME + ".showBody",
         SHOW_OUTLINE: Constants.NAME + ".showOutline",
         SHOW_LOG: Constants.NAME + ".showLogPane",
-        SORT_CHILDREN: Constants.NAME + ".sortChildrenSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+        SORT_CHILDREN: Constants.NAME + ".sortChildrenSelection",
+        SORT_CHILDREN_FO: Constants.NAME + ".sortChildrenSelectionFromOutline",
         SORT_SIBLING: Constants.NAME + ".sortSiblingsSelection",
         SORT_SIBLING_FO: Constants.NAME + ".sortSiblingsSelectionFromOutline",
         CONTRACT_ALL: Constants.NAME + ".contractAll", // From command Palette

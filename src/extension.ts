@@ -500,6 +500,13 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: false,
             keepSelection: true
         })],
+        [CMD.SORT_CHILDREN_FO, () => w_leo.nodeCommand({
+            action: BRIDGE.SORT_CHILDREN,
+            node: U,
+            refreshType: REFRESH_TREE,
+            fromOutline: true,
+            keepSelection: true
+        })],
         [CMD.SORT_SIBLING, () => w_leo.nodeCommand({
             action: BRIDGE.SORT_SIBLINGS,
             node: U,

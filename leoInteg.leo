@@ -1947,6 +1947,13 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: false,
     keepSelection: true
 })],
+[CMD.SORT_CHILDREN_FO, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.SORT_CHILDREN,
+    node: U,
+    refreshType: REFRESH_TREE,
+    fromOutline: true,
+    keepSelection: true
+})],
 [CMD.SORT_SIBLING, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.SORT_SIBLINGS,
     node: U,
@@ -2932,6 +2939,11 @@ print('done')
   "title": "Sort Children"
 },
 {
+  "command": "leointeg.sortChildrenSelectionFromOutline",
+  "category": "Leo",
+  "title": "Sort Children"
+},
+{
   "command": "leointeg.sortSiblingsSelection",
   "category": "Leo",
   "title": "Sort Siblings"
@@ -3687,6 +3699,10 @@ print('done')
 },
 {
   "command": "leointeg.demoteSelectionFromOutline",
+  "when": "false"
+},
+{
+  "command": "leointeg.sortChildrenSelectionFromOutline",
   "when": "false"
 },
 {
@@ -5530,11 +5546,11 @@ public static LEOBRIDGE = {
     CONTRACT_ALL: "contractAllHeadlines", // * Direct Leo Command
     GET_STATES: "!get_ui_states", // "getStates",
     // * Leo Documents
-    GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles", // TODO : contains selection
-    SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile", // TODO : use index instead of filename
+    GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles",
+    SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile",
     OPEN_FILE: "!open_file", // "openFile",
     IMPORT_ANY_FILE: "!import_any_file", // "importAnyFile",
-    OPEN_FILES: "!open_files", //  "openFiles", // TODO : Sends an array of paths instead: for opening many files at once
+    OPEN_FILES: "!open_files", //  "openFiles",
     CLOSE_FILE: "!close_file", // "closeFile",
     SAVE_FILE: "!save_file", // "saveFile",
     // * @-Buttons
@@ -5622,14 +5638,14 @@ public static COMMANDS = {
     RECENT_FILES: Constants.NAME + ".recentLeoFiles", // shows recent Leo files, opens one on selection
     SWITCH_FILE: Constants.NAME + ".switchLeoFile",
     NEW_FILE: Constants.NAME + ".newLeoFile",
-    SAVE_FILE: Constants.NAME + ".saveLeoFile", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
-    SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+    SAVE_FILE: Constants.NAME + ".saveLeoFile",
+    SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline",
     SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
     CLOSE_FILE: Constants.NAME + ".closeLeoFile",
     CLICK_BUTTON: Constants.NAME + ".clickButton",
     REMOVE_BUTTON: Constants.NAME + ".removeButton",
     MINIBUFFER: Constants.NAME + ".minibuffer",
-    GIT_DIFF: Constants.NAME + ".gitDiff", // TODO : Proof of concept leoCommand
+    GIT_DIFF: Constants.NAME + ".gitDiff", // TODO : Test &amp; Fix this Proof of concept leoCommand
     // * Outline selection
     SELECT_NODE: Constants.NAME + ".selectTreeNode",
     OPEN_ASIDE: Constants.NAME + ".openAside",
@@ -5658,7 +5674,8 @@ public static COMMANDS = {
     SHOW_BODY: Constants.NAME + ".showBody",
     SHOW_OUTLINE: Constants.NAME + ".showOutline",
     SHOW_LOG: Constants.NAME + ".showLogPane",
-    SORT_CHILDREN: Constants.NAME + ".sortChildrenSelection", // TODO : add to #34 @boltex detect focused panel for command-palette to return focus where appropriate
+    SORT_CHILDREN: Constants.NAME + ".sortChildrenSelection",
+    SORT_CHILDREN_FO: Constants.NAME + ".sortChildrenSelectionFromOutline",
     SORT_SIBLING: Constants.NAME + ".sortSiblingsSelection",
     SORT_SIBLING_FO: Constants.NAME + ".sortSiblingsSelectionFromOutline",
     CONTRACT_ALL: Constants.NAME + ".contractAll", // From command Palette
@@ -6669,7 +6686,6 @@ import { BodyTimeInfo } from "./types";
 </t>
 <t tx="felix.20200718040540.2">/**
  * * Body panes implementation as a file system using "leo" as a scheme identifier
- * TODO : Replace save/rename procedure to overcome API change for undos.
  * Saving and renaming prevents flickering and prevents undos to 'traverse through' different gnx
  */
 export class LeoBodyProvider implements vscode.FileSystemProvider {
@@ -12568,7 +12584,7 @@ def tag_configure(self, colorName, **keys): pass
 
         # get selection from wrapper instead if its the selected node
         if self.commander.p.v.gnx == w_p.v.gnx:
-            print("in GBS -&gt; SAME AS self.commander.p SO USING FROM WRAPPER")
+            # print("in GBS -&gt; SAME AS self.commander.p SO USING FROM WRAPPER")
             w_active = w_wrapper.getInsertPoint()
             w_start, w_end = w_wrapper.getSelectionRange(True)
             w_scroll = w_wrapper.getYScrollPosition()
@@ -12619,7 +12635,7 @@ def tag_configure(self, colorName, **keys): pass
     w_body = ""
     w_v = None
     if self.commander.p.v.gnx == w_gnx:
-        print('Set Selection! OK SAME GNX: ' + self.commander.p.v.gnx)
+        # print('Set Selection! OK SAME GNX: ' + self.commander.p.v.gnx)
         w_same = True
         w_v = self.commander.p.v
     else:
@@ -12655,8 +12671,8 @@ def tag_configure(self, colorName, **keys): pass
         w_endSel = f_convert(
             w_body, w_end['line'], w_end['col'])
 
-    print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
-          " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
+    # print("setSelection (same as selected): " + str(w_same) + " w_insert " + str(w_insert) +
+    #       " w_startSel " + str(w_startSel) + " w_endSel " + str(w_endSel))
 
     # If it's the currently selected node set the wrapper's states too
 
