@@ -618,6 +618,11 @@
         }
       },
       {
+        "command": "leointeg.importAnyFile",
+        "title": "Import File",
+        "category": "Leo"
+      },
+      {
         "command": "leointeg.recentLeoFiles",
         "category": "Leo",
         "title": "Recent Files"
@@ -1506,6 +1511,10 @@
         {
           "command": "leointeg.openLeoFile",
           "when": "leoBridgeReady"
+        },
+        {
+          "command": "leointeg.importAnyFile",
+          "when": "leoBridgeReady && leoTreeOpened"
         },
         {
           "command": "leointeg.recentLeoFiles",

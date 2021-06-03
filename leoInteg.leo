@@ -150,6 +150,7 @@
 <v t="felix.20200924205915.1"><vh>open_files</vh></v>
 <v t="felix.20191126232434.14"><vh>close_file</vh></v>
 <v t="felix.20200216160305.1"><vh>save_file</vh></v>
+<v t="felix.20210602203830.1"><vh>import_any_file</vh></v>
 </v>
 <v t="felix.20210523154320.1"><vh>Search</vh>
 <v t="felix.20210523154326.1"><vh>get_search_settings</vh></v>
@@ -352,6 +353,7 @@
 <v t="felix.20210530233134.1"><vh>find panel ids</vh></v>
 <v t="felix.20200718020912.5"><vh>workbench interface panels</vh></v>
 <v t="felix.20200718020912.6"><vh>user messages</vh></v>
+<v t="felix.20210602213308.1"><vh>import file types</vh></v>
 <v t="felix.20200718020912.7"><vh>ask/save buttons</vh></v>
 <v t="felix.20201126235315.1"><vh>at-buttons strings</vh></v>
 <v t="felix.20200718020912.8"><vh>configuration keys</vh></v>
@@ -364,6 +366,7 @@
 <v t="felix.20201103000337.1"><vh>body language code strings</vh></v>
 <v t="felix.20200718020912.13"><vh>leoBridge action strings</vh></v>
 <v t="felix.20200718020912.15"><vh>commands strings</vh></v>
+<v t="felix.20210602151654.1"><vh>minibuffer overridden commands</vh></v>
 </v>
 </v>
 <v t="felix.20200718031424.1"><vh>@clean src/extension.ts</vh>
@@ -448,6 +451,7 @@
 <v t="felix.20200718170429.1"><vh>@clean src/leoFileBrowser.ts</vh>
 <v t="felix.20200718170429.2"><vh>class LeoFilesBrowser</vh>
 <v t="felix.20200718170429.3"><vh>_getBestOpenFolderUri</vh></v>
+<v t="felix.20210602160216.1"><vh>getImportFileUrl</vh></v>
 <v t="felix.20200718170429.4"><vh>getLeoFileUrl</vh></v>
 </v>
 </v>
@@ -563,6 +567,7 @@
 <v t="felix.20200719025231.64"><vh>closeLeoFile</vh></v>
 <v t="felix.20200719025231.65"><vh>newLeoFile</vh></v>
 <v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
+<v t="felix.20210602155312.1"><vh>importFile</vh></v>
 </v>
 <v t="felix.20200719033306.1"><vh>AtButtons</vh>
 <v t="ekr.20200815090517.1"><vh>clickAtButton</vh></v>
@@ -1510,6 +1515,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.NEW_FILE, () =&gt; w_leo.newLeoFile()],
 
 [CMD.OPEN_FILE, (p_uri?: vscode.Uri) =&gt; w_leo.openLeoFile(p_uri)],
+[CMD.IMPORT_ANY_FILE, (p_uri?: vscode.Uri) =&gt; w_leo.importAnyFile(p_uri)],
 
 [CMD.RECENT_FILES, () =&gt; w_leo.showRecentLeoFiles()],
 [CMD.SAVE_AS_FILE, () =&gt; w_leo.saveAsLeoFile()],
@@ -2540,6 +2546,11 @@ print('done')
   }
 },
 {
+  "command": "leointeg.importAnyFile",
+  "title": "Import File",
+  "category": "Leo"
+},
+{
   "command": "leointeg.recentLeoFiles",
   "category": "Leo",
   "title": "Recent Files"
@@ -3289,6 +3300,10 @@ print('done')
 <t tx="ekr.20200815123601.47">{
   "command": "leointeg.openLeoFile",
   "when": "leoBridgeReady"
+},
+{
+  "command": "leointeg.importAnyFile",
+  "when": "leoBridgeReady &amp;&amp; leoTreeOpened"
 },
 {
   "command": "leointeg.recentLeoFiles",
@@ -4685,8 +4700,8 @@ if __name__ == '__main__':
         gui='nullGui',
         loadPlugins=True,   # True: attempt to load plugins.
         readSettings=True,  # True: read standard settings files.
-        silent=True,        # True: don't print signon messages.
-        # True: prints messages that would be sent to the log pane.
+        silent=True,       # True: don't print signon messages.
+        # True: prints what would be sent to the log pane.
         verbose=False,
     )
     self.g = self.bridge.globals()
@@ -4718,6 +4733,8 @@ if __name__ == '__main__':
     self.g.app.gui.runAskYesNoDialog = self._returnYes
     self.g.app.gui.show_find_success = self._show_find_success
     self.headlineWidget = self.g.bunch(_name='tree')
+
+    self.g.app.loadManager.createAllImporterData()
 
     # * setup leoBackground to get messages from leo
     try:
@@ -5516,6 +5533,7 @@ public static LEOBRIDGE = {
     GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles", // TODO : contains selection
     SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile", // TODO : use index instead of filename
     OPEN_FILE: "!open_file", // "openFile",
+    IMPORT_ANY_FILE: "!import_any_file", // "importAnyFile",
     OPEN_FILES: "!open_files", //  "openFiles", // TODO : Sends an array of paths instead: for opening many files at once
     CLOSE_FILE: "!close_file", // "closeFile",
     SAVE_FILE: "!save_file", // "saveFile",
@@ -5600,6 +5618,7 @@ public static COMMANDS = {
     CONNECT: Constants.NAME + ".connectToServer",
     SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
     OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
+    IMPORT_ANY_FILE: Constants.NAME + ".importAnyFile",
     RECENT_FILES: Constants.NAME + ".recentLeoFiles", // shows recent Leo files, opens one on selection
     SWITCH_FILE: Constants.NAME + ".switchLeoFile",
     NEW_FILE: Constants.NAME + ".newLeoFile",
@@ -7388,6 +7407,7 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
                 .showOpenDialog({
                     canSelectMany: false,
                     defaultUri: this._getBestOpenFolderUri(),
+                    canSelectFolders: false,
                     filters: w_filters
                 })
                 .then(p_chosenLeoFile =&gt; {
@@ -11716,8 +11736,8 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         'write-missing-at-file-nodes',
         'write-outline-only',
 
-        'clone-find-all',
-        'clone-find-all-flattened',
+        'clone-find-all',  # Should be overridden by leointeg
+        'clone-find-all-flattened',   # Should be overridden by leointeg
         'clone-find-all-flattened-marked',
         'clone-find-all-marked',
         'clone-find-parents',
@@ -11746,7 +11766,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 
         'pdb',
 
-        'redo',
+        'redo',  # Should be overridden by leointeg
         'rst3',
         'run-all-unit-tests-externally',
         'run-all-unit-tests-locally',
@@ -11756,7 +11776,7 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
         'run-selected-unit-tests-locally',
         'run-tests',
 
-        'undo',
+        'undo',  # Should be overridden by leointeg
 
         'xdb',
         # Beautify, blacken, fstringify...
@@ -12897,6 +12917,11 @@ public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
             return vscode.window.showQuickPick(q_commandList, w_options);
         })
         .then((p_picked) =&gt; {
+
+            if (p_picked &amp;&amp; p_picked.label &amp;&amp;
+                Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]) {
+                return vscode.commands.executeCommand(Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]);
+            }
             if (p_picked &amp;&amp; p_picked.func) {
                 const w_commandResult = this.nodeCommand({
                     action: p_picked.func,
@@ -17006,6 +17031,170 @@ public gotoGlobalLine(): void {
             }
         });
 }
+
+</t>
+<t tx="felix.20210602151654.1">/**
+ * * Overridden 'good' minibuffer commands
+ */
+public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
+    "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
+    "redo": Constants.COMMANDS.REDO,
+    "undo": Constants.COMMANDS.UNDO,
+    "clone-find-all": Constants.COMMANDS.CLONE_FIND_ALL,
+    "clone-find-all-flattened": Constants.COMMANDS.CLONE_FIND_ALL_FLATTENED
+};
+
+</t>
+<t tx="felix.20210602155312.1">/**
+ * * Import any File(s)
+ */
+public importAnyFile(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
+    return this._isBusyTriggerSave(true, true)
+        .then((p_saveResult) =&gt; {
+            let q_importFile: Promise&lt;LeoBridgePackage | undefined&gt;; // Promise for opening a file
+            if (p_leoFileUri &amp;&amp; p_leoFileUri.fsPath.trim()) {
+                const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, "/");
+                q_importFile = this.sendAction(Constants.LEOBRIDGE.IMPORT_ANY_FILE, JSON.stringify({ filenames: w_fixedFilePath }));
+            } else {
+                q_importFile = this._leoFilesBrowser.getImportFileUrls()
+                    .then(p_chosenLeoFiles =&gt; {
+                        if (p_chosenLeoFiles.length) {
+                            return this.sendAction(Constants.LEOBRIDGE.IMPORT_ANY_FILE, JSON.stringify({ filenames: p_chosenLeoFiles }));
+                        } else {
+                            return Promise.resolve(undefined);
+                        }
+                    }, p_errorGetFile =&gt; {
+                        return Promise.reject(p_errorGetFile);
+                    });
+            }
+            return q_importFile;
+        })
+        .then((p_importFileResult: LeoBridgePackage | undefined) =&gt; {
+            if (p_importFileResult) {
+                return this.launchRefresh({ tree: true, body: true, documents: true, buttons: false, states: true }, false);
+            } else {
+                return Promise.resolve(undefined);
+            }
+        }, p_errorImport =&gt; {
+            console.log('in .then not imported'); // TODO : IS REJECTION BEHAVIOR NECESSARY HERE TOO?
+            return Promise.reject(p_errorImport);
+        });
+}
+
+</t>
+<t tx="felix.20210602160216.1">/**
+ * * Open a file browser to let user choose file(s) to import
+ * @param p_fileType can be used to restrict to a particular file type
+ * @returns a promise of an array of filepath+name strings
+ */
+public getImportFileUrls(p_fileType?: string): Promise&lt;string[]&gt; {
+    if (this._fileBrowserActive) {
+        return Promise.resolve([]);
+    }
+    this._fileBrowserActive = true;
+    let w_types: { [name: string]: string[]; };
+    if (p_fileType &amp;&amp; Constants.IMPORT_FILE_TYPES[p_fileType]) {
+        w_types = {};
+        w_types[p_fileType] = Constants.IMPORT_FILE_TYPES[p_fileType];
+    } else {
+        w_types = Constants.IMPORT_FILE_TYPES;
+    }
+    return new Promise((p_resolve, p_reject) =&gt; {
+        vscode.window
+            .showOpenDialog({
+                canSelectMany: true,
+                openLabel: "Import File",
+                canSelectFolders: false,
+                filters: w_types,
+                defaultUri: this._getBestOpenFolderUri()
+            })
+            .then(p_chosenLeoFiles =&gt; {
+                this._fileBrowserActive = false;
+                if (p_chosenLeoFiles) {
+                    // array instead of single string
+                    const w_result = p_chosenLeoFiles.map(function (e) {
+                        return e.fsPath.replace(/\\/g, "/").trim();
+                    });
+                    p_resolve(w_result); // Replace backslashes for windows support
+                } else {
+                    p_resolve([]);
+                }
+            });
+    });
+}
+</t>
+<t tx="felix.20210602203830.1">def import_any_file(self, param):
+    """
+    Import file(s) from array of file names
+    """
+    c = self.commander
+    g = self.g
+    ic = c.importCommands
+    names = param.get('filenames')
+    if names:
+        g.chdir(names[0])
+    if not names:
+        return self._outputError("Error in import_any_file no filenames found")
+
+    # New in Leo 4.9: choose the type of import based on the extension.
+    derived = [z for z in names if c.looksLikeDerivedFile(z)]
+    others = [z for z in names if z not in derived]
+    if derived:
+        ic.importDerivedFiles(parent=c.p, paths=derived)
+    for fn in others:
+        junk, ext = g.os_path_splitext(fn)
+        ext = ext.lower()  # #1522
+        if ext.startswith('.'):
+            ext = ext[1:]
+        if ext == 'csv':
+            ic.importMindMap([fn])
+        elif ext in ('cw', 'cweb'):
+            ic.importWebCommand([fn], "cweb")
+        # Not useful. Use @auto x.json instead.
+        # elif ext == 'json':
+            # ic.importJSON([fn])
+        elif fn.endswith('mm.html'):
+            ic.importFreeMind([fn])
+        elif ext in ('nw', 'noweb'):
+            ic.importWebCommand([fn], "noweb")
+        elif ext == 'more':
+            # (Félix) leoImport Should be on c?
+            c.leoImport.MORE_Importer(c).import_file(fn)  # #1522.
+        elif ext == 'txt':
+            # (Félix) import_txt_file Should be on c?
+            # #1522: Create an @edit node.
+            c.import_txt_file(c, fn)
+        else:
+            # Make *sure* that parent.b is empty.
+            last = c.lastTopLevel()
+            parent = last.insertAfter()
+            parent.v.h = 'Imported Files'
+            ic.importFilesCommand(
+                files=[fn],
+                parent=parent,
+                treeType='@auto',  # was '@clean'
+                # Experimental: attempt to use permissive section ref logic.
+            )
+    return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+</t>
+<t tx="felix.20210602213308.1">/**
+ * * Possible import file types
+ */
+public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
+    "All files": ["*"],
+    "C/C++ files": ["c", "cpp", "h", "hpp"],
+    "FreeMind files": ["mm.html"],
+    "Java files": ["java"],
+    "JavaScript files": ["js"],
+    // "JSON files": ["json"],
+    "Mindjet files": ["csv"],
+    "MORE files": ["MORE"],
+    "Lua files": ["lua"],
+    "Pascal files": ["pas"],
+    "Python files": ["py"],
+    "Text files": ["txt"],
+};
 
 </t>
 </tnodes>

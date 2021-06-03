@@ -623,8 +623,8 @@ class LeoBridgeIntegController:
             gui='nullGui',
             loadPlugins=True,   # True: attempt to load plugins.
             readSettings=True,  # True: read standard settings files.
-            silent=True,        # True: don't print signon messages.
-            # True: prints messages that would be sent to the log pane.
+            silent=True,       # True: don't print signon messages.
+            # True: prints what would be sent to the log pane.
             verbose=False,
         )
         self.g = self.bridge.globals()
@@ -656,6 +656,8 @@ class LeoBridgeIntegController:
         self.g.app.gui.runAskYesNoDialog = self._returnYes
         self.g.app.gui.show_find_success = self._show_find_success
         self.headlineWidget = self.g.bunch(_name='tree')
+
+        self.g.app.loadManager.createAllImporterData()
 
         # * setup leoBackground to get messages from leo
         try:
@@ -1107,6 +1109,60 @@ class LeoBridgeIntegController:
                 print("Error while saving", param['name'], flush=True)
                 print(str(e),  param['name'],  flush=True)
 
+        return self.sendLeoBridgePackage()  # Just send empty as 'ok'
+
+    def import_any_file(self, param):
+        """
+        Import file(s) from array of file names
+        """
+        c = self.commander
+        g = self.g
+        ic = c.importCommands
+        names = param.get('filenames')
+        if names:
+            g.chdir(names[0])
+        if not names:
+            return self._outputError("Error in import_any_file no filenames found")
+
+        # New in Leo 4.9: choose the type of import based on the extension.
+        derived = [z for z in names if c.looksLikeDerivedFile(z)]
+        others = [z for z in names if z not in derived]
+        if derived:
+            ic.importDerivedFiles(parent=c.p, paths=derived)
+        for fn in others:
+            junk, ext = g.os_path_splitext(fn)
+            ext = ext.lower()  # #1522
+            if ext.startswith('.'):
+                ext = ext[1:]
+            if ext == 'csv':
+                ic.importMindMap([fn])
+            elif ext in ('cw', 'cweb'):
+                ic.importWebCommand([fn], "cweb")
+            # Not useful. Use @auto x.json instead.
+            # elif ext == 'json':
+                # ic.importJSON([fn])
+            elif fn.endswith('mm.html'):
+                ic.importFreeMind([fn])
+            elif ext in ('nw', 'noweb'):
+                ic.importWebCommand([fn], "noweb")
+            elif ext == 'more':
+                # (Félix) leoImport Should be on c?
+                c.leoImport.MORE_Importer(c).import_file(fn)  # #1522.
+            elif ext == 'txt':
+                # (Félix) import_txt_file Should be on c?
+                # #1522: Create an @edit node.
+                c.import_txt_file(c, fn)
+            else:
+                # Make *sure* that parent.b is empty.
+                last = c.lastTopLevel()
+                parent = last.insertAfter()
+                parent.v.h = 'Imported Files'
+                ic.importFilesCommand(
+                    files=[fn],
+                    parent=parent,
+                    treeType='@auto',  # was '@clean'
+                    # Experimental: attempt to use permissive section ref logic.
+                )
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     def get_search_settings(self, param):
@@ -2211,8 +2267,8 @@ class LeoBridgeIntegController:
             'write-missing-at-file-nodes',
             'write-outline-only',
 
-            'clone-find-all',
-            'clone-find-all-flattened',
+            'clone-find-all',  # Should be overridden by leointeg
+            'clone-find-all-flattened',   # Should be overridden by leointeg
             'clone-find-all-flattened-marked',
             'clone-find-all-marked',
             'clone-find-parents',
@@ -2241,7 +2297,7 @@ class LeoBridgeIntegController:
 
             'pdb',
 
-            'redo',
+            'redo',  # Should be overridden by leointeg
             'rst3',
             'run-all-unit-tests-externally',
             'run-all-unit-tests-locally',
@@ -2251,7 +2307,7 @@ class LeoBridgeIntegController:
             'run-selected-unit-tests-locally',
             'run-tests',
 
-            'undo',
+            'undo',  # Should be overridden by leointeg
 
             'xdb',
             # Beautify, blacken, fstringify...

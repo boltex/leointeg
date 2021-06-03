@@ -68,6 +68,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.NEW_FILE, () => w_leo.newLeoFile()],
 
         [CMD.OPEN_FILE, (p_uri?: vscode.Uri) => w_leo.openLeoFile(p_uri)],
+        [CMD.IMPORT_ANY_FILE, (p_uri?: vscode.Uri) => w_leo.importAnyFile(p_uri)],
 
         [CMD.RECENT_FILES, () => w_leo.showRecentLeoFiles()],
         [CMD.SAVE_AS_FILE, () => w_leo.saveAsLeoFile()],

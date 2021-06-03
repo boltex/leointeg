@@ -1639,6 +1639,11 @@ export class LeoIntegration {
                 return vscode.window.showQuickPick(q_commandList, w_options);
             })
             .then((p_picked) => {
+
+                if (p_picked && p_picked.label &&
+                    Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]) {
+                    return vscode.commands.executeCommand(Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]);
+                }
                 if (p_picked && p_picked.func) {
                     const w_commandResult = this.nodeCommand({
                         action: p_picked.func,
@@ -2353,6 +2358,42 @@ export class LeoIntegration {
             }, p_errorOpen => {
                 console.log('in .then not opened or already opened'); // TODO : IS REJECTION BEHAVIOR NECESSARY HERE TOO?
                 return Promise.reject(p_errorOpen);
+            });
+    }
+
+    /**
+     * * Import any File(s)
+     */
+    public importAnyFile(p_leoFileUri?: vscode.Uri): Thenable<unknown> {
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
+                let q_importFile: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
+                if (p_leoFileUri && p_leoFileUri.fsPath.trim()) {
+                    const w_fixedFilePath: string = p_leoFileUri.fsPath.replace(/\\/g, "/");
+                    q_importFile = this.sendAction(Constants.LEOBRIDGE.IMPORT_ANY_FILE, JSON.stringify({ filenames: w_fixedFilePath }));
+                } else {
+                    q_importFile = this._leoFilesBrowser.getImportFileUrls()
+                        .then(p_chosenLeoFiles => {
+                            if (p_chosenLeoFiles.length) {
+                                return this.sendAction(Constants.LEOBRIDGE.IMPORT_ANY_FILE, JSON.stringify({ filenames: p_chosenLeoFiles }));
+                            } else {
+                                return Promise.resolve(undefined);
+                            }
+                        }, p_errorGetFile => {
+                            return Promise.reject(p_errorGetFile);
+                        });
+                }
+                return q_importFile;
+            })
+            .then((p_importFileResult: LeoBridgePackage | undefined) => {
+                if (p_importFileResult) {
+                    return this.launchRefresh({ tree: true, body: true, documents: true, buttons: false, states: true }, false);
+                } else {
+                    return Promise.resolve(undefined);
+                }
+            }, p_errorImport => {
+                console.log('in .then not imported'); // TODO : IS REJECTION BEHAVIOR NECESSARY HERE TOO?
+                return Promise.reject(p_errorImport);
             });
     }
 

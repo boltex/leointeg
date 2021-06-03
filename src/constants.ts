@@ -143,6 +143,24 @@ export class Constants {
     };
 
     /**
+     * * Possible import file types
+     */
+    public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
+        "All files": ["*"],
+        "C/C++ files": ["c", "cpp", "h", "hpp"],
+        "FreeMind files": ["mm.html"],
+        "Java files": ["java"],
+        "JavaScript files": ["js"],
+        // "JSON files": ["json"],
+        "Mindjet files": ["csv"],
+        "MORE files": ["MORE"],
+        "Lua files": ["lua"],
+        "Pascal files": ["pas"],
+        "Python files": ["py"],
+        "Text files": ["txt"],
+    };
+
+    /**
      * * Choices offered when about to lose current changes to a Leo Document
      */
     public static ASK_SAVE_CHANGES_BUTTONS: vscode.MessageItem[] = [
@@ -356,6 +374,7 @@ export class Constants {
         GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles", // TODO : contains selection
         SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile", // TODO : use index instead of filename
         OPEN_FILE: "!open_file", // "openFile",
+        IMPORT_ANY_FILE: "!import_any_file", // "importAnyFile",
         OPEN_FILES: "!open_files", //  "openFiles", // TODO : Sends an array of paths instead: for opening many files at once
         CLOSE_FILE: "!close_file", // "closeFile",
         SAVE_FILE: "!save_file", // "saveFile",
@@ -439,6 +458,7 @@ export class Constants {
         CONNECT: Constants.NAME + ".connectToServer",
         SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
         OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
+        IMPORT_ANY_FILE: Constants.NAME + ".importAnyFile",
         RECENT_FILES: Constants.NAME + ".recentLeoFiles", // shows recent Leo files, opens one on selection
         SWITCH_FILE: Constants.NAME + ".switchLeoFile",
         NEW_FILE: Constants.NAME + ".newLeoFile",
@@ -579,6 +599,17 @@ export class Constants {
         TOGGLE_FIND_WORD_OPTION: Constants.NAME + ".toggleFindWordOption",
         TOGGLE_FIND_SEARCH_BODY_OPTION: Constants.NAME + ".toggleFindSearchBodyOption",
         TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
+    };
+
+    /**
+     * * Overridden 'good' minibuffer commands
+     */
+    public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
+        "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
+        "redo": Constants.COMMANDS.REDO,
+        "undo": Constants.COMMANDS.UNDO,
+        "clone-find-all": Constants.COMMANDS.CLONE_FIND_ALL,
+        "clone-find-all-flattened": Constants.COMMANDS.CLONE_FIND_ALL_FLATTENED
     };
 
 }

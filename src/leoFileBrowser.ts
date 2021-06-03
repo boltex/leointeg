@@ -37,6 +37,46 @@ export class LeoFilesBrowser {
     }
 
     /**
+     * * Open a file browser to let user choose file(s) to import
+     * @param p_fileType can be used to restrict to a particular file type
+     * @returns a promise of an array of filepath+name strings
+     */
+    public getImportFileUrls(p_fileType?: string): Promise<string[]> {
+        if (this._fileBrowserActive) {
+            return Promise.resolve([]);
+        }
+        this._fileBrowserActive = true;
+        let w_types: { [name: string]: string[]; };
+        if (p_fileType && Constants.IMPORT_FILE_TYPES[p_fileType]) {
+            w_types = {};
+            w_types[p_fileType] = Constants.IMPORT_FILE_TYPES[p_fileType];
+        } else {
+            w_types = Constants.IMPORT_FILE_TYPES;
+        }
+        return new Promise((p_resolve, p_reject) => {
+            vscode.window
+                .showOpenDialog({
+                    canSelectMany: true,
+                    openLabel: "Import File",
+                    canSelectFolders: false,
+                    filters: w_types,
+                    defaultUri: this._getBestOpenFolderUri()
+                })
+                .then(p_chosenLeoFiles => {
+                    this._fileBrowserActive = false;
+                    if (p_chosenLeoFiles) {
+                        // array instead of single string
+                        const w_result = p_chosenLeoFiles.map(function (e) {
+                            return e.fsPath.replace(/\\/g, "/").trim();
+                        });
+                        p_resolve(w_result); // Replace backslashes for windows support
+                    } else {
+                        p_resolve([]);
+                    }
+                });
+        });
+    }
+    /**
      * * Open a file browser and let the user choose a Leo file or cancel the operation
      * @param p_saveAsFlag Optional flag that will ask for a 'save' path+filename
      * @returns A promise resolving to a chosen path string, or rejected with an empty string if cancelled
@@ -71,6 +111,7 @@ export class LeoFilesBrowser {
                     .showOpenDialog({
                         canSelectMany: false,
                         defaultUri: this._getBestOpenFolderUri(),
+                        canSelectFolders: false,
                         filters: w_filters
                     })
                     .then(p_chosenLeoFile => {
