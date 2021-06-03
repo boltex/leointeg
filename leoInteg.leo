@@ -3878,6 +3878,12 @@ print('done')
 },
 {
   "command": "leointeg.showBody",
+  "key": "ctrl+g",
+  "mac": "cmd+g",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+},
+{
+  "command": "leointeg.showBody",
   "key": "tab",
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
 },
