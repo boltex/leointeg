@@ -8569,7 +8569,9 @@ or on [github](https://github.com/leo-editor/leo-editor), and vscode at [code.vi
 - Fixed automatic server startup and connection bugs.
 - Added Search functionality along with a 'find' panel.
 - Added goto global line and other clone-find related commands from Leo's 'Search' menu.
-- (...)
+- Added import-file(s) command - an alias of the import-any-file command form Leo.
+- Temporary fix for some minibuffer commands to override the widgets interactions (ex. clone-find-all, etc.)
+- Undo and redo icons are now faded out instead of disappearing when unavailable - to help with button shifting when clicking rapidly.
 
 @others
 </t>
