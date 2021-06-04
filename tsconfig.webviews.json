@@ -10,7 +10,7 @@
 		"skipLibCheck": true
 	},
 	"include": [
-		"src/webviews/apps/**/*"
+		"src/webviews/settingsPanel/**/*"
 	],
 	"exclude": [
 		"node_modules",

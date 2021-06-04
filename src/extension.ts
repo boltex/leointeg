@@ -4,7 +4,7 @@ import { Constants } from "./constants";
 import { ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
-import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
+import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
 
 /**
@@ -21,7 +21,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
     const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
     const w_leo: LeoIntegration = new LeoIntegration(p_context);
-    const w_leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(p_context, w_leo);
+    const w_leoSettingsWebview: LeoSettingsProvider = new LeoSettingsProvider(p_context, w_leo);
     const w_previousVersion = p_context.globalState.get<string>(Constants.VERSION_STATE_KEY);
     const w_start = process.hrtime(); // For calculating total startup time duration
 

@@ -1289,7 +1289,6 @@
         "category": "Leo",
         "title": "Toggle Find Whole Word Option"
       },
-
       {
         "command": "leointeg.toggleFindSearchBodyOption",
         "category": "Leo",
@@ -2109,7 +2108,7 @@
           "when": "view =~ /leoIntegration/ && leoTreeOpened && leoCanRedo",
           "group": "navigation@4"
         },
-          {
+        {
           "command": "leointeg.redoDisabled",
           "when": "view =~ /leoIntegration/ && leoTreeOpened && !leoCanRedo",
           "group": "navigation@4"

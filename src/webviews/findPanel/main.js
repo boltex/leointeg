@@ -19,59 +19,49 @@
         markChanges: false,
         searchHeadline: true,
         searchBody: true,
-        searchScope: 0 // 0 is entire outline (1: sub-outline, 2: node only)
+        searchScope: 0, // 0 is entire outline (1: sub-outline, 2: node only)
     };
 
     // Handle messages sent from the extension to the webview
-    window.addEventListener('message', event => {
+    window.addEventListener('message', (event) => {
         const message = event.data; // The json data that the extension sent
         switch (message.type) {
             // Focus and select all text in 'find' field
-            case 'selectFind':
-                {
-                    focusOnField('findText');
-                    break;
-                }
+            case 'selectFind': {
+                focusOnField('findText');
+                break;
+            }
             // Focus and select all text in 'replace' field
-            case 'selectReplace':
-                {
-                    focusOnField('replaceText');
-                    break;
-                }
-            case 'getSettings':
-                {
-                    getSettings();
-                    break;
-                }
-            case 'setSettings':
-                {
-                    setSettings(message.value);
-                    break;
-                }
-            case 'setSearchSetting':
-                {
-                    setSearchSetting(message.id);
-                    break;
-                }
-
+            case 'selectReplace': {
+                focusOnField('replaceText');
+                break;
+            }
+            case 'getSettings': {
+                getSettings();
+                break;
+            }
+            case 'setSettings': {
+                setSettings(message.value);
+                break;
+            }
+            case 'setSearchSetting': {
+                setSearchSetting(message.id);
+                break;
+            }
         }
     });
 
-    let inputIds = ["findText", "replaceText"];
+    let inputIds = ['findText', 'replaceText'];
     let checkboxIds = [
-        "wholeWord",
-        "ignoreCase",
-        "regExp",
-        "markFinds",
-        "markChanges",
-        "searchHeadline",
-        "searchBody"
+        'wholeWord',
+        'ignoreCase',
+        'regExp',
+        'markFinds',
+        'markChanges',
+        'searchHeadline',
+        'searchBody',
     ];
-    let radioIds = [
-        "entireOutline",
-        "subOutlineOnly",
-        "nodeOnly"
-    ];
+    let radioIds = ['entireOutline', 'subOutlineOnly', 'nodeOnly'];
 
     /**
      * @param {string} p_id
@@ -89,19 +79,19 @@
      */
     function setSettings(p_settings) {
         // When opening a Leo document, set default values of fields
-        inputIds.forEach(p_inputId => {
+        inputIds.forEach((p_inputId) => {
             //@ts-expect-error
             document.getElementById(p_inputId).value = p_settings[p_inputId];
             searchSettings[p_inputId] = p_settings[p_inputId];
-        })
-        checkboxIds.forEach(p_inputId => {
+        });
+        checkboxIds.forEach((p_inputId) => {
             //@ts-expect-error
             document.getElementById(p_inputId).checked = p_settings[p_inputId];
             searchSettings[p_inputId] = p_settings[p_inputId];
-        })
+        });
         //@ts-expect-error
-        document.getElementById(radioIds[p_settings["searchScope"]]).checked = true;
-        searchSettings.searchScope = p_settings["searchScope"];
+        document.getElementById(radioIds[p_settings['searchScope']]).checked = true;
+        searchSettings.searchScope = p_settings['searchScope'];
     }
 
     function sendSearchConfig() {
@@ -119,7 +109,7 @@
         }, 300);
     }
 
-    inputIds.forEach(p_inputId => {
+    inputIds.forEach((p_inputId) => {
         document.getElementById(p_inputId).onkeypress = function (p_event) {
             //@ts-expect-error
             if (!p_event) p_event = window.event;
@@ -132,34 +122,35 @@
                 vscode.postMessage({ type: 'leoFindNext' });
                 return false;
             }
-        }
-        document.getElementById(p_inputId).addEventListener("input", function (p_event) {
+        };
+        document.getElementById(p_inputId).addEventListener('input', function (p_event) {
             //@ts-expect-error
             searchSettings[p_inputId] = this.value;
             processChange();
-        })
+        });
     });
-    checkboxIds.forEach(p_inputId => {
-        document.getElementById(p_inputId).addEventListener("change", function (p_event) {
+    checkboxIds.forEach((p_inputId) => {
+        document.getElementById(p_inputId).addEventListener('change', function (p_event) {
             //@ts-expect-error
             searchSettings[p_inputId] = this.checked;
             processChange();
-        })
-
+        });
     });
-    radioIds.forEach(p_inputId => {
-        document.getElementById(p_inputId).addEventListener("change", function (p_event) {
-            //@ts-expect-error
-            searchSettings["searchScope"] = parseInt(document.querySelector('input[name="searchScope"]:checked').value);
+    radioIds.forEach((p_inputId) => {
+        document.getElementById(p_inputId).addEventListener('change', function (p_event) {
+            searchSettings['searchScope'] = parseInt(
+                //@ts-expect-error
+                document.querySelector('input[name="searchScope"]:checked').value
+            );
             processChange();
-        })
+        });
     });
 
     /**
      * @param {string} p_inputId
      */
     function toggleCheckbox(p_inputId) {
-        let w_checkbox = document.getElementById(p_inputId)
+        let w_checkbox = document.getElementById(p_inputId);
         let w_setTo = true;
         //@ts-expect-error
         if (w_checkbox.checked) {
@@ -180,8 +171,10 @@
     function setRadio(p_inputId) {
         //@ts-expect-error
         document.getElementById(p_inputId).checked = true;
-        //@ts-expect-error
-        searchSettings["searchScope"] = parseInt(document.querySelector('input[name="searchScope"]:checked').value);
+        searchSettings['searchScope'] = parseInt(
+            //@ts-expect-error
+            document.querySelector('input[name="searchScope"]:checked').value
+        );
         if (timer) {
             clearTimeout(timer);
         }
@@ -197,14 +190,16 @@
         if (!p_event) p_event = window.event;
         var keyCode = p_event.code || p_event.key;
 
-        if (keyCode === "F2") {
+        console.log('got keycode:', keyCode);
+
+        if (keyCode === 'F2') {
             p_event.preventDefault();
             p_event.stopPropagation();
             p_event.stopImmediatePropagation();
             vscode.postMessage({ type: 'leoFindPrevious' });
             return;
         }
-        if (keyCode === "F3") {
+        if (keyCode === 'F3') {
             p_event.preventDefault();
             p_event.stopPropagation();
             p_event.stopImmediatePropagation();
@@ -212,36 +207,36 @@
             return;
         }
 
-        if (keyCode === "f" && p_event.ctrlKey) {
+        if ((keyCode === 'f' || keyCode === 'KeyF') && p_event.ctrlKey) {
             p_event.preventDefault();
             p_event.stopPropagation();
             p_event.stopImmediatePropagation();
             focusOnField('findText');
             return;
-        };
-        if (keyCode === "t" && p_event.ctrlKey) {
+        }
+        if ((keyCode === 't' || keyCode === 'KeyT') && p_event.ctrlKey) {
             p_event.preventDefault();
             p_event.stopPropagation();
             p_event.stopImmediatePropagation();
             vscode.postMessage({ type: 'focusOnTree' });
             return;
-        };
-        if (keyCode === "=" && p_event.ctrlKey) {
+        }
+        if ((keyCode === '=' || keyCode === 'Equal') && p_event.ctrlKey) {
             p_event.preventDefault();
             p_event.stopPropagation();
             p_event.stopImmediatePropagation();
             vscode.postMessage({ type: 'replace' });
             return;
-        };
-        if (keyCode === "-" && p_event.ctrlKey) {
+        }
+        if ((keyCode === '-' || keyCode === 'Minus') && p_event.ctrlKey) {
             p_event.preventDefault();
             p_event.stopPropagation();
             p_event.stopImmediatePropagation();
             vscode.postMessage({ type: 'replaceThenFind' });
             return;
-        };
+        }
 
-        if (keyCode === "Tab") {
+        if (keyCode === 'Tab') {
             var actEl = document.activeElement;
             if (p_event.shiftKey) {
                 var firstEl = document.getElementById('findText');
@@ -266,43 +261,50 @@
 
         if (p_event.ctrlKey && p_event.altKey) {
             switch (keyCode) {
-                case "w":
-                    toggleCheckbox("wholeWord");
+                case 'w':
+                case 'KeyW':
+                    toggleCheckbox('wholeWord');
                     return;
-                case "i":
-                    toggleCheckbox("ignoreCase");
+                case 'i':
+                case 'KeyI':
+                    toggleCheckbox('ignoreCase');
                     return;
-                case "x":
-                    toggleCheckbox("regExp");
+                case 'x':
+                case 'KeyX':
+                    toggleCheckbox('regExp');
                     return;
-                case "f":
-                    toggleCheckbox("markFinds");
+                case 'f':
+                case 'KeyF':
+                    toggleCheckbox('markFinds');
                     return;
-                case "c":
-                    toggleCheckbox("markChanges");
+                case 'c':
+                case 'KeyC':
+                    toggleCheckbox('markChanges');
                     return;
-                case "h":
-                    toggleCheckbox("searchHeadline");
+                case 'h':
+                case 'KeyH':
+                    toggleCheckbox('searchHeadline');
                     return;
-                case "b":
-                    toggleCheckbox("searchBody");
+                case 'b':
+                case 'KeyB':
+                    toggleCheckbox('searchBody');
                     return;
-
-                case "e":
-                    setRadio("entireOutline");
+                case 'e':
+                case 'KeyE':
+                    setRadio('entireOutline');
                     return;
-                case "s":
-                    setRadio("subOutlineOnly");
+                case 's':
+                case 'KeyS':
+                    setRadio('subOutlineOnly');
                     return;
-                case "n":
-                    setRadio("nodeOnly");
+                case 'n':
+                case 'KeyN':
+                    setRadio('nodeOnly');
                     return;
                 default:
                     break;
             }
-
         }
-
     }
 
     // TODO :  CAPTURE FOCUS IN OVERALL PANEL AND SET CONTEXT-VAR OF 'FOCUSED PANEL'
@@ -336,7 +338,7 @@
     function getSettings() {
         // clear dirty, clear timer,
         if (dirty) {
-            dirty = false
+            dirty = false;
             clearTimeout(timer);
             sendSearchConfig(); // just trigger send settings
         }
@@ -344,7 +346,4 @@
 
     // FINISH STARTUP
     vscode.postMessage({ type: 'refreshSearchConfig' });
-
-}());
-
-
+})();
