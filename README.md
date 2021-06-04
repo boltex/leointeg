@@ -41,9 +41,9 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
-- Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, or the command palette:
+- Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
   - Open body panes to the side in any 'column'
-  - Outline edition commands
+  - Outline editing commands
   - Find operations
   - Clipboard operations
   - Undo/Redo commands
@@ -52,9 +52,7 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 ## Keybindings
 
-### Outline Commands
-
-|                            |     |            |                  |
+| Outline Commands           |     |            |                  |
 | :------------------------- | :-- | :--------- | :--------------- |
 | `Ctrl + I`                 |     |            | Insert Node      |
 | `Ctrl + H`                 |     |            | Edit Headline    |
@@ -65,20 +63,16 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 | `Ctrl + Backquote`         |     |            | Clone Node       |
 | `Ctrl + {`                 | and | `Ctrl + }` | Promote / Demote |
 
-### Moving Outline Nodes
-
-|            |     |                         |                    |
-| :--------- | :-- | :---------------------- | :----------------- |
-| `Ctrl + U` | or  | `Shift [+ Alt] + Up`    | Move Outline Up    |
-| `Ctrl + D` | or  | `Shift [+ Alt] + Down`  | Move Outline Down  |
-| `Ctrl + L` | or  | `Shift [+ Alt] + Left`  | Move Outline Left  |
-| `Ctrl + R` | or  | `Shift [+ Alt] + Right` | Move Outline Right |
+| Moving Outline Nodes |     |                         |                    |
+| :------------------- | :-- | :---------------------- | :----------------- |
+| `Ctrl + U`           | or  | `Shift [+ Alt] + Up`    | Move Outline Up    |
+| `Ctrl + D`           | or  | `Shift [+ Alt] + Down`  | Move Outline Down  |
+| `Ctrl + L`           | or  | `Shift [+ Alt] + Left`  | Move Outline Left  |
+| `Ctrl + R`           | or  | `Shift [+ Alt] + Right` | Move Outline Right |
 
 _Move Outline commands need the 'Alt' key modifier only when focus is on body pane._
 
-### Common Operations
-
-|                    |     |           |                     |
+| Common Operations  |     |           |                     |
 | :----------------- | :-- | :-------- | :------------------ |
 | `Alt + -`          |     |           | Contract All        |
 | `Ctrl + M`         |     |           | Mark / Unmark       |
@@ -93,9 +87,7 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | `F3`               |     |           | Find Next           |
 | `F2`               |     |           | Find Previous       |
 
-### Tree Navigation
-
-|                    |     |                 |                          |
+| Tree Navigation    |     |                 |                          |
 | :----------------- | :-- | :-------------- | :----------------------- |
 | `Alt + Home`       | or  | `Home` \*       | Go To First Visible Node |
 | `Alt + End`        |     |                 | Go To Last Sibling       |
@@ -134,7 +126,7 @@ This occurs when an outline node or a body pane has focus:
 
 ## Extension Settings
 
-### Open the command palette `CTRL+SHIFT+P` and start typing `leo settings` to access LeoInteg's welcome/settings screen
+### Open the command palette `Ctrl+Shift+P` and start typing `leo settings` to access LeoInteg's welcome/settings screen
 
 > _(Changes are auto-saved to the user's profile after 0.5 seconds)_
 
@@ -176,7 +168,7 @@ So select at least one character to use the previously assigned original keyboar
 
 Leo integration into VS Code is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
 
-The outline pane is made by implementing a [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics), while the body panes _virtual documents_ are made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api) and using the node's gnx as identifiers.
+The outline pane is made by implementing a [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics), while the body-pane's _virtual document_ is made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api) and using the node's gnx as identifier.
 
 ---
 

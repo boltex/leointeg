@@ -2,7 +2,7 @@
 
 ## 0.1.14
 
-- Rewrite of the leobridgeserver.py and made compatible with leoserver.py from Leo itself.
+- Rewrite of the leobridgeserver.py to be made compatible with the standards in leoserver.py from Leo.
 - Added option for specifying server file and path. Defaults to the internal leobridgeserver.py server.
 - Fixed cursor position and selection bugs.
 - Fixed automatic server startup and connection bugs.
@@ -11,6 +11,7 @@
 - Added import-file(s) command - an alias of the import-any-file command form Leo.
 - Temporary fix for some minibuffer commands to override the widgets interactions (ex. clone-find-all, etc.)
 - Undo and redo icons are now faded out instead of disappearing when unavailable - to help with button shifting when clicking rapidly.
+- Many other small bugfixes.
 
 ## 0.1.13
 
