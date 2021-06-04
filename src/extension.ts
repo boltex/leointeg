@@ -4,7 +4,7 @@ import { Constants } from "./constants";
 import { ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
-import { LeoSettingsWebview } from "./webviews/leoSettingsWebview";
+import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
 
 /**
@@ -21,7 +21,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
     const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
     const w_leo: LeoIntegration = new LeoIntegration(p_context);
-    const w_leoSettingsWebview: LeoSettingsWebview = new LeoSettingsWebview(p_context, w_leo);
+    const w_leoSettingsWebview: LeoSettingsProvider = new LeoSettingsProvider(p_context, w_leo);
     const w_previousVersion = p_context.globalState.get<string>(Constants.VERSION_STATE_KEY);
     const w_start = process.hrtime(); // For calculating total startup time duration
 
@@ -49,7 +49,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_commands: [string, (...args: any[]) => any][] = [
 
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        // ["leointeg.test", () => w_leo.test()], // Test function useful when debugging
+        ["leointeg.test", () => w_leo.test()], // Test function useful when debugging
         // ["leointeg.testFromOutline", () => w_leo.test(true)], // Test function useful when debugging.
 
         // * Define entries for all commands
@@ -68,6 +68,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.NEW_FILE, () => w_leo.newLeoFile()],
 
         [CMD.OPEN_FILE, (p_uri?: vscode.Uri) => w_leo.openLeoFile(p_uri)],
+        [CMD.IMPORT_ANY_FILE, (p_uri?: vscode.Uri) => w_leo.importAnyFile(p_uri)],
 
         [CMD.RECENT_FILES, () => w_leo.showRecentLeoFiles()],
         [CMD.SAVE_AS_FILE, () => w_leo.saveAsLeoFile()],
@@ -499,6 +500,13 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: false,
             keepSelection: true
         })],
+        [CMD.SORT_CHILDREN_FO, () => w_leo.nodeCommand({
+            action: BRIDGE.SORT_CHILDREN,
+            node: U,
+            refreshType: REFRESH_TREE,
+            fromOutline: true,
+            keepSelection: true
+        })],
         [CMD.SORT_SIBLING, () => w_leo.nodeCommand({
             action: BRIDGE.SORT_SIBLINGS,
             node: U,
@@ -520,6 +528,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: false
         })],
+        [CMD.REDO_DISABLED, () => { }],
         [CMD.REDO_FO, () => w_leo.nodeCommand({
             action: BRIDGE.REDO,
             node: U,
@@ -532,6 +541,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: false
         })],
+        [CMD.UNDO_DISABLED, () => { }],
         [CMD.UNDO_FO, () => w_leo.nodeCommand({
             action: BRIDGE.UNDO,
             node: U,
@@ -603,12 +613,34 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true
         })],
 
-        // TODO : @boltex More commands for issue #24
-        // [CMD.CLONE_FIND_ALL, () => showInfo("TODO: cloneFindAll command")],
-        // [CMD.CLONE_FIND_ALL_FLATTENED, () => showInfo("TODO: cloneFindAllFlattened command")],
-        // [CMD.CLONE_FIND_MARKED, () => showInfo("TODO: cloneFindMarked command")],
-        // [CMD.CLONE_FIND_FLATTENED_MARKED, () => showInfo("TODO: cloneFindFlattenedMarked command")],
+        [CMD.START_SEARCH, () => w_leo.startSearch()],
+        [CMD.FIND_ALL, () => w_leo.findAll(false)],
+        [CMD.FIND_NEXT, () => w_leo.find(false, false)],
+        [CMD.FIND_NEXT_FO, () => w_leo.find(true, false)],
+        [CMD.FIND_PREVIOUS, () => w_leo.find(false, true)],
+        [CMD.FIND_PREVIOUS_FO, () => w_leo.find(true, true)],
+        [CMD.REPLACE, () => w_leo.replace(false, false)],
+        [CMD.REPLACE_FO, () => w_leo.replace(true, false)],
+        [CMD.REPLACE_THEN_FIND, () => w_leo.replace(false, true)],
+        [CMD.REPLACE_THEN_FIND_FO, () => w_leo.replace(true, true)],
+        [CMD.REPLACE_ALL, () => w_leo.findAll(true)],
+        [CMD.GOTO_GLOBAL_LINE, () => w_leo.gotoGlobalLine()],
 
+        [CMD.CLONE_FIND_ALL, () => w_leo.cloneFind(false, false)],
+        [CMD.CLONE_FIND_ALL_FLATTENED, () => w_leo.cloneFind(false, true)],
+        [CMD.CLONE_FIND_MARKED, () => w_leo.cloneFind(true, false)],
+        [CMD.CLONE_FIND_FLATTENED_MARKED, () => w_leo.cloneFind(true, true)],
+
+        [CMD.SET_FIND_EVERYWHERE_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.ENTIRE_OUTLINE)],
+        [CMD.SET_FIND_NODE_ONLY_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.NODE_ONLY)],
+        [CMD.SET_FIND_SUBOUTLINE_ONLY_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SUBOUTLINE_ONLY)],
+        [CMD.TOGGLE_FIND_IGNORE_CASE_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.IGNORE_CASE)],
+        [CMD.TOGGLE_FIND_MARK_CHANGES_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.MARK_CHANGES)],
+        [CMD.TOGGLE_FIND_MARK_FINDS_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.MARK_FINDS)],
+        [CMD.TOGGLE_FIND_REGEXP_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.REG_EXP)],
+        [CMD.TOGGLE_FIND_WORD_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.WHOLE_WORD)],
+        [CMD.TOGGLE_FIND_SEARCH_BODY_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_BODY)],
+        [CMD.TOGGLE_FIND_SEARCH_HEADLINE_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_HEADLINE)],
     ];
 
     w_commands.map(function (p_command) {
@@ -644,7 +676,7 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
         w_showWelcomeScreen = true;
     } else {
         if (p_previousVersion !== p_version) {
-            console.log(`leoInteg upgraded from v${p_previousVersion} to v${p_version}`);
+            vscode.window.showInformationMessage(`leoInteg upgraded from v${p_previousVersion} to v${p_version}`);
         }
         const [w_major, w_minor] = p_version.split('.').map(p_stringVal => parseInt(p_stringVal, 10));
         const [w_prevMajor, w_prevMinor] = p_previousVersion.split('.').map(p_stringVal => parseInt(p_stringVal, 10));

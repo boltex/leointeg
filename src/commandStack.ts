@@ -102,7 +102,7 @@ export class CommandStack {
             if (this._selectedNode) {
                 w_nodeJson = this._selectedNode;
             } else {
-                w_nodeJson = this._leoIntegration.lastSelectedNode!.apJson;
+                w_nodeJson = this._leoIntegration.lastSelectedNode ? this._leoIntegration.lastSelectedNode.apJson : "";
             }
             if (!w_nodeJson) {
                 console.log('ERROR NO ARCHIVED POSITION JSON');

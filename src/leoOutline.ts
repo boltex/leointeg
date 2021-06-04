@@ -14,20 +14,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
 
-    // used in leoOutline.ts to check if getTreeItem(element: LeoNode) should fetch from Leo, or return as-is
-    private _refreshSingleNodeFlag: boolean = false;
-
     constructor(private _leoIntegration: LeoIntegration) { }
-
-    /**
-     * * Refresh a single node
-     * @param p_node The outline's node itself as a LeoNode instance
-     */
-    public refreshTreeNode(p_node: LeoNode): void {
-        // Do a real node refresh, not just giving back the same element: see getTreeItem(element) below
-        this._refreshSingleNodeFlag = true;
-        this._onDidChangeTreeData.fire(p_node);
-    }
 
     /**
      * * Refresh the whole outline
@@ -38,16 +25,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
     }
 
     public getTreeItem(element: LeoNode): Thenable<LeoNode> | LeoNode {
-        if (this._refreshSingleNodeFlag) {
-            this._refreshSingleNodeFlag = false;
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PNODE, element.apJson)
-                .then((p_package: LeoBridgePackage) => {
-                    const w_node = this._leoIntegration.apToLeoNode(p_package.node!, true, element);
-                    return element.copyProperties(w_node);
-                });
-        } else {
-            return element;
-        }
+        return element;
     }
 
     public getChildren(element?: LeoNode): Thenable<LeoNode[]> {
@@ -57,12 +35,12 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         if (element) {
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element.apJson)
                 .then((p_package: LeoBridgePackage) => {
-                    return this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+                    return this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
                 });
         } else {
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, "null")
                 .then((p_package: LeoBridgePackage) => {
-                    const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.nodes!);
+                    const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
                     if (w_nodes && w_nodes.length === 1) {
                         w_nodes[0].setRoot();
                     }

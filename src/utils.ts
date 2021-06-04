@@ -122,15 +122,15 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 }
 
 /**
- * * Builds and returns a JSON string with 'node' and 'text' members
+ * * Builds and returns a JSON string with 'node' and 'name' members
  * @param p_nodeJson Targeted tree node in the proper JSON format
- * @param p_text Desired text sent along with node in the parameters of the action to be 'called'
+ * @param p_command from which to extract possible name and 'keep selection' flag
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
 export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand): string {
-    let w_json = "{\"node\":" + p_nodeJson; // already json
-    if (p_command.text) {
-        w_json += ", \"text\": " + JSON.stringify(p_command.text);
+    let w_json = "{\"ap\":" + p_nodeJson; // already json
+    if (p_command.name) {
+        w_json += ", \"name\": " + JSON.stringify(p_command.name);
     }
     if (p_command.keepSelection) {
         w_json += ", \"keep\": true";
@@ -185,7 +185,7 @@ export function isHexColor(p_hexString: string): boolean {
 
 /**
  * * Builds a 'Leo Scheme' vscode.Uri from a gnx (or strings like 'LEO BODY' or empty strings to decorate breadcrumbs)
- * with a scheme header like "leo:/" or 'more:/' 
+ * with a scheme header like "leo:/" or 'more:/'
  * @param p_str leo node gnx strings are used to build Uri
  * @returns A vscode 'Uri' object
  */

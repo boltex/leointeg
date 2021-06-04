@@ -1,10 +1,8 @@
-
 import * as vscode from "vscode";
 import * as path from 'path';
-
 import { LeoIntegration } from "../leoIntegration";
 
-export class LeoSettingsWebview {
+export class LeoSettingsProvider {
 
     private _panel: vscode.WebviewPanel | undefined;
     private readonly _extensionPath: string;
@@ -33,7 +31,7 @@ export class LeoSettingsWebview {
                 this._panel = vscode.window.createWebviewPanel(
                     'leoSettings', // Identifies the type of the webview. Used internally
                     'Leo Integration Settings', // Title of the panel displayed to the user
-                    { viewColumn: vscode.ViewColumn.One, preserveFocus: false }, // Editor column to show the new webview panel in.
+                    { viewColumn: vscode.ViewColumn.Beside, preserveFocus: false }, // Editor column to show the new webview panel in.
                     {
                         retainContextWhenHidden: false,
                         enableFindWidget: true,
@@ -61,7 +59,23 @@ export class LeoSettingsWebview {
                                 vscode.window.showErrorMessage(message.text);
                                 break;
                             case 'chooseLeoServerPath':
-                                this._leoIntegration.config.chooseLeoServerPath();
+                                vscode.window.showOpenDialog(
+                                    {
+                                        title: "Locate Leo Server Script",
+                                        canSelectMany: false,
+                                        openLabel: "Choose",
+                                        filters: { 'script': ['py'] }
+                                    }
+                                ).then(p_chosenFile => {
+                                    if (p_chosenFile && p_chosenFile.length) {
+                                        this._panel!.webview.postMessage(
+                                            {
+                                                command: 'newServerPath',
+                                                serverPath: p_chosenFile[0].fsPath
+                                            }
+                                        );
+                                    }
+                                });
                                 break;
                             case 'getNewConfig':
                                 if (this._panel && !this._waitingForUpdate) {
