@@ -617,7 +617,6 @@ class LeoBridgeIntegController:
     # pylint: disable=no-else-return
 
     def __init__(self):
-        # TODO : @boltex #74 need gnx_to_vnode for each opened file/commander
         self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
         self.bridge = leoBridge.controller(
             gui='nullGui',
@@ -657,7 +656,7 @@ class LeoBridgeIntegController:
         self.g.app.gui.show_find_success = self._show_find_success
         self.headlineWidget = self.g.bunch(_name='tree')
 
-        self.g.app.loadManager.createAllImporterData()
+        # self.g.app.loadManager.createAllImporterData()  # Fixed in #1965 of leo-editor
 
         # * setup leoBackground to get messages from leo
         try:
@@ -3082,6 +3081,8 @@ class LeoBridgeIntegController:
             } for (stack_v, stack_childIndex) in p.stack],
         }
         # TODO : Convert all those booleans into an 8 bit integer 'status' flag
+        # TODO : Send p.v.u as simple boolean flag and let user inspect ...
+        # TODO ... it with context menu command instead of hover tooltip.
         if p.v.u:
             w_ap['u'] = p.v.u
         if bool(p.b):
@@ -3104,8 +3105,9 @@ class LeoBridgeIntegController:
 
 
 def printAction(param):
-    # print action if not getChild or getChildren
+    '''Debugging tool that prints out called action if not in 'common-action' array'''
     w_action = param["action"]
+    # print action if not getChild or getChildren or some other very common action
     if w_action in commonActions:
         pass
     else:
@@ -3115,7 +3117,7 @@ def printAction(param):
 def main():
     '''python script for leo integration via leoBridge'''
     global wsHost, wsPort
-    print("Starting LeoBridge IN LEOINTEG... (Launch with -h for help)", flush=True)
+    print("Starting Leobridgeserver.py (Launch with -h for help)", flush=True)
     # replace default host address and port if provided as arguments
 
     args = None
@@ -3167,12 +3169,14 @@ def main():
                     integController.setActionId(messageObject['id'])
                     # ! functions called this way need to accept at least a parameter other than 'self'
                     # ! See : getSelectedNode and getAllGnx
-                    # TODO : Block attempts to call functions starting with underscore or reserved.
                     if action[0] == "!":
                         w_func = getattr(integController, action[1:], None)
                         if not w_func:
                             print(action)
                         w_answer = w_func(param)
+                    elif action[0] == "_":
+                        integController._outputError(
+                            'Error : Command starting with underscore')
                     else:
                         # Attempt to execute the command directly on the commander/subcommander.
                         w_answer = integController.leoCommand(
