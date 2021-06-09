@@ -34,7 +34,7 @@ export class Constants {
     public static RECENT_FILES_KEY: string = "leoRecentFiles";
     public static LAST_FILES_KEY: string = "leoLastFiles";
 
-    public static DEFAULT_PYTHON: string = "python3.7";
+    public static DEFAULT_PYTHON: string = "python3";
     public static WIN32_PYTHON: string = "py";
     public static SERVER_PATH: string = "/leobridgeserver.py";
     public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
