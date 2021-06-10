@@ -2474,6 +2474,13 @@ export class LeoIntegration {
     }
 
     /**
+     * * Clear leointeg'S recently opened Leo files list
+     */
+    public clearRecentLeoFiles(): void {
+        this._context.globalState.update(Constants.LAST_FILES_KEY, undefined);
+    }
+
+    /**
      * * Close an opened Leo file
      * @returns the launchRefresh promise started after it's done closing the Leo document
      */
