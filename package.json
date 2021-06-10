@@ -623,6 +623,15 @@
         "category": "Leo"
       },
       {
+        "command": "leointeg.clearRecentFiles",
+        "category": "Leo",
+        "title": "Clear Recent Files",
+        "icon": {
+          "light": "resources/light/clear-files.svg",
+          "dark": "resources/dark/clear-files.svg"
+        }
+      },
+      {
         "command": "leointeg.recentLeoFiles",
         "category": "Leo",
         "title": "Recent Files"
@@ -2065,6 +2074,11 @@
         },
         {
           "command": "leointeg.showSettingsPage",
+          "when": "view =~ /leoIntegration/ && !leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.clearRecentFiles",
           "when": "view =~ /leoIntegration/ && !leoTreeOpened",
           "group": "navigation@1"
         },

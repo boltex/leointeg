@@ -130,6 +130,7 @@ export class Constants {
         CONNECTED: "Connected",
         ALREADY_CONNECTED: "Already connected",
         DISCONNECTED: "Disconnected",
+        CLEARED_RECENT: "Cleared recent files list",
         CLOSE_ERROR: "Cannot close: No files opened.",
         YES: "Yes",
         NO: "No",
@@ -458,6 +459,7 @@ export class Constants {
         CONNECT: Constants.NAME + ".connectToServer",
         SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
         OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
+        CLEAR_RECENT_FILES: Constants.NAME + ".clearRecentFiles",
         IMPORT_ANY_FILE: Constants.NAME + ".importAnyFile",
         RECENT_FILES: Constants.NAME + ".recentLeoFiles", // shows recent Leo files, opens one on selection
         SWITCH_FILE: Constants.NAME + ".switchLeoFile",
