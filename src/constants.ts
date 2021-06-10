@@ -130,6 +130,7 @@ export class Constants {
         CONNECTED: "Connected",
         ALREADY_CONNECTED: "Already connected",
         DISCONNECTED: "Disconnected",
+        CLEARED_RECENT: "Cleared recent files list",
         CLOSE_ERROR: "Cannot close: No files opened.",
         YES: "Yes",
         NO: "No",

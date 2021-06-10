@@ -2474,10 +2474,12 @@ export class LeoIntegration {
     }
 
     /**
-     * * Clear leointeg'S recently opened Leo files list
+     * * Clear leointeg's last-opened & recently opened Leo files list
      */
     public clearRecentLeoFiles(): void {
         this._context.globalState.update(Constants.LAST_FILES_KEY, undefined);
+        this._context.globalState.update(Constants.RECENT_FILES_KEY, undefined);
+        vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLEARED_RECENT);
     }
 
     /**

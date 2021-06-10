@@ -6031,6 +6031,7 @@ public static USER_MESSAGES = {
     CONNECTED: "Connected",
     ALREADY_CONNECTED: "Already connected",
     DISCONNECTED: "Disconnected",
+    CLEARED_RECENT: "Cleared recent files list",
     CLOSE_ERROR: "Cannot close: No files opened.",
     YES: "Yes",
     NO: "No",
@@ -20764,10 +20765,12 @@ section {
 }
 </t>
 <t tx="fil.20210609233100.1">/**
- * * Clear leointeg'S recently opened Leo files list
+ * * Clear leointeg's last-opened &amp; recently opened Leo files list
  */
 public clearRecentLeoFiles(): void {
     this._context.globalState.update(Constants.LAST_FILES_KEY, undefined);
+    this._context.globalState.update(Constants.RECENT_FILES_KEY, undefined);
+    vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLEARED_RECENT);
 }
 
 </t>
