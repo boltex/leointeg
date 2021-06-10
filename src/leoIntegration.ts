@@ -2778,6 +2778,17 @@ export class LeoIntegration {
     }
 
     /**
+     * * Previous / Next Node Buttons
+     */
+    public prevNextNode(p_next: boolean) {
+        if (p_next) {
+            vscode.window.showInformationMessage("TODO: Command Next");
+        } else {
+            vscode.window.showInformationMessage("TODO: Command Prev");
+        }
+    }
+
+    /**
      * * Capture instance for further calls on find panel webview
      */
     public setFindPanel(p_panel: vscode.WebviewView) {

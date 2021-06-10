@@ -59,7 +59,7 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 | `Ctrl + Shift + C`         |     |            | Copy Node        |
 | `Ctrl + Shift + X`         |     |            | Cut Node         |
 | `Ctrl + Shift + V`         |     |            | Paste Node       |
-| `Ctrl + Shift + Backspace` |     |            | Delete Node      |
+| `Ctrl + Shift + Backspace` | or  | `Delete`   | Delete Node      |
 | `Ctrl + Backquote`         |     |            | Clone Node       |
 | `Ctrl + {`                 | and | `Ctrl + }` | Promote / Demote |
 

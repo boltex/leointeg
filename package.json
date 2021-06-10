@@ -739,6 +739,24 @@
         }
       },
       {
+        "command": "leointeg.prev",
+        "category": "Leo",
+        "title": "Prev",
+        "icon": {
+          "light": "resources/light/prev.svg",
+          "dark": "resources/dark/prev.svg"
+        }
+      },
+      {
+        "command": "leointeg.next",
+        "category": "Leo",
+        "title": "Next",
+        "icon": {
+          "light": "resources/light/next.svg",
+          "dark": "resources/dark/next.svg"
+        }
+      },
+      {
         "command": "leointeg.editHeadline",
         "category": "Leo",
         "title": "Edit Headline",
@@ -2061,6 +2079,18 @@
           "group": "navigation@1"
         }
       ],
+      "editor/title": [
+        {
+          "command": "leointeg.next",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@2"
+        },
+        {
+          "command": "leointeg.prev",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@1"
+        }
+      ],
       "view/title": [
         {
           "command": "leointeg.openLeoFile",
@@ -2657,6 +2687,11 @@
         "command": "leointeg.deleteSelectionFromOutline",
         "key": "ctrl+shift+backspace",
         "mac": "cmd+shift+backspace",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.deleteSelectionFromOutline",
+        "key": "delete",
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {

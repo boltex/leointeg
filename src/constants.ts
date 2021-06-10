@@ -506,6 +506,8 @@ export class Constants {
         SORT_SIBLING_FO: Constants.NAME + ".sortSiblingsSelectionFromOutline",
         CONTRACT_ALL: Constants.NAME + ".contractAll", // From command Palette
         CONTRACT_ALL_FO: Constants.NAME + ".contractAllFromOutline", // from button, return focus on OUTLINE
+        PREV_NODE: Constants.NAME + ".prev",
+        NEXT_NODE: Constants.NAME + ".next",
         // * Commands from tree panel buttons or context: focus on OUTLINE
         MARK: Constants.NAME + ".mark",
         UNMARK: Constants.NAME + ".unmark",

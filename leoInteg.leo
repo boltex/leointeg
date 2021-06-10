@@ -305,6 +305,7 @@
 </v>
 </v>
 <v t="ekr.20200815123601.68"><vh>explorer/context</vh></v>
+<v t="felix.20210610022645.1"><vh>editor/title</vh></v>
 <v t="felix.20201215210439.1"><vh>view/title</vh></v>
 <v t="felix.20201215210510.1"><vh>view/item/context</vh></v>
 </v>
@@ -572,6 +573,7 @@
 <v t="ekr.20200815090517.2"><vh>removeAtButton</vh></v>
 </v>
 <v t="felix.20200719033511.1"><vh>Other</vh>
+<v t="felix.20210610022836.1"><vh>prevNextNode</vh></v>
 <v t="felix.20210524231157.1"><vh>setFindPanel</vh></v>
 <v t="felix.20200719025231.69"><vh>statusBarOnClick</vh></v>
 <v t="felix.20200719025231.70"><vh>test</vh></v>
@@ -2175,6 +2177,9 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: true
 })],
 
+[CMD.PREV_NODE, () =&gt; w_leo.prevNextNode(false)],
+[CMD.NEXT_NODE, () =&gt; w_leo.prevNextNode(true)],
+
 [CMD.START_SEARCH, () =&gt; w_leo.startSearch()],
 [CMD.FIND_ALL, () =&gt; w_leo.findAll(false)],
 [CMD.FIND_NEXT, () =&gt; w_leo.find(false, false)],
@@ -2794,6 +2799,24 @@ print('done')
   "icon": {
     "light": "resources/light/collapse.svg",
     "dark": "resources/dark/collapse.svg"
+  }
+},
+{
+  "command": "leointeg.prev",
+  "category": "Leo",
+  "title": "Prev",
+  "icon": {
+    "light": "resources/light/prev.svg",
+    "dark": "resources/dark/prev.svg"
+  }
+},
+{
+  "command": "leointeg.next",
+  "category": "Leo",
+  "title": "Next",
+  "icon": {
+    "light": "resources/light/next.svg",
+    "dark": "resources/dark/next.svg"
   }
 },
 </t>
@@ -4333,6 +4356,11 @@ print('done')
   "mac": "cmd+shift+backspace",
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
 },
+{
+  "command": "leointeg.deleteSelectionFromOutline",
+  "key": "delete",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
 </t>
 <t tx="ekr.20200815123601.88">{
   "command": "leointeg.gotoFirstVisible",
@@ -5814,6 +5842,8 @@ public static COMMANDS = {
     SORT_SIBLING_FO: Constants.NAME + ".sortSiblingsSelectionFromOutline",
     CONTRACT_ALL: Constants.NAME + ".contractAll", // From command Palette
     CONTRACT_ALL_FO: Constants.NAME + ".contractAllFromOutline", // from button, return focus on OUTLINE
+    PREV_NODE: Constants.NAME + ".prev",
+    NEXT_NODE: Constants.NAME + ".next",
     // * Commands from tree panel buttons or context: focus on OUTLINE
     MARK: Constants.NAME + ".mark",
     UNMARK: Constants.NAME + ".unmark",
@@ -8778,7 +8808,7 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 | `Ctrl + Shift + C`         |     |            | Copy Node        |
 | `Ctrl + Shift + X`         |     |            | Cut Node         |
 | `Ctrl + Shift + V`         |     |            | Paste Node       |
-| `Ctrl + Shift + Backspace` |     |            | Delete Node      |
+| `Ctrl + Shift + Backspace` | or  | `Delete`   | Delete Node      |
 | `Ctrl + Backquote`         |     |            | Clone Node       |
 | `Ctrl + {`                 | and | `Ctrl + }` | Promote / Demote |
 
@@ -17526,6 +17556,31 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
     "Python files": ["py"],
     "Text files": ["txt"],
 };
+
+</t>
+<t tx="felix.20210610022645.1">"editor/title": [
+  {
+    "command": "leointeg.next",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@2"
+  },
+  {
+    "command": "leointeg.prev",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  }
+],
+</t>
+<t tx="felix.20210610022836.1">/**
+ * * Previous / Next Node Buttons
+ */
+public prevNextNode(p_next: boolean) {
+    if (p_next) {
+        vscode.window.showInformationMessage("TODO: Command Next");
+    } else {
+        vscode.window.showInformationMessage("TODO: Command Prev");
+    }
+}
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
