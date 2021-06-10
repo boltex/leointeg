@@ -6,4 +6,5 @@ node_modules
 .vscode/settings.json
 *.vsix
 CodingFlow.txt
+leoserver.py
 ekr-leoInteg.leo
