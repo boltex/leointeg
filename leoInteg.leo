@@ -561,6 +561,7 @@
 <v t="felix.20200719025231.59"><vh>saveLeoFile</vh></v>
 <v t="felix.20200719025231.60"><vh>switchLeoFile</vh></v>
 <v t="felix.20200719025231.61"><vh>selectOpenedLeoDocument</vh></v>
+<v t="fil.20210609233100.1"><vh>clearRecentLeoFiles</vh></v>
 <v t="felix.20200719025231.64"><vh>closeLeoFile</vh></v>
 <v t="felix.20200719025231.65"><vh>newLeoFile</vh></v>
 <v t="felix.20200719025231.66"><vh>openLeoFile</vh></v>
@@ -1630,6 +1631,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.OPEN_FILE, (p_uri?: vscode.Uri) =&gt; w_leo.openLeoFile(p_uri)],
 [CMD.IMPORT_ANY_FILE, (p_uri?: vscode.Uri) =&gt; w_leo.importAnyFile(p_uri)],
 
+[CMD.CLEAR_RECENT_FILES, () =&gt; w_leo.clearRecentLeoFiles()],
 [CMD.RECENT_FILES, () =&gt; w_leo.showRecentLeoFiles()],
 [CMD.SAVE_AS_FILE, () =&gt; w_leo.saveAsLeoFile()],
 [CMD.SAVE_FILE, () =&gt; w_leo.saveLeoFile()],
@@ -2669,6 +2671,15 @@ print('done')
   "command": "leointeg.importAnyFile",
   "title": "Import File",
   "category": "Leo"
+},
+{
+  "command": "leointeg.clearRecentFiles",
+  "category": "Leo",
+  "title": "Clear Recent Files",
+  "icon": {
+    "light": "resources/light/clear-files.svg",
+    "dark": "resources/dark/clear-files.svg"
+  }
 },
 {
   "command": "leointeg.recentLeoFiles",
@@ -5756,6 +5767,7 @@ public static COMMANDS = {
     CONNECT: Constants.NAME + ".connectToServer",
     SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
     OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
+    CLEAR_RECENT_FILES: Constants.NAME + ".clearRecentFiles",
     IMPORT_ANY_FILE: Constants.NAME + ".importAnyFile",
     RECENT_FILES: Constants.NAME + ".recentLeoFiles", // shows recent Leo files, opens one on selection
     SWITCH_FILE: Constants.NAME + ".switchLeoFile",
@@ -6019,6 +6031,7 @@ public static USER_MESSAGES = {
     CONNECTED: "Connected",
     ALREADY_CONNECTED: "Already connected",
     DISCONNECTED: "Disconnected",
+    CLEARED_RECENT: "Cleared recent files list",
     CLOSE_ERROR: "Cannot close: No files opened.",
     YES: "Yes",
     NO: "No",
@@ -13372,6 +13385,11 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.showSettingsPage",
+    "when": "view =~ /leoIntegration/ &amp;&amp; !leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.clearRecentFiles",
     "when": "view =~ /leoIntegration/ &amp;&amp; !leoTreeOpened",
     "group": "navigation@1"
   },
@@ -20745,6 +20763,16 @@ section {
     border-bottom-color: var(--color-link-foreground--lighten-20);
   }
 }
+</t>
+<t tx="fil.20210609233100.1">/**
+ * * Clear leointeg's last-opened &amp; recently opened Leo files list
+ */
+public clearRecentLeoFiles(): void {
+    this._context.globalState.update(Constants.LAST_FILES_KEY, undefined);
+    this._context.globalState.update(Constants.RECENT_FILES_KEY, undefined);
+    vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLEARED_RECENT);
+}
+
 </t>
 </tnodes>
 </leo_file>
