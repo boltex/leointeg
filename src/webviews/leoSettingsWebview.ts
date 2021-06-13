@@ -61,7 +61,7 @@ export class LeoSettingsProvider {
                             case 'chooseLeoEditorPath':
                                 vscode.window.showOpenDialog(
                                     {
-                                        title: "Locate Leo Editor Installation Folder",
+                                        title: "Locate Leo-Editor Installation Folder",
                                         canSelectMany: false,
                                         openLabel: "Choose Folder",
                                         canSelectFiles: false,

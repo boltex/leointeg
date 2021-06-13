@@ -7006,13 +7006,17 @@ private _processAnswer(p_data: string): void {
 
 </t>
 <t tx="felix.20200718153505.12">/**
- * * Spawn a websocket
+ * * Create a websocket connection to leoserver on
+ * @param p_port facultative port number to override config port
  * @returns A promise for a LeoBridgePackage object containing only an 'id' member of 1 that will resolve when the 'leoBridge' is established
  */
-public initLeoProcess(): Promise&lt;LeoBridgePackage&gt; {
-    this._websocket = new WebSocket(Constants.TCPIP_DEFAULT_PROTOCOL +
+public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
+    this._websocket = new WebSocket(
+        Constants.TCPIP_DEFAULT_PROTOCOL +
         this._leoIntegration.config.connectionAddress +
-        ":" + this._leoIntegration.config.connectionPort);
+        ":" +
+        (p_port ? p_port : this._leoIntegration.config.connectionPort)
+    );
     // * Capture the python process output
     this._websocket.onmessage = (p_event) =&gt; {
         if (p_event.data) {
@@ -7979,7 +7983,7 @@ export class ServerService {
 
     private _platform: string;
     private _isWin32: boolean;
-    private _usingPort: number = 0;
+    public usingPort: number = 0; // set to other than zero if server is started by leointeg itself
 
     /**
      * * Leo Bridge Server Process
@@ -8054,7 +8058,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
             return Promise.reject("Port " + p_port + " already in use.");
         }
 
-        this._usingPort = p_availablePort;
+        this.usingPort = p_availablePort;
 
         // Leo Editor installation path is mandatory - Start with Leo Editor's folder
         let w_serverScriptPath = p_leoEditorPath + "/leo/core";
@@ -8105,7 +8109,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         w_args.push(w_serverScriptPath);
 
         // * Add port
-        w_args.push("-p " + this._usingPort);
+        w_args.push("-p " + this.usingPort);
 
         this._leoIntegration.addTerminalPaneEntry(
             'Starting server with command: ' +
@@ -10962,6 +10966,8 @@ public startServer(): void {
         )
         .then(
             (p_message) =&gt; {
+                console.log('SERVER START SUCCESS!!');
+
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                 if (this.config.connectToServerAutomatically) {
                     setTimeout(() =&gt; {
@@ -11085,7 +11091,9 @@ public connect(): void {
         return;
     }
     this._leoIsConnecting = true;
-    this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess();
+    this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess(
+        this._serverService.usingPort // This will be zero if no port found
+    );
     this._leoBridgeReadyPromise.then(
         (p_package) =&gt; {
             this._leoIsConnecting = false;
@@ -17695,11 +17703,12 @@ export function findNextAvailablePort(p_startingPort: number): Promise&lt;number
 
 </t>
 <t tx="felix.20210612230258.1">/**
- * * async function that tries to find open ports starting with a given port#.
- * Tries at most 'p_limit' times. from p_startingPort up to p_startingPort+p_limit.
+ * * async function that tries to find open ports starting with a given port#
+ * * Tries at most 'p_maxTries' times,
+ * * from p_startingPort up to p_startingPort+p_limit
  */
-async function asyncFindPort(p_startingPort: number, p_limit: number) {
-    const w_endPort = p_startingPort + p_limit;
+async function asyncFindPort(p_startingPort: number, p_maxTries: number) {
+    const w_endPort = p_startingPort + p_maxTries;
     let w_foundPort = 0;
     for (let i = p_startingPort; i &lt; w_endPort; i++) {
         // wait for the promise to resolve before advancing the for loop
@@ -17783,7 +17792,7 @@ import { LeoIntegration } from "../leoIntegration";
                         case 'chooseLeoEditorPath':
                             vscode.window.showOpenDialog(
                                 {
-                                    title: "Locate Leo Editor Installation Folder",
+                                    title: "Locate Leo-Editor Installation Folder",
                                     canSelectMany: false,
                                     openLabel: "Choose Folder",
                                     canSelectFiles: false,
@@ -18621,7 +18630,7 @@ u {
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;label for="leoEditorPath"&gt;Leo&amp;nbsp;Server&amp;nbsp;Path&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
+                &lt;label for="leoEditorPath"&gt;Leo-Editor&amp;nbsp;Path&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
                 &lt;input id="leoEditorPath"
                        name="leoEditorPath"
                        type="text"
@@ -18632,10 +18641,10 @@ u {
                         id="chooseLeoEditorPath"
                         name="chooseLeoEditorPath"
                         class="button btn button--flat button--flat-primary button--choose-path"&gt;
-                  Choose...
+                  Browse For Folder...
                 &lt;/button&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Leo server script 'leoserver.py' file location&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;Location of your Leo-Editor installation&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
