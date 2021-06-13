@@ -998,10 +998,11 @@ class LeoBridgeIntegController:
                     self.commander = w_commander
 
         if not w_found:
-            self.commander = self.bridge.openLeoFile(
-                w_filename)  # create self.commander
-            self.commander.findCommands.ftm = StringFindTabManager(
-                self.commander)
+            if os.path.isfile(w_filename):
+                # create self.commander by opening the file
+                self.commander = self.bridge.openLeoFile(w_filename)
+                self.commander.findCommands.ftm = StringFindTabManager(
+                    self.commander)
 
         # Leo at this point has done this too: g.app.windowList.append(c.frame)
         # and so, now, app.commanders() yields this: return [f.c for f in g.app.windowList]
@@ -1042,8 +1043,8 @@ class LeoBridgeIntegController:
 
             if not w_found:
                 if os.path.isfile(i_file):
-                    self.commander = self.bridge.openLeoFile(
-                        i_file)  # create self.commander
+                    # create self.commander by opening the file
+                    self.commander = self.bridge.openLeoFile(i_file)
                     self.commander.findCommands.ftm = StringFindTabManager(
                         self.commander)
             if self.commander:
@@ -1275,7 +1276,6 @@ class LeoBridgeIntegController:
         w_result = {"found": found, "pos": pos, "newpos": newpos,
                     "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
-
 
     def replace(self, param):
         """Run Leo's replace command and return results."""

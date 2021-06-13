@@ -58,20 +58,22 @@ export class LeoSettingsProvider {
                             case 'alert':
                                 vscode.window.showErrorMessage(message.text);
                                 break;
-                            case 'chooseLeoServerPath':
+                            case 'chooseLeoEditorPath':
                                 vscode.window.showOpenDialog(
                                     {
-                                        title: "Locate Leo Server Script",
+                                        title: "Locate Leo Editor Installation Folder",
                                         canSelectMany: false,
-                                        openLabel: "Choose",
-                                        filters: { 'script': ['py'] }
+                                        openLabel: "Choose Folder",
+                                        canSelectFiles: false,
+                                        canSelectFolders: true
+
                                     }
                                 ).then(p_chosenFile => {
                                     if (p_chosenFile && p_chosenFile.length) {
                                         this._panel!.webview.postMessage(
                                             {
-                                                command: 'newServerPath',
-                                                serverPath: p_chosenFile[0].fsPath
+                                                command: 'newEditorPath',
+                                                editorPath: p_chosenFile[0].fsPath
                                             }
                                         );
                                     }

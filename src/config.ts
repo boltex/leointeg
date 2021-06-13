@@ -28,7 +28,7 @@ export class Config implements ConfigMembers {
     public showCopyOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_COPY;
     public invertNodeContrast: boolean = Constants.CONFIG_DEFAULTS.INVERT_NODES;
     public leoPythonCommand: string = Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND;
-    public leoServerPath: string = Constants.CONFIG_DEFAULTS.LEO_SERVER_PATH;
+    public leoEditorPath: string = Constants.CONFIG_DEFAULTS.LEO_EDITOR_PATH;
     public startServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_START_SERVER;
     public connectToServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_CONNECT;
     public connectionAddress: string = Constants.CONFIG_DEFAULTS.IP_ADDRESS;
@@ -65,7 +65,7 @@ export class Config implements ConfigMembers {
             showCopyOnNodes: this.showCopyOnNodes,
             invertNodeContrast: this.invertNodeContrast,
             leoPythonCommand: this.leoPythonCommand,
-            leoServerPath: this.leoServerPath,
+            leoEditorPath: this.leoEditorPath,
             startServerAutomatically: this.startServerAutomatically,
             connectToServerAutomatically: this.connectToServerAutomatically,
             connectionAddress: this.connectionAddress,
@@ -145,7 +145,7 @@ export class Config implements ConfigMembers {
             this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
             this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
             this.invertNodeContrast = GET(NAME).get(NAMES.INVERT_NODES, DEFAULTS.INVERT_NODES);
-            this.leoServerPath = GET(NAME).get(NAMES.LEO_SERVER_PATH, DEFAULTS.LEO_SERVER_PATH);
+            this.leoEditorPath = GET(NAME).get(NAMES.LEO_EDITOR_PATH, DEFAULTS.LEO_EDITOR_PATH);
             this.leoPythonCommand = GET(NAME).get(NAMES.LEO_PYTHON_COMMAND, DEFAULTS.LEO_PYTHON_COMMAND);
             this.startServerAutomatically = GET(NAME).get(NAMES.AUTO_START_SERVER, DEFAULTS.AUTO_START_SERVER);
             this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);

@@ -397,9 +397,15 @@ export class LeoIntegration {
             );
         }
         this._serverService
-            .startServer(this.config.leoPythonCommand, this.config.leoServerPath)
+            .startServer(
+                this.config.leoPythonCommand,
+                this.config.leoEditorPath,
+                this.config.connectionPort
+            )
             .then(
                 (p_message) => {
+                    console.log('SERVER START SUCCESS!!');
+
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                     if (this.config.connectToServerAutomatically) {
                         setTimeout(() => {
@@ -411,9 +417,11 @@ export class LeoIntegration {
                     }
                 },
                 (p_reason) => {
-                    vscode.window.showErrorMessage(
-                        Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason
-                    );
+                    if (p_reason !== "Leo Editor Path Setting Missing") {
+                        vscode.window.showErrorMessage(
+                            Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason
+                        );
+                    }
                 }
             );
     }
@@ -427,7 +435,9 @@ export class LeoIntegration {
             return;
         }
         this._leoIsConnecting = true;
-        this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess();
+        this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess(
+            this._serverService.usingPort // This will be zero if no port found
+        );
         this._leoBridgeReadyPromise.then(
             (p_package) => {
                 this._leoIsConnecting = false;
@@ -1718,19 +1728,19 @@ export class LeoIntegration {
                 // Setup options for the preview state of the opened editor, and to choose which column it should appear
                 const w_showOptions: vscode.TextDocumentShowOptions = p_aside
                     ? {
-                          viewColumn: vscode.ViewColumn.Beside,
-                          preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
-                          preview: true, // should text document be in preview only? set false for fully opened
-                          // selection is instead set when the GET_BODY_STATES above resolves
-                      }
+                        viewColumn: vscode.ViewColumn.Beside,
+                        preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
+                        preview: true, // should text document be in preview only? set false for fully opened
+                        // selection is instead set when the GET_BODY_STATES above resolves
+                    }
                     : {
-                          viewColumn: this._bodyMainSelectionColumn
-                              ? this._bodyMainSelectionColumn
-                              : 1, // view column in which the editor should be shown
-                          preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
-                          preview: true, // should text document be in preview only? set false for fully opened
-                          // selection is instead set when the GET_BODY_STATES above resolves
-                      };
+                        viewColumn: this._bodyMainSelectionColumn
+                            ? this._bodyMainSelectionColumn
+                            : 1, // view column in which the editor should be shown
+                        preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
+                        preview: true, // should text document be in preview only? set false for fully opened
+                        // selection is instead set when the GET_BODY_STATES above resolves
+                    };
 
                 // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
                 const q_showTextDocument = vscode.window.showTextDocument(
@@ -2525,10 +2535,10 @@ export class LeoIntegration {
                     const q_askSaveChangesInfoMessage: Thenable<vscode.MessageItem | undefined> =
                         vscode.window.showInformationMessage(
                             Constants.USER_MESSAGES.SAVE_CHANGES +
-                                ' ' +
-                                this.leoStates.leoOpenedFileName +
-                                ' ' +
-                                Constants.USER_MESSAGES.BEFORE_CLOSING,
+                            ' ' +
+                            this.leoStates.leoOpenedFileName +
+                            ' ' +
+                            Constants.USER_MESSAGES.BEFORE_CLOSING,
                             { modal: true },
                             ...Constants.ASK_SAVE_CHANGES_BUTTONS
                         );

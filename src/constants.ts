@@ -36,7 +36,8 @@ export class Constants {
 
     public static DEFAULT_PYTHON: string = "python3";
     public static WIN32_PYTHON: string = "py";
-    public static SERVER_PATH: string = "/leobridgeserver.py";
+    public static OLD_SERVER_NAME: string = "/leobridgeserver.py";
+    public static SERVER_NAME: string = "/leoserver.py";
     public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
     public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
 
@@ -63,6 +64,7 @@ export class Constants {
         SEARCH_BODY: "searchBody",
         SEARCH_HEADLINE: "searchHeadline"
     };
+
     /**
      * * Strings used in the workbench interface panels (not for messages or dialogs)
      */
@@ -209,7 +211,7 @@ export class Constants {
         SHOW_CLONE: "showCloneOnNodes",
         SHOW_COPY: "showCopyOnNodes",
         INVERT_NODES: "invertNodeContrast",
-        LEO_SERVER_PATH: "leoServerPath",
+        LEO_EDITOR_PATH: "leoEditorPath",
         LEO_PYTHON_COMMAND: "leoPythonCommand",
         AUTO_START_SERVER: "startServerAutomatically",
         AUTO_CONNECT: "connectToServerAutomatically",
@@ -239,10 +241,11 @@ export class Constants {
         SHOW_COPY: false,
         INVERT_NODES: false,
         LEO_PYTHON_COMMAND: "",
-        LEO_SERVER_PATH: "",
+        LEO_EDITOR_PATH: "",
         AUTO_START_SERVER: false,
         AUTO_CONNECT: false,
         IP_ADDRESS: "localhost",
+        IP_LOOPBACK: "127.0.0.1",
         IP_PORT: 32125
     };
 

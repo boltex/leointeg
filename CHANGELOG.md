@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.1.15
+
+- Modified server location logic
+
 ## 0.1.14
 
 - Rewrite of the leobridgeserver.py to be made compatible with the standards in leoserver.py from Leo.

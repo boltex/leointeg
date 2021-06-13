@@ -21,7 +21,7 @@ export interface ConfigMembers {
     showCloneOnNodes: boolean;
     showCopyOnNodes: boolean;
     invertNodeContrast: boolean;
-    leoServerPath: string;
+    leoEditorPath: string;
     leoPythonCommand: string;
     startServerAutomatically: boolean;
     connectToServerAutomatically: boolean;

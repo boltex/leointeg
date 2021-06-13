@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20210612000127.1"><vh>0.1.14</vh></v>
 <v t="felix.20210509210502.1"><vh>0.1.13</vh></v>
 <v t="felix.20200718222417.1"><vh>0.1.12</vh></v>
 <v t="felix.20200718222419.1"><vh>0.1.11</vh></v>
@@ -55,7 +56,7 @@
 </v>
 </v>
 <v t="ekr.20200722190517.1"><vh>Files: Other</vh>
-<v t="felix.20191126232434.2"><vh>@clean leobridgeserver.py</vh>
+<v t="felix.20191126232434.2"><vh>@clean backup-leobridgeserver.py</vh>
 <v t="felix.20191128002414.1"><vh>&lt;&lt; imports &gt;&gt;</vh></v>
 <v t="felix.20191128002417.1"><vh>&lt;&lt; constants &gt;&gt;</vh></v>
 <v t="felix.20200302204251.1"><vh>class IdleTimeManager</vh>
@@ -686,6 +687,9 @@
 <v t="felix.20200718195558.10"><vh>strToLeoUri</vh></v>
 <v t="felix.20200718195558.11"><vh>leoUriToStr</vh></v>
 <v t="felix.20200718195558.12"><vh>setContext</vh></v>
+<v t="felix.20210612214028.1"><vh>findNextAvailablePort</vh></v>
+<v t="felix.20210612230258.1"><vh>asyncFindPort</vh></v>
+<v t="felix.20210612155932.1"><vh>portInUse</vh></v>
 </v>
 <v t="felix.20210522001751.1"><vh>@clean src/webviews/leoFindPanelWebview.ts</vh>
 <v t="felix.20210522001814.1"><vh>class LeoFindPanelProvider</vh>
@@ -750,7 +754,7 @@
 <v t="fil.20210603223933.10"><vh>&lt;html&gt;</vh></v>
 </v>
 <v t="fil.20210603223933.165"><vh>@clean src/webviews/settingsPanel/index.ts</vh>
-<v t="fil.20210603223933.166"><vh>interface VsCodeApi</vh></v>
+<v t="fil.20210603223933.166"><vh>main</vh>
 <v t="fil.20210603223934.1"><vh>listenAll</vh></v>
 <v t="fil.20210603223934.2"><vh>chooseLeoServerPath</vh></v>
 <v t="fil.20210603223934.3"><vh>onBind</vh></v>
@@ -764,6 +768,7 @@
 <v t="fil.20210603223934.11"><vh>parseStateExpression</vh></v>
 <v t="fil.20210603223934.12"><vh>evaluateStateExpression</vh></v>
 <v t="fil.20210603223934.13"><vh>getSettingValue</vh></v>
+</v>
 </v>
 <v t="fil.20210603223934.15"><vh>@clean src/webviews/settingsPanel/theme.ts</vh>
 <v t="fil.20210603223934.16"><vh>initializeAndWatchThemeColors</vh></v>
@@ -1068,10 +1073,11 @@ public static CONFIG_DEFAULTS = {
     SHOW_COPY: false,
     INVERT_NODES: false,
     LEO_PYTHON_COMMAND: "",
-    LEO_SERVER_PATH: "",
+    LEO_EDITOR_PATH: "",
     AUTO_START_SERVER: false,
     AUTO_CONNECT: false,
     IP_ADDRESS: "localhost",
+    IP_LOOPBACK: "127.0.0.1",
     IP_PORT: 32125
 };
 
@@ -2230,7 +2236,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "author": {
     "name": "Félix"
   },
@@ -2241,7 +2247,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.56.2"
+    "vscode": "^1.57.0"
   },
   "keywords": [
     "leo",
@@ -2254,8 +2260,7 @@ print('done')
     "Other"
   ],
   "activationEvents": [
-    "onView:leoIntegration",
-    "workspaceContains:**/*.leo"
+    "onStartupFinished"
   ],
   "main": "./dist/extension",
   "icon": "resources/leoapp128px.png",
@@ -2277,7 +2282,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.56.0",
+    "@types/vscode": "^1.57.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -3940,11 +3945,11 @@ print('done')
   }
 ],
 </t>
-<t tx="ekr.20200815123601.7">"leoIntegration.leoServerPath": {
+<t tx="ekr.20200815123601.7">"leoIntegration.leoEditorPath": {
   "scope": "application",
   "default": "",
   "type": "string",
-  "description": "Specifies the location of the Leo server script"
+  "description": "Specifies the location of your Leo-Editor installation"
 },
 "leoIntegration.leoPythonCommand": {
   "scope": "application",
@@ -4553,10 +4558,11 @@ print('done')
                 self.commander = w_commander
 
     if not w_found:
-        self.commander = self.bridge.openLeoFile(
-            w_filename)  # create self.commander
-        self.commander.findCommands.ftm = StringFindTabManager(
-            self.commander)
+        if os.path.isfile(w_filename):
+            # create self.commander by opening the file
+            self.commander = self.bridge.openLeoFile(w_filename)
+            self.commander.findCommands.ftm = StringFindTabManager(
+                self.commander)
 
     # Leo at this point has done this too: g.app.windowList.append(c.frame)
     # and so, now, app.commanders() yields this: return [f.c for f in g.app.windowList]
@@ -5982,7 +5988,8 @@ public static LAST_FILES_KEY: string = "leoLastFiles";
 
 public static DEFAULT_PYTHON: string = "python3";
 public static WIN32_PYTHON: string = "py";
-public static SERVER_PATH: string = "/leobridgeserver.py";
+public static OLD_SERVER_NAME: string = "/leobridgeserver.py";
+public static SERVER_NAME: string = "/leoserver.py";
 public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
 public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
 
@@ -6114,7 +6121,7 @@ public static CONFIG_NAMES = {
     SHOW_CLONE: "showCloneOnNodes",
     SHOW_COPY: "showCopyOnNodes",
     INVERT_NODES: "invertNodeContrast",
-    LEO_SERVER_PATH: "leoServerPath",
+    LEO_EDITOR_PATH: "leoEditorPath",
     LEO_PYTHON_COMMAND: "leoPythonCommand",
     AUTO_START_SERVER: "startServerAutomatically",
     AUTO_CONNECT: "connectToServerAutomatically",
@@ -6382,7 +6389,7 @@ export class Config implements ConfigMembers {
     public showCopyOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_COPY;
     public invertNodeContrast: boolean = Constants.CONFIG_DEFAULTS.INVERT_NODES;
     public leoPythonCommand: string = Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND;
-    public leoServerPath: string = Constants.CONFIG_DEFAULTS.LEO_SERVER_PATH;
+    public leoEditorPath: string = Constants.CONFIG_DEFAULTS.LEO_EDITOR_PATH;
     public startServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_START_SERVER;
     public connectToServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_CONNECT;
     public connectionAddress: string = Constants.CONFIG_DEFAULTS.IP_ADDRESS;
@@ -6422,7 +6429,7 @@ public getConfig(): ConfigMembers {
         showCopyOnNodes: this.showCopyOnNodes,
         invertNodeContrast: this.invertNodeContrast,
         leoPythonCommand: this.leoPythonCommand,
-        leoServerPath: this.leoServerPath,
+        leoEditorPath: this.leoEditorPath,
         startServerAutomatically: this.startServerAutomatically,
         connectToServerAutomatically: this.connectToServerAutomatically,
         connectionAddress: this.connectionAddress,
@@ -6504,7 +6511,7 @@ public buildFromSavedSettings(): void {
         this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
         this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
         this.invertNodeContrast = GET(NAME).get(NAMES.INVERT_NODES, DEFAULTS.INVERT_NODES);
-        this.leoServerPath = GET(NAME).get(NAMES.LEO_SERVER_PATH, DEFAULTS.LEO_SERVER_PATH);
+        this.leoEditorPath = GET(NAME).get(NAMES.LEO_EDITOR_PATH, DEFAULTS.LEO_EDITOR_PATH);
         this.leoPythonCommand = GET(NAME).get(NAMES.LEO_PYTHON_COMMAND, DEFAULTS.LEO_PYTHON_COMMAND);
         this.startServerAutomatically = GET(NAME).get(NAMES.AUTO_START_SERVER, DEFAULTS.AUTO_START_SERVER);
         this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);
@@ -7950,6 +7957,7 @@ private _updateLeoObjectIndicator(): void {
 
 </t>
 <t tx="felix.20200718191946.1">import * as os from 'os';
+import * as fs from 'fs';
 import * as child from 'child_process';
 import * as path from "path"; // TODO : Use this to have reliable support for window-vs-linux file-paths
 import * as vscode from "vscode";
@@ -7971,6 +7979,7 @@ export class ServerService {
 
     private _platform: string;
     private _isWin32: boolean;
+    private _usingPort: number = 0;
 
     /**
      * * Leo Bridge Server Process
@@ -7998,12 +8007,12 @@ export class ServerService {
  * @param p_leoPythonCommand String command to start python on this computer
  * @returns A promise that resolves when the server is started, or that is rejected in case of problem while starting
  */
-public startServer(p_leoPythonCommand: string, p_leoServerPath: string): Promise&lt;any&gt; {
-
-    let w_pythonPath = ""; // Command of child.spawn call
+public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: number): Promise&lt;any&gt; {
 
     /*
-        * For child_process.spawn(command[, args][, options])
+        * -----------------------------------------------------------------
+        * Documentation for child_process.spawn(command[, args][, options])
+        * -----------------------------------------------------------------
 
         The child_process.spawn() method spawns a new process
         using the given command, with command-line arguments in args.
@@ -8019,76 +8028,132 @@ public startServer(p_leoPythonCommand: string, p_leoServerPath: string): Promise
             cwd: undefined,
             env: process.env
         };
-
     */
+
+    if (!p_leoEditorPath) {
+        vscode.window.showInformationMessage(
+            "Specify the location of your Leo Editor installation in leointeg's settings",
+            "leointeg settings").then(p_button =&gt; {
+                if (p_button === 'leointeg settings') {
+                    vscode.commands.executeCommand(Constants.COMMANDS.SHOW_SETTINGS);
+                }
+            });
+        return Promise.reject("Leo Editor Path Setting Missing");
+    }
+
+    let w_pythonPath = ""; // Command of child.spawn call
+
     this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
 
     // If a leo server path is set then use it - otherwise use old script for now
-    const w_serverScriptPath = p_leoServerPath ? p_leoServerPath : this._context.extensionPath + Constants.SERVER_PATH;
+    // OLD // const w_serverScriptPath = p_leoEditorPath ? p_leoEditorPath : this._context.extensionPath + Constants.OLD_SERVER_NAME;
 
-    if (p_leoPythonCommand &amp;&amp; p_leoPythonCommand.length) {
-        // Start by running command (see executeCommand for multiple useful snippets)
-        w_pythonPath = p_leoPythonCommand; // Set path
-        this._leoIntegration.addTerminalPaneEntry('Starting server with command: ' + p_leoPythonCommand);
-    } else {
-        w_pythonPath = Constants.DEFAULT_PYTHON;
-        if (this._isWin32) {
-            w_pythonPath = Constants.WIN32_PYTHON;
+    return utils.findNextAvailablePort(p_port).then((p_availablePort) =&gt; {
+        if (!p_availablePort) {
+            // vscode.window.showInformationMessage("Port " + p_port+" already in use.");
+            return Promise.reject("Port " + p_port + " already in use.");
         }
-        this._leoIntegration.addTerminalPaneEntry('Starting server with command : ' +
-            w_pythonPath + ((this._isWin32 &amp;&amp; w_pythonPath === "py") ? " -3 " : "") +
-            " " + w_serverScriptPath);
-    }
 
-    const w_serverStartPromise = new Promise((p_resolve, p_reject) =&gt; {
-        // * Spawn a python child process for a leoBridge server
-        this._resolvePromise = p_resolve;
-        this._rejectPromise = p_reject;
+        this._usingPort = p_availablePort;
+
+        // Leo Editor installation path is mandatory - Start with Leo Editor's folder
+        let w_serverScriptPath = p_leoEditorPath + "/leo/core";
+
+        try {
+            if (fs.existsSync(w_serverScriptPath + Constants.OLD_SERVER_NAME)) {
+                //old file exists
+                console.log('Found old server');
+                w_serverScriptPath += Constants.OLD_SERVER_NAME;
+            } else if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
+                //new file exists
+                console.log('found leoserver.py');
+                w_serverScriptPath += Constants.SERVER_NAME;
+            } else {
+                return Promise.reject("Cannot find server script");
+            }
+        } catch (p_err) {
+            console.error(p_err);
+            return Promise.reject("Cannot find server script");
+        }
+
+        if (p_leoPythonCommand &amp;&amp; p_leoPythonCommand.length) {
+            // Start by running command (see executeCommand for multiple useful snippets)
+            w_pythonPath = p_leoPythonCommand; // Set path
+        } else {
+            w_pythonPath = Constants.DEFAULT_PYTHON;
+            if (this._isWin32) {
+                w_pythonPath = Constants.WIN32_PYTHON;
+            }
+        }
+
+        const w_serverStartPromise = new Promise((p_resolve, p_reject) =&gt; {
+            // * Spawn a python child process for a leoBridge server
+            this._resolvePromise = p_resolve;
+            this._rejectPromise = p_reject;
+        });
+
+        // * Setup arguments: Order is important!
+
+        let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
+
+        // * on windows, if the default py is used, make sure it's got a '-3'
+        if (this._isWin32 &amp;&amp; w_pythonPath === "py") {
+            w_args.push("-3");
+        }
+
+        // * The server script itself
+        w_args.push(w_serverScriptPath);
+
+        // * Add port
+        w_args.push("-p " + this._usingPort);
+
+        this._leoIntegration.addTerminalPaneEntry(
+            'Starting server with command: ' +
+            w_pythonPath + " " + w_args.join(" ")
+        );
+        console.log('w_args', w_args);
+
+        this._serverProcess = child.spawn(w_pythonPath, w_args);
+
+        if (this._serverProcess &amp;&amp; this._serverProcess.stdout) {
+            // * Capture the python process output
+            this._serverProcess.stdout.on("data", (p_data: string) =&gt; {
+                this._gotTerminalData(p_data);
+            });
+        } else {
+            console.error("No stdout");
+        }
+        if (this._serverProcess &amp;&amp; this._serverProcess.stderr) {
+            // * Capture other python process outputs
+            this._serverProcess.stderr.on("data", (p_data: string) =&gt; {
+                console.log(`stderr: ${p_data}`);
+                this._isStarted = false;
+                utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+                this._serverProcess = undefined;
+                if (this._rejectPromise) {
+                    this._rejectPromise(`stderr: ${p_data}`);
+                }
+            });
+        } else {
+            console.error("No stderr");
+        }
+        if (this._serverProcess) {
+            this._serverProcess!.on("close", (p_code: any) =&gt; {
+                console.log(`leoBridge exited with code ${p_code}`);
+                this._isStarted = false;
+                utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+                this._serverProcess = undefined;
+                if (this._rejectPromise) {
+                    this._rejectPromise(`leoBridge exited with code ${p_code}`);
+                }
+            });
+        }
+
+        return w_serverStartPromise;
+
     });
 
-    let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
 
-    if (this._isWin32 &amp;&amp; w_pythonPath === "py") {
-        w_args.push("-3");
-    }
-    w_args.push(w_serverScriptPath);
-    this._serverProcess = child.spawn(w_pythonPath, w_args);
-
-    if (this._serverProcess &amp;&amp; this._serverProcess.stdout) {
-        // * Capture the python process output
-        this._serverProcess.stdout.on("data", (p_data: string) =&gt; {
-            this._gotTerminalData(p_data);
-        });
-    } else {
-        console.error("No stdout");
-    }
-    if (this._serverProcess &amp;&amp; this._serverProcess.stderr) {
-        // * Capture other python process outputs
-        this._serverProcess.stderr.on("data", (p_data: string) =&gt; {
-            console.log(`stderr: ${p_data}`);
-            this._isStarted = false;
-            utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
-            this._serverProcess = undefined;
-            if (this._rejectPromise) {
-                this._rejectPromise(`stderr: ${p_data}`);
-            }
-        });
-    } else {
-        console.error("No stderr");
-    }
-    if (this._serverProcess) {
-        this._serverProcess!.on("close", (p_code: any) =&gt; {
-            console.log(`leoBridge exited with code ${p_code}`);
-            this._isStarted = false;
-            utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
-            this._serverProcess = undefined;
-            if (this._rejectPromise) {
-                this._rejectPromise(`leoBridge exited with code ${p_code}`);
-            }
-        });
-    }
-
-    return w_serverStartPromise;
 }
 
 </t>
@@ -8460,7 +8525,7 @@ export interface ConfigMembers {
     showCloneOnNodes: boolean;
     showCopyOnNodes: boolean;
     invertNodeContrast: boolean;
-    leoServerPath: string;
+    leoEditorPath: string;
     leoPythonCommand: string;
     startServerAutomatically: boolean;
     connectToServerAutomatically: boolean;
@@ -8564,6 +8629,7 @@ export interface ArchivedPosition {
 </t>
 <t tx="felix.20200718195558.1">import * as vscode from "vscode";
 import * as murmur from "murmurhash-js";
+import * as net from "net";
 import { Constants } from "./constants";
 import { Icon, UserCommand, ArchivedPosition } from "./types";
 import { LeoNode } from "./leoNode";
@@ -8735,18 +8801,9 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 @tabwidth -4
 # Change Log
 
-## 0.1.14
+## 0.1.15
 
-- Rewrite of the leobridgeserver.py to be made compatible with the standards in leoserver.py from Leo.
-- Added option for specifying server file and path. Defaults to the internal leobridgeserver.py server.
-- Fixed cursor position and selection bugs.
-- Fixed automatic server startup and connection bugs.
-- Added Search functionality along with a 'find' panel.
-- Added goto global line and other clone-find related commands from Leo's 'Search' menu.
-- Added import-file(s) command - an alias of the import-any-file command form Leo.
-- Temporary fix for some minibuffer commands to override the widgets interactions (ex. clone-find-all, etc.)
-- Undo and redo icons are now faded out instead of disappearing when unavailable - to help with button shifting when clicking rapidly.
-- Many other small bugfixes.
+- Modified server location logic
 
 @others
 </t>
@@ -10243,19 +10300,19 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
             // Setup options for the preview state of the opened editor, and to choose which column it should appear
             const w_showOptions: vscode.TextDocumentShowOptions = p_aside
                 ? {
-                      viewColumn: vscode.ViewColumn.Beside,
-                      preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
-                      preview: true, // should text document be in preview only? set false for fully opened
-                      // selection is instead set when the GET_BODY_STATES above resolves
-                  }
+                    viewColumn: vscode.ViewColumn.Beside,
+                    preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
+                    preview: true, // should text document be in preview only? set false for fully opened
+                    // selection is instead set when the GET_BODY_STATES above resolves
+                }
                 : {
-                      viewColumn: this._bodyMainSelectionColumn
-                          ? this._bodyMainSelectionColumn
-                          : 1, // view column in which the editor should be shown
-                      preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
-                      preview: true, // should text document be in preview only? set false for fully opened
-                      // selection is instead set when the GET_BODY_STATES above resolves
-                  };
+                    viewColumn: this._bodyMainSelectionColumn
+                        ? this._bodyMainSelectionColumn
+                        : 1, // view column in which the editor should be shown
+                    preserveFocus: p_preserveFocus, // an optional flag that when true will stop the editor from taking focus
+                    preview: true, // should text document be in preview only? set false for fully opened
+                    // selection is instead set when the GET_BODY_STATES above resolves
+                };
 
             // NOTE: textEditor.show() is deprecated — Use window.showTextDocument instead.
             const q_showTextDocument = vscode.window.showTextDocument(
@@ -10711,10 +10768,10 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                 const q_askSaveChangesInfoMessage: Thenable&lt;vscode.MessageItem | undefined&gt; =
                     vscode.window.showInformationMessage(
                         Constants.USER_MESSAGES.SAVE_CHANGES +
-                            ' ' +
-                            this.leoStates.leoOpenedFileName +
-                            ' ' +
-                            Constants.USER_MESSAGES.BEFORE_CLOSING,
+                        ' ' +
+                        this.leoStates.leoOpenedFileName +
+                        ' ' +
+                        Constants.USER_MESSAGES.BEFORE_CLOSING,
                         { modal: true },
                         ...Constants.ASK_SAVE_CHANGES_BUTTONS
                     );
@@ -10898,7 +10955,11 @@ public startServer(): void {
         );
     }
     this._serverService
-        .startServer(this.config.leoPythonCommand, this.config.leoServerPath)
+        .startServer(
+            this.config.leoPythonCommand,
+            this.config.leoEditorPath,
+            this.config.connectionPort
+        )
         .then(
             (p_message) =&gt; {
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
@@ -10912,9 +10973,11 @@ public startServer(): void {
                 }
             },
             (p_reason) =&gt; {
-                vscode.window.showErrorMessage(
-                    Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason
-                );
+                if (p_reason !== "Leo Editor Path Setting Missing") {
+                    vscode.window.showErrorMessage(
+                        Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason
+                    );
+                }
             }
         );
 }
@@ -11224,8 +11287,8 @@ public sendConfigToServer(p_config: ConfigMembers): Promise&lt;LeoBridgePackage&
 
         if not w_found:
             if os.path.isfile(i_file):
-                self.commander = self.bridge.openLeoFile(
-                    i_file)  # create self.commander
+                # create self.commander by opening the file
+                self.commander = self.bridge.openLeoFile(i_file)
                 self.commander.findCommands.ftm = StringFindTabManager(
                     self.commander)
         if self.commander:
@@ -16914,7 +16977,6 @@ public loadSearchSettings(): void {
                 "focus": focus, "node": self._p_to_ap(c.p)}
     return self.sendLeoBridgePackage(w_result)
 
-
 </t>
 <t tx="felix.20210528000603.1">def _show_find_success(self, c, in_headline, insert, p):
     '''Handle a successful find match.'''
@@ -17218,6 +17280,7 @@ public static FIND_INPUTS_IDS = {
     SEARCH_BODY: "searchBody",
     SEARCH_HEADLINE: "searchHeadline"
 };
+
 </t>
 <t tx="felix.20210531011702.1">def replace(self, param):
     """Run Leo's replace command and return results."""
@@ -17583,6 +17646,72 @@ public prevNextNode(p_next: boolean) {
 }
 
 </t>
+<t tx="felix.20210612000127.1">## 0.1.14
+
+- Rewrite of the leobridgeserver.py to be made compatible with the standards in leoserver.py from Leo.
+- Added option for specifying server file and path. Defaults to the internal leobridgeserver.py server.
+- Fixed cursor position and selection bugs.
+- Fixed automatic server startup and connection bugs.
+- Added Search functionality along with a 'find' panel.
+- Added goto global line and other clone-find related commands from Leo's 'Search' menu.
+- Added import-file(s) command - an alias of the import-any-file command form Leo.
+- Temporary fix for some minibuffer commands to override the widgets interactions (ex. clone-find-all, etc.)
+- Undo and redo icons are now faded out instead of disappearing when unavailable - to help with button shifting when clicking rapidly.
+- Many other small bugfixes.
+
+</t>
+<t tx="felix.20210612155932.1">/**
+ * * Return a promise to a boolean that will tell if port already in use
+ */
+export function portInUse(p_port: number): Promise&lt;boolean&gt; {
+    const q_checkPort: Promise&lt;boolean&gt; = new Promise((p_resolve, p_reject) =&gt; {
+        var w_server = net.createServer(function (socket) {
+            socket.write('Echo server\r\n');
+            socket.pipe(socket);
+        });
+        w_server.on('error', function (e) {
+            p_resolve(true);
+        });
+        w_server.on('listening', function (e: Event) {
+            w_server.close();
+            p_resolve(false);
+        });
+        w_server.listen(
+            p_port
+        );
+    });
+    return q_checkPort;
+}
+
+</t>
+<t tx="felix.20210612214028.1">/**
+ * * Find next available port starting with p_startingPort inclusively,
+ * * check next (max 5) additional ports and return port number, or 0 if none.
+ */
+export function findNextAvailablePort(p_startingPort: number): Promise&lt;number&gt; {
+    return asyncFindPort(p_startingPort, 5);
+    // return Promise.resolve(32126);
+}
+
+</t>
+<t tx="felix.20210612230258.1">/**
+ * * async function that tries to find open ports starting with a given port#.
+ * Tries at most 'p_limit' times. from p_startingPort up to p_startingPort+p_limit.
+ */
+async function asyncFindPort(p_startingPort: number, p_limit: number) {
+    const w_endPort = p_startingPort + p_limit;
+    let w_foundPort = 0;
+    for (let i = p_startingPort; i &lt; w_endPort; i++) {
+        // wait for the promise to resolve before advancing the for loop
+        if (!await portInUse(i)) {
+            w_foundPort = i;
+            break;
+        }
+    }
+    return Promise.resolve(w_foundPort);
+}
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -17651,20 +17780,22 @@ import { LeoIntegration } from "../leoIntegration";
                         case 'alert':
                             vscode.window.showErrorMessage(message.text);
                             break;
-                        case 'chooseLeoServerPath':
+                        case 'chooseLeoEditorPath':
                             vscode.window.showOpenDialog(
                                 {
-                                    title: "Locate Leo Server Script",
+                                    title: "Locate Leo Editor Installation Folder",
                                     canSelectMany: false,
-                                    openLabel: "Choose",
-                                    filters: { 'script': ['py'] }
+                                    openLabel: "Choose Folder",
+                                    canSelectFiles: false,
+                                    canSelectFolders: true
+
                                 }
                             ).then(p_chosenFile =&gt; {
                                 if (p_chosenFile &amp;&amp; p_chosenFile.length) {
                                     this._panel!.webview.postMessage(
                                         {
-                                            command: 'newServerPath',
-                                            serverPath: p_chosenFile[0].fsPath
+                                            command: 'newEditorPath',
+                                            editorPath: p_chosenFile[0].fsPath
                                         }
                                     );
                                 }
@@ -18490,16 +18621,16 @@ u {
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;label for="leoServerPath"&gt;Leo&amp;nbsp;Server&amp;nbsp;Path&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
-                &lt;input id="leoServerPath"
-                       name="leoServerPath"
+                &lt;label for="leoEditorPath"&gt;Leo&amp;nbsp;Server&amp;nbsp;Path&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
+                &lt;input id="leoEditorPath"
+                       name="leoEditorPath"
                        type="text"
                        maxlength="256"
                        placeholder="leoserver.py location"
                        data-setting /&gt;
                 &lt;button type="button"
-                        id="chooseLeoServerPath"
-                        name="chooseLeoServerPath"
+                        id="chooseLeoEditorPath"
+                        name="chooseLeoEditorPath"
                         class="button btn button--flat button--flat-primary button--choose-path"&gt;
                   Choose...
                 &lt;/button&gt;
@@ -18955,11 +19086,7 @@ u {
 import { debounce } from "debounce";
 import { ConfigSetting } from '../../types';
 
-@others
-@language typescript
-@tabwidth -4
-</t>
-<t tx="fil.20210603223933.166">interface VsCodeApi {
+interface VsCodeApi {
     postMessage(msg: {}): void;
     setState(state: {}): void;
     getState(): { [key: string]: any };
@@ -18967,7 +19094,11 @@ import { ConfigSetting } from '../../types';
 
 declare function acquireVsCodeApi(): VsCodeApi;
 
-(function () {
+@others
+@language typescript
+@tabwidth -4
+</t>
+<t tx="fil.20210603223933.166">(function () {
     const vscode = acquireVsCodeApi();
     initializeAndWatchThemeColors();
 
@@ -19013,10 +19144,10 @@ declare function acquireVsCodeApi(): VsCodeApi;
                     setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
                     vscodeConfig = message.config; // next changes will be confronted to those settings
                     break;
-                case "newServerPath":
-                    const w_element: HTMLElement | null = document.getElementById("leoServerPath");
+                case "newEditorPath":
+                    const w_element: HTMLElement | null = document.getElementById("leoEditorPath");
                     if (w_element) {
-                        (w_element as HTMLInputElement).value = message.serverPath;
+                        (w_element as HTMLInputElement).value = message.editorPath;
                         onInputChanged(w_element as HTMLInputElement);
                     }
                     break;
@@ -19029,6 +19160,40 @@ declare function acquireVsCodeApi(): VsCodeApi;
         }
     });
 
+    @others
+
+    var applyChanges = debounce(function () {
+        var w_changes: ConfigSetting[] = [];
+        if (frontConfig) {
+            for (var prop in frontConfig) {
+                if (Object.prototype.hasOwnProperty.call(frontConfig, prop)) {
+                    // console.log(prop);
+                    if (frontConfig[prop] !== vscodeConfig[prop]) {
+                        w_changes.push({ code: prop, value: frontConfig[prop] });
+                    }
+                }
+            }
+        }
+        if (w_changes.length) {
+            // ok replace!
+            vscodeConfig = frontConfig;
+            frontConfig = JSON.parse(JSON.stringify(frontConfig));
+            vscode.postMessage({
+                command: "config",
+                changes: w_changes
+            });
+        } else {
+            // Still have to remove 'modified' popup
+            dirty!.className = dirty!.className.replace("show", "");
+        }
+    }, 1500);
+
+    // * START
+    setControls();
+    setVisibility(frontConfig);
+    onBind();
+
+})();
 </t>
 <t tx="fil.20210603223933.2">const cssColorRegex = /^(?:(#?)([0-9a-f]{3}|[0-9a-f]{6})|((?:rgb|hsl)a?)\((-?\d+%?)[,\s]+(-?\d+%?)[,\s]+(-?\d+%?)[,\s]*(-?[\d.]+%?)?\))$/i;
 
@@ -19170,42 +19335,11 @@ declare function acquireVsCodeApi(): VsCodeApi;
 }
 
 </t>
-<t tx="fil.20210603223934.13">    function getSettingValue(p_setting: string): any {
-        return frontConfig[p_setting];
-    }
+<t tx="fil.20210603223934.13">function getSettingValue(p_setting: string): any {
+    return frontConfig[p_setting];
+}
 
-    var applyChanges = debounce(function () {
-        var w_changes: ConfigSetting[] = [];
-        if (frontConfig) {
-            for (var prop in frontConfig) {
-                if (Object.prototype.hasOwnProperty.call(frontConfig, prop)) {
-                    // console.log(prop);
-                    if (frontConfig[prop] !== vscodeConfig[prop]) {
-                        w_changes.push({ code: prop, value: frontConfig[prop] });
-                    }
-                }
-            }
-        }
-        if (w_changes.length) {
-            // ok replace!
-            vscodeConfig = frontConfig;
-            frontConfig = JSON.parse(JSON.stringify(frontConfig));
-            vscode.postMessage({
-                command: "config",
-                changes: w_changes
-            });
-        } else {
-            // Still have to remove 'modified' popup
-            dirty!.className = dirty!.className.replace("show", "");
-        }
-    }, 1500);
 
-    // * START
-    setControls();
-    setVisibility(frontConfig);
-    onBind();
-
-})();
 </t>
 <t tx="fil.20210603223934.15">import { darken, lighten, opacity } from './colors';
 
@@ -19283,9 +19417,9 @@ declare function acquireVsCodeApi(): VsCodeApi;
     return observer;
 }
 </t>
-<t tx="fil.20210603223934.2">function chooseLeoServerPath() {
+<t tx="fil.20210603223934.2">function chooseLeoEditorPath() {
     vscode.postMessage({
-        command: "chooseLeoServerPath"
+        command: "chooseLeoEditorPath"
     });
 }
 
@@ -19367,9 +19501,9 @@ declare function acquireVsCodeApi(): VsCodeApi;
             }
         }
     }
-    const w_button: HTMLElement | null = document.getElementById('chooseLeoServerPath');
+    const w_button: HTMLElement | null = document.getElementById('chooseLeoEditorPath');
     if (w_button) {
-        w_button.onclick = chooseLeoServerPath;
+        w_button.onclick = chooseLeoEditorPath;
     }
 }
 

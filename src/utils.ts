@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as murmur from "murmurhash-js";
+import * as net from "net";
 import { Constants } from "./constants";
 import { Icon, UserCommand, ArchivedPosition } from "./types";
 import { LeoNode } from "./leoNode";
@@ -212,5 +213,55 @@ export function leoUriToStr(p_uri: vscode.Uri): string {
  */
 export function setContext(p_key: string, p_value: any): Thenable<unknown> {
     return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, p_key, p_value);
+}
+
+/**
+ * * Find next available port starting with p_startingPort inclusively,
+ * * check next (max 5) additional ports and return port number, or 0 if none.
+ */
+export function findNextAvailablePort(p_startingPort: number): Promise<number> {
+    return asyncFindPort(p_startingPort, 5);
+    // return Promise.resolve(32126);
+}
+
+/**
+ * * async function that tries to find open ports starting with a given port#
+ * * Tries at most 'p_maxTries' times,
+ * * from p_startingPort up to p_startingPort+p_limit
+ */
+async function asyncFindPort(p_startingPort: number, p_maxTries: number) {
+    const w_endPort = p_startingPort + p_maxTries;
+    let w_foundPort = 0;
+    for (let i = p_startingPort; i < w_endPort; i++) {
+        // wait for the promise to resolve before advancing the for loop
+        if (!await portInUse(i)) {
+            w_foundPort = i;
+            break;
+        }
+    }
+    return Promise.resolve(w_foundPort);
+}
+
+/**
+ * * Return a promise to a boolean that will tell if port already in use
+ */
+export function portInUse(p_port: number): Promise<boolean> {
+    const q_checkPort: Promise<boolean> = new Promise((p_resolve, p_reject) => {
+        var w_server = net.createServer(function (socket) {
+            socket.write('Echo server\r\n');
+            socket.pipe(socket);
+        });
+        w_server.on('error', function (e) {
+            p_resolve(true);
+        });
+        w_server.on('listening', function (e: Event) {
+            w_server.close();
+            p_resolve(false);
+        });
+        w_server.listen(
+            p_port
+        );
+    });
+    return q_checkPort;
 }
 

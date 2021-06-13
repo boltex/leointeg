@@ -192,13 +192,17 @@ export class LeoBridge {
     }
 
     /**
-     * * Spawn a websocket
+     * * Create a websocket connection to leoserver on
+     * @param p_port facultative port number to override config port
      * @returns A promise for a LeoBridgePackage object containing only an 'id' member of 1 that will resolve when the 'leoBridge' is established
      */
-    public initLeoProcess(): Promise<LeoBridgePackage> {
-        this._websocket = new WebSocket(Constants.TCPIP_DEFAULT_PROTOCOL +
+    public initLeoProcess(p_port?: number): Promise<LeoBridgePackage> {
+        this._websocket = new WebSocket(
+            Constants.TCPIP_DEFAULT_PROTOCOL +
             this._leoIntegration.config.connectionAddress +
-            ":" + this._leoIntegration.config.connectionPort);
+            ":" +
+            (p_port ? p_port : this._leoIntegration.config.connectionPort)
+        );
         // * Capture the python process output
         this._websocket.onmessage = (p_event) => {
             if (p_event.data) {
