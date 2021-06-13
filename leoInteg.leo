@@ -2312,6 +2312,7 @@ print('done')
     "debounce": "^1.2.0",
     "hasbin": "^1.2.3",
     "murmurhash-js": "^1.0.0",
+    "portfinder": "^1.0.28",
     "ws": "^7.3.1"
   }
 }
@@ -8634,6 +8635,7 @@ export interface ArchivedPosition {
 <t tx="felix.20200718195558.1">import * as vscode from "vscode";
 import * as murmur from "murmurhash-js";
 import * as net from "net";
+var portfinder = require('portfinder');
 import { Constants } from "./constants";
 import { Icon, UserCommand, ArchivedPosition } from "./types";
 import { LeoNode } from "./leoNode";
@@ -17697,7 +17699,18 @@ export function portInUse(p_port: number): Promise&lt;boolean&gt; {
  * * check next (max 5) additional ports and return port number, or 0 if none.
  */
 export function findNextAvailablePort(p_startingPort: number): Promise&lt;number&gt; {
-    return asyncFindPort(p_startingPort, 5);
+
+
+    const q_portFinder = portfinder.getPortPromise({
+        port: p_startingPort,
+        startPort: p_startingPort,
+        stopPort: p_startingPort + 5
+    })
+
+    return q_portFinder;
+
+    // Only works on linux
+    // return asyncFindPort(p_startingPort, 5);
     // return Promise.resolve(32126);
 }
 
@@ -18577,13 +18590,13 @@ u {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 0.1.14&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 0.1.15&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 0.1.14
+            See What's New in LeoInteg 0.1.15
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
@@ -18635,7 +18648,7 @@ u {
                        name="leoEditorPath"
                        type="text"
                        maxlength="256"
-                       placeholder="leoserver.py location"
+                       placeholder="C:/leo-editor"
                        data-setting /&gt;
                 &lt;button type="button"
                         id="chooseLeoEditorPath"

@@ -3032,6 +3032,7 @@
     "debounce": "^1.2.0",
     "hasbin": "^1.2.3",
     "murmurhash-js": "^1.0.0",
+    "portfinder": "^1.0.28",
     "ws": "^7.3.1"
   }
 }

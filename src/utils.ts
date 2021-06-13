@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as murmur from "murmurhash-js";
 import * as net from "net";
+var portfinder = require('portfinder');
 import { Constants } from "./constants";
 import { Icon, UserCommand, ArchivedPosition } from "./types";
 import { LeoNode } from "./leoNode";
@@ -220,7 +221,18 @@ export function setContext(p_key: string, p_value: any): Thenable<unknown> {
  * * check next (max 5) additional ports and return port number, or 0 if none.
  */
 export function findNextAvailablePort(p_startingPort: number): Promise<number> {
-    return asyncFindPort(p_startingPort, 5);
+
+
+    const q_portFinder = portfinder.getPortPromise({
+        port: p_startingPort,
+        startPort: p_startingPort,
+        stopPort: p_startingPort + 5
+    })
+
+    return q_portFinder;
+
+    // Only works on linux
+    // return asyncFindPort(p_startingPort, 5);
     // return Promise.resolve(32126);
 }
 
