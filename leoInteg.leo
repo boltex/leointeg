@@ -5772,7 +5772,7 @@ public static LEOBRIDGE = {
     HOIST_PNODE: "hoist", // * Direct Leo Command
     DEHOIST: "dehoist", // * Direct Leo Command
     EXTRACT: "extract", // * Direct Leo Command
-    EXTRACT_NAMES: "extractNames", // * Direct Leo Command
+    EXTRACT_NAMES: "extractSectionNames", // * Direct Leo Command
     COPY_MARKED: "copyMarked", // * Direct Leo Command
     DIFF_MARKED_NODES: "deleteMarked", // * Direct Leo Command
     MARK_CHANGED_ITEMS: "markChangedHeadlines", // * Direct Leo Command
@@ -5795,8 +5795,8 @@ public static LEOBRIDGE = {
     GOTO_GLOBAL_LINE: "!goto_global_line",
     CLONE_FIND_ALL: "!clone_find_all",
     CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
-    CLONE_FIND_MARKED: "cloneFindMarked", // * Direct Leo Command
-    CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked" // * Direct Leo Command
+    CLONE_FIND_MARKED: "cloneFindAllMarked", // * Direct Leo Command
+    CLONE_FIND_FLATTENED_MARKED: "cloneFindAllFlattenedMarked" // * Direct Leo Command
 };
 
 </t>
@@ -17322,7 +17322,7 @@ public cloneFind(p_marked: boolean, p_flat: boolean): Promise&lt;any&gt; {
                         fromOutline: false
                     })!;
                 }
-                return this.sendAction(w_action)
+                return q_action
                     .then((p_cloneFindResult: LeoBridgePackage) =&gt; {
                         let w_focusOnOutline = false;
                         const w_focus = p_cloneFindResult.focus!.toLowerCase();

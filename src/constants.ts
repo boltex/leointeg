@@ -424,7 +424,7 @@ export class Constants {
         HOIST_PNODE: "hoist", // * Direct Leo Command
         DEHOIST: "dehoist", // * Direct Leo Command
         EXTRACT: "extract", // * Direct Leo Command
-        EXTRACT_NAMES: "extractNames", // * Direct Leo Command
+        EXTRACT_NAMES: "extractSectionNames", // * Direct Leo Command
         COPY_MARKED: "copyMarked", // * Direct Leo Command
         DIFF_MARKED_NODES: "deleteMarked", // * Direct Leo Command
         MARK_CHANGED_ITEMS: "markChangedHeadlines", // * Direct Leo Command
