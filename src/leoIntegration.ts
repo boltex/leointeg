@@ -2272,7 +2272,7 @@ export class LeoIntegration {
                             fromOutline: false
                         })!;
                     }
-                    return this.sendAction(w_action)
+                    return q_action
                         .then((p_cloneFindResult: LeoBridgePackage) => {
                             let w_focusOnOutline = false;
                             const w_focus = p_cloneFindResult.focus!.toLowerCase();

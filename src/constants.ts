@@ -447,8 +447,8 @@ export class Constants {
         GOTO_GLOBAL_LINE: "!goto_global_line",
         CLONE_FIND_ALL: "!clone_find_all",
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
-        CLONE_FIND_MARKED: "cloneFindMarked", // * Direct Leo Command
-        CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked" // * Direct Leo Command
+        CLONE_FIND_MARKED: "cloneFindAllMarked", // * Direct Leo Command
+        CLONE_FIND_FLATTENED_MARKED: "cloneFindAllFlattenedMarked" // * Direct Leo Command
     };
 
     /**
