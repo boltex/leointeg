@@ -166,7 +166,6 @@ export class ServerService {
                 'Starting server with command: ' +
                 w_pythonPath + " " + w_args.join(" ")
             );
-            console.log('w_args', w_args);
 
             this._serverProcess = child.spawn(w_pythonPath, w_args);
 
