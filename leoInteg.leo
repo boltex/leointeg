@@ -466,6 +466,7 @@
 <v t="felix.20200719025231.7"><vh>startServer</vh></v>
 <v t="felix.20200719025231.8"><vh>connect</vh></v>
 <v t="felix.20200719025231.9"><vh>cancelConnect</vh></v>
+<v t="felix.20210613210351.1"><vh>chooseLeoFolder</vh></v>
 <v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
 </v>
 <v t="felix.20200719025231.10"><vh>Recent files</vh>
@@ -549,6 +550,8 @@
 </v>
 <v t="felix.20210530225640.1"><vh>Search</vh>
 <v t="felix.20210516233931.1"><vh>startSearch</vh></v>
+<v t="felix.20210613212439.1"><vh>newHeadline</vh></v>
+<v t="felix.20210613205741.1"><vh>_inputFindPattern</vh></v>
 <v t="felix.20210516234059.1"><vh>find</vh></v>
 <v t="felix.20210530223726.1"><vh>replace</vh></v>
 <v t="felix.20210530230354.1"><vh>replaceAll</vh></v>
@@ -2121,6 +2124,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 
 [CMD.CONNECT, () =&gt; w_leo.connect()],
 [CMD.START_SERVER, () =&gt; w_leo.startServer()],
+[CMD.CHOOSE_LEO_FOLDER, () =&gt; w_leo.chooseLeoFolder()],
 
 // Called by nodes in tree when selected either by mouse, or with enter
 [CMD.SELECT_NODE, (p_node: LeoNode) =&gt; w_leo.selectTreeNode(p_node, false, false)],
@@ -2623,6 +2627,11 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.16">{
+  "command": "leointeg.chooseLeoFolder",
+  "title": "Choose Leo Installation Folder",
+  "category": "Leo"
+},
+{
   "command": "leointeg.startServer",
   "category": "Leo",
   "title": "Start Leo Bridge Server"
@@ -4300,18 +4309,18 @@ print('done')
 },
 {
   "command": "leointeg.cloneNodeSelection",
-  "key": "ctrl+[Backquote]",
-  "win": "ctrl+oem_7",
-  "linux": "ctrl+'",
-  "mac": "cmd+[Backquote]",
+  "key": "ctrl+`",
+  "win": "ctrl+oem_3",
+  "linux": "ctrl+`",
+  "mac": "cmd+`",
   "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.cloneNodeSelectionFromOutline",
-  "key": "ctrl+[Backquote]",
-  "win": "ctrl+oem_7",
-  "linux": "ctrl+'",
-  "mac": "cmd+[Backquote]",
+  "key": "ctrl+`",
+  "win": "ctrl+oem_3",
+  "linux": "ctrl+`",
+  "mac": "cmd+`",
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
 },
 {
@@ -5798,6 +5807,7 @@ public static COMMANDS = {
     SHOW_WELCOME: Constants.NAME + ".showWelcomePage", // Always available: not in the commandPalette section of package.json
     SHOW_SETTINGS: Constants.NAME + ".showSettingsPage", // Always available: not in the commandPalette section of package.json
     // * LeoBridge
+    CHOOSE_LEO_FOLDER: Constants.NAME + ".chooseLeoFolder",
     START_SERVER: Constants.NAME + ".startServer",
     CONNECT: Constants.NAME + ".connectToServer",
     SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
@@ -9459,6 +9469,7 @@ export class LeoIntegration {
     // * Find panel
     private _findPanelWebviewView: vscode.WebviewView | undefined;
     private _findPanelWebviewExplorerView: vscode.WebviewView | undefined;
+    private _lastSettingsUsed: LeoSearchSettings | undefined; // Last settings loaded / saved for current document
 
     // * Selection
     private _selectionDirty: boolean = false; // Flag set when cursor selection is changed
@@ -13812,11 +13823,7 @@ public _changedWindowState(p_windowState: vscode.WindowState): void {
     return self.sendLeoBridgePackage({"focus": focus})
 
 </t>
-<t tx="felix.20210516004048.1">@language python
-class LeoServer:
-    """Leo Server Controller"""
-    @others
-</t>
+<t tx="felix.20210516004048.1"># Found 3 marked nodes</t>
 <t tx="felix.20210516004048.10">def open_file(self, param):
     """
     Open a leo file with the given filename.
@@ -16360,12 +16367,12 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.cloneFindMarked",
   "category": "Leo",
-  "title": "Clone Marked Nodes"
+  "title": "cfam - Clone Find All Marked Nodes"
 },
 {
   "command": "leointeg.cloneFindFlattenedMarked",
   "category": "Leo",
-  "title": "cffm - Clone Find Flattened Marked"
+  "title": "cffm - Clone Find All Flattened Marked"
 },
 {
   "command": "leointeg.setFindEverywhereOption",
@@ -16875,7 +16882,8 @@ export interface LeoGuiFindTabManagerSettings {
 <t tx="felix.20210524215215.1">/**
  * * Send the settings to the Leo Bridge Server
  */
-public saveSearchSettings(p_settings: LeoSearchSettings): void {
+public saveSearchSettings(p_settings: LeoSearchSettings): Promise&lt;LeoBridgePackage&gt; {
+    this._lastSettingsUsed = p_settings;
     // convert to LeoGuiFindTabManagerSettings
     const w_settings: LeoGuiFindTabManagerSettings = {
         //Find/change strings...
@@ -16892,7 +16900,7 @@ public saveSearchSettings(p_settings: LeoSearchSettings): void {
         suboutline_only: !!(p_settings.searchScope === 1),
         whole_word: p_settings.wholeWord,
     };
-    this.sendAction(
+    return this.sendAction(
         Constants.LEOBRIDGE.SET_SEARCH_SETTINGS,
         JSON.stringify({ searchSettings: w_settings })
     );
@@ -16939,6 +16947,7 @@ public loadSearchSettings(): void {
             if (w_settings.searchScope &gt; 2) {
                 console.error('searchScope SHOULD BE 0,1,2 only: ', w_settings.searchScope);
             }
+            this._lastSettingsUsed = w_settings;
             if (this._findPanelWebviewExplorerView) {
                 this._findPanelWebviewExplorerView.webview.postMessage({
                     type: 'setSettings',
@@ -17200,7 +17209,7 @@ public replace(p_fromOutline: boolean, p_thenFind: boolean): Promise&lt;any&gt; 
 
 </t>
 <t tx="felix.20210530225306.1">/**
- *
+ * * Set search setting in the search webview
  */
 public setSearchSetting(p_id: string): void {
     let w_panel: vscode.WebviewView | undefined;
@@ -17221,21 +17230,50 @@ public findAll(p_replace: boolean): Promise&lt;any&gt; {
     const w_action: string = p_replace
         ? Constants.LEOBRIDGE.REPLACE_ALL
         : Constants.LEOBRIDGE.FIND_ALL;
+
+    let w_searchString: string = this._lastSettingsUsed!.findText;
+    let w_replaceString: string = this._lastSettingsUsed!.replaceText;
+
     return this._isBusyTriggerSave(false, true)
         .then((p_saveResult) =&gt; {
-            return this.sendAction(w_action);
+            return this._inputFindPattern()
+                .then((p_findString) =&gt; {
+                    if (!p_findString) {
+                        return true; // Cancelled with escape or empty string.
+                    }
+                    w_searchString = p_findString;
+                    if (p_replace) {
+                        return this._inputFindPattern(true).then((p_replaceString) =&gt; {
+                            if (p_replaceString === undefined) {
+                                return true;
+                            }
+                            w_replaceString = p_replaceString;
+                            return false;
+                        });
+                    }
+                    return false;
+                });
         })
-        .then((p_findResult: LeoBridgePackage) =&gt; {
-            let w_focusOnOutline = false;
-            const w_focus = p_findResult.focus!.toLowerCase();
-            if (w_focus.includes('tree') || w_focus.includes('head')) {
-                // tree
-                w_focusOnOutline = true;
+        .then((p_cancelled: boolean) =&gt; {
+            if (this._lastSettingsUsed &amp;&amp; !p_cancelled) {
+                this._lastSettingsUsed.findText = w_searchString;
+                this._lastSettingsUsed.replaceText = w_replaceString;
+                this.saveSearchSettings(this._lastSettingsUsed); // No need to wait, will be stacked.
+                return this.sendAction(w_action)
+                    .then((p_findResult: LeoBridgePackage) =&gt; {
+                        let w_focusOnOutline = false;
+                        const w_focus = p_findResult.focus!.toLowerCase();
+                        if (w_focus.includes('tree') || w_focus.includes('head')) {
+                            // tree
+                            w_focusOnOutline = true;
+                        }
+                        this.loadSearchSettings();
+                        this.launchRefresh(
+                            { tree: true, body: true, documents: false, buttons: false, states: true },
+                            w_focusOnOutline
+                        );
+                    });
             }
-            this.launchRefresh(
-                { tree: true, body: true, documents: false, buttons: false, states: true },
-                w_focusOnOutline
-            );
         });
 }
 
@@ -17244,6 +17282,7 @@ public findAll(p_replace: boolean): Promise&lt;any&gt; {
  * * Clone Find All / Marked / Flattened
  */
 public cloneFind(p_marked: boolean, p_flat: boolean): Promise&lt;any&gt; {
+    let w_searchString: string = this._lastSettingsUsed!.findText;
     let w_action: string;
     if (p_marked) {
         w_action = p_flat
@@ -17256,19 +17295,48 @@ public cloneFind(p_marked: boolean, p_flat: boolean): Promise&lt;any&gt; {
     }
     return this._isBusyTriggerSave(false, true)
         .then((p_saveResult) =&gt; {
-            return this.sendAction(w_action);
-        })
-        .then((p_cloneFindResult: LeoBridgePackage) =&gt; {
-            let w_focusOnOutline = false;
-            const w_focus = p_cloneFindResult.focus!.toLowerCase();
-            if (w_focus.includes('tree') || w_focus.includes('head')) {
-                // tree
-                w_focusOnOutline = true;
+            if (p_marked) {
+                return false;
             }
-            this.launchRefresh(
-                { tree: true, body: true, documents: false, buttons: false, states: true },
-                w_focusOnOutline
-            );
+            return this._inputFindPattern()
+                .then((p_findString) =&gt; {
+                    if (!p_findString) {
+                        return true; // Cancelled with escape or empty string.
+                    }
+                    w_searchString = p_findString;
+                    return false;
+                });
+        })
+        .then((p_cancelled: boolean) =&gt; {
+            if (this._lastSettingsUsed &amp;&amp; !p_cancelled) {
+                let q_action: Promise&lt;LeoBridgePackage&gt;;
+                if (!p_marked) {
+                    this._lastSettingsUsed.findText = w_searchString;
+                    this.saveSearchSettings(this._lastSettingsUsed); // No need to wait, will be stacked.
+                    q_action = this.sendAction(w_action);
+                } else {
+                    q_action = this.nodeCommand({
+                        action: w_action,
+                        node: undefined,
+                        refreshType: {},
+                        fromOutline: false
+                    })!;
+                }
+                return this.sendAction(w_action)
+                    .then((p_cloneFindResult: LeoBridgePackage) =&gt; {
+                        let w_focusOnOutline = false;
+                        const w_focus = p_cloneFindResult.focus!.toLowerCase();
+                        if (w_focus.includes('tree') || w_focus.includes('head')) {
+                            // tree
+                            w_focusOnOutline = true;
+                        }
+                        this.loadSearchSettings();
+                        this.launchRefresh(
+                            { tree: true, body: true, documents: false, buttons: false, states: true },
+                            w_focusOnOutline
+                        );
+                    });
+            }
         });
 }
 
@@ -17734,6 +17802,29 @@ async function asyncFindPort(p_startingPort: number, p_maxTries: number) {
 }
 
 </t>
+<t tx="felix.20210613205741.1">/**
+ * * Return a promise for a find pattern string input from the user
+ */
+private _inputFindPattern(p_replace?: boolean): Thenable&lt;string | undefined&gt; {
+    return vscode.window.showInputBox({
+        title: p_replace ? "Replace with" : "Search for",
+        prompt: p_replace ? "Type text to replace with and press enter." : "Type text to search for and press enter.",
+        placeHolder: p_replace ? "Replace pattern here" : "Find pattern here",
+    });
+}
+
+</t>
+<t tx="felix.20210613210351.1">/**
+ * * Popup browser to choose Leo-Editor installation folder path
+ */
+public chooseLeoFolder() {
+    //
+    console.log('chooseLeoFolder !!');
+
+}
+
+</t>
+<t tx="felix.20210613212439.1"></t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -18643,7 +18734,7 @@ u {
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;label for="leoEditorPath"&gt;Leo-Editor&amp;nbsp;Path&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
+                &lt;label for="leoEditorPath"&gt;Leo&amp;#8209;Editor&amp;nbsp;Path&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&lt;/label&gt;
                 &lt;input id="leoEditorPath"
                        name="leoEditorPath"
                        type="text"

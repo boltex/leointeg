@@ -564,6 +564,11 @@
         "category": "Leo"
       },
       {
+        "command": "leointeg.chooseLeoFolder",
+        "title": "Choose Leo Installation Folder",
+        "category": "Leo"
+      },
+      {
         "command": "leointeg.startServer",
         "category": "Leo",
         "title": "Start Leo Bridge Server"
@@ -1268,12 +1273,12 @@
       {
         "command": "leointeg.cloneFindMarked",
         "category": "Leo",
-        "title": "Clone Marked Nodes"
+        "title": "cfam - Clone Find All Marked Nodes"
       },
       {
         "command": "leointeg.cloneFindFlattenedMarked",
         "category": "Leo",
-        "title": "cffm - Clone Find Flattened Marked"
+        "title": "cffm - Clone Find All Flattened Marked"
       },
       {
         "command": "leointeg.setFindEverywhereOption",
@@ -2626,18 +2631,18 @@
       },
       {
         "command": "leointeg.cloneNodeSelection",
-        "key": "ctrl+[Backquote]",
-        "win": "ctrl+oem_7",
-        "linux": "ctrl+'",
-        "mac": "cmd+[Backquote]",
+        "key": "ctrl+`",
+        "win": "ctrl+oem_3",
+        "linux": "ctrl+`",
+        "mac": "cmd+`",
         "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.cloneNodeSelectionFromOutline",
-        "key": "ctrl+[Backquote]",
-        "win": "ctrl+oem_7",
-        "linux": "ctrl+'",
-        "mac": "cmd+[Backquote]",
+        "key": "ctrl+`",
+        "win": "ctrl+oem_3",
+        "linux": "ctrl+`",
+        "mac": "cmd+`",
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
       },
       {

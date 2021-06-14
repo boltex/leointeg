@@ -116,6 +116,7 @@ export class LeoIntegration {
     // * Find panel
     private _findPanelWebviewView: vscode.WebviewView | undefined;
     private _findPanelWebviewExplorerView: vscode.WebviewView | undefined;
+    private _lastSettingsUsed: LeoSearchSettings | undefined; // Last settings loaded / saved for current document
 
     // * Selection
     private _selectionDirty: boolean = false; // Flag set when cursor selection is changed
@@ -502,6 +503,15 @@ export class LeoIntegration {
         this._leoBridgeReadyPromise = undefined;
         this._leoStatusBar.update(false);
         this._refreshOutline(false, RevealType.NoReveal);
+    }
+
+    /**
+     * * Popup browser to choose Leo-Editor installation folder path
+     */
+    public chooseLeoFolder() {
+        //
+        console.log('chooseLeoFolder !!');
+
     }
 
     /**
@@ -2076,6 +2086,17 @@ export class LeoIntegration {
     }
 
     /**
+     * * Return a promise for a find pattern string input from the user
+     */
+    private _inputFindPattern(p_replace?: boolean): Thenable<string | undefined> {
+        return vscode.window.showInputBox({
+            title: p_replace ? "Replace with" : "Search for",
+            prompt: p_replace ? "Type text to replace with and press enter." : "Type text to search for and press enter.",
+            placeHolder: p_replace ? "Replace pattern here" : "Find pattern here",
+        });
+    }
+
+    /**
      * * Find next / previous commands
      * @param p_fromOutline
      * @param p_reverse
@@ -2160,21 +2181,50 @@ export class LeoIntegration {
         const w_action: string = p_replace
             ? Constants.LEOBRIDGE.REPLACE_ALL
             : Constants.LEOBRIDGE.FIND_ALL;
+
+        let w_searchString: string = this._lastSettingsUsed!.findText;
+        let w_replaceString: string = this._lastSettingsUsed!.replaceText;
+
         return this._isBusyTriggerSave(false, true)
             .then((p_saveResult) => {
-                return this.sendAction(w_action);
+                return this._inputFindPattern()
+                    .then((p_findString) => {
+                        if (!p_findString) {
+                            return true; // Cancelled with escape or empty string.
+                        }
+                        w_searchString = p_findString;
+                        if (p_replace) {
+                            return this._inputFindPattern(true).then((p_replaceString) => {
+                                if (p_replaceString === undefined) {
+                                    return true;
+                                }
+                                w_replaceString = p_replaceString;
+                                return false;
+                            });
+                        }
+                        return false;
+                    });
             })
-            .then((p_findResult: LeoBridgePackage) => {
-                let w_focusOnOutline = false;
-                const w_focus = p_findResult.focus!.toLowerCase();
-                if (w_focus.includes('tree') || w_focus.includes('head')) {
-                    // tree
-                    w_focusOnOutline = true;
+            .then((p_cancelled: boolean) => {
+                if (this._lastSettingsUsed && !p_cancelled) {
+                    this._lastSettingsUsed.findText = w_searchString;
+                    this._lastSettingsUsed.replaceText = w_replaceString;
+                    this.saveSearchSettings(this._lastSettingsUsed); // No need to wait, will be stacked.
+                    return this.sendAction(w_action)
+                        .then((p_findResult: LeoBridgePackage) => {
+                            let w_focusOnOutline = false;
+                            const w_focus = p_findResult.focus!.toLowerCase();
+                            if (w_focus.includes('tree') || w_focus.includes('head')) {
+                                // tree
+                                w_focusOnOutline = true;
+                            }
+                            this.loadSearchSettings();
+                            this.launchRefresh(
+                                { tree: true, body: true, documents: false, buttons: false, states: true },
+                                w_focusOnOutline
+                            );
+                        });
                 }
-                this.launchRefresh(
-                    { tree: true, body: true, documents: false, buttons: false, states: true },
-                    w_focusOnOutline
-                );
             });
     }
 
@@ -2182,6 +2232,7 @@ export class LeoIntegration {
      * * Clone Find All / Marked / Flattened
      */
     public cloneFind(p_marked: boolean, p_flat: boolean): Promise<any> {
+        let w_searchString: string = this._lastSettingsUsed!.findText;
         let w_action: string;
         if (p_marked) {
             w_action = p_flat
@@ -2194,24 +2245,53 @@ export class LeoIntegration {
         }
         return this._isBusyTriggerSave(false, true)
             .then((p_saveResult) => {
-                return this.sendAction(w_action);
-            })
-            .then((p_cloneFindResult: LeoBridgePackage) => {
-                let w_focusOnOutline = false;
-                const w_focus = p_cloneFindResult.focus!.toLowerCase();
-                if (w_focus.includes('tree') || w_focus.includes('head')) {
-                    // tree
-                    w_focusOnOutline = true;
+                if (p_marked) {
+                    return false;
                 }
-                this.launchRefresh(
-                    { tree: true, body: true, documents: false, buttons: false, states: true },
-                    w_focusOnOutline
-                );
+                return this._inputFindPattern()
+                    .then((p_findString) => {
+                        if (!p_findString) {
+                            return true; // Cancelled with escape or empty string.
+                        }
+                        w_searchString = p_findString;
+                        return false;
+                    });
+            })
+            .then((p_cancelled: boolean) => {
+                if (this._lastSettingsUsed && !p_cancelled) {
+                    let q_action: Promise<LeoBridgePackage>;
+                    if (!p_marked) {
+                        this._lastSettingsUsed.findText = w_searchString;
+                        this.saveSearchSettings(this._lastSettingsUsed); // No need to wait, will be stacked.
+                        q_action = this.sendAction(w_action);
+                    } else {
+                        q_action = this.nodeCommand({
+                            action: w_action,
+                            node: undefined,
+                            refreshType: {},
+                            fromOutline: false
+                        })!;
+                    }
+                    return this.sendAction(w_action)
+                        .then((p_cloneFindResult: LeoBridgePackage) => {
+                            let w_focusOnOutline = false;
+                            const w_focus = p_cloneFindResult.focus!.toLowerCase();
+                            if (w_focus.includes('tree') || w_focus.includes('head')) {
+                                // tree
+                                w_focusOnOutline = true;
+                            }
+                            this.loadSearchSettings();
+                            this.launchRefresh(
+                                { tree: true, body: true, documents: false, buttons: false, states: true },
+                                w_focusOnOutline
+                            );
+                        });
+                }
             });
     }
 
     /**
-     *
+     * * Set search setting in the search webview
      */
     public setSearchSetting(p_id: string): void {
         let w_panel: vscode.WebviewView | undefined;
@@ -2251,6 +2331,7 @@ export class LeoIntegration {
                 if (w_settings.searchScope > 2) {
                     console.error('searchScope SHOULD BE 0,1,2 only: ', w_settings.searchScope);
                 }
+                this._lastSettingsUsed = w_settings;
                 if (this._findPanelWebviewExplorerView) {
                     this._findPanelWebviewExplorerView.webview.postMessage({
                         type: 'setSettings',
@@ -2270,7 +2351,8 @@ export class LeoIntegration {
     /**
      * * Send the settings to the Leo Bridge Server
      */
-    public saveSearchSettings(p_settings: LeoSearchSettings): void {
+    public saveSearchSettings(p_settings: LeoSearchSettings): Promise<LeoBridgePackage> {
+        this._lastSettingsUsed = p_settings;
         // convert to LeoGuiFindTabManagerSettings
         const w_settings: LeoGuiFindTabManagerSettings = {
             //Find/change strings...
@@ -2287,7 +2369,7 @@ export class LeoIntegration {
             suboutline_only: !!(p_settings.searchScope === 1),
             whole_word: p_settings.wholeWord,
         };
-        this.sendAction(
+        return this.sendAction(
             Constants.LEOBRIDGE.SET_SEARCH_SETTINGS,
             JSON.stringify({ searchSettings: w_settings })
         );

@@ -458,6 +458,7 @@ export class Constants {
         SHOW_WELCOME: Constants.NAME + ".showWelcomePage", // Always available: not in the commandPalette section of package.json
         SHOW_SETTINGS: Constants.NAME + ".showSettingsPage", // Always available: not in the commandPalette section of package.json
         // * LeoBridge
+        CHOOSE_LEO_FOLDER: Constants.NAME + ".chooseLeoFolder",
         START_SERVER: Constants.NAME + ".startServer",
         CONNECT: Constants.NAME + ".connectToServer",
         SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
