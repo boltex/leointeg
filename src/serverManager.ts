@@ -86,14 +86,7 @@ export class ServerService {
         */
 
         if (!p_leoEditorPath) {
-            vscode.window.showInformationMessage(
-                "Specify the location of your Leo Editor installation in leointeg's settings",
-                "leointeg settings").then(p_button => {
-                    if (p_button === 'leointeg settings') {
-                        vscode.commands.executeCommand(Constants.COMMANDS.SHOW_SETTINGS);
-                    }
-                });
-            return Promise.reject("Leo Editor Path Setting Missing");
+            return Promise.reject(Constants.USER_MESSAGES.LEO_PATH_MISSING);
         }
 
         let w_pythonPath = ""; // Command of child.spawn call
@@ -124,11 +117,11 @@ export class ServerService {
                     console.log('found leoserver.py');
                     w_serverScriptPath += Constants.SERVER_NAME;
                 } else {
-                    return Promise.reject("Cannot find server script");
+                    return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
                 }
             } catch (p_err) {
                 console.error(p_err);
-                return Promise.reject("Cannot find server script");
+                return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
             }
 
             if (p_leoPythonCommand && p_leoPythonCommand.length) {

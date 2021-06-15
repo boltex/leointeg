@@ -134,6 +134,8 @@ export class Constants {
         DISCONNECTED: "Disconnected",
         CLEARED_RECENT: "Cleared recent files list",
         CLOSE_ERROR: "Cannot close: No files opened.",
+        LEO_PATH_MISSING: "Leo Editor Path Setting Missing",
+        CANNOT_FIND_SERVER_SCRIPT: "Cannot find server script",
         YES: "Yes",
         NO: "No",
         YES_ALL: "Yes to all",

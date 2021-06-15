@@ -3,6 +3,8 @@
 ## 0.1.15
 
 - Modified server location logic
+- Fixed find all/ clone-find commands
+- fixed extract name command
 
 ## 0.1.14
 

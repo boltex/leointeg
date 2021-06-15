@@ -34,6 +34,7 @@ import { LeoStates } from './leoStates';
 import { LeoButtonsProvider } from './leoButtons';
 import { LeoButtonNode } from './leoButtonNode';
 import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
+import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
 
 /**
  * * Orchestrates Leo integration into vscode
@@ -142,6 +143,9 @@ export class LeoIntegration {
 
     // * Leo Find Panel
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
+
+    // * Settings / Welcome webview
+    public leoSettingsWebview: LeoSettingsProvider;
 
     // * Log and terminal Panes
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(
@@ -307,6 +311,9 @@ export class LeoIntegration {
             )
         );
 
+        // * Configuration / Welcome webview
+        this.leoSettingsWebview = new LeoSettingsProvider(_context, this);
+
         // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
         vscode.window.onDidChangeActiveTextEditor((p_editor) =>
             this._onActiveEditorChanged(p_editor)
@@ -405,8 +412,6 @@ export class LeoIntegration {
             )
             .then(
                 (p_message) => {
-                    console.log('SERVER START SUCCESS!!');
-
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                     if (this.config.connectToServerAutomatically) {
                         setTimeout(() => {
@@ -418,11 +423,25 @@ export class LeoIntegration {
                     }
                 },
                 (p_reason) => {
-                    if (p_reason !== "Leo Editor Path Setting Missing") {
-                        vscode.window.showErrorMessage(
-                            Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason
-                        );
+                    // This context flag will remove the 'connecting' welcome view
+                    utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
+                    utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
+                    if (
+                        [Constants.USER_MESSAGES.LEO_PATH_MISSING,
+                        Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT].includes(p_reason)
+                    ) {
+                        vscode.window.showErrorMessage(Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason, "Choose Folder")
+                            .then(p_chosenButton => {
+                                if (p_chosenButton === 'Choose Folder') {
+                                    vscode.commands.executeCommand(Constants.COMMANDS.CHOOSE_LEO_FOLDER);
+                                }
+                            });
+
+                        return;
                     }
+                    vscode.window.showErrorMessage(
+                        Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason,
+                    );
                 }
             );
     }
@@ -509,9 +528,22 @@ export class LeoIntegration {
      * * Popup browser to choose Leo-Editor installation folder path
      */
     public chooseLeoFolder() {
-        //
-        console.log('chooseLeoFolder !!');
-
+        utils.chooseLeoFolderDialog().then(p_chosenPath => {
+            if (p_chosenPath && p_chosenPath.length) {
+                this.config.setLeoIntegSettings(
+                    [{
+                        code: Constants.CONFIG_NAMES.LEO_EDITOR_PATH,
+                        value: p_chosenPath[0].fsPath
+                    }]
+                ).then(() => {
+                    this.leoSettingsWebview.changedConfiguration();
+                    vscode.window.showInformationMessage("Leo-Editor installation folder chosen as " + p_chosenPath[0].fsPath);
+                    if (!this.finishedStartup && this.config.startServerAutomatically) {
+                        this.startServer();
+                    }
+                });
+            }
+        });
     }
 
     /**

@@ -1,12 +1,10 @@
 import * as vscode from "vscode";
 import * as murmur from "murmurhash-js";
 import * as net from "net";
-var portfinder = require('portfinder');
 import { Constants } from "./constants";
 import { Icon, UserCommand, ArchivedPosition } from "./types";
 import { LeoNode } from "./leoNode";
-
-// String and other types/structures helper functions, along with common vscode API calls
+var portfinder = require('portfinder');
 
 /**
  * * Build a string for representing a number that's 2 digits wide, padding with a zero if needed
@@ -18,7 +16,7 @@ export function padNumber2(p_number: number): string {
 }
 
 /**
- * Builds a string hash out of of an archived position, default without taking collapsed state into account
+ * * Builds a string hash out of of an archived position, default without taking collapsed state into account
  * @param p_ap Archived position
  * @param p_salt To be added to the hashing process (Change when tree changes)
  */
@@ -143,6 +141,21 @@ export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand)
 }
 
 /**
+ * * Return dialog for choosing the Leo Editor installation folder path
+ */
+export function chooseLeoFolderDialog(): Thenable<vscode.Uri[] | undefined> {
+    return vscode.window.showOpenDialog(
+        {
+            title: "Locate Leo-Editor Installation Folder",
+            canSelectMany: false,
+            openLabel: "Choose Folder",
+            canSelectFiles: false,
+            canSelectFolders: true
+        }
+    );
+}
+
+/**
  * * Returns the milliseconds between a given starting process.hrtime tuple and the current call to process.hrtime
  * @param p_start starting process.hrtime to subtract from current immediate time
  * @returns number of milliseconds passed since the given start hrtime
@@ -221,19 +234,12 @@ export function setContext(p_key: string, p_value: any): Thenable<unknown> {
  * * check next (max 5) additional ports and return port number, or 0 if none.
  */
 export function findNextAvailablePort(p_startingPort: number): Promise<number> {
-
-
     const q_portFinder = portfinder.getPortPromise({
         port: p_startingPort,
         startPort: p_startingPort,
         stopPort: p_startingPort + 5
-    })
-
+    });
     return q_portFinder;
-
-    // Only works on linux
-    // return asyncFindPort(p_startingPort, 5);
-    // return Promise.resolve(32126);
 }
 
 /**

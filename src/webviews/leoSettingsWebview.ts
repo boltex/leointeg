@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
+import * as utils from "../utils";
 
 export class LeoSettingsProvider {
 
@@ -14,10 +15,10 @@ export class LeoSettingsProvider {
         private _leoIntegration: LeoIntegration
     ) {
         this._extensionPath = _context.extensionPath;
-        vscode.workspace.onDidChangeConfiguration(p_event => this._onChangeConfiguration(p_event));
+        vscode.workspace.onDidChangeConfiguration(p_event => this.changedConfiguration(p_event));
     }
 
-    private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
+    public changedConfiguration(p_event?: vscode.ConfigurationChangeEvent): void {
         if (this._panel && !this._waitingForUpdate) {
             this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
         }
@@ -59,21 +60,12 @@ export class LeoSettingsProvider {
                                 vscode.window.showErrorMessage(message.text);
                                 break;
                             case 'chooseLeoEditorPath':
-                                vscode.window.showOpenDialog(
-                                    {
-                                        title: "Locate Leo-Editor Installation Folder",
-                                        canSelectMany: false,
-                                        openLabel: "Choose Folder",
-                                        canSelectFiles: false,
-                                        canSelectFolders: true
-
-                                    }
-                                ).then(p_chosenFile => {
-                                    if (p_chosenFile && p_chosenFile.length) {
+                                utils.chooseLeoFolderDialog().then(p_chosenPath => {
+                                    if (p_chosenPath && p_chosenPath.length) {
                                         this._panel!.webview.postMessage(
                                             {
                                                 command: 'newEditorPath',
-                                                editorPath: p_chosenFile[0].fsPath
+                                                editorPath: p_chosenPath[0].fsPath
                                             }
                                         );
                                     }

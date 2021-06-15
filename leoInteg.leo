@@ -684,6 +684,7 @@
 <v t="felix.20200718195558.4"><vh>buildDocumentIconPaths</vh></v>
 <v t="ekr.20200815091945.1"><vh>buildButtonsIconPaths</vh></v>
 <v t="felix.20200718195558.6"><vh>buildNodeAndTextJson</vh></v>
+<v t="felix.20210614235023.1"><vh>chooseLeoFolderDialog</vh></v>
 <v t="felix.20201018163510.1"><vh>getDurationMilliseconds</vh></v>
 <v t="felix.20200718195558.7"><vh>getFileFromPath</vh></v>
 <v t="felix.20200718195558.8"><vh>isIconChangedByEdit</vh></v>
@@ -704,7 +705,7 @@
 </v>
 <v t="fil.20210603195218.1"><vh>@clean src/webviews/leoSettingsWebview.ts</vh>
 <v t="fil.20210603195319.1"><vh>class LeoSettingsWebview</vh>
-<v t="fil.20210603195319.2"><vh>_onChangeConfiguration</vh></v>
+<v t="fil.20210603195319.2"><vh>changedConfiguration</vh></v>
 <v t="fil.20210603195319.3"><vh>openWebview</vh></v>
 <v t="fil.20210603195319.4"><vh>_getBaseHtml</vh></v>
 </v>
@@ -801,7 +802,6 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
-<v t="felix.20191126232434.4"></v>
 <v t="felix.20210516004048.1"><vh>BACKUP WIP class LeoServer</vh>
 <v t="felix.20210516004048.2"><vh>server.__init__ (load bridge)</vh></v>
 <v t="felix.20210516004048.3"><vh>server:public commands</vh>
@@ -1591,7 +1591,7 @@ export interface MinibufferCommand extends vscode.QuickPickItem {
 }
 </t>
 <t tx="ekr.20200815091619.1">/**
- * Builds a string hash out of of an archived position, default without taking collapsed state into account
+ * * Builds a string hash out of of an archived position, default without taking collapsed state into account
  * @param p_ap Archived position
  * @param p_salt To be added to the hashing process (Change when tree changes)
  */
@@ -6082,6 +6082,8 @@ public static USER_MESSAGES = {
     DISCONNECTED: "Disconnected",
     CLEARED_RECENT: "Cleared recent files list",
     CLOSE_ERROR: "Cannot close: No files opened.",
+    LEO_PATH_MISSING: "Leo Editor Path Setting Missing",
+    CANNOT_FIND_SERVER_SCRIPT: "Cannot find server script",
     YES: "Yes",
     NO: "No",
     YES_ALL: "Yes to all",
@@ -6543,10 +6545,13 @@ public buildFromSavedSettings(): void {
         utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
         utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
         utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
-        if (!this._leoIntegration.finishedStartup) {
+        if (!this._leoIntegration.finishedStartup &amp;&amp; this.leoEditorPath) {
             // Only relevant 'viewWelcome' content at startup.
             utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
             utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
+        } else {
+            utils.setContext(FLAGS.AUTO_START_SERVER, false); // server started
+            utils.setContext(FLAGS.AUTO_CONNECT, false); // server started
         }
     }
 }
@@ -6579,7 +6584,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
     const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
     const w_leo: LeoIntegration = new LeoIntegration(p_context);
-    const w_leoSettingsWebview: LeoSettingsProvider = new LeoSettingsProvider(p_context, w_leo);
+    const w_leoSettingsWebview: LeoSettingsProvider = w_leo.leoSettingsWebview;
     const w_previousVersion = p_context.globalState.get&lt;string&gt;(Constants.VERSION_STATE_KEY);
     const w_start = process.hrtime(); // For calculating total startup time duration
 
@@ -6602,7 +6607,6 @@ export function activate(p_context: vscode.ExtensionContext) {
         body: true,
         states: true
     };
-    const showInfo = vscode.window.showInformationMessage;
 
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
 
@@ -8047,14 +8051,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
     */
 
     if (!p_leoEditorPath) {
-        vscode.window.showInformationMessage(
-            "Specify the location of your Leo Editor installation in leointeg's settings",
-            "leointeg settings").then(p_button =&gt; {
-                if (p_button === 'leointeg settings') {
-                    vscode.commands.executeCommand(Constants.COMMANDS.SHOW_SETTINGS);
-                }
-            });
-        return Promise.reject("Leo Editor Path Setting Missing");
+        return Promise.reject(Constants.USER_MESSAGES.LEO_PATH_MISSING);
     }
 
     let w_pythonPath = ""; // Command of child.spawn call
@@ -8085,11 +8082,11 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
                 console.log('found leoserver.py');
                 w_serverScriptPath += Constants.SERVER_NAME;
             } else {
-                return Promise.reject("Cannot find server script");
+                return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
             }
         } catch (p_err) {
             console.error(p_err);
-            return Promise.reject("Cannot find server script");
+            return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
         }
 
         if (p_leoPythonCommand &amp;&amp; p_leoPythonCommand.length) {
@@ -8645,12 +8642,10 @@ export interface ArchivedPosition {
 <t tx="felix.20200718195558.1">import * as vscode from "vscode";
 import * as murmur from "murmurhash-js";
 import * as net from "net";
-var portfinder = require('portfinder');
 import { Constants } from "./constants";
 import { Icon, UserCommand, ArchivedPosition } from "./types";
 import { LeoNode } from "./leoNode";
-
-// String and other types/structures helper functions, along with common vscode API calls
+var portfinder = require('portfinder');
 
 @language typescript
 @tabwidth -4
@@ -8820,6 +8815,8 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 ## 0.1.15
 
 - Modified server location logic
+- Fixed find all/ clone-find commands
+- fixed extract name command
 
 @others
 </t>
@@ -9260,6 +9257,7 @@ import { LeoStates } from './leoStates';
 import { LeoButtonsProvider } from './leoButtons';
 import { LeoButtonNode } from './leoButtonNode';
 import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
+import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
 
 @others
 @language typescript
@@ -9495,6 +9493,9 @@ export class LeoIntegration {
 
     // * Leo Find Panel
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
+
+    // * Settings / Welcome webview
+    public leoSettingsWebview: LeoSettingsProvider;
 
     // * Log and terminal Panes
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(
@@ -9870,6 +9871,9 @@ private _onActiveEditorChanged(
             { webviewOptions: { retainContextWhenHidden: true } }
         )
     );
+
+    // * Configuration / Welcome webview
+    this.leoSettingsWebview = new LeoSettingsProvider(_context, this);
 
     // * React to change in active panel/text editor (window.activeTextEditor) - also fires when the active editor becomes undefined
     vscode.window.onDidChangeActiveTextEditor((p_editor) =&gt;
@@ -10979,8 +10983,6 @@ public startServer(): void {
         )
         .then(
             (p_message) =&gt; {
-                console.log('SERVER START SUCCESS!!');
-
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                 if (this.config.connectToServerAutomatically) {
                     setTimeout(() =&gt; {
@@ -10992,11 +10994,25 @@ public startServer(): void {
                 }
             },
             (p_reason) =&gt; {
-                if (p_reason !== "Leo Editor Path Setting Missing") {
-                    vscode.window.showErrorMessage(
-                        Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason
-                    );
+                // This context flag will remove the 'connecting' welcome view
+                utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
+                utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
+                if (
+                    [Constants.USER_MESSAGES.LEO_PATH_MISSING,
+                    Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT].includes(p_reason)
+                ) {
+                    vscode.window.showErrorMessage(Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason, "Choose Folder")
+                        .then(p_chosenButton =&gt; {
+                            if (p_chosenButton === 'Choose Folder') {
+                                vscode.commands.executeCommand(Constants.COMMANDS.CHOOSE_LEO_FOLDER);
+                            }
+                        });
+
+                    return;
                 }
+                vscode.window.showErrorMessage(
+                    Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason,
+                );
             }
         );
 }
@@ -17770,19 +17786,12 @@ export function portInUse(p_port: number): Promise&lt;boolean&gt; {
  * * check next (max 5) additional ports and return port number, or 0 if none.
  */
 export function findNextAvailablePort(p_startingPort: number): Promise&lt;number&gt; {
-
-
     const q_portFinder = portfinder.getPortPromise({
         port: p_startingPort,
         startPort: p_startingPort,
         stopPort: p_startingPort + 5
-    })
-
+    });
     return q_portFinder;
-
-    // Only works on linux
-    // return asyncFindPort(p_startingPort, 5);
-    // return Promise.resolve(32126);
 }
 
 </t>
@@ -17821,17 +17830,47 @@ private _inputFindPattern(p_replace?: boolean): Thenable&lt;string | undefined&g
  * * Popup browser to choose Leo-Editor installation folder path
  */
 public chooseLeoFolder() {
-    //
-    console.log('chooseLeoFolder !!');
-
+    utils.chooseLeoFolderDialog().then(p_chosenPath =&gt; {
+        if (p_chosenPath &amp;&amp; p_chosenPath.length) {
+            this.config.setLeoIntegSettings(
+                [{
+                    code: Constants.CONFIG_NAMES.LEO_EDITOR_PATH,
+                    value: p_chosenPath[0].fsPath
+                }]
+            ).then(() =&gt; {
+                this.leoSettingsWebview.changedConfiguration();
+                vscode.window.showInformationMessage("Leo-Editor installation folder chosen as " + p_chosenPath[0].fsPath);
+                if (!this.finishedStartup &amp;&amp; this.config.startServerAutomatically) {
+                    this.startServer();
+                }
+            });
+        }
+    });
 }
 
 </t>
 <t tx="felix.20210613212439.1"></t>
-<t tx="felix.20210614231550.1"># leoserver.py</t>
+<t tx="felix.20210614231550.1"># coming soon, just began preliminary work in "BACKUP WIP class LeoServer" node</t>
+<t tx="felix.20210614235023.1">/**
+ * * Return dialog for choosing the Leo Editor installation folder path
+ */
+export function chooseLeoFolderDialog(): Thenable&lt;vscode.Uri[] | undefined&gt; {
+    return vscode.window.showOpenDialog(
+        {
+            title: "Locate Leo-Editor Installation Folder",
+            canSelectMany: false,
+            openLabel: "Choose Folder",
+            canSelectFiles: false,
+            canSelectFolders: true
+        }
+    );
+}
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
+import * as utils from "../utils";
 
 @language typescript
 @tabwidth -4
@@ -17849,13 +17888,13 @@ import { LeoIntegration } from "../leoIntegration";
         private _leoIntegration: LeoIntegration
     ) {
         this._extensionPath = _context.extensionPath;
-        vscode.workspace.onDidChangeConfiguration(p_event =&gt; this._onChangeConfiguration(p_event));
+        vscode.workspace.onDidChangeConfiguration(p_event =&gt; this.changedConfiguration(p_event));
     }
 
     @others
 }
 </t>
-<t tx="fil.20210603195319.2">private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
+<t tx="fil.20210603195319.2">public changedConfiguration(p_event?: vscode.ConfigurationChangeEvent): void {
     if (this._panel &amp;&amp; !this._waitingForUpdate) {
         this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
     }
@@ -17898,21 +17937,12 @@ import { LeoIntegration } from "../leoIntegration";
                             vscode.window.showErrorMessage(message.text);
                             break;
                         case 'chooseLeoEditorPath':
-                            vscode.window.showOpenDialog(
-                                {
-                                    title: "Locate Leo-Editor Installation Folder",
-                                    canSelectMany: false,
-                                    openLabel: "Choose Folder",
-                                    canSelectFiles: false,
-                                    canSelectFolders: true
-
-                                }
-                            ).then(p_chosenFile =&gt; {
-                                if (p_chosenFile &amp;&amp; p_chosenFile.length) {
+                            utils.chooseLeoFolderDialog().then(p_chosenPath =&gt; {
+                                if (p_chosenPath &amp;&amp; p_chosenPath.length) {
                                     this._panel!.webview.postMessage(
                                         {
                                             command: 'newEditorPath',
-                                            editorPath: p_chosenFile[0].fsPath
+                                            editorPath: p_chosenPath[0].fsPath
                                         }
                                     );
                                 }
@@ -19455,8 +19485,6 @@ declare function acquireVsCodeApi(): VsCodeApi;
 <t tx="fil.20210603223934.13">function getSettingValue(p_setting: string): any {
     return frontConfig[p_setting];
 }
-
-
 </t>
 <t tx="fil.20210603223934.15">import { darken, lighten, opacity } from './colors';
 
@@ -19561,16 +19589,17 @@ declare function acquireVsCodeApi(): VsCodeApi;
         return onInputChanged(this);
     });
     listenAll('select[data-setting]', 'change', function (this: HTMLSelectElement) {
-        return onInputSelected(this);
+        return onDropdownChanged(this);
     });
 }
 
 </t>
-<t tx="fil.20210603223934.4">function onInputSelected(element: HTMLSelectElement) {
+<t tx="fil.20210603223934.4">function onDropdownChanged(element: HTMLSelectElement) {
     if (element) {
         const w_value = element.options[element.selectedIndex].value;
         frontConfig[element.id] = w_value;
     }
+    dirty!.className = "show";
     applyChanges();
 }
 
