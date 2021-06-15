@@ -56,7 +56,7 @@
 </v>
 </v>
 <v t="ekr.20200722190517.1"><vh>Files: Other</vh>
-<v t="felix.20191126232434.2"><vh>@clean backup-leobridgeserver.py</vh>
+<v t="felix.20191126232434.2"><vh>@clean leobridgeserver.py</vh>
 <v t="felix.20191128002414.1"><vh>&lt;&lt; imports &gt;&gt;</vh></v>
 <v t="felix.20191128002417.1"><vh>&lt;&lt; constants &gt;&gt;</vh></v>
 <v t="felix.20200302204251.1"><vh>class IdleTimeManager</vh>
@@ -222,6 +222,7 @@
 <v t="felix.20201129184357.1"><vh>printAction</vh></v>
 <v t="felix.20191126232435.1"><vh>main leoBridgeServer loop</vh></v>
 </v>
+<v t="felix.20210614231550.1"><vh>@clean leoserver.py</vh></v>
 <v t="ekr.20200815123601.1"><vh>@clean package.json</vh>
 <v t="ekr.20200815123601.2"><vh>configuration</vh>
 <v t="ekr.20200815123601.3"><vh>External Files Change Detection</vh></v>
@@ -13822,7 +13823,7 @@ public _changedWindowState(p_windowState: vscode.WindowState): void {
     return self.sendLeoBridgePackage({"focus": focus})
 
 </t>
-<t tx="felix.20210516004048.1"># Found 3 marked nodes</t>
+<t tx="felix.20210516004048.1"></t>
 <t tx="felix.20210516004048.10">def open_file(self, param):
     """
     Open a leo file with the given filename.
@@ -17292,11 +17293,25 @@ public cloneFind(p_marked: boolean, p_flat: boolean): Promise&lt;any&gt; {
             ? Constants.LEOBRIDGE.CLONE_FIND_ALL_FLATTENED
             : Constants.LEOBRIDGE.CLONE_FIND_ALL;
     }
+
+    if (p_marked) {
+        // don't use find methods.
+        return this.nodeCommand({
+            action: w_action,
+            node: undefined,
+            refreshType: {
+                tree: true,
+                body: true,
+                documents: false,
+                buttons: false,
+                states: true,
+            },
+            fromOutline: false,
+        }) || Promise.resolve();
+    }
+
     return this._isBusyTriggerSave(false, true)
-        .then((p_saveResult) =&gt; {
-            if (p_marked) {
-                return false;
-            }
+        .then(() =&gt; {
             return this._inputFindPattern()
                 .then((p_findString) =&gt; {
                     if (!p_findString) {
@@ -17308,20 +17323,9 @@ public cloneFind(p_marked: boolean, p_flat: boolean): Promise&lt;any&gt; {
         })
         .then((p_cancelled: boolean) =&gt; {
             if (this._lastSettingsUsed &amp;&amp; !p_cancelled) {
-                let q_action: Promise&lt;LeoBridgePackage&gt;;
-                if (!p_marked) {
-                    this._lastSettingsUsed.findText = w_searchString;
-                    this.saveSearchSettings(this._lastSettingsUsed); // No need to wait, will be stacked.
-                    q_action = this.sendAction(w_action);
-                } else {
-                    q_action = this.nodeCommand({
-                        action: w_action,
-                        node: undefined,
-                        refreshType: {},
-                        fromOutline: false
-                    })!;
-                }
-                return q_action
+                this._lastSettingsUsed.findText = w_searchString;
+                this.saveSearchSettings(this._lastSettingsUsed); // No need to wait, will be stacked.
+                return this.sendAction(w_action)
                     .then((p_cloneFindResult: LeoBridgePackage) =&gt; {
                         let w_focusOnOutline = false;
                         const w_focus = p_cloneFindResult.focus!.toLowerCase();
@@ -17824,6 +17828,7 @@ public chooseLeoFolder() {
 
 </t>
 <t tx="felix.20210613212439.1"></t>
+<t tx="felix.20210614231550.1"># leoserver.py</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";

@@ -2243,11 +2243,25 @@ export class LeoIntegration {
                 ? Constants.LEOBRIDGE.CLONE_FIND_ALL_FLATTENED
                 : Constants.LEOBRIDGE.CLONE_FIND_ALL;
         }
+
+        if (p_marked) {
+            // don't use find methods.
+            return this.nodeCommand({
+                action: w_action,
+                node: undefined,
+                refreshType: {
+                    tree: true,
+                    body: true,
+                    documents: false,
+                    buttons: false,
+                    states: true,
+                },
+                fromOutline: false,
+            }) || Promise.resolve();
+        }
+
         return this._isBusyTriggerSave(false, true)
-            .then((p_saveResult) => {
-                if (p_marked) {
-                    return false;
-                }
+            .then(() => {
                 return this._inputFindPattern()
                     .then((p_findString) => {
                         if (!p_findString) {
@@ -2259,20 +2273,9 @@ export class LeoIntegration {
             })
             .then((p_cancelled: boolean) => {
                 if (this._lastSettingsUsed && !p_cancelled) {
-                    let q_action: Promise<LeoBridgePackage>;
-                    if (!p_marked) {
-                        this._lastSettingsUsed.findText = w_searchString;
-                        this.saveSearchSettings(this._lastSettingsUsed); // No need to wait, will be stacked.
-                        q_action = this.sendAction(w_action);
-                    } else {
-                        q_action = this.nodeCommand({
-                            action: w_action,
-                            node: undefined,
-                            refreshType: {},
-                            fromOutline: false
-                        })!;
-                    }
-                    return q_action
+                    this._lastSettingsUsed.findText = w_searchString;
+                    this.saveSearchSettings(this._lastSettingsUsed); // No need to wait, will be stacked.
+                    return this.sendAction(w_action)
                         .then((p_cloneFindResult: LeoBridgePackage) => {
                             let w_focusOnOutline = false;
                             const w_focus = p_cloneFindResult.focus!.toLowerCase();
