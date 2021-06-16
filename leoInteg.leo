@@ -693,7 +693,6 @@
 <v t="felix.20200718195558.11"><vh>leoUriToStr</vh></v>
 <v t="felix.20200718195558.12"><vh>setContext</vh></v>
 <v t="felix.20210612214028.1"><vh>findNextAvailablePort</vh></v>
-<v t="felix.20210612230258.1"><vh>asyncFindPort</vh></v>
 <v t="felix.20210612155932.1"><vh>portInUse</vh></v>
 </v>
 <v t="felix.20210522001751.1"><vh>@clean src/webviews/leoFindPanelWebview.ts</vh>
@@ -16710,6 +16709,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 <t tx="felix.20210522001751.1">import * as vscode from 'vscode';
 import { Constants } from '../constants';
 import { LeoIntegration } from '../leoIntegration';
+import * as utils from '../utils';
 
 @language typescript
 @tabwidth -4
@@ -16725,7 +16725,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
         private readonly _extensionUri: vscode.Uri,
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
-    ) {}
+    ) { }
 
     @others
 }
@@ -17795,25 +17795,6 @@ export function findNextAvailablePort(p_startingPort: number): Promise&lt;number
 }
 
 </t>
-<t tx="felix.20210612230258.1">/**
- * * async function that tries to find open ports starting with a given port#
- * * Tries at most 'p_maxTries' times,
- * * from p_startingPort up to p_startingPort+p_limit
- */
-async function asyncFindPort(p_startingPort: number, p_maxTries: number) {
-    const w_endPort = p_startingPort + p_maxTries;
-    let w_foundPort = 0;
-    for (let i = p_startingPort; i &lt; w_endPort; i++) {
-        // wait for the promise to resolve before advancing the for loop
-        if (!await portInUse(i)) {
-            w_foundPort = i;
-            break;
-        }
-    }
-    return Promise.resolve(w_foundPort);
-}
-
-</t>
 <t tx="felix.20210613205741.1">/**
  * * Return a promise for a find pattern string input from the user
  */
@@ -18017,6 +17998,11 @@ import * as utils from "../utils";
 
     webviewView.webview.onDidReceiveMessage((data) =&gt; {
         switch (data.type) {
+            case 'gotFocus': {
+                utils.setContext("sideBarFocus", true);
+                utils.setContext("focusedView", "leoFindPanel");
+                break;
+            }
             case 'leoFindNext': {
                 vscode.commands.executeCommand(Constants.COMMANDS.FIND_NEXT);
                 break;
@@ -18071,7 +18057,7 @@ import * as utils from "../utils";
     const nonce = this.getNonce();
 
     return `&lt;!DOCTYPE html&gt;
-        &lt;html lang="en"&gt;
+        &lt;html lang="en" tabindex="-1"&gt;
         &lt;head&gt;
             &lt;meta charset="UTF-8"&gt;
             &lt;meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';"&gt;
@@ -18083,7 +18069,7 @@ import * as utils from "../utils";
             &lt;title&gt;Leo Find Panel&lt;/title&gt;
         &lt;/head&gt;
         &lt;body&gt;
-            &lt;label for="findText"&gt;Find:&lt;/label&gt;
+            &lt;label class="first" for="findText"&gt;Find:&lt;/label&gt;
             &lt;input type="text" id="findText" name="findText" placeholder="&lt;find pattern here&gt;" &gt;
             &lt;label for="replaceText"&gt;Replace:&lt;/label&gt;
             &lt;input type="text" id="replaceText" name="replaceText" &gt;
@@ -18201,19 +18187,19 @@ let dirty = false;
 
 </t>
 <t tx="fil.20210603223013.2">@language css
-body {
-	background-color: transparent;
-}
-
 div.row {
-	overflow-x: hidden;
-	white-space: nowrap;
+  overflow-x: hidden;
+  white-space: nowrap;
 }
 
 div.col {
-	width: 9.5em;
-	display: inline-block;
-}</t>
+  width: 50%;
+  max-width: 9.5em;
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+</t>
 <t tx="fil.20210603223013.20"></t>
 <t tx="fil.20210603223013.21">/**
  * @param {string} p_inputId
@@ -18261,8 +18247,49 @@ function checkKeyDown(p_event) {
     if (!p_event) p_event = window.event;
     var keyCode = p_event.code || p_event.key;
 
-    console.log('got keycode:', keyCode);
+    if (keyCode === 'Tab') {
+        var actEl = document.activeElement;
+        if (p_event.shiftKey) {
+            var firstEl = document.getElementById('findText');
+            if (actEl === firstEl) {
+                p_event.preventDefault();
+                p_event.stopPropagation();
+                p_event.stopImmediatePropagation();
+                document.getElementById('searchBody').focus();
+                return;
+            }
+        } else {
+            var lastEl = document.getElementById('searchBody');
+            if (actEl === lastEl) {
+                p_event.preventDefault();
+                p_event.stopPropagation();
+                p_event.stopImmediatePropagation();
+                focusOnField('findText');
+                return;
+            }
+        }
+    }
+    // checkOtherKeys(p_event);
+}
 
+// TODO :  CAPTURE FOCUS IN OVERALL PANEL AND SET CONTEXT-VAR OF 'FOCUSED PANEL'
+
+// TODO : ALSO CYCLE TABS !!
+// TODO : ALSO CAPTURE CTRL+T TO FOCUS OUT OF HERE
+
+// TODO : CHECK FOR ALT+CTRL+SHORTCUTS FOR TOGGLES AND RADIOS
+// document.addEventListener ("keydown", function (zEvent) {
+//     if (zEvent.ctrlKey  &amp;&amp;  zEvent.altKey  &amp;&amp;  zEvent.key === "e") {  // case sensitive
+//         // DO YOUR STUFF HERE
+//     }
+// } );
+
+document.onkeydown = checkKeyDown;
+
+// ! Not Used Anymore ! now uses real vscode keybindings
+/*
+function checkOtherKeys(p_event) {
+    var keyCode = p_event.code || p_event.key;
     if (keyCode === 'F2') {
         p_event.preventDefault();
         p_event.stopPropagation();
@@ -18277,7 +18304,6 @@ function checkKeyDown(p_event) {
         vscode.postMessage({ type: 'leoFindNext' });
         return;
     }
-
     if ((keyCode === 'f' || keyCode === 'KeyF') &amp;&amp; p_event.ctrlKey) {
         p_event.preventDefault();
         p_event.stopPropagation();
@@ -18306,30 +18332,6 @@ function checkKeyDown(p_event) {
         vscode.postMessage({ type: 'replaceThenFind' });
         return;
     }
-
-    if (keyCode === 'Tab') {
-        var actEl = document.activeElement;
-        if (p_event.shiftKey) {
-            var firstEl = document.getElementById('findText');
-            if (actEl === firstEl) {
-                p_event.preventDefault();
-                p_event.stopPropagation();
-                p_event.stopImmediatePropagation();
-                document.getElementById('searchBody').focus();
-                return;
-            }
-        } else {
-            var lastEl = document.getElementById('searchBody');
-            if (actEl === lastEl) {
-                p_event.preventDefault();
-                p_event.stopPropagation();
-                p_event.stopImmediatePropagation();
-                focusOnField('findText');
-                return;
-            }
-        }
-    }
-
     if (p_event.ctrlKey &amp;&amp; p_event.altKey) {
         switch (keyCode) {
             case 'w':
@@ -18377,20 +18379,7 @@ function checkKeyDown(p_event) {
         }
     }
 }
-
-// TODO :  CAPTURE FOCUS IN OVERALL PANEL AND SET CONTEXT-VAR OF 'FOCUSED PANEL'
-
-// TODO : ALSO CYCLE TABS !!
-// TODO : ALSO CAPTURE CTRL+T TO FOCUS OUT OF HERE
-
-// TODO : CHECK FOR ALT+CTRL+SHORTCUTS FOR TOGGLES AND RADIOS
-// document.addEventListener ("keydown", function (zEvent) {
-//     if (zEvent.ctrlKey  &amp;&amp;  zEvent.altKey  &amp;&amp;  zEvent.key === "e") {  // case sensitive
-//         // DO YOUR STUFF HERE
-//     }
-// } );
-
-document.onkeydown = checkKeyDown;
+*/
 
 </t>
 <t tx="fil.20210603223013.24">/**
@@ -18448,6 +18437,10 @@ vscode.postMessage({ type: 'refreshSearchConfig' });
         searchBody: true,
         searchScope: 0, // 0 is entire outline (1: sub-outline, 2: node only)
     };
+
+    document.addEventListener('focusin', (event) =&gt; {
+        vscode.postMessage({ type: 'gotFocus' });
+    });
 
     // Handle messages sent from the extension to the webview
     @others
@@ -18555,109 +18548,137 @@ img {
 </t>
 <t tx="fil.20210603223014.4">@language css
 :root {
-	--container-padding: 20px;
-	--input-padding-vertical: 6px;
-	--input-padding-horizontal: 4px;
-	--input-margin-vertical: 4px;
-	--input-margin-horizontal: 0;
+  --input-padding-vertical: 6px;
+  --input-padding-horizontal: 4px;
+  --input-margin-vertical: 4px;
+  --input-margin-horizontal: 0;
+  height: 100%;
+  padding-right: 20px;
+}
+
+comment {
+  --container-padding: 20px;
+}
+
+html:focus {
+  outline: 1px solid;
+  outline-width: 1px;
+  outline-style: solid;
+  outline-offset: -1px;
+  outline-color: var(--vscode-focusBorder);
 }
 
 body {
-	padding: 0 var(--container-padding);
-	color: var(--vscode-foreground);
-	font-size: var(--vscode-font-size);
-	font-weight: var(--vscode-font-weight);
-	font-family: var(--vscode-font-family);
-	background-color: var(--vscode-editor-background);
+  margin-left: 20px;
+  background-color: transparent;
+  padding: 0 var(--container-padding);
+  color: var(--vscode-foreground);
+  font-size: var(--vscode-font-size);
+  font-weight: var(--vscode-font-weight);
+  font-family: var(--vscode-font-family);
+}
+
+.first {
+  margin-top: 8px;
+  margin-bottom: 0;
+  display: inline-block;
 }
 
 ol,
 ul {
-	padding-left: var(--container-padding);
+  padding-left: var(--container-padding);
 }
 
 body &gt; *,
 form &gt; * {
-	margin-block-start: var(--input-margin-vertical);
-	margin-block-end: var(--input-margin-vertical);
+  margin-block-start: var(--input-margin-vertical);
+  margin-block-end: var(--input-margin-vertical);
 }
 
 *:focus {
-	outline-color: var(--vscode-focusBorder) !important;
+  outline-color: var(--vscode-focusBorder);
 }
 
 a {
-	color: var(--vscode-textLink-foreground);
+  color: var(--vscode-textLink-foreground);
 }
 
 a:hover,
 a:active {
-	color: var(--vscode-textLink-activeForeground);
+  color: var(--vscode-textLink-activeForeground);
 }
 
 code {
-	font-size: var(--vscode-editor-font-size);
-	font-family: var(--vscode-editor-font-family);
+  font-size: var(--vscode-editor-font-size);
+  font-family: var(--vscode-editor-font-family);
 }
 
 button {
-	border: none;
-	padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-	width: 100%;
-	text-align: center;
-	outline: 1px solid transparent;
-	outline-offset: 2px !important;
-	color: var(--vscode-button-foreground);
-	background: var(--vscode-button-background);
+  border: none;
+  padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+  width: 100%;
+  text-align: center;
+  outline: 1px solid transparent;
+  outline-offset: 2px !important;
+  color: var(--vscode-button-foreground);
+  background: var(--vscode-button-background);
 }
 
 button:hover {
-	cursor: pointer;
-	background: var(--vscode-button-hoverBackground);
+  cursor: pointer;
+  background: var(--vscode-button-hoverBackground);
 }
 
 button:focus {
-	outline-color: var(--vscode-focusBorder);
+  outline-color: var(--vscode-focusBorder);
 }
 
 button.secondary {
-	color: var(--vscode-button-secondaryForeground);
-	background: var(--vscode-button-secondaryBackground);
+  color: var(--vscode-button-secondaryForeground);
+  background: var(--vscode-button-secondaryBackground);
 }
 
 button.secondary:hover {
-	background: var(--vscode-button-secondaryHoverBackground);
+  background: var(--vscode-button-secondaryHoverBackground);
 }
 
 input:not([type="radio"]):not([type="checkbox"]),
 textarea {
-	display: block;
-	width: 100%;
-	border: none;
-	font-family: var(--vscode-font-family);
-	padding: var(--input-padding-vertical) var(--input-padding-horizontal);
-	color: var(--vscode-input-foreground);
-	outline-color: var(--vscode-input-border);
-	background-color: var(--vscode-input-background);
+  display: block;
+  margin-right: 20px;
+  width: 100%;
+  border: none;
+  font-family: var(--vscode-font-family);
+  padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+  color: var(--vscode-input-foreground);
+  outline-color: var(--vscode-input-border);
+  background-color: var(--vscode-input-background);
 }
 
 input[type="checkbox"]:focus + label {
-	border: 1px solid var(--vscode-button-background);
-  }
+  border: 1px solid var(--vscode-button-background);
+}
 input[type="radio"]:focus + label {
-	border: 1px solid var(--vscode-button-background);
-  }
+  border: 1px solid var(--vscode-button-background);
+}
 
 input::placeholder,
 textarea::placeholder {
-	color: var(--vscode-input-placeholderForeground);
+  color: var(--vscode-input-placeholderForeground);
 }
 
 u {
-	color:var(--vscode-editor-foreground);
-	text-decoration-color: var(--vscode-foreground);
-	text-underline-offset: 0.04em;
-}</t>
+  color: var(--vscode-editor-foreground);
+  text-decoration-color: var(--vscode-foreground);
+  text-underline-offset: 0.04em;
+}
+
+body &gt; div &gt; div &gt; label:focus,
+body &gt; div &gt; div &gt; label:active {
+  outline-color: none !important;
+  border: none !important;
+}
+</t>
 <t tx="fil.20210603223933.1"></t>
 <t tx="fil.20210603223933.10">&lt;html lang="en"&gt;
 

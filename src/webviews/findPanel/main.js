@@ -22,6 +22,10 @@
         searchScope: 0, // 0 is entire outline (1: sub-outline, 2: node only)
     };
 
+    document.addEventListener('focusin', (event) => {
+        vscode.postMessage({ type: 'gotFocus' });
+    });
+
     // Handle messages sent from the extension to the webview
     window.addEventListener('message', (event) => {
         const message = event.data; // The json data that the extension sent
@@ -190,8 +194,49 @@
         if (!p_event) p_event = window.event;
         var keyCode = p_event.code || p_event.key;
 
-        console.log('got keycode:', keyCode);
+        if (keyCode === 'Tab') {
+            var actEl = document.activeElement;
+            if (p_event.shiftKey) {
+                var firstEl = document.getElementById('findText');
+                if (actEl === firstEl) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    document.getElementById('searchBody').focus();
+                    return;
+                }
+            } else {
+                var lastEl = document.getElementById('searchBody');
+                if (actEl === lastEl) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    focusOnField('findText');
+                    return;
+                }
+            }
+        }
+        // checkOtherKeys(p_event);
+    }
 
+    // TODO :  CAPTURE FOCUS IN OVERALL PANEL AND SET CONTEXT-VAR OF 'FOCUSED PANEL'
+
+    // TODO : ALSO CYCLE TABS !!
+    // TODO : ALSO CAPTURE CTRL+T TO FOCUS OUT OF HERE
+
+    // TODO : CHECK FOR ALT+CTRL+SHORTCUTS FOR TOGGLES AND RADIOS
+    // document.addEventListener ("keydown", function (zEvent) {
+    //     if (zEvent.ctrlKey  &&  zEvent.altKey  &&  zEvent.key === "e") {  // case sensitive
+    //         // DO YOUR STUFF HERE
+    //     }
+    // } );
+
+    document.onkeydown = checkKeyDown;
+
+    // ! Not Used Anymore ! now uses real vscode keybindings
+    /*
+    function checkOtherKeys(p_event) {
+        var keyCode = p_event.code || p_event.key;
         if (keyCode === 'F2') {
             p_event.preventDefault();
             p_event.stopPropagation();
@@ -206,7 +251,6 @@
             vscode.postMessage({ type: 'leoFindNext' });
             return;
         }
-
         if ((keyCode === 'f' || keyCode === 'KeyF') && p_event.ctrlKey) {
             p_event.preventDefault();
             p_event.stopPropagation();
@@ -235,30 +279,6 @@
             vscode.postMessage({ type: 'replaceThenFind' });
             return;
         }
-
-        if (keyCode === 'Tab') {
-            var actEl = document.activeElement;
-            if (p_event.shiftKey) {
-                var firstEl = document.getElementById('findText');
-                if (actEl === firstEl) {
-                    p_event.preventDefault();
-                    p_event.stopPropagation();
-                    p_event.stopImmediatePropagation();
-                    document.getElementById('searchBody').focus();
-                    return;
-                }
-            } else {
-                var lastEl = document.getElementById('searchBody');
-                if (actEl === lastEl) {
-                    p_event.preventDefault();
-                    p_event.stopPropagation();
-                    p_event.stopImmediatePropagation();
-                    focusOnField('findText');
-                    return;
-                }
-            }
-        }
-
         if (p_event.ctrlKey && p_event.altKey) {
             switch (keyCode) {
                 case 'w':
@@ -306,20 +326,7 @@
             }
         }
     }
-
-    // TODO :  CAPTURE FOCUS IN OVERALL PANEL AND SET CONTEXT-VAR OF 'FOCUSED PANEL'
-
-    // TODO : ALSO CYCLE TABS !!
-    // TODO : ALSO CAPTURE CTRL+T TO FOCUS OUT OF HERE
-
-    // TODO : CHECK FOR ALT+CTRL+SHORTCUTS FOR TOGGLES AND RADIOS
-    // document.addEventListener ("keydown", function (zEvent) {
-    //     if (zEvent.ctrlKey  &&  zEvent.altKey  &&  zEvent.key === "e") {  // case sensitive
-    //         // DO YOUR STUFF HERE
-    //     }
-    // } );
-
-    document.onkeydown = checkKeyDown;
+    */
 
     /**
      * @param {string} p_id

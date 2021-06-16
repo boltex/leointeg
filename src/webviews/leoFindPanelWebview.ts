@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { Constants } from '../constants';
 import { LeoIntegration } from '../leoIntegration';
+import * as utils from '../utils';
 
 /**
  * Leo Find Panel provider
@@ -12,7 +13,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
         private readonly _extensionUri: vscode.Uri,
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
-    ) {}
+    ) { }
 
     public resolveWebviewView(
         webviewView: vscode.WebviewView,
@@ -32,6 +33,11 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage((data) => {
             switch (data.type) {
+                case 'gotFocus': {
+                    utils.setContext("sideBarFocus", true);
+                    utils.setContext("focusedView", "leoFindPanel");
+                    break;
+                }
                 case 'leoFindNext': {
                     vscode.commands.executeCommand(Constants.COMMANDS.FIND_NEXT);
                     break;
@@ -85,7 +91,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
         const nonce = this.getNonce();
 
         return `<!DOCTYPE html>
-            <html lang="en">
+            <html lang="en" tabindex="-1">
             <head>
                 <meta charset="UTF-8">
                 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
@@ -97,7 +103,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                 <title>Leo Find Panel</title>
             </head>
             <body>
-                <label for="findText">Find:</label>
+                <label class="first" for="findText">Find:</label>
                 <input type="text" id="findText" name="findText" placeholder="<find pattern here>" >
                 <label for="replaceText">Replace:</label>
                 <input type="text" id="replaceText" name="replaceText" >

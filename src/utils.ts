@@ -243,24 +243,6 @@ export function findNextAvailablePort(p_startingPort: number): Promise<number> {
 }
 
 /**
- * * async function that tries to find open ports starting with a given port#
- * * Tries at most 'p_maxTries' times,
- * * from p_startingPort up to p_startingPort+p_limit
- */
-async function asyncFindPort(p_startingPort: number, p_maxTries: number) {
-    const w_endPort = p_startingPort + p_maxTries;
-    let w_foundPort = 0;
-    for (let i = p_startingPort; i < w_endPort; i++) {
-        // wait for the promise to resolve before advancing the for loop
-        if (!await portInUse(i)) {
-            w_foundPort = i;
-            break;
-        }
-    }
-    return Promise.resolve(w_foundPort);
-}
-
-/**
  * * Return a promise to a boolean that will tell if port already in use
  */
 export function portInUse(p_port: number): Promise<boolean> {
