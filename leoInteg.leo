@@ -693,7 +693,6 @@
 <v t="felix.20200718195558.11"><vh>leoUriToStr</vh></v>
 <v t="felix.20200718195558.12"><vh>setContext</vh></v>
 <v t="felix.20210612214028.1"><vh>findNextAvailablePort</vh></v>
-<v t="felix.20210612155932.1"><vh>portInUse</vh></v>
 </v>
 <v t="felix.20210522001751.1"><vh>@clean src/webviews/leoFindPanelWebview.ts</vh>
 <v t="felix.20210522001814.1"><vh>class LeoFindPanelProvider</vh>
@@ -5804,6 +5803,7 @@ public static LEOBRIDGE = {
  * * All commands this expansion exposes (in package.json, contributes &gt; commands)
  */
 public static COMMANDS = {
+    // * Access to the Settings/Welcome Webview
     SHOW_WELCOME: Constants.NAME + ".showWelcomePage", // Always available: not in the commandPalette section of package.json
     SHOW_SETTINGS: Constants.NAME + ".showSettingsPage", // Always available: not in the commandPalette section of package.json
     // * LeoBridge
@@ -6647,7 +6647,7 @@ export function deactivate() {
 async function showWelcomeIfNewer(p_version: string, p_previousVersion: string | undefined): Promise&lt;unknown&gt; {
     let w_showWelcomeScreen: boolean = false;
     if (p_previousVersion === undefined) {
-        console.log('leoInteg first-time install');
+        console.log('leointeg first-time install');
         w_showWelcomeScreen = true;
     } else {
         if (p_previousVersion !== p_version) {
@@ -8640,7 +8640,6 @@ export interface ArchivedPosition {
 </t>
 <t tx="felix.20200718195558.1">import * as vscode from "vscode";
 import * as murmur from "murmurhash-js";
-import * as net from "net";
 import { Constants } from "./constants";
 import { Icon, UserCommand, ArchivedPosition } from "./types";
 import { LeoNode } from "./leoNode";
@@ -17757,33 +17756,11 @@ public prevNextNode(p_next: boolean) {
 - Many other small bugfixes.
 
 </t>
-<t tx="felix.20210612155932.1">/**
- * * Return a promise to a boolean that will tell if port already in use
- */
-export function portInUse(p_port: number): Promise&lt;boolean&gt; {
-    const q_checkPort: Promise&lt;boolean&gt; = new Promise((p_resolve, p_reject) =&gt; {
-        var w_server = net.createServer(function (socket) {
-            socket.write('Echo server\r\n');
-            socket.pipe(socket);
-        });
-        w_server.on('error', function (e) {
-            p_resolve(true);
-        });
-        w_server.on('listening', function (e: Event) {
-            w_server.close();
-            p_resolve(false);
-        });
-        w_server.listen(
-            p_port
-        );
-    });
-    return q_checkPort;
-}
-
-</t>
 <t tx="felix.20210612214028.1">/**
  * * Find next available port starting with p_startingPort inclusively,
  * * check next (max 5) additional ports and return port number, or 0 if none.
+ * @param p_startingPort the port number at which to start looking for a free port
+ * @returns a promise of an opened port number
  */
 export function findNextAvailablePort(p_startingPort: number): Promise&lt;number&gt; {
     const q_portFinder = portfinder.getPortPromise({

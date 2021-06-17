@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import * as murmur from "murmurhash-js";
-import * as net from "net";
 import { Constants } from "./constants";
 import { Icon, UserCommand, ArchivedPosition } from "./types";
 import { LeoNode } from "./leoNode";
@@ -232,6 +231,8 @@ export function setContext(p_key: string, p_value: any): Thenable<unknown> {
 /**
  * * Find next available port starting with p_startingPort inclusively,
  * * check next (max 5) additional ports and return port number, or 0 if none.
+ * @param p_startingPort the port number at which to start looking for a free port
+ * @returns a promise of an opened port number
  */
 export function findNextAvailablePort(p_startingPort: number): Promise<number> {
     const q_portFinder = portfinder.getPortPromise({
@@ -240,28 +241,5 @@ export function findNextAvailablePort(p_startingPort: number): Promise<number> {
         stopPort: p_startingPort + 5
     });
     return q_portFinder;
-}
-
-/**
- * * Return a promise to a boolean that will tell if port already in use
- */
-export function portInUse(p_port: number): Promise<boolean> {
-    const q_checkPort: Promise<boolean> = new Promise((p_resolve, p_reject) => {
-        var w_server = net.createServer(function (socket) {
-            socket.write('Echo server\r\n');
-            socket.pipe(socket);
-        });
-        w_server.on('error', function (e) {
-            p_resolve(true);
-        });
-        w_server.on('listening', function (e: Event) {
-            w_server.close();
-            p_resolve(false);
-        });
-        w_server.listen(
-            p_port
-        );
-    });
-    return q_checkPort;
 }
 

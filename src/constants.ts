@@ -457,6 +457,7 @@ export class Constants {
      * * All commands this expansion exposes (in package.json, contributes > commands)
      */
     public static COMMANDS = {
+        // * Access to the Settings/Welcome Webview
         SHOW_WELCOME: Constants.NAME + ".showWelcomePage", // Always available: not in the commandPalette section of package.json
         SHOW_SETTINGS: Constants.NAME + ".showSettingsPage", // Always available: not in the commandPalette section of package.json
         // * LeoBridge

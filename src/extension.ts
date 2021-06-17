@@ -676,7 +676,7 @@ export function deactivate() {
 async function showWelcomeIfNewer(p_version: string, p_previousVersion: string | undefined): Promise<unknown> {
     let w_showWelcomeScreen: boolean = false;
     if (p_previousVersion === undefined) {
-        console.log('leoInteg first-time install');
+        console.log('leointeg first-time install');
         w_showWelcomeScreen = true;
     } else {
         if (p_previousVersion !== p_version) {
