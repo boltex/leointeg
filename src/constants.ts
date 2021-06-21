@@ -126,6 +126,12 @@ export class Constants {
         TITLE_GOTO_GLOBAL_LINE: "Goto global line",
         PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
         PROMPT_GOTO_GLOBAL_LINE: "Line number",
+        TITLE_TAG_CHILDREN: "Tag Children",
+        PLACEHOLDER_TAG_CHILDREN: "<tag>",
+        PROMPT_TAG_CHILDREN: "Enter a tag name",
+        TITLE_FIND_TAG: "Find Tag",
+        PLACEHOLDER_CLONE_FIND_TAG: "<tag>",
+        PROMPT_CLONE_FIND_TAG: "Enter a tag name",
         START_SERVER_ERROR: "Error - Cannot start server: ",
         CONNECT_FAILED: "Leo Bridge Connection Failed",
         CONNECT_ERROR: "Leo Bridge Connection Error: Incorrect id",
@@ -447,6 +453,8 @@ export class Constants {
         REPLACE_THEN_FIND: "!replace_then_find",
         REPLACE_ALL: "!replace_all",
         GOTO_GLOBAL_LINE: "!goto_global_line",
+        TAG_CHILDREN: "!tag_children",
+        CLONE_FIND_TAG: "!clone_find_tag",
         CLONE_FIND_ALL: "!clone_find_all",
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
         CLONE_FIND_MARKED: "cloneFindAllMarked", // * Direct Leo Command
@@ -598,9 +606,11 @@ export class Constants {
         REPLACE_ALL: Constants.NAME + ".replaceAll",
         CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
         CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
+        CLONE_FIND_TAG: Constants.NAME + ".cloneFindTag",
         CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
         CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
         GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
+        TAG_CHILDREN: Constants.NAME + ".tagChildren",
         SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
         SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
         SET_FIND_SUBOUTLINE_ONLY_OPTION: Constants.NAME + ".setFindSuboutlineOnlyOption",
@@ -617,6 +627,8 @@ export class Constants {
      * * Overridden 'good' minibuffer commands
      */
     public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
+        "tag-children": Constants.COMMANDS.TAG_CHILDREN,
+        "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
         "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
         "redo": Constants.COMMANDS.REDO,
         "undo": Constants.COMMANDS.UNDO,

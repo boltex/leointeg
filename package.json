@@ -1281,6 +1281,16 @@
         "title": "cffm - Clone Find All Flattened Marked"
       },
       {
+        "command": "leointeg.cloneFindTag",
+        "category": "Leo",
+        "title": "cft - Clone Find Tag"
+      },
+      {
+        "command": "leointeg.tagChildren",
+        "category": "Leo",
+        "title": "Tag Children"
+      },
+      {
         "command": "leointeg.setFindEverywhereOption",
         "category": "Leo",
         "title": "Set Find Everywhere Option"
@@ -1777,6 +1787,14 @@
         },
         {
           "command": "leointeg.cloneFindFlattenedMarked",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.cloneFindTag",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.tagChildren",
           "when": "leoTreeOpened"
         },
         {

@@ -2450,6 +2450,78 @@ export class LeoIntegration {
     }
 
     /**
+     * * Tag Children
+     */
+    public tagChildren(): void {
+        this.triggerBodySave(false)
+            .then((p_saveResult: boolean) => {
+                return vscode.window.showInputBox({
+                    title: Constants.USER_MESSAGES.TITLE_TAG_CHILDREN,
+                    placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG_CHILDREN,
+                    prompt: Constants.USER_MESSAGES.PROMPT_TAG_CHILDREN,
+                });
+            })
+            .then((p_inputResult?: string) => {
+                if (p_inputResult && p_inputResult.trim()) {
+                    this.sendAction(
+                        Constants.LEOBRIDGE.TAG_CHILDREN,
+                        JSON.stringify({ tag: p_inputResult.trim() })
+                    ).then((p_resultFind: LeoBridgePackage) => {
+                        if (!p_resultFind.found) {
+                            // Not found
+                        }
+                        this.launchRefresh(
+                            {
+                                tree: true,
+                                body: true,
+                                documents: false,
+                                buttons: false,
+                                states: true,
+                            },
+                            false
+                        );
+                    });
+                }
+            });
+    }
+
+    /**
+     * * Clone Find Tag
+     */
+    public cloneFindTag(): void {
+        this.triggerBodySave(false)
+            .then((p_saveResult: boolean) => {
+                return vscode.window.showInputBox({
+                    title: Constants.USER_MESSAGES.TITLE_FIND_TAG,
+                    placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_CLONE_FIND_TAG,
+                    prompt: Constants.USER_MESSAGES.PROMPT_CLONE_FIND_TAG,
+                });
+            })
+            .then((p_inputResult?: string) => {
+                if (p_inputResult && p_inputResult.trim()) {
+                    this.sendAction(
+                        Constants.LEOBRIDGE.CLONE_FIND_TAG,
+                        JSON.stringify({ tag: p_inputResult.trim() })
+                    ).then((p_resultFind: LeoBridgePackage) => {
+                        if (!p_resultFind.found) {
+                            // Not found
+                        }
+                        this.launchRefresh(
+                            {
+                                tree: true,
+                                body: true,
+                                documents: false,
+                                buttons: false,
+                                states: true,
+                            },
+                            false
+                        );
+                    });
+                }
+            });
+    }
+
+    /**
      * * Asks for file name and path, then saves the Leo file
      * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
      */

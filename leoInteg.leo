@@ -167,6 +167,8 @@
 <v t="felix.20210601151758.1"><vh>find_var</vh></v>
 <v t="felix.20210601151804.1"><vh>find_def</vh></v>
 <v t="felix.20210601152841.1"><vh>goto_global_line</vh></v>
+<v t="felix.20210620213815.1"><vh>clone_find_tag</vh></v>
+<v t="felix.20210620213822.1"><vh>tag_children</vh></v>
 </v>
 <v t="felix.20200924223910.1"><vh>At Buttons</vh>
 <v t="felix.20200924210020.1"><vh>get_buttons</vh></v>
@@ -222,7 +224,7 @@
 <v t="felix.20201129184357.1"><vh>printAction</vh></v>
 <v t="felix.20191126232435.1"><vh>main leoBridgeServer loop</vh></v>
 </v>
-<v t="felix.20210614231550.1"><vh>@clean leoserver.py</vh></v>
+<v t="felix.20210614231550.1"><vh>@file leoserver.py</vh></v>
 <v t="ekr.20200815123601.1"><vh>@clean package.json</vh>
 <v t="ekr.20200815123601.2"><vh>configuration</vh>
 <v t="ekr.20200815123601.3"><vh>External Files Change Detection</vh></v>
@@ -561,6 +563,8 @@
 <v t="felix.20210525232728.1"><vh>loadSearchSettings</vh></v>
 <v t="felix.20210524215215.1"><vh>saveSearchSettings</vh></v>
 <v t="felix.20210601164915.1"><vh>gotoGlobalLine</vh></v>
+<v t="felix.20210620220655.1"><vh>tagChildren</vh></v>
+<v t="felix.20210620220702.1"><vh>cloneFindTag</vh></v>
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
 <v t="felix.20200719025231.58"><vh>saveAsLeoFile</vh></v>
@@ -894,7 +898,8 @@
 <v t="felix.20210516004048.83"><vh>server._make_response</vh></v>
 <v t="felix.20210516004048.84"><vh>server._make_minimal_response</vh></v>
 <v t="felix.20210516004048.85"><vh>server._p_to_ap</vh></v>
-<v t="felix.20210516004048.86"><vh>serverver._test_round_trip_positions</vh></v>
+<v t="felix.20210620165454.1"><vh>server._positionFromGnx</vh></v>
+<v t="felix.20210516004048.86"><vh>server._test_round_trip_positions</vh></v>
 </v>
 </v>
 </vnodes>
@@ -2201,9 +2206,11 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.REPLACE_THEN_FIND_FO, () =&gt; w_leo.replace(true, true)],
 [CMD.REPLACE_ALL, () =&gt; w_leo.findAll(true)],
 [CMD.GOTO_GLOBAL_LINE, () =&gt; w_leo.gotoGlobalLine()],
+[CMD.TAG_CHILDREN, () =&gt; w_leo.tagChildren()],
 
 [CMD.CLONE_FIND_ALL, () =&gt; w_leo.cloneFind(false, false)],
 [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; w_leo.cloneFind(false, true)],
+[CMD.CLONE_FIND_TAG, () =&gt; w_leo.cloneFindTag()],
 [CMD.CLONE_FIND_MARKED, () =&gt; w_leo.cloneFind(true, false)],
 [CMD.CLONE_FIND_FLATTENED_MARKED, () =&gt; w_leo.cloneFind(true, true)],
 
@@ -5792,6 +5799,8 @@ public static LEOBRIDGE = {
     REPLACE_THEN_FIND: "!replace_then_find",
     REPLACE_ALL: "!replace_all",
     GOTO_GLOBAL_LINE: "!goto_global_line",
+    TAG_CHILDREN: "!tag_children",
+    CLONE_FIND_TAG: "!clone_find_tag",
     CLONE_FIND_ALL: "!clone_find_all",
     CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
     CLONE_FIND_MARKED: "cloneFindAllMarked", // * Direct Leo Command
@@ -5944,9 +5953,11 @@ public static COMMANDS = {
     REPLACE_ALL: Constants.NAME + ".replaceAll",
     CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
     CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
+    CLONE_FIND_TAG: Constants.NAME + ".cloneFindTag",
     CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
     CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
     GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
+    TAG_CHILDREN: Constants.NAME + ".tagChildren",
     SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
     SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
     SET_FIND_SUBOUTLINE_ONLY_OPTION: Constants.NAME + ".setFindSuboutlineOnlyOption",
@@ -6073,6 +6084,12 @@ public static USER_MESSAGES = {
     TITLE_GOTO_GLOBAL_LINE: "Goto global line",
     PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
     PROMPT_GOTO_GLOBAL_LINE: "Line number",
+    TITLE_TAG_CHILDREN: "Tag Children",
+    PLACEHOLDER_TAG_CHILDREN: "&lt;tag&gt;",
+    PROMPT_TAG_CHILDREN: "Enter a tag name",
+    TITLE_FIND_TAG: "Find Tag",
+    PLACEHOLDER_CLONE_FIND_TAG: "&lt;tag&gt;",
+    PROMPT_CLONE_FIND_TAG: "Enter a tag name",
     START_SERVER_ERROR: "Error - Cannot start server: ",
     CONNECT_FAILED: "Leo Bridge Connection Failed",
     CONNECT_ERROR: "Leo Bridge Connection Error: Incorrect id",
@@ -13837,7 +13854,7 @@ public _changedWindowState(p_windowState: vscode.WindowState): void {
     return self.sendLeoBridgePackage({"focus": focus})
 
 </t>
-<t tx="felix.20210516004048.1"></t>
+<t tx="felix.20210516004048.1">@language python</t>
 <t tx="felix.20210516004048.10">def open_file(self, param):
     """
     Open a leo file with the given filename.
@@ -16389,6 +16406,16 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "title": "cffm - Clone Find All Flattened Marked"
 },
 {
+  "command": "leointeg.cloneFindTag",
+  "category": "Leo",
+  "title": "cft - Clone Find Tag"
+},
+{
+  "command": "leointeg.tagChildren",
+  "category": "Leo",
+  "title": "Tag Children"
+},
+{
   "command": "leointeg.setFindEverywhereOption",
   "category": "Leo",
   "title": "Set Find Everywhere Option"
@@ -17123,6 +17150,14 @@ public getBridgeFocus(): void {
   "command": "leointeg.cloneFindFlattenedMarked",
   "when": "leoTreeOpened"
 },
+{
+  "command": "leointeg.cloneFindTag",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.tagChildren",
+  "when": "leoTreeOpened"
+},
 </t>
 <t tx="felix.20210530153359.1">{
   "command": "leointeg.copyMarked",
@@ -17455,8 +17490,7 @@ public static FIND_INPUTS_IDS = {
     return self.sendLeoBridgePackage(w_result)
 
 </t>
-<t tx="felix.20210601151758.1">
-def find_var(self, param):
+<t tx="felix.20210601151758.1">def find_var(self, param):
     """Run Leo's find-var command and return results."""
     c = self.commander
     fc = c.findCommands
@@ -17537,6 +17571,8 @@ public gotoGlobalLine(): void {
  * * Overridden 'good' minibuffer commands
  */
 public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
+    "tag-children": Constants.COMMANDS.TAG_CHILDREN,
+    "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
     "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
     "redo": Constants.COMMANDS.REDO,
     "undo": Constants.COMMANDS.UNDO,
@@ -17808,7 +17844,6 @@ public chooseLeoFolder() {
 
 </t>
 <t tx="felix.20210613212439.1"></t>
-<t tx="felix.20210614231550.1"># coming soon, just began preliminary work in "BACKUP WIP class LeoServer" node</t>
 <t tx="felix.20210614235023.1">/**
  * * Return dialog for choosing the Leo Editor installation folder path
  */
@@ -17822,6 +17857,111 @@ export function chooseLeoFolderDialog(): Thenable&lt;vscode.Uri[] | undefined&gt
             canSelectFolders: true
         }
     );
+}
+
+</t>
+<t tx="felix.20210620165454.1">def _positionFromGnx(self, gnx):
+    '''Return first p node with this gnx or false'''
+    c = self._check_c()
+    for p in c.all_unique_positions():
+        if p.v.gnx == gnx:
+            return p
+    return False
+</t>
+<t tx="felix.20210620213815.1">def clone_find_tag(self, param):
+    """Run Leo's clone-find-tag command and return results."""
+    tag = 'clone_find_tag'
+    c = self.commander
+    fc = c.findCommands
+    the_tag = param.get("tag")
+    if the_tag:
+        settings = fc.ftm.get_settings()
+        n, p = fc.do_clone_find_tag(settings)
+    return self.sendLeoBridgePackage({"n": n})
+
+</t>
+<t tx="felix.20210620213822.1">def tag_children(self, param):
+    """Run Leo's tag-children command"""
+    # This is not a find command!
+    c = self.commander
+    fc = c.findCommands
+    the_tag = param.get("tag")
+    if the_tag:
+        fc.do_tag_children(c.p, the_tag)
+    return self.sendLeoBridgePackage()
+
+</t>
+<t tx="felix.20210620220655.1">/**
+ * * Tag Children
+ */
+public tagChildren(): void {
+    this.triggerBodySave(false)
+        .then((p_saveResult: boolean) =&gt; {
+            return vscode.window.showInputBox({
+                title: Constants.USER_MESSAGES.TITLE_TAG_CHILDREN,
+                placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG_CHILDREN,
+                prompt: Constants.USER_MESSAGES.PROMPT_TAG_CHILDREN,
+            });
+        })
+        .then((p_inputResult?: string) =&gt; {
+            if (p_inputResult &amp;&amp; p_inputResult.trim()) {
+                this.sendAction(
+                    Constants.LEOBRIDGE.TAG_CHILDREN,
+                    JSON.stringify({ tag: p_inputResult.trim() })
+                ).then((p_resultFind: LeoBridgePackage) =&gt; {
+                    if (!p_resultFind.found) {
+                        // Not found
+                    }
+                    this.launchRefresh(
+                        {
+                            tree: true,
+                            body: true,
+                            documents: false,
+                            buttons: false,
+                            states: true,
+                        },
+                        false
+                    );
+                });
+            }
+        });
+}
+
+</t>
+<t tx="felix.20210620220702.1">/**
+ * * Clone Find Tag
+ */
+public cloneFindTag(): void {
+    this.triggerBodySave(false)
+        .then((p_saveResult: boolean) =&gt; {
+            return vscode.window.showInputBox({
+                title: Constants.USER_MESSAGES.TITLE_FIND_TAG,
+                placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_CLONE_FIND_TAG,
+                prompt: Constants.USER_MESSAGES.PROMPT_CLONE_FIND_TAG,
+            });
+        })
+        .then((p_inputResult?: string) =&gt; {
+            if (p_inputResult &amp;&amp; p_inputResult.trim()) {
+                this.sendAction(
+                    Constants.LEOBRIDGE.CLONE_FIND_TAG,
+                    JSON.stringify({ tag: p_inputResult.trim() })
+                ).then((p_resultFind: LeoBridgePackage) =&gt; {
+                    if (!p_resultFind.found) {
+                        // Not found
+                    }
+                    this.launchRefresh(
+                        {
+                            tree: true,
+                            body: true,
+                            documents: false,
+                            buttons: false,
+                            states: true,
+                        },
+                        false
+                    );
+                });
+            }
+        });
 }
 
 </t>

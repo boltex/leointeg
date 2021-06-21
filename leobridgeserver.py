@@ -1336,7 +1336,6 @@ class LeoBridgeIntegController:
         w_result = {"found": result,
                     "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
-
     def find_var(self, param):
         """Run Leo's find-var command and return results."""
         c = self.commander
@@ -1370,6 +1369,27 @@ class LeoBridgeIntegController:
             n=int(param['line']))
         w_result = {"found": found, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
+
+    def clone_find_tag(self, param):
+        """Run Leo's clone-find-tag command and return results."""
+        tag = 'clone_find_tag'
+        c = self.commander
+        fc = c.findCommands
+        the_tag = param.get("tag")
+        if the_tag:
+            settings = fc.ftm.get_settings()
+            n, p = fc.do_clone_find_tag(settings)
+        return self.sendLeoBridgePackage({"n": n})
+
+    def tag_children(self, param):
+        """Run Leo's tag-children command"""
+        # This is not a find command!
+        c = self.commander
+        fc = c.findCommands
+        the_tag = param.get("tag")
+        if the_tag:
+            fc.do_tag_children(c.p, the_tag)
+        return self.sendLeoBridgePackage()
 
     def get_buttons(self, param):
         '''Gets the currently opened file's @buttons list'''

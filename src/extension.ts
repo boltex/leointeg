@@ -629,9 +629,11 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.REPLACE_THEN_FIND_FO, () => w_leo.replace(true, true)],
         [CMD.REPLACE_ALL, () => w_leo.findAll(true)],
         [CMD.GOTO_GLOBAL_LINE, () => w_leo.gotoGlobalLine()],
+        [CMD.TAG_CHILDREN, () => w_leo.tagChildren()],
 
         [CMD.CLONE_FIND_ALL, () => w_leo.cloneFind(false, false)],
         [CMD.CLONE_FIND_ALL_FLATTENED, () => w_leo.cloneFind(false, true)],
+        [CMD.CLONE_FIND_TAG, () => w_leo.cloneFindTag()],
         [CMD.CLONE_FIND_MARKED, () => w_leo.cloneFind(true, false)],
         [CMD.CLONE_FIND_FLATTENED_MARKED, () => w_leo.cloneFind(true, true)],
 
