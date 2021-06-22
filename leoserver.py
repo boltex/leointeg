@@ -992,7 +992,7 @@ class LeoServer:
             else:
                 foundPNode = self._positionFromGnx(ap.get('gnx'))
                 if foundPNode:
-                    c.selectPosition(w_foundPNode)
+                    c.selectPosition(foundPNode)
                 else:
                     print(f"{tag}: node does not exist! ap was: {json.dumps(ap)}")
 
@@ -1044,21 +1044,22 @@ class LeoServer:
             startSel = start
             endSel = end
         else:
+            # otherwise convert from line+col data.
             insert = convert(
-                v.b, insert['line'], insert['col'])
+                v.b, active['line'], active['col'])
             startSel = convert(
                 v.b, start['line'], start['col'])
             endSel = convert(
                 v.b, end['line'], end['col'])
         # If it's the currently selected node set the wrapper's states too
         if p == c.p:
-            wrapper.setSelectionRange(start, end, insert)
+            wrapper.setSelectionRange(startSel, endSel, insert)
             wrapper.setYScrollPosition(scroll)
         # Always set vnode attrs.
         v.scrollBarSpot = scroll
         v.insertSpot = insert
-        v.selectionStart = start
-        v.selectionLength = abs(start - end)
+        v.selectionStart = startSel
+        v.selectionLength = abs(startSel - endSel)
         return self._make_response()
     #@+node:felix.20210621233316.64: *5* server.toggle_mark
     def toggle_mark(self, param):
@@ -2298,6 +2299,7 @@ class LeoServer:
     def _check_p(self, ap):
         """Return _ap_to_p(ap) or c.p."""
         tag = '_check_p'
+        c = self._check_c()
         if ap:
             p = self._ap_to_p(ap)
             if not p:  # pragma: no cover
@@ -2327,7 +2329,7 @@ class LeoServer:
         c = self._check_c()
 
         if command in self.bad_commands_list:  # pragma: no cover
-            raise ServerError(f"{tag}: disallowed command: {command_name!r}")
+            raise ServerError(f"{tag}: disallowed command: {command!r}")
 
         keepSelection = False  # Set default, optional component of param
         if "keep" in param:
@@ -2392,6 +2394,7 @@ class LeoServer:
 
         # Execute the requested action.
         if action[0] == "!":
+            action = action[1:] # Remove exclamation point "!"
             func = self._do_server_command  # Server has this method.
         else:
             func = self._do_leo_command  # No prefix, so it's a Leo command.
@@ -2839,7 +2842,6 @@ def main():  # pragma: no cover (tested in client)
             await websocket.send(controller._make_response())
             # controller._sign_on()
             async for json_message in websocket:
-                print('got message')
                 try:
                     n += 1
                     d = None
