@@ -705,7 +705,7 @@ class LeoBridgeIntegController:
         self.g.es = self.es  # pointer - not a function call
 
         # print(dir(self.g), flush=True)
-        self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
+        self.currentActionId = 0  # Id of action being processed, STARTS AT 0 = Initial 'ready'
 
         # * Currently Selected Commander (opened from leo.core.leoBridge or chosen via the g.app.windowList 2 list)
         self.commander = None

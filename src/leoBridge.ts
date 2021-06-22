@@ -178,8 +178,10 @@ export class LeoBridge {
      * @param p_data given JSON data
      */
     private _processAnswer(p_data: string): void {
+        console.log('got data', p_data);
+
         const w_parsedData = this._tryParseJSON(p_data);
-        if (w_parsedData && w_parsedData.id) {
+        if (w_parsedData && (w_parsedData.id === 0 || w_parsedData.id)) {
             this._resolveBridgeReady(w_parsedData);
             this._callAction();
         } else if (w_parsedData && w_parsedData.async) {
@@ -205,6 +207,8 @@ export class LeoBridge {
         );
         // * Capture the python process output
         this._websocket.onmessage = (p_event) => {
+            console.error(`Websocket onmessage: ${p_event.data.toString()}`);
+
             if (p_event.data) {
                 this._processAnswer(p_event.data.toString());
             }

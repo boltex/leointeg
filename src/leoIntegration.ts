@@ -455,11 +455,15 @@ export class LeoIntegration {
             return;
         }
         this._leoIsConnecting = true;
+        console.log('connecting');
+
         this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess(
             this._serverService.usingPort // This will be zero if no port found
         );
         this._leoBridgeReadyPromise.then(
             (p_package) => {
+                console.log('connected');
+
                 this._leoIsConnecting = false;
                 if (p_package.id !== 1) {
                     this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);

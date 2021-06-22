@@ -57,7 +57,7 @@
 </v>
 <v t="ekr.20200722190517.1"><vh>Files: Other</vh>
 <v t="felix.20191126232434.2"><vh>@file leobridgeserver.py</vh></v>
-<v t="felix.20210614231550.1"><vh>@file leoserver.py</vh></v>
+<v t="felix.20210621233316.1"><vh>@file leoserver.py</vh></v>
 <v t="ekr.20200815123601.1"><vh>@clean package.json</vh>
 <v t="ekr.20200815123601.2"><vh>configuration</vh>
 <v t="ekr.20200815123601.3"><vh>External Files Change Detection</vh></v>
@@ -5652,8 +5652,10 @@ import { LeoAsync } from "./leoAsync";
  * @param p_data given JSON data
  */
 private _processAnswer(p_data: string): void {
+    console.log('got data', p_data);
+
     const w_parsedData = this._tryParseJSON(p_data);
-    if (w_parsedData &amp;&amp; w_parsedData.id) {
+    if (w_parsedData &amp;&amp; (w_parsedData.id === 0 || w_parsedData.id)) {
         this._resolveBridgeReady(w_parsedData);
         this._callAction();
     } else if (w_parsedData &amp;&amp; w_parsedData.async) {
@@ -5680,6 +5682,8 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
     );
     // * Capture the python process output
     this._websocket.onmessage = (p_event) =&gt; {
+        console.error(`Websocket onmessage: ${p_event.data.toString()}`);
+
         if (p_event.data) {
             this._processAnswer(p_event.data.toString());
         }
@@ -9764,11 +9768,15 @@ public connect(): void {
         return;
     }
     this._leoIsConnecting = true;
+    console.log('connecting');
+
     this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess(
         this._serverService.usingPort // This will be zero if no port found
     );
     this._leoBridgeReadyPromise.then(
         (p_package) =&gt; {
+            console.log('connected');
+
             this._leoIsConnecting = false;
             if (p_package.id !== 1) {
                 this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
