@@ -66,7 +66,7 @@ class LeoServer:
         self.action = None
         self.bad_commands_list = []  # Set below.
         self.config = None
-        self.current_id = 0  # Id of action being processed.  STARTS AT 1 = Initial 'ready'
+        self.current_id = 0  # Id of action being processed.
         self.log_flag = False  # set by "log" key
         #
         # Start the bridge.
@@ -78,7 +78,10 @@ class LeoServer:
             verbose=False,       # True: prints messages that would be sent to the log pane.
         )
         self.g = g = self.bridge.globals()  # Also sets global 'g' object
-        self.dummy_c = g.app.newCommander(fileName=None)  # To inspect commands
+        # * Intercept Log Pane output: Sends to client's log pane
+        self.g.es = self._es  # pointer - not a function call
+        # To inspect commands
+        self.dummy_c = g.app.newCommander(fileName=None)
         self.bad_commands_list = self._bad_commands(self.dummy_c)
         #
         # Complete the initialization, as in LeoApp.initApp.
@@ -348,7 +351,6 @@ class LeoServer:
             result = {"searchSettings": settings.__dict__}
         except Exception as e:
             raise ServerError(f"{tag}: exception getting search settings: {e}")
-
         return self._make_response(result)
     #@+node:felix.20210621233316.21: *5* server.set_search_settings
     def set_search_settings(self, param):
@@ -636,7 +638,7 @@ class LeoServer:
             print(f"\nget_all_gnx\n")
         c = self._check_c()
         all_gnx = [p.v.gnx for p in c.all_unique_positions(copy=False)]
-        return self._make_minimal_response({"gnx": all_gnx}, True)
+        return self._make_minimal_response({"gnx": all_gnx})
     #@+node:felix.20210621233316.39: *5* server.get_body
     def get_body(self, param):
         """
@@ -645,27 +647,42 @@ class LeoServer:
         Note: There is no need for a separate get_body_length command,
               because _make_response always adds "body-length": len(p.b)
         """
-        self._check_c()
-        p = self._get_p(param)
-        # _make_response adds all the cheap redraw data, including "body-length"
-        return self._make_minimal_response({"body": p.b})
+        c = self._check_c()
+
+        # p = self._get_p(param)
+        # return self._make_minimal_response({"body": p.b})
+
+        # TODO : Use real param instead of direct gnx string!
+
+        w_v = c.fileCommands.gnxDict.get(param)  # vitalije
+        if w_v:
+            if w_v.b:
+                return self._make_minimal_response({"body": w_v.b})
+            else:
+                return self._make_minimal_response({"body": ""})
     #@+node:felix.20210621233316.40: *5* server.get_body_length
     def get_body_length(self, param):
         """
         Return p.b's length in bytes, where p is c.p if param["ap"] is missing.
         """
-        self._check_c()
-        p = self._get_p(param)
-        if p and p.b:
+        c = self._check_c()
+        
+        # TODO : Use real param object instead of gnx string
+        
+        # p = self._get_p(param)
+        # if p and p.b:
+            
+        w_v = c.fileCommands.gnxDict.get(param)  # vitalije
+        if w_v:
             # Length in bytes, not just by character count.
-            return self._make_minimal_response({"len": len(p.b.encode('utf-8'))}, True)
-        return self._make_minimal_response({"len": 0}, True)  # empty as default
+            return self._make_minimal_response({"len": len(w_v.b.encode('utf-8'))})
+        return self._make_minimal_response({"len": 0})  # empty as default
     #@+node:felix.20210621233316.41: *5* server.get_body_states
     def get_body_states(self, param):
         """
         Return body data for p, where p is c.p if param["ap"] is missing.
         The cursor positions are given as {"line": line, "col": col, "index": i}
-        with line and col along with a redundant index for conveniance and flexibility.
+        with line and col along with a redundant index for convenience and flexibility.
         """
         c = self._check_c()
         p = self._get_p(param)
@@ -751,8 +768,8 @@ class LeoServer:
         parent = p.parent()
         data = self._get_position_d(parent) if parent else None
         return self._make_minimal_response({"node": data})
-    #@+node:felix.20210621233316.45: *5* server.get_position_dict
-    def get_position_data_dict(self, param):
+    #@+node:felix.20210621233316.45: *5* server.get_position_data
+    def get_position_data(self, param):
         """
         Return a dict of position data for all positions.
 
@@ -2218,6 +2235,22 @@ class LeoServer:
         if n:  # pragma: no cover
             raise ServerError(f"{tag}: {n} open outlines")
         raise TerminateServer("client requested shut down")
+    #@+node:felix.20210622235127.1: *3* server:leo overriden methods
+    #@+node:felix.20210622235209.1: *4* server._es
+    def _es(self, * args, **keys):  # pragma: no cover (tested in client).
+        '''Output to the Log Pane'''
+        d = {
+            'color': None,
+            'commas': False,
+            'newline': True,
+            'spaces': True,
+            'tabName': 'Log',
+            'nodeLink': None,
+        }
+        d = self.g.doKeywordArgs(keys, d)
+        s = self.g.translateArgs(args, d)
+        package = {"async": "log", "log": s}
+        self._send_async_output(package)
     #@+node:felix.20210621233316.78: *3* server:server utils
     #@+node:felix.20210621233316.79: *4* server._ap_to_p
     def _ap_to_p(self, ap):
@@ -2270,6 +2303,27 @@ class LeoServer:
                 f"{tag}: stack: {stack!r}")
             raise ServerError(f"{tag}: p does not exist in {c.shortFileName()}")
         return p
+    #@+node:felix.20210622232409.1: *4* server._send_async_output & helper
+    def _send_async_output(self, package):
+        """
+        Send data asynchronousy to the client
+        """
+        tag = "send async output"
+        jsonPackage = json.dumps(package, separators=(',', ':'))
+        if "async" not in package:
+            InternalServerError(f"\n{tag}: async member missing in package {jsonPackage} \n")
+        if self.loop:
+            self.loop.create_task(self._async_output(jsonPackage))
+        else:
+            InternalServerError(f"\n{tag}: loop not ready {jsonPackage} \n")
+    #@+node:felix.20210621233316.89: *5* server._async_output
+    async def _async_output(self, json):  # pragma: no cover (tested in server)
+        """Output json string to the web_socket"""
+        tag = '_async_output'
+        if self.web_socket:
+            await self.web_socket.send(bytes(json, 'utf-8'))
+        else:
+            g.trace(f"{tag}: no web socket. json: {json!r}")
     #@+node:felix.20210621233316.80: *4* server._check_c
     def _check_c(self):
         """Return self.c or raise ServerError if self.c is None."""
@@ -2382,11 +2436,16 @@ class LeoServer:
             raise ServerError(f"{tag}: no id")
         action = d.get("action")
         if action is None:  # pragma: no cover
-            raise ServerError("f{tag}: no action")
+            raise ServerError(f"{tag}: no action")
 
-        param = d.get('param', {})
+        # TODO : make/force always an object from the client connected.
+        param = d.get('param', {}) # Can be none or a string
         # Set log flag.
-        self.log_flag = param.get("log")
+        if param:
+            # self.log_flag = param.get("log")
+            pass
+        else:
+            param = {}
 
         # Set the current_id and action ivars for _make_response.
         self.current_id = id_
@@ -2428,29 +2487,6 @@ class LeoServer:
     def _dump_position(self, p):  # pragma: no cover
         level_s = ' ' * 2 * p.level()
         print(f"{level_s}{p.childIndex():2} {p.v.gnx} {p.h}")
-    #@+node:felix.20210621233316.88: *4* server._es & helper
-    def _es(self, s):  # pragma: no cover (tested in client).
-        """
-        Send a response that does not correspond to a request.
-
-        The response *must* have an "async" key, but *not* an "id" key.
-        """
-        tag = '_es'
-        message = g.toUnicode(s)
-        package = {"async": "", "s": message}
-        response = json.dumps(package, separators=(',', ':'))
-        if self.loop:
-            self.loop.create_task(self._async_output(response))
-        else:
-            print(f"{tag}: Error loop not ready {message}")
-    #@+node:felix.20210621233316.89: *5* server._async_output
-    async def _async_output(self, json):  # pragma: no cover (tested in server)
-        """Output json string to the web_socket"""
-        tag = '_async_output'
-        if self.web_socket:
-            await self.web_socket.send(bytes(json, 'utf-8'))
-        else:
-            g.trace(f"{tag}: no web socket. json: {json!r}")
     #@+node:felix.20210621233316.90: *4* server._get_p
     def _get_p(self, param):
         """Return _ap_to_p(param["ap"]) or c.p."""
@@ -2486,30 +2522,35 @@ class LeoServer:
     #@+node:felix.20210621233316.92: *4* server._get_position_d
     def _get_position_d(self, p):
         """
-        Return a python dict containing:
-        - "node": self._p_to_ap(p).
-        - All *cheap* redraw data..
-
-        Use get_ua to get p.ua *plus* all this redraw data.
-
-        Note: v.computeIcon sets iconVal as follows:
-            v, val = self, 0
-            if v.hasBody(): val += 1
-            if v.isMarked(): val += 2
-            if v.isCloned(): val += 4
-            if v.isDirty(): val += 8
+        Return a python dict that is adding
+        graphical representation data and flags
+        to the base 'ap' dict from _p_to_ap.
+        (To be used by the connected client GUI.)
         """
-        return {
-            "node": self._p_to_ap(p), # Contains p.gnx, p.childIndex and p.stack.
-            # The cheap redraw data...
-            "body-length": len(p.b),  # *Not* p.b.
-            "has-children": p.hasChildren(),  # *Not* p.children().
-            "has-ua": bool(p.v.u),  # *Not* p.v.u.
-            "headline": p.h,
-            "icon-val": p.v.iconVal,  # An int between 0 and 15.
-            "is-at-file": p.isAnyAtFileNode(),
-            "level": p.level(),  # Useful for debugging.
-        }
+        d = self._p_to_ap(p)
+        d['headline'] = p.h
+        d['level'] = p.level()
+        # TODO : Send p.v.u as simple boolean flag and let user inspect.
+        if p.v.u:
+            d['u'] = p.v.u
+        # TODO : Maybe Send body length, icon#, non-optional names, and/or other...
+        if bool(p.b):
+            d['hasBody'] = True
+        if p.hasChildren():
+            d['hasChildren'] = True
+        if p.isCloned():
+            d['cloned'] = True
+        if p.isDirty():
+            d['dirty'] = True
+        if p.isExpanded():
+            d['expanded'] = True
+        if p.isMarked():
+            d['marked'] = True
+        if p.isAnyAtFileNode():
+            d['atFile'] = True
+        if p == self.c.p:
+            d['selected'] = True
+        return d
     #@+node:felix.20210621233316.93: *4* server._make_response
     def _make_response(self, package=None):
         """
@@ -2558,7 +2599,7 @@ class LeoServer:
             p = p or c.p
             package ["commander"] = {
                 "changed": c.isChanged(),
-                "file_name": c.fileName(), # Can be None for new files.
+                "fileName": c.fileName(), # Can be None for new files.
             }
             # Add all the node data, including:
             # - "node": self._p_to_ap(p) # Contains p.gnx, p.childIndex and p.stack.
@@ -2569,7 +2610,7 @@ class LeoServer:
             g.printObj(package, tag=f"{tag} returns")
         return json.dumps(package, separators=(',', ':'))
     #@+node:felix.20210621233316.94: *4* server._make_minimal_response
-    def _make_minimal_response(self, package=None, minimal=False):
+    def _make_minimal_response(self, package=None):
         """
         Return a json string representing a response dict.
 
@@ -2598,6 +2639,8 @@ class LeoServer:
     #@+node:felix.20210621233316.95: *4* server._p_to_ap
     def _p_to_ap(self, p):
         """
+        * From Leo plugin leoflexx.py *
+
         Convert Leo position p to a serializable archived position.
 
         This returns only position-related data.
@@ -2832,7 +2875,7 @@ def main():  # pragma: no cover (tested in client)
         It must be a coroutine accepting two arguments: a WebSocketServerProtocol and the request URI.
         """
         tag = 'server'
-        trace = True
+        trace = False
         verbose = True
         try:
             controller._init_connection(websocket)
@@ -2850,7 +2893,8 @@ def main():  # pragma: no cover (tested in client)
                     if trace and verbose:
                         print(f"{tag}: got: {d}")
                     elif trace:
-                        print(f"{tag}: got: {d.get('action')}")
+                        # print(f"{tag}: got: {d.get('action')}")
+                        print(f"{tag}: got: {d}")
                     answer = controller._do_message(d)
                 except TerminateServer as e:
                     raise websockets.exceptions.ConnectionClosed(code=1000, reason=e)
@@ -2872,7 +2916,6 @@ def main():  # pragma: no cover (tested in client)
                     break
                 except Exception as e:  # pragma: no cover
                     print(f"{tag}: Unexpected Exception! {e}")
-                    g.printObj(package, tag=f"message: {d}")
                     g.print_exception()
                     break
                 await websocket.send(answer)
