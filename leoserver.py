@@ -794,15 +794,6 @@ class LeoServer:
             response = {"p": p, "bad-ua": repr(p.v.u)}
         # _make_response adds all the cheap redraw data.
         return self._make_minimal_response(response)
-    #@+node:felix.20210621233316.47: *5* server.get_sign_on
-    def get_sign_on(self, param):
-        """Synchronous version of _sign_on"""
-        g.app.computeSignon()
-        signon = []
-        for z in (g.app.signon, g.app.signon1):
-            for z2 in z.split('\n'):
-                signon.append(z2.strip())
-        return self._make_minimal_response({"sign-on": "\n".join(signon)})
     #@+node:felix.20210621233316.48: *5* server.get_ui_states
     def get_ui_states(self, param):
         """
@@ -2672,6 +2663,19 @@ class LeoServer:
             if p != p2:
                 self._dump_outline(c)
                 raise ServerError(f"{tag}: round-trip failed: ap: {ap!r}, p: {p!r}, p2: {p2!r}")
+    #@+node:felix.20210624160544.1: *4* server.emit_signon
+    def emit_signon(self):
+        '''Simulate the Initial Leo Log Entry'''
+        tag = 'emit_signon'
+        if self.loop:
+            g.app.computeSignon()
+            signon = []
+            for z in (g.app.signon, g.app.signon1):
+                for z2 in z.split('\n'):
+                    signon.append(z2.strip())
+            g.es("\n".join(signon))
+        else:
+            raise ServerError(f"{tag}: no loop ready for emit_signon")
     #@-others
 #@+node:felix.20210621233316.98: ** class TestLeoServer (unittest.TestCase)
 class TestLeoServer (unittest.TestCase):  # pragma: no cover
@@ -2883,7 +2887,7 @@ def main():  # pragma: no cover (tested in client)
             n = 0
             async_n = 0
             await websocket.send(controller._make_response())
-            # controller._sign_on()
+            controller.emit_signon()
             async for json_message in websocket:
                 try:
                     n += 1
@@ -2919,9 +2923,6 @@ def main():  # pragma: no cover (tested in client)
                     g.print_exception()
                     break
                 await websocket.send(answer)
-                if n in (3, 4, 7, 10):
-                    async_n += 1
-                    controller._es(f"async message {async_n}")
         except websockets.exceptions.ConnectionClosedError as e:  # pragma: no cover
             print(f"{tag}: closed error: {e}")
         except websockets.exceptions.ConnectionClosed as e:
