@@ -747,7 +747,10 @@ public showAskModalDialog(p_askArg: runAskYesNoDialogParameters): void {
         if (p_result) {
             this._askResult = p_result.value;
         }
-        const w_sendResultPromise = this._leoIntegration.sendAction(Constants.LEOBRIDGE.ASK_RESULT, '"' + this._askResult + '"'); // Quotes in string as a 'JSON parameter'
+        const w_sendResultPromise = this._leoIntegration.sendAction(
+            Constants.LEOBRIDGE.ASK_RESULT,
+            JSON.stringify({ "result": this._askResult })
+        );
         if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
             w_sendResultPromise.then(() =&gt; {
                 this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
@@ -766,7 +769,10 @@ public showWarnModalMessage(p_waitArg: runWarnMessageDialogParameters): void {
         p_waitArg.message,
         { modal: true }
     ).then(() =&gt; {
-        this._leoIntegration.sendAction(Constants.LEOBRIDGE.ASK_RESULT, Constants.ASYNC_ASK_RETURN_CODES.OK); // Quotes in string as a 'JSON parameter'
+        this._leoIntegration.sendAction(
+            Constants.LEOBRIDGE.ASK_RESULT,
+            JSON.stringify({ "result": Constants.ASYNC_ASK_RETURN_CODES.OK })
+        );
     });
 }
 
@@ -4329,7 +4335,7 @@ public static ASYNC_ASK_RETURN_CODES = {
     NO: "no",
     YES_ALL: "yes-all",
     NO_ALL: "no-all",
-    OK: '"ok"' // Quotes in string as a 'JSON parameter'
+    OK: "ok"
 };
 
 </t>
@@ -4963,7 +4969,7 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
             console.log('ERROR NO ARCHIVED POSITION JSON');
         }
     }
-    w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_command); // 'Insert Named Node' or 'Edit Headline'
+    w_jsonParam = utils.buildNodeCommandJson(w_nodeJson, w_command); // 'Insert Named Node' or 'Edit Headline'
 
     // Setup _finalRefreshType, if command requires higher than the one setup so far
     Object.assign(this._finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)
@@ -5345,15 +5351,12 @@ import { BodyTimeInfo } from "./types";
 </t>
 <t tx="felix.20200718040540.10">public stat(p_uri: vscode.Uri): vscode.FileStat | Thenable&lt;vscode.FileStat&gt; {
     // TODO : Fix/Check extraneous stat(...) call(s)
-
     if (this._leoIntegration.leoStates.fileOpenedReady) {
         const w_gnx = utils.leoUriToStr(p_uri);
         if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
             // console.log('called stat on root');
             return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-
         } else if (w_gnx === this._lastGnx &amp;&amp; this._openedBodiesGnx.includes(this._lastGnx)) {
-
             // If same as last checked, sending back time at absolute past
             // ? VERIFY this._selectedBody.mtime we get file changed on disk error??
             // console.log('VERIFY this._selectedBody.mtime we get file changed on disk error :', p_uri);
@@ -5363,20 +5366,20 @@ import { BodyTimeInfo } from "./types";
                 mtime: this._openedBodiesInfo[this._lastGnx].mtime,
                 size: this._lastBodyLength
             };
-
         } else if (this._openedBodiesGnx.includes(w_gnx)) {
-
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY_LENGTH, '"' + w_gnx + '"')
-                .then((p_result) =&gt; {
-                    return Promise.resolve(
-                        {
-                            type: vscode.FileType.File,
-                            ctime: this._openedBodiesInfo[w_gnx].ctime,
-                            mtime: this._openedBodiesInfo[w_gnx].mtime,
-                            size: p_result.len ? p_result.len : 0
-                        }
-                    );
-                });
+            return this._leoIntegration.sendAction(
+                Constants.LEOBRIDGE.GET_BODY_LENGTH,
+                JSON.stringify({ "gnx": w_gnx })
+            ).then((p_result) =&gt; {
+                return Promise.resolve(
+                    {
+                        type: vscode.FileType.File,
+                        ctime: this._openedBodiesInfo[w_gnx].ctime,
+                        mtime: this._openedBodiesInfo[w_gnx].mtime,
+                        size: p_result.len ? p_result.len : 0
+                    }
+                );
+            });
         }
     }
     throw vscode.FileSystemError.FileNotFound();
@@ -5394,31 +5397,33 @@ import { BodyTimeInfo } from "./types";
                 console.error("readFile: ERROR File not in _openedBodiesGnx! readFile missing refreshes?");
                 throw vscode.FileSystemError.FileNotFound();
             } else {
-                return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BODY, '"' + w_gnx + '"')
-                    .then((p_result) =&gt; {
-                        if (p_result.body) {
-                            this._lastGnx = w_gnx;
-                            this._lastBodyData = p_result.body;
-                            const w_buffer: Uint8Array = Buffer.from(p_result.body);
-                            this._lastBodyLength = w_buffer.byteLength;
-                            return Promise.resolve(w_buffer);
-                        } else if (p_result.body === "") {
-                            this._lastGnx = w_gnx;
-                            this._lastBodyLength = 0;
-                            this._lastBodyData = "";
-                            return Promise.resolve(Buffer.from(""));
-                        } else {
-                            if (this._lastGnx === w_gnx) {
-                                // was last gnx of closed file about to be switched to new document selected
-                                console.log('Passed in not found: ' + w_gnx);
+                return this._leoIntegration.sendAction(
+                    Constants.LEOBRIDGE.GET_BODY,
+                    JSON.stringify({ "gnx": w_gnx })
+                ).then((p_result) =&gt; {
+                    if (p_result.body) {
+                        this._lastGnx = w_gnx;
+                        this._lastBodyData = p_result.body;
+                        const w_buffer: Uint8Array = Buffer.from(p_result.body);
+                        this._lastBodyLength = w_buffer.byteLength;
+                        return Promise.resolve(w_buffer);
+                    } else if (p_result.body === "") {
+                        this._lastGnx = w_gnx;
+                        this._lastBodyLength = 0;
+                        this._lastBodyData = "";
+                        return Promise.resolve(Buffer.from(""));
+                    } else {
+                        if (this._lastGnx === w_gnx) {
+                            // was last gnx of closed file about to be switched to new document selected
+                            console.log('Passed in not found: ' + w_gnx);
 
-                                return Promise.resolve(Buffer.from(this._lastBodyData));
-                            }
-                            console.error("ERROR =&gt; readFile of unknown GNX"); // is possibleGnxList updated correctly?
-                            return Promise.resolve(Buffer.from(""));
-                            //  throw vscode.FileSystemError.FileNotFound();
+                            return Promise.resolve(Buffer.from(this._lastBodyData));
                         }
-                    });
+                        console.error("ERROR =&gt; readFile of unknown GNX"); // is possibleGnxList updated correctly?
+                        return Promise.resolve(Buffer.from(""));
+                        //  throw vscode.FileSystemError.FileNotFound();
+                    }
+                });
             }
         }
     } else {
@@ -5446,26 +5451,21 @@ import { BodyTimeInfo } from "./types";
 
 </t>
 <t tx="felix.20200718040540.14">public writeFile(p_uri: vscode.Uri, p_content: Uint8Array, p_options: { create: boolean, overwrite: boolean }): void {
-
     if (!this.preventSaveToLeo) {
         this._leoIntegration.triggerBodySave(true); // Might have been a vscode 'save' via the menu
     } else {
         this.preventSaveToLeo = false;
     }
-
     const w_gnx = utils.leoUriToStr(p_uri);
-
     if (!this._openedBodiesGnx.includes(w_gnx)) {
         console.error("ASKED TO SAVE NOT EVEN IN SELECTED BODY: ", w_gnx);
         this._openedBodiesGnx.push(w_gnx);
     }
-
     const w_now = new Date().getTime();
     this._openedBodiesInfo[w_gnx] = {
         ctime: w_now,
         mtime: w_now
     };
-
     this._fireSoon({ type: vscode.FileChangeType.Changed, uri: p_uri });
 }
 
@@ -5563,12 +5563,8 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
  * @param p_uri URI of file for which to set made-up modified time
  */
 public setBodyTime(p_uri: vscode.Uri): void {
-
     const w_gnx = utils.leoUriToStr(p_uri);
     this._lastBodyTimeGnx = w_gnx;
-
-    // console.log('Selected', w_gnx, ' total:', this._openedBodiesGnx.length);
-
     if (!this._openedBodiesGnx.includes(w_gnx)) {
         this._openedBodiesGnx.push(w_gnx);
     }
@@ -5609,7 +5605,9 @@ public fireRefreshFile(p_gnx: string): void {
  */
 public refreshPossibleGnxList(): Thenable&lt;string[]&gt; {
     // * Get updated list of possible gnx
-    return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_ALL_GNX).then((p_result) =&gt; {
+    return this._leoIntegration.sendAction(
+        Constants.LEOBRIDGE.GET_ALL_GNX
+    ).then((p_result) =&gt; {
         this._possibleGnxList = p_result.gnx || [];
         return Promise.resolve(this._possibleGnxList);
     });
@@ -5618,13 +5616,11 @@ public refreshPossibleGnxList(): Thenable&lt;string[]&gt; {
 </t>
 <t tx="felix.20200718040540.8">public watch(p_resource: vscode.Uri): vscode.Disposable {
     const w_gnx = utils.leoUriToStr(p_resource);
-
     if (!this._watchedBodiesGnx.includes(w_gnx)) {
         // console.log('MORE fs watch put in _openedBodiesGnx:', p_resource.fsPath);
         this._watchedBodiesGnx.push(w_gnx); // add gnx
     } else {
         // console.warn('MORE fs watch: already in _openedBodiesGnx:', p_resource.fsPath);
-
     }
     return new vscode.Disposable(() =&gt; {
         const w_position = this._watchedBodiesGnx.indexOf(w_gnx); // find and remove it
@@ -5652,8 +5648,7 @@ import { LeoAsync } from "./leoAsync";
  * @param p_data given JSON data
  */
 private _processAnswer(p_data: string): void {
-    console.log('got data', p_data);
-
+    // console.log('got data', p_data);
     const w_parsedData = this._tryParseJSON(p_data);
     if (w_parsedData &amp;&amp; (w_parsedData.id === 0 || w_parsedData.id)) {
         this._resolveBridgeReady(w_parsedData);
@@ -5682,8 +5677,6 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
     );
     // * Capture the python process output
     this._websocket.onmessage = (p_event) =&gt; {
-        console.error(`Websocket onmessage: ${p_event.data.toString()}`);
-
         if (p_event.data) {
             this._processAnswer(p_event.data.toString());
         }
@@ -6415,6 +6408,7 @@ public get iconPath(): Icon {
 <t tx="felix.20200718180428.1">import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
+import * as utils from './utils';
 import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
 import { LeoBridgePackage } from "./types";
@@ -6456,19 +6450,22 @@ public refreshTreeRoot(): void {
         return Promise.resolve([]); // Defaults to an empty list of children
     }
     if (element) {
-        return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element.apJson)
-            .then((p_package: LeoBridgePackage) =&gt; {
-                return this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
-            });
+        return this._leoIntegration.sendAction(
+            Constants.LEOBRIDGE.GET_CHILDREN,
+            utils.buildNodeCommandJson(element.apJson)
+        ).then((p_package: LeoBridgePackage) =&gt; {
+            return this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
+        });
     } else {
-        return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, "null")
-            .then((p_package: LeoBridgePackage) =&gt; {
-                const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
-                if (w_nodes &amp;&amp; w_nodes.length === 1) {
-                    w_nodes[0].setRoot();
-                }
-                return w_nodes;
-            });
+        return this._leoIntegration.sendAction(
+            Constants.LEOBRIDGE.GET_CHILDREN, "{}"
+        ).then((p_package: LeoBridgePackage) =&gt; {
+            const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
+            if (w_nodes &amp;&amp; w_nodes.length === 1) {
+                w_nodes[0].setRoot();
+            }
+            return w_nodes;
+        });
     }
 }
 
@@ -6483,14 +6480,16 @@ public refreshTreeRoot(): void {
     // console.log('ERROR! GET PARENT CALLED! on: ', element.label);
 
     if (this._leoIntegration.leoStates.fileOpenedReady) {
-        return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PARENT, element ? element.apJson : "null")
-            .then((p_package: LeoBridgePackage) =&gt; {
-                if (p_package.node === null) {
-                    return null;
-                } else {
-                    return this._leoIntegration.apToLeoNode(p_package.node!);
-                }
-            });
+        return this._leoIntegration.sendAction(
+            Constants.LEOBRIDGE.GET_PARENT,
+            element ? utils.buildNodeCommandJson(element.apJson) : "{}"
+        ).then((p_package: LeoBridgePackage) =&gt; {
+            if (p_package.node === null) {
+                return null;
+            } else {
+                return this._leoIntegration.apToLeoNode(p_package.node!);
+            }
+        });
     } else {
         return null; // Default gives no parent
     }
@@ -7383,12 +7382,12 @@ export function buildDocumentIconPaths(p_context: vscode.ExtensionContext): Icon
  * @param p_command from which to extract possible name and 'keep selection' flag
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
-export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand): string {
+export function buildNodeCommandJson(p_nodeJson: string, p_command?: UserCommand): string {
     let w_json = "{\"ap\":" + p_nodeJson; // already json
-    if (p_command.name) {
+    if (p_command &amp;&amp; p_command.name) {
         w_json += ", \"name\": " + JSON.stringify(p_command.name);
     }
-    if (p_command.keepSelection) {
+    if (p_command &amp;&amp; p_command.keepSelection) {
         w_json += ", \"keep\": true";
     }
     // TODO : Generalize this function to send any other members of p_command / other members
@@ -8316,7 +8315,7 @@ private _onChangeCollapsedState(
     }
     this.sendAction(
         p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE,
-        p_event.element.apJson
+        utils.buildNodeCommandJson(p_event.element.apJson)
     ).then(() =&gt; {
         if (this.config.leoTreeBrowse) {
             this._refreshOutline(true, RevealType.RevealSelect);
@@ -8942,7 +8941,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
             // * Set document language along with the proper cursor position, selection range and scrolling position
             const q_bodyStates: Promise&lt;LeoBridgePackage&gt; = this.sendAction(
                 Constants.LEOBRIDGE.GET_BODY_STATES,
-                this.lastSelectedNode!.apJson
+                utils.buildNodeCommandJson(this.lastSelectedNode!.apJson)
             );
 
             q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
@@ -9085,7 +9084,7 @@ public selectTreeNode(
     // * Set selected node in Leo via leoBridge
     const q_setSelectedNode = this.sendAction(
         Constants.LEOBRIDGE.SET_SELECTED_NODE,
-        p_node.apJson
+        utils.buildNodeCommandJson(p_node.apJson)
     ).then((p_setSelectedResult) =&gt; {
         if (!p_internalCall) {
             this._refreshType.states = true;

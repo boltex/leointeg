@@ -126,12 +126,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
  * @param p_command from which to extract possible name and 'keep selection' flag
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
-export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand): string {
+export function buildNodeCommandJson(p_nodeJson: string, p_command?: UserCommand): string {
     let w_json = "{\"ap\":" + p_nodeJson; // already json
-    if (p_command.name) {
+    if (p_command && p_command.name) {
         w_json += ", \"name\": " + JSON.stringify(p_command.name);
     }
-    if (p_command.keepSelection) {
+    if (p_command && p_command.keepSelection) {
         w_json += ", \"keep\": true";
     }
     // TODO : Generalize this function to send any other members of p_command / other members

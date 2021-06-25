@@ -824,9 +824,12 @@ class LeoBridgeIntegController:
                   json.dumps(p_package, separators=(',', ':')))
 
     #@+node:felix.20200304220844.1: *3* set_ask_result
-    def set_ask_result(self, p_result):
+    def set_ask_result(self, param):
         '''Got the result to an asked question/warning from client'''
-        self.g.app.externalFilesController.integResult(p_result)
+        w_result = param.get("result");
+        if not w_result:
+            return self._outputError("Error in set_ask_result, no param result")
+        self.g.app.externalFilesController.integResult(w_result)
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     #@+node:felix.20200312231358.1: *3* set_config
@@ -2670,7 +2673,7 @@ class LeoBridgeIntegController:
         '''Clone a node, return it, if it was also the current selection, otherwise try not to select it'''
         w_ap = param["ap"]
         if not w_ap:
-            return self._outputError("Error in clonePNode function, no param p_ap")
+            return self._outputError("Error in clonePNode function, no param ap")
         w_p = self._ap_to_p(w_ap)
         if not w_p:
             # default empty
@@ -2832,7 +2835,7 @@ class LeoBridgeIntegController:
         return self._outputPNode(self.commander.p)
 
     #@+node:felix.20200929215102.5: *4* get_body_states
-    def get_body_states(self, p_ap):
+    def get_body_states(self, param):
         """
         Finds the language in effect at top of body for position p,
         return type is lowercase 'language' non-empty string.
@@ -2841,13 +2844,14 @@ class LeoBridgeIntegController:
         The cursor positions are given as {"line": line, "col": col, "index": i}
         with line and col along with a redundant index for convenience and flexibility.
         """
-        if not p_ap:
-            return self._outputError("Error in getLanguage, no param p_ap")
+        w_ap = param.get("ap")  # At least node parameter is present   
+        if not w_ap:
+            return self._outputError("Error in getLanguage, no param ap")
 
-        w_p = self._ap_to_p(p_ap)
+        w_p = self._ap_to_p(w_ap)
         if not w_p:
             print(
-                "in GBS -> P NOT FOUND gnx:" + p_ap['gnx'] + " using self.commander.p gnx: " + self.commander.p.v.gnx)
+                "in GBS -> P NOT FOUND gnx:" + w_ap['gnx'] + " using self.commander.p gnx: " + self.commander.p.v.gnx)
             w_p = self.commander.p
 
         w_wrapper = self.commander.frame.body.wrapper
@@ -2938,10 +2942,11 @@ class LeoBridgeIntegController:
         return self.sendLeoBridgePackage(states)
 
     #@+node:felix.20191126232434.16: *4* get_children & helper
-    def get_children(self, p_ap):
+    def get_children(self, param):
         '''EMIT OUT list of children of a node'''
-        if p_ap:
-            w_p = self._ap_to_p(p_ap)
+        w_ap = param.get("ap")  # At least node parameter is present
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p and w_p.hasChildren():
                 return self._outputPNodes(w_p.children())
             else:
@@ -2962,10 +2967,11 @@ class LeoBridgeIntegController:
             p.moveToNext()
 
     #@+node:felix.20191126232434.17: *4* get_parent
-    def get_parent(self, p_ap):
+    def get_parent(self, param):
         '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
-        if p_ap:
-            w_p = self._ap_to_p(p_ap)
+        w_ap = param.get("ap")  # At least node parameter is present
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p and w_p.hasParent():
                 return self._outputPNode(w_p.getParent())  # if not root
         return self._outputPNode()  # default empty for root as default
@@ -2978,11 +2984,12 @@ class LeoBridgeIntegController:
         return self.sendLeoBridgePackage({"gnx": w_all_gnx})
 
     #@+node:felix.20191126232434.19: *4* get_body
-    def get_body(self, p_gnx):
+    def get_body(self, param):
         '''EMIT OUT body of a node'''
         # TODO : if not found, send code to prevent unresolved promise if 'document switch' occurred shortly before
-        if p_gnx:
-            w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
+        w_gnx = param.get("gnx")  # At least node parameter is present    
+        if w_gnx:
+            w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
             if w_v:
                 if w_v.b:
                     return self._outputBodyData(w_v.b)
@@ -2992,10 +2999,11 @@ class LeoBridgeIntegController:
         return self._outputBodyData()
 
     #@+node:felix.20191126232434.20: *4* get_body_length
-    def get_body_length(self, p_gnx):
+    def get_body_length(self, param):
         '''EMIT OUT body string length of a node'''
-        if p_gnx:
-            w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
+        w_gnx = param.get("gnx")  # At least node parameter is present   
+        if w_gnx:
+            w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
             if w_v and w_v.b:
                 # Length in bytes, not just by character count.
                 return self.sendLeoBridgePackage({"len": len(w_v.b.encode('utf-8'))})
@@ -3143,21 +3151,22 @@ class LeoBridgeIntegController:
         return self._outputError("Error in setNewHeadline")
 
     #@+node:felix.20191126232434.24: *4* set_current_position & helper
-    def set_current_position(self, p_ap):
+    def set_current_position(self, param):
         '''Select a node, or the first one found with its GNX'''
-        if p_ap:
-            w_p = self._ap_to_p(p_ap)
+        w_ap = param.get("ap")  # At least node parameter is present
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p:
                 if self.commander.positionExists(w_p):
                     # set this node as selection
                     self.commander.selectPosition(w_p)
                 else:
-                    w_foundPNode = self._findPNodeFromGnx(p_ap['gnx'])
+                    w_foundPNode = self._findPNodeFromGnx(w_ap['gnx'])
                     if w_foundPNode:
                         self.commander.selectPosition(w_foundPNode)
                     else:
                         print("Set Selection node does not exist! ap was:" +
-                              json.dumps(p_ap), flush=True)
+                              json.dumps(w_ap), flush=True)
         # * return the finally selected node
         if self.commander.p:
             return self._outputPNode(self.commander.p)
@@ -3173,19 +3182,21 @@ class LeoBridgeIntegController:
         return False
 
     #@+node:felix.20191126232434.25: *4* expand_node
-    def expand_node(self, p_ap):
+    def expand_node(self, param):
         '''Expand a node'''
-        if p_ap:
-            w_p = self._ap_to_p(p_ap)
+        w_ap = param.get("ap")  # At least node parameter is present
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p:
                 w_p.expand()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
     #@+node:felix.20191126232434.26: *4* contract_node
-    def contract_node(self, p_ap):
+    def contract_node(self, param):
         '''Collapse a node'''
-        if p_ap:
-            w_p = self._ap_to_p(p_ap)
+        w_ap = param.get("ap")  # At least node parameter is present
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p:
                 w_p.contract()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'

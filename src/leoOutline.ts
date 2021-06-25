@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
+import * as utils from './utils';
 import { ProviderResult } from "vscode";
 import { Constants } from "./constants";
 import { LeoBridgePackage } from "./types";
@@ -33,19 +34,22 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
             return Promise.resolve([]); // Defaults to an empty list of children
         }
         if (element) {
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, element.apJson)
-                .then((p_package: LeoBridgePackage) => {
-                    return this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
-                });
+            return this._leoIntegration.sendAction(
+                Constants.LEOBRIDGE.GET_CHILDREN,
+                utils.buildNodeCommandJson(element.apJson)
+            ).then((p_package: LeoBridgePackage) => {
+                return this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
+            });
         } else {
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_CHILDREN, "null")
-                .then((p_package: LeoBridgePackage) => {
-                    const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
-                    if (w_nodes && w_nodes.length === 1) {
-                        w_nodes[0].setRoot();
-                    }
-                    return w_nodes;
-                });
+            return this._leoIntegration.sendAction(
+                Constants.LEOBRIDGE.GET_CHILDREN, "{}"
+            ).then((p_package: LeoBridgePackage) => {
+                const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
+                if (w_nodes && w_nodes.length === 1) {
+                    w_nodes[0].setRoot();
+                }
+                return w_nodes;
+            });
         }
     }
 
@@ -59,14 +63,16 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         // console.log('ERROR! GET PARENT CALLED! on: ', element.label);
 
         if (this._leoIntegration.leoStates.fileOpenedReady) {
-            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_PARENT, element ? element.apJson : "null")
-                .then((p_package: LeoBridgePackage) => {
-                    if (p_package.node === null) {
-                        return null;
-                    } else {
-                        return this._leoIntegration.apToLeoNode(p_package.node!);
-                    }
-                });
+            return this._leoIntegration.sendAction(
+                Constants.LEOBRIDGE.GET_PARENT,
+                element ? utils.buildNodeCommandJson(element.apJson) : "{}"
+            ).then((p_package: LeoBridgePackage) => {
+                if (p_package.node === null) {
+                    return null;
+                } else {
+                    return this._leoIntegration.apToLeoNode(p_package.node!);
+                }
+            });
         } else {
             return null; // Default gives no parent
         }

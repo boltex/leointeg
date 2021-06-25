@@ -81,7 +81,10 @@ export class LeoAsync {
             if (p_result) {
                 this._askResult = p_result.value;
             }
-            const w_sendResultPromise = this._leoIntegration.sendAction(Constants.LEOBRIDGE.ASK_RESULT, '"' + this._askResult + '"'); // Quotes in string as a 'JSON parameter'
+            const w_sendResultPromise = this._leoIntegration.sendAction(
+                Constants.LEOBRIDGE.ASK_RESULT,
+                JSON.stringify({ "result": this._askResult })
+            );
             if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
                 w_sendResultPromise.then(() => {
                     this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
@@ -99,7 +102,10 @@ export class LeoAsync {
             p_waitArg.message,
             { modal: true }
         ).then(() => {
-            this._leoIntegration.sendAction(Constants.LEOBRIDGE.ASK_RESULT, Constants.ASYNC_ASK_RETURN_CODES.OK); // Quotes in string as a 'JSON parameter'
+            this._leoIntegration.sendAction(
+                Constants.LEOBRIDGE.ASK_RESULT,
+                JSON.stringify({ "result": Constants.ASYNC_ASK_RETURN_CODES.OK })
+            );
         });
     }
 

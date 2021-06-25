@@ -898,7 +898,7 @@ export class LeoIntegration {
         }
         this.sendAction(
             p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE,
-            p_event.element.apJson
+            utils.buildNodeCommandJson(p_event.element.apJson)
         ).then(() => {
             if (this.config.leoTreeBrowse) {
                 this._refreshOutline(true, RevealType.RevealSelect);
@@ -1747,7 +1747,7 @@ export class LeoIntegration {
                 // * Set document language along with the proper cursor position, selection range and scrolling position
                 const q_bodyStates: Promise<LeoBridgePackage> = this.sendAction(
                     Constants.LEOBRIDGE.GET_BODY_STATES,
-                    this.lastSelectedNode!.apJson
+                    utils.buildNodeCommandJson(this.lastSelectedNode!.apJson)
                 );
 
                 q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
@@ -1943,7 +1943,7 @@ export class LeoIntegration {
         // * Set selected node in Leo via leoBridge
         const q_setSelectedNode = this.sendAction(
             Constants.LEOBRIDGE.SET_SELECTED_NODE,
-            p_node.apJson
+            utils.buildNodeCommandJson(p_node.apJson)
         ).then((p_setSelectedResult) => {
             if (!p_internalCall) {
                 this._refreshType.states = true;

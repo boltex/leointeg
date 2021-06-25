@@ -346,7 +346,7 @@ export class Constants {
         NO: "no",
         YES_ALL: "yes-all",
         NO_ALL: "no-all",
-        OK: '"ok"' // Quotes in string as a 'JSON parameter'
+        OK: "ok"
     };
 
     /**
