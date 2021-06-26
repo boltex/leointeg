@@ -7885,7 +7885,6 @@ import {
     UserCommand,
     ShowBodyParam,
     BodySelectionInfo,
-    BodyPosition,
     LeoGuiFindTabManagerSettings,
     LeoSearchSettings,
 } from './types';

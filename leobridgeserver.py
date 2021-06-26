@@ -1104,6 +1104,8 @@ class LeoBridgeIntegController:
                 self.commander = self.bridge.openLeoFile(w_filename)
                 self.commander.findCommands.ftm = StringFindTabManager(
                     self.commander)
+                self.commander.frame.body.wrapper = IntegTextWrapper(
+                    self.commander, "integBody", self.g)
 
         # Leo at this point has done this too: g.app.windowList.append(c.frame)
         # and so, now, app.commanders() yields this: return [f.c for f in g.app.windowList]
@@ -1111,9 +1113,6 @@ class LeoBridgeIntegController:
         if self.commander:
             self.commander.closed = False
             if not w_found:
-                # is new so also replace wrapper
-                self.commander.frame.body.wrapper = IntegTextWrapper(
-                    self.commander, "integBody", self.g)
                 self.commander.selectPosition(self.commander.p)
 
             self._create_gnx_to_vnode()
@@ -1149,10 +1148,10 @@ class LeoBridgeIntegController:
                     self.commander = self.bridge.openLeoFile(i_file)
                     self.commander.findCommands.ftm = StringFindTabManager(
                         self.commander)
+                    self.commander.frame.body.wrapper = IntegTextWrapper(
+                        self.commander, "integBody", self.g)
             if self.commander:
                 self.commander.closed = False
-                self.commander.frame.body.wrapper = IntegTextWrapper(
-                    self.commander, "integBody", self.g)
                 self.commander.selectPosition(self.commander.p)
 
         # Done with the last one, it's now the selected commander. Check again just in case.
