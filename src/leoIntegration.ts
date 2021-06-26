@@ -1862,8 +1862,7 @@ export class LeoIntegration {
         return this._isBusyTriggerSave(false)
             .then((p_saveResult) => {
                 const q_commandList: Thenable<MinibufferCommand[]> = this.sendAction(
-                    Constants.LEOBRIDGE.GET_COMMANDS,
-                    JSON.stringify({ name: '' })
+                    Constants.LEOBRIDGE.GET_COMMANDS
                 ).then((p_result: LeoBridgePackage) => {
                     if (p_result.commands && p_result.commands.length) {
                         return p_result.commands;

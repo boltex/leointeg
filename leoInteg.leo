@@ -10130,8 +10130,7 @@ public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
             const q_commandList: Thenable&lt;MinibufferCommand[]&gt; = this.sendAction(
-                Constants.LEOBRIDGE.GET_COMMANDS,
-                JSON.stringify({ name: '' })
+                Constants.LEOBRIDGE.GET_COMMANDS
             ).then((p_result: LeoBridgePackage) =&gt; {
                 if (p_result.commands &amp;&amp; p_result.commands.length) {
                     return p_result.commands;

@@ -726,8 +726,6 @@ class LeoBridgeIntegController:
         self.g.app.gui.show_find_success = self._show_find_success
         self.headlineWidget = self.g.bunch(_name='tree')
 
-        # self.g.app.loadManager.createAllImporterData()  # Fixed in #1965 of leo-editor
-
         # * setup leoBackground to get messages from leo
         try:
             self.g.app.idleTimeManager.start()  # To catch derived file changes
@@ -2844,7 +2842,7 @@ class LeoBridgeIntegController:
         The cursor positions are given as {"line": line, "col": col, "index": i}
         with line and col along with a redundant index for convenience and flexibility.
         """
-        w_ap = param.get("ap")  # At least node parameter is present   
+        w_ap = param.get("ap")  # At least node parameter is present
         if not w_ap:
             return self._outputError("Error in getLanguage, no param ap")
 
@@ -2987,7 +2985,7 @@ class LeoBridgeIntegController:
     def get_body(self, param):
         '''EMIT OUT body of a node'''
         # TODO : if not found, send code to prevent unresolved promise if 'document switch' occurred shortly before
-        w_gnx = param.get("gnx")  # At least node parameter is present    
+        w_gnx = param.get("gnx")  # At least node parameter is present
         if w_gnx:
             w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
             if w_v:
@@ -3001,7 +2999,7 @@ class LeoBridgeIntegController:
     #@+node:felix.20191126232434.20: *4* get_body_length
     def get_body_length(self, param):
         '''EMIT OUT body string length of a node'''
-        w_gnx = param.get("gnx")  # At least node parameter is present   
+        w_gnx = param.get("gnx")  # At least node parameter is present
         if w_gnx:
             w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
             if w_v and w_v.b:
@@ -3368,8 +3366,6 @@ def main():
                     # ! See : getSelectedNode and getAllGnx
                     if action[0] == "!":
                         w_func = getattr(integController, action[1:], None)
-                        if not w_func:
-                            print(action)
                         w_answer = w_func(param)
                     elif action[0] == "_":
                         integController._outputError(
