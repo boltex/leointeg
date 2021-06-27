@@ -139,7 +139,7 @@ class ExternalFilesController:
         Check for changed open-with files and all external files in commanders
         for which @bool check_for_changed_external_file is True.
         '''
-        # Fix for flushing the terminal console to traverse
+        # Fix for flushing the terminal console to pass
         # python through node.js when using start server in leoInteg
         sys.stdout.flush()
 

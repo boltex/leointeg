@@ -8936,26 +8936,33 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
     return Promise.resolve(vscode.workspace.openTextDocument(this.bodyUri)).then(
         (p_document) =&gt; {
             this._bodyTextDocument = p_document;
+            const w_isSameGnx: boolean = utils.leoUriToStr(this.bodyUri) === this.lastSelectedNode!.gnx;
+            console.log('w_isSameGnx', w_isSameGnx);
 
             // * Set document language along with the proper cursor position, selection range and scrolling position
-            const q_bodyStates: Promise&lt;LeoBridgePackage&gt; = this.sendAction(
-                Constants.LEOBRIDGE.GET_BODY_STATES,
-                utils.buildNodeCommandJson(this.lastSelectedNode!.apJson)
-            );
+            let q_bodyStates: Promise&lt;LeoBridgePackage&gt; | undefined;
 
-            q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
-                let w_language: string = p_bodyStates.language!;
-                // Replace language string if in 'exceptions' array
-                w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
-                // Apply language if the selected node is still the same after all those events
-                if (
-                    !p_document.isClosed &amp;&amp;
-                    this.lastSelectedNode &amp;&amp;
-                    utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
-                ) {
-                    vscode.languages.setTextDocumentLanguage(p_document, w_language);
-                }
-            });
+            if (true || w_isSameGnx) {
+
+                q_bodyStates = this.sendAction(
+                    Constants.LEOBRIDGE.GET_BODY_STATES,
+                    utils.buildNodeCommandJson(this.lastSelectedNode!.apJson)
+                );
+
+                q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
+                    let w_language: string = p_bodyStates.language!;
+                    // Replace language string if in 'exceptions' array
+                    w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
+                    // Apply language if the selected node is still the same after all those events
+                    if (
+                        !p_document.isClosed &amp;&amp;
+                        this.lastSelectedNode &amp;&amp;
+                        utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
+                    ) {
+                        vscode.languages.setTextDocumentLanguage(p_document, w_language);
+                    }
+                });
+            }
 
             // Find body pane's position if already opened with same gnx (language still needs to be set per position)
             vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
@@ -8987,60 +8994,65 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                 w_showOptions
             );
 
-            Promise.all([q_bodyStates, q_showTextDocument]).then(
-                (p_values: [LeoBridgePackage, vscode.TextEditor]) =&gt; {
-                    const w_resultBodyStates = p_values[0];
-                    const w_bodyTextEditor = p_values[1];
-                    const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
+            // if (!w_isSameGnx) {
+            //     return q_showTextDocument;
+            // }
+            // else q_bodyStates will exist.
+            if (q_bodyStates) {
+                Promise.all([q_bodyStates, q_showTextDocument]).then(
+                    (p_values: [LeoBridgePackage, vscode.TextEditor]) =&gt; {
+                        const w_resultBodyStates = p_values[0];
+                        const w_bodyTextEditor = p_values[1];
+                        const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
 
-                    // Cursor position and selection range
-                    const w_activeRow: number = w_leoBodySel.insert.line;
-                    const w_activeCol: number = w_leoBodySel.insert.col;
-                    let w_anchorLine: number = w_leoBodySel.start.line;
-                    let w_anchorCharacter: number = w_leoBodySel.start.col;
+                        // Cursor position and selection range
+                        const w_activeRow: number = w_leoBodySel.insert.line;
+                        const w_activeCol: number = w_leoBodySel.insert.col;
+                        let w_anchorLine: number = w_leoBodySel.start.line;
+                        let w_anchorCharacter: number = w_leoBodySel.start.col;
 
-                    if (w_activeRow === w_anchorLine &amp;&amp; w_activeCol === w_anchorCharacter) {
-                        // Active insertion same as start selection, so use the other ones
-                        w_anchorLine = w_leoBodySel.end.line;
-                        w_anchorCharacter = w_leoBodySel.end.col;
+                        if (w_activeRow === w_anchorLine &amp;&amp; w_activeCol === w_anchorCharacter) {
+                            // Active insertion same as start selection, so use the other ones
+                            w_anchorLine = w_leoBodySel.end.line;
+                            w_anchorCharacter = w_leoBodySel.end.col;
+                        }
+
+                        const w_selection = new vscode.Selection(
+                            w_anchorLine,
+                            w_anchorCharacter,
+                            w_activeRow,
+                            w_activeCol
+                        );
+
+                        let w_scrollRange: vscode.Range | undefined;
+
+                        // ! Test scroll position from selection range instead
+                        // const w_scroll: number = w_leoBodySel.scroll;
+                        // if (w_scroll) {
+                        // w_scrollRange = new vscode.Range(w_scroll, 0, w_scroll, 0);
+                        // }
+
+                        // Build scroll position from selection range.
+                        w_scrollRange = new vscode.Range(
+                            w_activeRow,
+                            w_activeCol,
+                            w_activeRow,
+                            w_activeCol
+                        );
+
+                        w_bodyTextEditor.selection = w_selection; // set cursor insertion point &amp; selection range
+
+                        if (!w_scrollRange) {
+                            w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
+                        }
+
+                        if (this._refreshType.scroll) {
+                            this._refreshType.scroll = false;
+                            w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
+                        }
                     }
-
-                    const w_selection = new vscode.Selection(
-                        w_anchorLine,
-                        w_anchorCharacter,
-                        w_activeRow,
-                        w_activeCol
-                    );
-
-                    let w_scrollRange: vscode.Range | undefined;
-
-                    // ! Test scroll position from selection range instead
-                    // const w_scroll: number = w_leoBodySel.scroll;
-                    // if (w_scroll) {
-                    // w_scrollRange = new vscode.Range(w_scroll, 0, w_scroll, 0);
-                    // }
-
-                    // Build scroll position from selection range.
-                    w_scrollRange = new vscode.Range(
-                        w_activeRow,
-                        w_activeCol,
-                        w_activeRow,
-                        w_activeCol
-                    );
-
-                    w_bodyTextEditor.selection = w_selection; // set cursor insertion point &amp; selection range
-
-                    if (!w_scrollRange) {
-                        w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
-                    }
-
-                    if (this._refreshType.scroll) {
-                        this._refreshType.scroll = false;
-                        w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
-                    }
-                }
-            );
-
+                );
+            }
             return q_showTextDocument;
         }
     );
