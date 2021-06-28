@@ -598,7 +598,7 @@ export class LeoIntegration {
      */
     private _addRecentAndLastFile(p_file: string): Promise<void> {
         if (!p_file.length) {
-            return Promise.reject();
+            return Promise.resolve();
         }
         return Promise.all([
             utils.addFileToGlobal(this._context, p_file, Constants.RECENT_FILES_KEY),
@@ -2686,7 +2686,7 @@ export class LeoIntegration {
             })
             .then((p_openFileResult: LeoBridgePackage) => {
                 // Like we just opened or made a new file
-                if (p_openFileResult.filename) {
+                if (p_openFileResult.filename || p_openFileResult.filename === "") {
                     return this._setupOpenedLeoDocument(p_openFileResult);
                 } else {
                     console.log('Select Opened Leo File Error');
@@ -2847,7 +2847,7 @@ export class LeoIntegration {
                 return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, JSON.stringify({ filename: "" }));
             })
             .then((p_openFileResult: LeoBridgePackage) => {
-                if (p_openFileResult.filename) {
+                if (p_openFileResult.filename || p_openFileResult.filename === "") {
                     return this._setupOpenedLeoDocument(p_openFileResult);
                 } else {
                     return Promise.reject('New Leo File Error');

@@ -7979,7 +7979,7 @@ private _openLastFiles(): Promise&lt;vscode.TextEditor&gt; {
  */
 private _addRecentAndLastFile(p_file: string): Promise&lt;void&gt; {
     if (!p_file.length) {
-        return Promise.reject();
+        return Promise.resolve();
     }
     return Promise.all([
         utils.addFileToGlobal(this._context, p_file, Constants.RECENT_FILES_KEY),
@@ -9435,7 +9435,7 @@ public selectOpenedLeoDocument(p_index: number): Promise&lt;vscode.TextEditor&gt
         })
         .then((p_openFileResult: LeoBridgePackage) =&gt; {
             // Like we just opened or made a new file
-            if (p_openFileResult.filename) {
+            if (p_openFileResult.filename || p_openFileResult.filename === "") {
                 return this._setupOpenedLeoDocument(p_openFileResult);
             } else {
                 console.log('Select Opened Leo File Error');
@@ -9589,7 +9589,7 @@ public newLeoFile(): Promise&lt;vscode.TextEditor&gt; {
             return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, JSON.stringify({ filename: "" }));
         })
         .then((p_openFileResult: LeoBridgePackage) =&gt; {
-            if (p_openFileResult.filename) {
+            if (p_openFileResult.filename || p_openFileResult.filename === "") {
                 return this._setupOpenedLeoDocument(p_openFileResult);
             } else {
                 return Promise.reject('New Leo File Error');
