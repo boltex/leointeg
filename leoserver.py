@@ -3351,7 +3351,7 @@ def main():  # pragma: no cover (tested in client)
         It must be a coroutine accepting two arguments: a WebSocketServerProtocol and the request URI.
         """
         tag = 'server'
-        trace = False
+        trace = True
         verbose = False
         try:
             controller._init_connection(websocket)

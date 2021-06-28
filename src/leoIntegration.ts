@@ -2844,7 +2844,7 @@ export class LeoIntegration {
     public newLeoFile(): Promise<vscode.TextEditor> {
         return this._isBusyTriggerSave(true, true)
             .then((p_saveResult) => {
-                return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '""');
+                return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, JSON.stringify({ filename: "" }));
             })
             .then((p_openFileResult: LeoBridgePackage) => {
                 if (p_openFileResult.filename) {

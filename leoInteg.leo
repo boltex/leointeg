@@ -9586,7 +9586,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
 public newLeoFile(): Promise&lt;vscode.TextEditor&gt; {
     return this._isBusyTriggerSave(true, true)
         .then((p_saveResult) =&gt; {
-            return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, '""');
+            return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, JSON.stringify({ filename: "" }));
         })
         .then((p_openFileResult: LeoBridgePackage) =&gt; {
             if (p_openFileResult.filename) {
