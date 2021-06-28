@@ -752,7 +752,25 @@
         }
       },
       {
+        "command": "leointeg.prevFromOutline",
+        "category": "Leo",
+        "title": "Prev",
+        "icon": {
+          "light": "resources/light/prev.svg",
+          "dark": "resources/dark/prev.svg"
+        }
+      },
+      {
         "command": "leointeg.next",
+        "category": "Leo",
+        "title": "Next",
+        "icon": {
+          "light": "resources/light/next.svg",
+          "dark": "resources/dark/next.svg"
+        }
+      },
+      {
+        "command": "leointeg.nextFromOutline",
         "category": "Leo",
         "title": "Next",
         "icon": {
@@ -1867,6 +1885,14 @@
         },
         {
           "command": "leointeg.contractAllFromOutline",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.prevFromOutline",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.nextFromOutline",
           "when": "false"
         },
         {

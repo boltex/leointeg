@@ -615,7 +615,9 @@ export function activate(p_context: vscode.ExtensionContext) {
         })],
 
         [CMD.PREV_NODE, () => w_leo.prevNextNode(false)],
+        [CMD.PREV_NODE_FO, () => w_leo.prevNextNode(false)],
         [CMD.NEXT_NODE, () => w_leo.prevNextNode(true)],
+        [CMD.NEXT_NODE_FO, () => w_leo.prevNextNode(true)],
 
         [CMD.START_SEARCH, () => w_leo.startSearch()],
         [CMD.FIND_ALL, () => w_leo.findAll(false)],

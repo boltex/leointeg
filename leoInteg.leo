@@ -1933,7 +1933,9 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 })],
 
 [CMD.PREV_NODE, () =&gt; w_leo.prevNextNode(false)],
+[CMD.PREV_NODE_FO, () =&gt; w_leo.prevNextNode(false)],
 [CMD.NEXT_NODE, () =&gt; w_leo.prevNextNode(true)],
+[CMD.NEXT_NODE_FO, () =&gt; w_leo.prevNextNode(true)],
 
 [CMD.START_SEARCH, () =&gt; w_leo.startSearch()],
 [CMD.FIND_ALL, () =&gt; w_leo.findAll(false)],
@@ -2573,7 +2575,25 @@ print('done')
   }
 },
 {
+  "command": "leointeg.prevFromOutline",
+  "category": "Leo",
+  "title": "Prev",
+  "icon": {
+    "light": "resources/light/prev.svg",
+    "dark": "resources/dark/prev.svg"
+  }
+},
+{
   "command": "leointeg.next",
+  "category": "Leo",
+  "title": "Next",
+  "icon": {
+    "light": "resources/light/next.svg",
+    "dark": "resources/dark/next.svg"
+  }
+},
+{
+  "command": "leointeg.nextFromOutline",
   "category": "Leo",
   "title": "Next",
   "icon": {
@@ -3477,6 +3497,14 @@ print('done')
 },
 {
   "command": "leointeg.contractAllFromOutline",
+  "when": "false"
+},
+{
+  "command": "leointeg.prevFromOutline",
+  "when": "false"
+},
+{
+  "command": "leointeg.nextFromOutline",
   "when": "false"
 },
 </t>
@@ -4439,7 +4467,9 @@ public static LEOBRIDGE = {
     CLONE_FIND_ALL: "!clone_find_all",
     CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
     CLONE_FIND_MARKED: "cloneFindAllMarked", // * Direct Leo Command
-    CLONE_FIND_FLATTENED_MARKED: "cloneFindAllFlattenedMarked" // * Direct Leo Command
+    CLONE_FIND_FLATTENED_MARKED: "cloneFindAllFlattenedMarked", // * Direct Leo Command
+    GOTO_PREV_HISTORY: "goToPrevHistory", // * Direct Leo Command
+    GOTO_NEXT_HISTORY: "goToNextHistory" // * Direct Leo Command
 };
 
 </t>
@@ -4504,7 +4534,9 @@ public static COMMANDS = {
     CONTRACT_ALL: Constants.NAME + ".contractAll", // From command Palette
     CONTRACT_ALL_FO: Constants.NAME + ".contractAllFromOutline", // from button, return focus on OUTLINE
     PREV_NODE: Constants.NAME + ".prev",
+    PREV_NODE_FO: Constants.NAME + ".prevFromOutline",
     NEXT_NODE: Constants.NAME + ".next",
+    NEXT_NODE_FO: Constants.NAME + ".nextFromOutline",
     // * Commands from tree panel buttons or context: focus on OUTLINE
     MARK: Constants.NAME + ".mark",
     UNMARK: Constants.NAME + ".unmark",
@@ -8231,16 +8263,25 @@ private _setupNoOpenedLeoDocument(): void {
 private _setupOpenedLeoDocument(
     p_openFileResult: LeoBridgePackage
 ): Promise&lt;vscode.TextEditor&gt; {
+    this._needLastSelectedRefresh = true;
     const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node!, false); // Just to get gnx for the body's fist appearance
     this.leoStates.leoOpenedFileName = p_openFileResult.filename!;
 
     // * If not unnamed file add to recent list &amp; last opened list
     this._addRecentAndLastFile(p_openFileResult.filename!);
 
-    // * Could be already opened, so perform 'rename hack' as if another node was selected
+    let q_switchTextEditor: Promise&lt;vscode.TextEditor&gt; | false = false;
+    // * Could be already opened, so perform 'switch body' as if another node was selected
     if (this._bodyTextDocument &amp;&amp; this.bodyUri) {
+
         // TODO : BUG WHEN SWITCHING LEO DOCUMENT : NEED CROSSOVER LOGIC!
-        this._switchBody(w_selectedLeoNode.gnx, false, true);
+        console.log('SWITCH BODY TO GNX : ', w_selectedLeoNode.gnx);
+
+        q_switchTextEditor = new Promise((p_resolve, p_reject) =&gt; {
+            this._switchBody(w_selectedLeoNode.gnx, false, true).then((p_te) =&gt; {
+                p_resolve(p_te);
+            });
+        });
     } else {
         this.bodyUri = utils.strToLeoUri(w_selectedLeoNode.gnx);
     }
@@ -8272,7 +8313,12 @@ private _setupOpenedLeoDocument(
     this._leoButtonsProvider.refreshTreeRoot();
     this.loadSearchSettings();
     // * Maybe first Body appearance
-    return this.showBody(false);
+    // return this.showBody(false);
+    if (q_switchTextEditor) {
+        return q_switchTextEditor;
+    } else {
+        return this.showBody(false);
+    }
 }
 
 </t>
@@ -8936,13 +8982,11 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
     return Promise.resolve(vscode.workspace.openTextDocument(this.bodyUri)).then(
         (p_document) =&gt; {
             this._bodyTextDocument = p_document;
-            const w_isSameGnx: boolean = utils.leoUriToStr(this.bodyUri) === this.lastSelectedNode!.gnx;
-            console.log('w_isSameGnx', w_isSameGnx);
 
             // * Set document language along with the proper cursor position, selection range and scrolling position
             let q_bodyStates: Promise&lt;LeoBridgePackage&gt; | undefined;
 
-            if (true || w_isSameGnx) {
+            if (!this._needLastSelectedRefresh) {
 
                 q_bodyStates = this.sendAction(
                     Constants.LEOBRIDGE.GET_BODY_STATES,
@@ -8994,11 +9038,8 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                 w_showOptions
             );
 
-            // if (!w_isSameGnx) {
-            //     return q_showTextDocument;
-            // }
             // else q_bodyStates will exist.
-            if (q_bodyStates) {
+            if (q_bodyStates &amp;&amp; !this._needLastSelectedRefresh) {
                 Promise.all([q_bodyStates, q_showTextDocument]).then(
                     (p_values: [LeoBridgePackage, vscode.TextEditor]) =&gt; {
                         const w_resultBodyStates = p_values[0];
@@ -11740,12 +11781,22 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
 <t tx="felix.20210610022836.1">/**
  * * Previous / Next Node Buttons
  */
-public prevNextNode(p_next: boolean) {
-    if (p_next) {
-        vscode.window.showInformationMessage("TODO: Command Next");
-    } else {
-        vscode.window.showInformationMessage("TODO: Command Prev");
-    }
+public prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise&lt;any&gt; {
+    return this._isBusyTriggerSave(false, true)
+        .then((p_saveResult) =&gt; {
+            let w_command: string;
+            if (p_next) {
+                w_command = Constants.LEOBRIDGE.GOTO_NEXT_HISTORY;
+            } else {
+                w_command = Constants.LEOBRIDGE.GOTO_PREV_HISTORY;
+            }
+            return this.nodeCommand({
+                action: w_command,
+                node: undefined,
+                refreshType: { tree: true, states: true, body: true },
+                fromOutline: !!p_fromOutline,
+            });
+        });
 }
 
 </t>

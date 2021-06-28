@@ -458,7 +458,9 @@ export class Constants {
         CLONE_FIND_ALL: "!clone_find_all",
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
         CLONE_FIND_MARKED: "cloneFindAllMarked", // * Direct Leo Command
-        CLONE_FIND_FLATTENED_MARKED: "cloneFindAllFlattenedMarked" // * Direct Leo Command
+        CLONE_FIND_FLATTENED_MARKED: "cloneFindAllFlattenedMarked", // * Direct Leo Command
+        GOTO_PREV_HISTORY: "goToPrevHistory", // * Direct Leo Command
+        GOTO_NEXT_HISTORY: "goToNextHistory" // * Direct Leo Command
     };
 
     /**
@@ -522,7 +524,9 @@ export class Constants {
         CONTRACT_ALL: Constants.NAME + ".contractAll", // From command Palette
         CONTRACT_ALL_FO: Constants.NAME + ".contractAllFromOutline", // from button, return focus on OUTLINE
         PREV_NODE: Constants.NAME + ".prev",
+        PREV_NODE_FO: Constants.NAME + ".prevFromOutline",
         NEXT_NODE: Constants.NAME + ".next",
+        NEXT_NODE_FO: Constants.NAME + ".nextFromOutline",
         // * Commands from tree panel buttons or context: focus on OUTLINE
         MARK: Constants.NAME + ".mark",
         UNMARK: Constants.NAME + ".unmark",
