@@ -903,36 +903,24 @@ class LeoServer:
         fc = c.findCommands
         fromOutline = param.get("fromOutline")
         fromBody = not fromOutline
-        
+        #
         focus = self._get_focus()
         inOutline = ("tree" in focus) or ("head" in focus)
         inBody = not inOutline
-        
-        print("was in vscode outline?:" + str(fromOutline))
-        print("focus in Headline : "+ str(inOutline))
-        print("fc.in_Headline : "+ str(fc.in_headline))
-        
+        #
         if fromOutline and inBody:
             fc.in_headline = True
-            print("switched to headline")
         elif fromBody and inOutline:
-            print("switched to body")
             fc.in_headline = False
             # w = c.frame.body.wrapper
             c.bodyWantsFocus()
-            c.bodyWantsFocusNow()
-        
-        print("focus now in : "+ str(self._get_focus()))
-        print("fc.in_Headline : "+ str(fc.in_headline))
-
-        gui_w = c.edit_widget(p)
-        print(str(gui_w))
+            c.bodyWantsFocusNow()    
+        #
         if fc.in_headline:
-            print("set insert at end")
-            s = p.h
-            ins = len(s)
-            gui_w.setSelectionRange(ins,ins, insert =ins)
-        
+            ins = len(p.h)
+            gui_w = c.edit_widget(p)
+            gui_w.setSelectionRange(ins, ins, insert=ins)
+        #
         try:
             # Let cursor as-is
             settings = fc.ftm.get_settings()
@@ -954,34 +942,23 @@ class LeoServer:
         fc = c.findCommands
         fromOutline = param.get("fromOutline")
         fromBody = not fromOutline
-        
+        #
         focus = self._get_focus()
         inOutline = ("tree" in focus) or ("head" in focus)
         inBody = not inOutline
-        
-        print("was in vscode outline?:" + str(fromOutline))
-        print("focus in Headline : "+ str(inOutline))
-        print("fc.in_Headline : "+ str(fc.in_headline))
-
+        #
         if fromOutline and inBody:
             fc.in_headline = True
-            print("switched to headline")
         elif fromBody and inOutline:
-            print("switched to body")
             fc.in_headline = False
             # w = c.frame.body.wrapper
             c.bodyWantsFocus()
             c.bodyWantsFocusNow()
-
-        print("focus now in : "+ str(self._get_focus()))
-        print("fc.in_Headline : "+ str(fc.in_headline))
-
-        gui_w = c.edit_widget(p)
-        print(str(gui_w))
+        #
         if fc.in_headline:
-            print("set insert at 0")
-            gui_w.setSelectionRange(0,0, insert =0)
-        
+            gui_w = c.edit_widget(p)
+            gui_w.setSelectionRange(0, 0, insert=0)
+        #
         try:
             # set widget cursor pos to 0 if in headline
             settings = fc.ftm.get_settings()
@@ -990,7 +967,7 @@ class LeoServer:
             raise ServerError(f"{tag}: Running find operation gave exception: {e}")
         #
         # get focus again after the operation
-        focus = self._get_focus()  
+        focus = self._get_focus()
         result = {"found": bool(p), "pos": pos,
                     "newpos": newpos, "focus": focus}
         return self._make_response(result)
