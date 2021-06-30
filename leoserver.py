@@ -901,25 +901,46 @@ class LeoServer:
         c = self._check_c()
         p = c.p
         fc = c.findCommands
-        fc.init_in_headline()
-        
         fromOutline = param.get("fromOutline")
-        # set focus and call init in_headline 
+        fromBody = not fromOutline
         
-        # make sure if find next, that the headline position search starts at end
         focus = self._get_focus()
-        inHeadline = ("tree" in focus) or ("head" in focus)
-        print("inHeadline : "+ str(inHeadline))
-        print("fc.inHeadline : "+ str(fc.in_headline))
+        inOutline = ("tree" in focus) or ("head" in focus)
+        inBody = not inOutline
         
-        # gui_w = c.edit_widget(p)
+        print("was in vscode outline?:" + str(fromOutline))
+        print("focus in Headline : "+ str(inOutline))
+        print("fc.in_Headline : "+ str(fc.in_headline))
         
+        if fromOutline and inBody:
+            fc.in_headline = True
+            print("switched to headline")
+        elif fromBody and inOutline:
+            print("switched to body")
+            fc.in_headline = False
+            # w = c.frame.body.wrapper
+            c.bodyWantsFocus()
+            c.bodyWantsFocusNow()
+        
+        print("focus now in : "+ str(self._get_focus()))
+        print("fc.in_Headline : "+ str(fc.in_headline))
+
+        gui_w = c.edit_widget(p)
+        print(str(gui_w))
+        if fc.in_headline:
+            print("set insert at end")
+            s = p.h
+            ins = len(s)
+            gui_w.setSelectionRange(ins,ins, insert =ins)
         
         try:
+            # Let cursor as-is
             settings = fc.ftm.get_settings()
             p, pos, newpos = fc.do_find_next(settings)
         except Exception as e:
             raise ServerError(f"{tag}: Running find operation gave exception: {e}")
+        #
+        # get focus again after the operation
         focus = self._get_focus()
         result = {"found": bool(p), "pos": pos,
                     "newpos": newpos, "focus": focus}
@@ -931,20 +952,36 @@ class LeoServer:
         c = self._check_c()
         p = c.p
         fc = c.findCommands
-        fc.init_in_headline()
-        
         fromOutline = param.get("fromOutline")
-        # set focus and call init in_headline 
+        fromBody = not fromOutline
         
-        # make sure if find previous the headline position search starts at 0
         focus = self._get_focus()
-        inHeadline = ("tree" in focus) or ("head" in focus)
-        print("inHeadline : "+ str(inHeadline))
-        print("fc.inHeadline : "+ str(fc.in_headline))
+        inOutline = ("tree" in focus) or ("head" in focus)
+        inBody = not inOutline
+        
+        print("was in vscode outline?:" + str(fromOutline))
+        print("focus in Headline : "+ str(inOutline))
+        print("fc.in_Headline : "+ str(fc.in_headline))
 
-        # gui_w = c.edit_widget(p)
+        if fromOutline and inBody:
+            fc.in_headline = True
+            print("switched to headline")
+        elif fromBody and inOutline:
+            print("switched to body")
+            fc.in_headline = False
+            # w = c.frame.body.wrapper
+            c.bodyWantsFocus()
+            c.bodyWantsFocusNow()
 
+        print("focus now in : "+ str(self._get_focus()))
+        print("fc.in_Headline : "+ str(fc.in_headline))
 
+        gui_w = c.edit_widget(p)
+        print(str(gui_w))
+        if fc.in_headline:
+            print("set insert at 0")
+            gui_w.setSelectionRange(0,0, insert =0)
+        
         try:
             # set widget cursor pos to 0 if in headline
             settings = fc.ftm.get_settings()
@@ -1444,6 +1481,7 @@ class LeoServer:
     def set_body(self, param):
         """
         Undoably set body text of a v node.
+        (Only if new string is different from actual existing body string)
         """
         tag = 'set_body'
         c = self._check_c()
@@ -1454,6 +1492,9 @@ class LeoServer:
             raise ServerError(f"{tag}: no body given")
         for p in c.all_positions():
             if p.v.gnx == gnx:
+                if body==p.v.b:
+                    return self._make_response()
+                    # Just exited if no need to change at all.
                 bunch = u.beforeChangeNodeContents(p)
                 p.v.setBodyString(body)
                 u.afterChangeNodeContents(p, "Body Text", bunch)
@@ -3393,7 +3434,7 @@ def main():  # pragma: no cover (tested in client)
         It must be a coroutine accepting two arguments: a WebSocketServerProtocol and the request URI.
         """
         tag = 'server'
-        trace = True
+        trace = False
         verbose = False
         try:
             controller._init_connection(websocket)
