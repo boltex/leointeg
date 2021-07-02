@@ -2397,8 +2397,12 @@ print('done')
 </t>
 <t tx="ekr.20200815123601.17">{
   "command": "leointeg.executeScript",
+  "title": "Execute Script",
   "category": "Leo",
-  "title": "Execute Script"
+  "icon": {
+    "light": "resources/light/execute.svg",
+    "dark": "resources/dark/execute.svg"
+  }
 },
 {
   "command": "leointeg.minibuffer",
@@ -2512,17 +2516,29 @@ print('done')
 {
   "command": "leointeg.refreshFromDisk",
   "category": "Leo",
-  "title": "Refresh from Disk"
+  "title": "Refresh from Disk",
+  "icon": {
+    "light": "resources/light/refresh.svg",
+    "dark": "resources/dark/refresh.svg"
+  }
 },
 {
   "command": "leointeg.refreshFromDiskSelection",
   "category": "Leo",
-  "title": "Refresh from Disk"
+  "title": "Refresh from Disk",
+  "icon": {
+    "light": "resources/light/refresh.svg",
+    "dark": "resources/dark/refresh.svg"
+  }
 },
 {
   "command": "leointeg.refreshFromDiskSelectionFromOutline",
   "category": "Leo",
-  "title": "Refresh from Disk"
+  "title": "Refresh from Disk",
+  "icon": {
+    "light": "resources/light/refresh.svg",
+    "dark": "resources/dark/refresh.svg"
+  }
 },
 {
   "command": "leointeg.gitDiff",
@@ -2633,7 +2649,11 @@ print('done')
 {
   "command": "leointeg.copyNodeSelection",
   "category": "Leo",
-  "title": "Copy Node"
+  "title": "Copy Node",
+  "icon": {
+    "light": "resources/light/clipboard.svg",
+    "dark": "resources/dark/clipboard.svg"
+  }
 },
 {
   "command": "leointeg.cutNode",
@@ -2825,42 +2845,74 @@ print('done')
 {
   "command": "leointeg.cloneNodeSelection",
   "category": "Leo",
-  "title": "Clone Node"
+  "title": "Clone Node",
+  "icon": {
+    "light": "resources/light/link.svg",
+    "dark": "resources/dark/link.svg"
+  }
 },
 {
   "command": "leointeg.cloneNodeSelectionFromOutline",
   "category": "Leo",
-  "title": "Clone Node"
+  "title": "Clone Node",
+  "icon": {
+    "light": "resources/light/link.svg",
+    "dark": "resources/dark/link.svg"
+  }
 },
 {
   "command": "leointeg.promote",
   "category": "Leo",
-  "title": "Promote Children"
+  "title": "Promote Children",
+  "icon": {
+    "light": "resources/light/promote.svg",
+    "dark": "resources/dark/promote.svg"
+  }
 },
 {
   "command": "leointeg.promoteSelection",
   "category": "Leo",
-  "title": "Promote Children"
+  "title": "Promote Children",
+  "icon": {
+    "light": "resources/light/promote.svg",
+    "dark": "resources/dark/promote.svg"
+  }
 },
 {
   "command": "leointeg.promoteSelectionFromOutline",
   "category": "Leo",
-  "title": "Promote Children"
+  "title": "Promote Children",
+  "icon": {
+    "light": "resources/light/promote.svg",
+    "dark": "resources/dark/promote.svg"
+  }
 },
 {
   "command": "leointeg.demote",
   "category": "Leo",
-  "title": "Demote Siblings"
+  "title": "Demote Siblings",
+  "icon": {
+    "light": "resources/light/demote.svg",
+    "dark": "resources/dark/demote.svg"
+  }
 },
 {
   "command": "leointeg.demoteSelection",
   "category": "Leo",
-  "title": "Demote Siblings"
+  "title": "Demote Siblings",
+  "icon": {
+    "light": "resources/light/demote.svg",
+    "dark": "resources/dark/demote.svg"
+  }
 },
 {
   "command": "leointeg.demoteSelectionFromOutline",
   "category": "Leo",
-  "title": "Demote Siblings"
+  "title": "Demote Siblings",
+  "icon": {
+    "light": "resources/light/demote.svg",
+    "dark": "resources/dark/demote.svg"
+  }
 },
 {
   "command": "leointeg.sortChildrenSelection",
@@ -2952,17 +3004,29 @@ print('done')
 <t tx="ekr.20200815123601.25">{
   "command": "leointeg.hoistNode",
   "category": "Leo",
-  "title": "Hoist"
+  "title": "Hoist",
+  "icon": {
+    "light": "resources/light/hoist.svg",
+    "dark": "resources/dark/hoist.svg"
+  }
 },
 {
   "command": "leointeg.hoistSelection",
   "category": "Leo",
-  "title": "Hoist"
+  "title": "Hoist",
+  "icon": {
+    "light": "resources/light/hoist.svg",
+    "dark": "resources/dark/hoist.svg"
+  }
 },
 {
   "command": "leointeg.hoistSelectionFromOutline",
   "category": "Leo",
-  "title": "Hoist"
+  "title": "Hoist",
+  "icon": {
+    "light": "resources/light/hoist.svg",
+    "dark": "resources/dark/hoist.svg"
+  }
 },
 {
   "command": "leointeg.deHoist",
@@ -10804,12 +10868,20 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.markSelection",
   "category": "Leo",
-  "title": "Mark"
+  "title": "Mark",
+  "icon": {
+    "light": "resources/light/mark.svg",
+    "dark": "resources/dark/mark.svg"
+  }
 },
 {
   "command": "leointeg.markSelectionFromOutline",
   "category": "Leo",
-  "title": "Mark"
+  "title": "Mark",
+  "icon": {
+    "light": "resources/light/mark.svg",
+    "dark": "resources/dark/mark.svg"
+  }
 },
 {
   "command": "leointeg.unmark",
@@ -10823,12 +10895,20 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.unmarkSelection",
   "category": "Leo",
-  "title": "Unmark"
+  "title": "Unmark",
+  "icon": {
+    "light": "resources/light/unmark.svg",
+    "dark": "resources/dark/unmark.svg"
+  }
 },
 {
   "command": "leointeg.unmarkSelectionFromOutline",
   "category": "Leo",
-  "title": "Unmark"
+  "title": "Unmark",
+  "icon": {
+    "light": "resources/light/unmark.svg",
+    "dark": "resources/dark/unmark.svg"
+  }
 },
 {
   "command": "leointeg.unmarkAll",
