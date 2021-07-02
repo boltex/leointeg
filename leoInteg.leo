@@ -4277,14 +4277,14 @@ print('done')
       "id": "leoDocumentsExplorer",
       "name": "Leo Documents",
       "contextualTitle": "Leo",
-      "when": "treeInExplorer",
+      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
       "visibility": "collapsed"
     },
     {
       "id": "leoButtonsExplorer",
       "name": "Leo Buttons",
       "contextualTitle": "Leo",
-      "when": "treeInExplorer",
+      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
       "visibility": "collapsed"
     },
     {
