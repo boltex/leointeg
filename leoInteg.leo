@@ -7494,8 +7494,9 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 ## 0.1.15
 
 - Modified server location logic
-- Fixed find all/ clone-find commands
+- Fixed find-prev, next, find all / clone-find commands
 - fixed extract name command
+- Fixed body being re-written to same string and being marked dirty when 'safety-saving' before switching docs.
 
 @others
 </t>

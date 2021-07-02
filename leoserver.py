@@ -154,14 +154,11 @@ class ServerExternalFilesController:
         # Always update the path & time to prevent future warnings.
         self.set_time(path)
         self.checksum_d[path] = self.checksum(path)
-        print("******* DETECTED LEO FILE CHANGE *******")
-        # #1888:
-        val = self.ask(c, path)
-        if val in ('yes', 'yes-all'):
-            # Do a complete restart of Leo.
-            g.es_print('restarting Leo...')
-            print("******* TODO RESTARTING *******")
-            ###c.restartLeo()
+        # For now, ignore the #1888 fix method 
+        if self.ask(c, path):
+            pass
+            #reload Commander
+
     #@+node:felix.20210626222905.5: *3* sefc.idle_check_at_file_node
     def idle_check_at_file_node(self, c, p):
         '''Check the @<file> node at p for external changes.'''
@@ -191,13 +188,10 @@ class ServerExternalFilesController:
             return
 
         if p_result and "reload" in p_result.lower():
-            print("TODO : Reload leo file commander:"+self.lastCommander.mFileName)
             self.waitingForAnswer = False  # unblock
 
         # check if p_resultwas from a warn (ok) or an ask ('yes','yes-all','no','no-all')
         # act accordingly
-
-        path = g.fullPath(self.lastCommander, self.lastPNode)
 
         # 1- if ok, unblock 'warn'
         # 2- if no, unblock 'ask'
@@ -209,11 +203,19 @@ class ServerExternalFilesController:
             self.yesno_all_answer = p_result.lower()
         # ------------------------------------------ Also covers setting yesAll in #5
 
-        # 4- if yes: REFRESH self.lastPNode, and unblock 'ask'
-        # 5- if yesAll: REFRESH self.lastPNode, set yesAll, and unblock 'ask'
-        if bool(p_result and 'yes' in p_result.lower()):
-            self.lastCommander.selectPosition(self.lastPNode)
-            self.lastCommander.refreshFromDisk()
+        if self.lastPNode:
+            path = g.fullPath(self.lastCommander, self.lastPNode)
+            # 4- if yes: REFRESH self.lastPNode, and unblock 'ask'
+            # 5- if yesAll: REFRESH self.lastPNode, set yesAll, and unblock 'ask'
+            if bool(p_result and 'yes' in p_result.lower()):
+                self.lastCommander.selectPosition(self.lastPNode)
+                self.lastCommander.refreshFromDisk()
+        else:
+            path = self.lastCommander.mFileName
+            # Same but for Leo file commander (close and reopen)
+            if bool(p_result and 'yes' in p_result.lower()):
+                self.lastCommander.close()
+                g.leoServer.open_file({"filename":path }) # ignore returned value
 
         # Always update the path & time to prevent future warnings for this PNode.
         self.set_time(path)
@@ -256,13 +258,11 @@ class ServerExternalFilesController:
         _is_leo = path.endswith(('.leo', '.db')) # todo :check if this is even used (.leo)
 
         if _is_leo:
-            # todo :check if this is even used (.leo)
             s = '\n'.join([
                 f'{g.splitLongFileName(path)} has changed outside Leo.',
-                'Overwrite it?'
+                'Reload it?'
             ])
         else:
-            # todo :check if this is always used (not .leo file)
             s = '\n'.join([
                 f'{g.splitLongFileName(path)} has changed outside Leo.',
                 f"Reload {where} in Leo?",
@@ -710,7 +710,6 @@ class LeoServer:
                 c.revert()
             # Then, if still possible, close it.
             if forced or not c.changed:
-                # c.closed = True # maybe useless flag from leobridgeserver.py technique
                 c.close()
             else:
                 # Cannot close, return empty response without 'total' (ask to save, ignore or cancel)
