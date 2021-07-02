@@ -130,9 +130,6 @@ class ServerExternalFilesController:
         #
         # #1100: always scan the entire file for @<file> nodes.
         # #1134: Nested @<file> nodes are no longer valid, but this will do no harm.
-
-
-
         for p in c.all_unique_positions():
             if self.waitingForAnswer:
                 break
@@ -147,7 +144,6 @@ class ServerExternalFilesController:
     #@+node:felix.20210627013530.1: *3* sefc.idle_check_leo_file
     def idle_check_leo_file(self, c):
         """Check c's .leo file for external changes."""
-        # TODO !!
         path = c.fileName()
         if not self.has_changed(path):
             return
@@ -156,8 +152,9 @@ class ServerExternalFilesController:
         self.checksum_d[path] = self.checksum(path)
         # For now, ignore the #1888 fix method 
         if self.ask(c, path):
-            pass
             #reload Commander
+            self.lastCommander.close()
+            g.leoServer.open_file({"filename":path }) # ignore returned value
 
     #@+node:felix.20210626222905.5: *3* sefc.idle_check_at_file_node
     def idle_check_at_file_node(self, c, p):
@@ -187,9 +184,6 @@ class ServerExternalFilesController:
             print("ERROR: Received Result but no Asked Dialog", flush=True)
             return
 
-        if p_result and "reload" in p_result.lower():
-            self.waitingForAnswer = False  # unblock
-
         # check if p_resultwas from a warn (ok) or an ask ('yes','yes-all','no','no-all')
         # act accordingly
 
@@ -203,6 +197,7 @@ class ServerExternalFilesController:
             self.yesno_all_answer = p_result.lower()
         # ------------------------------------------ Also covers setting yesAll in #5
 
+        path = ""
         if self.lastPNode:
             path = g.fullPath(self.lastCommander, self.lastPNode)
             # 4- if yes: REFRESH self.lastPNode, and unblock 'ask'
@@ -210,20 +205,22 @@ class ServerExternalFilesController:
             if bool(p_result and 'yes' in p_result.lower()):
                 self.lastCommander.selectPosition(self.lastPNode)
                 self.lastCommander.refreshFromDisk()
-        else:
-            path = self.lastCommander.mFileName
+        elif self.lastCommander:
+            path = self.lastCommander.fileName()
             # Same but for Leo file commander (close and reopen)
             if bool(p_result and 'yes' in p_result.lower()):
                 self.lastCommander.close()
-                g.leoServer.open_file({"filename":path }) # ignore returned value
+                g.leoServer.open_file({"filename":path }) # ignore returned value        
 
-        # Always update the path & time to prevent future warnings for this PNode.
-        self.set_time(path)
-        self.checksum_d[path] = self.checksum(path)
+        # Always update the path & time to prevent future warnings for this path.
+        if path:
+            self.set_time(path)
+            self.checksum_d[path] = self.checksum(path)
 
         self.waitingForAnswer = False  # unblock
         # unblock: run the loop as if timer had hit
-        self.idle_check_commander(self.lastCommander)
+        if self.lastCommander:
+            self.idle_check_commander(self.lastCommander)
     #@+node:felix.20210626222905.7: *3* sefc.utilities
     #@+node:felix.20210626222905.8: *4* efc.ask
     def ask(self, c, path, p=None):
@@ -639,6 +636,7 @@ class LeoServer:
         """
         found, tag = False, 'open_file'
         filename = param.get('filename')  # Optional.
+        print("in open file for :" + str(filename))
         if filename:
             for c in g.app.commanders():
                  if c.fileName() == filename:
