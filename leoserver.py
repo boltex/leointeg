@@ -636,7 +636,6 @@ class LeoServer:
         """
         found, tag = False, 'open_file'
         filename = param.get('filename')  # Optional.
-        print("in open file for :" + str(filename))
         if filename:
             for c in g.app.commanders():
                  if c.fileName() == filename:
@@ -1406,6 +1405,16 @@ class LeoServer:
         c.selectPosition(p)
         c.insertHeadline()  # Handles undo, sets c.p
         return self._make_response()
+    #@+node:felix.20210703021435.1: *5* server.insert_child_node
+    def insert_child_node(self, param):
+        """
+        Insert a child node at given node, then select it once created, and finally return it
+        """
+        c = self._check_c()
+        p = self._get_p(param)
+        c.selectPosition(p)
+        c.insertHeadline(op_name='Insert Child', as_child=True)
+        return self._make_response()
     #@+node:felix.20210621233316.56: *5* server.insert_named_node
     def insert_named_node(self, param):
         '''
@@ -1416,6 +1425,26 @@ class LeoServer:
         newHeadline = param.get('name')
         bunch = c.undoer.beforeInsertNode(p)
         newNode = p.insertAfter()
+        # set this node's new headline
+        newNode.h = newHeadline
+        newNode.setDirty()
+        c.undoer.afterInsertNode(
+            newNode, 'Insert Node', bunch)
+        c.selectPosition(newNode)
+        return self._make_response()
+    #@+node:felix.20210703021441.1: *5* server.insert_child_named_node
+    def insert_child_named_node(self, param):
+        '''
+        Insert a child node at given node, set its headline, select it and finally return it
+        '''
+        c = self._check_c()
+        p = self._get_p(param)
+        newHeadline = param.get('name')
+        bunch = c.undoer.beforeInsertNode(p)
+        if c.config.getBool('insert-new-nodes-at-end'):
+            newNode = p.insertAsLastChild()
+        else:
+            newNode = p.insertAsNthChild(0)
         # set this node's new headline
         newNode.h = newHeadline
         newNode.setDirty()

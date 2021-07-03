@@ -154,6 +154,66 @@
           "type": "boolean",
           "description": "Inverts the contrast of the dirty/clean border aspect of tree nodes"
         },
+        "leoIntegration.showEditionOnBody": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows clone, delete and insert nodes above the body pane"
+        },
+        "leoIntegration.showClipboardOnBody": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows cut, copy & paste nodes above the body pane"
+        },
+        "leoIntegration.showPromoteOnBody": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows promote and demote above the body pane"
+        },
+        "leoIntegration.showExecuteOnBody": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows 'Execute Script' above the body pane"
+        },
+        "leoIntegration.showExtractOnBody": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows extract commands above the body pane"
+        },
+        "leoIntegration.showImportOnBody": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows 'Import File' above the body pane"
+        },
+        "leoIntegration.showRefreshOnBody": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows 'Refresh from disk' above the body pane"
+        },
+        "leoIntegration.showHoistOnBody": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows Hoist commands above the body pane"
+        },
+        "leoIntegration.showMarkOnBody": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows Mark commands above the body pane"
+        },
+        "leoIntegration.showSortOnBody": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Shows 'Sort Siblings' above the body pane"
+        },
         "leoIntegration.leoEditorPath": {
           "scope": "application",
           "default": "",
@@ -2208,6 +2268,30 @@
         }
       ],
       "editor/title": [
+
+
+        {
+          "command": "leointeg.cloneNodeSelection",
+          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@3"
+        },
+        {
+          "command": "leointeg.insertNodeSelection",
+          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@3"
+        },
+        {
+          "command": "leointeg.deleteSelection",
+          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@3"
+        },
+        {
+          "command": "leointeg.cloneNodeSelection",
+          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@3"
+        },
+
+
         {
           "command": "leointeg.next",
           "when": "resourceScheme == leo && leoTreeOpened",

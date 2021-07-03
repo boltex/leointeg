@@ -558,6 +558,9 @@ export class Constants {
         MOVE_LEFT_SELECTION: Constants.NAME + ".moveOutlineLeftSelection",
         MOVE_RIGHT_SELECTION: Constants.NAME + ".moveOutlineRightSelection",
         MOVE_UP_SELECTION: Constants.NAME + ".moveOutlineUpSelection",
+
+        INSERT_CHILD_SELECTION: Constants.NAME + ".insertChildNodeSelection", // Can be interrupted
+        INSERT_CHILD_SELECTION_INTERRUPT: Constants.NAME + ".insertChildNodeSelectionInterrupt", // Can be interrupted
         INSERT_SELECTION: Constants.NAME + ".insertNodeSelection", // Can be interrupted
         INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Interrupted version
         CLONE_SELECTION: Constants.NAME + ".cloneNodeSelection",

@@ -64,6 +64,7 @@
 <v t="ekr.20200815123601.4"><vh>Interface Behavior</vh></v>
 <v t="ekr.20200815123601.5"><vh>Statusbar Indicator</vh></v>
 <v t="ekr.20200815123601.6"><vh>Interface Appearance</vh></v>
+<v t="felix.20210703013251.1"><vh>Body Pane Icons</vh></v>
 <v t="ekr.20200815123601.7"><vh>Leo Bridge Options</vh></v>
 </v>
 <v t="ekr.20200815123601.8"><vh>viewsContainers</vh></v>
@@ -4632,6 +4633,9 @@ public static COMMANDS = {
     MOVE_LEFT_SELECTION: Constants.NAME + ".moveOutlineLeftSelection",
     MOVE_RIGHT_SELECTION: Constants.NAME + ".moveOutlineRightSelection",
     MOVE_UP_SELECTION: Constants.NAME + ".moveOutlineUpSelection",
+
+    INSERT_CHILD_SELECTION: Constants.NAME + ".insertChildNodeSelection", // Can be interrupted
+    INSERT_CHILD_SELECTION_INTERRUPT: Constants.NAME + ".insertChildNodeSelectionInterrupt", // Can be interrupted
     INSERT_SELECTION: Constants.NAME + ".insertNodeSelection", // Can be interrupted
     INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Interrupted version
     CLONE_SELECTION: Constants.NAME + ".cloneNodeSelection",
@@ -7280,6 +7284,18 @@ export interface ConfigMembers {
     showMarkOnNodes: boolean;
     showCloneOnNodes: boolean;
     showCopyOnNodes: boolean;
+
+    showEditionOnBody: boolean; // clone delete insert(s)
+    showClipboardOnBody: boolean; // cut copy paste(s)
+    showPromoteOnBody: boolean; // promote demote
+    showExecuteOnBody: boolean; // extract(s)
+    showExtractOnBody: boolean;
+    showImportOnBody: boolean;
+    showRefreshOnBody: boolean;
+    showHoistOnBody: boolean;
+    showMarkOnBody: boolean;
+    showSortOnBody: boolean;
+
     invertNodeContrast: boolean;
     leoEditorPath: string;
     leoPythonCommand: string;
@@ -11848,6 +11864,30 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
 
 </t>
 <t tx="felix.20210610022645.1">"editor/title": [
+
+
+  {
+    "command": "leointeg.cloneNodeSelection",
+    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@3"
+  },
+  {
+    "command": "leointeg.insertNodeSelection",
+    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@3"
+  },
+  {
+    "command": "leointeg.deleteSelection",
+    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@3"
+  },
+  {
+    "command": "leointeg.cloneNodeSelection",
+    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@3"
+  },
+
+
   {
     "command": "leointeg.next",
     "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
@@ -12037,6 +12077,67 @@ public cloneFindTag(): void {
         });
 }
 
+</t>
+<t tx="felix.20210703013251.1">"leoIntegration.showEditionOnBody": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows clone, delete and insert nodes above the body pane"
+},
+"leoIntegration.showClipboardOnBody": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows cut, copy &amp; paste nodes above the body pane"
+},
+"leoIntegration.showPromoteOnBody": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows promote and demote above the body pane"
+},
+"leoIntegration.showExecuteOnBody": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows 'Execute Script' above the body pane"
+},
+"leoIntegration.showExtractOnBody": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows extract commands above the body pane"
+},
+"leoIntegration.showImportOnBody": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows 'Import File' above the body pane"
+},
+"leoIntegration.showRefreshOnBody": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows 'Refresh from disk' above the body pane"
+},
+"leoIntegration.showHoistOnBody": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows Hoist commands above the body pane"
+},
+"leoIntegration.showMarkOnBody": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows Mark commands above the body pane"
+},
+"leoIntegration.showSortOnBody": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Shows 'Sort Siblings' above the body pane"
+},
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
