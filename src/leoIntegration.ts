@@ -2083,6 +2083,7 @@ export class LeoIntegration {
     public insertNode(
         p_node?: LeoNode,
         p_fromOutline?: boolean,
+        p_asChild?: boolean,
         p_interrupt?: boolean
     ): Promise<LeoBridgePackage> {
         let w_fromOutline: boolean = !!p_fromOutline; // Use w_fromOutline for where we intend to leave focus when done with the insert
@@ -2098,8 +2099,8 @@ export class LeoIntegration {
             return new Promise<LeoBridgePackage>((p_resolve, p_reject) => {
                 vscode.window.showInputBox(this._headlineInputOptions).then((p_newHeadline) => {
                     const w_action = p_newHeadline
-                        ? Constants.LEOBRIDGE.INSERT_NAMED_PNODE
-                        : Constants.LEOBRIDGE.INSERT_PNODE;
+                        ? (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_NAMED_PNODE)
+                        : (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_PNODE : Constants.LEOBRIDGE.INSERT_PNODE);
                     const q_commandResult = this.nodeCommand({
                         action: w_action,
                         node: p_node,
@@ -2906,6 +2907,8 @@ export class LeoIntegration {
 
     /**
      * * Import any File(s)
+     * No URL passed from the command definition.
+     * @param p_leoFileUri is offered for internal use only
      */
     public importAnyFile(p_leoFileUri?: vscode.Uri): Thenable<unknown> {
         return this._isBusyTriggerSave(true, true)

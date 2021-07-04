@@ -67,7 +67,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.NEW_FILE, () => w_leo.newLeoFile()],
 
         [CMD.OPEN_FILE, (p_uri?: vscode.Uri) => w_leo.openLeoFile(p_uri)],
-        [CMD.IMPORT_ANY_FILE, (p_uri?: vscode.Uri) => w_leo.importAnyFile(p_uri)],
+        [CMD.IMPORT_ANY_FILE, () => w_leo.importAnyFile()], // No URL passed from the command definition.
 
         [CMD.CLEAR_RECENT_FILES, () => w_leo.clearRecentLeoFiles()],
         [CMD.RECENT_FILES, () => w_leo.showRecentLeoFiles()],
@@ -345,13 +345,17 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true
         })],
 
-        [CMD.INSERT, (p_node: LeoNode) => w_leo.insertNode(p_node, true)],
-        [CMD.INSERT_SELECTION, () => w_leo.insertNode(U, false)],
-        [CMD.INSERT_SELECTION_FO, () => w_leo.insertNode(U, true)],
+        [CMD.INSERT, (p_node: LeoNode) => w_leo.insertNode(p_node, true, false)],
+        [CMD.INSERT_SELECTION, () => w_leo.insertNode(U, false, false)],
+        [CMD.INSERT_SELECTION_FO, () => w_leo.insertNode(U, true, false)],
+        [CMD.INSERT_CHILD, (p_node: LeoNode) => w_leo.insertNode(p_node, true, true)],
+        [CMD.INSERT_CHILD_SELECTION, () => w_leo.insertNode(U, false, true)],
+        [CMD.INSERT_CHILD_SELECTION_FO, () => w_leo.insertNode(U, true, true)],
 
         // Special command for when inserting rapidly more than one node without
         // even specifying a headline label, such as spamming CTRL+I rapidly.
-        [CMD.INSERT_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, true)],
+        [CMD.INSERT_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, false, true)],
+        [CMD.INSERT_CHILD_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, true, true)],
 
         [CMD.MARK, (p_node: LeoNode) => w_leo.changeMark(true, p_node, true)],
         [CMD.MARK_SELECTION, () => w_leo.changeMark(true, U, false)],

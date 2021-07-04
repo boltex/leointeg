@@ -52,16 +52,16 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 ## Keybindings
 
-| Outline Commands           |     |            |                  |
-| :------------------------- | :-- | :--------- | :--------------- |
-| `Ctrl + I`                 |     |            | Insert Node      |
-| `Ctrl + H`                 |     |            | Edit Headline    |
-| `Ctrl + Shift + C`         |     |            | Copy Node        |
-| `Ctrl + Shift + X`         |     |            | Cut Node         |
-| `Ctrl + Shift + V`         |     |            | Paste Node       |
-| `Ctrl + Shift + Backspace` | or  | `Delete`   | Delete Node      |
-| `Ctrl + Backquote`         |     |            | Clone Node       |
-| `Ctrl + {`                 | and | `Ctrl + }` | Promote / Demote |
+| Outline Commands           |     |                  |                  |
+| :------------------------- | :-- | :--------------- | :--------------- |
+| `Ctrl + I`                 | or  | `Shift + Insert` | Insert Node      |
+| `Ctrl + H`                 |     |                  | Edit Headline    |
+| `Ctrl + Shift + C`         |     |                  | Copy Node        |
+| `Ctrl + Shift + X`         |     |                  | Cut Node         |
+| `Ctrl + Shift + V`         |     |                  | Paste Node       |
+| `Ctrl + Shift + Backspace` | or  | `Delete`         | Delete Node      |
+| `Ctrl + Backquote`         |     |                  | Clone Node       |
+| `Ctrl + {`                 | and | `Ctrl + }`       | Promote / Demote |
 
 | Moving Outline Nodes |     |                         |                    |
 | :------------------- | :-- | :---------------------- | :----------------- |
@@ -145,7 +145,7 @@ Main issues are listed below. See the repository's [Issues Page](https://github.
 
 ### Keybindings Conflicts Resolution
 
-If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane, add **`&& resourceScheme != 'leo'`** to the keybinding's "*when*" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
+If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane, add **`&& resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Linux Keybindings
 

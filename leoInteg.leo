@@ -143,7 +143,19 @@
 </v>
 </v>
 <v t="ekr.20200815123601.68"><vh>explorer/context</vh></v>
-<v t="felix.20210610022645.1"><vh>editor/title</vh></v>
+<v t="felix.20210610022645.1"><vh>editor/title</vh>
+<v t="felix.20210703214733.1"><vh>Prev Next</vh></v>
+<v t="felix.20210703214602.1"><vh>Edition</vh></v>
+<v t="felix.20210703214616.1"><vh>Clipboard</vh></v>
+<v t="felix.20210703214622.1"><vh>Promote Demote</vh></v>
+<v t="felix.20210703214705.1"><vh>Mark</vh></v>
+<v t="felix.20210703214710.1"><vh>Sort</vh></v>
+<v t="felix.20210703214657.1"><vh>Hoist Dehoist</vh></v>
+<v t="felix.20210703214633.1"><vh>Execute</vh></v>
+<v t="felix.20210703214639.1"><vh>Extract</vh></v>
+<v t="felix.20210703214645.1"><vh>Import</vh></v>
+<v t="felix.20210703214654.1"><vh>Refresh</vh></v>
+</v>
 <v t="felix.20201215210439.1"><vh>view/title</vh></v>
 <v t="felix.20201215210510.1"><vh>view/item/context</vh></v>
 </v>
@@ -820,6 +832,18 @@ public static CONFIG_DEFAULTS = {
     SHOW_MARK: false,
     SHOW_CLONE: false,
     SHOW_COPY: false,
+
+    SHOW_EDITION_BODY: true,
+    SHOW_CLIPBOARD_BODY: true,
+    SHOW_PROMOTE_BODY: true,
+    SHOW_EXECUTE_BODY: true,
+    SHOW_EXTRACT_BODY: true,
+    SHOW_IMPORT_BODY: true,
+    SHOW_REFRESH_BODY: true,
+    SHOW_HOIST_BODY: true,
+    SHOW_MARK_BODY: true,
+    SHOW_SORT_BODY: true,
+
     INVERT_NODES: false,
     LEO_PYTHON_COMMAND: "",
     LEO_EDITOR_PATH: "",
@@ -1386,7 +1410,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.NEW_FILE, () =&gt; w_leo.newLeoFile()],
 
 [CMD.OPEN_FILE, (p_uri?: vscode.Uri) =&gt; w_leo.openLeoFile(p_uri)],
-[CMD.IMPORT_ANY_FILE, (p_uri?: vscode.Uri) =&gt; w_leo.importAnyFile(p_uri)],
+[CMD.IMPORT_ANY_FILE, () =&gt; w_leo.importAnyFile()], // No URL passed from the command definition.
 
 [CMD.CLEAR_RECENT_FILES, () =&gt; w_leo.clearRecentLeoFiles()],
 [CMD.RECENT_FILES, () =&gt; w_leo.showRecentLeoFiles()],
@@ -1664,13 +1688,17 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: true
 })],
 
-[CMD.INSERT, (p_node: LeoNode) =&gt; w_leo.insertNode(p_node, true)],
-[CMD.INSERT_SELECTION, () =&gt; w_leo.insertNode(U, false)],
-[CMD.INSERT_SELECTION_FO, () =&gt; w_leo.insertNode(U, true)],
+[CMD.INSERT, (p_node: LeoNode) =&gt; w_leo.insertNode(p_node, true, false)],
+[CMD.INSERT_SELECTION, () =&gt; w_leo.insertNode(U, false, false)],
+[CMD.INSERT_SELECTION_FO, () =&gt; w_leo.insertNode(U, true, false)],
+[CMD.INSERT_CHILD, (p_node: LeoNode) =&gt; w_leo.insertNode(p_node, true, true)],
+[CMD.INSERT_CHILD_SELECTION, () =&gt; w_leo.insertNode(U, false, true)],
+[CMD.INSERT_CHILD_SELECTION_FO, () =&gt; w_leo.insertNode(U, true, true)],
 
 // Special command for when inserting rapidly more than one node without
 // even specifying a headline label, such as spamming CTRL+I rapidly.
-[CMD.INSERT_SELECTION_INTERRUPT, () =&gt; w_leo.insertNode(U, false, true)],
+[CMD.INSERT_SELECTION_INTERRUPT, () =&gt; w_leo.insertNode(U, false, false, true)],
+[CMD.INSERT_CHILD_SELECTION_INTERRUPT, () =&gt; w_leo.insertNode(U, false, true, true)],
 
 [CMD.MARK, (p_node: LeoNode) =&gt; w_leo.changeMark(true, p_node, true)],
 [CMD.MARK_SELECTION, () =&gt; w_leo.changeMark(true, U, false)],
@@ -2444,7 +2472,11 @@ print('done')
 {
   "command": "leointeg.importAnyFile",
   "title": "Import File",
-  "category": "Leo"
+  "category": "Leo",
+  "icon": {
+    "light": "resources/light/import.svg",
+    "dark": "resources/dark/import.svg"
+  }
 },
 {
   "command": "leointeg.clearRecentFiles",
@@ -2664,7 +2696,11 @@ print('done')
 {
   "command": "leointeg.cutNodeSelection",
   "category": "Leo",
-  "title": "Cut Node"
+  "title": "Cut Node",
+  "icon": {
+    "light": "resources/light/cut.svg",
+    "dark": "resources/dark/cut.svg"
+  }
 },
 {
   "command": "leointeg.cutNodeSelectionFromOutline",
@@ -2679,7 +2715,11 @@ print('done')
 {
   "command": "leointeg.pasteNodeAtSelection",
   "category": "Leo",
-  "title": "Paste Node"
+  "title": "Paste Node",
+  "icon": {
+    "light": "resources/light/paste.svg",
+    "dark": "resources/dark/paste.svg"
+  }
 },
 {
   "command": "leointeg.pasteNodeAtSelectionFromOutline",
@@ -2694,7 +2734,11 @@ print('done')
 {
   "command": "leointeg.pasteNodeAsCloneAtSelection",
   "category": "Leo",
-  "title": "Paste Node as Clone"
+  "title": "Paste Node as Clone",
+  "icon": {
+    "light": "resources/light/paste-clone.svg",
+    "dark": "resources/dark/paste-clone.svg"
+  }
 },
 {
   "command": "leointeg.pasteNodeAsCloneAtSelectionFromOutline",
@@ -2713,7 +2757,11 @@ print('done')
 {
   "command": "leointeg.deleteSelection",
   "category": "Leo",
-  "title": "Delete Node"
+  "title": "Delete Node",
+  "icon": {
+    "light": "resources/light/delete.svg",
+    "dark": "resources/dark/delete.svg"
+  }
 },
 {
   "command": "leointeg.deleteSelectionFromOutline",
@@ -2808,12 +2856,30 @@ print('done')
   }
 },
 {
+  "command": "leointeg.insertChildNode",
+  "category": "Leo",
+  "title": "Insert Child",
+  "icon": {
+    "light": "resources/light/insert-child.svg",
+    "dark": "resources/dark/insert-child.svg"
+  }
+},
+{
   "command": "leointeg.insertNodeSelection",
   "category": "Leo",
   "title": "Insert Node",
   "icon": {
-    "light": "resources/light/plus.svg",
-    "dark": "resources/dark/plus.svg"
+    "light": "resources/light/insert.svg",
+    "dark": "resources/dark/insert.svg"
+  }
+},
+{
+  "command": "leointeg.insertChildNodeSelection",
+  "category": "Leo",
+  "title": "Insert Child",
+  "icon": {
+    "light": "resources/light/insert-child.svg",
+    "dark": "resources/dark/insert-child.svg"
   }
 },
 {
@@ -2821,8 +2887,17 @@ print('done')
   "category": "Leo",
   "title": "Insert Node",
   "icon": {
-    "light": "resources/light/plus.svg",
-    "dark": "resources/dark/plus.svg"
+    "light": "resources/light/insert.svg",
+    "dark": "resources/dark/insert.svg"
+  }
+},
+{
+  "command": "leointeg.insertChildNodeSelectionFromOutline",
+  "category": "Leo",
+  "title": "Insert Child",
+  "icon": {
+    "light": "resources/light/insert-child.svg",
+    "dark": "resources/dark/insert-child.svg"
   }
 },
 {
@@ -2830,8 +2905,17 @@ print('done')
   "category": "Leo",
   "title": "Insert Node",
   "icon": {
-    "light": "resources/light/plus.svg",
-    "dark": "resources/dark/plus.svg"
+    "light": "resources/light/insert.svg",
+    "dark": "resources/dark/insert.svg"
+  }
+},
+{
+  "command": "leointeg.insertChildNodeSelectionInterrupt",
+  "category": "Leo",
+  "title": "Insert Child",
+  "icon": {
+    "light": "resources/light/insert-child.svg",
+    "dark": "resources/dark/insert-child.svg"
   }
 },
 {
@@ -2928,12 +3012,20 @@ print('done')
 {
   "command": "leointeg.sortSiblingsSelection",
   "category": "Leo",
-  "title": "Sort Siblings"
+  "title": "Sort Siblings",
+  "icon": {
+    "light": "resources/light/sort.svg",
+    "dark": "resources/dark/sort.svg"
+  }
 },
 {
   "command": "leointeg.sortSiblingsSelectionFromOutline",
   "category": "Leo",
-  "title": "Sort Siblings"
+  "title": "Sort Siblings",
+  "icon": {
+    "light": "resources/light/sort.svg",
+    "dark": "resources/dark/sort.svg"
+  }
 },
 </t>
 <t tx="ekr.20200815123601.24">{
@@ -4148,6 +4240,48 @@ print('done')
   "when": "leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
 },
 {
+  "command": "leointeg.insertNodeSelection",
+  "key": "shift+insert",
+  "mac": "shift+insert",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.insertNodeSelectionFromOutline",
+  "key": "shift+insert",
+  "mac": "shift+insert",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.insertNodeSelectionFromOutline",
+  "key": "insert",
+  "mac": "insert",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.insertNodeSelectionInterrupt",
+  "key": "shift+insert",
+  "mac": "shift+insert",
+  "when": "leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
+},
+{
+  "command": "leointeg.insertChildNodeSelection",
+  "key": "ctrl+insert",
+  "mac": "cmd+insert",
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.insertChildNodeSelectionFromOutline",
+  "key": "ctrl+insert",
+  "mac": "cmd+insert",
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /leoIntegration/"
+},
+{
+  "command": "leointeg.insertChildNodeSelectionInterrupt",
+  "key": "ctrl+insert",
+  "mac": "cmd+insert",
+  "when": "leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
+},
+{
   "command": "leointeg.cloneNodeSelection",
   "key": "ctrl+`",
   "win": "ctrl+oem_3",
@@ -4494,6 +4628,8 @@ public static LEOBRIDGE = {
     MOVE_PNODE_UP: "moveOutlineUp", // * Direct Leo Command
     INSERT_PNODE: "!insert_node", // "insertPNode",
     INSERT_NAMED_PNODE: "!insert_named_node", // "insertNamedPNode",
+    INSERT_CHILD_PNODE: "!insert_child_node",
+    INSERT_CHILD_NAMED_PNODE: "!insert_child_named_node",
     CLONE_PNODE: "!clone_node", // "clonePNode",
     PROMOTE_PNODE: "promote", // * Direct Leo Command
     DEMOTE_PNODE: "demote", // * Direct Leo Command
@@ -4616,6 +4752,7 @@ public static COMMANDS = {
     MOVE_RIGHT: Constants.NAME + ".moveOutlineRight",
     MOVE_UP: Constants.NAME + ".moveOutlineUp",
     INSERT: Constants.NAME + ".insertNode",
+    INSERT_CHILD: Constants.NAME + ".insertChildNode",
     CLONE: Constants.NAME + ".cloneNode",
     PROMOTE: Constants.NAME + ".promote",
     DEMOTE: Constants.NAME + ".demote",
@@ -4634,10 +4771,12 @@ public static COMMANDS = {
     MOVE_RIGHT_SELECTION: Constants.NAME + ".moveOutlineRightSelection",
     MOVE_UP_SELECTION: Constants.NAME + ".moveOutlineUpSelection",
 
-    INSERT_CHILD_SELECTION: Constants.NAME + ".insertChildNodeSelection", // Can be interrupted
-    INSERT_CHILD_SELECTION_INTERRUPT: Constants.NAME + ".insertChildNodeSelectionInterrupt", // Can be interrupted
     INSERT_SELECTION: Constants.NAME + ".insertNodeSelection", // Can be interrupted
     INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Interrupted version
+
+    INSERT_CHILD_SELECTION: Constants.NAME + ".insertChildNodeSelection", // Can be interrupted
+    INSERT_CHILD_SELECTION_INTERRUPT: Constants.NAME + ".insertChildNodeSelectionInterrupt", // Can be interrupted
+
     CLONE_SELECTION: Constants.NAME + ".cloneNodeSelection",
     PROMOTE_SELECTION: Constants.NAME + ".promoteSelection",
     DEMOTE_SELECTION: Constants.NAME + ".demoteSelection",
@@ -4656,6 +4795,7 @@ public static COMMANDS = {
     MOVE_RIGHT_SELECTION_FO: Constants.NAME + ".moveOutlineRightSelectionFromOutline",
     MOVE_UP_SELECTION_FO: Constants.NAME + ".moveOutlineUpSelectionFromOutline",
     INSERT_SELECTION_FO: Constants.NAME + ".insertNodeSelectionFromOutline",
+    INSERT_CHILD_SELECTION_FO: Constants.NAME + ".insertChildNodeSelectionFromOutline",
     CLONE_SELECTION_FO: Constants.NAME + ".cloneNodeSelectionFromOutline",
     PROMOTE_SELECTION_FO: Constants.NAME + ".promoteSelectionFromOutline",
     DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",
@@ -4885,6 +5025,18 @@ public static CONFIG_NAMES = {
     SHOW_MARK: "showMarkOnNodes",
     SHOW_CLONE: "showCloneOnNodes",
     SHOW_COPY: "showCopyOnNodes",
+
+    SHOW_EDITION_BODY: "showEditionOnBody",
+    SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
+    SHOW_PROMOTE_BODY: "showPromoteOnBody",
+    SHOW_EXECUTE_BODY: "showExecuteOnBody",
+    SHOW_EXTRACT_BODY: "showExtractOnBody",
+    SHOW_IMPORT_BODY: "showImportOnBody",
+    SHOW_REFRESH_BODY: "showRefreshOnBody",
+    SHOW_HOIST_BODY: "showHoistOnBody",
+    SHOW_MARK_BODY: "showMarkOnBody",
+    SHOW_SORT_BODY: "showSortOnBody",
+
     INVERT_NODES: "invertNodeContrast",
     LEO_EDITOR_PATH: "leoEditorPath",
     LEO_PYTHON_COMMAND: "leoPythonCommand",
@@ -4917,7 +5069,7 @@ public static CONTEXT_FLAGS = {
     SELECTED_DIRTY: "leoDirty",
     SELECTED_EMPTY: "leoEmpty",
     SELECTED_CHILD: "leoChild", // Has children
-    SELECTED_ATFILE: "LeoAtFile", // Can be refreshed
+    SELECTED_ATFILE: "leoAtFile", // Can be refreshed
     SELECTED_ROOT: "leoRoot", // ! Not given by Leo: Computed by leoInteg/vscode instead
     // Statusbar Flag 'keybindings in effect'
     LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
@@ -4944,7 +5096,19 @@ public static CONTEXT_FLAGS = {
     SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,             // Hover Icons on outline nodes
     SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
     AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
-    AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT              // Used at startup
+    AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,             // Used at startup
+
+    SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
+    SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
+    SHOW_PROMOTE_BODY: Constants.CONFIG_NAMES.SHOW_PROMOTE_BODY,
+    SHOW_EXECUTE_BODY: Constants.CONFIG_NAMES.SHOW_EXECUTE_BODY,
+    SHOW_EXTRACT_BODY: Constants.CONFIG_NAMES.SHOW_EXTRACT_BODY,
+    SHOW_IMPORT_BODY: Constants.CONFIG_NAMES.SHOW_IMPORT_BODY,
+    SHOW_REFRESH_BODY: Constants.CONFIG_NAMES.SHOW_REFRESH_BODY,
+    SHOW_HOIST_BODY: Constants.CONFIG_NAMES.SHOW_HOIST_BODY,
+    SHOW_MARK_BODY: Constants.CONFIG_NAMES.SHOW_MARK_BODY,
+    SHOW_SORT_BODY: Constants.CONFIG_NAMES.SHOW_SORT_BODY
+
 };
 
 </t>
@@ -5152,6 +5316,18 @@ export class Config implements ConfigMembers {
     public showMarkOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK;
     public showCloneOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLONE;
     public showCopyOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_COPY;
+
+    public showEditionOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDITION_BODY;
+    public showClipboardOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLIPBOARD_BODY;
+    public showPromoteOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_PROMOTE_BODY;
+    public showExecuteOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EXECUTE_BODY;
+    public showExtractOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EXTRACT_BODY;
+    public showImportOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_IMPORT_BODY;
+    public showRefreshOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_REFRESH_BODY;
+    public showHoistOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_HOIST_BODY;
+    public showMarkOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK_BODY;
+    public showSortOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_SORT_BODY;
+
     public invertNodeContrast: boolean = Constants.CONFIG_DEFAULTS.INVERT_NODES;
     public leoPythonCommand: string = Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND;
     public leoEditorPath: string = Constants.CONFIG_DEFAULTS.LEO_EDITOR_PATH;
@@ -5192,6 +5368,18 @@ public getConfig(): ConfigMembers {
         showMarkOnNodes: this.showMarkOnNodes,
         showCloneOnNodes: this.showCloneOnNodes,
         showCopyOnNodes: this.showCopyOnNodes,
+
+        showEditionOnBody: this.showEditionOnBody,
+        showClipboardOnBody: this.showClipboardOnBody,
+        showPromoteOnBody: this.showPromoteOnBody,
+        showExecuteOnBody: this.showExecuteOnBody,
+        showExtractOnBody: this.showExtractOnBody,
+        showImportOnBody: this.showImportOnBody,
+        showRefreshOnBody: this.showRefreshOnBody,
+        showHoistOnBody: this.showHoistOnBody,
+        showMarkOnBody: this.showMarkOnBody,
+        showSortOnBody: this.showSortOnBody,
+
         invertNodeContrast: this.invertNodeContrast,
         leoPythonCommand: this.leoPythonCommand,
         leoEditorPath: this.leoEditorPath,
@@ -5275,6 +5463,18 @@ public buildFromSavedSettings(): void {
         this.showMarkOnNodes = GET(NAME).get(NAMES.SHOW_MARK, DEFAULTS.SHOW_MARK);
         this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
         this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
+
+        this.showEditionOnBody = GET(NAME).get(NAMES.SHOW_EDITION_BODY, DEFAULTS.SHOW_EDITION_BODY);
+        this.showClipboardOnBody = GET(NAME).get(NAMES.SHOW_CLIPBOARD_BODY, DEFAULTS.SHOW_CLIPBOARD_BODY);
+        this.showPromoteOnBody = GET(NAME).get(NAMES.SHOW_PROMOTE_BODY, DEFAULTS.SHOW_PROMOTE_BODY);
+        this.showExecuteOnBody = GET(NAME).get(NAMES.SHOW_EXECUTE_BODY, DEFAULTS.SHOW_EXECUTE_BODY);
+        this.showExtractOnBody = GET(NAME).get(NAMES.SHOW_EXTRACT_BODY, DEFAULTS.SHOW_EXTRACT_BODY);
+        this.showImportOnBody = GET(NAME).get(NAMES.SHOW_IMPORT_BODY, DEFAULTS.SHOW_IMPORT_BODY);
+        this.showRefreshOnBody = GET(NAME).get(NAMES.SHOW_REFRESH_BODY, DEFAULTS.SHOW_REFRESH_BODY);
+        this.showHoistOnBody = GET(NAME).get(NAMES.SHOW_HOIST_BODY, DEFAULTS.SHOW_HOIST_BODY);
+        this.showMarkOnBody = GET(NAME).get(NAMES.SHOW_MARK_BODY, DEFAULTS.SHOW_MARK_BODY);
+        this.showSortOnBody = GET(NAME).get(NAMES.SHOW_SORT_BODY, DEFAULTS.SHOW_SORT_BODY);
+
         this.invertNodeContrast = GET(NAME).get(NAMES.INVERT_NODES, DEFAULTS.INVERT_NODES);
         this.leoEditorPath = GET(NAME).get(NAMES.LEO_EDITOR_PATH, DEFAULTS.LEO_EDITOR_PATH);
         this.leoPythonCommand = GET(NAME).get(NAMES.LEO_PYTHON_COMMAND, DEFAULTS.LEO_PYTHON_COMMAND);
@@ -5296,6 +5496,18 @@ public buildFromSavedSettings(): void {
         utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
         utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
         utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
+
+        utils.setContext(FLAGS.SHOW_EDITION_BODY, this.showEditionOnBody);
+        utils.setContext(FLAGS.SHOW_CLIPBOARD_BODY, this.showClipboardOnBody);
+        utils.setContext(FLAGS.SHOW_PROMOTE_BODY, this.showPromoteOnBody);
+        utils.setContext(FLAGS.SHOW_EXECUTE_BODY, this.showExecuteOnBody);
+        utils.setContext(FLAGS.SHOW_EXTRACT_BODY, this.showExtractOnBody);
+        utils.setContext(FLAGS.SHOW_IMPORT_BODY, this.showImportOnBody);
+        utils.setContext(FLAGS.SHOW_REFRESH_BODY, this.showRefreshOnBody);
+        utils.setContext(FLAGS.SHOW_HOIST_BODY, this.showHoistOnBody);
+        utils.setContext(FLAGS.SHOW_MARK_BODY, this.showMarkOnBody);
+        utils.setContext(FLAGS.SHOW_SORT_BODY, this.showSortOnBody);
+
         if (!this._leoIntegration.finishedStartup &amp;&amp; this.leoEditorPath) {
             // Only relevant 'viewWelcome' content at startup.
             utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
@@ -7578,6 +7790,9 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 - fixed extract name command
 - Fixed body being re-written to same string and being marked dirty when 'safety-saving' before switching docs.
 - Detection of .Leo documents themselves now works by closing and re-opening the .leo file if reloading is chosen by the user. (or automatic via options)
+- Added icons and commands for top of body pane menu.
+- Added new commands such as insert-child along with their keybindings.
+- Also added more keybindings to the 'insert-node' command such as 'insert' and 'shift-insert'.
 
 @others
 </t>
@@ -7632,16 +7847,16 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 </t>
 <t tx="felix.20200718222043.1">## Keybindings
 
-| Outline Commands           |     |            |                  |
-| :------------------------- | :-- | :--------- | :--------------- |
-| `Ctrl + I`                 |     |            | Insert Node      |
-| `Ctrl + H`                 |     |            | Edit Headline    |
-| `Ctrl + Shift + C`         |     |            | Copy Node        |
-| `Ctrl + Shift + X`         |     |            | Cut Node         |
-| `Ctrl + Shift + V`         |     |            | Paste Node       |
-| `Ctrl + Shift + Backspace` | or  | `Delete`   | Delete Node      |
-| `Ctrl + Backquote`         |     |            | Clone Node       |
-| `Ctrl + {`                 | and | `Ctrl + }` | Promote / Demote |
+| Outline Commands           |     |                  |                  |
+| :------------------------- | :-- | :--------------- | :--------------- |
+| `Ctrl + I`                 | or  | `Shift + Insert` | Insert Node      |
+| `Ctrl + H`                 |     |                  | Edit Headline    |
+| `Ctrl + Shift + C`         |     |                  | Copy Node        |
+| `Ctrl + Shift + X`         |     |                  | Cut Node         |
+| `Ctrl + Shift + V`         |     |                  | Paste Node       |
+| `Ctrl + Shift + Backspace` | or  | `Delete`         | Delete Node      |
+| `Ctrl + Backquote`         |     |                  | Clone Node       |
+| `Ctrl + {`                 | and | `Ctrl + }`       | Promote / Demote |
 
 | Moving Outline Nodes |     |                         |                    |
 | :------------------- | :-- | :---------------------- | :----------------- |
@@ -7730,7 +7945,7 @@ Main issues are listed below. See the repository's [Issues Page](https://github.
 
 ### Keybindings Conflicts Resolution
 
-If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane, add **`&amp;&amp; resourceScheme != 'leo'`** to the keybinding's "*when*" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
+If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane, add **`&amp;&amp; resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Linux Keybindings
 
@@ -9317,6 +9532,7 @@ public editHeadline(
 public insertNode(
     p_node?: LeoNode,
     p_fromOutline?: boolean,
+    p_asChild?: boolean,
     p_interrupt?: boolean
 ): Promise&lt;LeoBridgePackage&gt; {
     let w_fromOutline: boolean = !!p_fromOutline; // Use w_fromOutline for where we intend to leave focus when done with the insert
@@ -9332,8 +9548,8 @@ public insertNode(
         return new Promise&lt;LeoBridgePackage&gt;((p_resolve, p_reject) =&gt; {
             vscode.window.showInputBox(this._headlineInputOptions).then((p_newHeadline) =&gt; {
                 const w_action = p_newHeadline
-                    ? Constants.LEOBRIDGE.INSERT_NAMED_PNODE
-                    : Constants.LEOBRIDGE.INSERT_PNODE;
+                    ? (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_NAMED_PNODE)
+                    : (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_PNODE : Constants.LEOBRIDGE.INSERT_PNODE);
                 const q_commandResult = this.nodeCommand({
                     action: w_action,
                     node: p_node,
@@ -10172,12 +10388,20 @@ public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
 <t tx="felix.20201105010614.1">{
   "command": "leointeg.extract",
   "category": "Leo",
-  "title": "Extract"
+  "title": "Extract",
+  "icon": {
+    "light": "resources/light/extract.svg",
+    "dark": "resources/dark/extract.svg"
+  }
 },
 {
   "command": "leointeg.extractNames",
   "category": "Leo",
-  "title": "Extract Names"
+  "title": "Extract Names",
+  "icon": {
+    "light": "resources/light/extract-name.svg",
+    "dark": "resources/dark/extract-name.svg"
+  }
 },
 </t>
 <t tx="felix.20201106200100.1">/**
@@ -11748,6 +11972,8 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
 </t>
 <t tx="felix.20210602155312.1">/**
  * * Import any File(s)
+ * No URL passed from the command definition.
+ * @param p_leoFileUri is offered for internal use only
  */
 public importAnyFile(p_leoFileUri?: vscode.Uri): Thenable&lt;unknown&gt; {
     return this._isBusyTriggerSave(true, true)
@@ -11864,40 +12090,7 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
 
 </t>
 <t tx="felix.20210610022645.1">"editor/title": [
-
-
-  {
-    "command": "leointeg.cloneNodeSelection",
-    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@3"
-  },
-  {
-    "command": "leointeg.insertNodeSelection",
-    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@3"
-  },
-  {
-    "command": "leointeg.deleteSelection",
-    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@3"
-  },
-  {
-    "command": "leointeg.cloneNodeSelection",
-    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@3"
-  },
-
-
-  {
-    "command": "leointeg.next",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@2"
-  },
-  {
-    "command": "leointeg.prev",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@1"
-  }
+  @others
 ],
 </t>
 <t tx="felix.20210610022836.1">/**
@@ -12137,6 +12330,127 @@ public cloneFindTag(): void {
   "default": true,
   "type": "boolean",
   "description": "Shows 'Sort Siblings' above the body pane"
+},
+</t>
+<t tx="felix.20210703214602.1">{
+  "command": "leointeg.cloneNodeSelection",
+  "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@3"
+},
+{
+  "command": "leointeg.deleteSelection",
+  "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@4"
+},
+{
+  "command": "leointeg.insertNodeSelection",
+  "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@5"
+},
+{
+  "command": "leointeg.insertChildNodeSelection",
+  "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@6"
+},
+</t>
+<t tx="felix.20210703214616.1">{
+  "command": "leointeg.cutNodeSelection",
+  "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@7"
+},
+{
+  "command": "leointeg.copyNodeSelection",
+  "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@8"
+},
+{
+  "command": "leointeg.pasteNodeAtSelection",
+  "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@9"
+},
+{
+  "command": "leointeg.pasteNodeAsCloneAtSelection",
+  "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@10"
+},
+</t>
+<t tx="felix.20210703214622.1">{
+  "command": "leointeg.promoteSelection",
+  "when": "showPromoteOnBody &amp;&amp; leoCanPromote &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@11"
+},
+{
+  "command": "leointeg.demoteSelection",
+  "when": "showPromoteOnBody &amp;&amp; leoCanDemote &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@12"
+},
+</t>
+<t tx="felix.20210703214633.1">{
+  "command": "leointeg.executeScript",
+  "when": "showExecuteOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@18"
+},
+</t>
+<t tx="felix.20210703214639.1">{
+  "command": "leointeg.extract",
+  "when": "showExtractOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@19"
+},
+{
+  "command": "leointeg.extractNames",
+  "when": "showExtractOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@20"
+},
+</t>
+<t tx="felix.20210703214645.1">{
+  "command": "leointeg.importAnyFile",
+  "when": "showImportOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@21"
+},
+</t>
+<t tx="felix.20210703214654.1">{
+  "command": "leointeg.refreshFromDiskSelection",
+  "when": "showRefreshOnBody &amp;&amp; leoAtFile &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@22"
+}
+</t>
+<t tx="felix.20210703214657.1">{
+  "command": "leointeg.hoistSelection",
+  "when": "showHoistOnBody &amp;&amp; !leoRoot &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@16"
+},
+{
+  "command": "leointeg.deHoist",
+  "when": "showHoistOnBody &amp;&amp; leoCanDehoist &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@17"
+},
+</t>
+<t tx="felix.20210703214705.1">{
+  "command": "leointeg.markSelection",
+  "when": "showMarkOnBody &amp;&amp; !leoMarked  &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@13"
+},
+{
+  "command": "leointeg.unmarkSelection",
+  "when": "showMarkOnBody &amp;&amp; leoMarked  &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@14"
+},
+</t>
+<t tx="felix.20210703214710.1">{
+  "command": "leointeg.sortSiblingsSelection",
+  "when": "showSortOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@15"
+},
+</t>
+<t tx="felix.20210703214733.1">{
+  "command": "leointeg.prev",
+  "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@1"
+},
+{
+  "command": "leointeg.next",
+  "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+  "group": "navigation@2"
 },
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
@@ -13407,6 +13721,135 @@ body &gt; div &gt; div &gt; label:active {
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Shows 'Insert' on hover&lt;/span&gt;
             &lt;/div&gt;
+          &lt;/div&gt;
+
+        &lt;/div&gt;
+      &lt;/section&gt;
+
+      &lt;section id="editor-commands"
+               class="section--settings"&gt;
+        &lt;div class="section__content"&gt;
+          &lt;div class="section__header"&gt;
+            &lt;h2&gt;
+              Body Editor Icons
+            &lt;/h2&gt;
+            &lt;p class="section__header-hint"&gt;
+              Body Pane Command Icons - Choose which commands to display
+            &lt;/p&gt;
+          &lt;/div&gt;
+          &lt;div class="section__preview"&gt;
+
+            &lt;img class="image__preview"
+                 src="#{root}/resources/allIconsDisabled.png" /&gt;
+
+            &lt;div class="image__preview--float-container"&gt;
+              todo: images
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;div class="settings"&gt;
+
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showEditionOnBody"
+                       name="showEditionOnBody"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="showEditionOnBody"&gt;Outline&amp;nbsp;Edition&amp;nbsp;Commands&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Clone, Delete and Insert nodes&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showClipboardOnBody"
+                       name="showClipboardOnBody"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="showClipboardOnBody"&gt;Clipboard&amp;nbsp;Operations&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Cut, Copy and Paste nodes&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showPromoteOnBody"
+                       name="showPromoteOnBody"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="showPromoteOnBody"&gt;Promote&amp;nbsp;&amp;amp;&amp;nbsp;Demote&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Promote children, demote siblings&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showExecuteOnBody"
+                       name="showExecuteOnBody"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="showExecuteOnBody"&gt;Execute&amp;nbsp;Script&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Executes node or selected text&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showExtractOnBody"
+                       name="showExtractOnBody"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="showExtractOnBody"&gt;Extract&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Extract Text and Names&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showImportOnBody"
+                       name="showImportOnBody"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="showImportOnBody"&gt;Import&amp;nbsp;File&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Import any file into a node&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showRefreshOnBody"
+                       name="showRefreshOnBody"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="showRefreshOnBody"&gt;Refresh&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Refresh an external file from disk&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showHoistOnBody"
+                       name="showHoistOnBody"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="showHoistOnBody"&gt;Hoist&amp;nbsp;&amp;amp;&amp;nbsp;Dehoist&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Isolate part of the outline&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showMarkOnBody"
+                       name="showMarkOnBody"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="showMarkOnBody"&gt;Mark&amp;nbsp;&amp;amp;&amp;nbsp;Unmark&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Mark or unmark tree nodes&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="showSortOnBody"
+                       name="showSortOnBody"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="showSortOnBody"&gt;Sort&amp;nbsp;Siblings&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Sort siblings of a node alphabetically&lt;/span&gt;
+            &lt;/div&gt;
+
           &lt;/div&gt;
 
         &lt;/div&gt;

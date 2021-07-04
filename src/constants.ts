@@ -218,6 +218,18 @@ export class Constants {
         SHOW_MARK: "showMarkOnNodes",
         SHOW_CLONE: "showCloneOnNodes",
         SHOW_COPY: "showCopyOnNodes",
+
+        SHOW_EDITION_BODY: "showEditionOnBody",
+        SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
+        SHOW_PROMOTE_BODY: "showPromoteOnBody",
+        SHOW_EXECUTE_BODY: "showExecuteOnBody",
+        SHOW_EXTRACT_BODY: "showExtractOnBody",
+        SHOW_IMPORT_BODY: "showImportOnBody",
+        SHOW_REFRESH_BODY: "showRefreshOnBody",
+        SHOW_HOIST_BODY: "showHoistOnBody",
+        SHOW_MARK_BODY: "showMarkOnBody",
+        SHOW_SORT_BODY: "showSortOnBody",
+
         INVERT_NODES: "invertNodeContrast",
         LEO_EDITOR_PATH: "leoEditorPath",
         LEO_PYTHON_COMMAND: "leoPythonCommand",
@@ -247,6 +259,18 @@ export class Constants {
         SHOW_MARK: false,
         SHOW_CLONE: false,
         SHOW_COPY: false,
+
+        SHOW_EDITION_BODY: true,
+        SHOW_CLIPBOARD_BODY: true,
+        SHOW_PROMOTE_BODY: true,
+        SHOW_EXECUTE_BODY: true,
+        SHOW_EXTRACT_BODY: true,
+        SHOW_IMPORT_BODY: true,
+        SHOW_REFRESH_BODY: true,
+        SHOW_HOIST_BODY: true,
+        SHOW_MARK_BODY: true,
+        SHOW_SORT_BODY: true,
+
         INVERT_NODES: false,
         LEO_PYTHON_COMMAND: "",
         LEO_EDITOR_PATH: "",
@@ -279,7 +303,7 @@ export class Constants {
         SELECTED_DIRTY: "leoDirty",
         SELECTED_EMPTY: "leoEmpty",
         SELECTED_CHILD: "leoChild", // Has children
-        SELECTED_ATFILE: "LeoAtFile", // Can be refreshed
+        SELECTED_ATFILE: "leoAtFile", // Can be refreshed
         SELECTED_ROOT: "leoRoot", // ! Not given by Leo: Computed by leoInteg/vscode instead
         // Statusbar Flag 'keybindings in effect'
         LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
@@ -306,7 +330,19 @@ export class Constants {
         SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,             // Hover Icons on outline nodes
         SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
         AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
-        AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT              // Used at startup
+        AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,             // Used at startup
+
+        SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
+        SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
+        SHOW_PROMOTE_BODY: Constants.CONFIG_NAMES.SHOW_PROMOTE_BODY,
+        SHOW_EXECUTE_BODY: Constants.CONFIG_NAMES.SHOW_EXECUTE_BODY,
+        SHOW_EXTRACT_BODY: Constants.CONFIG_NAMES.SHOW_EXTRACT_BODY,
+        SHOW_IMPORT_BODY: Constants.CONFIG_NAMES.SHOW_IMPORT_BODY,
+        SHOW_REFRESH_BODY: Constants.CONFIG_NAMES.SHOW_REFRESH_BODY,
+        SHOW_HOIST_BODY: Constants.CONFIG_NAMES.SHOW_HOIST_BODY,
+        SHOW_MARK_BODY: Constants.CONFIG_NAMES.SHOW_MARK_BODY,
+        SHOW_SORT_BODY: Constants.CONFIG_NAMES.SHOW_SORT_BODY
+
     };
 
     /**
@@ -420,6 +456,8 @@ export class Constants {
         MOVE_PNODE_UP: "moveOutlineUp", // * Direct Leo Command
         INSERT_PNODE: "!insert_node", // "insertPNode",
         INSERT_NAMED_PNODE: "!insert_named_node", // "insertNamedPNode",
+        INSERT_CHILD_PNODE: "!insert_child_node",
+        INSERT_CHILD_NAMED_PNODE: "!insert_child_named_node",
         CLONE_PNODE: "!clone_node", // "clonePNode",
         PROMOTE_PNODE: "promote", // * Direct Leo Command
         DEMOTE_PNODE: "demote", // * Direct Leo Command
@@ -541,6 +579,7 @@ export class Constants {
         MOVE_RIGHT: Constants.NAME + ".moveOutlineRight",
         MOVE_UP: Constants.NAME + ".moveOutlineUp",
         INSERT: Constants.NAME + ".insertNode",
+        INSERT_CHILD: Constants.NAME + ".insertChildNode",
         CLONE: Constants.NAME + ".cloneNode",
         PROMOTE: Constants.NAME + ".promote",
         DEMOTE: Constants.NAME + ".demote",
@@ -559,10 +598,12 @@ export class Constants {
         MOVE_RIGHT_SELECTION: Constants.NAME + ".moveOutlineRightSelection",
         MOVE_UP_SELECTION: Constants.NAME + ".moveOutlineUpSelection",
 
-        INSERT_CHILD_SELECTION: Constants.NAME + ".insertChildNodeSelection", // Can be interrupted
-        INSERT_CHILD_SELECTION_INTERRUPT: Constants.NAME + ".insertChildNodeSelectionInterrupt", // Can be interrupted
         INSERT_SELECTION: Constants.NAME + ".insertNodeSelection", // Can be interrupted
         INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Interrupted version
+
+        INSERT_CHILD_SELECTION: Constants.NAME + ".insertChildNodeSelection", // Can be interrupted
+        INSERT_CHILD_SELECTION_INTERRUPT: Constants.NAME + ".insertChildNodeSelectionInterrupt", // Can be interrupted
+
         CLONE_SELECTION: Constants.NAME + ".cloneNodeSelection",
         PROMOTE_SELECTION: Constants.NAME + ".promoteSelection",
         DEMOTE_SELECTION: Constants.NAME + ".demoteSelection",
@@ -581,6 +622,7 @@ export class Constants {
         MOVE_RIGHT_SELECTION_FO: Constants.NAME + ".moveOutlineRightSelectionFromOutline",
         MOVE_UP_SELECTION_FO: Constants.NAME + ".moveOutlineUpSelectionFromOutline",
         INSERT_SELECTION_FO: Constants.NAME + ".insertNodeSelectionFromOutline",
+        INSERT_CHILD_SELECTION_FO: Constants.NAME + ".insertChildNodeSelectionFromOutline",
         CLONE_SELECTION_FO: Constants.NAME + ".cloneNodeSelectionFromOutline",
         PROMOTE_SELECTION_FO: Constants.NAME + ".promoteSelectionFromOutline",
         DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",

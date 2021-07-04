@@ -688,7 +688,11 @@
       {
         "command": "leointeg.importAnyFile",
         "title": "Import File",
-        "category": "Leo"
+        "category": "Leo",
+        "icon": {
+          "light": "resources/light/import.svg",
+          "dark": "resources/dark/import.svg"
+        }
       },
       {
         "command": "leointeg.clearRecentFiles",
@@ -899,7 +903,11 @@
       {
         "command": "leointeg.cutNodeSelection",
         "category": "Leo",
-        "title": "Cut Node"
+        "title": "Cut Node",
+        "icon": {
+          "light": "resources/light/cut.svg",
+          "dark": "resources/dark/cut.svg"
+        }
       },
       {
         "command": "leointeg.cutNodeSelectionFromOutline",
@@ -914,7 +922,11 @@
       {
         "command": "leointeg.pasteNodeAtSelection",
         "category": "Leo",
-        "title": "Paste Node"
+        "title": "Paste Node",
+        "icon": {
+          "light": "resources/light/paste.svg",
+          "dark": "resources/dark/paste.svg"
+        }
       },
       {
         "command": "leointeg.pasteNodeAtSelectionFromOutline",
@@ -929,7 +941,11 @@
       {
         "command": "leointeg.pasteNodeAsCloneAtSelection",
         "category": "Leo",
-        "title": "Paste Node as Clone"
+        "title": "Paste Node as Clone",
+        "icon": {
+          "light": "resources/light/paste-clone.svg",
+          "dark": "resources/dark/paste-clone.svg"
+        }
       },
       {
         "command": "leointeg.pasteNodeAsCloneAtSelectionFromOutline",
@@ -948,7 +964,11 @@
       {
         "command": "leointeg.deleteSelection",
         "category": "Leo",
-        "title": "Delete Node"
+        "title": "Delete Node",
+        "icon": {
+          "light": "resources/light/delete.svg",
+          "dark": "resources/dark/delete.svg"
+        }
       },
       {
         "command": "leointeg.deleteSelectionFromOutline",
@@ -958,12 +978,20 @@
       {
         "command": "leointeg.extract",
         "category": "Leo",
-        "title": "Extract"
+        "title": "Extract",
+        "icon": {
+          "light": "resources/light/extract.svg",
+          "dark": "resources/dark/extract.svg"
+        }
       },
       {
         "command": "leointeg.extractNames",
         "category": "Leo",
-        "title": "Extract Names"
+        "title": "Extract Names",
+        "icon": {
+          "light": "resources/light/extract-name.svg",
+          "dark": "resources/dark/extract-name.svg"
+        }
       },
       {
         "command": "leointeg.moveOutlineDown",
@@ -1051,12 +1079,30 @@
         }
       },
       {
+        "command": "leointeg.insertChildNode",
+        "category": "Leo",
+        "title": "Insert Child",
+        "icon": {
+          "light": "resources/light/insert-child.svg",
+          "dark": "resources/dark/insert-child.svg"
+        }
+      },
+      {
         "command": "leointeg.insertNodeSelection",
         "category": "Leo",
         "title": "Insert Node",
         "icon": {
-          "light": "resources/light/plus.svg",
-          "dark": "resources/dark/plus.svg"
+          "light": "resources/light/insert.svg",
+          "dark": "resources/dark/insert.svg"
+        }
+      },
+      {
+        "command": "leointeg.insertChildNodeSelection",
+        "category": "Leo",
+        "title": "Insert Child",
+        "icon": {
+          "light": "resources/light/insert-child.svg",
+          "dark": "resources/dark/insert-child.svg"
         }
       },
       {
@@ -1064,8 +1110,17 @@
         "category": "Leo",
         "title": "Insert Node",
         "icon": {
-          "light": "resources/light/plus.svg",
-          "dark": "resources/dark/plus.svg"
+          "light": "resources/light/insert.svg",
+          "dark": "resources/dark/insert.svg"
+        }
+      },
+      {
+        "command": "leointeg.insertChildNodeSelectionFromOutline",
+        "category": "Leo",
+        "title": "Insert Child",
+        "icon": {
+          "light": "resources/light/insert-child.svg",
+          "dark": "resources/dark/insert-child.svg"
         }
       },
       {
@@ -1073,8 +1128,17 @@
         "category": "Leo",
         "title": "Insert Node",
         "icon": {
-          "light": "resources/light/plus.svg",
-          "dark": "resources/dark/plus.svg"
+          "light": "resources/light/insert.svg",
+          "dark": "resources/dark/insert.svg"
+        }
+      },
+      {
+        "command": "leointeg.insertChildNodeSelectionInterrupt",
+        "category": "Leo",
+        "title": "Insert Child",
+        "icon": {
+          "light": "resources/light/insert-child.svg",
+          "dark": "resources/dark/insert-child.svg"
         }
       },
       {
@@ -1171,12 +1235,20 @@
       {
         "command": "leointeg.sortSiblingsSelection",
         "category": "Leo",
-        "title": "Sort Siblings"
+        "title": "Sort Siblings",
+        "icon": {
+          "light": "resources/light/sort.svg",
+          "dark": "resources/dark/sort.svg"
+        }
       },
       {
         "command": "leointeg.sortSiblingsSelectionFromOutline",
         "category": "Leo",
-        "title": "Sort Siblings"
+        "title": "Sort Siblings",
+        "icon": {
+          "light": "resources/light/sort.svg",
+          "dark": "resources/dark/sort.svg"
+        }
       },
       {
         "command": "leointeg.gotoFirstVisible",
@@ -2268,39 +2340,115 @@
         }
       ],
       "editor/title": [
-
-
         {
-          "command": "leointeg.cloneNodeSelection",
-          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@3"
+          "command": "leointeg.prev",
+          "when": "resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@1"
         },
-        {
-          "command": "leointeg.insertNodeSelection",
-          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@3"
-        },
-        {
-          "command": "leointeg.deleteSelection",
-          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@3"
-        },
-        {
-          "command": "leointeg.cloneNodeSelection",
-          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@3"
-        },
-
-
         {
           "command": "leointeg.next",
           "when": "resourceScheme == leo && leoTreeOpened",
           "group": "navigation@2"
         },
         {
-          "command": "leointeg.prev",
-          "when": "resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@1"
+          "command": "leointeg.cloneNodeSelection",
+          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@3"
+        },
+        {
+          "command": "leointeg.deleteSelection",
+          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@4"
+        },
+        {
+          "command": "leointeg.insertNodeSelection",
+          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@5"
+        },
+        {
+          "command": "leointeg.insertChildNodeSelection",
+          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@6"
+        },
+        {
+          "command": "leointeg.cutNodeSelection",
+          "when": "showClipboardOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@7"
+        },
+        {
+          "command": "leointeg.copyNodeSelection",
+          "when": "showClipboardOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@8"
+        },
+        {
+          "command": "leointeg.pasteNodeAtSelection",
+          "when": "showClipboardOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@9"
+        },
+        {
+          "command": "leointeg.pasteNodeAsCloneAtSelection",
+          "when": "showClipboardOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@10"
+        },
+        {
+          "command": "leointeg.promoteSelection",
+          "when": "showPromoteOnBody && leoCanPromote && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@11"
+        },
+        {
+          "command": "leointeg.demoteSelection",
+          "when": "showPromoteOnBody && leoCanDemote && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@12"
+        },
+        {
+          "command": "leointeg.markSelection",
+          "when": "showMarkOnBody && !leoMarked  && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@13"
+        },
+        {
+          "command": "leointeg.unmarkSelection",
+          "when": "showMarkOnBody && leoMarked  && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@14"
+        },
+        {
+          "command": "leointeg.sortSiblingsSelection",
+          "when": "showSortOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@15"
+        },
+        {
+          "command": "leointeg.hoistSelection",
+          "when": "showHoistOnBody && !leoRoot && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@16"
+        },
+        {
+          "command": "leointeg.deHoist",
+          "when": "showHoistOnBody && leoCanDehoist && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@17"
+        },
+        {
+          "command": "leointeg.executeScript",
+          "when": "showExecuteOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@18"
+        },
+        {
+          "command": "leointeg.extract",
+          "when": "showExtractOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@19"
+        },
+        {
+          "command": "leointeg.extractNames",
+          "when": "showExtractOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@20"
+        },
+        {
+          "command": "leointeg.importAnyFile",
+          "when": "showImportOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@21"
+        },
+        {
+          "command": "leointeg.refreshFromDiskSelection",
+          "when": "showRefreshOnBody && leoAtFile && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@22"
         }
       ],
       "view/title": [
@@ -2835,6 +2983,48 @@
         "command": "leointeg.insertNodeSelectionInterrupt",
         "key": "ctrl+i",
         "mac": "cmd+i",
+        "when": "leoTreeOpened && !sideBarFocus && !editorTextFocus"
+      },
+      {
+        "command": "leointeg.insertNodeSelection",
+        "key": "shift+insert",
+        "mac": "shift+insert",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.insertNodeSelectionFromOutline",
+        "key": "shift+insert",
+        "mac": "shift+insert",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.insertNodeSelectionFromOutline",
+        "key": "insert",
+        "mac": "insert",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.insertNodeSelectionInterrupt",
+        "key": "shift+insert",
+        "mac": "shift+insert",
+        "when": "leoTreeOpened && !sideBarFocus && !editorTextFocus"
+      },
+      {
+        "command": "leointeg.insertChildNodeSelection",
+        "key": "ctrl+insert",
+        "mac": "cmd+insert",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.insertChildNodeSelectionFromOutline",
+        "key": "ctrl+insert",
+        "mac": "cmd+insert",
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+      },
+      {
+        "command": "leointeg.insertChildNodeSelectionInterrupt",
+        "key": "ctrl+insert",
+        "mac": "cmd+insert",
         "when": "leoTreeOpened && !sideBarFocus && !editorTextFocus"
       },
       {

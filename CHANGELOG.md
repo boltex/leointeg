@@ -7,6 +7,9 @@
 - fixed extract name command
 - Fixed body being re-written to same string and being marked dirty when 'safety-saving' before switching docs.
 - Detection of .Leo documents themselves now works by closing and re-opening the .leo file if reloading is chosen by the user. (or automatic via options)
+- Added icons and commands for top of body pane menu.
+- Added new commands such as insert-child along with their keybindings.
+- Also added more keybindings to the 'insert-node' command such as 'insert' and 'shift-insert'.
 
 ## 0.1.14
 
