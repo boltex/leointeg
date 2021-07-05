@@ -1416,6 +1416,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.RECENT_FILES, () =&gt; w_leo.showRecentLeoFiles()],
 [CMD.SAVE_AS_FILE, () =&gt; w_leo.saveAsLeoFile()],
 [CMD.SAVE_FILE, () =&gt; w_leo.saveLeoFile()],
+[CMD.SAVE_DISABLED, () =&gt; { }],
 [CMD.SAVE_FILE_FO, () =&gt; w_leo.saveLeoFile(true)],
 [CMD.SWITCH_FILE, () =&gt; w_leo.switchLeoFile()],
 
@@ -2529,6 +2530,15 @@ print('done')
   }
 },
 {
+  "command": "leointeg.saveLeoFileDisabled",
+  "category": "Leo",
+  "title": "Save Leo File",
+  "icon": {
+    "light": "resources/light/save-disabled.svg",
+    "dark": "resources/dark/save-disabled.svg"
+  }
+},
+{
   "command": "leointeg.saveLeoFileFromOutline",
   "category": "Leo",
   "title": "Save Leo File",
@@ -3632,6 +3642,10 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.60">{
+  "command": "leointeg.saveLeoFileDisabled",
+  "when": "false"
+},
+{
   "command": "leointeg.saveLeoFileFromOutline",
   "when": "false"
 },
@@ -4693,6 +4707,7 @@ public static COMMANDS = {
     SWITCH_FILE: Constants.NAME + ".switchLeoFile",
     NEW_FILE: Constants.NAME + ".newLeoFile",
     SAVE_FILE: Constants.NAME + ".saveLeoFile",
+    SAVE_DISABLED: Constants.NAME + ".saveLeoFileDisabled", // Disabled - nop
     SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline",
     SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
     CLOSE_FILE: Constants.NAME + ".closeLeoFile",
@@ -10579,6 +10594,11 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.showSettingsPage",
+    "when": "view =~ /leoDocuments/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@2"
+  },
+  {
+    "command": "leointeg.showSettingsPage",
     "when": "view =~ /leoIntegration/ &amp;&amp; !leoTreeOpened",
     "group": "navigation@1"
   },
@@ -10605,6 +10625,11 @@ public static VSCODE_COMMANDS = {
   {
     "command": "leointeg.saveLeoFileFromOutline",
     "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled &amp;&amp; leoChanged",
+    "group": "navigation@2"
+  },
+  {
+    "command": "leointeg.saveLeoFileDisabled",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled &amp;&amp; !leoChanged",
     "group": "navigation@2"
   },
   {
@@ -13739,11 +13764,44 @@ body &gt; div &gt; div &gt; label:active {
           &lt;/div&gt;
           &lt;div class="section__preview"&gt;
 
-            &lt;img class="image__preview"
-                 src="#{root}/resources/allIconsDisabled.png" /&gt;
+            &lt;img class="image__preview__body"
+                 src="#{root}/resources/body-menu-wide.png" /&gt;
 
-            &lt;div class="image__preview--float-container"&gt;
-              todo: images
+            &lt;div class="image__preview__body--float-container"&gt;
+
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-extract.png"
+                   data-visibility="showExtractOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-refresh.png"
+                   data-visibility="showRefreshOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-import.png"
+                   data-visibility="showImportOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-execute.png"
+                   data-visibility="showExecuteOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-hoist.png"
+                   data-visibility="showHoistOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-sort.png"
+                   data-visibility="showSortOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-mark.png"
+                   data-visibility="showMarkOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-promote.png"
+                   data-visibility="showPromoteOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-clipboard.png"
+                   data-visibility="showClipboardOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-edition.png"
+                   data-visibility="showEditionOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-prev-next.png" /&gt;
+
             &lt;/div&gt;
           &lt;/div&gt;
 
@@ -13937,9 +13995,11 @@ body &gt; div &gt; div &gt; label:active {
             &lt;a href="#node-commands"&gt;Node Hover Commands&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
+            &lt;a href="#editor-commands"&gt;Body Editor Icons&lt;/a&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
             &lt;a href="#statusbar-indicator"&gt;Statusbar Indicator&lt;/a&gt;
           &lt;/li&gt;
-
         &lt;/ul&gt;
       &lt;/div&gt;
 
@@ -15026,6 +15086,12 @@ ul {
   box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.8), 0px 0px 12px 1px rgba(0, 0, 0, 0.5);
   width: 600px;
 }
+.image__preview__body {
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.8), 0px 0px 12px 1px rgba(0, 0, 0, 0.5);
+  width: 680px;
+}
 
 .image__preview--overlay {
   left: 0;
@@ -15040,6 +15106,17 @@ ul {
   bottom: 0;
   right: 0;
   padding-right: 17%;
+}
+
+.image__preview__body--float-container {
+  left: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  padding-right: 7px;
+  padding-left: 7px;
+  overflow: hidden;
 }
 
 .image__preview--float {
@@ -15282,7 +15359,7 @@ section {
   flex: 0 1 auto;
   position: relative;
   margin-right: 1em;
-  min-width: 15em;
+  min-width: 15.5em;
 
   &amp; input[type="checkbox"] {
     flex: 0 0 16px;

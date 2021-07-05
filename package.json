@@ -745,6 +745,15 @@
         }
       },
       {
+        "command": "leointeg.saveLeoFileDisabled",
+        "category": "Leo",
+        "title": "Save Leo File",
+        "icon": {
+          "light": "resources/light/save-disabled.svg",
+          "dark": "resources/dark/save-disabled.svg"
+        }
+      },
+      {
         "command": "leointeg.saveLeoFileFromOutline",
         "category": "Leo",
         "title": "Save Leo File",
@@ -2076,6 +2085,10 @@
           "when": "false"
         },
         {
+          "command": "leointeg.saveLeoFileDisabled",
+          "when": "false"
+        },
+        {
           "command": "leointeg.saveLeoFileFromOutline",
           "when": "false"
         },
@@ -2464,6 +2477,11 @@
         },
         {
           "command": "leointeg.showSettingsPage",
+          "when": "view =~ /leoDocuments/ && leoBridgeReady",
+          "group": "navigation@2"
+        },
+        {
+          "command": "leointeg.showSettingsPage",
           "when": "view =~ /leoIntegration/ && !leoTreeOpened",
           "group": "navigation@1"
         },
@@ -2490,6 +2508,11 @@
         {
           "command": "leointeg.saveLeoFileFromOutline",
           "when": "view =~ /leoIntegration/ && leoTreeOpened && leoTreeTitled && leoChanged",
+          "group": "navigation@2"
+        },
+        {
+          "command": "leointeg.saveLeoFileDisabled",
+          "when": "view =~ /leoIntegration/ && leoTreeOpened && leoTreeTitled && !leoChanged",
           "group": "navigation@2"
         },
         {
