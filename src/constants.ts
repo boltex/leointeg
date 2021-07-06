@@ -520,7 +520,7 @@ export class Constants {
         SWITCH_FILE: Constants.NAME + ".switchLeoFile",
         NEW_FILE: Constants.NAME + ".newLeoFile",
         SAVE_FILE: Constants.NAME + ".saveLeoFile",
-        SAVE_DISABLED: Constants.NAME + ".saveLeoFileDisabled", // Disabled - nop
+        // SAVE_DISABLED: Constants.NAME + ".saveLeoFileDisabled", // Disabled - nop
         SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline",
         SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
         CLOSE_FILE: Constants.NAME + ".closeLeoFile",

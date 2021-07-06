@@ -1416,7 +1416,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.RECENT_FILES, () =&gt; w_leo.showRecentLeoFiles()],
 [CMD.SAVE_AS_FILE, () =&gt; w_leo.saveAsLeoFile()],
 [CMD.SAVE_FILE, () =&gt; w_leo.saveLeoFile()],
-[CMD.SAVE_DISABLED, () =&gt; { }],
+// [CMD.SAVE_DISABLED, () =&gt; { }],
 [CMD.SAVE_FILE_FO, () =&gt; w_leo.saveLeoFile(true)],
 [CMD.SWITCH_FILE, () =&gt; w_leo.switchLeoFile()],
 
@@ -2530,15 +2530,6 @@ print('done')
   }
 },
 {
-  "command": "leointeg.saveLeoFileDisabled",
-  "category": "Leo",
-  "title": "Save Leo File",
-  "icon": {
-    "light": "resources/light/save-disabled.svg",
-    "dark": "resources/dark/save-disabled.svg"
-  }
-},
-{
   "command": "leointeg.saveLeoFileFromOutline",
   "category": "Leo",
   "title": "Save Leo File",
@@ -3642,10 +3633,6 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.60">{
-  "command": "leointeg.saveLeoFileDisabled",
-  "when": "false"
-},
-{
   "command": "leointeg.saveLeoFileFromOutline",
   "when": "false"
 },
@@ -4707,7 +4694,7 @@ public static COMMANDS = {
     SWITCH_FILE: Constants.NAME + ".switchLeoFile",
     NEW_FILE: Constants.NAME + ".newLeoFile",
     SAVE_FILE: Constants.NAME + ".saveLeoFile",
-    SAVE_DISABLED: Constants.NAME + ".saveLeoFileDisabled", // Disabled - nop
+    // SAVE_DISABLED: Constants.NAME + ".saveLeoFileDisabled", // Disabled - nop
     SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline",
     SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
     CLOSE_FILE: Constants.NAME + ".closeLeoFile",
@@ -9968,7 +9955,8 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;vscode.TextEditor | un
 public statusBarOnClick(): Thenable&lt;unknown&gt; {
     // TODO : Set definitive (customizable?) behavior (For now, offer to switch documents, or show leoInteg's commands)
     if (this.leoStates.fileOpenedReady) {
-        return this.switchLeoFile();
+        return this.minibuffer();
+        // return this.switchLeoFile();
     } else {
         return vscode.commands.executeCommand(
             Constants.VSCODE_COMMANDS.QUICK_OPEN,
@@ -10624,12 +10612,7 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.saveLeoFileFromOutline",
-    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled &amp;&amp; leoChanged",
-    "group": "navigation@2"
-  },
-  {
-    "command": "leointeg.saveLeoFileDisabled",
-    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled &amp;&amp; !leoChanged",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoTreeTitled",
     "group": "navigation@2"
   },
   {
@@ -10672,7 +10655,7 @@ public static VSCODE_COMMANDS = {
 <t tx="felix.20201215210510.1">"view/item/context": [
   {
     "command": "leointeg.saveLeoFileFromOutline",
-    "when": "viewItem =~ /leoDocumentSelectedTitled/ &amp;&amp; leoChanged",
+    "when": "viewItem =~ /leoDocumentSelectedTitled/",
     "group": "inline@1"
   },
   {

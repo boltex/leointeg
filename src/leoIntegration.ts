@@ -3041,7 +3041,8 @@ export class LeoIntegration {
     public statusBarOnClick(): Thenable<unknown> {
         // TODO : Set definitive (customizable?) behavior (For now, offer to switch documents, or show leoInteg's commands)
         if (this.leoStates.fileOpenedReady) {
-            return this.switchLeoFile();
+            return this.minibuffer();
+            // return this.switchLeoFile();
         } else {
             return vscode.commands.executeCommand(
                 Constants.VSCODE_COMMANDS.QUICK_OPEN,
