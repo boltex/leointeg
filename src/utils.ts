@@ -6,6 +6,19 @@ import { LeoNode } from "./leoNode";
 var portfinder = require('portfinder');
 
 /**
+ * * Unique numeric Id
+ */
+var uniqueId: number = 0;
+
+/**
+ * * Get new uniqueID
+ */
+export function getUniqueId(): string {
+    const id = uniqueId++;
+    return id.toString();
+}
+
+/**
  * * Build a string for representing a number that's 2 digits wide, padding with a zero if needed
  * @param p_number Between 0 and 99
  * @returns a 2 digit wide string representation of the number, left padded with zeros as needed.

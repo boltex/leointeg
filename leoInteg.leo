@@ -526,6 +526,8 @@
 <v t="ekr.20200815091534.1"><vh>MinibufferCommand</vh></v>
 </v>
 <v t="felix.20200718195558.1"><vh>@clean src/utils.ts</vh>
+<v t="felix.20210706233101.1"><vh>uniqueId</vh></v>
+<v t="felix.20210706233106.1"><vh>getUniqueId</vh></v>
 <v t="felix.20200718195558.2"><vh>padNumber2</vh></v>
 <v t="ekr.20200815091619.1"><vh>hashNode</vh></v>
 <v t="felix.20201106200100.1"><vh>addFileToGlobal</vh></v>
@@ -6210,6 +6212,7 @@ public isBusy(): boolean {
 <t tx="felix.20200718162303.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoButton, Icon } from "./types";
+import * as utils from "./utils";
 import { LeoIntegration } from "./leoIntegration";
 
 @language typescript
@@ -6223,6 +6226,7 @@ export class LeoButtonNode extends vscode.TreeItem {
 
     // Context string that is checked in package.json with 'when' clauses
     public contextValue: string;
+    private _id: string;
 
     // is the special 'add' button used to create button from a given node's script
     private _isAdd: boolean;
@@ -6232,6 +6236,7 @@ export class LeoButtonNode extends vscode.TreeItem {
         private _leoIntegration: LeoIntegration
     ) {
         super(button.name);
+        this._id = utils.getUniqueId();
         // Setup this instance (just differentiate 'script-button' for now)
         this.command = {
             command: Constants.COMMANDS.CLICK_BUTTON,
@@ -6255,7 +6260,8 @@ public get iconPath(): Icon {
 <t tx="felix.20200718162442.1">// @ts-ignore
 public get id(): string {
     // Add prefix and suffix salt to index to prevent accidental duplicates
-    return "p" + this.button.index + "s" + this.button.name;
+    return this._id;
+    // return "p" + this.button.index + "s" + this.button.name;
 }
 
 </t>
@@ -6366,6 +6372,7 @@ export class LeoDocumentNode extends vscode.TreeItem {
 
     // Context string is checked in package.json with 'when' clauses
     public contextValue: string;
+    private _id: string;
 
     constructor(
         public documentEntry: LeoDocument,
@@ -6373,6 +6380,7 @@ export class LeoDocumentNode extends vscode.TreeItem {
     ) {
         super(documentEntry.name);
         // Setup this instance
+        this._id = utils.getUniqueId();
         const w_isNamed: boolean = !!this.documentEntry.name;
         this.label = w_isNamed ? utils.getFileFromPath(this.documentEntry.name) : Constants.UNTITLED_FILE_NAME;
         this.tooltip = w_isNamed ? this.documentEntry.name : Constants.UNTITLED_FILE_NAME;
@@ -6402,7 +6410,9 @@ public get iconPath(): Icon {
 <t tx="felix.20200718164638.1">// @ts-ignore
 public get id(): string {
     // Add prefix and suffix salt to numeric index to prevent accidental duplicates
-    return "p" + this.documentEntry.index + "s" + this.documentEntry.name;
+    // Should be unique when refreshed
+    return this._id;
+    // return "p" + this.documentEntry.index + "s" + this.documentEntry.name;
 }
 
 </t>
@@ -8963,6 +8973,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
  */
 public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise&lt;boolean&gt; {
     // * Save body to Leo if a change has been made to the body 'document' so far
+    let q_savePromise: Promise&lt;boolean&gt;;
     if (
         this._bodyLastChangedDocument &amp;&amp;
         this._bodyLastChangedDocument.isDirty &amp;&amp;
@@ -8973,11 +8984,17 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise&lt;boolean&gt; {
             // console.log('FORCED SAVE');
         }
         this._bodyLastChangedDocumentSaved = true;
-        return this._bodySaveDocument(w_document, p_forcedVsCodeSave);
+        q_savePromise = this._bodySaveDocument(w_document, p_forcedVsCodeSave);
     } else {
         this._bodyLastChangedDocumentSaved = true;
-        return this._bodySaveSelection();
+        q_savePromise = this._bodySaveSelection();
     }
+    return q_savePromise.then((p_result) =&gt; {
+        return p_result;
+    }, (p_reason) =&gt; {
+        console.log('BodySave rejected :', p_reason);
+        return false;
+    });
 }
 
 </t>
@@ -12460,6 +12477,21 @@ public cloneFindTag(): void {
   "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
   "group": "navigation@2"
 },
+</t>
+<t tx="felix.20210706233101.1">/**
+ * * Unique numeric Id
+ */
+var uniqueId: number = 0;
+
+</t>
+<t tx="felix.20210706233106.1">/**
+ * * Get new uniqueID
+ */
+export function getUniqueId(): string {
+    const id = uniqueId++;
+    return id.toString();
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

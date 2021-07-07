@@ -11,6 +11,7 @@ export class LeoDocumentNode extends vscode.TreeItem {
 
     // Context string is checked in package.json with 'when' clauses
     public contextValue: string;
+    private _id: string;
 
     constructor(
         public documentEntry: LeoDocument,
@@ -18,6 +19,7 @@ export class LeoDocumentNode extends vscode.TreeItem {
     ) {
         super(documentEntry.name);
         // Setup this instance
+        this._id = utils.getUniqueId();
         const w_isNamed: boolean = !!this.documentEntry.name;
         this.label = w_isNamed ? utils.getFileFromPath(this.documentEntry.name) : Constants.UNTITLED_FILE_NAME;
         this.tooltip = w_isNamed ? this.documentEntry.name : Constants.UNTITLED_FILE_NAME;
@@ -43,7 +45,9 @@ export class LeoDocumentNode extends vscode.TreeItem {
     // @ts-ignore
     public get id(): string {
         // Add prefix and suffix salt to numeric index to prevent accidental duplicates
-        return "p" + this.documentEntry.index + "s" + this.documentEntry.name;
+        // Should be unique when refreshed
+        return this._id;
+        // return "p" + this.documentEntry.index + "s" + this.documentEntry.name;
     }
 
 }

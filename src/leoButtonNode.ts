@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
 import { LeoButton, Icon } from "./types";
+import * as utils from "./utils";
 import { LeoIntegration } from "./leoIntegration";
 
 /**
@@ -10,6 +11,7 @@ export class LeoButtonNode extends vscode.TreeItem {
 
     // Context string that is checked in package.json with 'when' clauses
     public contextValue: string;
+    private _id: string;
 
     // is the special 'add' button used to create button from a given node's script
     private _isAdd: boolean;
@@ -19,6 +21,7 @@ export class LeoButtonNode extends vscode.TreeItem {
         private _leoIntegration: LeoIntegration
     ) {
         super(button.name);
+        this._id = utils.getUniqueId();
         // Setup this instance (just differentiate 'script-button' for now)
         this.command = {
             command: Constants.COMMANDS.CLICK_BUTTON,
@@ -38,7 +41,8 @@ export class LeoButtonNode extends vscode.TreeItem {
     // @ts-ignore
     public get id(): string {
         // Add prefix and suffix salt to index to prevent accidental duplicates
-        return "p" + this.button.index + "s" + this.button.name;
+        return this._id;
+        // return "p" + this.button.index + "s" + this.button.name;
     }
 
     // @ts-ignore

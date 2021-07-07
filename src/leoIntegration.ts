@@ -1114,6 +1114,7 @@ export class LeoIntegration {
      */
     public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise<boolean> {
         // * Save body to Leo if a change has been made to the body 'document' so far
+        let q_savePromise: Promise<boolean>;
         if (
             this._bodyLastChangedDocument &&
             this._bodyLastChangedDocument.isDirty &&
@@ -1124,11 +1125,17 @@ export class LeoIntegration {
                 // console.log('FORCED SAVE');
             }
             this._bodyLastChangedDocumentSaved = true;
-            return this._bodySaveDocument(w_document, p_forcedVsCodeSave);
+            q_savePromise = this._bodySaveDocument(w_document, p_forcedVsCodeSave);
         } else {
             this._bodyLastChangedDocumentSaved = true;
-            return this._bodySaveSelection();
+            q_savePromise = this._bodySaveSelection();
         }
+        return q_savePromise.then((p_result) => {
+            return p_result;
+        }, (p_reason) => {
+            console.log('BodySave rejected :', p_reason);
+            return false;
+        });
     }
 
     /**
