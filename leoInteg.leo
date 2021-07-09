@@ -129,6 +129,7 @@
 <v t="felix.20210530153359.1"><vh>Mark Nodes</vh></v>
 <v t="ekr.20200815123601.56"><vh>Hidden Commands</vh>
 <v t="ekr.20200815123601.57"><vh>Tests</vh></v>
+<v t="felix.20210709004123.1"><vh>Status Bar Click</vh></v>
 <v t="ekr.20200815123601.58"><vh>Scripting &amp; @buttons</vh></v>
 <v t="ekr.20200815123601.59"><vh>Show UI Panes</vh></v>
 <v t="ekr.20200815123601.60"><vh>Leo File Documents</vh></v>
@@ -369,7 +370,6 @@
 <v t="ekr.20200815085830.1"><vh>_refreshOutline</vh></v>
 <v t="ekr.20200815085830.2"><vh>_revealTreeViewNode</vh></v>
 <v t="ekr.20200815085830.3"><vh>launchRefresh</vh></v>
-<v t="ekr.20200815085830.4"><vh>_refreshDocumentsPane</vh></v>
 <v t="ekr.20200815085830.5"><vh>_gotSelection</vh></v>
 <v t="felix.20210528012836.1"><vh>getBridgeFocus</vh></v>
 </v>
@@ -1149,14 +1149,6 @@ public launchRefresh(
 }
 
 </t>
-<t tx="ekr.20200815085830.4">/**
- * * Refresh the documents pane
- */
-private _refreshDocumentsPane(): void {
-    this._leoDocumentsProvider.refreshTreeRoot();
-}
-
-</t>
 <t tx="ekr.20200815085830.5">/**
  * * Handle the selected node that was reached while converting received ap_nodes to LeoNodes
  * @param p_node The selected node that was reached while receiving 'children' from tree view api implementing Leo's outline
@@ -1398,6 +1390,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 </t>
 <t tx="ekr.20200815113156.1">// * Define entries for all commands
 [CMD.MINIBUFFER, () =&gt; w_leo.minibuffer()], // Is referenced in package.json
+[CMD.STATUS_BAR, () =&gt; w_leo.statusBarOnClick()],
 [CMD.EXECUTE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.EXECUTE_SCRIPT,
     node: U,
@@ -2435,6 +2428,11 @@ print('done')
     "light": "resources/light/execute.svg",
     "dark": "resources/dark/execute.svg"
   }
+},
+{
+  "command": "leointeg.statusBar",
+  "category": "Leo",
+  "title": "Statusbar Click"
 },
 {
   "command": "leointeg.minibuffer",
@@ -3563,8 +3561,7 @@ print('done')
 <t tx="ekr.20200815123601.57">{
   "command": "leointeg.test",
   "when": "false"
-},
-</t>
+},</t>
 <t tx="ekr.20200815123601.58">{
   "command": "leointeg.removeButton",
   "when": "false"
@@ -4684,6 +4681,7 @@ public static COMMANDS = {
     // * Access to the Settings/Welcome Webview
     SHOW_WELCOME: Constants.NAME + ".showWelcomePage", // Always available: not in the commandPalette section of package.json
     SHOW_SETTINGS: Constants.NAME + ".showSettingsPage", // Always available: not in the commandPalette section of package.json
+    STATUS_BAR: Constants.NAME + ".statusBar", // Status Bar Click Command
     // * LeoBridge
     CHOOSE_LEO_FOLDER: Constants.NAME + ".chooseLeoFolder",
     START_SERVER: Constants.NAME + ".startServer",
@@ -6411,8 +6409,10 @@ public get iconPath(): Icon {
 public get id(): string {
     // Add prefix and suffix salt to numeric index to prevent accidental duplicates
     // Should be unique when refreshed
-    return this._id;
-    // return "p" + this.documentEntry.index + "s" + this.documentEntry.name;
+    // return this._id;
+    return "c" + (this.documentEntry.changed ? "y" : "n") +
+        "p" + this.documentEntry.index +
+        "s" + this.documentEntry.name;
 }
 
 </t>
@@ -6855,7 +6855,7 @@ export class LeoStatusBar {
         this._leoStatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
         this._leoStatusBarItem.color = this._leoIntegration.config.statusBarColor;
 
-        this._leoStatusBarItem.command = Constants.COMMANDS.SWITCH_FILE;
+        this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
         // this._leoStatusBarItem.command = "leointeg.test"; // just call test function for now to help debugging
         this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this._leoIntegration.config.statusBarString;
         this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
@@ -8583,9 +8583,6 @@ private _setupOpenedLeoDocument(
     // * Could be already opened, so perform 'switch body' as if another node was selected
     if (this._bodyTextDocument &amp;&amp; this.bodyUri) {
 
-        // TODO : BUG WHEN SWITCHING LEO DOCUMENT : NEED CROSSOVER LOGIC!
-        console.log('SWITCH BODY TO GNX : ', w_selectedLeoNode.gnx);
-
         q_switchTextEditor = new Promise((p_resolve, p_reject) =&gt; {
             this._switchBody(w_selectedLeoNode.gnx, false, true).then((p_te) =&gt; {
                 p_resolve(p_te);
@@ -8919,7 +8916,9 @@ private _onActiveEditorChanged(
     // * Debounced refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
     this.getStates = debounce(this._triggerGetStates, Constants.STATES_DEBOUNCE_DELAY);
     this.refreshDocumentsPane = debounce(
-        this._refreshDocumentsPane,
+        () =&gt; {
+            this._leoDocumentsProvider.refreshTreeRoot();
+        },
         Constants.DOCUMENTS_DEBOUNCE_DELAY
     );
 }
@@ -8959,7 +8958,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
                     this._refreshOutline(false, RevealType.NoReveal);
                 });
                 // also refresh document panel (icon may be dirty now)
-                this._refreshDocumentsPane();
+                this.refreshDocumentsPane();
             }
         }
     }
@@ -9055,7 +9054,15 @@ public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
             w_trigger = true;
         }
         if (w_trigger) {
-            w_docView.reveal(p_documentNode, { select: true, focus: false });
+            w_docView.reveal(p_documentNode, { select: true, focus: false })
+                .then(
+                    (p_result) =&gt; {
+                        // Shown document node
+                    },
+                    (p_reason) =&gt; {
+                        console.log('shown doc error on reveal: ', p_reason);
+                    }
+                );
         }
     });
 }
@@ -9352,6 +9359,11 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
             const q_showTextDocument = vscode.window.showTextDocument(
                 this._bodyTextDocument,
                 w_showOptions
+            ).then(
+                (p_result) =&gt; { return p_result; },
+                (p_reason) =&gt; {
+                    console.log('showTextDocument rejected');
+                }
             );
 
             // else q_bodyStates will exist.
@@ -9360,6 +9372,9 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                     (p_values: [LeoBridgePackage, vscode.TextEditor]) =&gt; {
                         const w_resultBodyStates = p_values[0];
                         const w_bodyTextEditor = p_values[1];
+                        if (!w_resultBodyStates.selection) {
+                            console.log("no selection in returned package from get_body_states");
+                        }
                         const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
 
                         // Cursor position and selection range
@@ -9397,16 +9412,23 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                             w_activeCol
                         );
 
-                        w_bodyTextEditor.selection = w_selection; // set cursor insertion point &amp; selection range
+                        if (w_bodyTextEditor) {
+                            w_bodyTextEditor.selection = w_selection; // set cursor insertion point &amp; selection range
+                            if (!w_scrollRange) {
+                                w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
+                            }
 
-                        if (!w_scrollRange) {
-                            w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
+                            if (this._refreshType.scroll) {
+                                this._refreshType.scroll = false;
+                                w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
+                            }
+
+                        } else {
+                            console.log("no selection in returned package from showtextdocument");
+
                         }
 
-                        if (this._refreshType.scroll) {
-                            this._refreshType.scroll = false;
-                            w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
-                        }
+
                     }
                 );
             }
@@ -9970,7 +9992,6 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;vscode.TextEditor | un
  * @returns Thenable from the statusBar click customizable behavior
  */
 public statusBarOnClick(): Thenable&lt;unknown&gt; {
-    // TODO : Set definitive (customizable?) behavior (For now, offer to switch documents, or show leoInteg's commands)
     if (this.leoStates.fileOpenedReady) {
         return this.minibuffer();
         // return this.switchLeoFile();
@@ -12492,6 +12513,11 @@ export function getUniqueId(): string {
     return id.toString();
 }
 
+</t>
+<t tx="felix.20210709004123.1">{
+  "command": "leointeg.statusBar",
+  "when": "false"
+},
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

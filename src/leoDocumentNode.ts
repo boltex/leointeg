@@ -46,8 +46,10 @@ export class LeoDocumentNode extends vscode.TreeItem {
     public get id(): string {
         // Add prefix and suffix salt to numeric index to prevent accidental duplicates
         // Should be unique when refreshed
-        return this._id;
-        // return "p" + this.documentEntry.index + "s" + this.documentEntry.name;
+        // return this._id;
+        return "c" + (this.documentEntry.changed ? "y" : "n") +
+            "p" + this.documentEntry.index +
+            "s" + this.documentEntry.name;
     }
 
 }

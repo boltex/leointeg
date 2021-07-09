@@ -53,6 +53,7 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         // * Define entries for all commands
         [CMD.MINIBUFFER, () => w_leo.minibuffer()], // Is referenced in package.json
+        [CMD.STATUS_BAR, () => w_leo.statusBarOnClick()],
         [CMD.EXECUTE, () => w_leo.nodeCommand({
             action: BRIDGE.EXECUTE_SCRIPT,
             node: U,

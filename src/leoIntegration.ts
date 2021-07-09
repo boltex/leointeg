@@ -356,7 +356,9 @@ export class LeoIntegration {
         // * Debounced refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
         this.getStates = debounce(this._triggerGetStates, Constants.STATES_DEBOUNCE_DELAY);
         this.refreshDocumentsPane = debounce(
-            this._refreshDocumentsPane,
+            () => {
+                this._leoDocumentsProvider.refreshTreeRoot();
+            },
             Constants.DOCUMENTS_DEBOUNCE_DELAY
         );
     }
@@ -794,9 +796,6 @@ export class LeoIntegration {
         // * Could be already opened, so perform 'switch body' as if another node was selected
         if (this._bodyTextDocument && this.bodyUri) {
 
-            // TODO : BUG WHEN SWITCHING LEO DOCUMENT : NEED CROSSOVER LOGIC!
-            console.log('SWITCH BODY TO GNX : ', w_selectedLeoNode.gnx);
-
             q_switchTextEditor = new Promise((p_resolve, p_reject) => {
                 this._switchBody(w_selectedLeoNode.gnx, false, true).then((p_te) => {
                     p_resolve(p_te);
@@ -1101,7 +1100,7 @@ export class LeoIntegration {
                         this._refreshOutline(false, RevealType.NoReveal);
                     });
                     // also refresh document panel (icon may be dirty now)
-                    this._refreshDocumentsPane();
+                    this.refreshDocumentsPane();
                 }
             }
         }
@@ -1260,7 +1259,15 @@ export class LeoIntegration {
                 w_trigger = true;
             }
             if (w_trigger) {
-                w_docView.reveal(p_documentNode, { select: true, focus: false });
+                w_docView.reveal(p_documentNode, { select: true, focus: false })
+                    .then(
+                        (p_result) => {
+                            // Shown document node
+                        },
+                        (p_reason) => {
+                            console.log('shown doc error on reveal: ', p_reason);
+                        }
+                    );
             }
         });
     }
@@ -1414,13 +1421,6 @@ export class LeoIntegration {
             }
         }
         this.getStates();
-    }
-
-    /**
-     * * Refresh the documents pane
-     */
-    private _refreshDocumentsPane(): void {
-        this._leoDocumentsProvider.refreshTreeRoot();
     }
 
     /**
@@ -1817,6 +1817,11 @@ export class LeoIntegration {
                 const q_showTextDocument = vscode.window.showTextDocument(
                     this._bodyTextDocument,
                     w_showOptions
+                ).then(
+                    (p_result) => { return p_result; },
+                    (p_reason) => {
+                        console.log('showTextDocument rejected');
+                    }
                 );
 
                 // else q_bodyStates will exist.
@@ -1825,6 +1830,9 @@ export class LeoIntegration {
                         (p_values: [LeoBridgePackage, vscode.TextEditor]) => {
                             const w_resultBodyStates = p_values[0];
                             const w_bodyTextEditor = p_values[1];
+                            if (!w_resultBodyStates.selection) {
+                                console.log("no selection in returned package from get_body_states");
+                            }
                             const w_leoBodySel: BodySelectionInfo = w_resultBodyStates.selection!;
 
                             // Cursor position and selection range
@@ -1862,16 +1870,23 @@ export class LeoIntegration {
                                 w_activeCol
                             );
 
-                            w_bodyTextEditor.selection = w_selection; // set cursor insertion point & selection range
+                            if (w_bodyTextEditor) {
+                                w_bodyTextEditor.selection = w_selection; // set cursor insertion point & selection range
+                                if (!w_scrollRange) {
+                                    w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
+                                }
 
-                            if (!w_scrollRange) {
-                                w_scrollRange = w_bodyTextEditor.document.lineAt(0).range;
+                                if (this._refreshType.scroll) {
+                                    this._refreshType.scroll = false;
+                                    w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
+                                }
+
+                            } else {
+                                console.log("no selection in returned package from showtextdocument");
+
                             }
 
-                            if (this._refreshType.scroll) {
-                                this._refreshType.scroll = false;
-                                w_bodyTextEditor.revealRange(w_scrollRange); // set scroll approximation
-                            }
+
                         }
                     );
                 }
@@ -3046,7 +3061,6 @@ export class LeoIntegration {
      * @returns Thenable from the statusBar click customizable behavior
      */
     public statusBarOnClick(): Thenable<unknown> {
-        // TODO : Set definitive (customizable?) behavior (For now, offer to switch documents, or show leoInteg's commands)
         if (this.leoStates.fileOpenedReady) {
             return this.minibuffer();
             // return this.switchLeoFile();

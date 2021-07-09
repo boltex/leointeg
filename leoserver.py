@@ -427,7 +427,7 @@ class LeoServer:
 
         import leo.core.leoApp as leoApp
         import leo.core.leoBridge as leoBridge
-        import leo.core.leoExternalFiles as leoExternalFiles
+
         global g
         t1 = time.process_time()
         #
@@ -1664,6 +1664,8 @@ class LeoServer:
             print(f"{tag}: duplicate command names...")
             for z in sorted(duplicates):
                 print(z)
+        else:
+            print("no duplicates")
         result = []
         for command_name in sorted(d):
             func = d.get(command_name)
@@ -1686,6 +1688,7 @@ class LeoServer:
         if self.log_flag:  # pragma: no cover
             print(f"\n{tag}: {len(result)} leo commands\n")
             g.printObj([z.get("label") for z in result], tag=tag)
+        print("total: " + str(len(result)) )
         return self._make_minimal_response({"commands": result})
     #@+node:felix.20210621233316.73: *6* server._bad_commands
     def _bad_commands(self, c):
@@ -3454,7 +3457,6 @@ def main():  # pragma: no cover (tested in client)
             controller._init_connection(websocket)
             # Start by sending empty as 'ok'.
             n = 0
-            async_n = 0
             await websocket.send(controller._make_response())
             controller.emit_signon()
             async for json_message in websocket:
@@ -3533,10 +3535,10 @@ def main():  # pragma: no cover (tested in client)
     controller = LeoServer()
     # Start the server.
     loop = asyncio.get_event_loop()
-    server = websockets.serve(ws_handler, wsHost, wsPort)
+    server = websockets.serve(ws_handler, wsHost, wsPort)  # pylint: disable=no-member
     loop.run_until_complete(server)
     signon = SERVER_STARTED_TOKEN + f" at {wsHost} on port: {wsPort}. Ctrl+c to break"
-    print(signon)
+    print(signon, flush=True)
     loop.run_forever()
     # Execution continues here after server is interupted (e.g. with ctrl+c)
     print("Stopping leobridge server", flush=True)

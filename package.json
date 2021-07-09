@@ -652,6 +652,11 @@
         }
       },
       {
+        "command": "leointeg.statusBar",
+        "category": "Leo",
+        "title": "Statusbar Click"
+      },
+      {
         "command": "leointeg.minibuffer",
         "category": "Leo",
         "title": "Minibuffer"
@@ -2061,6 +2066,10 @@
         },
         {
           "command": "leointeg.test",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.statusBar",
           "when": "false"
         },
         {
