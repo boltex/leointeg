@@ -684,7 +684,75 @@ export class Constants {
         "redo": Constants.COMMANDS.REDO,
         "undo": Constants.COMMANDS.UNDO,
         "clone-find-all": Constants.COMMANDS.CLONE_FIND_ALL,
-        "clone-find-all-flattened": Constants.COMMANDS.CLONE_FIND_ALL_FLATTENED
+        "clone-find-all-flattened": Constants.COMMANDS.CLONE_FIND_ALL_FLATTENED,
+
+        'import-MORE-files': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-free-mind-files': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-jupyter-notebook': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-legacy-external-files': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-mind-jet-files': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-tabbed-files': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-todo-text-files': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-zim-folder': Constants.COMMANDS.IMPORT_ANY_FILE,
+
+        'file-new': Constants.COMMANDS.NEW_FILE,
+        'file-open-by-name': Constants.COMMANDS.OPEN_FILE,
+        'new': Constants.COMMANDS.NEW_FILE,
+        'open-outline': Constants.COMMANDS.OPEN_FILE,
+        'file-save': Constants.COMMANDS.SAVE_FILE,
+        'file-save-as': Constants.COMMANDS.SAVE_AS_FILE,
+        'file-save-as-unzipped': Constants.COMMANDS.SAVE_AS_FILE,
+        'file-save-by-name': Constants.COMMANDS.SAVE_AS_FILE,
+        'file-save-to': Constants.COMMANDS.SAVE_AS_FILE,
+        'save': Constants.COMMANDS.SAVE_FILE,
+        'save-as': Constants.COMMANDS.SAVE_AS_FILE,
+        'save-file': Constants.COMMANDS.SAVE_FILE,
+        'save-file-as': Constants.COMMANDS.SAVE_AS_FILE,
+        'save-file-as-unzipped': Constants.COMMANDS.SAVE_AS_FILE,
+        'save-file-by-name': Constants.COMMANDS.SAVE_AS_FILE,
+        'save-file-to': Constants.COMMANDS.SAVE_AS_FILE,
+        'save-to': Constants.COMMANDS.SAVE_AS_FILE,
+
+        'clone-find-all-flattened-marked': Constants.COMMANDS.CLONE_FIND_FLATTENED_MARKED,
+        'clone-find-all-marked': Constants.COMMANDS.CLONE_FIND_MARKED,
+
+        'clone-marked-nodes': Constants.COMMANDS.CLONE_MARKED_NODES,
+
+        'cfa': Constants.COMMANDS.CLONE_FIND_ALL,
+        'cfam': Constants.COMMANDS.CLONE_FIND_MARKED,
+        'cff': Constants.COMMANDS.CLONE_FIND_ALL_FLATTENED,
+        'cffm': Constants.COMMANDS.CLONE_FIND_FLATTENED_MARKED,
+        'cft': Constants.COMMANDS.CLONE_FIND_TAG,
+
+        'git-diff': Constants.COMMANDS.GIT_DIFF,
+        'gd': Constants.COMMANDS.GIT_DIFF,
+
+        'find-tab-open': Constants.COMMANDS.START_SEARCH,
+        'find-clone-all': Constants.COMMANDS.CLONE_FIND_ALL,
+        'find-clone-all-flattened': Constants.COMMANDS.CLONE_FIND_ALL_FLATTENED,
+        'find-clone-tag': Constants.COMMANDS.CLONE_FIND_TAG,
+        'find-all': Constants.COMMANDS.FIND_ALL,
+        'start-search': Constants.COMMANDS.START_SEARCH,
+        'find-next': Constants.COMMANDS.FIND_NEXT,
+        'find-prev': Constants.COMMANDS.FIND_PREVIOUS,
+        'search-backward': Constants.COMMANDS.FIND_NEXT,
+        'search-forward': Constants.COMMANDS.FIND_PREVIOUS,
+        'replace': Constants.COMMANDS.REPLACE,
+        'replace-all': Constants.COMMANDS.REPLACE_ALL,
+        'replace-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
+        'show-find-options': Constants.COMMANDS.START_SEARCH,
+        'toggle-find-ignore-case-option': Constants.COMMANDS.TOGGLE_FIND_IGNORE_CASE_OPTION,
+        'toggle-find-in-body-option': Constants.COMMANDS.TOGGLE_FIND_SEARCH_BODY_OPTION,
+        'toggle-find-in-headline-option': Constants.COMMANDS.TOGGLE_FIND_SEARCH_HEADLINE_OPTION,
+        'toggle-find-mark-changes-option': Constants.COMMANDS.TOGGLE_FIND_MARK_CHANGES_OPTION,
+        'toggle-find-mark-finds-option': Constants.COMMANDS.TOGGLE_FIND_MARK_FINDS_OPTION,
+        'toggle-find-regex-option': Constants.COMMANDS.TOGGLE_FIND_REGEXP_OPTION,
+        'toggle-find-word-option': Constants.COMMANDS.TOGGLE_FIND_WORD_OPTION,
+
+        'goto-next-history-node': Constants.COMMANDS.PREV_NODE,
+        'goto-prev-history-node': Constants.COMMANDS.NEXT_NODE,
+
+
     };
 
 }

@@ -48,6 +48,8 @@ export class LeoIntegration {
 
     // * State flags
     public leoStates: LeoStates;
+    public verbose: boolean = false;
+    public trace: boolean = false;
 
     // * Frontend command stack
     private _commandStack: CommandStack;
@@ -1265,7 +1267,9 @@ export class LeoIntegration {
                             // Shown document node
                         },
                         (p_reason) => {
-                            console.log('shown doc error on reveal: ', p_reason);
+                            if (this.trace || this.verbose) {
+                                console.log('shown doc error on reveal: ');
+                            }
                         }
                     );
             }
@@ -1820,7 +1824,9 @@ export class LeoIntegration {
                 ).then(
                     (p_result) => { return p_result; },
                     (p_reason) => {
-                        console.log('showTextDocument rejected');
+                        if (this.trace || this.verbose) {
+                            console.log('showTextDocument rejected');
+                        }
                     }
                 );
 
@@ -1882,8 +1888,9 @@ export class LeoIntegration {
                                 }
 
                             } else {
-                                console.log("no selection in returned package from showtextdocument");
-
+                                if (this.trace || this.verbose) {
+                                    console.log("no selection in returned package from showtextdocument");
+                                }
                             }
 
 
