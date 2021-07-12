@@ -125,6 +125,7 @@ export class LeoAsync {
                 w_message += Constants.USER_MESSAGES.IGNORED;
                 break;
             default:
+                w_message = w_message + " " + p_infoArg.message;
                 break;
         }
         vscode.window.showInformationMessage(w_message);
