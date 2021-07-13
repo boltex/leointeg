@@ -157,6 +157,7 @@
 <v t="felix.20210703214645.1"><vh>Import</vh></v>
 <v t="felix.20210703214654.1"><vh>Refresh</vh></v>
 </v>
+<v t="felix.20210713005825.1"><vh>editor/context</vh></v>
 <v t="felix.20201215210439.1"><vh>view/title</vh></v>
 <v t="felix.20201215210510.1"><vh>view/item/context</vh></v>
 </v>
@@ -402,6 +403,7 @@
 <v t="felix.20210613212439.1"><vh>newHeadline</vh></v>
 <v t="felix.20210613205741.1"><vh>_inputFindPattern</vh></v>
 <v t="felix.20210516234059.1"><vh>find</vh></v>
+<v t="felix.20210713000442.1"><vh>findSymbol</vh></v>
 <v t="felix.20210530223726.1"><vh>replace</vh></v>
 <v t="felix.20210530230354.1"><vh>replaceAll</vh></v>
 <v t="felix.20210530230400.1"><vh>cloneFind</vh></v>
@@ -1969,6 +1971,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.FIND_NEXT_FO, () =&gt; w_leo.find(true, false)],
 [CMD.FIND_PREVIOUS, () =&gt; w_leo.find(false, true)],
 [CMD.FIND_PREVIOUS_FO, () =&gt; w_leo.find(true, true)],
+[CMD.FIND_VAR, () =&gt; w_leo.findSymbol(false)],
+[CMD.FIND_DEF, () =&gt; w_leo.findSymbol(true)],
 [CMD.REPLACE, () =&gt; w_leo.replace(false, false)],
 [CMD.REPLACE_FO, () =&gt; w_leo.replace(true, false)],
 [CMD.REPLACE_THEN_FIND, () =&gt; w_leo.replace(false, true)],
@@ -3562,7 +3566,8 @@ print('done')
 <t tx="ekr.20200815123601.57">{
   "command": "leointeg.test",
   "when": "false"
-},</t>
+},
+</t>
 <t tx="ekr.20200815123601.58">{
   "command": "leointeg.removeButton",
   "when": "false"
@@ -4660,6 +4665,8 @@ public static LEOBRIDGE = {
     FIND_ALL: "!find_all",
     FIND_NEXT: "!find_next",
     FIND_PREVIOUS: "!find_previous",
+    FIND_VAR: "!find_var",
+    FIND_DEF: "!find_def",
     REPLACE: "!replace",
     REPLACE_THEN_FIND: "!replace_then_find",
     REPLACE_ALL: "!replace_all",
@@ -4824,6 +4831,8 @@ public static COMMANDS = {
     FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
     FIND_PREVIOUS: Constants.NAME + ".findPrevious",
     FIND_PREVIOUS_FO: Constants.NAME + ".findPreviousFromOutline",
+    FIND_VAR: Constants.NAME + ".findVar",
+    FIND_DEF: Constants.NAME + ".findDef",
     REPLACE: Constants.NAME + ".replace",
     REPLACE_FO: Constants.NAME + ".replaceFromOutline",
     REPLACE_THEN_FIND: Constants.NAME + ".replaceThenFind",
@@ -11040,6 +11049,16 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "title": "Find Previous"
 },
 {
+  "command": "leointeg.findVar",
+  "category": "Leo",
+  "title": "Find the var under the cursor"
+},
+{
+  "command": "leointeg.findDef",
+  "category": "Leo",
+  "title": "Find the def or class under the cursor"
+},
+{
   "command": "leointeg.replace",
   "category": "Leo",
   "title": "Replace"
@@ -11636,6 +11655,14 @@ public getBridgeFocus(): void {
   "when": "leoTreeOpened"
 },
 {
+  "command": "leointeg.findVar",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.findDef",
+  "when": "leoTreeOpened"
+},
+{
   "command": "leointeg.replace",
   "when": "leoTreeOpened"
 },
@@ -12073,6 +12100,8 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'find-prev': Constants.COMMANDS.FIND_PREVIOUS,
     'search-backward': Constants.COMMANDS.FIND_NEXT,
     'search-forward': Constants.COMMANDS.FIND_PREVIOUS,
+    'find-var': Constants.COMMANDS.FIND_VAR,
+    'find-def': Constants.COMMANDS.FIND_DEF,
     'replace': Constants.COMMANDS.REPLACE,
     'replace-all': Constants.COMMANDS.REPLACE_ALL,
     'replace-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
@@ -12594,6 +12623,69 @@ export function getUniqueId(): string {
   "command": "leointeg.statusBar",
   "when": "false"
 },
+</t>
+<t tx="felix.20210713000442.1">/**
+ * * find-var or find-def commands
+ * @param p_def find-def instead of find-var
+ * @returns Promise that resolves when the "launch refresh" is started
+ */
+public findSymbol(p_def: boolean): Promise&lt;any&gt; {
+    const w_action: string = p_def
+        ? Constants.LEOBRIDGE.FIND_DEF
+        : Constants.LEOBRIDGE.FIND_VAR;
+    return this._isBusyTriggerSave(false, true)
+        .then((p_saveResult) =&gt; {
+            return this.sendAction(w_action, JSON.stringify({ fromOutline: false }));
+        })
+        .then((p_findResult: LeoBridgePackage) =&gt; {
+            if (!p_findResult.found || !p_findResult.focus) {
+                vscode.window.showInformationMessage('Not found');
+            } else {
+                let w_focusOnOutline = false;
+                const w_focus = p_findResult.focus.toLowerCase();
+                if (w_focus.includes('tree') || w_focus.includes('head')) {
+                    // tree
+                    w_focusOnOutline = true;
+                }
+                this.loadSearchSettings();
+                this.launchRefresh(
+                    {
+                        tree: true,
+                        body: true,
+                        scroll: p_findResult.found &amp;&amp; !w_focusOnOutline,
+                        documents: false,
+                        buttons: false,
+                        states: true,
+                    },
+                    w_focusOnOutline
+                );
+            }
+        });
+}
+
+</t>
+<t tx="felix.20210713005825.1">"editor/context": [
+  {
+    "command": "leointeg.findVar",
+    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.findDef",
+    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.extract",
+    "when": "!editorHasMultipleSelections &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.extractNames",
+    "when": "editorHasSelection &amp;&amp; !editorHasMultipleSelections &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  }
+],
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

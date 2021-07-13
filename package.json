@@ -1450,6 +1450,16 @@
         "title": "Find Previous"
       },
       {
+        "command": "leointeg.findVar",
+        "category": "Leo",
+        "title": "Find the var under the cursor"
+      },
+      {
+        "command": "leointeg.findDef",
+        "category": "Leo",
+        "title": "Find the def or class under the cursor"
+      },
+      {
         "command": "leointeg.replace",
         "category": "Leo",
         "title": "Replace"
@@ -1950,6 +1960,14 @@
         },
         {
           "command": "leointeg.findPrevious",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.findVar",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.findDef",
           "when": "leoTreeOpened"
         },
         {
@@ -2458,6 +2476,28 @@
           "command": "leointeg.refreshFromDiskSelection",
           "when": "showRefreshOnBody && leoAtFile && resourceScheme == leo && leoTreeOpened",
           "group": "navigation@22"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "leointeg.findVar",
+          "when": "!editorHasMultipleSelections && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.findDef",
+          "when": "!editorHasMultipleSelections && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.extract",
+          "when": "!editorHasMultipleSelections && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.extractNames",
+          "when": "editorHasSelection && !editorHasMultipleSelections && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@1"
         }
       ],
       "view/title": [

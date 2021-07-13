@@ -631,6 +631,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.FIND_NEXT_FO, () => w_leo.find(true, false)],
         [CMD.FIND_PREVIOUS, () => w_leo.find(false, true)],
         [CMD.FIND_PREVIOUS_FO, () => w_leo.find(true, true)],
+        [CMD.FIND_VAR, () => w_leo.findSymbol(false)],
+        [CMD.FIND_DEF, () => w_leo.findSymbol(true)],
         [CMD.REPLACE, () => w_leo.replace(false, false)],
         [CMD.REPLACE_FO, () => w_leo.replace(true, false)],
         [CMD.REPLACE_THEN_FIND, () => w_leo.replace(false, true)],

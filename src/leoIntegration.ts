@@ -2221,6 +2221,45 @@ export class LeoIntegration {
     }
 
     /**
+     * * find-var or find-def commands
+     * @param p_def find-def instead of find-var
+     * @returns Promise that resolves when the "launch refresh" is started
+     */
+    public findSymbol(p_def: boolean): Promise<any> {
+        const w_action: string = p_def
+            ? Constants.LEOBRIDGE.FIND_DEF
+            : Constants.LEOBRIDGE.FIND_VAR;
+        return this._isBusyTriggerSave(false, true)
+            .then((p_saveResult) => {
+                return this.sendAction(w_action, JSON.stringify({ fromOutline: false }));
+            })
+            .then((p_findResult: LeoBridgePackage) => {
+                if (!p_findResult.found || !p_findResult.focus) {
+                    vscode.window.showInformationMessage('Not found');
+                } else {
+                    let w_focusOnOutline = false;
+                    const w_focus = p_findResult.focus.toLowerCase();
+                    if (w_focus.includes('tree') || w_focus.includes('head')) {
+                        // tree
+                        w_focusOnOutline = true;
+                    }
+                    this.loadSearchSettings();
+                    this.launchRefresh(
+                        {
+                            tree: true,
+                            body: true,
+                            scroll: p_findResult.found && !w_focusOnOutline,
+                            documents: false,
+                            buttons: false,
+                            states: true,
+                        },
+                        w_focusOnOutline
+                    );
+                }
+            });
+    }
+
+    /**
      * * Replace / Replace-Then-Find commands
      * @param p_fromOutline
      * @param p_thenFind
