@@ -7830,26 +7830,21 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Having [Leo's path made available in the \$PYTHONPATH environment variable](https://docs.python.org/2/using/windows.html#excursus-setting-environment-variables)\
-  ([More info](https://docs.python.org/2/using/cmdline.html#environment-variables))
+- Having Leo Editor installed.
+  _Install with :_ `pip install leo`\
+   _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
+
 - Having the Websocket Python Library installed.
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
 
 </t>
-<t tx="felix.20200718222026.1">## Development Version Installation
+<t tx="felix.20200718222026.1">## Beta Version Installation
 
-[Video tutorial of installation and startup](https://www.youtube.com/watch?v=rutt11xL54I):
+- Get the leointeg extension file at [boltex.github.io](https://boltex.github.io/)
+  and drag the file over a VSCode window to easily install this extension.
 
-[![Installation and startup video](https://img.youtube.com/vi/rutt11xL54I/0.jpg)](https://www.youtube.com/watch?v=rutt11xL54I)
-
-In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's next release), make sure you have Node.js and Git installed, then clone the sources and run `npm install` in a terminal to install the remaining development dependencies.
-
-![run extension](resources/run-extension.png)
-
-You can then run the **Run Extension** target, as shown above, in the **Debug View**.
-
-&gt; See [CONTRIBUTING.md](CONTRIBUTING.md) for complete details on how to install and run this extension.
+- In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's 6.4 release)
 
 </t>
 <t tx="felix.20200718222035.1">## Features
