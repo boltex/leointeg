@@ -745,6 +745,8 @@ export class Constants {
         'find-def': Constants.COMMANDS.FIND_DEF,
         'replace': Constants.COMMANDS.REPLACE,
         'replace-all': Constants.COMMANDS.REPLACE_ALL,
+        'change-all': Constants.COMMANDS.REPLACE_ALL,
+        'change-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
         'replace-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
         'show-find-options': Constants.COMMANDS.START_SEARCH,
         'toggle-find-ignore-case-option': Constants.COMMANDS.TOGGLE_FIND_IGNORE_CASE_OPTION,

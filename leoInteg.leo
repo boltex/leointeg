@@ -7815,6 +7815,8 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 - Added icons and commands for top of body pane menu.
 - Added new commands such as insert-child along with their keybindings.
 - Also added more keybindings to the 'insert-node' command such as 'insert' and 'shift-insert'.
+- Added find-var and find-def commands.
+- Made some text-related commands available through the right-click context menu in the body pane. (extract, find-var, find-def, etc.)
 
 @others
 </t>
@@ -12104,6 +12106,8 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'find-def': Constants.COMMANDS.FIND_DEF,
     'replace': Constants.COMMANDS.REPLACE,
     'replace-all': Constants.COMMANDS.REPLACE_ALL,
+    'change-all': Constants.COMMANDS.REPLACE_ALL,
+    'change-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
     'replace-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
     'show-find-options': Constants.COMMANDS.START_SEARCH,
     'toggle-find-ignore-case-option': Constants.COMMANDS.TOGGLE_FIND_IGNORE_CASE_OPTION,

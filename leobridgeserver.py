@@ -3237,7 +3237,7 @@ class LeoBridgeIntegController:
         Return false if no key
         '''
         childIndex = ap['childIndex']
-
+        tag= "_ap_to_p"
         try:
             v = self.gnx_to_vnode[ap['gnx']]  # Trap this
             stack = [
@@ -3246,8 +3246,15 @@ class LeoBridgeIntegController:
             ]
         except Exception:
             return False
+        p = leoNodes.position(v, childIndex, stack)
+        if not self.commander.positionExists(p):  # pragma: no cover.
+            print(
+                f"{tag}: Bad ap: {ap!r}\n"
+                # f"{tag}: position: {p!r}\n"
+                f"{tag}: v {v!r} childIndex: {childIndex!r}\n"
+                f"{tag}: stack: {stack!r}")
 
-        return leoNodes.position(v, childIndex, stack)
+        return p
 
     #@+node:felix.20191126232434.31: *4* _p_to_ap
     def _p_to_ap(self, p):

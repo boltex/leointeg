@@ -10,6 +10,8 @@
 - Added icons and commands for top of body pane menu.
 - Added new commands such as insert-child along with their keybindings.
 - Also added more keybindings to the 'insert-node' command such as 'insert' and 'shift-insert'.
+- Added find-var and find-def commands.
+- Made some text-related commands available through the right-click context menu in the body pane. (extract, find-var, find-def, etc.)
 
 ## 0.1.14
 
