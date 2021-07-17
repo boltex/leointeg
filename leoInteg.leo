@@ -7799,7 +7799,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ---
 
-**🦁 Enjoy!**
+**🤍 To sponsor, donate or contribute see my [user page](https://boltex.github.io/) 🦁 Enjoy!**
 </t>
 <t tx="felix.20200718220833.1">@language md
 @tabwidth -4
@@ -7841,8 +7841,8 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718222026.1">## Beta Version Installation
 
-- Get the leointeg extension file at [boltex.github.io](https://boltex.github.io/)
-  and drag the file over a VSCode window to easily install this extension.
+- Get the leointeg extension file at [boltex.github.io](https://boltex.github.io/),
+  then **drag-and-drop** that '.vsix' file over a VSCode window to easily install this extension.
 
 - In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's 6.4 release)
 

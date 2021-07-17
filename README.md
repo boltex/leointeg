@@ -24,8 +24,8 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Beta Version Installation
 
-- Get the leointeg extension file at [boltex.github.io](https://boltex.github.io/)
-  and drag the file over a VSCode window to easily install this extension.
+- Get the leointeg extension file at [boltex.github.io](https://boltex.github.io/),
+  then **drag-and-drop** that '.vsix' file over a VSCode window to easily install this extension.
 
 - In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's 6.4 release)
 
@@ -178,4 +178,4 @@ The outline pane is made by implementing a [TreeDataProvider for vscode's TreeVi
 
 ---
 
-**🦁 Enjoy!**
+**🤍 To sponsor, donate or contribute see my [user page](https://boltex.github.io/) 🦁 Enjoy!**
