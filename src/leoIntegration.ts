@@ -1733,10 +1733,13 @@ export class LeoIntegration {
     /**
      * * Closes any body pane opened in this vscode window instance
      */
-    public closeBody(): void {
+    public closeBody(): Thenable<any> {
         // TODO : CLEAR UNDO HISTORY AND FILE HISTORY for this.bodyUri !
+        let q_closed;
         if (this.bodyUri) {
-            vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', this.bodyUri.path);
+            q_closed = vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', this.bodyUri.path);
+        } else {
+            q_closed = Promise.resolve(true);
         }
         vscode.window.visibleTextEditors.forEach((p_textEditor) => {
             if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
@@ -1749,6 +1752,32 @@ export class LeoIntegration {
                 }
             }
         });
+        return q_closed;
+    }
+
+    /**
+     * * cleanupBody closes all remaining body pane to shut down this vscode window
+     */
+    public cleanupBody(): Promise<boolean> {
+        let q_edit: Thenable<boolean>;
+        if (this.bodyUri) {
+            const w_edit = new vscode.WorkspaceEdit();
+            w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
+            q_edit = vscode.workspace.applyEdit(w_edit);
+        }
+        return Promise.resolve(true)
+            .then(() => {
+                if (q_edit) {
+                    console.log('closing body');
+                    return q_edit;
+                } else {
+                    return Promise.resolve(true);
+                }
+            }).then(() => {
+                console.log('done closing body');
+                return this.closeBody();
+            });
+
     }
 
     /**

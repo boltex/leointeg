@@ -680,10 +680,18 @@ export function activate(p_context: vscode.ExtensionContext) {
 /**
  * * Called when extension is deactivated
  */
-export function deactivate() {
-    console.log('deactivate called for extension "leointeg"');
+export function deactivate(): Promise<boolean> {
     if (LeoInteg) {
+        LeoInteg.cleanupBody();
         LeoInteg.stopServer();
+        return Promise.resolve(true).then(() => {
+            return new Promise(resolve => setTimeout(() => {
+                console.log("done deactivating");
+                resolve(true);
+            }, 200));
+        });
+    } else {
+        return Promise.resolve(false);
     }
 }
 

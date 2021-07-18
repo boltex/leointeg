@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.1.16
+
+- Added procedures to cleanup when closing a vscode window. (closes server and body panes)
+
 ## 0.1.15
 
 - Modified server location logic

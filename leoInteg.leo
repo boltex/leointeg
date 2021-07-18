@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20210718163005.1"><vh>0.1.15</vh></v>
 <v t="felix.20210612000127.1"><vh>0.1.14</vh></v>
 <v t="felix.20210509210502.1"><vh>0.1.13</vh></v>
 <v t="felix.20200718222417.1"><vh>0.1.12</vh></v>
@@ -389,6 +390,7 @@
 <v t="felix.20210418013332.1"><vh>_hideDeleteBody</vh></v>
 <v t="felix.20210418220343.1"><vh>_checkPreviewMode</vh></v>
 <v t="felix.20200719025231.49"><vh>closeBody</vh></v>
+<v t="felix.20210718155134.1"><vh>cleanupBody</vh></v>
 <v t="felix.20200719025231.50"><vh>showBody</vh></v>
 </v>
 <v t="felix.20200719025231.51"><vh>Commands</vh>
@@ -2021,7 +2023,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "author": {
     "name": "Félix"
   },
@@ -2032,7 +2034,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.57.0"
+    "vscode": "^1.58.0"
   },
   "keywords": [
     "leo",
@@ -2045,7 +2047,7 @@ print('done')
     "Other"
   ],
   "activationEvents": [
-    "onStartupFinished"
+    "*"
   ],
   "main": "./dist/extension",
   "icon": "resources/leoapp128px.png",
@@ -2067,7 +2069,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.57.0",
+    "@types/vscode": "^1.58.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -5617,10 +5619,18 @@ export function activate(p_context: vscode.ExtensionContext) {
 <t tx="felix.20200718031424.24">/**
  * * Called when extension is deactivated
  */
-export function deactivate() {
-    console.log('deactivate called for extension "leointeg"');
+export function deactivate(): Promise&lt;boolean&gt; {
     if (LeoInteg) {
+        LeoInteg.cleanupBody();
         LeoInteg.stopServer();
+        return Promise.resolve(true).then(() =&gt; {
+            return new Promise(resolve =&gt; setTimeout(() =&gt; {
+                console.log("done deactivating");
+                resolve(true);
+            }, 200));
+        });
+    } else {
+        return Promise.resolve(false);
     }
 }
 
@@ -7816,18 +7826,9 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 @tabwidth -4
 # Change Log
 
-## 0.1.15
+## 0.1.16
 
-- Modified server location logic
-- Fixed find-prev, next, find all / clone-find commands
-- fixed extract name command
-- Fixed body being re-written to same string and being marked dirty when 'safety-saving' before switching docs.
-- Detection of .Leo documents themselves now works by closing and re-opening the .leo file if reloading is chosen by the user. (or automatic via options)
-- Added icons and commands for top of body pane menu.
-- Added new commands such as insert-child along with their keybindings.
-- Also added more keybindings to the 'insert-node' command such as 'insert' and 'shift-insert'.
-- Added find-var and find-def commands.
-- Made some text-related commands available through the right-click context menu in the body pane. (extract, find-var, find-def, etc.)
+- Added procedures to cleanup when closing a vscode window. (closes server and body panes)
 
 @others
 </t>
@@ -9273,10 +9274,13 @@ private _locateOpenedBody(p_gnx: string): boolean {
 <t tx="felix.20200719025231.49">/**
  * * Closes any body pane opened in this vscode window instance
  */
-public closeBody(): void {
+public closeBody(): Thenable&lt;any&gt; {
     // TODO : CLEAR UNDO HISTORY AND FILE HISTORY for this.bodyUri !
+    let q_closed;
     if (this.bodyUri) {
-        vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', this.bodyUri.path);
+        q_closed = vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', this.bodyUri.path);
+    } else {
+        q_closed = Promise.resolve(true);
     }
     vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
         if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
@@ -9289,6 +9293,7 @@ public closeBody(): void {
             }
         }
     });
+    return q_closed;
 }
 
 </t>
@@ -12724,6 +12729,46 @@ public stopServer(): void {
 }
 
 </t>
+<t tx="felix.20210718155134.1">/**
+ * * cleanupBody closes all remaining body pane to shut down this vscode window
+ */
+public cleanupBody(): Promise&lt;boolean&gt; {
+    let q_edit: Thenable&lt;boolean&gt;;
+    if (this.bodyUri) {
+        const w_edit = new vscode.WorkspaceEdit();
+        w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
+        q_edit = vscode.workspace.applyEdit(w_edit);
+    }
+    return Promise.resolve(true)
+        .then(() =&gt; {
+            if (q_edit) {
+                console.log('closing body');
+                return q_edit;
+            } else {
+                return Promise.resolve(true);
+            }
+        }).then(() =&gt; {
+            console.log('done closing body');
+            return this.closeBody();
+        });
+
+}
+
+</t>
+<t tx="felix.20210718163005.1">## 0.1.15
+
+- Modified server location logic
+- Fixed find-prev, next, find all / clone-find commands
+- fixed extract name command
+- Fixed body being re-written to same string and being marked dirty when 'safety-saving' before switching docs.
+- Detection of .Leo documents themselves now works by closing and re-opening the .leo file if reloading is chosen by the user. (or automatic via options)
+- Added icons and commands for top of body pane menu.
+- Added new commands such as insert-child along with their keybindings.
+- Also added more keybindings to the 'insert-node' command such as 'insert' and 'shift-insert'.
+- Added find-var and find-def commands.
+- Made some text-related commands available through the right-click context menu in the body pane. (extract, find-var, find-def, etc.)
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -13611,13 +13656,13 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 0.1.15&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 0.1.16&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 0.1.15
+            See What's New in LeoInteg 0.1.16
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
