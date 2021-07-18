@@ -108,7 +108,7 @@ export class CommandStack {
                 console.log('ERROR NO ARCHIVED POSITION JSON');
             }
         }
-        w_jsonParam = utils.buildNodeAndTextJson(w_nodeJson, w_command); // 'Insert Named Node' or 'Edit Headline'
+        w_jsonParam = utils.buildNodeCommandJson(w_nodeJson, w_command); // 'Insert Named Node' or 'Edit Headline'
 
         // Setup _finalRefreshType, if command requires higher than the one setup so far
         Object.assign(this._finalRefreshType, w_command.refreshType); // add all properties (expecting only 'true' properties)

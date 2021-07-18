@@ -7,6 +7,8 @@ import { LeoNode } from "./leoNode";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
 
+var LeoInteg: LeoIntegration | undefined = undefined;
+
 /**
  * * Called by vscode when extension is activated
  * It creates the leoIntegration instance
@@ -21,6 +23,9 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
     const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
     const w_leo: LeoIntegration = new LeoIntegration(p_context);
+    if (w_leo) {
+        LeoInteg = w_leo;
+    }
     const w_leoSettingsWebview: LeoSettingsProvider = w_leo.leoSettingsWebview;
     const w_previousVersion = p_context.globalState.get<string>(Constants.VERSION_STATE_KEY);
     const w_start = process.hrtime(); // For calculating total startup time duration
@@ -53,6 +58,7 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         // * Define entries for all commands
         [CMD.MINIBUFFER, () => w_leo.minibuffer()], // Is referenced in package.json
+        [CMD.STATUS_BAR, () => w_leo.statusBarOnClick()],
         [CMD.EXECUTE, () => w_leo.nodeCommand({
             action: BRIDGE.EXECUTE_SCRIPT,
             node: U,
@@ -67,12 +73,13 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.NEW_FILE, () => w_leo.newLeoFile()],
 
         [CMD.OPEN_FILE, (p_uri?: vscode.Uri) => w_leo.openLeoFile(p_uri)],
-        [CMD.IMPORT_ANY_FILE, (p_uri?: vscode.Uri) => w_leo.importAnyFile(p_uri)],
+        [CMD.IMPORT_ANY_FILE, () => w_leo.importAnyFile()], // No URL passed from the command definition.
 
         [CMD.CLEAR_RECENT_FILES, () => w_leo.clearRecentLeoFiles()],
         [CMD.RECENT_FILES, () => w_leo.showRecentLeoFiles()],
         [CMD.SAVE_AS_FILE, () => w_leo.saveAsLeoFile()],
         [CMD.SAVE_FILE, () => w_leo.saveLeoFile()],
+        // [CMD.SAVE_DISABLED, () => { }],
         [CMD.SAVE_FILE_FO, () => w_leo.saveLeoFile(true)],
         [CMD.SWITCH_FILE, () => w_leo.switchLeoFile()],
 
@@ -345,13 +352,17 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true
         })],
 
-        [CMD.INSERT, (p_node: LeoNode) => w_leo.insertNode(p_node, true)],
-        [CMD.INSERT_SELECTION, () => w_leo.insertNode(U, false)],
-        [CMD.INSERT_SELECTION_FO, () => w_leo.insertNode(U, true)],
+        [CMD.INSERT, (p_node: LeoNode) => w_leo.insertNode(p_node, true, false)],
+        [CMD.INSERT_SELECTION, () => w_leo.insertNode(U, false, false)],
+        [CMD.INSERT_SELECTION_FO, () => w_leo.insertNode(U, true, false)],
+        [CMD.INSERT_CHILD, (p_node: LeoNode) => w_leo.insertNode(p_node, true, true)],
+        [CMD.INSERT_CHILD_SELECTION, () => w_leo.insertNode(U, false, true)],
+        [CMD.INSERT_CHILD_SELECTION_FO, () => w_leo.insertNode(U, true, true)],
 
         // Special command for when inserting rapidly more than one node without
         // even specifying a headline label, such as spamming CTRL+I rapidly.
-        [CMD.INSERT_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, true)],
+        [CMD.INSERT_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, false, true)],
+        [CMD.INSERT_CHILD_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, true, true)],
 
         [CMD.MARK, (p_node: LeoNode) => w_leo.changeMark(true, p_node, true)],
         [CMD.MARK_SELECTION, () => w_leo.changeMark(true, U, false)],
@@ -615,7 +626,9 @@ export function activate(p_context: vscode.ExtensionContext) {
         })],
 
         [CMD.PREV_NODE, () => w_leo.prevNextNode(false)],
+        [CMD.PREV_NODE_FO, () => w_leo.prevNextNode(false)],
         [CMD.NEXT_NODE, () => w_leo.prevNextNode(true)],
+        [CMD.NEXT_NODE_FO, () => w_leo.prevNextNode(true)],
 
         [CMD.START_SEARCH, () => w_leo.startSearch()],
         [CMD.FIND_ALL, () => w_leo.findAll(false)],
@@ -623,15 +636,19 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.FIND_NEXT_FO, () => w_leo.find(true, false)],
         [CMD.FIND_PREVIOUS, () => w_leo.find(false, true)],
         [CMD.FIND_PREVIOUS_FO, () => w_leo.find(true, true)],
+        [CMD.FIND_VAR, () => w_leo.findSymbol(false)],
+        [CMD.FIND_DEF, () => w_leo.findSymbol(true)],
         [CMD.REPLACE, () => w_leo.replace(false, false)],
         [CMD.REPLACE_FO, () => w_leo.replace(true, false)],
         [CMD.REPLACE_THEN_FIND, () => w_leo.replace(false, true)],
         [CMD.REPLACE_THEN_FIND_FO, () => w_leo.replace(true, true)],
         [CMD.REPLACE_ALL, () => w_leo.findAll(true)],
         [CMD.GOTO_GLOBAL_LINE, () => w_leo.gotoGlobalLine()],
+        [CMD.TAG_CHILDREN, () => w_leo.tagChildren()],
 
         [CMD.CLONE_FIND_ALL, () => w_leo.cloneFind(false, false)],
         [CMD.CLONE_FIND_ALL_FLATTENED, () => w_leo.cloneFind(false, true)],
+        [CMD.CLONE_FIND_TAG, () => w_leo.cloneFindTag()],
         [CMD.CLONE_FIND_MARKED, () => w_leo.cloneFind(true, false)],
         [CMD.CLONE_FIND_FLATTENED_MARKED, () => w_leo.cloneFind(true, true)],
 
@@ -665,6 +682,9 @@ export function activate(p_context: vscode.ExtensionContext) {
  */
 export function deactivate() {
     console.log('deactivate called for extension "leointeg"');
+    if (LeoInteg) {
+        LeoInteg.stopServer();
+    }
 }
 
 /**
@@ -676,7 +696,7 @@ export function deactivate() {
 async function showWelcomeIfNewer(p_version: string, p_previousVersion: string | undefined): Promise<unknown> {
     let w_showWelcomeScreen: boolean = false;
     if (p_previousVersion === undefined) {
-        console.log('leoInteg first-time install');
+        console.log('leointeg first-time install');
         w_showWelcomeScreen = true;
     } else {
         if (p_previousVersion !== p_version) {

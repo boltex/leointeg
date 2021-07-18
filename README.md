@@ -14,25 +14,26 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Requirements
 
-- Having [Leo's path made available in the \$PYTHONPATH environment variable](https://docs.python.org/2/using/windows.html#excursus-setting-environment-variables)\
-  ([More info](https://docs.python.org/2/using/cmdline.html#environment-variables))
+- Having Leo Editor installed.
+  _Install with :_ `pip install leo`\
+   _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
+
 - Having the Websocket Python Library installed.
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
 
-## Development Version Installation
+## Beta Version Installation
 
-[Video tutorial of installation and startup](https://www.youtube.com/watch?v=rutt11xL54I):
+> While in beta, this extension isn't available in the microsoft store, nor the extension panel yet. But you can drag the extension file onto it.
 
-[![Installation and startup video](https://img.youtube.com/vi/rutt11xL54I/0.jpg)](https://www.youtube.com/watch?v=rutt11xL54I)
+- Get the leointeg extension file at
+  [boltex.github.io](https://boltex.github.io/),
+  then **drag-and-drop** that '.vsix' file over the
+  extension panel of VSCode's sidebar.
 
-In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's next release), make sure you have Node.js and Git installed, then clone the sources and run `npm install` in a terminal to install the remaining development dependencies.
-
-![run extension](resources/run-extension.png)
-
-You can then run the **Run Extension** target, as shown above, in the **Debug View**.
-
-> See [CONTRIBUTING.md](CONTRIBUTING.md) for complete details on how to install and run this extension.
+- In addition to the above requirements,
+  **use Leo's 'devel' branch**
+  (This is temporary until Leo's 6.4 release)
 
 ## Features
 
@@ -52,16 +53,16 @@ You can then run the **Run Extension** target, as shown above, in the **Debug Vi
 
 ## Keybindings
 
-| Outline Commands           |     |            |                  |
-| :------------------------- | :-- | :--------- | :--------------- |
-| `Ctrl + I`                 |     |            | Insert Node      |
-| `Ctrl + H`                 |     |            | Edit Headline    |
-| `Ctrl + Shift + C`         |     |            | Copy Node        |
-| `Ctrl + Shift + X`         |     |            | Cut Node         |
-| `Ctrl + Shift + V`         |     |            | Paste Node       |
-| `Ctrl + Shift + Backspace` | or  | `Delete`   | Delete Node      |
-| `Ctrl + Backquote`         |     |            | Clone Node       |
-| `Ctrl + {`                 | and | `Ctrl + }` | Promote / Demote |
+| Outline Commands           |     |                  |                  |
+| :------------------------- | :-- | :--------------- | :--------------- |
+| `Ctrl + I`                 | or  | `Shift + Insert` | Insert Node      |
+| `Ctrl + H`                 |     |                  | Edit Headline    |
+| `Ctrl + Shift + C`         |     |                  | Copy Node        |
+| `Ctrl + Shift + X`         |     |                  | Cut Node         |
+| `Ctrl + Shift + V`         |     |                  | Paste Node       |
+| `Ctrl + Shift + Backspace` | or  | `Delete`         | Delete Node      |
+| `Ctrl + Backquote`         |     |                  | Clone Node       |
+| `Ctrl + {`                 | and | `Ctrl + }`       | Promote / Demote |
 
 | Moving Outline Nodes |     |                         |                    |
 | :------------------- | :-- | :---------------------- | :----------------- |
@@ -145,7 +146,7 @@ Main issues are listed below. See the repository's [Issues Page](https://github.
 
 ### Keybindings Conflicts Resolution
 
-If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane, add **`&& resourceScheme != 'leo'`** to the keybinding's "*when*" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
+If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane, add **`&& resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Linux Keybindings
 
@@ -183,4 +184,4 @@ The outline pane is made by implementing a [TreeDataProvider for vscode's TreeVi
 
 ---
 
-**🦁 Enjoy!**
+**🤍 To sponsor, donate or contribute see my [user page](https://boltex.github.io/) 🦁 Enjoy!**

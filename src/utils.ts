@@ -1,10 +1,22 @@
 import * as vscode from "vscode";
 import * as murmur from "murmurhash-js";
-import * as net from "net";
 import { Constants } from "./constants";
 import { Icon, UserCommand, ArchivedPosition } from "./types";
 import { LeoNode } from "./leoNode";
 var portfinder = require('portfinder');
+
+/**
+ * * Unique numeric Id
+ */
+var uniqueId: number = 0;
+
+/**
+ * * Get new uniqueID
+ */
+export function getUniqueId(): string {
+    const id = uniqueId++;
+    return id.toString();
+}
 
 /**
  * * Build a string for representing a number that's 2 digits wide, padding with a zero if needed
@@ -127,12 +139,12 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
  * @param p_command from which to extract possible name and 'keep selection' flag
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
-export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand): string {
+export function buildNodeCommandJson(p_nodeJson: string, p_command?: UserCommand): string {
     let w_json = "{\"ap\":" + p_nodeJson; // already json
-    if (p_command.name) {
+    if (p_command && p_command.name) {
         w_json += ", \"name\": " + JSON.stringify(p_command.name);
     }
-    if (p_command.keepSelection) {
+    if (p_command && p_command.keepSelection) {
         w_json += ", \"keep\": true";
     }
     // TODO : Generalize this function to send any other members of p_command / other members
@@ -232,6 +244,8 @@ export function setContext(p_key: string, p_value: any): Thenable<unknown> {
 /**
  * * Find next available port starting with p_startingPort inclusively,
  * * check next (max 5) additional ports and return port number, or 0 if none.
+ * @param p_startingPort the port number at which to start looking for a free port
+ * @returns a promise of an opened port number
  */
 export function findNextAvailablePort(p_startingPort: number): Promise<number> {
     const q_portFinder = portfinder.getPortPromise({
@@ -240,28 +254,5 @@ export function findNextAvailablePort(p_startingPort: number): Promise<number> {
         stopPort: p_startingPort + 5
     });
     return q_portFinder;
-}
-
-/**
- * * Return a promise to a boolean that will tell if port already in use
- */
-export function portInUse(p_port: number): Promise<boolean> {
-    const q_checkPort: Promise<boolean> = new Promise((p_resolve, p_reject) => {
-        var w_server = net.createServer(function (socket) {
-            socket.write('Echo server\r\n');
-            socket.pipe(socket);
-        });
-        w_server.on('error', function (e) {
-            p_resolve(true);
-        });
-        w_server.on('listening', function (e: Event) {
-            w_server.close();
-            p_resolve(false);
-        });
-        w_server.listen(
-            p_port
-        );
-    });
-    return q_checkPort;
 }
 

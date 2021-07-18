@@ -440,6 +440,168 @@
         </div>
       </section>
 
+      <section id="editor-commands"
+               class="section--settings">
+        <div class="section__content">
+          <div class="section__header">
+            <h2>
+              Body Editor Icons
+            </h2>
+            <p class="section__header-hint">
+              Body Pane Command Icons - Choose which commands to display
+            </p>
+          </div>
+          <div class="section__preview">
+
+            <img class="image__preview__body"
+                 src="#{root}/resources/body-menu-wide.png" />
+
+            <div class="image__preview__body--float-container">
+
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-extract.png"
+                   data-visibility="showExtractOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-refresh.png"
+                   data-visibility="showRefreshOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-import.png"
+                   data-visibility="showImportOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-execute.png"
+                   data-visibility="showExecuteOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-hoist.png"
+                   data-visibility="showHoistOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-sort.png"
+                   data-visibility="showSortOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-mark.png"
+                   data-visibility="showMarkOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-promote.png"
+                   data-visibility="showPromoteOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-clipboard.png"
+                   data-visibility="showClipboardOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-edition.png"
+                   data-visibility="showEditionOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-prev-next.png" />
+
+            </div>
+          </div>
+
+          <div class="settings">
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showEditionOnBody"
+                       name="showEditionOnBody"
+                       type="checkbox"
+                       data-setting />
+                <label for="showEditionOnBody">Outline&nbsp;Edition&nbsp;Commands</label>
+              </div>
+              <span class="setting__hint">Clone, Delete and Insert nodes</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showClipboardOnBody"
+                       name="showClipboardOnBody"
+                       type="checkbox"
+                       data-setting />
+                <label for="showClipboardOnBody">Clipboard&nbsp;Operations</label>
+              </div>
+              <span class="setting__hint">Cut, Copy and Paste nodes</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showPromoteOnBody"
+                       name="showPromoteOnBody"
+                       type="checkbox"
+                       data-setting />
+                <label for="showPromoteOnBody">Promote&nbsp;&amp;&nbsp;Demote</label>
+              </div>
+              <span class="setting__hint">Promote children, demote siblings</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showExecuteOnBody"
+                       name="showExecuteOnBody"
+                       type="checkbox"
+                       data-setting />
+                <label for="showExecuteOnBody">Execute&nbsp;Script</label>
+              </div>
+              <span class="setting__hint">Executes node or selected text</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showExtractOnBody"
+                       name="showExtractOnBody"
+                       type="checkbox"
+                       data-setting />
+                <label for="showExtractOnBody">Extract</label>
+              </div>
+              <span class="setting__hint">Extract Text and Names</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showImportOnBody"
+                       name="showImportOnBody"
+                       type="checkbox"
+                       data-setting />
+                <label for="showImportOnBody">Import&nbsp;File</label>
+              </div>
+              <span class="setting__hint">Import any file into a node</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showRefreshOnBody"
+                       name="showRefreshOnBody"
+                       type="checkbox"
+                       data-setting />
+                <label for="showRefreshOnBody">Refresh</label>
+              </div>
+              <span class="setting__hint">Refresh an external file from disk</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showHoistOnBody"
+                       name="showHoistOnBody"
+                       type="checkbox"
+                       data-setting />
+                <label for="showHoistOnBody">Hoist&nbsp;&amp;&nbsp;Dehoist</label>
+              </div>
+              <span class="setting__hint">Isolate part of the outline</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showMarkOnBody"
+                       name="showMarkOnBody"
+                       type="checkbox"
+                       data-setting />
+                <label for="showMarkOnBody">Mark&nbsp;&amp;&nbsp;Unmark</label>
+              </div>
+              <span class="setting__hint">Mark or unmark tree nodes</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="showSortOnBody"
+                       name="showSortOnBody"
+                       type="checkbox"
+                       data-setting />
+                <label for="showSortOnBody">Sort&nbsp;Siblings</label>
+              </div>
+              <span class="setting__hint">Sort siblings of a node alphabetically</span>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
       <section id="statusbar-indicator"
                class="section--settings">
         <div class="section__content">
@@ -522,9 +684,11 @@
             <a href="#node-commands">Node Hover Commands</a>
           </li>
           <li>
+            <a href="#editor-commands">Body Editor Icons</a>
+          </li>
+          <li>
             <a href="#statusbar-indicator">Statusbar Indicator</a>
           </li>
-
         </ul>
       </div>
 

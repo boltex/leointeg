@@ -1,4 +1,10 @@
+#@+leo-ver=5-thin
+#@+node:felix.20191126232434.2: * @file leobridgeserver.py
 #! python3
+#@@language python
+#@@tabwidth -4
+#@+<< imports >>
+#@+node:felix.20191128002414.1: ** << imports >>
 import leo.core.leoBridge as leoBridge
 import leo.core.leoNodes as leoNodes
 from leo.core.leoGui import StringFindTabManager
@@ -10,6 +16,9 @@ import sys
 import time
 import traceback
 import websockets
+#@-<< imports >>
+#@+<< constants >>
+#@+node:felix.20191128002417.1: ** << constants >>
 # server defaults
 wsHost = "localhost"
 wsPort = 32125
@@ -21,6 +30,9 @@ commonActions = ["getChildren", "getBody", "getBodyLength"]
 SERVER_STARTED_TOKEN = "LeoBridge started"
 
 
+#@-<< constants >>
+#@+others
+#@+node:felix.20200302204251.1: ** class IdleTimeManager
 class IdleTimeManager:
     """
     A singleton class to manage idle-time handling. This class handles all
@@ -38,10 +50,13 @@ class IdleTimeManager:
         self.timer = None
         self.on_idle_count = 0
 
+    #@+others
+    #@+node:felix.20200302204251.2: *3* itm.add_callback
     def add_callback(self, callback):
         """Add a callback to be called at every idle time."""
         self.callback_list.append(callback)
 
+    #@+node:felix.20200302204251.3: *3* itm.on_idle
     def on_idle(self, timer):
         """IdleTimeManager: Run all idle-time callbacks."""
         if not self.g.app:
@@ -65,6 +80,7 @@ class IdleTimeManager:
         # Handle idle-time hooks.
         self.g.app.pluginsController.on_idle()
 
+    #@+node:felix.20200302204251.4: *3* itm.start
     def start(self):
         """Start the idle-time timer."""
         self.timer = self.g.IdleTime(
@@ -74,11 +90,15 @@ class IdleTimeManager:
         if self.timer:
             self.timer.start()
 
+    #@-others
 
+#@+node:felix.20200302205810.1: ** class ExternalFilesController
 class ExternalFilesController:
     '''EFC Modified from Leo's sources'''
     # pylint: disable=no-else-return
 
+    #@+others
+    #@+node:felix.20200302205810.2: *3* efc.ctor
     def __init__(self, integController):
         '''Ctor for ExternalFiles class.'''
         self.on_idle_count = 0
@@ -113,12 +133,13 @@ class ExternalFilesController:
         self.lastPNode = None  # last p node that was asked for if not set to "AllYes\AllNo"
         self.lastCommander = None
 
+    #@+node:felix.20200302205810.7: *3* efc.on_idle
     def on_idle(self):
         '''
         Check for changed open-with files and all external files in commanders
         for which @bool check_for_changed_external_file is True.
         '''
-        # Fix for flushing the terminal console to traverse
+        # Fix for flushing the terminal console to pass
         # python through node.js when using start server in leoInteg
         sys.stdout.flush()
 
@@ -142,6 +163,7 @@ class ExternalFilesController:
                 z for z in self.integController.g.app.commanders() if self.is_enabled(z)
             ]
 
+    #@+node:felix.20200302205810.8: *3* efc.idle_check_commander
     def idle_check_commander(self, c):
         '''
         Check all external files corresponding to @<file> nodes in c for
@@ -164,6 +186,7 @@ class ExternalFilesController:
             w_package = {"async": "info", "message": self.infoMessage}
             self.integController.sendAsyncOutput(w_package)
 
+    #@+node:felix.20200302205810.9: *3* efc.idle_check_at_file_node
     def idle_check_at_file_node(self, c, p):
         '''Check the @<file> node at p for external changes.'''
         trace = False
@@ -186,6 +209,7 @@ class ExternalFilesController:
             self.set_time(path)
             self.checksum_d[path] = self.checksum(path)
 
+    #@+node:felix.20200304221925.1: *3* efc.integResult
     def integResult(self, p_result):
         '''Received result from client'''
         # Got the result to an asked question/warning from the client
@@ -222,6 +246,8 @@ class ExternalFilesController:
         # unblock: run the loop as if timer had hit
         self.idle_check_commander(self.lastCommander)
 
+    #@+node:felix.20200302205810.21: *3* efc.utilities
+    #@+node:felix.20200302205810.22: *4* efc.ask
     def ask(self, c, path, p=None):
         '''
         Ask user whether to overwrite an @<file> tree.
@@ -279,15 +305,18 @@ class ExternalFilesController:
 
         # return bool(result and 'yes' in result.lower())
 
+    #@+node:felix.20200302205810.23: *4* efc.checksum
     def checksum(self, path):
         '''Return the checksum of the file at the given path.'''
         import hashlib
         return hashlib.md5(open(path, 'rb').read()).hexdigest()
 
+    #@+node:felix.20200302205810.25: *4* efc.get_mtime
     def get_mtime(self, path):
         '''Return the modification time for the path.'''
         return self.integController.g.os_path_getmtime(self.integController.g.os_path_realpath(path))
 
+    #@+node:felix.20200302205810.26: *4* efc.get_time
     def get_time(self, path):
         '''
         return timestamp for path
@@ -296,6 +325,7 @@ class ExternalFilesController:
         '''
         return self._time_d.get(self.integController.g.os_path_realpath(path))
 
+    #@+node:felix.20200302205810.27: *4* efc.has_changed
     def has_changed(self, path):
         '''Return True if p's external file has changed outside of Leo.'''
         if not path:
@@ -334,6 +364,7 @@ class ExternalFilesController:
         # self.checksum_d[path] = new_sum
         return True
 
+    #@+node:felix.20200302205810.28: *4* efc.is_enabled
     def is_enabled(self, c):
         '''Return the cached @bool check_for_changed_external_file setting.'''
         # check with leoInteg's config first
@@ -353,10 +384,12 @@ class ExternalFilesController:
             d[c] = val
         return val
 
+    #@+node:felix.20200302205810.29: *4* efc.join
     def join(self, s1, s2):
         '''Return s1 + ' ' + s2'''
         return f"{s1} {s2}"
 
+    #@+node:felix.20200302205810.30: *4* efc.set_time
     def set_time(self, path, new_time=None):
         '''
         Implements c.setTimeStamp.
@@ -374,6 +407,7 @@ class ExternalFilesController:
         t = new_time or self.get_mtime(path)
         self._time_d[self.integController.g.os_path_realpath(path)] = t
 
+    #@+node:felix.20200302205810.31: *4* efc.warn
     def warn(self, c, path, p):
         '''
         Warn that an @asis or @nosent node has been changed externally.
@@ -412,30 +446,39 @@ class ExternalFilesController:
         self.integController.sendAsyncOutput(w_package)
         self.waitingForAnswer = True
 
+    #@+node:felix.20200308145948.1: *3* other called methods
     # Some methods are called in the usual (non-leoBridge without 'efc') save process.
     # Those may be called by the 'save' function, like check_overwrite,
     # or by any other functions from the instance of leo.core.leoBridge that's running.
 
+    #@+node:felix.20200308150856.1: *4* open_with
     def open_with(self, c, d):
         return
 
+    #@+node:felix.20200308150848.1: *4* check_overwrite
     def check_overwrite(self, c, fn):
         # print("check_overwrite!! ", flush=True)
         return True
 
+    #@+node:felix.20200308150821.1: *4* shut_down
     def shut_down(self):
         return
 
+    #@+node:felix.20200308150842.1: *4* destroy_frame
     def destroy_frame(self, f):
         return
 
+    #@-others
 
+#@+node:felix.20200928174406.1: ** class IntegTextWrapper
 class IntegTextWrapper:
     """
     A class that represents text as a Python string.
     Modified from Leo's StringTextWrapper class source
     """
 
+    #@+others
+    #@+node:felix.20200928174406.2: *3* stw.ctor
     def __init__(self, c, name, g):
         """Ctor for the IntegTextWrapper class."""
         self.c = c
@@ -455,6 +498,7 @@ class IntegTextWrapper:
         """IntegTextWrapper."""
         return self.name  # Essential.
 
+    #@+node:felix.20200928174406.3: *3* stw.Clipboard
     def clipboard_clear(self):
         self.g.app.gui.replaceClipboardWith('')
 
@@ -462,6 +506,7 @@ class IntegTextWrapper:
         s1 = self.g.app.gui.getTextFromClipboard()
         self.g.app.gui.replaceClipboardWith(s1 + s)
 
+    #@+node:felix.20200928174406.4: *3* stw.Do-nothings
     def flashCharacter(self, i, bg='white', fg='red',
                        flashes=3, delay=75): pass
 
@@ -475,6 +520,8 @@ class IntegTextWrapper:
 
     def tag_configure(self, colorName, **keys): pass
 
+    #@+node:felix.20200928174406.5: *3* stw.Text
+    #@+node:felix.20200928174406.6: *4* stw.appendText
     def appendText(self, s):
         """IntegTextWrapper appendText"""
         self.s = self.s + self.g.toUnicode(s)
@@ -482,6 +529,7 @@ class IntegTextWrapper:
         self.ins = len(self.s)
         self.sel = self.ins, self.ins
 
+    #@+node:felix.20200928174406.7: *4* stw.delete
     def delete(self, i, j=None):
         """IntegTextWrapper delete"""
         i = self.toPythonIndex(i)
@@ -496,11 +544,13 @@ class IntegTextWrapper:
         # Bug fix: 2011/11/13: Significant in external tests.
         self.setSelectionRange(i, i, insert=i)
 
+    #@+node:felix.20200928174406.8: *4* stw.deleteTextSelection
     def deleteTextSelection(self):
         """IntegTextWrapper."""
         i, j = self.getSelectionRange()
         self.delete(i, j)
 
+    #@+node:felix.20200928174406.9: *4* stw.get
     def get(self, i, j=None):
         """IntegTextWrapper get"""
         i = self.toPythonIndex(i)
@@ -511,12 +561,14 @@ class IntegTextWrapper:
         # print("WRAPPER GET with self.s[i:j]: " + s)
         return self.g.toUnicode(s)
 
+    #@+node:felix.20200928174406.10: *4* stw.getAllText
     def getAllText(self):
         """IntegTextWrapper getAllText"""
         s = self.s
         # print("WRAPPER getAllText  " + s)
         return self.g.checkUnicode(s)
 
+    #@+node:felix.20200928174406.11: *4* stw.getInsertPoint
     def getInsertPoint(self):
         """IntegTextWrapper getInsertPoint"""
         i = self.ins
@@ -528,6 +580,7 @@ class IntegTextWrapper:
         self.virtualInsertPoint = i
         return i
 
+    #@+node:felix.20200928174406.12: *4* stw.getSelectedText
     def getSelectedText(self):
         """IntegTextWrapper getSelectedText"""
         i, j = self.sel
@@ -535,6 +588,7 @@ class IntegTextWrapper:
         # print("WRAPPER getSelectedText with self.s[i:j]: " + s)
         return self.g.checkUnicode(s)
 
+    #@+node:felix.20200928174406.13: *4* stw.getSelectionRange
     def getSelectionRange(self, sort=True):
         """Return the selected range of the widget."""
         sel = self.sel
@@ -546,19 +600,23 @@ class IntegTextWrapper:
         i = self.ins
         return i, i
 
+    #@+node:felix.20201028223533.1: *4* stw.getXScrollPosition
     def getXScrollPosition(self):
         return 0
         # X axis ignored
 
+    #@+node:felix.20201102223052.1: *4* stw.getYScrollPosition
     def getYScrollPosition(self):
         # print("wrapper get y scroll" + str(self.yScroll))
         return self.yScroll
 
+    #@+node:felix.20200928174406.14: *4* stw.hasSelection
     def hasSelection(self):
         """IntegTextWrapper hasSelection"""
         i, j = self.getSelectionRange()
         return i != j
 
+    #@+node:felix.20200928174406.15: *4* stw.insert
     def insert(self, i, s):
         """IntegTextWrapper insert"""
         i = self.toPythonIndex(i)
@@ -568,10 +626,12 @@ class IntegTextWrapper:
         self.ins = i
         self.sel = i, i
 
+    #@+node:felix.20200928174406.16: *4* stw.selectAllText
     def selectAllText(self, insert=None):
         """IntegTextWrapper selectAllText"""
         self.setSelectionRange(0, 'end', insert=insert)
 
+    #@+node:felix.20200928174406.17: *4* stw.setAllText
     def setAllText(self, s):
         """IntegTextWrapper setAllText"""
         # print("WRAPPER setAllText: " + s)
@@ -580,30 +640,36 @@ class IntegTextWrapper:
         self.ins = i
         self.sel = i, i
 
+    #@+node:felix.20200928174406.18: *4* stw.setInsertPoint
     def setInsertPoint(self, pos, s=None):
         """IntegTextWrapper setInsertPoint"""
         self.virtualInsertPoint = i = self.toPythonIndex(pos)
         self.ins = i
         self.sel = i, i
 
+    #@+node:felix.20201028223434.1: *4* stw.setXScrollPosition
     def setXScrollPosition(self, i):
         pass
         # X axis ignored
 
+    #@+node:felix.20201102223046.1: *4* stw.setYScrollPosition
     def setYScrollPosition(self, i):
         self.yScroll = i
         # print("wrapper set y scroll" + str(self.yScroll))
 
+    #@+node:felix.20200928174406.19: *4* stw.setSelectionRange
     def setSelectionRange(self, i, j, insert=None):
         """IntegTextWrapper setSelectionRange"""
         i, j = self.toPythonIndex(i), self.toPythonIndex(j)
         self.sel = i, j
         self.ins = j if insert is None else self.toPythonIndex(insert)
 
+    #@+node:felix.20200928174406.20: *4* stw.toPythonIndex
     def toPythonIndex(self, index):
         """IntegTextWrapper toPythonIndex"""
         return self.g.toPythonIndex(self.s, index)
 
+    #@+node:felix.20200928174406.21: *4* stw.toPythonIndexRowCol
     def toPythonIndexRowCol(self, index):
         """IntegTextWrapper toPythonIndexRowCol"""
         s = self.getAllText()
@@ -611,11 +677,15 @@ class IntegTextWrapper:
         row, col = self.g.convertPythonIndexToRowCol(s, i)
         return i, row, col
 
+    #@-others
 
+#@+node:felix.20191126232434.4: ** class LeoBridgeIntegController
 class LeoBridgeIntegController:
     '''Leo Bridge Controller'''
     # pylint: disable=no-else-return
 
+    #@+others
+    #@+node:felix.20191126232434.5: *3* __init__
     def __init__(self):
         self.gnx_to_vnode = []  # utility array - see leoflexx.py in leoPluginsRef.leo
         self.bridge = leoBridge.controller(
@@ -635,7 +705,7 @@ class LeoBridgeIntegController:
         self.g.es = self.es  # pointer - not a function call
 
         # print(dir(self.g), flush=True)
-        self.currentActionId = 1  # Id of action being processed, STARTS AT 1 = Initial 'ready'
+        self.currentActionId = 0  # Id of action being processed, STARTS AT 0 = Initial 'ready'
 
         # * Currently Selected Commander (opened from leo.core.leoBridge or chosen via the g.app.windowList 2 list)
         self.commander = None
@@ -656,27 +726,29 @@ class LeoBridgeIntegController:
         self.g.app.gui.show_find_success = self._show_find_success
         self.headlineWidget = self.g.bunch(_name='tree')
 
-        # self.g.app.loadManager.createAllImporterData()  # Fixed in #1965 of leo-editor
-
         # * setup leoBackground to get messages from leo
         try:
             self.g.app.idleTimeManager.start()  # To catch derived file changes
         except Exception:
             print('ERROR with idleTimeManager')
 
+    #@+node:felix.20200303214235.1: *3* _asyncIdleLoop
     async def _asyncIdleLoop(self, p_seconds, p_fn):
         while True:
             await asyncio.sleep(p_seconds)
             p_fn(self)
 
+    #@+node:felix.20200626012709.1: *3* _returnNo
     def _returnNo(self, *arguments, **kwargs):
         '''Used to override g.app.gui.ask[XXX] dialogs answers'''
         return "no"
 
+    #@+node:felix.20200626030820.1: *3* _returnYes
     def _returnYes(self, *arguments, **kwargs):
         '''Used to override g.app.gui.ask[XXX] dialogs answers'''
         return "yes"
 
+    #@+node:felix.20200927213534.1: *3* _getScript
     def _getScript(self, c, p,
                    useSelectedText=True,
                    forcePythonSentinels=True,
@@ -707,10 +779,12 @@ class LeoBridgeIntegController:
             script = ''
         return script
 
+    #@+node:felix.20200303214255.1: *3* _idleTime
     def _idleTime(self, fn, delay, tag):
         # TODO : REVISE/REPLACE WITH OWN SYSTEM
         asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
 
+    #@+node:felix.20200623201853.1: *3* _getTotalOpened
     def _getTotalOpened(self):
         '''Get total of opened commander (who have closed == false)'''
         w_total = 0
@@ -719,6 +793,7 @@ class LeoBridgeIntegController:
                 w_total = w_total + 1
         return w_total
 
+    #@+node:felix.20200623215904.1: *3* _getFirstOpenedCommander
     def _getFirstOpenedCommander(self):
         '''Get first opened commander, or False if there are none.'''
         for w_commander in self.g.app.commanders():
@@ -726,12 +801,14 @@ class LeoBridgeIntegController:
                 return w_commander
         return False
 
+    #@+node:felix.20210528000603.1: *3* _show_find_success
     def _show_find_success(self, c, in_headline, insert, p):
         '''Handle a successful find match.'''
         if in_headline:
             self.g.app.gui.set_focus(c, self.headlineWidget)
         # no return
 
+    #@+node:felix.20200304224909.1: *3* sendAsyncOutput
     def sendAsyncOutput(self, p_package):
         if "async" not in p_package:
             print('[sendAsyncOutput] Error async member missing in package parameter')
@@ -744,16 +821,22 @@ class LeoBridgeIntegController:
             print('[sendAsyncOutput] Error loop not ready' +
                   json.dumps(p_package, separators=(',', ':')))
 
-    def set_ask_result(self, p_result):
+    #@+node:felix.20200304220844.1: *3* set_ask_result
+    def set_ask_result(self, param):
         '''Got the result to an asked question/warning from client'''
-        self.g.app.externalFilesController.integResult(p_result)
+        w_result = param.get("result");
+        if not w_result:
+            return self._outputError("Error in set_ask_result, no param result")
+        self.g.app.externalFilesController.integResult(w_result)
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
+    #@+node:felix.20200312231358.1: *3* set_config
     def set_config(self, p_config):
         '''Got leoInteg's config from client'''
         self.leoIntegConfig = p_config
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
+    #@+node:felix.20200219224515.1: *3* logSignon
     def logSignon(self):
         '''Simulate the Initial Leo Log Entry'''
         if self.loop:
@@ -763,9 +846,12 @@ class LeoBridgeIntegController:
         else:
             print('no loop in logSignon', flush=True)
 
+    #@+node:felix.20200924224017.1: *3* JSON Output Functions
+    #@+node:felix.20200924211032.1: *4* setActionId
     def setActionId(self, p_id):
         self.currentActionId = p_id
 
+    #@+node:felix.20200924211034.1: *4* asyncOutput
     async def asyncOutput(self, p_json):
         '''Output json string to the websocket'''
         if self.webSocket:
@@ -773,10 +859,12 @@ class LeoBridgeIntegController:
         else:
             print("websocket not ready yet", flush=True)
 
+    #@+node:felix.20200924211037.1: *4* sendLeoBridgePackage
     def sendLeoBridgePackage(self, p_package={}):
         p_package["id"] = self.currentActionId
         return(json.dumps(p_package, separators=(',', ':')))  # send as json
 
+    #@+node:felix.20200924211041.1: *4* _outputError
     def _outputError(self, p_message="Unknown Error"):
         # Output to this server's running console
         print("ERROR: " + p_message, flush=True)
@@ -784,12 +872,15 @@ class LeoBridgeIntegController:
         w_package["error"] = p_message
         return p_message
 
+    #@+node:felix.20200924211048.1: *4* _outputBodyData
     def _outputBodyData(self, p_bodyText=""):
         return self.sendLeoBridgePackage({"body": p_bodyText})
 
+    #@+node:felix.20200927224639.1: *4* _outputSelectionData
     def _outputSelectionData(self, p_bodySelection):
         return self.sendLeoBridgePackage({"bodySelection": p_bodySelection})
 
+    #@+node:felix.20200924211051.1: *4* _outputPNode
     def _outputPNode(self, p_node=False):
         if p_node:
             # Single node, singular
@@ -797,6 +888,7 @@ class LeoBridgeIntegController:
         else:
             return self.sendLeoBridgePackage({"node": None})
 
+    #@+node:felix.20200924211054.1: *4* _outputPNodes
     def _outputPNodes(self, p_pList):
         w_apList = []
         for p in p_pList:
@@ -804,6 +896,7 @@ class LeoBridgeIntegController:
         # Multiple nodes, plural
         return self.sendLeoBridgePackage({"children": w_apList})
 
+    #@+node:felix.20200219222712.1: *3* es
     def es(self, * args, **keys):
         '''Output to the Log Pane'''
         d = {
@@ -819,10 +912,12 @@ class LeoBridgeIntegController:
         w_package = {"async": "log", "log": s}
         self.sendAsyncOutput(w_package)
 
+    #@+node:felix.20200211202929.1: *3* initConnection
     def initConnection(self, p_webSocket):
         self.webSocket = p_webSocket
         self.loop = asyncio.get_event_loop()
 
+    #@+node:felix.20200924205439.1: *3* _get_commander_method
     def _get_commander_method(self, p_command):
         """ Return the given method (p_command) in the Commands class or subcommanders."""
         # self.g.trace(p_command)
@@ -870,6 +965,7 @@ class LeoBridgeIntegController:
                 # self.g.trace(f"Not Found: c.{ivar}") # Should never happen.
         return None
 
+    #@+node:felix.20200924205503.1: *3* leoCommand
     def leoCommand(self, p_command, param):
         '''
         Generic call to a method in Leo's Commands class or any subcommander class.
@@ -911,6 +1007,8 @@ class LeoBridgeIntegController:
 
         return self._outputPNode(self.commander.p)
 
+    #@+node:felix.20200924223845.1: *3* Leo Documents
+    #@+node:felix.20200622230608.1: *4* get_all_open_commanders
     def get_all_open_commanders(self, param):
         '''Return array of opened file path/names to be used as openFile parameters to switch files'''
         w_files = []
@@ -929,6 +1027,7 @@ class LeoBridgeIntegController:
 
         return self.sendLeoBridgePackage({"files": w_files})
 
+    #@+node:felix.20210523154200.1: *4* get_ui_states
     def get_ui_states(self, param):
         """
         Gets the currently opened file's general states for UI enabled/disabled states
@@ -959,6 +1058,7 @@ class LeoBridgeIntegController:
 
         return self.sendLeoBridgePackage({"states": w_states})
 
+    #@+node:felix.20200624172552.1: *4* set_opened_file
     def set_opened_file(self, param):
         '''Choose the new active commander from array of opened file path/names by numeric index'''
         w_openedCommanders = []
@@ -983,6 +1083,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError('Error in setOpenedFile')
 
+    #@+node:felix.20191126232434.13: *4* open_file
     def open_file(self, param):
         """
         Open a leo file via leoBridge controller, or create a new document if empty string.
@@ -1003,6 +1104,8 @@ class LeoBridgeIntegController:
                 self.commander = self.bridge.openLeoFile(w_filename)
                 self.commander.findCommands.ftm = StringFindTabManager(
                     self.commander)
+                self.commander.frame.body.wrapper = IntegTextWrapper(
+                    self.commander, "integBody", self.g)
 
         # Leo at this point has done this too: g.app.windowList.append(c.frame)
         # and so, now, app.commanders() yields this: return [f.c for f in g.app.windowList]
@@ -1010,9 +1113,6 @@ class LeoBridgeIntegController:
         if self.commander:
             self.commander.closed = False
             if not w_found:
-                # is new so also replace wrapper
-                self.commander.frame.body.wrapper = IntegTextWrapper(
-                    self.commander, "integBody", self.g)
                 self.commander.selectPosition(self.commander.p)
 
             self._create_gnx_to_vnode()
@@ -1022,6 +1122,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError('Error in openFile')
 
+    #@+node:felix.20200924205915.1: *4* open_files
     def open_files(self, param):
         """
         Opens an array of leo files
@@ -1047,10 +1148,10 @@ class LeoBridgeIntegController:
                     self.commander = self.bridge.openLeoFile(i_file)
                     self.commander.findCommands.ftm = StringFindTabManager(
                         self.commander)
+                    self.commander.frame.body.wrapper = IntegTextWrapper(
+                        self.commander, "integBody", self.g)
             if self.commander:
                 self.commander.closed = False
-                self.commander.frame.body.wrapper = IntegTextWrapper(
-                    self.commander, "integBody", self.g)
                 self.commander.selectPosition(self.commander.p)
 
         # Done with the last one, it's now the selected commander. Check again just in case.
@@ -1062,6 +1163,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError('Error in openFiles')
 
+    #@+node:felix.20191126232434.14: *4* close_file
     def close_file(self, param):
         """
         Closes a leo file. A file can then be opened with "openFile".
@@ -1096,6 +1198,7 @@ class LeoBridgeIntegController:
 
         return self.sendLeoBridgePackage(w_result)
 
+    #@+node:felix.20200216160305.1: *4* save_file
     def save_file(self, param):
         '''Saves the leo file. New or dirty derived files are rewritten'''
         if self.commander:
@@ -1111,6 +1214,7 @@ class LeoBridgeIntegController:
 
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
+    #@+node:felix.20210602203830.1: *4* import_any_file
     def import_any_file(self, param):
         """
         Import file(s) from array of file names
@@ -1165,6 +1269,8 @@ class LeoBridgeIntegController:
                 )
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
+    #@+node:felix.20210523154320.1: *3* Search
+    #@+node:felix.20210523154326.1: *4* get_search_settings
     def get_search_settings(self, param):
         """
         Gets search options
@@ -1172,6 +1278,7 @@ class LeoBridgeIntegController:
         w_result = self.commander.findCommands.ftm.get_settings()
         return self.sendLeoBridgePackage({"searchSettings": w_result.__dict__})
 
+    #@+node:felix.20210523154352.1: *4* set_search_settings
     def set_search_settings(self, param):
         """
         Sets search options. Init widgets and ivars from param.searchSettings
@@ -1235,6 +1342,7 @@ class LeoBridgeIntegController:
         w_result = ftm.get_settings()
         return self.sendLeoBridgePackage({"searchSettings": w_result.__dict__})
 
+    #@+node:felix.20210601005209.1: *4* find_all
     def find_all(self, param):
         """Run Leo's find all command and return results."""
         c = self.commander
@@ -1247,6 +1355,7 @@ class LeoBridgeIntegController:
                     "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
+    #@+node:felix.20210527225925.1: *4* find_next
     def find_next(self, param):
         """Run Leo's find-next command and return results."""
         c = self.commander
@@ -1262,6 +1371,7 @@ class LeoBridgeIntegController:
                     "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
+    #@+node:felix.20210527225930.1: *4* find_previous
     def find_previous(self, param):
         """Run Leo's find-previous command and return results."""
         c = self.commander
@@ -1277,6 +1387,7 @@ class LeoBridgeIntegController:
                     "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
+    #@+node:felix.20210531011702.1: *4* replace
     def replace(self, param):
         """Run Leo's replace command and return results."""
         c = self.commander
@@ -1289,6 +1400,7 @@ class LeoBridgeIntegController:
                     "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
+    #@+node:felix.20210531011713.1: *4* replace_then_find
     def replace_then_find(self, param):
         """Run Leo's replace then find next command and return results."""
         c = self.commander
@@ -1301,6 +1413,7 @@ class LeoBridgeIntegController:
                     "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
+    #@+node:felix.20210531011822.1: *4* replace_all
     def replace_all(self, param):
         """Run Leo's replace all command and return results."""
         c = self.commander
@@ -1313,6 +1426,7 @@ class LeoBridgeIntegController:
                     "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
+    #@+node:felix.20210531214057.1: *4* clone_find_all
     def clone_find_all(self, param):
         """Run Leo's clone-find-all command and return results."""
         c = self.commander
@@ -1325,6 +1439,7 @@ class LeoBridgeIntegController:
                     "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
+    #@+node:felix.20210531214103.1: *4* clone_find_all_flattened
     def clone_find_all_flattened(self, param):
         """Run Leo's clone-find-all-flattened command and return results."""
         c = self.commander
@@ -1336,7 +1451,7 @@ class LeoBridgeIntegController:
         w_result = {"found": result,
                     "focus": focus, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
-
+    #@+node:felix.20210601151758.1: *4* find_var
     def find_var(self, param):
         """Run Leo's find-var command and return results."""
         c = self.commander
@@ -1350,6 +1465,7 @@ class LeoBridgeIntegController:
         w_result = {"node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
+    #@+node:felix.20210601151804.1: *4* find_def
     def find_def(self, param):
         """Run Leo's find-def command and return results."""
         c = self.commander
@@ -1363,6 +1479,7 @@ class LeoBridgeIntegController:
         w_result = {"node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
+    #@+node:felix.20210601152841.1: *4* goto_global_line
     def goto_global_line(self, param):
         """Run Leo's goto-global-line command and return results."""
         c = self.commander
@@ -1371,6 +1488,31 @@ class LeoBridgeIntegController:
         w_result = {"found": found, "node": self._p_to_ap(c.p)}
         return self.sendLeoBridgePackage(w_result)
 
+    #@+node:felix.20210620213815.1: *4* clone_find_tag
+    def clone_find_tag(self, param):
+        """Run Leo's clone-find-tag command and return results."""
+        tag = 'clone_find_tag'
+        c = self.commander
+        fc = c.findCommands
+        the_tag = param.get("tag")
+        if the_tag:
+            settings = fc.ftm.get_settings()
+            n, p = fc.do_clone_find_tag(settings)
+        return self.sendLeoBridgePackage({"n": n})
+
+    #@+node:felix.20210620213822.1: *4* tag_children
+    def tag_children(self, param):
+        """Run Leo's tag-children command"""
+        # This is not a find command!
+        c = self.commander
+        fc = c.findCommands
+        the_tag = param.get("tag")
+        if the_tag:
+            fc.do_tag_children(c.p, the_tag)
+        return self.sendLeoBridgePackage()
+
+    #@+node:felix.20200924223910.1: *3* At Buttons
+    #@+node:felix.20200924210020.1: *4* get_buttons
     def get_buttons(self, param):
         '''Gets the currently opened file's @buttons list'''
         w_buttons = []
@@ -1381,6 +1523,7 @@ class LeoBridgeIntegController:
                 w_buttons.append(w_entry)
         return self.sendLeoBridgePackage({"buttons": w_buttons})
 
+    #@+node:felix.20200924210024.1: *4* remove_button
     def remove_button(self, param):
         '''Removes an entry from the buttonsDict by index string'''
         w_index = param['index']
@@ -1394,6 +1537,7 @@ class LeoBridgeIntegController:
         # return selected node when done
         return self._outputPNode(self.commander.p)
 
+    #@+node:felix.20200924210029.1: *4* click_button
     def click_button(self, param):
         '''Handles buttons clicked in client from the '@button' panel'''
         w_index = param['index']
@@ -1407,6 +1551,8 @@ class LeoBridgeIntegController:
         # return selected node when done
         return self._outputPNode(self.commander.p)
 
+    #@+node:felix.20200924223945.1: *3* Minibuffer
+    #@+node:felix.20200924210036.1: *4* get_all_leo_commands
     def get_all_leo_commands(self, param):
         """Return a list of all Leo commands that make sense in leoInteg."""
         c = self.commander
@@ -1443,6 +1589,7 @@ class LeoBridgeIntegController:
 
         return self.sendLeoBridgePackage({"commands": result})
 
+    #@+node:felix.20200924210058.1: *4* _bad_commands
     def _bad_commands(self):
         """Return the list of Leo's command names that leoInteg should ignore."""
         c = self.commander
@@ -2048,6 +2195,7 @@ class LeoBridgeIntegController:
         result = list(sorted(bad))
         return result
 
+    #@+node:felix.20200924210112.1: *4* _good_commands
     def _good_commands(self):
         """Defined commands that definitely should be included in leoInteg."""
         good_list = [
@@ -2479,12 +2627,15 @@ class LeoBridgeIntegController:
         ]
         return good_list
 
+    #@+node:felix.20200924210952.1: *4* _getDocstringForCommand
     def _getDocstringForCommand(self, command_name):
         """get docstring for the given command."""
         func = self._get_commander_method(command_name)
         docstring = func.__doc__ if func else ''
         return docstring
 
+    #@+node:felix.20200924224100.1: *3* Overriden Leo Commands
+    #@+node:felix.20200924211057.1: *4* mark_node
     def mark_node(self, param):
         '''Mark a node, don't select it'''
         w_ap = param["ap"]
@@ -2499,6 +2650,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError("Error in markPNode no param node")
 
+    #@+node:felix.20200924211100.1: *4* unmark_node
     def unmark_node(self, param):
         '''Unmark a node, don't select it'''
         w_ap = param["ap"]
@@ -2513,11 +2665,12 @@ class LeoBridgeIntegController:
         else:
             return self._outputError("Error in unmarkPNode no param node")
 
+    #@+node:felix.20200924211104.1: *4* clone_node
     def clone_node(self, param):
         '''Clone a node, return it, if it was also the current selection, otherwise try not to select it'''
         w_ap = param["ap"]
         if not w_ap:
-            return self._outputError("Error in clonePNode function, no param p_ap")
+            return self._outputError("Error in clonePNode function, no param ap")
         w_p = self._ap_to_p(w_ap)
         if not w_p:
             # default empty
@@ -2533,6 +2686,7 @@ class LeoBridgeIntegController:
         # return selected node either ways
         return self._outputPNode(self.commander.p)
 
+    #@+node:felix.20200924211121.1: *4* cut_node
     def cut_node(self, param):
         '''Cut a node, don't select it. Try to keep selection, then return the selected node that remains'''
         w_ap = param["ap"]
@@ -2562,6 +2716,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError("Error in cutPNode no param node")
 
+    #@+node:felix.20200924211125.1: *4* delete_node
     def delete_node(self, param):
         '''Delete a node, don't select it. Try to keep selection, then return the selected node that remains'''
         w_ap = param["ap"]
@@ -2591,6 +2746,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError("Error in deletePNode no param node")
 
+    #@+node:felix.20200924211127.1: *4* insert_node
     def insert_node(self, param):
         '''Insert a node at given node, then select it once created, and finally return it'''
         w_ap = param["ap"]
@@ -2611,6 +2767,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError("Error in insertPNode no param node")
 
+    #@+node:felix.20200924211132.1: *4* insert_named_node
     def insert_named_node(self, param):
         '''Insert a node at given node, set its headline, select it and finally return it'''
         w_newHeadline = param['name']
@@ -2634,6 +2791,7 @@ class LeoBridgeIntegController:
         else:
             return self._outputError("Error in insertNamedPNode no param node")
 
+    #@+node:felix.20200924211135.1: *4* undo
     def undo(self, param):
         '''Undo last un-doable operation'''
         if self.commander.undoer.canUndo():
@@ -2641,6 +2799,7 @@ class LeoBridgeIntegController:
         # return selected node when done
         return self._outputPNode(self.commander.p)
 
+    #@+node:felix.20200924211138.1: *4* redo
     def redo(self, param):
         '''Undo last un-doable operation'''
         if self.commander.undoer.canRedo():
@@ -2648,12 +2807,15 @@ class LeoBridgeIntegController:
         # return selected node when done
         return self._outputPNode(self.commander.p)
 
+    #@+node:felix.20201025144113.1: *4* test
     def test(self, param):
         '''Utility test function for debugging'''
         print("Called test")
         return self.sendLeoBridgePackage({'testReturnedKey': 'testReturnedValue'})
         # return self._outputPNode(self.commander.p)
 
+    #@+node:felix.20191128001054.1: *3* Outline and Body Interaction
+    #@+node:felix.20200929215102.3: *4* page_up
     def page_up(self, param):
         """Selects a node a couple of steps up in the tree to simulate page up"""
         n = param.get("n", 3)
@@ -2661,6 +2823,7 @@ class LeoBridgeIntegController:
             self.commander.selectVisBack()
         return self._outputPNode(self.commander.p)
 
+    #@+node:felix.20200929215102.4: *4* page_down
     def page_down(self, param):
         """Selects a node a couple of steps down in the tree to simulate page down"""
         n = param.get("n", 3)
@@ -2668,7 +2831,8 @@ class LeoBridgeIntegController:
             self.commander.selectVisNext()
         return self._outputPNode(self.commander.p)
 
-    def get_body_states(self, p_ap):
+    #@+node:felix.20200929215102.5: *4* get_body_states
+    def get_body_states(self, param):
         """
         Finds the language in effect at top of body for position p,
         return type is lowercase 'language' non-empty string.
@@ -2677,13 +2841,14 @@ class LeoBridgeIntegController:
         The cursor positions are given as {"line": line, "col": col, "index": i}
         with line and col along with a redundant index for convenience and flexibility.
         """
-        if not p_ap:
-            return self._outputError("Error in getLanguage, no param p_ap")
+        w_ap = param.get("ap")  # At least node parameter is present
+        if not w_ap:
+            return self._outputError("Error in getLanguage, no param ap")
 
-        w_p = self._ap_to_p(p_ap)
+        w_p = self._ap_to_p(w_ap)
         if not w_p:
             print(
-                "in GBS -> P NOT FOUND gnx:" + p_ap['gnx'] + " using self.commander.p gnx: " + self.commander.p.v.gnx)
+                "in GBS -> P NOT FOUND gnx:" + w_ap['gnx'] + " using self.commander.p gnx: " + self.commander.p.v.gnx)
             w_p = self.commander.p
 
         w_wrapper = self.commander.frame.body.wrapper
@@ -2773,10 +2938,12 @@ class LeoBridgeIntegController:
             }
         return self.sendLeoBridgePackage(states)
 
-    def get_children(self, p_ap):
+    #@+node:felix.20191126232434.16: *4* get_children & helper
+    def get_children(self, param):
         '''EMIT OUT list of children of a node'''
-        if p_ap:
-            w_p = self._ap_to_p(p_ap)
+        w_ap = param.get("ap")  # At least node parameter is present
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p and w_p.hasChildren():
                 return self._outputPNodes(w_p.children())
             else:
@@ -2788,6 +2955,7 @@ class LeoBridgeIntegController:
                 # this outputs all Root Children
                 return self._outputPNodes(self._yieldAllRootChildren())
 
+    #@+node:felix.20191126232434.29: *5* _yieldAllRootChildren
     def _yieldAllRootChildren(self):
         '''Return all root children P nodes'''
         p = self.commander.rootPosition()
@@ -2795,25 +2963,30 @@ class LeoBridgeIntegController:
             yield p
             p.moveToNext()
 
-    def get_parent(self, p_ap):
+    #@+node:felix.20191126232434.17: *4* get_parent
+    def get_parent(self, param):
         '''EMIT OUT the parent of a node, as an array, even if unique or empty'''
-        if p_ap:
-            w_p = self._ap_to_p(p_ap)
+        w_ap = param.get("ap")  # At least node parameter is present
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p and w_p.hasParent():
                 return self._outputPNode(w_p.getParent())  # if not root
         return self._outputPNode()  # default empty for root as default
 
+    #@+node:felix.20191201194046.1: *4* get_all_gnx
     def get_all_gnx(self, param):
         '''Get gnx array from all unique nodes'''
         w_all_gnx = [
             p.v.gnx for p in self.commander.all_unique_positions(copy=False)]
         return self.sendLeoBridgePackage({"gnx": w_all_gnx})
 
-    def get_body(self, p_gnx):
+    #@+node:felix.20191126232434.19: *4* get_body
+    def get_body(self, param):
         '''EMIT OUT body of a node'''
         # TODO : if not found, send code to prevent unresolved promise if 'document switch' occurred shortly before
-        if p_gnx:
-            w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
+        w_gnx = param.get("gnx")  # At least node parameter is present
+        if w_gnx:
+            w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
             if w_v:
                 if w_v.b:
                     return self._outputBodyData(w_v.b)
@@ -2822,16 +2995,19 @@ class LeoBridgeIntegController:
         # Send as empty to fix unresolved promise if 'document switch' occurred shortly before
         return self._outputBodyData()
 
-    def get_body_length(self, p_gnx):
+    #@+node:felix.20191126232434.20: *4* get_body_length
+    def get_body_length(self, param):
         '''EMIT OUT body string length of a node'''
-        if p_gnx:
-            w_v = self.commander.fileCommands.gnxDict.get(p_gnx)  # vitalije
+        w_gnx = param.get("gnx")  # At least node parameter is present
+        if w_gnx:
+            w_v = self.commander.fileCommands.gnxDict.get(w_gnx)  # vitalije
             if w_v and w_v.b:
                 # Length in bytes, not just by character count.
                 return self.sendLeoBridgePackage({"len": len(w_v.b.encode('utf-8'))})
         # TODO : May need to signal inexistent by self.sendLeoBridgePackage()
         return self.sendLeoBridgePackage({"len": 0})  # empty as default
 
+    #@+node:felix.20191126232434.22: *4* set_body
     def set_body(self, param):
         '''Change Body text of a v node'''
         w_gnx = param['gnx']
@@ -2858,6 +3034,7 @@ class LeoBridgeIntegController:
                 w_v.b = w_body
         return self._outputPNode(self.commander.p)  # return selected node
 
+    #@+node:felix.20210512000301.1: *4* get_focus
     def get_focus(self, param):
         """
         Return a representation of the focused widget,
@@ -2867,6 +3044,7 @@ class LeoBridgeIntegController:
         focus = self.g.app.gui.widget_name(w)
         return self.sendLeoBridgePackage({"focus": focus})
 
+    #@+node:felix.20200929230231.1: *4* set_selection
     def set_selection(self, param):
         '''
         Set cursor position and scroll position along with selection start and end.
@@ -2953,6 +3131,7 @@ class LeoBridgeIntegController:
         # output selected node as 'ok'
         return self._outputPNode(self.commander.p)
 
+    #@+node:felix.20191126232434.23: *4* set_headline
     def set_headline(self, param):
         '''Change Headline of a node'''
         w_newHeadline = param['name']
@@ -2968,27 +3147,30 @@ class LeoBridgeIntegController:
                 return self._outputPNode(w_p)
         return self._outputError("Error in setNewHeadline")
 
-    def set_current_position(self, p_ap):
+    #@+node:felix.20191126232434.24: *4* set_current_position & helper
+    def set_current_position(self, param):
         '''Select a node, or the first one found with its GNX'''
-        if p_ap:
-            w_p = self._ap_to_p(p_ap)
+        w_ap = param.get("ap")  # At least node parameter is present
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p:
                 if self.commander.positionExists(w_p):
                     # set this node as selection
                     self.commander.selectPosition(w_p)
                 else:
-                    w_foundPNode = self._findPNodeFromGnx(p_ap['gnx'])
+                    w_foundPNode = self._findPNodeFromGnx(w_ap['gnx'])
                     if w_foundPNode:
                         self.commander.selectPosition(w_foundPNode)
                     else:
                         print("Set Selection node does not exist! ap was:" +
-                              json.dumps(p_ap), flush=True)
+                              json.dumps(w_ap), flush=True)
         # * return the finally selected node
         if self.commander.p:
             return self._outputPNode(self.commander.p)
         else:
             return self._outputPNode()
 
+    #@+node:felix.20191216195906.1: *5* _findPNodeFromGnx
     def _findPNodeFromGnx(self, p_gnx):
         '''Return first p node with this gnx or false'''
         for p in self.commander.all_unique_positions():
@@ -2996,22 +3178,28 @@ class LeoBridgeIntegController:
                 return p
         return False
 
-    def expand_node(self, p_ap):
+    #@+node:felix.20191126232434.25: *4* expand_node
+    def expand_node(self, param):
         '''Expand a node'''
-        if p_ap:
-            w_p = self._ap_to_p(p_ap)
+        w_ap = param.get("ap")  # At least node parameter is present
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p:
                 w_p.expand()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
-    def contract_node(self, p_ap):
+    #@+node:felix.20191126232434.26: *4* contract_node
+    def contract_node(self, param):
         '''Collapse a node'''
-        if p_ap:
-            w_p = self._ap_to_p(p_ap)
+        w_ap = param.get("ap")  # At least node parameter is present
+        if w_ap:
+            w_p = self._ap_to_p(w_ap)
             if w_p:
                 w_p.contract()
         return self.sendLeoBridgePackage()  # Just send empty as 'ok'
 
+    #@+node:felix.20191128003648.1: *3* leoFlexx Conversion Functions
+    #@+node:felix.20191126232434.27: *4* _create_gnx_to_vnode
     def _create_gnx_to_vnode(self):
         '''Make the first gnx_to_vnode array with all unique nodes'''
         t1 = time.process_time()
@@ -3023,6 +3211,7 @@ class LeoBridgeIntegController:
                 (time.process_time()-t1), len(list(self.gnx_to_vnode.keys()))), flush=True)
         self._test_round_trip_positions()
 
+    #@+node:felix.20191126232434.28: *4* _test_round_trip_positions
     def _test_round_trip_positions(self):
         '''(From Leo plugin leoflexx.py) Test the round tripping of p_to_ap and ap_to_p.'''
         # Bug fix: p_to_ap updates app.gnx_to_vnode. Save and restore it.
@@ -3041,13 +3230,14 @@ class LeoBridgeIntegController:
         # print('Leo file opened. Its outline contains ' + str(qtyAllPositions) + " nodes positions.", flush=True)
         # print(('Testing app.test_round_trip_positions for all nodes: Total time: %5.3f sec.' % (time.process_time()-t1)), flush=True)
 
+    #@+node:felix.20191126232434.30: *4* _ap_to_p
     def _ap_to_p(self, ap):
         '''
         (From Leo plugin leoflexx.py) Convert an archived position to a true Leo position.
         Return false if no key
         '''
         childIndex = ap['childIndex']
-
+        tag= "_ap_to_p"
         try:
             v = self.gnx_to_vnode[ap['gnx']]  # Trap this
             stack = [
@@ -3056,9 +3246,17 @@ class LeoBridgeIntegController:
             ]
         except Exception:
             return False
+        p = leoNodes.position(v, childIndex, stack)
+        if not self.commander.positionExists(p):  # pragma: no cover.
+            print(
+                f"{tag}: Bad ap: {ap!r}\n"
+                # f"{tag}: position: {p!r}\n"
+                f"{tag}: v {v!r} childIndex: {childIndex!r}\n"
+                f"{tag}: stack: {stack!r}")
 
-        return leoNodes.position(v, childIndex, stack)
+        return p
 
+    #@+node:felix.20191126232434.31: *4* _p_to_ap
     def _p_to_ap(self, p):
         '''(From Leo plugin leoflexx.py) Converts Leo position to a serializable archived position.'''
         if not p.v:
@@ -3104,6 +3302,8 @@ class LeoBridgeIntegController:
         return w_ap
 
 
+    #@-others
+#@+node:felix.20201129184357.1: ** printAction
 def printAction(param):
     '''Debugging tool that prints out called action if not in 'common-action' array'''
     w_action = param["action"]
@@ -3114,6 +3314,7 @@ def printAction(param):
         print(f"*ACTION* {w_action}, id {param['id']}", flush=True)
 
 
+#@+node:felix.20191126232435.1: ** main leoBridgeServer loop
 def main():
     '''python script for leo integration via leoBridge'''
     global wsHost, wsPort
@@ -3171,8 +3372,6 @@ def main():
                     # ! See : getSelectedNode and getAllGnx
                     if action[0] == "!":
                         w_func = getattr(integController, action[1:], None)
-                        if not w_func:
-                            print(action)
                         w_answer = w_func(param)
                     elif action[0] == "_":
                         integController._outputError(
@@ -3207,6 +3406,7 @@ def main():
     print("Stopping leobridge server", flush=True)
 
 
+#@-others
 if __name__ == '__main__':
     # Startup
     try:
@@ -3214,3 +3414,4 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print("\nKeyboard Interupt: Stopping leobridge server", flush=True)
         sys.exit()
+#@-leo

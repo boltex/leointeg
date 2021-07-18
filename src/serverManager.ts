@@ -6,6 +6,8 @@ import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
+var kill = require('tree-kill');
+
 
 /**
  * * Leo bridge server service
@@ -197,10 +199,20 @@ export class ServerService {
             }
 
             return w_serverStartPromise;
-
         });
 
+    }
 
+    /**
+     * Kills the server if it was started by this instance of leoInteg
+     */
+    public killServer(): void {
+        if (this._serverProcess) {
+            // this._serverProcess.kill();
+            kill(this._serverProcess.pid);
+        } else {
+            console.error("No stdout");
+        }
     }
 
 }
