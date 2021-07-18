@@ -1,0 +1,12 @@
+div.row {
+  overflow-x: hidden;
+  white-space: nowrap;
+}
+
+div.col {
+  width: 50%;
+  max-width: 9.5em;
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

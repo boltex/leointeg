@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
+import * as utils from "../utils";
 
 export class LeoSettingsProvider {
 
@@ -14,10 +15,10 @@ export class LeoSettingsProvider {
         private _leoIntegration: LeoIntegration
     ) {
         this._extensionPath = _context.extensionPath;
-        vscode.workspace.onDidChangeConfiguration(p_event => this._onChangeConfiguration(p_event));
+        vscode.workspace.onDidChangeConfiguration(p_event => this.changedConfiguration(p_event));
     }
 
-    private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
+    public changedConfiguration(p_event?: vscode.ConfigurationChangeEvent): void {
         if (this._panel && !this._waitingForUpdate) {
             this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
         }
@@ -58,20 +59,13 @@ export class LeoSettingsProvider {
                             case 'alert':
                                 vscode.window.showErrorMessage(message.text);
                                 break;
-                            case 'chooseLeoServerPath':
-                                vscode.window.showOpenDialog(
-                                    {
-                                        title: "Locate Leo Server Script",
-                                        canSelectMany: false,
-                                        openLabel: "Choose",
-                                        filters: { 'script': ['py'] }
-                                    }
-                                ).then(p_chosenFile => {
-                                    if (p_chosenFile && p_chosenFile.length) {
+                            case 'chooseLeoEditorPath':
+                                utils.chooseLeoFolderDialog().then(p_chosenPath => {
+                                    if (p_chosenPath && p_chosenPath.length) {
                                         this._panel!.webview.postMessage(
                                             {
-                                                command: 'newServerPath',
-                                                serverPath: p_chosenFile[0].fsPath
+                                                command: 'newEditorPath',
+                                                editorPath: p_chosenPath[0].fsPath
                                             }
                                         );
                                     }

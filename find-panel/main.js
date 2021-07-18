@@ -22,6 +22,10 @@
         searchScope: 0, // 0 is entire outline (1: sub-outline, 2: node only)
     };
 
+    document.addEventListener('focusin', (event) => {
+        vscode.postMessage({ type: 'gotFocus' });
+    });
+
     // Handle messages sent from the extension to the webview
     window.addEventListener('message', (event) => {
         const message = event.data; // The json data that the extension sent
@@ -80,16 +84,16 @@
     function setSettings(p_settings) {
         // When opening a Leo document, set default values of fields
         inputIds.forEach((p_inputId) => {
-            //@ts-expect-error
+                    //@ts-expect-error
             document.getElementById(p_inputId).value = p_settings[p_inputId];
             searchSettings[p_inputId] = p_settings[p_inputId];
         });
         checkboxIds.forEach((p_inputId) => {
-            //@ts-expect-error
+                    //@ts-expect-error
             document.getElementById(p_inputId).checked = p_settings[p_inputId];
             searchSettings[p_inputId] = p_settings[p_inputId];
         });
-        //@ts-expect-error
+                //@ts-expect-error
         document.getElementById(radioIds[p_settings['searchScope']]).checked = true;
         searchSettings.searchScope = p_settings['searchScope'];
     }
@@ -111,7 +115,7 @@
 
     inputIds.forEach((p_inputId) => {
         document.getElementById(p_inputId).onkeypress = function (p_event) {
-            //@ts-expect-error
+                    //@ts-expect-error
             if (!p_event) p_event = window.event;
             var keyCode = p_event.code || p_event.key;
             if (keyCode == 'Enter') {
@@ -124,14 +128,14 @@
             }
         };
         document.getElementById(p_inputId).addEventListener('input', function (p_event) {
-            //@ts-expect-error
+                    //@ts-expect-error
             searchSettings[p_inputId] = this.value;
             processChange();
         });
     });
     checkboxIds.forEach((p_inputId) => {
         document.getElementById(p_inputId).addEventListener('change', function (p_event) {
-            //@ts-expect-error
+                //@ts-expect-error
             searchSettings[p_inputId] = this.checked;
             processChange();
         });
@@ -139,7 +143,7 @@
     radioIds.forEach((p_inputId) => {
         document.getElementById(p_inputId).addEventListener('change', function (p_event) {
             searchSettings['searchScope'] = parseInt(
-                //@ts-expect-error
+                    //@ts-expect-error
                 document.querySelector('input[name="searchScope"]:checked').value
             );
             processChange();
@@ -152,11 +156,11 @@
     function toggleCheckbox(p_inputId) {
         let w_checkbox = document.getElementById(p_inputId);
         let w_setTo = true;
-        //@ts-expect-error
+            //@ts-expect-error
         if (w_checkbox.checked) {
             w_setTo = false;
         }
-        //@ts-expect-error
+            //@ts-expect-error
         w_checkbox.checked = w_setTo;
         searchSettings[p_inputId] = w_setTo;
         if (timer) {
@@ -169,10 +173,10 @@
      * @param {string} p_inputId
      */
     function setRadio(p_inputId) {
-        //@ts-expect-error
+            //@ts-expect-error
         document.getElementById(p_inputId).checked = true;
         searchSettings['searchScope'] = parseInt(
-            //@ts-expect-error
+                //@ts-expect-error
             document.querySelector('input[name="searchScope"]:checked').value
         );
         if (timer) {
@@ -186,12 +190,53 @@
      * @param {KeyboardEvent} p_event
      */
     function checkKeyDown(p_event) {
-        //@ts-expect-error
+            //@ts-expect-error
         if (!p_event) p_event = window.event;
         var keyCode = p_event.code || p_event.key;
 
-        console.log('got keycode:', keyCode);
+        if (keyCode === 'Tab') {
+            var actEl = document.activeElement;
+            if (p_event.shiftKey) {
+                var firstEl = document.getElementById('findText');
+                if (actEl === firstEl) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    document.getElementById('searchBody').focus();
+                    return;
+                }
+            } else {
+                var lastEl = document.getElementById('searchBody');
+                if (actEl === lastEl) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    focusOnField('findText');
+                    return;
+                }
+            }
+        }
+        // checkOtherKeys(p_event);
+    }
 
+    // TODO :  CAPTURE FOCUS IN OVERALL PANEL AND SET CONTEXT-VAR OF 'FOCUSED PANEL'
+
+    // TODO : ALSO CYCLE TABS !!
+    // TODO : ALSO CAPTURE CTRL+T TO FOCUS OUT OF HERE
+
+    // TODO : CHECK FOR ALT+CTRL+SHORTCUTS FOR TOGGLES AND RADIOS
+    // document.addEventListener ("keydown", function (zEvent) {
+    //     if (zEvent.ctrlKey  &&  zEvent.altKey  &&  zEvent.key === "e") {  // case sensitive
+    //         // DO YOUR STUFF HERE
+    //     }
+    // } );
+
+    document.onkeydown = checkKeyDown;
+
+    // ! Not Used Anymore ! now uses real vscode keybindings
+    /*
+    function checkOtherKeys(p_event) {
+        var keyCode = p_event.code || p_event.key;
         if (keyCode === 'F2') {
             p_event.preventDefault();
             p_event.stopPropagation();
@@ -206,7 +251,6 @@
             vscode.postMessage({ type: 'leoFindNext' });
             return;
         }
-
         if ((keyCode === 'f' || keyCode === 'KeyF') && p_event.ctrlKey) {
             p_event.preventDefault();
             p_event.stopPropagation();
@@ -235,30 +279,6 @@
             vscode.postMessage({ type: 'replaceThenFind' });
             return;
         }
-
-        if (keyCode === 'Tab') {
-            var actEl = document.activeElement;
-            if (p_event.shiftKey) {
-                var firstEl = document.getElementById('findText');
-                if (actEl === firstEl) {
-                    p_event.preventDefault();
-                    p_event.stopPropagation();
-                    p_event.stopImmediatePropagation();
-                    document.getElementById('searchBody').focus();
-                    return;
-                }
-            } else {
-                var lastEl = document.getElementById('searchBody');
-                if (actEl === lastEl) {
-                    p_event.preventDefault();
-                    p_event.stopPropagation();
-                    p_event.stopImmediatePropagation();
-                    focusOnField('findText');
-                    return;
-                }
-            }
-        }
-
         if (p_event.ctrlKey && p_event.altKey) {
             switch (keyCode) {
                 case 'w':
@@ -306,31 +326,18 @@
             }
         }
     }
-
-    // TODO :  CAPTURE FOCUS IN OVERALL PANEL AND SET CONTEXT-VAR OF 'FOCUSED PANEL'
-
-    // TODO : ALSO CYCLE TABS !!
-    // TODO : ALSO CAPTURE CTRL+T TO FOCUS OUT OF HERE
-
-    // TODO : CHECK FOR ALT+CTRL+SHORTCUTS FOR TOGGLES AND RADIOS
-    // document.addEventListener ("keydown", function (zEvent) {
-    //     if (zEvent.ctrlKey  &&  zEvent.altKey  &&  zEvent.key === "e") {  // case sensitive
-    //         // DO YOUR STUFF HERE
-    //     }
-    // } );
-
-    document.onkeydown = checkKeyDown;
+    */
 
     /**
      * @param {string} p_id
      */
     function focusOnField(p_id) {
         const inputField = document.querySelector('#' + p_id);
-        //@ts-expect-error
+            //@ts-expect-error
         inputField.select();
         // TODO : TEST IF NEEDED TO PREVENT FLICKER ON FIRST TRY?
         setTimeout(() => {
-            //@ts-expect-error
+                //@ts-expect-error
             inputField.select();
         }, 0);
     }

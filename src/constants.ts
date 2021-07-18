@@ -36,7 +36,8 @@ export class Constants {
 
     public static DEFAULT_PYTHON: string = "python3";
     public static WIN32_PYTHON: string = "py";
-    public static SERVER_PATH: string = "/leobridgeserver.py";
+    public static OLD_SERVER_NAME: string = "/leobridgeserver.py";
+    public static SERVER_NAME: string = "/leoserver.py";
     public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
     public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
 
@@ -63,6 +64,7 @@ export class Constants {
         SEARCH_BODY: "searchBody",
         SEARCH_HEADLINE: "searchHeadline"
     };
+
     /**
      * * Strings used in the workbench interface panels (not for messages or dialogs)
      */
@@ -124,6 +126,12 @@ export class Constants {
         TITLE_GOTO_GLOBAL_LINE: "Goto global line",
         PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
         PROMPT_GOTO_GLOBAL_LINE: "Line number",
+        TITLE_TAG_CHILDREN: "Tag Children",
+        PLACEHOLDER_TAG_CHILDREN: "<tag>",
+        PROMPT_TAG_CHILDREN: "Enter a tag name",
+        TITLE_FIND_TAG: "Find Tag",
+        PLACEHOLDER_CLONE_FIND_TAG: "<tag>",
+        PROMPT_CLONE_FIND_TAG: "Enter a tag name",
         START_SERVER_ERROR: "Error - Cannot start server: ",
         CONNECT_FAILED: "Leo Bridge Connection Failed",
         CONNECT_ERROR: "Leo Bridge Connection Error: Incorrect id",
@@ -132,6 +140,8 @@ export class Constants {
         DISCONNECTED: "Disconnected",
         CLEARED_RECENT: "Cleared recent files list",
         CLOSE_ERROR: "Cannot close: No files opened.",
+        LEO_PATH_MISSING: "Leo Editor Path Setting Missing",
+        CANNOT_FIND_SERVER_SCRIPT: "Cannot find server script",
         YES: "Yes",
         NO: "No",
         YES_ALL: "Yes to all",
@@ -208,8 +218,20 @@ export class Constants {
         SHOW_MARK: "showMarkOnNodes",
         SHOW_CLONE: "showCloneOnNodes",
         SHOW_COPY: "showCopyOnNodes",
+
+        SHOW_EDITION_BODY: "showEditionOnBody",
+        SHOW_CLIPBOARD_BODY: "showClipboardOnBody",
+        SHOW_PROMOTE_BODY: "showPromoteOnBody",
+        SHOW_EXECUTE_BODY: "showExecuteOnBody",
+        SHOW_EXTRACT_BODY: "showExtractOnBody",
+        SHOW_IMPORT_BODY: "showImportOnBody",
+        SHOW_REFRESH_BODY: "showRefreshOnBody",
+        SHOW_HOIST_BODY: "showHoistOnBody",
+        SHOW_MARK_BODY: "showMarkOnBody",
+        SHOW_SORT_BODY: "showSortOnBody",
+
         INVERT_NODES: "invertNodeContrast",
-        LEO_SERVER_PATH: "leoServerPath",
+        LEO_EDITOR_PATH: "leoEditorPath",
         LEO_PYTHON_COMMAND: "leoPythonCommand",
         AUTO_START_SERVER: "startServerAutomatically",
         AUTO_CONNECT: "connectToServerAutomatically",
@@ -237,12 +259,25 @@ export class Constants {
         SHOW_MARK: false,
         SHOW_CLONE: false,
         SHOW_COPY: false,
+
+        SHOW_EDITION_BODY: true,
+        SHOW_CLIPBOARD_BODY: true,
+        SHOW_PROMOTE_BODY: true,
+        SHOW_EXECUTE_BODY: true,
+        SHOW_EXTRACT_BODY: true,
+        SHOW_IMPORT_BODY: true,
+        SHOW_REFRESH_BODY: true,
+        SHOW_HOIST_BODY: true,
+        SHOW_MARK_BODY: true,
+        SHOW_SORT_BODY: true,
+
         INVERT_NODES: false,
         LEO_PYTHON_COMMAND: "",
-        LEO_SERVER_PATH: "",
+        LEO_EDITOR_PATH: "",
         AUTO_START_SERVER: false,
         AUTO_CONNECT: false,
         IP_ADDRESS: "localhost",
+        IP_LOOPBACK: "127.0.0.1",
         IP_PORT: 32125
     };
 
@@ -268,7 +303,7 @@ export class Constants {
         SELECTED_DIRTY: "leoDirty",
         SELECTED_EMPTY: "leoEmpty",
         SELECTED_CHILD: "leoChild", // Has children
-        SELECTED_ATFILE: "LeoAtFile", // Can be refreshed
+        SELECTED_ATFILE: "leoAtFile", // Can be refreshed
         SELECTED_ROOT: "leoRoot", // ! Not given by Leo: Computed by leoInteg/vscode instead
         // Statusbar Flag 'keybindings in effect'
         LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
@@ -295,7 +330,19 @@ export class Constants {
         SHOW_CLONE: Constants.CONFIG_NAMES.SHOW_CLONE,             // Hover Icons on outline nodes
         SHOW_COPY: Constants.CONFIG_NAMES.SHOW_COPY,               // Hover Icons on outline nodes
         AUTO_START_SERVER: Constants.CONFIG_NAMES.AUTO_START_SERVER,   // Used at startup
-        AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT              // Used at startup
+        AUTO_CONNECT: Constants.CONFIG_NAMES.AUTO_CONNECT,             // Used at startup
+
+        SHOW_EDITION_BODY: Constants.CONFIG_NAMES.SHOW_EDITION_BODY,
+        SHOW_CLIPBOARD_BODY: Constants.CONFIG_NAMES.SHOW_CLIPBOARD_BODY,
+        SHOW_PROMOTE_BODY: Constants.CONFIG_NAMES.SHOW_PROMOTE_BODY,
+        SHOW_EXECUTE_BODY: Constants.CONFIG_NAMES.SHOW_EXECUTE_BODY,
+        SHOW_EXTRACT_BODY: Constants.CONFIG_NAMES.SHOW_EXTRACT_BODY,
+        SHOW_IMPORT_BODY: Constants.CONFIG_NAMES.SHOW_IMPORT_BODY,
+        SHOW_REFRESH_BODY: Constants.CONFIG_NAMES.SHOW_REFRESH_BODY,
+        SHOW_HOIST_BODY: Constants.CONFIG_NAMES.SHOW_HOIST_BODY,
+        SHOW_MARK_BODY: Constants.CONFIG_NAMES.SHOW_MARK_BODY,
+        SHOW_SORT_BODY: Constants.CONFIG_NAMES.SHOW_SORT_BODY
+
     };
 
     /**
@@ -335,7 +382,7 @@ export class Constants {
         NO: "no",
         YES_ALL: "yes-all",
         NO_ALL: "no-all",
-        OK: '"ok"' // Quotes in string as a 'JSON parameter'
+        OK: "ok"
     };
 
     /**
@@ -409,6 +456,8 @@ export class Constants {
         MOVE_PNODE_UP: "moveOutlineUp", // * Direct Leo Command
         INSERT_PNODE: "!insert_node", // "insertPNode",
         INSERT_NAMED_PNODE: "!insert_named_node", // "insertNamedPNode",
+        INSERT_CHILD_PNODE: "!insert_child_node",
+        INSERT_CHILD_NAMED_PNODE: "!insert_child_named_node",
         CLONE_PNODE: "!clone_node", // "clonePNode",
         PROMOTE_PNODE: "promote", // * Direct Leo Command
         DEMOTE_PNODE: "demote", // * Direct Leo Command
@@ -421,7 +470,7 @@ export class Constants {
         HOIST_PNODE: "hoist", // * Direct Leo Command
         DEHOIST: "dehoist", // * Direct Leo Command
         EXTRACT: "extract", // * Direct Leo Command
-        EXTRACT_NAMES: "extractNames", // * Direct Leo Command
+        EXTRACT_NAMES: "extractSectionNames", // * Direct Leo Command
         COPY_MARKED: "copyMarked", // * Direct Leo Command
         DIFF_MARKED_NODES: "deleteMarked", // * Direct Leo Command
         MARK_CHANGED_ITEMS: "markChangedHeadlines", // * Direct Leo Command
@@ -438,23 +487,32 @@ export class Constants {
         FIND_ALL: "!find_all",
         FIND_NEXT: "!find_next",
         FIND_PREVIOUS: "!find_previous",
+        FIND_VAR: "!find_var",
+        FIND_DEF: "!find_def",
         REPLACE: "!replace",
         REPLACE_THEN_FIND: "!replace_then_find",
         REPLACE_ALL: "!replace_all",
         GOTO_GLOBAL_LINE: "!goto_global_line",
+        TAG_CHILDREN: "!tag_children",
+        CLONE_FIND_TAG: "!clone_find_tag",
         CLONE_FIND_ALL: "!clone_find_all",
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
-        CLONE_FIND_MARKED: "cloneFindMarked", // * Direct Leo Command
-        CLONE_FIND_FLATTENED_MARKED: "cloneFindFlattenedMarked" // * Direct Leo Command
+        CLONE_FIND_MARKED: "cloneFindAllMarked", // * Direct Leo Command
+        CLONE_FIND_FLATTENED_MARKED: "cloneFindAllFlattenedMarked", // * Direct Leo Command
+        GOTO_PREV_HISTORY: "goToPrevHistory", // * Direct Leo Command
+        GOTO_NEXT_HISTORY: "goToNextHistory" // * Direct Leo Command
     };
 
     /**
      * * All commands this expansion exposes (in package.json, contributes > commands)
      */
     public static COMMANDS = {
+        // * Access to the Settings/Welcome Webview
         SHOW_WELCOME: Constants.NAME + ".showWelcomePage", // Always available: not in the commandPalette section of package.json
         SHOW_SETTINGS: Constants.NAME + ".showSettingsPage", // Always available: not in the commandPalette section of package.json
+        STATUS_BAR: Constants.NAME + ".statusBar", // Status Bar Click Command
         // * LeoBridge
+        CHOOSE_LEO_FOLDER: Constants.NAME + ".chooseLeoFolder",
         START_SERVER: Constants.NAME + ".startServer",
         CONNECT: Constants.NAME + ".connectToServer",
         SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
@@ -465,6 +523,7 @@ export class Constants {
         SWITCH_FILE: Constants.NAME + ".switchLeoFile",
         NEW_FILE: Constants.NAME + ".newLeoFile",
         SAVE_FILE: Constants.NAME + ".saveLeoFile",
+        // SAVE_DISABLED: Constants.NAME + ".saveLeoFileDisabled", // Disabled - nop
         SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline",
         SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
         CLOSE_FILE: Constants.NAME + ".closeLeoFile",
@@ -506,6 +565,10 @@ export class Constants {
         SORT_SIBLING_FO: Constants.NAME + ".sortSiblingsSelectionFromOutline",
         CONTRACT_ALL: Constants.NAME + ".contractAll", // From command Palette
         CONTRACT_ALL_FO: Constants.NAME + ".contractAllFromOutline", // from button, return focus on OUTLINE
+        PREV_NODE: Constants.NAME + ".prev",
+        PREV_NODE_FO: Constants.NAME + ".prevFromOutline",
+        NEXT_NODE: Constants.NAME + ".next",
+        NEXT_NODE_FO: Constants.NAME + ".nextFromOutline",
         // * Commands from tree panel buttons or context: focus on OUTLINE
         MARK: Constants.NAME + ".mark",
         UNMARK: Constants.NAME + ".unmark",
@@ -520,6 +583,7 @@ export class Constants {
         MOVE_RIGHT: Constants.NAME + ".moveOutlineRight",
         MOVE_UP: Constants.NAME + ".moveOutlineUp",
         INSERT: Constants.NAME + ".insertNode",
+        INSERT_CHILD: Constants.NAME + ".insertChildNode",
         CLONE: Constants.NAME + ".cloneNode",
         PROMOTE: Constants.NAME + ".promote",
         DEMOTE: Constants.NAME + ".demote",
@@ -537,8 +601,13 @@ export class Constants {
         MOVE_LEFT_SELECTION: Constants.NAME + ".moveOutlineLeftSelection",
         MOVE_RIGHT_SELECTION: Constants.NAME + ".moveOutlineRightSelection",
         MOVE_UP_SELECTION: Constants.NAME + ".moveOutlineUpSelection",
+
         INSERT_SELECTION: Constants.NAME + ".insertNodeSelection", // Can be interrupted
         INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Interrupted version
+
+        INSERT_CHILD_SELECTION: Constants.NAME + ".insertChildNodeSelection", // Can be interrupted
+        INSERT_CHILD_SELECTION_INTERRUPT: Constants.NAME + ".insertChildNodeSelectionInterrupt", // Can be interrupted
+
         CLONE_SELECTION: Constants.NAME + ".cloneNodeSelection",
         PROMOTE_SELECTION: Constants.NAME + ".promoteSelection",
         DEMOTE_SELECTION: Constants.NAME + ".demoteSelection",
@@ -557,6 +626,7 @@ export class Constants {
         MOVE_RIGHT_SELECTION_FO: Constants.NAME + ".moveOutlineRightSelectionFromOutline",
         MOVE_UP_SELECTION_FO: Constants.NAME + ".moveOutlineUpSelectionFromOutline",
         INSERT_SELECTION_FO: Constants.NAME + ".insertNodeSelectionFromOutline",
+        INSERT_CHILD_SELECTION_FO: Constants.NAME + ".insertChildNodeSelectionFromOutline",
         CLONE_SELECTION_FO: Constants.NAME + ".cloneNodeSelectionFromOutline",
         PROMOTE_SELECTION_FO: Constants.NAME + ".promoteSelectionFromOutline",
         DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",
@@ -582,6 +652,8 @@ export class Constants {
         FIND_NEXT_FO: Constants.NAME + ".findNextFromOutline",
         FIND_PREVIOUS: Constants.NAME + ".findPrevious",
         FIND_PREVIOUS_FO: Constants.NAME + ".findPreviousFromOutline",
+        FIND_VAR: Constants.NAME + ".findVar",
+        FIND_DEF: Constants.NAME + ".findDef",
         REPLACE: Constants.NAME + ".replace",
         REPLACE_FO: Constants.NAME + ".replaceFromOutline",
         REPLACE_THEN_FIND: Constants.NAME + ".replaceThenFind",
@@ -589,9 +661,11 @@ export class Constants {
         REPLACE_ALL: Constants.NAME + ".replaceAll",
         CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
         CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
+        CLONE_FIND_TAG: Constants.NAME + ".cloneFindTag",
         CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
         CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
         GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
+        TAG_CHILDREN: Constants.NAME + ".tagChildren",
         SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
         SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
         SET_FIND_SUBOUTLINE_ONLY_OPTION: Constants.NAME + ".setFindSuboutlineOnlyOption",
@@ -608,11 +682,85 @@ export class Constants {
      * * Overridden 'good' minibuffer commands
      */
     public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
+        "tag-children": Constants.COMMANDS.TAG_CHILDREN,
+        "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
         "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
         "redo": Constants.COMMANDS.REDO,
         "undo": Constants.COMMANDS.UNDO,
         "clone-find-all": Constants.COMMANDS.CLONE_FIND_ALL,
-        "clone-find-all-flattened": Constants.COMMANDS.CLONE_FIND_ALL_FLATTENED
+        "clone-find-all-flattened": Constants.COMMANDS.CLONE_FIND_ALL_FLATTENED,
+
+        'import-MORE-files': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-free-mind-files': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-jupyter-notebook': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-legacy-external-files': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-mind-jet-files': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-tabbed-files': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-todo-text-files': Constants.COMMANDS.IMPORT_ANY_FILE,
+        'import-zim-folder': Constants.COMMANDS.IMPORT_ANY_FILE,
+
+        'file-new': Constants.COMMANDS.NEW_FILE,
+        'file-open-by-name': Constants.COMMANDS.OPEN_FILE,
+        'new': Constants.COMMANDS.NEW_FILE,
+        'open-outline': Constants.COMMANDS.OPEN_FILE,
+        'file-save': Constants.COMMANDS.SAVE_FILE,
+        'file-save-as': Constants.COMMANDS.SAVE_AS_FILE,
+        'file-save-as-unzipped': Constants.COMMANDS.SAVE_AS_FILE,
+        'file-save-by-name': Constants.COMMANDS.SAVE_AS_FILE,
+        'file-save-to': Constants.COMMANDS.SAVE_AS_FILE,
+        'save': Constants.COMMANDS.SAVE_FILE,
+        'save-as': Constants.COMMANDS.SAVE_AS_FILE,
+        'save-file': Constants.COMMANDS.SAVE_FILE,
+        'save-file-as': Constants.COMMANDS.SAVE_AS_FILE,
+        'save-file-as-unzipped': Constants.COMMANDS.SAVE_AS_FILE,
+        'save-file-by-name': Constants.COMMANDS.SAVE_AS_FILE,
+        'save-file-to': Constants.COMMANDS.SAVE_AS_FILE,
+        'save-to': Constants.COMMANDS.SAVE_AS_FILE,
+
+        'clone-find-all-flattened-marked': Constants.COMMANDS.CLONE_FIND_FLATTENED_MARKED,
+        'clone-find-all-marked': Constants.COMMANDS.CLONE_FIND_MARKED,
+
+        'clone-marked-nodes': Constants.COMMANDS.CLONE_MARKED_NODES,
+
+        'cfa': Constants.COMMANDS.CLONE_FIND_ALL,
+        'cfam': Constants.COMMANDS.CLONE_FIND_MARKED,
+        'cff': Constants.COMMANDS.CLONE_FIND_ALL_FLATTENED,
+        'cffm': Constants.COMMANDS.CLONE_FIND_FLATTENED_MARKED,
+        'cft': Constants.COMMANDS.CLONE_FIND_TAG,
+
+        'git-diff': Constants.COMMANDS.GIT_DIFF,
+        'gd': Constants.COMMANDS.GIT_DIFF,
+
+        'find-tab-open': Constants.COMMANDS.START_SEARCH,
+        'find-clone-all': Constants.COMMANDS.CLONE_FIND_ALL,
+        'find-clone-all-flattened': Constants.COMMANDS.CLONE_FIND_ALL_FLATTENED,
+        'find-clone-tag': Constants.COMMANDS.CLONE_FIND_TAG,
+        'find-all': Constants.COMMANDS.FIND_ALL,
+        'start-search': Constants.COMMANDS.START_SEARCH,
+        'find-next': Constants.COMMANDS.FIND_NEXT,
+        'find-prev': Constants.COMMANDS.FIND_PREVIOUS,
+        'search-backward': Constants.COMMANDS.FIND_NEXT,
+        'search-forward': Constants.COMMANDS.FIND_PREVIOUS,
+        'find-var': Constants.COMMANDS.FIND_VAR,
+        'find-def': Constants.COMMANDS.FIND_DEF,
+        'replace': Constants.COMMANDS.REPLACE,
+        'replace-all': Constants.COMMANDS.REPLACE_ALL,
+        'change-all': Constants.COMMANDS.REPLACE_ALL,
+        'change-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
+        'replace-then-find': Constants.COMMANDS.REPLACE_THEN_FIND,
+        'show-find-options': Constants.COMMANDS.START_SEARCH,
+        'toggle-find-ignore-case-option': Constants.COMMANDS.TOGGLE_FIND_IGNORE_CASE_OPTION,
+        'toggle-find-in-body-option': Constants.COMMANDS.TOGGLE_FIND_SEARCH_BODY_OPTION,
+        'toggle-find-in-headline-option': Constants.COMMANDS.TOGGLE_FIND_SEARCH_HEADLINE_OPTION,
+        'toggle-find-mark-changes-option': Constants.COMMANDS.TOGGLE_FIND_MARK_CHANGES_OPTION,
+        'toggle-find-mark-finds-option': Constants.COMMANDS.TOGGLE_FIND_MARK_FINDS_OPTION,
+        'toggle-find-regex-option': Constants.COMMANDS.TOGGLE_FIND_REGEXP_OPTION,
+        'toggle-find-word-option': Constants.COMMANDS.TOGGLE_FIND_WORD_OPTION,
+
+        'goto-next-history-node': Constants.COMMANDS.PREV_NODE,
+        'goto-prev-history-node': Constants.COMMANDS.NEXT_NODE,
+
+
     };
 
 }

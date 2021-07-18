@@ -19,10 +19,17 @@
 			"preLaunchTask": "npm: webpack"
 		},
 		{
-			"name": "Python: leoBridge Server",
+			"name": "Python: Old leoBridge Server",
 			"type": "python",
 			"request": "launch",
 			"program": "${workspaceFolder}/leobridgeserver.py",
+			"console": "integratedTerminal"
+		},
+		{
+			"name": "Python: New leoBridge Server",
+			"type": "python",
+			"request": "launch",
+			"program": "${workspaceFolder}/leoserver.py",
 			"console": "integratedTerminal"
 		}
 		// ,
@@ -43,10 +50,19 @@
 	],
 	"compounds": [
 		{
-			"name": "Server and Extension",
+			"name": "Old Server and Extension",
 			"configurations": [
 				"Run Extension",
-				"Python: leoBridge Server"
+				"Python: Old leoBridge Server"
+			]
+			// ,
+			// "preLaunchTask": "${defaultBuildTask}"
+		},
+		{
+			"name": "New Server and Extension",
+			"configurations": [
+				"Run Extension",
+				"Python: New leoBridge Server"
 			]
 			// ,
 			// "preLaunchTask": "${defaultBuildTask}"

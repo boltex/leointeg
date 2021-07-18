@@ -1,5 +1,22 @@
 # Change Log
 
+## 0.1.16
+
+- Added procedures to cleanup when closing a vscode window. (closes server and body panes)
+
+## 0.1.15
+
+- Modified server location logic
+- Fixed find-prev, next, find all / clone-find commands
+- fixed extract name command
+- Fixed body being re-written to same string and being marked dirty when 'safety-saving' before switching docs.
+- Detection of .Leo documents themselves now works by closing and re-opening the .leo file if reloading is chosen by the user. (or automatic via options)
+- Added icons and commands for top of body pane menu.
+- Added new commands such as insert-child along with their keybindings.
+- Also added more keybindings to the 'insert-node' command such as 'insert' and 'shift-insert'.
+- Added find-var and find-def commands.
+- Made some text-related commands available through the right-click context menu in the body pane. (extract, find-var, find-def, etc.)
+
 ## 0.1.14
 
 - Rewrite of the leobridgeserver.py to be made compatible with the standards in leoserver.py from Leo.

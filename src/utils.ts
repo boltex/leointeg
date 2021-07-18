@@ -3,8 +3,20 @@ import * as murmur from "murmurhash-js";
 import { Constants } from "./constants";
 import { Icon, UserCommand, ArchivedPosition } from "./types";
 import { LeoNode } from "./leoNode";
+var portfinder = require('portfinder');
 
-// String and other types/structures helper functions, along with common vscode API calls
+/**
+ * * Unique numeric Id
+ */
+var uniqueId: number = 0;
+
+/**
+ * * Get new uniqueID
+ */
+export function getUniqueId(): string {
+    const id = uniqueId++;
+    return id.toString();
+}
 
 /**
  * * Build a string for representing a number that's 2 digits wide, padding with a zero if needed
@@ -16,7 +28,7 @@ export function padNumber2(p_number: number): string {
 }
 
 /**
- * Builds a string hash out of of an archived position, default without taking collapsed state into account
+ * * Builds a string hash out of of an archived position, default without taking collapsed state into account
  * @param p_ap Archived position
  * @param p_salt To be added to the hashing process (Change when tree changes)
  */
@@ -127,17 +139,32 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
  * @param p_command from which to extract possible name and 'keep selection' flag
  * @returns JSON string suitable for being a parameter of a leoBridge action
  */
-export function buildNodeAndTextJson(p_nodeJson: string, p_command: UserCommand): string {
+export function buildNodeCommandJson(p_nodeJson: string, p_command?: UserCommand): string {
     let w_json = "{\"ap\":" + p_nodeJson; // already json
-    if (p_command.name) {
+    if (p_command && p_command.name) {
         w_json += ", \"name\": " + JSON.stringify(p_command.name);
     }
-    if (p_command.keepSelection) {
+    if (p_command && p_command.keepSelection) {
         w_json += ", \"keep\": true";
     }
     // TODO : Generalize this function to send any other members of p_command / other members
     w_json += "}";
     return w_json;
+}
+
+/**
+ * * Return dialog for choosing the Leo Editor installation folder path
+ */
+export function chooseLeoFolderDialog(): Thenable<vscode.Uri[] | undefined> {
+    return vscode.window.showOpenDialog(
+        {
+            title: "Locate Leo-Editor Installation Folder",
+            canSelectMany: false,
+            openLabel: "Choose Folder",
+            canSelectFiles: false,
+            canSelectFolders: true
+        }
+    );
 }
 
 /**
@@ -212,5 +239,20 @@ export function leoUriToStr(p_uri: vscode.Uri): string {
  */
 export function setContext(p_key: string, p_value: any): Thenable<unknown> {
     return vscode.commands.executeCommand(Constants.VSCODE_COMMANDS.SET_CONTEXT, p_key, p_value);
+}
+
+/**
+ * * Find next available port starting with p_startingPort inclusively,
+ * * check next (max 5) additional ports and return port number, or 0 if none.
+ * @param p_startingPort the port number at which to start looking for a free port
+ * @returns a promise of an opened port number
+ */
+export function findNextAvailablePort(p_startingPort: number): Promise<number> {
+    const q_portFinder = portfinder.getPortPromise({
+        port: p_startingPort,
+        startPort: p_startingPort,
+        stopPort: p_startingPort + 5
+    });
+    return q_portFinder;
 }
 

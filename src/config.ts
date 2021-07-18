@@ -26,9 +26,21 @@ export class Config implements ConfigMembers {
     public showMarkOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK;
     public showCloneOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLONE;
     public showCopyOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_COPY;
+
+    public showEditionOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDITION_BODY;
+    public showClipboardOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLIPBOARD_BODY;
+    public showPromoteOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_PROMOTE_BODY;
+    public showExecuteOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EXECUTE_BODY;
+    public showExtractOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EXTRACT_BODY;
+    public showImportOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_IMPORT_BODY;
+    public showRefreshOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_REFRESH_BODY;
+    public showHoistOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_HOIST_BODY;
+    public showMarkOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK_BODY;
+    public showSortOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_SORT_BODY;
+
     public invertNodeContrast: boolean = Constants.CONFIG_DEFAULTS.INVERT_NODES;
     public leoPythonCommand: string = Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND;
-    public leoServerPath: string = Constants.CONFIG_DEFAULTS.LEO_SERVER_PATH;
+    public leoEditorPath: string = Constants.CONFIG_DEFAULTS.LEO_EDITOR_PATH;
     public startServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_START_SERVER;
     public connectToServerAutomatically: boolean = Constants.CONFIG_DEFAULTS.AUTO_CONNECT;
     public connectionAddress: string = Constants.CONFIG_DEFAULTS.IP_ADDRESS;
@@ -63,9 +75,21 @@ export class Config implements ConfigMembers {
             showMarkOnNodes: this.showMarkOnNodes,
             showCloneOnNodes: this.showCloneOnNodes,
             showCopyOnNodes: this.showCopyOnNodes,
+
+            showEditionOnBody: this.showEditionOnBody,
+            showClipboardOnBody: this.showClipboardOnBody,
+            showPromoteOnBody: this.showPromoteOnBody,
+            showExecuteOnBody: this.showExecuteOnBody,
+            showExtractOnBody: this.showExtractOnBody,
+            showImportOnBody: this.showImportOnBody,
+            showRefreshOnBody: this.showRefreshOnBody,
+            showHoistOnBody: this.showHoistOnBody,
+            showMarkOnBody: this.showMarkOnBody,
+            showSortOnBody: this.showSortOnBody,
+
             invertNodeContrast: this.invertNodeContrast,
             leoPythonCommand: this.leoPythonCommand,
-            leoServerPath: this.leoServerPath,
+            leoEditorPath: this.leoEditorPath,
             startServerAutomatically: this.startServerAutomatically,
             connectToServerAutomatically: this.connectToServerAutomatically,
             connectionAddress: this.connectionAddress,
@@ -144,8 +168,20 @@ export class Config implements ConfigMembers {
             this.showMarkOnNodes = GET(NAME).get(NAMES.SHOW_MARK, DEFAULTS.SHOW_MARK);
             this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
             this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
+
+            this.showEditionOnBody = GET(NAME).get(NAMES.SHOW_EDITION_BODY, DEFAULTS.SHOW_EDITION_BODY);
+            this.showClipboardOnBody = GET(NAME).get(NAMES.SHOW_CLIPBOARD_BODY, DEFAULTS.SHOW_CLIPBOARD_BODY);
+            this.showPromoteOnBody = GET(NAME).get(NAMES.SHOW_PROMOTE_BODY, DEFAULTS.SHOW_PROMOTE_BODY);
+            this.showExecuteOnBody = GET(NAME).get(NAMES.SHOW_EXECUTE_BODY, DEFAULTS.SHOW_EXECUTE_BODY);
+            this.showExtractOnBody = GET(NAME).get(NAMES.SHOW_EXTRACT_BODY, DEFAULTS.SHOW_EXTRACT_BODY);
+            this.showImportOnBody = GET(NAME).get(NAMES.SHOW_IMPORT_BODY, DEFAULTS.SHOW_IMPORT_BODY);
+            this.showRefreshOnBody = GET(NAME).get(NAMES.SHOW_REFRESH_BODY, DEFAULTS.SHOW_REFRESH_BODY);
+            this.showHoistOnBody = GET(NAME).get(NAMES.SHOW_HOIST_BODY, DEFAULTS.SHOW_HOIST_BODY);
+            this.showMarkOnBody = GET(NAME).get(NAMES.SHOW_MARK_BODY, DEFAULTS.SHOW_MARK_BODY);
+            this.showSortOnBody = GET(NAME).get(NAMES.SHOW_SORT_BODY, DEFAULTS.SHOW_SORT_BODY);
+
             this.invertNodeContrast = GET(NAME).get(NAMES.INVERT_NODES, DEFAULTS.INVERT_NODES);
-            this.leoServerPath = GET(NAME).get(NAMES.LEO_SERVER_PATH, DEFAULTS.LEO_SERVER_PATH);
+            this.leoEditorPath = GET(NAME).get(NAMES.LEO_EDITOR_PATH, DEFAULTS.LEO_EDITOR_PATH);
             this.leoPythonCommand = GET(NAME).get(NAMES.LEO_PYTHON_COMMAND, DEFAULTS.LEO_PYTHON_COMMAND);
             this.startServerAutomatically = GET(NAME).get(NAMES.AUTO_START_SERVER, DEFAULTS.AUTO_START_SERVER);
             this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);
@@ -165,10 +201,25 @@ export class Config implements ConfigMembers {
             utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
             utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
             utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
-            if (!this._leoIntegration.finishedStartup) {
+
+            utils.setContext(FLAGS.SHOW_EDITION_BODY, this.showEditionOnBody);
+            utils.setContext(FLAGS.SHOW_CLIPBOARD_BODY, this.showClipboardOnBody);
+            utils.setContext(FLAGS.SHOW_PROMOTE_BODY, this.showPromoteOnBody);
+            utils.setContext(FLAGS.SHOW_EXECUTE_BODY, this.showExecuteOnBody);
+            utils.setContext(FLAGS.SHOW_EXTRACT_BODY, this.showExtractOnBody);
+            utils.setContext(FLAGS.SHOW_IMPORT_BODY, this.showImportOnBody);
+            utils.setContext(FLAGS.SHOW_REFRESH_BODY, this.showRefreshOnBody);
+            utils.setContext(FLAGS.SHOW_HOIST_BODY, this.showHoistOnBody);
+            utils.setContext(FLAGS.SHOW_MARK_BODY, this.showMarkOnBody);
+            utils.setContext(FLAGS.SHOW_SORT_BODY, this.showSortOnBody);
+
+            if (!this._leoIntegration.finishedStartup && this.leoEditorPath) {
                 // Only relevant 'viewWelcome' content at startup.
                 utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
                 utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
+            } else {
+                utils.setContext(FLAGS.AUTO_START_SERVER, false); // server started
+                utils.setContext(FLAGS.AUTO_CONNECT, false); // server started
             }
         }
     }
