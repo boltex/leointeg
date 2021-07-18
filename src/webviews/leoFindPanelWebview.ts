@@ -73,18 +73,17 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
     private _getHtmlForWebview(webview: vscode.Webview) {
         // Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
         const scriptUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, 'src', 'webviews', 'findPanel', 'main.js')
+            vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'main.js')
         );
-
         // Do the same for the stylesheet.
         const styleResetUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, 'src', 'webviews', 'findPanel', 'reset.css')
+            vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'reset.css')
         );
         const styleVSCodeUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, 'src', 'webviews', 'findPanel', 'vscode.css')
+            vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'vscode.css')
         );
         const styleMainUri = webview.asWebviewUri(
-            vscode.Uri.joinPath(this._extensionUri, 'src', 'webviews', 'findPanel', 'main.css')
+            vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'main.css')
         );
 
         // Use a nonce to only allow a specific script to be run.

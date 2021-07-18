@@ -450,6 +450,13 @@ export class LeoIntegration {
     }
 
     /**
+     * * Stops the server if it was started by this instance of the extension
+     */
+    public stopServer(): void {
+        this._serverService.killServer();
+    }
+
+    /**
      * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
      */
     public connect(): void {

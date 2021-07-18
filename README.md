@@ -24,10 +24,16 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Beta Version Installation
 
-- Get the leointeg extension file at [boltex.github.io](https://boltex.github.io/),
-  then **drag-and-drop** that '.vsix' file over a VSCode window to easily install this extension.
+> While in beta, this extension isn't available in the microsoft store, nor the extension panel yet. But you can drag the extension file onto it.
 
-- In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's 6.4 release)
+- Get the leointeg extension file at
+  [boltex.github.io](https://boltex.github.io/),
+  then **drag-and-drop** that '.vsix' file over the
+  extension panel of VSCode's sidebar.
+
+- In addition to the above requirements,
+  **use Leo's 'devel' branch**
+  (This is temporary until Leo's 6.4 release)
 
 ## Features
 

@@ -17,7 +17,7 @@
 <v t="felix.20200718220811.1"><vh>Documentation</vh>
 <v t="felix.20200718220818.1"><vh>@clean README.md</vh>
 <v t="felix.20200718221645.1"><vh>Requirements</vh></v>
-<v t="felix.20200718222026.1"><vh>Development version installation</vh></v>
+<v t="felix.20200718222026.1"><vh>BETA version installation</vh></v>
 <v t="felix.20200718222035.1"><vh>Features</vh></v>
 <v t="felix.20200718222043.1"><vh>Keybindings</vh></v>
 <v t="felix.20200718222048.1"><vh>Derive External Files</vh></v>
@@ -315,6 +315,7 @@
 <v t="felix.20200719025231.5"><vh>sendAction</vh></v>
 <v t="felix.20200719025231.6"><vh>startNetworkServices</vh></v>
 <v t="felix.20200719025231.7"><vh>startServer</vh></v>
+<v t="felix.20210717204048.1"><vh>stopServer</vh></v>
 <v t="felix.20200719025231.8"><vh>connect</vh></v>
 <v t="felix.20200719025231.9"><vh>cancelConnect</vh></v>
 <v t="felix.20210613210351.1"><vh>chooseLeoFolder</vh></v>
@@ -496,6 +497,7 @@
 <v t="felix.20200718191946.2"><vh>class ServerService</vh>
 <v t="ekr.20200815091220.1"><vh>_gotTerminalData</vh></v>
 <v t="felix.20200718191946.4"><vh>startServer</vh></v>
+<v t="felix.20210717192921.1"><vh>killServer</vh></v>
 </v>
 </v>
 <v t="felix.20200718194857.1"><vh>@clean src/types.d.ts</vh>
@@ -564,8 +566,8 @@
 </v>
 </v>
 <v t="fil.20210603223013.1"><vh>Files: Find Panel Webview</vh>
-<v t="fil.20210603223013.2"><vh>@clean src/webviews/findPanel/main.css</vh></v>
-<v t="fil.20210603223013.4"><vh>@clean src/webviews/findPanel/main.js</vh>
+<v t="fil.20210603223013.2"><vh>@clean find-panel/main.css</vh></v>
+<v t="fil.20210603223013.4"><vh>@clean find-panel/main.js</vh>
 <v t="fil.20210603223013.5"><vh>function</vh>
 <v t="fil.20210603223013.6"><vh>window.addEventListener =&gt;</vh></v>
 <v t="fil.20210603223013.7"><vh>function setSearchSetting</vh></v>
@@ -596,8 +598,8 @@
 <v t="fil.20210603223013.26"><vh>function getSettings</vh></v>
 </v>
 </v>
-<v t="fil.20210603223014.2"><vh>@clean src/webviews/findPanel/reset.css</vh></v>
-<v t="fil.20210603223014.4"><vh>@clean src/webviews/findPanel/vscode.css</vh></v>
+<v t="fil.20210603223014.2"><vh>@clean find-panel/reset.css</vh></v>
+<v t="fil.20210603223014.4"><vh>@clean find-panel/vscode.css</vh></v>
 </v>
 <v t="fil.20210603223933.1"><vh>Files: Settings Panel Webview</vh>
 <v t="fil.20210603223933.2"><vh>@clean src/webviews/settingsPanel/colors.ts</vh>
@@ -2096,6 +2098,7 @@ print('done')
     "hasbin": "^1.2.3",
     "murmurhash-js": "^1.0.0",
     "portfinder": "^1.0.28",
+    "tree-kill": "^1.2.2",
     "ws": "^7.3.1"
   }
 }
@@ -5541,6 +5544,8 @@ import { LeoNode } from "./leoNode";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
 
+var LeoInteg: LeoIntegration | undefined = undefined;
+
 @language typescript
 @tabwidth -4
 @others
@@ -5559,6 +5564,9 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_leoIntegExtension = vscode.extensions.getExtension(Constants.PUBLISHER + '.' + Constants.NAME)!;
     const w_leoIntegVersion = w_leoIntegExtension.packageJSON.version;
     const w_leo: LeoIntegration = new LeoIntegration(p_context);
+    if (w_leo) {
+        LeoInteg = w_leo;
+    }
     const w_leoSettingsWebview: LeoSettingsProvider = w_leo.leoSettingsWebview;
     const w_previousVersion = p_context.globalState.get&lt;string&gt;(Constants.VERSION_STATE_KEY);
     const w_start = process.hrtime(); // For calculating total startup time duration
@@ -5611,6 +5619,9 @@ export function activate(p_context: vscode.ExtensionContext) {
  */
 export function deactivate() {
     console.log('deactivate called for extension "leointeg"');
+    if (LeoInteg) {
+        LeoInteg.stopServer();
+    }
 }
 
 </t>
@@ -6966,6 +6977,8 @@ import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
+var kill = require('tree-kill');
+
 
 @language typescript
 @tabwidth -4
@@ -7144,9 +7157,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         }
 
         return w_serverStartPromise;
-
     });
-
 
 }
 
@@ -7841,10 +7852,16 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718222026.1">## Beta Version Installation
 
-- Get the leointeg extension file at [boltex.github.io](https://boltex.github.io/),
-  then **drag-and-drop** that '.vsix' file over a VSCode window to easily install this extension.
+&gt; While in beta, this extension isn't available in the microsoft store, nor the extension panel yet. But you can drag the extension file onto it.
 
-- In addition to the above requirements, **use Leo's 'devel' branch** (This is temporary until Leo's 6.4 release)
+- Get the leointeg extension file at
+  [boltex.github.io](https://boltex.github.io/),
+  then **drag-and-drop** that '.vsix' file over the
+  extension panel of VSCode's sidebar.
+
+- In addition to the above requirements,
+  **use Leo's 'devel' branch**
+  (This is temporary until Leo's 6.4 release)
 
 </t>
 <t tx="felix.20200718222035.1">## Features
@@ -12686,6 +12703,27 @@ public findSymbol(p_def: boolean): Promise&lt;any&gt; {
   }
 ],
 </t>
+<t tx="felix.20210717192921.1">/**
+ * Kills the server if it was started by this instance of leoInteg
+ */
+public killServer(): void {
+    if (this._serverProcess) {
+        // this._serverProcess.kill();
+        kill(this._serverProcess.pid);
+    } else {
+        console.error("No stdout");
+    }
+}
+
+</t>
+<t tx="felix.20210717204048.1">/**
+ * * Stops the server if it was started by this instance of the extension
+ */
+public stopServer(): void {
+    this._serverService.killServer();
+}
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -12877,18 +12915,17 @@ import * as utils from "../utils";
 <t tx="fil.20210603195902.1">private _getHtmlForWebview(webview: vscode.Webview) {
     // Get the local path to main script run in the webview, then convert it to a uri we can use in the webview.
     const scriptUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'src', 'webviews', 'findPanel', 'main.js')
+        vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'main.js')
     );
-
     // Do the same for the stylesheet.
     const styleResetUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'src', 'webviews', 'findPanel', 'reset.css')
+        vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'reset.css')
     );
     const styleVSCodeUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'src', 'webviews', 'findPanel', 'vscode.css')
+        vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'vscode.css')
     );
     const styleMainUri = webview.asWebviewUri(
-        vscode.Uri.joinPath(this._extensionUri, 'src', 'webviews', 'findPanel', 'main.css')
+        vscode.Uri.joinPath(this._extensionUri, 'find-panel', 'main.css')
     );
 
     // Use a nonce to only allow a specific script to be run.
@@ -12954,11 +12991,11 @@ import * as utils from "../utils";
 </t>
 <t tx="fil.20210603223013.1"></t>
 <t tx="fil.20210603223013.10">checkboxIds.forEach((p_inputId) =&gt; {
-            //@ts-expect-error
+                    //@ts-expect-error
     document.getElementById(p_inputId).checked = p_settings[p_inputId];
     searchSettings[p_inputId] = p_settings[p_inputId];
 });
-        //@ts-expect-error
+                //@ts-expect-error
 document.getElementById(radioIds[p_settings['searchScope']]).checked = true;
 searchSettings.searchScope = p_settings['searchScope'];
 </t>
@@ -12985,7 +13022,7 @@ let dirty = false;
 });
 </t>
 <t tx="fil.20210603223013.15">document.getElementById(p_inputId).onkeypress = function (p_event) {
-            //@ts-expect-error
+                    //@ts-expect-error
     if (!p_event) p_event = window.event;
     var keyCode = p_event.code || p_event.key;
     if (keyCode == 'Enter') {
@@ -12999,14 +13036,14 @@ let dirty = false;
 };
 </t>
 <t tx="fil.20210603223013.16">document.getElementById(p_inputId).addEventListener('input', function (p_event) {
-            //@ts-expect-error
+                    //@ts-expect-error
     searchSettings[p_inputId] = this.value;
     processChange();
 });
 </t>
 <t tx="fil.20210603223013.17">checkboxIds.forEach((p_inputId) =&gt; {
     document.getElementById(p_inputId).addEventListener('change', function (p_event) {
-            //@ts-expect-error
+                //@ts-expect-error
         searchSettings[p_inputId] = this.checked;
         processChange();
     });
@@ -13016,7 +13053,7 @@ let dirty = false;
 <t tx="fil.20210603223013.19">radioIds.forEach((p_inputId) =&gt; {
     document.getElementById(p_inputId).addEventListener('change', function (p_event) {
         searchSettings['searchScope'] = parseInt(
-                //@ts-expect-error
+                    //@ts-expect-error
             document.querySelector('input[name="searchScope"]:checked').value
         );
         processChange();
@@ -13045,11 +13082,11 @@ div.col {
 function toggleCheckbox(p_inputId) {
     let w_checkbox = document.getElementById(p_inputId);
     let w_setTo = true;
-        //@ts-expect-error
+            //@ts-expect-error
     if (w_checkbox.checked) {
         w_setTo = false;
     }
-        //@ts-expect-error
+            //@ts-expect-error
     w_checkbox.checked = w_setTo;
     searchSettings[p_inputId] = w_setTo;
     if (timer) {
@@ -13063,10 +13100,10 @@ function toggleCheckbox(p_inputId) {
  * @param {string} p_inputId
  */
 function setRadio(p_inputId) {
-        //@ts-expect-error
+            //@ts-expect-error
     document.getElementById(p_inputId).checked = true;
     searchSettings['searchScope'] = parseInt(
-            //@ts-expect-error
+                //@ts-expect-error
         document.querySelector('input[name="searchScope"]:checked').value
     );
     if (timer) {
@@ -13081,7 +13118,7 @@ function setRadio(p_inputId) {
  * @param {KeyboardEvent} p_event
  */
 function checkKeyDown(p_event) {
-        //@ts-expect-error
+            //@ts-expect-error
     if (!p_event) p_event = window.event;
     var keyCode = p_event.code || p_event.key;
 
@@ -13225,11 +13262,11 @@ function checkOtherKeys(p_event) {
  */
 function focusOnField(p_id) {
     const inputField = document.querySelector('#' + p_id);
-        //@ts-expect-error
+            //@ts-expect-error
     inputField.select();
     // TODO : TEST IF NEEDED TO PREVENT FLICKER ON FIRST TRY?
     setTimeout(() =&gt; {
-            //@ts-expect-error
+                //@ts-expect-error
         inputField.select();
     }, 0);
 }
@@ -13347,7 +13384,7 @@ function setSettings(p_settings) {
 
 </t>
 <t tx="fil.20210603223013.9">inputIds.forEach((p_inputId) =&gt; {
-            //@ts-expect-error
+                    //@ts-expect-error
     document.getElementById(p_inputId).value = p_settings[p_inputId];
     searchSettings[p_inputId] = p_settings[p_inputId];
 });

@@ -3490,6 +3490,7 @@
     "hasbin": "^1.2.3",
     "murmurhash-js": "^1.0.0",
     "portfinder": "^1.0.28",
+    "tree-kill": "^1.2.2",
     "ws": "^7.3.1"
   }
 }
