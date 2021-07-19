@@ -7858,7 +7858,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 - Get the leointeg extension file at
   [boltex.github.io](https://boltex.github.io/),
   then **drag-and-drop** that '.vsix' file over the
-  extension panel of VSCode's sidebar.
+  extension panel of VSCode's sidebar. (**on windows use the 'install from VSIX' command**)
 
 - In addition to the above requirements,
   **use Leo's 'devel' branch**
