@@ -23,6 +23,9 @@
 			"type": "python",
 			"request": "launch",
 			"program": "${workspaceFolder}/leobridgeserver.py",
+			"args": [
+				"-p 32126"
+			],
 			"console": "integratedTerminal"
 		},
 		{
@@ -30,6 +33,9 @@
 			"type": "python",
 			"request": "launch",
 			"program": "${workspaceFolder}/leoserver.py",
+			"args": [
+				"-p 32126"
+			],
 			"console": "integratedTerminal"
 		}
 		// ,

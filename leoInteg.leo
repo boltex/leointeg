@@ -4680,8 +4680,8 @@ public static LEOBRIDGE = {
     CLONE_FIND_TAG: "!clone_find_tag",
     CLONE_FIND_ALL: "!clone_find_all",
     CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
-    CLONE_FIND_MARKED: "cloneFindAllMarked", // * Direct Leo Command
-    CLONE_FIND_FLATTENED_MARKED: "cloneFindAllFlattenedMarked", // * Direct Leo Command
+    CLONE_FIND_MARKED: "!clone_find_all_marked",
+    CLONE_FIND_FLATTENED_MARKED: "!clone_find_all_flattened_marked",
     GOTO_PREV_HISTORY: "goToPrevHistory", // * Direct Leo Command
     GOTO_NEXT_HISTORY: "goToNextHistory" // * Direct Leo Command
 };
