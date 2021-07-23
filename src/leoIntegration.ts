@@ -11,7 +11,6 @@ import {
     ReqRefresh,
     ChooseDocumentItem,
     LeoDocument,
-    MinibufferCommand,
     UserCommand,
     ShowBodyParam,
     BodySelectionInfo,
@@ -1946,7 +1945,7 @@ export class LeoIntegration {
         // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
         return this._isBusyTriggerSave(false)
             .then((p_saveResult) => {
-                const q_commandList: Thenable<MinibufferCommand[]> = this.sendAction(
+                const q_commandList: Thenable<vscode.QuickPickItem[]> = this.sendAction(
                     Constants.LEOBRIDGE.GET_COMMANDS
                 ).then((p_result: LeoBridgePackage) => {
                     if (p_result.commands && p_result.commands.length) {
@@ -1971,9 +1970,9 @@ export class LeoIntegration {
                         Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
                     );
                 }
-                if (p_picked && p_picked.func) {
+                if (p_picked && p_picked.label) {
                     const w_commandResult = this.nodeCommand({
-                        action: p_picked.func,
+                        action: "-" + p_picked.label, // Adding HYPHEN prefix to specify a command-name
                         node: undefined,
                         refreshType: {
                             tree: true,

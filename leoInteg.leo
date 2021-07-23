@@ -529,7 +529,6 @@
 <v t="felix.20200718194857.18"><vh>runInfoMessageDialogParameters</vh></v>
 <v t="felix.20200718194857.19"><vh>AskMessageItem</vh></v>
 <v t="felix.20200718194857.20"><vh>ChooseDocumentItem</vh></v>
-<v t="ekr.20200815091534.1"><vh>MinibufferCommand</vh></v>
 </v>
 <v t="felix.20200718195558.1"><vh>@clean src/utils.ts</vh>
 <v t="felix.20210706233101.1"><vh>uniqueId</vh></v>
@@ -1351,14 +1350,6 @@ export interface LeoPackageStates {
     canDehoist: boolean; // Leo Document is currently hoisted and can be de-hoisted
 }
 
-</t>
-<t tx="ekr.20200815091534.1">/**
- * * Used by the minibuffer command pallette
- * Acquired from the getCommands method in leobridgeserver.py
- */
-export interface MinibufferCommand extends vscode.QuickPickItem {
-    func: string;
-}
 </t>
 <t tx="ekr.20200815091619.1">/**
  * * Builds a string hash out of of an archived position, default without taking collapsed state into account
@@ -6265,6 +6256,14 @@ export class LeoButtonNode extends vscode.TreeItem {
         private _leoIntegration: LeoIntegration
     ) {
         super(button.name);
+        // Cleanup button name of any directives starting with '@'
+        // super(
+        //     button.name.split(" ")
+        //         .filter(item =&gt; item[0] !== "@")
+        //         .join(" ")
+        //         .trim()
+        // );
+
         this._id = utils.getUniqueId();
         // Setup this instance (just differentiate 'script-button' for now)
         this.command = {
@@ -7417,7 +7416,7 @@ export interface LeoBridgePackage {
     len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
-    commands?: MinibufferCommand[]; // getCommands
+    commands?: vscode.QuickPickItem[]; // getCommands
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous
@@ -8247,7 +8246,6 @@ import {
     ReqRefresh,
     ChooseDocumentItem,
     LeoDocument,
-    MinibufferCommand,
     UserCommand,
     ShowBodyParam,
     BodySelectionInfo,
@@ -10564,7 +10562,7 @@ public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
     // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
-            const q_commandList: Thenable&lt;MinibufferCommand[]&gt; = this.sendAction(
+            const q_commandList: Thenable&lt;vscode.QuickPickItem[]&gt; = this.sendAction(
                 Constants.LEOBRIDGE.GET_COMMANDS
             ).then((p_result: LeoBridgePackage) =&gt; {
                 if (p_result.commands &amp;&amp; p_result.commands.length) {
@@ -10589,9 +10587,9 @@ public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
                     Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
                 );
             }
-            if (p_picked &amp;&amp; p_picked.func) {
+            if (p_picked &amp;&amp; p_picked.label) {
                 const w_commandResult = this.nodeCommand({
-                    action: p_picked.func,
+                    action: "-" + p_picked.label, // Adding HYPHEN prefix to specify a command-name
                     node: undefined,
                     refreshType: {
                         tree: true,
