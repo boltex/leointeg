@@ -160,7 +160,7 @@ export interface LeoBridgePackage {
     len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
-    commands?: MinibufferCommand[]; // getCommands
+    commands?: vscode.QuickPickItem[]; // getCommands
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous
@@ -332,10 +332,3 @@ export interface ChooseDocumentItem extends vscode.QuickPickItem {
     value: number;
 }
 
-/**
- * * Used by the minibuffer command pallette
- * Acquired from the getCommands method in leobridgeserver.py
- */
-export interface MinibufferCommand extends vscode.QuickPickItem {
-    func: string;
-}
