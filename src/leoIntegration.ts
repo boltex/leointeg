@@ -478,7 +478,7 @@ export class LeoIntegration {
                     this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
                 } else {
                     const w_lastFiles: string[] =
-                        this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
+                        this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
                     if (w_lastFiles.length) {
                         // This context flag will trigger 'Connecting...' placeholder
                         utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
@@ -573,12 +573,12 @@ export class LeoIntegration {
     }
 
     /**
-     * * Open Leo files found in "context.globalState.leoFiles"
+     * * Open Leo files found in "context.workspaceState.leoFiles"
      * @returns promise that resolves with editor of last opened from the list, or rejects if empty
      */
     private _openLastFiles(): Promise<vscode.TextEditor> {
-        // Loop through context.globalState.<something> and check if they exist: open them
-        const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
+        // Loop through context.workspaceState.<something> and check if they exist: open them
+        const w_lastFiles: string[] = this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
         if (w_lastFiles.length) {
             return this.sendAction(
                 Constants.LEOBRIDGE.OPEN_FILES,
@@ -602,38 +602,38 @@ export class LeoIntegration {
     }
 
     /**
-     * * Adds to the context.globalState.<xxx>files if not already in there (no duplicates)
+     * * Adds to the context.workspaceState.<xxx>files if not already in there (no duplicates)
      * @param p_file path+file name string
-     * @returns A promise that resolves when all global storage modifications are done
+     * @returns A promise that resolves when all workspace storage modifications are done
      */
     private _addRecentAndLastFile(p_file: string): Promise<void> {
         if (!p_file.length) {
             return Promise.resolve();
         }
         return Promise.all([
-            utils.addFileToGlobal(this._context, p_file, Constants.RECENT_FILES_KEY),
-            utils.addFileToGlobal(this._context, p_file, Constants.LAST_FILES_KEY),
+            utils.addFileToWorkspace(this._context, p_file, Constants.RECENT_FILES_KEY),
+            utils.addFileToWorkspace(this._context, p_file, Constants.LAST_FILES_KEY),
         ]).then(() => {
             return Promise.resolve();
         });
     }
 
     /**
-     * * Removes from context.globalState.leoRecentFiles if found (should not have duplicates)
+     * * Removes from context.workspaceState.leoRecentFiles if found (should not have duplicates)
      * @param p_file path+file name string
-     * @returns A promise that resolves when the global storage modification is done
+     * @returns A promise that resolves when the workspace storage modification is done
      */
     private _removeRecentFile(p_file: string): Thenable<void> {
-        return utils.removeFileFromGlobal(this._context, p_file, Constants.RECENT_FILES_KEY);
+        return utils.removeFileFromWorkspace(this._context, p_file, Constants.RECENT_FILES_KEY);
     }
 
     /**
-     * * Removes from context.globalState.leoLastFiles if found (should not have duplicates)
+     * * Removes from context.workspaceState.leoLastFiles if found (should not have duplicates)
      * @param p_file path+file name string
-     * @returns A promise that resolves when the global storage modification is done
+     * @returns A promise that resolves when the workspace storage modification is done
      */
     private _removeLastFile(p_file: string): Thenable<void> {
-        return utils.removeFileFromGlobal(this._context, p_file, Constants.LAST_FILES_KEY);
+        return utils.removeFileFromWorkspace(this._context, p_file, Constants.LAST_FILES_KEY);
     }
 
     /**
@@ -642,7 +642,7 @@ export class LeoIntegration {
      */
     public showRecentLeoFiles(): Thenable<vscode.TextEditor | undefined> {
         const w_recentFiles: string[] =
-            this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
+            this._context.workspaceState.get(Constants.RECENT_FILES_KEY) || [];
         let q_chooseFile: Thenable<string | undefined>;
         if (w_recentFiles.length) {
             q_chooseFile = vscode.window.showQuickPick(w_recentFiles, {
@@ -1924,7 +1924,7 @@ export class LeoIntegration {
 
                             } else {
                                 if (this.trace || this.verbose) {
-                                    console.log("no selection in returned package from showtextdocument");
+                                    console.log("no selection in returned package from showTextDocument");
                                 }
                             }
 
@@ -2803,8 +2803,8 @@ export class LeoIntegration {
      * * Clear leointeg's last-opened & recently opened Leo files list
      */
     public clearRecentLeoFiles(): void {
-        this._context.globalState.update(Constants.LAST_FILES_KEY, undefined);
-        this._context.globalState.update(Constants.RECENT_FILES_KEY, undefined);
+        this._context.workspaceState.update(Constants.LAST_FILES_KEY, undefined);
+        this._context.workspaceState.update(Constants.RECENT_FILES_KEY, undefined);
         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLEARED_RECENT);
     }
 

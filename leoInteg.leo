@@ -322,7 +322,7 @@
 <v t="felix.20210613210351.1"><vh>chooseLeoFolder</vh></v>
 <v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
 </v>
-<v t="felix.20200719025231.10"><vh>Recent files</vh>
+<v t="felix.20200719025231.10"><vh>Recently Opened Files</vh>
 <v t="felix.20200719025231.11"><vh>_openLastFiles</vh></v>
 <v t="felix.20200719025231.12"><vh>_addRecentAndLastFile</vh></v>
 <v t="felix.20200719025231.13"><vh>_removeRecentFile</vh></v>
@@ -8275,12 +8275,12 @@ import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
 </t>
 <t tx="felix.20200719025231.10"></t>
 <t tx="felix.20200719025231.11">/**
- * * Open Leo files found in "context.globalState.leoFiles"
+ * * Open Leo files found in "context.workspaceState.leoFiles"
  * @returns promise that resolves with editor of last opened from the list, or rejects if empty
  */
 private _openLastFiles(): Promise&lt;vscode.TextEditor&gt; {
-    // Loop through context.globalState.&lt;something&gt; and check if they exist: open them
-    const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
+    // Loop through context.workspaceState.&lt;something&gt; and check if they exist: open them
+    const w_lastFiles: string[] = this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
     if (w_lastFiles.length) {
         return this.sendAction(
             Constants.LEOBRIDGE.OPEN_FILES,
@@ -8305,17 +8305,17 @@ private _openLastFiles(): Promise&lt;vscode.TextEditor&gt; {
 
 </t>
 <t tx="felix.20200719025231.12">/**
- * * Adds to the context.globalState.&lt;xxx&gt;files if not already in there (no duplicates)
+ * * Adds to the context.workspaceState.&lt;xxx&gt;files if not already in there (no duplicates)
  * @param p_file path+file name string
- * @returns A promise that resolves when all global storage modifications are done
+ * @returns A promise that resolves when all workspace storage modifications are done
  */
 private _addRecentAndLastFile(p_file: string): Promise&lt;void&gt; {
     if (!p_file.length) {
         return Promise.resolve();
     }
     return Promise.all([
-        utils.addFileToGlobal(this._context, p_file, Constants.RECENT_FILES_KEY),
-        utils.addFileToGlobal(this._context, p_file, Constants.LAST_FILES_KEY),
+        utils.addFileToWorkspace(this._context, p_file, Constants.RECENT_FILES_KEY),
+        utils.addFileToWorkspace(this._context, p_file, Constants.LAST_FILES_KEY),
     ]).then(() =&gt; {
         return Promise.resolve();
     });
@@ -8323,22 +8323,22 @@ private _addRecentAndLastFile(p_file: string): Promise&lt;void&gt; {
 
 </t>
 <t tx="felix.20200719025231.13">/**
- * * Removes from context.globalState.leoRecentFiles if found (should not have duplicates)
+ * * Removes from context.workspaceState.leoRecentFiles if found (should not have duplicates)
  * @param p_file path+file name string
- * @returns A promise that resolves when the global storage modification is done
+ * @returns A promise that resolves when the workspace storage modification is done
  */
 private _removeRecentFile(p_file: string): Thenable&lt;void&gt; {
-    return utils.removeFileFromGlobal(this._context, p_file, Constants.RECENT_FILES_KEY);
+    return utils.removeFileFromWorkspace(this._context, p_file, Constants.RECENT_FILES_KEY);
 }
 
 </t>
 <t tx="felix.20200719025231.14">/**
- * * Removes from context.globalState.leoLastFiles if found (should not have duplicates)
+ * * Removes from context.workspaceState.leoLastFiles if found (should not have duplicates)
  * @param p_file path+file name string
- * @returns A promise that resolves when the global storage modification is done
+ * @returns A promise that resolves when the workspace storage modification is done
  */
 private _removeLastFile(p_file: string): Thenable&lt;void&gt; {
-    return utils.removeFileFromGlobal(this._context, p_file, Constants.LAST_FILES_KEY);
+    return utils.removeFileFromWorkspace(this._context, p_file, Constants.LAST_FILES_KEY);
 }
 
 </t>
@@ -8348,7 +8348,7 @@ private _removeLastFile(p_file: string): Thenable&lt;void&gt; {
  */
 public showRecentLeoFiles(): Thenable&lt;vscode.TextEditor | undefined&gt; {
     const w_recentFiles: string[] =
-        this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
+        this._context.workspaceState.get(Constants.RECENT_FILES_KEY) || [];
     let q_chooseFile: Thenable&lt;string | undefined&gt;;
     if (w_recentFiles.length) {
         q_chooseFile = vscode.window.showQuickPick(w_recentFiles, {
@@ -9458,7 +9458,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
 
                         } else {
                             if (this.trace || this.verbose) {
-                                console.log("no selection in returned package from showtextdocument");
+                                console.log("no selection in returned package from showTextDocument");
                             }
                         }
 
@@ -10206,7 +10206,7 @@ public connect(): void {
                 this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
             } else {
                 const w_lastFiles: string[] =
-                    this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
+                    this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
                 if (w_lastFiles.length) {
                     // This context flag will trigger 'Connecting...' placeholder
                     utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
@@ -10480,15 +10480,15 @@ public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
 },
 </t>
 <t tx="felix.20201106200100.1">/**
- * * Performs the actual addition into globalState context
- * @param p_context Needed to get to vscode global storage
+ * * Performs the actual addition into workspaceState context
+ * @param p_context Needed to get to vscode workspace storage
  * @param p_file path+file name string
  * @param p_key A constant string such as RECENT_FILES_KEY or LAST_FILES_KEY
- * @returns A promise that resolves when the global storage modification is done
+ * @returns A promise that resolves when the workspace storage modification is done
  */
-export function addFileToGlobal(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable&lt;void&gt; {
-    // Just push that string into the context.globalState.&lt;something&gt; array
-    const w_contextEntry: string[] = p_context.globalState.get(p_key) || [];
+export function addFileToWorkspace(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable&lt;void&gt; {
+    // Just push that string into the context.workspaceState.&lt;something&gt; array
+    const w_contextEntry: string[] = p_context.workspaceState.get(p_key) || [];
     if (w_contextEntry) {
         if (!w_contextEntry.includes(p_file)) {
             w_contextEntry.push(p_file);
@@ -10496,27 +10496,27 @@ export function addFileToGlobal(p_context: vscode.ExtensionContext, p_file: stri
                 w_contextEntry.shift();
             }
         }
-        return p_context.globalState.update(p_key, w_contextEntry); // Added file
+        return p_context.workspaceState.update(p_key, w_contextEntry); // Added file
     } else {
         // First so create key entry with an array of single file
-        return p_context.globalState.update(p_key, [p_file]);
+        return p_context.workspaceState.update(p_key, [p_file]);
     }
 }
 
 </t>
 <t tx="felix.20201106200109.1">/**
- * * Removes file entry from globalState context
- * @param p_context Needed to get to vscode global storage
+ * * Removes file entry from workspaceState context
+ * @param p_context Needed to get to vscode workspace storage
  * @param p_file path+file name string
  * @param p_key A constant string such as RECENT_FILES_KEY or LAST_FILES_KEY
- * @returns A promise that resolves when the global storage modification is done
+ * @returns A promise that resolves when the workspace storage modification is done
   */
-export function removeFileFromGlobal(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable&lt;void&gt; {
-    // Check if exist in context.globalState.&lt;something&gt; and remove if found
-    const w_files: string[] = p_context.globalState.get(p_key) || [];
+export function removeFileFromWorkspace(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable&lt;void&gt; {
+    // Check if exist in context.workspaceState.&lt;something&gt; and remove if found
+    const w_files: string[] = p_context.workspaceState.get(p_key) || [];
     if (w_files &amp;&amp; w_files.includes(p_file)) {
         w_files.splice(w_files.indexOf(p_file), 1); // Splice and update
-        return p_context.globalState.update(p_key, w_files);
+        return p_context.workspaceState.update(p_key, w_files);
     }
     return Promise.resolve(); // not even in list so just resolve
 }
@@ -16223,8 +16223,8 @@ section {
  * * Clear leointeg's last-opened &amp; recently opened Leo files list
  */
 public clearRecentLeoFiles(): void {
-    this._context.globalState.update(Constants.LAST_FILES_KEY, undefined);
-    this._context.globalState.update(Constants.RECENT_FILES_KEY, undefined);
+    this._context.workspaceState.update(Constants.LAST_FILES_KEY, undefined);
+    this._context.workspaceState.update(Constants.RECENT_FILES_KEY, undefined);
     vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLEARED_RECENT);
 }
 
