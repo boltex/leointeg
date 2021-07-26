@@ -2,13 +2,18 @@ import { initializeAndWatchThemeColors } from './theme';
 import { debounce } from "debounce";
 import { ConfigSetting } from '../../types';
 
-interface VsCodeApi {
+interface IVsCodeApi {
     postMessage(msg: {}): void;
     setState(state: {}): void;
     getState(): { [key: string]: any };
 }
 
-declare function acquireVsCodeApi(): VsCodeApi;
+interface IFontConfig {
+    zoomLevel: number;
+    fontSize: number;
+}
+
+declare function acquireVsCodeApi(): IVsCodeApi;
 
 (function () {
     const vscode = acquireVsCodeApi();
@@ -33,9 +38,13 @@ declare function acquireVsCodeApi(): VsCodeApi;
     // Global variable config
     let frontConfig: { [key: string]: any } = {};
     let vscodeConfig: { [key: string]: any } = {};
+    let vscodeFontConfig: { [key: string]: any } = {};
+    let frontFontConfig: { [key: string]: any } = {};
 
     vscodeConfig = (window as any).leoConfig; // ! PRE SET BY leoSettingsWebview
     frontConfig = JSON.parse(JSON.stringify(vscodeConfig));
+    vscodeFontConfig = (window as any).leoConfig; // ! PRE SET BY leoSettingsWebview
+    frontFontConfig = JSON.parse(JSON.stringify(vscodeConfig));
 
     // Handle messages sent from the extension to the webview
     window.addEventListener("message", event => {
@@ -55,6 +64,14 @@ declare function acquireVsCodeApi(): VsCodeApi;
                     toast!.className = "show";
                     setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
                     vscodeConfig = message.config; // next changes will be confronted to those settings
+                    break;
+                case "newFontConfig":
+                    vscodeFontConfig = message.config;
+                    frontFontConfig = JSON.parse(JSON.stringify(message.config));
+                    setFontControls();
+                    break;
+                case "vscodeFontConfig":
+                    vscodeFontConfig = message.config; // next changes will be confronted to those settings
                     break;
                 case "newEditorPath":
                     const w_element: HTMLElement | null = document.getElementById("leoEditorPath");
@@ -107,6 +124,11 @@ declare function acquireVsCodeApi(): VsCodeApi;
         listenAll('select[data-setting]', 'change', function (this: HTMLSelectElement) {
             return onDropdownChanged(this);
         });
+        listenAll('input[type=number][data-vscode]', 'input', function (
+            this: HTMLInputElement
+        ) {
+            return onVscodeInputChanged(this);
+        });
     }
 
     function onDropdownChanged(element: HTMLSelectElement) {
@@ -144,6 +166,25 @@ declare function acquireVsCodeApi(): VsCodeApi;
         applyChanges();
     }
 
+    function onVscodeInputChanged(element: HTMLInputElement) {
+        if (element.id === "zoomLevel") {
+            frontFontConfig.zoomLevel = element.value;
+        }
+        if (element.id === "editorFontSize") {
+            frontFontConfig.fontSize = element.value;
+        }
+        debounce(function () {
+            // Send to vscode.
+        }, 800);
+    }
+
+    function setFontControls(): void {
+        const w_zoomLevel = document.getElementById("zoomLevel");
+        const w_fontSize = document.getElementById("editorFontSize");
+        (w_zoomLevel as HTMLInputElement).value = frontFontConfig.zoomLevel;
+        (w_fontSize as HTMLInputElement).value = frontFontConfig.fontSize;
+    }
+
     function setControls(): void {
         for (const key in frontConfig) {
             if (frontConfig.hasOwnProperty(key)) {
@@ -156,10 +197,6 @@ declare function acquireVsCodeApi(): VsCodeApi;
                     console.log('ERROR : w_element', key, ' is ', w_element);
                 }
             }
-        }
-        const w_button: HTMLElement | null = document.getElementById('chooseLeoEditorPath');
-        if (w_button) {
-            w_button.onclick = chooseLeoEditorPath;
         }
     }
 
@@ -244,6 +281,10 @@ declare function acquireVsCodeApi(): VsCodeApi;
     }, 1500);
 
     // * START
+    const w_button: HTMLElement | null = document.getElementById('chooseLeoEditorPath');
+    if (w_button) {
+        w_button.onclick = chooseLeoEditorPath;
+    }
     setControls();
     setVisibility(frontConfig);
     onBind();

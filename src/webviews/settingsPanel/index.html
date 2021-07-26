@@ -55,13 +55,13 @@
       <section id="welcome"
                class="section--full mb-0">
         <h2 class="section__title section__title--primary">
-          Welcome to <span class="highlight">LeoInteg 0.1.16</span>
+          Welcome to <span class="highlight">LeoInteg 0.1.17</span>
         </h2>
         <div class="center mt-1">
           <a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features">
-            See What's New in LeoInteg 0.1.16
+            See What's New in LeoInteg 0.1.17
           </a>
         </div>
         <p class="blurb center ml-0 mr-0">
@@ -457,7 +457,6 @@
                  src="#{root}/resources/body-menu-wide.png" />
 
             <div class="image__preview__body--float-container">
-
               <img class="image__preview--float"
                    src="#{root}/resources/body-menu-extract.png"
                    data-visibility="showExtractOnBody" />
@@ -468,26 +467,28 @@
                    src="#{root}/resources/body-menu-import.png"
                    data-visibility="showImportOnBody" />
               <img class="image__preview--float"
-                   src="#{root}/resources/body-menu-execute.png"
-                   data-visibility="showExecuteOnBody" />
-              <img class="image__preview--float"
-                   src="#{root}/resources/body-menu-hoist.png"
-                   data-visibility="showHoistOnBody" />
-              <img class="image__preview--float"
                    src="#{root}/resources/body-menu-sort.png"
                    data-visibility="showSortOnBody" />
               <img class="image__preview--float"
                    src="#{root}/resources/body-menu-mark.png"
                    data-visibility="showMarkOnBody" />
               <img class="image__preview--float"
-                   src="#{root}/resources/body-menu-promote.png"
-                   data-visibility="showPromoteOnBody" />
-              <img class="image__preview--float"
                    src="#{root}/resources/body-menu-clipboard.png"
                    data-visibility="showClipboardOnBody" />
               <img class="image__preview--float"
                    src="#{root}/resources/body-menu-edition.png"
                    data-visibility="showEditionOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-config.png" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-execute.png"
+                   data-visibility="showExecuteOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-promote.png"
+                   data-visibility="showPromoteOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-hoist.png"
+                   data-visibility="showHoistOnBody" />
               <img class="image__preview--float"
                    src="#{root}/resources/body-menu-prev-next.png" />
 
@@ -602,6 +603,57 @@
         </div>
       </section>
 
+      <section id="font-sizes"
+               class="section--settings">
+        <div class="section__content">
+          <div class="section__header">
+            <h2>
+              Outline and Body Font Sizes
+            </h2>
+            <p class="section__header-hint">
+              To adjust the Outline and Body font sizes, start by adjusting the Outline pane first
+              by changing the Zoom Level. Then, change the Editor Font Size to adjust the Body Pane.
+            </p>
+          </div>
+
+          <div class="settings">
+            <div class="setting">
+              <div class="setting__input">
+                <label for="zoomLevel">Zoom Level</label>
+                <input id="zoomLevel"
+                       name="zoomLevel"
+                       type="number"
+                       min="-30"
+                       max="30"
+                       maxlength="2"
+                       placeholder="Signed Numeric value"
+                       data-vscode />
+              </div>
+              <span class="setting__hint">
+                Adjust the zoom level of the window.
+                The original size is 0 and each increment above (e.g. 1) or below (e.g. -1)
+                represents zooming 20% larger or smaller.
+                You can also enter decimals to adjust the zoom level with a finer granularity.
+              </span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <label for="editorFontSize">Editor Font Size</label>
+                <input id="editorFontSize"
+                       name="editorFontSize"
+                       type="number"
+                       min="6"
+                       max="50"
+                       maxlength="2"
+                       placeholder="Numeric, at least 6"
+                       data-vscode />
+              </div>
+              <span class="setting__hint">Controls the Text-Editor pane font size in pixels. (Is multiplied by the Zoom Level)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section id="statusbar-indicator"
                class="section--settings">
         <div class="section__content">
@@ -685,6 +737,9 @@
           </li>
           <li>
             <a href="#editor-commands">Body Editor Icons</a>
+          </li>
+          <li>
+            <a href="#font-sizes">Font Sizes</a>
           </li>
           <li>
             <a href="#statusbar-indicator">Statusbar Indicator</a>

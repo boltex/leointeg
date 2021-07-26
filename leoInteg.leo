@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20210725153617.1"><vh>0.1.16</vh></v>
 <v t="felix.20210718163005.1"><vh>0.1.15</vh></v>
 <v t="felix.20210612000127.1"><vh>0.1.14</vh></v>
 <v t="felix.20210509210502.1"><vh>0.1.13</vh></v>
@@ -145,19 +146,7 @@
 </v>
 </v>
 <v t="ekr.20200815123601.68"><vh>explorer/context</vh></v>
-<v t="felix.20210610022645.1"><vh>editor/title</vh>
-<v t="felix.20210703214733.1"><vh>Prev Next</vh></v>
-<v t="felix.20210703214602.1"><vh>Edition</vh></v>
-<v t="felix.20210703214616.1"><vh>Clipboard</vh></v>
-<v t="felix.20210703214622.1"><vh>Promote Demote</vh></v>
-<v t="felix.20210703214705.1"><vh>Mark</vh></v>
-<v t="felix.20210703214710.1"><vh>Sort</vh></v>
-<v t="felix.20210703214657.1"><vh>Hoist Dehoist</vh></v>
-<v t="felix.20210703214633.1"><vh>Execute</vh></v>
-<v t="felix.20210703214639.1"><vh>Extract</vh></v>
-<v t="felix.20210703214645.1"><vh>Import</vh></v>
-<v t="felix.20210703214654.1"><vh>Refresh</vh></v>
-</v>
+<v t="felix.20210610022645.1"><vh>editor/title</vh></v>
 <v t="felix.20210713005825.1"><vh>editor/context</vh></v>
 <v t="felix.20201215210439.1"><vh>view/title</vh></v>
 <v t="felix.20201215210510.1"><vh>view/item/context</vh></v>
@@ -623,6 +612,8 @@
 <v t="fil.20210603223934.6"><vh>onInputBlurred</vh></v>
 <v t="fil.20210603223934.7"><vh>onInputFocused</vh></v>
 <v t="fil.20210603223934.8"><vh>onInputChanged</vh></v>
+<v t="felix.20210725221438.1"><vh>onVscodeInputChanged</vh></v>
+<v t="felix.20210725221447.1"><vh>setFontControls</vh></v>
 <v t="fil.20210603223934.9"><vh>setControls</vh></v>
 <v t="fil.20210603223934.10"><vh>setVisibility</vh></v>
 <v t="fil.20210603223934.11"><vh>parseStateExpression</vh></v>
@@ -7825,9 +7816,11 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 @tabwidth -4
 # Change Log
 
-## 0.1.16
+## 0.1.17
 
-- Added procedures to cleanup when closing a vscode window. (closes server and body panes)
+- Saves recently opened Leo files list per workspace, instead of globally.
+- Changed the default visible command icons above the body pane. Also makes sure 'settings' is visible.
+- Added global zoom level and editor font-size in the LeoInteg settings panel to help change the body &amp; outline font sizes.^
 
 @others
 </t>
@@ -12260,7 +12253,121 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
 
 </t>
 <t tx="felix.20210610022645.1">"editor/title": [
-  @others
+  {
+    "command": "leointeg.prev",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.next",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@2"
+  },
+  {
+    "command": "leointeg.hoistSelection",
+    "when": "showHoistOnBody &amp;&amp; !leoRoot &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@3"
+  },
+  {
+    "command": "leointeg.deHoist",
+    "when": "showHoistOnBody &amp;&amp; leoCanDehoist &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@4"
+  },
+  {
+    "command": "leointeg.cloneNodeSelection",
+    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@5"
+  },
+  {
+    "command": "leointeg.promoteSelection",
+    "when": "showPromoteOnBody &amp;&amp; leoCanPromote &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@6"
+  },
+  {
+    "command": "leointeg.demoteSelection",
+    "when": "showPromoteOnBody &amp;&amp; leoCanDemote &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@7"
+  },
+  {
+    "command": "leointeg.executeScript",
+    "when": "showExecuteOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@8"
+  },
+  {
+    "command": "leointeg.showSettingsPage",
+    "when": "resourceScheme == leo",
+    "group": "navigation@9"
+  },
+  {
+    "command": "leointeg.extract",
+    "when": "showExtractOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@10"
+  },
+  {
+    "command": "leointeg.extractNames",
+    "when": "showExtractOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@11"
+  },
+  {
+    "command": "leointeg.insertNodeSelection",
+    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@12"
+  },
+  {
+    "command": "leointeg.insertChildNodeSelection",
+    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@13"
+  },
+  {
+    "command": "leointeg.deleteSelection",
+    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@14"
+  },
+  {
+    "command": "leointeg.cutNodeSelection",
+    "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@15"
+  },
+  {
+    "command": "leointeg.copyNodeSelection",
+    "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@16"
+  },
+  {
+    "command": "leointeg.pasteNodeAtSelection",
+    "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@17"
+  },
+  {
+    "command": "leointeg.pasteNodeAsCloneAtSelection",
+    "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@18"
+  },
+  {
+    "command": "leointeg.markSelection",
+    "when": "showMarkOnBody &amp;&amp; !leoMarked  &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@19"
+  },
+  {
+    "command": "leointeg.unmarkSelection",
+    "when": "showMarkOnBody &amp;&amp; leoMarked  &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@20"
+  },
+  {
+    "command": "leointeg.sortSiblingsSelection",
+    "when": "showSortOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@21"
+  },
+  {
+    "command": "leointeg.importAnyFile",
+    "when": "showImportOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@22"
+  },
+  {
+    "command": "leointeg.refreshFromDiskSelection",
+    "when": "showRefreshOnBody &amp;&amp; leoAtFile &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@23"
+  }
 ],
 </t>
 <t tx="felix.20210610022836.1">/**
@@ -12502,127 +12609,6 @@ public cloneFindTag(): void {
   "description": "Shows 'Sort Siblings' above the body pane"
 },
 </t>
-<t tx="felix.20210703214602.1">{
-  "command": "leointeg.cloneNodeSelection",
-  "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@3"
-},
-{
-  "command": "leointeg.deleteSelection",
-  "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@4"
-},
-{
-  "command": "leointeg.insertNodeSelection",
-  "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@5"
-},
-{
-  "command": "leointeg.insertChildNodeSelection",
-  "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@6"
-},
-</t>
-<t tx="felix.20210703214616.1">{
-  "command": "leointeg.cutNodeSelection",
-  "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@7"
-},
-{
-  "command": "leointeg.copyNodeSelection",
-  "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@8"
-},
-{
-  "command": "leointeg.pasteNodeAtSelection",
-  "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@9"
-},
-{
-  "command": "leointeg.pasteNodeAsCloneAtSelection",
-  "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@10"
-},
-</t>
-<t tx="felix.20210703214622.1">{
-  "command": "leointeg.promoteSelection",
-  "when": "showPromoteOnBody &amp;&amp; leoCanPromote &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@11"
-},
-{
-  "command": "leointeg.demoteSelection",
-  "when": "showPromoteOnBody &amp;&amp; leoCanDemote &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@12"
-},
-</t>
-<t tx="felix.20210703214633.1">{
-  "command": "leointeg.executeScript",
-  "when": "showExecuteOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@18"
-},
-</t>
-<t tx="felix.20210703214639.1">{
-  "command": "leointeg.extract",
-  "when": "showExtractOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@19"
-},
-{
-  "command": "leointeg.extractNames",
-  "when": "showExtractOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@20"
-},
-</t>
-<t tx="felix.20210703214645.1">{
-  "command": "leointeg.importAnyFile",
-  "when": "showImportOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@21"
-},
-</t>
-<t tx="felix.20210703214654.1">{
-  "command": "leointeg.refreshFromDiskSelection",
-  "when": "showRefreshOnBody &amp;&amp; leoAtFile &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@22"
-}
-</t>
-<t tx="felix.20210703214657.1">{
-  "command": "leointeg.hoistSelection",
-  "when": "showHoistOnBody &amp;&amp; !leoRoot &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@16"
-},
-{
-  "command": "leointeg.deHoist",
-  "when": "showHoistOnBody &amp;&amp; leoCanDehoist &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@17"
-},
-</t>
-<t tx="felix.20210703214705.1">{
-  "command": "leointeg.markSelection",
-  "when": "showMarkOnBody &amp;&amp; !leoMarked  &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@13"
-},
-{
-  "command": "leointeg.unmarkSelection",
-  "when": "showMarkOnBody &amp;&amp; leoMarked  &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@14"
-},
-</t>
-<t tx="felix.20210703214710.1">{
-  "command": "leointeg.sortSiblingsSelection",
-  "when": "showSortOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@15"
-},
-</t>
-<t tx="felix.20210703214733.1">{
-  "command": "leointeg.prev",
-  "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@1"
-},
-{
-  "command": "leointeg.next",
-  "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
-  "group": "navigation@2"
-},
-</t>
 <t tx="felix.20210706233101.1">/**
  * * Unique numeric Id
  */
@@ -12767,6 +12753,32 @@ public cleanupBody(): Promise&lt;boolean&gt; {
 - Made some text-related commands available through the right-click context menu in the body pane. (extract, find-var, find-def, etc.)
 
 </t>
+<t tx="felix.20210725153617.1">## 0.1.16
+
+- Added procedures to cleanup when closing a vscode window. (closes server and body panes)
+
+</t>
+<t tx="felix.20210725221438.1">function onVscodeInputChanged(element: HTMLInputElement) {
+    if (element.id === "zoomLevel") {
+        frontFontConfig.zoomLevel = element.value;
+    }
+    if (element.id === "editorFontSize") {
+        frontFontConfig.fontSize = element.value;
+    }
+    debounce(function () {
+        // Send to vscode.
+    }, 800);
+}
+
+</t>
+<t tx="felix.20210725221447.1">function setFontControls(): void {
+    const w_zoomLevel = document.getElementById("zoomLevel");
+    const w_fontSize = document.getElementById("editorFontSize");
+    (w_zoomLevel as HTMLInputElement).value = frontFontConfig.zoomLevel;
+    (w_fontSize as HTMLInputElement).value = frontFontConfig.fontSize;
+}
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -12797,6 +12809,13 @@ import * as utils from "../utils";
 <t tx="fil.20210603195319.2">public changedConfiguration(p_event?: vscode.ConfigurationChangeEvent): void {
     if (this._panel &amp;&amp; !this._waitingForUpdate) {
         this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
+        this._panel.webview.postMessage({
+            command: 'newFonts', config:
+            {
+                zoomLevel: 1,
+                fontSize: 12
+            }
+        });
     }
 }
 
@@ -12828,6 +12847,11 @@ import * as utils from "../utils";
                 /#{endOfBody}/g,
                 `&lt;script type="text/javascript" nonce="Z2l0bGV1cy1ib290c3RyYXA="&gt;window.leoConfig = ${JSON.stringify(
                     this._leoIntegration.config.getConfig()
+                )};window.fontConfig = ${JSON.stringify(
+                    {
+                        zoomLevel: 1,
+                        fontSize: 12
+                    }
                 )};&lt;/script&gt;`
             );
             this._panel.webview.onDidReceiveMessage(
@@ -12864,6 +12888,28 @@ import * as utils from "../utils";
                                 this._panel!.webview.postMessage(
                                     {
                                         command: 'vscodeConfig',
+                                        config: this._leoIntegration.config.getConfig()
+                                    }
+                                );
+                                this._waitingForUpdate = false;
+                            });
+                            break;
+                        case 'getNewFontConfig':
+                            if (this._panel &amp;&amp; !this._waitingForUpdate) {
+                                this._panel.webview.postMessage(
+                                    {
+                                        command: 'newFontConfig',
+                                        config: this._leoIntegration.config.getConfig()
+                                    }
+                                );
+                            }
+                            break;
+                        case 'fontConfig':
+                            this._waitingForUpdate = true;
+                            this._leoIntegration.config.setLeoIntegSettings(message.changes).then(() =&gt; {
+                                this._panel!.webview.postMessage(
+                                    {
+                                        command: 'vscodeFontConfig',
                                         config: this._leoIntegration.config.getConfig()
                                     }
                                 );
@@ -13654,13 +13700,13 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 0.1.16&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 0.1.17&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 0.1.16
+            See What's New in LeoInteg 0.1.17
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
@@ -14056,7 +14102,6 @@ body &gt; div &gt; div &gt; label:active {
                  src="#{root}/resources/body-menu-wide.png" /&gt;
 
             &lt;div class="image__preview__body--float-container"&gt;
-
               &lt;img class="image__preview--float"
                    src="#{root}/resources/body-menu-extract.png"
                    data-visibility="showExtractOnBody" /&gt;
@@ -14067,26 +14112,28 @@ body &gt; div &gt; div &gt; label:active {
                    src="#{root}/resources/body-menu-import.png"
                    data-visibility="showImportOnBody" /&gt;
               &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-execute.png"
-                   data-visibility="showExecuteOnBody" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-hoist.png"
-                   data-visibility="showHoistOnBody" /&gt;
-              &lt;img class="image__preview--float"
                    src="#{root}/resources/body-menu-sort.png"
                    data-visibility="showSortOnBody" /&gt;
               &lt;img class="image__preview--float"
                    src="#{root}/resources/body-menu-mark.png"
                    data-visibility="showMarkOnBody" /&gt;
               &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-promote.png"
-                   data-visibility="showPromoteOnBody" /&gt;
-              &lt;img class="image__preview--float"
                    src="#{root}/resources/body-menu-clipboard.png"
                    data-visibility="showClipboardOnBody" /&gt;
               &lt;img class="image__preview--float"
                    src="#{root}/resources/body-menu-edition.png"
                    data-visibility="showEditionOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-settings.png" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-execute.png"
+                   data-visibility="showExecuteOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-promote.png"
+                   data-visibility="showPromoteOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-hoist.png"
+                   data-visibility="showHoistOnBody" /&gt;
               &lt;img class="image__preview--float"
                    src="#{root}/resources/body-menu-prev-next.png" /&gt;
 
@@ -14201,6 +14248,57 @@ body &gt; div &gt; div &gt; label:active {
         &lt;/div&gt;
       &lt;/section&gt;
 
+      &lt;section id="font-sizes"
+               class="section--settings"&gt;
+        &lt;div class="section__content"&gt;
+          &lt;div class="section__header"&gt;
+            &lt;h2&gt;
+              Outline and Body Font Sizes
+            &lt;/h2&gt;
+            &lt;p class="section__header-hint"&gt;
+              To adjust the Outline and Body font sizes, start by adjusting the Outline pane first
+              by changing the Zoom Level. Then, change the Editor Font Size to adjust the Body Pane.
+            &lt;/p&gt;
+          &lt;/div&gt;
+
+          &lt;div class="settings"&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="zoomLevel"&gt;Zoom Level&lt;/label&gt;
+                &lt;input id="zoomLevel"
+                       name="zoomLevel"
+                       type="number"
+                       min="-30"
+                       max="30"
+                       maxlength="2"
+                       placeholder="Signed Numeric value"
+                       data-vscode /&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;
+                Adjust the zoom level of the window.
+                The original size is 0 and each increment above (e.g. 1) or below (e.g. -1)
+                represents zooming 20% larger or smaller.
+                You can also enter decimals to adjust the zoom level with a finer granularity.
+              &lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="editorFontSize"&gt;Editor Font Size&lt;/label&gt;
+                &lt;input id="editorFontSize"
+                       name="editorFontSize"
+                       type="number"
+                       min="6"
+                       max="50"
+                       maxlength="2"
+                       placeholder="Numeric, at least 6"
+                       data-vscode /&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Controls the Text-Editor pane font size in pixels. (Is multiplied by the Zoom Level)&lt;/span&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/section&gt;
+
       &lt;section id="statusbar-indicator"
                class="section--settings"&gt;
         &lt;div class="section__content"&gt;
@@ -14286,6 +14384,9 @@ body &gt; div &gt; div &gt; label:active {
             &lt;a href="#editor-commands"&gt;Body Editor Icons&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
+            &lt;a href="#font-sizes"&gt;Font Sizes&lt;/a&gt;
+          &lt;/li&gt;
+          &lt;li&gt;
             &lt;a href="#statusbar-indicator"&gt;Statusbar Indicator&lt;/a&gt;
           &lt;/li&gt;
         &lt;/ul&gt;
@@ -14336,13 +14437,18 @@ body &gt; div &gt; div &gt; label:active {
 import { debounce } from "debounce";
 import { ConfigSetting } from '../../types';
 
-interface VsCodeApi {
+interface IVsCodeApi {
     postMessage(msg: {}): void;
     setState(state: {}): void;
     getState(): { [key: string]: any };
 }
 
-declare function acquireVsCodeApi(): VsCodeApi;
+interface IFontConfig {
+    zoomLevel: number;
+    fontSize: number;
+}
+
+declare function acquireVsCodeApi(): IVsCodeApi;
 
 @others
 @language typescript
@@ -14371,9 +14477,13 @@ declare function acquireVsCodeApi(): VsCodeApi;
     // Global variable config
     let frontConfig: { [key: string]: any } = {};
     let vscodeConfig: { [key: string]: any } = {};
+    let vscodeFontConfig: { [key: string]: any } = {};
+    let frontFontConfig: { [key: string]: any } = {};
 
     vscodeConfig = (window as any).leoConfig; // ! PRE SET BY leoSettingsWebview
     frontConfig = JSON.parse(JSON.stringify(vscodeConfig));
+    vscodeFontConfig = (window as any).leoConfig; // ! PRE SET BY leoSettingsWebview
+    frontFontConfig = JSON.parse(JSON.stringify(vscodeConfig));
 
     // Handle messages sent from the extension to the webview
     window.addEventListener("message", event =&gt; {
@@ -14393,6 +14503,14 @@ declare function acquireVsCodeApi(): VsCodeApi;
                     toast!.className = "show";
                     setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
                     vscodeConfig = message.config; // next changes will be confronted to those settings
+                    break;
+                case "newFontConfig":
+                    vscodeFontConfig = message.config;
+                    frontFontConfig = JSON.parse(JSON.stringify(message.config));
+                    setFontControls();
+                    break;
+                case "vscodeFontConfig":
+                    vscodeFontConfig = message.config; // next changes will be confronted to those settings
                     break;
                 case "newEditorPath":
                     const w_element: HTMLElement | null = document.getElementById("leoEditorPath");
@@ -14439,6 +14557,10 @@ declare function acquireVsCodeApi(): VsCodeApi;
     }, 1500);
 
     // * START
+    const w_button: HTMLElement | null = document.getElementById('chooseLeoEditorPath');
+    if (w_button) {
+        w_button.onclick = chooseLeoEditorPath;
+    }
     setControls();
     setVisibility(frontConfig);
     onBind();
@@ -14694,6 +14816,11 @@ declare function acquireVsCodeApi(): VsCodeApi;
     listenAll('select[data-setting]', 'change', function (this: HTMLSelectElement) {
         return onDropdownChanged(this);
     });
+    listenAll('input[type=number][data-vscode]', 'input', function (
+        this: HTMLInputElement
+    ) {
+        return onVscodeInputChanged(this);
+    });
 }
 
 </t>
@@ -14749,10 +14876,6 @@ declare function acquireVsCodeApi(): VsCodeApi;
                 console.log('ERROR : w_element', key, ' is ', w_element);
             }
         }
-    }
-    const w_button: HTMLElement | null = document.getElementById('chooseLeoEditorPath');
-    if (w_button) {
-        w_button.onclick = chooseLeoEditorPath;
     }
 }
 
@@ -15378,7 +15501,7 @@ ul {
   display: block;
   border-radius: 8px;
   box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.8), 0px 0px 12px 1px rgba(0, 0, 0, 0.5);
-  width: 680px;
+  width: 700px;
 }
 
 .image__preview--overlay {
