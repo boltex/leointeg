@@ -2378,18 +2378,18 @@
           "group": "navigation@2"
         },
         {
+          "command": "leointeg.showSettingsPage",
+          "when": "resourceScheme == leo",
+          "group": "navigation@3"
+        },
+        {
           "command": "leointeg.hoistSelection",
           "when": "showHoistOnBody && !leoRoot && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@3"
+          "group": "navigation@4"
         },
         {
           "command": "leointeg.deHoist",
           "when": "showHoistOnBody && leoCanDehoist && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@4"
-        },
-        {
-          "command": "leointeg.cloneNodeSelection",
-          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
           "group": "navigation@5"
         },
         {
@@ -2408,18 +2408,18 @@
           "group": "navigation@8"
         },
         {
-          "command": "leointeg.showSettingsPage",
-          "when": "resourceScheme == leo",
-          "group": "navigation@9"
-        },
-        {
           "command": "leointeg.extract",
           "when": "showExtractOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@10"
+          "group": "navigation@9"
         },
         {
           "command": "leointeg.extractNames",
           "when": "showExtractOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@10"
+        },
+        {
+          "command": "leointeg.cloneNodeSelection",
+          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
           "group": "navigation@11"
         },
         {

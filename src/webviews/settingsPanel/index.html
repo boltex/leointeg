@@ -457,9 +457,7 @@
                  src="#{root}/resources/body-menu-wide.png" />
 
             <div class="image__preview__body--float-container">
-              <img class="image__preview--float"
-                   src="#{root}/resources/body-menu-extract.png"
-                   data-visibility="showExtractOnBody" />
+
               <img class="image__preview--float"
                    src="#{root}/resources/body-menu-refresh.png"
                    data-visibility="showRefreshOnBody" />
@@ -479,7 +477,8 @@
                    src="#{root}/resources/body-menu-edition.png"
                    data-visibility="showEditionOnBody" />
               <img class="image__preview--float"
-                   src="#{root}/resources/body-menu-config.png" />
+                   src="#{root}/resources/body-menu-extract.png"
+                   data-visibility="showExtractOnBody" />
               <img class="image__preview--float"
                    src="#{root}/resources/body-menu-execute.png"
                    data-visibility="showExecuteOnBody" />
@@ -489,6 +488,8 @@
               <img class="image__preview--float"
                    src="#{root}/resources/body-menu-hoist.png"
                    data-visibility="showHoistOnBody" />
+              <img class="image__preview--float"
+                   src="#{root}/resources/body-menu-config.png" />
               <img class="image__preview--float"
                    src="#{root}/resources/body-menu-prev-next.png" />
 
@@ -611,8 +612,9 @@
               Outline and Body Font Sizes
             </h2>
             <p class="section__header-hint">
-              To adjust the Outline and Body font sizes, start by adjusting the Outline pane first
-              by changing the Zoom Level. Then, change the Editor Font Size to adjust the Body Pane.
+              To adjust the Outline and Body font sizes, start by adjusting the Outline pane first,
+              by changing the Zoom Level.<br>
+              Then, change the Editor Font Size, to adjust the Body Pane relative font compared to the outline.
             </p>
           </div>
 
@@ -626,14 +628,16 @@
                        min="-30"
                        max="30"
                        maxlength="2"
-                       placeholder="Signed Numeric value"
+                       placeholder="Number"
                        data-vscode />
               </div>
               <span class="setting__hint">
-                Adjust the zoom level of the window.
-                The original size is 0 and each increment above (e.g. 1) or below (e.g. -1)
-                represents zooming 20% larger or smaller.
-                You can also enter decimals to adjust the zoom level with a finer granularity.
+                Adjust the zoom level<br>
+                of the window.<br>
+                (Original size is 0 and each<br>
+                increment above 1 or below -1<br>
+                represents zooming 20%.<br>
+                You can also use decimals.)
               </span>
             </div>
             <div class="setting">
@@ -645,10 +649,16 @@
                        min="6"
                        max="50"
                        maxlength="2"
-                       placeholder="Numeric, at least 6"
+                       placeholder="Number"
                        data-vscode />
               </div>
-              <span class="setting__hint">Controls the Text-Editor pane font size in pixels. (Is multiplied by the Zoom Level)</span>
+              <span class="setting__hint">
+                Controls the Text-Editor<br>
+                pane font size in pixels.<br>
+                Set this after having set the<br>
+                Zoom Level for the outline, as<br>
+                it's affected by the Zoom Level.
+              </span>
             </div>
           </div>
         </div>

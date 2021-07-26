@@ -12264,18 +12264,18 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
     "group": "navigation@2"
   },
   {
+    "command": "leointeg.showSettingsPage",
+    "when": "resourceScheme == leo",
+    "group": "navigation@3"
+  },
+  {
     "command": "leointeg.hoistSelection",
     "when": "showHoistOnBody &amp;&amp; !leoRoot &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@3"
+    "group": "navigation@4"
   },
   {
     "command": "leointeg.deHoist",
     "when": "showHoistOnBody &amp;&amp; leoCanDehoist &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@4"
-  },
-  {
-    "command": "leointeg.cloneNodeSelection",
-    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
     "group": "navigation@5"
   },
   {
@@ -12294,18 +12294,18 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
     "group": "navigation@8"
   },
   {
-    "command": "leointeg.showSettingsPage",
-    "when": "resourceScheme == leo",
-    "group": "navigation@9"
-  },
-  {
     "command": "leointeg.extract",
     "when": "showExtractOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@10"
+    "group": "navigation@9"
   },
   {
     "command": "leointeg.extractNames",
     "when": "showExtractOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@10"
+  },
+  {
+    "command": "leointeg.cloneNodeSelection",
+    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
     "group": "navigation@11"
   },
   {
@@ -14102,9 +14102,7 @@ body &gt; div &gt; div &gt; label:active {
                  src="#{root}/resources/body-menu-wide.png" /&gt;
 
             &lt;div class="image__preview__body--float-container"&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-extract.png"
-                   data-visibility="showExtractOnBody" /&gt;
+
               &lt;img class="image__preview--float"
                    src="#{root}/resources/body-menu-refresh.png"
                    data-visibility="showRefreshOnBody" /&gt;
@@ -14124,7 +14122,8 @@ body &gt; div &gt; div &gt; label:active {
                    src="#{root}/resources/body-menu-edition.png"
                    data-visibility="showEditionOnBody" /&gt;
               &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-settings.png" /&gt;
+                   src="#{root}/resources/body-menu-extract.png"
+                   data-visibility="showExtractOnBody" /&gt;
               &lt;img class="image__preview--float"
                    src="#{root}/resources/body-menu-execute.png"
                    data-visibility="showExecuteOnBody" /&gt;
@@ -14134,6 +14133,8 @@ body &gt; div &gt; div &gt; label:active {
               &lt;img class="image__preview--float"
                    src="#{root}/resources/body-menu-hoist.png"
                    data-visibility="showHoistOnBody" /&gt;
+              &lt;img class="image__preview--float"
+                   src="#{root}/resources/body-menu-config.png" /&gt;
               &lt;img class="image__preview--float"
                    src="#{root}/resources/body-menu-prev-next.png" /&gt;
 
@@ -14256,8 +14257,9 @@ body &gt; div &gt; div &gt; label:active {
               Outline and Body Font Sizes
             &lt;/h2&gt;
             &lt;p class="section__header-hint"&gt;
-              To adjust the Outline and Body font sizes, start by adjusting the Outline pane first
-              by changing the Zoom Level. Then, change the Editor Font Size to adjust the Body Pane.
+              To adjust the Outline and Body font sizes, start by adjusting the Outline pane first,
+              by changing the Zoom Level.&lt;br&gt;
+              Then, change the Editor Font Size, to adjust the Body Pane relative font compared to the outline.
             &lt;/p&gt;
           &lt;/div&gt;
 
@@ -14271,14 +14273,16 @@ body &gt; div &gt; div &gt; label:active {
                        min="-30"
                        max="30"
                        maxlength="2"
-                       placeholder="Signed Numeric value"
+                       placeholder="Number"
                        data-vscode /&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;
-                Adjust the zoom level of the window.
-                The original size is 0 and each increment above (e.g. 1) or below (e.g. -1)
-                represents zooming 20% larger or smaller.
-                You can also enter decimals to adjust the zoom level with a finer granularity.
+                Adjust the zoom level&lt;br&gt;
+                of the window.&lt;br&gt;
+                (Original size is 0 and each&lt;br&gt;
+                increment above 1 or below -1&lt;br&gt;
+                represents zooming 20%.&lt;br&gt;
+                You can also use decimals.)
               &lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
@@ -14290,10 +14294,16 @@ body &gt; div &gt; div &gt; label:active {
                        min="6"
                        max="50"
                        maxlength="2"
-                       placeholder="Numeric, at least 6"
+                       placeholder="Number"
                        data-vscode /&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Controls the Text-Editor pane font size in pixels. (Is multiplied by the Zoom Level)&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;
+                Controls the Text-Editor&lt;br&gt;
+                pane font size in pixels.&lt;br&gt;
+                Set this after having set the&lt;br&gt;
+                Zoom Level for the outline, as&lt;br&gt;
+                it's affected by the Zoom Level.
+              &lt;/span&gt;
             &lt;/div&gt;
           &lt;/div&gt;
         &lt;/div&gt;
@@ -15501,7 +15511,7 @@ ul {
   display: block;
   border-radius: 8px;
   box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.8), 0px 0px 12px 1px rgba(0, 0, 0, 0.5);
-  width: 700px;
+  width: 720px;
 }
 
 .image__preview--overlay {
