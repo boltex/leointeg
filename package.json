@@ -611,7 +611,7 @@
       },
       {
         "command": "leointeg.showSettingsPage",
-        "title": "Open Settings",
+        "title": "LeoInteg Settings",
         "category": "Leo",
         "icon": {
           "light": "resources/light/gear.svg",
