@@ -14255,8 +14255,8 @@ body &gt; div &gt; div &gt; label:active {
               Outline and Body Font Sizes
             &lt;/h2&gt;
             &lt;p class="section__header-hint"&gt;
-              To adjust the Outline and Body font sizes, &lt;em&gt;start by adjusting the Outline pane&lt;/em&gt;,&lt;br&gt;
-              by changing the global &lt;em&gt;Zoom Level.&lt;/em&gt; Then, change the &lt;em&gt;Editor Font Size&lt;/em&gt;, to adjust the Body Pane font size.
+              &lt;em&gt;Start by adjusting the Outline pane&lt;/em&gt;, by changing the global &lt;em&gt;Zoom Level&lt;/em&gt;.&lt;br&gt;
+              Then, resize the the &lt;em&gt;Body Pane font size&lt;/em&gt; by changing the &lt;em&gt;Editor Font Size&lt;/em&gt;.
             &lt;/p&gt;
           &lt;/div&gt;
 
