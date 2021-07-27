@@ -12254,6 +12254,11 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
 </t>
 <t tx="felix.20210610022645.1">"editor/title": [
   {
+    "command": "leointeg.showSettingsPage",
+    "when": "resourceScheme == leo",
+    "group": "2_custom"
+  },
+  {
     "command": "leointeg.prev",
     "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
@@ -12264,109 +12269,104 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
     "group": "navigation@2"
   },
   {
-    "command": "leointeg.showSettingsPage",
-    "when": "resourceScheme == leo",
-    "group": "navigation@3"
-  },
-  {
     "command": "leointeg.hoistSelection",
     "when": "showHoistOnBody &amp;&amp; !leoRoot &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@4"
+    "group": "navigation@3"
   },
   {
     "command": "leointeg.deHoist",
     "when": "showHoistOnBody &amp;&amp; leoCanDehoist &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@5"
+    "group": "navigation@4"
   },
   {
     "command": "leointeg.promoteSelection",
     "when": "showPromoteOnBody &amp;&amp; leoCanPromote &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@6"
+    "group": "navigation@5"
   },
   {
     "command": "leointeg.demoteSelection",
     "when": "showPromoteOnBody &amp;&amp; leoCanDemote &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@7"
+    "group": "navigation@6"
   },
   {
     "command": "leointeg.executeScript",
     "when": "showExecuteOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@8"
+    "group": "navigation@7"
   },
   {
     "command": "leointeg.extract",
     "when": "showExtractOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@9"
+    "group": "navigation@8"
   },
   {
     "command": "leointeg.extractNames",
     "when": "showExtractOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@10"
+    "group": "navigation@9"
   },
   {
     "command": "leointeg.cloneNodeSelection",
     "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@11"
+    "group": "navigation@10"
   },
   {
     "command": "leointeg.insertNodeSelection",
     "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@12"
+    "group": "navigation@11"
   },
   {
     "command": "leointeg.insertChildNodeSelection",
     "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@13"
+    "group": "navigation@12"
   },
   {
     "command": "leointeg.deleteSelection",
     "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@14"
+    "group": "navigation@13"
   },
   {
     "command": "leointeg.cutNodeSelection",
     "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@15"
+    "group": "navigation@14"
   },
   {
     "command": "leointeg.copyNodeSelection",
     "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@16"
+    "group": "navigation@15"
   },
   {
     "command": "leointeg.pasteNodeAtSelection",
     "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@17"
+    "group": "navigation@16"
   },
   {
     "command": "leointeg.pasteNodeAsCloneAtSelection",
     "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@18"
+    "group": "navigation@17"
   },
   {
     "command": "leointeg.markSelection",
     "when": "showMarkOnBody &amp;&amp; !leoMarked  &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@19"
+    "group": "navigation@18"
   },
   {
     "command": "leointeg.unmarkSelection",
     "when": "showMarkOnBody &amp;&amp; leoMarked  &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@20"
+    "group": "navigation@19"
   },
   {
     "command": "leointeg.sortSiblingsSelection",
     "when": "showSortOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@21"
+    "group": "navigation@20"
   },
   {
     "command": "leointeg.importAnyFile",
     "when": "showImportOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@22"
+    "group": "navigation@21"
   },
   {
     "command": "leointeg.refreshFromDiskSelection",
     "when": "showRefreshOnBody &amp;&amp; leoAtFile &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@23"
+    "group": "navigation@22"
   }
 ],
 </t>
@@ -13680,7 +13680,7 @@ body &gt; div &gt; div &gt; label:active {
         is an open-source extension created by
         &lt;a class="bold"
            title="My github user page"
-           href="https://github.com/boltex"&gt;Félix&lt;/a&gt; that integrates &lt;a class="bold"
+           href="https://boltex.github.io/"&gt;Félix&lt;/a&gt; that integrates &lt;a class="bold"
            title="Learn more about Leo"
            href="https://leoeditor.com/"&gt;Leo&lt;/a&gt; into Visual Studio
         Code.
@@ -14093,13 +14093,13 @@ body &gt; div &gt; div &gt; label:active {
               Body Editor Icons
             &lt;/h2&gt;
             &lt;p class="section__header-hint"&gt;
-              Body Pane Command Icons - Choose which commands to display
+              Body Pane Command Icons - Choose which commands to display - &lt;em&gt;First leftmost 9 icons shown&lt;/em&gt;
             &lt;/p&gt;
           &lt;/div&gt;
           &lt;div class="section__preview"&gt;
 
             &lt;img class="image__preview__body"
-                 src="#{root}/resources/body-menu-wide.png" /&gt;
+                 src="#{root}/resources/body-menu.png" /&gt;
 
             &lt;div class="image__preview__body--float-container"&gt;
 
@@ -14133,8 +14133,6 @@ body &gt; div &gt; div &gt; label:active {
               &lt;img class="image__preview--float"
                    src="#{root}/resources/body-menu-hoist.png"
                    data-visibility="showHoistOnBody" /&gt;
-              &lt;img class="image__preview--float"
-                   src="#{root}/resources/body-menu-config.png" /&gt;
               &lt;img class="image__preview--float"
                    src="#{root}/resources/body-menu-prev-next.png" /&gt;
 
@@ -14257,9 +14255,8 @@ body &gt; div &gt; div &gt; label:active {
               Outline and Body Font Sizes
             &lt;/h2&gt;
             &lt;p class="section__header-hint"&gt;
-              To adjust the Outline and Body font sizes, start by adjusting the Outline pane first,
-              by changing the Zoom Level.&lt;br&gt;
-              Then, change the Editor Font Size, to adjust the Body Pane relative font compared to the outline.
+              To adjust the Outline and Body font sizes, &lt;em&gt;start by adjusting the Outline pane&lt;/em&gt;,&lt;br&gt;
+              by changing the global &lt;em&gt;Zoom Level.&lt;/em&gt; Then, change the &lt;em&gt;Editor Font Size&lt;/em&gt;, to adjust the Body Pane font size.
             &lt;/p&gt;
           &lt;/div&gt;
 
@@ -15511,7 +15508,7 @@ ul {
   display: block;
   border-radius: 8px;
   box-shadow: 0px 0px 1px 0px rgba(0, 0, 0, 0.8), 0px 0px 12px 1px rgba(0, 0, 0, 0.5);
-  width: 720px;
+  width: 680px;
 }
 
 .image__preview--overlay {
