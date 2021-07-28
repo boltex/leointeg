@@ -1,6 +1,11 @@
 import * as vscode from "vscode";
 import { LeoNode } from "./leoNode";
 
+export interface IVsCodeApi {
+    postMessage(msg: {}): void;
+    setState(state: {}): void;
+    getState(): { [key: string]: any };
+}
 /**
  * * Types of the various JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
  */
@@ -47,6 +52,11 @@ export interface ConfigMembers {
 export interface ConfigSetting {
     code: string;
     value: any;
+}
+
+export interface FontSettings {
+    zoomLevel: number;
+    fontSize: number;
 }
 
 /**

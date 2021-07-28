@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.1.17
+
+- Saves recently opened Leo files list per workspace, instead of globally.
+- Changed the default visible command icons above the body pane. Also makes sure 'settings' is visible.
+- Added global zoom level and editor font-size in the LeoInteg settings panel to help change the body & outline font sizes.^
+
 ## 0.1.16
 
 - Added procedures to cleanup when closing a vscode window. (closes server and body panes)
