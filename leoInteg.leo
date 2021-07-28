@@ -186,7 +186,9 @@
 <v t="felix.20200718030926.1"><vh>@clean src/config.ts</vh>
 <v t="felix.20200718030926.2"><vh>class Config</vh>
 <v t="felix.20200718030926.3"><vh>getConfig</vh></v>
+<v t="felix.20210727224122.1"><vh>getFontConfig</vh></v>
 <v t="felix.20200718030926.4"><vh>setLeoIntegSettings</vh></v>
+<v t="felix.20210727224135.1"><vh>setFontConfig</vh></v>
 <v t="felix.20200718030926.5"><vh>buildFromSavedSettings</vh></v>
 </v>
 </v>
@@ -492,8 +494,10 @@
 </v>
 </v>
 <v t="felix.20200718194857.1"><vh>@clean src/types.d.ts</vh>
+<v t="felix.20210727225050.1"><vh>IVsCodeApi</vh></v>
 <v t="felix.20200718194857.2"><vh>ConfigMembers</vh></v>
 <v t="felix.20201017224340.1"><vh>ConfigSetting</vh></v>
+<v t="felix.20210727224655.1"><vh>FontSettings</vh></v>
 <v t="felix.20200718194857.3"><vh>RevealType</vh></v>
 <v t="felix.20200718194857.4"><vh>RefreshType</vh></v>
 <v t="felix.20200718194857.5"><vh>UserCommand</vh></v>
@@ -2379,7 +2383,7 @@ print('done')
 </t>
 <t tx="ekr.20200815123601.15">{
   "command": "leointeg.showSettingsPage",
-  "title": "Open Settings",
+  "title": "LeoInteg Settings",
   "category": "Leo",
   "icon": {
     "light": "resources/light/gear.svg",
@@ -5285,7 +5289,7 @@ private _resolveResult(p_package: LeoBridgePackage): void {
 </t>
 <t tx="felix.20200718030926.1">import * as vscode from "vscode";
 import * as utils from "./utils";
-import { ConfigMembers, ConfigSetting } from "./types";
+import { ConfigMembers, ConfigSetting, FontSettings } from "./types";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -5391,7 +5395,7 @@ public getConfig(): ConfigMembers {
 
 </t>
 <t tx="felix.20200718030926.4">/**
- * * Apply changes to the expansion config settings and save them in ser settings.
+ * * Apply changes to the expansion config settings and save them in user settings.
  * @param p_changes is an array of codes and values to be changed
  * @returns a promise that resolves upon completion
  */
@@ -12760,24 +12764,88 @@ public cleanupBody(): Promise&lt;boolean&gt; {
 </t>
 <t tx="felix.20210725221438.1">function onVscodeInputChanged(element: HTMLInputElement) {
     if (element.id === "zoomLevel") {
-        frontFontConfig.zoomLevel = element.value;
+        frontFontConfig.zoomLevel = element.valueAsNumber;
     }
     if (element.id === "editorFontSize") {
-        frontFontConfig.fontSize = element.value;
+        frontFontConfig.fontSize = element.valueAsNumber;
     }
-    debounce(function () {
-        // Send to vscode.
-    }, 800);
+    applyFontChanges();
 }
 
 </t>
 <t tx="felix.20210725221447.1">function setFontControls(): void {
-    const w_zoomLevel = document.getElementById("zoomLevel");
-    const w_fontSize = document.getElementById("editorFontSize");
-    (w_zoomLevel as HTMLInputElement).value = frontFontConfig.zoomLevel;
-    (w_fontSize as HTMLInputElement).value = frontFontConfig.fontSize;
+    if (frontFontConfig.zoomLevel || frontFontConfig.zoomLevel === 0) {
+        const w_element = document.getElementById("zoomLevel");
+        (w_element as HTMLInputElement).valueAsNumber = Number(frontFontConfig.zoomLevel);
+    } else {
+        console.log('Error : vscode font setting "zoomLevel" is missing');
+    }
+    if (frontFontConfig.fontSize) {
+        const w_element = document.getElementById("editorFontSize");
+        (w_element as HTMLInputElement).valueAsNumber = Number(frontFontConfig.fontSize);
+    } else {
+        console.log('Error : vscode font setting "fontSize" is missing');
+    }
 }
 
+</t>
+<t tx="felix.20210727224122.1">/**
+ * * Get config from vscode for the UI font sizes
+ */
+public getFontConfig(): FontSettings {
+    let w_zoomLevel = vscode.workspace.getConfiguration(
+        "window"
+    ).get("zoomLevel");
+    let w_fontSize = vscode.workspace.getConfiguration(
+        "editor"
+    ).get("fontSize");
+
+    const w_config: FontSettings = {
+        zoomLevel: Number(w_zoomLevel),
+        fontSize: Number(w_fontSize)
+    };
+    return w_config;
+}
+
+</t>
+<t tx="felix.20210727224135.1">/**
+ * * Apply changes in font size settings and save them in user settings.
+ */
+public setFontConfig(p_settings: FontSettings): void {
+    if (p_settings.zoomLevel || p_settings.zoomLevel === 0) {
+        if (!isNaN(p_settings.zoomLevel) &amp;&amp; p_settings.zoomLevel &lt;= 12 &amp;&amp; p_settings.zoomLevel &gt;= -12) {
+            vscode.workspace.getConfiguration("window")
+                .update("zoomLevel", p_settings.zoomLevel, true);
+        } else {
+            vscode.window.showInformationMessage(
+                "Value for zoom level should be between -12 and 12"
+            );
+        }
+    }
+    if (p_settings.fontSize) {
+        if (!isNaN(p_settings.fontSize) &amp;&amp; p_settings.fontSize &lt;= 30 &amp;&amp; p_settings.fontSize &gt;= 6) {
+            vscode.workspace.getConfiguration("editor")
+                .update("fontSize", p_settings.fontSize, true);
+        } else {
+            vscode.window.showInformationMessage(
+                "Value for font size should be between 6 and 30"
+            );
+        }
+    }
+}
+
+</t>
+<t tx="felix.20210727224655.1">export interface FontSettings {
+    zoomLevel: number;
+    fontSize: number;
+}
+
+</t>
+<t tx="felix.20210727225050.1">export interface IVsCodeApi {
+    postMessage(msg: {}): void;
+    setState(state: {}): void;
+    getState(): { [key: string]: any };
+}
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
@@ -12809,13 +12877,7 @@ import * as utils from "../utils";
 <t tx="fil.20210603195319.2">public changedConfiguration(p_event?: vscode.ConfigurationChangeEvent): void {
     if (this._panel &amp;&amp; !this._waitingForUpdate) {
         this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
-        this._panel.webview.postMessage({
-            command: 'newFonts', config:
-            {
-                zoomLevel: 1,
-                fontSize: 12
-            }
-        });
+        this._panel.webview.postMessage({ command: 'newFontConfig', config: this._leoIntegration.config.getFontConfig() });
     }
 }
 
@@ -12848,10 +12910,7 @@ import * as utils from "../utils";
                 `&lt;script type="text/javascript" nonce="Z2l0bGV1cy1ib290c3RyYXA="&gt;window.leoConfig = ${JSON.stringify(
                     this._leoIntegration.config.getConfig()
                 )};window.fontConfig = ${JSON.stringify(
-                    {
-                        zoomLevel: 1,
-                        fontSize: 12
-                    }
+                    this._leoIntegration.config.getFontConfig()
                 )};&lt;/script&gt;`
             );
             this._panel.webview.onDidReceiveMessage(
@@ -12899,22 +12958,13 @@ import * as utils from "../utils";
                                 this._panel.webview.postMessage(
                                     {
                                         command: 'newFontConfig',
-                                        config: this._leoIntegration.config.getConfig()
+                                        config: this._leoIntegration.config.getFontConfig()
                                     }
                                 );
                             }
                             break;
                         case 'fontConfig':
-                            this._waitingForUpdate = true;
-                            this._leoIntegration.config.setLeoIntegSettings(message.changes).then(() =&gt; {
-                                this._panel!.webview.postMessage(
-                                    {
-                                        command: 'vscodeFontConfig',
-                                        config: this._leoIntegration.config.getConfig()
-                                    }
-                                );
-                                this._waitingForUpdate = false;
-                            });
+                            this._leoIntegration.config.setFontConfig(message.changes);
                             break;
                     }
                 },
@@ -14267,8 +14317,8 @@ body &gt; div &gt; div &gt; label:active {
                 &lt;input id="zoomLevel"
                        name="zoomLevel"
                        type="number"
-                       min="-30"
-                       max="30"
+                       min="-12"
+                       max="12"
                        maxlength="2"
                        placeholder="Number"
                        data-vscode /&gt;
@@ -14289,7 +14339,7 @@ body &gt; div &gt; div &gt; label:active {
                        name="editorFontSize"
                        type="number"
                        min="6"
-                       max="50"
+                       max="30"
                        maxlength="2"
                        placeholder="Number"
                        data-vscode /&gt;
@@ -14442,18 +14492,7 @@ body &gt; div &gt; div &gt; label:active {
 </t>
 <t tx="fil.20210603223933.165">import { initializeAndWatchThemeColors } from './theme';
 import { debounce } from "debounce";
-import { ConfigSetting } from '../../types';
-
-interface IVsCodeApi {
-    postMessage(msg: {}): void;
-    setState(state: {}): void;
-    getState(): { [key: string]: any };
-}
-
-interface IFontConfig {
-    zoomLevel: number;
-    fontSize: number;
-}
+import { ConfigSetting, IVsCodeApi } from '../../types';
 
 declare function acquireVsCodeApi(): IVsCodeApi;
 
@@ -14489,8 +14528,8 @@ declare function acquireVsCodeApi(): IVsCodeApi;
 
     vscodeConfig = (window as any).leoConfig; // ! PRE SET BY leoSettingsWebview
     frontConfig = JSON.parse(JSON.stringify(vscodeConfig));
-    vscodeFontConfig = (window as any).leoConfig; // ! PRE SET BY leoSettingsWebview
-    frontFontConfig = JSON.parse(JSON.stringify(vscodeConfig));
+    vscodeFontConfig = (window as any).fontConfig; // ! PRE SET BY leoSettingsWebview
+    frontFontConfig = JSON.parse(JSON.stringify(vscodeFontConfig));
 
     // Handle messages sent from the extension to the webview
     window.addEventListener("message", event =&gt; {
@@ -14563,12 +14602,21 @@ declare function acquireVsCodeApi(): IVsCodeApi;
         }
     }, 1500);
 
+    var applyFontChanges = debounce(function () {
+        vscode.postMessage({
+            command: "fontConfig",
+            changes: frontFontConfig
+        });
+    }, 800);
+
+
     // * START
     const w_button: HTMLElement | null = document.getElementById('chooseLeoEditorPath');
     if (w_button) {
         w_button.onclick = chooseLeoEditorPath;
     }
     setControls();
+    setFontControls();
     setVisibility(frontConfig);
     onBind();
 
@@ -14872,6 +14920,7 @@ declare function acquireVsCodeApi(): IVsCodeApi;
 
 </t>
 <t tx="fil.20210603223934.9">function setControls(): void {
+    // 1- Set leointeg's own configuration settings
     for (const key in frontConfig) {
         if (frontConfig.hasOwnProperty(key)) {
             const w_element = document.getElementById(key);

@@ -21,13 +21,7 @@ export class LeoSettingsProvider {
     public changedConfiguration(p_event?: vscode.ConfigurationChangeEvent): void {
         if (this._panel && !this._waitingForUpdate) {
             this._panel.webview.postMessage({ command: 'newConfig', config: this._leoIntegration.config.getConfig() });
-            this._panel.webview.postMessage({
-                command: 'newFonts', config:
-                {
-                    zoomLevel: 1,
-                    fontSize: 12
-                }
-            });
+            this._panel.webview.postMessage({ command: 'newFontConfig', config: this._leoIntegration.config.getFontConfig() });
         }
     }
 
@@ -59,10 +53,7 @@ export class LeoSettingsProvider {
                     `<script type="text/javascript" nonce="Z2l0bGV1cy1ib290c3RyYXA=">window.leoConfig = ${JSON.stringify(
                         this._leoIntegration.config.getConfig()
                     )};window.fontConfig = ${JSON.stringify(
-                        {
-                            zoomLevel: 1,
-                            fontSize: 12
-                        }
+                        this._leoIntegration.config.getFontConfig()
                     )};</script>`
                 );
                 this._panel.webview.onDidReceiveMessage(
@@ -110,22 +101,13 @@ export class LeoSettingsProvider {
                                     this._panel.webview.postMessage(
                                         {
                                             command: 'newFontConfig',
-                                            config: this._leoIntegration.config.getConfig()
+                                            config: this._leoIntegration.config.getFontConfig()
                                         }
                                     );
                                 }
                                 break;
                             case 'fontConfig':
-                                this._waitingForUpdate = true;
-                                this._leoIntegration.config.setLeoIntegSettings(message.changes).then(() => {
-                                    this._panel!.webview.postMessage(
-                                        {
-                                            command: 'vscodeFontConfig',
-                                            config: this._leoIntegration.config.getConfig()
-                                        }
-                                    );
-                                    this._waitingForUpdate = false;
-                                });
+                                this._leoIntegration.config.setFontConfig(message.changes);
                                 break;
                         }
                     },

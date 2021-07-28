@@ -1,17 +1,6 @@
 import { initializeAndWatchThemeColors } from './theme';
 import { debounce } from "debounce";
-import { ConfigSetting } from '../../types';
-
-interface IVsCodeApi {
-    postMessage(msg: {}): void;
-    setState(state: {}): void;
-    getState(): { [key: string]: any };
-}
-
-interface IFontConfig {
-    zoomLevel: number;
-    fontSize: number;
-}
+import { ConfigSetting, IVsCodeApi } from '../../types';
 
 declare function acquireVsCodeApi(): IVsCodeApi;
 
@@ -43,8 +32,8 @@ declare function acquireVsCodeApi(): IVsCodeApi;
 
     vscodeConfig = (window as any).leoConfig; // ! PRE SET BY leoSettingsWebview
     frontConfig = JSON.parse(JSON.stringify(vscodeConfig));
-    vscodeFontConfig = (window as any).leoConfig; // ! PRE SET BY leoSettingsWebview
-    frontFontConfig = JSON.parse(JSON.stringify(vscodeConfig));
+    vscodeFontConfig = (window as any).fontConfig; // ! PRE SET BY leoSettingsWebview
+    frontFontConfig = JSON.parse(JSON.stringify(vscodeFontConfig));
 
     // Handle messages sent from the extension to the webview
     window.addEventListener("message", event => {
@@ -168,24 +157,31 @@ declare function acquireVsCodeApi(): IVsCodeApi;
 
     function onVscodeInputChanged(element: HTMLInputElement) {
         if (element.id === "zoomLevel") {
-            frontFontConfig.zoomLevel = element.value;
+            frontFontConfig.zoomLevel = element.valueAsNumber;
         }
         if (element.id === "editorFontSize") {
-            frontFontConfig.fontSize = element.value;
+            frontFontConfig.fontSize = element.valueAsNumber;
         }
-        debounce(function () {
-            // Send to vscode.
-        }, 800);
+        applyFontChanges();
     }
 
     function setFontControls(): void {
-        const w_zoomLevel = document.getElementById("zoomLevel");
-        const w_fontSize = document.getElementById("editorFontSize");
-        (w_zoomLevel as HTMLInputElement).value = frontFontConfig.zoomLevel;
-        (w_fontSize as HTMLInputElement).value = frontFontConfig.fontSize;
+        if (frontFontConfig.zoomLevel || frontFontConfig.zoomLevel === 0) {
+            const w_element = document.getElementById("zoomLevel");
+            (w_element as HTMLInputElement).valueAsNumber = Number(frontFontConfig.zoomLevel);
+        } else {
+            console.log('Error : vscode font setting "zoomLevel" is missing');
+        }
+        if (frontFontConfig.fontSize) {
+            const w_element = document.getElementById("editorFontSize");
+            (w_element as HTMLInputElement).valueAsNumber = Number(frontFontConfig.fontSize);
+        } else {
+            console.log('Error : vscode font setting "fontSize" is missing');
+        }
     }
 
     function setControls(): void {
+        // 1- Set leointeg's own configuration settings
         for (const key in frontConfig) {
             if (frontConfig.hasOwnProperty(key)) {
                 const w_element = document.getElementById(key);
@@ -280,12 +276,21 @@ declare function acquireVsCodeApi(): IVsCodeApi;
         }
     }, 1500);
 
+    var applyFontChanges = debounce(function () {
+        vscode.postMessage({
+            command: "fontConfig",
+            changes: frontFontConfig
+        });
+    }, 800);
+
+
     // * START
     const w_button: HTMLElement | null = document.getElementById('chooseLeoEditorPath');
     if (w_button) {
         w_button.onclick = chooseLeoEditorPath;
     }
     setControls();
+    setFontControls();
     setVisibility(frontConfig);
     onBind();
 
