@@ -47,10 +47,9 @@ export class LeoDocumentsProvider implements vscode.TreeDataProvider<LeoDocument
                             w_index++;
                         });
                     }
-
-                    return Promise.resolve(w_list);
+                    return w_list;
                 } else {
-                    return Promise.resolve([]);
+                    return [];
                 }
             });
         } else {

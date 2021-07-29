@@ -45,6 +45,7 @@ export class Constants {
     public static STARTING_PACKAGE_ID: number = 1;
     public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
     public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
+    public static BUTTONS_DEBOUNCE_DELAY: number = 80;
     public static STATES_DEBOUNCE_DELAY: number = 100;
 
     /**
@@ -97,17 +98,14 @@ export class Constants {
      * * Basic user messages strings for messages and dialogs
      */
     public static USER_MESSAGES = {
-        SCRIPT_BUTTON: "Creates a button from selected node's script",
+        SCRIPT_BUTTON: "Creates a button from selected node",
         SCRIPT_BUTTON_TOOLTIP:
-            "The 'Script Button' button creates a new button.\n" +
-            "Its name will be the headline of the presently selected node\n" +
-            "Hitting this newly created button executes the button's script.\n" +
-            "\n" +
+            "Creates a new button with the presently selected node.\n" +
             "For example, to run a script on any part of an outline:\n" +
             "\n" +
-            "1.  Select the node containing a script. (Ex.: \"g.es(p.h)\")\n" +
-            "2.  Press 'Script Button'. This will create a new button.\n" +
-            "3.  Select a node on which you want to run the script.\n" +
+            "1.  Select the node containing a script. e.g. \"g.es(p.h)\"\n" +
+            "2.  Press 'Script Button' to create a new button.\n" +
+            "3.  Select another node on which to run the script.\n" +
             "4.  Press the *new* button.",
         SAVE_CHANGES: "Save changes to",
         BEFORE_CLOSING: "before closing?",

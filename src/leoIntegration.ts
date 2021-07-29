@@ -186,6 +186,13 @@ export class LeoIntegration {
         flush(): void;
     };
 
+    // * Debounced method used to get content of the at-buttons pane
+    public refreshButtonsPane: (() => void) & {
+        clear(): void;
+    } & {
+        flush(): void;
+    };
+
     constructor(private _context: vscode.ExtensionContext) {
         // * Setup States
         this.leoStates = new LeoStates(_context, this);
@@ -355,12 +362,17 @@ export class LeoIntegration {
         );
 
         // * Debounced refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
-        this.getStates = debounce(this._triggerGetStates, Constants.STATES_DEBOUNCE_DELAY);
+        this.getStates = debounce(
+            () => { this._triggerGetStates(); },
+            Constants.STATES_DEBOUNCE_DELAY
+        );
         this.refreshDocumentsPane = debounce(
-            () => {
-                this._leoDocumentsProvider.refreshTreeRoot();
-            },
+            () => { this._leoDocumentsProvider.refreshTreeRoot(); },
             Constants.DOCUMENTS_DEBOUNCE_DELAY
+        );
+        this.refreshButtonsPane = debounce(
+            () => { this._leoButtonsProvider.refreshTreeRoot(); },
+            Constants.BUTTONS_DEBOUNCE_DELAY
         );
     }
 
@@ -722,7 +734,7 @@ export class LeoIntegration {
         }
         if (this._refreshType.buttons) {
             this._refreshType.buttons = false;
-            this._leoButtonsProvider.refreshTreeRoot();
+            this.refreshButtonsPane();
         }
         if (this._refreshType.states) {
             this._refreshType.states = false;
@@ -781,7 +793,7 @@ export class LeoIntegration {
         this.lastSelectedNode = undefined;
         this._refreshOutline(false, RevealType.NoReveal);
         this.refreshDocumentsPane();
-        this._leoButtonsProvider.refreshTreeRoot();
+        this.refreshButtonsPane();
         this.closeBody();
     }
 
@@ -837,7 +849,7 @@ export class LeoIntegration {
         this.sendConfigToServer(this.config.getConfig());
         // * Refresh Opened tree views
         this.refreshDocumentsPane();
-        this._leoButtonsProvider.refreshTreeRoot();
+        this.refreshButtonsPane();
         this.loadSearchSettings();
         // * Maybe first Body appearance
         // return this.showBody(false);
@@ -974,7 +986,7 @@ export class LeoIntegration {
         if (p_explorerView) {
         } // (Facultative/unused) Do something different if explorer view is used
         if (p_event.visible) {
-            this._leoButtonsProvider.refreshTreeRoot();
+            this.refreshButtonsPane();
         }
     }
 
@@ -3071,6 +3083,8 @@ export class LeoIntegration {
      * @returns the launchRefresh promise started after it's done running the 'atButton' command
      */
     public clickAtButton(p_node: LeoButtonNode): Promise<boolean> {
+        console.log('click but');
+
         return this._isBusyTriggerSave(false)
             .then((p_saveResult) => {
                 return this.sendAction(
@@ -3079,6 +3093,7 @@ export class LeoIntegration {
                 );
             })
             .then((p_clickButtonResult: LeoBridgePackage) => {
+                console.log('back from click but');
                 this.launchRefresh(
                     { tree: true, body: true, documents: true, buttons: true, states: true },
                     false
