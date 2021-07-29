@@ -1021,7 +1021,7 @@ private _onButtonsTreeViewVisibilityChanged(
     if (p_explorerView) {
     } // (Facultative/unused) Do something different if explorer view is used
     if (p_event.visible) {
-        this._leoButtonsProvider.refreshTreeRoot();
+        this.refreshButtonsPane();
     }
 }
 
@@ -1266,6 +1266,8 @@ public nodeCommand(p_userCommand: UserCommand): Promise&lt;LeoBridgePackage&gt; 
  * @returns the launchRefresh promise started after it's done running the 'atButton' command
  */
 public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
+    console.log('click but');
+
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
             return this.sendAction(
@@ -1274,6 +1276,7 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
             );
         })
         .then((p_clickButtonResult: LeoBridgePackage) =&gt; {
+            console.log('back from click but');
             this.launchRefresh(
                 { tree: true, body: true, documents: true, buttons: true, states: true },
                 false
@@ -4897,6 +4900,7 @@ public static ERROR_PACKAGE_ID: number = 0;
 public static STARTING_PACKAGE_ID: number = 1;
 public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
 public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
+public static BUTTONS_DEBOUNCE_DELAY: number = 80;
 public static STATES_DEBOUNCE_DELAY: number = 100;
 
 </t>
@@ -4933,17 +4937,14 @@ public static GUI = {
  * * Basic user messages strings for messages and dialogs
  */
 public static USER_MESSAGES = {
-    SCRIPT_BUTTON: "Creates a button from selected node's script",
+    SCRIPT_BUTTON: "Creates a button from selected node",
     SCRIPT_BUTTON_TOOLTIP:
-        "The 'Script Button' button creates a new button.\n" +
-        "Its name will be the headline of the presently selected node\n" +
-        "Hitting this newly created button executes the button's script.\n" +
-        "\n" +
+        "Creates a new button with the presently selected node.\n" +
         "For example, to run a script on any part of an outline:\n" +
         "\n" +
-        "1.  Select the node containing a script. (Ex.: \"g.es(p.h)\")\n" +
-        "2.  Press 'Script Button'. This will create a new button.\n" +
-        "3.  Select a node on which you want to run the script.\n" +
+        "1.  Select the node containing a script. e.g. \"g.es(p.h)\"\n" +
+        "2.  Press 'Script Button' to create a new button.\n" +
+        "3.  Select another node on which to run the script.\n" +
         "4.  Press the *new* button.",
     SAVE_CHANGES: "Save changes to",
     BEFORE_CLOSING: "before closing?",
@@ -6347,23 +6348,22 @@ public refreshTreeRoot(): void {
 
 </t>
 <t tx="felix.20200718164130.5">public getChildren(element?: LeoButtonNode): Thenable&lt;LeoButtonNode[]&gt; {
-
     // if called with element, or not ready, give back empty array as there won't be any children
     if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
 
         // call action to get get list, and convert to LeoButtonNode(s) array
         return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_BUTTONS).then(p_package =&gt; {
-            if (p_package &amp;&amp; p_package) {
+            if (p_package &amp;&amp; p_package.buttons) {
                 const w_list: LeoButtonNode[] = [];
-                const w_buttons: LeoButton[] = p_package.buttons!;
+                const w_buttons: LeoButton[] = p_package.buttons;
                 if (w_buttons &amp;&amp; w_buttons.length) {
                     w_buttons.forEach((i_button: LeoButton) =&gt; {
                         w_list.push(new LeoButtonNode(i_button, this._leoIntegration));
                     });
                 }
-                return Promise.resolve(w_list);
+                return w_list;
             } else {
-                return Promise.resolve([]);
+                return [];
             }
         });
     } else {
@@ -6499,10 +6499,9 @@ public refreshTreeRoot(): void {
                         w_index++;
                     });
                 }
-
-                return Promise.resolve(w_list);
+                return w_list;
             } else {
-                return Promise.resolve([]);
+                return [];
             }
         });
     } else {
@@ -8376,7 +8375,7 @@ private _triggerGetStates(): void {
     }
     if (this._refreshType.buttons) {
         this._refreshType.buttons = false;
-        this._leoButtonsProvider.refreshTreeRoot();
+        this.refreshButtonsPane();
     }
     if (this._refreshType.states) {
         this._refreshType.states = false;
@@ -8545,6 +8544,13 @@ export class LeoIntegration {
         flush(): void;
     };
 
+    // * Debounced method used to get content of the at-buttons pane
+    public refreshButtonsPane: (() =&gt; void) &amp; {
+        clear(): void;
+    } &amp; {
+        flush(): void;
+    };
+
     @others
 }
 </t>
@@ -8581,7 +8587,7 @@ private _setupNoOpenedLeoDocument(): void {
     this.lastSelectedNode = undefined;
     this._refreshOutline(false, RevealType.NoReveal);
     this.refreshDocumentsPane();
-    this._leoButtonsProvider.refreshTreeRoot();
+    this.refreshButtonsPane();
     this.closeBody();
 }
 
@@ -8638,7 +8644,7 @@ private _setupOpenedLeoDocument(
     this.sendConfigToServer(this.config.getConfig());
     // * Refresh Opened tree views
     this.refreshDocumentsPane();
-    this._leoButtonsProvider.refreshTreeRoot();
+    this.refreshButtonsPane();
     this.loadSearchSettings();
     // * Maybe first Body appearance
     // return this.showBody(false);
@@ -8936,12 +8942,17 @@ private _onActiveEditorChanged(
     );
 
     // * Debounced refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
-    this.getStates = debounce(this._triggerGetStates, Constants.STATES_DEBOUNCE_DELAY);
+    this.getStates = debounce(
+        () =&gt; { this._triggerGetStates(); },
+        Constants.STATES_DEBOUNCE_DELAY
+    );
     this.refreshDocumentsPane = debounce(
-        () =&gt; {
-            this._leoDocumentsProvider.refreshTreeRoot();
-        },
+        () =&gt; { this._leoDocumentsProvider.refreshTreeRoot(); },
         Constants.DOCUMENTS_DEBOUNCE_DELAY
+    );
+    this.refreshButtonsPane = debounce(
+        () =&gt; { this._leoButtonsProvider.refreshTreeRoot(); },
+        Constants.BUTTONS_DEBOUNCE_DELAY
     );
 }
 
