@@ -368,6 +368,7 @@ class LeoServer:
             verbose=False,       # True: prints messages that would be sent to the log pane.
         )
         self.g = g = self.bridge.globals()  # Also sets global 'g' object
+        g.in_leo_server = True  # #2098.
         g.leoServer = self  # Set server singleton global reference
         self.leoServerConfig = None
         # * Intercept Log Pane output: Sends to client's log pane
@@ -577,7 +578,7 @@ class LeoServer:
                 key = i_key
         if key:
             try:
-                del d [index]
+                del d [key]
             except Exception as e:
                 raise ServerError(f"{tag}: exception removing button {index!r}: {e}")
         else:
@@ -2215,7 +2216,7 @@ class LeoServer:
             'vs-dump',
             'vs-reset',
             'vs-update',
-            # vs code's text editing commands should cover all of these...
+            # Connected client's text editing commands should cover all of these...
             'add-comments',
             'add-space-to-lines',
             'add-tab-to-lines',
@@ -3572,9 +3573,11 @@ def main():  # pragma: no cover (tested in client)
         verbose = False
         try:
             if connectionsTotal >= connectionsLimit:
-                websocket.close(1001)
+                print(f"{tag}: User Refused, Total: {connectionsTotal}, Limit: {connectionsLimit}")
+                await websocket.close(1001)
                 return
             connectionsTotal += 1
+            print(f"{tag}: User Connected, Total: {connectionsTotal}, Limit: {connectionsLimit}")
             controller._init_connection(websocket)
             # Start by sending empty as 'ok'.
             n = 0
@@ -3615,9 +3618,14 @@ def main():  # pragma: no cover (tested in client)
                     break
                 await websocket.send(answer)
         except websockets.exceptions.ConnectionClosedError as e:  # pragma: no cover
-            print(f"{tag}: closed error: {e}")
+            connectionsTotal =-1
+            print(f"{tag}: connection closed error: {e}")
         except websockets.exceptions.ConnectionClosed as e:
-            print(f"{tag}: closed normally: {e}")
+            connectionsTotal =-1
+            print(f"{tag}: connection closed: {e}")
+        finally:
+            connectionsTotal =-1
+            print(f"{tag}: finished normally Total: {connectionsTotal}, Limit: {connectionsLimit}")
         # Don't call EventLoop.stop(). It terminates abnormally.
             # asyncio.get_event_loop().stop()
     #@+node:felix.20210621233316.107: *3* function: get_args

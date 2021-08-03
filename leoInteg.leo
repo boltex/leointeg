@@ -260,6 +260,7 @@
 <v t="felix.20200718153505.9"><vh>_tryParseJSON</vh></v>
 <v t="felix.20200718153505.11"><vh>_processAnswer</vh></v>
 <v t="felix.20200718153505.12"><vh>initLeoProcess</vh></v>
+<v t="felix.20210802163703.1"><vh>closeLeoProcess</vh></v>
 <v t="felix.20200718153505.13"><vh>_send</vh></v>
 </v>
 </v>
@@ -308,6 +309,7 @@
 <v t="felix.20200719025231.6"><vh>startNetworkServices</vh></v>
 <v t="felix.20200719025231.7"><vh>startServer</vh></v>
 <v t="felix.20210717204048.1"><vh>stopServer</vh></v>
+<v t="felix.20210802162424.1"><vh>stopConnection</vh></v>
 <v t="felix.20200719025231.8"><vh>connect</vh></v>
 <v t="felix.20200719025231.9"><vh>cancelConnect</vh></v>
 <v t="felix.20210613210351.1"><vh>chooseLeoFolder</vh></v>
@@ -5609,7 +5611,8 @@ export function activate(p_context: vscode.ExtensionContext) {
 export function deactivate(): Promise&lt;boolean&gt; {
     if (LeoInteg) {
         LeoInteg.cleanupBody();
-        LeoInteg.stopServer();
+        // LeoInteg.stopServer(); // * Force-kills the server
+        LeoInteg.stopConnection();
         return Promise.resolve(true).then(() =&gt; {
             return new Promise(resolve =&gt; setTimeout(() =&gt; {
                 console.log("done deactivating");
@@ -12857,6 +12860,26 @@ public setFontConfig(p_settings: FontSettings): void {
     setState(state: {}): void;
     getState(): { [key: string]: any };
 }
+</t>
+<t tx="felix.20210802162424.1">/**
+ * * Disconnects from the server
+ */
+public stopConnection(): void {
+    this._leoBridge.closeLeoProcess();
+}
+
+</t>
+<t tx="felix.20210802163703.1">/**
+ * * Closes the websocket connection
+ */
+public closeLeoProcess(): void {
+    if (this._websocket) {
+        this._websocket.close(1001, "Quitting LeoInteg");
+    } else {
+        console.warn('LeoInteg websocket close called without websocket active');
+    }
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

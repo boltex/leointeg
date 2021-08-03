@@ -468,6 +468,13 @@ export class LeoIntegration {
     }
 
     /**
+     * * Disconnects from the server
+     */
+    public stopConnection(): void {
+        this._leoBridge.closeLeoProcess();
+    }
+
+    /**
      * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
      */
     public connect(): void {

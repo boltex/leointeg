@@ -228,6 +228,17 @@ export class LeoBridge {
     }
 
     /**
+     * * Closes the websocket connection
+     */
+    public closeLeoProcess(): void {
+        if (this._websocket) {
+            this._websocket.close(1001, "Quitting LeoInteg");
+        } else {
+            console.warn('LeoInteg websocket close called without websocket active');
+        }
+    }
+
+    /**
      * * Send into the python process input
      * @param p_data JSON Message string to be sent to leobridgeserver.py
      */

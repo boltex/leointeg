@@ -683,7 +683,8 @@ export function activate(p_context: vscode.ExtensionContext) {
 export function deactivate(): Promise<boolean> {
     if (LeoInteg) {
         LeoInteg.cleanupBody();
-        LeoInteg.stopServer();
+        // LeoInteg.stopServer(); // * Force-kills the server
+        LeoInteg.stopConnection();
         return Promise.resolve(true).then(() => {
             return new Promise(resolve => setTimeout(() => {
                 console.log("done deactivating");
