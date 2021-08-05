@@ -2016,7 +2016,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "author": {
     "name": "Félix"
   },
@@ -7805,7 +7805,7 @@ export function isHexColor(p_hexString: string): boolean {
 <t tx="felix.20200718220811.1"></t>
 <t tx="felix.20200718220818.1">@language md
 @tabwidth -4
-# ![LeoEditor](resources/leoapp.png) Leo for VS Code
+# ![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for VS Code
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
@@ -7817,7 +7817,7 @@ export function isHexColor(p_hexString: string): boolean {
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
 or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.visualstudio.com](https://code.visualstudio.com/).
 
-![Screenshot](resources/animated-screenshot.gif)
+![Screenshot](https://raw.githubusercontent.com/boltex/leointeg/master/resources/animated-screenshot.gif)
 
 @others
 
@@ -7885,7 +7885,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
   - Clipboard operations
   - Undo/Redo commands
 
-![Menu](resources/context-hover-menus.png)
+![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
 </t>
 <t tx="felix.20200718222043.1">## Keybindings
@@ -7947,14 +7947,14 @@ Use the **Save Leo File** command to derive external files.
 
 Leo will detect derived file changes and will ask to either **refresh from disk** or **ignore the changes**.
 
-![derive files](resources/derived-file.gif)
+![derive files](https://raw.githubusercontent.com/boltex/leointeg/master/resources/derived-file.gif)
 
 </t>
 <t tx="felix.20200718222053.1">## Automate Synchronization
 
 The **change detection** process can be automated to always refresh, or ignore file changes: A **notification** will inform you of the action taken instead.
 
-![auto sync](resources/auto-sync.gif)
+![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/auto-sync.gif)
 
 </t>
 <t tx="felix.20200718222058.1">## Status Bar Indicator
@@ -7963,7 +7963,7 @@ A customizable keyboard status bar indicator is shown when this extension is act
 It will turn orange (or your choice of text and color), when leo's **keyboard shortcuts** are active.
 This occurs when an outline node or a body pane has focus:
 
-![Statusbar](resources/statusbar-keyboard.gif)
+![Statusbar](https://raw.githubusercontent.com/boltex/leointeg/master/resources/statusbar-keyboard.gif)
 
 </t>
 <t tx="felix.20200718222102.1">## Extension Settings
@@ -7979,7 +7979,7 @@ This occurs when an outline node or a body pane has focus:
 - Hide or show the "Open on the side" command in the context menu to open a node beside the active editor
 - Set preferences for setting the address and port, and for automatically starting, and/or connecting, to a Leo Bridge server.
 
-![Settings](resources/welcome-settings.gif)
+![Settings](https://raw.githubusercontent.com/boltex/leointeg/master/resources/welcome-settings.gif)
 
 </t>
 <t tx="felix.20200718222108.1">## Issues
