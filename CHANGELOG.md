@@ -144,4 +144,4 @@ _Note: This editable body panel does not affect Leo file yet._
 - Initial basic skeleton of this extension. Press F5 to view icon and test the startup of the extension!
 - Implemented [leoBridge](https://leoeditor.com/leoBridge.html) interaction.
 
-![LeoEditor](resources/leoapp96px.png)
+![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp96px.png)
