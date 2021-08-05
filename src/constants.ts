@@ -46,6 +46,7 @@ export class Constants {
     public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
     public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
     public static BUTTONS_DEBOUNCE_DELAY: number = 80;
+    public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
     public static STATES_DEBOUNCE_DELAY: number = 100;
 
     /**
@@ -358,6 +359,7 @@ export class Constants {
      */
     public static ASYNC_ACTIONS = {
         ASYNC_LOG: "log",
+        ASYNC_REFRESH: "refresh",
         ASYNC_ASK: "ask",
         ASYNC_WARN: "warn",
         ASYNC_INFO: "info",

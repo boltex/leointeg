@@ -75,6 +75,10 @@ export class LeoBridge {
                     this._leoAsync.log(w_parsedData.log);
                     break;
                 }
+                case Constants.ASYNC_ACTIONS.ASYNC_REFRESH: {
+                    this._leoAsync.refresh(w_parsedData.action);
+                    break;
+                }
                 case Constants.ASYNC_ACTIONS.ASYNC_ASK: {
                     this._leoAsync.showAskModalDialog(w_parsedData);
                     break;

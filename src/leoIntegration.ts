@@ -193,6 +193,13 @@ export class LeoIntegration {
         flush(): void;
     };
 
+    // * Debounced method used to refresh all
+    public refreshAll: (() => void) & {
+        clear(): void;
+    } & {
+        flush(): void;
+    };
+
     constructor(private _context: vscode.ExtensionContext) {
         // * Setup States
         this.leoStates = new LeoStates(_context, this);
@@ -361,7 +368,7 @@ export class LeoIntegration {
             this._onDidOpenTextDocument(p_document)
         );
 
-        // * Debounced refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
+        // * Debounced refresh flags and UI parts, other than the tree and body
         this.getStates = debounce(
             () => { this._triggerGetStates(); },
             Constants.STATES_DEBOUNCE_DELAY
@@ -373,6 +380,18 @@ export class LeoIntegration {
         this.refreshButtonsPane = debounce(
             () => { this._leoButtonsProvider.refreshTreeRoot(); },
             Constants.BUTTONS_DEBOUNCE_DELAY
+        );
+        this.refreshAll = debounce(
+            () => {
+                this.launchRefresh({
+                    tree: true,
+                    body: true,
+                    buttons: true,
+                    states: true,
+                    documents: true
+                }, false);
+            },
+            Constants.REFRESH_ALL_DEBOUNCE_DELAY
         );
     }
 
@@ -1147,9 +1166,6 @@ export class LeoIntegration {
             !this._bodyLastChangedDocumentSaved
         ) {
             const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
-            if (p_forcedVsCodeSave) {
-                // console.log('FORCED SAVE');
-            }
             this._bodyLastChangedDocumentSaved = true;
             q_savePromise = this._bodySaveDocument(w_document, p_forcedVsCodeSave);
         } else {
@@ -1777,25 +1793,26 @@ export class LeoIntegration {
      * * cleanupBody closes all remaining body pane to shut down this vscode window
      */
     public cleanupBody(): Promise<boolean> {
+        let q_save: Thenable<boolean>;
+        if (this._bodyLastChangedDocument) {
+            q_save = this._bodySaveDocument(this._bodyLastChangedDocument, false);
+        } else {
+            q_save = Promise.resolve(true);
+        }
         let q_edit: Thenable<boolean>;
         if (this.bodyUri) {
             const w_edit = new vscode.WorkspaceEdit();
             w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
-            q_edit = vscode.workspace.applyEdit(w_edit);
+            q_edit = vscode.workspace.applyEdit(w_edit).then(() => {
+                return true;
+            });
+        } else {
+            q_edit = Promise.resolve(true);
         }
-        return Promise.resolve(true)
+        return Promise.all([q_save, q_edit])
             .then(() => {
-                if (q_edit) {
-                    console.log('closing body');
-                    return q_edit;
-                } else {
-                    return Promise.resolve(true);
-                }
-            }).then(() => {
-                console.log('done closing body');
                 return this.closeBody();
             });
-
     }
 
     /**

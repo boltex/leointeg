@@ -224,6 +224,7 @@
 <v t="felix.20200718035737.1"><vh>@clean src/leoAsync.ts</vh>
 <v t="ekr.20200815083608.1"><vh>class LeoAsync</vh>
 <v t="ekr.20200815083608.2"><vh>log</vh></v>
+<v t="felix.20210804175113.1"><vh>refresh</vh></v>
 <v t="ekr.20200815083608.3"><vh>showSaveAsDialog</vh></v>
 <v t="ekr.20200815083609.1"><vh>showAskModalDialog</vh></v>
 <v t="ekr.20200815083609.2"><vh>showWarnModalMessage</vh></v>
@@ -696,17 +697,18 @@ export class LeoAsync {
         private _leoIntegration: LeoIntegration
     ) { }
 
-    /**
-     * * Adds message string to leoInteg's log pane, used when leoBridge gets an async 'log' command
-     */
     @others
+
 }
 
 &lt;&lt; TODO &gt;&gt;
 @language typescript
 @tabwidth -4
 </t>
-<t tx="ekr.20200815083608.2">public log(p_message: string): void {
+<t tx="ekr.20200815083608.2">/**
+ * * Adds message string to leoInteg's log pane, used when leoBridge gets an async 'log' command
+ */
+public log(p_message: string): void {
     this._leoIntegration.addLogPaneEntry(p_message);
 }
 
@@ -4540,6 +4542,7 @@ print('done')
  */
 public static ASYNC_ACTIONS = {
     ASYNC_LOG: "log",
+    ASYNC_REFRESH: "refresh",
     ASYNC_ASK: "ask",
     ASYNC_WARN: "warn",
     ASYNC_INFO: "info",
@@ -4903,6 +4906,7 @@ public static STARTING_PACKAGE_ID: number = 1;
 public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
 public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
 public static BUTTONS_DEBOUNCE_DELAY: number = 80;
+public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
 public static STATES_DEBOUNCE_DELAY: number = 100;
 
 </t>
@@ -5610,15 +5614,14 @@ export function activate(p_context: vscode.ExtensionContext) {
  */
 export function deactivate(): Promise&lt;boolean&gt; {
     if (LeoInteg) {
-        LeoInteg.cleanupBody();
-        // LeoInteg.stopServer(); // * Force-kills the server
-        LeoInteg.stopConnection();
-        return Promise.resolve(true).then(() =&gt; {
-            return new Promise(resolve =&gt; setTimeout(() =&gt; {
-                console.log("done deactivating");
-                resolve(true);
-            }, 200));
+        LeoInteg.cleanupBody().then(() =&gt; {
+            LeoInteg?.stopConnection();
         });
+        // Call to LeoInteg.stopServer() is not needed: server should handle disconnects.
+        // Server should open tk GUI dialogs if dirty files still remain before closing itself.
+        return new Promise(resolve =&gt; setTimeout(() =&gt; {
+            resolve(true); // 200 ms to save last dirty body text.
+        }, 200));
     } else {
         return Promise.resolve(false);
     }
@@ -6114,6 +6117,10 @@ private _asyncAction(w_parsedData: any): void {
         switch (w_parsedData.async) {
             case Constants.ASYNC_ACTIONS.ASYNC_LOG: {
                 this._leoAsync.log(w_parsedData.log);
+                break;
+            }
+            case Constants.ASYNC_ACTIONS.ASYNC_REFRESH: {
+                this._leoAsync.refresh(w_parsedData.action);
                 break;
             }
             case Constants.ASYNC_ACTIONS.ASYNC_ASK: {
@@ -7826,7 +7833,8 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 - Saves recently opened Leo files list per workspace, instead of globally.
 - Changed the default visible command icons above the body pane. Also makes sure 'settings' is visible.
-- Added global zoom level and editor font-size in the LeoInteg settings panel to help change the body &amp; outline font sizes.^
+- Added global zoom level and editor font-size in the LeoInteg settings panel to help change the body &amp; outline font sizes.
+- Server now opens modal dialogs for saving dirty documents on exit.
 
 @others
 </t>
@@ -8554,6 +8562,13 @@ export class LeoIntegration {
         flush(): void;
     };
 
+    // * Debounced method used to refresh all
+    public refreshAll: (() =&gt; void) &amp; {
+        clear(): void;
+    } &amp; {
+        flush(): void;
+    };
+
     @others
 }
 </t>
@@ -8944,7 +8959,7 @@ private _onActiveEditorChanged(
         this._onDidOpenTextDocument(p_document)
     );
 
-    // * Debounced refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
+    // * Debounced refresh flags and UI parts, other than the tree and body
     this.getStates = debounce(
         () =&gt; { this._triggerGetStates(); },
         Constants.STATES_DEBOUNCE_DELAY
@@ -8956,6 +8971,18 @@ private _onActiveEditorChanged(
     this.refreshButtonsPane = debounce(
         () =&gt; { this._leoButtonsProvider.refreshTreeRoot(); },
         Constants.BUTTONS_DEBOUNCE_DELAY
+    );
+    this.refreshAll = debounce(
+        () =&gt; {
+            this.launchRefresh({
+                tree: true,
+                body: true,
+                buttons: true,
+                states: true,
+                documents: true
+            }, false);
+        },
+        Constants.REFRESH_ALL_DEBOUNCE_DELAY
     );
 }
 
@@ -9015,9 +9042,6 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise&lt;boolean&gt; {
         !this._bodyLastChangedDocumentSaved
     ) {
         const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
-        if (p_forcedVsCodeSave) {
-            // console.log('FORCED SAVE');
-        }
         this._bodyLastChangedDocumentSaved = true;
         q_savePromise = this._bodySaveDocument(w_document, p_forcedVsCodeSave);
     } else {
@@ -12735,25 +12759,26 @@ public stopServer(): void {
  * * cleanupBody closes all remaining body pane to shut down this vscode window
  */
 public cleanupBody(): Promise&lt;boolean&gt; {
+    let q_save: Thenable&lt;boolean&gt;;
+    if (this._bodyLastChangedDocument) {
+        q_save = this._bodySaveDocument(this._bodyLastChangedDocument, false);
+    } else {
+        q_save = Promise.resolve(true);
+    }
     let q_edit: Thenable&lt;boolean&gt;;
     if (this.bodyUri) {
         const w_edit = new vscode.WorkspaceEdit();
         w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
-        q_edit = vscode.workspace.applyEdit(w_edit);
+        q_edit = vscode.workspace.applyEdit(w_edit).then(() =&gt; {
+            return true;
+        });
+    } else {
+        q_edit = Promise.resolve(true);
     }
-    return Promise.resolve(true)
+    return Promise.all([q_save, q_edit])
         .then(() =&gt; {
-            if (q_edit) {
-                console.log('closing body');
-                return q_edit;
-            } else {
-                return Promise.resolve(true);
-            }
-        }).then(() =&gt; {
-            console.log('done closing body');
             return this.closeBody();
         });
-
 }
 
 </t>
@@ -12878,6 +12903,17 @@ public closeLeoProcess(): void {
     } else {
         console.warn('LeoInteg websocket close called without websocket active');
     }
+}
+
+</t>
+<t tx="felix.20210804175113.1">/**
+ * * Server announced the multi-user content changed: Debounce a refresh cycle.
+ * The 'action' string can be checked to determine what kind, if any, is required.
+ */
+public refresh(p_action: string): void {
+    //
+    console.log('REFRESH', p_action);
+    this._leoIntegration.refreshAll();
 }
 
 </t>

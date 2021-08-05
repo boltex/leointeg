@@ -682,15 +682,14 @@ export function activate(p_context: vscode.ExtensionContext) {
  */
 export function deactivate(): Promise<boolean> {
     if (LeoInteg) {
-        LeoInteg.cleanupBody();
-        // LeoInteg.stopServer(); // * Force-kills the server
-        LeoInteg.stopConnection();
-        return Promise.resolve(true).then(() => {
-            return new Promise(resolve => setTimeout(() => {
-                console.log("done deactivating");
-                resolve(true);
-            }, 200));
+        LeoInteg.cleanupBody().then(() => {
+            LeoInteg?.stopConnection();
         });
+        // Call to LeoInteg.stopServer() is not needed: server should handle disconnects.
+        // Server should open tk GUI dialogs if dirty files still remain before closing itself.
+        return new Promise(resolve => setTimeout(() => {
+            resolve(true); // 200 ms to save last dirty body text.
+        }, 200));
     } else {
         return Promise.resolve(false);
     }

@@ -3322,6 +3322,7 @@ def main():
     # replace default host address and port if provided as arguments
 
     args = None
+    # See https://docs.python.org/3/library/getopt.html for 'getopt' usage
     try:
         opts, args = getopt.getopt(sys.argv[1:], "ha:p:", [
                                    "help", "address=", "port="])
