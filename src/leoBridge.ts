@@ -216,9 +216,6 @@ export class LeoBridge {
         );
         // * Capture the python process output
         this._websocket.onmessage = (p_event) => {
-            if (this._receivedTotal < 5) {
-                console.log('onmessage: ', p_event.data.toString());
-            }
             this._receivedTotal++;
             if (p_event.data) {
                 this._processAnswer(p_event.data.toString());

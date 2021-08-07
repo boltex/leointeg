@@ -503,15 +503,12 @@ export class LeoIntegration {
         }
         this._leoIsConnecting = true;
         console.log('connecting');
-
         this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess(
             this._serverService.usingPort // This will be zero if no port found
         );
         this._leoBridgeReadyPromise.then(
             (p_package) => {
                 console.log('connected');
-                console.log('connected package: ', p_package);
-
                 this._leoIsConnecting = false;
                 // Check if hard-coded first package signature
                 if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
@@ -1270,16 +1267,11 @@ export class LeoIntegration {
                 gnx: utils.leoUriToStr(p_document.uri),
                 body: p_document.getText(),
             };
-            console.log('send action set body ');
-
             this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)); // Don't wait for promise
             // This bodySaveSelection is placed on the stack right after saving body, returns promise either way
             return this._bodySaveSelection().then(() => {
                 this._refreshType.states = true;
                 this.getStates();
-
-                console.log('saved selections');
-
                 if (p_forcedVsCodeSave) {
                     return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
                 }
@@ -1302,7 +1294,7 @@ export class LeoIntegration {
             gnx: utils.leoUriToStr(p_document.uri),
             body: p_document.getText(),
         };
-        console.log('send action set body on quit');
+        console.log('Send action set body on quit');
         return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
     }
 

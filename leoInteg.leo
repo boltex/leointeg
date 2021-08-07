@@ -5628,7 +5628,7 @@ export function deactivate(): Promise&lt;boolean&gt; {
         return new Promise((p_resolve, p_reject) =&gt; {
             setTimeout(() =&gt; {
                 console.log('5 sec passed');
-                LeoInteg?.stopServer()
+                LeoInteg?.stopServer();
                 p_resolve(true);
             }, 5000);
         }
@@ -6026,9 +6026,6 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
     );
     // * Capture the python process output
     this._websocket.onmessage = (p_event) =&gt; {
-        if (this._receivedTotal &lt; 5) {
-            console.log('onmessage: ', p_event.data.toString());
-        }
         this._receivedTotal++;
         if (p_event.data) {
             this._processAnswer(p_event.data.toString());
@@ -9109,16 +9106,11 @@ private _bodySaveDocument(
             gnx: utils.leoUriToStr(p_document.uri),
             body: p_document.getText(),
         };
-        console.log('send action set body ');
-
         this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)); // Don't wait for promise
         // This bodySaveSelection is placed on the stack right after saving body, returns promise either way
         return this._bodySaveSelection().then(() =&gt; {
             this._refreshType.states = true;
             this.getStates();
-
-            console.log('saved selections');
-
             if (p_forcedVsCodeSave) {
                 return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
             }
@@ -10269,15 +10261,12 @@ public connect(): void {
     }
     this._leoIsConnecting = true;
     console.log('connecting');
-
     this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess(
         this._serverService.usingPort // This will be zero if no port found
     );
     this._leoBridgeReadyPromise.then(
         (p_package) =&gt; {
             console.log('connected');
-            console.log('connected package: ', p_package);
-
             this._leoIsConnecting = false;
             // Check if hard-coded first package signature
             if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
@@ -12989,7 +12978,7 @@ private _bodySaveDeactivate(
         gnx: utils.leoUriToStr(p_document.uri),
         body: p_document.getText(),
     };
-    console.log('send action set body on quit');
+    console.log('Send action set body on quit');
     return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
 }
 

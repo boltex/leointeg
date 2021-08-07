@@ -695,7 +695,7 @@ export function deactivate(): Promise<boolean> {
         return new Promise((p_resolve, p_reject) => {
             setTimeout(() => {
                 console.log('5 sec passed');
-                LeoInteg?.stopServer()
+                LeoInteg?.stopServer();
                 p_resolve(true);
             }, 5000);
         }
