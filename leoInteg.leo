@@ -358,6 +358,7 @@
 <v t="felix.20200719025231.32"><vh>triggerBodySave</vh></v>
 <v t="felix.20200928133238.1"><vh>_bodySaveSelection</vh></v>
 <v t="felix.20200719025231.33"><vh>_bodySaveDocument</vh></v>
+<v t="felix.20210806175431.1"><vh>_bodySaveDeactivate</vh></v>
 </v>
 <v t="felix.20200719030902.1"><vh>Refresh UI</vh>
 <v t="felix.20200719025231.34"><vh>setDocumentSelection</vh></v>
@@ -1314,7 +1315,7 @@ public removeAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
  * * Otherwise just outputs lines to the terminal Output
  * @param p_data Data object (not pure string)
  */
-private _gotTerminalData(p_data: string): void {
+private _processServerOutput(p_data: string): void {
     p_data.toString().split("\n").forEach(p_line =&gt; {
         p_line = p_line.trim();
         if (p_line) { // * std out process line by line: json shouldn't have line breaks
@@ -5604,7 +5605,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         w_leo.startNetworkServices();
         // Save version # for next startup comparison
         p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-        console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
+        console.log('leoInteg 0.1.17.01 startup launched in ', utils.getDurationMs(w_start), 'ms');
     });
 }
 
@@ -5614,14 +5615,24 @@ export function activate(p_context: vscode.ExtensionContext) {
  */
 export function deactivate(): Promise&lt;boolean&gt; {
     if (LeoInteg) {
+
+        console.log("init cleanupBody");
         LeoInteg.cleanupBody().then(() =&gt; {
+
+            console.log("init stopConnection");
             LeoInteg?.stopConnection();
+
         });
         // Call to LeoInteg.stopServer() is not needed: server should handle disconnects.
         // Server should open tk GUI dialogs if dirty files still remain before closing itself.
-        return new Promise(resolve =&gt; setTimeout(() =&gt; {
-            resolve(true); // 200 ms to save last dirty body text.
-        }, 200));
+        return new Promise((p_resolve, p_reject) =&gt; {
+            setTimeout(() =&gt; {
+                console.log('5 sec passed');
+                LeoInteg?.stopServer()
+                p_resolve(true);
+            }, 5000);
+        }
+        );
     } else {
         return Promise.resolve(false);
     }
@@ -6002,7 +6013,7 @@ private _processAnswer(p_data: string): void {
 
 </t>
 <t tx="felix.20200718153505.12">/**
- * * Create a websocket connection to leoserver on
+ * * Create a websocket connection to a Leo server
  * @param p_port facultative port number to override config port
  * @returns A promise for a LeoBridgePackage object containing only an 'id' member of 1 that will resolve when the 'leoBridge' is established
  */
@@ -6015,6 +6026,10 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
     );
     // * Capture the python process output
     this._websocket.onmessage = (p_event) =&gt; {
+        if (this._receivedTotal &lt; 5) {
+            console.log('onmessage: ', p_event.data.toString());
+        }
+        this._receivedTotal++;
         if (p_event.data) {
             this._processAnswer(p_event.data.toString());
         }
@@ -6068,6 +6083,8 @@ export class LeoBridge {
 
     private _websocket: WebSocket | null = null;
     private _leoAsync: LeoAsync;
+
+    private _receivedTotal: number = 0;
 
     // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
     // private _hasbin = require('hasbin');
@@ -6167,12 +6184,16 @@ private _buildActionParameter(p_action: string, p_jsonParam?: string): string {
  * * Resolves promises with the answers from an action that was finished
  * @param p_object Parsed data that was given as the answer by the Leo command that finished
  */
-private _resolveBridgeReady(p_object: string) {
+private _resolveBridgeReady(p_object: any) {
     let w_bottomAction = this._callStack.shift();
     if (w_bottomAction) {
         if (w_bottomAction.deferredPayload) {
             // Used when the action already has a return value ready but is also waiting for python's side
-            w_bottomAction.resolveFn(w_bottomAction.deferredPayload); // given back 'as is'
+            // We check if it's really the initial first, then replace the id and pass the results.
+            if (w_bottomAction.deferredPayload.id === Constants.STARTING_PACKAGE_ID) {
+                p_object.id = Constants.STARTING_PACKAGE_ID;
+            }
+            w_bottomAction.resolveFn(p_object); // given back with id=1 !
         } else {
             w_bottomAction.resolveFn(p_object);
         }
@@ -7087,7 +7108,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
                 w_serverScriptPath += Constants.OLD_SERVER_NAME;
             } else if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
                 //new file exists
-                console.log('found leoserver.py');
+                // console.log('found leoserver.py');
                 w_serverScriptPath += Constants.SERVER_NAME;
             } else {
                 return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
@@ -7108,24 +7129,23 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         }
 
         const w_serverStartPromise = new Promise((p_resolve, p_reject) =&gt; {
-            // * Spawn a python child process for a leoBridge server
+            // Spawn a python child process for a leoBridge server
             this._resolvePromise = p_resolve;
             this._rejectPromise = p_reject;
         });
 
-        // * Setup arguments: Order is important!
-
+        // Setup arguments: Order is important!
         let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
 
-        // * on windows, if the default py is used, make sure it's got a '-3'
+        // on windows, if the default py is used, make sure it's got a '-3'
         if (this._isWin32 &amp;&amp; w_pythonPath === "py") {
             w_args.push("-3");
         }
 
-        // * The server script itself
+        // The server script itself
         w_args.push(w_serverScriptPath);
 
-        // * Add port
+        // Add port
         w_args.push("-p " + this.usingPort);
 
         this._leoIntegration.addTerminalPaneEntry(
@@ -7133,18 +7153,29 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
             w_pythonPath + " " + w_args.join(" ")
         );
 
-        this._serverProcess = child.spawn(w_pythonPath, w_args);
+        const w_options: child.SpawnOptionsWithoutStdio = {
+            // Child to run independently of its parent process. Depends on the platform.
+            detached: true,
+            // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
+            // shell: true
+        };
 
+        // * See https://nodejs.org/api/child_process.html for options
+        this._serverProcess = child.spawn(w_pythonPath, w_args, w_options); // SPAWN method
+        this._serverProcess.unref();
+
+        // this._serverProcess = child.fork(w_pythonPath, w_args, w_options); // FORK method
+
+        // Capture the OUTPUT and send it to the "leo server" OutputChannel
         if (this._serverProcess &amp;&amp; this._serverProcess.stdout) {
-            // * Capture the python process output
             this._serverProcess.stdout.on("data", (p_data: string) =&gt; {
-                this._gotTerminalData(p_data);
+                this._processServerOutput(p_data);
             });
         } else {
             console.error("No stdout");
         }
+        // Capture the ERROR channel and set flags on server errors
         if (this._serverProcess &amp;&amp; this._serverProcess.stderr) {
-            // * Capture other python process outputs
             this._serverProcess.stderr.on("data", (p_data: string) =&gt; {
                 console.log(`stderr: ${p_data}`);
                 this._isStarted = false;
@@ -7157,6 +7188,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         } else {
             console.error("No stderr");
         }
+        // Capture the CLOSE event and set flags on server actually closing
         if (this._serverProcess) {
             this._serverProcess!.on("close", (p_code: any) =&gt; {
                 console.log(`leoBridge exited with code ${p_code}`);
@@ -7168,7 +7200,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
                 }
             });
         }
-
+        // Give out the promise that will resolve when the server is started
         return w_serverStartPromise;
     });
 
@@ -7421,6 +7453,10 @@ export interface LeoBridgePackage {
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
     commands?: vscode.QuickPickItem[]; // getCommands
+    commander?: {
+        changed: boolean,
+        fileName: string;
+    }
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous
@@ -9073,11 +9109,16 @@ private _bodySaveDocument(
             gnx: utils.leoUriToStr(p_document.uri),
             body: p_document.getText(),
         };
+        console.log('send action set body ');
+
         this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)); // Don't wait for promise
         // This bodySaveSelection is placed on the stack right after saving body, returns promise either way
         return this._bodySaveSelection().then(() =&gt; {
             this._refreshType.states = true;
             this.getStates();
+
+            console.log('saved selections');
+
             if (p_forcedVsCodeSave) {
                 return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
             }
@@ -10235,14 +10276,17 @@ public connect(): void {
     this._leoBridgeReadyPromise.then(
         (p_package) =&gt; {
             console.log('connected');
+            console.log('connected package: ', p_package);
 
             this._leoIsConnecting = false;
-            if (p_package.id !== 1) {
+            // Check if hard-coded first package signature
+            if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
                 this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
             } else {
+                const w_opened: boolean = !!p_package.commander;
                 const w_lastFiles: string[] =
                     this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
-                if (w_lastFiles.length) {
+                if (w_lastFiles.length &amp;&amp; !w_opened) {
                     // This context flag will trigger 'Connecting...' placeholder
                     utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
 
@@ -10252,6 +10296,10 @@ public connect(): void {
                 } else {
                     this.leoStates.leoBridgeReady = true;
                     this.finishedStartup = true;
+                }
+                if (w_opened) {
+                    p_package.filename = p_package.commander!.fileName;
+                    this._setupOpenedLeoDocument(p_package);
                 }
 
                 this.showLogPane();
@@ -11985,13 +12033,7 @@ public cloneFind(p_marked: boolean, p_flat: boolean): Promise&lt;any&gt; {
         return this.nodeCommand({
             action: w_action,
             node: undefined,
-            refreshType: {
-                tree: true,
-                body: true,
-                documents: false,
-                buttons: false,
-                states: true,
-            },
+            refreshType: { tree: true, body: true, states: true },
             fromOutline: false,
         }) || Promise.resolve();
     }
@@ -12735,7 +12777,7 @@ public findSymbol(p_def: boolean): Promise&lt;any&gt; {
 ],
 </t>
 <t tx="felix.20210717192921.1">/**
- * Kills the server if it was started by this instance of leoInteg
+ * * Kills the server if it was started by this instance of leoInteg
  */
 public killServer(): void {
     if (this._serverProcess) {
@@ -12758,27 +12800,45 @@ public stopServer(): void {
 <t tx="felix.20210718155134.1">/**
  * * cleanupBody closes all remaining body pane to shut down this vscode window
  */
-public cleanupBody(): Promise&lt;boolean&gt; {
-    let q_save: Thenable&lt;boolean&gt;;
+public cleanupBody(): Thenable&lt;any&gt; {
+    console.log('start cleanupBody');
+
+    let q_save: Thenable&lt;any&gt;;
     if (this._bodyLastChangedDocument) {
-        q_save = this._bodySaveDocument(this._bodyLastChangedDocument, false);
+        q_save = this._bodySaveDeactivate(this._bodyLastChangedDocument);
     } else {
         q_save = Promise.resolve(true);
     }
+
+    // Adding log in the chain of events
+    q_save.then(() =&gt; {
+        console.log('q_save resolved');
+    });
+
     let q_edit: Thenable&lt;boolean&gt;;
     if (this.bodyUri) {
+        console.log('start deleteFile');
+
         const w_edit = new vscode.WorkspaceEdit();
         w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
+        console.log('applyEdit');
+
         q_edit = vscode.workspace.applyEdit(w_edit).then(() =&gt; {
+            console.log('applyEdit done');
             return true;
         });
     } else {
+        console.log('no deleteFile');
+
         q_edit = Promise.resolve(true);
     }
-    return Promise.all([q_save, q_edit])
+    Promise.all([q_save, q_edit])
         .then(() =&gt; {
+            console.log('cleaned both');
             return this.closeBody();
         });
+
+    return q_save;
 }
 
 </t>
@@ -12900,6 +12960,7 @@ public stopConnection(): void {
 public closeLeoProcess(): void {
     if (this._websocket) {
         this._websocket.close(1001, "Quitting LeoInteg");
+        console.log('websocket closed');
     } else {
         console.warn('LeoInteg websocket close called without websocket active');
     }
@@ -12911,9 +12972,25 @@ public closeLeoProcess(): void {
  * The 'action' string can be checked to determine what kind, if any, is required.
  */
 public refresh(p_action: string): void {
-    //
-    console.log('REFRESH', p_action);
+    // console.log('REFRESH', p_action);
     this._leoIntegration.refreshAll();
+}
+
+</t>
+<t tx="felix.20210806175431.1">/**
+ * * Sets new body text on leo's side before vscode closes itself if body is dirty
+ * @param p_document Vscode's text document which content will be used to be the new node's body text in Leo
+ * @returns a promise that resolves when the complete saving process is finished
+ */
+private _bodySaveDeactivate(
+    p_document: vscode.TextDocument
+): Promise&lt;LeoBridgePackage&gt; {
+    const w_param = {
+        gnx: utils.leoUriToStr(p_document.uri),
+        body: p_document.getText(),
+    };
+    console.log('send action set body on quit');
+    return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
 }
 
 </t>

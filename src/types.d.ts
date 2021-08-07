@@ -171,6 +171,10 @@ export interface LeoBridgePackage {
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
     commands?: vscode.QuickPickItem[]; // getCommands
+    commander?: {
+        changed: boolean,
+        fileName: string;
+    }
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous

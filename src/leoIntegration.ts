@@ -510,14 +510,17 @@ export class LeoIntegration {
         this._leoBridgeReadyPromise.then(
             (p_package) => {
                 console.log('connected');
+                console.log('connected package: ', p_package);
 
                 this._leoIsConnecting = false;
-                if (p_package.id !== 1) {
+                // Check if hard-coded first package signature
+                if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
                     this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
                 } else {
+                    const w_opened: boolean = !!p_package.commander;
                     const w_lastFiles: string[] =
                         this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
-                    if (w_lastFiles.length) {
+                    if (w_lastFiles.length && !w_opened) {
                         // This context flag will trigger 'Connecting...' placeholder
                         utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
 
@@ -527,6 +530,10 @@ export class LeoIntegration {
                     } else {
                         this.leoStates.leoBridgeReady = true;
                         this.finishedStartup = true;
+                    }
+                    if (w_opened) {
+                        p_package.filename = p_package.commander!.fileName;
+                        this._setupOpenedLeoDocument(p_package);
                     }
 
                     this.showLogPane();
@@ -1263,11 +1270,16 @@ export class LeoIntegration {
                 gnx: utils.leoUriToStr(p_document.uri),
                 body: p_document.getText(),
             };
+            console.log('send action set body ');
+
             this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param)); // Don't wait for promise
             // This bodySaveSelection is placed on the stack right after saving body, returns promise either way
             return this._bodySaveSelection().then(() => {
                 this._refreshType.states = true;
                 this.getStates();
+
+                console.log('saved selections');
+
                 if (p_forcedVsCodeSave) {
                     return p_document.save(); // ! USED INTENTIONALLY: This trims trailing spaces
                 }
@@ -1276,6 +1288,22 @@ export class LeoIntegration {
         } else {
             return Promise.resolve(false);
         }
+    }
+
+    /**
+     * * Sets new body text on leo's side before vscode closes itself if body is dirty
+     * @param p_document Vscode's text document which content will be used to be the new node's body text in Leo
+     * @returns a promise that resolves when the complete saving process is finished
+     */
+    private _bodySaveDeactivate(
+        p_document: vscode.TextDocument
+    ): Promise<LeoBridgePackage> {
+        const w_param = {
+            gnx: utils.leoUriToStr(p_document.uri),
+            body: p_document.getText(),
+        };
+        console.log('send action set body on quit');
+        return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
     }
 
     /**
@@ -1792,27 +1820,45 @@ export class LeoIntegration {
     /**
      * * cleanupBody closes all remaining body pane to shut down this vscode window
      */
-    public cleanupBody(): Promise<boolean> {
-        let q_save: Thenable<boolean>;
+    public cleanupBody(): Thenable<any> {
+        console.log('start cleanupBody');
+
+        let q_save: Thenable<any>;
         if (this._bodyLastChangedDocument) {
-            q_save = this._bodySaveDocument(this._bodyLastChangedDocument, false);
+            q_save = this._bodySaveDeactivate(this._bodyLastChangedDocument);
         } else {
             q_save = Promise.resolve(true);
         }
+
+        // Adding log in the chain of events
+        q_save.then(() => {
+            console.log('q_save resolved');
+        });
+
         let q_edit: Thenable<boolean>;
         if (this.bodyUri) {
+            console.log('start deleteFile');
+
             const w_edit = new vscode.WorkspaceEdit();
             w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
+            console.log('applyEdit');
+
             q_edit = vscode.workspace.applyEdit(w_edit).then(() => {
+                console.log('applyEdit done');
                 return true;
             });
         } else {
+            console.log('no deleteFile');
+
             q_edit = Promise.resolve(true);
         }
-        return Promise.all([q_save, q_edit])
+        Promise.all([q_save, q_edit])
             .then(() => {
+                console.log('cleaned both');
                 return this.closeBody();
             });
+
+        return q_save;
     }
 
     /**
@@ -2444,13 +2490,7 @@ export class LeoIntegration {
             return this.nodeCommand({
                 action: w_action,
                 node: undefined,
-                refreshType: {
-                    tree: true,
-                    body: true,
-                    documents: false,
-                    buttons: false,
-                    states: true,
-                },
+                refreshType: { tree: true, body: true, states: true },
                 fromOutline: false,
             }) || Promise.resolve();
         }

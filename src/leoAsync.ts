@@ -34,8 +34,7 @@ export class LeoAsync {
      * The 'action' string can be checked to determine what kind, if any, is required.
      */
     public refresh(p_action: string): void {
-        //
-        console.log('REFRESH', p_action);
+        // console.log('REFRESH', p_action);
         this._leoIntegration.refreshAll();
     }
 
