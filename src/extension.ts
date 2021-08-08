@@ -694,10 +694,10 @@ export function deactivate(): Promise<boolean> {
         // Server should open tk GUI dialogs if dirty files still remain before closing itself.
         return new Promise((p_resolve, p_reject) => {
             setTimeout(() => {
-                console.log('5 sec passed');
+                console.log('15 sec passed');
                 LeoInteg?.stopServer();
                 p_resolve(true);
-            }, 5000);
+            }, 15000);
         }
         );
     } else {
