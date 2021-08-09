@@ -3259,7 +3259,7 @@
         "command": "leointeg.startSearch",
         "key": "ctrl+f",
         "mac": "cmd+f",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && !editorFocus && !editorTextFocus && focusedView =~ /^leo/"
       },
       {
         "command": "leointeg.startSearch",

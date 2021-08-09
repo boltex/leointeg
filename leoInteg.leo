@@ -5627,10 +5627,10 @@ export function deactivate(): Promise&lt;boolean&gt; {
         // Server should open tk GUI dialogs if dirty files still remain before closing itself.
         return new Promise((p_resolve, p_reject) =&gt; {
             setTimeout(() =&gt; {
-                console.log('5 sec passed');
+                console.log('15 sec passed');
                 LeoInteg?.stopServer();
                 p_resolve(true);
-            }, 5000);
+            }, 15000);
         }
         );
     } else {
@@ -11357,7 +11357,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.startSearch",
   "key": "ctrl+f",
   "mac": "cmd+f",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leo/"
 },
 {
   "command": "leointeg.startSearch",
