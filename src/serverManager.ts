@@ -44,7 +44,7 @@ export class ServerService {
      * * Otherwise just outputs lines to the terminal Output
      * @param p_data Data object (not pure string)
      */
-    private _gotTerminalData(p_data: string): void {
+    private _processServerOutput(p_data: string): void {
         p_data.toString().split("\n").forEach(p_line => {
             p_line = p_line.trim();
             if (p_line) { // * std out process line by line: json shouldn't have line breaks
@@ -116,7 +116,7 @@ export class ServerService {
                     w_serverScriptPath += Constants.OLD_SERVER_NAME;
                 } else if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
                     //new file exists
-                    console.log('found leoserver.py');
+                    // console.log('found leoserver.py');
                     w_serverScriptPath += Constants.SERVER_NAME;
                 } else {
                     return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
@@ -137,24 +137,23 @@ export class ServerService {
             }
 
             const w_serverStartPromise = new Promise((p_resolve, p_reject) => {
-                // * Spawn a python child process for a leoBridge server
+                // Spawn a python child process for a leoBridge server
                 this._resolvePromise = p_resolve;
                 this._rejectPromise = p_reject;
             });
 
-            // * Setup arguments: Order is important!
-
+            // Setup arguments: Order is important!
             let w_args: string[] = []; //  "\"" + w_serverScriptPath + "\"" // For on windows ??
 
-            // * on windows, if the default py is used, make sure it's got a '-3'
+            // on windows, if the default py is used, make sure it's got a '-3'
             if (this._isWin32 && w_pythonPath === "py") {
                 w_args.push("-3");
             }
 
-            // * The server script itself
+            // The server script itself
             w_args.push(w_serverScriptPath);
 
-            // * Add port
+            // Add port
             w_args.push("-p " + this.usingPort);
 
             this._leoIntegration.addTerminalPaneEntry(
@@ -162,18 +161,29 @@ export class ServerService {
                 w_pythonPath + " " + w_args.join(" ")
             );
 
-            this._serverProcess = child.spawn(w_pythonPath, w_args);
+            const w_options: child.SpawnOptionsWithoutStdio = {
+                // Child to run independently of its parent process. Depends on the platform.
+                detached: true,
+                // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
+                // shell: true
+            };
 
+            // * See https://nodejs.org/api/child_process.html for options
+            this._serverProcess = child.spawn(w_pythonPath, w_args, w_options); // SPAWN method
+            this._serverProcess.unref();
+
+            // this._serverProcess = child.fork(w_pythonPath, w_args, w_options); // FORK method
+
+            // Capture the OUTPUT and send it to the "leo server" OutputChannel
             if (this._serverProcess && this._serverProcess.stdout) {
-                // * Capture the python process output
                 this._serverProcess.stdout.on("data", (p_data: string) => {
-                    this._gotTerminalData(p_data);
+                    this._processServerOutput(p_data);
                 });
             } else {
                 console.error("No stdout");
             }
+            // Capture the ERROR channel and set flags on server errors
             if (this._serverProcess && this._serverProcess.stderr) {
-                // * Capture other python process outputs
                 this._serverProcess.stderr.on("data", (p_data: string) => {
                     console.log(`stderr: ${p_data}`);
                     this._isStarted = false;
@@ -186,10 +196,14 @@ export class ServerService {
             } else {
                 console.error("No stderr");
             }
+            // Capture the CLOSE event and set flags on server actually closing
             if (this._serverProcess) {
                 this._serverProcess!.on("close", (p_code: any) => {
                     console.log(`leoBridge exited with code ${p_code}`);
                     this._isStarted = false;
+                    if (!this._leoIntegration.activated) {
+                        return;
+                    }
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                     this._serverProcess = undefined;
                     if (this._rejectPromise) {
@@ -197,14 +211,14 @@ export class ServerService {
                     }
                 });
             }
-
+            // Give out the promise that will resolve when the server is started
             return w_serverStartPromise;
         });
 
     }
 
     /**
-     * Kills the server if it was started by this instance of leoInteg
+     * * Kills the server if it was started by this instance of leoInteg
      */
     public killServer(): void {
         if (this._serverProcess) {

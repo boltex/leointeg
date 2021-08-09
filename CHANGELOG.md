@@ -4,7 +4,8 @@
 
 - Saves recently opened Leo files list per workspace, instead of globally.
 - Changed the default visible command icons above the body pane. Also makes sure 'settings' is visible.
-- Added global zoom level and editor font-size in the LeoInteg settings panel to help change the body & outline font sizes.^
+- Added global zoom level and editor font-size in the LeoInteg settings panel to help change the body & outline font sizes.
+- Server now opens modal dialogs for saving dirty documents on exit.
 
 ## 0.1.16
 
@@ -143,4 +144,4 @@ _Note: This editable body panel does not affect Leo file yet._
 - Initial basic skeleton of this extension. Press F5 to view icon and test the startup of the extension!
 - Implemented [leoBridge](https://leoeditor.com/leoBridge.html) interaction.
 
-![LeoEditor](resources/leoapp96px.png)
+![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp96px.png)
