@@ -309,7 +309,7 @@
 <v t="felix.20200719025231.5"><vh>sendAction</vh></v>
 <v t="felix.20200719025231.6"><vh>startNetworkServices</vh></v>
 <v t="felix.20200719025231.7"><vh>startServer</vh></v>
-<v t="felix.20210717204048.1"><vh>stopServer</vh></v>
+<v t="felix.20210717204048.1"><vh>killServer</vh></v>
 <v t="felix.20210802162424.1"><vh>stopConnection</vh></v>
 <v t="felix.20200719025231.8"><vh>connect</vh></v>
 <v t="felix.20200719025231.9"><vh>cancelConnect</vh></v>
@@ -5615,22 +5615,17 @@ export function activate(p_context: vscode.ExtensionContext) {
  */
 export function deactivate(): Promise&lt;boolean&gt; {
     if (LeoInteg) {
-
-        console.log("init cleanupBody");
+        LeoInteg.activated = false;
         LeoInteg.cleanupBody().then(() =&gt; {
-
-            console.log("init stopConnection");
             LeoInteg?.stopConnection();
-
         });
         // Call to LeoInteg.stopServer() is not needed: server should handle disconnects.
         // Server should open tk GUI dialogs if dirty files still remain before closing itself.
         return new Promise((p_resolve, p_reject) =&gt; {
             setTimeout(() =&gt; {
-                console.log('15 sec passed');
-                LeoInteg?.stopServer();
+                LeoInteg?.killServer();
                 p_resolve(true);
-            }, 15000);
+            }, 30000);
         }
         );
     } else {
@@ -6037,6 +6032,9 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
     this._websocket.onclose = (p_event: WebSocket.CloseEvent) =&gt; {
         // * Disconnected from server
         console.log(`Websocket closed, code: ${p_event.code}`);
+        if (!this._leoIntegration.activated) {
+            return;
+        }
         this._rejectAction(`Websocket closed, code: ${p_event.code}`);
         // TODO : Implement a better connection error handling
         if (this._leoIntegration.leoStates.leoBridgeReady) {
@@ -7190,6 +7188,9 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
             this._serverProcess!.on("close", (p_code: any) =&gt; {
                 console.log(`leoBridge exited with code ${p_code}`);
                 this._isStarted = false;
+                if (!this._leoIntegration.activated) {
+                    return;
+                }
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                 this._serverProcess = undefined;
                 if (this._rejectPromise) {
@@ -8441,6 +8442,7 @@ private _triggerGetStates(): void {
  */
 export class LeoIntegration {
     // * Status Flags
+    public activated: boolean = true; // Set to false when deactivating the extension
     public finishedStartup: boolean = false;
     private _leoIsConnecting: boolean = false; // Used in connect method, to prevent other attempts while trying
     private _leoBridgeReadyPromise: Promise&lt;LeoBridgePackage&gt; | undefined; // Is set when leoBridge has a leo controller ready
@@ -12779,9 +12781,9 @@ public killServer(): void {
 
 </t>
 <t tx="felix.20210717204048.1">/**
- * * Stops the server if it was started by this instance of the extension
+ * * Kills the server process if it was started by this instance of the extension
  */
-public stopServer(): void {
+public killServer(): void {
     this._serverService.killServer();
 }
 
@@ -12793,7 +12795,11 @@ public cleanupBody(): Thenable&lt;any&gt; {
     console.log('start cleanupBody');
 
     let q_save: Thenable&lt;any&gt;;
-    if (this._bodyLastChangedDocument) {
+    //
+    if (this._bodyLastChangedDocument &amp;&amp;
+        this._bodyLastChangedDocument.isDirty &amp;&amp;
+        utils.leoUriToStr(this.bodyUri) === utils.leoUriToStr(this._bodyLastChangedDocument.uri)
+    ) {
         q_save = this._bodySaveDeactivate(this._bodyLastChangedDocument);
     } else {
         q_save = Promise.resolve(true);

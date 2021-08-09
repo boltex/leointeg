@@ -39,6 +39,7 @@ import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
  */
 export class LeoIntegration {
     // * Status Flags
+    public activated: boolean = true; // Set to false when deactivating the extension
     public finishedStartup: boolean = false;
     private _leoIsConnecting: boolean = false; // Used in connect method, to prevent other attempts while trying
     private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Is set when leoBridge has a leo controller ready
@@ -480,9 +481,9 @@ export class LeoIntegration {
     }
 
     /**
-     * * Stops the server if it was started by this instance of the extension
+     * * Kills the server process if it was started by this instance of the extension
      */
-    public stopServer(): void {
+    public killServer(): void {
         this._serverService.killServer();
     }
 
@@ -1816,7 +1817,11 @@ export class LeoIntegration {
         console.log('start cleanupBody');
 
         let q_save: Thenable<any>;
-        if (this._bodyLastChangedDocument) {
+        //
+        if (this._bodyLastChangedDocument &&
+            this._bodyLastChangedDocument.isDirty &&
+            utils.leoUriToStr(this.bodyUri) === utils.leoUriToStr(this._bodyLastChangedDocument.uri)
+        ) {
             q_save = this._bodySaveDeactivate(this._bodyLastChangedDocument);
         } else {
             q_save = Promise.resolve(true);

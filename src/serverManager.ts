@@ -201,6 +201,9 @@ export class ServerService {
                 this._serverProcess!.on("close", (p_code: any) => {
                     console.log(`leoBridge exited with code ${p_code}`);
                     this._isStarted = false;
+                    if (!this._leoIntegration.activated) {
+                        return;
+                    }
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                     this._serverProcess = undefined;
                     if (this._rejectPromise) {

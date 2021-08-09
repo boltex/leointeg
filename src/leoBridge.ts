@@ -227,6 +227,9 @@ export class LeoBridge {
         this._websocket.onclose = (p_event: WebSocket.CloseEvent) => {
             // * Disconnected from server
             console.log(`Websocket closed, code: ${p_event.code}`);
+            if (!this._leoIntegration.activated) {
+                return;
+            }
             this._rejectAction(`Websocket closed, code: ${p_event.code}`);
             // TODO : Implement a better connection error handling
             if (this._leoIntegration.leoStates.leoBridgeReady) {
