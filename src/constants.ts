@@ -514,6 +514,7 @@ export class Constants {
         // * LeoBridge
         CHOOSE_LEO_FOLDER: Constants.NAME + ".chooseLeoFolder",
         START_SERVER: Constants.NAME + ".startServer",
+        STOP_SERVER: Constants.NAME + ".stopServer",
         CONNECT: Constants.NAME + ".connectToServer",
         SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
         OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY

@@ -492,9 +492,9 @@
 </v>
 <v t="felix.20200718191946.1"><vh>@clean src/serverManager.ts</vh>
 <v t="felix.20200718191946.2"><vh>class ServerService</vh>
-<v t="ekr.20200815091220.1"><vh>_gotTerminalData</vh></v>
 <v t="felix.20200718191946.4"><vh>startServer</vh></v>
 <v t="felix.20210717192921.1"><vh>killServer</vh></v>
+<v t="ekr.20200815091220.1"><vh>_gotTerminalData</vh></v>
 </v>
 </v>
 <v t="felix.20200718194857.1"><vh>@clean src/types.d.ts</vh>
@@ -1895,6 +1895,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 
 [CMD.CONNECT, () =&gt; w_leo.connect()],
 [CMD.START_SERVER, () =&gt; w_leo.startServer()],
+[CMD.STOP_SERVER, () =&gt; w_leo.killServer()],
 [CMD.CHOOSE_LEO_FOLDER, () =&gt; w_leo.chooseLeoFolder()],
 
 // Called by nodes in tree when selected either by mouse, or with enter
@@ -2412,7 +2413,20 @@ print('done')
 {
   "command": "leointeg.startServer",
   "category": "Leo",
-  "title": "Start Leo Bridge Server"
+  "title": "Start Leo Bridge Server",
+  "icon": {
+    "light": "resources/light/start-server.svg",
+    "dark": "resources/dark/start-server.svg"
+  }
+},
+{
+  "command": "leointeg.stopServer",
+  "category": "Leo",
+  "title": "Stop Leo Bridge Server",
+  "icon": {
+    "light": "resources/light/close-server.svg",
+    "dark": "resources/dark/close-server.svg"
+  }
 },
 {
   "command": "leointeg.connectToServer",
@@ -3380,6 +3394,10 @@ print('done')
 <t tx="ekr.20200815123601.44">{
   "command": "leointeg.startServer",
   "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; !leoServerStarted"
+},
+{
+  "command": "leointeg.stopServer",
+  "when": "leoServerStarted"
 },
 {
   "command": "leointeg.connectToServer",
@@ -4693,6 +4711,7 @@ public static COMMANDS = {
     // * LeoBridge
     CHOOSE_LEO_FOLDER: Constants.NAME + ".chooseLeoFolder",
     START_SERVER: Constants.NAME + ".startServer",
+    STOP_SERVER: Constants.NAME + ".stopServer",
     CONNECT: Constants.NAME + ".connectToServer",
     SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
     OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
@@ -7174,6 +7193,9 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
             this._serverProcess.stderr.on("data", (p_data: string) =&gt; {
                 console.log(`stderr: ${p_data}`);
                 this._isStarted = false;
+                if (!this._leoIntegration.activated) {
+                    return;
+                }
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                 this._serverProcess = undefined;
                 if (this._rejectPromise) {
@@ -10734,7 +10756,7 @@ public static VSCODE_COMMANDS = {
   {
     "command": "leointeg.showSettingsPage",
     "when": "view =~ /leoIntegration/ &amp;&amp; !leoTreeOpened",
-    "group": "navigation@1"
+    "group": "navigation@2"
   },
   {
     "command": "leointeg.clearRecentFiles",
@@ -10744,6 +10766,16 @@ public static VSCODE_COMMANDS = {
   {
     "command": "leointeg.connectToServer",
     "when": "view =~ /leoIntegration/ &amp;&amp; !leoBridgeReady &amp;&amp; !leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.startServer",
+    "when": "view =~ /leoIntegration/ &amp;&amp; !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; !leoServerStarted",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.stopServer",
+    "when": "view =~ /leoIntegration/ &amp;&amp; !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoServerStarted",
     "group": "navigation@1"
   },
   {
@@ -12772,10 +12804,16 @@ public findSymbol(p_def: boolean): Promise&lt;any&gt; {
  */
 public killServer(): void {
     if (this._serverProcess) {
-        // this._serverProcess.kill();
+        // this._serverProcess.kill(); // Replaced by the tree-kill lib
         kill(this._serverProcess.pid);
+        this._isStarted = false;
+        if (!this._leoIntegration.activated) {
+            return;
+        }
+        utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+        this._serverProcess = undefined;
     } else {
-        console.error("No stdout");
+        console.error("No Server");
     }
 }
 
@@ -12785,6 +12823,11 @@ public killServer(): void {
  */
 public killServer(): void {
     this._serverService.killServer();
+    if (this.activated) {
+        this._leoTerminalPane?.clear();
+        this._leoTerminalPane?.dispose();
+        this._leoTerminalPane = undefined;
+    }
 }
 
 </t>

@@ -631,7 +631,20 @@
       {
         "command": "leointeg.startServer",
         "category": "Leo",
-        "title": "Start Leo Bridge Server"
+        "title": "Start Leo Bridge Server",
+        "icon": {
+          "light": "resources/light/start-server.svg",
+          "dark": "resources/dark/start-server.svg"
+        }
+      },
+      {
+        "command": "leointeg.stopServer",
+        "category": "Leo",
+        "title": "Stop Leo Bridge Server",
+        "icon": {
+          "light": "resources/light/close-server.svg",
+          "dark": "resources/dark/close-server.svg"
+        }
       },
       {
         "command": "leointeg.connectToServer",
@@ -1783,6 +1796,10 @@
           "when": "!leoBridgeReady && !leoTreeOpened && !leoServerStarted"
         },
         {
+          "command": "leointeg.stopServer",
+          "when": "leoServerStarted"
+        },
+        {
           "command": "leointeg.connectToServer",
           "when": "!leoBridgeReady && !leoTreeOpened"
         },
@@ -2524,7 +2541,7 @@
         {
           "command": "leointeg.showSettingsPage",
           "when": "view =~ /leoIntegration/ && !leoTreeOpened",
-          "group": "navigation@1"
+          "group": "navigation@2"
         },
         {
           "command": "leointeg.clearRecentFiles",
@@ -2534,6 +2551,16 @@
         {
           "command": "leointeg.connectToServer",
           "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.startServer",
+          "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened && !leoServerStarted",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.stopServer",
+          "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened && leoServerStarted",
           "group": "navigation@1"
         },
         {

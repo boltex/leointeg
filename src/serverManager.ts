@@ -40,26 +40,6 @@ export class ServerService {
     }
 
     /**
-     * * Splits the received data into lines and parses output to detect server start event
-     * * Otherwise just outputs lines to the terminal Output
-     * @param p_data Data object (not pure string)
-     */
-    private _processServerOutput(p_data: string): void {
-        p_data.toString().split("\n").forEach(p_line => {
-            p_line = p_line.trim();
-            if (p_line) { // * std out process line by line: json shouldn't have line breaks
-                if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
-                    if (this._resolvePromise && !this._isStarted) {
-                        this._isStarted = true;
-                        this._resolvePromise(p_line); // * Server confirmed started
-                    }
-                }
-                this._leoIntegration.addTerminalPaneEntry(p_line); // Output message anyways
-            }
-        });
-    }
-
-    /**
      * * Get command from settings or best command for the current OS
      * @param p_leoPythonCommand String command to start python on this computer
      * @returns A promise that resolves when the server is started, or that is rejected in case of problem while starting
@@ -187,6 +167,9 @@ export class ServerService {
                 this._serverProcess.stderr.on("data", (p_data: string) => {
                     console.log(`stderr: ${p_data}`);
                     this._isStarted = false;
+                    if (!this._leoIntegration.activated) {
+                        return;
+                    }
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                     this._serverProcess = undefined;
                     if (this._rejectPromise) {
@@ -222,11 +205,37 @@ export class ServerService {
      */
     public killServer(): void {
         if (this._serverProcess) {
-            // this._serverProcess.kill();
+            // this._serverProcess.kill(); // Replaced by the tree-kill lib
             kill(this._serverProcess.pid);
+            this._isStarted = false;
+            if (!this._leoIntegration.activated) {
+                return;
+            }
+            utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
+            this._serverProcess = undefined;
         } else {
-            console.error("No stdout");
+            console.error("No Server");
         }
+    }
+
+    /**
+     * * Splits the received data into lines and parses output to detect server start event
+     * * Otherwise just outputs lines to the terminal Output
+     * @param p_data Data object (not pure string)
+     */
+    private _processServerOutput(p_data: string): void {
+        p_data.toString().split("\n").forEach(p_line => {
+            p_line = p_line.trim();
+            if (p_line) { // * std out process line by line: json shouldn't have line breaks
+                if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
+                    if (this._resolvePromise && !this._isStarted) {
+                        this._isStarted = true;
+                        this._resolvePromise(p_line); // * Server confirmed started
+                    }
+                }
+                this._leoIntegration.addTerminalPaneEntry(p_line); // Output message anyways
+            }
+        });
     }
 
 }

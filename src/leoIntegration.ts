@@ -485,6 +485,11 @@ export class LeoIntegration {
      */
     public killServer(): void {
         this._serverService.killServer();
+        if (this.activated) {
+            this._leoTerminalPane?.clear();
+            this._leoTerminalPane?.dispose();
+            this._leoTerminalPane = undefined;
+        }
     }
 
     /**
