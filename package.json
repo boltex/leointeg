@@ -3499,6 +3499,16 @@
         "key": "ctrl+alt+h",
         "mac": "cmd+alt+h",
         "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "workbench.files.action.collapseExplorerFolders",
+        "key": "alt+-",
+        "when": "!inSearchEditor && !sideBarFocus && resourceScheme != leo"
+      },
+      {
+        "command": "workbench.files.action.collapseExplorerFolders",
+        "key": "alt+-",
+        "when": "!inSearchEditor && explorerViewletFocus"
       }
     ],
     "resourceLabelFormatters": [

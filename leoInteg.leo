@@ -167,6 +167,7 @@
 <v t="ekr.20200815123601.87"><vh>Outline Editing</vh></v>
 <v t="ekr.20200815123601.88"><vh>Goto Nodes</vh></v>
 <v t="felix.20210517004335.1"><vh>Search</vh></v>
+<v t="felix.20210812004050.1"><vh>VSCode Commands</vh></v>
 </v>
 <v t="ekr.20200815123601.89"><vh>resourceLabelFormatters</vh></v>
 </v>
@@ -11639,7 +11640,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "key": "ctrl+alt+h",
   "mac": "cmd+alt+h",
   "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-}
+},
 </t>
 <t tx="felix.20210522001751.1">import * as vscode from 'vscode';
 import { Constants } from '../constants';
@@ -13093,6 +13094,17 @@ private _bodySaveDeactivate(
 }
 
 </t>
+<t tx="felix.20210812004050.1">{
+  "command": "workbench.files.action.collapseExplorerFolders",
+  "key": "alt+-",
+  "when": "!inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme != leo"
+},
+{
+  "command": "workbench.files.action.collapseExplorerFolders",
+  "key": "alt+-",
+  "when": "!inSearchEditor &amp;&amp; explorerViewletFocus"
+}
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -14134,7 +14146,8 @@ body &gt; div &gt; div &gt; label:active {
                        data-setting /&gt;
                 &lt;label for="setEnv"&gt;Spawn&amp;nbsp;in&amp;nbsp;Env&lt;/label&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Server process spawned with the 'env' option set to the workspace&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;Server process spawned with the 'env'&lt;br&gt;
+                option set to the workspace&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
@@ -14153,10 +14166,10 @@ body &gt; div &gt; div &gt; label:active {
                 &lt;input id="limitUsers"
                        name="limitUsers"
                        type="number"
-                       min="1"
+                       min="0"
                        max="255"
                        max-length="3"
-                       placeholder="(1) to 255"
+                       placeholder="1 to 255"
                        data-setting /&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Server simultaneous connection limit&lt;/span&gt;
