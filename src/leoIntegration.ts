@@ -1819,8 +1819,6 @@ export class LeoIntegration {
      * * cleanupBody closes all remaining body pane to shut down this vscode window
      */
     public cleanupBody(): Thenable<any> {
-        console.log('start cleanupBody');
-
         let q_save: Thenable<any>;
         //
         if (this._bodyLastChangedDocument &&
@@ -1833,31 +1831,27 @@ export class LeoIntegration {
         }
 
         // Adding log in the chain of events
-        q_save.then(() => {
-            console.log('q_save resolved');
-        });
-
         let q_edit: Thenable<boolean>;
         if (this.bodyUri) {
-            console.log('start deleteFile');
-
             const w_edit = new vscode.WorkspaceEdit();
             w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
-            console.log('applyEdit');
-
             q_edit = vscode.workspace.applyEdit(w_edit).then(() => {
                 console.log('applyEdit done');
                 return true;
+            }, () => {
+                console.log('applyEdit failed');
+                return false;
             });
         } else {
-            console.log('no deleteFile');
-
             q_edit = Promise.resolve(true);
         }
         Promise.all([q_save, q_edit])
             .then(() => {
                 console.log('cleaned both');
                 return this.closeBody();
+            }, () => {
+                console.log('cleaned both failed');
+                return true;
             });
 
         return q_save;

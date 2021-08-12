@@ -44,6 +44,12 @@ export interface ConfigMembers {
     connectToServerAutomatically: boolean;
     connectionAddress: string;
     connectionPort: number;
+
+    setDetached: boolean;
+    setShell: boolean;
+    setEnv: boolean;
+    setPersist: boolean;
+    limitUsers: number
 }
 
 /**

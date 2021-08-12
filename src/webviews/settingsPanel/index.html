@@ -163,6 +163,65 @@
               </div>
               <span class="setting__hint">Connection host port number</span>
             </div>
+
+            <div class="setting">
+              <div class="setting__input">
+                <input id="setDetached"
+                       name="setDetached"
+                       type="checkbox"
+                       data-setting />
+                <label for="setDetached">Spawn&nbsp;Detached</label>
+              </div>
+              <span class="setting__hint">Server process spawned with the 'detached' flag,<br>
+                allows for dialogs when closing about unsaved files</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="setShell"
+                       name="setShell"
+                       type="checkbox"
+                       data-setting />
+                <label for="setShell">Spawn&nbsp;in&nbsp;Shell</label>
+              </div>
+              <span class="setting__hint">Server process spawned with the 'shell' flag</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="setEnv"
+                       name="setEnv"
+                       type="checkbox"
+                       data-setting />
+                <label for="setEnv">Spawn&nbsp;in&nbsp;Env</label>
+              </div>
+              <span class="setting__hint">Server process spawned with the 'env'<br>
+                option set to the workspace</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <input id="setPersist"
+                       name="setPersist"
+                       type="checkbox"
+                       data-setting />
+                <label for="setPersist">Keep&nbsp;Server&nbsp;Alive</label>
+              </div>
+              <span class="setting__hint">Starts the server with the 'persist' flag<br>
+                (Forces 'detached' flag)</span>
+            </div>
+            <div class="setting">
+              <div class="setting__input">
+                <label for="limitUsers">User&nbsp;Limit</label>
+                <input id="limitUsers"
+                       name="limitUsers"
+                       type="number"
+                       min="0"
+                       max="255"
+                       max-length="3"
+                       placeholder="1 to 255"
+                       data-setting />
+              </div>
+              <span class="setting__hint">Server simultaneous connection limit</span>
+            </div>
+
           </div>
         </div>
       </section>
@@ -448,7 +507,7 @@
               Body Editor Icons
             </h2>
             <p class="section__header-hint">
-              Body Pane Command Icons - Choose which commands to display - <em>First leftmost 9 icons shown</em>
+              Command Icons to display atop the Body Pane: <em>Limited to the first leftmost 9 icons</em>
             </p>
           </div>
           <div class="section__preview">
@@ -689,7 +748,7 @@
                        placeholder="Status bar indicator text "
                        data-setting />
               </div>
-              <span class="setting__hint">Keybindings 'on/off' indicator text message</span>
+              <span class="setting__hint">Leo's keybindings 'on/off' indicator text message</span>
             </div>
             <div class="setting">
               <div class="setting__input">
@@ -701,7 +760,7 @@
                        placeholder="RrGgBb"
                        data-setting />
               </div>
-              <span class="setting__hint">Keybindings 'on' indicator 6 hex digits color code</span>
+              <span class="setting__hint">Leo's keybindings 'on' indicator 6 hex digits color code</span>
             </div>
           </div>
         </div>

@@ -859,7 +859,13 @@ public static CONFIG_DEFAULTS = {
     AUTO_CONNECT: false,
     IP_ADDRESS: "localhost",
     IP_LOOPBACK: "127.0.0.1",
-    IP_PORT: 32125
+    IP_PORT: 32125,
+
+    SET_DETACHED: true,
+    SET_SHELL: false,
+    SET_ENV: false,
+    SET_PERSIST: false,
+    LIMIT_USERS: 1
 };
 
 </t>
@@ -2029,7 +2035,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.58.0"
+    "vscode": "^1.59.0"
   },
   "keywords": [
     "leo",
@@ -2042,7 +2048,7 @@ print('done')
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "main": "./dist/extension",
   "icon": "resources/leoapp128px.png",
@@ -2064,7 +2070,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.58.0",
+    "@types/vscode": "^1.59.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -3947,8 +3953,39 @@ print('done')
   "maximum": 65535,
   "type": "number",
   "description": "Connection port"
-}
-</t>
+},
+"leoIntegration.setDetached": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Starts the server process with the 'detached' flag when spawing - Allows a dialog to be shown after closing for unsaved Leo documents"
+},
+"leoIntegration.setShell": {
+  "scope": "application",
+  "default": false,
+  "type": "boolean",
+  "description": "Starts the server process with the 'shell' flag when spawing - May help with some python installations"
+},
+"leoIntegration.setEnv": {
+  "scope": "application",
+  "default": false,
+  "type": "boolean",
+  "description": "Starts the server process with the 'ENV' option set to the workspace folder when spawing"
+},
+"leoIntegration.setPersist": {
+  "scope": "application",
+  "default": false,
+  "type": "boolean",
+  "description": "Sets the persist flag for the server (forces 'detached') to continue after last disconnect"
+},
+"leoIntegration.limitUsers": {
+  "default": 1,
+  "scope": "application",
+  "minimum": 1,
+  "maximum": 255,
+  "type": "number",
+  "descripftion": "Limit of concurrent connections - Allows for multi-user synchronous editing"
+}</t>
 <t tx="ekr.20200815123601.76">"keybindings": [
   @others
 ],
@@ -5074,6 +5111,12 @@ public static CONFIG_NAMES = {
     AUTO_CONNECT: "connectToServerAutomatically",
     IP_ADDRESS: "connectionAddress",
     IP_PORT: "connectionPort",
+
+    SET_DETACHED: "setDetached",
+    SET_SHELL: "setShell",
+    SET_ENV: "setEnv",
+    SET_PERSIST: "setPersist",
+    LIMIT_USERS: "limitUsers"
 };
 
 </t>
@@ -5366,6 +5409,12 @@ export class Config implements ConfigMembers {
     public connectionAddress: string = Constants.CONFIG_DEFAULTS.IP_ADDRESS;
     public connectionPort: number = Constants.CONFIG_DEFAULTS.IP_PORT;
 
+    public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
+    public setShell: boolean = Constants.CONFIG_DEFAULTS.SET_SHELL;
+    public setEnv: boolean = Constants.CONFIG_DEFAULTS.SET_ENV;
+    public setPersist: boolean = Constants.CONFIG_DEFAULTS.SET_PERSIST;
+    public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
+
     private _isBusySettingConfig: boolean = false;
     private _needsTreeRefresh: boolean = false;
 
@@ -5417,6 +5466,12 @@ public getConfig(): ConfigMembers {
         connectToServerAutomatically: this.connectToServerAutomatically,
         connectionAddress: this.connectionAddress,
         connectionPort: this.connectionPort,
+
+        setDetached: this.setDetached,
+        setShell: this.setShell,
+        setEnv: this.setEnv,
+        setPersist: this.setPersist,
+        limitUsers: this.limitUsers,
     };
 }
 
@@ -5512,6 +5567,12 @@ public buildFromSavedSettings(): void {
         this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);
         this.connectionAddress = GET(NAME).get(NAMES.IP_ADDRESS, DEFAULTS.IP_ADDRESS);
         this.connectionPort = GET(NAME).get(NAMES.IP_PORT, DEFAULTS.IP_PORT);
+
+        this.setDetached = GET(NAME).get(NAMES.SET_DETACHED, DEFAULTS.SET_DETACHED);
+        this.setShell = GET(NAME).get(NAMES.SET_SHELL, DEFAULTS.SET_SHELL);
+        this.setEnv = GET(NAME).get(NAMES.SET_ENV, DEFAULTS.SET_ENV);
+        this.setPersist = GET(NAME).get(NAMES.SET_PERSIST, DEFAULTS.SET_PERSIST);
+        this.limitUsers = GET(NAME).get(NAMES.LIMIT_USERS, DEFAULTS.LIMIT_USERS);
 
         // * Set context for tree items visibility that are based on config options
         if (this._leoIntegration.leoStates.leoBridgeReady) {
@@ -7617,6 +7678,12 @@ export interface ConfigMembers {
     connectToServerAutomatically: boolean;
     connectionAddress: string;
     connectionPort: number;
+
+    setDetached: boolean;
+    setShell: boolean;
+    setEnv: boolean;
+    setPersist: boolean;
+    limitUsers: number
 }
 
 </t>
@@ -12835,8 +12902,6 @@ public killServer(): void {
  * * cleanupBody closes all remaining body pane to shut down this vscode window
  */
 public cleanupBody(): Thenable&lt;any&gt; {
-    console.log('start cleanupBody');
-
     let q_save: Thenable&lt;any&gt;;
     //
     if (this._bodyLastChangedDocument &amp;&amp;
@@ -12849,31 +12914,27 @@ public cleanupBody(): Thenable&lt;any&gt; {
     }
 
     // Adding log in the chain of events
-    q_save.then(() =&gt; {
-        console.log('q_save resolved');
-    });
-
     let q_edit: Thenable&lt;boolean&gt;;
     if (this.bodyUri) {
-        console.log('start deleteFile');
-
         const w_edit = new vscode.WorkspaceEdit();
         w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
-        console.log('applyEdit');
-
         q_edit = vscode.workspace.applyEdit(w_edit).then(() =&gt; {
             console.log('applyEdit done');
             return true;
+        }, () =&gt; {
+            console.log('applyEdit failed');
+            return false;
         });
     } else {
-        console.log('no deleteFile');
-
         q_edit = Promise.resolve(true);
     }
     Promise.all([q_save, q_edit])
         .then(() =&gt; {
             console.log('cleaned both');
             return this.closeBody();
+        }, () =&gt; {
+            console.log('cleaned both failed');
+            return true;
         });
 
     return q_save;
@@ -14043,6 +14104,64 @@ body &gt; div &gt; div &gt; label:active {
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Connection host port number&lt;/span&gt;
             &lt;/div&gt;
+
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="setDetached"
+                       name="setDetached"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="setDetached"&gt;Spawn&amp;nbsp;Detached&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Server process spawned with the 'detached' flag,&lt;br&gt;
+                allows for dialogs when closing about unsaved files&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="setShell"
+                       name="setShell"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="setShell"&gt;Spawn&amp;nbsp;in&amp;nbsp;Shell&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Server process spawned with the 'shell' flag&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="setEnv"
+                       name="setEnv"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="setEnv"&gt;Spawn&amp;nbsp;in&amp;nbsp;Env&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Server process spawned with the 'env' option set to the workspace&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;input id="setPersist"
+                       name="setPersist"
+                       type="checkbox"
+                       data-setting /&gt;
+                &lt;label for="setPersist"&gt;Keep&amp;nbsp;Server&amp;nbsp;Alive&lt;/label&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Starts the server with the 'persist' flag&lt;br&gt;
+                (Forces 'detached' flag)&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;div class="setting"&gt;
+              &lt;div class="setting__input"&gt;
+                &lt;label for="limitUsers"&gt;User&amp;nbsp;Limit&lt;/label&gt;
+                &lt;input id="limitUsers"
+                       name="limitUsers"
+                       type="number"
+                       min="1"
+                       max="255"
+                       max-length="3"
+                       placeholder="(1) to 255"
+                       data-setting /&gt;
+              &lt;/div&gt;
+              &lt;span class="setting__hint"&gt;Server simultaneous connection limit&lt;/span&gt;
+            &lt;/div&gt;
+
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/section&gt;
@@ -14328,7 +14447,7 @@ body &gt; div &gt; div &gt; label:active {
               Body Editor Icons
             &lt;/h2&gt;
             &lt;p class="section__header-hint"&gt;
-              Body Pane Command Icons - Choose which commands to display - &lt;em&gt;First leftmost 9 icons shown&lt;/em&gt;
+              Command Icons to display atop the Body Pane: &lt;em&gt;Limited to the first leftmost 9 icons&lt;/em&gt;
             &lt;/p&gt;
           &lt;/div&gt;
           &lt;div class="section__preview"&gt;
@@ -14569,7 +14688,7 @@ body &gt; div &gt; div &gt; label:active {
                        placeholder="Status bar indicator text "
                        data-setting /&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Keybindings 'on/off' indicator text message&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;Leo's keybindings 'on/off' indicator text message&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
@@ -14581,7 +14700,7 @@ body &gt; div &gt; div &gt; label:active {
                        placeholder="RrGgBb"
                        data-setting /&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Keybindings 'on' indicator 6 hex digits color code&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;Leo's keybindings 'on' indicator 6 hex digits color code&lt;/span&gt;
             &lt;/div&gt;
           &lt;/div&gt;
         &lt;/div&gt;
@@ -15816,7 +15935,7 @@ section {
 
   border-radius: 8px;
   margin: 1em;
-  padding: 1em;
+  padding: 1em 0 0.5em 1em;
   // box-shadow: 0px 0px 6px 1px rgba(0, 0, 0, 0.15);
 
   .vscode-dark &amp; {

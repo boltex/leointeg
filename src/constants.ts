@@ -236,6 +236,12 @@ export class Constants {
         AUTO_CONNECT: "connectToServerAutomatically",
         IP_ADDRESS: "connectionAddress",
         IP_PORT: "connectionPort",
+
+        SET_DETACHED: "setDetached",
+        SET_SHELL: "setShell",
+        SET_ENV: "setEnv",
+        SET_PERSIST: "setPersist",
+        LIMIT_USERS: "limitUsers"
     };
 
     /**
@@ -277,7 +283,13 @@ export class Constants {
         AUTO_CONNECT: false,
         IP_ADDRESS: "localhost",
         IP_LOOPBACK: "127.0.0.1",
-        IP_PORT: 32125
+        IP_PORT: 32125,
+
+        SET_DETACHED: true,
+        SET_SHELL: false,
+        SET_ENV: false,
+        SET_PERSIST: false,
+        LIMIT_USERS: 1
     };
 
     /**
