@@ -48,7 +48,7 @@ export class Config implements ConfigMembers {
 
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
     public setShell: boolean = Constants.CONFIG_DEFAULTS.SET_SHELL;
-    public setEnv: boolean = Constants.CONFIG_DEFAULTS.SET_ENV;
+    public setCwd: boolean = Constants.CONFIG_DEFAULTS.SET_CWD;
     public setPersist: boolean = Constants.CONFIG_DEFAULTS.SET_PERSIST;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
 
@@ -103,7 +103,7 @@ export class Config implements ConfigMembers {
 
             setDetached: this.setDetached,
             setShell: this.setShell,
-            setEnv: this.setEnv,
+            setCwd: this.setCwd,
             setPersist: this.setPersist,
             limitUsers: this.limitUsers,
         };
@@ -246,7 +246,7 @@ export class Config implements ConfigMembers {
 
             this.setDetached = GET(NAME).get(NAMES.SET_DETACHED, DEFAULTS.SET_DETACHED);
             this.setShell = GET(NAME).get(NAMES.SET_SHELL, DEFAULTS.SET_SHELL);
-            this.setEnv = GET(NAME).get(NAMES.SET_ENV, DEFAULTS.SET_ENV);
+            this.setCwd = GET(NAME).get(NAMES.SET_CWD, DEFAULTS.SET_CWD);
             this.setPersist = GET(NAME).get(NAMES.SET_PERSIST, DEFAULTS.SET_PERSIST);
             this.limitUsers = GET(NAME).get(NAMES.LIMIT_USERS, DEFAULTS.LIMIT_USERS);
 

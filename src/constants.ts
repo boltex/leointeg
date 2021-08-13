@@ -239,7 +239,7 @@ export class Constants {
 
         SET_DETACHED: "setDetached",
         SET_SHELL: "setShell",
-        SET_ENV: "setEnv",
+        SET_CWD: "setCwd",
         SET_PERSIST: "setPersist",
         LIMIT_USERS: "limitUsers"
     };
@@ -287,7 +287,7 @@ export class Constants {
 
         SET_DETACHED: true,
         SET_SHELL: false,
-        SET_ENV: false,
+        SET_CWD: false,
         SET_PERSIST: false,
         LIMIT_USERS: 1
     };

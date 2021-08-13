@@ -47,7 +47,7 @@ export interface ConfigMembers {
 
     setDetached: boolean;
     setShell: boolean;
-    setEnv: boolean;
+    setCwd: boolean;
     setPersist: boolean;
     limitUsers: number
 }

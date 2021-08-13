@@ -864,7 +864,7 @@ public static CONFIG_DEFAULTS = {
 
     SET_DETACHED: true,
     SET_SHELL: false,
-    SET_ENV: false,
+    SET_CWD: false,
     SET_PERSIST: false,
     LIMIT_USERS: 1
 };
@@ -3959,19 +3959,19 @@ print('done')
   "scope": "application",
   "default": true,
   "type": "boolean",
-  "description": "Starts the server process with the 'detached' flag when spawing - Allows a dialog to be shown after closing for unsaved Leo documents"
+  "description": "Starts the server process with the 'detached' flag - Allows a dialog to be shown after closing for unsaved Leo documents"
 },
 "leoIntegration.setShell": {
   "scope": "application",
   "default": false,
   "type": "boolean",
-  "description": "Starts the server process with the 'shell' flag when spawing - May help with some python installations"
+  "description": "Starts the server process with the 'shell' flag - May help with some python installations"
 },
-"leoIntegration.setEnv": {
+"leoIntegration.setCwd": {
   "scope": "application",
   "default": false,
   "type": "boolean",
-  "description": "Starts the server process with the 'ENV' option set to the workspace folder when spawing"
+  "description": "Starts the server process with the 'CWD' set to the workspace folder"
 },
 "leoIntegration.setPersist": {
   "scope": "application",
@@ -3985,8 +3985,9 @@ print('done')
   "minimum": 1,
   "maximum": 255,
   "type": "number",
-  "descripftion": "Limit of concurrent connections - Allows for multi-user synchronous editing"
-}</t>
+  "description": "Limit of concurrent connections - Allows for multi-user synchronous editing"
+}
+</t>
 <t tx="ekr.20200815123601.76">"keybindings": [
   @others
 ],
@@ -5115,7 +5116,7 @@ public static CONFIG_NAMES = {
 
     SET_DETACHED: "setDetached",
     SET_SHELL: "setShell",
-    SET_ENV: "setEnv",
+    SET_CWD: "setCwd",
     SET_PERSIST: "setPersist",
     LIMIT_USERS: "limitUsers"
 };
@@ -5412,7 +5413,7 @@ export class Config implements ConfigMembers {
 
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
     public setShell: boolean = Constants.CONFIG_DEFAULTS.SET_SHELL;
-    public setEnv: boolean = Constants.CONFIG_DEFAULTS.SET_ENV;
+    public setCwd: boolean = Constants.CONFIG_DEFAULTS.SET_CWD;
     public setPersist: boolean = Constants.CONFIG_DEFAULTS.SET_PERSIST;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
 
@@ -5470,7 +5471,7 @@ public getConfig(): ConfigMembers {
 
         setDetached: this.setDetached,
         setShell: this.setShell,
-        setEnv: this.setEnv,
+        setCwd: this.setCwd,
         setPersist: this.setPersist,
         limitUsers: this.limitUsers,
     };
@@ -5571,7 +5572,7 @@ public buildFromSavedSettings(): void {
 
         this.setDetached = GET(NAME).get(NAMES.SET_DETACHED, DEFAULTS.SET_DETACHED);
         this.setShell = GET(NAME).get(NAMES.SET_SHELL, DEFAULTS.SET_SHELL);
-        this.setEnv = GET(NAME).get(NAMES.SET_ENV, DEFAULTS.SET_ENV);
+        this.setCwd = GET(NAME).get(NAMES.SET_CWD, DEFAULTS.SET_CWD);
         this.setPersist = GET(NAME).get(NAMES.SET_PERSIST, DEFAULTS.SET_PERSIST);
         this.limitUsers = GET(NAME).get(NAMES.LIMIT_USERS, DEFAULTS.LIMIT_USERS);
 
@@ -7089,7 +7090,6 @@ import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
 var kill = require('tree-kill');
 
-
 @language typescript
 @tabwidth -4
 @others
@@ -7224,23 +7224,62 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         // Add port
         w_args.push("-p " + this.usingPort);
 
+        if (this._leoIntegration.config.setPersist) {
+            w_args.push("--persist");
+        }
+
+        if (this._leoIntegration.config.limitUsers &gt; 1 &amp;&amp;
+            this._leoIntegration.config.limitUsers &lt; 256) {
+            w_args.push("--limit " + this._leoIntegration.config.limitUsers);
+        }
+
+        const w_options: child.SpawnOptionsWithoutStdio = {
+            // Child to run independently of its parent process. Depends on the platform.
+            detached: this._leoIntegration.config.setDetached,
+            // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
+            shell: this._leoIntegration.config.setShell
+        };
+
+        if (this._leoIntegration.config.setCwd) {
+            if (vscode.workspace.workspaceFolders !== undefined &amp;&amp;
+                vscode.workspace.workspaceFolders.length) {
+                let w_folder = vscode.workspace.workspaceFolders[0].uri.path;
+                let w_file = vscode.workspace.workspaceFolders[0].uri.fsPath;
+                const w_message = `ENV: folder: ${w_folder} - ${w_file}`;
+                w_options.cwd = w_folder;
+                this._leoIntegration.addTerminalPaneEntry(w_message);
+            }
+            else {
+                const message = "Working folder not found, 'CWD' not set";
+                vscode.window.showErrorMessage(message);
+            }
+        }
+
+        if (this._leoIntegration.config.setShell) {
+            w_options.shell = true;
+
+
+        }
+
+        // stdio: ['pipe', process.stdout, process.stderr]
+
+        // shell: true,
+        // stdio: [
+        //     'inherit', // StdIn.
+        //     'pipe',    // StdOut.
+        //     'pipe',    // StdErr.
+        // ],
+
         this._leoIntegration.addTerminalPaneEntry(
             'Starting server with command: ' +
             w_pythonPath + " " + w_args.join(" ")
         );
 
-        const w_options: child.SpawnOptionsWithoutStdio = {
-            // Child to run independently of its parent process. Depends on the platform.
-            detached: true,
-            // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
-            // shell: true
-        };
-
         // * See https://nodejs.org/api/child_process.html for options
         this._serverProcess = child.spawn(w_pythonPath, w_args, w_options); // SPAWN method
-        this._serverProcess.unref();
 
-        // this._serverProcess = child.fork(w_pythonPath, w_args, w_options); // FORK method
+        // To prevent the parent from waiting for a given subprocess to exit
+        this._serverProcess.unref();
 
         // Capture the OUTPUT and send it to the "leo server" OutputChannel
         if (this._serverProcess &amp;&amp; this._serverProcess.stdout) {
@@ -7269,7 +7308,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         }
         // Capture the CLOSE event and set flags on server actually closing
         if (this._serverProcess) {
-            this._serverProcess!.on("close", (p_code: any) =&gt; {
+            this._serverProcess.on("close", (p_code: any) =&gt; {
                 console.log(`leoBridge exited with code ${p_code}`);
                 this._isStarted = false;
                 if (!this._leoIntegration.activated) {
@@ -7682,7 +7721,7 @@ export interface ConfigMembers {
 
     setDetached: boolean;
     setShell: boolean;
-    setEnv: boolean;
+    setCwd: boolean;
     setPersist: boolean;
     limitUsers: number
 }
@@ -14140,14 +14179,14 @@ body &gt; div &gt; div &gt; label:active {
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
-                &lt;input id="setEnv"
-                       name="setEnv"
+                &lt;input id="setCwd"
+                       name="setCwd"
                        type="checkbox"
                        data-setting /&gt;
-                &lt;label for="setEnv"&gt;Spawn&amp;nbsp;in&amp;nbsp;Env&lt;/label&gt;
+                &lt;label for="setCwd"&gt;Specify&amp;nbsp;CWD&lt;/label&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Server process spawned with the 'env'&lt;br&gt;
-                option set to the workspace&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;Server process spawned with the&lt;br&gt;
+                option CWD set to the workspace&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
