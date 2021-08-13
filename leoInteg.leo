@@ -7233,9 +7233,10 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
             w_args.push("--limit " + this._leoIntegration.config.limitUsers);
         }
 
-        const w_options: child.SpawnOptionsWithoutStdio = {
+        const w_options: child.SpawnOptions = {
             // Child to run independently of its parent process. Depends on the platform.
             detached: this._leoIntegration.config.setDetached,
+
             // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
             shell: this._leoIntegration.config.setShell
         };
@@ -7256,19 +7257,11 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         }
 
         if (this._leoIntegration.config.setShell) {
-            w_options.shell = true;
-
-
+            // TODO : Other modifications to support shell flag
+            w_options.stdio = ['inherit', 'inherit', 'inherit'];
+            // w_options.stdio = ['inherit', 'pipe', 'pipe'];
+            // w_options.stdio ['pipe', process.stdout, process.stderr];
         }
-
-        // stdio: ['pipe', process.stdout, process.stderr]
-
-        // shell: true,
-        // stdio: [
-        //     'inherit', // StdIn.
-        //     'pipe',    // StdOut.
-        //     'pipe',    // StdErr.
-        // ],
 
         this._leoIntegration.addTerminalPaneEntry(
             'Starting server with command: ' +
