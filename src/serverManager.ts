@@ -256,7 +256,7 @@ export class ServerService {
      */
     private _processServerOutput(p_data: string): void {
         p_data.toString().split("\n").forEach(p_line => {
-            p_line = p_line.trim();
+            // p_line = p_line.trim(); // ? SHOULD NOT TRIM ?
             if (p_line) { // * std out process line by line: json shouldn't have line breaks
                 if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
                     if (this._resolvePromise && !this._isStarted) {
