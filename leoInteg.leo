@@ -1325,6 +1325,17 @@ public removeAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
 private _processServerOutput(p_data: string): void {
     p_data.toString().split("\n").forEach(p_line =&gt; {
         // p_line = p_line.trim(); // ? SHOULD NOT TRIM ?
+        /*
+        // * OR TRIM LAST NEWLINE ONLY?
+        verses1 = "1\n222\n"
+        verses1.replace(/\n$/, "")
+         "1\n222"
+
+        verses2 = "1\n222\n\n"
+        verses2.replace(/\n$/, "")
+         "1\n222\n"
+        */
+        
         if (p_line) { // * std out process line by line: json shouldn't have line breaks
             if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
                 if (this._resolvePromise &amp;&amp; !this._isStarted) {
@@ -13094,7 +13105,7 @@ public closeLeoProcess(): void {
         this._websocket.close(1001, "Quitting LeoInteg");
         console.log('websocket closed');
     } else {
-        console.warn('LeoInteg websocket close called without websocket active');
+        // console.warn('LeoInteg websocket close called without websocket active');
     }
 }
 

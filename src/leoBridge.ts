@@ -249,7 +249,7 @@ export class LeoBridge {
             this._websocket.close(1001, "Quitting LeoInteg");
             console.log('websocket closed');
         } else {
-            console.warn('LeoInteg websocket close called without websocket active');
+            // console.warn('LeoInteg websocket close called without websocket active');
         }
     }
 
