@@ -14021,7 +14021,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;/a&gt;
       &lt;p class="header__blurb"&gt;
         Use &lt;b&gt;Leo&lt;/b&gt;, the Literate Editor with Outlines, to program with &lt;b&gt;directed acyclic graphs&lt;/b&gt;,
-        along with section-references, '@others' and clones to generate (and read from) external files.
+        along with section-references, '@others', and clones to generate (and read from) external files.
       &lt;/p&gt;
     &lt;/header&gt;
 
