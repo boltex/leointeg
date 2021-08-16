@@ -6,6 +6,8 @@
 - Changed the default visible command icons above the body pane. Also makes sure 'settings' is visible.
 - Added global zoom level and editor font-size in the LeoInteg settings panel to help change the body & outline font sizes.
 - Server now opens modal dialogs for saving dirty documents on exit.
+- Added experimental server option settings (cwd, shell, detach) to help with various python setups.
+- Server now started with a CWD of the current workspace by default (fixes git-diff).
 
 ## 0.1.16
 

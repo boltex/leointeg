@@ -146,7 +146,7 @@ export class ServerService {
 
             const w_options: child.SpawnOptions = {
                 // Child to run independently of its parent process. Depends on the platform.
-                detached: this._leoIntegration.config.setDetached,
+                detached: this._leoIntegration.config.setDetached || this._leoIntegration.config.setPersist,
 
                 // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
                 shell: this._leoIntegration.config.setShell
@@ -157,7 +157,7 @@ export class ServerService {
                     vscode.workspace.workspaceFolders.length) {
                     let w_folder = vscode.workspace.workspaceFolders[0].uri.path;
                     let w_file = vscode.workspace.workspaceFolders[0].uri.fsPath;
-                    const w_message = `ENV: folder: ${w_folder} - ${w_file}`;
+                    const w_message = `Server CWD set to: ${w_folder}`;
                     w_options.cwd = w_folder;
                     this._leoIntegration.addTerminalPaneEntry(w_message);
                 }
@@ -255,20 +255,10 @@ export class ServerService {
      * @param p_data Data object (not pure string)
      */
     private _processServerOutput(p_data: string): void {
-        p_data.toString().split("\n").forEach(p_line => {
-            // p_line = p_line.trim(); // ? SHOULD NOT TRIM ?
-            /*
-            // * OR TRIM LAST NEWLINE ONLY?
-            verses1 = "1\n222\n"
-            verses1.replace(/\n$/, "")
-             "1\n222"
+        let w_dataString = p_data.toString().replace(/\n$/, ""); // remove last
+        w_dataString.toString().split("\n").forEach(p_line => {
 
-            verses2 = "1\n222\n\n"
-            verses2.replace(/\n$/, "")
-             "1\n222\n"
-            */
-            
-            if (p_line) { // * std out process line by line: json shouldn't have line breaks
+            if (true || p_line) { // ? std out process line by line: json shouldn't have line breaks
                 if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
                     if (this._resolvePromise && !this._isStarted) {
                         this._isStarted = true;

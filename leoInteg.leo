@@ -864,7 +864,7 @@ public static CONFIG_DEFAULTS = {
 
     SET_DETACHED: true,
     SET_SHELL: false,
-    SET_CWD: false,
+    SET_CWD: true,
     SET_PERSIST: false,
     LIMIT_USERS: 1
 };
@@ -1323,20 +1323,10 @@ public removeAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
  * @param p_data Data object (not pure string)
  */
 private _processServerOutput(p_data: string): void {
-    p_data.toString().split("\n").forEach(p_line =&gt; {
-        // p_line = p_line.trim(); // ? SHOULD NOT TRIM ?
-        /*
-        // * OR TRIM LAST NEWLINE ONLY?
-        verses1 = "1\n222\n"
-        verses1.replace(/\n$/, "")
-         "1\n222"
+    let w_dataString = p_data.toString().replace(/\n$/, ""); // remove last
+    w_dataString.toString().split("\n").forEach(p_line =&gt; {
 
-        verses2 = "1\n222\n\n"
-        verses2.replace(/\n$/, "")
-         "1\n222\n"
-        */
-        
-        if (p_line) { // * std out process line by line: json shouldn't have line breaks
+        if (true || p_line) { // ? std out process line by line: json shouldn't have line breaks
             if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
                 if (this._resolvePromise &amp;&amp; !this._isStarted) {
                     this._isStarted = true;
@@ -3980,7 +3970,7 @@ print('done')
 },
 "leoIntegration.setCwd": {
   "scope": "application",
-  "default": false,
+  "default": true,
   "type": "boolean",
   "description": "Starts the server process with the 'CWD' set to the workspace folder"
 },
@@ -6124,7 +6114,7 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
     };
     this._websocket.onclose = (p_event: WebSocket.CloseEvent) =&gt; {
         // * Disconnected from server
-        console.log(`Websocket closed, code: ${p_event.code}`);
+        // console.log(`Websocket closed, code: ${p_event.code}`);
         if (!this._leoIntegration.activated) {
             return;
         }
@@ -7246,7 +7236,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
 
         const w_options: child.SpawnOptions = {
             // Child to run independently of its parent process. Depends on the platform.
-            detached: this._leoIntegration.config.setDetached,
+            detached: this._leoIntegration.config.setDetached || this._leoIntegration.config.setPersist,
 
             // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
             shell: this._leoIntegration.config.setShell
@@ -7257,7 +7247,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
                 vscode.workspace.workspaceFolders.length) {
                 let w_folder = vscode.workspace.workspaceFolders[0].uri.path;
                 let w_file = vscode.workspace.workspaceFolders[0].uri.fsPath;
-                const w_message = `ENV: folder: ${w_folder} - ${w_file}`;
+                const w_message = `Server CWD set to: ${w_folder}`;
                 w_options.cwd = w_folder;
                 this._leoIntegration.addTerminalPaneEntry(w_message);
             }
@@ -8002,6 +7992,8 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 - Changed the default visible command icons above the body pane. Also makes sure 'settings' is visible.
 - Added global zoom level and editor font-size in the LeoInteg settings panel to help change the body &amp; outline font sizes.
 - Server now opens modal dialogs for saving dirty documents on exit.
+- Added experimental server option settings (cwd, shell, detach) to help with various python setups.
+- Server now started with a CWD of the current workspace by default (fixes git-diff).
 
 @others
 </t>
@@ -12963,10 +12955,10 @@ public cleanupBody(): Thenable&lt;any&gt; {
         const w_edit = new vscode.WorkspaceEdit();
         w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
         q_edit = vscode.workspace.applyEdit(w_edit).then(() =&gt; {
-            console.log('applyEdit done');
+            // console.log('applyEdit done');
             return true;
         }, () =&gt; {
-            console.log('applyEdit failed');
+            // console.log('applyEdit failed');
             return false;
         });
     } else {
@@ -12974,10 +12966,10 @@ public cleanupBody(): Thenable&lt;any&gt; {
     }
     Promise.all([q_save, q_edit])
         .then(() =&gt; {
-            console.log('cleaned both');
+            // console.log('cleaned both');
             return this.closeBody();
         }, () =&gt; {
-            console.log('cleaned both failed');
+            // console.log('cleaned both failed');
             return true;
         });
 
@@ -13103,7 +13095,7 @@ public stopConnection(): void {
 public closeLeoProcess(): void {
     if (this._websocket) {
         this._websocket.close(1001, "Quitting LeoInteg");
-        console.log('websocket closed');
+        // console.log('websocket closed');
     } else {
         // console.warn('LeoInteg websocket close called without websocket active');
     }
@@ -14160,63 +14152,69 @@ body &gt; div &gt; div &gt; label:active {
               &lt;span class="setting__hint"&gt;Connection host port number&lt;/span&gt;
             &lt;/div&gt;
 
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="setDetached"
-                       name="setDetached"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="setDetached"&gt;Spawn&amp;nbsp;Detached&lt;/label&gt;
+
+            &lt;fieldset&gt;
+              &lt;legend&gt;Experimental Features&lt;/legend&gt;
+              &lt;div class="setting"&gt;
+                &lt;div class="setting__input"&gt;
+                  &lt;input id="setDetached"
+                         name="setDetached"
+                         type="checkbox"
+                         data-setting /&gt;
+                  &lt;label for="setDetached"&gt;Spawn&amp;nbsp;Detached&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;span class="setting__hint"&gt;Server spawned with the 'detached' flag,&lt;br&gt;
+                  allows dialogs when closing with unsaved files&lt;/span&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Server process spawned with the 'detached' flag,&lt;br&gt;
-                allows for dialogs when closing about unsaved files&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="setShell"
-                       name="setShell"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="setShell"&gt;Spawn&amp;nbsp;in&amp;nbsp;Shell&lt;/label&gt;
+              &lt;div class="setting"&gt;
+                &lt;div class="setting__input"&gt;
+                  &lt;input id="setShell"
+                         name="setShell"
+                         type="checkbox"
+                         data-setting /&gt;
+                  &lt;label for="setShell"&gt;Spawn&amp;nbsp;in&amp;nbsp;Shell&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;span class="setting__hint"&gt;Server spawned with the 'shell' flag&lt;/span&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Server process spawned with the 'shell' flag&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="setCwd"
-                       name="setCwd"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="setCwd"&gt;Specify&amp;nbsp;CWD&lt;/label&gt;
+              &lt;div class="setting"&gt;
+                &lt;div class="setting__input"&gt;
+                  &lt;input id="setCwd"
+                         name="setCwd"
+                         type="checkbox"
+                         data-setting /&gt;
+                  &lt;label for="setCwd"&gt;Specify&amp;nbsp;CWD&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;span class="setting__hint"&gt;Server process spawned with the&lt;br&gt;
+                  option CWD set to the workspace&lt;/span&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Server process spawned with the&lt;br&gt;
-                option CWD set to the workspace&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;input id="setPersist"
-                       name="setPersist"
-                       type="checkbox"
-                       data-setting /&gt;
-                &lt;label for="setPersist"&gt;Keep&amp;nbsp;Server&amp;nbsp;Alive&lt;/label&gt;
+              &lt;div class="setting"&gt;
+                &lt;div class="setting__input"&gt;
+                  &lt;input id="setPersist"
+                         name="setPersist"
+                         type="checkbox"
+                         data-setting /&gt;
+                  &lt;label for="setPersist"&gt;Keep&amp;nbsp;Server&amp;nbsp;Alive&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;span class="setting__hint"&gt;Starts the server with the 'persist' flag&lt;br&gt;
+                  (Forces 'detached' flag)&lt;/span&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Starts the server with the 'persist' flag&lt;br&gt;
-                (Forces 'detached' flag)&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;div class="setting"&gt;
-              &lt;div class="setting__input"&gt;
-                &lt;label for="limitUsers"&gt;User&amp;nbsp;Limit&lt;/label&gt;
-                &lt;input id="limitUsers"
-                       name="limitUsers"
-                       type="number"
-                       min="0"
-                       max="255"
-                       max-length="3"
-                       placeholder="1 to 255"
-                       data-setting /&gt;
+              &lt;div class="setting"&gt;
+                &lt;div class="setting__input"&gt;
+                  &lt;label for="limitUsers"&gt;User&amp;nbsp;Limit&lt;/label&gt;
+                  &lt;input id="limitUsers"
+                         name="limitUsers"
+                         type="number"
+                         min="0"
+                         max="255"
+                         max-length="3"
+                         placeholder="1 to 255"
+                         data-setting /&gt;
+                &lt;/div&gt;
+                &lt;span class="setting__hint"&gt;Server simultaneous connections&lt;/span&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Server simultaneous connection limit&lt;/span&gt;
-            &lt;/div&gt;
+
+            &lt;/fieldset&gt;
+
 
           &lt;/div&gt;
         &lt;/div&gt;
@@ -16209,6 +16207,16 @@ section {
   .setting {
     min-width: 29em;
   }
+}
+
+fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: 1em;
+  border-style: solid;
+  border-width: 1px;
+  background-color: #80000010;
+  border-color: #92473e;
 }
 
 // .setting--expandable {

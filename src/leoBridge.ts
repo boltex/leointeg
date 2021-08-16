@@ -226,7 +226,7 @@ export class LeoBridge {
         };
         this._websocket.onclose = (p_event: WebSocket.CloseEvent) => {
             // * Disconnected from server
-            console.log(`Websocket closed, code: ${p_event.code}`);
+            // console.log(`Websocket closed, code: ${p_event.code}`);
             if (!this._leoIntegration.activated) {
                 return;
             }
@@ -247,7 +247,7 @@ export class LeoBridge {
     public closeLeoProcess(): void {
         if (this._websocket) {
             this._websocket.close(1001, "Quitting LeoInteg");
-            console.log('websocket closed');
+            // console.log('websocket closed');
         } else {
             // console.warn('LeoInteg websocket close called without websocket active');
         }

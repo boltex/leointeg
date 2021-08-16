@@ -1836,10 +1836,10 @@ export class LeoIntegration {
             const w_edit = new vscode.WorkspaceEdit();
             w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
             q_edit = vscode.workspace.applyEdit(w_edit).then(() => {
-                console.log('applyEdit done');
+                // console.log('applyEdit done');
                 return true;
             }, () => {
-                console.log('applyEdit failed');
+                // console.log('applyEdit failed');
                 return false;
             });
         } else {
@@ -1847,10 +1847,10 @@ export class LeoIntegration {
         }
         Promise.all([q_save, q_edit])
             .then(() => {
-                console.log('cleaned both');
+                // console.log('cleaned both');
                 return this.closeBody();
             }, () => {
-                console.log('cleaned both failed');
+                // console.log('cleaned both failed');
                 return true;
             });
 

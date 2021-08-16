@@ -164,63 +164,69 @@
               <span class="setting__hint">Connection host port number</span>
             </div>
 
-            <div class="setting">
-              <div class="setting__input">
-                <input id="setDetached"
-                       name="setDetached"
-                       type="checkbox"
-                       data-setting />
-                <label for="setDetached">Spawn&nbsp;Detached</label>
+
+            <fieldset>
+              <legend>Experimental Features</legend>
+              <div class="setting">
+                <div class="setting__input">
+                  <input id="setDetached"
+                         name="setDetached"
+                         type="checkbox"
+                         data-setting />
+                  <label for="setDetached">Spawn&nbsp;Detached</label>
+                </div>
+                <span class="setting__hint">Server spawned with the 'detached' flag,<br>
+                  allows dialogs when closing with unsaved files</span>
               </div>
-              <span class="setting__hint">Server process spawned with the 'detached' flag,<br>
-                allows for dialogs when closing about unsaved files</span>
-            </div>
-            <div class="setting">
-              <div class="setting__input">
-                <input id="setShell"
-                       name="setShell"
-                       type="checkbox"
-                       data-setting />
-                <label for="setShell">Spawn&nbsp;in&nbsp;Shell</label>
+              <div class="setting">
+                <div class="setting__input">
+                  <input id="setShell"
+                         name="setShell"
+                         type="checkbox"
+                         data-setting />
+                  <label for="setShell">Spawn&nbsp;in&nbsp;Shell</label>
+                </div>
+                <span class="setting__hint">Server spawned with the 'shell' flag</span>
               </div>
-              <span class="setting__hint">Server process spawned with the 'shell' flag</span>
-            </div>
-            <div class="setting">
-              <div class="setting__input">
-                <input id="setCwd"
-                       name="setCwd"
-                       type="checkbox"
-                       data-setting />
-                <label for="setCwd">Specify&nbsp;CWD</label>
+              <div class="setting">
+                <div class="setting__input">
+                  <input id="setCwd"
+                         name="setCwd"
+                         type="checkbox"
+                         data-setting />
+                  <label for="setCwd">Specify&nbsp;CWD</label>
+                </div>
+                <span class="setting__hint">Server process spawned with the<br>
+                  option CWD set to the workspace</span>
               </div>
-              <span class="setting__hint">Server process spawned with the<br>
-                option CWD set to the workspace</span>
-            </div>
-            <div class="setting">
-              <div class="setting__input">
-                <input id="setPersist"
-                       name="setPersist"
-                       type="checkbox"
-                       data-setting />
-                <label for="setPersist">Keep&nbsp;Server&nbsp;Alive</label>
+              <div class="setting">
+                <div class="setting__input">
+                  <input id="setPersist"
+                         name="setPersist"
+                         type="checkbox"
+                         data-setting />
+                  <label for="setPersist">Keep&nbsp;Server&nbsp;Alive</label>
+                </div>
+                <span class="setting__hint">Starts the server with the 'persist' flag<br>
+                  (Forces 'detached' flag)</span>
               </div>
-              <span class="setting__hint">Starts the server with the 'persist' flag<br>
-                (Forces 'detached' flag)</span>
-            </div>
-            <div class="setting">
-              <div class="setting__input">
-                <label for="limitUsers">User&nbsp;Limit</label>
-                <input id="limitUsers"
-                       name="limitUsers"
-                       type="number"
-                       min="0"
-                       max="255"
-                       max-length="3"
-                       placeholder="1 to 255"
-                       data-setting />
+              <div class="setting">
+                <div class="setting__input">
+                  <label for="limitUsers">User&nbsp;Limit</label>
+                  <input id="limitUsers"
+                         name="limitUsers"
+                         type="number"
+                         min="0"
+                         max="255"
+                         max-length="3"
+                         placeholder="1 to 255"
+                         data-setting />
+                </div>
+                <span class="setting__hint">Server simultaneous connections</span>
               </div>
-              <span class="setting__hint">Server simultaneous connection limit</span>
-            </div>
+
+            </fieldset>
+
 
           </div>
         </div>

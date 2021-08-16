@@ -287,7 +287,7 @@ export class Constants {
 
         SET_DETACHED: true,
         SET_SHELL: false,
-        SET_CWD: false,
+        SET_CWD: true,
         SET_PERSIST: false,
         LIMIT_USERS: 1
     };

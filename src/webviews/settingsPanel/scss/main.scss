@@ -912,6 +912,16 @@ section {
   }
 }
 
+fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: 1em;
+  border-style: solid;
+  border-width: 1px;
+  background-color: #80000010;
+  border-color: #92473e;
+}
+
 // .setting--expandable {
 //   .setting__expander {
 //     background-color: var(--color-foreground--75);

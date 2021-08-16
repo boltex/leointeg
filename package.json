@@ -266,7 +266,7 @@
         },
         "leoIntegration.setCwd": {
           "scope": "application",
-          "default": false,
+          "default": true,
           "type": "boolean",
           "description": "Starts the server process with the 'CWD' set to the workspace folder"
         },
