@@ -543,7 +543,7 @@ export class Constants {
         CLICK_BUTTON: Constants.NAME + ".clickButton",
         REMOVE_BUTTON: Constants.NAME + ".removeButton",
         MINIBUFFER: Constants.NAME + ".minibuffer",
-        GIT_DIFF: Constants.NAME + ".gitDiff", // TODO : Test & Fix this Proof of concept leoCommand
+        GIT_DIFF: Constants.NAME + ".gitDiff",
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",
         OPEN_ASIDE: Constants.NAME + ".openAside",
