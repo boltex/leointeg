@@ -7247,6 +7247,14 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
                 vscode.workspace.workspaceFolders.length) {
                 let w_folder = vscode.workspace.workspaceFolders[0].uri.path;
                 let w_file = vscode.workspace.workspaceFolders[0].uri.fsPath;
+                // If windows and start with a slash - remove it
+                // to get "c:/" instead of "/c:/"
+                if (this._isWin32) {
+                    if (w_folder.substring(0, 1) === "/") {
+                        w_folder = w_folder.substring(1);
+                    }
+                    w_folder = w_folder.replace(/\//g, '\\'); // convert to backslashes
+                }
                 const w_message = `Server CWD set to: ${w_folder}`;
                 w_options.cwd = w_folder;
                 this._leoIntegration.addTerminalPaneEntry(w_message);
