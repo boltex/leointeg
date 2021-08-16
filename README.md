@@ -181,6 +181,8 @@ The outline pane is made by implementing a [TreeDataProvider for vscode's TreeVi
 - [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
 - [Vitalije](https://github.com/vitalije) for his contributions and support
 - [Arjan](https://github.com/ar-jan) for his suggestions and ideas
+- [Thomas](https://github.com/tbpassin) for his contributions and support
+- [Viktor](https://github.com/ranvik14) for his contributions and support
 
 ---
 

@@ -167,6 +167,7 @@
 <v t="ekr.20200815123601.87"><vh>Outline Editing</vh></v>
 <v t="ekr.20200815123601.88"><vh>Goto Nodes</vh></v>
 <v t="felix.20210517004335.1"><vh>Search</vh></v>
+<v t="felix.20210812004050.1"><vh>VSCode Commands</vh></v>
 </v>
 <v t="ekr.20200815123601.89"><vh>resourceLabelFormatters</vh></v>
 </v>
@@ -859,7 +860,13 @@ public static CONFIG_DEFAULTS = {
     AUTO_CONNECT: false,
     IP_ADDRESS: "localhost",
     IP_LOOPBACK: "127.0.0.1",
-    IP_PORT: 32125
+    IP_PORT: 32125,
+
+    SET_DETACHED: true,
+    SET_SHELL: false,
+    SET_CWD: true,
+    SET_PERSIST: false,
+    LIMIT_USERS: 1
 };
 
 </t>
@@ -1316,9 +1323,10 @@ public removeAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
  * @param p_data Data object (not pure string)
  */
 private _processServerOutput(p_data: string): void {
-    p_data.toString().split("\n").forEach(p_line =&gt; {
-        p_line = p_line.trim();
-        if (p_line) { // * std out process line by line: json shouldn't have line breaks
+    let w_dataString = p_data.toString().replace(/\n$/, ""); // remove last
+    w_dataString.toString().split("\n").forEach(p_line =&gt; {
+
+        if (true || p_line) { // ? std out process line by line: json shouldn't have line breaks
             if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
                 if (this._resolvePromise &amp;&amp; !this._isStarted) {
                     this._isStarted = true;
@@ -2029,7 +2037,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.58.0"
+    "vscode": "^1.59.0"
   },
   "keywords": [
     "leo",
@@ -2042,7 +2050,7 @@ print('done')
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "main": "./dist/extension",
   "icon": "resources/leoapp128px.png",
@@ -2064,7 +2072,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.58.0",
+    "@types/vscode": "^1.59.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -3947,6 +3955,38 @@ print('done')
   "maximum": 65535,
   "type": "number",
   "description": "Connection port"
+},
+"leoIntegration.setDetached": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Starts the server process with the 'detached' flag - Allows a dialog to be shown after closing for unsaved Leo documents"
+},
+"leoIntegration.setShell": {
+  "scope": "application",
+  "default": false,
+  "type": "boolean",
+  "description": "Starts the server process with the 'shell' flag - May help with some python installations"
+},
+"leoIntegration.setCwd": {
+  "scope": "application",
+  "default": true,
+  "type": "boolean",
+  "description": "Starts the server process with the 'CWD' set to the workspace folder"
+},
+"leoIntegration.setPersist": {
+  "scope": "application",
+  "default": false,
+  "type": "boolean",
+  "description": "Sets the persist flag for the server (forces 'detached') to continue after last disconnect"
+},
+"leoIntegration.limitUsers": {
+  "default": 1,
+  "scope": "application",
+  "minimum": 1,
+  "maximum": 255,
+  "type": "number",
+  "description": "Limit of concurrent connections - Allows for multi-user synchronous editing"
 }
 </t>
 <t tx="ekr.20200815123601.76">"keybindings": [
@@ -4728,7 +4768,7 @@ public static COMMANDS = {
     CLICK_BUTTON: Constants.NAME + ".clickButton",
     REMOVE_BUTTON: Constants.NAME + ".removeButton",
     MINIBUFFER: Constants.NAME + ".minibuffer",
-    GIT_DIFF: Constants.NAME + ".gitDiff", // TODO : Test &amp; Fix this Proof of concept leoCommand
+    GIT_DIFF: Constants.NAME + ".gitDiff",
     // * Outline selection
     SELECT_NODE: Constants.NAME + ".selectTreeNode",
     OPEN_ASIDE: Constants.NAME + ".openAside",
@@ -5074,6 +5114,12 @@ public static CONFIG_NAMES = {
     AUTO_CONNECT: "connectToServerAutomatically",
     IP_ADDRESS: "connectionAddress",
     IP_PORT: "connectionPort",
+
+    SET_DETACHED: "setDetached",
+    SET_SHELL: "setShell",
+    SET_CWD: "setCwd",
+    SET_PERSIST: "setPersist",
+    LIMIT_USERS: "limitUsers"
 };
 
 </t>
@@ -5366,6 +5412,12 @@ export class Config implements ConfigMembers {
     public connectionAddress: string = Constants.CONFIG_DEFAULTS.IP_ADDRESS;
     public connectionPort: number = Constants.CONFIG_DEFAULTS.IP_PORT;
 
+    public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
+    public setShell: boolean = Constants.CONFIG_DEFAULTS.SET_SHELL;
+    public setCwd: boolean = Constants.CONFIG_DEFAULTS.SET_CWD;
+    public setPersist: boolean = Constants.CONFIG_DEFAULTS.SET_PERSIST;
+    public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
+
     private _isBusySettingConfig: boolean = false;
     private _needsTreeRefresh: boolean = false;
 
@@ -5417,6 +5469,12 @@ public getConfig(): ConfigMembers {
         connectToServerAutomatically: this.connectToServerAutomatically,
         connectionAddress: this.connectionAddress,
         connectionPort: this.connectionPort,
+
+        setDetached: this.setDetached,
+        setShell: this.setShell,
+        setCwd: this.setCwd,
+        setPersist: this.setPersist,
+        limitUsers: this.limitUsers,
     };
 }
 
@@ -5512,6 +5570,12 @@ public buildFromSavedSettings(): void {
         this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);
         this.connectionAddress = GET(NAME).get(NAMES.IP_ADDRESS, DEFAULTS.IP_ADDRESS);
         this.connectionPort = GET(NAME).get(NAMES.IP_PORT, DEFAULTS.IP_PORT);
+
+        this.setDetached = GET(NAME).get(NAMES.SET_DETACHED, DEFAULTS.SET_DETACHED);
+        this.setShell = GET(NAME).get(NAMES.SET_SHELL, DEFAULTS.SET_SHELL);
+        this.setCwd = GET(NAME).get(NAMES.SET_CWD, DEFAULTS.SET_CWD);
+        this.setPersist = GET(NAME).get(NAMES.SET_PERSIST, DEFAULTS.SET_PERSIST);
+        this.limitUsers = GET(NAME).get(NAMES.LIMIT_USERS, DEFAULTS.LIMIT_USERS);
 
         // * Set context for tree items visibility that are based on config options
         if (this._leoIntegration.leoStates.leoBridgeReady) {
@@ -6050,7 +6114,7 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
     };
     this._websocket.onclose = (p_event: WebSocket.CloseEvent) =&gt; {
         // * Disconnected from server
-        console.log(`Websocket closed, code: ${p_event.code}`);
+        // console.log(`Websocket closed, code: ${p_event.code}`);
         if (!this._leoIntegration.activated) {
             return;
         }
@@ -7027,7 +7091,6 @@ import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
 var kill = require('tree-kill');
 
-
 @language typescript
 @tabwidth -4
 @others
@@ -7162,23 +7225,55 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         // Add port
         w_args.push("-p " + this.usingPort);
 
+        if (this._leoIntegration.config.setPersist) {
+            w_args.push("--persist");
+        }
+
+        if (this._leoIntegration.config.limitUsers &gt; 1 &amp;&amp;
+            this._leoIntegration.config.limitUsers &lt; 256) {
+            w_args.push("--limit " + this._leoIntegration.config.limitUsers);
+        }
+
+        const w_options: child.SpawnOptions = {
+            // Child to run independently of its parent process. Depends on the platform.
+            detached: this._leoIntegration.config.setDetached || this._leoIntegration.config.setPersist,
+
+            // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
+            shell: this._leoIntegration.config.setShell
+        };
+
+        if (this._leoIntegration.config.setCwd) {
+            if (vscode.workspace.workspaceFolders !== undefined &amp;&amp;
+                vscode.workspace.workspaceFolders.length) {
+                let w_folder = vscode.workspace.workspaceFolders[0].uri.path;
+                let w_file = vscode.workspace.workspaceFolders[0].uri.fsPath;
+                const w_message = `Server CWD set to: ${w_folder}`;
+                w_options.cwd = w_folder;
+                this._leoIntegration.addTerminalPaneEntry(w_message);
+            }
+            else {
+                const message = "Working folder not found, 'CWD' not set";
+                vscode.window.showErrorMessage(message);
+            }
+        }
+
+        if (this._leoIntegration.config.setShell) {
+            // TODO : Other modifications to support shell flag
+            w_options.stdio = ['inherit', 'inherit', 'inherit'];
+            // w_options.stdio = ['inherit', 'pipe', 'pipe'];
+            // w_options.stdio ['pipe', process.stdout, process.stderr];
+        }
+
         this._leoIntegration.addTerminalPaneEntry(
             'Starting server with command: ' +
             w_pythonPath + " " + w_args.join(" ")
         );
 
-        const w_options: child.SpawnOptionsWithoutStdio = {
-            // Child to run independently of its parent process. Depends on the platform.
-            detached: true,
-            // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
-            // shell: true
-        };
-
         // * See https://nodejs.org/api/child_process.html for options
         this._serverProcess = child.spawn(w_pythonPath, w_args, w_options); // SPAWN method
-        this._serverProcess.unref();
 
-        // this._serverProcess = child.fork(w_pythonPath, w_args, w_options); // FORK method
+        // To prevent the parent from waiting for a given subprocess to exit
+        this._serverProcess.unref();
 
         // Capture the OUTPUT and send it to the "leo server" OutputChannel
         if (this._serverProcess &amp;&amp; this._serverProcess.stdout) {
@@ -7207,7 +7302,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         }
         // Capture the CLOSE event and set flags on server actually closing
         if (this._serverProcess) {
-            this._serverProcess!.on("close", (p_code: any) =&gt; {
+            this._serverProcess.on("close", (p_code: any) =&gt; {
                 console.log(`leoBridge exited with code ${p_code}`);
                 this._isStarted = false;
                 if (!this._leoIntegration.activated) {
@@ -7617,6 +7712,12 @@ export interface ConfigMembers {
     connectToServerAutomatically: boolean;
     connectionAddress: string;
     connectionPort: number;
+
+    setDetached: boolean;
+    setShell: boolean;
+    setCwd: boolean;
+    setPersist: boolean;
+    limitUsers: number
 }
 
 </t>
@@ -7891,6 +7992,8 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 - Changed the default visible command icons above the body pane. Also makes sure 'settings' is visible.
 - Added global zoom level and editor font-size in the LeoInteg settings panel to help change the body &amp; outline font sizes.
 - Server now opens modal dialogs for saving dirty documents on exit.
+- Added experimental server option settings (cwd, shell, detach) to help with various python setups.
+- Server now started with a CWD of the current workspace by default (fixes git-diff).
 
 @others
 </t>
@@ -8081,6 +8184,8 @@ The outline pane is made by implementing a [TreeDataProvider for vscode's TreeVi
 - [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
 - [Vitalije](https://github.com/vitalije) for his contributions and support
 - [Arjan](https://github.com/ar-jan) for his suggestions and ideas
+- [Thomas](https://github.com/tbpassin) for his contributions and support
+- [Viktor](https://github.com/ranvik14) for his contributions and support
 </t>
 <t tx="felix.20200718222417.1">## 0.1.12
 
@@ -8102,7 +8207,7 @@ The outline pane is made by implementing a [TreeDataProvider for vscode's TreeVi
 - Added more [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree for starting a server, connecting to it, and added content to help with automation settings.
 - Changed the starting default configuration setting for starting and connecting to the leoBridge server script to false.
 - Made starting and connecting to the leoBridge server script easier to access in the interface, and in the welcome/settings webview.
-- Added new CONTRIBUTING.md markdown file for running the development version of the leoInteg extension.
+- Added new CONTRIBUTING markdown file for running the development version of the leoInteg extension.
 - Closes [#44](https://github.com/boltex/leointeg/issues/44)
 
 </t>
@@ -11572,7 +11677,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "key": "ctrl+alt+h",
   "mac": "cmd+alt+h",
   "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
-}
+},
 </t>
 <t tx="felix.20210522001751.1">import * as vscode from 'vscode';
 import { Constants } from '../constants';
@@ -12501,8 +12606,8 @@ public prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise&lt;any&gt
 </t>
 <t tx="felix.20210612000127.1">## 0.1.14
 
-- Rewrite of the leobridgeserver.py to be made compatible with the standards in leoserver.py from Leo.
-- Added option for specifying server file and path. Defaults to the internal leobridgeserver.py server.
+- Rewrite of the leobridgeserver script to be made compatible with the standards in leoserver script from Leo.
+- Added option for specifying server file and path. Defaults to the internal leobridgeserver server script.
 - Fixed cursor position and selection bugs.
 - Fixed automatic server startup and connection bugs.
 - Added Search functionality along with a 'find' panel.
@@ -12835,8 +12940,6 @@ public killServer(): void {
  * * cleanupBody closes all remaining body pane to shut down this vscode window
  */
 public cleanupBody(): Thenable&lt;any&gt; {
-    console.log('start cleanupBody');
-
     let q_save: Thenable&lt;any&gt;;
     //
     if (this._bodyLastChangedDocument &amp;&amp;
@@ -12849,31 +12952,27 @@ public cleanupBody(): Thenable&lt;any&gt; {
     }
 
     // Adding log in the chain of events
-    q_save.then(() =&gt; {
-        console.log('q_save resolved');
-    });
-
     let q_edit: Thenable&lt;boolean&gt;;
     if (this.bodyUri) {
-        console.log('start deleteFile');
-
         const w_edit = new vscode.WorkspaceEdit();
         w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
-        console.log('applyEdit');
-
         q_edit = vscode.workspace.applyEdit(w_edit).then(() =&gt; {
-            console.log('applyEdit done');
+            // console.log('applyEdit done');
             return true;
+        }, () =&gt; {
+            // console.log('applyEdit failed');
+            return false;
         });
     } else {
-        console.log('no deleteFile');
-
         q_edit = Promise.resolve(true);
     }
     Promise.all([q_save, q_edit])
         .then(() =&gt; {
-            console.log('cleaned both');
+            // console.log('cleaned both');
             return this.closeBody();
+        }, () =&gt; {
+            // console.log('cleaned both failed');
+            return true;
         });
 
     return q_save;
@@ -12998,9 +13097,9 @@ public stopConnection(): void {
 public closeLeoProcess(): void {
     if (this._websocket) {
         this._websocket.close(1001, "Quitting LeoInteg");
-        console.log('websocket closed');
+        // console.log('websocket closed');
     } else {
-        console.warn('LeoInteg websocket close called without websocket active');
+        // console.warn('LeoInteg websocket close called without websocket active');
     }
 }
 
@@ -13031,6 +13130,17 @@ private _bodySaveDeactivate(
     return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
 }
 
+</t>
+<t tx="felix.20210812004050.1">{
+  "command": "workbench.files.action.collapseExplorerFolders",
+  "key": "alt+-",
+  "when": "!inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme != leo"
+},
+{
+  "command": "workbench.files.action.collapseExplorerFolders",
+  "key": "alt+-",
+  "when": "!inSearchEditor &amp;&amp; explorerViewletFocus"
+}
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
@@ -14043,6 +14153,71 @@ body &gt; div &gt; div &gt; label:active {
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Connection host port number&lt;/span&gt;
             &lt;/div&gt;
+
+
+            &lt;fieldset&gt;
+              &lt;legend&gt;Experimental Features&lt;/legend&gt;
+              &lt;div class="setting"&gt;
+                &lt;div class="setting__input"&gt;
+                  &lt;input id="setDetached"
+                         name="setDetached"
+                         type="checkbox"
+                         data-setting /&gt;
+                  &lt;label for="setDetached"&gt;Spawn&amp;nbsp;Detached&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;span class="setting__hint"&gt;Server spawned with the 'detached' flag,&lt;br&gt;
+                  allows dialogs when closing with unsaved files&lt;/span&gt;
+              &lt;/div&gt;
+              &lt;div class="setting"&gt;
+                &lt;div class="setting__input"&gt;
+                  &lt;input id="setShell"
+                         name="setShell"
+                         type="checkbox"
+                         data-setting /&gt;
+                  &lt;label for="setShell"&gt;Spawn&amp;nbsp;in&amp;nbsp;Shell&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;span class="setting__hint"&gt;Server spawned with the 'shell' flag&lt;/span&gt;
+              &lt;/div&gt;
+              &lt;div class="setting"&gt;
+                &lt;div class="setting__input"&gt;
+                  &lt;input id="setCwd"
+                         name="setCwd"
+                         type="checkbox"
+                         data-setting /&gt;
+                  &lt;label for="setCwd"&gt;Specify&amp;nbsp;CWD&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;span class="setting__hint"&gt;Server process spawned with the&lt;br&gt;
+                  option CWD set to the workspace&lt;/span&gt;
+              &lt;/div&gt;
+              &lt;div class="setting"&gt;
+                &lt;div class="setting__input"&gt;
+                  &lt;input id="setPersist"
+                         name="setPersist"
+                         type="checkbox"
+                         data-setting /&gt;
+                  &lt;label for="setPersist"&gt;Keep&amp;nbsp;Server&amp;nbsp;Alive&lt;/label&gt;
+                &lt;/div&gt;
+                &lt;span class="setting__hint"&gt;Starts the server with the 'persist' flag&lt;br&gt;
+                  (Forces 'detached' flag)&lt;/span&gt;
+              &lt;/div&gt;
+              &lt;div class="setting"&gt;
+                &lt;div class="setting__input"&gt;
+                  &lt;label for="limitUsers"&gt;User&amp;nbsp;Limit&lt;/label&gt;
+                  &lt;input id="limitUsers"
+                         name="limitUsers"
+                         type="number"
+                         min="0"
+                         max="255"
+                         max-length="3"
+                         placeholder="1 to 255"
+                         data-setting /&gt;
+                &lt;/div&gt;
+                &lt;span class="setting__hint"&gt;Server simultaneous connections&lt;/span&gt;
+              &lt;/div&gt;
+
+            &lt;/fieldset&gt;
+
+
           &lt;/div&gt;
         &lt;/div&gt;
       &lt;/section&gt;
@@ -14328,7 +14503,7 @@ body &gt; div &gt; div &gt; label:active {
               Body Editor Icons
             &lt;/h2&gt;
             &lt;p class="section__header-hint"&gt;
-              Body Pane Command Icons - Choose which commands to display - &lt;em&gt;First leftmost 9 icons shown&lt;/em&gt;
+              Command Icons to display atop the Body Pane: &lt;em&gt;Limited to the first leftmost 9 icons&lt;/em&gt;
             &lt;/p&gt;
           &lt;/div&gt;
           &lt;div class="section__preview"&gt;
@@ -14569,7 +14744,7 @@ body &gt; div &gt; div &gt; label:active {
                        placeholder="Status bar indicator text "
                        data-setting /&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Keybindings 'on/off' indicator text message&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;Leo's keybindings 'on/off' indicator text message&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
@@ -14581,7 +14756,7 @@ body &gt; div &gt; div &gt; label:active {
                        placeholder="RrGgBb"
                        data-setting /&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Keybindings 'on' indicator 6 hex digits color code&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;Leo's keybindings 'on' indicator 6 hex digits color code&lt;/span&gt;
             &lt;/div&gt;
           &lt;/div&gt;
         &lt;/div&gt;
@@ -15816,7 +15991,7 @@ section {
 
   border-radius: 8px;
   margin: 1em;
-  padding: 1em;
+  padding: 1em 0 0.5em 1em;
   // box-shadow: 0px 0px 6px 1px rgba(0, 0, 0, 0.15);
 
   .vscode-dark &amp; {
@@ -16034,6 +16209,16 @@ section {
   .setting {
     min-width: 29em;
   }
+}
+
+fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: 1em;
+  border-style: solid;
+  border-width: 1px;
+  background-color: #80000010;
+  border-color: #92473e;
 }
 
 // .setting--expandable {

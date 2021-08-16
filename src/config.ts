@@ -46,6 +46,12 @@ export class Config implements ConfigMembers {
     public connectionAddress: string = Constants.CONFIG_DEFAULTS.IP_ADDRESS;
     public connectionPort: number = Constants.CONFIG_DEFAULTS.IP_PORT;
 
+    public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
+    public setShell: boolean = Constants.CONFIG_DEFAULTS.SET_SHELL;
+    public setCwd: boolean = Constants.CONFIG_DEFAULTS.SET_CWD;
+    public setPersist: boolean = Constants.CONFIG_DEFAULTS.SET_PERSIST;
+    public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
+
     private _isBusySettingConfig: boolean = false;
     private _needsTreeRefresh: boolean = false;
 
@@ -94,6 +100,12 @@ export class Config implements ConfigMembers {
             connectToServerAutomatically: this.connectToServerAutomatically,
             connectionAddress: this.connectionAddress,
             connectionPort: this.connectionPort,
+
+            setDetached: this.setDetached,
+            setShell: this.setShell,
+            setCwd: this.setCwd,
+            setPersist: this.setPersist,
+            limitUsers: this.limitUsers,
         };
     }
 
@@ -231,6 +243,12 @@ export class Config implements ConfigMembers {
             this.connectToServerAutomatically = GET(NAME).get(NAMES.AUTO_CONNECT, DEFAULTS.AUTO_CONNECT);
             this.connectionAddress = GET(NAME).get(NAMES.IP_ADDRESS, DEFAULTS.IP_ADDRESS);
             this.connectionPort = GET(NAME).get(NAMES.IP_PORT, DEFAULTS.IP_PORT);
+
+            this.setDetached = GET(NAME).get(NAMES.SET_DETACHED, DEFAULTS.SET_DETACHED);
+            this.setShell = GET(NAME).get(NAMES.SET_SHELL, DEFAULTS.SET_SHELL);
+            this.setCwd = GET(NAME).get(NAMES.SET_CWD, DEFAULTS.SET_CWD);
+            this.setPersist = GET(NAME).get(NAMES.SET_PERSIST, DEFAULTS.SET_PERSIST);
+            this.limitUsers = GET(NAME).get(NAMES.LIMIT_USERS, DEFAULTS.LIMIT_USERS);
 
             // * Set context for tree items visibility that are based on config options
             if (this._leoIntegration.leoStates.leoBridgeReady) {

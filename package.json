@@ -13,7 +13,7 @@
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.58.0"
+    "vscode": "^1.59.0"
   },
   "keywords": [
     "leo",
@@ -26,7 +26,7 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "main": "./dist/extension",
   "icon": "resources/leoapp128px.png",
@@ -251,6 +251,38 @@
           "maximum": 65535,
           "type": "number",
           "description": "Connection port"
+        },
+        "leoIntegration.setDetached": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Starts the server process with the 'detached' flag - Allows a dialog to be shown after closing for unsaved Leo documents"
+        },
+        "leoIntegration.setShell": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Starts the server process with the 'shell' flag - May help with some python installations"
+        },
+        "leoIntegration.setCwd": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Starts the server process with the 'CWD' set to the workspace folder"
+        },
+        "leoIntegration.setPersist": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Sets the persist flag for the server (forces 'detached') to continue after last disconnect"
+        },
+        "leoIntegration.limitUsers": {
+          "default": 1,
+          "scope": "application",
+          "minimum": 1,
+          "maximum": 255,
+          "type": "number",
+          "description": "Limit of concurrent connections - Allows for multi-user synchronous editing"
         }
       }
     },
@@ -3467,6 +3499,16 @@
         "key": "ctrl+alt+h",
         "mac": "cmd+alt+h",
         "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "workbench.files.action.collapseExplorerFolders",
+        "key": "alt+-",
+        "when": "!inSearchEditor && !sideBarFocus && resourceScheme != leo"
+      },
+      {
+        "command": "workbench.files.action.collapseExplorerFolders",
+        "key": "alt+-",
+        "when": "!inSearchEditor && explorerViewletFocus"
       }
     ],
     "resourceLabelFormatters": [
@@ -3491,7 +3533,7 @@
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.58.0",
+    "@types/vscode": "^1.59.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",

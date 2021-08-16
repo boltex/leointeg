@@ -8,7 +8,6 @@ import { Constants } from "./constants";
 import { LeoIntegration } from './leoIntegration';
 var kill = require('tree-kill');
 
-
 /**
  * * Leo bridge server service
  * Provides simple automatic leo bridge server startup functionality
@@ -136,23 +135,55 @@ export class ServerService {
             // Add port
             w_args.push("-p " + this.usingPort);
 
+            if (this._leoIntegration.config.setPersist) {
+                w_args.push("--persist");
+            }
+
+            if (this._leoIntegration.config.limitUsers > 1 &&
+                this._leoIntegration.config.limitUsers < 256) {
+                w_args.push("--limit " + this._leoIntegration.config.limitUsers);
+            }
+
+            const w_options: child.SpawnOptions = {
+                // Child to run independently of its parent process. Depends on the platform.
+                detached: this._leoIntegration.config.setDetached || this._leoIntegration.config.setPersist,
+
+                // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
+                shell: this._leoIntegration.config.setShell
+            };
+
+            if (this._leoIntegration.config.setCwd) {
+                if (vscode.workspace.workspaceFolders !== undefined &&
+                    vscode.workspace.workspaceFolders.length) {
+                    let w_folder = vscode.workspace.workspaceFolders[0].uri.path;
+                    let w_file = vscode.workspace.workspaceFolders[0].uri.fsPath;
+                    const w_message = `Server CWD set to: ${w_folder}`;
+                    w_options.cwd = w_folder;
+                    this._leoIntegration.addTerminalPaneEntry(w_message);
+                }
+                else {
+                    const message = "Working folder not found, 'CWD' not set";
+                    vscode.window.showErrorMessage(message);
+                }
+            }
+
+            if (this._leoIntegration.config.setShell) {
+                // TODO : Other modifications to support shell flag
+                w_options.stdio = ['inherit', 'inherit', 'inherit'];
+                // w_options.stdio = ['inherit', 'pipe', 'pipe'];
+                // w_options.stdio ['pipe', process.stdout, process.stderr];
+            }
+
             this._leoIntegration.addTerminalPaneEntry(
                 'Starting server with command: ' +
                 w_pythonPath + " " + w_args.join(" ")
             );
 
-            const w_options: child.SpawnOptionsWithoutStdio = {
-                // Child to run independently of its parent process. Depends on the platform.
-                detached: true,
-                // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
-                // shell: true
-            };
-
             // * See https://nodejs.org/api/child_process.html for options
             this._serverProcess = child.spawn(w_pythonPath, w_args, w_options); // SPAWN method
-            this._serverProcess.unref();
 
-            // this._serverProcess = child.fork(w_pythonPath, w_args, w_options); // FORK method
+            // To prevent the parent from waiting for a given subprocess to exit
+            this._serverProcess.unref();
 
             // Capture the OUTPUT and send it to the "leo server" OutputChannel
             if (this._serverProcess && this._serverProcess.stdout) {
@@ -181,7 +212,7 @@ export class ServerService {
             }
             // Capture the CLOSE event and set flags on server actually closing
             if (this._serverProcess) {
-                this._serverProcess!.on("close", (p_code: any) => {
+                this._serverProcess.on("close", (p_code: any) => {
                     console.log(`leoBridge exited with code ${p_code}`);
                     this._isStarted = false;
                     if (!this._leoIntegration.activated) {
@@ -224,9 +255,10 @@ export class ServerService {
      * @param p_data Data object (not pure string)
      */
     private _processServerOutput(p_data: string): void {
-        p_data.toString().split("\n").forEach(p_line => {
-            p_line = p_line.trim();
-            if (p_line) { // * std out process line by line: json shouldn't have line breaks
+        let w_dataString = p_data.toString().replace(/\n$/, ""); // remove last
+        w_dataString.toString().split("\n").forEach(p_line => {
+
+            if (true || p_line) { // ? std out process line by line: json shouldn't have line breaks
                 if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
                     if (this._resolvePromise && !this._isStarted) {
                         this._isStarted = true;
