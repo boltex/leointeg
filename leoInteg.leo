@@ -8184,6 +8184,8 @@ The outline pane is made by implementing a [TreeDataProvider for vscode's TreeVi
 - [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
 - [Vitalije](https://github.com/vitalije) for his contributions and support
 - [Arjan](https://github.com/ar-jan) for his suggestions and ideas
+- [Thomas](https://github.com/tbpassin) for his contributions and support
+- [Viktor](https://github.com/ranvik14) for his contributions and support
 </t>
 <t tx="felix.20200718222417.1">## 0.1.12
 
@@ -8205,7 +8207,7 @@ The outline pane is made by implementing a [TreeDataProvider for vscode's TreeVi
 - Added more [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree for starting a server, connecting to it, and added content to help with automation settings.
 - Changed the starting default configuration setting for starting and connecting to the leoBridge server script to false.
 - Made starting and connecting to the leoBridge server script easier to access in the interface, and in the welcome/settings webview.
-- Added new CONTRIBUTING.md markdown file for running the development version of the leoInteg extension.
+- Added new CONTRIBUTING markdown file for running the development version of the leoInteg extension.
 - Closes [#44](https://github.com/boltex/leointeg/issues/44)
 
 </t>
@@ -12604,8 +12606,8 @@ public prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise&lt;any&gt
 </t>
 <t tx="felix.20210612000127.1">## 0.1.14
 
-- Rewrite of the leobridgeserver.py to be made compatible with the standards in leoserver.py from Leo.
-- Added option for specifying server file and path. Defaults to the internal leobridgeserver.py server.
+- Rewrite of the leobridgeserver script to be made compatible with the standards in leoserver script from Leo.
+- Added option for specifying server file and path. Defaults to the internal leobridgeserver server script.
 - Fixed cursor position and selection bugs.
 - Fixed automatic server startup and connection bugs.
 - Added Search functionality along with a 'find' panel.

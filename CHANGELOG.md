@@ -28,8 +28,8 @@
 
 ## 0.1.14
 
-- Rewrite of the leobridgeserver.py to be made compatible with the standards in leoserver.py from Leo.
-- Added option for specifying server file and path. Defaults to the internal leobridgeserver.py server.
+- Rewrite of the leobridgeserver script to be made compatible with the standards in leoserver script from Leo.
+- Added option for specifying server file and path. Defaults to the internal leobridgeserver server script.
 - Fixed cursor position and selection bugs.
 - Fixed automatic server startup and connection bugs.
 - Added Search functionality along with a 'find' panel.
@@ -74,7 +74,7 @@
 - Added more [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree for starting a server, connecting to it, and added content to help with automation settings.
 - Changed the starting default configuration setting for starting and connecting to the leoBridge server script to false.
 - Made starting and connecting to the leoBridge server script easier to access in the interface, and in the welcome/settings webview.
-- Added new CONTRIBUTING.md markdown file for running the development version of the leoInteg extension.
+- Added new CONTRIBUTING markdown file for running the development version of the leoInteg extension.
 - Closes [#44](https://github.com/boltex/leointeg/issues/44)
 
 ## 0.1.9
