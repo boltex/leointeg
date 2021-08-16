@@ -21,6 +21,14 @@ export class LeoButtonNode extends vscode.TreeItem {
         private _leoIntegration: LeoIntegration
     ) {
         super(button.name);
+        // Cleanup button name of any directives starting with '@'
+        // super(
+        //     button.name.split(" ")
+        //         .filter(item => item[0] !== "@")
+        //         .join(" ")
+        //         .trim()
+        // );
+
         this._id = utils.getUniqueId();
         // Setup this instance (just differentiate 'script-button' for now)
         this.command = {

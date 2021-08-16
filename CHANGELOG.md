@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.1.17
+
+- Saves recently opened Leo files list per workspace, instead of globally.
+- Changed the default visible command icons above the body pane. Also makes sure 'settings' is visible.
+- Added global zoom level and editor font-size in the LeoInteg settings panel to help change the body & outline font sizes.
+- Server now opens modal dialogs for saving dirty documents on exit.
+- Added experimental server option settings (cwd, shell, detach) to help with various python setups.
+- Server now started with a CWD of the current workspace by default (fixes git-diff).
+
 ## 0.1.16
 
 - Added procedures to cleanup when closing a vscode window. (closes server and body panes)
@@ -19,8 +28,8 @@
 
 ## 0.1.14
 
-- Rewrite of the leobridgeserver.py to be made compatible with the standards in leoserver.py from Leo.
-- Added option for specifying server file and path. Defaults to the internal leobridgeserver.py server.
+- Rewrite of the leobridgeserver script to be made compatible with the standards in leoserver script from Leo.
+- Added option for specifying server file and path. Defaults to the internal leobridgeserver server script.
 - Fixed cursor position and selection bugs.
 - Fixed automatic server startup and connection bugs.
 - Added Search functionality along with a 'find' panel.
@@ -65,7 +74,7 @@
 - Added more [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree for starting a server, connecting to it, and added content to help with automation settings.
 - Changed the starting default configuration setting for starting and connecting to the leoBridge server script to false.
 - Made starting and connecting to the leoBridge server script easier to access in the interface, and in the welcome/settings webview.
-- Added new CONTRIBUTING.md markdown file for running the development version of the leoInteg extension.
+- Added new CONTRIBUTING markdown file for running the development version of the leoInteg extension.
 - Closes [#44](https://github.com/boltex/leointeg/issues/44)
 
 ## 0.1.9
@@ -137,4 +146,4 @@ _Note: This editable body panel does not affect Leo file yet._
 - Initial basic skeleton of this extension. Press F5 to view icon and test the startup of the extension!
 - Implemented [leoBridge](https://leoeditor.com/leoBridge.html) interaction.
 
-![LeoEditor](resources/leoapp96px.png)
+![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp96px.png)

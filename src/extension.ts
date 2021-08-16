@@ -562,6 +562,7 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         [CMD.CONNECT, () => w_leo.connect()],
         [CMD.START_SERVER, () => w_leo.startServer()],
+        [CMD.STOP_SERVER, () => w_leo.killServer()],
         [CMD.CHOOSE_LEO_FOLDER, () => w_leo.chooseLeoFolder()],
 
         // Called by nodes in tree when selected either by mouse, or with enter
@@ -673,7 +674,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         w_leo.startNetworkServices();
         // Save version # for next startup comparison
         p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-        console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
+        console.log('leoInteg 0.1.17.01 startup launched in ', utils.getDurationMs(w_start), 'ms');
     });
 }
 
@@ -682,14 +683,19 @@ export function activate(p_context: vscode.ExtensionContext) {
  */
 export function deactivate(): Promise<boolean> {
     if (LeoInteg) {
-        LeoInteg.cleanupBody();
-        LeoInteg.stopServer();
-        return Promise.resolve(true).then(() => {
-            return new Promise(resolve => setTimeout(() => {
-                console.log("done deactivating");
-                resolve(true);
-            }, 200));
+        LeoInteg.activated = false;
+        LeoInteg.cleanupBody().then(() => {
+            LeoInteg?.stopConnection();
         });
+        // Call to LeoInteg.stopServer() is not needed: server should handle disconnects.
+        // Server should open tk GUI dialogs if dirty files still remain before closing itself.
+        return new Promise((p_resolve, p_reject) => {
+            setTimeout(() => {
+                LeoInteg?.killServer();
+                p_resolve(true);
+            }, 30000);
+        }
+        );
     } else {
         return Promise.resolve(false);
     }

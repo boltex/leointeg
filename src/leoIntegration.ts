@@ -11,7 +11,6 @@ import {
     ReqRefresh,
     ChooseDocumentItem,
     LeoDocument,
-    MinibufferCommand,
     UserCommand,
     ShowBodyParam,
     BodySelectionInfo,
@@ -40,6 +39,7 @@ import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
  */
 export class LeoIntegration {
     // * Status Flags
+    public activated: boolean = true; // Set to false when deactivating the extension
     public finishedStartup: boolean = false;
     private _leoIsConnecting: boolean = false; // Used in connect method, to prevent other attempts while trying
     private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Is set when leoBridge has a leo controller ready
@@ -182,6 +182,20 @@ export class LeoIntegration {
 
     // * Debounced method used to get opened Leo Files for the documents pane
     public refreshDocumentsPane: (() => void) & {
+        clear(): void;
+    } & {
+        flush(): void;
+    };
+
+    // * Debounced method used to get content of the at-buttons pane
+    public refreshButtonsPane: (() => void) & {
+        clear(): void;
+    } & {
+        flush(): void;
+    };
+
+    // * Debounced method used to refresh all
+    public refreshAll: (() => void) & {
         clear(): void;
     } & {
         flush(): void;
@@ -355,13 +369,30 @@ export class LeoIntegration {
             this._onDidOpenTextDocument(p_document)
         );
 
-        // * Debounced refresh flags and UI parts, other than the tree and body, when operation(s) are done executing
-        this.getStates = debounce(this._triggerGetStates, Constants.STATES_DEBOUNCE_DELAY);
+        // * Debounced refresh flags and UI parts, other than the tree and body
+        this.getStates = debounce(
+            () => { this._triggerGetStates(); },
+            Constants.STATES_DEBOUNCE_DELAY
+        );
         this.refreshDocumentsPane = debounce(
-            () => {
-                this._leoDocumentsProvider.refreshTreeRoot();
-            },
+            () => { this._leoDocumentsProvider.refreshTreeRoot(); },
             Constants.DOCUMENTS_DEBOUNCE_DELAY
+        );
+        this.refreshButtonsPane = debounce(
+            () => { this._leoButtonsProvider.refreshTreeRoot(); },
+            Constants.BUTTONS_DEBOUNCE_DELAY
+        );
+        this.refreshAll = debounce(
+            () => {
+                this.launchRefresh({
+                    tree: true,
+                    body: true,
+                    buttons: true,
+                    states: true,
+                    documents: true
+                }, false);
+            },
+            Constants.REFRESH_ALL_DEBOUNCE_DELAY
         );
     }
 
@@ -450,10 +481,22 @@ export class LeoIntegration {
     }
 
     /**
-     * * Stops the server if it was started by this instance of the extension
+     * * Kills the server process if it was started by this instance of the extension
      */
-    public stopServer(): void {
+    public killServer(): void {
         this._serverService.killServer();
+        if (this.activated) {
+            this._leoTerminalPane?.clear();
+            this._leoTerminalPane?.dispose();
+            this._leoTerminalPane = undefined;
+        }
+    }
+
+    /**
+     * * Disconnects from the server
+     */
+    public stopConnection(): void {
+        this._leoBridge.closeLeoProcess();
     }
 
     /**
@@ -466,21 +509,21 @@ export class LeoIntegration {
         }
         this._leoIsConnecting = true;
         console.log('connecting');
-
         this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess(
             this._serverService.usingPort // This will be zero if no port found
         );
         this._leoBridgeReadyPromise.then(
             (p_package) => {
                 console.log('connected');
-
                 this._leoIsConnecting = false;
-                if (p_package.id !== 1) {
+                // Check if hard-coded first package signature
+                if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
                     this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
                 } else {
+                    const w_opened: boolean = !!p_package.commander;
                     const w_lastFiles: string[] =
-                        this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
-                    if (w_lastFiles.length) {
+                        this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
+                    if (w_lastFiles.length && !w_opened) {
                         // This context flag will trigger 'Connecting...' placeholder
                         utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
 
@@ -490,6 +533,10 @@ export class LeoIntegration {
                     } else {
                         this.leoStates.leoBridgeReady = true;
                         this.finishedStartup = true;
+                    }
+                    if (w_opened) {
+                        p_package.filename = p_package.commander!.fileName;
+                        this._setupOpenedLeoDocument(p_package);
                     }
 
                     this.showLogPane();
@@ -574,12 +621,12 @@ export class LeoIntegration {
     }
 
     /**
-     * * Open Leo files found in "context.globalState.leoFiles"
+     * * Open Leo files found in "context.workspaceState.leoFiles"
      * @returns promise that resolves with editor of last opened from the list, or rejects if empty
      */
     private _openLastFiles(): Promise<vscode.TextEditor> {
-        // Loop through context.globalState.<something> and check if they exist: open them
-        const w_lastFiles: string[] = this._context.globalState.get(Constants.LAST_FILES_KEY) || [];
+        // Loop through context.workspaceState.<something> and check if they exist: open them
+        const w_lastFiles: string[] = this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
         if (w_lastFiles.length) {
             return this.sendAction(
                 Constants.LEOBRIDGE.OPEN_FILES,
@@ -603,38 +650,38 @@ export class LeoIntegration {
     }
 
     /**
-     * * Adds to the context.globalState.<xxx>files if not already in there (no duplicates)
+     * * Adds to the context.workspaceState.<xxx>files if not already in there (no duplicates)
      * @param p_file path+file name string
-     * @returns A promise that resolves when all global storage modifications are done
+     * @returns A promise that resolves when all workspace storage modifications are done
      */
     private _addRecentAndLastFile(p_file: string): Promise<void> {
         if (!p_file.length) {
             return Promise.resolve();
         }
         return Promise.all([
-            utils.addFileToGlobal(this._context, p_file, Constants.RECENT_FILES_KEY),
-            utils.addFileToGlobal(this._context, p_file, Constants.LAST_FILES_KEY),
+            utils.addFileToWorkspace(this._context, p_file, Constants.RECENT_FILES_KEY),
+            utils.addFileToWorkspace(this._context, p_file, Constants.LAST_FILES_KEY),
         ]).then(() => {
             return Promise.resolve();
         });
     }
 
     /**
-     * * Removes from context.globalState.leoRecentFiles if found (should not have duplicates)
+     * * Removes from context.workspaceState.leoRecentFiles if found (should not have duplicates)
      * @param p_file path+file name string
-     * @returns A promise that resolves when the global storage modification is done
+     * @returns A promise that resolves when the workspace storage modification is done
      */
     private _removeRecentFile(p_file: string): Thenable<void> {
-        return utils.removeFileFromGlobal(this._context, p_file, Constants.RECENT_FILES_KEY);
+        return utils.removeFileFromWorkspace(this._context, p_file, Constants.RECENT_FILES_KEY);
     }
 
     /**
-     * * Removes from context.globalState.leoLastFiles if found (should not have duplicates)
+     * * Removes from context.workspaceState.leoLastFiles if found (should not have duplicates)
      * @param p_file path+file name string
-     * @returns A promise that resolves when the global storage modification is done
+     * @returns A promise that resolves when the workspace storage modification is done
      */
     private _removeLastFile(p_file: string): Thenable<void> {
-        return utils.removeFileFromGlobal(this._context, p_file, Constants.LAST_FILES_KEY);
+        return utils.removeFileFromWorkspace(this._context, p_file, Constants.LAST_FILES_KEY);
     }
 
     /**
@@ -643,7 +690,7 @@ export class LeoIntegration {
      */
     public showRecentLeoFiles(): Thenable<vscode.TextEditor | undefined> {
         const w_recentFiles: string[] =
-            this._context.globalState.get(Constants.RECENT_FILES_KEY) || [];
+            this._context.workspaceState.get(Constants.RECENT_FILES_KEY) || [];
         let q_chooseFile: Thenable<string | undefined>;
         if (w_recentFiles.length) {
             q_chooseFile = vscode.window.showQuickPick(w_recentFiles, {
@@ -723,7 +770,7 @@ export class LeoIntegration {
         }
         if (this._refreshType.buttons) {
             this._refreshType.buttons = false;
-            this._leoButtonsProvider.refreshTreeRoot();
+            this.refreshButtonsPane();
         }
         if (this._refreshType.states) {
             this._refreshType.states = false;
@@ -782,7 +829,7 @@ export class LeoIntegration {
         this.lastSelectedNode = undefined;
         this._refreshOutline(false, RevealType.NoReveal);
         this.refreshDocumentsPane();
-        this._leoButtonsProvider.refreshTreeRoot();
+        this.refreshButtonsPane();
         this.closeBody();
     }
 
@@ -838,7 +885,7 @@ export class LeoIntegration {
         this.sendConfigToServer(this.config.getConfig());
         // * Refresh Opened tree views
         this.refreshDocumentsPane();
-        this._leoButtonsProvider.refreshTreeRoot();
+        this.refreshButtonsPane();
         this.loadSearchSettings();
         // * Maybe first Body appearance
         // return this.showBody(false);
@@ -975,7 +1022,7 @@ export class LeoIntegration {
         if (p_explorerView) {
         } // (Facultative/unused) Do something different if explorer view is used
         if (p_event.visible) {
-            this._leoButtonsProvider.refreshTreeRoot();
+            this.refreshButtonsPane();
         }
     }
 
@@ -1129,9 +1176,6 @@ export class LeoIntegration {
             !this._bodyLastChangedDocumentSaved
         ) {
             const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
-            if (p_forcedVsCodeSave) {
-                // console.log('FORCED SAVE');
-            }
             this._bodyLastChangedDocumentSaved = true;
             q_savePromise = this._bodySaveDocument(w_document, p_forcedVsCodeSave);
         } else {
@@ -1242,6 +1286,22 @@ export class LeoIntegration {
         } else {
             return Promise.resolve(false);
         }
+    }
+
+    /**
+     * * Sets new body text on leo's side before vscode closes itself if body is dirty
+     * @param p_document Vscode's text document which content will be used to be the new node's body text in Leo
+     * @returns a promise that resolves when the complete saving process is finished
+     */
+    private _bodySaveDeactivate(
+        p_document: vscode.TextDocument
+    ): Promise<LeoBridgePackage> {
+        const w_param = {
+            gnx: utils.leoUriToStr(p_document.uri),
+            body: p_document.getText(),
+        };
+        console.log('Send action set body on quit');
+        return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
     }
 
     /**
@@ -1758,26 +1818,43 @@ export class LeoIntegration {
     /**
      * * cleanupBody closes all remaining body pane to shut down this vscode window
      */
-    public cleanupBody(): Promise<boolean> {
+    public cleanupBody(): Thenable<any> {
+        let q_save: Thenable<any>;
+        //
+        if (this._bodyLastChangedDocument &&
+            this._bodyLastChangedDocument.isDirty &&
+            utils.leoUriToStr(this.bodyUri) === utils.leoUriToStr(this._bodyLastChangedDocument.uri)
+        ) {
+            q_save = this._bodySaveDeactivate(this._bodyLastChangedDocument);
+        } else {
+            q_save = Promise.resolve(true);
+        }
+
+        // Adding log in the chain of events
         let q_edit: Thenable<boolean>;
         if (this.bodyUri) {
             const w_edit = new vscode.WorkspaceEdit();
             w_edit.deleteFile(this.bodyUri, { ignoreIfNotExists: true });
-            q_edit = vscode.workspace.applyEdit(w_edit);
+            q_edit = vscode.workspace.applyEdit(w_edit).then(() => {
+                // console.log('applyEdit done');
+                return true;
+            }, () => {
+                // console.log('applyEdit failed');
+                return false;
+            });
+        } else {
+            q_edit = Promise.resolve(true);
         }
-        return Promise.resolve(true)
+        Promise.all([q_save, q_edit])
             .then(() => {
-                if (q_edit) {
-                    console.log('closing body');
-                    return q_edit;
-                } else {
-                    return Promise.resolve(true);
-                }
-            }).then(() => {
-                console.log('done closing body');
+                // console.log('cleaned both');
                 return this.closeBody();
+            }, () => {
+                // console.log('cleaned both failed');
+                return true;
             });
 
+        return q_save;
     }
 
     /**
@@ -1925,7 +2002,7 @@ export class LeoIntegration {
 
                             } else {
                                 if (this.trace || this.verbose) {
-                                    console.log("no selection in returned package from showtextdocument");
+                                    console.log("no selection in returned package from showTextDocument");
                                 }
                             }
 
@@ -1946,7 +2023,7 @@ export class LeoIntegration {
         // Wait for _isBusyTriggerSave resolve because the full body save may change available commands
         return this._isBusyTriggerSave(false)
             .then((p_saveResult) => {
-                const q_commandList: Thenable<MinibufferCommand[]> = this.sendAction(
+                const q_commandList: Thenable<vscode.QuickPickItem[]> = this.sendAction(
                     Constants.LEOBRIDGE.GET_COMMANDS
                 ).then((p_result: LeoBridgePackage) => {
                     if (p_result.commands && p_result.commands.length) {
@@ -1971,9 +2048,9 @@ export class LeoIntegration {
                         Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
                     );
                 }
-                if (p_picked && p_picked.func) {
+                if (p_picked && p_picked.label) {
                     const w_commandResult = this.nodeCommand({
-                        action: p_picked.func,
+                        action: "-" + p_picked.label, // Adding HYPHEN prefix to specify a command-name
                         node: undefined,
                         refreshType: {
                             tree: true,
@@ -2409,13 +2486,7 @@ export class LeoIntegration {
             return this.nodeCommand({
                 action: w_action,
                 node: undefined,
-                refreshType: {
-                    tree: true,
-                    body: true,
-                    documents: false,
-                    buttons: false,
-                    states: true,
-                },
+                refreshType: { tree: true, body: true, states: true },
                 fromOutline: false,
             }) || Promise.resolve();
         }
@@ -2804,8 +2875,8 @@ export class LeoIntegration {
      * * Clear leointeg's last-opened & recently opened Leo files list
      */
     public clearRecentLeoFiles(): void {
-        this._context.globalState.update(Constants.LAST_FILES_KEY, undefined);
-        this._context.globalState.update(Constants.RECENT_FILES_KEY, undefined);
+        this._context.workspaceState.update(Constants.LAST_FILES_KEY, undefined);
+        this._context.workspaceState.update(Constants.RECENT_FILES_KEY, undefined);
         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLEARED_RECENT);
     }
 
@@ -3072,6 +3143,8 @@ export class LeoIntegration {
      * @returns the launchRefresh promise started after it's done running the 'atButton' command
      */
     public clickAtButton(p_node: LeoButtonNode): Promise<boolean> {
+        console.log('click but');
+
         return this._isBusyTriggerSave(false)
             .then((p_saveResult) => {
                 return this.sendAction(
@@ -3080,6 +3153,7 @@ export class LeoIntegration {
                 );
             })
             .then((p_clickButtonResult: LeoBridgePackage) => {
+                console.log('back from click but');
                 this.launchRefresh(
                     { tree: true, body: true, documents: true, buttons: true, states: true },
                     false

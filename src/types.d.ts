@@ -1,6 +1,11 @@
 import * as vscode from "vscode";
 import { LeoNode } from "./leoNode";
 
+export interface IVsCodeApi {
+    postMessage(msg: {}): void;
+    setState(state: {}): void;
+    getState(): { [key: string]: any };
+}
 /**
  * * Types of the various JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
  */
@@ -39,6 +44,12 @@ export interface ConfigMembers {
     connectToServerAutomatically: boolean;
     connectionAddress: string;
     connectionPort: number;
+
+    setDetached: boolean;
+    setShell: boolean;
+    setCwd: boolean;
+    setPersist: boolean;
+    limitUsers: number
 }
 
 /**
@@ -47,6 +58,11 @@ export interface ConfigMembers {
 export interface ConfigSetting {
     code: string;
     value: any;
+}
+
+export interface FontSettings {
+    zoomLevel: number;
+    fontSize: number;
 }
 
 /**
@@ -160,7 +176,11 @@ export interface LeoBridgePackage {
     len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
-    commands?: MinibufferCommand[]; // getCommands
+    commands?: vscode.QuickPickItem[]; // getCommands
+    commander?: {
+        changed: boolean,
+        fileName: string;
+    }
     filename?: string; // set_opened_file, open_file(s), ?close_file
     files?: LeoDocument[]; // get_all_open_commanders
     focus?: string; // find_next, find_previous
@@ -332,10 +352,3 @@ export interface ChooseDocumentItem extends vscode.QuickPickItem {
     value: number;
 }
 
-/**
- * * Used by the minibuffer command pallette
- * Acquired from the getCommands method in leobridgeserver.py
- */
-export interface MinibufferCommand extends vscode.QuickPickItem {
-    func: string;
-}

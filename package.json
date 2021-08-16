@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "author": {
     "name": "Félix"
   },
@@ -13,7 +13,7 @@
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.58.0"
+    "vscode": "^1.59.0"
   },
   "keywords": [
     "leo",
@@ -26,7 +26,7 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "main": "./dist/extension",
   "icon": "resources/leoapp128px.png",
@@ -251,6 +251,38 @@
           "maximum": 65535,
           "type": "number",
           "description": "Connection port"
+        },
+        "leoIntegration.setDetached": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Starts the server process with the 'detached' flag - Allows a dialog to be shown after closing for unsaved Leo documents"
+        },
+        "leoIntegration.setShell": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Starts the server process with the 'shell' flag - May help with some python installations"
+        },
+        "leoIntegration.setCwd": {
+          "scope": "application",
+          "default": true,
+          "type": "boolean",
+          "description": "Starts the server process with the 'CWD' set to the workspace folder"
+        },
+        "leoIntegration.setPersist": {
+          "scope": "application",
+          "default": false,
+          "type": "boolean",
+          "description": "Sets the persist flag for the server (forces 'detached') to continue after last disconnect"
+        },
+        "leoIntegration.limitUsers": {
+          "default": 1,
+          "scope": "application",
+          "minimum": 1,
+          "maximum": 255,
+          "type": "number",
+          "description": "Limit of concurrent connections - Allows for multi-user synchronous editing"
         }
       }
     },
@@ -611,7 +643,7 @@
       },
       {
         "command": "leointeg.showSettingsPage",
-        "title": "Open Settings",
+        "title": "LeoInteg Settings",
         "category": "Leo",
         "icon": {
           "light": "resources/light/gear.svg",
@@ -631,7 +663,20 @@
       {
         "command": "leointeg.startServer",
         "category": "Leo",
-        "title": "Start Leo Bridge Server"
+        "title": "Start Leo Bridge Server",
+        "icon": {
+          "light": "resources/light/start-server.svg",
+          "dark": "resources/dark/start-server.svg"
+        }
+      },
+      {
+        "command": "leointeg.stopServer",
+        "category": "Leo",
+        "title": "Stop Leo Bridge Server",
+        "icon": {
+          "light": "resources/light/close-server.svg",
+          "dark": "resources/dark/close-server.svg"
+        }
       },
       {
         "command": "leointeg.connectToServer",
@@ -1783,6 +1828,10 @@
           "when": "!leoBridgeReady && !leoTreeOpened && !leoServerStarted"
         },
         {
+          "command": "leointeg.stopServer",
+          "when": "leoServerStarted"
+        },
+        {
           "command": "leointeg.connectToServer",
           "when": "!leoBridgeReady && !leoTreeOpened"
         },
@@ -2368,6 +2417,11 @@
       ],
       "editor/title": [
         {
+          "command": "leointeg.showSettingsPage",
+          "when": "resourceScheme == leo",
+          "group": "2_custom"
+        },
+        {
           "command": "leointeg.prev",
           "when": "resourceScheme == leo && leoTreeOpened",
           "group": "navigation@1"
@@ -2378,93 +2432,93 @@
           "group": "navigation@2"
         },
         {
-          "command": "leointeg.cloneNodeSelection",
-          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@3"
-        },
-        {
-          "command": "leointeg.deleteSelection",
-          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@4"
-        },
-        {
-          "command": "leointeg.insertNodeSelection",
-          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@5"
-        },
-        {
-          "command": "leointeg.insertChildNodeSelection",
-          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@6"
-        },
-        {
-          "command": "leointeg.cutNodeSelection",
-          "when": "showClipboardOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@7"
-        },
-        {
-          "command": "leointeg.copyNodeSelection",
-          "when": "showClipboardOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@8"
-        },
-        {
-          "command": "leointeg.pasteNodeAtSelection",
-          "when": "showClipboardOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@9"
-        },
-        {
-          "command": "leointeg.pasteNodeAsCloneAtSelection",
-          "when": "showClipboardOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@10"
-        },
-        {
-          "command": "leointeg.promoteSelection",
-          "when": "showPromoteOnBody && leoCanPromote && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@11"
-        },
-        {
-          "command": "leointeg.demoteSelection",
-          "when": "showPromoteOnBody && leoCanDemote && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@12"
-        },
-        {
-          "command": "leointeg.markSelection",
-          "when": "showMarkOnBody && !leoMarked  && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@13"
-        },
-        {
-          "command": "leointeg.unmarkSelection",
-          "when": "showMarkOnBody && leoMarked  && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@14"
-        },
-        {
-          "command": "leointeg.sortSiblingsSelection",
-          "when": "showSortOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@15"
-        },
-        {
           "command": "leointeg.hoistSelection",
           "when": "showHoistOnBody && !leoRoot && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@16"
+          "group": "navigation@3"
         },
         {
           "command": "leointeg.deHoist",
           "when": "showHoistOnBody && leoCanDehoist && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@17"
+          "group": "navigation@4"
+        },
+        {
+          "command": "leointeg.promoteSelection",
+          "when": "showPromoteOnBody && leoCanPromote && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@5"
+        },
+        {
+          "command": "leointeg.demoteSelection",
+          "when": "showPromoteOnBody && leoCanDemote && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@6"
         },
         {
           "command": "leointeg.executeScript",
           "when": "showExecuteOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@18"
+          "group": "navigation@7"
         },
         {
           "command": "leointeg.extract",
           "when": "showExtractOnBody && resourceScheme == leo && leoTreeOpened",
-          "group": "navigation@19"
+          "group": "navigation@8"
         },
         {
           "command": "leointeg.extractNames",
           "when": "showExtractOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@9"
+        },
+        {
+          "command": "leointeg.cloneNodeSelection",
+          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@10"
+        },
+        {
+          "command": "leointeg.insertNodeSelection",
+          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@11"
+        },
+        {
+          "command": "leointeg.insertChildNodeSelection",
+          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@12"
+        },
+        {
+          "command": "leointeg.deleteSelection",
+          "when": "showEditionOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@13"
+        },
+        {
+          "command": "leointeg.cutNodeSelection",
+          "when": "showClipboardOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@14"
+        },
+        {
+          "command": "leointeg.copyNodeSelection",
+          "when": "showClipboardOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@15"
+        },
+        {
+          "command": "leointeg.pasteNodeAtSelection",
+          "when": "showClipboardOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@16"
+        },
+        {
+          "command": "leointeg.pasteNodeAsCloneAtSelection",
+          "when": "showClipboardOnBody && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@17"
+        },
+        {
+          "command": "leointeg.markSelection",
+          "when": "showMarkOnBody && !leoMarked  && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@18"
+        },
+        {
+          "command": "leointeg.unmarkSelection",
+          "when": "showMarkOnBody && leoMarked  && resourceScheme == leo && leoTreeOpened",
+          "group": "navigation@19"
+        },
+        {
+          "command": "leointeg.sortSiblingsSelection",
+          "when": "showSortOnBody && resourceScheme == leo && leoTreeOpened",
           "group": "navigation@20"
         },
         {
@@ -2519,7 +2573,7 @@
         {
           "command": "leointeg.showSettingsPage",
           "when": "view =~ /leoIntegration/ && !leoTreeOpened",
-          "group": "navigation@1"
+          "group": "navigation@2"
         },
         {
           "command": "leointeg.clearRecentFiles",
@@ -2529,6 +2583,16 @@
         {
           "command": "leointeg.connectToServer",
           "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.startServer",
+          "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened && !leoServerStarted",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.stopServer",
+          "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened && leoServerStarted",
           "group": "navigation@1"
         },
         {
@@ -3254,7 +3318,7 @@
         "command": "leointeg.startSearch",
         "key": "ctrl+f",
         "mac": "cmd+f",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && !editorFocus && !editorTextFocus && focusedView =~ /^leo/"
       },
       {
         "command": "leointeg.startSearch",
@@ -3435,6 +3499,16 @@
         "key": "ctrl+alt+h",
         "mac": "cmd+alt+h",
         "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "workbench.files.action.collapseExplorerFolders",
+        "key": "alt+-",
+        "when": "!inSearchEditor && !sideBarFocus && resourceScheme != leo"
+      },
+      {
+        "command": "workbench.files.action.collapseExplorerFolders",
+        "key": "alt+-",
+        "when": "!inSearchEditor && explorerViewletFocus"
       }
     ],
     "resourceLabelFormatters": [
@@ -3459,7 +3533,7 @@
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.58.0",
+    "@types/vscode": "^1.59.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",

@@ -43,15 +43,15 @@ export function hashNode(p_ap: ArchivedPosition, p_salt: string, p_withCollapse?
 }
 
 /**
- * * Performs the actual addition into globalState context
- * @param p_context Needed to get to vscode global storage
+ * * Performs the actual addition into workspaceState context
+ * @param p_context Needed to get to vscode workspace storage
  * @param p_file path+file name string
  * @param p_key A constant string such as RECENT_FILES_KEY or LAST_FILES_KEY
- * @returns A promise that resolves when the global storage modification is done
+ * @returns A promise that resolves when the workspace storage modification is done
  */
-export function addFileToGlobal(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable<void> {
-    // Just push that string into the context.globalState.<something> array
-    const w_contextEntry: string[] = p_context.globalState.get(p_key) || [];
+export function addFileToWorkspace(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable<void> {
+    // Just push that string into the context.workspaceState.<something> array
+    const w_contextEntry: string[] = p_context.workspaceState.get(p_key) || [];
     if (w_contextEntry) {
         if (!w_contextEntry.includes(p_file)) {
             w_contextEntry.push(p_file);
@@ -59,26 +59,26 @@ export function addFileToGlobal(p_context: vscode.ExtensionContext, p_file: stri
                 w_contextEntry.shift();
             }
         }
-        return p_context.globalState.update(p_key, w_contextEntry); // Added file
+        return p_context.workspaceState.update(p_key, w_contextEntry); // Added file
     } else {
         // First so create key entry with an array of single file
-        return p_context.globalState.update(p_key, [p_file]);
+        return p_context.workspaceState.update(p_key, [p_file]);
     }
 }
 
 /**
- * * Removes file entry from globalState context
- * @param p_context Needed to get to vscode global storage
+ * * Removes file entry from workspaceState context
+ * @param p_context Needed to get to vscode workspace storage
  * @param p_file path+file name string
  * @param p_key A constant string such as RECENT_FILES_KEY or LAST_FILES_KEY
- * @returns A promise that resolves when the global storage modification is done
+ * @returns A promise that resolves when the workspace storage modification is done
   */
-export function removeFileFromGlobal(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable<void> {
-    // Check if exist in context.globalState.<something> and remove if found
-    const w_files: string[] = p_context.globalState.get(p_key) || [];
+export function removeFileFromWorkspace(p_context: vscode.ExtensionContext, p_file: string, p_key: string): Thenable<void> {
+    // Check if exist in context.workspaceState.<something> and remove if found
+    const w_files: string[] = p_context.workspaceState.get(p_key) || [];
     if (w_files && w_files.includes(p_file)) {
         w_files.splice(w_files.indexOf(p_file), 1); // Splice and update
-        return p_context.globalState.update(p_key, w_files);
+        return p_context.workspaceState.update(p_key, w_files);
     }
     return Promise.resolve(); // not even in list so just resolve
 }

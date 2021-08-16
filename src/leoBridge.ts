@@ -22,6 +22,8 @@ export class LeoBridge {
     private _websocket: WebSocket | null = null;
     private _leoAsync: LeoAsync;
 
+    private _receivedTotal: number = 0;
+
     // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
     // private _hasbin = require('hasbin');
 
@@ -75,6 +77,10 @@ export class LeoBridge {
                     this._leoAsync.log(w_parsedData.log);
                     break;
                 }
+                case Constants.ASYNC_ACTIONS.ASYNC_REFRESH: {
+                    this._leoAsync.refresh(w_parsedData.action);
+                    break;
+                }
                 case Constants.ASYNC_ACTIONS.ASYNC_ASK: {
                     this._leoAsync.showAskModalDialog(w_parsedData);
                     break;
@@ -117,12 +123,16 @@ export class LeoBridge {
      * * Resolves promises with the answers from an action that was finished
      * @param p_object Parsed data that was given as the answer by the Leo command that finished
      */
-    private _resolveBridgeReady(p_object: string) {
+    private _resolveBridgeReady(p_object: any) {
         let w_bottomAction = this._callStack.shift();
         if (w_bottomAction) {
             if (w_bottomAction.deferredPayload) {
                 // Used when the action already has a return value ready but is also waiting for python's side
-                w_bottomAction.resolveFn(w_bottomAction.deferredPayload); // given back 'as is'
+                // We check if it's really the initial first, then replace the id and pass the results.
+                if (w_bottomAction.deferredPayload.id === Constants.STARTING_PACKAGE_ID) {
+                    p_object.id = Constants.STARTING_PACKAGE_ID;
+                }
+                w_bottomAction.resolveFn(p_object); // given back with id=1 !
             } else {
                 w_bottomAction.resolveFn(p_object);
             }
@@ -193,7 +203,7 @@ export class LeoBridge {
     }
 
     /**
-     * * Create a websocket connection to leoserver on
+     * * Create a websocket connection to a Leo server
      * @param p_port facultative port number to override config port
      * @returns A promise for a LeoBridgePackage object containing only an 'id' member of 1 that will resolve when the 'leoBridge' is established
      */
@@ -206,6 +216,7 @@ export class LeoBridge {
         );
         // * Capture the python process output
         this._websocket.onmessage = (p_event) => {
+            this._receivedTotal++;
             if (p_event.data) {
                 this._processAnswer(p_event.data.toString());
             }
@@ -215,7 +226,10 @@ export class LeoBridge {
         };
         this._websocket.onclose = (p_event: WebSocket.CloseEvent) => {
             // * Disconnected from server
-            console.log(`Websocket closed, code: ${p_event.code}`);
+            // console.log(`Websocket closed, code: ${p_event.code}`);
+            if (!this._leoIntegration.activated) {
+                return;
+            }
             this._rejectAction(`Websocket closed, code: ${p_event.code}`);
             // TODO : Implement a better connection error handling
             if (this._leoIntegration.leoStates.leoBridgeReady) {
@@ -225,6 +239,18 @@ export class LeoBridge {
         // * Start first with 'preventCall' set to true: no need to call anything for the first 'ready'
         this._readyPromise = this.action("", "", { id: Constants.STARTING_PACKAGE_ID }, true);
         return this._readyPromise; // This promise will resolve when the started python process starts
+    }
+
+    /**
+     * * Closes the websocket connection
+     */
+    public closeLeoProcess(): void {
+        if (this._websocket) {
+            this._websocket.close(1001, "Quitting LeoInteg");
+            // console.log('websocket closed');
+        } else {
+            // console.warn('LeoInteg websocket close called without websocket active');
+        }
     }
 
     /**

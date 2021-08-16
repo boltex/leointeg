@@ -1,14 +1,8 @@
 import { initializeAndWatchThemeColors } from './theme';
 import { debounce } from "debounce";
-import { ConfigSetting } from '../../types';
+import { ConfigSetting, IVsCodeApi } from '../../types';
 
-interface VsCodeApi {
-    postMessage(msg: {}): void;
-    setState(state: {}): void;
-    getState(): { [key: string]: any };
-}
-
-declare function acquireVsCodeApi(): VsCodeApi;
+declare function acquireVsCodeApi(): IVsCodeApi;
 
 (function () {
     const vscode = acquireVsCodeApi();
@@ -33,9 +27,13 @@ declare function acquireVsCodeApi(): VsCodeApi;
     // Global variable config
     let frontConfig: { [key: string]: any } = {};
     let vscodeConfig: { [key: string]: any } = {};
+    let vscodeFontConfig: { [key: string]: any } = {};
+    let frontFontConfig: { [key: string]: any } = {};
 
     vscodeConfig = (window as any).leoConfig; // ! PRE SET BY leoSettingsWebview
     frontConfig = JSON.parse(JSON.stringify(vscodeConfig));
+    vscodeFontConfig = (window as any).fontConfig; // ! PRE SET BY leoSettingsWebview
+    frontFontConfig = JSON.parse(JSON.stringify(vscodeFontConfig));
 
     // Handle messages sent from the extension to the webview
     window.addEventListener("message", event => {
@@ -55,6 +53,14 @@ declare function acquireVsCodeApi(): VsCodeApi;
                     toast!.className = "show";
                     setTimeout(function () { toast!.className = toast!.className.replace("show", ""); }, 1500);
                     vscodeConfig = message.config; // next changes will be confronted to those settings
+                    break;
+                case "newFontConfig":
+                    vscodeFontConfig = message.config;
+                    frontFontConfig = JSON.parse(JSON.stringify(message.config));
+                    setFontControls();
+                    break;
+                case "vscodeFontConfig":
+                    vscodeFontConfig = message.config; // next changes will be confronted to those settings
                     break;
                 case "newEditorPath":
                     const w_element: HTMLElement | null = document.getElementById("leoEditorPath");
@@ -107,6 +113,11 @@ declare function acquireVsCodeApi(): VsCodeApi;
         listenAll('select[data-setting]', 'change', function (this: HTMLSelectElement) {
             return onDropdownChanged(this);
         });
+        listenAll('input[type=number][data-vscode]', 'input', function (
+            this: HTMLInputElement
+        ) {
+            return onVscodeInputChanged(this);
+        });
     }
 
     function onDropdownChanged(element: HTMLSelectElement) {
@@ -144,7 +155,33 @@ declare function acquireVsCodeApi(): VsCodeApi;
         applyChanges();
     }
 
+    function onVscodeInputChanged(element: HTMLInputElement) {
+        if (element.id === "zoomLevel") {
+            frontFontConfig.zoomLevel = element.valueAsNumber;
+        }
+        if (element.id === "editorFontSize") {
+            frontFontConfig.fontSize = element.valueAsNumber;
+        }
+        applyFontChanges();
+    }
+
+    function setFontControls(): void {
+        if (frontFontConfig.zoomLevel || frontFontConfig.zoomLevel === 0) {
+            const w_element = document.getElementById("zoomLevel");
+            (w_element as HTMLInputElement).valueAsNumber = Number(frontFontConfig.zoomLevel);
+        } else {
+            console.log('Error : vscode font setting "zoomLevel" is missing');
+        }
+        if (frontFontConfig.fontSize) {
+            const w_element = document.getElementById("editorFontSize");
+            (w_element as HTMLInputElement).valueAsNumber = Number(frontFontConfig.fontSize);
+        } else {
+            console.log('Error : vscode font setting "fontSize" is missing');
+        }
+    }
+
     function setControls(): void {
+        // 1- Set leointeg's own configuration settings
         for (const key in frontConfig) {
             if (frontConfig.hasOwnProperty(key)) {
                 const w_element = document.getElementById(key);
@@ -156,10 +193,6 @@ declare function acquireVsCodeApi(): VsCodeApi;
                     console.log('ERROR : w_element', key, ' is ', w_element);
                 }
             }
-        }
-        const w_button: HTMLElement | null = document.getElementById('chooseLeoEditorPath');
-        if (w_button) {
-            w_button.onclick = chooseLeoEditorPath;
         }
     }
 
@@ -243,8 +276,21 @@ declare function acquireVsCodeApi(): VsCodeApi;
         }
     }, 1500);
 
+    var applyFontChanges = debounce(function () {
+        vscode.postMessage({
+            command: "fontConfig",
+            changes: frontFontConfig
+        });
+    }, 800);
+
+
     // * START
+    const w_button: HTMLElement | null = document.getElementById('chooseLeoEditorPath');
+    if (w_button) {
+        w_button.onclick = chooseLeoEditorPath;
+    }
     setControls();
+    setFontControls();
     setVisibility(frontConfig);
     onBind();
 

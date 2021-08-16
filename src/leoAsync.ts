@@ -30,6 +30,15 @@ export class LeoAsync {
     }
 
     /**
+     * * Server announced the multi-user content changed: Debounce a refresh cycle.
+     * The 'action' string can be checked to determine what kind, if any, is required.
+     */
+    public refresh(p_action: string): void {
+        // console.log('REFRESH', p_action);
+        this._leoIntegration.refreshAll();
+    }
+
+    /**
      * * Equivalent to runSaveFileDialog from Leo's qt_gui.py, used when leoBridge gets an async 'ask' command
      * @param p_saveAsArg
      */
@@ -130,6 +139,7 @@ export class LeoAsync {
         }
         vscode.window.showInformationMessage(w_message);
     }
+
 
 }
 

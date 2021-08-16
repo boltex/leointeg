@@ -1,4 +1,4 @@
-# ![LeoEditor](resources/leoapp.png) Leo for VS Code
+# ![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for VS Code
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
@@ -10,7 +10,7 @@
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
 or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.visualstudio.com](https://code.visualstudio.com/).
 
-![Screenshot](resources/animated-screenshot.gif)
+![Screenshot](https://raw.githubusercontent.com/boltex/leointeg/master/resources/animated-screenshot.gif)
 
 ## Requirements
 
@@ -49,7 +49,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
   - Clipboard operations
   - Undo/Redo commands
 
-![Menu](resources/context-hover-menus.png)
+![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
 ## Keybindings
 
@@ -109,13 +109,13 @@ Use the **Save Leo File** command to derive external files.
 
 Leo will detect derived file changes and will ask to either **refresh from disk** or **ignore the changes**.
 
-![derive files](resources/derived-file.gif)
+![derive files](https://raw.githubusercontent.com/boltex/leointeg/master/resources/derived-file.gif)
 
 ## Automate Synchronization
 
 The **change detection** process can be automated to always refresh, or ignore file changes: A **notification** will inform you of the action taken instead.
 
-![auto sync](resources/auto-sync.gif)
+![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/auto-sync.gif)
 
 ## Status Bar Indicator
 
@@ -123,7 +123,7 @@ A customizable keyboard status bar indicator is shown when this extension is act
 It will turn orange (or your choice of text and color), when leo's **keyboard shortcuts** are active.
 This occurs when an outline node or a body pane has focus:
 
-![Statusbar](resources/statusbar-keyboard.gif)
+![Statusbar](https://raw.githubusercontent.com/boltex/leointeg/master/resources/statusbar-keyboard.gif)
 
 ## Extension Settings
 
@@ -138,7 +138,7 @@ This occurs when an outline node or a body pane has focus:
 - Hide or show the "Open on the side" command in the context menu to open a node beside the active editor
 - Set preferences for setting the address and port, and for automatically starting, and/or connecting, to a Leo Bridge server.
 
-![Settings](resources/welcome-settings.gif)
+![Settings](https://raw.githubusercontent.com/boltex/leointeg/master/resources/welcome-settings.gif)
 
 ## Issues
 
@@ -181,6 +181,8 @@ The outline pane is made by implementing a [TreeDataProvider for vscode's TreeVi
 - [Eric Amodio](https://github.com/eamodio) for the [welcome screen templates](https://github.com/eamodio/vscode-gitlens/tree/master/src/webviews)
 - [Vitalije](https://github.com/vitalije) for his contributions and support
 - [Arjan](https://github.com/ar-jan) for his suggestions and ideas
+- [Thomas](https://github.com/tbpassin) for his contributions and support
+- [Viktor](https://github.com/ranvik14) for his contributions and support
 
 ---
 

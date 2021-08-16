@@ -45,6 +45,8 @@ export class Constants {
     public static STARTING_PACKAGE_ID: number = 1;
     public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
     public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
+    public static BUTTONS_DEBOUNCE_DELAY: number = 80;
+    public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
     public static STATES_DEBOUNCE_DELAY: number = 100;
 
     /**
@@ -97,17 +99,14 @@ export class Constants {
      * * Basic user messages strings for messages and dialogs
      */
     public static USER_MESSAGES = {
-        SCRIPT_BUTTON: "Creates a button from selected node's script",
+        SCRIPT_BUTTON: "Creates a button from selected node",
         SCRIPT_BUTTON_TOOLTIP:
-            "The 'Script Button' button creates a new button.\n" +
-            "Its name will be the headline of the presently selected node\n" +
-            "Hitting this newly created button executes the button's script.\n" +
-            "\n" +
+            "Creates a new button with the presently selected node.\n" +
             "For example, to run a script on any part of an outline:\n" +
             "\n" +
-            "1.  Select the node containing a script. (Ex.: \"g.es(p.h)\")\n" +
-            "2.  Press 'Script Button'. This will create a new button.\n" +
-            "3.  Select a node on which you want to run the script.\n" +
+            "1.  Select the node containing a script. e.g. \"g.es(p.h)\"\n" +
+            "2.  Press 'Script Button' to create a new button.\n" +
+            "3.  Select another node on which to run the script.\n" +
             "4.  Press the *new* button.",
         SAVE_CHANGES: "Save changes to",
         BEFORE_CLOSING: "before closing?",
@@ -237,6 +236,12 @@ export class Constants {
         AUTO_CONNECT: "connectToServerAutomatically",
         IP_ADDRESS: "connectionAddress",
         IP_PORT: "connectionPort",
+
+        SET_DETACHED: "setDetached",
+        SET_SHELL: "setShell",
+        SET_CWD: "setCwd",
+        SET_PERSIST: "setPersist",
+        LIMIT_USERS: "limitUsers"
     };
 
     /**
@@ -278,7 +283,13 @@ export class Constants {
         AUTO_CONNECT: false,
         IP_ADDRESS: "localhost",
         IP_LOOPBACK: "127.0.0.1",
-        IP_PORT: 32125
+        IP_PORT: 32125,
+
+        SET_DETACHED: true,
+        SET_SHELL: false,
+        SET_CWD: true,
+        SET_PERSIST: false,
+        LIMIT_USERS: 1
     };
 
     /**
@@ -360,6 +371,7 @@ export class Constants {
      */
     public static ASYNC_ACTIONS = {
         ASYNC_LOG: "log",
+        ASYNC_REFRESH: "refresh",
         ASYNC_ASK: "ask",
         ASYNC_WARN: "warn",
         ASYNC_INFO: "info",
@@ -497,8 +509,8 @@ export class Constants {
         CLONE_FIND_TAG: "!clone_find_tag",
         CLONE_FIND_ALL: "!clone_find_all",
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
-        CLONE_FIND_MARKED: "cloneFindAllMarked", // * Direct Leo Command
-        CLONE_FIND_FLATTENED_MARKED: "cloneFindAllFlattenedMarked", // * Direct Leo Command
+        CLONE_FIND_MARKED: "!clone_find_all_marked",
+        CLONE_FIND_FLATTENED_MARKED: "!clone_find_all_flattened_marked",
         GOTO_PREV_HISTORY: "goToPrevHistory", // * Direct Leo Command
         GOTO_NEXT_HISTORY: "goToNextHistory" // * Direct Leo Command
     };
@@ -514,6 +526,7 @@ export class Constants {
         // * LeoBridge
         CHOOSE_LEO_FOLDER: Constants.NAME + ".chooseLeoFolder",
         START_SERVER: Constants.NAME + ".startServer",
+        STOP_SERVER: Constants.NAME + ".stopServer",
         CONNECT: Constants.NAME + ".connectToServer",
         SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
         OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
@@ -530,7 +543,7 @@ export class Constants {
         CLICK_BUTTON: Constants.NAME + ".clickButton",
         REMOVE_BUTTON: Constants.NAME + ".removeButton",
         MINIBUFFER: Constants.NAME + ".minibuffer",
-        GIT_DIFF: Constants.NAME + ".gitDiff", // TODO : Test & Fix this Proof of concept leoCommand
+        GIT_DIFF: Constants.NAME + ".gitDiff",
         // * Outline selection
         SELECT_NODE: Constants.NAME + ".selectTreeNode",
         OPEN_ASIDE: Constants.NAME + ".openAside",
