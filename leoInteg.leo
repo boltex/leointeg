@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20210816230003.1"><vh>0.1.17</vh></v>
 <v t="felix.20210725153617.1"><vh>0.1.16</vh></v>
 <v t="felix.20210718163005.1"><vh>0.1.15</vh></v>
 <v t="felix.20210612000127.1"><vh>0.1.14</vh></v>
@@ -2026,7 +2027,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "author": {
     "name": "Félix"
   },
@@ -5688,7 +5689,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         w_leo.startNetworkServices();
         // Save version # for next startup comparison
         p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-        console.log('leoInteg 0.1.17.01 startup launched in ', utils.getDurationMs(w_start), 'ms');
+        console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
     });
 }
 
@@ -7994,14 +7995,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 @tabwidth -4
 # Change Log
 
-## 0.1.17
-
-- Saves recently opened Leo files list per workspace, instead of globally.
-- Changed the default visible command icons above the body pane. Also makes sure 'settings' is visible.
-- Added global zoom level and editor font-size in the LeoInteg settings panel to help change the body &amp; outline font sizes.
-- Server now opens modal dialogs for saving dirty documents on exit.
-- Added experimental server option settings (cwd, shell, detach) to help with various python setups.
-- Server now started with a CWD of the current workspace by default (fixes git-diff).
+## 0.1.18
 
 @others
 </t>
@@ -13150,6 +13144,16 @@ private _bodySaveDeactivate(
   "when": "!inSearchEditor &amp;&amp; explorerViewletFocus"
 }
 </t>
+<t tx="felix.20210816230003.1">## 0.1.17
+
+- Saves recently opened Leo files list per workspace, instead of globally.
+- Changed the default visible command icons above the body pane. Also makes sure 'settings' is visible.
+- Added global zoom level and editor font-size in the LeoInteg settings panel to help change the body &amp; outline font sizes.
+- Server now opens modal dialogs for saving dirty documents on exit.
+- Added experimental server option settings (cwd, shell, detach) to help with various python setups.
+- Server now started with a CWD of the current workspace by default (fixes git-diff).
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -14053,13 +14057,13 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 0.1.17&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 0.1.18&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 0.1.17
+            See What's New in LeoInteg 0.1.18
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
@@ -15066,7 +15070,7 @@ declare function acquireVsCodeApi(): IVsCodeApi;
 </t>
 <t tx="fil.20210603223933.9">&lt;!DOCTYPE html&gt;
 @others
-@language xml
+@language html
 @tabwidth -2
 </t>
 <t tx="fil.20210603223934.1">function listenAll(selector: string, name: string, listener: EventListener) {

@@ -1,5 +1,7 @@
 # Change Log
 
+## 0.1.18
+
 ## 0.1.17
 
 - Saves recently opened Leo files list per workspace, instead of globally.
