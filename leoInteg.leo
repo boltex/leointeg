@@ -8393,9 +8393,11 @@ On Linux:
 </t>
 <t tx="felix.20200718222754.1">## The python server script
 
-- This extension needs the **`leobridgeserver.py`** script to be running. That is where the two extra extension requirements come into play:
-  - Having [Leo's path made available in the \$PYTHONPATH environment variable](https://docs.python.org/2/using/windows.html#excursus-setting-environment-variables) ([More info](https://docs.python.org/2/using/cmdline.html#environment-variables))
-  - Having the [Websocket Python Library installed](https://websockets.readthedocs.io/en/stable/intro.html)
+- This extension needs the **`leobridgeserver.py`** or the **`leoserver.py`** script to be running from Leo's own installation folder. That is where the two extra extension requirements come into play:
+
+## Server Script Requirement
+
+- Having the [Websocket Python Library installed](https://websockets.readthedocs.io/en/stable/intro.html)
 
 ### 3 ways to start the server script
 
@@ -14137,7 +14139,7 @@ body &gt; div &gt; div &gt; label:active {
         &lt;/p&gt;
         &lt;h2 class="section__title section__title--break"&gt;&lt;/h2&gt;
         &lt;p class="section__hint mt-0 center"&gt;
-          Automate the &lt;a href="#leobridge-options"&gt;leoBridge startup&lt;/a&gt;,
+          Automate the &lt;a href="#leobridge-options"&gt;Leo server startup&lt;/a&gt;,
           auto-refresh when &lt;a href="#external-files"&gt;external files change&lt;/a&gt;,
           or choose which &lt;a href="#node-commands"&gt;node icons&lt;/a&gt;
           are shown and more with the options below.
@@ -14149,7 +14151,7 @@ body &gt; div &gt; div &gt; label:active {
         &lt;div class="section__content"&gt;
           &lt;div class="section__header"&gt;
             &lt;h2&gt;
-              Leo Bridge Options
+              Leo Server Options
             &lt;/h2&gt;
           &lt;/div&gt;
           &lt;div class="settings"&gt;
@@ -14161,7 +14163,7 @@ body &gt; div &gt; div &gt; label:active {
                        data-setting /&gt;
                 &lt;label for="startServerAutomatically"&gt;Start&amp;nbsp;Server&lt;/label&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Run the leobridgeserver.py server script at startup&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;Run the leoserver.py server script at startup&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
@@ -14171,7 +14173,7 @@ body &gt; div &gt; div &gt; label:active {
                        data-setting /&gt;
                 &lt;label for="connectToServerAutomatically"&gt;Connect&amp;nbsp;to&amp;nbsp;Server&lt;/label&gt;
               &lt;/div&gt;
-              &lt;span class="setting__hint"&gt;Connects automatically to a LeoBridge server&lt;/span&gt;
+              &lt;span class="setting__hint"&gt;Connects automatically to a Leo server&lt;/span&gt;
             &lt;/div&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
@@ -14230,7 +14232,6 @@ body &gt; div &gt; div &gt; label:active {
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Connection host port number&lt;/span&gt;
             &lt;/div&gt;
-
 
             &lt;fieldset&gt;
               &lt;legend&gt;Experimental Features&lt;/legend&gt;
@@ -14293,7 +14294,6 @@ body &gt; div &gt; div &gt; label:active {
               &lt;/div&gt;
 
             &lt;/fieldset&gt;
-
 
           &lt;/div&gt;
         &lt;/div&gt;
@@ -14854,7 +14854,7 @@ body &gt; div &gt; div &gt; label:active {
         &lt;h2&gt;Configuration&lt;/h2&gt;
         &lt;ul&gt;
           &lt;li&gt;
-            &lt;a href="#leobridge-options"&gt;LeoBridge Options&lt;/a&gt;
+            &lt;a href="#leobridge-options"&gt;Leo server Options&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
             &lt;a href="#external-files"&gt;External Files&lt;/a&gt;
