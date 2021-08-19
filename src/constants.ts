@@ -411,6 +411,7 @@ export class Constants {
      */
     public static LEOBRIDGE = {
         TEST: "!test",
+        DO_NOTHING: "!do_nothing",
         // * Server Commands
         GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
         APPLY_CONFIG: "!set_config", // "applyConfig",
@@ -689,6 +690,7 @@ export class Constants {
         TOGGLE_FIND_WORD_OPTION: Constants.NAME + ".toggleFindWordOption",
         TOGGLE_FIND_SEARCH_BODY_OPTION: Constants.NAME + ".toggleFindSearchBodyOption",
         TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
+        SET_ENABLE_PREVIEW: Constants.NAME + ".setEnablePreview",
     };
 
     /**

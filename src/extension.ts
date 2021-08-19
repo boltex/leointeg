@@ -663,6 +663,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.TOGGLE_FIND_WORD_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.WHOLE_WORD)],
         [CMD.TOGGLE_FIND_SEARCH_BODY_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_BODY)],
         [CMD.TOGGLE_FIND_SEARCH_HEADLINE_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_HEADLINE)],
+
+        [CMD.SET_ENABLE_PREVIEW, () => w_leo.config.setEnablePreview()],
     ];
 
     w_commands.map(function (p_command) {
@@ -670,6 +672,9 @@ export function activate(p_context: vscode.ExtensionContext) {
     });
 
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() => {
+        // if setting for preview mode enabled is false then show popup
+        w_leo.config.checkEnablePreview();
+
         // Start server and/or connect to it, as per user settings
         w_leo.startNetworkServices();
         // Save version # for next startup comparison

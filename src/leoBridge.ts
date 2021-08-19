@@ -78,7 +78,7 @@ export class LeoBridge {
                     break;
                 }
                 case Constants.ASYNC_ACTIONS.ASYNC_REFRESH: {
-                    this._leoAsync.refresh(w_parsedData.action);
+                    this._leoAsync.refresh(w_parsedData);
                     break;
                 }
                 case Constants.ASYNC_ACTIONS.ASYNC_ASK: {

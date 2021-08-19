@@ -147,7 +147,7 @@ export class ServerService {
             const w_options: child.SpawnOptions = {
                 // Child to run independently of its parent process. Depends on the platform.
                 detached: this._leoIntegration.config.setDetached || this._leoIntegration.config.setPersist,
-
+                windowsHide: true,
                 // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
                 shell: this._leoIntegration.config.setShell
             };
@@ -176,9 +176,10 @@ export class ServerService {
             }
 
             if (this._leoIntegration.config.setShell) {
+                w_pythonPath = w_pythonPath + " >1"; // ! TEST ! -----------------------
                 // TODO : Other modifications to support shell flag
                 w_options.stdio = ['inherit', 'inherit', 'inherit'];
-                // w_options.stdio = ['inherit', 'pipe', 'pipe'];
+                // w_options.stdio = ['pipe', 'pipe', 'pipe'];
                 // w_options.stdio ['pipe', process.stdout, process.stderr];
             }
 
@@ -265,7 +266,6 @@ export class ServerService {
     private _processServerOutput(p_data: string): void {
         let w_dataString = p_data.toString().replace(/\n$/, ""); // remove last
         w_dataString.toString().split("\n").forEach(p_line => {
-
             if (true || p_line) { // ? std out process line by line: json shouldn't have line breaks
                 if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
                     if (this._resolvePromise && !this._isStarted) {

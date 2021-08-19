@@ -189,6 +189,36 @@ export class Config implements ConfigMembers {
     }
 
     /**
+    * * Set the "workbench.editor.enablePreview" vscode setting
+    */
+    public setEnablePreview(): Thenable<void> {
+        // workbench.editor.enablePreview
+        return vscode.workspace.getConfiguration("workbench.editor")
+            .update("enablePreview", true, true);
+    }
+
+    /**
+     * * Check if the preview mode flag is set
+     */
+    public checkEnablePreview(): void {
+        // workbench.editor.enablePreview
+        let w_result: any = true;
+        const w_setting = vscode.workspace.getConfiguration("workbench.editor");
+        if (w_setting.inspect("enablePreview")!.globalValue === undefined) {
+            w_result = w_setting.inspect("enablePreview")!.defaultValue;
+        } else {
+            w_result = w_setting.inspect("enablePreview")!.globalValue;
+        }
+        if (w_result === false) {
+            vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Enable Previews")
+                .then(p_chosenButton => {
+                    if (p_chosenButton === "Enable Previews") {
+                        vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
+                    }
+                });
+        }
+    }
+    /**
      * * Build config from settings from vscode's saved config settings
      */
     public buildFromSavedSettings(): void {

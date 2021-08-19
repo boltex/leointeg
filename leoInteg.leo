@@ -191,6 +191,8 @@
 <v t="felix.20210727224122.1"><vh>getFontConfig</vh></v>
 <v t="felix.20200718030926.4"><vh>setLeoIntegSettings</vh></v>
 <v t="felix.20210727224135.1"><vh>setFontConfig</vh></v>
+<v t="felix.20210818223534.1"><vh>setEnablePreview</vh></v>
+<v t="felix.20210818225820.1"><vh>checkEnablePreview</vh></v>
 <v t="felix.20200718030926.5"><vh>buildFromSavedSettings</vh></v>
 </v>
 </v>
@@ -1326,7 +1328,6 @@ public removeAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
 private _processServerOutput(p_data: string): void {
     let w_dataString = p_data.toString().replace(/\n$/, ""); // remove last
     w_dataString.toString().split("\n").forEach(p_line =&gt; {
-
         if (true || p_line) { // ? std out process line by line: json shouldn't have line breaks
             if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
                 if (this._resolvePromise &amp;&amp; !this._isStarted) {
@@ -2005,6 +2006,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.TOGGLE_FIND_WORD_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.WHOLE_WORD)],
 [CMD.TOGGLE_FIND_SEARCH_BODY_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_BODY)],
 [CMD.TOGGLE_FIND_SEARCH_HEADLINE_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_HEADLINE)],
+
+[CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 </t>
 <t tx="ekr.20200815113508.1">@language python
 g.cls()
@@ -2397,6 +2400,11 @@ print('done')
   "command": "leointeg.test",
   "category": "Leo",
   "title": "Test Leo Integration"
+},
+{
+  "command": "leointeg.setEnablePreview",
+  "category": "Leo",
+  "title": "Set Enable-Preview"
 },
 </t>
 <t tx="ekr.20200815123601.15">{
@@ -3593,6 +3601,10 @@ print('done')
   "command": "leointeg.test",
   "when": "false"
 },
+{
+  "command": "leointeg.setEnablePreview",
+  "when": "false"
+},
 </t>
 <t tx="ekr.20200815123601.58">{
   "command": "leointeg.removeButton",
@@ -4636,6 +4648,7 @@ public static ASYNC_ASK_RETURN_CODES = {
  */
 public static LEOBRIDGE = {
     TEST: "!test",
+    DO_NOTHING: "!do_nothing",
     // * Server Commands
     GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
     APPLY_CONFIG: "!set_config", // "applyConfig",
@@ -4915,6 +4928,7 @@ public static COMMANDS = {
     TOGGLE_FIND_WORD_OPTION: Constants.NAME + ".toggleFindWordOption",
     TOGGLE_FIND_SEARCH_BODY_OPTION: Constants.NAME + ".toggleFindSearchBodyOption",
     TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
+    SET_ENABLE_PREVIEW: Constants.NAME + ".setEnablePreview",
 };
 
 </t>
@@ -5685,6 +5699,9 @@ export function activate(p_context: vscode.ExtensionContext) {
     });
 
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
+        // if setting for preview mode enabled is false then show popup
+        w_leo.config.checkEnablePreview();
+
         // Start server and/or connect to it, as per user settings
         w_leo.startNetworkServices();
         // Save version # for next startup comparison
@@ -5760,7 +5777,8 @@ import {
     runAskYesNoDialogParameters,
     runWarnMessageDialogParameters,
     runInfoMessageDialogParameters,
-    showSaveAsDialogParameters
+    showSaveAsDialogParameters,
+    LeoDocument
 } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -6216,7 +6234,7 @@ private _asyncAction(w_parsedData: any): void {
                 break;
             }
             case Constants.ASYNC_ACTIONS.ASYNC_REFRESH: {
-                this._leoAsync.refresh(w_parsedData.action);
+                this._leoAsync.refresh(w_parsedData);
                 break;
             }
             case Constants.ASYNC_ACTIONS.ASYNC_ASK: {
@@ -7238,7 +7256,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         const w_options: child.SpawnOptions = {
             // Child to run independently of its parent process. Depends on the platform.
             detached: this._leoIntegration.config.setDetached || this._leoIntegration.config.setPersist,
-
+            windowsHide: true,
             // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
             shell: this._leoIntegration.config.setShell
         };
@@ -7267,9 +7285,10 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         }
 
         if (this._leoIntegration.config.setShell) {
+            w_pythonPath = w_pythonPath + " &gt;1"; // ! TEST ! -----------------------
             // TODO : Other modifications to support shell flag
             w_options.stdio = ['inherit', 'inherit', 'inherit'];
-            // w_options.stdio = ['inherit', 'pipe', 'pipe'];
+            // w_options.stdio = ['pipe', 'pipe', 'pipe'];
             // w_options.stdio ['pipe', process.stdout, process.stderr];
         }
 
@@ -8459,7 +8478,7 @@ private _openLastFiles(): Promise&lt;vscode.TextEditor&gt; {
             (p_openFileResult: LeoBridgePackage) =&gt; {
                 this.leoStates.leoBridgeReady = true;
                 this.finishedStartup = true;
-                return this._setupOpenedLeoDocument(p_openFileResult);
+                return this.setupOpenedLeoDocument(p_openFileResult);
             },
             (p_errorOpen) =&gt; {
                 this.leoStates.leoBridgeReady = true;
@@ -8763,7 +8782,7 @@ private _isCurrentFileNamed(): boolean {
 <t tx="felix.20200719025231.22">/**
  * * Setup leoInteg's UI for having no opened Leo documents
  */
-private _setupNoOpenedLeoDocument(): void {
+public setupNoOpenedLeoDocument(): void {
     this.leoStates.fileOpenedReady = false;
     this._bodyTextDocument = undefined;
     this.lastSelectedNode = undefined;
@@ -8779,15 +8798,18 @@ private _setupNoOpenedLeoDocument(): void {
  * @param p_openFileResult Returned info about currently opened and editing document
  * @return a promise that resolves to an opened body pane text editor
  */
-private _setupOpenedLeoDocument(
-    p_openFileResult: LeoBridgePackage
+public setupOpenedLeoDocument(
+    p_openFileResult: LeoBridgePackage,
+    p_asClient?: boolean
 ): Promise&lt;vscode.TextEditor&gt; {
     this._needLastSelectedRefresh = true;
     const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node!, false); // Just to get gnx for the body's fist appearance
     this.leoStates.leoOpenedFileName = p_openFileResult.filename!;
 
-    // * If not unnamed file add to recent list &amp; last opened list
-    this._addRecentAndLastFile(p_openFileResult.filename!);
+    if (!p_asClient) {
+        // * If not unnamed file add to recent list &amp; last opened list
+        this._addRecentAndLastFile(p_openFileResult.filename!);
+    }
 
     let q_switchTextEditor: Promise&lt;vscode.TextEditor&gt; | false = false;
     // * Could be already opened, so perform 'switch body' as if another node was selected
@@ -8850,6 +8872,9 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
     this._bodyEnablePreview = !!vscode.workspace
         .getConfiguration('workbench.editor')
         .get('enablePreview');
+
+    // Check For "workbench.editor.enablePreview" to be true.
+    // this.config.checkEnablePreview();
 }
 
 </t>
@@ -10008,7 +10033,7 @@ public selectOpenedLeoDocument(p_index: number): Promise&lt;vscode.TextEditor&gt
         .then((p_openFileResult: LeoBridgePackage) =&gt; {
             // Like we just opened or made a new file
             if (p_openFileResult.filename || p_openFileResult.filename === "") {
-                return this._setupOpenedLeoDocument(p_openFileResult);
+                return this.setupOpenedLeoDocument(p_openFileResult);
             } else {
                 console.log('Select Opened Leo File Error');
                 return Promise.reject('Select Opened Leo File Error');
@@ -10040,7 +10065,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
             if (p_tryCloseResult.total || p_tryCloseResult.total === 0) {
                 this._removeLastFile(w_removeLastFileName);
                 if (p_tryCloseResult.total === 0) {
-                    this._setupNoOpenedLeoDocument();
+                    this.setupNoOpenedLeoDocument();
                 } else {
                     this.loadSearchSettings();
                     this.launchRefresh(
@@ -10069,55 +10094,50 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                     );
                 return Promise.resolve(q_askSaveChangesInfoMessage)
                     .then((p_askSaveResult: vscode.MessageItem | undefined) =&gt; {
-                        if (p_askSaveResult) {
-                            if (p_askSaveResult.title === Constants.USER_MESSAGES.YES) {
-                                // save and then force-close
-                                let w_savePromise: Promise&lt;LeoBridgePackage | undefined&gt;;
-                                if (this._isCurrentFileNamed()) {
-                                    w_savePromise = this.sendAction(
-                                        Constants.LEOBRIDGE.SAVE_FILE,
-                                        JSON.stringify({ name: '' })
-                                    );
-                                } else {
-                                    w_savePromise = this._leoFilesBrowser
-                                        .getLeoFileUrl(true)
-                                        .then((p_chosenLeoFile) =&gt; {
-                                            if (p_chosenLeoFile.trim()) {
-                                                return this.sendAction(
-                                                    Constants.LEOBRIDGE.SAVE_FILE,
-                                                    JSON.stringify({
-                                                        name: p_chosenLeoFile.trim(),
-                                                    })
-                                                );
-                                            } else {
-                                                // Canceled
-                                                return Promise.resolve(undefined);
-                                            }
-                                        });
-                                }
-                                return w_savePromise.then(
-                                    (p_packageAfterSave) =&gt; {
-                                        return this.sendAction(
-                                            Constants.LEOBRIDGE.CLOSE_FILE,
-                                            JSON.stringify({ forced: true })
-                                        );
-                                    },
-                                    () =&gt; {
-                                        return Promise.reject('Save failed');
-                                    }
-                                );
-                            } else if (p_askSaveResult.title === Constants.USER_MESSAGES.NO) {
-                                // Don't want to save so just force-close directly
-                                return this.sendAction(
-                                    Constants.LEOBRIDGE.CLOSE_FILE,
-                                    JSON.stringify({ forced: true })
+                        if (p_askSaveResult &amp;&amp; p_askSaveResult.title === Constants.USER_MESSAGES.YES) {
+                            // save and then force-close
+                            let w_savePromise: Promise&lt;LeoBridgePackage | undefined&gt;;
+                            if (this._isCurrentFileNamed()) {
+                                w_savePromise = this.sendAction(
+                                    Constants.LEOBRIDGE.SAVE_FILE,
+                                    JSON.stringify({ name: '' })
                                 );
                             } else {
-                                // Canceled
-                                return Promise.resolve(undefined);
+                                w_savePromise = this._leoFilesBrowser
+                                    .getLeoFileUrl(true)
+                                    .then((p_chosenLeoFile) =&gt; {
+                                        if (p_chosenLeoFile.trim()) {
+                                            return this.sendAction(
+                                                Constants.LEOBRIDGE.SAVE_FILE,
+                                                JSON.stringify({
+                                                    name: p_chosenLeoFile.trim(),
+                                                })
+                                            );
+                                        } else {
+                                            // Canceled
+                                            return Promise.resolve(undefined);
+                                        }
+                                    });
                             }
+                            return w_savePromise.then(
+                                (p_packageAfterSave) =&gt; {
+                                    return this.sendAction(
+                                        Constants.LEOBRIDGE.CLOSE_FILE,
+                                        JSON.stringify({ forced: true })
+                                    );
+                                },
+                                () =&gt; {
+                                    return Promise.reject('Save failed');
+                                }
+                            );
+                        } else if (p_askSaveResult &amp;&amp; p_askSaveResult.title === Constants.USER_MESSAGES.NO) {
+                            // Don't want to save so just force-close directly
+                            return this.sendAction(
+                                Constants.LEOBRIDGE.CLOSE_FILE,
+                                JSON.stringify({ forced: true })
+                            );
                         } else {
-                            // Canceled
+                            // Canceled dialog
                             return Promise.resolve(undefined);
                         }
                     })
@@ -10126,7 +10146,7 @@ public closeLeoFile(): Promise&lt;boolean&gt; {
                             // * back from CLOSE_FILE action, the last that can be performed (after saving if dirty or not)
                             this._removeLastFile(w_removeLastFileName);
                             if (p_closeResult &amp;&amp; p_closeResult.total === 0) {
-                                this._setupNoOpenedLeoDocument();
+                                this.setupNoOpenedLeoDocument();
                             } else {
                                 this.loadSearchSettings();
                                 this.launchRefresh(
@@ -10162,7 +10182,7 @@ public newLeoFile(): Promise&lt;vscode.TextEditor&gt; {
         })
         .then((p_openFileResult: LeoBridgePackage) =&gt; {
             if (p_openFileResult.filename || p_openFileResult.filename === "") {
-                return this._setupOpenedLeoDocument(p_openFileResult);
+                return this.setupOpenedLeoDocument(p_openFileResult);
             } else {
                 return Promise.reject('New Leo File Error');
             }
@@ -10207,7 +10227,7 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;vscode.TextEditor | un
         .then(
             (p_openFileResult: LeoBridgePackage | undefined) =&gt; {
                 if (p_openFileResult) {
-                    return this._setupOpenedLeoDocument(p_openFileResult);
+                    return this.setupOpenedLeoDocument(p_openFileResult);
                 } else {
                     return Promise.resolve(undefined);
                 }
@@ -10257,9 +10277,9 @@ public startServer(): void {
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                 if (this.config.connectToServerAutomatically) {
                     setTimeout(() =&gt; {
-                        // Wait a full second
+                        // Wait 2 full seconds
                         this.connect();
-                    }, 1000);
+                    }, 2000);
                 } else {
                     this.finishedStartup = true;
                 }
@@ -10419,7 +10439,7 @@ public connect(): void {
                 }
                 if (w_opened) {
                     p_package.filename = p_package.commander!.fileName;
-                    this._setupOpenedLeoDocument(p_package);
+                    this.setupOpenedLeoDocument(p_package, true);
                 }
 
                 this.showLogPane();
@@ -13110,9 +13130,22 @@ public closeLeoProcess(): void {
  * * Server announced the multi-user content changed: Debounce a refresh cycle.
  * The 'action' string can be checked to determine what kind, if any, is required.
  */
-public refresh(p_action: string): void {
-    // console.log('REFRESH', p_action);
-    this._leoIntegration.refreshAll();
+public refresh(p_package: any): void {
+    console.log('REFRESH', p_package);
+    if (p_package.opened &amp;&amp; this._leoIntegration.leoStates.fileOpenedReady) {
+        this._leoIntegration.refreshAll();
+
+    } else if (p_package.opened &amp;&amp; !this._leoIntegration.leoStates.fileOpenedReady) {
+        // get standard response to have commander details
+        const q_action = this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
+            .then((p_package) =&gt; {
+                p_package.filename = p_package.commander!.fileName;
+                this._leoIntegration.setupOpenedLeoDocument(p_package, true);
+            });
+
+    } else {
+        this._leoIntegration.setupNoOpenedLeoDocument();
+    }
 }
 
 </t>
@@ -13153,6 +13186,38 @@ private _bodySaveDeactivate(
 - Added experimental server option settings (cwd, shell, detach) to help with various python setups.
 - Server now started with a CWD of the current workspace by default (fixes git-diff).
 
+</t>
+<t tx="felix.20210818223534.1">/**
+* * Set the "workbench.editor.enablePreview" vscode setting
+*/
+public setEnablePreview(): Thenable&lt;void&gt; {
+    // workbench.editor.enablePreview
+    return vscode.workspace.getConfiguration("workbench.editor")
+        .update("enablePreview", true, true);
+}
+
+</t>
+<t tx="felix.20210818225820.1">/**
+ * * Check if the preview mode flag is set
+ */
+public checkEnablePreview(): void {
+    // workbench.editor.enablePreview
+    let w_result: any = true;
+    const w_setting = vscode.workspace.getConfiguration("workbench.editor");
+    if (w_setting.inspect("enablePreview")!.globalValue === undefined) {
+        w_result = w_setting.inspect("enablePreview")!.defaultValue;
+    } else {
+        w_result = w_setting.inspect("enablePreview")!.globalValue;
+    }
+    if (w_result === false) {
+        vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Enable Previews")
+            .then(p_chosenButton =&gt; {
+                if (p_chosenButton === "Enable Previews") {
+                    vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
+                }
+            });
+    }
+}
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
