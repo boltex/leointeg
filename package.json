@@ -230,7 +230,7 @@
           "scope": "application",
           "default": false,
           "type": "boolean",
-          "description": "Starts a LeoBridge server automatically, by running the Leo server script"
+          "description": "Starts a Leo server automatically, by running the Leo server script"
         },
         "leoIntegration.connectToServerAutomatically": {
           "scope": "application",
@@ -668,7 +668,7 @@
       {
         "command": "leointeg.startServer",
         "category": "Leo",
-        "title": "Start Leo Bridge Server",
+        "title": "Start a Leo Server",
         "icon": {
           "light": "resources/light/start-server.svg",
           "dark": "resources/dark/start-server.svg"
@@ -677,7 +677,7 @@
       {
         "command": "leointeg.stopServer",
         "category": "Leo",
-        "title": "Stop Leo Bridge Server",
+        "title": "Stop the Leo Server",
         "icon": {
           "light": "resources/light/close-server.svg",
           "dark": "resources/dark/close-server.svg"
@@ -685,7 +685,7 @@
       },
       {
         "command": "leointeg.connectToServer",
-        "title": "Connect to Leo Bridge Server",
+        "title": "Connect to a Leo Server",
         "category": "Leo",
         "icon": {
           "light": "resources/light/connect.svg",
@@ -1757,12 +1757,12 @@
       },
       {
         "view": "leoIntegration",
-        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "leoBridgeReady && !leoTreeOpened"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "leoBridgeReady && !leoTreeOpened"
       },
       {

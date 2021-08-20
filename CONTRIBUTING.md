@@ -16,13 +16,11 @@ If you're having problems with the procedures below, try [running this sample ex
 
 ## Development requirements
 
-- **use Leo's 'devel' branch** (This is temporary until Leo's next release)
+- **use Leo's 'devel' branch** (This is temporary until Leo's 6.4 release)
 
 - Make sure you have [Node.js](https://nodejs.org/en/download/) and [Git](https://git-scm.com/downloads) installed.
 
-- Check your node.js version by typing `node -v` in a terminal. [The latest lts version is 12.18.0](https://nodejs.org/en/download/).
-
-- Also check your vscode version by opening the 'about' dialog from the help menu. You should at least match or exceed the version below.
+- Also check your vscode, and other software versions by opening the 'about' dialog from the help menu. You should at least match or exceed the versions below.
 
 On Windows:
 
@@ -86,9 +84,9 @@ On Linux:
 
 ### 3 ways to start the server script
 
-1. You can have LeoInteg try to start a server script instance itself via the **Start Leo Bridge Server** command or button. It will use the 'py' command on Windows and 'python3' command on other OSes by default. _You can automate this process via leoInteg's configuration settings._
+1. You can have LeoInteg try to start a server script instance itself via the **Start Leo Server** command or button. It will use the 'py' command on Windows and 'python3' command on other OSes by default. _You can automate this process via leoInteg's configuration settings._
 2. You can have vscode's **Debug View** start it as a debug session starts by choosing a debug profile that includes the server script. It's then possible to step in, inspect and debug the python server script. _The [python development extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) may be required._
-3. You can also start it yourself manually, by running the leobridgeserver.py script from a command prompt.
+3. You can also start it yourself manually, by running the leoserver.py script (preferably from your leo-editor/leo/core folder) in a terminal or command prompt of your liking.
 
 ### Using Anaconda or other custom python installations
 

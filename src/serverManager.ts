@@ -222,7 +222,7 @@ export class ServerService {
             // Capture the CLOSE event and set flags on server actually closing
             if (this._serverProcess) {
                 this._serverProcess.on("close", (p_code: any) => {
-                    console.log(`leoBridge exited with code ${p_code}`);
+                    console.log(`Leo server exited with code ${p_code}`);
                     this._isStarted = false;
                     if (!this._leoIntegration.activated) {
                         return;
@@ -230,7 +230,7 @@ export class ServerService {
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                     this._serverProcess = undefined;
                     if (this._rejectPromise) {
-                        this._rejectPromise(`leoBridge exited with code ${p_code}`);
+                        this._rejectPromise(`Leo server exited with code ${p_code}`);
                     }
                 });
             }

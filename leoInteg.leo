@@ -2430,7 +2430,7 @@ print('done')
 {
   "command": "leointeg.startServer",
   "category": "Leo",
-  "title": "Start Leo Bridge Server",
+  "title": "Start a Leo Server",
   "icon": {
     "light": "resources/light/start-server.svg",
     "dark": "resources/dark/start-server.svg"
@@ -2439,7 +2439,7 @@ print('done')
 {
   "command": "leointeg.stopServer",
   "category": "Leo",
-  "title": "Stop Leo Bridge Server",
+  "title": "Stop the Leo Server",
   "icon": {
     "light": "resources/light/close-server.svg",
     "dark": "resources/dark/close-server.svg"
@@ -2447,7 +2447,7 @@ print('done')
 },
 {
   "command": "leointeg.connectToServer",
-  "title": "Connect to Leo Bridge Server",
+  "title": "Connect to a Leo Server",
   "category": "Leo",
   "icon": {
     "light": "resources/light/connect.svg",
@@ -3315,12 +3315,12 @@ print('done')
 </t>
 <t tx="ekr.20200815123601.34">{
   "view": "leoIntegration",
-  "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
   "when": "leoBridgeReady &amp;&amp; !leoTreeOpened"
 },
 {
   "view": "leoIntegrationExplorer",
-  "contents": "leoBridge Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+  "contents": "Connected\n[Open Leo File](command:leointeg.openLeoFile)\nView LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
   "when": "leoBridgeReady &amp;&amp; !leoTreeOpened"
 },
 </t>
@@ -3947,7 +3947,7 @@ print('done')
   "scope": "application",
   "default": false,
   "type": "boolean",
-  "description": "Starts a LeoBridge server automatically, by running the Leo server script"
+  "description": "Starts a Leo server automatically, by running the Leo server script"
 },
 "leoIntegration.connectToServerAutomatically": {
   "scope": "application",
@@ -5051,8 +5051,8 @@ public static USER_MESSAGES = {
     PLACEHOLDER_CLONE_FIND_TAG: "&lt;tag&gt;",
     PROMPT_CLONE_FIND_TAG: "Enter a tag name",
     START_SERVER_ERROR: "Error - Cannot start server: ",
-    CONNECT_FAILED: "Leo Bridge Connection Failed",
-    CONNECT_ERROR: "Leo Bridge Connection Error: Incorrect id",
+    CONNECT_FAILED: "Leo Server Connection Failed",
+    CONNECT_ERROR: "Leo Server Connection Error: Incorrect id",
     CONNECTED: "Connected",
     ALREADY_CONNECTED: "Already connected",
     DISCONNECTED: "Disconnected",
@@ -7331,7 +7331,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         // Capture the CLOSE event and set flags on server actually closing
         if (this._serverProcess) {
             this._serverProcess.on("close", (p_code: any) =&gt; {
-                console.log(`leoBridge exited with code ${p_code}`);
+                console.log(`Leo server exited with code ${p_code}`);
                 this._isStarted = false;
                 if (!this._leoIntegration.activated) {
                     return;
@@ -7339,7 +7339,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                 this._serverProcess = undefined;
                 if (this._rejectPromise) {
-                    this._rejectPromise(`leoBridge exited with code ${p_code}`);
+                    this._rejectPromise(`Leo server exited with code ${p_code}`);
                 }
             });
         }
@@ -8157,7 +8157,7 @@ This occurs when an outline node or a body pane has focus:
 - Show additional icons on outline nodes (Move, delete, mark, copy, paste...)
 - Choose to either focus on the body pane, or keep focus in the outline when a node is selected.
 - Hide or show the "Open on the side" command in the context menu to open a node beside the active editor
-- Set preferences for setting the address and port, and for automatically starting, and/or connecting, to a Leo Bridge server.
+- Set preferences for setting the address and port, and for automatically starting, and/or connecting to a Leo server.
 
 ![Settings](https://raw.githubusercontent.com/boltex/leointeg/master/resources/welcome-settings.gif)
 
@@ -8327,13 +8327,11 @@ If you're having problems with the procedures below, try [running this sample ex
 </t>
 <t tx="felix.20200718222739.1">## Development requirements
 
-- **use Leo's 'devel' branch** (This is temporary until Leo's next release)
+- **use Leo's 'devel' branch** (This is temporary until Leo's 6.4 release)
 
 - Make sure you have [Node.js](https://nodejs.org/en/download/) and [Git](https://git-scm.com/downloads) installed.
 
-- Check your node.js version by typing `node -v` in a terminal. [The latest lts version is 12.18.0](https://nodejs.org/en/download/).
-
-- Also check your vscode version by opening the 'about' dialog from the help menu. You should at least match or exceed the version below.
+- Also check your vscode, and other software versions by opening the 'about' dialog from the help menu. You should at least match or exceed the versions below.
 
 On Windows:
 
@@ -8401,9 +8399,9 @@ On Linux:
 
 ### 3 ways to start the server script
 
-1. You can have LeoInteg try to start a server script instance itself via the **Start Leo Bridge Server** command or button. It will use the 'py' command on Windows and 'python3' command on other OSes by default. _You can automate this process via leoInteg's configuration settings._
+1. You can have LeoInteg try to start a server script instance itself via the **Start Leo Server** command or button. It will use the 'py' command on Windows and 'python3' command on other OSes by default. _You can automate this process via leoInteg's configuration settings._
 2. You can have vscode's **Debug View** start it as a debug session starts by choosing a debug profile that includes the server script. It's then possible to step in, inspect and debug the python server script. _The [python development extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) may be required._
-3. You can also start it yourself manually, by running the leobridgeserver.py script from a command prompt.
+3. You can also start it yourself manually, by running the leoserver.py script (preferably from your leo-editor/leo/core folder) in a terminal or command prompt of your liking.
 
 ### Using Anaconda or other custom python installations
 
