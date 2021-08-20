@@ -418,6 +418,10 @@ export class LeoIntegration {
      * Starts a leoBridge server, and/or establish a connection to a server, based on config settings.
      */
     public startNetworkServices(): void {
+
+        // TODO : If auto-start, AND limit > 1 AND port taken, skip starting.
+        // use utils.findNextAvailablePort(p_port).then((p_availablePort) => {
+
         // * Check settings and start a server accordingly
         if (this.config.startServerAutomatically) {
             this.startServer();

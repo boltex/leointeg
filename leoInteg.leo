@@ -4971,7 +4971,6 @@ public static LAST_FILES_KEY: string = "leoLastFiles";
 
 public static DEFAULT_PYTHON: string = "python3";
 public static WIN32_PYTHON: string = "py";
-public static OLD_SERVER_NAME: string = "/leobridgeserver.py";
 public static SERVER_NAME: string = "/leoserver.py";
 public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
 public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
@@ -7183,9 +7182,6 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
 
     this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
 
-    // If a leo server path is set then use it - otherwise use old script for now
-    // OLD // const w_serverScriptPath = p_leoEditorPath ? p_leoEditorPath : this._context.extensionPath + Constants.OLD_SERVER_NAME;
-
     return utils.findNextAvailablePort(p_port).then((p_availablePort) =&gt; {
         if (!p_availablePort) {
             // vscode.window.showInformationMessage("Port " + p_port+" already in use.");
@@ -7198,13 +7194,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         let w_serverScriptPath = p_leoEditorPath + "/leo/core";
 
         try {
-            if (fs.existsSync(w_serverScriptPath + Constants.OLD_SERVER_NAME)) {
-                //old file exists
-                console.log('Found old server');
-                w_serverScriptPath += Constants.OLD_SERVER_NAME;
-            } else if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
-                //new file exists
-                // console.log('found leoserver.py');
+            if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
                 w_serverScriptPath += Constants.SERVER_NAME;
             } else {
                 return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
@@ -9960,6 +9950,10 @@ public saveLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undef
  * Starts a leoBridge server, and/or establish a connection to a server, based on config settings.
  */
 public startNetworkServices(): void {
+
+    // TODO : If auto-start, AND limit &gt; 1 AND port taken, skip starting.
+    // use utils.findNextAvailablePort(p_port).then((p_availablePort) =&gt; {
+
     // * Check settings and start a server accordingly
     if (this.config.startServerAutomatically) {
         this.startServer();

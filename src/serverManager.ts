@@ -74,9 +74,6 @@ export class ServerService {
 
         this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
 
-        // If a leo server path is set then use it - otherwise use old script for now
-        // OLD // const w_serverScriptPath = p_leoEditorPath ? p_leoEditorPath : this._context.extensionPath + Constants.OLD_SERVER_NAME;
-
         return utils.findNextAvailablePort(p_port).then((p_availablePort) => {
             if (!p_availablePort) {
                 // vscode.window.showInformationMessage("Port " + p_port+" already in use.");
@@ -89,13 +86,7 @@ export class ServerService {
             let w_serverScriptPath = p_leoEditorPath + "/leo/core";
 
             try {
-                if (fs.existsSync(w_serverScriptPath + Constants.OLD_SERVER_NAME)) {
-                    //old file exists
-                    console.log('Found old server');
-                    w_serverScriptPath += Constants.OLD_SERVER_NAME;
-                } else if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
-                    //new file exists
-                    // console.log('found leoserver.py');
+                if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
                     w_serverScriptPath += Constants.SERVER_NAME;
                 } else {
                     return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);

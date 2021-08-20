@@ -36,7 +36,6 @@ export class Constants {
 
     public static DEFAULT_PYTHON: string = "python3";
     public static WIN32_PYTHON: string = "py";
-    public static OLD_SERVER_NAME: string = "/leobridgeserver.py";
     public static SERVER_NAME: string = "/leoserver.py";
     public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
     public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
