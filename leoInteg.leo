@@ -151,6 +151,7 @@
 <v t="felix.20210713005825.1"><vh>editor/context</vh></v>
 <v t="felix.20201215210439.1"><vh>view/title</vh></v>
 <v t="felix.20201215210510.1"><vh>view/item/context</vh></v>
+<v t="felix.20210821212114.1"><vh>extension/context</vh></v>
 </v>
 <v t="ekr.20200815123601.76"><vh>keybindings</vh>
 <v t="ekr.20200815123601.77"><vh>Scripting</vh></v>
@@ -192,7 +193,9 @@
 <v t="felix.20200718030926.4"><vh>setLeoIntegSettings</vh></v>
 <v t="felix.20210727224135.1"><vh>setFontConfig</vh></v>
 <v t="felix.20210818223534.1"><vh>setEnablePreview</vh></v>
+<v t="felix.20210821203119.1"><vh>clearCloseEmptyGroups</vh></v>
 <v t="felix.20210818225820.1"><vh>checkEnablePreview</vh></v>
+<v t="felix.20210821202347.1"><vh>checkCloseEmptyGroups</vh></v>
 <v t="felix.20200718030926.5"><vh>buildFromSavedSettings</vh></v>
 </v>
 </v>
@@ -551,6 +554,7 @@
 <v t="felix.20200718195558.11"><vh>leoUriToStr</vh></v>
 <v t="felix.20200718195558.12"><vh>setContext</vh></v>
 <v t="felix.20210612214028.1"><vh>findNextAvailablePort</vh></v>
+<v t="felix.20210820231649.1"><vh>findSingleAvailablePort</vh></v>
 </v>
 <v t="felix.20210522001751.1"><vh>@clean src/webviews/leoFindPanelWebview.ts</vh>
 <v t="felix.20210522001814.1"><vh>class LeoFindPanelProvider</vh>
@@ -866,8 +870,6 @@ public static CONFIG_DEFAULTS = {
     IP_PORT: 32125,
 
     SET_DETACHED: true,
-    SET_SHELL: false,
-    SET_CWD: true,
     SET_PERSIST: false,
     LIMIT_USERS: 1
 };
@@ -2008,6 +2010,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.TOGGLE_FIND_SEARCH_HEADLINE_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_HEADLINE)],
 
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
+[CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
 </t>
 <t tx="ekr.20200815113508.1">@language python
 g.cls()
@@ -2408,8 +2411,13 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.15">{
+  "command": "leointeg.clearCloseEmptyGroups",
+  "category": "Leo",
+  "title": "Clear Close-Empty-Groups"
+},
+{
   "command": "leointeg.showSettingsPage",
-  "title": "LeoInteg Settings",
+  "title": "Open Settings",
   "category": "Leo",
   "icon": {
     "light": "resources/light/gear.svg",
@@ -2616,7 +2624,7 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.2">"configuration": {
-  "title": "Leo Integration",
+  "title": "Leo Integration — Use 'Leo: Open Settings' for a richer, interactive experience",
   "properties": {
     @others
   }
@@ -3271,12 +3279,12 @@ print('done')
 </t>
 <t tx="ekr.20200815123601.30">{
   "view": "leoIntegration",
-  "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nStart a local server\n[Start Server](command:leointeg.startServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+  "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
   "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically"
 },
 {
   "view": "leoIntegrationExplorer",
-  "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nStart a local server\n[Start Server](command:leointeg.startServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+  "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
   "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically"
 },
 </t>
@@ -3603,6 +3611,10 @@ print('done')
 },
 {
   "command": "leointeg.setEnablePreview",
+  "when": "false"
+},
+{
+  "command": "leointeg.clearCloseEmptyGroups",
   "when": "false"
 },
 </t>
@@ -3974,18 +3986,6 @@ print('done')
   "default": true,
   "type": "boolean",
   "description": "Starts the server process with the 'detached' flag - Allows a dialog to be shown after closing for unsaved Leo documents"
-},
-"leoIntegration.setShell": {
-  "scope": "application",
-  "default": false,
-  "type": "boolean",
-  "description": "Starts the server process with the 'shell' flag - May help with some python installations"
-},
-"leoIntegration.setCwd": {
-  "scope": "application",
-  "default": true,
-  "type": "boolean",
-  "description": "Starts the server process with the 'CWD' set to the workspace folder"
 },
 "leoIntegration.setPersist": {
   "scope": "application",
@@ -4929,6 +4929,7 @@ public static COMMANDS = {
     TOGGLE_FIND_SEARCH_BODY_OPTION: Constants.NAME + ".toggleFindSearchBodyOption",
     TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
     SET_ENABLE_PREVIEW: Constants.NAME + ".setEnablePreview",
+    CLEAR_CLOSE_EMPTY_GROUPS: Constants.NAME + ".clearCloseEmptyGroups",
 };
 
 </t>
@@ -5130,8 +5131,6 @@ public static CONFIG_NAMES = {
     IP_PORT: "connectionPort",
 
     SET_DETACHED: "setDetached",
-    SET_SHELL: "setShell",
-    SET_CWD: "setCwd",
     SET_PERSIST: "setPersist",
     LIMIT_USERS: "limitUsers"
 };
@@ -5427,8 +5426,6 @@ export class Config implements ConfigMembers {
     public connectionPort: number = Constants.CONFIG_DEFAULTS.IP_PORT;
 
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
-    public setShell: boolean = Constants.CONFIG_DEFAULTS.SET_SHELL;
-    public setCwd: boolean = Constants.CONFIG_DEFAULTS.SET_CWD;
     public setPersist: boolean = Constants.CONFIG_DEFAULTS.SET_PERSIST;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
 
@@ -5485,8 +5482,6 @@ public getConfig(): ConfigMembers {
         connectionPort: this.connectionPort,
 
         setDetached: this.setDetached,
-        setShell: this.setShell,
-        setCwd: this.setCwd,
         setPersist: this.setPersist,
         limitUsers: this.limitUsers,
     };
@@ -5586,8 +5581,6 @@ public buildFromSavedSettings(): void {
         this.connectionPort = GET(NAME).get(NAMES.IP_PORT, DEFAULTS.IP_PORT);
 
         this.setDetached = GET(NAME).get(NAMES.SET_DETACHED, DEFAULTS.SET_DETACHED);
-        this.setShell = GET(NAME).get(NAMES.SET_SHELL, DEFAULTS.SET_SHELL);
-        this.setCwd = GET(NAME).get(NAMES.SET_CWD, DEFAULTS.SET_CWD);
         this.setPersist = GET(NAME).get(NAMES.SET_PERSIST, DEFAULTS.SET_PERSIST);
         this.limitUsers = GET(NAME).get(NAMES.LIMIT_USERS, DEFAULTS.LIMIT_USERS);
 
@@ -5697,9 +5690,10 @@ export function activate(p_context: vscode.ExtensionContext) {
         p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
     });
 
-    showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() =&gt; {
+    showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo).then(() =&gt; {
         // if setting for preview mode enabled is false then show popup
         w_leo.config.checkEnablePreview();
+        w_leo.config.checkCloseEmptyGroups();
 
         // Start server and/or connect to it, as per user settings
         w_leo.startNetworkServices();
@@ -5740,10 +5734,13 @@ export function deactivate(): Promise&lt;boolean&gt; {
  * @param p_previousVersion Previous version, as a string, from context.globalState.get service
  * @returns A promise that triggers when command to show the welcome screen is finished, or immediately if not needed
  */
-async function showWelcomeIfNewer(p_version: string, p_previousVersion: string | undefined): Promise&lt;unknown&gt; {
+async function showWelcomeIfNewer(p_version: string, p_previousVersion: string | undefined, p_leoInteg: LeoIntegration): Promise&lt;unknown&gt; {
     let w_showWelcomeScreen: boolean = false;
     if (p_previousVersion === undefined) {
         console.log('leointeg first-time install');
+        // Set/Clear leointeg's required configuration settings
+        p_leoInteg.config.setEnablePreview();
+        p_leoInteg.config.clearCloseEmptyGroups();
         w_showWelcomeScreen = true;
     } else {
         if (p_previousVersion !== p_version) {
@@ -5776,13 +5773,12 @@ import {
     runAskYesNoDialogParameters,
     runWarnMessageDialogParameters,
     runInfoMessageDialogParameters,
-    showSaveAsDialogParameters,
-    LeoDocument
+    showSaveAsDialogParameters
 } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 
 @others
-</t>
+"workbench.editor.closeEmptyGroups": false,</t>
 <t tx="felix.20200718040540.1">import * as vscode from "vscode";
 import * as utils from "./utils";
 import * as path from 'path';
@@ -7247,40 +7243,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
             // Child to run independently of its parent process. Depends on the platform.
             detached: this._leoIntegration.config.setDetached || this._leoIntegration.config.setPersist,
             windowsHide: true,
-            // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
-            shell: this._leoIntegration.config.setShell
         };
-
-        if (this._leoIntegration.config.setCwd) {
-            if (vscode.workspace.workspaceFolders !== undefined &amp;&amp;
-                vscode.workspace.workspaceFolders.length) {
-                let w_folder = vscode.workspace.workspaceFolders[0].uri.path;
-                let w_file = vscode.workspace.workspaceFolders[0].uri.fsPath;
-                // If windows and start with a slash - remove it
-                // to get "c:/" instead of "/c:/"
-                if (this._isWin32) {
-                    if (w_folder.substring(0, 1) === "/") {
-                        w_folder = w_folder.substring(1);
-                    }
-                    w_folder = w_folder.replace(/\//g, '\\'); // convert to backslashes
-                }
-                const w_message = `Server CWD set to: ${w_folder}`;
-                w_options.cwd = w_folder;
-                this._leoIntegration.addTerminalPaneEntry(w_message);
-            }
-            else {
-                const message = "Working folder not found, 'CWD' not set";
-                vscode.window.showErrorMessage(message);
-            }
-        }
-
-        if (this._leoIntegration.config.setShell) {
-            w_pythonPath = w_pythonPath + " &gt;1"; // ! TEST ! -----------------------
-            // TODO : Other modifications to support shell flag
-            w_options.stdio = ['inherit', 'inherit', 'inherit'];
-            // w_options.stdio = ['pipe', 'pipe', 'pipe'];
-            // w_options.stdio ['pipe', process.stdout, process.stderr];
-        }
 
         this._leoIntegration.addTerminalPaneEntry(
             'Starting server with command: ' +
@@ -7732,8 +7695,6 @@ export interface ConfigMembers {
     connectionPort: number;
 
     setDetached: boolean;
-    setShell: boolean;
-    setCwd: boolean;
     setPersist: boolean;
     limitUsers: number
 }
@@ -8005,6 +7966,12 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 # Change Log
 
 ## 0.1.18
+
+- Git-diff is now fixed in Leo so the experimental option 'Set CWD' has been removed
+- The somewhat unnecessary experimental option 'Shell' has been removed.
+- Automatic detection of VSCode's workbench.editor.enablePreview if its missing/disabled.
+- Automatic detection of VSCode's workbench.editor.closeEmptyGroups if its missing/enabled.
+- Easier access to the leo settings through the extension config title strings and the extension view menu
 
 @others
 </t>
@@ -9951,12 +9918,26 @@ public saveLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undef
  */
 public startNetworkServices(): void {
 
-    // TODO : If auto-start, AND limit &gt; 1 AND port taken, skip starting.
-    // use utils.findNextAvailablePort(p_port).then((p_availablePort) =&gt; {
-
     // * Check settings and start a server accordingly
     if (this.config.startServerAutomatically) {
-        this.startServer();
+
+        if (this.config.limitUsers &gt; 1) {
+            utils.findSingleAvailablePort(this.config.connectionPort)
+                .then((p_availablePort) =&gt; {
+                    console.log('multi user port free so start it');
+
+                    this.startServer();
+                }, (p_reason) =&gt; {
+                    console.log('multi user port IN USE so skip start');
+                    if (this.config.connectToServerAutomatically) {
+                        console.log('multi user connect');
+
+                        this.connect();
+                    }
+                });
+        } else {
+            this.startServer();
+        }
     } else if (this.config.connectToServerAutomatically) {
         // * (via settings) Connect to Leo Bridge server automatically without starting one first
         this.connect();
@@ -11092,7 +11073,7 @@ public static VSCODE_COMMANDS = {
     "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoButtonNode/",
     "group": "leoButtonContext1@1"
   }
-]
+],
 </t>
 <t tx="felix.20210418013332.1">private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
     console.log('DELETE EXTRANEOUS:', p_textEditor.document.uri.fsPath);
@@ -12641,12 +12622,11 @@ public prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise&lt;any&gt
  * @returns a promise of an opened port number
  */
 export function findNextAvailablePort(p_startingPort: number): Promise&lt;number&gt; {
-    const q_portFinder = portfinder.getPortPromise({
+    return = portfinder.getPortPromise({
         port: p_startingPort,
         startPort: p_startingPort,
         stopPort: p_startingPort + 5
     });
-    return q_portFinder;
 }
 
 </t>
@@ -13204,14 +13184,68 @@ public checkEnablePreview(): void {
         w_result = w_setting.inspect("enablePreview")!.globalValue;
     }
     if (w_result === false) {
-        vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Enable Previews")
+        vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
             .then(p_chosenButton =&gt; {
-                if (p_chosenButton === "Enable Previews") {
+                if (p_chosenButton === "Fix it") {
                     vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
                 }
             });
     }
 }
+</t>
+<t tx="felix.20210820231649.1">/**
+ * * Check for unique port #
+ * @param p_port the port number at which to look for
+ * @returns a promise of an opened port number - or rejection if busy port
+ */
+export function findSingleAvailablePort(p_port: number): Promise&lt;number&gt; {
+    return q_portFinder = portfinder.getPortPromise({
+        port: p_port,
+        startPort: p_port,
+        stopPort: p_port
+    });
+}
+
+</t>
+<t tx="felix.20210821202347.1">/**
+ * * Check if the 'close Empty Groups' setting is false
+ */
+public checkCloseEmptyGroups(): void {
+    // workbench.editor.closeEmptyGroups
+    let w_result: any = false;
+    const w_setting = vscode.workspace.getConfiguration("workbench.editor");
+    if (w_setting.inspect("closeEmptyGroups")!.globalValue === undefined) {
+        w_result = w_setting.inspect("closeEmptyGroups")!.defaultValue;
+    } else {
+        w_result = w_setting.inspect("closeEmptyGroups")!.globalValue;
+    }
+    if (w_result === true) {
+        vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
+            .then(p_chosenButton =&gt; {
+                if (p_chosenButton === "Fix it") {
+                    vscode.commands.executeCommand(Constants.COMMANDS.CLEAR_CLOSE_EMPTY_GROUPS);
+                }
+            });
+    }
+}
+</t>
+<t tx="felix.20210821203119.1">/**
+* * Set the "workbench.editor.enablePreview" vscode setting
+*/
+public clearCloseEmptyGroups(): Thenable&lt;void&gt; {
+    // workbench.editor.enablePreview
+    return vscode.workspace.getConfiguration("workbench.editor")
+        .update("closeEmptyGroups", false, true);
+}
+
+</t>
+<t tx="felix.20210821212114.1">"extension/context": [
+  {
+    "command": "leointeg.showSettingsPage",
+    "when": "extension =~ /^boltex.leointeg/ &amp;&amp; extensionStatus == installed",
+    "group": "3_leointeg@1"
+  }
+]
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
@@ -14237,27 +14271,6 @@ body &gt; div &gt; div &gt; label:active {
                 &lt;/div&gt;
                 &lt;span class="setting__hint"&gt;Server spawned with the 'detached' flag,&lt;br&gt;
                   allows dialogs when closing with unsaved files&lt;/span&gt;
-              &lt;/div&gt;
-              &lt;div class="setting"&gt;
-                &lt;div class="setting__input"&gt;
-                  &lt;input id="setShell"
-                         name="setShell"
-                         type="checkbox"
-                         data-setting /&gt;
-                  &lt;label for="setShell"&gt;Spawn&amp;nbsp;in&amp;nbsp;Shell&lt;/label&gt;
-                &lt;/div&gt;
-                &lt;span class="setting__hint"&gt;Server spawned with the 'shell' flag&lt;/span&gt;
-              &lt;/div&gt;
-              &lt;div class="setting"&gt;
-                &lt;div class="setting__input"&gt;
-                  &lt;input id="setCwd"
-                         name="setCwd"
-                         type="checkbox"
-                         data-setting /&gt;
-                  &lt;label for="setCwd"&gt;Specify&amp;nbsp;CWD&lt;/label&gt;
-                &lt;/div&gt;
-                &lt;span class="setting__hint"&gt;Server process spawned with the&lt;br&gt;
-                  option CWD set to the workspace&lt;/span&gt;
               &lt;/div&gt;
               &lt;div class="setting"&gt;
                 &lt;div class="setting__input"&gt;

@@ -36,7 +36,7 @@
   },
   "contributes": {
     "configuration": {
-      "title": "Leo Integration",
+      "title": "Leo Integration — Use 'Leo: Open Settings' for a richer, interactive experience",
       "properties": {
         "leoIntegration.checkForChangeExternalFiles": {
           "scope": "application",
@@ -257,18 +257,6 @@
           "default": true,
           "type": "boolean",
           "description": "Starts the server process with the 'detached' flag - Allows a dialog to be shown after closing for unsaved Leo documents"
-        },
-        "leoIntegration.setShell": {
-          "scope": "application",
-          "default": false,
-          "type": "boolean",
-          "description": "Starts the server process with the 'shell' flag - May help with some python installations"
-        },
-        "leoIntegration.setCwd": {
-          "scope": "application",
-          "default": true,
-          "type": "boolean",
-          "description": "Starts the server process with the 'CWD' set to the workspace folder"
         },
         "leoIntegration.setPersist": {
           "scope": "application",
@@ -647,8 +635,13 @@
         "title": "Set Enable-Preview"
       },
       {
+        "command": "leointeg.clearCloseEmptyGroups",
+        "category": "Leo",
+        "title": "Clear Close-Empty-Groups"
+      },
+      {
         "command": "leointeg.showSettingsPage",
-        "title": "LeoInteg Settings",
+        "title": "Open Settings",
         "category": "Leo",
         "icon": {
           "light": "resources/light/gear.svg",
@@ -1717,12 +1710,12 @@
     "viewsWelcome": [
       {
         "view": "leoIntegration",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nStart a local server\n[Start Server](command:leointeg.startServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "!leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
       },
       {
         "view": "leoIntegrationExplorer",
-        "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nStart a local server\n[Start Server](command:leointeg.startServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
+        "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
         "when": "!leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
       },
       {
@@ -2142,6 +2135,10 @@
         },
         {
           "command": "leointeg.setEnablePreview",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.clearCloseEmptyGroups",
           "when": "false"
         },
         {
@@ -2795,6 +2792,13 @@
           "command": "leointeg.removeButton",
           "when": "leoTreeOpened && viewItem =~ /leoButtonNode/",
           "group": "leoButtonContext1@1"
+        }
+      ],
+      "extension/context": [
+        {
+          "command": "leointeg.showSettingsPage",
+          "when": "extension =~ /^boltex.leointeg/ && extensionStatus == installed",
+          "group": "3_leointeg@1"
         }
       ]
     },

@@ -139,40 +139,7 @@ export class ServerService {
                 // Child to run independently of its parent process. Depends on the platform.
                 detached: this._leoIntegration.config.setDetached || this._leoIntegration.config.setPersist,
                 windowsHide: true,
-                // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
-                shell: this._leoIntegration.config.setShell
             };
-
-            if (this._leoIntegration.config.setCwd) {
-                if (vscode.workspace.workspaceFolders !== undefined &&
-                    vscode.workspace.workspaceFolders.length) {
-                    let w_folder = vscode.workspace.workspaceFolders[0].uri.path;
-                    let w_file = vscode.workspace.workspaceFolders[0].uri.fsPath;
-                    // If windows and start with a slash - remove it
-                    // to get "c:/" instead of "/c:/"
-                    if (this._isWin32) {
-                        if (w_folder.substring(0, 1) === "/") {
-                            w_folder = w_folder.substring(1);
-                        }
-                        w_folder = w_folder.replace(/\//g, '\\'); // convert to backslashes
-                    }
-                    const w_message = `Server CWD set to: ${w_folder}`;
-                    w_options.cwd = w_folder;
-                    this._leoIntegration.addTerminalPaneEntry(w_message);
-                }
-                else {
-                    const message = "Working folder not found, 'CWD' not set";
-                    vscode.window.showErrorMessage(message);
-                }
-            }
-
-            if (this._leoIntegration.config.setShell) {
-                w_pythonPath = w_pythonPath + " >1"; // ! TEST ! -----------------------
-                // TODO : Other modifications to support shell flag
-                w_options.stdio = ['inherit', 'inherit', 'inherit'];
-                // w_options.stdio = ['pipe', 'pipe', 'pipe'];
-                // w_options.stdio ['pipe', process.stdout, process.stderr];
-            }
 
             this._leoIntegration.addTerminalPaneEntry(
                 'Starting server with command: ' +

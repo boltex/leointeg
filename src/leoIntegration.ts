@@ -419,12 +419,26 @@ export class LeoIntegration {
      */
     public startNetworkServices(): void {
 
-        // TODO : If auto-start, AND limit > 1 AND port taken, skip starting.
-        // use utils.findNextAvailablePort(p_port).then((p_availablePort) => {
-
         // * Check settings and start a server accordingly
         if (this.config.startServerAutomatically) {
-            this.startServer();
+
+            if (this.config.limitUsers > 1) {
+                utils.findSingleAvailablePort(this.config.connectionPort)
+                    .then((p_availablePort) => {
+                        console.log('multi user port free so start it');
+
+                        this.startServer();
+                    }, (p_reason) => {
+                        console.log('multi user port IN USE so skip start');
+                        if (this.config.connectToServerAutomatically) {
+                            console.log('multi user connect');
+
+                            this.connect();
+                        }
+                    });
+            } else {
+                this.startServer();
+            }
         } else if (this.config.connectToServerAutomatically) {
             // * (via settings) Connect to Leo Bridge server automatically without starting one first
             this.connect();

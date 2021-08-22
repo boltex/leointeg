@@ -5,8 +5,7 @@ import {
     runAskYesNoDialogParameters,
     runWarnMessageDialogParameters,
     runInfoMessageDialogParameters,
-    showSaveAsDialogParameters,
-    LeoDocument
+    showSaveAsDialogParameters
 } from "./types";
 import { LeoIntegration } from "./leoIntegration";
 

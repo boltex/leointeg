@@ -46,8 +46,6 @@ export interface ConfigMembers {
     connectionPort: number;
 
     setDetached: boolean;
-    setShell: boolean;
-    setCwd: boolean;
     setPersist: boolean;
     limitUsers: number
 }

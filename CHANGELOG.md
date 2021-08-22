@@ -2,6 +2,12 @@
 
 ## 0.1.18
 
+- Git-diff is now fixed in Leo so the experimental option 'Set CWD' has been removed
+- The somewhat unnecessary experimental option 'Shell' has been removed.
+- Automatic detection of VSCode's workbench.editor.enablePreview if its missing/disabled.
+- Automatic detection of VSCode's workbench.editor.closeEmptyGroups if its missing/enabled.
+- Easier access to the leo settings through the extension config title strings and the extension view menu
+
 ## 0.1.17
 
 - Saves recently opened Leo files list per workspace, instead of globally.

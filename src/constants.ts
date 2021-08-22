@@ -237,8 +237,6 @@ export class Constants {
         IP_PORT: "connectionPort",
 
         SET_DETACHED: "setDetached",
-        SET_SHELL: "setShell",
-        SET_CWD: "setCwd",
         SET_PERSIST: "setPersist",
         LIMIT_USERS: "limitUsers"
     };
@@ -285,8 +283,6 @@ export class Constants {
         IP_PORT: 32125,
 
         SET_DETACHED: true,
-        SET_SHELL: false,
-        SET_CWD: true,
         SET_PERSIST: false,
         LIMIT_USERS: 1
     };
@@ -690,6 +686,7 @@ export class Constants {
         TOGGLE_FIND_SEARCH_BODY_OPTION: Constants.NAME + ".toggleFindSearchBodyOption",
         TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
         SET_ENABLE_PREVIEW: Constants.NAME + ".setEnablePreview",
+        CLEAR_CLOSE_EMPTY_GROUPS: Constants.NAME + ".clearCloseEmptyGroups",
     };
 
     /**
