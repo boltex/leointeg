@@ -1056,6 +1056,7 @@ public configTreeRefresh(): void {
 </t>
 <t tx="ekr.20200815085830.1">/**
  * * Refreshes the outline. A reveal type can be passed along to specify the reveal type for the selected node
+ * @param p_incrementTreeID Flag meaning for the _treeId counter to be incremented
  * @param p_revealType Facultative reveal type to specify type of reveal when the 'selected node' is encountered
  */
 private _refreshOutline(p_incrementTreeID: boolean, p_revealType?: RevealType): void {
@@ -1081,6 +1082,7 @@ private _refreshOutline(p_incrementTreeID: boolean, p_revealType?: RevealType): 
  * * 'TreeView.reveal' for any opened leo outline that is currently visible
  * @param p_leoNode The node to be revealed
  * @param p_options Options object for the revealed node to either also select it, focus it, and expand it
+ * @returns Thenable from the reveal tree node action, resolves directly if no tree visible
  */
 private _revealTreeViewNode(
     p_leoNode: LeoNode,
@@ -1189,6 +1191,7 @@ private _gotSelection(p_node: LeoNode): void {
  * @param p_aside Flag to indicate opening 'Aside' was required
  * @param p_showBodyKeepFocus Flag used to keep focus where it was instead of forcing in body
  * @param p_force_open Flag to force opening the body pane editor
+ * @returns a text editor of the p_node parameter's gnx (As 'leo' file scheme)
  */
 private _tryApplyNodeToBody(
     p_node: LeoNode,
@@ -5778,7 +5781,7 @@ import {
 import { LeoIntegration } from "./leoIntegration";
 
 @others
-"workbench.editor.closeEmptyGroups": false,</t>
+</t>
 <t tx="felix.20200718040540.1">import * as vscode from "vscode";
 import * as utils from "./utils";
 import * as path from 'path';
@@ -8753,6 +8756,7 @@ public setupNoOpenedLeoDocument(): void {
 <t tx="felix.20200719025231.23">/**
  * * A Leo file was opened: setup leoInteg's UI accordingly.
  * @param p_openFileResult Returned info about currently opened and editing document
+ * @param p_asClient specifies its not the originator of the opened file in multiple user context
  * @return a promise that resolves to an opened body pane text editor
  */
 public setupOpenedLeoDocument(
@@ -9295,6 +9299,7 @@ public showOutline(p_focusOutline?: boolean): void {
  * @param p_ap The archived position to convert
  * @param p_revealSelected Flag that will trigger the node to reveal, select, and focus if its selected node in Leo
  * @param p_specificNode Other specific LeoNode to be used to override when revealing the the selected node is encountered
+ * @returns The converted Leo Node (For tree provider usage)
  */
 public apToLeoNode(
     p_ap: ArchivedPosition,
@@ -9370,6 +9375,7 @@ private _apToLeoNodeConvertReveal(p_leoNode: LeoNode): void {
 <t tx="felix.20200719025231.40">/**
  * * Converts an array of 'ap' to an array of leoNodes.  This is used in 'getChildren' of leoOutline.ts
  * @param p_array Array of archived positions to be converted to leoNodes for the vscode treeview
+ * @returns An array of converted Leo Nodes (For tree provider usage)
  */
 public arrayToLeoNodesArray(p_array: ArchivedPosition[]): LeoNode[] {
     const w_leoNodesArray: LeoNode[] = [];
@@ -11091,6 +11097,7 @@ public static VSCODE_COMMANDS = {
 </t>
 <t tx="felix.20210418014039.1">/**
  * * Moved a document to another column
+ * @param p_columnChangeEvent  event describing the change of a text editor's view column
  */
 public _changedTextEditorViewColumn(
     p_columnChangeEvent: vscode.TextEditorViewColumnChangeEvent
@@ -11104,9 +11111,11 @@ public _changedTextEditorViewColumn(
 </t>
 <t tx="felix.20210418014040.1">/**
  * * Tabbed on another editor
+ * @param p_editors text editor array (to be checked for changes in this method)
  */
 public _changedVisibleTextEditors(p_editors: vscode.TextEditor[]): void {
     if (p_editors &amp;&amp; p_editors.length) {
+        // May be no changes - so check length
         p_editors.forEach((p_textEditor) =&gt; {
             if (p_textEditor &amp;&amp; p_textEditor.document.uri.scheme === 'more') {
                 if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
@@ -12622,7 +12631,7 @@ public prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise&lt;any&gt
  * @returns a promise of an opened port number
  */
 export function findNextAvailablePort(p_startingPort: number): Promise&lt;number&gt; {
-    return = portfinder.getPortPromise({
+    return portfinder.getPortPromise({
         port: p_startingPort,
         startPort: p_startingPort,
         stopPort: p_startingPort + 5
@@ -13172,7 +13181,7 @@ public setEnablePreview(): Thenable&lt;void&gt; {
 
 </t>
 <t tx="felix.20210818225820.1">/**
- * * Check if the preview mode flag is set
+ * * Check if the workbench.editor.enablePreview flag is set
  */
 public checkEnablePreview(): void {
     // workbench.editor.enablePreview
@@ -13192,6 +13201,7 @@ public checkEnablePreview(): void {
             });
     }
 }
+
 </t>
 <t tx="felix.20210820231649.1">/**
  * * Check for unique port #
@@ -13199,7 +13209,7 @@ public checkEnablePreview(): void {
  * @returns a promise of an opened port number - or rejection if busy port
  */
 export function findSingleAvailablePort(p_port: number): Promise&lt;number&gt; {
-    return q_portFinder = portfinder.getPortPromise({
+    return portfinder.getPortPromise({
         port: p_port,
         startPort: p_port,
         stopPort: p_port
@@ -13208,10 +13218,9 @@ export function findSingleAvailablePort(p_port: number): Promise&lt;number&gt; {
 
 </t>
 <t tx="felix.20210821202347.1">/**
- * * Check if the 'close Empty Groups' setting is false
+ * * Check if the 'workbench.editor.closeEmptyGroups' setting is false
  */
 public checkCloseEmptyGroups(): void {
-    // workbench.editor.closeEmptyGroups
     let w_result: any = false;
     const w_setting = vscode.workspace.getConfiguration("workbench.editor");
     if (w_setting.inspect("closeEmptyGroups")!.globalValue === undefined) {
@@ -13228,12 +13237,12 @@ public checkCloseEmptyGroups(): void {
             });
     }
 }
+
 </t>
 <t tx="felix.20210821203119.1">/**
-* * Set the "workbench.editor.enablePreview" vscode setting
+* * Clears the workbench.editor.closeEmptyGroups vscode setting
 */
 public clearCloseEmptyGroups(): Thenable&lt;void&gt; {
-    // workbench.editor.enablePreview
     return vscode.workspace.getConfiguration("workbench.editor")
         .update("closeEmptyGroups", false, true);
 }

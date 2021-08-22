@@ -194,16 +194,15 @@ export class Config implements ConfigMembers {
     }
 
     /**
-    * * Set the "workbench.editor.enablePreview" vscode setting
+    * * Clears the workbench.editor.closeEmptyGroups vscode setting
     */
     public clearCloseEmptyGroups(): Thenable<void> {
-        // workbench.editor.enablePreview
         return vscode.workspace.getConfiguration("workbench.editor")
             .update("closeEmptyGroups", false, true);
     }
 
     /**
-     * * Check if the preview mode flag is set
+     * * Check if the workbench.editor.enablePreview flag is set
      */
     public checkEnablePreview(): void {
         // workbench.editor.enablePreview
@@ -223,11 +222,11 @@ export class Config implements ConfigMembers {
                 });
         }
     }
+
     /**
-     * * Check if the 'close Empty Groups' setting is false
+     * * Check if the 'workbench.editor.closeEmptyGroups' setting is false
      */
     public checkCloseEmptyGroups(): void {
-        // workbench.editor.closeEmptyGroups
         let w_result: any = false;
         const w_setting = vscode.workspace.getConfiguration("workbench.editor");
         if (w_setting.inspect("closeEmptyGroups")!.globalValue === undefined) {
@@ -244,6 +243,7 @@ export class Config implements ConfigMembers {
                 });
         }
     }
+
     /**
      * * Build config from settings from vscode's saved config settings
      */
