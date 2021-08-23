@@ -14291,8 +14291,8 @@ body &gt; div &gt; div &gt; label:active {
                          data-setting /&gt;
                   &lt;label for="setDetached"&gt;Spawn&amp;nbsp;Detached&lt;/label&gt;
                 &lt;/div&gt;
-                &lt;span class="setting__hint"&gt;Server spawned with the 'detached' flag,&lt;br&gt;
-                  allows dialogs when closing with unsaved files&lt;/span&gt;
+                &lt;span class="setting__hint"&gt;Server spawned with 'detached' option&lt;br&gt;
+                  (Shows dialog when quitting with unsaved files)&lt;/span&gt;
               &lt;/div&gt;
               &lt;div class="setting"&gt;
                 &lt;div class="setting__input"&gt;
@@ -14302,8 +14302,8 @@ body &gt; div &gt; div &gt; label:active {
                          data-setting /&gt;
                   &lt;label for="setPersist"&gt;Keep&amp;nbsp;Server&amp;nbsp;Alive&lt;/label&gt;
                 &lt;/div&gt;
-                &lt;span class="setting__hint"&gt;Starts the server with the 'persist' flag&lt;br&gt;
-                  (Forces 'detached' flag)&lt;/span&gt;
+                &lt;span class="setting__hint"&gt;Starts the server with '--persist' arg&lt;br&gt;
+                  (Forces the 'Spawn Detached' flag)&lt;/span&gt;
               &lt;/div&gt;
               &lt;div class="setting"&gt;
                 &lt;div class="setting__input"&gt;
@@ -14317,7 +14317,7 @@ body &gt; div &gt; div &gt; label:active {
                          placeholder="1 to 255"
                          data-setting /&gt;
                 &lt;/div&gt;
-                &lt;span class="setting__hint"&gt;Server simultaneous connections&lt;/span&gt;
+                &lt;span class="setting__hint"&gt;Server's max simultaneous connections&lt;/span&gt;
               &lt;/div&gt;
 
             &lt;/fieldset&gt;
@@ -16319,6 +16319,7 @@ fieldset {
   display: flex;
   flex-wrap: wrap;
   margin-right: 1em;
+  padding-right: 0;
   border-style: solid;
   border-width: 1px;
   background-color: #80000010;
