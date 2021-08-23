@@ -418,21 +418,16 @@ export class LeoIntegration {
      * Starts a leoBridge server, and/or establish a connection to a server, based on config settings.
      */
     public startNetworkServices(): void {
-
         // * Check settings and start a server accordingly
         if (this.config.startServerAutomatically) {
-
             if (this.config.limitUsers > 1) {
                 utils.findSingleAvailablePort(this.config.connectionPort)
                     .then((p_availablePort) => {
-                        console.log('multi user port free so start it');
-
                         this.startServer();
                     }, (p_reason) => {
-                        console.log('multi user port IN USE so skip start');
+                        // Rejected: Multi user port IN USE so skip start
                         if (this.config.connectToServerAutomatically) {
-                            console.log('multi user connect');
-
+                            // Still try to connect if auto-connect is 'on'
                             this.connect();
                         }
                     });
