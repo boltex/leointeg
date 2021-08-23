@@ -7243,7 +7243,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         }
 
         // Add port
-        w_args.push("--port ");
+        w_args.push("--port");
         w_args.push(this.usingPort.toString());
 
         const w_options: child.SpawnOptions = {

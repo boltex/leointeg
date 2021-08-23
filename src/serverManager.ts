@@ -134,7 +134,7 @@ export class ServerService {
             }
 
             // Add port
-            w_args.push("--port ");
+            w_args.push("--port");
             w_args.push(this.usingPort.toString());
 
             const w_options: child.SpawnOptions = {
