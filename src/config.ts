@@ -47,7 +47,6 @@ export class Config implements ConfigMembers {
     public connectionPort: number = Constants.CONFIG_DEFAULTS.IP_PORT;
 
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
-    public setPersist: boolean = Constants.CONFIG_DEFAULTS.SET_PERSIST;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
 
     private _isBusySettingConfig: boolean = false;
@@ -100,7 +99,6 @@ export class Config implements ConfigMembers {
             connectionPort: this.connectionPort,
 
             setDetached: this.setDetached,
-            setPersist: this.setPersist,
             limitUsers: this.limitUsers,
         };
     }
@@ -301,7 +299,6 @@ export class Config implements ConfigMembers {
             this.connectionPort = GET(NAME).get(NAMES.IP_PORT, DEFAULTS.IP_PORT);
 
             this.setDetached = GET(NAME).get(NAMES.SET_DETACHED, DEFAULTS.SET_DETACHED);
-            this.setPersist = GET(NAME).get(NAMES.SET_PERSIST, DEFAULTS.SET_PERSIST);
             this.limitUsers = GET(NAME).get(NAMES.LIMIT_USERS, DEFAULTS.LIMIT_USERS);
 
             // * Set context for tree items visibility that are based on config options

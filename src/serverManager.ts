@@ -123,10 +123,6 @@ export class ServerService {
             // The server script itself
             w_args.push(w_serverScriptPath);
 
-            if (this._leoIntegration.config.setPersist) {
-                w_args.push("--persist");
-            }
-
             if (this._leoIntegration.config.limitUsers > 1 &&
                 this._leoIntegration.config.limitUsers < 256) {
                 w_args.push("--limit");
@@ -138,8 +134,10 @@ export class ServerService {
             w_args.push(this.usingPort.toString());
 
             const w_options: child.SpawnOptions = {
-                // Child to run independently of its parent process. Depends on the platform.
-                detached: this._leoIntegration.config.setDetached || this._leoIntegration.config.setPersist,
+                // Child to run independently of its parent process.
+                // (Depends on the platform)
+                detached: this._leoIntegration.config.setDetached,
+                // If possible hide the terminal window that could appear
                 windowsHide: true,
             };
 

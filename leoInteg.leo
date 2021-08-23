@@ -870,7 +870,6 @@ public static CONFIG_DEFAULTS = {
     IP_PORT: 32125,
 
     SET_DETACHED: true,
-    SET_PERSIST: false,
     LIMIT_USERS: 1
 };
 
@@ -3992,12 +3991,6 @@ print('done')
   "type": "boolean",
   "description": "Starts the server process with the 'detached' flag - Allows a dialog to be shown after closing for unsaved Leo documents"
 },
-"leoIntegration.setPersist": {
-  "scope": "application",
-  "default": false,
-  "type": "boolean",
-  "description": "Sets the persist flag for the server (forces 'detached') to continue after last disconnect"
-},
 "leoIntegration.limitUsers": {
   "default": 1,
   "scope": "application",
@@ -5136,7 +5129,6 @@ public static CONFIG_NAMES = {
     IP_PORT: "connectionPort",
 
     SET_DETACHED: "setDetached",
-    SET_PERSIST: "setPersist",
     LIMIT_USERS: "limitUsers"
 };
 
@@ -5431,7 +5423,6 @@ export class Config implements ConfigMembers {
     public connectionPort: number = Constants.CONFIG_DEFAULTS.IP_PORT;
 
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
-    public setPersist: boolean = Constants.CONFIG_DEFAULTS.SET_PERSIST;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
 
     private _isBusySettingConfig: boolean = false;
@@ -5487,7 +5478,6 @@ public getConfig(): ConfigMembers {
         connectionPort: this.connectionPort,
 
         setDetached: this.setDetached,
-        setPersist: this.setPersist,
         limitUsers: this.limitUsers,
     };
 }
@@ -5586,7 +5576,6 @@ public buildFromSavedSettings(): void {
         this.connectionPort = GET(NAME).get(NAMES.IP_PORT, DEFAULTS.IP_PORT);
 
         this.setDetached = GET(NAME).get(NAMES.SET_DETACHED, DEFAULTS.SET_DETACHED);
-        this.setPersist = GET(NAME).get(NAMES.SET_PERSIST, DEFAULTS.SET_PERSIST);
         this.limitUsers = GET(NAME).get(NAMES.LIMIT_USERS, DEFAULTS.LIMIT_USERS);
 
         // * Set context for tree items visibility that are based on config options
@@ -7232,10 +7221,6 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         // The server script itself
         w_args.push(w_serverScriptPath);
 
-        if (this._leoIntegration.config.setPersist) {
-            w_args.push("--persist");
-        }
-
         if (this._leoIntegration.config.limitUsers &gt; 1 &amp;&amp;
             this._leoIntegration.config.limitUsers &lt; 256) {
             w_args.push("--limit");
@@ -7247,8 +7232,10 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         w_args.push(this.usingPort.toString());
 
         const w_options: child.SpawnOptions = {
-            // Child to run independently of its parent process. Depends on the platform.
-            detached: this._leoIntegration.config.setDetached || this._leoIntegration.config.setPersist,
+            // Child to run independently of its parent process.
+            // (Depends on the platform)
+            detached: this._leoIntegration.config.setDetached,
+            // If possible hide the terminal window that could appear
             windowsHide: true,
         };
 
@@ -7702,7 +7689,6 @@ export interface ConfigMembers {
     connectionPort: number;
 
     setDetached: boolean;
-    setPersist: boolean;
     limitUsers: number
 }
 
@@ -13090,11 +13076,15 @@ public setFontConfig(p_settings: FontSettings): void {
 }
 
 </t>
-<t tx="felix.20210727225050.1">export interface IVsCodeApi {
+<t tx="felix.20210727225050.1">/**
+ * * For simple interactions in webviews into vscode API
+ */
+export interface IVsCodeApi {
     postMessage(msg: {}): void;
     setState(state: {}): void;
     getState(): { [key: string]: any };
 }
+
 </t>
 <t tx="felix.20210802162424.1">/**
  * * Disconnects from the server
@@ -14284,17 +14274,6 @@ body &gt; div &gt; div &gt; label:active {
                 &lt;/div&gt;
                 &lt;span class="setting__hint"&gt;Server spawned with 'detached' option&lt;br&gt;
                   (Shows dialog when quitting with unsaved files)&lt;/span&gt;
-              &lt;/div&gt;
-              &lt;div class="setting"&gt;
-                &lt;div class="setting__input"&gt;
-                  &lt;input id="setPersist"
-                         name="setPersist"
-                         type="checkbox"
-                         data-setting /&gt;
-                  &lt;label for="setPersist"&gt;Keep&amp;nbsp;Server&amp;nbsp;Alive&lt;/label&gt;
-                &lt;/div&gt;
-                &lt;span class="setting__hint"&gt;Starts the server with '--persist' arg&lt;br&gt;
-                  (Forces the 'Spawn Detached' flag)&lt;/span&gt;
               &lt;/div&gt;
               &lt;div class="setting"&gt;
                 &lt;div class="setting__input"&gt;

@@ -258,12 +258,6 @@
           "type": "boolean",
           "description": "Starts the server process with the 'detached' flag - Allows a dialog to be shown after closing for unsaved Leo documents"
         },
-        "leoIntegration.setPersist": {
-          "scope": "application",
-          "default": false,
-          "type": "boolean",
-          "description": "Sets the persist flag for the server (forces 'detached') to continue after last disconnect"
-        },
         "leoIntegration.limitUsers": {
           "default": 1,
           "scope": "application",

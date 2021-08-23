@@ -237,7 +237,6 @@ export class Constants {
         IP_PORT: "connectionPort",
 
         SET_DETACHED: "setDetached",
-        SET_PERSIST: "setPersist",
         LIMIT_USERS: "limitUsers"
     };
 
@@ -283,7 +282,6 @@ export class Constants {
         IP_PORT: 32125,
 
         SET_DETACHED: true,
-        SET_PERSIST: false,
         LIMIT_USERS: 1
     };
 
