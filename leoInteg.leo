@@ -1283,6 +1283,7 @@ public nodeCommand(p_userCommand: UserCommand): Promise&lt;LeoBridgePackage&gt; 
 </t>
 <t tx="ekr.20200815090517.1">/**
  * * Invoke an '@button' click directly by index string. Used by '@buttons' treeview.
+ * @param p_node the node of the at-buttons panel that was clicked
  * @returns the launchRefresh promise started after it's done running the 'atButton' command
  */
 public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
@@ -1308,6 +1309,7 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
 </t>
 <t tx="ekr.20200815090517.2">/**
  * * Removes an '@button' from Leo's button dict, directly by index string. Used by '@buttons' treeview.
+ * @param p_node the node of the at-buttons panel that was chosen to remove
  * @returns the launchRefresh promise started after it's done removing the button
  */
 public removeAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
@@ -7230,17 +7232,19 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         // The server script itself
         w_args.push(w_serverScriptPath);
 
-        // Add port
-        w_args.push("-p " + this.usingPort);
-
         if (this._leoIntegration.config.setPersist) {
             w_args.push("--persist");
         }
 
         if (this._leoIntegration.config.limitUsers &gt; 1 &amp;&amp;
             this._leoIntegration.config.limitUsers &lt; 256) {
-            w_args.push("--limit " + this._leoIntegration.config.limitUsers);
+            w_args.push("--limit");
+            w_args.push(this._leoIntegration.config.limitUsers.toString());
         }
+
+        // Add port
+        w_args.push("--port ");
+        w_args.push(this.usingPort.toString());
 
         const w_options: child.SpawnOptions = {
             // Child to run independently of its parent process. Depends on the platform.
@@ -7253,8 +7257,8 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
             w_pythonPath + " " + w_args.join(" ")
         );
 
-        // * See https://nodejs.org/api/child_process.html for options
-        this._serverProcess = child.spawn(w_pythonPath, w_args, w_options); // SPAWN method
+        // Spawn the process
+        this._serverProcess = child.spawn(w_pythonPath, w_args, w_options);
 
         // To prevent the parent from waiting for a given subprocess to exit
         this._serverProcess.unref();
@@ -9836,6 +9840,7 @@ public insertNode(
 <t tx="felix.20200719025231.58">/**
  * * Asks for file name and path, then saves the Leo file
  * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
+ * @returns a promise from saving the file results, or that will resolve to undefined if cancelled
  */
 public saveAsLeoFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undefined&gt; {
     return this._isBusyTriggerSave(true, true)
@@ -10001,6 +10006,7 @@ public switchLeoFile(): Promise&lt;vscode.TextEditor | undefined&gt; {
 </t>
 <t tx="felix.20200719025231.61">/**
  * * Switches Leo document directly by index number. Used by document treeview and switchLeoFile command.
+ * @param p_index position of the opened Leo document in the document array
  * @returns A promise that resolves with a textEditor of the selected node's body from the newly opened document
  */
 public selectOpenedLeoDocument(p_index: number): Promise&lt;vscode.TextEditor&gt; {
@@ -10174,6 +10180,7 @@ public newLeoFile(): Promise&lt;vscode.TextEditor&gt; {
 <t tx="felix.20200719025231.66">/**
  * * Shows an 'Open Leo File' dialog window and opens the chosen file
  * * If not shown already, it also shows the outline, body and log panes along with leaving focus in the outline
+ * @param p_leoFileUri optional uri for specifying a file, if missing, a dialog will open
  * @returns A promise that resolves with a textEditor of the chosen file
  */
 public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;vscode.TextEditor | undefined&gt; {
@@ -11772,6 +11779,8 @@ export interface LeoGuiFindTabManagerSettings {
 </t>
 <t tx="felix.20210524215215.1">/**
  * * Send the settings to the Leo Bridge Server
+ * @param p_settings the search settings to be set server side to affect next results
+ * @returns the promise from the server call
  */
 public saveSearchSettings(p_settings: LeoSearchSettings): Promise&lt;LeoBridgePackage&gt; {
     this._lastSettingsUsed = p_settings;
@@ -11800,6 +11809,7 @@ public saveSearchSettings(p_settings: LeoSearchSettings): Promise&lt;LeoBridgePa
 </t>
 <t tx="felix.20210524231157.1">/**
  * * Capture instance for further calls on find panel webview
+ * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
  */
 public setFindPanel(p_panel: vscode.WebviewView) {
     if (this._lastTreeView === this._leoTreeExView) {
@@ -11811,7 +11821,7 @@ public setFindPanel(p_panel: vscode.WebviewView) {
 
 </t>
 <t tx="felix.20210525232728.1">/**
- * * Get settings from Leo and apply them to the find panel webviews
+ * * Gets the search settings from Leo, and applies them to the find panel webviews
  */
 public loadSearchSettings(): void {
     this.sendAction(Constants.LEOBRIDGE.GET_SEARCH_SETTINGS).then(
@@ -12078,6 +12088,7 @@ public replace(p_fromOutline: boolean, p_thenFind: boolean): Promise&lt;any&gt; 
 </t>
 <t tx="felix.20210530225306.1">/**
  * * Set search setting in the search webview
+ * @param p_id string id of the setting name
  */
 public setSearchSetting(p_id: string): void {
     let w_panel: vscode.WebviewView | undefined;
@@ -12590,6 +12601,8 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
 </t>
 <t tx="felix.20210610022836.1">/**
  * * Previous / Next Node Buttons
+ * @param p_next Flag to mean 'next' instead of default 'previous'
+ * @returns the promise from the command sent to the leo bridge
  */
 public prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise&lt;any&gt; {
     return this._isBusyTriggerSave(false, true)

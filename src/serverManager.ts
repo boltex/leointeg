@@ -123,17 +123,19 @@ export class ServerService {
             // The server script itself
             w_args.push(w_serverScriptPath);
 
-            // Add port
-            w_args.push("-p " + this.usingPort);
-
             if (this._leoIntegration.config.setPersist) {
                 w_args.push("--persist");
             }
 
             if (this._leoIntegration.config.limitUsers > 1 &&
                 this._leoIntegration.config.limitUsers < 256) {
-                w_args.push("--limit " + this._leoIntegration.config.limitUsers);
+                w_args.push("--limit");
+                w_args.push(this._leoIntegration.config.limitUsers.toString());
             }
+
+            // Add port
+            w_args.push("--port ");
+            w_args.push(this.usingPort.toString());
 
             const w_options: child.SpawnOptions = {
                 // Child to run independently of its parent process. Depends on the platform.
@@ -146,8 +148,8 @@ export class ServerService {
                 w_pythonPath + " " + w_args.join(" ")
             );
 
-            // * See https://nodejs.org/api/child_process.html for options
-            this._serverProcess = child.spawn(w_pythonPath, w_args, w_options); // SPAWN method
+            // Spawn the process
+            this._serverProcess = child.spawn(w_pythonPath, w_args, w_options);
 
             // To prevent the parent from waiting for a given subprocess to exit
             this._serverProcess.unref();

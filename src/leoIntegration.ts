@@ -2559,6 +2559,7 @@ export class LeoIntegration {
 
     /**
      * * Set search setting in the search webview
+     * @param p_id string id of the setting name
      */
     public setSearchSetting(p_id: string): void {
         let w_panel: vscode.WebviewView | undefined;
@@ -2571,7 +2572,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Get settings from Leo and apply them to the find panel webviews
+     * * Gets the search settings from Leo, and applies them to the find panel webviews
      */
     public loadSearchSettings(): void {
         this.sendAction(Constants.LEOBRIDGE.GET_SEARCH_SETTINGS).then(
@@ -2617,6 +2618,8 @@ export class LeoIntegration {
 
     /**
      * * Send the settings to the Leo Bridge Server
+     * @param p_settings the search settings to be set server side to affect next results
+     * @returns the promise from the server call
      */
     public saveSearchSettings(p_settings: LeoSearchSettings): Promise<LeoBridgePackage> {
         this._lastSettingsUsed = p_settings;
@@ -2756,6 +2759,7 @@ export class LeoIntegration {
     /**
      * * Asks for file name and path, then saves the Leo file
      * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
+     * @returns a promise from saving the file results, or that will resolve to undefined if cancelled
      */
     public saveAsLeoFile(p_fromOutline?: boolean): Promise<LeoBridgePackage | undefined> {
         return this._isBusyTriggerSave(true, true)
@@ -2883,6 +2887,7 @@ export class LeoIntegration {
 
     /**
      * * Switches Leo document directly by index number. Used by document treeview and switchLeoFile command.
+     * @param p_index position of the opened Leo document in the document array
      * @returns A promise that resolves with a textEditor of the selected node's body from the newly opened document
      */
     public selectOpenedLeoDocument(p_index: number): Promise<vscode.TextEditor> {
@@ -3062,6 +3067,7 @@ export class LeoIntegration {
     /**
      * * Shows an 'Open Leo File' dialog window and opens the chosen file
      * * If not shown already, it also shows the outline, body and log panes along with leaving focus in the outline
+     * @param p_leoFileUri optional uri for specifying a file, if missing, a dialog will open
      * @returns A promise that resolves with a textEditor of the chosen file
      */
     public openLeoFile(p_leoFileUri?: vscode.Uri): Promise<vscode.TextEditor | undefined> {
@@ -3168,6 +3174,7 @@ export class LeoIntegration {
 
     /**
      * * Invoke an '@button' click directly by index string. Used by '@buttons' treeview.
+     * @param p_node the node of the at-buttons panel that was clicked
      * @returns the launchRefresh promise started after it's done running the 'atButton' command
      */
     public clickAtButton(p_node: LeoButtonNode): Promise<boolean> {
@@ -3192,6 +3199,7 @@ export class LeoIntegration {
 
     /**
      * * Removes an '@button' from Leo's button dict, directly by index string. Used by '@buttons' treeview.
+     * @param p_node the node of the at-buttons panel that was chosen to remove
      * @returns the launchRefresh promise started after it's done removing the button
      */
     public removeAtButton(p_node: LeoButtonNode): Promise<boolean> {
@@ -3210,6 +3218,8 @@ export class LeoIntegration {
 
     /**
      * * Previous / Next Node Buttons
+     * @param p_next Flag to mean 'next' instead of default 'previous'
+     * @returns the promise from the command sent to the leo bridge
      */
     public prevNextNode(p_next: boolean, p_fromOutline?: boolean): Promise<any> {
         return this._isBusyTriggerSave(false, true)
@@ -3231,6 +3241,7 @@ export class LeoIntegration {
 
     /**
      * * Capture instance for further calls on find panel webview
+     * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
      */
     public setFindPanel(p_panel: vscode.WebviewView) {
         if (this._lastTreeView === this._leoTreeExView) {
