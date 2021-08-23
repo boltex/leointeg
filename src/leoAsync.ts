@@ -34,18 +34,14 @@ export class LeoAsync {
      * The 'action' string can be checked to determine what kind, if any, is required.
      */
     public refresh(p_package: any): void {
-        console.log('REFRESH', p_package);
         if (p_package.opened && this._leoIntegration.leoStates.fileOpenedReady) {
             this._leoIntegration.refreshAll();
-
         } else if (p_package.opened && !this._leoIntegration.leoStates.fileOpenedReady) {
-            // get standard response to have commander details
-            const q_action = this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
+            this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                 .then((p_package) => {
                     p_package.filename = p_package.commander!.fileName;
                     this._leoIntegration.setupOpenedLeoDocument(p_package, true);
                 });
-
         } else {
             this._leoIntegration.setupNoOpenedLeoDocument();
         }
