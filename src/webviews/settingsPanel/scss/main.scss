@@ -921,6 +921,15 @@ fieldset {
   border-width: 1px;
   background-color: #80000010;
   border-color: #92473e;
+  p {
+    margin: 0;
+    padding-right: 1em;
+    width: 100%;
+    color: var(--color-foreground--65);
+    span {
+      color: var(--color-foreground);
+    }
+  }
 }
 
 // .setting--expandable {

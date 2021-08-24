@@ -5016,7 +5016,7 @@ public static GUI = {
  * * Basic user messages strings for messages and dialogs
  */
 public static USER_MESSAGES = {
-    SCRIPT_BUTTON: "Creates a button from selected node",
+    SCRIPT_BUTTON: "from selected node",
     SCRIPT_BUTTON_TOOLTIP:
         "Creates a new button with the presently selected node.\n" +
         "For example, to run a script on any part of an outline:\n" +
@@ -8082,7 +8082,8 @@ Leo will detect derived file changes and will ask to either **refresh from disk*
 </t>
 <t tx="felix.20200718222053.1">## Automate Synchronization
 
-The **change detection** process can be automated to always refresh, or ignore file changes: A **notification** will inform you of the action taken instead.
+The **change detection** process can be automated to always refresh, or ignore file changes:
+A **notification** will inform you of the action taken instead.
 
 ![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/auto-sync.gif)
 
@@ -8118,7 +8119,8 @@ Main issues are listed below. See the repository's [Issues Page](https://github.
 
 ### Keybindings Conflicts Resolution
 
-If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane, add **`&amp;&amp; resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
+If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane,
+add **`&amp;&amp; resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Linux Keybindings
 
@@ -8131,18 +8133,27 @@ for more information.
 ### Move Outline Keyboard Commands
 
 For some users, the **`Alt+[Arrow Keys]`**, **`Ctrl+D`** and **`Ctrl+T`** keybinding are already assigned.
+
 To help with this conflict, tree-browsing, outline-move keyboard commands, and switch focus command will only trigger
 with the additional condition of having no text selection in the editor.
+
 So select at least one character to use the previously assigned original keyboard commands while focus is in the body pane.
 
-&gt; This extension is still in development, so please refer to its [issue tracker](https://github.com/boltex/leointeg/issues) to learn more about its intended features, or to contribute with additional information if you encounter other issues yourself.
+&gt; Refer to the [issue tracker](https://github.com/boltex/leointeg/issues) page to learn more about the known issues, or to contribute with additional information if you encounter some yourself.
 
 </t>
 <t tx="felix.20200718222113.1">## How It Works
 
-Leo integration into VS Code is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
+Leo integration into VS Code is done by starting
+a [python server script](https://github.com/leo-editor/leo-editor/blob/devel/leo/core/leoserver.py) and connecting to it via
+a [websocket](https://websockets.readthedocs.io/en/stable/intro.html)
+to exchange JSON data. The server script leverages [leoBridge](https://leoeditor.com/leoBridge.html)
+and re-uses code from the [leoflexx.py plugin](https://github.com/leo-editor/leo-editor/blob/devel/leo/plugins/leoflexx.py#L574).
 
-The outline pane is made by implementing a [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics), while the body-pane's _virtual document_ is made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api) and using the node's gnx as identifier.
+The outline pane is made by implementing a
+[TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics),
+while the body-pane's _virtual document_ is made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api)
+and using the node's gnx as identifier.
 
 ---
 
@@ -14289,7 +14300,12 @@ body &gt; div &gt; div &gt; label:active {
                 &lt;/div&gt;
                 &lt;span class="setting__hint"&gt;Server's max simultaneous connections&lt;/span&gt;
               &lt;/div&gt;
-
+              &lt;br&gt;
+              &lt;p&gt;For standalone, persistent, or multi-user server,
+                see all server options by running
+                &lt;span&gt;leoserver.py --help&lt;/span&gt;
+                in your leo-editor/leo/core folder.
+              &lt;/p&gt;
             &lt;/fieldset&gt;
 
           &lt;/div&gt;
@@ -16294,6 +16310,15 @@ fieldset {
   border-width: 1px;
   background-color: #80000010;
   border-color: #92473e;
+  p {
+    margin: 0;
+    padding-right: 1em;
+    width: 100%;
+    color: var(--color-foreground--65);
+    span {
+      color: var(--color-foreground);
+    }
+  }
 }
 
 // .setting--expandable {

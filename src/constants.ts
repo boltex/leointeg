@@ -98,7 +98,7 @@ export class Constants {
      * * Basic user messages strings for messages and dialogs
      */
     public static USER_MESSAGES = {
-        SCRIPT_BUTTON: "Creates a button from selected node",
+        SCRIPT_BUTTON: "from selected node",
         SCRIPT_BUTTON_TOOLTIP:
             "Creates a new button with the presently selected node.\n" +
             "For example, to run a script on any part of an outline:\n" +

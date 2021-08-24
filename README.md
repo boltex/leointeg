@@ -113,7 +113,8 @@ Leo will detect derived file changes and will ask to either **refresh from disk*
 
 ## Automate Synchronization
 
-The **change detection** process can be automated to always refresh, or ignore file changes: A **notification** will inform you of the action taken instead.
+The **change detection** process can be automated to always refresh, or ignore file changes:
+A **notification** will inform you of the action taken instead.
 
 ![auto sync](https://raw.githubusercontent.com/boltex/leointeg/master/resources/auto-sync.gif)
 
@@ -146,7 +147,8 @@ Main issues are listed below. See the repository's [Issues Page](https://github.
 
 ### Keybindings Conflicts Resolution
 
-If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane, add **`&& resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
+If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane,
+add **`&& resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Linux Keybindings
 
@@ -159,17 +161,26 @@ for more information.
 ### Move Outline Keyboard Commands
 
 For some users, the **`Alt+[Arrow Keys]`**, **`Ctrl+D`** and **`Ctrl+T`** keybinding are already assigned.
+
 To help with this conflict, tree-browsing, outline-move keyboard commands, and switch focus command will only trigger
 with the additional condition of having no text selection in the editor.
+
 So select at least one character to use the previously assigned original keyboard commands while focus is in the body pane.
 
-> This extension is still in development, so please refer to its [issue tracker](https://github.com/boltex/leointeg/issues) to learn more about its intended features, or to contribute with additional information if you encounter other issues yourself.
+> Refer to the [issue tracker](https://github.com/boltex/leointeg/issues) page to learn more about the known issues, or to contribute with additional information if you encounter some yourself.
 
 ## How It Works
 
-Leo integration into VS Code is done by starting a python server script and connecting to it via a [websocket](https://websockets.readthedocs.io/en/stable/intro.html) to exchange JSON data. That script leverages [leoBridge](https://leoeditor.com/leoBridge.html) and re-uses code from the leoflexx.py plugin.
+Leo integration into VS Code is done by starting
+a [python server script](https://github.com/leo-editor/leo-editor/blob/devel/leo/core/leoserver.py) and connecting to it via
+a [websocket](https://websockets.readthedocs.io/en/stable/intro.html)
+to exchange JSON data. The server script leverages [leoBridge](https://leoeditor.com/leoBridge.html)
+and re-uses code from the [leoflexx.py plugin](https://github.com/leo-editor/leo-editor/blob/devel/leo/plugins/leoflexx.py#L574).
 
-The outline pane is made by implementing a [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics), while the body-pane's _virtual document_ is made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api) and using the node's gnx as identifier.
+The outline pane is made by implementing a
+[TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics),
+while the body-pane's _virtual document_ is made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api)
+and using the node's gnx as identifier.
 
 ---
 
