@@ -14303,7 +14303,7 @@ body &gt; div &gt; div &gt; label:active {
               &lt;br&gt;
               &lt;p&gt;For standalone, persistent, or multi-user server,
                 see all server options by running
-                &lt;span&gt;leoserver.py --help&lt;/span&gt;
+                &lt;span&gt;leoserver.py&amp;nbsp;--help&lt;/span&gt;
                 in your leo-editor/leo/core folder.
               &lt;/p&gt;
             &lt;/fieldset&gt;
