@@ -7934,20 +7934,9 @@ export function isHexColor(p_hexString: string): boolean {
 <t tx="felix.20200718220811.1"></t>
 <t tx="felix.20200718220818.1">@language md
 @tabwidth -4
-&lt;p align="center"&gt;
-  &lt;br /&gt;
-  &lt;a title="Leo Integration" href="https://github.com/boltex/leointeg#-leo-for-vs-code"&gt;&lt;img src="https://raw.githubusercontent.com/boltex/leointeg/master/resources/banner-blur-narrow.png" alt="LeoInteg Banner" /&gt;&lt;/a&gt;
-&lt;/p&gt;
-
-## Sponsor LeoInteg
-
-If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.github.io/) it.
-Also please [write a review](https://marketplace.visualstudio.com/items?itemName=boltex.leointeg#review-details "Write a review")
-or [star it on GitHub](https://github.com/boltex/leointeg "Star it on GitHub")
-
-&lt;br /&gt;
-
 # ![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for VS Code
+
+_If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.github.io/) it. Also please [write a review](https://marketplace.visualstudio.com/items?itemName=boltex.leointeg#review-details "Write a review") or [star it on GitHub](https://github.com/boltex/leointeg "Star it on GitHub")_
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
 
