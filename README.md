@@ -1,3 +1,16 @@
+<p align="center">
+  <br />
+  <a title="Leo Integration" href="https://github.com/boltex/leointeg#-leo-for-vs-code"><img src="https://raw.githubusercontent.com/boltex/leointeg/master/resources/banner-blur-narrow.png" alt="LeoInteg Banner" /></a>
+</p>
+
+## Sponsor LeoInteg
+
+If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.github.io/) it.
+Also please [write a review](https://marketplace.visualstudio.com/items?itemName=boltex.leointeg#review-details "Write a review")
+or [star it on GitHub](https://github.com/boltex/leointeg "Star it on GitHub")
+
+<br />
+
 # ![LeoEditor](https://raw.githubusercontent.com/boltex/leointeg/master/resources/leoapp.png) Leo for VS Code
 
 ## Literate Programming with _Directed Acyclic Graphs_ ([dag](https://en.wikipedia.org/wiki/Directed_acyclic_graph))
