@@ -203,7 +203,6 @@ export class Config implements ConfigMembers {
      * * Check if the workbench.editor.enablePreview flag is set
      */
     public checkEnablePreview(): void {
-        // workbench.editor.enablePreview
         let w_result: any = true;
         const w_setting = vscode.workspace.getConfiguration("workbench.editor");
         if (w_setting.inspect("enablePreview")!.globalValue === undefined) {

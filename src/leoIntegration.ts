@@ -921,13 +921,15 @@ export class LeoIntegration {
         if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
             this.config.buildFromSavedSettings();
         }
+
         // also check if workbench.editor.enablePreview
         this._bodyEnablePreview = !!vscode.workspace
             .getConfiguration('workbench.editor')
             .get('enablePreview');
 
         // Check For "workbench.editor.enablePreview" to be true.
-        // this.config.checkEnablePreview();
+        this.config.checkEnablePreview();
+        this.config.checkCloseEmptyGroups();
     }
 
     /**

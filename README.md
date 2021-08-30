@@ -143,6 +143,27 @@ This occurs when an outline node or a body pane has focus:
 
 ![Settings](https://raw.githubusercontent.com/boltex/leointeg/master/resources/welcome-settings.gif)
 
+## Server Settings
+
+Although the Leo integration has one instance of the leoserver script per vscode 'project'
+window by default, the server settings also has features that allows you to use the same instance
+of Leo in multiple client (vscode) windows simultaneously, with real-time updates and interaction.
+
+### Auto Start
+
+**When auto-start is set, a vscode window will start a new instance of Leo server for itself on the next available network port.**
+If the connection limit is set to anything above the default of one (1),
+then the auto-start logic will consider a port being in use as
+being already started and will not start another one.
+_(Letting you connect, or auto-connect to it from any additional opened vscode window.)_
+
+The server, located in your Leo-Editor installation folder, also has other options unrelated to
+LeoInteg that allows you to create a stand-alone internet server for other uses such as
+multi-user interaction over a network/internet, and more.
+
+Run the server directly with the '--help' argument like so for more details:
+**`...leo-editor/leo/core/leoserver.py --help`**
+
 ## Issues
 
 Main issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.

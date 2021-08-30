@@ -24,6 +24,7 @@
 <v t="felix.20200718222053.1"><vh>Automate Synchronization</vh></v>
 <v t="felix.20200718222058.1"><vh>Status Bar Indicator</vh></v>
 <v t="felix.20200718222102.1"><vh>Extension Settings</vh></v>
+<v t="felix.20210829192609.1"><vh>Server Settings</vh></v>
 <v t="felix.20200718222108.1"><vh>Issues</vh></v>
 <v t="felix.20200718222113.1"><vh>How it works</vh></v>
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
@@ -309,6 +310,16 @@
 <v t="felix.20200718170429.4"><vh>getLeoFileUrl</vh></v>
 </v>
 </v>
+<v t="felix.20200718170712.1"><vh>@clean src/leoNode.ts</vh>
+<v t="felix.20200718170712.2"><vh>class LeoNode</vh>
+<v t="felix.20200718170712.4"><vh>setRoot</vh></v>
+<v t="felix.20200718170712.5"><vh>_getNodeContextValue</vh></v>
+<v t="felix.20200718171904.1"><vh>get_iconPath</vh></v>
+<v t="felix.20200718171854.1"><vh>get_id</vh></v>
+<v t="felix.20200718171837.1"><vh>get_description</vh></v>
+<v t="felix.20200718171849.1"><vh>get tooltip</vh></v>
+</v>
+</v>
 <v t="felix.20200719025231.1"><vh>@clean src/leoIntegration.ts</vh>
 <v t="felix.20200719025231.2"><vh>class LeoIntegration</vh>
 <v t="felix.20200719025231.3"><vh>Constructor</vh></v>
@@ -440,16 +451,6 @@
 <v t="felix.20200719025231.69"><vh>statusBarOnClick</vh></v>
 <v t="felix.20200719025231.70"><vh>test</vh></v>
 </v>
-</v>
-</v>
-<v t="felix.20200718170712.1"><vh>@clean src/leoNode.ts</vh>
-<v t="felix.20200718170712.2"><vh>class LeoNode</vh>
-<v t="felix.20200718170712.4"><vh>setRoot</vh></v>
-<v t="felix.20200718170712.5"><vh>_getNodeContextValue</vh></v>
-<v t="felix.20200718171904.1"><vh>get_iconPath</vh></v>
-<v t="felix.20200718171854.1"><vh>get_id</vh></v>
-<v t="felix.20200718171837.1"><vh>get_description</vh></v>
-<v t="felix.20200718171849.1"><vh>get tooltip</vh></v>
 </v>
 </v>
 <v t="felix.20200718180428.1"><vh>@clean src/leoOutline.ts</vh>
@@ -8832,13 +8833,15 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
     if (p_event.affectsConfiguration(Constants.CONFIG_NAME)) {
         this.config.buildFromSavedSettings();
     }
+
     // also check if workbench.editor.enablePreview
     this._bodyEnablePreview = !!vscode.workspace
         .getConfiguration('workbench.editor')
         .get('enablePreview');
 
     // Check For "workbench.editor.enablePreview" to be true.
-    // this.config.checkEnablePreview();
+    this.config.checkEnablePreview();
+    this.config.checkCloseEmptyGroups();
 }
 
 </t>
@@ -13191,7 +13194,6 @@ public setEnablePreview(): Thenable&lt;void&gt; {
  * * Check if the workbench.editor.enablePreview flag is set
  */
 public checkEnablePreview(): void {
-    // workbench.editor.enablePreview
     let w_result: any = true;
     const w_setting = vscode.workspace.getConfiguration("workbench.editor");
     if (w_setting.inspect("enablePreview")!.globalValue === undefined) {
@@ -13262,6 +13264,28 @@ public clearCloseEmptyGroups(): Thenable&lt;void&gt; {
     "group": "3_leointeg@1"
   }
 ]
+</t>
+<t tx="felix.20210829192609.1">## Server Settings
+
+Although the Leo integration has one instance of the leoserver script per vscode 'project'
+window by default, the server settings also has features that allows you to use the same instance
+of Leo in multiple client (vscode) windows simultaneously, with real-time updates and interaction.
+
+### Auto Start
+
+**When auto-start is set, a vscode window will start a new instance of Leo server for itself on the next available network port.**
+If the connection limit is set to anything above the default of one (1),
+then the auto-start logic will consider a port being in use as
+being already started and will not start another one.
+_(Letting you connect, or auto-connect to it from any additional opened vscode window.)_
+
+The server, located in your Leo-Editor installation folder, also has other options unrelated to
+LeoInteg that allows you to create a stand-alone internet server for other uses such as
+multi-user interaction over a network/internet, and more.
+
+Run the server directly with the '--help' argument like so for more details:
+**`...leo-editor/leo/core/leoserver.py --help`**
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
