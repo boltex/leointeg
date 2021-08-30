@@ -14331,6 +14331,8 @@ body &gt; div &gt; div &gt; label:active {
                 see all server options by running
                 &lt;span&gt;leoserver.py&amp;nbsp;--help&lt;/span&gt;
                 in your leo-editor/leo/core folder.
+                Or read more about the server in the
+                &lt;a href="https://github.com/boltex/leointeg#server-settings"&gt;readme.&lt;/a&gt;
               &lt;/p&gt;
             &lt;/fieldset&gt;
 
