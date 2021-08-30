@@ -85,7 +85,8 @@ On Linux:
 ### 3 ways to start the server script
 
 1. You can have LeoInteg try to start a server script instance itself via the **Start Leo Server** command or button. It will use the 'py' command on Windows and 'python3' command on other OSes by default. _You can automate this process via leoInteg's configuration settings._
-2. You can have vscode's **Debug View** start it as a debug session starts by choosing a debug profile that includes the server script. It's then possible to step in, inspect and debug the python server script. _The [python development extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) may be required._
+2. You can have vscode's **Debug View** start it, as a debug session starts, by choosing a debug profile that includes the server script. It's then possible to step in, inspect and debug the python server script. _The [python development extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) may be required._
+   **If using those debug view profiles, the server files have to be de-commented from the leointeg.leo file, or copied from the leo-editor/leo/core folder.**
 3. You can also start it yourself manually, by running the leoserver.py script (preferably from your leo-editor/leo/core folder) in a terminal or command prompt of your liking.
 
 ### Using Anaconda or other custom python installations
