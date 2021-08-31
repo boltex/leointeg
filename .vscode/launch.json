@@ -29,7 +29,7 @@
 			"console": "integratedTerminal"
 		},
 		{
-			"name": "Python: New leoBridge Server",
+			"name": "Python: New leoserver",
 			"type": "python",
 			"request": "launch",
 			"program": "${workspaceFolder}/leoserver.py",
@@ -68,7 +68,7 @@
 			"name": "New Server and Extension",
 			"configurations": [
 				"Run Extension",
-				"Python: New leoBridge Server"
+				"Python: New leoserver"
 			]
 			// ,
 			// "preLaunchTask": "${defaultBuildTask}"

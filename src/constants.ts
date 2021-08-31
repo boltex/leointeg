@@ -36,7 +36,6 @@ export class Constants {
 
     public static DEFAULT_PYTHON: string = "python3";
     public static WIN32_PYTHON: string = "py";
-    public static OLD_SERVER_NAME: string = "/leobridgeserver.py";
     public static SERVER_NAME: string = "/leoserver.py";
     public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
     public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
@@ -99,7 +98,7 @@ export class Constants {
      * * Basic user messages strings for messages and dialogs
      */
     public static USER_MESSAGES = {
-        SCRIPT_BUTTON: "Creates a button from selected node",
+        SCRIPT_BUTTON: "from selected node",
         SCRIPT_BUTTON_TOOLTIP:
             "Creates a new button with the presently selected node.\n" +
             "For example, to run a script on any part of an outline:\n" +
@@ -132,8 +131,8 @@ export class Constants {
         PLACEHOLDER_CLONE_FIND_TAG: "<tag>",
         PROMPT_CLONE_FIND_TAG: "Enter a tag name",
         START_SERVER_ERROR: "Error - Cannot start server: ",
-        CONNECT_FAILED: "Leo Bridge Connection Failed",
-        CONNECT_ERROR: "Leo Bridge Connection Error: Incorrect id",
+        CONNECT_FAILED: "Leo Server Connection Failed",
+        CONNECT_ERROR: "Leo Server Connection Error: Incorrect id",
         CONNECTED: "Connected",
         ALREADY_CONNECTED: "Already connected",
         DISCONNECTED: "Disconnected",
@@ -238,9 +237,6 @@ export class Constants {
         IP_PORT: "connectionPort",
 
         SET_DETACHED: "setDetached",
-        SET_SHELL: "setShell",
-        SET_CWD: "setCwd",
-        SET_PERSIST: "setPersist",
         LIMIT_USERS: "limitUsers"
     };
 
@@ -286,9 +282,6 @@ export class Constants {
         IP_PORT: 32125,
 
         SET_DETACHED: true,
-        SET_SHELL: false,
-        SET_CWD: true,
-        SET_PERSIST: false,
         LIMIT_USERS: 1
     };
 
@@ -411,6 +404,7 @@ export class Constants {
      */
     public static LEOBRIDGE = {
         TEST: "!test",
+        DO_NOTHING: "!do_nothing",
         // * Server Commands
         GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
         APPLY_CONFIG: "!set_config", // "applyConfig",
@@ -689,6 +683,8 @@ export class Constants {
         TOGGLE_FIND_WORD_OPTION: Constants.NAME + ".toggleFindWordOption",
         TOGGLE_FIND_SEARCH_BODY_OPTION: Constants.NAME + ".toggleFindSearchBodyOption",
         TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
+        SET_ENABLE_PREVIEW: Constants.NAME + ".setEnablePreview",
+        CLEAR_CLOSE_EMPTY_GROUPS: Constants.NAME + ".clearCloseEmptyGroups",
     };
 
     /**

@@ -74,9 +74,6 @@ export class ServerService {
 
         this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
 
-        // If a leo server path is set then use it - otherwise use old script for now
-        // OLD // const w_serverScriptPath = p_leoEditorPath ? p_leoEditorPath : this._context.extensionPath + Constants.OLD_SERVER_NAME;
-
         return utils.findNextAvailablePort(p_port).then((p_availablePort) => {
             if (!p_availablePort) {
                 // vscode.window.showInformationMessage("Port " + p_port+" already in use.");
@@ -89,13 +86,7 @@ export class ServerService {
             let w_serverScriptPath = p_leoEditorPath + "/leo/core";
 
             try {
-                if (fs.existsSync(w_serverScriptPath + Constants.OLD_SERVER_NAME)) {
-                    //old file exists
-                    console.log('Found old server');
-                    w_serverScriptPath += Constants.OLD_SERVER_NAME;
-                } else if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
-                    //new file exists
-                    // console.log('found leoserver.py');
+                if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
                     w_serverScriptPath += Constants.SERVER_NAME;
                 } else {
                     return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
@@ -132,63 +123,31 @@ export class ServerService {
             // The server script itself
             w_args.push(w_serverScriptPath);
 
-            // Add port
-            w_args.push("-p " + this.usingPort);
-
-            if (this._leoIntegration.config.setPersist) {
-                w_args.push("--persist");
-            }
-
             if (this._leoIntegration.config.limitUsers > 1 &&
                 this._leoIntegration.config.limitUsers < 256) {
-                w_args.push("--limit " + this._leoIntegration.config.limitUsers);
+                w_args.push("--limit");
+                w_args.push(this._leoIntegration.config.limitUsers.toString());
             }
+
+            // Add port
+            w_args.push("--port");
+            w_args.push(this.usingPort.toString());
 
             const w_options: child.SpawnOptions = {
-                // Child to run independently of its parent process. Depends on the platform.
-                detached: this._leoIntegration.config.setDetached || this._leoIntegration.config.setPersist,
-
-                // Runs command in a shell. '/bin/sh' on Unix, process.env.ComSpec on Windows.
-                shell: this._leoIntegration.config.setShell
+                // Child to run independently of its parent process.
+                // (Depends on the platform)
+                detached: this._leoIntegration.config.setDetached,
+                // If possible hide the terminal window that could appear
+                windowsHide: true,
             };
-
-            if (this._leoIntegration.config.setCwd) {
-                if (vscode.workspace.workspaceFolders !== undefined &&
-                    vscode.workspace.workspaceFolders.length) {
-                    let w_folder = vscode.workspace.workspaceFolders[0].uri.path;
-                    let w_file = vscode.workspace.workspaceFolders[0].uri.fsPath;
-                    // If windows and start with a slash - remove it
-                    // to get "c:/" instead of "/c:/"
-                    if (this._isWin32) {
-                        if (w_folder.substring(0, 1) === "/") {
-                            w_folder = w_folder.substring(1);
-                        }
-                        w_folder = w_folder.replace(/\//g, '\\'); // convert to backslashes
-                    }
-                    const w_message = `Server CWD set to: ${w_folder}`;
-                    w_options.cwd = w_folder;
-                    this._leoIntegration.addTerminalPaneEntry(w_message);
-                }
-                else {
-                    const message = "Working folder not found, 'CWD' not set";
-                    vscode.window.showErrorMessage(message);
-                }
-            }
-
-            if (this._leoIntegration.config.setShell) {
-                // TODO : Other modifications to support shell flag
-                w_options.stdio = ['inherit', 'inherit', 'inherit'];
-                // w_options.stdio = ['inherit', 'pipe', 'pipe'];
-                // w_options.stdio ['pipe', process.stdout, process.stderr];
-            }
 
             this._leoIntegration.addTerminalPaneEntry(
                 'Starting server with command: ' +
                 w_pythonPath + " " + w_args.join(" ")
             );
 
-            // * See https://nodejs.org/api/child_process.html for options
-            this._serverProcess = child.spawn(w_pythonPath, w_args, w_options); // SPAWN method
+            // Spawn the process
+            this._serverProcess = child.spawn(w_pythonPath, w_args, w_options);
 
             // To prevent the parent from waiting for a given subprocess to exit
             this._serverProcess.unref();
@@ -221,7 +180,7 @@ export class ServerService {
             // Capture the CLOSE event and set flags on server actually closing
             if (this._serverProcess) {
                 this._serverProcess.on("close", (p_code: any) => {
-                    console.log(`leoBridge exited with code ${p_code}`);
+                    console.log(`Leo server exited with code ${p_code}`);
                     this._isStarted = false;
                     if (!this._leoIntegration.activated) {
                         return;
@@ -229,7 +188,7 @@ export class ServerService {
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, false);
                     this._serverProcess = undefined;
                     if (this._rejectPromise) {
-                        this._rejectPromise(`leoBridge exited with code ${p_code}`);
+                        this._rejectPromise(`Leo server exited with code ${p_code}`);
                     }
                 });
             }
@@ -265,7 +224,6 @@ export class ServerService {
     private _processServerOutput(p_data: string): void {
         let w_dataString = p_data.toString().replace(/\n$/, ""); // remove last
         w_dataString.toString().split("\n").forEach(p_line => {
-
             if (true || p_line) { // ? std out process line by line: json shouldn't have line breaks
                 if (p_line.startsWith(Constants.SERVER_STARTED_TOKEN)) {
                     if (this._resolvePromise && !this._isStarted) {

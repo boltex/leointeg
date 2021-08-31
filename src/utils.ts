@@ -248,11 +248,23 @@ export function setContext(p_key: string, p_value: any): Thenable<unknown> {
  * @returns a promise of an opened port number
  */
 export function findNextAvailablePort(p_startingPort: number): Promise<number> {
-    const q_portFinder = portfinder.getPortPromise({
+    return portfinder.getPortPromise({
         port: p_startingPort,
         startPort: p_startingPort,
         stopPort: p_startingPort + 5
     });
-    return q_portFinder;
+}
+
+/**
+ * * Check for unique port #
+ * @param p_port the port number at which to look for
+ * @returns a promise of an opened port number - or rejection if busy port
+ */
+export function findSingleAvailablePort(p_port: number): Promise<number> {
+    return portfinder.getPortPromise({
+        port: p_port,
+        startPort: p_port,
+        stopPort: p_port
+    });
 }
 

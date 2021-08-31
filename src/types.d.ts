@@ -1,11 +1,15 @@
 import * as vscode from "vscode";
 import { LeoNode } from "./leoNode";
 
+/**
+ * * For simple interactions in webviews into vscode API
+ */
 export interface IVsCodeApi {
     postMessage(msg: {}): void;
     setState(state: {}): void;
     getState(): { [key: string]: any };
 }
+
 /**
  * * Types of the various JSON configuration keys such as treeKeepFocus, defaultReloadIgnore, etc.
  */
@@ -46,9 +50,6 @@ export interface ConfigMembers {
     connectionPort: number;
 
     setDetached: boolean;
-    setShell: boolean;
-    setCwd: boolean;
-    setPersist: boolean;
     limitUsers: number
 }
 

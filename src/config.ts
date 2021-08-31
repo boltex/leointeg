@@ -47,9 +47,6 @@ export class Config implements ConfigMembers {
     public connectionPort: number = Constants.CONFIG_DEFAULTS.IP_PORT;
 
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
-    public setShell: boolean = Constants.CONFIG_DEFAULTS.SET_SHELL;
-    public setCwd: boolean = Constants.CONFIG_DEFAULTS.SET_CWD;
-    public setPersist: boolean = Constants.CONFIG_DEFAULTS.SET_PERSIST;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
 
     private _isBusySettingConfig: boolean = false;
@@ -102,9 +99,6 @@ export class Config implements ConfigMembers {
             connectionPort: this.connectionPort,
 
             setDetached: this.setDetached,
-            setShell: this.setShell,
-            setCwd: this.setCwd,
-            setPersist: this.setPersist,
             limitUsers: this.limitUsers,
         };
     }
@@ -189,6 +183,65 @@ export class Config implements ConfigMembers {
     }
 
     /**
+    * * Set the "workbench.editor.enablePreview" vscode setting
+    */
+    public setEnablePreview(): Thenable<void> {
+        // workbench.editor.enablePreview
+        return vscode.workspace.getConfiguration("workbench.editor")
+            .update("enablePreview", true, true);
+    }
+
+    /**
+    * * Clears the workbench.editor.closeEmptyGroups vscode setting
+    */
+    public clearCloseEmptyGroups(): Thenable<void> {
+        return vscode.workspace.getConfiguration("workbench.editor")
+            .update("closeEmptyGroups", false, true);
+    }
+
+    /**
+     * * Check if the workbench.editor.enablePreview flag is set
+     */
+    public checkEnablePreview(): void {
+        let w_result: any = true;
+        const w_setting = vscode.workspace.getConfiguration("workbench.editor");
+        if (w_setting.inspect("enablePreview")!.globalValue === undefined) {
+            w_result = w_setting.inspect("enablePreview")!.defaultValue;
+        } else {
+            w_result = w_setting.inspect("enablePreview")!.globalValue;
+        }
+        if (w_result === false) {
+            vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
+                .then(p_chosenButton => {
+                    if (p_chosenButton === "Fix it") {
+                        vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
+                    }
+                });
+        }
+    }
+
+    /**
+     * * Check if the 'workbench.editor.closeEmptyGroups' setting is false
+     */
+    public checkCloseEmptyGroups(): void {
+        let w_result: any = false;
+        const w_setting = vscode.workspace.getConfiguration("workbench.editor");
+        if (w_setting.inspect("closeEmptyGroups")!.globalValue === undefined) {
+            w_result = w_setting.inspect("closeEmptyGroups")!.defaultValue;
+        } else {
+            w_result = w_setting.inspect("closeEmptyGroups")!.globalValue;
+        }
+        if (w_result === true) {
+            vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
+                .then(p_chosenButton => {
+                    if (p_chosenButton === "Fix it") {
+                        vscode.commands.executeCommand(Constants.COMMANDS.CLEAR_CLOSE_EMPTY_GROUPS);
+                    }
+                });
+        }
+    }
+
+    /**
      * * Build config from settings from vscode's saved config settings
      */
     public buildFromSavedSettings(): void {
@@ -245,9 +298,6 @@ export class Config implements ConfigMembers {
             this.connectionPort = GET(NAME).get(NAMES.IP_PORT, DEFAULTS.IP_PORT);
 
             this.setDetached = GET(NAME).get(NAMES.SET_DETACHED, DEFAULTS.SET_DETACHED);
-            this.setShell = GET(NAME).get(NAMES.SET_SHELL, DEFAULTS.SET_SHELL);
-            this.setCwd = GET(NAME).get(NAMES.SET_CWD, DEFAULTS.SET_CWD);
-            this.setPersist = GET(NAME).get(NAMES.SET_PERSIST, DEFAULTS.SET_PERSIST);
             this.limitUsers = GET(NAME).get(NAMES.LIMIT_USERS, DEFAULTS.LIMIT_USERS);
 
             // * Set context for tree items visibility that are based on config options

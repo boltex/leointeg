@@ -55,13 +55,13 @@
       <section id="welcome"
                class="section--full mb-0">
         <h2 class="section__title section__title--primary">
-          Welcome to <span class="highlight">LeoInteg 0.1.17</span>
+          Welcome to <span class="highlight">LeoInteg 0.1.18</span>
         </h2>
         <div class="center mt-1">
           <a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features">
-            See What's New in LeoInteg 0.1.17
+            See What's New in LeoInteg 0.1.18
           </a>
         </div>
         <p class="blurb center ml-0 mr-0">
@@ -70,7 +70,7 @@
         </p>
         <h2 class="section__title section__title--break"></h2>
         <p class="section__hint mt-0 center">
-          Automate the <a href="#leobridge-options">leoBridge startup</a>,
+          Automate the <a href="#leobridge-options">Leo server startup</a>,
           auto-refresh when <a href="#external-files">external files change</a>,
           or choose which <a href="#node-commands">node icons</a>
           are shown and more with the options below.
@@ -82,7 +82,7 @@
         <div class="section__content">
           <div class="section__header">
             <h2>
-              Leo Bridge Options
+              Leo Server Options
             </h2>
           </div>
           <div class="settings">
@@ -94,7 +94,7 @@
                        data-setting />
                 <label for="startServerAutomatically">Start&nbsp;Server</label>
               </div>
-              <span class="setting__hint">Run the leobridgeserver.py server script at startup</span>
+              <span class="setting__hint">Run the leoserver.py server script at startup</span>
             </div>
             <div class="setting">
               <div class="setting__input">
@@ -104,7 +104,7 @@
                        data-setting />
                 <label for="connectToServerAutomatically">Connect&nbsp;to&nbsp;Server</label>
               </div>
-              <span class="setting__hint">Connects automatically to a LeoBridge server</span>
+              <span class="setting__hint">Connects automatically to a Leo server</span>
             </div>
             <div class="setting">
               <div class="setting__input">
@@ -164,7 +164,6 @@
               <span class="setting__hint">Connection host port number</span>
             </div>
 
-
             <fieldset>
               <legend>Experimental Features</legend>
               <div class="setting">
@@ -175,40 +174,8 @@
                          data-setting />
                   <label for="setDetached">Spawn&nbsp;Detached</label>
                 </div>
-                <span class="setting__hint">Server spawned with the 'detached' flag,<br>
-                  allows dialogs when closing with unsaved files</span>
-              </div>
-              <div class="setting">
-                <div class="setting__input">
-                  <input id="setShell"
-                         name="setShell"
-                         type="checkbox"
-                         data-setting />
-                  <label for="setShell">Spawn&nbsp;in&nbsp;Shell</label>
-                </div>
-                <span class="setting__hint">Server spawned with the 'shell' flag</span>
-              </div>
-              <div class="setting">
-                <div class="setting__input">
-                  <input id="setCwd"
-                         name="setCwd"
-                         type="checkbox"
-                         data-setting />
-                  <label for="setCwd">Specify&nbsp;CWD</label>
-                </div>
-                <span class="setting__hint">Server process spawned with the<br>
-                  option CWD set to the workspace</span>
-              </div>
-              <div class="setting">
-                <div class="setting__input">
-                  <input id="setPersist"
-                         name="setPersist"
-                         type="checkbox"
-                         data-setting />
-                  <label for="setPersist">Keep&nbsp;Server&nbsp;Alive</label>
-                </div>
-                <span class="setting__hint">Starts the server with the 'persist' flag<br>
-                  (Forces 'detached' flag)</span>
+                <span class="setting__hint">Server spawned with 'detached' option<br>
+                  (Shows dialog when quitting with unsaved files)</span>
               </div>
               <div class="setting">
                 <div class="setting__input">
@@ -222,11 +189,17 @@
                          placeholder="1 to 255"
                          data-setting />
                 </div>
-                <span class="setting__hint">Server simultaneous connections</span>
+                <span class="setting__hint">Server's max simultaneous connections</span>
               </div>
-
+              <br>
+              <p>For standalone, persistent, or multi-user server,
+                see all server options by running
+                <span>leoserver.py&nbsp;--help</span>
+                in your leo-editor/leo/core folder.
+                Or read more about the server in the
+                <a href="https://github.com/boltex/leointeg#server-settings">readme.</a>
+              </p>
             </fieldset>
-
 
           </div>
         </div>
@@ -787,7 +760,7 @@
         <h2>Configuration</h2>
         <ul>
           <li>
-            <a href="#leobridge-options">LeoBridge Options</a>
+            <a href="#leobridge-options">Leo server Options</a>
           </li>
           <li>
             <a href="#external-files">External Files</a>

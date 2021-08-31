@@ -663,18 +663,25 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.TOGGLE_FIND_WORD_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.WHOLE_WORD)],
         [CMD.TOGGLE_FIND_SEARCH_BODY_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_BODY)],
         [CMD.TOGGLE_FIND_SEARCH_HEADLINE_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SEARCH_HEADLINE)],
+
+        [CMD.SET_ENABLE_PREVIEW, () => w_leo.config.setEnablePreview()],
+        [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () => w_leo.config.clearCloseEmptyGroups()],
     ];
 
     w_commands.map(function (p_command) {
         p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
     });
 
-    showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion).then(() => {
+    showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo).then(() => {
+        // if setting for preview mode enabled is false then show popup
+        w_leo.config.checkEnablePreview();
+        w_leo.config.checkCloseEmptyGroups();
+
         // Start server and/or connect to it, as per user settings
         w_leo.startNetworkServices();
         // Save version # for next startup comparison
         p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-        console.log('leoInteg 0.1.17.01 startup launched in ', utils.getDurationMs(w_start), 'ms');
+        console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
     });
 }
 
@@ -707,10 +714,13 @@ export function deactivate(): Promise<boolean> {
  * @param p_previousVersion Previous version, as a string, from context.globalState.get service
  * @returns A promise that triggers when command to show the welcome screen is finished, or immediately if not needed
  */
-async function showWelcomeIfNewer(p_version: string, p_previousVersion: string | undefined): Promise<unknown> {
+async function showWelcomeIfNewer(p_version: string, p_previousVersion: string | undefined, p_leoInteg: LeoIntegration): Promise<unknown> {
     let w_showWelcomeScreen: boolean = false;
     if (p_previousVersion === undefined) {
         console.log('leointeg first-time install');
+        // Set/Clear leointeg's required configuration settings
+        p_leoInteg.config.setEnablePreview();
+        p_leoInteg.config.clearCloseEmptyGroups();
         w_showWelcomeScreen = true;
     } else {
         if (p_previousVersion !== p_version) {

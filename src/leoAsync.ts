@@ -33,9 +33,18 @@ export class LeoAsync {
      * * Server announced the multi-user content changed: Debounce a refresh cycle.
      * The 'action' string can be checked to determine what kind, if any, is required.
      */
-    public refresh(p_action: string): void {
-        // console.log('REFRESH', p_action);
-        this._leoIntegration.refreshAll();
+    public refresh(p_package: any): void {
+        if (p_package.opened && this._leoIntegration.leoStates.fileOpenedReady) {
+            this._leoIntegration.refreshAll();
+        } else if (p_package.opened && !this._leoIntegration.leoStates.fileOpenedReady) {
+            this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
+                .then((p_package) => {
+                    p_package.filename = p_package.commander!.fileName;
+                    this._leoIntegration.setupOpenedLeoDocument(p_package, true);
+                });
+        } else {
+            this._leoIntegration.setupNoOpenedLeoDocument();
+        }
     }
 
     /**
