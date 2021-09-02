@@ -10003,6 +10003,11 @@ On Linux:
    **If using those debug view profiles, the server files have to be de-commented from the leointeg.leo file, or copied from the leo-editor/leo/core folder.**
 3. You can also start it yourself manually, by running the leoserver.py script (preferably from your leo-editor/leo/core folder) in a terminal or command prompt of your liking.
 
+For more details about all possible arguments, run it from a command prompt with the 'help' argument like so:\
+**`...leo-editor/leo/core/leoserver.py --help`**
+
+For more information about the Leo server see [Using leoserver.py](https://leoeditor.com/leoserver.html) from Leo's official documentation.
+
 ### Using Anaconda or other custom python installations
 
 - LeoInteg provides configuration options to specify how to launch python interpreter but this may not be enough to get it to start on your system, see [#10](https://github.com/boltex/leointeg/issues/10) and other issues relating to configurations in _sitecustomize.py_ file as noted in [Leo's google group forum](https://groups.google.com/d/msg/leo-editor/FAP8lVnWLyQ/lWHWEYH9AgAJ).
@@ -20883,8 +20888,10 @@ The server, located in your Leo-Editor installation folder, also has other optio
 LeoInteg that allows you to create a stand-alone internet server for other uses such as
 multi-user interaction over a network/internet, and more.
 
-Run the server directly with the '--help' argument like so for more details:
+Run the server directly with the '--help' argument like so for more details:\
 **`...leo-editor/leo/core/leoserver.py --help`**
+
+For more information about the Leo server see [Using leoserver.py](https://leoeditor.com/leoserver.html) from Leo's official documentation.
 
 </t>
 <t tx="felix.20210829223822.1">Old Server Scripts
@@ -21955,7 +21962,8 @@ body &gt; div &gt; div &gt; label:active {
                 &lt;span&gt;leoserver.py&amp;nbsp;--help&lt;/span&gt;
                 in your leo-editor/leo/core folder.
                 Or read more about the server in the
-                &lt;a href="https://github.com/boltex/leointeg#server-settings"&gt;readme.&lt;/a&gt;
+                &lt;a href="https://github.com/boltex/leointeg#server-settings"&gt;readme&lt;/a&gt;,
+                or at &lt;a href="https://leoeditor.com/"&gt;Using leoserver.py&lt;/a&gt; from Leo's documentation.
               &lt;/p&gt;
             &lt;/fieldset&gt;
 
