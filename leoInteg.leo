@@ -528,8 +528,10 @@
 <v t="felix.20210727224135.1"><vh>setFontConfig</vh></v>
 <v t="felix.20210818223534.1"><vh>setEnablePreview</vh></v>
 <v t="felix.20210821203119.1"><vh>clearCloseEmptyGroups</vh></v>
+<v t="felix.20210904235707.1"><vh>setCloseOnFileDelete</vh></v>
 <v t="felix.20210818225820.1"><vh>checkEnablePreview</vh></v>
 <v t="felix.20210821202347.1"><vh>checkCloseEmptyGroups</vh></v>
+<v t="felix.20210904235646.1"><vh>checkCloseOnFileDelete</vh></v>
 <v t="felix.20200718030926.5"><vh>buildFromSavedSettings</vh></v>
 </v>
 </v>
@@ -2349,6 +2351,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
+[CMD.SET_CLOSE_ON_FILE_DELETE, () =&gt; w_leo.config.setCloseOnFileDelete()],
 </t>
 <t tx="ekr.20200815113508.1">@language python
 g.cls()
@@ -2752,6 +2755,11 @@ print('done')
   "command": "leointeg.clearCloseEmptyGroups",
   "category": "Leo",
   "title": "Clear Close-Empty-Groups"
+},
+{
+  "command": "leointeg.setCloseOnFileDelete",
+  "category": "Leo",
+  "title": "Set Close-On-File-Delete"
 },
 {
   "command": "leointeg.showSettingsPage",
@@ -6568,6 +6576,7 @@ public static COMMANDS = {
     TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
     SET_ENABLE_PREVIEW: Constants.NAME + ".setEnablePreview",
     CLEAR_CLOSE_EMPTY_GROUPS: Constants.NAME + ".clearCloseEmptyGroups",
+    SET_CLOSE_ON_FILE_DELETE: Constants.NAME + ".setCloseOnFileDelete",
 };
 
 </t>
@@ -7324,17 +7333,19 @@ export function activate(p_context: vscode.ExtensionContext) {
         p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
     });
 
-    showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo).then(() =&gt; {
-        // if setting for preview mode enabled is false then show popup
-        w_leo.config.checkEnablePreview();
-        w_leo.config.checkCloseEmptyGroups();
+    // * Show a welcome screen on version updates, then start the actual extension.
+    showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo)
+        .then(() =&gt; {
+            // if setting for preview mode enabled is false then show popup
+            w_leo.config.checkEnablePreview();
+            w_leo.config.checkCloseEmptyGroups();
 
-        // Start server and/or connect to it, as per user settings
-        w_leo.startNetworkServices();
-        // Save version # for next startup comparison
-        p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-        console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
-    });
+            // Start server and/or connect to it, as per user settings
+            w_leo.startNetworkServices();
+            // Save version # for next startup comparison
+            p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
+            console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
+        });
 }
 
 </t>
@@ -7372,13 +7383,18 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
     let w_showWelcomeScreen: boolean = false;
     if (p_previousVersion === undefined) {
         console.log('leointeg first-time install');
-        // Set/Clear leointeg's required configuration settings
+        // Force-Set/Clear leointeg's required configuration settings
         p_leoInteg.config.setEnablePreview();
         p_leoInteg.config.clearCloseEmptyGroups();
+        p_leoInteg.config.setCloseOnFileDelete();
         w_showWelcomeScreen = true;
     } else {
         if (p_previousVersion !== p_version) {
             vscode.window.showInformationMessage(`leoInteg upgraded from v${p_previousVersion} to v${p_version}`);
+            // Force-Set/Clear leointeg's required configuration settings but show info messages
+            p_leoInteg.config.checkEnablePreview(true);
+            p_leoInteg.config.checkCloseEmptyGroups(true);
+            p_leoInteg.config.checkCloseOnFileDelete(true);
         }
         const [w_major, w_minor] = p_version.split('.').map(p_stringVal =&gt; parseInt(p_stringVal, 10));
         const [w_prevMajor, w_prevMinor] = p_previousVersion.split('.').map(p_stringVal =&gt; parseInt(p_stringVal, 10));
@@ -20282,6 +20298,10 @@ export function getUniqueId(): string {
 
 </t>
 <t tx="felix.20210709004123.1">{
+  "command": "leointeg.setCloseOnFileDelete",
+  "when": "false"
+},
+{
   "command": "leointeg.statusBar",
   "when": "false"
 },
@@ -20786,10 +20806,9 @@ private _bodySaveDeactivate(
     return self._make_response()
 </t>
 <t tx="felix.20210818223534.1">/**
-* * Set the "workbench.editor.enablePreview" vscode setting
-*/
+ * * Set the workbench.editor.enablePreview vscode setting
+ */
 public setEnablePreview(): Thenable&lt;void&gt; {
-    // workbench.editor.enablePreview
     return vscode.workspace.getConfiguration("workbench.editor")
         .update("enablePreview", true, true);
 }
@@ -20798,7 +20817,7 @@ public setEnablePreview(): Thenable&lt;void&gt; {
 <t tx="felix.20210818225820.1">/**
  * * Check if the workbench.editor.enablePreview flag is set
  */
-public checkEnablePreview(): void {
+public checkEnablePreview(p_forced?: boolean): void {
     let w_result: any = true;
     const w_setting = vscode.workspace.getConfiguration("workbench.editor");
     if (w_setting.inspect("enablePreview")!.globalValue === undefined) {
@@ -20807,12 +20826,17 @@ public checkEnablePreview(): void {
         w_result = w_setting.inspect("enablePreview")!.globalValue;
     }
     if (w_result === false) {
-        vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
-            .then(p_chosenButton =&gt; {
-                if (p_chosenButton === "Fix it") {
-                    vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
-                }
-            });
+        if (p_forced) {
+            this.setCloseOnFileDelete();
+            vscode.window.showInformationMessage("'Enable Preview' setting was set");
+        } else {
+            vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
+                .then(p_chosenButton =&gt; {
+                    if (p_chosenButton === "Fix it") {
+                        vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
+                    }
+                });
+        }
     }
 }
 
@@ -20834,7 +20858,7 @@ export function findSingleAvailablePort(p_port: number): Promise&lt;number&gt; {
 <t tx="felix.20210821202347.1">/**
  * * Check if the 'workbench.editor.closeEmptyGroups' setting is false
  */
-public checkCloseEmptyGroups(): void {
+public checkCloseEmptyGroups(p_forced?: boolean): void {
     let w_result: any = false;
     const w_setting = vscode.workspace.getConfiguration("workbench.editor");
     if (w_setting.inspect("closeEmptyGroups")!.globalValue === undefined) {
@@ -20843,19 +20867,24 @@ public checkCloseEmptyGroups(): void {
         w_result = w_setting.inspect("closeEmptyGroups")!.globalValue;
     }
     if (w_result === true) {
-        vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
-            .then(p_chosenButton =&gt; {
-                if (p_chosenButton === "Fix it") {
-                    vscode.commands.executeCommand(Constants.COMMANDS.CLEAR_CLOSE_EMPTY_GROUPS);
-                }
-            });
+        if (p_forced) {
+            this.setCloseOnFileDelete();
+            vscode.window.showInformationMessage("'Close Empty Groups' setting was cleared");
+        } else {
+            vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
+                .then(p_chosenButton =&gt; {
+                    if (p_chosenButton === "Fix it") {
+                        vscode.commands.executeCommand(Constants.COMMANDS.CLEAR_CLOSE_EMPTY_GROUPS);
+                    }
+                });
+        }
     }
 }
 
 </t>
 <t tx="felix.20210821203119.1">/**
-* * Clears the workbench.editor.closeEmptyGroups vscode setting
-*/
+ * * Clears the workbench.editor.closeEmptyGroups vscode setting
+ */
 public clearCloseEmptyGroups(): Thenable&lt;void&gt; {
     return vscode.workspace.getConfiguration("workbench.editor")
         .update("closeEmptyGroups", false, true);
@@ -20915,6 +20944,43 @@ For normal usage, use the leoserver.py file from your leo-editor installation fo
 - Automatic detection of VSCode's workbench.editor.enablePreview if its missing/disabled.
 - Automatic detection of VSCode's workbench.editor.closeEmptyGroups if its missing/enabled.
 - Easier access to the leo settings through the extension config title strings and the extension view menu
+
+</t>
+<t tx="felix.20210904235646.1">/**
+ * * Check if the workbench.editor.closeOnFileDelete flag is set
+ */
+public checkCloseOnFileDelete(p_forced?: boolean): void {
+    let w_result: any = true;
+    const w_setting = vscode.workspace.getConfiguration("workbench.editor");
+    if (w_setting.inspect("closeOnFileDelete")!.globalValue === undefined) {
+        w_result = w_setting.inspect("closeOnFileDelete")!.defaultValue;
+    } else {
+        w_result = w_setting.inspect("closeOnFileDelete")!.globalValue;
+    }
+    if (w_result === false) {
+        if (p_forced) {
+            this.setCloseOnFileDelete();
+            vscode.window.showInformationMessage("'Close on File Delete' setting was set");
+
+        } else {
+            vscode.window.showWarningMessage("'Close on File Delete' setting is recommended (currently disabled)", "Fix it")
+                .then(p_chosenButton =&gt; {
+                    if (p_chosenButton === "Fix it") {
+                        vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
+                    }
+                });
+        }
+    }
+}
+
+</t>
+<t tx="felix.20210904235707.1">/**
+ * * Set the "workbench.editor.closeOnFileDelete" vscode setting
+ */
+public setCloseOnFileDelete(): Thenable&lt;void&gt; {
+    return vscode.workspace.getConfiguration("workbench.editor")
+        .update("closeOnFileDelete", true, true);
+}
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

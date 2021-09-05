@@ -685,6 +685,7 @@ export class Constants {
         TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
         SET_ENABLE_PREVIEW: Constants.NAME + ".setEnablePreview",
         CLEAR_CLOSE_EMPTY_GROUPS: Constants.NAME + ".clearCloseEmptyGroups",
+        SET_CLOSE_ON_FILE_DELETE: Constants.NAME + ".setCloseOnFileDelete",
     };
 
     /**

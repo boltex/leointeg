@@ -634,6 +634,11 @@
         "title": "Clear Close-Empty-Groups"
       },
       {
+        "command": "leointeg.setCloseOnFileDelete",
+        "category": "Leo",
+        "title": "Set Close-On-File-Delete"
+      },
+      {
         "command": "leointeg.showSettingsPage",
         "title": "Open Settings",
         "category": "Leo",
@@ -2133,6 +2138,10 @@
         },
         {
           "command": "leointeg.clearCloseEmptyGroups",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.setCloseOnFileDelete",
           "when": "false"
         },
         {
