@@ -666,23 +666,27 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         [CMD.SET_ENABLE_PREVIEW, () => w_leo.config.setEnablePreview()],
         [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () => w_leo.config.clearCloseEmptyGroups()],
+        [CMD.SET_CLOSE_ON_FILE_DELETE, () => w_leo.config.setCloseOnFileDelete()],
     ];
 
     w_commands.map(function (p_command) {
         p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
     });
 
-    showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo).then(() => {
-        // if setting for preview mode enabled is false then show popup
-        w_leo.config.checkEnablePreview();
-        w_leo.config.checkCloseEmptyGroups();
+    // * Show a welcome screen on version updates, then start the actual extension.
+    showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo)
+        .then(() => {
+            // if setting for preview mode enabled is false then show popup
+            w_leo.config.checkEnablePreview();
+            w_leo.config.checkCloseEmptyGroups();
+            w_leo.config.checkCloseOnFileDelete();
 
-        // Start server and/or connect to it, as per user settings
-        w_leo.startNetworkServices();
-        // Save version # for next startup comparison
-        p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-        console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
-    });
+            // Start server and/or connect to it, as per user settings
+            w_leo.startNetworkServices();
+            // Save version # for next startup comparison
+            p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
+            console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
+        });
 }
 
 /**
@@ -718,13 +722,18 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
     let w_showWelcomeScreen: boolean = false;
     if (p_previousVersion === undefined) {
         console.log('leointeg first-time install');
-        // Set/Clear leointeg's required configuration settings
+        // Force-Set/Clear leointeg's required configuration settings
         p_leoInteg.config.setEnablePreview();
         p_leoInteg.config.clearCloseEmptyGroups();
+        p_leoInteg.config.setCloseOnFileDelete();
         w_showWelcomeScreen = true;
     } else {
         if (p_previousVersion !== p_version) {
             vscode.window.showInformationMessage(`leoInteg upgraded from v${p_previousVersion} to v${p_version}`);
+            // Force-Set/Clear leointeg's required configuration settings but show info messages
+            p_leoInteg.config.checkEnablePreview(true);
+            p_leoInteg.config.checkCloseEmptyGroups(true);
+            p_leoInteg.config.checkCloseOnFileDelete(true);
         }
         const [w_major, w_minor] = p_version.split('.').map(p_stringVal => parseInt(p_stringVal, 10));
         const [w_prevMajor, w_prevMinor] = p_previousVersion.split('.').map(p_stringVal => parseInt(p_stringVal, 10));
