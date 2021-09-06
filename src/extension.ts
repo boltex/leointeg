@@ -679,6 +679,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             // if setting for preview mode enabled is false then show popup
             w_leo.config.checkEnablePreview();
             w_leo.config.checkCloseEmptyGroups();
+            w_leo.config.checkCloseOnFileDelete();
 
             // Start server and/or connect to it, as per user settings
             w_leo.startNetworkServices();

@@ -930,6 +930,7 @@ export class LeoIntegration {
         // Check For "workbench.editor.enablePreview" to be true.
         this.config.checkEnablePreview();
         this.config.checkCloseEmptyGroups();
+        this.config.checkCloseOnFileDelete();
     }
 
     /**

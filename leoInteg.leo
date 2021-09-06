@@ -7339,6 +7339,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             // if setting for preview mode enabled is false then show popup
             w_leo.config.checkEnablePreview();
             w_leo.config.checkCloseEmptyGroups();
+            w_leo.config.checkCloseOnFileDelete();
 
             // Start server and/or connect to it, as per user settings
             w_leo.startNetworkServices();
@@ -10499,6 +10500,7 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
     // Check For "workbench.editor.enablePreview" to be true.
     this.config.checkEnablePreview();
     this.config.checkCloseEmptyGroups();
+    this.config.checkCloseOnFileDelete();
 }
 
 </t>
@@ -20966,7 +20968,7 @@ public checkCloseOnFileDelete(p_forced?: boolean): void {
             vscode.window.showWarningMessage("'Close on File Delete' setting is recommended (currently disabled)", "Fix it")
                 .then(p_chosenButton =&gt; {
                     if (p_chosenButton === "Fix it") {
-                        vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
+                        vscode.commands.executeCommand(Constants.COMMANDS.SET_CLOSE_ON_FILE_DELETE);
                     }
                 });
         }

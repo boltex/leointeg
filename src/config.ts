@@ -278,7 +278,7 @@ export class Config implements ConfigMembers {
                 vscode.window.showWarningMessage("'Close on File Delete' setting is recommended (currently disabled)", "Fix it")
                     .then(p_chosenButton => {
                         if (p_chosenButton === "Fix it") {
-                            vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
+                            vscode.commands.executeCommand(Constants.COMMANDS.SET_CLOSE_ON_FILE_DELETE);
                         }
                     });
             }
