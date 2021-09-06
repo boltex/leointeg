@@ -2385,7 +2385,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.59.0"
+    "vscode": "^1.60.0"
   },
   "keywords": [
     "leo",
@@ -2420,7 +2420,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.59.0",
+    "@types/vscode": "^1.60.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -20827,7 +20827,7 @@ public checkEnablePreview(p_forced?: boolean): void {
     }
     if (w_result === false) {
         if (p_forced) {
-            this.setCloseOnFileDelete();
+            this.setEnablePreview();
             vscode.window.showInformationMessage("'Enable Preview' setting was set");
         } else {
             vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
@@ -20868,7 +20868,7 @@ public checkCloseEmptyGroups(p_forced?: boolean): void {
     }
     if (w_result === true) {
         if (p_forced) {
-            this.setCloseOnFileDelete();
+            this.clearCloseEmptyGroups();
             vscode.window.showInformationMessage("'Close Empty Groups' setting was cleared");
         } else {
             vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")

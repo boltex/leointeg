@@ -219,7 +219,7 @@ export class Config implements ConfigMembers {
         }
         if (w_result === false) {
             if (p_forced) {
-                this.setCloseOnFileDelete();
+                this.setEnablePreview();
                 vscode.window.showInformationMessage("'Enable Preview' setting was set");
             } else {
                 vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
@@ -245,7 +245,7 @@ export class Config implements ConfigMembers {
         }
         if (w_result === true) {
             if (p_forced) {
-                this.setCloseOnFileDelete();
+                this.clearCloseEmptyGroups();
                 vscode.window.showInformationMessage("'Close Empty Groups' setting was cleared");
             } else {
                 vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
