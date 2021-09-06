@@ -2454,8 +2454,7 @@ print('done')
     "tree-kill": "^1.2.2",
     "ws": "^7.4.6"
   }
-}
-</t>
+}</t>
 <t tx="ekr.20200815123601.10">"languages": [
   {
     "id": "leobody.plain",
