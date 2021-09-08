@@ -1053,7 +1053,11 @@ export class LeoAsync {
 <t tx="ekr.20200815083608.2">/**
  * * Adds message string to leoInteg's log pane, used when leoBridge gets an async 'log' command
  */
-public log(p_message: string): void {
+public log(p_message: string, p_color?: string): void {
+    if (p_color &amp;&amp; p_color === Constants.LOG_ALERT_COLOR) {
+        // Red Detected: Force showing the log pane for 'errors' in the log pane.
+        this._leoIntegration.showLogPane();
+    }
     this._leoIntegration.addLogPaneEntry(p_message);
 }
 
@@ -2454,7 +2458,8 @@ print('done')
     "tree-kill": "^1.2.2",
     "ws": "^7.4.6"
   }
-}</t>
+}
+</t>
 <t tx="ekr.20200815123601.10">"languages": [
   {
     "id": "leobody.plain",
@@ -4652,7 +4657,7 @@ print('done')
   "command": "leointeg.insertNodeSelectionInterrupt",
   "key": "ctrl+i",
   "mac": "cmd+i",
-  "when": "leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
+  "when": "!terminalFocus &amp;&amp; !panelFocus &amp;&amp; leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
 },
 {
   "command": "leointeg.insertNodeSelection",
@@ -4676,7 +4681,7 @@ print('done')
   "command": "leointeg.insertNodeSelectionInterrupt",
   "key": "shift+insert",
   "mac": "shift+insert",
-  "when": "leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
+  "when": "!terminalFocus &amp;&amp; !panelFocus &amp;&amp; leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
 },
 {
   "command": "leointeg.insertChildNodeSelection",
@@ -6630,6 +6635,8 @@ public static BUTTONS_DEBOUNCE_DELAY: number = 80;
 public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
 public static STATES_DEBOUNCE_DELAY: number = 100;
 
+public static LOG_ALERT_COLOR: string = 'red';
+
 </t>
 <t tx="felix.20200718020912.5">/**
  * * Strings used in the workbench interface panels (not for messages or dialogs)
@@ -7875,7 +7882,7 @@ private _asyncAction(w_parsedData: any): void {
     if (w_parsedData &amp;&amp; w_parsedData.async &amp;&amp; (typeof w_parsedData.async === "string")) {
         switch (w_parsedData.async) {
             case Constants.ASYNC_ACTIONS.ASYNC_LOG: {
-                this._leoAsync.log(w_parsedData.log);
+                this._leoAsync.log(w_parsedData.log, w_parsedData.color);
                 break;
             }
             case Constants.ASYNC_ACTIONS.ASYNC_REFRESH: {
@@ -8826,7 +8833,8 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
 
     let w_pythonPath = ""; // Command of child.spawn call
 
-    this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
+    // Show problems when running the server, if any.
+    // this._leoIntegration.showTerminalPane(); // #203 Do not 'force' show the server output
 
     return utils.findNextAvailablePort(p_port).then((p_availablePort) =&gt; {
         if (!p_availablePort) {
@@ -9619,6 +9627,8 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 ## 0.0.19
 
 - Fixed 'tab' press from the sidebar: if pressing from the outline it tabs to possible icons on the node, then goes to the body pane. If pressed from the search panel, it cycles through the fields of the search panel.
+- Made the server output channel and the Leo Log Window not show up and open automatically anymore unless the text in the Log Window is 'red' (For Errors to be shown).
+- Fixed pressing shift+insert while in terminal, which triggered the 'insert node' command instead of letting the usual vscode 'paste in terminal' command take effect.
 
 @others
 </t>
@@ -10464,8 +10474,10 @@ public setupOpenedLeoDocument(
     // * Maybe first StatusBar appearance
     this._leoStatusBar.update(true, 0, true);
     this._leoStatusBar.show(); // Just selected a node
+
     // * Show leo log pane
-    this.showLogPane();
+    // this.showLogPane(); // #203 No need to explicitly show the log pane upon opening files
+
     // * Send config to python's side (for settings such as defaultReloadIgnore and checkForChangeExternalFiles)
     this.sendConfigToServer(this.config.getConfig());
     // * Refresh Opened tree views
@@ -12085,7 +12097,8 @@ public connect(): void {
                     this.setupOpenedLeoDocument(p_package, true);
                 }
 
-                this.showLogPane();
+                // this.showLogPane(); // #203 Do not 'force' show the log pane
+
                 if (!this.config.connectToServerAutomatically) {
                     vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                 }
