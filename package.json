@@ -3117,7 +3117,7 @@
         "command": "leointeg.insertNodeSelectionInterrupt",
         "key": "ctrl+i",
         "mac": "cmd+i",
-        "when": "!terminalFocus && leoTreeOpened && !sideBarFocus && !editorTextFocus"
+        "when": "!terminalFocus && !panelFocus && leoTreeOpened && !sideBarFocus && !editorTextFocus"
       },
       {
         "command": "leointeg.insertNodeSelection",
@@ -3141,7 +3141,7 @@
         "command": "leointeg.insertNodeSelectionInterrupt",
         "key": "shift+insert",
         "mac": "shift+insert",
-        "when": "!terminalFocus && leoTreeOpened && !sideBarFocus && !editorTextFocus"
+        "when": "!terminalFocus && !panelFocus && leoTreeOpened && !sideBarFocus && !editorTextFocus"
       },
       {
         "command": "leointeg.insertChildNodeSelection",

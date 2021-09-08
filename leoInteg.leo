@@ -4657,7 +4657,7 @@ print('done')
   "command": "leointeg.insertNodeSelectionInterrupt",
   "key": "ctrl+i",
   "mac": "cmd+i",
-  "when": "leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
+  "when": "!terminalFocus &amp;&amp; !panelFocus &amp;&amp; leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
 },
 {
   "command": "leointeg.insertNodeSelection",
@@ -4681,7 +4681,7 @@ print('done')
   "command": "leointeg.insertNodeSelectionInterrupt",
   "key": "shift+insert",
   "mac": "shift+insert",
-  "when": "!terminalFocus &amp;&amp; leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
+  "when": "!terminalFocus &amp;&amp; !panelFocus &amp;&amp; leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
 },
 {
   "command": "leointeg.insertChildNodeSelection",
