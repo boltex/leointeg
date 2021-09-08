@@ -72,7 +72,8 @@ export class ServerService {
 
         let w_pythonPath = ""; // Command of child.spawn call
 
-        this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
+        // Show problems when running the server, if any.
+        // this._leoIntegration.showTerminalPane(); // #203 Do not 'force' show the server output
 
         return utils.findNextAvailablePort(p_port).then((p_availablePort) => {
             if (!p_availablePort) {

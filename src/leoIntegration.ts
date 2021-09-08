@@ -552,7 +552,8 @@ export class LeoIntegration {
                         this.setupOpenedLeoDocument(p_package, true);
                     }
 
-                    this.showLogPane();
+                    // this.showLogPane(); // #203 Do not 'force' show the log pane
+
                     if (!this.config.connectToServerAutomatically) {
                         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                     }
@@ -896,8 +897,10 @@ export class LeoIntegration {
         // * Maybe first StatusBar appearance
         this._leoStatusBar.update(true, 0, true);
         this._leoStatusBar.show(); // Just selected a node
+
         // * Show leo log pane
-        this.showLogPane();
+        // this.showLogPane(); // #203 No need to explicitly show the log pane upon opening files
+
         // * Send config to python's side (for settings such as defaultReloadIgnore and checkForChangeExternalFiles)
         this.sendConfigToServer(this.config.getConfig());
         // * Refresh Opened tree views
