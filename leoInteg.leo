@@ -2394,7 +2394,7 @@ print('done')
   "keywords": [
     "leo",
     "literate",
-    "editor",
+    "tree",
     "outline",
     "programming"
   ],
@@ -2404,6 +2404,7 @@ print('done')
   "activationEvents": [
     "onStartupFinished"
   ],
+  "qna": false,
   "main": "./dist/extension",
   "icon": "resources/leoapp128px.png",
   "galleryBanner": {
@@ -2783,6 +2784,7 @@ print('done')
 <t tx="ekr.20200815123601.16">{
   "command": "leointeg.chooseLeoFolder",
   "title": "Choose Leo Installation Folder",
+  "shortTitle": "Set Leo Folder",
   "category": "Leo"
 },
 {
@@ -2851,7 +2853,11 @@ print('done')
 {
   "command": "leointeg.showLogPane",
   "category": "Leo",
-  "title": "Show Log Pane"
+  "title": "Show Log Pane",
+  "icon": {
+    "light": "resources/light/show-log.svg",
+    "dark": "resources/dark/show-log.svg"
+  }
 },
 </t>
 <t tx="ekr.20200815123601.19">{
@@ -14478,7 +14484,12 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.showSettingsPage",
-    "when": "view =~ /leoDocuments/ &amp;&amp; leoBridgeReady",
+    "when": "view =~ /leoFindPanel|leoDocuments|leoButtons/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@2"
+  },
+  {
+    "command": "leointeg.showLogPane",
+    "when": "view =~ /leoFindPanel|leoDocuments|leoButtons/ &amp;&amp; leoBridgeReady",
     "group": "navigation@2"
   },
   {
@@ -14920,6 +14931,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.findDef",
   "category": "Leo",
+  "shortTitle": "Find Definition",
   "title": "Find the def or class under the cursor"
 },
 {
@@ -14965,16 +14977,19 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.cloneFindMarked",
   "category": "Leo",
+  "shortTitle": "cfam",
   "title": "cfam - Clone Find All Marked Nodes"
 },
 {
   "command": "leointeg.cloneFindFlattenedMarked",
   "category": "Leo",
+  "shortTitle": "cffm",
   "title": "cffm - Clone Find All Flattened Marked"
 },
 {
   "command": "leointeg.cloneFindTag",
   "category": "Leo",
+  "shortTitle": "cft",
   "title": "cft - Clone Find Tag"
 },
 {
@@ -14985,51 +15000,61 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.setFindEverywhereOption",
   "category": "Leo",
+  "shortTitle": "Find Everywhere",
   "title": "Set Find Everywhere Option"
 },
 {
   "command": "leointeg.setFindNodeOnlyOption",
   "category": "Leo",
+  "shortTitle": "Find in Node",
   "title": "Set Find in Node Only Option"
 },
 {
   "command": "leointeg.setFindSuboutlineOnlyOption",
   "category": "Leo",
+  "shortTitle": "Find in SubOutline",
   "title": "Set Find in SubOutline Only Option"
 },
 {
   "command": "leointeg.toggleFindIgnoreCaseOption",
   "category": "Leo",
+  "shortTitle": "Find Ignore Case",
   "title": "Toggle Find Ignore Case Option"
 },
 {
   "command": "leointeg.toggleFindMarkChangesOption",
   "category": "Leo",
+  "shortTitle": "Find Mark Changes",
   "title": "Toggle Find Mark Changes Option"
 },
 {
   "command": "leointeg.toggleFindMarkFindsOption",
   "category": "Leo",
+  "shortTitle": "Find Mark Finds",
   "title": "Toggle Find Mark Finds Option"
 },
 {
   "command": "leointeg.toggleFindRegexpOption",
   "category": "Leo",
+  "shortTitle": "Find RegExp",
   "title": "Toggle Find RegExp Option"
 },
 {
   "command": "leointeg.toggleFindWordOption",
   "category": "Leo",
+  "shortTitle": "Find Whole Word",
   "title": "Toggle Find Whole Word Option"
 },
 {
   "command": "leointeg.toggleFindSearchBodyOption",
   "category": "Leo",
+  "shortTitle": "Find Search Body",
   "title": "Toggle Find Search Body Option"
 },
 {
   "command": "leointeg.toggleFindSearchHeadlineOption",
   "category": "Leo",
+  "shortTitle": "Find Search Headline",
   "title": "Toggle Find Search Headline Option"
 },
 </t>
