@@ -677,9 +677,13 @@ export function activate(p_context: vscode.ExtensionContext) {
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo)
         .then(() => {
             // if setting for preview mode enabled is false then show popup
-            w_leo.config.checkEnablePreview();
-            w_leo.config.checkCloseEmptyGroups();
-            w_leo.config.checkCloseOnFileDelete();
+            setTimeout(() => {
+                // A second and a half to make sure first installs have finished setting those
+                // and not to try to see if they're set too soon
+                w_leo.config.checkEnablePreview();
+                w_leo.config.checkCloseEmptyGroups();
+                w_leo.config.checkCloseOnFileDelete();
+            }, 1500);
 
             // Start server and/or connect to it, as per user settings
             w_leo.startNetworkServices();
