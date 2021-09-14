@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "author": {
     "name": "Félix"
   },
@@ -13,12 +13,12 @@
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.59.0"
+    "vscode": "^1.60.0"
   },
   "keywords": [
     "leo",
     "literate",
-    "editor",
+    "tree",
     "outline",
     "programming"
   ],
@@ -28,6 +28,7 @@
   "activationEvents": [
     "onStartupFinished"
   ],
+  "qna": false,
   "main": "./dist/extension",
   "icon": "resources/leoapp128px.png",
   "galleryBanner": {
@@ -634,6 +635,11 @@
         "title": "Clear Close-Empty-Groups"
       },
       {
+        "command": "leointeg.setCloseOnFileDelete",
+        "category": "Leo",
+        "title": "Set Close-On-File-Delete"
+      },
+      {
         "command": "leointeg.showSettingsPage",
         "title": "Open Settings",
         "category": "Leo",
@@ -650,6 +656,7 @@
       {
         "command": "leointeg.chooseLeoFolder",
         "title": "Choose Leo Installation Folder",
+        "shortTitle": "Set Leo Folder",
         "category": "Leo"
       },
       {
@@ -716,7 +723,11 @@
       {
         "command": "leointeg.showLogPane",
         "category": "Leo",
-        "title": "Show Log Pane"
+        "title": "Show Log Pane",
+        "icon": {
+          "light": "resources/light/show-log.svg",
+          "dark": "resources/dark/show-log.svg"
+        }
       },
       {
         "command": "leointeg.openLeoFile",
@@ -1494,6 +1505,7 @@
       {
         "command": "leointeg.findDef",
         "category": "Leo",
+        "shortTitle": "Find Definition",
         "title": "Find the def or class under the cursor"
       },
       {
@@ -1539,16 +1551,19 @@
       {
         "command": "leointeg.cloneFindMarked",
         "category": "Leo",
+        "shortTitle": "cfam",
         "title": "cfam - Clone Find All Marked Nodes"
       },
       {
         "command": "leointeg.cloneFindFlattenedMarked",
         "category": "Leo",
+        "shortTitle": "cffm",
         "title": "cffm - Clone Find All Flattened Marked"
       },
       {
         "command": "leointeg.cloneFindTag",
         "category": "Leo",
+        "shortTitle": "cft",
         "title": "cft - Clone Find Tag"
       },
       {
@@ -1559,51 +1574,61 @@
       {
         "command": "leointeg.setFindEverywhereOption",
         "category": "Leo",
+        "shortTitle": "Find Everywhere",
         "title": "Set Find Everywhere Option"
       },
       {
         "command": "leointeg.setFindNodeOnlyOption",
         "category": "Leo",
+        "shortTitle": "Find in Node",
         "title": "Set Find in Node Only Option"
       },
       {
         "command": "leointeg.setFindSuboutlineOnlyOption",
         "category": "Leo",
+        "shortTitle": "Find in SubOutline",
         "title": "Set Find in SubOutline Only Option"
       },
       {
         "command": "leointeg.toggleFindIgnoreCaseOption",
         "category": "Leo",
+        "shortTitle": "Find Ignore Case",
         "title": "Toggle Find Ignore Case Option"
       },
       {
         "command": "leointeg.toggleFindMarkChangesOption",
         "category": "Leo",
+        "shortTitle": "Find Mark Changes",
         "title": "Toggle Find Mark Changes Option"
       },
       {
         "command": "leointeg.toggleFindMarkFindsOption",
         "category": "Leo",
+        "shortTitle": "Find Mark Finds",
         "title": "Toggle Find Mark Finds Option"
       },
       {
         "command": "leointeg.toggleFindRegexpOption",
         "category": "Leo",
+        "shortTitle": "Find RegExp",
         "title": "Toggle Find RegExp Option"
       },
       {
         "command": "leointeg.toggleFindWordOption",
         "category": "Leo",
+        "shortTitle": "Find Whole Word",
         "title": "Toggle Find Whole Word Option"
       },
       {
         "command": "leointeg.toggleFindSearchBodyOption",
         "category": "Leo",
+        "shortTitle": "Find Search Body",
         "title": "Toggle Find Search Body Option"
       },
       {
         "command": "leointeg.toggleFindSearchHeadlineOption",
         "category": "Leo",
+        "shortTitle": "Find Search Headline",
         "title": "Toggle Find Search Headline Option"
       },
       {
@@ -2136,6 +2161,10 @@
           "when": "false"
         },
         {
+          "command": "leointeg.setCloseOnFileDelete",
+          "when": "false"
+        },
+        {
           "command": "leointeg.statusBar",
           "when": "false"
         },
@@ -2567,7 +2596,12 @@
         },
         {
           "command": "leointeg.showSettingsPage",
-          "when": "view =~ /leoDocuments/ && leoBridgeReady",
+          "when": "view =~ /leoFindPanel|leoDocuments|leoButtons/ && leoBridgeReady",
+          "group": "navigation@2"
+        },
+        {
+          "command": "leointeg.showLogPane",
+          "when": "view =~ /leoFindPanel|leoDocuments|leoButtons/ && leoBridgeReady",
           "group": "navigation@2"
         },
         {
@@ -2845,7 +2879,7 @@
       {
         "command": "leointeg.showBody",
         "key": "tab",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.showBody",
@@ -3108,7 +3142,7 @@
         "command": "leointeg.insertNodeSelectionInterrupt",
         "key": "ctrl+i",
         "mac": "cmd+i",
-        "when": "leoTreeOpened && !sideBarFocus && !editorTextFocus"
+        "when": "!terminalFocus && !panelFocus && leoTreeOpened && !sideBarFocus && !editorTextFocus"
       },
       {
         "command": "leointeg.insertNodeSelection",
@@ -3132,7 +3166,7 @@
         "command": "leointeg.insertNodeSelectionInterrupt",
         "key": "shift+insert",
         "mac": "shift+insert",
-        "when": "leoTreeOpened && !sideBarFocus && !editorTextFocus"
+        "when": "!terminalFocus && !panelFocus && leoTreeOpened && !sideBarFocus && !editorTextFocus"
       },
       {
         "command": "leointeg.insertChildNodeSelection",
@@ -3540,7 +3574,7 @@
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.59.0",
+    "@types/vscode": "^1.60.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",

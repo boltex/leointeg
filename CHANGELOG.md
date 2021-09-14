@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.0.19
+
+- Fixed 'tab' press from the sidebar: if pressing from the outline it tabs to possible icons on the node, then goes to the body pane. If pressed from the search panel, it cycles through the fields of the search panel.
+- Made the server output channel and the Leo Log Window not show up and open automatically anymore unless the text in the Log Window is 'red' (For Errors to be shown).
+- Added icon for the 'show Log Pane' command and made it available, along with the 'Show Leointeg Settings', on title bar of documents and buttons views.
+- Automatic detection of VSCode's workbench.editor.closeOnFileDelete if its missing/disabled.
+- Fixed pressing shift+insert while in terminal, which triggered the 'insert node' command instead of letting the usual vscode 'paste in terminal' command take effect.
+
 ## 0.1.18
 
 - Git-diff is now fixed in Leo so the experimental option 'Set CWD' has been removed

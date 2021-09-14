@@ -74,7 +74,7 @@ export class LeoBridge {
         if (w_parsedData && w_parsedData.async && (typeof w_parsedData.async === "string")) {
             switch (w_parsedData.async) {
                 case Constants.ASYNC_ACTIONS.ASYNC_LOG: {
-                    this._leoAsync.log(w_parsedData.log);
+                    this._leoAsync.log(w_parsedData.log, w_parsedData.color);
                     break;
                 }
                 case Constants.ASYNC_ACTIONS.ASYNC_REFRESH: {

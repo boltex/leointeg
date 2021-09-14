@@ -183,26 +183,33 @@ export class Config implements ConfigMembers {
     }
 
     /**
-    * * Set the "workbench.editor.enablePreview" vscode setting
-    */
+     * * Set the workbench.editor.enablePreview vscode setting
+     */
     public setEnablePreview(): Thenable<void> {
-        // workbench.editor.enablePreview
         return vscode.workspace.getConfiguration("workbench.editor")
             .update("enablePreview", true, true);
     }
 
     /**
-    * * Clears the workbench.editor.closeEmptyGroups vscode setting
-    */
+     * * Clears the workbench.editor.closeEmptyGroups vscode setting
+     */
     public clearCloseEmptyGroups(): Thenable<void> {
         return vscode.workspace.getConfiguration("workbench.editor")
             .update("closeEmptyGroups", false, true);
     }
 
     /**
+     * * Set the "workbench.editor.closeOnFileDelete" vscode setting
+     */
+    public setCloseOnFileDelete(): Thenable<void> {
+        return vscode.workspace.getConfiguration("workbench.editor")
+            .update("closeOnFileDelete", true, true);
+    }
+
+    /**
      * * Check if the workbench.editor.enablePreview flag is set
      */
-    public checkEnablePreview(): void {
+    public checkEnablePreview(p_forced?: boolean): void {
         let w_result: any = true;
         const w_setting = vscode.workspace.getConfiguration("workbench.editor");
         if (w_setting.inspect("enablePreview")!.globalValue === undefined) {
@@ -211,19 +218,24 @@ export class Config implements ConfigMembers {
             w_result = w_setting.inspect("enablePreview")!.globalValue;
         }
         if (w_result === false) {
-            vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
-                .then(p_chosenButton => {
-                    if (p_chosenButton === "Fix it") {
-                        vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
-                    }
-                });
+            if (p_forced) {
+                this.setEnablePreview();
+                vscode.window.showInformationMessage("'Enable Preview' setting was set");
+            } else {
+                vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
+                    .then(p_chosenButton => {
+                        if (p_chosenButton === "Fix it") {
+                            vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
+                        }
+                    });
+            }
         }
     }
 
     /**
      * * Check if the 'workbench.editor.closeEmptyGroups' setting is false
      */
-    public checkCloseEmptyGroups(): void {
+    public checkCloseEmptyGroups(p_forced?: boolean): void {
         let w_result: any = false;
         const w_setting = vscode.workspace.getConfiguration("workbench.editor");
         if (w_setting.inspect("closeEmptyGroups")!.globalValue === undefined) {
@@ -232,12 +244,44 @@ export class Config implements ConfigMembers {
             w_result = w_setting.inspect("closeEmptyGroups")!.globalValue;
         }
         if (w_result === true) {
-            vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
-                .then(p_chosenButton => {
-                    if (p_chosenButton === "Fix it") {
-                        vscode.commands.executeCommand(Constants.COMMANDS.CLEAR_CLOSE_EMPTY_GROUPS);
-                    }
-                });
+            if (p_forced) {
+                this.clearCloseEmptyGroups();
+                vscode.window.showInformationMessage("'Close Empty Groups' setting was cleared");
+            } else {
+                vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
+                    .then(p_chosenButton => {
+                        if (p_chosenButton === "Fix it") {
+                            vscode.commands.executeCommand(Constants.COMMANDS.CLEAR_CLOSE_EMPTY_GROUPS);
+                        }
+                    });
+            }
+        }
+    }
+
+    /**
+     * * Check if the workbench.editor.closeOnFileDelete flag is set
+     */
+    public checkCloseOnFileDelete(p_forced?: boolean): void {
+        let w_result: any = true;
+        const w_setting = vscode.workspace.getConfiguration("workbench.editor");
+        if (w_setting.inspect("closeOnFileDelete")!.globalValue === undefined) {
+            w_result = w_setting.inspect("closeOnFileDelete")!.defaultValue;
+        } else {
+            w_result = w_setting.inspect("closeOnFileDelete")!.globalValue;
+        }
+        if (w_result === false) {
+            if (p_forced) {
+                this.setCloseOnFileDelete();
+                vscode.window.showInformationMessage("'Close on File Delete' setting was set");
+
+            } else {
+                vscode.window.showWarningMessage("'Close on File Delete' setting is recommended (currently disabled)", "Fix it")
+                    .then(p_chosenButton => {
+                        if (p_chosenButton === "Fix it") {
+                            vscode.commands.executeCommand(Constants.COMMANDS.SET_CLOSE_ON_FILE_DELETE);
+                        }
+                    });
+            }
         }
     }
 

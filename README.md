@@ -161,8 +161,10 @@ The server, located in your Leo-Editor installation folder, also has other optio
 LeoInteg that allows you to create a stand-alone internet server for other uses such as
 multi-user interaction over a network/internet, and more.
 
-Run the server directly with the '--help' argument like so for more details:
+Run the server directly with the '--help' argument like so for more details:\
 **`...leo-editor/leo/core/leoserver.py --help`**
+
+For more information about the Leo server see [Using leoserver.py](https://leoeditor.com/leoserver.html) from Leo's official documentation.
 
 ## Issues
 

@@ -89,6 +89,11 @@ On Linux:
    **If using those debug view profiles, the server files have to be de-commented from the leointeg.leo file, or copied from the leo-editor/leo/core folder.**
 3. You can also start it yourself manually, by running the leoserver.py script (preferably from your leo-editor/leo/core folder) in a terminal or command prompt of your liking.
 
+For more details about all possible arguments, run it from a command prompt with the 'help' argument like so:\
+**`...leo-editor/leo/core/leoserver.py --help`**
+
+For more information about the Leo server see [Using leoserver.py](https://leoeditor.com/leoserver.html) from Leo's official documentation.
+
 ### Using Anaconda or other custom python installations
 
 - LeoInteg provides configuration options to specify how to launch python interpreter but this may not be enough to get it to start on your system, see [#10](https://github.com/boltex/leointeg/issues/10) and other issues relating to configurations in _sitecustomize.py_ file as noted in [Leo's google group forum](https://groups.google.com/d/msg/leo-editor/FAP8lVnWLyQ/lWHWEYH9AgAJ).

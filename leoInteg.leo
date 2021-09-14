@@ -30,6 +30,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20210901215735.1"><vh>0.1.18</vh></v>
 <v t="felix.20210816230003.1"><vh>0.1.17</vh></v>
 <v t="felix.20210725153617.1"><vh>0.1.16</vh></v>
 <v t="felix.20210718163005.1"><vh>0.1.15</vh></v>
@@ -527,8 +528,10 @@
 <v t="felix.20210727224135.1"><vh>setFontConfig</vh></v>
 <v t="felix.20210818223534.1"><vh>setEnablePreview</vh></v>
 <v t="felix.20210821203119.1"><vh>clearCloseEmptyGroups</vh></v>
+<v t="felix.20210904235707.1"><vh>setCloseOnFileDelete</vh></v>
 <v t="felix.20210818225820.1"><vh>checkEnablePreview</vh></v>
 <v t="felix.20210821202347.1"><vh>checkCloseEmptyGroups</vh></v>
+<v t="felix.20210904235646.1"><vh>checkCloseOnFileDelete</vh></v>
 <v t="felix.20200718030926.5"><vh>buildFromSavedSettings</vh></v>
 </v>
 </v>
@@ -1050,7 +1053,11 @@ export class LeoAsync {
 <t tx="ekr.20200815083608.2">/**
  * * Adds message string to leoInteg's log pane, used when leoBridge gets an async 'log' command
  */
-public log(p_message: string): void {
+public log(p_message: string, p_color?: string): void {
+    if (p_color &amp;&amp; p_color === Constants.LOG_ALERT_COLOR) {
+        // Red Detected: Force showing the log pane for 'errors' in the log pane.
+        this._leoIntegration.showLogPane();
+    }
     this._leoIntegration.addLogPaneEntry(p_message);
 }
 
@@ -2348,6 +2355,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 
 [CMD.SET_ENABLE_PREVIEW, () =&gt; w_leo.config.setEnablePreview()],
 [CMD.CLEAR_CLOSE_EMPTY_GROUPS, () =&gt; w_leo.config.clearCloseEmptyGroups()],
+[CMD.SET_CLOSE_ON_FILE_DELETE, () =&gt; w_leo.config.setCloseOnFileDelete()],
 </t>
 <t tx="ekr.20200815113508.1">@language python
 g.cls()
@@ -2370,7 +2378,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "author": {
     "name": "Félix"
   },
@@ -2381,12 +2389,12 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.59.0"
+    "vscode": "^1.60.0"
   },
   "keywords": [
     "leo",
     "literate",
-    "editor",
+    "tree",
     "outline",
     "programming"
   ],
@@ -2396,6 +2404,7 @@ print('done')
   "activationEvents": [
     "onStartupFinished"
   ],
+  "qna": false,
   "main": "./dist/extension",
   "icon": "resources/leoapp128px.png",
   "galleryBanner": {
@@ -2416,7 +2425,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.59.0",
+    "@types/vscode": "^1.60.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -2753,6 +2762,11 @@ print('done')
   "title": "Clear Close-Empty-Groups"
 },
 {
+  "command": "leointeg.setCloseOnFileDelete",
+  "category": "Leo",
+  "title": "Set Close-On-File-Delete"
+},
+{
   "command": "leointeg.showSettingsPage",
   "title": "Open Settings",
   "category": "Leo",
@@ -2770,6 +2784,7 @@ print('done')
 <t tx="ekr.20200815123601.16">{
   "command": "leointeg.chooseLeoFolder",
   "title": "Choose Leo Installation Folder",
+  "shortTitle": "Set Leo Folder",
   "category": "Leo"
 },
 {
@@ -2838,7 +2853,11 @@ print('done')
 {
   "command": "leointeg.showLogPane",
   "category": "Leo",
-  "title": "Show Log Pane"
+  "title": "Show Log Pane",
+  "icon": {
+    "light": "resources/light/show-log.svg",
+    "dark": "resources/dark/show-log.svg"
+  }
 },
 </t>
 <t tx="ekr.20200815123601.19">{
@@ -4386,7 +4405,7 @@ print('done')
 {
   "command": "leointeg.showBody",
   "key": "tab",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leo/"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
   "command": "leointeg.showBody",
@@ -4644,7 +4663,7 @@ print('done')
   "command": "leointeg.insertNodeSelectionInterrupt",
   "key": "ctrl+i",
   "mac": "cmd+i",
-  "when": "leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
+  "when": "!terminalFocus &amp;&amp; !panelFocus &amp;&amp; leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
 },
 {
   "command": "leointeg.insertNodeSelection",
@@ -4668,7 +4687,7 @@ print('done')
   "command": "leointeg.insertNodeSelectionInterrupt",
   "key": "shift+insert",
   "mac": "shift+insert",
-  "when": "leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
+  "when": "!terminalFocus &amp;&amp; !panelFocus &amp;&amp; leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
 },
 {
   "command": "leointeg.insertChildNodeSelection",
@@ -6567,6 +6586,7 @@ public static COMMANDS = {
     TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
     SET_ENABLE_PREVIEW: Constants.NAME + ".setEnablePreview",
     CLEAR_CLOSE_EMPTY_GROUPS: Constants.NAME + ".clearCloseEmptyGroups",
+    SET_CLOSE_ON_FILE_DELETE: Constants.NAME + ".setCloseOnFileDelete",
 };
 
 </t>
@@ -6620,6 +6640,8 @@ public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
 public static BUTTONS_DEBOUNCE_DELAY: number = 80;
 public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
 public static STATES_DEBOUNCE_DELAY: number = 100;
+
+public static LOG_ALERT_COLOR: string = 'red';
 
 </t>
 <t tx="felix.20200718020912.5">/**
@@ -7323,17 +7345,24 @@ export function activate(p_context: vscode.ExtensionContext) {
         p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
     });
 
-    showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo).then(() =&gt; {
-        // if setting for preview mode enabled is false then show popup
-        w_leo.config.checkEnablePreview();
-        w_leo.config.checkCloseEmptyGroups();
+    // * Show a welcome screen on version updates, then start the actual extension.
+    showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo)
+        .then(() =&gt; {
+            // if setting for preview mode enabled is false then show popup
+            setTimeout(() =&gt; {
+                // A second and a half to make sure first installs have finished setting those
+                // and not to try to see if they're set too soon
+                w_leo.config.checkEnablePreview();
+                w_leo.config.checkCloseEmptyGroups();
+                w_leo.config.checkCloseOnFileDelete();
+            }, 1500);
 
-        // Start server and/or connect to it, as per user settings
-        w_leo.startNetworkServices();
-        // Save version # for next startup comparison
-        p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-        console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
-    });
+            // Start server and/or connect to it, as per user settings
+            w_leo.startNetworkServices();
+            // Save version # for next startup comparison
+            p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
+            console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
+        });
 }
 
 </t>
@@ -7371,13 +7400,18 @@ async function showWelcomeIfNewer(p_version: string, p_previousVersion: string |
     let w_showWelcomeScreen: boolean = false;
     if (p_previousVersion === undefined) {
         console.log('leointeg first-time install');
-        // Set/Clear leointeg's required configuration settings
+        // Force-Set/Clear leointeg's required configuration settings
         p_leoInteg.config.setEnablePreview();
         p_leoInteg.config.clearCloseEmptyGroups();
+        p_leoInteg.config.setCloseOnFileDelete();
         w_showWelcomeScreen = true;
     } else {
         if (p_previousVersion !== p_version) {
             vscode.window.showInformationMessage(`leoInteg upgraded from v${p_previousVersion} to v${p_version}`);
+            // Force-Set/Clear leointeg's required configuration settings but show info messages
+            p_leoInteg.config.checkEnablePreview(true);
+            p_leoInteg.config.checkCloseEmptyGroups(true);
+            p_leoInteg.config.checkCloseOnFileDelete(true);
         }
         const [w_major, w_minor] = p_version.split('.').map(p_stringVal =&gt; parseInt(p_stringVal, 10));
         const [w_prevMajor, w_prevMinor] = p_previousVersion.split('.').map(p_stringVal =&gt; parseInt(p_stringVal, 10));
@@ -7858,7 +7892,7 @@ private _asyncAction(w_parsedData: any): void {
     if (w_parsedData &amp;&amp; w_parsedData.async &amp;&amp; (typeof w_parsedData.async === "string")) {
         switch (w_parsedData.async) {
             case Constants.ASYNC_ACTIONS.ASYNC_LOG: {
-                this._leoAsync.log(w_parsedData.log);
+                this._leoAsync.log(w_parsedData.log, w_parsedData.color);
                 break;
             }
             case Constants.ASYNC_ACTIONS.ASYNC_REFRESH: {
@@ -8809,7 +8843,8 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
 
     let w_pythonPath = ""; // Command of child.spawn call
 
-    this._leoIntegration.showTerminalPane(); // Show problems when running the server, if any.
+    // Show problems when running the server, if any.
+    // this._leoIntegration.showTerminalPane(); // #203 Do not 'force' show the server output
 
     return utils.findNextAvailablePort(p_port).then((p_availablePort) =&gt; {
         if (!p_availablePort) {
@@ -9599,13 +9634,13 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 @tabwidth -4
 # Change Log
 
-## 0.1.18
+## 0.0.19
 
-- Git-diff is now fixed in Leo so the experimental option 'Set CWD' has been removed
-- The somewhat unnecessary experimental option 'Shell' has been removed.
-- Automatic detection of VSCode's workbench.editor.enablePreview if its missing/disabled.
-- Automatic detection of VSCode's workbench.editor.closeEmptyGroups if its missing/enabled.
-- Easier access to the leo settings through the extension config title strings and the extension view menu
+- Fixed 'tab' press from the sidebar: if pressing from the outline it tabs to possible icons on the node, then goes to the body pane. If pressed from the search panel, it cycles through the fields of the search panel.
+- Made the server output channel and the Leo Log Window not show up and open automatically anymore unless the text in the Log Window is 'red' (For Errors to be shown).
+- Added icon for the 'show Log Pane' command and made it available, along with the 'Show Leointeg Settings', on title bar of documents and buttons views.
+- Automatic detection of VSCode's workbench.editor.closeOnFileDelete if its missing/disabled.
+- Fixed pressing shift+insert while in terminal, which triggered the 'insert node' command instead of letting the usual vscode 'paste in terminal' command take effect.
 
 @others
 </t>
@@ -10005,6 +10040,11 @@ On Linux:
 2. You can have vscode's **Debug View** start it, as a debug session starts, by choosing a debug profile that includes the server script. It's then possible to step in, inspect and debug the python server script. _The [python development extension](https://marketplace.visualstudio.com/items?itemName=ms-python.python) may be required._
    **If using those debug view profiles, the server files have to be de-commented from the leointeg.leo file, or copied from the leo-editor/leo/core folder.**
 3. You can also start it yourself manually, by running the leoserver.py script (preferably from your leo-editor/leo/core folder) in a terminal or command prompt of your liking.
+
+For more details about all possible arguments, run it from a command prompt with the 'help' argument like so:\
+**`...leo-editor/leo/core/leoserver.py --help`**
+
+For more information about the Leo server see [Using leoserver.py](https://leoeditor.com/leoserver.html) from Leo's official documentation.
 
 ### Using Anaconda or other custom python installations
 
@@ -10446,8 +10486,10 @@ public setupOpenedLeoDocument(
     // * Maybe first StatusBar appearance
     this._leoStatusBar.update(true, 0, true);
     this._leoStatusBar.show(); // Just selected a node
+
     // * Show leo log pane
-    this.showLogPane();
+    // this.showLogPane(); // #203 No need to explicitly show the log pane upon opening files
+
     // * Send config to python's side (for settings such as defaultReloadIgnore and checkForChangeExternalFiles)
     this.sendConfigToServer(this.config.getConfig());
     // * Refresh Opened tree views
@@ -10481,6 +10523,7 @@ private _onChangeConfiguration(p_event: vscode.ConfigurationChangeEvent): void {
     // Check For "workbench.editor.enablePreview" to be true.
     this.config.checkEnablePreview();
     this.config.checkCloseEmptyGroups();
+    this.config.checkCloseOnFileDelete();
 }
 
 </t>
@@ -12066,7 +12109,8 @@ public connect(): void {
                     this.setupOpenedLeoDocument(p_package, true);
                 }
 
-                this.showLogPane();
+                // this.showLogPane(); // #203 Do not 'force' show the log pane
+
                 if (!this.config.connectToServerAutomatically) {
                     vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                 }
@@ -14446,7 +14490,12 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.showSettingsPage",
-    "when": "view =~ /leoDocuments/ &amp;&amp; leoBridgeReady",
+    "when": "view =~ /leoFindPanel|leoDocuments|leoButtons/ &amp;&amp; leoBridgeReady",
+    "group": "navigation@2"
+  },
+  {
+    "command": "leointeg.showLogPane",
+    "when": "view =~ /leoFindPanel|leoDocuments|leoButtons/ &amp;&amp; leoBridgeReady",
     "group": "navigation@2"
   },
   {
@@ -14888,6 +14937,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.findDef",
   "category": "Leo",
+  "shortTitle": "Find Definition",
   "title": "Find the def or class under the cursor"
 },
 {
@@ -14933,16 +14983,19 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.cloneFindMarked",
   "category": "Leo",
+  "shortTitle": "cfam",
   "title": "cfam - Clone Find All Marked Nodes"
 },
 {
   "command": "leointeg.cloneFindFlattenedMarked",
   "category": "Leo",
+  "shortTitle": "cffm",
   "title": "cffm - Clone Find All Flattened Marked"
 },
 {
   "command": "leointeg.cloneFindTag",
   "category": "Leo",
+  "shortTitle": "cft",
   "title": "cft - Clone Find Tag"
 },
 {
@@ -14953,51 +15006,61 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.setFindEverywhereOption",
   "category": "Leo",
+  "shortTitle": "Find Everywhere",
   "title": "Set Find Everywhere Option"
 },
 {
   "command": "leointeg.setFindNodeOnlyOption",
   "category": "Leo",
+  "shortTitle": "Find in Node",
   "title": "Set Find in Node Only Option"
 },
 {
   "command": "leointeg.setFindSuboutlineOnlyOption",
   "category": "Leo",
+  "shortTitle": "Find in SubOutline",
   "title": "Set Find in SubOutline Only Option"
 },
 {
   "command": "leointeg.toggleFindIgnoreCaseOption",
   "category": "Leo",
+  "shortTitle": "Find Ignore Case",
   "title": "Toggle Find Ignore Case Option"
 },
 {
   "command": "leointeg.toggleFindMarkChangesOption",
   "category": "Leo",
+  "shortTitle": "Find Mark Changes",
   "title": "Toggle Find Mark Changes Option"
 },
 {
   "command": "leointeg.toggleFindMarkFindsOption",
   "category": "Leo",
+  "shortTitle": "Find Mark Finds",
   "title": "Toggle Find Mark Finds Option"
 },
 {
   "command": "leointeg.toggleFindRegexpOption",
   "category": "Leo",
+  "shortTitle": "Find RegExp",
   "title": "Toggle Find RegExp Option"
 },
 {
   "command": "leointeg.toggleFindWordOption",
   "category": "Leo",
+  "shortTitle": "Find Whole Word",
   "title": "Toggle Find Whole Word Option"
 },
 {
   "command": "leointeg.toggleFindSearchBodyOption",
   "category": "Leo",
+  "shortTitle": "Find Search Body",
   "title": "Toggle Find Search Body Option"
 },
 {
   "command": "leointeg.toggleFindSearchHeadlineOption",
   "category": "Leo",
+  "shortTitle": "Find Search Headline",
   "title": "Toggle Find Search Headline Option"
 },
 </t>
@@ -20280,6 +20343,10 @@ export function getUniqueId(): string {
 
 </t>
 <t tx="felix.20210709004123.1">{
+  "command": "leointeg.setCloseOnFileDelete",
+  "when": "false"
+},
+{
   "command": "leointeg.statusBar",
   "when": "false"
 },
@@ -20784,10 +20851,9 @@ private _bodySaveDeactivate(
     return self._make_response()
 </t>
 <t tx="felix.20210818223534.1">/**
-* * Set the "workbench.editor.enablePreview" vscode setting
-*/
+ * * Set the workbench.editor.enablePreview vscode setting
+ */
 public setEnablePreview(): Thenable&lt;void&gt; {
-    // workbench.editor.enablePreview
     return vscode.workspace.getConfiguration("workbench.editor")
         .update("enablePreview", true, true);
 }
@@ -20796,7 +20862,7 @@ public setEnablePreview(): Thenable&lt;void&gt; {
 <t tx="felix.20210818225820.1">/**
  * * Check if the workbench.editor.enablePreview flag is set
  */
-public checkEnablePreview(): void {
+public checkEnablePreview(p_forced?: boolean): void {
     let w_result: any = true;
     const w_setting = vscode.workspace.getConfiguration("workbench.editor");
     if (w_setting.inspect("enablePreview")!.globalValue === undefined) {
@@ -20805,12 +20871,17 @@ public checkEnablePreview(): void {
         w_result = w_setting.inspect("enablePreview")!.globalValue;
     }
     if (w_result === false) {
-        vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
-            .then(p_chosenButton =&gt; {
-                if (p_chosenButton === "Fix it") {
-                    vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
-                }
-            });
+        if (p_forced) {
+            this.setEnablePreview();
+            vscode.window.showInformationMessage("'Enable Preview' setting was set");
+        } else {
+            vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
+                .then(p_chosenButton =&gt; {
+                    if (p_chosenButton === "Fix it") {
+                        vscode.commands.executeCommand(Constants.COMMANDS.SET_ENABLE_PREVIEW);
+                    }
+                });
+        }
     }
 }
 
@@ -20832,7 +20903,7 @@ export function findSingleAvailablePort(p_port: number): Promise&lt;number&gt; {
 <t tx="felix.20210821202347.1">/**
  * * Check if the 'workbench.editor.closeEmptyGroups' setting is false
  */
-public checkCloseEmptyGroups(): void {
+public checkCloseEmptyGroups(p_forced?: boolean): void {
     let w_result: any = false;
     const w_setting = vscode.workspace.getConfiguration("workbench.editor");
     if (w_setting.inspect("closeEmptyGroups")!.globalValue === undefined) {
@@ -20841,19 +20912,24 @@ public checkCloseEmptyGroups(): void {
         w_result = w_setting.inspect("closeEmptyGroups")!.globalValue;
     }
     if (w_result === true) {
-        vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
-            .then(p_chosenButton =&gt; {
-                if (p_chosenButton === "Fix it") {
-                    vscode.commands.executeCommand(Constants.COMMANDS.CLEAR_CLOSE_EMPTY_GROUPS);
-                }
-            });
+        if (p_forced) {
+            this.clearCloseEmptyGroups();
+            vscode.window.showInformationMessage("'Close Empty Groups' setting was cleared");
+        } else {
+            vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
+                .then(p_chosenButton =&gt; {
+                    if (p_chosenButton === "Fix it") {
+                        vscode.commands.executeCommand(Constants.COMMANDS.CLEAR_CLOSE_EMPTY_GROUPS);
+                    }
+                });
+        }
     }
 }
 
 </t>
 <t tx="felix.20210821203119.1">/**
-* * Clears the workbench.editor.closeEmptyGroups vscode setting
-*/
+ * * Clears the workbench.editor.closeEmptyGroups vscode setting
+ */
 public clearCloseEmptyGroups(): Thenable&lt;void&gt; {
     return vscode.workspace.getConfiguration("workbench.editor")
         .update("closeEmptyGroups", false, true);
@@ -20886,8 +20962,10 @@ The server, located in your Leo-Editor installation folder, also has other optio
 LeoInteg that allows you to create a stand-alone internet server for other uses such as
 multi-user interaction over a network/internet, and more.
 
-Run the server directly with the '--help' argument like so for more details:
+Run the server directly with the '--help' argument like so for more details:\
 **`...leo-editor/leo/core/leoserver.py --help`**
+
+For more information about the Leo server see [Using leoserver.py](https://leoeditor.com/leoserver.html) from Leo's official documentation.
 
 </t>
 <t tx="felix.20210829223822.1">Old Server Scripts
@@ -20903,6 +20981,52 @@ leobridgeserver.py and leoserver.py file names are now part of the .gitignore fi
 For normal usage, use the leoserver.py file from your leo-editor installation folder instead.
 
 (Located in ...leo-editor/leo/core/)
+</t>
+<t tx="felix.20210901215735.1">## 0.1.18
+
+- Git-diff is now fixed in Leo so the experimental option 'Set CWD' has been removed
+- The somewhat unnecessary experimental option 'Shell' has been removed.
+- Automatic detection of VSCode's workbench.editor.enablePreview if its missing/disabled.
+- Automatic detection of VSCode's workbench.editor.closeEmptyGroups if its missing/enabled.
+- Easier access to the leo settings through the extension config title strings and the extension view menu
+
+</t>
+<t tx="felix.20210904235646.1">/**
+ * * Check if the workbench.editor.closeOnFileDelete flag is set
+ */
+public checkCloseOnFileDelete(p_forced?: boolean): void {
+    let w_result: any = true;
+    const w_setting = vscode.workspace.getConfiguration("workbench.editor");
+    if (w_setting.inspect("closeOnFileDelete")!.globalValue === undefined) {
+        w_result = w_setting.inspect("closeOnFileDelete")!.defaultValue;
+    } else {
+        w_result = w_setting.inspect("closeOnFileDelete")!.globalValue;
+    }
+    if (w_result === false) {
+        if (p_forced) {
+            this.setCloseOnFileDelete();
+            vscode.window.showInformationMessage("'Close on File Delete' setting was set");
+
+        } else {
+            vscode.window.showWarningMessage("'Close on File Delete' setting is recommended (currently disabled)", "Fix it")
+                .then(p_chosenButton =&gt; {
+                    if (p_chosenButton === "Fix it") {
+                        vscode.commands.executeCommand(Constants.COMMANDS.SET_CLOSE_ON_FILE_DELETE);
+                    }
+                });
+        }
+    }
+}
+
+</t>
+<t tx="felix.20210904235707.1">/**
+ * * Set the "workbench.editor.closeOnFileDelete" vscode setting
+ */
+public setCloseOnFileDelete(): Thenable&lt;void&gt; {
+    return vscode.workspace.getConfiguration("workbench.editor")
+        .update("closeOnFileDelete", true, true);
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
@@ -21807,13 +21931,13 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 0.1.18&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 0.1.19&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 0.1.18
+            See What's New in LeoInteg 0.1.19
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
@@ -21949,7 +22073,8 @@ body &gt; div &gt; div &gt; label:active {
                 &lt;span&gt;leoserver.py&amp;nbsp;--help&lt;/span&gt;
                 in your leo-editor/leo/core folder.
                 Or read more about the server in the
-                &lt;a href="https://github.com/boltex/leointeg#server-settings"&gt;readme.&lt;/a&gt;
+                &lt;a href="https://github.com/boltex/leointeg#server-settings"&gt;readme&lt;/a&gt;,
+                or at &lt;a href="https://leoeditor.com/"&gt;Using leoserver.py&lt;/a&gt; from Leo's documentation.
               &lt;/p&gt;
             &lt;/fieldset&gt;
 

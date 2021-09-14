@@ -48,6 +48,8 @@ export class Constants {
     public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
     public static STATES_DEBOUNCE_DELAY: number = 100;
 
+    public static LOG_ALERT_COLOR: string = 'red';
+
     /**
      * * Find panel controls ids
      */
@@ -685,6 +687,7 @@ export class Constants {
         TOGGLE_FIND_SEARCH_HEADLINE_OPTION: Constants.NAME + ".toggleFindSearchHeadlineOption",
         SET_ENABLE_PREVIEW: Constants.NAME + ".setEnablePreview",
         CLEAR_CLOSE_EMPTY_GROUPS: Constants.NAME + ".clearCloseEmptyGroups",
+        SET_CLOSE_ON_FILE_DELETE: Constants.NAME + ".setCloseOnFileDelete",
     };
 
     /**
