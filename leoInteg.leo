@@ -9638,6 +9638,8 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 - Fixed 'tab' press from the sidebar: if pressing from the outline it tabs to possible icons on the node, then goes to the body pane. If pressed from the search panel, it cycles through the fields of the search panel.
 - Made the server output channel and the Leo Log Window not show up and open automatically anymore unless the text in the Log Window is 'red' (For Errors to be shown).
+- Added icon for the 'show Log Pane' command and made it available, along with the 'Show Leointeg Settings', on title bar of documents and buttons views.
+- Automatic detection of VSCode's workbench.editor.closeOnFileDelete if its missing/disabled.
 - Fixed pressing shift+insert while in terminal, which triggered the 'insert node' command instead of letting the usual vscode 'paste in terminal' command take effect.
 
 @others
