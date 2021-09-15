@@ -407,6 +407,7 @@ export class Constants {
     public static LEOBRIDGE = {
         TEST: "!test",
         DO_NOTHING: "!do_nothing",
+        GET_VERSION: "!get_version",
         // * Server Commands
         GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
         APPLY_CONFIG: "!set_config", // "applyConfig",

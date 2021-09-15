@@ -6305,6 +6305,7 @@ public static ASYNC_ASK_RETURN_CODES = {
 public static LEOBRIDGE = {
     TEST: "!test",
     DO_NOTHING: "!do_nothing",
+    GET_VERSION: "!get_version",
     // * Server Commands
     GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
     APPLY_CONFIG: "!set_config", // "applyConfig",
@@ -9233,6 +9234,10 @@ export interface LeoBridgePackage {
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
     total?: number; // set_opened_file, open_file(s), close_file
+    version?: string;
+    major?: number;
+    minor?: number;
+    patch?: number;
 }
 
 </t>
@@ -12057,7 +12062,7 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
         Constants.LEOBRIDGE.GET_FOCUS,
         JSON.stringify({ testParam: 'Some String' })
     ).then((p_result: LeoBridgePackage) =&gt; {
-        console.log('get focus: ', p_result);
+        console.log('get focus results: ', p_result);
 
         // this.launchRefresh({ buttons: true }, false);
         // return vscode.window.showInformationMessage(
@@ -12066,6 +12071,13 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
         //     ', with result: ' +
         //     JSON.stringify(p_result)
         // );
+    }).then(() =&gt; {
+        return this.sendAction(Constants.LEOBRIDGE.GET_VERSION);
+    }).then((p_result: LeoBridgePackage) =&gt; {
+        console.log('get version results: ', p_result);
+        if (p_result.version) {
+            vscode.window.showInformationMessage(p_result.version);
+        }
     });
 }
 </t>

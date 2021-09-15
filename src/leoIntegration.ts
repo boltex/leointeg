@@ -3349,7 +3349,7 @@ export class LeoIntegration {
             Constants.LEOBRIDGE.GET_FOCUS,
             JSON.stringify({ testParam: 'Some String' })
         ).then((p_result: LeoBridgePackage) => {
-            console.log('get focus: ', p_result);
+            console.log('get focus results: ', p_result);
 
             // this.launchRefresh({ buttons: true }, false);
             // return vscode.window.showInformationMessage(
@@ -3358,6 +3358,13 @@ export class LeoIntegration {
             //     ', with result: ' +
             //     JSON.stringify(p_result)
             // );
+        }).then(() => {
+            return this.sendAction(Constants.LEOBRIDGE.GET_VERSION);
+        }).then((p_result: LeoBridgePackage) => {
+            console.log('get version results: ', p_result);
+            if (p_result.version) {
+                vscode.window.showInformationMessage(p_result.version);
+            }
         });
     }
 }
