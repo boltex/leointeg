@@ -816,6 +816,15 @@
         }
       },
       {
+        "command": "leointeg.saveAsLeoJsFile",
+        "category": "Leo",
+        "title": "Save as leojs JSON File...",
+        "icon": {
+          "light": "resources/light/save-as-leojs.svg",
+          "dark": "resources/dark/save-as-leojs.svg"
+        }
+      },
+      {
         "command": "leointeg.refreshFromDisk",
         "category": "Leo",
         "title": "Refresh from Disk",

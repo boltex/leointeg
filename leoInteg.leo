@@ -2950,6 +2950,15 @@ print('done')
   }
 },
 {
+  "command": "leointeg.saveAsLeoJsFile",
+  "category": "Leo",
+  "title": "Save as leojs JSON File...",
+  "icon": {
+    "light": "resources/light/save-as-leojs.svg",
+    "dark": "resources/dark/save-as-leojs.svg"
+  }
+},
+{
   "command": "leointeg.refreshFromDisk",
   "category": "Leo",
   "title": "Refresh from Disk",
@@ -8373,7 +8382,10 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
     this._fileBrowserActive = true;
     return new Promise((p_resolve, p_reject) =&gt; {
         const w_filters: { [name: string]: string[] } = {};
-        w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [Constants.FILE_EXTENSION];
+        w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [
+            Constants.FILE_EXTENSION,
+            Constants.JS_FILE_EXTENSION
+        ];
 
         if (p_saveAsFlag) {
             // Choose file
@@ -21112,43 +21124,22 @@ public getLeoJsFileUrl(): Promise&lt;string&gt; {
     }
     this._fileBrowserActive = true;
     return new Promise((p_resolve, p_reject) =&gt; {
-        const w_filters: { [name: string]: string[] } = {};
-        w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [Constants.FILE_EXTENSION];
+        // Choose file
+        vscode.window.showSaveDialog({
+            saveLabel: "Save as leojs File",
+            defaultUri: this._getBestOpenFolderUri(),
+            filters: { 'JSON Leo File': ['leojs'] }
+        })
+            .then(p_chosenLeoFile =&gt; {
+                this._fileBrowserActive = false;
+                if (p_chosenLeoFile) {
+                    // single string
+                    p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                } else {
+                    p_resolve(""); // not rejection - resolve empty string
+                }
+            });
 
-        if (p_saveAsFlag) {
-            // Choose file
-            vscode.window.showSaveDialog({
-                saveLabel: "Save Leo File",
-                defaultUri: this._getBestOpenFolderUri(),
-                filters: { 'Leo File': ['leo'] }
-            })
-                .then(p_chosenLeoFile =&gt; {
-                    this._fileBrowserActive = false;
-                    if (p_chosenLeoFile) {
-                        // single string
-                        p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
-                    } else {
-                        p_resolve(""); // not rejection - resolve empty string
-                    }
-                });
-        } else {
-            vscode.window
-                .showOpenDialog({
-                    canSelectMany: false,
-                    defaultUri: this._getBestOpenFolderUri(),
-                    canSelectFolders: false,
-                    filters: w_filters
-                })
-                .then(p_chosenLeoFile =&gt; {
-                    this._fileBrowserActive = false;
-                    if (p_chosenLeoFile) {
-                        // array instead of single string
-                        p_resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
-                    } else {
-                        p_resolve("");
-                    }
-                });
-        }
     });
 }
 
