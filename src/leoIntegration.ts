@@ -2820,7 +2820,7 @@ export class LeoIntegration {
         return this._isBusyTriggerSave(true, true)
             .then((p_saveResult) => {
                 if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
-                    return this._leoFilesBrowser.getLeoFileUrl(true);
+                    return this._leoFilesBrowser.getLeoJsFileUrl();
                 } else {
                     // 'when-conditions' should prevent this
                     vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);

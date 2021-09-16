@@ -21065,7 +21065,7 @@ public saveAsLeoJsFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | u
     return this._isBusyTriggerSave(true, true)
         .then((p_saveResult) =&gt; {
             if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
-                return this._leoFilesBrowser.getLeoFileUrl(true);
+                return this._leoFilesBrowser.getLeoJsFileUrl();
             } else {
                 // 'when-conditions' should prevent this
                 vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
