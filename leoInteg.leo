@@ -6346,7 +6346,6 @@ public static LEOBRIDGE = {
     OPEN_FILES: "!open_files", //  "openFiles",
     CLOSE_FILE: "!close_file", // "closeFile",
     SAVE_FILE: "!save_file", // "saveFile",
-    SAVE_LEOJS_FILE: "!save_leojs_file",
     // * @-Buttons
     GET_BUTTONS: "!get_buttons", // "getButtons",
     REMOVE_BUTTON: "!remove_button", // "removeButton",
@@ -21089,7 +21088,7 @@ public saveAsLeoJsFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | u
                     this._removeRecentFile(this.leoStates.leoOpenedFileName);
                 }
                 const q_commandResult = this.nodeCommand({
-                    action: Constants.LEOBRIDGE.SAVE_LEOJS_FILE,
+                    action: Constants.LEOBRIDGE.SAVE_FILE,
                     node: undefined,
                     refreshType: { tree: true, states: true, documents: true },
                     fromOutline: !!p_fromOutline,

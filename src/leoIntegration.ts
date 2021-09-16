@@ -2844,7 +2844,7 @@ export class LeoIntegration {
                         this._removeRecentFile(this.leoStates.leoOpenedFileName);
                     }
                     const q_commandResult = this.nodeCommand({
-                        action: Constants.LEOBRIDGE.SAVE_LEOJS_FILE,
+                        action: Constants.LEOBRIDGE.SAVE_FILE,
                         node: undefined,
                         refreshType: { tree: true, states: true, documents: true },
                         fromOutline: !!p_fromOutline,
