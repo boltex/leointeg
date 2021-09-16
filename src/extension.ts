@@ -78,6 +78,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.CLEAR_RECENT_FILES, () => w_leo.clearRecentLeoFiles()],
         [CMD.RECENT_FILES, () => w_leo.showRecentLeoFiles()],
         [CMD.SAVE_AS_FILE, () => w_leo.saveAsLeoFile()],
+        [CMD.SAVE_AS_LEOJS, () => w_leo.saveAsLeoJsFile()],
         [CMD.SAVE_FILE, () => w_leo.saveLeoFile()],
         // [CMD.SAVE_DISABLED, () => { }],
         [CMD.SAVE_FILE_FO, () => w_leo.saveLeoFile(true)],

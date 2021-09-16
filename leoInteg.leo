@@ -643,6 +643,7 @@
 <v t="felix.20200718170429.3"><vh>_getBestOpenFolderUri</vh></v>
 <v t="felix.20210602160216.1"><vh>getImportFileUrl</vh></v>
 <v t="felix.20200718170429.4"><vh>getLeoFileUrl</vh></v>
+<v t="felix.20210915234252.1"><vh>getLeoJsFileUrl</vh></v>
 </v>
 </v>
 <v t="felix.20200718170712.1"><vh>@clean src/leoNode.ts</vh>
@@ -767,6 +768,7 @@
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
 <v t="felix.20200719025231.58"><vh>saveAsLeoFile</vh></v>
+<v t="felix.20210915233602.1"><vh>saveAsLeoJsFile</vh></v>
 <v t="felix.20200719025231.59"><vh>saveLeoFile</vh></v>
 <v t="felix.20200719025231.60"><vh>switchLeoFile</vh></v>
 <v t="felix.20200719025231.61"><vh>selectOpenedLeoDocument</vh></v>
@@ -1767,6 +1769,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.CLEAR_RECENT_FILES, () =&gt; w_leo.clearRecentLeoFiles()],
 [CMD.RECENT_FILES, () =&gt; w_leo.showRecentLeoFiles()],
 [CMD.SAVE_AS_FILE, () =&gt; w_leo.saveAsLeoFile()],
+[CMD.SAVE_AS_LEOJS, () =&gt; w_leo.saveAsLeoJsFile()],
 [CMD.SAVE_FILE, () =&gt; w_leo.saveLeoFile()],
 // [CMD.SAVE_DISABLED, () =&gt; { }],
 [CMD.SAVE_FILE_FO, () =&gt; w_leo.saveLeoFile(true)],
@@ -6333,6 +6336,7 @@ public static LEOBRIDGE = {
     OPEN_FILES: "!open_files", //  "openFiles",
     CLOSE_FILE: "!close_file", // "closeFile",
     SAVE_FILE: "!save_file", // "saveFile",
+    SAVE_LEOJS_FILE: "!save_leojs_file",
     // * @-Buttons
     GET_BUTTONS: "!get_buttons", // "getButtons",
     REMOVE_BUTTON: "!remove_button", // "removeButton",
@@ -6435,6 +6439,7 @@ public static COMMANDS = {
     // SAVE_DISABLED: Constants.NAME + ".saveLeoFileDisabled", // Disabled - nop
     SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline",
     SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
+    SAVE_AS_LEOJS: Constants.NAME + ".saveAsLeoJsFile",
     CLOSE_FILE: Constants.NAME + ".closeLeoFile",
     CLICK_BUTTON: Constants.NAME + ".clickButton",
     REMOVE_BUTTON: Constants.NAME + ".removeButton",
@@ -6620,6 +6625,8 @@ public static FIND_EXPLORER_ID: string = "leoFindPanelExplorer";
 public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
 public static FILE_EXTENSION: string = "leo";
+public static JS_FILE_EXTENSION: string = "leojs";
+
 public static URI_LEO_SCHEME: string = "leo";
 public static URI_FILE_SCHEME: string = "file";
 public static URI_SCHEME_HEADER: string = "leo:/";
@@ -21037,6 +21044,112 @@ public checkCloseOnFileDelete(p_forced?: boolean): void {
 public setCloseOnFileDelete(): Thenable&lt;void&gt; {
     return vscode.workspace.getConfiguration("workbench.editor")
         .update("closeOnFileDelete", true, true);
+}
+
+</t>
+<t tx="felix.20210915233602.1">/**
+ * * Asks for .leojs file name and path, then saves the JSON Leo file
+ * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
+ * @returns a promise from saving the file results, or that will resolve to undefined if cancelled
+ */
+public saveAsLeoJsFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undefined&gt; {
+    return this._isBusyTriggerSave(true, true)
+        .then((p_saveResult) =&gt; {
+            if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
+                return this._leoFilesBrowser.getLeoFileUrl(true);
+            } else {
+                // 'when-conditions' should prevent this
+                vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+            }
+        })
+        .then((p_chosenLeoFile) =&gt; {
+            if (p_chosenLeoFile.trim()) {
+                const w_hasDot = p_chosenLeoFile.indexOf('.') !== -1;
+                if (
+                    !w_hasDot ||
+                    (p_chosenLeoFile.split('.').pop() !== Constants.JS_FILE_EXTENSION &amp;&amp; w_hasDot)
+                ) {
+                    if (!p_chosenLeoFile.endsWith('.')) {
+                        p_chosenLeoFile += '.'; // Add dot if needed
+                    }
+                    p_chosenLeoFile += Constants.JS_FILE_EXTENSION; // Add extension
+                }
+                if (this.leoStates.leoOpenedFileName) {
+                    this._removeLastFile(this.leoStates.leoOpenedFileName);
+                    this._removeRecentFile(this.leoStates.leoOpenedFileName);
+                }
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.SAVE_LEOJS_FILE,
+                    node: undefined,
+                    refreshType: { tree: true, states: true, documents: true },
+                    fromOutline: !!p_fromOutline,
+                    name: p_chosenLeoFile,
+                });
+                this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
+                this._leoStatusBar.update(true, 0, true);
+                this._addRecentAndLastFile(p_chosenLeoFile.trim());
+                if (q_commandResult) {
+                    return q_commandResult;
+                } else {
+                    return Promise.reject('Save file not added on command stack');
+                }
+            } else {
+                // Canceled
+                return Promise.resolve(undefined);
+            }
+        });
+}
+
+</t>
+<t tx="felix.20210915234252.1">/**
+ * * Open a file browser and let the user choose a JSON leojs file name to save as.
+ * @returns A promise resolving to a chosen path string, or rejected with an empty string if cancelled
+ */
+public getLeoJsFileUrl(): Promise&lt;string&gt; {
+    if (this._fileBrowserActive) {
+        return Promise.resolve("");
+    }
+    this._fileBrowserActive = true;
+    return new Promise((p_resolve, p_reject) =&gt; {
+        const w_filters: { [name: string]: string[] } = {};
+        w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [Constants.FILE_EXTENSION];
+
+        if (p_saveAsFlag) {
+            // Choose file
+            vscode.window.showSaveDialog({
+                saveLabel: "Save Leo File",
+                defaultUri: this._getBestOpenFolderUri(),
+                filters: { 'Leo File': ['leo'] }
+            })
+                .then(p_chosenLeoFile =&gt; {
+                    this._fileBrowserActive = false;
+                    if (p_chosenLeoFile) {
+                        // single string
+                        p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                    } else {
+                        p_resolve(""); // not rejection - resolve empty string
+                    }
+                });
+        } else {
+            vscode.window
+                .showOpenDialog({
+                    canSelectMany: false,
+                    defaultUri: this._getBestOpenFolderUri(),
+                    canSelectFolders: false,
+                    filters: w_filters
+                })
+                .then(p_chosenLeoFile =&gt; {
+                    this._fileBrowserActive = false;
+                    if (p_chosenLeoFile) {
+                        // array instead of single string
+                        p_resolve(p_chosenLeoFile[0].fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                    } else {
+                        p_resolve("");
+                    }
+                });
+        }
+    });
 }
 
 </t>

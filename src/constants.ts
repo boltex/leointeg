@@ -26,6 +26,8 @@ export class Constants {
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";
+    public static JS_FILE_EXTENSION: string = "leojs";
+
     public static URI_LEO_SCHEME: string = "leo";
     public static URI_FILE_SCHEME: string = "file";
     public static URI_SCHEME_HEADER: string = "leo:/";
@@ -435,6 +437,7 @@ export class Constants {
         OPEN_FILES: "!open_files", //  "openFiles",
         CLOSE_FILE: "!close_file", // "closeFile",
         SAVE_FILE: "!save_file", // "saveFile",
+        SAVE_LEOJS_FILE: "!save_leojs_file",
         // * @-Buttons
         GET_BUTTONS: "!get_buttons", // "getButtons",
         REMOVE_BUTTON: "!remove_button", // "removeButton",
@@ -536,6 +539,7 @@ export class Constants {
         // SAVE_DISABLED: Constants.NAME + ".saveLeoFileDisabled", // Disabled - nop
         SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline",
         SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
+        SAVE_AS_LEOJS: Constants.NAME + ".saveAsLeoJsFile",
         CLOSE_FILE: Constants.NAME + ".closeLeoFile",
         CLICK_BUTTON: Constants.NAME + ".clickButton",
         REMOVE_BUTTON: Constants.NAME + ".removeButton",
