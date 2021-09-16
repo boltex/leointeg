@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "author": {
     "name": "Félix"
   },
@@ -813,6 +813,15 @@
         "icon": {
           "light": "resources/light/save-as.svg",
           "dark": "resources/dark/save-as.svg"
+        }
+      },
+      {
+        "command": "leointeg.saveAsLeoJsFile",
+        "category": "Leo",
+        "title": "Save as leojs JSON File...",
+        "icon": {
+          "light": "resources/light/save-as-leojs.svg",
+          "dark": "resources/dark/save-as-leojs.svg"
         }
       },
       {

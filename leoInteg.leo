@@ -30,7 +30,8 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
-<v t="felix.20210901215735.1"><vh>0.1.18</vh></v>
+<v t="felix.20210901215735.1"><vh>0.1.19</vh></v>
+<v t="felix.20210916004954.1"><vh>0.1.18</vh></v>
 <v t="felix.20210816230003.1"><vh>0.1.17</vh></v>
 <v t="felix.20210725153617.1"><vh>0.1.16</vh></v>
 <v t="felix.20210718163005.1"><vh>0.1.15</vh></v>
@@ -643,6 +644,7 @@
 <v t="felix.20200718170429.3"><vh>_getBestOpenFolderUri</vh></v>
 <v t="felix.20210602160216.1"><vh>getImportFileUrl</vh></v>
 <v t="felix.20200718170429.4"><vh>getLeoFileUrl</vh></v>
+<v t="felix.20210915234252.1"><vh>getLeoJsFileUrl</vh></v>
 </v>
 </v>
 <v t="felix.20200718170712.1"><vh>@clean src/leoNode.ts</vh>
@@ -767,6 +769,7 @@
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
 <v t="felix.20200719025231.58"><vh>saveAsLeoFile</vh></v>
+<v t="felix.20210915233602.1"><vh>saveAsLeoJsFile</vh></v>
 <v t="felix.20200719025231.59"><vh>saveLeoFile</vh></v>
 <v t="felix.20200719025231.60"><vh>switchLeoFile</vh></v>
 <v t="felix.20200719025231.61"><vh>selectOpenedLeoDocument</vh></v>
@@ -1767,6 +1770,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.CLEAR_RECENT_FILES, () =&gt; w_leo.clearRecentLeoFiles()],
 [CMD.RECENT_FILES, () =&gt; w_leo.showRecentLeoFiles()],
 [CMD.SAVE_AS_FILE, () =&gt; w_leo.saveAsLeoFile()],
+[CMD.SAVE_AS_LEOJS, () =&gt; w_leo.saveAsLeoJsFile()],
 [CMD.SAVE_FILE, () =&gt; w_leo.saveLeoFile()],
 // [CMD.SAVE_DISABLED, () =&gt; { }],
 [CMD.SAVE_FILE_FO, () =&gt; w_leo.saveLeoFile(true)],
@@ -2378,7 +2382,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "author": {
     "name": "Félix"
   },
@@ -2944,6 +2948,15 @@ print('done')
   "icon": {
     "light": "resources/light/save-as.svg",
     "dark": "resources/dark/save-as.svg"
+  }
+},
+{
+  "command": "leointeg.saveAsLeoJsFile",
+  "category": "Leo",
+  "title": "Save as leojs JSON File...",
+  "icon": {
+    "light": "resources/light/save-as-leojs.svg",
+    "dark": "resources/dark/save-as-leojs.svg"
   }
 },
 {
@@ -6435,6 +6448,7 @@ public static COMMANDS = {
     // SAVE_DISABLED: Constants.NAME + ".saveLeoFileDisabled", // Disabled - nop
     SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline",
     SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
+    SAVE_AS_LEOJS: Constants.NAME + ".saveAsLeoJsFile",
     CLOSE_FILE: Constants.NAME + ".closeLeoFile",
     CLICK_BUTTON: Constants.NAME + ".clickButton",
     REMOVE_BUTTON: Constants.NAME + ".removeButton",
@@ -6620,6 +6634,8 @@ public static FIND_EXPLORER_ID: string = "leoFindPanelExplorer";
 public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
 public static FILE_EXTENSION: string = "leo";
+public static JS_FILE_EXTENSION: string = "leojs";
+
 public static URI_LEO_SCHEME: string = "leo";
 public static URI_FILE_SCHEME: string = "file";
 public static URI_SCHEME_HEADER: string = "leo:/";
@@ -8366,7 +8382,10 @@ public getLeoFileUrl(p_saveAsFlag?: boolean): Promise&lt;string&gt; {
     this._fileBrowserActive = true;
     return new Promise((p_resolve, p_reject) =&gt; {
         const w_filters: { [name: string]: string[] } = {};
-        w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [Constants.FILE_EXTENSION];
+        w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [
+            Constants.FILE_EXTENSION,
+            Constants.JS_FILE_EXTENSION
+        ];
 
         if (p_saveAsFlag) {
             // Choose file
@@ -9639,13 +9658,9 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 @tabwidth -4
 # Change Log
 
-## 0.0.19
+## 0.0.20
 
-- Fixed 'tab' press from the sidebar: if pressing from the outline it tabs to possible icons on the node, then goes to the body pane. If pressed from the search panel, it cycles through the fields of the search panel.
-- Made the server output channel and the Leo Log Window not show up and open automatically anymore unless the text in the Log Window is 'red' (For Errors to be shown).
-- Added icon for the 'show Log Pane' command and made it available, along with the 'Show Leointeg Settings', on title bar of documents and buttons views.
-- Automatic detection of VSCode's workbench.editor.closeOnFileDelete if its missing/disabled.
-- Fixed pressing shift+insert while in terminal, which triggered the 'insert node' command instead of letting the usual vscode 'paste in terminal' command take effect.
+- Added .leojs JSON file format support
 
 @others
 </t>
@@ -16226,6 +16241,7 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'open-outline': Constants.COMMANDS.OPEN_FILE,
     'file-save': Constants.COMMANDS.SAVE_FILE,
     'file-save-as': Constants.COMMANDS.SAVE_AS_FILE,
+    'file-save-as-leojs': Constants.COMMANDS.SAVE_AS_LEOJS,
     'file-save-as-unzipped': Constants.COMMANDS.SAVE_AS_FILE,
     'file-save-by-name': Constants.COMMANDS.SAVE_AS_FILE,
     'file-save-to': Constants.COMMANDS.SAVE_AS_FILE,
@@ -16233,6 +16249,7 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'save-as': Constants.COMMANDS.SAVE_AS_FILE,
     'save-file': Constants.COMMANDS.SAVE_FILE,
     'save-file-as': Constants.COMMANDS.SAVE_AS_FILE,
+    'save-file-as-leojs': Constants.COMMANDS.SAVE_AS_LEOJS,
     'save-file-as-unzipped': Constants.COMMANDS.SAVE_AS_FILE,
     'save-file-by-name': Constants.COMMANDS.SAVE_AS_FILE,
     'save-file-to': Constants.COMMANDS.SAVE_AS_FILE,
@@ -20994,13 +21011,13 @@ For normal usage, use the leoserver.py file from your leo-editor installation fo
 
 (Located in ...leo-editor/leo/core/)
 </t>
-<t tx="felix.20210901215735.1">## 0.1.18
+<t tx="felix.20210901215735.1">## 0.0.19
 
-- Git-diff is now fixed in Leo so the experimental option 'Set CWD' has been removed
-- The somewhat unnecessary experimental option 'Shell' has been removed.
-- Automatic detection of VSCode's workbench.editor.enablePreview if its missing/disabled.
-- Automatic detection of VSCode's workbench.editor.closeEmptyGroups if its missing/enabled.
-- Easier access to the leo settings through the extension config title strings and the extension view menu
+- Fixed 'tab' press from the sidebar: if pressing from the outline it tabs to possible icons on the node, then goes to the body pane. If pressed from the search panel, it cycles through the fields of the search panel.
+- Made the server output channel and the Leo Log Window not show up and open automatically anymore unless the text in the Log Window is 'red' (For Errors to be shown).
+- Added icon for the 'show Log Pane' command and made it available, along with the 'Show Leointeg Settings', on title bar of documents and buttons views.
+- Automatic detection of VSCode's workbench.editor.closeOnFileDelete if its missing/disabled.
+- Fixed pressing shift+insert while in terminal, which triggered the 'insert node' command instead of letting the usual vscode 'paste in terminal' command take effect.
 
 </t>
 <t tx="felix.20210904235646.1">/**
@@ -21038,6 +21055,100 @@ public setCloseOnFileDelete(): Thenable&lt;void&gt; {
     return vscode.workspace.getConfiguration("workbench.editor")
         .update("closeOnFileDelete", true, true);
 }
+
+</t>
+<t tx="felix.20210915233602.1">/**
+ * * Asks for .leojs file name and path, then saves the JSON Leo file
+ * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
+ * @returns a promise from saving the file results, or that will resolve to undefined if cancelled
+ */
+public saveAsLeoJsFile(p_fromOutline?: boolean): Promise&lt;LeoBridgePackage | undefined&gt; {
+    return this._isBusyTriggerSave(true, true)
+        .then((p_saveResult) =&gt; {
+            if (this.leoStates.fileOpenedReady &amp;&amp; this.lastSelectedNode) {
+                return this._leoFilesBrowser.getLeoJsFileUrl();
+            } else {
+                // 'when-conditions' should prevent this
+                vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+            }
+        })
+        .then((p_chosenLeoFile) =&gt; {
+            if (p_chosenLeoFile.trim()) {
+                const w_hasDot = p_chosenLeoFile.indexOf('.') !== -1;
+                if (
+                    !w_hasDot ||
+                    (p_chosenLeoFile.split('.').pop() !== Constants.JS_FILE_EXTENSION &amp;&amp; w_hasDot)
+                ) {
+                    if (!p_chosenLeoFile.endsWith('.')) {
+                        p_chosenLeoFile += '.'; // Add dot if needed
+                    }
+                    p_chosenLeoFile += Constants.JS_FILE_EXTENSION; // Add extension
+                }
+                if (this.leoStates.leoOpenedFileName) {
+                    this._removeLastFile(this.leoStates.leoOpenedFileName);
+                    this._removeRecentFile(this.leoStates.leoOpenedFileName);
+                }
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.SAVE_FILE,
+                    node: undefined,
+                    refreshType: { tree: true, states: true, documents: true },
+                    fromOutline: !!p_fromOutline,
+                    name: p_chosenLeoFile,
+                });
+                this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
+                this._leoStatusBar.update(true, 0, true);
+                this._addRecentAndLastFile(p_chosenLeoFile.trim());
+                if (q_commandResult) {
+                    return q_commandResult;
+                } else {
+                    return Promise.reject('Save file not added on command stack');
+                }
+            } else {
+                // Canceled
+                return Promise.resolve(undefined);
+            }
+        });
+}
+
+</t>
+<t tx="felix.20210915234252.1">/**
+ * * Open a file browser and let the user choose a JSON leojs file name to save as.
+ * @returns A promise resolving to a chosen path string, or rejected with an empty string if cancelled
+ */
+public getLeoJsFileUrl(): Promise&lt;string&gt; {
+    if (this._fileBrowserActive) {
+        return Promise.resolve("");
+    }
+    this._fileBrowserActive = true;
+    return new Promise((p_resolve, p_reject) =&gt; {
+        // Choose file
+        vscode.window.showSaveDialog({
+            saveLabel: "Save as leojs File",
+            defaultUri: this._getBestOpenFolderUri(),
+            filters: { 'JSON Leo File': ['leojs'] }
+        })
+            .then(p_chosenLeoFile =&gt; {
+                this._fileBrowserActive = false;
+                if (p_chosenLeoFile) {
+                    // single string
+                    p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                } else {
+                    p_resolve(""); // not rejection - resolve empty string
+                }
+            });
+
+    });
+}
+
+</t>
+<t tx="felix.20210916004954.1">## 0.1.18
+
+- Git-diff is now fixed in Leo so the experimental option 'Set CWD' has been removed
+- The somewhat unnecessary experimental option 'Shell' has been removed.
+- Automatic detection of VSCode's workbench.editor.enablePreview if its missing/disabled.
+- Automatic detection of VSCode's workbench.editor.closeEmptyGroups if its missing/enabled.
+- Easier access to the leo settings through the extension config title strings and the extension view menu
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
@@ -21943,13 +22054,13 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 0.1.19&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 0.1.20&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 0.1.19
+            See What's New in LeoInteg 0.1.20
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;

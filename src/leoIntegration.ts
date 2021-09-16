@@ -2812,6 +2812,60 @@ export class LeoIntegration {
     }
 
     /**
+     * * Asks for .leojs file name and path, then saves the JSON Leo file
+     * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
+     * @returns a promise from saving the file results, or that will resolve to undefined if cancelled
+     */
+    public saveAsLeoJsFile(p_fromOutline?: boolean): Promise<LeoBridgePackage | undefined> {
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
+                if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
+                    return this._leoFilesBrowser.getLeoJsFileUrl();
+                } else {
+                    // 'when-conditions' should prevent this
+                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                    return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                }
+            })
+            .then((p_chosenLeoFile) => {
+                if (p_chosenLeoFile.trim()) {
+                    const w_hasDot = p_chosenLeoFile.indexOf('.') !== -1;
+                    if (
+                        !w_hasDot ||
+                        (p_chosenLeoFile.split('.').pop() !== Constants.JS_FILE_EXTENSION && w_hasDot)
+                    ) {
+                        if (!p_chosenLeoFile.endsWith('.')) {
+                            p_chosenLeoFile += '.'; // Add dot if needed
+                        }
+                        p_chosenLeoFile += Constants.JS_FILE_EXTENSION; // Add extension
+                    }
+                    if (this.leoStates.leoOpenedFileName) {
+                        this._removeLastFile(this.leoStates.leoOpenedFileName);
+                        this._removeRecentFile(this.leoStates.leoOpenedFileName);
+                    }
+                    const q_commandResult = this.nodeCommand({
+                        action: Constants.LEOBRIDGE.SAVE_FILE,
+                        node: undefined,
+                        refreshType: { tree: true, states: true, documents: true },
+                        fromOutline: !!p_fromOutline,
+                        name: p_chosenLeoFile,
+                    });
+                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
+                    this._leoStatusBar.update(true, 0, true);
+                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
+                    if (q_commandResult) {
+                        return q_commandResult;
+                    } else {
+                        return Promise.reject('Save file not added on command stack');
+                    }
+                } else {
+                    // Canceled
+                    return Promise.resolve(undefined);
+                }
+            });
+    }
+
+    /**
      * * Invokes the self.commander.save() Leo command
      * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
      * @returns Promise that resolves when the save command is placed on the front-end command stack
