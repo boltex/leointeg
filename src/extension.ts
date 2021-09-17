@@ -674,6 +674,15 @@ export function activate(p_context: vscode.ExtensionContext) {
         p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
     });
 
+    // * Close remaining Leo Bodies restored by vscode from last session.
+    vscode.window.visibleTextEditors.forEach(p_textEditor => {
+        if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+            if (p_textEditor.hide) {
+                p_textEditor.hide();
+            }
+        }
+    });
+
     // * Show a welcome screen on version updates, then start the actual extension.
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo)
         .then(() => {

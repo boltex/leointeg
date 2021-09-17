@@ -1459,7 +1459,7 @@ export class LeoIntegration {
      * * Launches refresh for UI components and states
      * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
-     * @param p_ap // TODO ! DOCUMENT !
+     * @param p_ap An archived position
      */
     public launchRefresh(
         p_refreshType: ReqRefresh,

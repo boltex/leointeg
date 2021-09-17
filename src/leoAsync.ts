@@ -140,8 +140,15 @@ export class LeoAsync {
         switch (p_infoArg.message) {
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_REFRESHED:
                 w_message += Constants.USER_MESSAGES.REFRESHED;
-                // TODO : #34 @boltex Deal with focus placement
-                this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
+
+                // this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
+
+                this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
+                    .then((p_package) => {
+                        // refresh and reveal selection
+                        this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+                    });
+
                 break;
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_IGNORED:
                 w_message += Constants.USER_MESSAGES.IGNORED;

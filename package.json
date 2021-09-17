@@ -2659,6 +2659,11 @@
           "group": "navigation@2"
         },
         {
+          "command": "leointeg.saveAsLeoJsFile",
+          "when": "view =~ /leoIntegration/ && leoTreeOpened && !leoTreeTitled",
+          "group": "navigation@2"
+        },
+        {
           "command": "leointeg.undoFromOutline",
           "when": "view =~ /leoIntegration/ && leoTreeOpened && leoCanUndo",
           "group": "navigation@3"
@@ -2697,6 +2702,11 @@
         },
         {
           "command": "leointeg.saveAsLeoFile",
+          "when": "viewItem =~ /leoDocumentSelectedUntitled/",
+          "group": "inline@1"
+        },
+        {
+          "command": "leointeg.saveAsLeoJsFile",
           "when": "viewItem =~ /leoDocumentSelectedUntitled/",
           "group": "inline@1"
         },

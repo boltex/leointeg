@@ -1157,8 +1157,15 @@ public showChangesDetectedInfoMessage(p_infoArg: runInfoMessageDialogParameters)
     switch (p_infoArg.message) {
         case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_REFRESHED:
             w_message += Constants.USER_MESSAGES.REFRESHED;
-            // TODO : #34 @boltex Deal with focus placement
-            this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
+
+            // this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
+
+            this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
+                .then((p_package) =&gt; {
+                    // refresh and reveal selection
+                    this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+                });
+
             break;
         case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_IGNORED:
             w_message += Constants.USER_MESSAGES.IGNORED;
@@ -1444,7 +1451,7 @@ private _revealTreeViewNode(
  * * Launches refresh for UI components and states
  * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
- * @param p_ap // TODO ! DOCUMENT !
+ * @param p_ap An archived position
  */
 public launchRefresh(
     p_refreshType: ReqRefresh,
@@ -7360,6 +7367,15 @@ export function activate(p_context: vscode.ExtensionContext) {
 
     w_commands.map(function (p_command) {
         p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
+    });
+
+    // * Close remaining Leo Bodies restored by vscode from last session.
+    vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
+        if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+            if (p_textEditor.hide) {
+                p_textEditor.hide();
+            }
+        }
     });
 
     // * Show a welcome screen on version updates, then start the actual extension.
@@ -14571,6 +14587,11 @@ public static VSCODE_COMMANDS = {
     "group": "navigation@2"
   },
   {
+    "command": "leointeg.saveAsLeoJsFile",
+    "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTreeTitled",
+    "group": "navigation@2"
+  },
+  {
     "command": "leointeg.undoFromOutline",
     "when": "view =~ /leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanUndo",
     "group": "navigation@3"
@@ -14610,6 +14631,11 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.saveAsLeoFile",
+    "when": "viewItem =~ /leoDocumentSelectedUntitled/",
+    "group": "inline@1"
+  },
+  {
+    "command": "leointeg.saveAsLeoJsFile",
     "when": "viewItem =~ /leoDocumentSelectedUntitled/",
     "group": "inline@1"
   },
