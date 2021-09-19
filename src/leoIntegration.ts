@@ -15,7 +15,7 @@ import {
     ShowBodyParam,
     BodySelectionInfo,
     LeoGuiFindTabManagerSettings,
-    LeoSearchSettings,
+    LeoSearchSettings
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
@@ -1076,11 +1076,13 @@ export class LeoIntegration {
             return;
         }
         // * Status flag check
-        if (vscode.window.activeTextEditor) {
-            this._leoStatusBar.update(
-                vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME
-            );
-        }
+        setTimeout(() => {
+            if (vscode.window.activeTextEditor) {
+                this._leoStatusBar.update(
+                    vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME
+                );
+            }
+        }, 0);
     }
 
     /**
@@ -1090,7 +1092,7 @@ export class LeoIntegration {
     public _changedTextEditorViewColumn(
         p_columnChangeEvent: vscode.TextEditorViewColumnChangeEvent
     ): void {
-        if (p_columnChangeEvent && p_columnChangeEvent.textEditor.document.uri.scheme === 'more') {
+        if (p_columnChangeEvent && p_columnChangeEvent.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
             this._checkPreviewMode(p_columnChangeEvent.textEditor);
         }
         this.triggerBodySave(true);
@@ -1104,7 +1106,7 @@ export class LeoIntegration {
         if (p_editors && p_editors.length) {
             // May be no changes - so check length
             p_editors.forEach((p_textEditor) => {
-                if (p_textEditor && p_textEditor.document.uri.scheme === 'more') {
+                if (p_textEditor && p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
                     if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
                         this._hideDeleteBody(p_textEditor);
                     }
@@ -1459,7 +1461,7 @@ export class LeoIntegration {
      * * Launches refresh for UI components and states
      * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
-     * @param p_ap // TODO ! DOCUMENT !
+     * @param p_ap An archived position
      */
     public launchRefresh(
         p_refreshType: ReqRefresh,
@@ -1804,6 +1806,7 @@ export class LeoIntegration {
         console.log('DELETE EXTRANEOUS:', p_textEditor.document.uri.fsPath);
         const w_edit = new vscode.WorkspaceEdit();
         w_edit.deleteFile(p_textEditor.document.uri, { ignoreIfNotExists: true });
+        vscode.workspace.applyEdit(w_edit);
         if (p_textEditor.hide) {
             p_textEditor.hide();
         }

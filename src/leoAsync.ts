@@ -36,6 +36,7 @@ export class LeoAsync {
     /**
      * * Server announced the multi-user content changed: Debounce a refresh cycle.
      * The 'action' string can be checked to determine what kind, if any, is required.
+     * Note: 'Getters' and the 'do_nothing' actions are NOT shared by the server.
      */
     public refresh(p_package: any): void {
         if (p_package.opened && this._leoIntegration.leoStates.fileOpenedReady) {
@@ -140,8 +141,15 @@ export class LeoAsync {
         switch (p_infoArg.message) {
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_REFRESHED:
                 w_message += Constants.USER_MESSAGES.REFRESHED;
-                // TODO : #34 @boltex Deal with focus placement
-                this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
+
+                // this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
+
+                this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
+                    .then((p_package) => {
+                        // refresh and reveal selection
+                        this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+                    });
+
                 break;
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_IGNORED:
                 w_message += Constants.USER_MESSAGES.IGNORED;

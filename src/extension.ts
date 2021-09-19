@@ -674,6 +674,9 @@ export function activate(p_context: vscode.ExtensionContext) {
         p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
     });
 
+    // * Close remaining Leo Bodies restored by vscode from last session.
+    closeLeoTextEditors();
+
     // * Show a welcome screen on version updates, then start the actual extension.
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo)
         .then(() => {
@@ -698,6 +701,7 @@ export function activate(p_context: vscode.ExtensionContext) {
  * * Called when extension is deactivated
  */
 export function deactivate(): Promise<boolean> {
+    closeLeoTextEditors();
     if (LeoInteg) {
         LeoInteg.activated = false;
         LeoInteg.cleanupBody().then(() => {
@@ -715,6 +719,19 @@ export function deactivate(): Promise<boolean> {
     } else {
         return Promise.resolve(false);
     }
+}
+
+/**
+ * * Closes all visible text editors that have Leo filesystem scheme
+ */
+function closeLeoTextEditors() {
+    vscode.window.visibleTextEditors.forEach(p_textEditor => {
+        if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+            if (p_textEditor.hide) {
+                p_textEditor.hide();
+            }
+        }
+    });
 }
 
 /**

@@ -170,18 +170,18 @@ For more information about the Leo server see [Using leoserver.py](https://leoed
 
 Main issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
 
-### Keybindings Conflicts Resolution
-
-If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane,
-add **`&& resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
-
 ### Linux Keybindings
 
 If you're experiencing trouble with the keyboard shortcuts for
 the 'Clone Node' or the 'Promote' and 'Demote' commands,
-use **"keyboard.dispatch": "keyCode"** in your settings and restart vscode.
+set **"keyboard.dispatch": "keyCode"** in your vscode settings and restart vscode.
 See [Troubleshoot Linux Keybindings](https://github.com/microsoft/vscode/wiki/Keybinding-Issues#troubleshoot-linux-keybindings)
 for more information.
+
+### Keybindings Conflicts Resolution
+
+If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane,
+add **`&& resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Move Outline Keyboard Commands
 
