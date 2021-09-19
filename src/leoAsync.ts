@@ -36,6 +36,7 @@ export class LeoAsync {
     /**
      * * Server announced the multi-user content changed: Debounce a refresh cycle.
      * The 'action' string can be checked to determine what kind, if any, is required.
+     * Note: 'Getters' and the 'do_nothing' actions are NOT shared by the server.
      */
     public refresh(p_package: any): void {
         if (p_package.opened && this._leoIntegration.leoStates.fileOpenedReady) {
