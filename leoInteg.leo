@@ -14856,7 +14856,7 @@ public _changedWindowState(p_windowState: vscode.WindowState): void {
 }
 
 </t>
-<t tx="felix.20210418230204.2">private findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
+<t tx="felix.20210418230204.2">private _findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
     let w_column: vscode.ViewColumn | undefined;
     vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
         if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {

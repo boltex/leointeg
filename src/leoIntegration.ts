@@ -1792,7 +1792,7 @@ export class LeoIntegration {
         return w_column;
     }
 
-    private findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
+    private _findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
         let w_column: vscode.ViewColumn | undefined;
         vscode.window.visibleTextEditors.forEach((p_textEditor) => {
             if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {
