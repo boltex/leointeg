@@ -521,13 +521,11 @@ export class LeoIntegration {
             return;
         }
         this._leoIsConnecting = true;
-        console.log('connecting');
         this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess(
             this._serverService.usingPort // This will be zero if no port found
         );
         this._leoBridgeReadyPromise.then(
             (p_package) => {
-                console.log('connected');
                 this._leoIsConnecting = false;
                 // Check if hard-coded first package signature
                 if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
@@ -602,7 +600,7 @@ export class LeoIntegration {
     /**
      * * Popup browser to choose Leo-Editor installation folder path
      */
-    public chooseLeoFolder() {
+    public chooseLeoFolder(): void {
         utils.chooseLeoFolderDialog().then(p_chosenPath => {
             if (p_chosenPath && p_chosenPath.length) {
                 this.config.setLeoIntegSettings(
@@ -828,7 +826,8 @@ export class LeoIntegration {
     }
 
     /**
-     * * Returns true if the current opened Leo document's filename has some content. (not a new unnamed file)
+     * * Check if the current file is an already saved/named file
+     * @returns true if the current opened Leo document's filename has some content. (not a new unnamed file)
      */
     private _isCurrentFileNamed(): boolean {
         return !!this.leoStates.leoOpenedFileName.length; // checks if it's an empty string
@@ -1119,6 +1118,7 @@ export class LeoIntegration {
 
     /**
      * * Whole window has been minimized/restored
+     * @param p_windowState the state of the window that changed
      */
     public _changedWindowState(p_windowState: vscode.WindowState): void {
         // no other action
@@ -1331,7 +1331,6 @@ export class LeoIntegration {
             gnx: utils.leoUriToStr(p_document.uri),
             body: p_document.getText(),
         };
-        console.log('Send action set body on quit');
         return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
     }
 
@@ -1684,35 +1683,6 @@ export class LeoIntegration {
             this.bodyUri = utils.strToLeoUri(p_node.gnx);
         }
         return this.showBody(p_aside, p_showBodyKeepFocus);
-
-        /*
-            this._showBodyParams = {
-                node: p_node,
-                aside: p_aside,
-                showBodyKeepFocus: p_showBodyKeepFocus,
-                force_open: p_force_open // can be undefined
-            };
-            // Start it if possible, otherwise the last _showBodyParams will be used again right after
-            if (!this._showBodyStarted) {
-                this._showBodyStarted = true;
-                this._applyNodeToBody(this._showBodyParams)
-                    .then((p_textEditor: vscode.TextEditor) => {
-                        // finished
-                        this._showBodyStarted = false;
-                        if (this._showBodyParams) {
-                            // New node to show again! Call itself faking params from the specified ones.
-                            this._tryApplyNodeToBody(
-                                this._showBodyParams.node,
-                                this._showBodyParams.aside,
-                                this._showBodyParams.showBodyKeepFocus,
-                                this._showBodyParams.force_open
-                            );
-                        }
-                    });
-                // Clear global body params, will get refilled if needed
-                this._showBodyParams = undefined;
-            }
-            */
     }
 
     /**
@@ -1768,6 +1738,7 @@ export class LeoIntegration {
     /**
      * * Sets globals if the current body is found opened in an editor panel for a particular gnx
      * @param p_gnx gnx to match
+     * @returns true if located and found, false otherwise
      */
     private _locateOpenedBody(p_gnx: string): boolean {
         let w_found = false;
@@ -1782,6 +1753,11 @@ export class LeoIntegration {
         return w_found;
     }
 
+
+    /**
+     * * Find editor column based on uri
+     * @returns View Column if found, undefined otherwise
+     */
     private _findUriColumn(p_uri: vscode.Uri): vscode.ViewColumn | undefined {
         let w_column: vscode.ViewColumn | undefined;
         vscode.window.visibleTextEditors.forEach((p_textEditor) => {
@@ -1792,6 +1768,10 @@ export class LeoIntegration {
         return w_column;
     }
 
+    /**
+     * * Find editor column based on gnx string
+     * @returns View Column if found, undefined otherwise
+     */
     private _findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
         let w_column: vscode.ViewColumn | undefined;
         vscode.window.visibleTextEditors.forEach((p_textEditor) => {
@@ -1802,8 +1782,11 @@ export class LeoIntegration {
         return w_column;
     }
 
+    /**
+     * * Closes non-existing body by deleting the file and calling 'hide'
+     * @param p_textEditor the editor to close
+     */
     private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
-        console.log('DELETE EXTRANEOUS:', p_textEditor.document.uri.fsPath);
         const w_edit = new vscode.WorkspaceEdit();
         w_edit.deleteFile(p_textEditor.document.uri, { ignoreIfNotExists: true });
         vscode.workspace.applyEdit(w_edit);
@@ -1816,6 +1799,11 @@ export class LeoIntegration {
         );
     }
 
+
+    /**
+     * * Clears the global 'Preview Mode' flag if the given editor is not in the main body column
+     * @param p_editor is the editor to check for is in the same column as the main one
+     */
     private _checkPreviewMode(p_editor: vscode.TextEditor): void {
         // if selected gnx but in another column
         if (
@@ -1829,6 +1817,7 @@ export class LeoIntegration {
 
     /**
      * * Closes any body pane opened in this vscode window instance
+     * @returns a promise that resolves when the file is closed and removed from recently opened list
      */
     public closeBody(): Thenable<any> {
         // TODO : CLEAR UNDO HISTORY AND FILE HISTORY for this.bodyUri !
@@ -1854,6 +1843,7 @@ export class LeoIntegration {
 
     /**
      * * cleanupBody closes all remaining body pane to shut down this vscode window
+     * @returns a promise that resolves when done saving and closing
      */
     public cleanupBody(): Thenable<any> {
         let q_save: Thenable<any>;
@@ -1898,6 +1888,7 @@ export class LeoIntegration {
      * * Opens an an editor for the currently selected node: "this.bodyUri". If already opened, this just 'reveals' it
      * @param p_aside Flag for opening the editor beside any currently opened and focused editor
      * @param p_preserveFocus flag that when true will stop the editor from taking focus once opened
+     * @returns a promise for the editor that will show the body pane
      */
     public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise<vscode.TextEditor> {
         // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
@@ -2185,6 +2176,7 @@ export class LeoIntegration {
      * @param p_isMark Set 'True' to mark, otherwise unmarks the node
      * @param p_node Specifies which node use, or leave undefined to mark or unmark the currently selected node
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
+     * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
      */
     public changeMark(
         p_isMark: boolean,
@@ -2212,6 +2204,7 @@ export class LeoIntegration {
      * * Asks for a new headline label, and replaces the current label with this new one one the specified, or currently selected node
      * @param p_node Specifies which node to rename, or leave undefined to rename the currently selected node
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
+     * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
      */
     public editHeadline(
         p_node?: LeoNode,
@@ -2258,6 +2251,7 @@ export class LeoIntegration {
      * @param p_node specified under which node to insert, or leave undefined to use whichever is currently selected
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
      * @param p_interrupt Signifies the insert action is actually interrupting itself (e.g. rapid CTRL+I actions by the user)
+     * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
      */
     public insertNode(
         p_node?: LeoNode,
@@ -2321,7 +2315,9 @@ export class LeoIntegration {
     }
 
     /**
-     * * Return a promise for a find pattern string input from the user
+     * * Get a find pattern string input from the user
+     * @param p_replace flag for doing a 'replace' instead of a 'find'
+     * @returns Promise of string or undefined if cancelled
      */
     private _inputFindPattern(p_replace?: boolean): Thenable<string | undefined> {
         return vscode.window.showInputBox({
@@ -2448,8 +2444,9 @@ export class LeoIntegration {
             });
     }
 
-    /*
+    /**
      * * Find / Replace All
+     * @returns Promise of LeoBridgePackage from execution or undefined if cancelled
      */
     public findAll(p_replace: boolean): Promise<any> {
         const w_action: string = p_replace
@@ -2504,6 +2501,9 @@ export class LeoIntegration {
 
     /**
      * * Clone Find All / Marked / Flattened
+     * @param p_marked flag for finding marked nodes
+     * @param p_flat flag to get flattened results
+     * @returns Promise of LeoBridgePackage from execution or undefined if cancelled
      */
     public cloneFind(p_marked: boolean, p_flat: boolean): Promise<any> {
         let w_searchString: string = this._lastSettingsUsed!.findText;
@@ -3236,8 +3236,6 @@ export class LeoIntegration {
      * @returns the launchRefresh promise started after it's done running the 'atButton' command
      */
     public clickAtButton(p_node: LeoButtonNode): Promise<boolean> {
-        console.log('click but');
-
         return this._isBusyTriggerSave(false)
             .then((p_saveResult) => {
                 return this.sendAction(
@@ -3246,11 +3244,11 @@ export class LeoIntegration {
                 );
             })
             .then((p_clickButtonResult: LeoBridgePackage) => {
-                console.log('back from click but');
-                this.launchRefresh(
-                    { tree: true, body: true, documents: true, buttons: true, states: true },
-                    false
-                );
+                return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+            })
+            .then((p_package) => {
+                // refresh and reveal selection
+                this.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
                 return Promise.resolve(true); // TODO launchRefresh should be a returned promise
             });
     }
@@ -3301,7 +3299,7 @@ export class LeoIntegration {
      * * Capture instance for further calls on find panel webview
      * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
      */
-    public setFindPanel(p_panel: vscode.WebviewView) {
+    public setFindPanel(p_panel: vscode.WebviewView): void {
         if (this._lastTreeView === this._leoTreeExView) {
             this._findPanelWebviewExplorerView = p_panel;
         } else {

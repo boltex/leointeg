@@ -1581,35 +1581,6 @@ private _tryApplyNodeToBody(
         this.bodyUri = utils.strToLeoUri(p_node.gnx);
     }
     return this.showBody(p_aside, p_showBodyKeepFocus);
-
-    /*
-        this._showBodyParams = {
-            node: p_node,
-            aside: p_aside,
-            showBodyKeepFocus: p_showBodyKeepFocus,
-            force_open: p_force_open // can be undefined
-        };
-        // Start it if possible, otherwise the last _showBodyParams will be used again right after
-        if (!this._showBodyStarted) {
-            this._showBodyStarted = true;
-            this._applyNodeToBody(this._showBodyParams)
-                .then((p_textEditor: vscode.TextEditor) =&gt; {
-                    // finished
-                    this._showBodyStarted = false;
-                    if (this._showBodyParams) {
-                        // New node to show again! Call itself faking params from the specified ones.
-                        this._tryApplyNodeToBody(
-                            this._showBodyParams.node,
-                            this._showBodyParams.aside,
-                            this._showBodyParams.showBodyKeepFocus,
-                            this._showBodyParams.force_open
-                        );
-                    }
-                });
-            // Clear global body params, will get refilled if needed
-            this._showBodyParams = undefined;
-        }
-        */
 }
 
 </t>
@@ -1645,8 +1616,6 @@ public nodeCommand(p_userCommand: UserCommand): Promise&lt;LeoBridgePackage&gt; 
  * @returns the launchRefresh promise started after it's done running the 'atButton' command
  */
 public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
-    console.log('click but');
-
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
             return this.sendAction(
@@ -1655,11 +1624,11 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
             );
         })
         .then((p_clickButtonResult: LeoBridgePackage) =&gt; {
-            console.log('back from click but');
-            this.launchRefresh(
-                { tree: true, body: true, documents: true, buttons: true, states: true },
-                false
-            );
+            return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+        })
+        .then((p_package) =&gt; {
+            // refresh and reveal selection
+            this.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
             return Promise.resolve(true); // TODO launchRefresh should be a returned promise
         });
 }
@@ -10433,7 +10402,8 @@ private _isBusy(p_all?: boolean): boolean {
 
 </t>
 <t tx="felix.20200719025231.21">/**
- * * Returns true if the current opened Leo document's filename has some content. (not a new unnamed file)
+ * * Check if the current file is an already saved/named file
+ * @returns true if the current opened Leo document's filename has some content. (not a new unnamed file)
  */
 private _isCurrentFileNamed(): boolean {
     return !!this.leoStates.leoOpenedFileName.length; // checks if it's an empty string
@@ -11149,6 +11119,7 @@ private _switchBody(
 <t tx="felix.20200719025231.48">/**
  * * Sets globals if the current body is found opened in an editor panel for a particular gnx
  * @param p_gnx gnx to match
+ * @returns true if located and found, false otherwise
  */
 private _locateOpenedBody(p_gnx: string): boolean {
     let w_found = false;
@@ -11166,6 +11137,7 @@ private _locateOpenedBody(p_gnx: string): boolean {
 </t>
 <t tx="felix.20200719025231.49">/**
  * * Closes any body pane opened in this vscode window instance
+ * @returns a promise that resolves when the file is closed and removed from recently opened list
  */
 public closeBody(): Thenable&lt;any&gt; {
     // TODO : CLEAR UNDO HISTORY AND FILE HISTORY for this.bodyUri !
@@ -11212,6 +11184,7 @@ public sendAction(
  * * Opens an an editor for the currently selected node: "this.bodyUri". If already opened, this just 'reveals' it
  * @param p_aside Flag for opening the editor beside any currently opened and focused editor
  * @param p_preserveFocus flag that when true will stop the editor from taking focus once opened
+ * @returns a promise for the editor that will show the body pane
  */
 public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.TextEditor&gt; {
     // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
@@ -11423,6 +11396,7 @@ public selectTreeNode(
  * @param p_isMark Set 'True' to mark, otherwise unmarks the node
  * @param p_node Specifies which node use, or leave undefined to mark or unmark the currently selected node
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
+ * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
  */
 public changeMark(
     p_isMark: boolean,
@@ -11451,6 +11425,7 @@ public changeMark(
  * * Asks for a new headline label, and replaces the current label with this new one one the specified, or currently selected node
  * @param p_node Specifies which node to rename, or leave undefined to rename the currently selected node
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
+ * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
  */
 public editHeadline(
     p_node?: LeoNode,
@@ -11498,6 +11473,7 @@ public editHeadline(
  * @param p_node specified under which node to insert, or leave undefined to use whichever is currently selected
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
  * @param p_interrupt Signifies the insert action is actually interrupting itself (e.g. rapid CTRL+I actions by the user)
+ * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
  */
 public insertNode(
     p_node?: LeoNode,
@@ -12105,13 +12081,11 @@ public connect(): void {
         return;
     }
     this._leoIsConnecting = true;
-    console.log('connecting');
     this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess(
         this._serverService.usingPort // This will be zero if no port found
     );
     this._leoBridgeReadyPromise.then(
         (p_package) =&gt; {
-            console.log('connected');
             this._leoIsConnecting = false;
             // Check if hard-coded first package signature
             if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
@@ -14755,8 +14729,11 @@ public static VSCODE_COMMANDS = {
   }
 ],
 </t>
-<t tx="felix.20210418013332.1">private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
-    console.log('DELETE EXTRANEOUS:', p_textEditor.document.uri.fsPath);
+<t tx="felix.20210418013332.1">/**
+ * * Closes non-existing body by deleting the file and calling 'hide'
+ * @param p_textEditor the editor to close
+ */
+private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
     const w_edit = new vscode.WorkspaceEdit();
     w_edit.deleteFile(p_textEditor.document.uri, { ignoreIfNotExists: true });
     vscode.workspace.applyEdit(w_edit);
@@ -14806,6 +14783,7 @@ public _changedVisibleTextEditors(p_editors: vscode.TextEditor[]): void {
 </t>
 <t tx="felix.20210418014040.2">/**
  * * Whole window has been minimized/restored
+ * @param p_windowState the state of the window that changed
  */
 public _changedWindowState(p_windowState: vscode.WindowState): void {
     // no other action
@@ -14813,7 +14791,12 @@ public _changedWindowState(p_windowState: vscode.WindowState): void {
 }
 
 </t>
-<t tx="felix.20210418220343.1">private _checkPreviewMode(p_editor: vscode.TextEditor): void {
+<t tx="felix.20210418220343.1">
+/**
+ * * Clears the global 'Preview Mode' flag if the given editor is not in the main body column
+ * @param p_editor is the editor to check for is in the same column as the main one
+ */
+private _checkPreviewMode(p_editor: vscode.TextEditor): void {
     // if selected gnx but in another column
     if (
         p_editor.document.uri.fsPath === this.bodyUri.fsPath &amp;&amp;
@@ -14825,7 +14808,12 @@ public _changedWindowState(p_windowState: vscode.WindowState): void {
 }
 
 </t>
-<t tx="felix.20210418230204.1">private _findUriColumn(p_uri: vscode.Uri): vscode.ViewColumn | undefined {
+<t tx="felix.20210418230204.1">
+/**
+ * * Find editor column based on uri
+ * @returns View Column if found, undefined otherwise
+ */
+private _findUriColumn(p_uri: vscode.Uri): vscode.ViewColumn | undefined {
     let w_column: vscode.ViewColumn | undefined;
     vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
         if (p_textEditor.document.uri.fsPath === p_uri.fsPath) {
@@ -14836,7 +14824,11 @@ public _changedWindowState(p_windowState: vscode.WindowState): void {
 }
 
 </t>
-<t tx="felix.20210418230204.2">private _findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
+<t tx="felix.20210418230204.2">/**
+ * * Find editor column based on gnx string
+ * @returns View Column if found, undefined otherwise
+ */
+private _findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
     let w_column: vscode.ViewColumn | undefined;
     vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
         if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {
@@ -15607,7 +15599,7 @@ public saveSearchSettings(p_settings: LeoSearchSettings): Promise&lt;LeoBridgePa
  * * Capture instance for further calls on find panel webview
  * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
  */
-public setFindPanel(p_panel: vscode.WebviewView) {
+public setFindPanel(p_panel: vscode.WebviewView): void {
     if (this._lastTreeView === this._leoTreeExView) {
         this._findPanelWebviewExplorerView = p_panel;
     } else {
@@ -15937,8 +15929,9 @@ public setSearchSetting(p_id: string): void {
 
 </t>
 <t tx="felix.20210530225640.1"></t>
-<t tx="felix.20210530230354.1">/*
+<t tx="felix.20210530230354.1">/**
  * * Find / Replace All
+ * @returns Promise of LeoBridgePackage from execution or undefined if cancelled
  */
 public findAll(p_replace: boolean): Promise&lt;any&gt; {
     const w_action: string = p_replace
@@ -15994,6 +15987,9 @@ public findAll(p_replace: boolean): Promise&lt;any&gt; {
 </t>
 <t tx="felix.20210530230400.1">/**
  * * Clone Find All / Marked / Flattened
+ * @param p_marked flag for finding marked nodes
+ * @param p_flat flag to get flattened results
+ * @returns Promise of LeoBridgePackage from execution or undefined if cancelled
  */
 public cloneFind(p_marked: boolean, p_flat: boolean): Promise&lt;any&gt; {
     let w_searchString: string = this._lastSettingsUsed!.findText;
@@ -16659,7 +16655,9 @@ export function findNextAvailablePort(p_startingPort: number): Promise&lt;number
 
 </t>
 <t tx="felix.20210613205741.1">/**
- * * Return a promise for a find pattern string input from the user
+ * * Get a find pattern string input from the user
+ * @param p_replace flag for doing a 'replace' instead of a 'find'
+ * @returns Promise of string or undefined if cancelled
  */
 private _inputFindPattern(p_replace?: boolean): Thenable&lt;string | undefined&gt; {
     return vscode.window.showInputBox({
@@ -16673,7 +16671,7 @@ private _inputFindPattern(p_replace?: boolean): Thenable&lt;string | undefined&g
 <t tx="felix.20210613210351.1">/**
  * * Popup browser to choose Leo-Editor installation folder path
  */
-public chooseLeoFolder() {
+public chooseLeoFolder(): void {
     utils.chooseLeoFolderDialog().then(p_chosenPath =&gt; {
         if (p_chosenPath &amp;&amp; p_chosenPath.length) {
             this.config.setLeoIntegSettings(
@@ -20561,6 +20559,7 @@ public killServer(): void {
 </t>
 <t tx="felix.20210718155134.1">/**
  * * cleanupBody closes all remaining body pane to shut down this vscode window
+ * @returns a promise that resolves when done saving and closing
  */
 public cleanupBody(): Thenable&lt;any&gt; {
     let q_save: Thenable&lt;any&gt;;
@@ -20826,7 +20825,6 @@ private _bodySaveDeactivate(
         gnx: utils.leoUriToStr(p_document.uri),
         body: p_document.getText(),
     };
-    console.log('Send action set body on quit');
     return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
 }
 
@@ -22099,16 +22097,6 @@ body &gt; div &gt; div &gt; label:active {
            title="Learn more about Leo"
            href="https://leoeditor.com/"&gt;Leo&lt;/a&gt; into VS Code.
       &lt;/p&gt;
-      &lt;div class="cta is-sidebar-hidden center"&gt;
-        &lt;div class="cta--primary"&gt;
-          &lt;a class="button button--flat-primary button--big"
-             title="Support LeoInteg"
-             href="https://boltex.github.io/"&gt;Sponsor LeoInteg &amp;#x2764;&lt;/a&gt;
-          &lt;p&gt;
-            LeoInteg is built by the support of generous users like &lt;b&gt;you&lt;/b&gt;!
-          &lt;/p&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
     &lt;/div&gt;
 
     &lt;div class="content__area"&gt;
@@ -22118,6 +22106,11 @@ body &gt; div &gt; div &gt; label:active {
           Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
+          &lt;a class="button button--flat is-sidebar-hidden "
+             title="LeoInteg is built by the support of generous users like you!"
+             href="https://boltex.github.io/"&gt;Sponsor LeoInteg
+            &lt;span class="heart"&gt;&amp;#x2764;&lt;/span&gt;
+          &lt;/a&gt;
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
@@ -22252,7 +22245,7 @@ body &gt; div &gt; div &gt; label:active {
                 &lt;span class="setting__hint"&gt;Server's max simultaneous connections&lt;/span&gt;
               &lt;/div&gt;
               &lt;br&gt;
-              &lt;p&gt;For standalone, persistent, or multi-user server
+              &lt;p&gt;For a standalone, persistent, or multi-user server
                 see &lt;a href="https://leoeditor.com/leoserver.html"&gt;Using leoserver.py&lt;/a&gt;
                 from Leo's documentation.
               &lt;/p&gt;
@@ -23387,6 +23380,10 @@ a:focus {
 
 b {
   font-weight: 600;
+}
+
+span.heart {
+  color: rgb(139, 49, 119);
 }
 
 code,
