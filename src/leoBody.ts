@@ -137,7 +137,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         }
         // throw vscode.FileSystemError.FileNotFound();
         // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
-        return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
+        return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: 0 };
     }
 
     public readFile(p_uri: vscode.Uri): Thenable<Uint8Array> {

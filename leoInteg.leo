@@ -7522,7 +7522,7 @@ import { BodyTimeInfo } from "./types";
     }
     // throw vscode.FileSystemError.FileNotFound();
     // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
-    return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
+    return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: 0 };
 }
 
 </t>
@@ -22071,7 +22071,7 @@ body &gt; div &gt; div &gt; label:active {
     &lt;header&gt;
       &lt;a class="header__link"
          title="Learn more about Leo Integration"
-         href="https://github.com/boltex/leointeg#literate-programming"&gt;
+         href="https://github.com/boltex/leointeg#-leo-for-vs-code"&gt;
         &lt;div class="header__logo"&gt;
           &lt;img class="image__logo"
                src="#{root}/resources/leoapp128px.png" /&gt;
@@ -22097,18 +22097,18 @@ body &gt; div &gt; div &gt; label:active {
            title="My github user page"
            href="https://boltex.github.io/"&gt;Félix&lt;/a&gt; that integrates &lt;a class="bold"
            title="Learn more about Leo"
-           href="https://leoeditor.com/"&gt;Leo&lt;/a&gt; into Visual Studio
-        Code.
+           href="https://leoeditor.com/"&gt;Leo&lt;/a&gt; into VS Code.
       &lt;/p&gt;
-      &lt;!-- &lt;div class="cta is-sidebar-hidden center"&gt;
+      &lt;div class="cta is-sidebar-hidden center"&gt;
         &lt;div class="cta--primary"&gt;
-          &lt;a class="button button--flat-primary button--big" title="Support LeoInteg"
-            href="https://github.com/boltex/leointeg"&gt;Support LeoInteg &amp;#x2764;&lt;/a&gt;
+          &lt;a class="button button--flat-primary button--big"
+             title="Support LeoInteg"
+             href="https://boltex.github.io/"&gt;Sponsor LeoInteg &amp;#x2764;&lt;/a&gt;
           &lt;p&gt;
-            LeoInteg is built by the support of generous open source users and programmers like &lt;b&gt;you&lt;/b&gt;!
+            LeoInteg is built by the support of generous users like &lt;b&gt;you&lt;/b&gt;!
           &lt;/p&gt;
         &lt;/div&gt;
-      &lt;/div&gt; --&gt;
+      &lt;/div&gt;
     &lt;/div&gt;
 
     &lt;div class="content__area"&gt;
@@ -22252,8 +22252,9 @@ body &gt; div &gt; div &gt; label:active {
                 &lt;span class="setting__hint"&gt;Server's max simultaneous connections&lt;/span&gt;
               &lt;/div&gt;
               &lt;br&gt;
-              &lt;p&gt;For standalone, persistent, or multi-user server,
-                see &lt;a href="https://leoeditor.com/"&gt;Using leoserver.py&lt;/a&gt; from Leo's documentation.
+              &lt;p&gt;For standalone, persistent, or multi-user server
+                see &lt;a href="https://leoeditor.com/leoserver.html"&gt;Using leoserver.py&lt;/a&gt;
+                from Leo's documentation.
               &lt;/p&gt;
             &lt;/fieldset&gt;
 
@@ -22803,14 +22804,15 @@ body &gt; div &gt; div &gt; label:active {
     &lt;/div&gt;
 
     &lt;div class="sidebar"&gt;
-      &lt;!-- &lt;div class="sidebar__group"&gt;
-        &lt;a class="button button--flat-primary" title="Support LeoInteg"
-          href="https://github.com/boltex/leointeg"&gt;Support
+      &lt;div class="sidebar__group"&gt;
+        &lt;a class="button button--flat-primary"
+           title="Support LeoInteg"
+           href="https://boltex.github.io/"&gt;Sponsor
           LeoInteg &amp;#x2764;&lt;/a&gt;
         &lt;p&gt;
-          LeoInteg is built by the support of generous open source users and programmers like &lt;b&gt;you&lt;/b&gt;!
+          LeoInteg is built by the support of generous users like &lt;b&gt;you&lt;/b&gt;!
         &lt;/p&gt;
-      &lt;/div&gt; --&gt;
+      &lt;/div&gt;
 
       &lt;div class="sidebar__group"&gt;
         &lt;h2&gt;Configuration&lt;/h2&gt;
@@ -23375,6 +23377,12 @@ a {
   &amp;:hover {
     color: var(--color-link-foreground--lighten-20);
   }
+}
+
+a,
+a:active,
+a:focus {
+  outline: none;
 }
 
 b {

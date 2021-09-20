@@ -39,6 +39,12 @@ a {
   }
 }
 
+a,
+a:active,
+a:focus {
+  outline: none;
+}
+
 b {
   font-weight: 600;
 }
