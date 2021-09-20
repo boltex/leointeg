@@ -24,19 +24,6 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
 
-## Beta Version Installation
-
-> While in beta, this extension isn't available in the microsoft store, nor the extension panel yet. But you can drag the extension file onto it.
-
-- Get the leointeg extension file at
-  [boltex.github.io](https://boltex.github.io/),
-  then **drag-and-drop** that '.vsix' file over the
-  extension panel of VSCode's sidebar. (**on windows use the 'install from VSIX' command**)
-
-- In addition to the above requirements,
-  **use Leo's 'devel' branch**
-  (This is temporary until Leo's 6.4 release)
-
 ## Features
 
 - UI controls such as a **Leo Outline** in the explorer view, or as a standalone sidebar, **body pane**, **opened documents selector**, **find panel**, along with a **Log Window** and **Terminal** [output channels](https://code.visualstudio.com/api/extension-capabilities/common-capabilities#output-channel).
@@ -148,6 +135,8 @@ This occurs when an outline node or a body pane has focus:
 Although the Leo integration has one instance of the leoserver script per vscode 'project'
 window by default, the server settings also has features that allows you to use the same instance
 of Leo in multiple client (vscode) windows simultaneously, with real-time updates and interaction.
+
+(See [Multiple concurrent connections](https://leoeditor.com/leoserver.html#multiple-concurrent-connections))
 
 ### Auto Start
 

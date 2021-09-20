@@ -57,6 +57,10 @@ export class LeoNode extends vscode.TreeItem {
         this.contextValue = this._getNodeContextValue();
     }
 
+    /**
+     * * Builds the node context string by concatenating coded constants
+     * @returns the string made up of all status flags
+     */
     private _getNodeContextValue(): string {
         // Start it with 'leoNodeMarked' or 'leoNodeUnmarked'
         let w_contextValue = Constants.CONTEXT_FLAGS.NODE_UNMARKED;

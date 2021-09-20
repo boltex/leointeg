@@ -1,10 +1,15 @@
 # Change Log
 
-## 0.0.20
+## 1.0
+
+- Version 1.0, First Official Release!
+
+## 0.1.20
 
 - Added .leojs JSON file format support
+- Fixed various smaller/invisible bugs
 
-## 0.0.19
+## 0.1.19
 
 - Fixed 'tab' press from the sidebar: if pressing from the outline it tabs to possible icons on the node, then goes to the body pane. If pressed from the search panel, it cycles through the fields of the search panel.
 - Made the server output channel and the Leo Log Window not show up and open automatically anymore unless the text in the Log Window is 'red' (For Errors to be shown).

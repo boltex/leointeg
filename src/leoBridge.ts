@@ -60,6 +60,7 @@ export class LeoBridge {
 
     /**
      * * Busy state of the leoBridge's command stack
+     * @returns true if leoBridge's command stack still has unresolved actions
      */
     public isBusy(): boolean {
         return this._actionBusy || !!this._callStack.length;
@@ -111,6 +112,7 @@ export class LeoBridge {
      * * Build JSON string for action parameter to the leoBridge
      * @param p_action Action string to be invoked as command by Leo in the leobridgeserver.py script
      * @param p_jsonParam Optional JSON string to be added as a 'param' to the action sent to Leo
+     * @returns the JSON string built from the action string and the parameters
      */
     private _buildActionParameter(p_action: string, p_jsonParam?: string): string {
         return "{\"id\":" + (++this._leoBridgeSerialId) + // no quotes, serial id is a number, pre incremented
@@ -123,7 +125,7 @@ export class LeoBridge {
      * * Resolves promises with the answers from an action that was finished
      * @param p_object Parsed data that was given as the answer by the Leo command that finished
      */
-    private _resolveBridgeReady(p_object: any) {
+    private _resolveBridgeReady(p_object: any): void {
         let w_bottomAction = this._callStack.shift();
         if (w_bottomAction) {
             if (w_bottomAction.deferredPayload) {
@@ -204,7 +206,7 @@ export class LeoBridge {
 
     /**
      * * Create a websocket connection to a Leo server
-     * @param p_port facultative port number to override config port
+     * @param p_port optional port number to override config port
      * @returns A promise for a LeoBridgePackage object containing only an 'id' member of 1 that will resolve when the 'leoBridge' is established
      */
     public initLeoProcess(p_port?: number): Promise<LeoBridgePackage> {
@@ -257,7 +259,7 @@ export class LeoBridge {
      * * Send into the python process input
      * @param p_data JSON Message string to be sent to leobridgeserver.py
      */
-    private _send(p_data: string): any {
+    private _send(p_data: string): void {
         if (this._readyPromise) {
             this._readyPromise.then(() => { // using '.then' that was surely resolved already: to be buffered in case process isn't ready.
                 if (this._websocket && this._websocket.OPEN) {

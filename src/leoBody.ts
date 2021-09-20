@@ -14,9 +14,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * Flag normally false
     public preventSaveToLeo: boolean = false;
 
-    // * Simple structure to keep mtime of selected and renamed body virtual files
-    private _selectedBody: string = "";
-
     // * Last file read data with the readFile method
     private _lastGnx: string = ""; // gnx of last file read
     private _lastBodyData: string = ""; // body content of last file read
@@ -65,7 +62,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
      * @param p_gnx Gnx of body associated with this virtual file, mostly Leo's selected node
      */
     public fireRefreshFile(p_gnx: string): void {
-        this._selectedBody = p_gnx;
         if (!this._openedBodiesGnx.includes(p_gnx)) {
             console.error("ASKED TO REFRESH NOT EVEN IN SELECTED BODY: ", p_gnx);
             this._openedBodiesGnx.push(p_gnx);
@@ -117,9 +113,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
             if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
             } else if (w_gnx === this._lastGnx && this._openedBodiesGnx.includes(this._lastGnx)) {
-                // If same as last checked, sending back time at absolute past
-                // ? VERIFY this._selectedBody.mtime we get file changed on disk error??
-                // console.log('VERIFY this._selectedBody.mtime we get file changed on disk error :', p_uri);
                 return {
                     type: vscode.FileType.File,
                     ctime: this._openedBodiesInfo[this._lastGnx].ctime,

@@ -37,15 +37,16 @@ export class LeoAsync {
      * * Server announced the multi-user content changed: Debounce a refresh cycle.
      * The 'action' string can be checked to determine what kind, if any, is required.
      * Note: 'Getters' and the 'do_nothing' actions are NOT shared by the server.
+     * @param p_serverPackage the package sent along by the server
      */
-    public refresh(p_package: any): void {
-        if (p_package.opened && this._leoIntegration.leoStates.fileOpenedReady) {
+    public refresh(p_serverPackage: any): void {
+        if (p_serverPackage.opened && this._leoIntegration.leoStates.fileOpenedReady) {
             this._leoIntegration.refreshAll();
-        } else if (p_package.opened && !this._leoIntegration.leoStates.fileOpenedReady) {
+        } else if (p_serverPackage.opened && !this._leoIntegration.leoStates.fileOpenedReady) {
             this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
-                .then((p_package) => {
-                    p_package.filename = p_package.commander!.fileName;
-                    this._leoIntegration.setupOpenedLeoDocument(p_package, true);
+                .then((p_doNothingPackage) => {
+                    p_doNothingPackage.filename = p_doNothingPackage.commander!.fileName;
+                    this._leoIntegration.setupOpenedLeoDocument(p_doNothingPackage, true);
                 });
         } else {
             this._leoIntegration.setupNoOpenedLeoDocument();
@@ -110,8 +111,13 @@ export class LeoAsync {
             );
             if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
                 w_sendResultPromise.then(() => {
-                    this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
-                });
+                    //  this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
+                    return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+                })
+                    .then((p_package) => {
+                        // refresh and reveal selection
+                        this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+                    });
             }
         });
     }
