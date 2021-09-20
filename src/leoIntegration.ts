@@ -15,7 +15,7 @@ import {
     ShowBodyParam,
     BodySelectionInfo,
     LeoGuiFindTabManagerSettings,
-    LeoSearchSettings,
+    LeoSearchSettings
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
@@ -1076,11 +1076,13 @@ export class LeoIntegration {
             return;
         }
         // * Status flag check
-        if (vscode.window.activeTextEditor) {
-            this._leoStatusBar.update(
-                vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME
-            );
-        }
+        setTimeout(() => {
+            if (vscode.window.activeTextEditor) {
+                this._leoStatusBar.update(
+                    vscode.window.activeTextEditor.document.uri.scheme === Constants.URI_LEO_SCHEME
+                );
+            }
+        }, 0);
     }
 
     /**
@@ -1090,7 +1092,7 @@ export class LeoIntegration {
     public _changedTextEditorViewColumn(
         p_columnChangeEvent: vscode.TextEditorViewColumnChangeEvent
     ): void {
-        if (p_columnChangeEvent && p_columnChangeEvent.textEditor.document.uri.scheme === 'more') {
+        if (p_columnChangeEvent && p_columnChangeEvent.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
             this._checkPreviewMode(p_columnChangeEvent.textEditor);
         }
         this.triggerBodySave(true);
@@ -1104,7 +1106,7 @@ export class LeoIntegration {
         if (p_editors && p_editors.length) {
             // May be no changes - so check length
             p_editors.forEach((p_textEditor) => {
-                if (p_textEditor && p_textEditor.document.uri.scheme === 'more') {
+                if (p_textEditor && p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
                     if (this.bodyUri.fsPath !== p_textEditor.document.uri.fsPath) {
                         this._hideDeleteBody(p_textEditor);
                     }
@@ -1459,7 +1461,7 @@ export class LeoIntegration {
      * * Launches refresh for UI components and states
      * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
      * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
-     * @param p_ap // TODO ! DOCUMENT !
+     * @param p_ap An archived position
      */
     public launchRefresh(
         p_refreshType: ReqRefresh,
@@ -1790,7 +1792,7 @@ export class LeoIntegration {
         return w_column;
     }
 
-    private findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
+    private _findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
         let w_column: vscode.ViewColumn | undefined;
         vscode.window.visibleTextEditors.forEach((p_textEditor) => {
             if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {
@@ -1804,6 +1806,7 @@ export class LeoIntegration {
         console.log('DELETE EXTRANEOUS:', p_textEditor.document.uri.fsPath);
         const w_edit = new vscode.WorkspaceEdit();
         w_edit.deleteFile(p_textEditor.document.uri, { ignoreIfNotExists: true });
+        vscode.workspace.applyEdit(w_edit);
         if (p_textEditor.hide) {
             p_textEditor.hide();
         }
@@ -2812,6 +2815,60 @@ export class LeoIntegration {
     }
 
     /**
+     * * Asks for .leojs file name and path, then saves the JSON Leo file
+     * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
+     * @returns a promise from saving the file results, or that will resolve to undefined if cancelled
+     */
+    public saveAsLeoJsFile(p_fromOutline?: boolean): Promise<LeoBridgePackage | undefined> {
+        return this._isBusyTriggerSave(true, true)
+            .then((p_saveResult) => {
+                if (this.leoStates.fileOpenedReady && this.lastSelectedNode) {
+                    return this._leoFilesBrowser.getLeoJsFileUrl();
+                } else {
+                    // 'when-conditions' should prevent this
+                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                    return Promise.reject(Constants.USER_MESSAGES.FILE_NOT_OPENED);
+                }
+            })
+            .then((p_chosenLeoFile) => {
+                if (p_chosenLeoFile.trim()) {
+                    const w_hasDot = p_chosenLeoFile.indexOf('.') !== -1;
+                    if (
+                        !w_hasDot ||
+                        (p_chosenLeoFile.split('.').pop() !== Constants.JS_FILE_EXTENSION && w_hasDot)
+                    ) {
+                        if (!p_chosenLeoFile.endsWith('.')) {
+                            p_chosenLeoFile += '.'; // Add dot if needed
+                        }
+                        p_chosenLeoFile += Constants.JS_FILE_EXTENSION; // Add extension
+                    }
+                    if (this.leoStates.leoOpenedFileName) {
+                        this._removeLastFile(this.leoStates.leoOpenedFileName);
+                        this._removeRecentFile(this.leoStates.leoOpenedFileName);
+                    }
+                    const q_commandResult = this.nodeCommand({
+                        action: Constants.LEOBRIDGE.SAVE_FILE,
+                        node: undefined,
+                        refreshType: { tree: true, states: true, documents: true },
+                        fromOutline: !!p_fromOutline,
+                        name: p_chosenLeoFile,
+                    });
+                    this.leoStates.leoOpenedFileName = p_chosenLeoFile.trim();
+                    this._leoStatusBar.update(true, 0, true);
+                    this._addRecentAndLastFile(p_chosenLeoFile.trim());
+                    if (q_commandResult) {
+                        return q_commandResult;
+                    } else {
+                        return Promise.reject('Save file not added on command stack');
+                    }
+                } else {
+                    // Canceled
+                    return Promise.resolve(undefined);
+                }
+            });
+    }
+
+    /**
      * * Invokes the self.commander.save() Leo command
      * @param p_fromOutlineSignifies that the focus was, and should be brought back to, the outline
      * @returns Promise that resolves when the save command is placed on the front-end command stack
@@ -3349,7 +3406,7 @@ export class LeoIntegration {
             Constants.LEOBRIDGE.GET_FOCUS,
             JSON.stringify({ testParam: 'Some String' })
         ).then((p_result: LeoBridgePackage) => {
-            console.log('get focus: ', p_result);
+            console.log('get focus results: ', p_result);
 
             // this.launchRefresh({ buttons: true }, false);
             // return vscode.window.showInformationMessage(
@@ -3358,6 +3415,13 @@ export class LeoIntegration {
             //     ', with result: ' +
             //     JSON.stringify(p_result)
             // );
+        }).then(() => {
+            return this.sendAction(Constants.LEOBRIDGE.GET_VERSION);
+        }).then((p_result: LeoBridgePackage) => {
+            console.log('get version results: ', p_result);
+            if (p_result.version) {
+                vscode.window.showInformationMessage(p_result.version);
+            }
         });
     }
 }

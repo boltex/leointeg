@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.0.20
+
+- Added .leojs JSON file format support
+
 ## 0.0.19
 
 - Fixed 'tab' press from the sidebar: if pressing from the outline it tabs to possible icons on the node, then goes to the body pane. If pressed from the search panel, it cycles through the fields of the search panel.

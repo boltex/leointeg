@@ -99,15 +99,12 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public watch(p_resource: vscode.Uri): vscode.Disposable {
         const w_gnx = utils.leoUriToStr(p_resource);
         if (!this._watchedBodiesGnx.includes(w_gnx)) {
-            // console.log('MORE fs watch put in _openedBodiesGnx:', p_resource.fsPath);
             this._watchedBodiesGnx.push(w_gnx); // add gnx
         } else {
-            // console.warn('MORE fs watch: already in _openedBodiesGnx:', p_resource.fsPath);
         }
         return new vscode.Disposable(() => {
             const w_position = this._watchedBodiesGnx.indexOf(w_gnx); // find and remove it
             if (w_position > -1) {
-                // console.log('MORE fs removed from _openedBodiesGnx: ', w_gnx);
                 this._watchedBodiesGnx.splice(w_position, 1);
             }
         });
@@ -118,7 +115,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         if (this._leoIntegration.leoStates.fileOpenedReady) {
             const w_gnx = utils.leoUriToStr(p_uri);
             if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
-                // console.log('called stat on root');
                 return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
             } else if (w_gnx === this._lastGnx && this._openedBodiesGnx.includes(this._lastGnx)) {
                 // If same as last checked, sending back time at absolute past
@@ -146,7 +142,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 });
             }
         }
-        throw vscode.FileSystemError.FileNotFound();
+        // throw vscode.FileSystemError.FileNotFound();
+        // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+        return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
     }
 
     public readFile(p_uri: vscode.Uri): Thenable<Uint8Array> {
@@ -158,7 +156,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 // if (!this._possibleGnxList.includes(w_gnx)) {
                 if (!this._openedBodiesGnx.includes(w_gnx)) {
                     console.error("readFile: ERROR File not in _openedBodiesGnx! readFile missing refreshes?");
-                    throw vscode.FileSystemError.FileNotFound();
+                    // throw vscode.FileSystemError.FileNotFound();
+                    // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+                    return Promise.resolve(Buffer.from(""));
                 } else {
                     return this._leoIntegration.sendAction(
                         Constants.LEOBRIDGE.GET_BODY,
@@ -183,8 +183,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                                 return Promise.resolve(Buffer.from(this._lastBodyData));
                             }
                             console.error("ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?
-                            return Promise.resolve(Buffer.from(""));
                             //  throw vscode.FileSystemError.FileNotFound();
+                            // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+                            return Promise.resolve(Buffer.from(""));
                         }
                     });
                 }
@@ -195,7 +196,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     }
 
     public readDirectory(p_uri: vscode.Uri): Thenable<[string, vscode.FileType][]> {
-        // console.warn('Called readDirectory with ', p_uri.fsPath); // should not happen
         if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
             const w_directory: [string, vscode.FileType][] = [];
             w_directory.push([this._lastBodyTimeGnx, vscode.FileType.File]);
@@ -218,7 +218,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         }
         const w_gnx = utils.leoUriToStr(p_uri);
         if (!this._openedBodiesGnx.includes(w_gnx)) {
-            console.error("ASKED TO SAVE NOT EVEN IN SELECTED BODY: ", w_gnx);
+            console.error("Leointeg: Tried to save body other than selected node's body", w_gnx);
             this._openedBodiesGnx.push(w_gnx);
         }
         const w_now = new Date().getTime();

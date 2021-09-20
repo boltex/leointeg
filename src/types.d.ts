@@ -194,6 +194,10 @@ export interface LeoBridgePackage {
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
     total?: number; // set_opened_file, open_file(s), close_file
+    version?: string;
+    major?: number;
+    minor?: number;
+    patch?: number;
 }
 
 /**

@@ -78,6 +78,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.CLEAR_RECENT_FILES, () => w_leo.clearRecentLeoFiles()],
         [CMD.RECENT_FILES, () => w_leo.showRecentLeoFiles()],
         [CMD.SAVE_AS_FILE, () => w_leo.saveAsLeoFile()],
+        [CMD.SAVE_AS_LEOJS, () => w_leo.saveAsLeoJsFile()],
         [CMD.SAVE_FILE, () => w_leo.saveLeoFile()],
         // [CMD.SAVE_DISABLED, () => { }],
         [CMD.SAVE_FILE_FO, () => w_leo.saveLeoFile(true)],
@@ -673,6 +674,9 @@ export function activate(p_context: vscode.ExtensionContext) {
         p_context.subscriptions.push(vscode.commands.registerCommand(...p_command));
     });
 
+    // * Close remaining Leo Bodies restored by vscode from last session.
+    closeLeoTextEditors();
+
     // * Show a welcome screen on version updates, then start the actual extension.
     showWelcomeIfNewer(w_leoIntegVersion, w_previousVersion, w_leo)
         .then(() => {
@@ -697,6 +701,7 @@ export function activate(p_context: vscode.ExtensionContext) {
  * * Called when extension is deactivated
  */
 export function deactivate(): Promise<boolean> {
+    closeLeoTextEditors();
     if (LeoInteg) {
         LeoInteg.activated = false;
         LeoInteg.cleanupBody().then(() => {
@@ -714,6 +719,19 @@ export function deactivate(): Promise<boolean> {
     } else {
         return Promise.resolve(false);
     }
+}
+
+/**
+ * * Closes all visible text editors that have Leo filesystem scheme
+ */
+function closeLeoTextEditors() {
+    vscode.window.visibleTextEditors.forEach(p_textEditor => {
+        if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+            if (p_textEditor.hide) {
+                p_textEditor.hide();
+            }
+        }
+    });
 }
 
 /**

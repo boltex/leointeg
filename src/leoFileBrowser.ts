@@ -88,7 +88,10 @@ export class LeoFilesBrowser {
         this._fileBrowserActive = true;
         return new Promise((p_resolve, p_reject) => {
             const w_filters: { [name: string]: string[] } = {};
-            w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [Constants.FILE_EXTENSION];
+            w_filters[Constants.FILE_OPEN_FILTER_MESSAGE] = [
+                Constants.FILE_EXTENSION,
+                Constants.JS_FILE_EXTENSION
+            ];
 
             if (p_saveAsFlag) {
                 // Choose file
@@ -124,6 +127,35 @@ export class LeoFilesBrowser {
                         }
                     });
             }
+        });
+    }
+
+    /**
+     * * Open a file browser and let the user choose a JSON leojs file name to save as.
+     * @returns A promise resolving to a chosen path string, or rejected with an empty string if cancelled
+     */
+    public getLeoJsFileUrl(): Promise<string> {
+        if (this._fileBrowserActive) {
+            return Promise.resolve("");
+        }
+        this._fileBrowserActive = true;
+        return new Promise((p_resolve, p_reject) => {
+            // Choose file
+            vscode.window.showSaveDialog({
+                saveLabel: "Save as leojs File",
+                defaultUri: this._getBestOpenFolderUri(),
+                filters: { 'JSON Leo File': ['leojs'] }
+            })
+                .then(p_chosenLeoFile => {
+                    this._fileBrowserActive = false;
+                    if (p_chosenLeoFile) {
+                        // single string
+                        p_resolve(p_chosenLeoFile.fsPath.replace(/\\/g, "/")); // Replace backslashes for windows support
+                    } else {
+                        p_resolve(""); // not rejection - resolve empty string
+                    }
+                });
+
         });
     }
 

@@ -26,6 +26,8 @@ export class Constants {
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";
+    public static JS_FILE_EXTENSION: string = "leojs";
+
     public static URI_LEO_SCHEME: string = "leo";
     public static URI_FILE_SCHEME: string = "file";
     public static URI_SCHEME_HEADER: string = "leo:/";
@@ -407,6 +409,7 @@ export class Constants {
     public static LEOBRIDGE = {
         TEST: "!test",
         DO_NOTHING: "!do_nothing",
+        GET_VERSION: "!get_version",
         // * Server Commands
         GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
         APPLY_CONFIG: "!set_config", // "applyConfig",
@@ -535,6 +538,7 @@ export class Constants {
         // SAVE_DISABLED: Constants.NAME + ".saveLeoFileDisabled", // Disabled - nop
         SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline",
         SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
+        SAVE_AS_LEOJS: Constants.NAME + ".saveAsLeoJsFile",
         CLOSE_FILE: Constants.NAME + ".closeLeoFile",
         CLICK_BUTTON: Constants.NAME + ".clickButton",
         REMOVE_BUTTON: Constants.NAME + ".removeButton",
@@ -717,6 +721,7 @@ export class Constants {
         'open-outline': Constants.COMMANDS.OPEN_FILE,
         'file-save': Constants.COMMANDS.SAVE_FILE,
         'file-save-as': Constants.COMMANDS.SAVE_AS_FILE,
+        'file-save-as-leojs': Constants.COMMANDS.SAVE_AS_LEOJS,
         'file-save-as-unzipped': Constants.COMMANDS.SAVE_AS_FILE,
         'file-save-by-name': Constants.COMMANDS.SAVE_AS_FILE,
         'file-save-to': Constants.COMMANDS.SAVE_AS_FILE,
@@ -724,6 +729,7 @@ export class Constants {
         'save-as': Constants.COMMANDS.SAVE_AS_FILE,
         'save-file': Constants.COMMANDS.SAVE_FILE,
         'save-file-as': Constants.COMMANDS.SAVE_AS_FILE,
+        'save-file-as-leojs': Constants.COMMANDS.SAVE_AS_LEOJS,
         'save-file-as-unzipped': Constants.COMMANDS.SAVE_AS_FILE,
         'save-file-by-name': Constants.COMMANDS.SAVE_AS_FILE,
         'save-file-to': Constants.COMMANDS.SAVE_AS_FILE,
