@@ -112,8 +112,7 @@ export class LeoIntegration {
 
     private _bodyPreviewMode: boolean = true;
 
-    private _showBodyStarted: boolean = false; // Flag for when _applySelectionToBody 'show body' cycle is busy
-    private _showBodyParams: ShowBodyParam | undefined; // _applySelectionToBody parameters, may be overwritten at each call if not finished
+    private _editorTouched: boolean = false; // Flag for applying editor changes to body when 'icon' state change and 'undo' back to untouched
 
     // * Find panel
     private _findPanelWebviewView: vscode.WebviewView | undefined;
@@ -1169,6 +1168,7 @@ export class LeoIntegration {
             this._bodyLastChangedDocumentSaved = false;
             this._bodyPreviewMode = false;
             this._fromOutline = false; // Focus is on body pane
+            this._editorTouched = true; // To make sure to transfer content to Leo even if all undone
 
             // * If icon should change then do it now (if there's no document edit pending)
             if (
@@ -1203,11 +1203,12 @@ export class LeoIntegration {
         let q_savePromise: Promise<boolean>;
         if (
             this._bodyLastChangedDocument &&
-            this._bodyLastChangedDocument.isDirty &&
+            (this._bodyLastChangedDocument.isDirty || this._editorTouched) &&
             !this._bodyLastChangedDocumentSaved
         ) {
             const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
             this._bodyLastChangedDocumentSaved = true;
+            this._editorTouched = false;
             q_savePromise = this._bodySaveDocument(w_document, p_forcedVsCodeSave);
         } else {
             this._bodyLastChangedDocumentSaved = true;

@@ -9626,7 +9626,7 @@ _If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.gi
 ### Break your code down into sections structured as an outline, to derive or parse back your files
 
 &gt; Leo is a fundamentally different way of using and organizing data, programs and scripts.\
-&gt; [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4) 🎥
+&gt; [Introduction Video](https://www.youtube.com/watch?v=SYwlfdEukD4) 🎥
 
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
 or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.visualstudio.com](https://code.visualstudio.com/).
@@ -10293,8 +10293,7 @@ export class LeoIntegration {
 
     private _bodyPreviewMode: boolean = true;
 
-    private _showBodyStarted: boolean = false; // Flag for when _applySelectionToBody 'show body' cycle is busy
-    private _showBodyParams: ShowBodyParam | undefined; // _applySelectionToBody parameters, may be overwritten at each call if not finished
+    private _editorTouched: boolean = false; // Flag for applying editor changes to body when 'icon' state change and 'undo' back to untouched
 
     // * Find panel
     private _findPanelWebviewView: vscode.WebviewView | undefined;
@@ -10831,6 +10830,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
         this._bodyLastChangedDocumentSaved = false;
         this._bodyPreviewMode = false;
         this._fromOutline = false; // Focus is on body pane
+        this._editorTouched = true; // To make sure to transfer content to Leo even if all undone
 
         // * If icon should change then do it now (if there's no document edit pending)
         if (
@@ -10866,11 +10866,12 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise&lt;boolean&gt; {
     let q_savePromise: Promise&lt;boolean&gt;;
     if (
         this._bodyLastChangedDocument &amp;&amp;
-        this._bodyLastChangedDocument.isDirty &amp;&amp;
+        (this._bodyLastChangedDocument.isDirty || this._editorTouched) &amp;&amp;
         !this._bodyLastChangedDocumentSaved
     ) {
         const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
         this._bodyLastChangedDocumentSaved = true;
+        this._editorTouched = false;
         q_savePromise = this._bodySaveDocument(w_document, p_forcedVsCodeSave);
     } else {
         this._bodyLastChangedDocumentSaved = true;
@@ -22081,7 +22082,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;/a&gt;
       &lt;p class="header__blurb"&gt;
         Use &lt;b&gt;Leo&lt;/b&gt;, the Literate Editor with Outlines, to program with &lt;b&gt;directed acyclic graphs&lt;/b&gt;,
-        along with section-references, '@others', and clones to generate (and read from) external files.
+        along with section-references, '@others', and clones.
       &lt;/p&gt;
     &lt;/header&gt;
 
