@@ -22123,9 +22123,9 @@ body &gt; div &gt; div &gt; label:active {
         &lt;/p&gt;
         &lt;h2 class="section__title section__title--break"&gt;&lt;/h2&gt;
         &lt;p class="section__hint mt-0 center"&gt;
-          Automate the &lt;a href="#leobridge-options"&gt;Leo server startup&lt;/a&gt;,
-          auto-refresh when &lt;a href="#external-files"&gt;external files change&lt;/a&gt;,
-          or choose which &lt;a href="#node-commands"&gt;node icons&lt;/a&gt;
+          Automate the &lt;a href="#leobridge-options" title="Setup server options"&gt;Leo server startup&lt;/a&gt;,
+          auto-refresh when &lt;a href="#external-files" title="Setup file-change detection"&gt;external files change&lt;/a&gt;,
+          or choose which &lt;a href="#node-commands" title="Fine-tune interface"&gt;node icons&lt;/a&gt;
           are shown and more with the options below.
         &lt;/p&gt;
       &lt;/section&gt;
@@ -22246,7 +22246,7 @@ body &gt; div &gt; div &gt; label:active {
               &lt;/div&gt;
               &lt;br&gt;
               &lt;p&gt;For a standalone, persistent, or multi-user server
-                see &lt;a href="https://leoeditor.com/leoserver.html"&gt;Using leoserver.py&lt;/a&gt;
+                see &lt;a href="https://leoeditor.com/leoserver.html" title="Leo server documentation"&gt;Using leoserver.py&lt;/a&gt;
                 from Leo's documentation.
               &lt;/p&gt;
             &lt;/fieldset&gt;
@@ -22799,7 +22799,7 @@ body &gt; div &gt; div &gt; label:active {
     &lt;div class="sidebar"&gt;
       &lt;div class="sidebar__group"&gt;
         &lt;a class="button button--flat-primary"
-           title="Support LeoInteg"
+           title="Support LeoInteg Development"
            href="https://boltex.github.io/"&gt;Sponsor
           LeoInteg &amp;#x2764;&lt;/a&gt;
         &lt;p&gt;
@@ -22811,34 +22811,34 @@ body &gt; div &gt; div &gt; label:active {
         &lt;h2&gt;Configuration&lt;/h2&gt;
         &lt;ul&gt;
           &lt;li&gt;
-            &lt;a href="#leobridge-options"&gt;Leo server Options&lt;/a&gt;
+            &lt;a href="#leobridge-options" title="Server settings"&gt;Leo server Options&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#external-files"&gt;External Files&lt;/a&gt;
+            &lt;a href="#external-files" title="File change detection settings"&gt;External Files&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#interface-behavior"&gt;Interface Behavior&lt;/a&gt;
+            &lt;a href="#interface-behavior" title="Outline behavior settings"&gt;Interface Behavior&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#tree-in-explorer"&gt;Outline in Explorer&lt;/a&gt;
+            &lt;a href="#tree-in-explorer" title="Outline visibility settings"&gt;Outline in Explorer&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#show-open-aside"&gt;Open to the Side&lt;/a&gt;
+            &lt;a href="#show-open-aside" title="Outline context menu settings"&gt;Open to the Side&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#invert-contrast"&gt;Invert Contrast&lt;/a&gt;
+            &lt;a href="#invert-contrast" title="UI contrast settings"&gt;Invert Contrast&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#node-commands"&gt;Node Hover Commands&lt;/a&gt;
+            &lt;a href="#node-commands" title="Outline nodes settings"&gt;Node Hover Commands&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#editor-commands"&gt;Body Editor Icons&lt;/a&gt;
+            &lt;a href="#editor-commands" title="Body editor menu settings"&gt;Body Editor Icons&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#font-sizes"&gt;Font Sizes&lt;/a&gt;
+            &lt;a href="#font-sizes" title="Font size settings"&gt;Font Sizes&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#statusbar-indicator"&gt;Statusbar Indicator&lt;/a&gt;
+            &lt;a href="#statusbar-indicator" title="Statusbar settings"&gt;Statusbar Indicator&lt;/a&gt;
           &lt;/li&gt;
         &lt;/ul&gt;
       &lt;/div&gt;
@@ -22859,17 +22859,17 @@ body &gt; div &gt; div &gt; label:active {
         &lt;h2&gt;About Leo&lt;/h2&gt;
         &lt;ul&gt;
           &lt;li&gt;
-            &lt;a href="https://leoeditor.com/"&gt;Home Page&lt;/a&gt;
+            &lt;a href="https://leoeditor.com/" title="Leo’s Home Page"&gt;Home Page&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="https://leoeditor.com/leo_toc.html"&gt;Documentation&lt;/a&gt;
+            &lt;a href="https://leoeditor.com/leo_toc.html" title="Leo’s Documentation Page"&gt;Documentation&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="https://groups.google.com/forum/#!forum/leo-editor"&gt;Forum&lt;/a&gt;
+            &lt;a href="https://groups.google.com/forum/#!forum/leo-editor" title="Leo Editor Forum"&gt;Forum&lt;/a&gt;
             &lt;small&gt; &amp;nbsp;&amp;nbsp;&amp;mdash;&amp;nbsp; #Google Group&lt;/small&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="https://github.com/leo-editor/leo-editor"&gt;Source&lt;/a&gt;
+            &lt;a href="https://github.com/leo-editor/leo-editor" title="Leo Editor on GitHub"&gt;Source&lt;/a&gt;
             &lt;small&gt; &amp;nbsp;&amp;nbsp;&amp;mdash;&amp;nbsp; #GitHub&lt;/small&gt;
           &lt;/li&gt;
         &lt;/ul&gt;
