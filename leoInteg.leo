@@ -17,7 +17,6 @@
 <v t="felix.20200718220811.1"><vh>Documentation</vh>
 <v t="felix.20200718220818.1"><vh>@clean README.md</vh>
 <v t="felix.20200718221645.1"><vh>Requirements</vh></v>
-<v t="felix.20200718222026.1"><vh>BETA version installation</vh></v>
 <v t="felix.20200718222035.1"><vh>Features</vh></v>
 <v t="felix.20200718222043.1"><vh>Keybindings</vh></v>
 <v t="felix.20200718222048.1"><vh>Derive External Files</vh></v>
@@ -30,6 +29,8 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20210919194446.1"><vh>1.0.0</vh></v>
+<v t="felix.20210919194259.1"><vh>0.1.20</vh></v>
 <v t="felix.20210901215735.1"><vh>0.1.19</vh></v>
 <v t="felix.20210916004954.1"><vh>0.1.18</vh></v>
 <v t="felix.20210816230003.1"><vh>0.1.17</vh></v>
@@ -414,7 +415,6 @@
 <v t="ekr.20200815123601.11"><vh>grammars</vh></v>
 <v t="ekr.20200815123601.12"><vh>snippets</vh></v>
 <v t="ekr.20200815123601.13"><vh>commands</vh>
-<v t="ekr.20200815123601.14"><vh>Tests</vh></v>
 <v t="ekr.20200815123601.15"><vh>Show Webviews</vh></v>
 <v t="ekr.20200815123601.16"><vh>Server</vh></v>
 <v t="ekr.20200815123601.17"><vh>Scripting &amp; @buttons</vh></v>
@@ -469,7 +469,7 @@
 <v t="felix.20210530153353.1"><vh>Search</vh></v>
 <v t="felix.20210530153359.1"><vh>Mark Nodes</vh></v>
 <v t="ekr.20200815123601.56"><vh>Hidden Commands</vh>
-<v t="ekr.20200815123601.57"><vh>Tests</vh></v>
+<v t="ekr.20200815123601.57"><vh>VSCode Settings Commands</vh></v>
 <v t="felix.20210709004123.1"><vh>Status Bar Click</vh></v>
 <v t="ekr.20200815123601.58"><vh>Scripting &amp; @buttons</vh></v>
 <v t="ekr.20200815123601.59"><vh>Show UI Panes</vh></v>
@@ -1128,8 +1128,13 @@ public showAskModalDialog(p_askArg: runAskYesNoDialogParameters): void {
         );
         if (this._askResult.includes(Constants.ASYNC_ASK_RETURN_CODES.YES)) {
             w_sendResultPromise.then(() =&gt; {
-                this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
-            });
+                //  this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
+                return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+            })
+                .then((p_package) =&gt; {
+                    // refresh and reveal selection
+                    this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+                });
         }
     });
 }
@@ -1576,35 +1581,6 @@ private _tryApplyNodeToBody(
         this.bodyUri = utils.strToLeoUri(p_node.gnx);
     }
     return this.showBody(p_aside, p_showBodyKeepFocus);
-
-    /*
-        this._showBodyParams = {
-            node: p_node,
-            aside: p_aside,
-            showBodyKeepFocus: p_showBodyKeepFocus,
-            force_open: p_force_open // can be undefined
-        };
-        // Start it if possible, otherwise the last _showBodyParams will be used again right after
-        if (!this._showBodyStarted) {
-            this._showBodyStarted = true;
-            this._applyNodeToBody(this._showBodyParams)
-                .then((p_textEditor: vscode.TextEditor) =&gt; {
-                    // finished
-                    this._showBodyStarted = false;
-                    if (this._showBodyParams) {
-                        // New node to show again! Call itself faking params from the specified ones.
-                        this._tryApplyNodeToBody(
-                            this._showBodyParams.node,
-                            this._showBodyParams.aside,
-                            this._showBodyParams.showBodyKeepFocus,
-                            this._showBodyParams.force_open
-                        );
-                    }
-                });
-            // Clear global body params, will get refilled if needed
-            this._showBodyParams = undefined;
-        }
-        */
 }
 
 </t>
@@ -1640,8 +1616,6 @@ public nodeCommand(p_userCommand: UserCommand): Promise&lt;LeoBridgePackage&gt; 
  * @returns the launchRefresh promise started after it's done running the 'atButton' command
  */
 public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
-    console.log('click but');
-
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
             return this.sendAction(
@@ -1650,11 +1624,11 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
             );
         })
         .then((p_clickButtonResult: LeoBridgePackage) =&gt; {
-            console.log('back from click but');
-            this.launchRefresh(
-                { tree: true, body: true, documents: true, buttons: true, states: true },
-                false
-            );
+            return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+        })
+        .then((p_package) =&gt; {
+            // refresh and reveal selection
+            this.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
             return Promise.resolve(true); // TODO launchRefresh should be a returned promise
         });
 }
@@ -2393,7 +2367,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "0.1.20",
+  "version": "1.0.0",
   "author": {
     "name": "Félix"
   },
@@ -2404,7 +2378,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.60.0"
+    "vscode": "^1.60.1"
   },
   "keywords": [
     "leo",
@@ -2760,18 +2734,12 @@ print('done')
   @others
 ],
 </t>
-<t tx="ekr.20200815123601.14">{
-  "command": "leointeg.test",
-  "category": "Leo",
-  "title": "Test Leo Integration"
-},
-{
+<t tx="ekr.20200815123601.15">{
   "command": "leointeg.setEnablePreview",
   "category": "Leo",
   "title": "Set Enable-Preview"
 },
-</t>
-<t tx="ekr.20200815123601.15">{
+{
   "command": "leointeg.clearCloseEmptyGroups",
   "category": "Leo",
   "title": "Clear Close-Empty-Groups"
@@ -3986,15 +3954,15 @@ print('done')
 </t>
 <t tx="ekr.20200815123601.56"></t>
 <t tx="ekr.20200815123601.57">{
-  "command": "leointeg.test",
-  "when": "false"
-},
-{
   "command": "leointeg.setEnablePreview",
   "when": "false"
 },
 {
   "command": "leointeg.clearCloseEmptyGroups",
+  "when": "false"
+},
+{
+  "command": "leointeg.setCloseOnFileDelete",
   "when": "false"
 },
 </t>
@@ -7366,7 +7334,7 @@ export function activate(p_context: vscode.ExtensionContext) {
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
 
         // ! REMOVE TESTS ENTRIES FROM PACKAGE.JSON FOR MASTER BRANCH RELEASES !
-        ["leointeg.test", () =&gt; w_leo.test()], // Test function useful when debugging
+        // ["leointeg.test", () =&gt; w_leo.test()], // Test function useful when debugging
         // ["leointeg.testFromOutline", () =&gt; w_leo.test(true)], // Test function useful when debugging.
 
         &lt;&lt; Define entries for all commands &gt;&gt;
@@ -7499,9 +7467,6 @@ import { BodyTimeInfo } from "./types";
         if (p_uri.fsPath.length === 1) { // p_uri.fsPath === '/' || p_uri.fsPath === '\\'
             return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
         } else if (w_gnx === this._lastGnx &amp;&amp; this._openedBodiesGnx.includes(this._lastGnx)) {
-            // If same as last checked, sending back time at absolute past
-            // ? VERIFY this._selectedBody.mtime we get file changed on disk error??
-            // console.log('VERIFY this._selectedBody.mtime we get file changed on disk error :', p_uri);
             return {
                 type: vscode.FileType.File,
                 ctime: this._openedBodiesInfo[this._lastGnx].ctime,
@@ -7526,7 +7491,7 @@ import { BodyTimeInfo } from "./types";
     }
     // throw vscode.FileSystemError.FileNotFound();
     // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
-    return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
+    return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: 0 };
 }
 
 </t>
@@ -7672,9 +7637,6 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     // * Flag normally false
     public preventSaveToLeo: boolean = false;
 
-    // * Simple structure to keep mtime of selected and renamed body virtual files
-    private _selectedBody: string = "";
-
     // * Last file read data with the readFile method
     private _lastGnx: string = ""; // gnx of last file read
     private _lastBodyData: string = ""; // body content of last file read
@@ -7727,7 +7689,6 @@ public setBodyTime(p_uri: vscode.Uri): void {
  * @param p_gnx Gnx of body associated with this virtual file, mostly Leo's selected node
  */
 public fireRefreshFile(p_gnx: string): void {
-    this._selectedBody = p_gnx;
     if (!this._openedBodiesGnx.includes(p_gnx)) {
         console.error("ASKED TO REFRESH NOT EVEN IN SELECTED BODY: ", p_gnx);
         this._openedBodiesGnx.push(p_gnx);
@@ -7808,7 +7769,7 @@ private _processAnswer(p_data: string): void {
 </t>
 <t tx="felix.20200718153505.12">/**
  * * Create a websocket connection to a Leo server
- * @param p_port facultative port number to override config port
+ * @param p_port optional port number to override config port
  * @returns A promise for a LeoBridgePackage object containing only an 'id' member of 1 that will resolve when the 'leoBridge' is established
  */
 public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
@@ -7850,7 +7811,7 @@ public initLeoProcess(p_port?: number): Promise&lt;LeoBridgePackage&gt; {
  * * Send into the python process input
  * @param p_data JSON Message string to be sent to leobridgeserver.py
  */
-private _send(p_data: string): any {
+private _send(p_data: string): void {
     if (this._readyPromise) {
         this._readyPromise.then(() =&gt; { // using '.then' that was surely resolved already: to be buffered in case process isn't ready.
             if (this._websocket &amp;&amp; this._websocket.OPEN) {
@@ -7965,6 +7926,7 @@ private _asyncAction(w_parsedData: any): void {
  * * Build JSON string for action parameter to the leoBridge
  * @param p_action Action string to be invoked as command by Leo in the leobridgeserver.py script
  * @param p_jsonParam Optional JSON string to be added as a 'param' to the action sent to Leo
+ * @returns the JSON string built from the action string and the parameters
  */
 private _buildActionParameter(p_action: string, p_jsonParam?: string): string {
     return "{\"id\":" + (++this._leoBridgeSerialId) + // no quotes, serial id is a number, pre incremented
@@ -7978,7 +7940,7 @@ private _buildActionParameter(p_action: string, p_jsonParam?: string): string {
  * * Resolves promises with the answers from an action that was finished
  * @param p_object Parsed data that was given as the answer by the Leo command that finished
  */
-private _resolveBridgeReady(p_object: any) {
+private _resolveBridgeReady(p_object: any): void {
     let w_bottomAction = this._callStack.shift();
     if (w_bottomAction) {
         if (w_bottomAction.deferredPayload) {
@@ -8044,6 +8006,7 @@ private _tryParseJSON(p_jsonStr: string): boolean | any {
 </t>
 <t tx="felix.20200718155251.1">/**
  * * Busy state of the leoBridge's command stack
+ * @returns true if leoBridge's command stack still has unresolved actions
  */
 public isBusy(): boolean {
     return this._actionBusy || !!this._callStack.length;
@@ -8510,7 +8473,11 @@ public setRoot(): void {
 }
 
 </t>
-<t tx="felix.20200718170712.5">private _getNodeContextValue(): string {
+<t tx="felix.20200718170712.5">/**
+ * * Builds the node context string by concatenating coded constants
+ * @returns the string made up of all status flags
+ */
+private _getNodeContextValue(): string {
     // Start it with 'leoNodeMarked' or 'leoNodeUnmarked'
     let w_contextValue = Constants.CONTEXT_FLAGS.NODE_UNMARKED;
     if (this.marked) {
@@ -9659,7 +9626,7 @@ _If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.gi
 ### Break your code down into sections structured as an outline, to derive or parse back your files
 
 &gt; Leo is a fundamentally different way of using and organizing data, programs and scripts.\
-&gt; [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4) 🎥
+&gt; [Introduction Video](https://www.youtube.com/watch?v=SYwlfdEukD4) 🎥
 
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
 or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.visualstudio.com](https://code.visualstudio.com/).
@@ -9676,10 +9643,6 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 @tabwidth -4
 # Change Log
 
-## 0.0.20
-
-- Added .leojs JSON file format support
-
 @others
 </t>
 <t tx="felix.20200718220833.2">@language md
@@ -9692,27 +9655,13 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Having Leo Editor installed.
+- Leo Editor 6.4 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
-- Having the Websocket Python Library installed.
+- Websocket Python Library\
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
-
-</t>
-<t tx="felix.20200718222026.1">## Beta Version Installation
-
-&gt; While in beta, this extension isn't available in the microsoft store, nor the extension panel yet. But you can drag the extension file onto it.
-
-- Get the leointeg extension file at
-  [boltex.github.io](https://boltex.github.io/),
-  then **drag-and-drop** that '.vsix' file over the
-  extension panel of VSCode's sidebar. (**on windows use the 'install from VSIX' command**)
-
-- In addition to the above requirements,
-  **use Leo's 'devel' branch**
-  (This is temporary until Leo's 6.4 release)
 
 </t>
 <t tx="felix.20200718222035.1">## Features
@@ -9862,7 +9811,7 @@ Leo integration into VS Code is done by starting
 a [python server script](https://github.com/leo-editor/leo-editor/blob/devel/leo/core/leoserver.py) and connecting to it via
 a [websocket](https://websockets.readthedocs.io/en/stable/intro.html)
 to exchange JSON data. The server script leverages [leoBridge](https://leoeditor.com/leoBridge.html)
-and re-uses code from the [leoflexx.py plugin](https://github.com/leo-editor/leo-editor/blob/devel/leo/plugins/leoflexx.py#L574).
+and re-uses code from the [leoflexx.py plugin](https://github.com/leo-editor/leo-editor/blob/devel/leo/plugins/leoflexx.py#L893).
 
 The outline pane is made by implementing a
 [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics),
@@ -9904,7 +9853,7 @@ and using the node's gnx as identifier.
 - Changed the starting default configuration setting for starting and connecting to the leoBridge server script to false.
 - Made starting and connecting to the leoBridge server script easier to access in the interface, and in the welcome/settings webview.
 - Added new CONTRIBUTING markdown file for running the development version of the leoInteg extension.
-- Closes [#44](https://github.com/boltex/leointeg/issues/44)
+- Closes [#44](https://github.com/boltex/leointeg/issues/44).
 
 </t>
 <t tx="felix.20200718222425.1">## 0.1.9
@@ -9915,7 +9864,7 @@ and using the node's gnx as identifier.
 - Added config options to bypass derived files change detection dialogs with defaults, allowing automatic synchronization of derived files in both directions.
 - Added support for redo, refresh from disk and many any other core Leo commands and operations.
 - Added support for rapid outline edition command entry, including 'insert node' command **`Ctrl+I`** and for replacing focus on relevant elements to mimic actual Leo interface workflow.
-- Added [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree to help with connecting and opening
+- Added [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree to help with connecting and opening.
 - Replaced body-editor content transfer logic and removed the related option in the expansion's settings. The body is sent to Leo when appropriate without need of a timed delay.
 - _REMOVED FEATURE_ Rolled back 'multi-body' feature for simultaneous body panes from different gnx. Body panes from the same gnx are still available.
 
@@ -10344,8 +10293,7 @@ export class LeoIntegration {
 
     private _bodyPreviewMode: boolean = true;
 
-    private _showBodyStarted: boolean = false; // Flag for when _applySelectionToBody 'show body' cycle is busy
-    private _showBodyParams: ShowBodyParam | undefined; // _applySelectionToBody parameters, may be overwritten at each call if not finished
+    private _editorTouched: boolean = false; // Flag for applying editor changes to body when 'icon' state change and 'undo' back to untouched
 
     // * Find panel
     private _findPanelWebviewView: vscode.WebviewView | undefined;
@@ -10453,7 +10401,8 @@ private _isBusy(p_all?: boolean): boolean {
 
 </t>
 <t tx="felix.20200719025231.21">/**
- * * Returns true if the current opened Leo document's filename has some content. (not a new unnamed file)
+ * * Check if the current file is an already saved/named file
+ * @returns true if the current opened Leo document's filename has some content. (not a new unnamed file)
  */
 private _isCurrentFileNamed(): boolean {
     return !!this.leoStates.leoOpenedFileName.length; // checks if it's an empty string
@@ -10881,6 +10830,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
         this._bodyLastChangedDocumentSaved = false;
         this._bodyPreviewMode = false;
         this._fromOutline = false; // Focus is on body pane
+        this._editorTouched = true; // To make sure to transfer content to Leo even if all undone
 
         // * If icon should change then do it now (if there's no document edit pending)
         if (
@@ -10916,11 +10866,12 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise&lt;boolean&gt; {
     let q_savePromise: Promise&lt;boolean&gt;;
     if (
         this._bodyLastChangedDocument &amp;&amp;
-        this._bodyLastChangedDocument.isDirty &amp;&amp;
+        (this._bodyLastChangedDocument.isDirty || this._editorTouched) &amp;&amp;
         !this._bodyLastChangedDocumentSaved
     ) {
         const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
         this._bodyLastChangedDocumentSaved = true;
+        this._editorTouched = false;
         q_savePromise = this._bodySaveDocument(w_document, p_forcedVsCodeSave);
     } else {
         this._bodyLastChangedDocumentSaved = true;
@@ -11169,6 +11120,7 @@ private _switchBody(
 <t tx="felix.20200719025231.48">/**
  * * Sets globals if the current body is found opened in an editor panel for a particular gnx
  * @param p_gnx gnx to match
+ * @returns true if located and found, false otherwise
  */
 private _locateOpenedBody(p_gnx: string): boolean {
     let w_found = false;
@@ -11186,6 +11138,7 @@ private _locateOpenedBody(p_gnx: string): boolean {
 </t>
 <t tx="felix.20200719025231.49">/**
  * * Closes any body pane opened in this vscode window instance
+ * @returns a promise that resolves when the file is closed and removed from recently opened list
  */
 public closeBody(): Thenable&lt;any&gt; {
     // TODO : CLEAR UNDO HISTORY AND FILE HISTORY for this.bodyUri !
@@ -11232,6 +11185,7 @@ public sendAction(
  * * Opens an an editor for the currently selected node: "this.bodyUri". If already opened, this just 'reveals' it
  * @param p_aside Flag for opening the editor beside any currently opened and focused editor
  * @param p_preserveFocus flag that when true will stop the editor from taking focus once opened
+ * @returns a promise for the editor that will show the body pane
  */
 public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.TextEditor&gt; {
     // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
@@ -11443,6 +11397,7 @@ public selectTreeNode(
  * @param p_isMark Set 'True' to mark, otherwise unmarks the node
  * @param p_node Specifies which node use, or leave undefined to mark or unmark the currently selected node
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
+ * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
  */
 public changeMark(
     p_isMark: boolean,
@@ -11471,6 +11426,7 @@ public changeMark(
  * * Asks for a new headline label, and replaces the current label with this new one one the specified, or currently selected node
  * @param p_node Specifies which node to rename, or leave undefined to rename the currently selected node
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
+ * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
  */
 public editHeadline(
     p_node?: LeoNode,
@@ -11518,6 +11474,7 @@ public editHeadline(
  * @param p_node specified under which node to insert, or leave undefined to use whichever is currently selected
  * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
  * @param p_interrupt Signifies the insert action is actually interrupting itself (e.g. rapid CTRL+I actions by the user)
+ * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
  */
 public insertNode(
     p_node?: LeoNode,
@@ -12125,13 +12082,11 @@ public connect(): void {
         return;
     }
     this._leoIsConnecting = true;
-    console.log('connecting');
     this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess(
         this._serverService.usingPort // This will be zero if no port found
     );
     this._leoBridgeReadyPromise.then(
         (p_package) =&gt; {
-            console.log('connected');
             this._leoIsConnecting = false;
             // Check if hard-coded first package signature
             if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
@@ -14775,8 +14730,11 @@ public static VSCODE_COMMANDS = {
   }
 ],
 </t>
-<t tx="felix.20210418013332.1">private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
-    console.log('DELETE EXTRANEOUS:', p_textEditor.document.uri.fsPath);
+<t tx="felix.20210418013332.1">/**
+ * * Closes non-existing body by deleting the file and calling 'hide'
+ * @param p_textEditor the editor to close
+ */
+private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
     const w_edit = new vscode.WorkspaceEdit();
     w_edit.deleteFile(p_textEditor.document.uri, { ignoreIfNotExists: true });
     vscode.workspace.applyEdit(w_edit);
@@ -14826,6 +14784,7 @@ public _changedVisibleTextEditors(p_editors: vscode.TextEditor[]): void {
 </t>
 <t tx="felix.20210418014040.2">/**
  * * Whole window has been minimized/restored
+ * @param p_windowState the state of the window that changed
  */
 public _changedWindowState(p_windowState: vscode.WindowState): void {
     // no other action
@@ -14833,7 +14792,12 @@ public _changedWindowState(p_windowState: vscode.WindowState): void {
 }
 
 </t>
-<t tx="felix.20210418220343.1">private _checkPreviewMode(p_editor: vscode.TextEditor): void {
+<t tx="felix.20210418220343.1">
+/**
+ * * Clears the global 'Preview Mode' flag if the given editor is not in the main body column
+ * @param p_editor is the editor to check for is in the same column as the main one
+ */
+private _checkPreviewMode(p_editor: vscode.TextEditor): void {
     // if selected gnx but in another column
     if (
         p_editor.document.uri.fsPath === this.bodyUri.fsPath &amp;&amp;
@@ -14845,7 +14809,12 @@ public _changedWindowState(p_windowState: vscode.WindowState): void {
 }
 
 </t>
-<t tx="felix.20210418230204.1">private _findUriColumn(p_uri: vscode.Uri): vscode.ViewColumn | undefined {
+<t tx="felix.20210418230204.1">
+/**
+ * * Find editor column based on uri
+ * @returns View Column if found, undefined otherwise
+ */
+private _findUriColumn(p_uri: vscode.Uri): vscode.ViewColumn | undefined {
     let w_column: vscode.ViewColumn | undefined;
     vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
         if (p_textEditor.document.uri.fsPath === p_uri.fsPath) {
@@ -14856,7 +14825,11 @@ public _changedWindowState(p_windowState: vscode.WindowState): void {
 }
 
 </t>
-<t tx="felix.20210418230204.2">private _findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
+<t tx="felix.20210418230204.2">/**
+ * * Find editor column based on gnx string
+ * @returns View Column if found, undefined otherwise
+ */
+private _findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
     let w_column: vscode.ViewColumn | undefined;
     vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
         if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {
@@ -15627,7 +15600,7 @@ public saveSearchSettings(p_settings: LeoSearchSettings): Promise&lt;LeoBridgePa
  * * Capture instance for further calls on find panel webview
  * @param p_panel The panel (usually that got the latest onDidReceiveMessage)
  */
-public setFindPanel(p_panel: vscode.WebviewView) {
+public setFindPanel(p_panel: vscode.WebviewView): void {
     if (this._lastTreeView === this._leoTreeExView) {
         this._findPanelWebviewExplorerView = p_panel;
     } else {
@@ -15957,8 +15930,9 @@ public setSearchSetting(p_id: string): void {
 
 </t>
 <t tx="felix.20210530225640.1"></t>
-<t tx="felix.20210530230354.1">/*
+<t tx="felix.20210530230354.1">/**
  * * Find / Replace All
+ * @returns Promise of LeoBridgePackage from execution or undefined if cancelled
  */
 public findAll(p_replace: boolean): Promise&lt;any&gt; {
     const w_action: string = p_replace
@@ -16014,6 +15988,9 @@ public findAll(p_replace: boolean): Promise&lt;any&gt; {
 </t>
 <t tx="felix.20210530230400.1">/**
  * * Clone Find All / Marked / Flattened
+ * @param p_marked flag for finding marked nodes
+ * @param p_flat flag to get flattened results
+ * @returns Promise of LeoBridgePackage from execution or undefined if cancelled
  */
 public cloneFind(p_marked: boolean, p_flat: boolean): Promise&lt;any&gt; {
     let w_searchString: string = this._lastSettingsUsed!.findText;
@@ -16679,7 +16656,9 @@ export function findNextAvailablePort(p_startingPort: number): Promise&lt;number
 
 </t>
 <t tx="felix.20210613205741.1">/**
- * * Return a promise for a find pattern string input from the user
+ * * Get a find pattern string input from the user
+ * @param p_replace flag for doing a 'replace' instead of a 'find'
+ * @returns Promise of string or undefined if cancelled
  */
 private _inputFindPattern(p_replace?: boolean): Thenable&lt;string | undefined&gt; {
     return vscode.window.showInputBox({
@@ -16693,7 +16672,7 @@ private _inputFindPattern(p_replace?: boolean): Thenable&lt;string | undefined&g
 <t tx="felix.20210613210351.1">/**
  * * Popup browser to choose Leo-Editor installation folder path
  */
-public chooseLeoFolder() {
+public chooseLeoFolder(): void {
     utils.chooseLeoFolderDialog().then(p_chosenPath =&gt; {
         if (p_chosenPath &amp;&amp; p_chosenPath.length) {
             this.config.setLeoIntegSettings(
@@ -16715,7 +16694,8 @@ public chooseLeoFolder() {
 </t>
 <t tx="felix.20210613212439.1"></t>
 <t tx="felix.20210614235023.1">/**
- * * Return dialog for choosing the Leo Editor installation folder path
+ * * Shows dialog for choosing the Leo Editor installation folder path
+ * @returns A promise that resolves to the selected resources or undefined
  */
 export function chooseLeoFolderDialog(): Thenable&lt;vscode.Uri[] | undefined&gt; {
     return vscode.window.showOpenDialog(
@@ -20398,10 +20378,6 @@ export function getUniqueId(): string {
 
 </t>
 <t tx="felix.20210709004123.1">{
-  "command": "leointeg.setCloseOnFileDelete",
-  "when": "false"
-},
-{
   "command": "leointeg.statusBar",
   "when": "false"
 },
@@ -20584,6 +20560,7 @@ public killServer(): void {
 </t>
 <t tx="felix.20210718155134.1">/**
  * * cleanupBody closes all remaining body pane to shut down this vscode window
+ * @returns a promise that resolves when done saving and closing
  */
 public cleanupBody(): Thenable&lt;any&gt; {
     let q_save: Thenable&lt;any&gt;;
@@ -20629,7 +20606,7 @@ public cleanupBody(): Thenable&lt;any&gt; {
 
 - Modified server location logic
 - Fixed find-prev, next, find all / clone-find commands
-- fixed extract name command
+- Fixed extract name command.
 - Fixed body being re-written to same string and being marked dirty when 'safety-saving' before switching docs.
 - Detection of .Leo documents themselves now works by closing and re-opening the .leo file if reloading is chosen by the user. (or automatic via options)
 - Added icons and commands for top of body pane menu.
@@ -20697,6 +20674,7 @@ public cleanupBody(): Thenable&lt;any&gt; {
 </t>
 <t tx="felix.20210727224122.1">/**
  * * Get config from vscode for the UI font sizes
+ * @returns the font settings object (zoom level and editor font size)
  */
 public getFontConfig(): FontSettings {
     let w_zoomLevel = vscode.workspace.getConfiguration(
@@ -20819,15 +20797,16 @@ public closeLeoProcess(): void {
  * * Server announced the multi-user content changed: Debounce a refresh cycle.
  * The 'action' string can be checked to determine what kind, if any, is required.
  * Note: 'Getters' and the 'do_nothing' actions are NOT shared by the server.
+ * @param p_serverPackage the package sent along by the server
  */
-public refresh(p_package: any): void {
-    if (p_package.opened &amp;&amp; this._leoIntegration.leoStates.fileOpenedReady) {
+public refresh(p_serverPackage: any): void {
+    if (p_serverPackage.opened &amp;&amp; this._leoIntegration.leoStates.fileOpenedReady) {
         this._leoIntegration.refreshAll();
-    } else if (p_package.opened &amp;&amp; !this._leoIntegration.leoStates.fileOpenedReady) {
+    } else if (p_serverPackage.opened &amp;&amp; !this._leoIntegration.leoStates.fileOpenedReady) {
         this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
-            .then((p_package) =&gt; {
-                p_package.filename = p_package.commander!.fileName;
-                this._leoIntegration.setupOpenedLeoDocument(p_package, true);
+            .then((p_doNothingPackage) =&gt; {
+                p_doNothingPackage.filename = p_doNothingPackage.commander!.fileName;
+                this._leoIntegration.setupOpenedLeoDocument(p_doNothingPackage, true);
             });
     } else {
         this._leoIntegration.setupNoOpenedLeoDocument();
@@ -20847,7 +20826,6 @@ private _bodySaveDeactivate(
         gnx: utils.leoUriToStr(p_document.uri),
         body: p_document.getText(),
     };
-    console.log('Send action set body on quit');
     return this.sendAction(Constants.LEOBRIDGE.SET_BODY, JSON.stringify(w_param));
 }
 
@@ -20921,6 +20899,7 @@ public setEnablePreview(): Thenable&lt;void&gt; {
 </t>
 <t tx="felix.20210818225820.1">/**
  * * Check if the workbench.editor.enablePreview flag is set
+ * @param p_forced Forces the setting instead of just suggesting with a message
  */
 public checkEnablePreview(p_forced?: boolean): void {
     let w_result: any = true;
@@ -20962,6 +20941,7 @@ export function findSingleAvailablePort(p_port: number): Promise&lt;number&gt; {
 </t>
 <t tx="felix.20210821202347.1">/**
  * * Check if the 'workbench.editor.closeEmptyGroups' setting is false
+ * @param p_forced Forces the setting instead of just suggesting with a message
  */
 public checkCloseEmptyGroups(p_forced?: boolean): void {
     let w_result: any = false;
@@ -21010,6 +20990,8 @@ Although the Leo integration has one instance of the leoserver script per vscode
 window by default, the server settings also has features that allows you to use the same instance
 of Leo in multiple client (vscode) windows simultaneously, with real-time updates and interaction.
 
+(See [Multiple concurrent connections](https://leoeditor.com/leoserver.html#multiple-concurrent-connections))
+
 ### Auto Start
 
 **When auto-start is set, a vscode window will start a new instance of Leo server for itself on the next available network port.**
@@ -21045,7 +21027,7 @@ For normal usage, use the leoserver.py file from your leo-editor installation fo
 To make sure leointeg is using the latest server version, make sure you update your Leo-Editor installation to the latest version.
 
 </t>
-<t tx="felix.20210901215735.1">## 0.0.19
+<t tx="felix.20210901215735.1">## 0.1.19
 
 - Fixed 'tab' press from the sidebar: if pressing from the outline it tabs to possible icons on the node, then goes to the body pane. If pressed from the search panel, it cycles through the fields of the search panel.
 - Made the server output channel and the Leo Log Window not show up and open automatically anymore unless the text in the Log Window is 'red' (For Errors to be shown).
@@ -21056,6 +21038,7 @@ To make sure leointeg is using the latest server version, make sure you update y
 </t>
 <t tx="felix.20210904235646.1">/**
  * * Check if the workbench.editor.closeOnFileDelete flag is set
+ * @param p_forced Forces the setting instead of just suggesting with a message
  */
 public checkCloseOnFileDelete(p_forced?: boolean): void {
     let w_result: any = true;
@@ -21200,7 +21183,7 @@ public getLeoJsFileUrl(): Promise&lt;string&gt; {
 - The somewhat unnecessary experimental option 'Shell' has been removed.
 - Automatic detection of VSCode's workbench.editor.enablePreview if its missing/disabled.
 - Automatic detection of VSCode's workbench.editor.closeEmptyGroups if its missing/enabled.
-- Easier access to the leo settings through the extension config title strings and the extension view menu
+- Easier access to the leo settings through the extension config title strings and the extension view menu.
 
 </t>
 <t tx="felix.20210917225004.1">/**
@@ -21215,6 +21198,18 @@ function closeLeoTextEditors() {
         }
     });
 }
+
+</t>
+<t tx="felix.20210919194259.1">## 0.1.20
+
+- Added .leojs JSON file format support.
+- Fixed various smaller/invisible bugs.
+
+</t>
+<t tx="felix.20210919194446.1">## 1.0.0
+
+- Fixed 'body-undo-modification-bug' when triggering outline icon change before undoing.
+- Version 1.0, First Official Release!
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
@@ -22076,7 +22071,7 @@ body &gt; div &gt; div &gt; label:active {
     &lt;header&gt;
       &lt;a class="header__link"
          title="Learn more about Leo Integration"
-         href="https://github.com/boltex/leointeg#literate-programming"&gt;
+         href="https://github.com/boltex/leointeg#-leo-for-vs-code"&gt;
         &lt;div class="header__logo"&gt;
           &lt;img class="image__logo"
                src="#{root}/resources/leoapp128px.png" /&gt;
@@ -22088,7 +22083,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;/a&gt;
       &lt;p class="header__blurb"&gt;
         Use &lt;b&gt;Leo&lt;/b&gt;, the Literate Editor with Outlines, to program with &lt;b&gt;directed acyclic graphs&lt;/b&gt;,
-        along with section-references, '@others', and clones to generate (and read from) external files.
+        along with section-references, '@others', and clones.
       &lt;/p&gt;
     &lt;/header&gt;
 
@@ -22102,31 +22097,26 @@ body &gt; div &gt; div &gt; label:active {
            title="My github user page"
            href="https://boltex.github.io/"&gt;Félix&lt;/a&gt; that integrates &lt;a class="bold"
            title="Learn more about Leo"
-           href="https://leoeditor.com/"&gt;Leo&lt;/a&gt; into Visual Studio
-        Code.
+           href="https://leoeditor.com/"&gt;Leo&lt;/a&gt; into VS Code.
       &lt;/p&gt;
-      &lt;!-- &lt;div class="cta is-sidebar-hidden center"&gt;
-        &lt;div class="cta--primary"&gt;
-          &lt;a class="button button--flat-primary button--big" title="Support LeoInteg"
-            href="https://github.com/boltex/leointeg"&gt;Support LeoInteg &amp;#x2764;&lt;/a&gt;
-          &lt;p&gt;
-            LeoInteg is built by the support of generous open source users and programmers like &lt;b&gt;you&lt;/b&gt;!
-          &lt;/p&gt;
-        &lt;/div&gt;
-      &lt;/div&gt; --&gt;
     &lt;/div&gt;
 
     &lt;div class="content__area"&gt;
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 0.1.20&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
+          &lt;a class="button button--flat is-sidebar-hidden "
+             title="LeoInteg is built by the support of generous users like you!"
+             href="https://boltex.github.io/"&gt;Sponsor LeoInteg
+            &lt;span class="heart"&gt;&amp;#x2764;&lt;/span&gt;
+          &lt;/a&gt;
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 0.1.20
+            See What's New in LeoInteg 1.0
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
@@ -22135,9 +22125,9 @@ body &gt; div &gt; div &gt; label:active {
         &lt;/p&gt;
         &lt;h2 class="section__title section__title--break"&gt;&lt;/h2&gt;
         &lt;p class="section__hint mt-0 center"&gt;
-          Automate the &lt;a href="#leobridge-options"&gt;Leo server startup&lt;/a&gt;,
-          auto-refresh when &lt;a href="#external-files"&gt;external files change&lt;/a&gt;,
-          or choose which &lt;a href="#node-commands"&gt;node icons&lt;/a&gt;
+          Automate the &lt;a href="#leobridge-options" title="Setup server options"&gt;Leo server startup&lt;/a&gt;,
+          auto-refresh when &lt;a href="#external-files" title="Setup file-change detection"&gt;external files change&lt;/a&gt;,
+          or choose which &lt;a href="#node-commands" title="Fine-tune interface"&gt;node icons&lt;/a&gt;
           are shown and more with the options below.
         &lt;/p&gt;
       &lt;/section&gt;
@@ -22257,13 +22247,9 @@ body &gt; div &gt; div &gt; label:active {
                 &lt;span class="setting__hint"&gt;Server's max simultaneous connections&lt;/span&gt;
               &lt;/div&gt;
               &lt;br&gt;
-              &lt;p&gt;For standalone, persistent, or multi-user server,
-                see all server options by running
-                &lt;span&gt;leoserver.py&amp;nbsp;--help&lt;/span&gt;
-                in your leo-editor/leo/core folder.
-                Or read more about the server in the
-                &lt;a href="https://github.com/boltex/leointeg#server-settings"&gt;readme&lt;/a&gt;,
-                or at &lt;a href="https://leoeditor.com/"&gt;Using leoserver.py&lt;/a&gt; from Leo's documentation.
+              &lt;p&gt;For a standalone, persistent, or multi-user server
+                see &lt;a href="https://leoeditor.com/leoserver.html" title="Leo server documentation"&gt;Using leoserver.py&lt;/a&gt;
+                from Leo's documentation.
               &lt;/p&gt;
             &lt;/fieldset&gt;
 
@@ -22813,47 +22799,48 @@ body &gt; div &gt; div &gt; label:active {
     &lt;/div&gt;
 
     &lt;div class="sidebar"&gt;
-      &lt;!-- &lt;div class="sidebar__group"&gt;
-        &lt;a class="button button--flat-primary" title="Support LeoInteg"
-          href="https://github.com/boltex/leointeg"&gt;Support
+      &lt;div class="sidebar__group"&gt;
+        &lt;a class="button button--flat-primary"
+           title="Support LeoInteg Development"
+           href="https://boltex.github.io/"&gt;Sponsor
           LeoInteg &amp;#x2764;&lt;/a&gt;
         &lt;p&gt;
-          LeoInteg is built by the support of generous open source users and programmers like &lt;b&gt;you&lt;/b&gt;!
+          LeoInteg is built by the support of generous users like &lt;b&gt;you&lt;/b&gt;!
         &lt;/p&gt;
-      &lt;/div&gt; --&gt;
+      &lt;/div&gt;
 
       &lt;div class="sidebar__group"&gt;
         &lt;h2&gt;Configuration&lt;/h2&gt;
         &lt;ul&gt;
           &lt;li&gt;
-            &lt;a href="#leobridge-options"&gt;Leo server Options&lt;/a&gt;
+            &lt;a href="#leobridge-options" title="Server settings"&gt;Leo server Options&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#external-files"&gt;External Files&lt;/a&gt;
+            &lt;a href="#external-files" title="File change detection settings"&gt;External Files&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#interface-behavior"&gt;Interface Behavior&lt;/a&gt;
+            &lt;a href="#interface-behavior" title="Outline behavior settings"&gt;Interface Behavior&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#tree-in-explorer"&gt;Outline in Explorer&lt;/a&gt;
+            &lt;a href="#tree-in-explorer" title="Outline visibility settings"&gt;Outline in Explorer&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#show-open-aside"&gt;Open to the Side&lt;/a&gt;
+            &lt;a href="#show-open-aside" title="Outline context menu settings"&gt;Open to the Side&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#invert-contrast"&gt;Invert Contrast&lt;/a&gt;
+            &lt;a href="#invert-contrast" title="UI contrast settings"&gt;Invert Contrast&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#node-commands"&gt;Node Hover Commands&lt;/a&gt;
+            &lt;a href="#node-commands" title="Outline nodes settings"&gt;Node Hover Commands&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#editor-commands"&gt;Body Editor Icons&lt;/a&gt;
+            &lt;a href="#editor-commands" title="Body editor menu settings"&gt;Body Editor Icons&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#font-sizes"&gt;Font Sizes&lt;/a&gt;
+            &lt;a href="#font-sizes" title="Font size settings"&gt;Font Sizes&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#statusbar-indicator"&gt;Statusbar Indicator&lt;/a&gt;
+            &lt;a href="#statusbar-indicator" title="Statusbar settings"&gt;Statusbar Indicator&lt;/a&gt;
           &lt;/li&gt;
         &lt;/ul&gt;
       &lt;/div&gt;
@@ -22874,17 +22861,17 @@ body &gt; div &gt; div &gt; label:active {
         &lt;h2&gt;About Leo&lt;/h2&gt;
         &lt;ul&gt;
           &lt;li&gt;
-            &lt;a href="https://leoeditor.com/"&gt;Home Page&lt;/a&gt;
+            &lt;a href="https://leoeditor.com/" title="Leo’s Home Page"&gt;Home Page&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="https://leoeditor.com/leo_toc.html"&gt;Documentation&lt;/a&gt;
+            &lt;a href="https://leoeditor.com/leo_toc.html" title="Leo’s Documentation Page"&gt;Documentation&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="https://groups.google.com/forum/#!forum/leo-editor"&gt;Forum&lt;/a&gt;
+            &lt;a href="https://groups.google.com/forum/#!forum/leo-editor" title="Leo Editor Forum"&gt;Forum&lt;/a&gt;
             &lt;small&gt; &amp;nbsp;&amp;nbsp;&amp;mdash;&amp;nbsp; #Google Group&lt;/small&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="https://github.com/leo-editor/leo-editor"&gt;Source&lt;/a&gt;
+            &lt;a href="https://github.com/leo-editor/leo-editor" title="Leo Editor on GitHub"&gt;Source&lt;/a&gt;
             &lt;small&gt; &amp;nbsp;&amp;nbsp;&amp;mdash;&amp;nbsp; #GitHub&lt;/small&gt;
           &lt;/li&gt;
         &lt;/ul&gt;
@@ -23387,8 +23374,18 @@ a {
   }
 }
 
+a,
+a:active,
+a:focus {
+  outline: none;
+}
+
 b {
   font-weight: 600;
+}
+
+span.heart {
+  color: rgb(139, 49, 119);
 }
 
 code,

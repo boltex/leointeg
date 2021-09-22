@@ -7,7 +7,7 @@ _If you find LeoInteg useful, please consider [**sponsoring**](https://boltex.gi
 ### Break your code down into sections structured as an outline, to derive or parse back your files
 
 > Leo is a fundamentally different way of using and organizing data, programs and scripts.\
-> [View Preview Video](https://www.youtube.com/watch?v=SYwlfdEukD4) 🎥
+> [Introduction Video](https://www.youtube.com/watch?v=SYwlfdEukD4) 🎥
 
 See Leo, the Literate Editor with Outline, at [leoeditor.com](https://leoeditor.com/)
 or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.visualstudio.com](https://code.visualstudio.com/).
@@ -16,26 +16,13 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Requirements
 
-- Having Leo Editor installed.
+- Leo Editor 6.4 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
-- Having the Websocket Python Library installed.
+- Websocket Python Library\
   _Install with :_ `pip install websockets`\
   (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
-
-## Beta Version Installation
-
-> While in beta, this extension isn't available in the microsoft store, nor the extension panel yet. But you can drag the extension file onto it.
-
-- Get the leointeg extension file at
-  [boltex.github.io](https://boltex.github.io/),
-  then **drag-and-drop** that '.vsix' file over the
-  extension panel of VSCode's sidebar. (**on windows use the 'install from VSIX' command**)
-
-- In addition to the above requirements,
-  **use Leo's 'devel' branch**
-  (This is temporary until Leo's 6.4 release)
 
 ## Features
 
@@ -149,6 +136,8 @@ Although the Leo integration has one instance of the leoserver script per vscode
 window by default, the server settings also has features that allows you to use the same instance
 of Leo in multiple client (vscode) windows simultaneously, with real-time updates and interaction.
 
+(See [Multiple concurrent connections](https://leoeditor.com/leoserver.html#multiple-concurrent-connections))
+
 ### Auto Start
 
 **When auto-start is set, a vscode window will start a new instance of Leo server for itself on the next available network port.**
@@ -200,7 +189,7 @@ Leo integration into VS Code is done by starting
 a [python server script](https://github.com/leo-editor/leo-editor/blob/devel/leo/core/leoserver.py) and connecting to it via
 a [websocket](https://websockets.readthedocs.io/en/stable/intro.html)
 to exchange JSON data. The server script leverages [leoBridge](https://leoeditor.com/leoBridge.html)
-and re-uses code from the [leoflexx.py plugin](https://github.com/leo-editor/leo-editor/blob/devel/leo/plugins/leoflexx.py#L574).
+and re-uses code from the [leoflexx.py plugin](https://github.com/leo-editor/leo-editor/blob/devel/leo/plugins/leoflexx.py#L893).
 
 The outline pane is made by implementing a
 [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics),
