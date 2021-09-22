@@ -2372,7 +2372,7 @@ print('done')
     "name": "Félix"
   },
   "publisher": "boltex",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
     "url": "https://github.com/boltex/leointeg"
