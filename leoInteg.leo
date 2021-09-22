@@ -29,7 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
-<v t="felix.20210919194446.1"><vh>1.0</vh></v>
+<v t="felix.20210919194446.1"><vh>1.0.0</vh></v>
 <v t="felix.20210919194259.1"><vh>0.1.20</vh></v>
 <v t="felix.20210901215735.1"><vh>0.1.19</vh></v>
 <v t="felix.20210916004954.1"><vh>0.1.18</vh></v>
@@ -9853,7 +9853,7 @@ and using the node's gnx as identifier.
 - Changed the starting default configuration setting for starting and connecting to the leoBridge server script to false.
 - Made starting and connecting to the leoBridge server script easier to access in the interface, and in the welcome/settings webview.
 - Added new CONTRIBUTING markdown file for running the development version of the leoInteg extension.
-- Closes [#44](https://github.com/boltex/leointeg/issues/44)
+- Closes [#44](https://github.com/boltex/leointeg/issues/44).
 
 </t>
 <t tx="felix.20200718222425.1">## 0.1.9
@@ -9864,7 +9864,7 @@ and using the node's gnx as identifier.
 - Added config options to bypass derived files change detection dialogs with defaults, allowing automatic synchronization of derived files in both directions.
 - Added support for redo, refresh from disk and many any other core Leo commands and operations.
 - Added support for rapid outline edition command entry, including 'insert node' command **`Ctrl+I`** and for replacing focus on relevant elements to mimic actual Leo interface workflow.
-- Added [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree to help with connecting and opening
+- Added [welcome content](https://code.visualstudio.com/api/extension-guides/tree-view#welcome-content) in outlines panes that have not yet opened a tree to help with connecting and opening.
 - Replaced body-editor content transfer logic and removed the related option in the expansion's settings. The body is sent to Leo when appropriate without need of a timed delay.
 - _REMOVED FEATURE_ Rolled back 'multi-body' feature for simultaneous body panes from different gnx. Body panes from the same gnx are still available.
 
@@ -20606,7 +20606,7 @@ public cleanupBody(): Thenable&lt;any&gt; {
 
 - Modified server location logic
 - Fixed find-prev, next, find all / clone-find commands
-- fixed extract name command
+- Fixed extract name command.
 - Fixed body being re-written to same string and being marked dirty when 'safety-saving' before switching docs.
 - Detection of .Leo documents themselves now works by closing and re-opening the .leo file if reloading is chosen by the user. (or automatic via options)
 - Added icons and commands for top of body pane menu.
@@ -21183,7 +21183,7 @@ public getLeoJsFileUrl(): Promise&lt;string&gt; {
 - The somewhat unnecessary experimental option 'Shell' has been removed.
 - Automatic detection of VSCode's workbench.editor.enablePreview if its missing/disabled.
 - Automatic detection of VSCode's workbench.editor.closeEmptyGroups if its missing/enabled.
-- Easier access to the leo settings through the extension config title strings and the extension view menu
+- Easier access to the leo settings through the extension config title strings and the extension view menu.
 
 </t>
 <t tx="felix.20210917225004.1">/**
@@ -21202,12 +21202,13 @@ function closeLeoTextEditors() {
 </t>
 <t tx="felix.20210919194259.1">## 0.1.20
 
-- Added .leojs JSON file format support
-- Fixed various smaller/invisible bugs
+- Added .leojs JSON file format support.
+- Fixed various smaller/invisible bugs.
 
 </t>
-<t tx="felix.20210919194446.1">## 1.0
+<t tx="felix.20210919194446.1">## 1.0.0
 
+- Fixed 'body-undo-modification-bug' when triggering outline icon change before undoing.
 - Version 1.0, First Official Release!
 
 </t>
