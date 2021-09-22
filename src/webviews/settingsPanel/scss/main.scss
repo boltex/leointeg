@@ -39,8 +39,18 @@ a {
   }
 }
 
+a,
+a:active,
+a:focus {
+  outline: none;
+}
+
 b {
   font-weight: 600;
+}
+
+span.heart {
+  color: rgb(139, 49, 119);
 }
 
 code,

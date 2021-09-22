@@ -5,4 +5,5 @@ package-json.lock
 tsconfig.json
 webpack.config.js
 leoInteg.leo
+leoserver.py
 .gitignore

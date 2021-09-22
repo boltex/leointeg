@@ -105,6 +105,7 @@ export class Config implements ConfigMembers {
 
     /**
      * * Get config from vscode for the UI font sizes
+     * @returns the font settings object (zoom level and editor font size)
      */
     public getFontConfig(): FontSettings {
         let w_zoomLevel = vscode.workspace.getConfiguration(
@@ -208,6 +209,7 @@ export class Config implements ConfigMembers {
 
     /**
      * * Check if the workbench.editor.enablePreview flag is set
+     * @param p_forced Forces the setting instead of just suggesting with a message
      */
     public checkEnablePreview(p_forced?: boolean): void {
         let w_result: any = true;
@@ -234,6 +236,7 @@ export class Config implements ConfigMembers {
 
     /**
      * * Check if the 'workbench.editor.closeEmptyGroups' setting is false
+     * @param p_forced Forces the setting instead of just suggesting with a message
      */
     public checkCloseEmptyGroups(p_forced?: boolean): void {
         let w_result: any = false;
@@ -260,6 +263,7 @@ export class Config implements ConfigMembers {
 
     /**
      * * Check if the workbench.editor.closeOnFileDelete flag is set
+     * @param p_forced Forces the setting instead of just suggesting with a message
      */
     public checkCloseOnFileDelete(p_forced?: boolean): void {
         let w_result: any = true;
