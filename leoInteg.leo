@@ -29,7 +29,8 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
-<v t="felix.20210919194446.1"><vh>1.0.0</vh></v>
+<v t="felix.20210919194446.1"><vh>1.0.1</vh></v>
+<v t="felix.20210923233342.1"><vh>1.0.0</vh></v>
 <v t="felix.20210919194259.1"><vh>0.1.20</vh></v>
 <v t="felix.20210901215735.1"><vh>0.1.19</vh></v>
 <v t="felix.20210916004954.1"><vh>0.1.18</vh></v>
@@ -2367,7 +2368,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Félix"
   },
@@ -7265,11 +7266,11 @@ public buildFromSavedSettings(): void {
 
         if (!this._leoIntegration.finishedStartup &amp;&amp; this.leoEditorPath) {
             // Only relevant 'viewWelcome' content at startup.
-            utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
-            utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
+            utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically);  // ok
+            utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
         } else {
-            utils.setContext(FLAGS.AUTO_START_SERVER, false); // server started
-            utils.setContext(FLAGS.AUTO_CONNECT, false); // server started
+            utils.setContext(FLAGS.AUTO_START_SERVER, false); // Cannot start automatically
+            utils.setContext(FLAGS.AUTO_CONNECT, false);
         }
     }
 }
@@ -20914,6 +20915,9 @@ public checkEnablePreview(p_forced?: boolean): void {
             this.setEnablePreview();
             vscode.window.showInformationMessage("'Enable Preview' setting was set");
         } else {
+            if (!this._leoIntegration.finishedStartup) {
+                return;
+            }
             vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
                 .then(p_chosenButton =&gt; {
                     if (p_chosenButton === "Fix it") {
@@ -20956,6 +20960,9 @@ public checkCloseEmptyGroups(p_forced?: boolean): void {
             this.clearCloseEmptyGroups();
             vscode.window.showInformationMessage("'Close Empty Groups' setting was cleared");
         } else {
+            if (!this._leoIntegration.finishedStartup) {
+                return;
+            }
             vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
                 .then(p_chosenButton =&gt; {
                     if (p_chosenButton === "Fix it") {
@@ -21054,6 +21061,9 @@ public checkCloseOnFileDelete(p_forced?: boolean): void {
             vscode.window.showInformationMessage("'Close on File Delete' setting was set");
 
         } else {
+            if (!this._leoIntegration.finishedStartup) {
+                return;
+            }
             vscode.window.showWarningMessage("'Close on File Delete' setting is recommended (currently disabled)", "Fix it")
                 .then(p_chosenButton =&gt; {
                     if (p_chosenButton === "Fix it") {
@@ -21206,7 +21216,12 @@ function closeLeoTextEditors() {
 - Fixed various smaller/invisible bugs.
 
 </t>
-<t tx="felix.20210919194446.1">## 1.0.0
+<t tx="felix.20210919194446.1">## 1.0.1
+
+- Fixed double check for vscode settings recommendations at startup.
+
+</t>
+<t tx="felix.20210923233342.1">## 1.0.0
 
 - Fixed 'body-undo-modification-bug' when triggering outline icon change before undoing.
 - Version 1.0, First Official Release!
@@ -22105,7 +22120,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.1&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden "
@@ -22116,7 +22131,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 1.0
+            See What's New in LeoInteg 1.0.1
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
@@ -22125,9 +22140,12 @@ body &gt; div &gt; div &gt; label:active {
         &lt;/p&gt;
         &lt;h2 class="section__title section__title--break"&gt;&lt;/h2&gt;
         &lt;p class="section__hint mt-0 center"&gt;
-          Automate the &lt;a href="#leobridge-options" title="Setup server options"&gt;Leo server startup&lt;/a&gt;,
-          auto-refresh when &lt;a href="#external-files" title="Setup file-change detection"&gt;external files change&lt;/a&gt;,
-          or choose which &lt;a href="#node-commands" title="Fine-tune interface"&gt;node icons&lt;/a&gt;
+          Automate the &lt;a href="#leobridge-options"
+             title="Setup server options"&gt;Leo server startup&lt;/a&gt;,
+          auto-refresh when &lt;a href="#external-files"
+             title="Setup file-change detection"&gt;external files change&lt;/a&gt;,
+          or choose which &lt;a href="#node-commands"
+             title="Fine-tune interface"&gt;node icons&lt;/a&gt;
           are shown and more with the options below.
         &lt;/p&gt;
       &lt;/section&gt;
@@ -22248,7 +22266,8 @@ body &gt; div &gt; div &gt; label:active {
               &lt;/div&gt;
               &lt;br&gt;
               &lt;p&gt;For a standalone, persistent, or multi-user server
-                see &lt;a href="https://leoeditor.com/leoserver.html" title="Leo server documentation"&gt;Using leoserver.py&lt;/a&gt;
+                see &lt;a href="https://leoeditor.com/leoserver.html"
+                   title="Leo server documentation"&gt;Using leoserver.py&lt;/a&gt;
                 from Leo's documentation.
               &lt;/p&gt;
             &lt;/fieldset&gt;
@@ -22813,34 +22832,44 @@ body &gt; div &gt; div &gt; label:active {
         &lt;h2&gt;Configuration&lt;/h2&gt;
         &lt;ul&gt;
           &lt;li&gt;
-            &lt;a href="#leobridge-options" title="Server settings"&gt;Leo server Options&lt;/a&gt;
+            &lt;a href="#leobridge-options"
+               title="Server settings"&gt;Leo server Options&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#external-files" title="File change detection settings"&gt;External Files&lt;/a&gt;
+            &lt;a href="#external-files"
+               title="File change detection settings"&gt;External Files&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#interface-behavior" title="Outline behavior settings"&gt;Interface Behavior&lt;/a&gt;
+            &lt;a href="#interface-behavior"
+               title="Outline behavior settings"&gt;Interface Behavior&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#tree-in-explorer" title="Outline visibility settings"&gt;Outline in Explorer&lt;/a&gt;
+            &lt;a href="#tree-in-explorer"
+               title="Outline visibility settings"&gt;Outline in Explorer&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#show-open-aside" title="Outline context menu settings"&gt;Open to the Side&lt;/a&gt;
+            &lt;a href="#show-open-aside"
+               title="Outline context menu settings"&gt;Open to the Side&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#invert-contrast" title="UI contrast settings"&gt;Invert Contrast&lt;/a&gt;
+            &lt;a href="#invert-contrast"
+               title="UI contrast settings"&gt;Invert Contrast&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#node-commands" title="Outline nodes settings"&gt;Node Hover Commands&lt;/a&gt;
+            &lt;a href="#node-commands"
+               title="Outline nodes settings"&gt;Node Hover Commands&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#editor-commands" title="Body editor menu settings"&gt;Body Editor Icons&lt;/a&gt;
+            &lt;a href="#editor-commands"
+               title="Body editor menu settings"&gt;Body Editor Icons&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#font-sizes" title="Font size settings"&gt;Font Sizes&lt;/a&gt;
+            &lt;a href="#font-sizes"
+               title="Font size settings"&gt;Font Sizes&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="#statusbar-indicator" title="Statusbar settings"&gt;Statusbar Indicator&lt;/a&gt;
+            &lt;a href="#statusbar-indicator"
+               title="Statusbar settings"&gt;Statusbar Indicator&lt;/a&gt;
           &lt;/li&gt;
         &lt;/ul&gt;
       &lt;/div&gt;
@@ -22861,17 +22890,21 @@ body &gt; div &gt; div &gt; label:active {
         &lt;h2&gt;About Leo&lt;/h2&gt;
         &lt;ul&gt;
           &lt;li&gt;
-            &lt;a href="https://leoeditor.com/" title="Leo’s Home Page"&gt;Home Page&lt;/a&gt;
+            &lt;a href="https://leoeditor.com/"
+               title="Leo’s Home Page"&gt;Home Page&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="https://leoeditor.com/leo_toc.html" title="Leo’s Documentation Page"&gt;Documentation&lt;/a&gt;
+            &lt;a href="https://leoeditor.com/leo_toc.html"
+               title="Leo’s Documentation Page"&gt;Documentation&lt;/a&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="https://groups.google.com/forum/#!forum/leo-editor" title="Leo Editor Forum"&gt;Forum&lt;/a&gt;
+            &lt;a href="https://groups.google.com/forum/#!forum/leo-editor"
+               title="Leo Editor Forum"&gt;Forum&lt;/a&gt;
             &lt;small&gt; &amp;nbsp;&amp;nbsp;&amp;mdash;&amp;nbsp; #Google Group&lt;/small&gt;
           &lt;/li&gt;
           &lt;li&gt;
-            &lt;a href="https://github.com/leo-editor/leo-editor" title="Leo Editor on GitHub"&gt;Source&lt;/a&gt;
+            &lt;a href="https://github.com/leo-editor/leo-editor"
+               title="Leo Editor on GitHub"&gt;Source&lt;/a&gt;
             &lt;small&gt; &amp;nbsp;&amp;nbsp;&amp;mdash;&amp;nbsp; #GitHub&lt;/small&gt;
           &lt;/li&gt;
         &lt;/ul&gt;

@@ -224,6 +224,9 @@ export class Config implements ConfigMembers {
                 this.setEnablePreview();
                 vscode.window.showInformationMessage("'Enable Preview' setting was set");
             } else {
+                if (!this._leoIntegration.finishedStartup) {
+                    return;
+                }
                 vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
                     .then(p_chosenButton => {
                         if (p_chosenButton === "Fix it") {
@@ -251,6 +254,9 @@ export class Config implements ConfigMembers {
                 this.clearCloseEmptyGroups();
                 vscode.window.showInformationMessage("'Close Empty Groups' setting was cleared");
             } else {
+                if (!this._leoIntegration.finishedStartup) {
+                    return;
+                }
                 vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
                     .then(p_chosenButton => {
                         if (p_chosenButton === "Fix it") {
@@ -279,6 +285,9 @@ export class Config implements ConfigMembers {
                 vscode.window.showInformationMessage("'Close on File Delete' setting was set");
 
             } else {
+                if (!this._leoIntegration.finishedStartup) {
+                    return;
+                }
                 vscode.window.showWarningMessage("'Close on File Delete' setting is recommended (currently disabled)", "Fix it")
                     .then(p_chosenButton => {
                         if (p_chosenButton === "Fix it") {
@@ -375,11 +384,11 @@ export class Config implements ConfigMembers {
 
             if (!this._leoIntegration.finishedStartup && this.leoEditorPath) {
                 // Only relevant 'viewWelcome' content at startup.
-                utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically); // server started
-                utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically); // server started
+                utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically);  // ok
+                utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
             } else {
-                utils.setContext(FLAGS.AUTO_START_SERVER, false); // server started
-                utils.setContext(FLAGS.AUTO_CONNECT, false); // server started
+                utils.setContext(FLAGS.AUTO_START_SERVER, false); // Cannot start automatically
+                utils.setContext(FLAGS.AUTO_CONNECT, false);
             }
         }
     }
