@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.1
+
+- Fixed double check for vscode settings recommendations at startup.
+
 ## 1.0.0
 
 - Fixed 'body-undo-modification-bug' when triggering outline icon change before undoing.

@@ -29,7 +29,8 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
-<v t="felix.20210919194446.1"><vh>1.0.0</vh></v>
+<v t="felix.20210919194446.1"><vh>1.0.1</vh></v>
+<v t="felix.20210923233342.1"><vh>1.0.0</vh></v>
 <v t="felix.20210919194259.1"><vh>0.1.20</vh></v>
 <v t="felix.20210901215735.1"><vh>0.1.19</vh></v>
 <v t="felix.20210916004954.1"><vh>0.1.18</vh></v>
@@ -21215,7 +21216,12 @@ function closeLeoTextEditors() {
 - Fixed various smaller/invisible bugs.
 
 </t>
-<t tx="felix.20210919194446.1">## 1.0.0
+<t tx="felix.20210919194446.1">## 1.0.1
+
+- Fixed double check for vscode settings recommendations at startup.
+
+</t>
+<t tx="felix.20210923233342.1">## 1.0.0
 
 - Fixed 'body-undo-modification-bug' when triggering outline icon change before undoing.
 - Version 1.0, First Official Release!
