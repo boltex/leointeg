@@ -4177,6 +4177,18 @@ print('done')
   "when": "false"
 },
 {
+  "command": "leointeg.insertChildNode",
+  "when": "false"
+},
+{
+  "command": "leointeg.insertChildNodeSelectionFromOutline",
+  "when": "false"
+},
+{
+  "command": "leointeg.insertChildNodeSelectionInterrupt",
+  "when": "false"
+},
+{
   "command": "leointeg.cloneNode",
   "when": "false"
 },
