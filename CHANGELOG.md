@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.2
+
+- Cleaned up command palette's insert 'child' choices.
+
 ## 1.0.1
 
 - Fixed double check for vscode settings recommendations at startup.
