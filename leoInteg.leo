@@ -21250,6 +21250,7 @@ function closeLeoTextEditors() {
 <t tx="felix.20210928231455.1">## 1.0.2
 
 - Cleaned up command palette's insert 'child' choices.
+- Fixed 'insert node' command to insert as child if the targeted (or current) node is expanded.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

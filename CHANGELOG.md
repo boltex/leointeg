@@ -3,6 +3,7 @@
 ## 1.0.2
 
 - Cleaned up command palette's insert 'child' choices.
+- Fixed 'insert node' command to insert as child if the targeted (or current) node is expanded.
 
 ## 1.0.1
 
