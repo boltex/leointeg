@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20210928231455.1"><vh>1.0.2</vh></v>
 <v t="felix.20210919194446.1"><vh>1.0.1</vh></v>
 <v t="felix.20210923233342.1"><vh>1.0.0</vh></v>
 <v t="felix.20210919194259.1"><vh>0.1.20</vh></v>
@@ -2368,7 +2369,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": {
     "name": "Félix"
   },
@@ -4174,6 +4175,18 @@ print('done')
 },
 {
   "command": "leointeg.insertNodeSelectionInterrupt",
+  "when": "false"
+},
+{
+  "command": "leointeg.insertChildNode",
+  "when": "false"
+},
+{
+  "command": "leointeg.insertChildNodeSelectionFromOutline",
+  "when": "false"
+},
+{
+  "command": "leointeg.insertChildNodeSelectionInterrupt",
   "when": "false"
 },
 {
@@ -11495,7 +11508,14 @@ public insertNode(
         this._headlineInputOptions.value = Constants.USER_MESSAGES.DEFAULT_HEADLINE;
         return new Promise&lt;LeoBridgePackage&gt;((p_resolve, p_reject) =&gt; {
             vscode.window.showInputBox(this._headlineInputOptions).then((p_newHeadline) =&gt; {
-                const w_action = p_newHeadline
+                // * if node has child and is expanded: turn p_asChild to true!
+                if (p_node &amp;&amp; p_node.collapsibleState === vscode.TreeItemCollapsibleState.Expanded) {
+                    p_asChild = true;
+                }
+                if (!p_node &amp;&amp; this.lastSelectedNode &amp;&amp; this.lastSelectedNode.collapsibleState === vscode.TreeItemCollapsibleState.Expanded) {
+                    p_asChild = true;
+                }
+                let w_action = p_newHeadline
                     ? (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_NAMED_PNODE)
                     : (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_PNODE : Constants.LEOBRIDGE.INSERT_PNODE);
                 const q_commandResult = this.nodeCommand({
@@ -21227,6 +21247,12 @@ function closeLeoTextEditors() {
 - Version 1.0, First Official Release!
 
 </t>
+<t tx="felix.20210928231455.1">## 1.0.2
+
+- Cleaned up command palette's insert 'child' choices.
+- Fixed 'insert node' command to insert as child if the targeted (or current) node is expanded.
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -22120,7 +22146,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.1&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.2&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden "
@@ -22131,7 +22157,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 1.0.1
+            See What's New in LeoInteg 1.0.2
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
