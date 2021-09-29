@@ -11508,7 +11508,14 @@ public insertNode(
         this._headlineInputOptions.value = Constants.USER_MESSAGES.DEFAULT_HEADLINE;
         return new Promise&lt;LeoBridgePackage&gt;((p_resolve, p_reject) =&gt; {
             vscode.window.showInputBox(this._headlineInputOptions).then((p_newHeadline) =&gt; {
-                const w_action = p_newHeadline
+                // * if node has child and is expanded: turn p_asChild to true!
+                if (p_node &amp;&amp; p_node.collapsibleState === vscode.TreeItemCollapsibleState.Expanded) {
+                    p_asChild = true;
+                }
+                if (!p_node &amp;&amp; this.lastSelectedNode &amp;&amp; this.lastSelectedNode.collapsibleState === vscode.TreeItemCollapsibleState.Expanded) {
+                    p_asChild = true;
+                }
+                let w_action = p_newHeadline
                     ? (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_NAMED_PNODE : Constants.LEOBRIDGE.INSERT_NAMED_PNODE)
                     : (p_asChild ? Constants.LEOBRIDGE.INSERT_CHILD_PNODE : Constants.LEOBRIDGE.INSERT_PNODE);
                 const q_commandResult = this.nodeCommand({
