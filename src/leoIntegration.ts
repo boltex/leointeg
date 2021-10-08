@@ -1619,15 +1619,14 @@ export class LeoIntegration {
             this.lastSelectedNode = p_leoNode; // special case only: lastSelectedNode should be set in selectTreeNode
         }
         setTimeout(() => {
-            // TODO : MAKE SURE TIMEOUT IS REALLY REQUIRED
-            this._revealTreeViewNode(p_leoNode, { select: w_selectFlag, focus: w_focusFlag }).then(
-                () => {
+            this._revealTreeViewNode(p_leoNode, { select: w_selectFlag, focus: w_focusFlag })
+                .then(() => {
                     // console.log('did this ask for parent?', p_leoNode.id, p_leoNode.label); // ! debug
                     if (w_selectFlag) {
                         this._gotSelection(p_leoNode);
                     }
                 }
-            );
+                );
         });
     }
 

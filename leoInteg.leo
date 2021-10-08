@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20211007215423.1"><vh>1.0.3</vh></v>
 <v t="felix.20210928231455.1"><vh>1.0.2</vh></v>
 <v t="felix.20210919194446.1"><vh>1.0.1</vh></v>
 <v t="felix.20210923233342.1"><vh>1.0.0</vh></v>
@@ -2369,7 +2370,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": {
     "name": "Félix"
   },
@@ -11051,15 +11052,14 @@ private _apToLeoNodeConvertReveal(p_leoNode: LeoNode): void {
         this.lastSelectedNode = p_leoNode; // special case only: lastSelectedNode should be set in selectTreeNode
     }
     setTimeout(() =&gt; {
-        // TODO : MAKE SURE TIMEOUT IS REALLY REQUIRED
-        this._revealTreeViewNode(p_leoNode, { select: w_selectFlag, focus: w_focusFlag }).then(
-            () =&gt; {
+        this._revealTreeViewNode(p_leoNode, { select: w_selectFlag, focus: w_focusFlag })
+            .then(() =&gt; {
                 // console.log('did this ask for parent?', p_leoNode.id, p_leoNode.label); // ! debug
                 if (w_selectFlag) {
                     this._gotSelection(p_leoNode);
                 }
             }
-        );
+            );
     });
 }
 
@@ -21253,6 +21253,11 @@ function closeLeoTextEditors() {
 - Fixed 'insert node' command to insert as child if the targeted (or current) node is expanded.
 
 </t>
+<t tx="felix.20211007215423.1">## 1.0.3
+
+- ...
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -22146,7 +22151,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.2&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.3&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden "
@@ -22157,7 +22162,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 1.0.2
+            See What's New in LeoInteg 1.0.3
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
