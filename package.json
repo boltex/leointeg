@@ -32,7 +32,7 @@
   "main": "./dist/extension",
   "icon": "resources/leoapp128px.png",
   "galleryBanner": {
-    "color": "#fffbdc",
+    "color": "#fff3dc",
     "theme": "light"
   },
   "contributes": {
@@ -2598,249 +2598,249 @@
       "view/title": [
         {
           "command": "leointeg.openLeoFile",
-          "when": "view =~ /leoDocuments/ && leoBridgeReady",
+          "when": "view =~ /^leoDocuments/ && leoBridgeReady",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.newLeoFile",
-          "when": "view =~ /leoDocuments/ && leoBridgeReady",
+          "when": "view =~ /^leoDocuments/ && leoBridgeReady",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.showSettingsPage",
-          "when": "view =~ /leoFindPanel|leoDocuments|leoButtons/ && leoBridgeReady",
+          "when": "view =~ /^leoFindPanel|^leoDocuments|^leoButtons/ && leoBridgeReady",
           "group": "navigation@2"
         },
         {
           "command": "leointeg.showLogPane",
-          "when": "view =~ /leoFindPanel|leoDocuments|leoButtons/ && leoBridgeReady",
+          "when": "view =~ /^leoFindPanel|^leoDocuments|^leoButtons/ && leoBridgeReady",
           "group": "navigation@2"
         },
         {
           "command": "leointeg.showSettingsPage",
-          "when": "view =~ /leoIntegration/ && !leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && !leoTreeOpened",
           "group": "navigation@2"
         },
         {
           "command": "leointeg.clearRecentFiles",
-          "when": "view =~ /leoIntegration/ && !leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && !leoTreeOpened",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.connectToServer",
-          "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && !leoBridgeReady && !leoTreeOpened",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.startServer",
-          "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened && !leoServerStarted",
+          "when": "view =~ /^leoIntegration/ && !leoBridgeReady && !leoTreeOpened && !leoServerStarted",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.stopServer",
-          "when": "view =~ /leoIntegration/ && !leoBridgeReady && !leoTreeOpened && leoServerStarted",
+          "when": "view =~ /^leoIntegration/ && !leoBridgeReady && !leoTreeOpened && leoServerStarted",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.openLeoFile",
-          "when": "view =~ /leoIntegration/ && leoBridgeReady",
+          "when": "view =~ /^leoIntegration/ && leoBridgeReady",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.newLeoFile",
-          "when": "view =~ /leoIntegration/ && leoBridgeReady",
+          "when": "view =~ /^leoIntegration/ && leoBridgeReady",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.saveLeoFileFromOutline",
-          "when": "view =~ /leoIntegration/ && leoTreeOpened && leoTreeTitled",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoTreeTitled",
           "group": "navigation@2"
         },
         {
           "command": "leointeg.saveAsLeoFile",
-          "when": "view =~ /leoIntegration/ && leoTreeOpened && !leoTreeTitled",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoTreeTitled",
           "group": "navigation@2"
         },
         {
           "command": "leointeg.saveAsLeoJsFile",
-          "when": "view =~ /leoIntegration/ && leoTreeOpened && !leoTreeTitled",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoTreeTitled",
           "group": "navigation@2"
         },
         {
           "command": "leointeg.undoFromOutline",
-          "when": "view =~ /leoIntegration/ && leoTreeOpened && leoCanUndo",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoCanUndo",
           "group": "navigation@3"
         },
         {
           "command": "leointeg.undoDisabled",
-          "when": "view =~ /leoIntegration/ && leoTreeOpened && !leoCanUndo",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoCanUndo",
           "group": "navigation@3"
         },
         {
           "command": "leointeg.redoFromOutline",
-          "when": "view =~ /leoIntegration/ && leoTreeOpened && leoCanRedo",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoCanRedo",
           "group": "navigation@4"
         },
         {
           "command": "leointeg.redoDisabled",
-          "when": "view =~ /leoIntegration/ && leoTreeOpened && !leoCanRedo",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoCanRedo",
           "group": "navigation@4"
         },
         {
           "command": "leointeg.deHoistFromOutline",
-          "when": "view =~ /leoIntegration/ && leoTreeOpened && leoCanDehoist",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoCanDehoist",
           "group": "navigation@5"
         },
         {
           "command": "leointeg.contractAllFromOutline",
-          "when": "view =~ /leoIntegration/ && leoTreeOpened",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
           "group": "navigation@6"
         }
       ],
       "view/item/context": [
         {
           "command": "leointeg.saveLeoFileFromOutline",
-          "when": "viewItem =~ /leoDocumentSelectedTitled/",
+          "when": "viewItem =~ /^leoDocumentSelectedTitled/",
           "group": "inline@1"
         },
         {
           "command": "leointeg.saveAsLeoFile",
-          "when": "viewItem =~ /leoDocumentSelectedUntitled/",
+          "when": "viewItem =~ /^leoDocumentSelectedUntitled/",
           "group": "inline@1"
         },
         {
           "command": "leointeg.saveAsLeoJsFile",
-          "when": "viewItem =~ /leoDocumentSelectedUntitled/",
+          "when": "viewItem =~ /^leoDocumentSelectedUntitled/",
           "group": "inline@1"
         },
         {
           "command": "leointeg.closeLeoFile",
-          "when": "viewItem =~ /leoDocumentSelected/",
+          "when": "viewItem =~ /^leoDocumentSelected/",
           "group": "inline@2"
         },
         {
           "command": "leointeg.editHeadline",
-          "when": "showEditOnNodes && viewItem =~ /leoNode/",
+          "when": "showEditOnNodes && viewItem =~ /^leoNode/",
           "group": "inline@1"
         },
         {
           "command": "leointeg.insertNode",
-          "when": "showAddOnNodes && viewItem =~ /leoNode/",
+          "when": "showAddOnNodes && viewItem =~ /^leoNode/",
           "group": "inline@2"
         },
         {
           "command": "leointeg.moveOutlineDown",
-          "when": "showArrowsOnNodes && viewItem =~ /leoNode/",
+          "when": "showArrowsOnNodes && viewItem =~ /^leoNode/",
           "group": "inline@3"
         },
         {
           "command": "leointeg.moveOutlineLeft",
-          "when": "showArrowsOnNodes && viewItem =~ /leoNode/",
+          "when": "showArrowsOnNodes && viewItem =~ /^leoNode/",
           "group": "inline@3"
         },
         {
           "command": "leointeg.moveOutlineRight",
-          "when": "showArrowsOnNodes && viewItem =~ /leoNode/",
+          "when": "showArrowsOnNodes && viewItem =~ /^leoNode/",
           "group": "inline@3"
         },
         {
           "command": "leointeg.moveOutlineUp",
-          "when": "showArrowsOnNodes && viewItem =~ /leoNode/",
+          "when": "showArrowsOnNodes && viewItem =~ /^leoNode/",
           "group": "inline@3"
         },
         {
           "command": "leointeg.copyNode",
-          "when": "showCopyOnNodes && viewItem =~ /leoNode/",
+          "when": "showCopyOnNodes && viewItem =~ /^leoNode/",
           "group": "inline@4"
         },
         {
           "command": "leointeg.cloneNode",
-          "when": "showCloneOnNodes && viewItem =~ /leoNode/",
+          "when": "showCloneOnNodes && viewItem =~ /^leoNode/",
           "group": "inline@4"
         },
         {
           "command": "leointeg.mark",
-          "when": "showMarkOnNodes && viewItem =~ /leoNodeUnmarked/",
+          "when": "showMarkOnNodes && viewItem =~ /^leoNodeUnmarked/",
           "group": "inline@5"
         },
         {
           "command": "leointeg.unmark",
-          "when": "showMarkOnNodes && viewItem =~ /leoNodeMarked/",
+          "when": "showMarkOnNodes && viewItem =~ /^leoNodeMarked/",
           "group": "inline@5"
         },
         {
           "command": "leointeg.openAside",
-          "when": "showOpenAside && viewItem =~ /leoNode/",
+          "when": "showOpenAside && viewItem =~ /^leoNode/",
           "group": "leoNodeContext1@1"
         },
         {
           "command": "leointeg.hoistNode",
-          "when": "viewItem =~ /leoNodeNotRoot/",
+          "when": "viewItem =~ /^leoNodeNotRoot/",
           "group": "leoNodeContext1@2"
         },
         {
           "command": "leointeg.deHoist",
-          "when": "leoCanDehoist && viewItem =~ /leoNodeRoot/",
+          "when": "leoCanDehoist && viewItem =~ /^leoNodeRoot/",
           "group": "leoNodeContext1@2"
         },
         {
           "command": "leointeg.refreshFromDisk",
-          "when": "viewItem =~ /leoNodeAtFile/",
+          "when": "viewItem =~ /^leoNodeAtFile/",
           "group": "leoNodeContext1@3"
         },
         {
           "command": "leointeg.mark",
-          "when": "viewItem =~ /leoNodeUnmarked/",
+          "when": "viewItem =~ /^leoNodeUnmarked/",
           "group": "leoNodeContext2@1"
         },
         {
           "command": "leointeg.unmark",
-          "when": "viewItem =~ /leoNodeMarked/",
+          "when": "viewItem =~ /^leoNodeMarked/",
           "group": "leoNodeContext2@2"
         },
         {
           "command": "leointeg.copyNode",
-          "when": "viewItem =~ /leoNode/",
+          "when": "viewItem =~ /^leoNode/",
           "group": "leoNodeContext2@3"
         },
         {
           "command": "leointeg.cutNode",
-          "when": "viewItem =~ /leoNode/",
+          "when": "viewItem =~ /^leoNode/",
           "group": "leoNodeContext2@4"
         },
         {
           "command": "leointeg.pasteNode",
-          "when": "viewItem =~ /leoNode/",
+          "when": "viewItem =~ /^leoNode/",
           "group": "leoNodeContext2@5"
         },
         {
           "command": "leointeg.pasteNodeAsClone",
-          "when": "viewItem =~ /leoNode/",
+          "when": "viewItem =~ /^leoNode/",
           "group": "leoNodeContext2@6"
         },
         {
           "command": "leointeg.delete",
-          "when": "viewItem =~ /leoNode/",
+          "when": "viewItem =~ /^leoNode/",
           "group": "leoNodeContext2@7"
         },
         {
           "command": "leointeg.insertNode",
-          "when": "leoTreeOpened && viewItem =~ /leoNode/",
+          "when": "leoTreeOpened && viewItem =~ /^leoNode/",
           "group": "leoNodeContext3@1"
         },
         {
           "command": "leointeg.cloneNode",
-          "when": "leoTreeOpened && viewItem =~ /leoNode/",
+          "when": "leoTreeOpened && viewItem =~ /^leoNode/",
           "group": "leoNodeContext3@2"
         },
         {
           "command": "leointeg.gotoNextClone",
-          "when": "leoTreeOpened && viewItem =~ /leoNodeCloned/",
+          "when": "leoTreeOpened && viewItem =~ /^leoNodeCloned/",
           "group": "leoNodeContext3@3"
         },
         {
           "command": "leointeg.removeButton",
-          "when": "leoTreeOpened && viewItem =~ /leoButtonNode/",
+          "when": "leoTreeOpened && viewItem =~ /^leoButtonNode/",
           "group": "leoButtonContext1@1"
         }
       ],
@@ -2863,7 +2863,7 @@
         "command": "leointeg.executeScript",
         "key": "ctrl+b",
         "mac": "cmd+b",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.minibuffer",
@@ -2885,18 +2885,18 @@
         "command": "leointeg.showBody",
         "key": "ctrl+t",
         "mac": "cmd+t",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.showBody",
         "key": "alt+d",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.showBody",
         "key": "ctrl+g",
         "mac": "cmd+g",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.showBody",
@@ -2906,13 +2906,13 @@
       {
         "command": "leointeg.showBody",
         "key": "enter",
-        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.saveLeoFileFromOutline",
         "key": "ctrl+s",
         "mac": "cmd+s",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.saveLeoFile",
@@ -2928,7 +2928,7 @@
       {
         "command": "leointeg.contractAllFromOutline",
         "key": "alt+-",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.editSelectedHeadline",
@@ -2940,7 +2940,7 @@
         "command": "leointeg.editSelectedHeadlineFromOutline",
         "key": "ctrl+h",
         "mac": "cmd+h",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.markSelection",
@@ -2952,7 +2952,7 @@
         "command": "leointeg.markSelectionFromOutline",
         "key": "ctrl+m",
         "mac": "cmd+m",
-        "when": "leoTreeOpened && !leoMarked && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && !leoMarked && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.unmarkSelection",
@@ -2964,7 +2964,7 @@
         "command": "leointeg.unmarkSelectionFromOutline",
         "key": "ctrl+m",
         "mac": "cmd+m",
-        "when": "leoTreeOpened && leoMarked && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && leoMarked && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.extract",
@@ -2976,7 +2976,7 @@
         "command": "leointeg.extract",
         "key": "ctrl+shift+d",
         "mac": "cmd+shift+d",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.extractNames",
@@ -2988,7 +2988,7 @@
         "command": "leointeg.extractNames",
         "key": "ctrl+shift+n",
         "mac": "cmd+shift+n",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.moveOutlineDownSelection",
@@ -3006,18 +3006,18 @@
         "command": "leointeg.moveOutlineDownSelectionFromOutline",
         "key": "ctrl+d",
         "mac": "cmd+d",
-        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineDownSelectionFromOutline",
         "key": "shift+down",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineDownSelectionFromOutline",
         "key": "shift+alt+down",
         "mac": "shift+alt+down",
-        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineLeftSelection",
@@ -3035,18 +3035,18 @@
         "command": "leointeg.moveOutlineLeftSelectionFromOutline",
         "key": "ctrl+l",
         "mac": "cmd+l",
-        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineLeftSelectionFromOutline",
         "key": "shift+left",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineLeftSelectionFromOutline",
         "key": "shift+alt+left",
         "mac": "shift+alt+left",
-        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineRightSelection",
@@ -3064,18 +3064,18 @@
         "command": "leointeg.moveOutlineRightSelectionFromOutline",
         "key": "ctrl+r",
         "mac": "cmd+r",
-        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineRightSelectionFromOutline",
         "key": "shift+right",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineRightSelectionFromOutline",
         "key": "shift+alt+right",
         "mac": "shift+alt+right",
-        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineUpSelection",
@@ -3093,18 +3093,18 @@
         "command": "leointeg.moveOutlineUpSelectionFromOutline",
         "key": "ctrl+u",
         "mac": "cmd+u",
-        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineUpSelectionFromOutline",
         "key": "shift+up",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.moveOutlineUpSelectionFromOutline",
         "key": "shift+alt+up",
         "mac": "shift+alt+up",
-        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && !editorHasSelection && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.sortSiblingsSelection",
@@ -3114,7 +3114,7 @@
       {
         "command": "leointeg.sortSiblingsSelectionFromOutline",
         "key": "alt+a",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.promoteSelection",
@@ -3130,7 +3130,7 @@
         "win": "ctrl+oem_4",
         "linux": "ctrl+[",
         "mac": "cmd+[BracketLeft]",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.demoteSelection",
@@ -3146,7 +3146,7 @@
         "win": "ctrl+oem_6",
         "linux": "ctrl+]",
         "mac": "cmd+[BracketRight]",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.insertNodeSelection",
@@ -3158,7 +3158,7 @@
         "command": "leointeg.insertNodeSelectionFromOutline",
         "key": "ctrl+i",
         "mac": "cmd+i",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.insertNodeSelectionInterrupt",
@@ -3176,13 +3176,13 @@
         "command": "leointeg.insertNodeSelectionFromOutline",
         "key": "shift+insert",
         "mac": "shift+insert",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.insertNodeSelectionFromOutline",
         "key": "insert",
         "mac": "insert",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.insertNodeSelectionInterrupt",
@@ -3200,7 +3200,7 @@
         "command": "leointeg.insertChildNodeSelectionFromOutline",
         "key": "ctrl+insert",
         "mac": "cmd+insert",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.insertChildNodeSelectionInterrupt",
@@ -3222,7 +3222,7 @@
         "win": "ctrl+oem_3",
         "linux": "ctrl+`",
         "mac": "cmd+`",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.cutNodeSelection",
@@ -3234,7 +3234,7 @@
         "command": "leointeg.cutNodeSelectionFromOutline",
         "key": "ctrl+shift+x",
         "mac": "cmd+shift+x",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.copyNodeSelection",
@@ -3246,7 +3246,7 @@
         "command": "leointeg.copyNodeSelection",
         "key": "ctrl+shift+c",
         "mac": "cmd+shift+c",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.pasteNodeAtSelection",
@@ -3258,7 +3258,7 @@
         "command": "leointeg.pasteNodeAtSelectionFromOutline",
         "key": "ctrl+shift+v",
         "mac": "cmd+shift+v",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.deleteSelection",
@@ -3270,47 +3270,47 @@
         "command": "leointeg.deleteSelectionFromOutline",
         "key": "ctrl+shift+backspace",
         "mac": "cmd+shift+backspace",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.deleteSelectionFromOutline",
         "key": "delete",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.gotoFirstVisible",
         "key": "alt+home",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.gotoLastSibling",
         "key": "alt+end",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.gotoFirstVisible",
         "key": "home",
-        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.gotoLastVisible",
         "key": "end",
-        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.pageUp",
         "key": "pageup",
-        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.pageDown",
         "key": "pagedown",
-        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.gotoNextCloneSelectionFromOutline",
         "key": "alt+n",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.gotoNextCloneSelection",
@@ -3320,12 +3320,12 @@
       {
         "command": "leointeg.gotoNextVisible",
         "key": "down",
-        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.gotoNextVisible",
         "key": "alt+down",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.gotoNextVisible",
@@ -3335,12 +3335,12 @@
       {
         "command": "leointeg.gotoPrevVisible",
         "key": "up",
-        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.gotoPrevVisible",
         "key": "alt+up",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.gotoPrevVisible",
@@ -3350,12 +3350,12 @@
       {
         "command": "leointeg.contractOrGoLeft",
         "key": "left",
-        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.contractOrGoLeft",
         "key": "alt+left",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.contractOrGoLeft",
@@ -3365,12 +3365,12 @@
       {
         "command": "leointeg.expandAndGoRight",
         "key": "right",
-        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration/"
+        "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
         "command": "leointeg.expandAndGoRight",
         "key": "alt+right",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /leoIntegration|leoDocuments|leoButtons/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.expandAndGoRight",
@@ -3381,7 +3381,7 @@
         "command": "leointeg.startSearch",
         "key": "ctrl+f",
         "mac": "cmd+f",
-        "when": "leoTreeOpened && sideBarFocus && !editorFocus && !editorTextFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && !editorFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.startSearch",
@@ -3392,17 +3392,17 @@
       {
         "command": "leointeg.findNextFromOutline",
         "key": "f3",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.findNext",
         "key": "f3",
-        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoTreeOpened && !sideBarFocus && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.findPreviousFromOutline",
         "key": "f2",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.findPrevious",
@@ -3419,7 +3419,7 @@
         "command": "leointeg.replaceFromOutline",
         "key": "ctrl+=",
         "mac": "cmd+=",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.replaceThenFind",
@@ -3431,12 +3431,12 @@
         "command": "leointeg.replaceThenFindFromOutline",
         "key": "ctrl+-",
         "mac": "cmd+-",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.gotoGlobalLine",
         "key": "alt+g",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.gotoGlobalLine",
@@ -3447,7 +3447,7 @@
         "command": "leointeg.setFindEverywhereOption",
         "key": "ctrl+alt+e",
         "mac": "cmd+alt+e",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.setFindEverywhereOption",
@@ -3459,7 +3459,7 @@
         "command": "leointeg.setFindNodeOnlyOption",
         "key": "ctrl+alt+n",
         "mac": "cmd+alt+n",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.setFindNodeOnlyOption",
@@ -3471,7 +3471,7 @@
         "command": "leointeg.setFindSuboutlineOnlyOption",
         "key": "ctrl+alt+s",
         "mac": "cmd+alt+s",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.setFindSuboutlineOnlyOption",
@@ -3483,7 +3483,7 @@
         "command": "leointeg.toggleFindIgnoreCaseOption",
         "key": "ctrl+alt+i",
         "mac": "cmd+alt+i",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.toggleFindIgnoreCaseOption",
@@ -3495,7 +3495,7 @@
         "command": "leointeg.toggleFindMarkChangesOption",
         "key": "ctrl+alt+c",
         "mac": "cmd+alt+c",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.toggleFindMarkChangesOption",
@@ -3507,7 +3507,7 @@
         "command": "leointeg.toggleFindMarkFindsOption",
         "key": "ctrl+alt+f",
         "mac": "cmd+alt+f",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.toggleFindMarkFindsOption",
@@ -3519,7 +3519,7 @@
         "command": "leointeg.toggleFindRegexpOption",
         "key": "ctrl+alt+x",
         "mac": "cmd+alt+x",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.toggleFindRegexpOption",
@@ -3531,7 +3531,7 @@
         "command": "leointeg.toggleFindWordOption",
         "key": "ctrl+alt+w",
         "mac": "cmd+alt+w",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.toggleFindWordOption",
@@ -3543,7 +3543,7 @@
         "command": "leointeg.toggleFindSearchBodyOption",
         "key": "ctrl+alt+b",
         "mac": "cmd+alt+b",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.toggleFindSearchBodyOption",
@@ -3555,7 +3555,7 @@
         "command": "leointeg.toggleFindSearchHeadlineOption",
         "key": "ctrl+alt+h",
         "mac": "cmd+alt+h",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leo/"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.toggleFindSearchHeadlineOption",
