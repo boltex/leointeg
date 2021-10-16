@@ -475,6 +475,17 @@
         "configuration": "./language-configurations/leobody.php.language-configuration.json"
       },
       {
+        "id": "leobody.restructuredtext",
+        "aliases": [
+          "Leo Body reStructuredText",
+          "leobody.restructuredtext"
+        ],
+        "extensions": [
+          ""
+        ],
+        "configuration": "./language-configurations/leobody.rst.language-configuration.json"
+      },
+      {
         "id": "leobody.rust",
         "aliases": [
           "Leo Body Rust",
@@ -548,6 +559,11 @@
         "path": "./syntaxes/leobody.php.tmLanguage.json"
       },
       {
+        "language": "leobody.restructuredtext",
+        "scopeName": "source.leobody.restructuredtext",
+        "path": "./syntaxes/leobody.rst.tmLanguage.json"
+      },
+      {
         "language": "leobody.rust",
         "scopeName": "source.leobody.rust",
         "path": "./syntaxes/leobody.rust.tmLanguage.json"
@@ -567,6 +583,7 @@
           "source.leobody.json",
           "source.leobody.markdown",
           "source.leobody.php",
+          "source.leobody.restructuredtext",
           "source.leobody.rust"
         ],
         "path": "./syntaxes/leobody.tmLanguage.json",
@@ -612,6 +629,10 @@
       {
         "language": "leobody.markdown",
         "path": "./snippets/markdown.code-snippets"
+      },
+      {
+        "language": "leobody.restructuredtext",
+        "path": "./snippets/restructuredtext.code-snippets"
       },
       {
         "language": "leobody.rust",

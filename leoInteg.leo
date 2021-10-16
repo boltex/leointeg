@@ -2587,6 +2587,17 @@ print('done')
     "configuration": "./language-configurations/leobody.php.language-configuration.json"
   },
   {
+    "id": "leobody.restructuredtext",
+    "aliases": [
+      "Leo Body reStructuredText",
+      "leobody.restructuredtext"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.rst.language-configuration.json"
+  },
+  {
     "id": "leobody.rust",
     "aliases": [
       "Leo Body Rust",
@@ -2661,6 +2672,11 @@ print('done')
     "path": "./syntaxes/leobody.php.tmLanguage.json"
   },
   {
+    "language": "leobody.restructuredtext",
+    "scopeName": "source.leobody.restructuredtext",
+    "path": "./syntaxes/leobody.rst.tmLanguage.json"
+  },
+  {
     "language": "leobody.rust",
     "scopeName": "source.leobody.rust",
     "path": "./syntaxes/leobody.rust.tmLanguage.json"
@@ -2680,6 +2696,7 @@ print('done')
       "source.leobody.json",
       "source.leobody.markdown",
       "source.leobody.php",
+      "source.leobody.restructuredtext",
       "source.leobody.rust"
     ],
     "path": "./syntaxes/leobody.tmLanguage.json",
@@ -2726,6 +2743,10 @@ print('done')
   {
     "language": "leobody.markdown",
     "path": "./snippets/markdown.code-snippets"
+  },
+  {
+    "language": "leobody.restructuredtext",
+    "path": "./snippets/restructuredtext.code-snippets"
   },
   {
     "language": "leobody.rust",
@@ -14279,7 +14300,8 @@ export function getDurationMs(p_start: [number, number]): number {
  */
 public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
     cplusplus: 'cpp',
-    md: 'markdown'
+    md: 'markdown',
+    rst: 'restructuredtext'
 };
 
 </t>
@@ -21256,6 +21278,7 @@ function closeLeoTextEditors() {
 <t tx="felix.20211007215423.1">## 1.0.3
 
 - Fixed 'F3' findNext bug that didn't trigger because the context was not (re)set properly on focus out from the 'find panel'.
+- Changed all context 'when' clauses to be more 'precise &amp; unique' in relation to other extensions, such as leojs.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
