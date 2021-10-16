@@ -1010,6 +1010,7 @@
 <v t="felix.20200718185403.2"></v>
 <v t="felix.20200718191946.2"></v>
 </v>
+<v t="ekr.20211016085907.2"><vh>@file src/leoAtFile.ts</vh></v>
 </vnodes>
 <tnodes>
 <t tx="ekr.20200722125546.1">@language python
@@ -21256,6 +21257,7 @@ function closeLeoTextEditors() {
 <t tx="felix.20211007215423.1">## 1.0.3
 
 - Fixed 'F3' findNext bug that didn't trigger because the context was not (re)set properly on focus out from the 'find panel'.
+- Changed all context 'when' clauses to be more 'precise &amp; unique' in relation to other extensions, such as leojs.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
