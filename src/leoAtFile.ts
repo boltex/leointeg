@@ -1,34 +1,34 @@
-/* -*- coding: utf-8 -*- */
 //@+leo-ver=5-thin
-//@+node:ekr.20211016085907.2: * @file leoAtFile.ts
-//@@first
-/* Classes to read and write @file nodes. */
+//@+node:ekr.20211016085907.2: * @file src/leoAtFile.ts
+/*
+ * Classes to read and write @file nodes.
+ */
 //@+<< imports >>
 //@+node:ekr.20211016085907.3: ** << imports >> (leoAtFile.py)
-import io
-import os
-import re
-import sys
-import tabnanny
-import time
-import tokenize
-from typing import List
-from leo.core import leoGlobals as g
-from leo.core import leoNodes
+// import io
+// import os
+// import re
+// import sys
+// import tabnanny
+// import time
+// import tokenize
+// from typing import List
+// from leo.core import leoGlobals as g
+// from leo.core import leoNodes
+import * as vscode from "vscode";
+import * as utils from "./utils";
+import { ConfigMembers, ConfigSetting, FontSettings } from "./types";
+import { Constants } from "./constants";
+import { LeoIntegration } from "./leoIntegration";
 //@-<< imports >>
 //@+others
-//@+node:ekr.20211016085907.4: ** cmd (decorator)
-public cmd(name): void {
-    /* Command decorator for the AtFileCommands class. */
-    return g.new_cmd_decorator(name, ['c', 'atFileCommands',])
-}
 //@+node:ekr.20211016085907.5: ** class AtFile
+/*
+ * A class implementing the atFile subcommander.
+*/
 classAtFile {
-    /* A class implementing the atFile subcommander. */
     //@+<< define class constants >>
     //@+node:ekr.20211016085907.6: *3* << define class constants >>
-    //@@nobeautify
-
     /* directives... */
     noDirective     =  1  /* not an at-directive. */
     allDirective    =  2  /* at-all (4.2) */
@@ -45,46 +45,51 @@ classAtFile {
     //@+others
     //@+node:ekr.20211016085907.7: *3* at.Birth & init
     //@+node:ekr.20211016085907.8: *4* at.constructor & helpers
-    /* Note: g.getScript also call the at.__init__ and at.finishCreate(). */
-
+    /*
+     * ctor for atFile class.
+     *
+     * Note: g.getScript also calls at.__init__ and at.finishCreate().
+     */
     public constructor(c: Commands): void {
-        /* ctor for atFile class. */
-        /* **Warning**: all these ivars must **also** be inited in initCommonIvars. */
-        self.c = c
-        self.encoding = 'utf-8'  /* 2014/08/13 */
-        self.fileCommands = c.fileCommands
-        self.errors = 0  /* Make sure at.error() works even when not inited. */
-        /* **Only** at.writeAll manages these flags. */
-        self.unchangedFiles = 0
+
+        /*
+         **Warning**: all these ivars must **also** be inited in initCommonIvars.
+         */
+        this.c = c
+        this.encoding = 'utf-8'
+        this.fileCommands = c.fileCommands
+        this.errors = 0  /* Make sure at.error() works even when not inited. */
+        
+        /* Only at.writeAll manages these flags... */
+        this.unchangedFiles = 0
+
         /* promptForDangerousWrite sets cancelFlag and yesToAll only if canCancelFlag is True. */
-        self.canCancelFlag = False
-        self.cancelFlag = False
-        self.yesToAll = False
+        this.canCancelFlag = False
+        this.cancelFlag = False
+        this.yesToAll = False
+
         /* User options: set in reloadSettings. */
-        self.checkPythonCodeOnWrite = False
-        self.runPyFlakesOnWrite = False
-        self.underindentEscapeString = '\\-'
-        self.reloadSettings()
+        this.checkPythonCodeOnWrite = False
+        this.runPyFlakesOnWrite = False
+        this.underindentEscapeString = '\\-'
+        this.reloadSettings()
     }
     //@+node:ekr.20211016085907.9: *5* at.reloadSettings
     public reloadSettings(): void {
         /* AtFile.reloadSettings */
-        c = self.c
-        self.checkPythonCodeOnWrite = c.config.getBool(
-            'check-python-code-on-write', default=True)
-        self.runPyFlakesOnWrite = c.config.getBool(
-            'run-pyflakes-on-write', default=False)
-        self.underindentEscapeString = c.config.getString(
-            'underindent-escape-string') or '\\-'
+        c = this.c
+        this.checkPythonCodeOnWrite = c.config.getBool('check-python-code-on-write', default=True)
+        this.runPyFlakesOnWrite = c.config.getBool('run-pyflakes-on-write', default=False)
+        this.underindentEscapeString = c.config.getString('underindent-escape-string') or '\\-'
     }
     //@+node:ekr.20211016085907.10: *4* at.initCommonIvars
+    /** 
+     * Init ivars common to both reading and writing.
+     *
+     * The defaults set here may be changed later.
+     */
     public initCommonIvars(): void {
-        /** 
-         * Init ivars common to both reading and writing.
-         *
-         * The defaults set here may be changed later.
-         */
-        at = self
+        at = this
         c = at.c
         at.at_auto_encoding = c.config.default_at_auto_file_encoding
         at.encoding = c.config.default_derived_file_encoding
@@ -104,52 +109,29 @@ classAtFile {
     }
     //@+node:ekr.20211016085907.11: *4* at.initReadIvars
     public initReadIvars(root, fileName): void {
-        at = self
+        at = this
         at.initCommonIvars()
-        at.bom_encoding = None
-            /* The encoding implied by any BOM (set by g.stripBOM) */
-        at.cloneSibCount = 0
-            /* n > 1: Make sure n cloned sibs exists at next @+node sentinel */
-        at.correctedLines = 0
-            /* For perfect import. */
+        at.bom_encoding = None  /* The encoding implied by any BOM (set by g.stripBOM) */
+        at.cloneSibCount = 0  /* n > 1: Make sure n cloned sibs exists at next @+node sentinel */
+        at.correctedLines = 0  /* For perfect import. */
         at.docOut = []  /* The doc part being accumulated. */
         at.done = False  /* True when @-leo seen. */
-        at.endSentinelIndentStack = []
-            /* Restored indentation for @-others and @-<< sentinels. */
-            /* Used only when readVersion5. */
-        at.endSentinelStack = []
-            /* Contains entries for +node sentinels only when not readVersion5 */
-        at.endSentinelLevelStack = []
-            /* The saved level, len(at.thinNodeStack), for @-others and @-<< sentinels. */
-            /* Used only when readVersion5. */
-        at.endSentinelNodeStack = []
-            /* Used only when readVersion5. */
         at.fromString = False
         at.importRootSeen = False
         at.indentStack = []
         at.lastLines = []  /* The lines after @-leo */
-        at.lastRefNode = None
-            /* The previous reference node, for at.readAfterRef. */
-            /* No stack is needed because -<< sentinels restore at.v */
-            /* to the node needed by at.readAfterRef. */
-        at.lastThinNode = None
-            /* The last thin node at this level. */
-            /* Used by createThinChild4. */
         at.leadingWs = ""
         at.lineNumber = 0  /* New in Leo 4.4.8. */
         at.out = None
         at.outStack = []
         at.read_i = 0
         at.read_lines = []
-        at.readVersion = ''
-            /* New in Leo 4.8: "4" or "5" for new-style thin files. */
-        at.readVersion5 = False
-            /* synonym for at.readVersion >= '5' */
+        at.readVersion = ''  /* "5" for new-style thin files. */
+        at.readVersion5 = False  /* Synonym for at.readVersion >= '5' */
         at.root = root
         at.rootSeen = False
         at.targetFileName = fileName  /* For at.writeError only. */
-        at.tnodeList = []
-            /* Needed until old-style @file nodes are no longer supported. */
+        at.tnodeList = []  /* Needed until old-style @file nodes are no longer supported. */
         at.tnodeListIndex = 0
         at.v = None
         at.vStack = []  /* Stack of at.v values. */
@@ -158,45 +140,43 @@ classAtFile {
         at.updateWarningGiven = False
     }
     //@+node:ekr.20211016085907.12: *4* at.initWriteIvars
+    /** 
+     * Compute default values of all write-related ivars.
+     * Return the finalized name of the output file.
+     */
     public initWriteIvars(root): void {
-        /** 
-         * Compute default values of all write-related ivars.
-         * Return the finalized name of the output file.
-         */
-        at, c = self, self.c
+
+        at, c = this, this.c
         if (not c and c.config) {
             return None
         }
         make_dirs = c.config.create_nonexistent_directories
         assert root
-        self.initCommonIvars()
+        this.initCommonIvars()
         assert at.checkPythonCodeOnWrite is not None
         assert at.underindentEscapeString is not None
-        /*  */
+        
         /* Copy args */
         at.root = root
         at.sentinels = True
-        /*  */
+
         /* Override initCommonIvars. */
         if (g.unitTesting) {
             at.output_newline = '\n'
         }
-        /*  */
-        /* Set other ivars. */
-        at.force_newlines_in_at_nosent_bodies = c.config.getBool(
-            'force-newlines-in-at-nosent-bodies')
-            /* For at.putBody only. */
-        at.outputList = []
-            /* For stream output. */
+
+        /* Set other ivars... */
+        
+        /* For at.putBody only. */
+        at.force_newlines_in_at_nosent_bodies = c.config.getBool('force-newlines-in-at-nosent-bodies')
+
+        at.outputList = [] /* For stream output. */
+        /* Sets the following ivars:
+         * at.encoding, at.explicitLineEnding, at.language
+         * at.output_newline, at.page_width, at.tab_width
+         */
         at.scanAllDirectives(root)
-            /* Sets the following ivars: */
-                /* at.encoding */
-                /* at.explicitLineEnding */
-                /* at.language */
-                /* at.output_newline */
-                /* at.page_width */
-                /* at.tab_width */
-        /*  */
+
         /* Overrides of at.scanAllDirectives... */
         if (at.language == 'python') {
             /* Encoding directive overrides everything else. */
@@ -205,7 +185,7 @@ classAtFile {
                 at.encoding = encoding
             }
         }
-        /*  */
+
         /* Clean root.v. */
         if (not at.errors and at.root) {
             if (hasattr(at.root.v, 'tnodeList')) {
@@ -213,23 +193,23 @@ classAtFile {
             }
             at.root.v._p_changed = True
         }
-        /*  */
+
         /* #1907: Compute the file name and create directories as needed. */
         targetFileName = g.os_path_realpath(g.fullPath(c, root))
         at.targetFileName = targetFileName  /* For at.writeError only. */
-        /*  */
+
         /* targetFileName can be empty for unit tests & @command nodes. */
         if (not targetFileName) {
             targetFileName = root.h if g.unitTesting else None
             at.targetFileName = targetFileName  /* For at.writeError only. */
             return targetFileName
         }
-        /*  */
+
         /* Do nothing more if the file already exists. */
         if (os.path.exists(targetFileName)) {
             return targetFileName
         }
-        /*  */
+
         /* Create directories if enabled. */
         root_dir = g.os_path_dirname(targetFileName)
         if (make_dirs and root_dir) {
@@ -239,7 +219,7 @@ classAtFile {
                 return None
             }
         }
-        /*  */
+
         /* Return the target file name, regardless of future problems. */
         return targetFileName
     }
@@ -249,7 +229,7 @@ classAtFile {
     @cmd('check-external-file')
     public checkExternalFile(event=None): void {
         /* Make sure an external file written by Leo may be read properly. */
-        c, p = self.c, self.c.p
+        c, p = this.c, this.c.p
         if (not p.isAtFileNode() and not p.isAtThinFileNode()) {
             g.red('Please select an @thin or @file node')
             return
@@ -276,8 +256,8 @@ classAtFile {
          * Open the file given by at.root.
          * This will be the private file for @shadow nodes.
          */
-        at, c = self, self.c
-        is_at_shadow = self.root.isAtShadowFileNode()
+        at, c = this, this.c
+        is_at_shadow = this.root.isAtShadowFileNode()
         if (fromString) {
             if (is_at_shadow) {
                 return at.error(
@@ -320,7 +300,7 @@ classAtFile {
     //@+node:ekr.20211016085907.17: *6* at.openAtShadowFileForReading
     public openAtShadowFileForReading(fn): void {
         /* Open an @shadow for reading and return shadow_fn. */
-        at = self
+        at = this
         x = at.c.shadowController
         /* readOneAtShadowNode should already have checked these. */
         shadow_fn = x.shadowPathName(fn)
@@ -338,7 +318,7 @@ classAtFile {
     //@+node:ekr.20211016085907.18: *5* at.read & helpers
     public read(root, fromString=None): void {
         /* Read an @thin or @file tree. */
-        at, c = self, self.c
+        at, c = this, this.c
         fileName = g.fullPath(c, root)  /* #1341. #1889. */
         if (not fileName) {
             at.error("Missing file name. Restoring @file tree from .leo file.")
@@ -401,7 +381,7 @@ classAtFile {
          * Before Leo 5.6: Move unvisited node to be children of the 'Resurrected
          * Nodes'.
          */
-        at = self
+        at = this
         /* Find the unvisited nodes. */
         aList = [z for z in root.subtree() if not z.isVisited()]
         if (aList) {
@@ -416,7 +396,7 @@ classAtFile {
     //@+node:ekr.20211016085907.21: *7* createResurrectedNodesNode
     public createResurrectedNodesNode(): void {
         /* Create a 'Resurrected Nodes' node as the last top-level node. */
-        c = self.c
+        c = this.c
         tag = 'Resurrected Nodes'
         /* Find the last top-level node. */
         last = c.rootPosition()
@@ -467,7 +447,7 @@ classAtFile {
     //@+node:ekr.20211016085907.23: *6* at.isFileLike
     public isFileLike(s: string): void {
         /* Return True if s has file-like sentinels. */
-        at = self
+        at = this
         tag = "@+leo"
         s = g.checkUnicode(s)
         i = s.find(tag)
@@ -482,7 +462,7 @@ classAtFile {
     //@+node:ekr.20211016085907.24: *5* at.readAll & helpers
     public readAll(root, force=False): void {
         /* Scan positions, looking for @<file> nodes to read. */
-        at, c = self, self.c
+        at, c = this, this.c
         old_changed = c.changed
         if (force) {
             /* Capture the current headline only if */
@@ -515,7 +495,7 @@ classAtFile {
     //@+node:ekr.20211016085907.25: *6* at.findFilesToRead
     public findFilesToRead(force, root): void {
 
-        c = self.c
+        c = this.c
         p = root.copy()
         scanned_tnodes = set()
         files = []
@@ -562,43 +542,29 @@ classAtFile {
         }
         return files
     }
-    //@+node:ekr.20211016085907.26: *6* at.readFileAtPosition
+    //@+node:ekr.20211016085907.26: *6* at.readFileAtPosition (elif BUG)
     public readFileAtPosition(force, p: Position): void {
         /* Read the @<file> node at p. */
         at, c, fileName = self, self.c, p.anyAtFileNodeName()
+        ///
         if (p.isAtThinFileNode() or p.isAtFileNode()) {
             at.read(p)
         }
-        else {
-            if (p.isAtAutoNode()) {
-                at.readOneAtAutoNode(p)
-            }
-        }
-        else {
-            if (p.isAtEditNode()) {
-                at.readOneAtEditNode(fileName, p)
-            }
-        }
-        else {
-            if (p.isAtShadowFileNode()) {
-                at.readOneAtShadowNode(fileName, p)
-            }
-        }
-        else {
-            if (p.isAtAsisFileNode() or p.isAtNoSentFileNode()) {
-                at.rememberReadPath(g.fullPath(c, p), p)
-            }
-        }
-        else {
-            if (p.isAtCleanNode()) {
-                at.readOneAtCleanNode(p)
-            }
-        }
+        elif p.isAtAutoNode():
+            at.readOneAtAutoNode(p)
+        elif p.isAtEditNode():
+            at.readOneAtEditNode(fileName, p)
+        elif p.isAtShadowFileNode():
+            at.readOneAtShadowNode(fileName, p)
+        elif p.isAtAsisFileNode() or p.isAtNoSentFileNode():
+            at.rememberReadPath(g.fullPath(c, p), p)
+        elif p.isAtCleanNode():
+            at.readOneAtCleanNode(p)
     }
     //@+node:ekr.20211016085907.27: *5* at.readAtShadowNodes
     public readAtShadowNodes(p: Position): void {
         /* Read all @shadow nodes in the p's tree. */
-        at = self
+        at = this
         after = p.nodeAfterTree()
         p = p.copy()  /* Don't change p in the caller. */
         while (p and p != after) { // # Don't use iterator.
@@ -615,7 +581,7 @@ classAtFile {
     //@+node:ekr.20211016085907.28: *5* at.readOneAtAutoNode
     public readOneAtAutoNode(p: Position): void {
         /* Read an @auto file into p. Return the *new* position. */
-        at, c, ic = self, self.c, self.c.importCommands
+        at, c, ic = this, this.c, this.c.importCommands
         fileName = g.fullPath(c, p)  /* #1521, #1341, #1914. */
         if (not g.os_path_exists(fileName)) {
             g.error(f"not found: {p.h!r}", nodeLink=p.get_UNL(with_proto=True))
@@ -661,7 +627,7 @@ classAtFile {
     }
     //@+node:ekr.20211016085907.29: *5* at.readOneAtEditNode
     public readOneAtEditNode(fn, p: Position): void {
-        at = self
+        at = this
         c = at.c
         ic = c.importCommands
         /* #1521 */
@@ -704,7 +670,7 @@ classAtFile {
     //@+node:ekr.20211016085907.30: *5* at.readOneAtAsisNode
     public readOneAtAsisNode(fn, p: Position): void {
         /* Read one @asis node. Used only by refresh-from-disk */
-        at, c = self, self.c
+        at, c = this, this.c
         /* #1521 & #1341. */
         fn = g.fullPath(c, p)
         junk, ext = g.os_path_splitext(fn)
@@ -729,7 +695,7 @@ classAtFile {
     //@+node:ekr.20211016085907.31: *5* at.readOneAtCleanNode & helpers
     public readOneAtCleanNode(root): void {
         /* Update the @clean/@nosent node at root. */
-        at, c, x = self, self.c, self.c.shadowController
+        at, c, x = this, this.c, this.c.shadowController
         fileName = g.fullPath(c, root)
         if (not g.os_path_exists(fileName)) {
             g.es_print(
@@ -744,7 +710,7 @@ classAtFile {
         at.scanAllDirectives(root)
             /* Sets at.startSentinelComment/endSentinelComment. */
         new_public_lines = at.read_at_clean_lines(fileName)
-        old_private_lines = self.write_at_clean_sentinels(root)
+        old_private_lines = this.write_at_clean_sentinels(root)
         marker = x.markerFromFileLines(old_private_lines, fileName)
         old_public_lines, junk = x.separate_sentinels(old_private_lines, marker)
         if (old_public_lines) {
@@ -779,7 +745,7 @@ classAtFile {
     //@+node:ekr.20211016085907.33: *6* at.read_at_clean_lines
     public read_at_clean_lines(fn): void {
         /* Return all lines of the @clean/@nosent file at fn. */
-        at = self
+        at = this
         s = at.openFileHelper(fn)
             /* Use the standard helper. Better error reporting. */
             /* Important: uses 'rb' to open the file. */
@@ -800,7 +766,7 @@ classAtFile {
          * Return all lines of the @clean tree as if it were
          * written as an @file node.
          */
-        at = self.c.atFileCommands
+        at = this.c.atFileCommands
         result = at.atFileToString(root, sentinels=True)
         s = g.toUnicode(result, encoding=at.encoding)
         return g.splitLines(s)
@@ -808,7 +774,7 @@ classAtFile {
     //@+node:ekr.20211016085907.35: *5* at.readOneAtShadowNode & helper
     public readOneAtShadowNode(fn, p: Position): void {
 
-        at, c = self, self.c
+        at, c = this, this.c
         x = c.shadowController
         if (not fn == p.atShadowFileNodeName()) {
             at.error(
@@ -838,7 +804,7 @@ classAtFile {
     }
     //@+node:ekr.20211016085907.36: *6* at.importAtShadowNode
     public importAtShadowNode(p: Position): void {
-        c, ic = self.c, self.c.importCommands
+        c, ic = this.c, this.c.importCommands
         fn = g.fullPath(c, p)  /* #1521, #1341, #1914. */
         if (not g.os_path_exists(fn)) {
             g.error(f"not found: {p.h!r}", nodeLink=p.get_UNL(with_proto=True))
@@ -866,7 +832,7 @@ classAtFile {
     //@+node:ekr.20211016085907.38: *4* at.Reading utils...
     //@+node:ekr.20211016085907.39: *5* at.createImportedNode
     public createImportedNode(root, headline): void {
-        at = self
+        at = this
         if (at.importRootSeen) {
             p = root.insertAsLastChild()
             p.initHeadString(headline)
@@ -882,7 +848,7 @@ classAtFile {
     //@+node:ekr.20211016085907.40: *5* at.initReadLine
     public initReadLine(s: string): void {
         /* Init the ivars so that at.readLine will read all of s. */
-        at = self
+        at = this
         at.read_i = 0
         at.read_lines = g.splitLines(s)
         at._file_bytes = g.toEncodedString(s)
@@ -893,7 +859,7 @@ classAtFile {
          * Parse the sentinel line s.
          * If the sentinel is valid, set at.encoding, at.readVersion, at.readVersion5.
          */
-        at, c = self, self.c
+        at, c = this, this.c
         /* Set defaults. */
         encoding = c.config.default_derived_file_encoding
         readVersion, readVersion5 = None, None
@@ -970,7 +936,7 @@ classAtFile {
          *
          * Returns the string, or None on failure.
          */
-        at = self
+        at = this
         s = at.openFileHelper(fileName)
             /* Catches all exceptions. */
         /* #1798. */
@@ -996,7 +962,7 @@ classAtFile {
     //@+node:ekr.20211016085907.43: *6* at.openFileHelper
     public openFileHelper(fileName): void {
         /* Open a file, reporting all exceptions. */
-        at = self
+        at = this
         /* #1798: return None as a flag on any error. */
         s = None
         try {
@@ -1019,7 +985,7 @@ classAtFile {
          * Return the encoding given in the @+leo sentinel, if the sentinel is
          * present, or the previous value of at.encoding otherwise.
          */
-        at = self
+        at = this
         if (at.errors) {
             g.trace('can not happen: at.errors > 0', g.callers())
             e = at.encoding
@@ -1047,7 +1013,7 @@ classAtFile {
          */
         /* This is an old interface, now used only by at.scanHeader. */
         /* For now, it's not worth replacing. */
-        at = self
+        at = this
         if (at.read_i < len(at.read_lines)) {
             s = at.read_lines[at.read_i]
             at.read_i += 1
@@ -1060,17 +1026,17 @@ classAtFile {
         /** 
          * Scan the @+leo sentinel, using the old readLine interface.
          *
-         * Sets self.encoding, and self.start/endSentinelComment.
+         * Sets this.encoding, and this.start/endSentinelComment.
          *
          * Returns (firstLines,new_df,isThinDerivedFile) where:
          * firstLines        contains all @first lines,
          * new_df            is True if we are reading a new-format derived file.
          * isThinDerivedFile is True if the file is an @thin file.
          */
-        at = self
+        at = this
         new_df, isThinDerivedFile = False, False
         firstLines: List[str] = []  /* The lines before @+leo. */
-        s = self.scanFirstLines(firstLines)
+        s = this.scanFirstLines(firstLines)
         valid = len(s) > 0
         if (valid) {
             valid, new_df, start, end, isThinDerivedFile = at.parseLeoSentinel(s)
@@ -1098,7 +1064,7 @@ classAtFile {
          * We can not call sentinelKind here because that depends on the comment
          * delimiters we set here.
          */
-        at = self
+        at = this
         s = at.readLine()
         while (s and s.find("@+leo") == -1) {
             firstLines.append(s)
@@ -1113,7 +1079,7 @@ classAtFile {
          *
          * This is a kludgy method used only by the import code.
          */
-        at = self
+        at = this
         at.readFileToUnicode(fileName)
             /* Sets at.encoding, regularizes whitespace and calls at.initReadLines. */
         junk, junk, isThin = at.scanHeader(None)
@@ -1128,7 +1094,7 @@ classAtFile {
     @cmd('write-at-auto-nodes')
     public writeAtAutoNodes(event=None): void {
         /* Write all @auto nodes in the selected outline. */
-        at, c = self, self.c
+        at, c = this, this.c
         c.init_error_dialogs()
         at.writeAtAutoNodesHelper(writeDirtyOnly=False)
         c.raise_error_dialogs(kind='write')
@@ -1137,7 +1103,7 @@ classAtFile {
     @cmd('write-dirty-at-auto-nodes')
     public writeDirtyAtAutoNodes(event=None): void {
         /* Write all dirty @auto nodes in the selected outline. */
-        at, c = self, self.c
+        at, c = this, this.c
         c.init_error_dialogs()
         at.writeAtAutoNodesHelper(writeDirtyOnly=True)
         c.raise_error_dialogs(kind='write')
@@ -1145,7 +1111,7 @@ classAtFile {
     //@+node:ekr.20211016085907.53: *7* at.writeAtAutoNodesHelper
     public writeAtAutoNodesHelper(writeDirtyOnly=True): void {
         /* Write @auto nodes in the selected outline */
-        at, c = self, self.c
+        at, c = this, this.c
         p = c.p
         after = p.nodeAfterTree()
         found = False
@@ -1184,7 +1150,7 @@ classAtFile {
     @cmd('write-at-shadow-nodes')
     public writeAtShadowNodes(event=None): void {
         /* Write all @shadow nodes in the selected outline. */
-        at, c = self, self.c
+        at, c = this, this.c
         c.init_error_dialogs()
         val = at.writeAtShadowNodesHelper(writeDirtyOnly=False)
         c.raise_error_dialogs(kind='write')
@@ -1194,7 +1160,7 @@ classAtFile {
     @cmd('write-dirty-at-shadow-nodes')
     public writeDirtyAtShadowNodes(event=None): void {
         /* Write all dirty @shadow nodes in the selected outline. */
-        at, c = self, self.c
+        at, c = this, this.c
         c.init_error_dialogs()
         val = at.writeAtShadowNodesHelper(writeDirtyOnly=True)
         c.raise_error_dialogs(kind='write')
@@ -1203,7 +1169,7 @@ classAtFile {
     //@+node:ekr.20211016085907.55: *7* at.writeAtShadowNodesHelper
     public writeAtShadowNodesHelper(writeDirtyOnly=True): void {
         /* Write @shadow nodes in the selected outline */
-        at, c = self, self.c
+        at, c = this, this.c
         p = c.p
         after = p.nodeAfterTree()
         found = False
@@ -1243,7 +1209,7 @@ classAtFile {
     //@+node:ekr.20211016085907.56: *5* at.putFile & helper
     public putFile(root, fromString='', sentinels=True): void {
         /* Write the contents of the file to the output stream. */
-        at = self
+        at = this
         s = fromString if fromString else root.v.b
         root.clearAllVisitedInTree()
         at.putAtFirstLines(s)
@@ -1260,7 +1226,7 @@ classAtFile {
     //@+node:ekr.20211016085907.57: *5* at.writeAll & helpers
     public writeAll(all=False, dirty=False): void {
         /* Write @file nodes in all or part of the outline */
-        at, c = self, self.c
+        at, c = this, this.c
         /* This is the *only* place where these are set. */
         /* promptForDangerousWrite sets cancelFlag only if canCancelFlag is True. */
         at.unchangedFiles = 0
@@ -1297,7 +1263,7 @@ classAtFile {
         if (trace) {
             g.trace(f"writing *{'selected' if force else 'all'}* files")
         }
-        c = self.c
+        c = this.c
         if (force) {
             /* The Write @<file> Nodes command. */
             /* Write all nodes in the selected tree. */
@@ -1366,7 +1332,7 @@ classAtFile {
     //@+node:ekr.20211016085907.60: *6* at.reportEndOfWrite
     public reportEndOfWrite(files, all, dirty): void {
 
-        at = self
+        at = this
         if (g.unitTesting) {
             return
         }
@@ -1388,7 +1354,7 @@ classAtFile {
     //@+node:ekr.20211016085907.61: *6* at.saveOutlineIfPossible
     public saveOutlineIfPossible(): void {
         /* Save the outline if only persistence data nodes are dirty. */
-        c = self.c
+        c = this.c
         changed_positions = [p for p in c.all_unique_positions() if p.v.isDirty()]
         at_persistence = (
             c.persistenceController and
@@ -1414,7 +1380,7 @@ classAtFile {
          * This prevents the write-all command from needlessly updating
          * the @persistence data, thereby annoyingly changing the .leo file.
          */
-        at = self
+        at = this
         at.root = root
         if (p.isAtIgnoreNode()) {
             /* Should have been handled in findFilesToWrite. */
@@ -1459,7 +1425,7 @@ classAtFile {
         /** 
          * raise IOError if p's path has changed *and* user forbids the write.
          */
-        at, c = self, self.c
+        at, c = this, this.c
         /*  */
         /* Suppress this message during save-as and save-to commands. */
         if (c.ignoreChangedPaths) {
@@ -1491,7 +1457,7 @@ classAtFile {
     //@+node:ekr.20211016085907.64: *5* at.writeAtAutoContents
     public writeAtAutoContents(fileName, root): void {
         /* Common helper for atAutoToString and writeOneAtAutoNode. */
-        at, c = self, self.c
+        at, c = this, this.c
         /* Dispatch the proper writer. */
         junk, ext = g.os_path_splitext(fileName)
         writer = at.dispatch(ext, root)
@@ -1527,7 +1493,7 @@ classAtFile {
     //@+node:ekr.20211016085907.65: *5* at.writeX...
     //@+node:ekr.20211016085907.66: *6* at.asisWrite & helper
     public asisWrite(root): void {
-        at, c = self, self.c
+        at, c = this, this.c
         try {
             c.endEditing()
             c.init_error_dialogs()
@@ -1555,10 +1521,10 @@ classAtFile {
     //@+node:ekr.20211016085907.67: *7* at.writeAsisNode
     public writeAsisNode(p: Position): void {
         /* Write the p's node to an @asis file. */
-        at = self
+        at = this
 
         public put(s: string): void {
-            /* Append s to self.output_list. */
+            /* Append s to this.output_list. */
             /* #1480: Avoid calling at.os(). */
             s = g.toUnicode(s, at.encoding, reportErrors=True)
             at.outputList.append(s)
@@ -1583,7 +1549,7 @@ classAtFile {
     }
     //@+node:ekr.20211016085907.68: *6* at.writeMissing & helper
     public writeMissing(p: Position): void {
-        at, c = self, self.c
+        at, c = this, this.c
         writtenFiles = False
         c.init_error_dialogs()
         /* #1450. */
@@ -1628,7 +1594,7 @@ classAtFile {
     //@+node:ekr.20211016085907.69: *7* at.writeMissingNode
     public writeMissingNode(p: Position): void {
 
-        at = self
+        at = this
         table = (
             (p.isAtAsisFileNode, at.asisWrite),
             (p.isAtAutoNode, at.writeOneAtAutoNode),
@@ -1654,7 +1620,7 @@ classAtFile {
          * File indices *must* have already been assigned.
          * Return True if the node was written successfully.
          */
-        at, c = self, self.c
+        at, c = this, this.c
         root = p.copy()
         try {
             c.endEditing()
@@ -1689,14 +1655,14 @@ classAtFile {
     //@+node:ekr.20211016085907.71: *7* at.dispatch & helpers
     public dispatch(ext, p: Position): void {
         /* Return the correct writer function for p, an @auto node. */
-        at = self
+        at = this
         /* Match @auto type before matching extension. */
         return at.writer_for_at_auto(p) or at.writer_for_ext(ext)
     }
     //@+node:ekr.20211016085907.72: *8* at.writer_for_at_auto
     public writer_for_at_auto(root): void {
         /* A factory returning a writer function for the given kind of @auto directive. */
-        at = self
+        at = this
         d = g.app.atAutoWritersDict
         for (key in d) {
             aClass = d.get(key)
@@ -1723,7 +1689,7 @@ classAtFile {
     //@+node:ekr.20211016085907.73: *8* at.writer_for_ext
     public writer_for_ext(ext): void {
         /* A factory returning a writer function for the given file extension. */
-        at = self
+        at = this
         d = g.app.writersDispatchDict
         aClass = d.get(ext)
         if (aClass) {
@@ -1748,7 +1714,7 @@ classAtFile {
         /** Write one @clean file..
          * root is the position of an @clean node.
          */
-        at, c = self, self.c
+        at, c = this, this.c
         try {
             c.endEditing()
             fileName = at.initWriteIvars(root)
@@ -1769,8 +1735,8 @@ classAtFile {
             }
         }
         except (Exception) {
-            if (hasattr(self.root.v, 'tnodeList')) {
-                delattr(self.root.v, 'tnodeList')
+            if (hasattr(this.root.v, 'tnodeList')) {
+                delattr(this.root.v, 'tnodeList')
             }
             at.writeException(fileName, root)
         }
@@ -1778,7 +1744,7 @@ classAtFile {
     //@+node:ekr.20211016085907.75: *6* at.writeOneAtEditNode
     public writeOneAtEditNode(p: Position): void {
         /* Write one @edit node. */
-        at, c = self, self.c
+        at, c = this, this.c
         root = p.copy()
         try {
             c.endEditing()
@@ -1812,7 +1778,7 @@ classAtFile {
     //@+node:ekr.20211016085907.76: *6* at.writeOneAtFileNode
     public writeOneAtFileNode(root): void {
         /* Write @file or @thin file. */
-        at, c = self, self.c
+        at, c = this, this.c
         try {
             c.endEditing()
             fileName = at.initWriteIvars(root)
@@ -1835,8 +1801,8 @@ classAtFile {
             }
         }
         except (Exception) {
-            if (hasattr(self.root.v, 'tnodeList')) {
-                delattr(self.root.v, 'tnodeList')
+            if (hasattr(this.root.v, 'tnodeList')) {
+                delattr(this.root.v, 'tnodeList')
             }
             at.writeException(fileName, root)
         }
@@ -1847,7 +1813,7 @@ classAtFile {
          * root is the position of an @<file> node.
          * sentinels will be False for @clean and @nosent nodes.
          */
-        at, c = self, self.c
+        at, c = this, this.c
         try {
             c.endEditing()
             fileName = at.initWriteIvars(root)
@@ -1868,8 +1834,8 @@ classAtFile {
             }
         }
         except (Exception) {
-            if (hasattr(self.root.v, 'tnodeList')) {
-                delattr(self.root.v, 'tnodeList')
+            if (hasattr(this.root.v, 'tnodeList')) {
+                delattr(this.root.v, 'tnodeList')
             }
             at.writeException(fileName, root)
         }
@@ -1883,14 +1849,14 @@ classAtFile {
          * testing: set by unit tests to suppress the call to at.precheck.
          * Testing is not the same as g.unitTesting.
          */
-        at, c = self, self.c
+        at, c = this, this.c
         root = p.copy()
         x = c.shadowController
         try {
             c.endEditing()  /* Capture the current headline. */
             fn = p.atShadowFileNodeName()
             assert fn, p.h
-            self.adjustTargetLanguage(fn)
+            this.adjustTargetLanguage(fn)
                 /* A hack to support unknown extensions. May set c.target_language. */
             full_path = g.fullPath(c, p)
             at.initWriteIvars(root)
@@ -1960,7 +1926,7 @@ classAtFile {
         /** Use the language implied by fn's extension if
          * there is a conflict between it and c.target_language.
          */
-        at = self
+        at = this
         c = at.c
         junk, ext = g.os_path_splitext(fn)
         if (ext) {
@@ -1982,7 +1948,7 @@ classAtFile {
     //@+node:ekr.20211016085907.81: *6* at.atAsisToString
     public atAsisToString(root): void {
         /* Write the @asis node to a string. */
-        at, c = self, self.c
+        at, c = this, this.c
         try {
             c.endEditing()
             fileName = at.initWriteIvars(root)
@@ -2000,7 +1966,7 @@ classAtFile {
     //@+node:ekr.20211016085907.82: *6* at.atAutoToString
     public atAutoToString(root): void {
         /* Write the root @auto node to a string, and return it. */
-        at, c = self, self.c
+        at, c = this, this.c
         try {
             c.endEditing()
             fileName = at.initWriteIvars(root)
@@ -2020,7 +1986,7 @@ classAtFile {
     //@+node:ekr.20211016085907.83: *6* at.atEditToString
     public atEditToString(root): void {
         /* Write one @edit node. */
-        at, c = self, self.c
+        at, c = this, this.c
         try {
             c.endEditing()
             if (root.hasChildren()) {
@@ -2048,7 +2014,7 @@ classAtFile {
     //@+node:ekr.20211016085907.84: *6* at.atFileToString
     public atFileToString(root, sentinels=True): void {
         /* Write an external file to a string, and return its contents. */
-        at, c = self, self.c
+        at, c = this, this.c
         try {
             c.endEditing()
             at.initWriteIvars(root)
@@ -2059,15 +2025,15 @@ classAtFile {
             contents = '' if at.errors else ''.join(at.outputList)
             /* Major bug: failure to clear this wipes out headlines! */
             /* Sometimes this causes slight problems... */
-            if (hasattr(self.root.v, 'tnodeList')) {
-                delattr(self.root.v, 'tnodeList')
+            if (hasattr(this.root.v, 'tnodeList')) {
+                delattr(this.root.v, 'tnodeList')
                 root.v._p_changed = True
             }
             return contents
         }
         except (Exception) {
-            if (hasattr(self.root.v, 'tnodeList')) {
-                delattr(self.root.v, 'tnodeList')
+            if (hasattr(this.root.v, 'tnodeList')) {
+                delattr(this.root.v, 'tnodeList')
             }
             at.exception("exception preprocessing script")
             root.v._p_changed = True
@@ -2081,7 +2047,7 @@ classAtFile {
          *
          * This is at.write specialized for scripting.
          */
-        at, c = self, self.c
+        at, c = this, this.c
         try {
             c.endEditing()
             at.initWriteIvars(root)
@@ -2097,8 +2063,8 @@ classAtFile {
             /* Major bug: failure to clear this wipes out headlines! */
             /* Sometimes this causes slight problems... */
             if (root) {
-                if (hasattr(self.root.v, 'tnodeList')) {
-                    delattr(self.root.v, 'tnodeList')
+                if (hasattr(this.root.v, 'tnodeList')) {
+                    delattr(this.root.v, 'tnodeList')
                 }
                 root.v._p_changed = True
             }
@@ -2116,7 +2082,7 @@ classAtFile {
          * Generate the body enclosed in sentinel lines.
          * Return True if the body contains an @others line.
          */
-        at = self
+        at = this
         /*  */
         /* New in 4.3 b2: get s from fromString if possible. */
         s = fromString if fromString else p.b
@@ -2156,7 +2122,7 @@ classAtFile {
     //@+node:ekr.20211016085907.88: *6* at.putLine
     public putLine(i: number, kind, p: Position, s: string, status): void {
         /* Put the line at s[i:] of the given kind, updating the status. */
-        at = self
+        at = this
         if (kind == at.noDirective) {
             if (status.in_code) {
                 if (at.raw) {
@@ -2211,7 +2177,7 @@ classAtFile {
         else {
             if (kind == at.allDirective) {
                 if (status.in_code) {
-                    if (p == self.root) {
+                    if (p == this.root) {
                         at.putAtAllLine(s, i, p)
                     }
                     else {
@@ -2292,7 +2258,7 @@ classAtFile {
     //@+node:ekr.20211016085907.91: *7* at.putAtAllLine
     public putAtAllLine(s: string, i: number, p: Position): void {
         /* Put the expansion of @all. */
-        at = self
+        at = this
         j, delta = g.skip_leading_ws_with_indent(s, i, at.tab_width)
         k = g.skip_to_end_of_line(s, i)
         at.putLeadInSentinel(s, i, j, delta)
@@ -2308,7 +2274,7 @@ classAtFile {
     //@+node:ekr.20211016085907.92: *7* at.putAtAllBody
     public putAtAllBody(p: Position): void {
         /* Generate the body enclosed in sentinel lines. */
-        at = self
+        at = this
         s = p.b
         p.v.setVisited()
             /* Make sure v is never expanded again. */
@@ -2344,7 +2310,7 @@ classAtFile {
          * likely to be used only for recreating the outline in Leo. The
          * representation in the derived file doesn't matter much.
          */
-        at = self
+        at = this
         at.putOpenNodeSentinel(p, inAtAll=True)
             /* Suppress warnings about @file nodes. */
         at.putAtAllBody(p)
@@ -2357,7 +2323,7 @@ classAtFile {
     //@+node:ekr.20211016085907.95: *7* at.putAtOthersLine & helpers
     public putAtOthersLine(s: string, i: number, p: Position): void {
         /* Put the expansion of @others. */
-        at = self
+        at = this
         j, delta = g.skip_leading_ws_with_indent(s, i, at.tab_width)
         k = g.skip_to_end_of_line(s, i)
         at.putLeadInSentinel(s, i, j, delta)
@@ -2391,7 +2357,7 @@ classAtFile {
     }
     //@+node:ekr.20211016085907.96: *8* at.putAtOthersChild
     public putAtOthersChild(p: Position): void {
-        at = self
+        at = this
         at.putOpenNodeSentinel(p)
         at.putBody(p)
         at.putCloseNodeSentinel(p)
@@ -2402,7 +2368,7 @@ classAtFile {
          * Return True if p should be included in the expansion of the @others
          * directive in the body text of p's parent.
          */
-        at = self
+        at = this
         i = g.skip_ws(p.h, 0)
         isSection, junk = at.isSectionName(p.h, i)
         if (isSection) {
@@ -2421,11 +2387,11 @@ classAtFile {
     //@+node:ekr.20211016085907.98: *6* at.putCodeLine
     public putCodeLine(s: string, i: number): void {
         /* Put a normal code line. */
-        at = self
+        at = this
         /* Put @verbatim sentinel if required. */
         k = g.skip_ws(s, i)
-        if (g.match(s, k, self.startSentinelComment + '@')) {
-            self.putSentinel('@verbatim')
+        if (g.match(s, k, this.startSentinelComment + '@')) {
+            this.putSentinel('@verbatim')
         }
         j = g.skip_line(s, i)
         line = s[i:j]
@@ -2459,7 +2425,7 @@ classAtFile {
     //@+node:ekr.20211016085907.99: *6* at.putRefLine & helpers
     public putRefLine(s: string, i: number, n1, n2, name, p: Position): void {
         /* Put a line containing one or more references. */
-        at = self
+        at = this
         ref = at.findReference(name, p)
         is_clean = at.root.h.startswith('@clean')
         if (not ref) {
@@ -2473,7 +2439,7 @@ classAtFile {
         junk, delta = g.skip_leading_ws_with_indent(s, i, at.tab_width)
         /* Write the lead-in sentinel only once. */
         at.putLeadInSentinel(s, i, n1, delta)
-        self.putRefAt(name, ref, delta)
+        this.putRefAt(name, ref, delta)
         n_refs = 0
         while (1) {
             progress = i
@@ -2492,8 +2458,8 @@ classAtFile {
                     /* Issues error if not found. */
                 if (ref) {
                     middle_s = s[i:n1]
-                    self.putAfterMiddleRef(middle_s, delta)
-                    self.putRefAt(name, ref, delta)
+                    this.putAfterMiddleRef(middle_s, delta)
+                    this.putRefAt(name, ref, delta)
                 }
             }
             else {
@@ -2501,12 +2467,12 @@ classAtFile {
             }
             assert progress < i
         }
-        self.putAfterLastRef(s, i, delta)
+        this.putAfterLastRef(s, i, delta)
     }
     //@+node:ekr.20211016085907.100: *7* at.findReference
     public findReference(name, p: Position): void {
         /* Find a reference to name.  Raise an error if not found. */
-        at = self
+        at = this
         ref = g.findReference(name, p)
         if (not ref and not hasattr(at, 'allow_undefined_refs')) {
             /* Do give this error even if unit testing. */
@@ -2549,7 +2515,7 @@ classAtFile {
     //@+node:ekr.20211016085907.102: *7* at.putAfterLastRef
     public putAfterLastRef(s: string, start, delta): void {
         /* Handle whatever follows the last ref of a line. */
-        at = self
+        at = this
         j = g.skip_ws(s, start)
         if (j < len(s) and s[j] != '\n') {
             /* Temporarily readjust delta to make @afterref look better. */
@@ -2567,7 +2533,7 @@ classAtFile {
     //@+node:ekr.20211016085907.103: *7* at.putAfterMiddleRef
     public putAfterMiddleRef(s: string, delta): void {
         /* Handle whatever follows a ref that is not the last ref of a line. */
-        at = self
+        at = this
         if (s) {
             at.indent += delta
             at.putSentinel("@afterref")
@@ -2578,7 +2544,7 @@ classAtFile {
     }
     //@+node:ekr.20211016085907.104: *7* at.putRefAt
     public putRefAt(name, ref, delta): void {
-        at = self
+        at = this
         /* #132: Section Reference causes clone... */
         /*  */
         /* Never put any @+middle or @-middle sentinels. */
@@ -2593,7 +2559,7 @@ classAtFile {
     //@+node:ekr.20211016085907.105: *5* writing doc lines...
     //@+node:ekr.20211016085907.106: *6* at.putBlankDocLine
     public putBlankDocLine(): void {
-        at = self
+        at = this
         if (not at.endSentinelComment) {
             at.putIndent(at.indent)
             at.os(at.startSentinelComment)
@@ -2606,7 +2572,7 @@ classAtFile {
     //@+node:ekr.20211016085907.107: *6* at.putDocLine
     public putDocLine(s: string, i: number): void {
         /* Handle one line of a doc part. */
-        at = self
+        at = this
         j = g.skip_line(s, i)
         s = s[i:j]
         /*  */
@@ -2633,7 +2599,7 @@ classAtFile {
     //@+node:ekr.20211016085907.108: *6* at.putEndDocLine
     public putEndDocLine(): void {
         /* Write the conclusion of a doc part. */
-        at = self
+        at = this
         /* Put the closing delimiter if we are using block comments. */
         if (at.endSentinelComment) {
             at.putIndent(at.indent)
@@ -2644,7 +2610,7 @@ classAtFile {
     //@+node:ekr.20211016085907.109: *6* at.putStartDocLine
     public putStartDocLine(s: string, i: number, kind): void {
         /* Write the start of a doc part. */
-        at = self
+        at = this
         sentinel = "@+doc" if kind == at.docDirective else "@+at"
         directive = "@doc" if kind == at.docDirective else "@"
         /* Put whatever follows the directive in the sentinel. */
@@ -2665,7 +2631,7 @@ classAtFile {
     //@+node:ekr.20211016085907.111: *5* at.nodeSentinelText & helper
     public nodeSentinelText(p: Position): void {
         /* Return the text of a @+node or @-node sentinel for p. */
-        at = self
+        at = this
         h = at.removeCommentDelims(p)
         if (getattr(at, 'at_shadow_test_hack', False)) {
             /* A hack for @shadow unit testing. */
@@ -2673,7 +2639,7 @@ classAtFile {
             return h
         }
         gnx = p.v.fileIndex
-        level = 1 + p.level() - self.root.level()
+        level = 1 + p.level() - this.root.level()
         if (level > 2) {
             return f"{gnx}: *{level}* {h}"
         }
@@ -2686,7 +2652,7 @@ classAtFile {
          * we remove all block comment delims from h. This prevents headline text from
          * interfering with the parsing of node sentinels.
          */
-        at = self
+        at = this
         start = at.startSentinelComment
         end = at.endSentinelComment
         h = p.h
@@ -2705,7 +2671,7 @@ classAtFile {
          * j points at @others or a section reference.
          * delta is the change in at.indent that is about to happen and hasn't happened yet.
          */
-        at = self
+        at = this
         at.leadingWs = ""  /* Set the default. */
         if (i == j) {
             return  /* The @others or ref starts a line. */
@@ -2717,7 +2683,7 @@ classAtFile {
                 i:j]  /* Remember the leading whitespace, including its spelling. */
         }
         else {
-            self.putIndent(at.indent)  /* 1/29/04: fix bug reported by Dan Winkler. */
+            this.putIndent(at.indent)  /* 1/29/04: fix bug reported by Dan Winkler. */
             at.os(s[i:j])
             at.onl_sent()
         }
@@ -2725,13 +2691,13 @@ classAtFile {
     //@+node:ekr.20211016085907.114: *5* at.putCloseNodeSentinel
     public putCloseNodeSentinel(p: Position): void {
         /* End a node. */
-        at = self
+        at = this
         at.raw = False  /* Bug fix: 2010/07/04 */
     }
     //@+node:ekr.20211016085907.115: *5* at.putOpenLeoSentinel 4.x
     public putOpenLeoSentinel(s: string): void {
         /* Write @+leo sentinel. */
-        at = self
+        at = this
         if (at.sentinels or hasattr(at, 'force_sentinels')) {
             s = s + "-thin"
             encoding = at.encoding.lower()
@@ -2746,7 +2712,7 @@ classAtFile {
     public putOpenNodeSentinel(p: Position, inAtAll=False): void {
         /* Write @+node sentinel for p. */
         /* Note: lineNumbers.py overrides this method. */
-        at = self
+        at = this
         if (not inAtAll and p.isAtFileNode() and p != at.root) {
             at.writeError("@file not valid in: " + p.h)
             return
@@ -2762,7 +2728,7 @@ classAtFile {
          *
          * This method outputs all sentinels.
          */
-        at = self
+        at = this
         if (at.sentinels or hasattr(at, 'force_sentinels')) {
             at.putIndent(at.indent)
             at.os(at.startSentinelComment)
@@ -2787,7 +2753,7 @@ classAtFile {
     //@+node:ekr.20211016085907.119: *5* at.addToOrphanList
     public addToOrphanList(root): void {
         /* Mark the root as erroneous for c.raise_error_dialogs(). */
-        c = self.c
+        c = this.c
         /* Fix #1050: */
         root.setOrphan()
         c.orphan_at_file_nodes.append(root.h)
@@ -2810,7 +2776,7 @@ classAtFile {
     //@+node:ekr.20211016085907.121: *5* at.checkPythonCode & helpers
     public checkPythonCode(contents, fileName, root, pyflakes_errors_only=False): void {
         /* Perform python-related checks on root. */
-        at = self
+        at = this
         if (
             contents and fileName and fileName.endswith('.py')
             and at.checkPythonCodeOnWrite
@@ -2825,7 +2791,7 @@ classAtFile {
             /* Syntax checking catches most indentation problems. */
                 /* if ok: at.tabNannyNode(root,s) */
             if (ok and at.runPyFlakesOnWrite and not g.unitTesting) {
-                ok2 = self.runPyflakes(root, pyflakes_errors_only=pyflakes_errors_only)
+                ok2 = this.runPyflakes(root, pyflakes_errors_only=pyflakes_errors_only)
             }
             else {
                 ok2 = True
@@ -2836,7 +2802,7 @@ classAtFile {
     }
     //@+node:ekr.20211016085907.122: *6* at.checkPythonSyntax
     public checkPythonSyntax(p: Position, body, supress=False): void {
-        at = self
+        at = this
         try {
             body = body.replace('\r', '')
             fn = f"<node: {p.h}>"
@@ -2891,7 +2857,7 @@ classAtFile {
         try {
             from leo.commands import checkerCommands
             if (checkerCommands.pyflakes) {
-                x = checkerCommands.PyflakesCommand(self.c)
+                x = checkerCommands.PyflakesCommand(this.c)
                 ok = x.run(p=root, pyflakes_errors_only=pyflakes_errors_only)
                 return ok
             }
@@ -2957,7 +2923,7 @@ classAtFile {
          * - Using strings instead of constants.
          * - Using additional regex's to recognize directives.
          */
-        at = self
+        at = this
         n = len(s)
         if (i >= n or s[i] != '@') {
             j = g.skip_ws(s, i)
@@ -2998,7 +2964,7 @@ classAtFile {
         /* Use regex to properly distinguish between Leo directives */
         /* and python decorators. */
         s2 = s[i:]
-        m = self.at_directive_kind_pattern.match(s2)
+        m = this.at_directive_kind_pattern.match(s2)
         if (m) {
             word = m.group(1)
             if (word not in g.globalDirectiveList) {
@@ -3032,26 +2998,26 @@ classAtFile {
     //@+node:ekr.20211016085907.128: *5* at.os and allies
     //@+node:ekr.20211016085907.129: *6* at.oblank, oblanks & otabs
     public oblank(): void {
-        self.os(' ')
+        this.os(' ')
     }
 
     public oblanks(n: number): void {
-        self.os(' ' * abs(n))
+        this.os(' ' * abs(n))
     }
 
     public otabs(n: number): void {
-        self.os('\t' * abs(n))
+        this.os('\t' * abs(n))
     }
     //@+node:ekr.20211016085907.130: *6* at.onl & onl_sent
     public onl(): void {
         /* Write a newline to the output stream. */
-        self.os('\n')  /* **not** self.output_newline */
+        this.os('\n')  /* **not** this.output_newline */
     }
 
     public onl_sent(): void {
         /* Write a newline to the output stream, provided we are outputting sentinels. */
-        if (self.sentinels) {
-            self.onl()
+        if (this.sentinels) {
+            this.onl()
         }
     }
     //@+node:ekr.20211016085907.131: *6* at.os
@@ -3061,8 +3027,8 @@ classAtFile {
          *
          * All output produced by leoAtFile module goes here.
          */
-        at = self
-        if (s.startswith(self.underindentEscapeString)) {
+        at = this
+        if (s.startswith(this.underindentEscapeString)) {
             try {
                 junk, s = at.parseUnderindentTag(s)
             }
@@ -3079,12 +3045,12 @@ classAtFile {
         /** 
          * Write the string s as-is except that we replace '\n' with the proper line ending.
          *
-         * Calling self.onl() runs afoul of queued newlines.
+         * Calling this.onl() runs afoul of queued newlines.
          */
-        at = self
+        at = this
         s = g.toUnicode(s, at.encoding)
         s = s.replace('\n', at.output_newline)
-        self.os(s)
+        this.os(s)
     }
     //@+node:ekr.20211016085907.133: *5* at.precheck (calls shouldPrompt...)
     public precheck(fileName, root): void {
@@ -3093,7 +3059,7 @@ classAtFile {
          *
          * Return True if so.  Return False *and* issue a warning otherwise.
          */
-        at = self
+        at = this
         /*  */
         /* #1450: First, check that the directory exists. */
         theDir = g.os_path_dirname(fileName)
@@ -3110,7 +3076,7 @@ classAtFile {
         }
         /*  */
         /* Prompt if the write would overwrite the existing file. */
-        ok = self.promptForDangerousWrite(fileName)
+        ok = this.promptForDangerousWrite(fileName)
         if (ok) {
             /* Fix bug 889175: Remember the full fileName. */
             at.rememberReadPath(fileName, root)
@@ -3128,7 +3094,7 @@ classAtFile {
          * These lines are converted to @verbatim lines,
          * so the read logic simply ignores lines preceding the @+leo sentinel.
          */
-        at = self
+        at = this
         tag = "@first"
         i = 0
         while (g.match(s, i, tag)) {
@@ -3150,7 +3116,7 @@ classAtFile {
          * These lines are converted to @verbatim lines,
          * so the read logic simply ignores lines following the @-leo sentinel.
          */
-        at = self
+        at = this
         tag = "@last"
         /* Use g.splitLines to preserve trailing newlines. */
         lines = g.splitLines(s)
@@ -3180,55 +3146,62 @@ classAtFile {
         }
     }
     //@+node:ekr.20211016085907.136: *5* at.putDirective & helper
-    public putDirective(s: string, i: number, p: Position): void {
-        r"""
-        Output a sentinel a directive or reference s.
+    /*
+     * Output a sentinel a directive or reference s.
 
-        It is important for PHP and other situations that \@first and \@last
-        directives get translated to verbatim lines that do *not* include what
-        follows the @first & @last directives.
-        /** 
-         * at = self
-         * k = i
-         * j = g.skip_to_end_of_line(s, i)
-         * directive = s[i:j]
-         * if g.match_word(s, k, "@delims"):
-         * at.putDelims(directive, s, k)
-         * elif g.match_word(s, k, "@language"):
-         * self.putSentinel("@" + directive)
-         * elif g.match_word(s, k, "@comment"):
-         * self.putSentinel("@" + directive)
-         * elif g.match_word(s, k, "@last"):
-         * # #1307.
-         * if p.isAtCleanNode():
-         * at.error(f"ignoring @last directive in {p.h!r}")
-         * g.es_print('@last is not valid in @clean nodes')
-         * # #1297.
-         * elif g.app.inScript or g.unitTesting or p.isAnyAtFileNode():
-         * self.putSentinel("@@last")
-         * # Convert to an verbatim line _without_ anything else.
-         * else:
-         * at.error(f"ignoring @last directive in {p.h!r}")
-         * elif g.match_word(s, k, "@first"):
-         * # #1307.
-         * if p.isAtCleanNode():
-         * at.error(f"ignoring @first directive in {p.h!r}")
-         * g.es_print('@first is not valid in @clean nodes')
-         * # #1297.
-         * elif g.app.inScript or g.unitTesting or p.isAnyAtFileNode():
-         * self.putSentinel("@@first")
-         * # Convert to an verbatim line _without_ anything else.
-         * else:
-         * at.error(f"ignoring @first directive in {p.h!r}")
-         * else:
-         * self.putSentinel("@" + directive)
-         * i = g.skip_line(s, k)
-         * return i
-         * }
+     * It is important for PHP and other situations that \@first and \@last
+     * directives get translated to verbatim lines that do *not* include what
+     * follows the @first & @last directives.
+    */
+    public putDirective(s: string, i: number, p: Position): void {
+        
+        at = self
+        k = i
+        j = g.skip_to_end_of_line(s, i)
+        directive = s[i:j]
+        if (g.match_word(s, k, "@delims")) {
+            at.putDelims(directive, s, k)
+        }
+        elif g.match_word(s, k, "@language"):
+            self.putSentinel("@" + directive)
+        elif g.match_word(s, k, "@comment"):
+            self.putSentinel("@" + directive)
+        elif g.match_word(s, k, "@last"):
+            /* #1307. */
+            if (p.isAtCleanNode()) {
+                at.error(f"ignoring @last directive in {p.h!r}")
+                g.es_print('@last is not valid in @clean nodes')
+            }
+            /* #1297. */
+            elif g.app.inScript or g.unitTesting or p.isAnyAtFileNode():
+                self.putSentinel("@@last")
+                    /* Convert to an verbatim line _without_ anything else. */
+            else {
+                at.error(f"ignoring @last directive in {p.h!r}")
+            }
+        elif g.match_word(s, k, "@first"):
+            /* #1307. */
+            if (p.isAtCleanNode()) {
+                at.error(f"ignoring @first directive in {p.h!r}")
+                g.es_print('@first is not valid in @clean nodes')
+            }
+            /* #1297. */
+            elif g.app.inScript or g.unitTesting or p.isAnyAtFileNode():
+                self.putSentinel("@@first")
+                    /* Convert to an verbatim line _without_ anything else. */
+            else {
+                at.error(f"ignoring @first directive in {p.h!r}")
+            }
+        else {
+            self.putSentinel("@" + directive)
+        }
+        i = g.skip_line(s, k)
+        return i
+    }
     //@+node:ekr.20211016085907.137: *6* at.putDelims
     public putDelims(directive, s: string, k: number): void {
         /* Put an @delims directive. */
-        at = self
+        at = this
         /* Put a space to protect the last delim. */
         at.putSentinel(directive + " ")  /* 10/23/02: put @delims, not @@delims */
         /* Skip the keyword and whitespace. */
@@ -3257,9 +3230,9 @@ classAtFile {
          *
          * Remove extra blanks if the line starts with the underindentEscapeString
          */
-        tag = self.underindentEscapeString
+        tag = this.underindentEscapeString
         if (s.startswith(tag)) {
-            n2, s2 = self.parseUnderindentTag(s)
+            n2, s2 = this.parseUnderindentTag(s)
             if (n2 >= n) {
                 return
             }
@@ -3271,27 +3244,27 @@ classAtFile {
             }
         }
         if (n > 0) {
-            w = self.tab_width
+            w = this.tab_width
             if (w > 1) {
                 q, r = divmod(n, w)
-                self.otabs(q)
-                self.oblanks(r)
+                this.otabs(q)
+                this.oblanks(r)
             }
             else {
-                self.oblanks(n)
+                this.oblanks(n)
             }
         }
     }
     //@+node:ekr.20211016085907.139: *5* at.putInitialComment
     public putInitialComment(): void {
-        c = self.c
+        c = this.c
         s2 = c.config.output_initial_comment
         if (s2) {
             lines = s2.split("\\n")
             for (line in lines) {
                 line = line.replace("@date", time.asctime())
                 if (line) {
-                    self.putSentinel("@comment " + line)
+                    this.putSentinel("@comment " + line)
                 }
             }
         }
@@ -3302,7 +3275,7 @@ classAtFile {
          * Write or create the given file from the contents.
          * Return True if the original file was changed.
          */
-        at, c = self, self.c
+        at, c = this, this.c
         if (root) {
             root.clearDirty()
         }
@@ -3425,7 +3398,7 @@ classAtFile {
 
     public warnAboutOrphandAndIgnoredNodes(): void {
         /* Always warn, even when language=="cweb" */
-        at, root = self, self.root
+        at, root = this, this.root
         if (at.errors) {
             return  /* No need to repeat this. */
         }
@@ -3458,7 +3431,7 @@ classAtFile {
     //@+node:ekr.20211016085907.144: *5* at.writeError
     public writeError(message): void {
         /* Issue an error while writing an @<file> node. */
-        at = self
+        at = this
         if (at.errors == 0) {
             fn = at.targetFileName or 'unnamed file'
             g.es_error(f"errors writing: {fn}")
@@ -3468,7 +3441,7 @@ classAtFile {
     }
     //@+node:ekr.20211016085907.145: *5* at.writeException
     public writeException(fileName, root): void {
-        at = self
+        at = this
         g.error("exception writing:", fileName)
         g.es_exception()
         if (getattr(at, 'outputFile', None)) {
@@ -3482,14 +3455,14 @@ classAtFile {
     //@+node:ekr.20211016085907.146: *3* at.Utilites
     //@+node:ekr.20211016085907.147: *4* at.error & printError
     public error(*args): void {
-        at = self
+        at = this
         at.printError(*args)
         at.errors += 1
     }
 
     public printError(*args): void {
         /* Print an error message that may contain non-ascii characters. */
-        at = self
+        at = this
         if (at.errors) {
             g.error(*args)
         }
@@ -3499,14 +3472,16 @@ classAtFile {
     }
     //@+node:ekr.20211016085907.148: *4* at.exception
     public exception(message): void {
-        self.error(message)
+        this.error(message)
         g.es_exception()
     }
     //@+node:ekr.20211016085907.149: *4* at.file operations...
-    /* Error checking versions of corresponding functions in Python's os module. */
+    /*
+     * Error checking versions of corresponding functions in Python's os module.
+     */
     //@+node:ekr.20211016085907.150: *5* at.chmod
     public chmod(fileName, mode): void {
-        /* Do _not_ call self.error here. */
+        /* Do _not_ call this.error here. */
         if (mode is None) {
             return
         }
@@ -3531,7 +3506,7 @@ classAtFile {
         }
         except (Exception) {
             if (not g.unitTesting) {
-                self.error(f"exception removing: {fileName}")
+                this.error(f"exception removing: {fileName}")
                 g.es_exception()
             }
             return False
@@ -3540,7 +3515,7 @@ classAtFile {
     //@+node:ekr.20211016085907.152: *5* at.stat
     public stat(fileName): void {
         /* Return the access mode of named file, removing any setuid, setgid, and sticky bits. */
-        /* Do _not_ call self.error here. */
+        /* Do _not_ call this.error here. */
         try {
             mode = (os.stat(fileName))[0] & (7 * 8 * 8 + 7 * 8 + 7)  /* 0777 */
         }
@@ -3572,7 +3547,7 @@ classAtFile {
     /* It is called from at.os and at.putIndent. */
 
     public parseUnderindentTag(s: string): void {
-        tag = self.underindentEscapeString
+        tag = this.underindentEscapeString
         s2 = s[len(tag) :]
         /* To be valid, the escape must be followed by at least one digit. */
         i = 0
@@ -3593,7 +3568,7 @@ classAtFile {
     //@+node:ekr.20211016085907.155: *4* at.promptForDangerousWrite
     public promptForDangerousWrite(fileName, message=None): void {
         /* Raise a dialog asking the user whether to overwrite an existing file. */
-        at, c, root = self, self.c, self.root
+        at, c, root = this, this.c, this.root
         if (at.cancelFlag) {
             assert at.canCancelFlag
             return False
@@ -3664,7 +3639,7 @@ classAtFile {
          * Scan p and p's ancestors looking for directives,
          * setting corresponding AtFile ivars.
          */
-        at, c = self, self.c
+        at, c = this, this.c
         d = c.scanAllDirectives(p)
         /*  */
         /* Language & delims: Tricky. */
@@ -3741,7 +3716,7 @@ classAtFile {
          */
         trace = 'save' in g.app.debug
         sfn = g.shortFileName(fn)
-        c = self.c
+        c = this.c
         efc = g.app.externalFilesController
         if (p.isAtNoSentFileNode()) {
             /* #1450. */
@@ -3816,28 +3791,27 @@ classAtFile {
 }
 atFile = AtFile  /* compatibility */
 //@+node:ekr.20211016085907.161: ** class FastAtRead
+/** 
+ * Read an exteral file, created from an @file tree.
+ * Written by Vitalije; edited by EKR.
+ */
 classFastAtRead {
-    /** 
-     * Read an exteral file, created from an @file tree.
-     * This is Vitalije's code, edited by EKR.
-     */
 
     public constructor(c: Commands, gnx2vnode, test=False, TestVNode=None): void {
-        self.c = c
+        this.c = c
         assert gnx2vnode is not None
-        self.gnx2vnode = gnx2vnode
-            /* The global fc.gnxDict. Keys are gnx's, values are vnodes. */
-        self.path = None
-        self.root = None
-        self.VNode = TestVNode if test else leoNodes.VNode
-        self.test = test
+        this.gnx2vnode = gnx2vnode  /* The global fc.gnxDict. Keys are gnx's, values are vnodes. */
+        this.path = None
+        this.root = None
+        this.VNode = TestVNode if test else leoNodes.VNode
+        this.test = test
     }
     //@+others
     //@+node:ekr.20211016085907.162: *3* fast_at.get_patterns
-    //@@nobeautify
-
-    public get_patterns(delims): void {
-        /* Create regex patterns for the given comment delims. */
+    /*
+     * Create regex patterns for the given comment delims.
+     */
+    public get_patterns(delims): void {  /// List[regex's] 
         /* This must be a function, because of @comments & @delims. */
         delim_start, delim_end = delims
         delims = re.escape(delim_start), re.escape(delim_end or '')
@@ -3864,10 +3838,11 @@ classFastAtRead {
         return (re.compile(pattern) for pattern in patterns)
     }
     //@+node:ekr.20211016085907.163: *3* fast_at.post_pass
+    /*
+     * Set all body text.
+     */
     public post_pass(gnx2body, gnx2vnode, root_v): void {
-        /* Set all body text. */
-        /* Set the body text. */
-        if (self.test) {
+        if (this.test) {
             /* Check the keys. */
             bkeys = sorted(gnx2body.keys())
             vkeys = sorted(gnx2vnode.keys())
@@ -3875,7 +3850,7 @@ classFastAtRead {
                 g.trace('KEYS MISMATCH')
                 g.printObj(bkeys)
                 g.printObj(vkeys)
-                if (self.test) {
+                if (this.test) {
                     sys.exit(1)
                 }
             }
@@ -3908,7 +3883,7 @@ classFastAtRead {
         re.VERBOSE,
     )
 
-    public scan_header(lines): void {
+    public scan_header(lines): void {  /// Union[None, Tuple[delims, first_lines, int]
         /** 
          * Scan for the header line, which follows any @first lines.
          * Return (delims, first_lines, i+1) or None
@@ -3916,7 +3891,7 @@ classFastAtRead {
         first_lines: List[str] = []
         i = 0  /* To keep some versions of pylint happy. */
         for (i, line in enumerate(lines)) {
-            m = self.header_pattern.match(line)
+            m = this.header_pattern.match(line)
             if (m) {
                 delims = m.group(1), m.group(8) or ''
                 return delims, first_lines, i + 1
@@ -3926,7 +3901,7 @@ classFastAtRead {
         return None
     }
     //@+node:ekr.20211016085907.165: *3* fast_at.scan_lines
-    public scan_lines(delims, first_lines, lines, path, start): void {
+    public scan_lines(delims, first_lines, lines, path, start): void {  /// Tuple(root_v, last_lines)
         /* Scan all lines of the file, creating vnodes. */
         //@+<< init scan_lines >>
         //@+node:ekr.20211016085907.166: *4* << init scan_lines >>
@@ -3957,26 +3932,26 @@ classFastAtRead {
         /*  */
         /* Init the parent vnode for testing. */
         /*  */
-        if (self.test) {
+        if (this.test) {
             /* Start with the gnx for the @file node. */
             root_gnx = gnx = 'root-gnx'  /* The node that we are reading. */
             gnx_head = '<hidden top vnode>'  /* The headline of the root node. */
             context = None
-            parent_v = self.VNode(context=context, gnx=gnx)
+            parent_v = this.VNode(context=context, gnx=gnx)
             parent_v._headString = gnx_head  /* Corresponds to the @files node itself. */
         }
         else {
             /* Production. */
-            root_gnx = gnx = self.root.gnx
-            context = self.c
-            parent_v = self.root.v
+            root_gnx = gnx = this.root.gnx
+            context = this.c
+            parent_v = this.root.v
         }
         root_v = parent_v  /* Does not change. */
         level_stack.append((root_v, False),)
         /*  */
         /* Init the gnx dict last. */
         /*  */
-        gnx2vnode = self.gnx2vnode  /* Keys are gnx's, values are vnodes. */
+        gnx2vnode = this.gnx2vnode  /* Keys are gnx's, values are vnodes. */
         gnx2body = {}  /* Keys are gnxs, values are list of body lines. */
         gnx2vnode[gnx] = parent_v  /* Add gnx to the keys */
         /* Add gnx to the keys. */
@@ -3984,7 +3959,7 @@ classFastAtRead {
         gnx2body[gnx] = body = first_lines
         /*  */
         /* get the patterns. */
-        data = self.get_patterns(delims)
+        data = this.get_patterns(delims)
         /* pylint: disable=line-too-long */
         after_pat, all_pat, code_pat, comment_pat, delims_pat, doc_pat, end_raw_pat, first_pat, last_pat, node_start_pat, others_pat, raw_pat, ref_pat = data
         //@-<< init scan_lines >>
@@ -4169,7 +4144,7 @@ classFastAtRead {
                 }
                 else {
                     /* Make a new vnode. */
-                    v = self.VNode(context=context, gnx=gnx)
+                    v = this.VNode(context=context, gnx=gnx)
                 }
                 /*  */
                 /* The last version of the body and headline wins. */
@@ -4315,7 +4290,7 @@ classFastAtRead {
                     after_pat, all_pat, code_pat, comment_pat, delims_pat,
                     doc_pat, end_raw_pat, first_pat, last_pat,
                     node_start_pat, others_pat, raw_pat, ref_pat
-                ) = self.get_patterns(delims)
+                ) = this.get_patterns(delims)
                 continue
             }
             //@-<< handle @comment >>
@@ -4354,7 +4329,7 @@ classFastAtRead {
                     after_pat, all_pat, code_pat, comment_pat, delims_pat,
                     doc_pat, end_raw_pat, first_pat, last_pat,
                     node_start_pat, others_pat, raw_pat, ref_pat
-                ) = self.get_patterns(delims)
+                ) = this.get_patterns(delims)
                 continue
             }
             //@-<< handle @delims >>
@@ -4419,7 +4394,7 @@ classFastAtRead {
             /*  */
             /* #2213: *Do* insert the line, with a warning. */
             g.trace(
-                f"{g.shortFileName(self.path)}: "
+                f"{g.shortFileName(this.path)}: "
                 f"warning: inserting unexpected line: {line.rstrip()!r}"
             )
             body.append(line)
@@ -4435,23 +4410,24 @@ classFastAtRead {
             last_lines = ['@last ' + z for z in last_lines]
             gnx2body[root_gnx] = gnx2body[root_gnx] + last_lines
         }
-        self.post_pass(gnx2body, gnx2vnode, root_v)
+        this.post_pass(gnx2body, gnx2vnode, root_v)
         return root_v, last_lines
     }
     //@+node:ekr.20211016085907.184: *3* fast_at.read_into_root
-    public read_into_root(contents, path, root): void {
-        /** 
-         * Parse the file's contents, creating a tree of vnodes
-         * anchored in root.v.
-         */
+    /** 
+     * Parse the file's contents, creating a tree of vnodes
+     * anchored in root.v.
+     */
+    public read_into_root(contents, path, root): bool {
+
         trace = False
         t1 = time.process_time()
-        self.path = path
-        self.root = root
+        this.path = path
+        this.root = root
         sfn = g.shortFileName(path)
         contents = contents.replace('\r', '')
         lines = g.splitLines(contents)
-        data = self.scan_header(lines)
+        data = this.scan_header(lines)
         if (not data) {
             g.trace(f"Invalid external file: {sfn}")
             return False
@@ -4460,7 +4436,7 @@ classFastAtRead {
         /* Previously, this had been done in readOpenFile. */
         root.v._deleteAllChildren()
         delims, first_lines, start_i = data
-        self.scan_lines(delims, first_lines, lines, path, start_i)
+        this.scan_lines(delims, first_lines, lines, path, start_i)
         if (trace) {
             t2 = time.process_time()
             g.trace(f"{t2 - t1:5.2f} sec. {path}")
