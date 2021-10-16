@@ -4396,18 +4396,18 @@ print('done')
   "command": "leointeg.showBody",
   "key": "ctrl+t",
   "mac": "cmd+t",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.showBody",
   "key": "alt+d",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.showBody",
   "key": "ctrl+g",
   "mac": "cmd+g",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.showBody",
@@ -4424,7 +4424,7 @@ print('done')
   "command": "leointeg.saveLeoFileFromOutline",
   "key": "ctrl+s",
   "mac": "cmd+s",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.saveLeoFile",
@@ -4451,7 +4451,7 @@ print('done')
 {
   "command": "leointeg.contractAllFromOutline",
   "key": "alt+-",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 </t>
 <t tx="ekr.20200815123601.81">{
@@ -4464,7 +4464,7 @@ print('done')
   "command": "leointeg.editSelectedHeadlineFromOutline",
   "key": "ctrl+h",
   "mac": "cmd+h",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.markSelection",
@@ -4740,7 +4740,7 @@ print('done')
   "command": "leointeg.cutNodeSelectionFromOutline",
   "key": "ctrl+shift+x",
   "mac": "cmd+shift+x",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.copyNodeSelection",
@@ -4752,7 +4752,7 @@ print('done')
   "command": "leointeg.copyNodeSelection",
   "key": "ctrl+shift+c",
   "mac": "cmd+shift+c",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.pasteNodeAtSelection",
@@ -4764,7 +4764,7 @@ print('done')
   "command": "leointeg.pasteNodeAtSelectionFromOutline",
   "key": "ctrl+shift+v",
   "mac": "cmd+shift+v",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.deleteSelection",
@@ -14293,7 +14293,7 @@ public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
   "command": "leointeg.extract",
   "key": "ctrl+shift+d",
   "mac": "cmd+shift+d",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.extractNames",
@@ -14305,7 +14305,7 @@ public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
   "command": "leointeg.extractNames",
   "key": "ctrl+shift+n",
   "mac": "cmd+shift+n",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 </t>
 <t tx="felix.20201105010614.1">{
@@ -15226,17 +15226,17 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.findNextFromOutline",
   "key": "f3",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.findNext",
   "key": "f3",
-  "when": "leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.findPreviousFromOutline",
   "key": "f2",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.findPrevious",
@@ -15253,7 +15253,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.replaceFromOutline",
   "key": "ctrl+=",
   "mac": "cmd+=",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.replaceThenFind",
@@ -15265,12 +15265,12 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.replaceThenFindFromOutline",
   "key": "ctrl+-",
   "mac": "cmd+-",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.gotoGlobalLine",
   "key": "alt+g",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.gotoGlobalLine",
@@ -15281,7 +15281,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.setFindEverywhereOption",
   "key": "ctrl+alt+e",
   "mac": "cmd+alt+e",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.setFindEverywhereOption",
@@ -15293,7 +15293,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.setFindNodeOnlyOption",
   "key": "ctrl+alt+n",
   "mac": "cmd+alt+n",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.setFindNodeOnlyOption",
@@ -15305,7 +15305,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.setFindSuboutlineOnlyOption",
   "key": "ctrl+alt+s",
   "mac": "cmd+alt+s",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.setFindSuboutlineOnlyOption",
@@ -15317,7 +15317,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.toggleFindIgnoreCaseOption",
   "key": "ctrl+alt+i",
   "mac": "cmd+alt+i",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.toggleFindIgnoreCaseOption",
@@ -15329,7 +15329,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.toggleFindMarkChangesOption",
   "key": "ctrl+alt+c",
   "mac": "cmd+alt+c",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.toggleFindMarkChangesOption",
@@ -15341,7 +15341,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.toggleFindMarkFindsOption",
   "key": "ctrl+alt+f",
   "mac": "cmd+alt+f",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.toggleFindMarkFindsOption",
@@ -15353,7 +15353,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.toggleFindRegexpOption",
   "key": "ctrl+alt+x",
   "mac": "cmd+alt+x",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.toggleFindRegexpOption",
@@ -15365,7 +15365,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.toggleFindWordOption",
   "key": "ctrl+alt+w",
   "mac": "cmd+alt+w",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.toggleFindWordOption",
@@ -15377,7 +15377,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.toggleFindSearchBodyOption",
   "key": "ctrl+alt+b",
   "mac": "cmd+alt+b",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.toggleFindSearchBodyOption",
@@ -15389,7 +15389,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.toggleFindSearchHeadlineOption",
   "key": "ctrl+alt+h",
   "mac": "cmd+alt+h",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.toggleFindSearchHeadlineOption",
@@ -21255,7 +21255,7 @@ function closeLeoTextEditors() {
 </t>
 <t tx="felix.20211007215423.1">## 1.0.3
 
-- ...
+- Fixed 'F3' findNext bug that didn't trigger because the context was not (re)set properly on focus out from the 'find panel'.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
@@ -21425,8 +21425,15 @@ import * as utils from "../utils";
     webviewView.webview.onDidReceiveMessage((data) =&gt; {
         switch (data.type) {
             case 'gotFocus': {
-                utils.setContext("sideBarFocus", true);
-                utils.setContext("focusedView", "leoFindPanel");
+                // utils.setContext("sideBarFocus", true);
+                // utils.setContext("focusedView", "leoFindPanel");
+                utils.setContext("leoFindFocus", true);
+                break;
+            }
+            case 'lostFocus': {
+                // utils.setContext("sideBarFocus", false);
+                // utils.setContext("focusedView", "");
+                utils.setContext("leoFindFocus", false);
                 break;
             }
             case 'leoFindNext': {
@@ -21541,11 +21548,11 @@ import * as utils from "../utils";
 </t>
 <t tx="fil.20210603223013.1"></t>
 <t tx="fil.20210603223013.10">checkboxIds.forEach((p_inputId) =&gt; {
-                    //@ts-expect-error
+                            //@ts-expect-error
     document.getElementById(p_inputId).checked = p_settings[p_inputId];
     searchSettings[p_inputId] = p_settings[p_inputId];
 });
-                //@ts-expect-error
+                        //@ts-expect-error
 document.getElementById(radioIds[p_settings['searchScope']]).checked = true;
 searchSettings.searchScope = p_settings['searchScope'];
 </t>
@@ -21572,7 +21579,7 @@ let dirty = false;
 });
 </t>
 <t tx="fil.20210603223013.15">document.getElementById(p_inputId).onkeypress = function (p_event) {
-                    //@ts-expect-error
+                            //@ts-expect-error
     if (!p_event) p_event = window.event;
     var keyCode = p_event.code || p_event.key;
     if (keyCode == 'Enter') {
@@ -21586,14 +21593,14 @@ let dirty = false;
 };
 </t>
 <t tx="fil.20210603223013.16">document.getElementById(p_inputId).addEventListener('input', function (p_event) {
-                    //@ts-expect-error
+                            //@ts-expect-error
     searchSettings[p_inputId] = this.value;
     processChange();
 });
 </t>
 <t tx="fil.20210603223013.17">checkboxIds.forEach((p_inputId) =&gt; {
     document.getElementById(p_inputId).addEventListener('change', function (p_event) {
-                //@ts-expect-error
+                    //@ts-expect-error
         searchSettings[p_inputId] = this.checked;
         processChange();
     });
@@ -21603,7 +21610,7 @@ let dirty = false;
 <t tx="fil.20210603223013.19">radioIds.forEach((p_inputId) =&gt; {
     document.getElementById(p_inputId).addEventListener('change', function (p_event) {
         searchSettings['searchScope'] = parseInt(
-                    //@ts-expect-error
+                        //@ts-expect-error
             document.querySelector('input[name="searchScope"]:checked').value
         );
         processChange();
@@ -21632,11 +21639,11 @@ div.col {
 function toggleCheckbox(p_inputId) {
     let w_checkbox = document.getElementById(p_inputId);
     let w_setTo = true;
-            //@ts-expect-error
+                //@ts-expect-error
     if (w_checkbox.checked) {
         w_setTo = false;
     }
-            //@ts-expect-error
+                //@ts-expect-error
     w_checkbox.checked = w_setTo;
     searchSettings[p_inputId] = w_setTo;
     if (timer) {
@@ -21650,10 +21657,10 @@ function toggleCheckbox(p_inputId) {
  * @param {string} p_inputId
  */
 function setRadio(p_inputId) {
-            //@ts-expect-error
+                //@ts-expect-error
     document.getElementById(p_inputId).checked = true;
     searchSettings['searchScope'] = parseInt(
-                //@ts-expect-error
+                    //@ts-expect-error
         document.querySelector('input[name="searchScope"]:checked').value
     );
     if (timer) {
@@ -21668,7 +21675,7 @@ function setRadio(p_inputId) {
  * @param {KeyboardEvent} p_event
  */
 function checkKeyDown(p_event) {
-            //@ts-expect-error
+                //@ts-expect-error
     if (!p_event) p_event = window.event;
     var keyCode = p_event.code || p_event.key;
 
@@ -21812,11 +21819,11 @@ function checkOtherKeys(p_event) {
  */
 function focusOnField(p_id) {
     const inputField = document.querySelector('#' + p_id);
-            //@ts-expect-error
+                //@ts-expect-error
     inputField.select();
     // TODO : TEST IF NEEDED TO PREVENT FLICKER ON FIRST TRY?
     setTimeout(() =&gt; {
-                //@ts-expect-error
+                    //@ts-expect-error
         inputField.select();
     }, 0);
 }
@@ -21865,6 +21872,9 @@ vscode.postMessage({ type: 'refreshSearchConfig' });
 
     document.addEventListener('focusin', (event) =&gt; {
         vscode.postMessage({ type: 'gotFocus' });
+    });
+    document.addEventListener('focusout', (event) =&gt; {
+        vscode.postMessage({ type: 'lostFocus' });
     });
 
     // Handle messages sent from the extension to the webview
@@ -21934,7 +21944,7 @@ function setSettings(p_settings) {
 
 </t>
 <t tx="fil.20210603223013.9">inputIds.forEach((p_inputId) =&gt; {
-                    //@ts-expect-error
+                            //@ts-expect-error
     document.getElementById(p_inputId).value = p_settings[p_inputId];
     searchSettings[p_inputId] = p_settings[p_inputId];
 });

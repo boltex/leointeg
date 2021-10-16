@@ -2,7 +2,8 @@
 
 ## 1.0.3
 
-- ...
+- Fixed 'F3' findNext bug that didn't trigger because the context was not (re)set properly on focus out from the 'find panel'.
+- Changed all context 'when' clauses to be more 'precise & unique' in relation to other extensions, such as leojs.
 
 ## 1.0.2
 
