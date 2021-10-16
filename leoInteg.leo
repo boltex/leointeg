@@ -14301,7 +14301,7 @@ export function getDurationMs(p_start: [number, number]): number {
 public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
     cplusplus: 'cpp',
     md: 'markdown',
-    rst: 'restructuredtext'
+    rest: 'restructuredtext'
 };
 
 </t>
