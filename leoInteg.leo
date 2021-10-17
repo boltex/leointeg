@@ -1631,7 +1631,7 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
         })
         .then((p_package) =&gt; {
             // refresh and reveal selection
-            this.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+            this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
             return Promise.resolve(true); // TODO launchRefresh should be a returned promise
         });
 }
@@ -7399,7 +7399,10 @@ export function activate(p_context: vscode.ExtensionContext) {
             w_leo.startNetworkServices();
             // Save version # for next startup comparison
             p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-            console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
+            
+            // * Log time taken for startup
+            // console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
+            
         });
 }
 
@@ -11261,7 +11264,18 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                         this.lastSelectedNode &amp;&amp;
                         utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
                     ) {
-                        vscode.languages.setTextDocumentLanguage(p_document, w_language);
+                        vscode.languages.setTextDocumentLanguage(p_document, w_language).then(
+                            () =&gt; { }, // ok - language found
+                            (p_error) =&gt; {
+                                let w_langName = p_error.toString().split('\n')[0];
+                                if (w_langName.length &gt; 36) {
+                                    w_langName = w_langName.substring(36)
+                                    vscode.window.showInformationMessage(w_langName + " language not yet supported.");
+                                    return;
+                                }
+                                vscode.window.showInformationMessage("Language not yet supported.");
+                            }
+                        );
                     }
                 });
             }
@@ -14301,7 +14315,8 @@ export function getDurationMs(p_start: [number, number]): number {
 public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
     cplusplus: 'cpp',
     md: 'markdown',
-    rest: 'restructuredtext'
+    rest: 'restructuredtext',
+    rst: 'restructuredtext'
 };
 
 </t>
@@ -21280,6 +21295,7 @@ function closeLeoTextEditors() {
 - Fixed 'F3' bug: findNext didn't trigger because the context was not (re)set properly on focus-out from the 'find panel'.
 - Changed all context 'when' clauses to be more 'precise &amp; unique' in relation to other extensions, such as leojs.
 - Added the reStructuredText (rest) .rst language support (syntax coloring and snippets)
+- Fixed at-button panel to refresh after adding a button
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

@@ -401,7 +401,8 @@ export class Constants {
     public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
         cplusplus: 'cpp',
         md: 'markdown',
-        rest: 'restructuredtext'
+        rest: 'restructuredtext',
+        rst: 'restructuredtext'
     };
 
     /**

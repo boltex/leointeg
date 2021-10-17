@@ -693,7 +693,10 @@ export function activate(p_context: vscode.ExtensionContext) {
             w_leo.startNetworkServices();
             // Save version # for next startup comparison
             p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-            console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
+            
+            // * Log time taken for startup
+            // console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
+            
         });
 }
 

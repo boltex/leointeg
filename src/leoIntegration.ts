@@ -1929,7 +1929,18 @@ export class LeoIntegration {
                             this.lastSelectedNode &&
                             utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
                         ) {
-                            vscode.languages.setTextDocumentLanguage(p_document, w_language);
+                            vscode.languages.setTextDocumentLanguage(p_document, w_language).then(
+                                () => { }, // ok - language found
+                                (p_error) => {
+                                    let w_langName = p_error.toString().split('\n')[0];
+                                    if (w_langName.length > 36) {
+                                        w_langName = w_langName.substring(36)
+                                        vscode.window.showInformationMessage(w_langName + " language not yet supported.");
+                                        return;
+                                    }
+                                    vscode.window.showInformationMessage("Language not yet supported.");
+                                }
+                            );
                         }
                     });
                 }
@@ -3255,7 +3266,7 @@ export class LeoIntegration {
             })
             .then((p_package) => {
                 // refresh and reveal selection
-                this.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+                this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
                 return Promise.resolve(true); // TODO launchRefresh should be a returned promise
             });
     }
