@@ -1619,15 +1619,14 @@ export class LeoIntegration {
             this.lastSelectedNode = p_leoNode; // special case only: lastSelectedNode should be set in selectTreeNode
         }
         setTimeout(() => {
-            // TODO : MAKE SURE TIMEOUT IS REALLY REQUIRED
-            this._revealTreeViewNode(p_leoNode, { select: w_selectFlag, focus: w_focusFlag }).then(
-                () => {
+            this._revealTreeViewNode(p_leoNode, { select: w_selectFlag, focus: w_focusFlag })
+                .then(() => {
                     // console.log('did this ask for parent?', p_leoNode.id, p_leoNode.label); // ! debug
                     if (w_selectFlag) {
                         this._gotSelection(p_leoNode);
                     }
                 }
-            );
+                );
         });
     }
 
@@ -1930,7 +1929,18 @@ export class LeoIntegration {
                             this.lastSelectedNode &&
                             utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
                         ) {
-                            vscode.languages.setTextDocumentLanguage(p_document, w_language);
+                            vscode.languages.setTextDocumentLanguage(p_document, w_language).then(
+                                () => { }, // ok - language found
+                                (p_error) => {
+                                    let w_langName = p_error.toString().split('\n')[0];
+                                    if (w_langName.length > 36) {
+                                        w_langName = w_langName.substring(36)
+                                        vscode.window.showInformationMessage(w_langName + " language not yet supported.");
+                                        return;
+                                    }
+                                    vscode.window.showInformationMessage("Language not yet supported.");
+                                }
+                            );
                         }
                     });
                 }
@@ -3256,7 +3266,30 @@ export class LeoIntegration {
             })
             .then((p_package) => {
                 // refresh and reveal selection
-                this.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+                this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
+                return Promise.resolve(true); // TODO launchRefresh should be a returned promise
+            });
+    }
+
+    /**
+     * * Finds and goes to the script of an at-button. Used by '@buttons' treeview.
+     * @param p_node the node of the at-buttons panel that was right-clicked
+     * @returns the launchRefresh promise started after it's done finding the node
+     */
+    public gotoScript(p_node: LeoButtonNode): Promise<boolean> {
+        return this._isBusyTriggerSave(false)
+            .then((p_saveResult) => {
+                return this.sendAction(
+                    Constants.LEOBRIDGE.GOTO_SCRIPT,
+                    JSON.stringify({ index: p_node.button.index })
+                );
+            })
+            .then((p_gotoScriptResult: LeoBridgePackage) => {
+                return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+            })
+            .then((p_package) => {
+                // refresh and reveal selection
+                this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
                 return Promise.resolve(true); // TODO launchRefresh should be a returned promise
             });
     }

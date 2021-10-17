@@ -1,173 +1,173 @@
 {
-	"name": "Leo Body",
-	"scopeName": "leo.injection",
-	"injectionSelector": "L:source.leobody",
-	"patterns": [
-		{
-			"include": "#leo-comments"
-		},
-		{
-			"include": "#leo-raw"
-		},
-		{
-			"include": "#leo-sectionref"
-		},
-		{
-			"include": "#leo-keywords"
-		},
-		{
-			"include": "#leo-languages"
-		}
-	],
-	"repository": {
-		"leo-comments": {
-			"patterns": [
-				{
-					"begin": "^(@doc|@)($|\\s+)",
-					"end": "^(@code|@c)($|\\s+)",
-					"beginCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"endCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"name": "comment"
-				}
-			]
-		},
-		"leo-raw": {
-			"patterns": [
-				{
-					"begin": "^(@raw)($|\\s+)",
-					"end": "^(@end_raw)($|\\s+)",
-					"beginCaptures": {
-						"0": {
-							"name": "invalid"
-						}
-					},
-					"endCaptures": {
-						"0": {
-							"name": "invalid"
-						}
-					},
-					"name": "markup.inline.raw"
-				}
-			]
-		},
-		"leo-sectionref": {
-			"patterns": [
-				{
-					"match": "(<<)([\\sa-zA-Z0-9_\\-]+)(>>)",
-					"captures": {
-						"1": {
-							"name": "punctuation.section.embedded"
-						},
-						"2": {
-							"name": "markup.underline"
-						},
-						"3": {
-							"name": "punctuation.section.embedded"
-						}
-					}
-				}
-			]
-		},
-		"leo-keywords": {
-			"patterns": [
-				{
-					"match": "^\\s*(@others|@all)($|\\s+)",
-					"name": "keyword"
-				},
-				{
-					"match": "^(@language)\\s+\\b(batch|c|cplusplus|csharp|css|fortran|haskell|html|java|javascript|json|latex|lua|makefile|matlab|md|pascal|perl|php|python|ruby|rust|typescript)\\b",
-					"name": "keyword"
-				},
-				{
-					"match": "^(@c|@code|@encoding|@ignore|@lineending|@path|@pagewidth|@tabwidth)($|\\s+)",
-					"name": "keyword"
-				},
-				{
-					"match": "^(@color|@killcolor|@nocolor|@nocolor\\-node)($|\\s+)",
-					"name": "keyword"
-				},
-				{
-					"match": "^(@first|@last)($|\\s+)",
-					"name": "keyword"
-				},
-				{
-					"match": "^(@wrap|@nowrap)($|\\s+)",
-					"name": "keyword"
-				},
-				{
-					"match": "^(@comment|@delims)($|\\s+)",
-					"name": "invalid"
-				}
-			]
-		},
-		"strings": {
-			"patterns": [
-				{
-					"name": "string.quoted.double.leobody",
-					"begin": "\"",
-					"end": "\"",
-					"patterns": [
-						{
-							"name": "constant.character.escape.leobody",
-							"match": "\\\\."
-						}
-					]
-				},
-				{
-					"name": "string.quoted.single.leobody",
-					"begin": "\\'",
-					"end": "\\'",
-					"patterns": [
-						{
-							"name": "constant.character.escape.leobody",
-							"match": "\\\\."
-						}
-					]
-				}
-			]
-		},
-		"leo-languages": {
-			"patterns": [],
-			"// TEST patterns": [
-				{
-					"begin": "^(@language python)($|\\s+)",
-					"end": "^(@language)($|\\s+)",
-					"beginCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"endCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"name": "meta.embedded.block.leobody.python"
-				},
-				{
-					"begin": "^(@language typescript)($|\\s+)",
-					"end": "^(@language)($|\\s+)",
-					"beginCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"endCaptures": {
-						"0": {
-							"name": "keyword"
-						}
-					},
-					"name": "meta.embedded.block.leobody.typescript"
-				}
-			]
-		}
-	}
+    "name": "Leo Body",
+    "scopeName": "leo.injection",
+    "injectionSelector": "L:source.leobody",
+    "patterns": [
+        {
+            "include": "#leo-comments"
+        },
+        {
+            "include": "#leo-raw"
+        },
+        {
+            "include": "#leo-sectionref"
+        },
+        {
+            "include": "#leo-keywords"
+        },
+        {
+            "include": "#leo-languages"
+        }
+    ],
+    "repository": {
+        "leo-comments": {
+            "patterns": [
+                {
+                    "begin": "^(@doc|@)($|\\s+)",
+                    "end": "^(@code|@c)($|\\s+)",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "keyword"
+                        }
+                    },
+                    "endCaptures": {
+                        "0": {
+                            "name": "keyword"
+                        }
+                    },
+                    "name": "comment"
+                }
+            ]
+        },
+        "leo-raw": {
+            "patterns": [
+                {
+                    "begin": "^(@raw)($|\\s+)",
+                    "end": "^(@end_raw)($|\\s+)",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "invalid"
+                        }
+                    },
+                    "endCaptures": {
+                        "0": {
+                            "name": "invalid"
+                        }
+                    },
+                    "name": "markup.inline.raw"
+                }
+            ]
+        },
+        "leo-sectionref": {
+            "patterns": [
+                {
+                    "match": "(<<)([\\sa-zA-Z0-9_\\-]+)(>>)",
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.section.embedded"
+                        },
+                        "2": {
+                            "name": "markup.underline"
+                        },
+                        "3": {
+                            "name": "punctuation.section.embedded"
+                        }
+                    }
+                }
+            ]
+        },
+        "leo-keywords": {
+            "patterns": [
+                {
+                    "match": "^\\s*(@others|@all)($|\\s+)",
+                    "name": "keyword"
+                },
+                {
+                    "match": "^(@language)\\s+\\b(batch|c|cplusplus|csharp|css|fortran|haskell|html|java|javascript|json|latex|lua|makefile|matlab|md|pascal|perl|php|python|rest|ruby|rust|typescript)\\b",
+                    "name": "keyword"
+                },
+                {
+                    "match": "^(@c|@code|@encoding|@ignore|@lineending|@path|@pagewidth|@tabwidth)($|\\s+)",
+                    "name": "keyword"
+                },
+                {
+                    "match": "^(@color|@killcolor|@nocolor|@nocolor\\-node)($|\\s+)",
+                    "name": "keyword"
+                },
+                {
+                    "match": "^(@first|@last)($|\\s+)",
+                    "name": "keyword"
+                },
+                {
+                    "match": "^(@wrap|@nowrap)($|\\s+)",
+                    "name": "keyword"
+                },
+                {
+                    "match": "^(@comment|@delims)($|\\s+)",
+                    "name": "invalid"
+                }
+            ]
+        },
+        "strings": {
+            "patterns": [
+                {
+                    "name": "string.quoted.double.leobody",
+                    "begin": "\"",
+                    "end": "\"",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.leobody",
+                            "match": "\\\\."
+                        }
+                    ]
+                },
+                {
+                    "name": "string.quoted.single.leobody",
+                    "begin": "\\'",
+                    "end": "\\'",
+                    "patterns": [
+                        {
+                            "name": "constant.character.escape.leobody",
+                            "match": "\\\\."
+                        }
+                    ]
+                }
+            ]
+        },
+        "leo-languages": {
+            "patterns": [],
+            "// TEST patterns": [
+                {
+                    "begin": "^(@language python)($|\\s+)",
+                    "end": "^(@language)($|\\s+)",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "keyword"
+                        }
+                    },
+                    "endCaptures": {
+                        "0": {
+                            "name": "keyword"
+                        }
+                    },
+                    "name": "meta.embedded.block.leobody.python"
+                },
+                {
+                    "begin": "^(@language typescript)($|\\s+)",
+                    "end": "^(@language)($|\\s+)",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "keyword"
+                        }
+                    },
+                    "endCaptures": {
+                        "0": {
+                            "name": "keyword"
+                        }
+                    },
+                    "name": "meta.embedded.block.leobody.typescript"
+                }
+            ]
+        }
+    }
 }

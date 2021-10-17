@@ -25,6 +25,9 @@
     document.addEventListener('focusin', (event) => {
         vscode.postMessage({ type: 'gotFocus' });
     });
+    document.addEventListener('focusout', (event) => {
+        vscode.postMessage({ type: 'lostFocus' });
+    });
 
     // Handle messages sent from the extension to the webview
     window.addEventListener('message', (event) => {
@@ -84,16 +87,16 @@
     function setSettings(p_settings) {
         // When opening a Leo document, set default values of fields
         inputIds.forEach((p_inputId) => {
-                    //@ts-expect-error
+                            //@ts-expect-error
             document.getElementById(p_inputId).value = p_settings[p_inputId];
             searchSettings[p_inputId] = p_settings[p_inputId];
         });
         checkboxIds.forEach((p_inputId) => {
-                    //@ts-expect-error
+                            //@ts-expect-error
             document.getElementById(p_inputId).checked = p_settings[p_inputId];
             searchSettings[p_inputId] = p_settings[p_inputId];
         });
-                //@ts-expect-error
+                        //@ts-expect-error
         document.getElementById(radioIds[p_settings['searchScope']]).checked = true;
         searchSettings.searchScope = p_settings['searchScope'];
     }
@@ -115,7 +118,7 @@
 
     inputIds.forEach((p_inputId) => {
         document.getElementById(p_inputId).onkeypress = function (p_event) {
-                    //@ts-expect-error
+                            //@ts-expect-error
             if (!p_event) p_event = window.event;
             var keyCode = p_event.code || p_event.key;
             if (keyCode == 'Enter') {
@@ -128,14 +131,14 @@
             }
         };
         document.getElementById(p_inputId).addEventListener('input', function (p_event) {
-                    //@ts-expect-error
+                            //@ts-expect-error
             searchSettings[p_inputId] = this.value;
             processChange();
         });
     });
     checkboxIds.forEach((p_inputId) => {
         document.getElementById(p_inputId).addEventListener('change', function (p_event) {
-                //@ts-expect-error
+                    //@ts-expect-error
             searchSettings[p_inputId] = this.checked;
             processChange();
         });
@@ -143,7 +146,7 @@
     radioIds.forEach((p_inputId) => {
         document.getElementById(p_inputId).addEventListener('change', function (p_event) {
             searchSettings['searchScope'] = parseInt(
-                    //@ts-expect-error
+                        //@ts-expect-error
                 document.querySelector('input[name="searchScope"]:checked').value
             );
             processChange();
@@ -156,11 +159,11 @@
     function toggleCheckbox(p_inputId) {
         let w_checkbox = document.getElementById(p_inputId);
         let w_setTo = true;
-            //@ts-expect-error
+                //@ts-expect-error
         if (w_checkbox.checked) {
             w_setTo = false;
         }
-            //@ts-expect-error
+                //@ts-expect-error
         w_checkbox.checked = w_setTo;
         searchSettings[p_inputId] = w_setTo;
         if (timer) {
@@ -173,10 +176,10 @@
      * @param {string} p_inputId
      */
     function setRadio(p_inputId) {
-            //@ts-expect-error
+                //@ts-expect-error
         document.getElementById(p_inputId).checked = true;
         searchSettings['searchScope'] = parseInt(
-                //@ts-expect-error
+                    //@ts-expect-error
             document.querySelector('input[name="searchScope"]:checked').value
         );
         if (timer) {
@@ -190,7 +193,7 @@
      * @param {KeyboardEvent} p_event
      */
     function checkKeyDown(p_event) {
-            //@ts-expect-error
+                //@ts-expect-error
         if (!p_event) p_event = window.event;
         var keyCode = p_event.code || p_event.key;
 
@@ -333,11 +336,11 @@
      */
     function focusOnField(p_id) {
         const inputField = document.querySelector('#' + p_id);
-            //@ts-expect-error
+                //@ts-expect-error
         inputField.select();
         // TODO : TEST IF NEEDED TO PREVENT FLICKER ON FIRST TRY?
         setTimeout(() => {
-                //@ts-expect-error
+                    //@ts-expect-error
             inputField.select();
         }, 0);
     }

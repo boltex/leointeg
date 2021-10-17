@@ -1,5 +1,13 @@
 # Change Log
 
+## 1.0.3
+
+- Fixed 'F3' bug: findNext didn't trigger because the context was not (re)set properly on focus-out from the 'find panel'.
+- Changed all context 'when' clauses to be more 'precise & unique' in relation to other extensions, such as leojs.
+- Added the reStructuredText (rest) .rst language support (syntax coloring and snippets)
+- Fixed at-button panel to refresh after adding a button
+- Added 'Goto Script' command to the context menu of at-buttons, to 'find and goto' the source node of the button script.
+
 ## 1.0.2
 
 - Cleaned up command palette's insert 'child' choices.
