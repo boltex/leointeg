@@ -442,6 +442,7 @@ export class Constants {
         // * @-Buttons
         GET_BUTTONS: "!get_buttons", // "getButtons",
         REMOVE_BUTTON: "!remove_button", // "removeButton",
+        GOTO_SCRIPT: "!goto_script", // "goto Script command",
         CLICK_BUTTON: "!click_button", // "clickButton",
         // * Goto operations
         PAGE_UP: "!page_up", // "pageUp",
@@ -544,6 +545,7 @@ export class Constants {
         CLOSE_FILE: Constants.NAME + ".closeLeoFile",
         CLICK_BUTTON: Constants.NAME + ".clickButton",
         REMOVE_BUTTON: Constants.NAME + ".removeButton",
+        GOTO_SCRIPT: Constants.NAME + ".gotoScript",
         MINIBUFFER: Constants.NAME + ".minibuffer",
         GIT_DIFF: Constants.NAME + ".gitDiff",
         // * Outline selection

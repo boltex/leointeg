@@ -722,6 +722,11 @@
         "title": "Minibuffer"
       },
       {
+        "command": "leointeg.gotoScript",
+        "category": "Leo",
+        "title": "Goto Script"
+      },
+      {
         "command": "leointeg.removeButton",
         "category": "Leo",
         "title": "Remove Button"
@@ -2190,6 +2195,10 @@
           "when": "false"
         },
         {
+          "command": "leointeg.gotoScript",
+          "when": "false"
+        },
+        {
           "command": "leointeg.removeButton",
           "when": "false"
         },
@@ -2863,6 +2872,11 @@
           "command": "leointeg.removeButton",
           "when": "leoTreeOpened && viewItem =~ /^leoButtonNode/",
           "group": "leoButtonContext1@1"
+        },
+        {
+          "command": "leointeg.gotoScript",
+          "when": "leoTreeOpened && viewItem =~ /^leoButtonNode/",
+          "group": "leoButtonContext1@2"
         }
       ],
       "extension/context": [

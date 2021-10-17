@@ -788,6 +788,7 @@
 </v>
 <v t="felix.20200719033306.1"><vh>AtButtons</vh>
 <v t="ekr.20200815090517.1"><vh>clickAtButton</vh></v>
+<v t="felix.20211017002435.1"><vh>gotoScript</vh></v>
 <v t="ekr.20200815090517.2"><vh>removeAtButton</vh></v>
 </v>
 <v t="felix.20200719033511.1"><vh>Other</vh>
@@ -1747,6 +1748,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 })],
 
 [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.clickAtButton(p_node)], // Not referenced in package.json
+[CMD.GOTO_SCRIPT, (p_node: LeoButtonNode) =&gt; w_leo.gotoScript(p_node)],
 [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.removeAtButton(p_node)],
 
 [CMD.CLOSE_FILE, () =&gt; w_leo.closeLeoFile()],
@@ -2840,6 +2842,11 @@ print('done')
   "command": "leointeg.minibuffer",
   "category": "Leo",
   "title": "Minibuffer"
+},
+{
+  "command": "leointeg.gotoScript",
+  "category": "Leo",
+  "title": "Goto Script"
 },
 {
   "command": "leointeg.removeButton",
@@ -3991,6 +3998,10 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.58">{
+  "command": "leointeg.gotoScript",
+  "when": "false"
+},
+{
   "command": "leointeg.removeButton",
   "when": "false"
 },
@@ -6367,6 +6378,7 @@ public static LEOBRIDGE = {
     // * @-Buttons
     GET_BUTTONS: "!get_buttons", // "getButtons",
     REMOVE_BUTTON: "!remove_button", // "removeButton",
+    GOTO_SCRIPT: "!goto_script", // "goto Script command",
     CLICK_BUTTON: "!click_button", // "clickButton",
     // * Goto operations
     PAGE_UP: "!page_up", // "pageUp",
@@ -6470,6 +6482,7 @@ public static COMMANDS = {
     CLOSE_FILE: Constants.NAME + ".closeLeoFile",
     CLICK_BUTTON: Constants.NAME + ".clickButton",
     REMOVE_BUTTON: Constants.NAME + ".removeButton",
+    GOTO_SCRIPT: Constants.NAME + ".gotoScript",
     MINIBUFFER: Constants.NAME + ".minibuffer",
     GIT_DIFF: Constants.NAME + ".gitDiff",
     // * Outline selection
@@ -14785,6 +14798,11 @@ public static VSCODE_COMMANDS = {
     "command": "leointeg.removeButton",
     "when": "leoTreeOpened &amp;&amp; viewItem =~ /^leoButtonNode/",
     "group": "leoButtonContext1@1"
+  },
+  {
+    "command": "leointeg.gotoScript",
+    "when": "leoTreeOpened &amp;&amp; viewItem =~ /^leoButtonNode/",
+    "group": "leoButtonContext1@2"
   }
 ],
 </t>
@@ -21296,6 +21314,30 @@ function closeLeoTextEditors() {
 - Changed all context 'when' clauses to be more 'precise &amp; unique' in relation to other extensions, such as leojs.
 - Added the reStructuredText (rest) .rst language support (syntax coloring and snippets)
 - Fixed at-button panel to refresh after adding a button
+
+</t>
+<t tx="felix.20211017002435.1">/**
+ * * Finds and goes to the script of an at-button. Used by '@buttons' treeview.
+ * @param p_node the node of the at-buttons panel that was right-clicked
+ * @returns the launchRefresh promise started after it's done finding the node
+ */
+public gotoScript(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
+    return this._isBusyTriggerSave(false)
+        .then((p_saveResult) =&gt; {
+            return this.sendAction(
+                Constants.LEOBRIDGE.GOTO_SCRIPT,
+                JSON.stringify({ index: p_node.button.index })
+            );
+        })
+        .then((p_gotoScriptResult: LeoBridgePackage) =&gt; {
+            return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+        })
+        .then((p_package) =&gt; {
+            // refresh and reveal selection
+            this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
+            return Promise.resolve(true); // TODO launchRefresh should be a returned promise
+        });
+}
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
