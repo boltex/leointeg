@@ -6,6 +6,7 @@
 - Changed all context 'when' clauses to be more 'precise & unique' in relation to other extensions, such as leojs.
 - Added the reStructuredText (rest) .rst language support (syntax coloring and snippets)
 - Fixed at-button panel to refresh after adding a button
+- Added 'Goto Script' command to the context menu of at-buttons, to 'find and goto' the source node of the button script.
 
 ## 1.0.2
 
