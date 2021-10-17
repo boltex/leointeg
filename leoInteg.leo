@@ -21277,8 +21277,9 @@ function closeLeoTextEditors() {
 </t>
 <t tx="felix.20211007215423.1">## 1.0.3
 
-- Fixed 'F3' findNext bug that didn't trigger because the context was not (re)set properly on focus out from the 'find panel'.
+- Fixed 'F3' bug: findNext didn't trigger because the context was not (re)set properly on focus-out from the 'find panel'.
 - Changed all context 'when' clauses to be more 'precise &amp; unique' in relation to other extensions, such as leojs.
+- Added the reStructuredText (rest) .rst language support (syntax coloring and snippets)
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
