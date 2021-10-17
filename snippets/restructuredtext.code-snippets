@@ -1,0 +1,137 @@
+{
+    "code": {
+        "prefix": "code",
+        "body": ".. code-block:: ${1:language}\n$0",
+        "description": "Code"
+    },
+    "image": {
+        "prefix": "image",
+        "body": ".. image:: ${1:path}\n$0",
+        "description": "Image"
+    },
+    "figure": {
+        "prefix": "figure",
+        "body": ".. figure:: ${1:path}\n\n   $0",
+        "description": "Figure"
+    },
+    "link": {
+        "prefix": "link",
+        "body": "`${1:Title} <${2:http://link}>`_ ",
+        "description": "Link"
+    },
+    "attention": {
+        "prefix": "attention",
+        "body": ".. attention:: ${1:text}\n$0",
+        "description": "Attention"
+    },
+    "note": {
+        "prefix": "note",
+        "body": ".. note:: ${1:text}\n$0",
+        "description": "Note"
+    },
+    "warning": {
+        "prefix": "warning",
+        "body": ".. warning:: ${1:text}\n$0",
+        "description": "Warning"
+    },
+    "error": {
+        "prefix": "error",
+        "body": ".. error:: ${1:text}\n$0",
+        "description": "Error"
+    },
+    "hint": {
+        "prefix": "hint",
+        "body": ".. hint:: ${1:text}\n$0",
+        "description": "Hint"
+    },
+    "important": {
+        "prefix": "important",
+        "body": ".. important:: ${1:text}\n$0",
+        "description": "Important"
+    },
+    "caution": {
+        "prefix": "caution",
+        "body": ".. caution:: ${1:text}\n$0",
+        "description": "Caution"
+    },
+    "danger": {
+        "prefix": "danger",
+        "body": ".. danger:: ${1:text}\n$0",
+        "description": "Danger"
+    },
+    "tip": {
+        "prefix": "tip",
+        "body": ".. tip:: ${1:text}\n$0",
+        "description": "Tip"
+    },
+    "admonition": {
+        "prefix": "admonition",
+        "body": ".. admonition:: ${1:text}\n$0",
+        "description": "Admonition"
+    },
+    "rubric": {
+        "prefix": "rubric",
+        "body": ".. rubric:: ${1:text}\n$0",
+        "description": "Rubric"
+    },
+    "doc": {
+        "prefix": "doc",
+        "body": ":doc:`/${1:text}` $0",
+        "description": "Doc reference"
+    },
+    "ref": {
+        "prefix": "ref",
+        "body": ":ref:`${1:Label}` $0",
+        "description": "Label reference"
+    },
+    "label": {
+        "prefix": "label",
+        "body": ".. _${1:Title}:\n\n$0",
+        "description": "Label"
+    },
+    "download": {
+        "prefix": "download",
+        "body": ":download:`${1:Title} <${2:path}>` $0",
+        "description": "Download"
+    },
+    "numref": {
+        "prefix": "numref",
+        "body": ":numref:`${1:Title} <${2:figure}>` $0",
+        "description": "Cross-referencing Figure"
+    },
+    "math": {
+        "prefix": "math",
+        "body": ":math:`${1:expression}` $0",
+        "description": "Math Expression"
+    },
+    "command": {
+        "prefix": "command",
+        "body": ":command:`${1:Title}` $0",
+        "description": "Command"
+    },
+    "file": {
+        "prefix": "file",
+        "body": ":file:`${1:path}` $0",
+        "description": "File"
+    },
+    "guilabel": {
+        "prefix": "guilabel",
+        "body": ":guilabel:`${1:Title}` $0",
+        "description": "GUI Label"
+    },
+    "key": {
+        "prefix": "key",
+        "body": ":kbd:`${1:shortcut}` $0",
+        "description": "Keyboard Shortcut"
+    },
+    "menu": {
+        "prefix": "menu",
+        "body": ":menuselection:`${1:Title} --> ${2:Title2}` $0",
+        "description": "Menu Selection"
+    },
+    "literalinclude": {
+        "prefix": "literalinclude",
+        "body": ".. literalinclude:: ${1:path}\n$0",
+        "description": "Literal Include"
+    }
+}

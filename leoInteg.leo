@@ -788,6 +788,7 @@
 </v>
 <v t="felix.20200719033306.1"><vh>AtButtons</vh>
 <v t="ekr.20200815090517.1"><vh>clickAtButton</vh></v>
+<v t="felix.20211017002435.1"><vh>gotoScript</vh></v>
 <v t="ekr.20200815090517.2"><vh>removeAtButton</vh></v>
 </v>
 <v t="felix.20200719033511.1"><vh>Other</vh>
@@ -1631,7 +1632,7 @@ public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
         })
         .then((p_package) =&gt; {
             // refresh and reveal selection
-            this.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+            this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
             return Promise.resolve(true); // TODO launchRefresh should be a returned promise
         });
 }
@@ -1747,6 +1748,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 })],
 
 [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.clickAtButton(p_node)], // Not referenced in package.json
+[CMD.GOTO_SCRIPT, (p_node: LeoButtonNode) =&gt; w_leo.gotoScript(p_node)],
 [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) =&gt; w_leo.removeAtButton(p_node)],
 
 [CMD.CLOSE_FILE, () =&gt; w_leo.closeLeoFile()],
@@ -2381,7 +2383,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.60.1"
+    "vscode": "^1.61.0"
   },
   "keywords": [
     "leo",
@@ -2417,7 +2419,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.60.0",
+    "@types/vscode": "^1.61.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -2587,6 +2589,17 @@ print('done')
     "configuration": "./language-configurations/leobody.php.language-configuration.json"
   },
   {
+    "id": "leobody.restructuredtext",
+    "aliases": [
+      "Leo Body reStructuredText",
+      "leobody.restructuredtext"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.rst.language-configuration.json"
+  },
+  {
     "id": "leobody.rust",
     "aliases": [
       "Leo Body Rust",
@@ -2661,6 +2674,11 @@ print('done')
     "path": "./syntaxes/leobody.php.tmLanguage.json"
   },
   {
+    "language": "leobody.restructuredtext",
+    "scopeName": "source.leobody.restructuredtext",
+    "path": "./syntaxes/leobody.rst.tmLanguage.json"
+  },
+  {
     "language": "leobody.rust",
     "scopeName": "source.leobody.rust",
     "path": "./syntaxes/leobody.rust.tmLanguage.json"
@@ -2680,6 +2698,7 @@ print('done')
       "source.leobody.json",
       "source.leobody.markdown",
       "source.leobody.php",
+      "source.leobody.restructuredtext",
       "source.leobody.rust"
     ],
     "path": "./syntaxes/leobody.tmLanguage.json",
@@ -2726,6 +2745,10 @@ print('done')
   {
     "language": "leobody.markdown",
     "path": "./snippets/markdown.code-snippets"
+  },
+  {
+    "language": "leobody.restructuredtext",
+    "path": "./snippets/restructuredtext.code-snippets"
   },
   {
     "language": "leobody.rust",
@@ -2819,6 +2842,11 @@ print('done')
   "command": "leointeg.minibuffer",
   "category": "Leo",
   "title": "Minibuffer"
+},
+{
+  "command": "leointeg.gotoScript",
+  "category": "Leo",
+  "title": "Goto Script"
 },
 {
   "command": "leointeg.removeButton",
@@ -3970,6 +3998,10 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.58">{
+  "command": "leointeg.gotoScript",
+  "when": "false"
+},
+{
   "command": "leointeg.removeButton",
   "when": "false"
 },
@@ -6346,6 +6378,7 @@ public static LEOBRIDGE = {
     // * @-Buttons
     GET_BUTTONS: "!get_buttons", // "getButtons",
     REMOVE_BUTTON: "!remove_button", // "removeButton",
+    GOTO_SCRIPT: "!goto_script", // "goto Script command",
     CLICK_BUTTON: "!click_button", // "clickButton",
     // * Goto operations
     PAGE_UP: "!page_up", // "pageUp",
@@ -6449,6 +6482,7 @@ public static COMMANDS = {
     CLOSE_FILE: Constants.NAME + ".closeLeoFile",
     CLICK_BUTTON: Constants.NAME + ".clickButton",
     REMOVE_BUTTON: Constants.NAME + ".removeButton",
+    GOTO_SCRIPT: Constants.NAME + ".gotoScript",
     MINIBUFFER: Constants.NAME + ".minibuffer",
     GIT_DIFF: Constants.NAME + ".gitDiff",
     // * Outline selection
@@ -7378,7 +7412,10 @@ export function activate(p_context: vscode.ExtensionContext) {
             w_leo.startNetworkServices();
             // Save version # for next startup comparison
             p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-            console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
+            
+            // * Log time taken for startup
+            // console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
+            
         });
 }
 
@@ -11240,7 +11277,18 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                         this.lastSelectedNode &amp;&amp;
                         utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
                     ) {
-                        vscode.languages.setTextDocumentLanguage(p_document, w_language);
+                        vscode.languages.setTextDocumentLanguage(p_document, w_language).then(
+                            () =&gt; { }, // ok - language found
+                            (p_error) =&gt; {
+                                let w_langName = p_error.toString().split('\n')[0];
+                                if (w_langName.length &gt; 36) {
+                                    w_langName = w_langName.substring(36)
+                                    vscode.window.showInformationMessage(w_langName + " language not yet supported.");
+                                    return;
+                                }
+                                vscode.window.showInformationMessage("Language not yet supported.");
+                            }
+                        );
                     }
                 });
             }
@@ -14279,7 +14327,9 @@ export function getDurationMs(p_start: [number, number]): number {
  */
 public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
     cplusplus: 'cpp',
-    md: 'markdown'
+    md: 'markdown',
+    rest: 'restructuredtext',
+    rst: 'restructuredtext'
 };
 
 </t>
@@ -14748,6 +14798,11 @@ public static VSCODE_COMMANDS = {
     "command": "leointeg.removeButton",
     "when": "leoTreeOpened &amp;&amp; viewItem =~ /^leoButtonNode/",
     "group": "leoButtonContext1@1"
+  },
+  {
+    "command": "leointeg.gotoScript",
+    "when": "leoTreeOpened &amp;&amp; viewItem =~ /^leoButtonNode/",
+    "group": "leoButtonContext1@2"
   }
 ],
 </t>
@@ -21255,7 +21310,35 @@ function closeLeoTextEditors() {
 </t>
 <t tx="felix.20211007215423.1">## 1.0.3
 
-- Fixed 'F3' findNext bug that didn't trigger because the context was not (re)set properly on focus out from the 'find panel'.
+- Fixed 'F3' bug: findNext didn't trigger because the context was not (re)set properly on focus-out from the 'find panel'.
+- Changed all context 'when' clauses to be more 'precise &amp; unique' in relation to other extensions, such as leojs.
+- Added the reStructuredText (rest) .rst language support (syntax coloring and snippets)
+- Fixed at-button panel to refresh after adding a button
+- Added 'Goto Script' command to the context menu of at-buttons, to 'find and goto' the source node of the button script.
+
+</t>
+<t tx="felix.20211017002435.1">/**
+ * * Finds and goes to the script of an at-button. Used by '@buttons' treeview.
+ * @param p_node the node of the at-buttons panel that was right-clicked
+ * @returns the launchRefresh promise started after it's done finding the node
+ */
+public gotoScript(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
+    return this._isBusyTriggerSave(false)
+        .then((p_saveResult) =&gt; {
+            return this.sendAction(
+                Constants.LEOBRIDGE.GOTO_SCRIPT,
+                JSON.stringify({ index: p_node.button.index })
+            );
+        })
+        .then((p_gotoScriptResult: LeoBridgePackage) =&gt; {
+            return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+        })
+        .then((p_package) =&gt; {
+            // refresh and reveal selection
+            this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
+            return Promise.resolve(true); // TODO launchRefresh should be a returned promise
+        });
+}
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

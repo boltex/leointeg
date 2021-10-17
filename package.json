@@ -13,7 +13,7 @@
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.60.1"
+    "vscode": "^1.61.0"
   },
   "keywords": [
     "leo",
@@ -475,6 +475,17 @@
         "configuration": "./language-configurations/leobody.php.language-configuration.json"
       },
       {
+        "id": "leobody.restructuredtext",
+        "aliases": [
+          "Leo Body reStructuredText",
+          "leobody.restructuredtext"
+        ],
+        "extensions": [
+          ""
+        ],
+        "configuration": "./language-configurations/leobody.rst.language-configuration.json"
+      },
+      {
         "id": "leobody.rust",
         "aliases": [
           "Leo Body Rust",
@@ -548,6 +559,11 @@
         "path": "./syntaxes/leobody.php.tmLanguage.json"
       },
       {
+        "language": "leobody.restructuredtext",
+        "scopeName": "source.leobody.restructuredtext",
+        "path": "./syntaxes/leobody.rst.tmLanguage.json"
+      },
+      {
         "language": "leobody.rust",
         "scopeName": "source.leobody.rust",
         "path": "./syntaxes/leobody.rust.tmLanguage.json"
@@ -567,6 +583,7 @@
           "source.leobody.json",
           "source.leobody.markdown",
           "source.leobody.php",
+          "source.leobody.restructuredtext",
           "source.leobody.rust"
         ],
         "path": "./syntaxes/leobody.tmLanguage.json",
@@ -612,6 +629,10 @@
       {
         "language": "leobody.markdown",
         "path": "./snippets/markdown.code-snippets"
+      },
+      {
+        "language": "leobody.restructuredtext",
+        "path": "./snippets/restructuredtext.code-snippets"
       },
       {
         "language": "leobody.rust",
@@ -699,6 +720,11 @@
         "command": "leointeg.minibuffer",
         "category": "Leo",
         "title": "Minibuffer"
+      },
+      {
+        "command": "leointeg.gotoScript",
+        "category": "Leo",
+        "title": "Goto Script"
       },
       {
         "command": "leointeg.removeButton",
@@ -2169,6 +2195,10 @@
           "when": "false"
         },
         {
+          "command": "leointeg.gotoScript",
+          "when": "false"
+        },
+        {
           "command": "leointeg.removeButton",
           "when": "false"
         },
@@ -2842,6 +2872,11 @@
           "command": "leointeg.removeButton",
           "when": "leoTreeOpened && viewItem =~ /^leoButtonNode/",
           "group": "leoButtonContext1@1"
+        },
+        {
+          "command": "leointeg.gotoScript",
+          "when": "leoTreeOpened && viewItem =~ /^leoButtonNode/",
+          "group": "leoButtonContext1@2"
         }
       ],
       "extension/context": [
@@ -3596,7 +3631,7 @@
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.60.0",
+    "@types/vscode": "^1.61.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",

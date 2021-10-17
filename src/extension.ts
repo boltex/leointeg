@@ -67,6 +67,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         })],
 
         [CMD.CLICK_BUTTON, (p_node: LeoButtonNode) => w_leo.clickAtButton(p_node)], // Not referenced in package.json
+        [CMD.GOTO_SCRIPT, (p_node: LeoButtonNode) => w_leo.gotoScript(p_node)],
         [CMD.REMOVE_BUTTON, (p_node: LeoButtonNode) => w_leo.removeAtButton(p_node)],
 
         [CMD.CLOSE_FILE, () => w_leo.closeLeoFile()],
@@ -693,7 +694,10 @@ export function activate(p_context: vscode.ExtensionContext) {
             w_leo.startNetworkServices();
             // Save version # for next startup comparison
             p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-            console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
+            
+            // * Log time taken for startup
+            // console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
+            
         });
 }
 
