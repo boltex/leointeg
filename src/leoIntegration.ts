@@ -1934,7 +1934,7 @@ export class LeoIntegration {
                                 (p_error) => {
                                     let w_langName = p_error.toString().split('\n')[0];
                                     if (w_langName.length > 36) {
-                                        w_langName = w_langName.substring(36)
+                                        w_langName = w_langName.substring(36);
                                         vscode.window.showInformationMessage(w_langName + " language not yet supported.");
                                         return;
                                     }

@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.4
+
+- Fixed typos and small bugs
+
 ## 1.0.3
 
 - Fixed 'F3' bug: findNext didn't trigger because the context was not (re)set properly on focus-out from the 'find panel'.

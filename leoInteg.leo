@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20211018004333.1"><vh>1.0.4</vh></v>
 <v t="felix.20211007215423.1"><vh>1.0.3</vh></v>
 <v t="felix.20210928231455.1"><vh>1.0.2</vh></v>
 <v t="felix.20210919194446.1"><vh>1.0.1</vh></v>
@@ -2372,7 +2373,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "author": {
     "name": "Félix"
   },
@@ -11282,7 +11283,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                             (p_error) =&gt; {
                                 let w_langName = p_error.toString().split('\n')[0];
                                 if (w_langName.length &gt; 36) {
-                                    w_langName = w_langName.substring(36)
+                                    w_langName = w_langName.substring(36);
                                     vscode.window.showInformationMessage(w_langName + " language not yet supported.");
                                     return;
                                 }
@@ -21341,6 +21342,11 @@ public gotoScript(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
 }
 
 </t>
+<t tx="felix.20211018004333.1">## 1.0.4
+
+- Fixed typos and small bugs
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -22244,7 +22250,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.3&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.4&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden "
@@ -22255,7 +22261,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 1.0.3
+            See What's New in LeoInteg 1.0.4
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
