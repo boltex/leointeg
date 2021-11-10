@@ -2198,7 +2198,7 @@ export class LeoIntegration {
         const q_commandResult = this.nodeCommand({
             action: p_isMark ? Constants.LEOBRIDGE.MARK_PNODE : Constants.LEOBRIDGE.UNMARK_PNODE,
             node: p_node,
-            refreshType: { tree: true },
+            refreshType: { tree: true, states: true },
             fromOutline: !!p_fromOutline,
         });
         if (q_commandResult) {
