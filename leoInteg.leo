@@ -14732,17 +14732,17 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.hoistNode",
-    "when": "viewItem =~ /^leoNodeNotRoot/",
+    "when": "viewItem =~ /leoNodeNotRoot/",
     "group": "leoNodeContext1@2"
   },
   {
     "command": "leointeg.deHoist",
-    "when": "leoCanDehoist &amp;&amp; viewItem =~ /^leoNodeRoot/",
+    "when": "leoCanDehoist &amp;&amp; viewItem =~ /leoNodeRoot/",
     "group": "leoNodeContext1@2"
   },
   {
     "command": "leointeg.refreshFromDisk",
-    "when": "viewItem =~ /^leoNodeAtFile/",
+    "when": "viewItem =~ /leoNodeAtFile/",
     "group": "leoNodeContext1@3"
   },
   {
@@ -14792,7 +14792,7 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.gotoNextClone",
-    "when": "leoTreeOpened &amp;&amp; viewItem =~ /^leoNodeCloned/",
+    "when": "leoTreeOpened &amp;&amp; viewItem =~ /leoNodeCloned/",
     "group": "leoNodeContext3@3"
   },
   {
