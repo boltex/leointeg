@@ -3,6 +3,9 @@
 ## 1.0.4
 
 - Fixed typos and small bugs
+- Fixed refresh type for mark/unmark node
+- Fixed bug that prevented context some menu items on \@\<files\> nodes and other special nodes.
+- Added Write (dirty) \@\<file\> commands and keybindings
 
 ## 1.0.3
 

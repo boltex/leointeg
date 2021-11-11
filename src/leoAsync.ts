@@ -143,10 +143,10 @@ export class LeoAsync {
      * @param p_infoArg an async package object { "message": string; }
      */
     public showChangesDetectedInfoMessage(p_infoArg: runInfoMessageDialogParameters): void {
-        let w_message = Constants.USER_MESSAGES.CHANGES_DETECTED;
+        let w_message = "";
         switch (p_infoArg.message) {
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_REFRESHED:
-                w_message += Constants.USER_MESSAGES.REFRESHED;
+                w_message = Constants.USER_MESSAGES.CHANGES_DETECTED + Constants.USER_MESSAGES.REFRESHED;
 
                 // this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
 
@@ -158,10 +158,10 @@ export class LeoAsync {
 
                 break;
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_IGNORED:
-                w_message += Constants.USER_MESSAGES.IGNORED;
+                w_message = Constants.USER_MESSAGES.CHANGES_DETECTED + Constants.USER_MESSAGES.IGNORED;
                 break;
             default:
-                w_message = w_message + " " + p_infoArg.message;
+                w_message = p_infoArg.message;
                 break;
         }
         vscode.window.showInformationMessage(w_message);

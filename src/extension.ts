@@ -106,6 +106,32 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
+
+        [CMD.WRITE_AT_FILE_NODES, () => w_leo.nodeCommand({
+            action: BRIDGE.WRITE_AT_FILE_NODES,
+            node: U,
+            refreshType: REFRESH_TREE,
+            fromOutline: false
+        })],
+        [CMD.WRITE_AT_FILE_NODES_FO, () => w_leo.nodeCommand({
+            action: BRIDGE.WRITE_AT_FILE_NODES,
+            node: U,
+            refreshType: REFRESH_TREE,
+            fromOutline: true
+        })],
+        [CMD.WRITE_DIRTY_AT_FILE_NODES, () => w_leo.nodeCommand({
+            action: BRIDGE.WRITE_DIRTY_AT_FILE_NODES,
+            node: U,
+            refreshType: REFRESH_TREE,
+            fromOutline: false
+        })],
+        [CMD.WRITE_DIRTY_AT_FILE_NODES_FO, () => w_leo.nodeCommand({
+            action: BRIDGE.WRITE_DIRTY_AT_FILE_NODES,
+            node: U,
+            refreshType: REFRESH_TREE,
+            fromOutline: true
+        })],
+
         [CMD.GIT_DIFF, () => w_leo.nodeCommand({
             action: BRIDGE.GIT_DIFF,
             node: U,
@@ -694,10 +720,10 @@ export function activate(p_context: vscode.ExtensionContext) {
             w_leo.startNetworkServices();
             // Save version # for next startup comparison
             p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-            
+
             // * Log time taken for startup
             // console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
-            
+
         });
 }
 

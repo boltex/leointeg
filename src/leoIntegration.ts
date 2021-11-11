@@ -1921,6 +1921,11 @@ export class LeoIntegration {
 
                     q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
                         let w_language: string = p_bodyStates.language!;
+                        let w_wrap: boolean = !!p_bodyStates.wrap;
+
+                        // TODO : Apply Wrap
+                        // console.log('WRAP: ', w_wrap);
+
                         // Replace language string if in 'exceptions' array
                         w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
                         // Apply language if the selected node is still the same after all those events

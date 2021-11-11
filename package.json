@@ -873,6 +873,26 @@
         }
       },
       {
+        "command": "leointeg.writeAtFileNodes",
+        "category": "Leo",
+        "title": "Write @<file> Nodes"
+      },
+      {
+        "command": "leointeg.writeAtFileNodesFromOutline",
+        "category": "Leo",
+        "title": "Write @<file> Nodes"
+      },
+      {
+        "command": "leointeg.writeDirtyAtFileNodes",
+        "category": "Leo",
+        "title": "Write Dirty @<file> Nodes"
+      },
+      {
+        "command": "leointeg.writeDirtyAtFileNodesFromOutline",
+        "category": "Leo",
+        "title": "Write Dirty @<file> Nodes"
+      },
+      {
         "command": "leointeg.gitDiff",
         "category": "Leo",
         "title": "Git Diff"
@@ -1935,6 +1955,14 @@
           "when": "leoTreeOpened"
         },
         {
+          "command": "leointeg.writeAtFileNodes",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.writeDirtyAtFileNodes",
+          "when": "leoTreeOpened"
+        },
+        {
           "command": "leointeg.contractAll",
           "when": "leoTreeOpened"
         },
@@ -2220,6 +2248,14 @@
         },
         {
           "command": "leointeg.refreshFromDiskSelectionFromOutline",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.writeAtFileNodesFromOutline",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.writeDirtyAtFileNodesFromOutline",
           "when": "false"
         },
         {
@@ -2954,6 +2990,30 @@
         "key": "ctrl+s",
         "mac": "cmd+s",
         "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.writeAtFileNodes",
+        "key": "ctrl+shift+w",
+        "mac": "cmd+shift+w",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.writeAtFileNodesFromOutline",
+        "key": "ctrl+shift+w",
+        "mac": "cmd+shift+w",
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+      },
+      {
+        "command": "leointeg.writeDirtyAtFileNodes",
+        "key": "ctrl+shift+q",
+        "mac": "cmd+shift+q",
+        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.writeDirtyAtFileNodesFromOutline",
+        "key": "ctrl+shift+q",
+        "mac": "cmd+shift+q",
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.contractAll",
