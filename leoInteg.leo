@@ -751,6 +751,8 @@
 <v t="felix.20200719025231.49"><vh>closeBody</vh></v>
 <v t="felix.20210718155134.1"><vh>cleanupBody</vh></v>
 <v t="felix.20200719025231.50"><vh>showBody</vh></v>
+<v t="felix.20211111214657.1"><vh>refreshBodyStates</vh></v>
+<v t="felix.20211111233213.1"><vh>debouncedRefreshBodyStates</vh></v>
 </v>
 <v t="felix.20200719025231.51"><vh>Commands</vh>
 <v t="felix.20201114185813.1"><vh>minibuffer</vh></v>
@@ -6596,6 +6598,7 @@ public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
 public static BUTTONS_DEBOUNCE_DELAY: number = 80;
 public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
 public static STATES_DEBOUNCE_DELAY: number = 100;
+public static BODY_STATES_DEBOUNCE_DELAY: number = 200;
 
 public static LOG_ALERT_COLOR: string = 'red';
 
@@ -10048,6 +10051,7 @@ import { LeoButtonsProvider } from './leoButtons';
 import { LeoButtonNode } from './leoButtonNode';
 import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
 import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
+import { constants } from 'buffer';
 
 @others
 @language typescript
@@ -10255,6 +10259,8 @@ export class LeoIntegration {
     private _bodyPreviewMode: boolean = true;
 
     private _editorTouched: boolean = false; // Flag for applying editor changes to body when 'icon' state change and 'undo' back to untouched
+
+    private _bodyStatesTimer: NodeJS.Timeout | undefined;
 
     // * Find panel
     private _findPanelWebviewView: vscode.WebviewView | undefined;
@@ -10813,6 +10819,32 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
                 this.refreshDocumentsPane();
             }
         }
+
+        // * If body changed a line with and '@' directive refresh body states
+        let w_needsRefresh = false;
+        p_textDocumentChange.contentChanges.forEach(p_contentChange =&gt; {
+            if (p_contentChange.text.includes('@')) {
+                // There may have been an @
+                w_needsRefresh = true;
+                w_needsRefresh = true;
+            }
+        });
+
+        const w_textEditor = vscode.window.activeTextEditor;
+
+        if (w_textEditor &amp;&amp; p_textDocumentChange.document.uri.fsPath === w_textEditor.document.uri.fsPath) {
+            w_textEditor.selections.forEach(p_selection =&gt; {
+                // if line starts with @
+                let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
+                if (w_line.trim().startsWith('@')) {
+                    w_needsRefresh = true;
+                }
+            });
+        }
+        if (w_needsRefresh) {
+            this.debouncedRefreshBodyStates();
+        }
+
     }
 }
 
@@ -11203,6 +11235,10 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                                 vscode.window.showInformationMessage("Language not yet supported.");
                             }
                         );
+                    } else if (!p_document.isClosed &amp;&amp;
+                        this.lastSelectedNode &amp;&amp;
+                        utils.leoUriToStr(p_document.uri) !== this.lastSelectedNode.gnx) {
+                        this.refreshBodyStates();
                     }
                 });
             }
@@ -11306,7 +11342,6 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                                 console.log("no selection in returned package from showTextDocument");
                             }
                         }
-
 
                     }
                 );
@@ -21520,6 +21555,68 @@ class TerminateServer(Exception):  # pragma: no cover
         raise ServerError(f"{tag}: no param result")
     g.app.externalFilesController.clientResult(result)
     return self._make_response()
+</t>
+<t tx="felix.20211111214657.1">/**
+ * * Refreshes body pane's statuses such as applied language file type, word-wrap state, etc.
+ */
+public refreshBodyStates(): void {
+    if (!this._bodyTextDocument || !this.lastSelectedNode) {
+        return;
+    }
+
+    // * Set document language along with the proper cursor position, selection range and scrolling position
+    let q_bodyStates: Promise&lt;LeoBridgePackage&gt; | undefined;
+    q_bodyStates = this.sendAction(
+        Constants.LEOBRIDGE.GET_BODY_STATES,
+        utils.buildNodeCommandJson(this.lastSelectedNode!.apJson)
+    );
+    q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
+        let w_language: string = p_bodyStates.language!;
+        let w_wrap: boolean = !!p_bodyStates.wrap;
+
+        // TODO : Apply Wrap
+        // console.log('WRAP: ', w_wrap);
+
+        // Replace language string if in 'exceptions' array
+        w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
+        // Apply language if the selected node is still the same after all those events
+        if (this._bodyTextDocument &amp;&amp;
+            !this._bodyTextDocument.isClosed &amp;&amp;
+            this.lastSelectedNode &amp;&amp;
+            w_language !== this._bodyTextDocument.languageId &amp;&amp;
+            utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
+        ) {
+            vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, w_language).then(
+                () =&gt; { }, // ok - language found
+                (p_error) =&gt; {
+                    let w_langName = p_error.toString().split('\n')[0];
+                    if (w_langName.length &gt; 36) {
+                        w_langName = w_langName.substring(36);
+                        vscode.window.showInformationMessage(w_langName + " language not yet supported.");
+                        return;
+                    }
+                    vscode.window.showInformationMessage("Language not yet supported.");
+                }
+            );
+        }
+    });
+}
+
+</t>
+<t tx="felix.20211111233213.1">/**
+ * * Refresh body states after a small debounced delay.
+ */
+public debouncedRefreshBodyStates() {
+    if (this._bodyStatesTimer) {
+        clearTimeout(this._bodyStatesTimer);
+    }
+    this._bodyStatesTimer = setTimeout(() =&gt; {
+        // this.triggerBodySave(true);
+        this._bodySaveDocument(this._bodyLastChangedDocument!);
+        this.refreshBodyStates();
+    }, Constants.BODY_STATES_DEBOUNCE_DELAY);
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

@@ -33,6 +33,7 @@ import { LeoButtonsProvider } from './leoButtons';
 import { LeoButtonNode } from './leoButtonNode';
 import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
 import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
+import { constants } from 'buffer';
 
 /**
  * * Orchestrates Leo integration into vscode
@@ -113,6 +114,8 @@ export class LeoIntegration {
     private _bodyPreviewMode: boolean = true;
 
     private _editorTouched: boolean = false; // Flag for applying editor changes to body when 'icon' state change and 'undo' back to untouched
+
+    private _bodyStatesTimer: NodeJS.Timeout | undefined;
 
     // * Find panel
     private _findPanelWebviewView: vscode.WebviewView | undefined;
@@ -1190,6 +1193,31 @@ export class LeoIntegration {
                     this.refreshDocumentsPane();
                 }
             }
+
+            // * If body changed a line with and '@' directive refresh body states
+            let w_needsRefresh = false;
+            p_textDocumentChange.contentChanges.forEach(p_contentChange => {
+                if (p_contentChange.text.includes('@')) {
+                    // There may have been an @
+                    w_needsRefresh = true;
+                }
+            });
+
+            const w_textEditor = vscode.window.activeTextEditor;
+
+            if (w_textEditor && p_textDocumentChange.document.uri.fsPath === w_textEditor.document.uri.fsPath) {
+                w_textEditor.selections.forEach(p_selection => {
+                    // if line starts with @
+                    let w_line = w_textEditor.document.lineAt(p_selection.active.line).text;
+                    if (w_line.trim().startsWith('@')) {
+                        w_needsRefresh = true;
+                    }
+                });
+            }
+            if (w_needsRefresh) {
+                this.debouncedRefreshBodyStates();
+            }
+
         }
     }
 
@@ -1946,6 +1974,10 @@ export class LeoIntegration {
                                     vscode.window.showInformationMessage("Language not yet supported.");
                                 }
                             );
+                        } else if (!p_document.isClosed &&
+                            this.lastSelectedNode &&
+                            utils.leoUriToStr(p_document.uri) !== this.lastSelectedNode.gnx) {
+                            this.refreshBodyStates();
                         }
                     });
                 }
@@ -2050,13 +2082,72 @@ export class LeoIntegration {
                                 }
                             }
 
-
                         }
                     );
                 }
                 return q_showTextDocument;
             }
         );
+    }
+
+    /**
+     * * Refreshes body pane's statuses such as applied language file type, word-wrap state, etc.
+     */
+    public refreshBodyStates(): void {
+        if (!this._bodyTextDocument || !this.lastSelectedNode) {
+            return;
+        }
+
+        // * Set document language along with the proper cursor position, selection range and scrolling position
+        let q_bodyStates: Promise<LeoBridgePackage> | undefined;
+        q_bodyStates = this.sendAction(
+            Constants.LEOBRIDGE.GET_BODY_STATES,
+            utils.buildNodeCommandJson(this.lastSelectedNode!.apJson)
+        );
+        q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
+            let w_language: string = p_bodyStates.language!;
+            let w_wrap: boolean = !!p_bodyStates.wrap;
+
+            // TODO : Apply Wrap
+            // console.log('WRAP: ', w_wrap);
+
+            // Replace language string if in 'exceptions' array
+            w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
+            // Apply language if the selected node is still the same after all those events
+            if (this._bodyTextDocument &&
+                !this._bodyTextDocument.isClosed &&
+                this.lastSelectedNode &&
+                w_language !== this._bodyTextDocument.languageId &&
+                utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
+            ) {
+                vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, w_language).then(
+                    () => { }, // ok - language found
+                    (p_error) => {
+                        let w_langName = p_error.toString().split('\n')[0];
+                        if (w_langName.length > 36) {
+                            w_langName = w_langName.substring(36);
+                            vscode.window.showInformationMessage(w_langName + " language not yet supported.");
+                            return;
+                        }
+                        vscode.window.showInformationMessage("Language not yet supported.");
+                    }
+                );
+            }
+        });
+    }
+
+    /**
+     * * Refresh body states after a small debounced delay.
+     */
+    public debouncedRefreshBodyStates() {
+        if (this._bodyStatesTimer) {
+            clearTimeout(this._bodyStatesTimer);
+        }
+        this._bodyStatesTimer = setTimeout(() => {
+            // this.triggerBodySave(true);
+            this._bodySaveDocument(this._bodyLastChangedDocument!);
+            this.refreshBodyStates();
+        }, Constants.BODY_STATES_DEBOUNCE_DELAY);
     }
 
     /**
