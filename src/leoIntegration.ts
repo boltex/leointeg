@@ -942,13 +942,14 @@ export class LeoIntegration {
     private _onDidOpenTextDocument(p_document: vscode.TextDocument): void {
         if (
             this.leoStates.leoBridgeReady &&
-            p_document.uri.scheme === Constants.URI_LEO_SCHEME &&
+            p_document.uri.scheme === Constants.URI_FILE_SCHEME &&
             p_document.uri.fsPath.toLowerCase().endsWith('.leo')
         ) {
             if (!this._hasShownContextOpenMessage) {
                 vscode.window.showInformationMessage(Constants.USER_MESSAGES.RIGHT_CLICK_TO_OPEN);
                 this._hasShownContextOpenMessage = true;
             }
+            // ? Use a picker for more 'intense' interaction ?
             // vscode.window.showQuickPick(
             //     [Constants.USER_MESSAGES.YES, Constants.USER_MESSAGES.NO],
             //     { placeHolder: Constants.USER_MESSAGES.OPEN_WITH_LEOINTEG }

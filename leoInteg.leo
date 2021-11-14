@@ -1364,13 +1364,14 @@ public addLogPaneEntry(p_message: string): void {
 private _onDidOpenTextDocument(p_document: vscode.TextDocument): void {
     if (
         this.leoStates.leoBridgeReady &amp;&amp;
-        p_document.uri.scheme === Constants.URI_LEO_SCHEME &amp;&amp;
+        p_document.uri.scheme === Constants.URI_FILE_SCHEME &amp;&amp;
         p_document.uri.fsPath.toLowerCase().endsWith('.leo')
     ) {
         if (!this._hasShownContextOpenMessage) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.RIGHT_CLICK_TO_OPEN);
             this._hasShownContextOpenMessage = true;
         }
+        // ? Use a picker for more 'intense' interaction ?
         // vscode.window.showQuickPick(
         //     [Constants.USER_MESSAGES.YES, Constants.USER_MESSAGES.NO],
         //     { placeHolder: Constants.USER_MESSAGES.OPEN_WITH_LEOINTEG }
@@ -2402,7 +2403,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.61.0"
+    "vscode": "^1.62.0"
   },
   "keywords": [
     "leo",
@@ -2438,7 +2439,7 @@ print('done')
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.61.0",
+    "@types/vscode": "^1.62.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
