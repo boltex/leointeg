@@ -511,6 +511,7 @@
 </v>
 <v t="ekr.20200815123601.87"><vh>Outline Editing</vh></v>
 <v t="ekr.20200815123601.88"><vh>Goto Nodes</vh></v>
+<v t="felix.20211114150842.1"><vh>Undo/Redo</vh></v>
 <v t="felix.20210517004335.1"><vh>Search</vh></v>
 <v t="felix.20210812004050.1"><vh>VSCode Commands</vh></v>
 </v>
@@ -21483,6 +21484,19 @@ public debouncedRefreshBodyStates() {
     }, Constants.BODY_STATES_DEBOUNCE_DELAY);
 }
 
+</t>
+<t tx="felix.20211114150842.1">{
+  "command": "leointeg.undoFromOutline",
+  "key": "ctrl+z",
+  "mac": "cmd+z",
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !inputFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+},
+{
+  "command": "leointeg.redoFromOutline",
+  "key": "ctrl+shift+z",
+  "mac": "cmd+shift+z",
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !inputFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+},
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

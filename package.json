@@ -3429,6 +3429,18 @@
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened && !editorHasSelection  && editorTextFocus && resourceScheme == leo"
       },
       {
+        "command": "leointeg.undoFromOutline",
+        "key": "ctrl+z",
+        "mac": "cmd+z",
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && !inputFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+      },
+      {
+        "command": "leointeg.redoFromOutline",
+        "key": "ctrl+shift+z",
+        "mac": "cmd+shift+z",
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && !inputFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+      },
+      {
         "command": "leointeg.startSearch",
         "key": "ctrl+f",
         "mac": "cmd+f",
