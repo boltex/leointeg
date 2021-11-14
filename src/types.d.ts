@@ -104,16 +104,6 @@ export interface UserCommand {
 }
 
 /**
- * * Object container for parameters of leoIntegration's "apply-selected-node-to-body" method
- */
-export interface ShowBodyParam {
-    node: LeoNode,
-    aside: boolean,
-    showBodyKeepFocus: boolean,
-    force_open?: boolean
-}
-
-/**
  * * Stackable leoBridge actions to be performed by Leo
  */
 export interface LeoAction {

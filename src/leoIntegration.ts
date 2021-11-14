@@ -12,7 +12,6 @@ import {
     ChooseDocumentItem,
     LeoDocument,
     UserCommand,
-    ShowBodyParam,
     BodySelectionInfo,
     LeoGuiFindTabManagerSettings,
     LeoSearchSettings
@@ -33,7 +32,6 @@ import { LeoButtonsProvider } from './leoButtons';
 import { LeoButtonNode } from './leoButtonNode';
 import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
 import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
-import { constants } from 'buffer';
 
 /**
  * * Orchestrates Leo integration into vscode
