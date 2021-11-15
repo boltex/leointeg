@@ -1950,6 +1950,10 @@ export class LeoIntegration {
                     q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
                         let w_language: string = p_bodyStates.language!;
                         let w_wrap: boolean = !!p_bodyStates.wrap;
+                        let w_tabWidth: number | boolean = p_bodyStates.tabWidth || !!p_bodyStates.tabWidth;
+
+                        // TODO : Apply tabwidth
+                        // console.log('TABWIDTH: ', w_tabWidth);
 
                         // TODO : Apply Wrap
                         // console.log('WRAP: ', w_wrap);
@@ -3479,6 +3483,53 @@ export class LeoIntegration {
 
         //     });
 
+        // * test ua's
+        this.sendAction(
+            // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+            Constants.LEOBRIDGE.SET_UA,
+            JSON.stringify({
+                ua: {
+                    kin: 'kin val',
+                    yoi: "toi test value string"
+                }
+            })
+        ).then((p_result: LeoBridgePackage) => {
+            console.log('get focus results: ', p_result);
+
+            // this.launchRefresh({ buttons: true }, false);
+            // return vscode.window.showInformationMessage(
+            //     ' back from test, called from ' +
+            //     (p_fromOutline ? "outline" : "body") +
+            //     ', with result: ' +
+            //     JSON.stringify(p_result)
+            // );
+        });
+        // * test ua's
+        return this.sendAction(
+            // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+            Constants.LEOBRIDGE.SET_UA_MEMBER,
+            JSON.stringify({
+                name: 'uaTestName',
+                value: "some test value string"
+            })
+        ).then((p_result: LeoBridgePackage) => {
+            console.log('get focus results: ', p_result);
+
+            // this.launchRefresh({ buttons: true }, false);
+            // return vscode.window.showInformationMessage(
+            //     ' back from test, called from ' +
+            //     (p_fromOutline ? "outline" : "body") +
+            //     ', with result: ' +
+            //     JSON.stringify(p_result)
+            // );
+            this.launchRefresh(
+                {
+                    tree: true
+                },
+                false
+            );
+        });
+
         // Test setting scroll / selection range
 
         /*
@@ -3536,27 +3587,27 @@ export class LeoIntegration {
         */
 
         // GET_FOCUS AS A TEST
-        return this.sendAction(
-            // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
-            Constants.LEOBRIDGE.GET_FOCUS,
-            JSON.stringify({ testParam: 'Some String' })
-        ).then((p_result: LeoBridgePackage) => {
-            console.log('get focus results: ', p_result);
+        // return this.sendAction(
+        //     // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+        //     Constants.LEOBRIDGE.GET_FOCUS,
+        //     JSON.stringify({ testParam: 'Some String' })
+        // ).then((p_result: LeoBridgePackage) => {
+        //     console.log('get focus results: ', p_result);
 
-            // this.launchRefresh({ buttons: true }, false);
-            // return vscode.window.showInformationMessage(
-            //     ' back from test, called from ' +
-            //     (p_fromOutline ? "outline" : "body") +
-            //     ', with result: ' +
-            //     JSON.stringify(p_result)
-            // );
-        }).then(() => {
-            return this.sendAction(Constants.LEOBRIDGE.GET_VERSION);
-        }).then((p_result: LeoBridgePackage) => {
-            console.log('get version results: ', p_result);
-            if (p_result.version) {
-                vscode.window.showInformationMessage(p_result.version);
-            }
-        });
+        //     // this.launchRefresh({ buttons: true }, false);
+        //     // return vscode.window.showInformationMessage(
+        //     //     ' back from test, called from ' +
+        //     //     (p_fromOutline ? "outline" : "body") +
+        //     //     ', with result: ' +
+        //     //     JSON.stringify(p_result)
+        //     // );
+        // }).then(() => {
+        //     return this.sendAction(Constants.LEOBRIDGE.GET_VERSION);
+        // }).then((p_result: LeoBridgePackage) => {
+        //     console.log('get version results: ', p_result);
+        //     if (p_result.version) {
+        //         vscode.window.showInformationMessage(p_result.version);
+        //     }
+        // });
     }
 }

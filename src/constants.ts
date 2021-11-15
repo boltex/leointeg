@@ -436,6 +436,9 @@ export class Constants {
         COLLAPSE_NODE: "!contract_node", // "collapseNode",
         CONTRACT_ALL: "contractAllHeadlines",
         GET_STATES: "!get_ui_states", // "getStates",
+        GET_UA: "!get_ua",
+        SET_UA_MEMBER: "!set_ua_member",
+        SET_UA: "!set_ua",
         // * Leo Documents
         GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles",
         SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile",

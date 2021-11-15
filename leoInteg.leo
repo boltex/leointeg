@@ -6230,6 +6230,9 @@ public static LEOBRIDGE = {
     COLLAPSE_NODE: "!contract_node", // "collapseNode",
     CONTRACT_ALL: "contractAllHeadlines",
     GET_STATES: "!get_ui_states", // "getStates",
+    GET_UA: "!get_ua",
+    SET_UA_MEMBER: "!set_ua_member",
+    SET_UA: "!set_ua",
     // * Leo Documents
     GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles",
     SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile",
@@ -9159,6 +9162,7 @@ export interface LeoBridgePackage {
     index?: number; // get_all_open_commanders
     language?: string; // get_body_states
     wrap?: boolean; // get_body_states
+    tabWidth?: number | boolean; // get_body_states either the tabwidth or falsy
     node?: ArchivedPosition; // get_parent, set_opened_file, open_file(s), ?close_file
     children?: ArchivedPosition[]; // get_children
     searchSettings?: LeoGuiFindTabManagerSettings // get_search_settings
@@ -11171,6 +11175,10 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                 q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
                     let w_language: string = p_bodyStates.language!;
                     let w_wrap: boolean = !!p_bodyStates.wrap;
+                    let w_tabWidth: number | boolean = p_bodyStates.tabWidth || !!p_bodyStates.tabWidth;
+
+                    // TODO : Apply tabwidth
+                    // console.log('TABWIDTH: ', w_tabWidth);
 
                     // TODO : Apply Wrap
                     // console.log('WRAP: ', w_wrap);
@@ -11970,6 +11978,53 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
 
     //     });
 
+    // * test ua's
+    this.sendAction(
+        // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+        Constants.LEOBRIDGE.SET_UA,
+        JSON.stringify({
+            ua: {
+                kin: 'kin val',
+                yoi: "toi test value string"
+            }
+        })
+    ).then((p_result: LeoBridgePackage) =&gt; {
+        console.log('get focus results: ', p_result);
+
+        // this.launchRefresh({ buttons: true }, false);
+        // return vscode.window.showInformationMessage(
+        //     ' back from test, called from ' +
+        //     (p_fromOutline ? "outline" : "body") +
+        //     ', with result: ' +
+        //     JSON.stringify(p_result)
+        // );
+    });
+    // * test ua's
+    return this.sendAction(
+        // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+        Constants.LEOBRIDGE.SET_UA_MEMBER,
+        JSON.stringify({
+            name: 'uaTestName',
+            value: "some test value string"
+        })
+    ).then((p_result: LeoBridgePackage) =&gt; {
+        console.log('get focus results: ', p_result);
+
+        // this.launchRefresh({ buttons: true }, false);
+        // return vscode.window.showInformationMessage(
+        //     ' back from test, called from ' +
+        //     (p_fromOutline ? "outline" : "body") +
+        //     ', with result: ' +
+        //     JSON.stringify(p_result)
+        // );
+        this.launchRefresh(
+            {
+                tree: true
+            },
+            false
+        );
+    });
+
     // Test setting scroll / selection range
 
     /*
@@ -12027,28 +12082,28 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
     */
 
     // GET_FOCUS AS A TEST
-    return this.sendAction(
-        // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
-        Constants.LEOBRIDGE.GET_FOCUS,
-        JSON.stringify({ testParam: 'Some String' })
-    ).then((p_result: LeoBridgePackage) =&gt; {
-        console.log('get focus results: ', p_result);
+    // return this.sendAction(
+    //     // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+    //     Constants.LEOBRIDGE.GET_FOCUS,
+    //     JSON.stringify({ testParam: 'Some String' })
+    // ).then((p_result: LeoBridgePackage) =&gt; {
+    //     console.log('get focus results: ', p_result);
 
-        // this.launchRefresh({ buttons: true }, false);
-        // return vscode.window.showInformationMessage(
-        //     ' back from test, called from ' +
-        //     (p_fromOutline ? "outline" : "body") +
-        //     ', with result: ' +
-        //     JSON.stringify(p_result)
-        // );
-    }).then(() =&gt; {
-        return this.sendAction(Constants.LEOBRIDGE.GET_VERSION);
-    }).then((p_result: LeoBridgePackage) =&gt; {
-        console.log('get version results: ', p_result);
-        if (p_result.version) {
-            vscode.window.showInformationMessage(p_result.version);
-        }
-    });
+    //     // this.launchRefresh({ buttons: true }, false);
+    //     // return vscode.window.showInformationMessage(
+    //     //     ' back from test, called from ' +
+    //     //     (p_fromOutline ? "outline" : "body") +
+    //     //     ', with result: ' +
+    //     //     JSON.stringify(p_result)
+    //     // );
+    // }).then(() =&gt; {
+    //     return this.sendAction(Constants.LEOBRIDGE.GET_VERSION);
+    // }).then((p_result: LeoBridgePackage) =&gt; {
+    //     console.log('get version results: ', p_result);
+    //     if (p_result.version) {
+    //         vscode.window.showInformationMessage(p_result.version);
+    //     }
+    // });
 }
 </t>
 <t tx="felix.20200719025231.8">/**
@@ -17442,7 +17497,7 @@ function closeLeoTextEditors() {
 
 - Fixed 'F3' bug: findNext didn't trigger because the context was not (re)set properly on focus-out from the 'find panel'.
 - Changed all context 'when' clauses to be more 'precise &amp; unique' in relation to other extensions, such as leojs.
-- Added the reStructuredText (rest) .rst language support (syntax coloring and snippets)
+- Added the reStructuredText (rest) .rst language support. (syntax coloring and snippets)
 - Fixed at-button panel to refresh after adding a button
 - Added 'Goto Script' command to the context menu of at-buttons, to 'find and goto' the source node of the button script.
 
@@ -17473,10 +17528,11 @@ public gotoScript(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
 </t>
 <t tx="felix.20211018004333.1">## 1.0.4
 
-- Fixed typos and small bugs
-- Fixed refresh type for mark/unmark node
+- Fixed typos and small bugs.
+- Fixed refresh type for mark/unmark node.
 - Fixed bug that prevented context some menu items on \@\&lt;files\&gt; nodes and other special nodes.
-- Added Write (dirty) \@\&lt;file\&gt; commands and keybindings
+- Added Write (dirty) \@\&lt;file\&gt; commands and keybindings.
+- Fixed flags and icons shown above the body pane for hoist/dehoist commands.
 
 </t>
 <t tx="felix.20211111172843.1">@language python
