@@ -1618,6 +1618,7 @@ export class LeoIntegration {
             !!p_ap.marked, // marked
             !!p_ap.atFile, // atFile
             !!p_ap.hasBody, // hasBody
+            !!p_ap.selected, // only used in LeoNode for setting isRoot
             w_u, // unknownAttributes
             this, // _leoIntegration pointer
             utils.hashNode(p_ap, this._treeId.toString(36))

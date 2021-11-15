@@ -8357,6 +8357,7 @@ export class LeoNode extends vscode.TreeItem {
         public marked: boolean,
         public atFile: boolean,
         public hasBody: boolean,
+        public selected: boolean,
         public u: any,
         private _leoIntegration: LeoIntegration,
         private _id: string
@@ -8390,7 +8391,10 @@ export class LeoNode extends vscode.TreeItem {
  */
 public setRoot(): void {
     this.isRoot = true;
-    this._leoIntegration.leoStates.leoRoot = true; // Set this special global 'selected node' flag
+    if (this.selected) {
+        // Set this special global 'selected node' flag
+        this._leoIntegration.leoStates.leoRoot = true;
+    }
     this.contextValue = this._getNodeContextValue();
 }
 
@@ -8920,7 +8924,7 @@ export class LeoStates {
 }
 </t>
 <t tx="felix.20200718192411.2">public setSelectedNodeFlags(p_node: LeoNode): void {
-    this.leoRoot = false; // * RESET the root flag : It is set by vscode instead right after getting list of children for root of outline
+    this.leoRoot = p_node.isRoot; // * ALSO set in setRoot of LeoNode class
     this.leoMarked = p_node.marked;
     this.leoCloned = p_node.cloned;
     this.leoDirty = p_node.dirty;
@@ -10956,6 +10960,7 @@ public apToLeoNode(
         !!p_ap.marked, // marked
         !!p_ap.atFile, // atFile
         !!p_ap.hasBody, // hasBody
+        !!p_ap.selected, // only used in LeoNode for setting isRoot
         w_u, // unknownAttributes
         this, // _leoIntegration pointer
         utils.hashNode(p_ap, this._treeId.toString(36))

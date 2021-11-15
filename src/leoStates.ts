@@ -180,7 +180,7 @@ export class LeoStates {
     ) { }
 
     public setSelectedNodeFlags(p_node: LeoNode): void {
-        this.leoRoot = false; // * RESET the root flag : It is set by vscode instead right after getting list of children for root of outline
+        this.leoRoot = p_node.isRoot; // * ALSO set in setRoot of LeoNode class
         this.leoMarked = p_node.marked;
         this.leoCloned = p_node.cloned;
         this.leoDirty = p_node.dirty;

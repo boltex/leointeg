@@ -23,6 +23,7 @@ export class LeoNode extends vscode.TreeItem {
         public marked: boolean,
         public atFile: boolean,
         public hasBody: boolean,
+        public selected: boolean,
         public u: any,
         private _leoIntegration: LeoIntegration,
         private _id: string
@@ -53,7 +54,10 @@ export class LeoNode extends vscode.TreeItem {
      */
     public setRoot(): void {
         this.isRoot = true;
-        this._leoIntegration.leoStates.leoRoot = true; // Set this special global 'selected node' flag
+        if (this.selected) {
+            // Set this special global 'selected node' flag
+            this._leoIntegration.leoStates.leoRoot = true;
+        }
         this.contextValue = this._getNodeContextValue();
     }
 
