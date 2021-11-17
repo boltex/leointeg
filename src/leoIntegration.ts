@@ -1233,13 +1233,23 @@ export class LeoIntegration {
             (this._bodyLastChangedDocument.isDirty || this._editorTouched) &&
             !this._bodyLastChangedDocumentSaved
         ) {
+            // * Is dirty and unsaved, so proper save is in order
             const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
             this._bodyLastChangedDocumentSaved = true;
             this._editorTouched = false;
             q_savePromise = this._bodySaveDocument(w_document, p_forcedVsCodeSave);
+        } else if(
+            p_forcedVsCodeSave &&
+            this._bodyLastChangedDocument &&
+            this._bodyLastChangedDocument.isDirty &&
+            this._bodyLastChangedDocumentSaved
+        ) {
+            // * Had 'forcedVsCodeSave' and isDirty only, so just clean up dirty VSCODE document flag.
+            this._bodyLastChangedDocument.save(); // ! USED INTENTIONALLY: This trims trailing spaces
+            q_savePromise = this._bodySaveSelection(); // just save selection if it's changed
         } else {
             this._bodyLastChangedDocumentSaved = true;
-            q_savePromise = this._bodySaveSelection();
+            q_savePromise = this._bodySaveSelection();  // just save selection if it's changed
         }
         return q_savePromise.then((p_result) => {
             return p_result;

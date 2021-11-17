@@ -1141,7 +1141,7 @@ public showAskModalDialog(p_askArg: runAskYesNoDialogParameters): void {
             })
                 .then((p_package) =&gt; {
                     // refresh and reveal selection
-                    this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+                    this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
                 });
         }
     });
@@ -1180,7 +1180,7 @@ public showChangesDetectedInfoMessage(p_infoArg: runInfoMessageDialogParameters)
             this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                 .then((p_package) =&gt; {
                     // refresh and reveal selection
-                    this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+                    this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
                 });
 
             break;
@@ -10825,13 +10825,23 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise&lt;boolean&gt; {
         (this._bodyLastChangedDocument.isDirty || this._editorTouched) &amp;&amp;
         !this._bodyLastChangedDocumentSaved
     ) {
+        // * Is dirty and unsaved, so proper save is in order
         const w_document = this._bodyLastChangedDocument; // backup for bodySaveDocument before reset
         this._bodyLastChangedDocumentSaved = true;
         this._editorTouched = false;
         q_savePromise = this._bodySaveDocument(w_document, p_forcedVsCodeSave);
+    } else if(
+        p_forcedVsCodeSave &amp;&amp;
+        this._bodyLastChangedDocument &amp;&amp;
+        this._bodyLastChangedDocument.isDirty &amp;&amp;
+        this._bodyLastChangedDocumentSaved
+    ) {
+        // * Had 'forcedVsCodeSave' and isDirty only, so just clean up dirty VSCODE document flag.
+        this._bodyLastChangedDocument.save(); // ! USED INTENTIONALLY: This trims trailing spaces
+        q_savePromise = this._bodySaveSelection(); // just save selection if it's changed
     } else {
         this._bodyLastChangedDocumentSaved = true;
-        q_savePromise = this._bodySaveSelection();
+        q_savePromise = this._bodySaveSelection();  // just save selection if it's changed
     }
     return q_savePromise.then((p_result) =&gt; {
         return p_result;
@@ -17533,6 +17543,7 @@ public gotoScript(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
 - Fixed bug that prevented context some menu items on \@\&lt;files\&gt; nodes and other special nodes.
 - Added Write (dirty) \@\&lt;file\&gt; commands and keybindings.
 - Fixed flags and icons shown above the body pane for hoist/dehoist commands.
+- Fixed 'clean/dirty' state of leo body documents whith the 'triggerBodySave' method which makes sure the body text is sent to the leo server before anything would close or destroy the body pane. (when focusing on another document or outside of vscode, etc.)
 
 </t>
 <t tx="felix.20211111172843.1">@language python

@@ -116,7 +116,7 @@ export class LeoAsync {
                 })
                     .then((p_package) => {
                         // refresh and reveal selection
-                        this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+                        this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
                     });
             }
         });
@@ -153,7 +153,7 @@ export class LeoAsync {
                 this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                     .then((p_package) => {
                         // refresh and reveal selection
-                        this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+                        this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
                     });
 
                 break;
