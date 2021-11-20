@@ -34,20 +34,21 @@ export function activate(p_context: vscode.ExtensionContext) {
     const U = undefined;
     const BRIDGE = Constants.LEOBRIDGE;
     const CMD = Constants.COMMANDS;
+    // * Refresh helper variables: 'states' refresh will also refresh documents pane.
     const NO_REFRESH: ReqRefresh = {};
     const REFRESH_NODE_BODY: ReqRefresh = {
         node: true, // Reveal the returned 'selected position' without changes to the tree
         body: true, // Goto/select another node needs the body pane refreshed
-        states: true
+        states: true // * Also refreshes documents pane if node's 'changed' state differ.
     };
     const REFRESH_TREE: ReqRefresh = {
         tree: true,
-        states: true
+        states: true // * Also refreshes documents pane if node's 'changed' state differ.
     };
     const REFRESH_TREE_BODY: ReqRefresh = {
         tree: true,
         body: true,
-        states: true
+        states: true // * Also refreshes documents pane if node's 'changed' state differ.
     };
 
     const w_commands: [string, (...args: any[]) => any][] = [

@@ -190,7 +190,7 @@ export class LeoStates {
     }
 
     public setLeoStateFlags(p_states: LeoPackageStates): void {
-        this.leoChanged = p_states.changed;
+        this.leoChanged = p_states.changed; // Documents will be refresh if this changes
         this.leoCanUndo = p_states.canUndo;
         this.leoCanRedo = p_states.canRedo;
         this.leoCanDemote = p_states.canDemote;

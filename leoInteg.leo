@@ -1175,12 +1175,14 @@ public showChangesDetectedInfoMessage(p_infoArg: runInfoMessageDialogParameters)
         case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_REFRESHED:
             w_message = Constants.USER_MESSAGES.CHANGES_DETECTED + Constants.USER_MESSAGES.REFRESHED;
 
-            // this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
-
             this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                 .then((p_package) =&gt; {
                     // refresh and reveal selection
-                    this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
+                    this._leoIntegration.launchRefresh(
+                        { tree: true, body: true, states: true, buttons: true, documents: true },
+                        false,
+                        p_package.node
+                    );
                 });
 
             break;
@@ -1544,7 +1546,7 @@ private _gotSelection(p_node: LeoNode): void {
     // * Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
     let w_showBodyKeepFocus: boolean = this._fromOutline; // Will preserve focus where it is without forcing into the body pane if true
     if (this._focusInterrupt) {
-        this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
+        this._focusInterrupt = false;
         w_showBodyKeepFocus = true;
     }
     this._tryApplyNodeToBody(p_node, false, w_showBodyKeepFocus);
@@ -6290,7 +6292,7 @@ public static LEOBRIDGE = {
     EXTRACT: "extract",
     EXTRACT_NAMES: "extractSectionNames",
     COPY_MARKED: "copyMarked",
-    DIFF_MARKED_NODES: "deleteMarked",
+    DIFF_MARKED_NODES: "-diff-marked-nodes",
     MARK_CHANGED_ITEMS: "markChangedHeadlines",
     MARK_SUBHEADS: "markSubheads",
     UNMARK_ALL: "unmarkAll",
@@ -7237,20 +7239,21 @@ export function activate(p_context: vscode.ExtensionContext) {
     const U = undefined;
     const BRIDGE = Constants.LEOBRIDGE;
     const CMD = Constants.COMMANDS;
+    // * Refresh helper variables: 'states' refresh will also refresh documents pane.
     const NO_REFRESH: ReqRefresh = {};
     const REFRESH_NODE_BODY: ReqRefresh = {
         node: true, // Reveal the returned 'selected position' without changes to the tree
         body: true, // Goto/select another node needs the body pane refreshed
-        states: true
+        states: true // * Also refreshes documents pane if node's 'changed' state differ.
     };
     const REFRESH_TREE: ReqRefresh = {
         tree: true,
-        states: true
+        states: true // * Also refreshes documents pane if node's 'changed' state differ.
     };
     const REFRESH_TREE_BODY: ReqRefresh = {
         tree: true,
         body: true,
-        states: true
+        states: true // * Also refreshes documents pane if node's 'changed' state differ.
     };
 
     const w_commands: [string, (...args: any[]) =&gt; any][] = [
@@ -8938,7 +8941,7 @@ export class LeoStates {
 
 </t>
 <t tx="felix.20200718192411.3">public setLeoStateFlags(p_states: LeoPackageStates): void {
-    this.leoChanged = p_states.changed;
+    this.leoChanged = p_states.changed; // Documents will be refresh if this changes
     this.leoCanUndo = p_states.canUndo;
     this.leoCanRedo = p_states.canRedo;
     this.leoCanDemote = p_states.canDemote;
@@ -10131,15 +10134,12 @@ private _triggerGetStates(): void {
     }
     if (this._refreshType.states) {
         this._refreshType.states = false;
-        this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) =&gt; {
-            //                            **********************************
-            //                             TODO : Check if still same GNX !
-            //                            **********************************
-
-            if (p_package.states) {
-                this.leoStates.setLeoStateFlags(p_package.states);
-            }
-        });
+        this.sendAction(Constants.LEOBRIDGE.GET_STATES)
+            .then((p_package: LeoBridgePackage) =&gt; {
+                if (p_package.states) {
+                    this.leoStates.setLeoStateFlags(p_package.states);
+                }
+            });
     }
 }
 
@@ -10200,7 +10200,8 @@ export class LeoIntegration {
     // * Outline Pane redraw/refresh flags. Also set when calling refreshTreeRoot
     // If there's no reveal and its the selected node, the old id will be re-used for the node. (see _id property in LeoNode)
     private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
-    private _preventShowBody = false; // Used when refreshing treeview from config: It requires not to open the body pane when refreshing.
+    private _preventShowBody = false; // Used when refreshing treeview from config: It requires not to open the body pane when refreshing
+    private _needRefresh = false; // Used at the end of refresh process, when a setLanguage checks if gnx is same as lastSelectedNode
 
     // * Documents Pane
     private _leoDocumentsProvider: LeoDocumentsProvider;
@@ -10382,6 +10383,7 @@ public setupOpenedLeoDocument(
                 p_resolve(p_te);
             });
         });
+
     } else {
         this.bodyUri = utils.strToLeoUri(w_selectedLeoNode.gnx);
     }
@@ -10397,10 +10399,15 @@ public setupOpenedLeoDocument(
         );
         this._bodyFileSystemStarted = true;
     }
+
     // * Startup flag
-    this.leoStates.fileOpenedReady = true;
+    if (!this.leoStates.fileOpenedReady) {
+        this.leoStates.fileOpenedReady = true;
+    }
+
     // * Maybe first valid redraw of tree along with the selected node and its body
     this._refreshOutline(true, RevealType.RevealSelectFocus); // p_revealSelection flag set
+
     // * Maybe first StatusBar appearance
     this._leoStatusBar.update(true, 0, true);
     this._leoStatusBar.show(); // Just selected a node
@@ -10830,7 +10837,7 @@ public triggerBodySave(p_forcedVsCodeSave?: boolean): Promise&lt;boolean&gt; {
         this._bodyLastChangedDocumentSaved = true;
         this._editorTouched = false;
         q_savePromise = this._bodySaveDocument(w_document, p_forcedVsCodeSave);
-    } else if(
+    } else if (
         p_forcedVsCodeSave &amp;&amp;
         this._bodyLastChangedDocument &amp;&amp;
         this._bodyLastChangedDocument.isDirty &amp;&amp;
@@ -11164,6 +11171,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
     }
 
     if (this._preventShowBody) {
+        this._needRefresh = false;
         this._preventShowBody = false;
         return Promise.resolve(vscode.window.activeTextEditor!);
     }
@@ -11201,6 +11209,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                         this.lastSelectedNode &amp;&amp;
                         utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
                     ) {
+                        this._needRefresh = false;
                         vscode.languages.setTextDocumentLanguage(p_document, w_language).then(
                             () =&gt; { }, // ok - language found
                             (p_error) =&gt; {
@@ -11216,7 +11225,25 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                     } else if (!p_document.isClosed &amp;&amp;
                         this.lastSelectedNode &amp;&amp;
                         utils.leoUriToStr(p_document.uri) !== this.lastSelectedNode.gnx) {
-                        this.refreshBodyStates();
+
+                        // * check ONCE and retry.
+                        // IF FLAG ALREADY SET ERROR MESSAGE &amp; RETURN
+                        if (this._needRefresh) {
+                            vscode.window.showInformationMessage("Leo Refresh Failed");
+                            this._needRefresh = false; // reset flag
+                        } else {
+                            // SET FLAG AND LAUNCH FULL REFRESH
+                            this._needRefresh = true;
+                            this.sendAction(Constants.LEOBRIDGE.DO_NOTHING).then((p_package) =&gt; {
+                                // refresh and reveal selection
+                                this.launchRefresh(
+                                    { tree: true, body: true, states: true, buttons: true, documents: true },
+                                    false,
+                                    p_package.node
+                                );
+                            });
+                        }
+
                     }
                 });
             }
@@ -15670,7 +15697,6 @@ public getBridgeFocus(): void {
             const w_focus = p_resultFocus.focus.toLowerCase();
             if (w_focus.includes('tree') || w_focus.includes('head')) {
                 this._fromOutline = true;
-                // this.showOutline(true);
             }
         }
     });

@@ -89,7 +89,8 @@ export class LeoIntegration {
     // * Outline Pane redraw/refresh flags. Also set when calling refreshTreeRoot
     // If there's no reveal and its the selected node, the old id will be re-used for the node. (see _id property in LeoNode)
     private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
-    private _preventShowBody = false; // Used when refreshing treeview from config: It requires not to open the body pane when refreshing.
+    private _preventShowBody = false; // Used when refreshing treeview from config: It requires not to open the body pane when refreshing
+    private _needRefresh = false; // Used at the end of refresh process, when a setLanguage checks if gnx is same as lastSelectedNode
 
     // * Documents Pane
     private _leoDocumentsProvider: LeoDocumentsProvider;
@@ -786,15 +787,12 @@ export class LeoIntegration {
         }
         if (this._refreshType.states) {
             this._refreshType.states = false;
-            this.sendAction(Constants.LEOBRIDGE.GET_STATES).then((p_package: LeoBridgePackage) => {
-                //                            **********************************
-                //                             TODO : Check if still same GNX !
-                //                            **********************************
-
-                if (p_package.states) {
-                    this.leoStates.setLeoStateFlags(p_package.states);
-                }
-            });
+            this.sendAction(Constants.LEOBRIDGE.GET_STATES)
+                .then((p_package: LeoBridgePackage) => {
+                    if (p_package.states) {
+                        this.leoStates.setLeoStateFlags(p_package.states);
+                    }
+                });
         }
     }
 
@@ -874,6 +872,7 @@ export class LeoIntegration {
                     p_resolve(p_te);
                 });
             });
+
         } else {
             this.bodyUri = utils.strToLeoUri(w_selectedLeoNode.gnx);
         }
@@ -889,10 +888,15 @@ export class LeoIntegration {
             );
             this._bodyFileSystemStarted = true;
         }
+
         // * Startup flag
-        this.leoStates.fileOpenedReady = true;
+        if (!this.leoStates.fileOpenedReady) {
+            this.leoStates.fileOpenedReady = true;
+        }
+
         // * Maybe first valid redraw of tree along with the selected node and its body
         this._refreshOutline(true, RevealType.RevealSelectFocus); // p_revealSelection flag set
+
         // * Maybe first StatusBar appearance
         this._leoStatusBar.update(true, 0, true);
         this._leoStatusBar.show(); // Just selected a node
@@ -1238,7 +1242,7 @@ export class LeoIntegration {
             this._bodyLastChangedDocumentSaved = true;
             this._editorTouched = false;
             q_savePromise = this._bodySaveDocument(w_document, p_forcedVsCodeSave);
-        } else if(
+        } else if (
             p_forcedVsCodeSave &&
             this._bodyLastChangedDocument &&
             this._bodyLastChangedDocument.isDirty &&
@@ -1572,7 +1576,7 @@ export class LeoIntegration {
         // * Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
         let w_showBodyKeepFocus: boolean = this._fromOutline; // Will preserve focus where it is without forcing into the body pane if true
         if (this._focusInterrupt) {
-            this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
+            this._focusInterrupt = false;
             w_showBodyKeepFocus = true;
         }
         this._tryApplyNodeToBody(p_node, false, w_showBodyKeepFocus);
@@ -1587,7 +1591,6 @@ export class LeoIntegration {
                 const w_focus = p_resultFocus.focus.toLowerCase();
                 if (w_focus.includes('tree') || w_focus.includes('head')) {
                     this._fromOutline = true;
-                    // this.showOutline(true);
                 }
             }
         });
@@ -1939,6 +1942,7 @@ export class LeoIntegration {
         }
 
         if (this._preventShowBody) {
+            this._needRefresh = false;
             this._preventShowBody = false;
             return Promise.resolve(vscode.window.activeTextEditor!);
         }
@@ -1976,6 +1980,7 @@ export class LeoIntegration {
                             this.lastSelectedNode &&
                             utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
                         ) {
+                            this._needRefresh = false;
                             vscode.languages.setTextDocumentLanguage(p_document, w_language).then(
                                 () => { }, // ok - language found
                                 (p_error) => {
@@ -1991,7 +1996,25 @@ export class LeoIntegration {
                         } else if (!p_document.isClosed &&
                             this.lastSelectedNode &&
                             utils.leoUriToStr(p_document.uri) !== this.lastSelectedNode.gnx) {
-                            this.refreshBodyStates();
+
+                            // * check ONCE and retry.
+                            // IF FLAG ALREADY SET ERROR MESSAGE & RETURN
+                            if (this._needRefresh) {
+                                vscode.window.showInformationMessage("Leo Refresh Failed");
+                                this._needRefresh = false; // reset flag
+                            } else {
+                                // SET FLAG AND LAUNCH FULL REFRESH
+                                this._needRefresh = true;
+                                this.sendAction(Constants.LEOBRIDGE.DO_NOTHING).then((p_package) => {
+                                    // refresh and reveal selection
+                                    this.launchRefresh(
+                                        { tree: true, body: true, states: true, buttons: true, documents: true },
+                                        false,
+                                        p_package.node
+                                    );
+                                });
+                            }
+
                         }
                     });
                 }

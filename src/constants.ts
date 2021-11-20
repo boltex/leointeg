@@ -496,7 +496,7 @@ export class Constants {
         EXTRACT: "extract",
         EXTRACT_NAMES: "extractSectionNames",
         COPY_MARKED: "copyMarked",
-        DIFF_MARKED_NODES: "deleteMarked",
+        DIFF_MARKED_NODES: "-diff-marked-nodes",
         MARK_CHANGED_ITEMS: "markChangedHeadlines",
         MARK_SUBHEADS: "markSubheads",
         UNMARK_ALL: "unmarkAll",
