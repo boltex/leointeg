@@ -235,172 +235,174 @@
 <v t="felix.20201129184357.1"><vh>printAction</vh></v>
 <v t="felix.20191126232435.1"><vh>main leoBridgeServer loop</vh></v>
 </v>
-<v t="felix.20211111172843.1"><vh>@@file leoserver.py</vh>
-<v t="felix.20211111172843.2"><vh>&lt;&lt; imports &gt;&gt;</vh></v>
-<v t="felix.20211111172843.3"><vh>setup JSON encoder</vh></v>
-<v t="felix.20211111172843.4"><vh>Exception classes</vh></v>
-<v t="felix.20211111172843.5"><vh>class ServerExternalFilesController</vh>
-<v t="felix.20211111172843.6"><vh>sefc.ctor</vh></v>
-<v t="felix.20211111172843.7"><vh>sefc.clientResult</vh></v>
-<v t="felix.20211111172843.8"><vh>sefc.entries</vh>
-<v t="felix.20211111172843.9"><vh>sefc.check_overwrite</vh></v>
-<v t="felix.20211111172843.10"><vh>sefc.on_idle &amp; helpers</vh>
-<v t="felix.20211111172843.11"><vh>sefc.idle_check_commander</vh></v>
-<v t="felix.20211111172843.12"><vh>sefc.idle_check_leo_file</vh></v>
-<v t="felix.20211111172843.13"><vh>sefc.idle_check_at_file_node</vh></v>
+<v t="felix.20211120022537.1"><vh>@@file leoserver.py</vh>
+<v t="felix.20211120022537.2"><vh>&lt;&lt; imports &gt;&gt;</vh></v>
+<v t="felix.20211120022537.3"><vh>setup JSON encoder</vh></v>
+<v t="felix.20211120022537.4"><vh>Exception classes</vh></v>
+<v t="felix.20211120022537.5"><vh>class ServerExternalFilesController</vh>
+<v t="felix.20211120022537.6"><vh>sefc.ctor</vh></v>
+<v t="felix.20211120022537.7"><vh>sefc.clientResult</vh></v>
+<v t="felix.20211120022537.8"><vh>sefc.entries</vh>
+<v t="felix.20211120022537.9"><vh>sefc.check_overwrite</vh></v>
+<v t="felix.20211120022537.10"><vh>sefc.on_idle &amp; helpers</vh>
+<v t="felix.20211120022537.11"><vh>sefc.idle_check_commander</vh></v>
+<v t="felix.20211120022537.12"><vh>sefc.idle_check_leo_file</vh></v>
+<v t="felix.20211120022537.13"><vh>sefc.idle_check_at_file_node</vh></v>
 </v>
-<v t="felix.20211111172843.14"><vh>sefc.open_with</vh></v>
+<v t="felix.20211120022537.14"><vh>sefc.open_with</vh></v>
 </v>
-<v t="felix.20211111172843.15"><vh>sefc.utilities</vh>
-<v t="felix.20211111172843.16"><vh>sefc.ask</vh></v>
-<v t="felix.20211111172843.17"><vh>sefc.is_enabled</vh></v>
-<v t="felix.20211111172843.18"><vh>sefc.warn</vh></v>
-</v>
-</v>
-<v t="felix.20211111172843.19"><vh>class LeoServer</vh>
-<v t="felix.20211111172843.20"><vh>server.__init__</vh></v>
-<v t="felix.20211111172843.21"><vh>server:leo overridden methods</vh>
-<v t="felix.20211111172843.22"><vh>_runAskOkDialog</vh></v>
-<v t="felix.20211111172843.23"><vh>_runAskYesNoDialog</vh></v>
-<v t="felix.20211111172843.24"><vh>_runAskYesNoCancelDialog</vh></v>
-<v t="felix.20211111172843.25"><vh>_es</vh></v>
-<v t="felix.20211111172843.26"><vh>_getScript</vh></v>
-<v t="felix.20211111172843.27"><vh>_asyncIdleLoop</vh></v>
-<v t="felix.20211111172843.28"><vh>_idleTime</vh></v>
-<v t="felix.20211111172843.29"><vh>_show_find_success</vh></v>
-</v>
-<v t="felix.20211111172843.30"><vh>server:public commands</vh>
-<v t="felix.20211111172843.31"><vh>server:button commands</vh>
-<v t="felix.20211111172843.32"><vh>_check_button_command</vh></v>
-<v t="felix.20211111172843.33"><vh>server.click_button</vh></v>
-<v t="felix.20211111172843.34"><vh>server.get_buttons</vh></v>
-<v t="felix.20211111172843.35"><vh>server.remove_button</vh></v>
-<v t="felix.20211111172843.36"><vh>server.goto_script</vh></v>
-</v>
-<v t="felix.20211111172843.37"><vh>server:file commands</vh>
-<v t="felix.20211111172843.38"><vh>server.open_file</vh></v>
-<v t="felix.20211111172843.39"><vh>server.open_files</vh></v>
-<v t="felix.20211111172843.40"><vh>server.set_opened_file</vh></v>
-<v t="felix.20211111172843.41"><vh>server.close_file</vh></v>
-<v t="felix.20211111172843.42"><vh>server.save_file</vh></v>
-<v t="felix.20211111172843.43"><vh>server.import_any_file</vh></v>
-</v>
-<v t="felix.20211111172843.44"><vh>server.search commands</vh>
-<v t="felix.20211111172843.45"><vh>server.get_search_settings</vh></v>
-<v t="felix.20211111172843.46"><vh>server.set_search_settings</vh></v>
-<v t="felix.20211111172843.47"><vh>server.find_all</vh></v>
-<v t="felix.20211111172843.48"><vh>server.find_next</vh></v>
-<v t="felix.20211111172843.49"><vh>server.find_previous</vh></v>
-<v t="felix.20211111172843.50"><vh>server.replace</vh></v>
-<v t="felix.20211111172843.51"><vh>server.replace_then_find</vh></v>
-<v t="felix.20211111172843.52"><vh>server.replace_all</vh></v>
-<v t="felix.20211111172843.53"><vh>server.clone_find_all</vh></v>
-<v t="felix.20211111172843.54"><vh>server.clone_find_all_flattened</vh></v>
-<v t="felix.20211111172843.55"><vh>server.find_var</vh></v>
-<v t="felix.20211111172843.56"><vh>server.clone_find_all_flattened_marked</vh></v>
-<v t="felix.20211111172843.57"><vh>server.clone_find_all_marked</vh></v>
-<v t="felix.20211111172843.58"><vh>server.find_def</vh></v>
-<v t="felix.20211111172843.59"><vh>server.goto_global_line</vh></v>
-<v t="felix.20211111172843.60"><vh>server.clone_find_tag</vh></v>
-<v t="felix.20211111172843.61"><vh>server.tag_children</vh></v>
-</v>
-<v t="felix.20211111172843.62"><vh>server:getter commands</vh>
-<v t="felix.20211111172843.63"><vh>server.get_all_open_commanders</vh></v>
-<v t="felix.20211111172843.64"><vh>server.get_all_positions</vh></v>
-<v t="felix.20211111172843.65"><vh>server.get_all_gnx</vh></v>
-<v t="felix.20211111172843.66"><vh>server.get_body</vh></v>
-<v t="felix.20211111172843.67"><vh>server.get_body_length</vh></v>
-<v t="felix.20211111172843.68"><vh>server.get_body_states</vh></v>
-<v t="felix.20211111172843.69"><vh>server.get_children</vh></v>
-<v t="felix.20211111172843.70"><vh>server.get_focus</vh></v>
-<v t="felix.20211111172843.71"><vh>server.get_parent</vh></v>
-<v t="felix.20211111172843.72"><vh>server.get_position_data</vh></v>
-<v t="felix.20211111172843.73"><vh>server.get_ua</vh></v>
-<v t="felix.20211111172843.74"><vh>server.get_ui_states</vh></v>
-</v>
-<v t="felix.20211111172843.75"><vh>server:node commands</vh>
-<v t="felix.20211111172843.76"><vh>server.clone_node</vh></v>
-<v t="felix.20211111172843.77"><vh>server.contract_node</vh></v>
-<v t="felix.20211111172843.78"><vh>server.cut_node</vh></v>
-<v t="felix.20211111172843.79"><vh>server.delete_node</vh></v>
-<v t="felix.20211111172843.80"><vh>server.expand_node</vh></v>
-<v t="felix.20211111172843.81"><vh>server.insert_node</vh></v>
-<v t="felix.20211111172843.82"><vh>server.insert_child_node</vh></v>
-<v t="felix.20211111172843.83"><vh>server.insert_named_node</vh></v>
-<v t="felix.20211111172843.84"><vh>server.insert_child_named_node</vh></v>
-<v t="felix.20211111172843.85"><vh>server.page_down</vh></v>
-<v t="felix.20211111172843.86"><vh>server.page_up</vh></v>
-<v t="felix.20211111172843.87"><vh>server.redo</vh></v>
-<v t="felix.20211111172843.88"><vh>server.set_body</vh></v>
-<v t="felix.20211111172843.89"><vh>server.set_current_position</vh></v>
-<v t="felix.20211111172843.90"><vh>server.set_headline</vh></v>
-<v t="felix.20211111172843.91"><vh>server.set_selection</vh></v>
-<v t="felix.20211111172843.92"><vh>server.toggle_mark</vh></v>
-<v t="felix.20211111172843.93"><vh>server.mark_node</vh></v>
-<v t="felix.20211111172843.94"><vh>server.unmark_node</vh></v>
-<v t="felix.20211111172843.95"><vh>server.undo</vh></v>
-</v>
-<v t="felix.20211111172843.96"><vh>server:server commands</vh>
-<v t="felix.20211111172843.97"><vh>server.get_version</vh></v>
-<v t="felix.20211111172843.98"><vh>server.do_nothing</vh></v>
-<v t="felix.20211111172843.99"><vh>server.set_ask_result</vh></v>
-<v t="felix.20211111172843.100"><vh>server.set_config</vh></v>
-<v t="felix.20211111172843.101"><vh>server.error</vh></v>
-<v t="felix.20211111172843.102"><vh>server.get_all_leo_commands &amp; helper</vh>
-<v t="felix.20211111172843.103"><vh>server._bad_commands</vh></v>
-<v t="felix.20211111172843.104"><vh>server._good_commands</vh></v>
-</v>
-<v t="felix.20211111172843.105"><vh>server.get_all_server_commands &amp; helpers</vh>
-<v t="felix.20211111172843.106"><vh>_get_all_server_commands</vh></v>
-</v>
-<v t="felix.20211111172843.107"><vh>server.init_connection</vh></v>
-<v t="felix.20211111172843.108"><vh>server.shut_down</vh></v>
+<v t="felix.20211120022537.15"><vh>sefc.utilities</vh>
+<v t="felix.20211120022537.16"><vh>sefc.ask</vh></v>
+<v t="felix.20211120022537.17"><vh>sefc.is_enabled</vh></v>
+<v t="felix.20211120022537.18"><vh>sefc.warn</vh></v>
 </v>
 </v>
-<v t="felix.20211111172843.109"><vh>server:server utils</vh>
-<v t="felix.20211111172843.110"><vh>server._ap_to_p</vh></v>
-<v t="felix.20211111172843.111"><vh>server._check_c</vh></v>
-<v t="felix.20211111172843.112"><vh>server._check_outline</vh></v>
-<v t="felix.20211111172843.113"><vh>server._check_outline_positions</vh></v>
-<v t="felix.20211111172843.114"><vh>server._do_leo_command_by_name</vh></v>
-<v t="felix.20211111172843.115"><vh>server._do_leo_function_by_name</vh></v>
-<v t="felix.20211111172843.116"><vh>server._do_message</vh></v>
-<v t="felix.20211111172843.117"><vh>server._do_server_command</vh></v>
-<v t="felix.20211111172843.118"><vh>server._dump_*</vh></v>
-<v t="felix.20211111172843.119"><vh>server._emit_signon</vh></v>
-<v t="felix.20211111172843.120"><vh>server._get_commander_method</vh></v>
-<v t="felix.20211111172843.121"><vh>server._get_focus</vh></v>
-<v t="felix.20211111172843.122"><vh>server._get_p</vh></v>
-<v t="felix.20211111172843.123"><vh>server._get_position_d</vh></v>
-<v t="felix.20211111172843.124"><vh>server._is_jsonable</vh></v>
-<v t="felix.20211111172843.125"><vh>server._make_minimal_response</vh></v>
-<v t="felix.20211111172843.126"><vh>server._make_response</vh></v>
-<v t="felix.20211111172843.127"><vh>server._p_to_ap</vh></v>
-<v t="felix.20211111172843.128"><vh>server._positionFromGnx</vh></v>
-<v t="felix.20211111172843.129"><vh>server._send_async_output &amp; helper</vh>
-<v t="felix.20211111172843.130"><vh>server._async_output</vh></v>
+<v t="felix.20211120022537.19"><vh>class LeoServer</vh>
+<v t="felix.20211120022537.20"><vh>server.__init__</vh></v>
+<v t="felix.20211120022537.21"><vh>server:leo overridden methods</vh>
+<v t="felix.20211120022537.22"><vh>_runAskOkDialog</vh></v>
+<v t="felix.20211120022537.23"><vh>_runAskYesNoDialog</vh></v>
+<v t="felix.20211120022537.24"><vh>_runAskYesNoCancelDialog</vh></v>
+<v t="felix.20211120022537.25"><vh>_es</vh></v>
+<v t="felix.20211120022537.26"><vh>_getScript</vh></v>
+<v t="felix.20211120022537.27"><vh>_asyncIdleLoop</vh></v>
+<v t="felix.20211120022537.28"><vh>_idleTime</vh></v>
+<v t="felix.20211120022537.29"><vh>_show_find_success</vh></v>
 </v>
-<v t="felix.20211111172843.131"><vh>server._test_round_trip_positions</vh></v>
-<v t="felix.20211111172843.132"><vh>server._yieldAllRootChildren</vh></v>
+<v t="felix.20211120022537.30"><vh>server:public commands</vh>
+<v t="felix.20211120022537.31"><vh>server:button commands</vh>
+<v t="felix.20211120022537.32"><vh>_check_button_command</vh></v>
+<v t="felix.20211120022537.33"><vh>server.click_button</vh></v>
+<v t="felix.20211120022537.34"><vh>server.get_buttons</vh></v>
+<v t="felix.20211120022537.35"><vh>server.remove_button</vh></v>
+<v t="felix.20211120022537.36"><vh>server.goto_script</vh></v>
+</v>
+<v t="felix.20211120022537.37"><vh>server:file commands</vh>
+<v t="felix.20211120022537.38"><vh>server.open_file</vh></v>
+<v t="felix.20211120022537.39"><vh>server.open_files</vh></v>
+<v t="felix.20211120022537.40"><vh>server.set_opened_file</vh></v>
+<v t="felix.20211120022537.41"><vh>server.close_file</vh></v>
+<v t="felix.20211120022537.42"><vh>server.save_file</vh></v>
+<v t="felix.20211120022537.43"><vh>server.import_any_file</vh></v>
+</v>
+<v t="felix.20211120022537.44"><vh>server.search commands</vh>
+<v t="felix.20211120022537.45"><vh>server.get_search_settings</vh></v>
+<v t="felix.20211120022537.46"><vh>server.set_search_settings</vh></v>
+<v t="felix.20211120022537.47"><vh>server.find_all</vh></v>
+<v t="felix.20211120022537.48"><vh>server.find_next</vh></v>
+<v t="felix.20211120022537.49"><vh>server.find_previous</vh></v>
+<v t="felix.20211120022537.50"><vh>server.replace</vh></v>
+<v t="felix.20211120022537.51"><vh>server.replace_then_find</vh></v>
+<v t="felix.20211120022537.52"><vh>server.replace_all</vh></v>
+<v t="felix.20211120022537.53"><vh>server.clone_find_all</vh></v>
+<v t="felix.20211120022537.54"><vh>server.clone_find_all_flattened</vh></v>
+<v t="felix.20211120022537.55"><vh>server.find_var</vh></v>
+<v t="felix.20211120022537.56"><vh>server.clone_find_all_flattened_marked</vh></v>
+<v t="felix.20211120022537.57"><vh>server.clone_find_all_marked</vh></v>
+<v t="felix.20211120022537.58"><vh>server.find_def</vh></v>
+<v t="felix.20211120022537.59"><vh>server.goto_global_line</vh></v>
+<v t="felix.20211120022537.60"><vh>server.clone_find_tag</vh></v>
+<v t="felix.20211120022537.61"><vh>server.tag_children</vh></v>
+</v>
+<v t="felix.20211120022537.62"><vh>server:getter commands</vh>
+<v t="felix.20211120022537.63"><vh>server.get_all_open_commanders</vh></v>
+<v t="felix.20211120022537.64"><vh>server.get_all_positions</vh></v>
+<v t="felix.20211120022537.65"><vh>server.get_all_gnx</vh></v>
+<v t="felix.20211120022537.66"><vh>server.get_body</vh></v>
+<v t="felix.20211120022537.67"><vh>server.get_body_length</vh></v>
+<v t="felix.20211120022537.68"><vh>server.get_body_states</vh></v>
+<v t="felix.20211120022537.69"><vh>server.get_children</vh></v>
+<v t="felix.20211120022537.70"><vh>server.get_focus</vh></v>
+<v t="felix.20211120022537.71"><vh>server.get_parent</vh></v>
+<v t="felix.20211120022537.72"><vh>server.get_position_data</vh></v>
+<v t="felix.20211120022537.73"><vh>server.get_ua</vh></v>
+<v t="felix.20211120022537.74"><vh>server.get_ui_states</vh></v>
+</v>
+<v t="felix.20211120022537.75"><vh>server:node commands</vh>
+<v t="felix.20211120022537.76"><vh>server.clone_node</vh></v>
+<v t="felix.20211120022537.77"><vh>server.contract_node</vh></v>
+<v t="felix.20211120022537.78"><vh>server.cut_node</vh></v>
+<v t="felix.20211120022537.79"><vh>server.delete_node</vh></v>
+<v t="felix.20211120022537.80"><vh>server.expand_node</vh></v>
+<v t="felix.20211120022537.81"><vh>server.insert_node</vh></v>
+<v t="felix.20211120022537.82"><vh>server.insert_child_node</vh></v>
+<v t="felix.20211120022537.83"><vh>server.insert_named_node</vh></v>
+<v t="felix.20211120022537.84"><vh>server.insert_child_named_node</vh></v>
+<v t="felix.20211120022537.85"><vh>server.page_down</vh></v>
+<v t="felix.20211120022537.86"><vh>server.page_up</vh></v>
+<v t="felix.20211120022537.87"><vh>server.redo</vh></v>
+<v t="felix.20211120022537.88"><vh>server.set_body</vh></v>
+<v t="felix.20211120022537.89"><vh>server.set_current_position</vh></v>
+<v t="felix.20211120022537.90"><vh>server.set_headline</vh></v>
+<v t="felix.20211120022537.91"><vh>server.set_selection</vh></v>
+<v t="felix.20211120022537.92"><vh>server.set_ua_member</vh></v>
+<v t="felix.20211120022537.93"><vh>server.set_ua</vh></v>
+<v t="felix.20211120022537.94"><vh>server.toggle_mark</vh></v>
+<v t="felix.20211120022537.95"><vh>server.mark_node</vh></v>
+<v t="felix.20211120022537.96"><vh>server.unmark_node</vh></v>
+<v t="felix.20211120022537.97"><vh>server.undo</vh></v>
+</v>
+<v t="felix.20211120022537.98"><vh>server:server commands</vh>
+<v t="felix.20211120022537.99"><vh>server.get_version</vh></v>
+<v t="felix.20211120022537.100"><vh>server.do_nothing</vh></v>
+<v t="felix.20211120022537.101"><vh>server.set_ask_result</vh></v>
+<v t="felix.20211120022537.102"><vh>server.set_config</vh></v>
+<v t="felix.20211120022537.103"><vh>server.error</vh></v>
+<v t="felix.20211120022537.104"><vh>server.get_all_leo_commands &amp; helper</vh>
+<v t="felix.20211120022537.105"><vh>server._bad_commands</vh></v>
+<v t="felix.20211120022537.106"><vh>server._good_commands</vh></v>
+</v>
+<v t="felix.20211120022537.107"><vh>server.get_all_server_commands &amp; helpers</vh>
+<v t="felix.20211120022537.108"><vh>_get_all_server_commands</vh></v>
+</v>
+<v t="felix.20211120022537.109"><vh>server.init_connection</vh></v>
+<v t="felix.20211120022537.110"><vh>server.shut_down</vh></v>
 </v>
 </v>
-<v t="felix.20211111172843.133"><vh>function: main &amp; helpers</vh>
-<v t="felix.20211111172843.134"><vh>function: cancel_tasks</vh></v>
-<v t="felix.20211111172843.135"><vh>function: center_tk_frame</vh></v>
-<v t="felix.20211111172843.136"><vh>function: close_server</vh></v>
-<v t="felix.20211111172843.137"><vh>function: general_yes_no_dialog &amp; helpers</vh>
-<v t="felix.20211111172843.138"><vh>function: tk_runAskYesNoCancelDialog &amp; helpers</vh>
-<v t="felix.20211111172843.139"><vh>function: create_yes_no_frame</vh></v>
-<v t="felix.20211111172843.140"><vh>function: callbacks</vh></v>
+<v t="felix.20211120022537.111"><vh>server:server utils</vh>
+<v t="felix.20211120022537.112"><vh>server._ap_to_p</vh></v>
+<v t="felix.20211120022537.113"><vh>server._check_c</vh></v>
+<v t="felix.20211120022537.114"><vh>server._check_outline</vh></v>
+<v t="felix.20211120022537.115"><vh>server._check_outline_positions</vh></v>
+<v t="felix.20211120022537.116"><vh>server._do_leo_command_by_name</vh></v>
+<v t="felix.20211120022537.117"><vh>server._do_leo_function_by_name</vh></v>
+<v t="felix.20211120022537.118"><vh>server._do_message</vh></v>
+<v t="felix.20211120022537.119"><vh>server._do_server_command</vh></v>
+<v t="felix.20211120022537.120"><vh>server._dump_*</vh></v>
+<v t="felix.20211120022537.121"><vh>server._emit_signon</vh></v>
+<v t="felix.20211120022537.122"><vh>server._get_commander_method</vh></v>
+<v t="felix.20211120022537.123"><vh>server._get_focus</vh></v>
+<v t="felix.20211120022537.124"><vh>server._get_p</vh></v>
+<v t="felix.20211120022537.125"><vh>server._get_position_d</vh></v>
+<v t="felix.20211120022537.126"><vh>server._is_jsonable</vh></v>
+<v t="felix.20211120022537.127"><vh>server._make_minimal_response</vh></v>
+<v t="felix.20211120022537.128"><vh>server._make_response</vh></v>
+<v t="felix.20211120022537.129"><vh>server._p_to_ap</vh></v>
+<v t="felix.20211120022537.130"><vh>server._positionFromGnx</vh></v>
+<v t="felix.20211120022537.131"><vh>server._send_async_output &amp; helper</vh>
+<v t="felix.20211120022537.132"><vh>server._async_output</vh></v>
 </v>
-<v t="felix.20211111172843.141"><vh>function: qt_runAskYesNoCancelDialog</vh></v>
+<v t="felix.20211120022537.133"><vh>server._test_round_trip_positions</vh></v>
+<v t="felix.20211120022537.134"><vh>server._yieldAllRootChildren</vh></v>
 </v>
-<v t="felix.20211111172843.142"><vh>function: get_args</vh></v>
-<v t="felix.20211111172843.143"><vh>function: notify_clients</vh></v>
-<v t="felix.20211111172843.144"><vh>function: register_client</vh></v>
-<v t="felix.20211111172843.145"><vh>function: save_dirty</vh></v>
-<v t="felix.20211111172843.146"><vh>function: unregister_client</vh></v>
-<v t="felix.20211111172843.147"><vh>function: ws_handler (server)</vh></v>
+</v>
+<v t="felix.20211120022537.135"><vh>function: main &amp; helpers</vh>
+<v t="felix.20211120022537.136"><vh>function: cancel_tasks</vh></v>
+<v t="felix.20211120022537.137"><vh>function: center_tk_frame</vh></v>
+<v t="felix.20211120022537.138"><vh>function: close_server</vh></v>
+<v t="felix.20211120022537.139"><vh>function: general_yes_no_dialog &amp; helpers</vh>
+<v t="felix.20211120022537.140"><vh>function: tk_runAskYesNoCancelDialog &amp; helpers</vh>
+<v t="felix.20211120022537.141"><vh>function: create_yes_no_frame</vh></v>
+<v t="felix.20211120022537.142"><vh>function: callbacks</vh></v>
+</v>
+<v t="felix.20211120022537.143"><vh>function: qt_runAskYesNoCancelDialog</vh></v>
+</v>
+<v t="felix.20211120022537.144"><vh>function: get_args</vh></v>
+<v t="felix.20211120022537.145"><vh>function: notify_clients</vh></v>
+<v t="felix.20211120022537.146"><vh>function: register_client</vh></v>
+<v t="felix.20211120022537.147"><vh>function: save_dirty</vh></v>
+<v t="felix.20211120022537.148"><vh>function: unregister_client</vh></v>
+<v t="felix.20211120022537.149"><vh>function: ws_handler (server)</vh></v>
 </v>
 </v>
 </v>
@@ -17572,7 +17574,82 @@ public gotoScript(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
 - Fixed 'clean/dirty' state of leo body documents whith the 'triggerBodySave' method which makes sure the body text is sent to the leo server before anything would close or destroy the body pane. (when focusing on another document or outside of vscode, etc.)
 
 </t>
-<t tx="felix.20211111172843.1">@language python
+<t tx="felix.20211111214657.1">/**
+ * * Refreshes body pane's statuses such as applied language file type, word-wrap state, etc.
+ */
+public refreshBodyStates(): void {
+    if (!this._bodyTextDocument || !this.lastSelectedNode) {
+        return;
+    }
+
+    // * Set document language along with the proper cursor position, selection range and scrolling position
+    let q_bodyStates: Promise&lt;LeoBridgePackage&gt; | undefined;
+    q_bodyStates = this.sendAction(
+        Constants.LEOBRIDGE.GET_BODY_STATES,
+        utils.buildNodeCommandJson(this.lastSelectedNode!.apJson)
+    );
+    q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
+        let w_language: string = p_bodyStates.language!;
+        let w_wrap: boolean = !!p_bodyStates.wrap;
+
+        // TODO : Apply Wrap
+        // console.log('WRAP: ', w_wrap);
+
+        // Replace language string if in 'exceptions' array
+        w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
+        // Apply language if the selected node is still the same after all those events
+        if (this._bodyTextDocument &amp;&amp;
+            !this._bodyTextDocument.isClosed &amp;&amp;
+            this.lastSelectedNode &amp;&amp;
+            w_language !== this._bodyTextDocument.languageId &amp;&amp;
+            utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
+        ) {
+            vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, w_language).then(
+                () =&gt; { }, // ok - language found
+                (p_error) =&gt; {
+                    let w_langName = p_error.toString().split('\n')[0];
+                    if (w_langName.length &gt; 36) {
+                        w_langName = w_langName.substring(36);
+                        vscode.window.showInformationMessage(w_langName + " language not yet supported.");
+                        return;
+                    }
+                    vscode.window.showInformationMessage("Language not yet supported.");
+                }
+            );
+        }
+    });
+}
+
+</t>
+<t tx="felix.20211111233213.1">/**
+ * * Refresh body states after a small debounced delay.
+ */
+public debouncedRefreshBodyStates() {
+    if (this._bodyStatesTimer) {
+        clearTimeout(this._bodyStatesTimer);
+    }
+    this._bodyStatesTimer = setTimeout(() =&gt; {
+        // this.triggerBodySave(true);
+        this._bodySaveDocument(this._bodyLastChangedDocument!);
+        this.refreshBodyStates();
+    }, Constants.BODY_STATES_DEBOUNCE_DELAY);
+}
+
+</t>
+<t tx="felix.20211114150842.1">{
+  "command": "leointeg.undoFromOutline",
+  "key": "ctrl+z",
+  "mac": "cmd+z",
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !inputFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+},
+{
+  "command": "leointeg.redoFromOutline",
+  "key": "ctrl+shift+z",
+  "mac": "cmd+shift+z",
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !inputFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+},
+</t>
+<t tx="felix.20211120022537.1">@language python
 @tabwidth -4
 """
 Leo's internet server.
@@ -17604,7 +17681,7 @@ if __name__ == '__main__':
     # pytest will *not* execute this code.
     main()
 </t>
-<t tx="felix.20211111172843.10">def on_idle(self):
+<t tx="felix.20211120022537.10">def on_idle(self):
     """
     Check for changed open-with files and all external files in commanders
     for which @bool check_for_changed_external_file is True.
@@ -17633,16 +17710,29 @@ if __name__ == '__main__':
             z for z in g.app.commanders() if self.is_enabled(z)
         ]
 </t>
-<t tx="felix.20211111172843.100">def set_config(self, param):
+<t tx="felix.20211120022537.100">def do_nothing(self, param):
+    """Simply return states from _make_response"""
+    return self._make_response()
+</t>
+<t tx="felix.20211120022537.101">def set_ask_result(self, param):
+    """Got the result to an asked question/warning from client"""
+    tag = "set_ask_result"
+    result = param.get("result")
+    if not result:
+        raise ServerError(f"{tag}: no param result")
+    g.app.externalFilesController.clientResult(result)
+    return self._make_response()
+</t>
+<t tx="felix.20211120022537.102">def set_config(self, param):
     """Got auto-reload's config from client"""
     self.leoServerConfig = param # PARAM IS THE CONFIG-DICT
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.101">def error(self, param):
+<t tx="felix.20211120022537.103">def error(self, param):
     """For unit testing. Raise ServerError"""
     raise ServerError("error called")
 </t>
-<t tx="felix.20211111172843.102">def get_all_leo_commands(self, param):
+<t tx="felix.20211120022537.104">def get_all_leo_commands(self, param):
     """Return a list of all commands that make sense for connected clients."""
     tag = 'get_all_leo_commands'
     # #173: Use the present commander to get commands created by @button and @command.
@@ -17674,7 +17764,7 @@ if __name__ == '__main__':
         print('', flush=True)
     return self._make_minimal_response({"commands": result})
 </t>
-<t tx="felix.20211111172843.103">def _bad_commands(self, c):
+<t tx="felix.20211120022537.105">def _bad_commands(self, c):
     """Return the list of command names that connected clients should ignore."""
     d = c.commandsDict if c else {}  # keys are command names, values are functions.
     bad = []
@@ -18421,7 +18511,7 @@ if __name__ == '__main__':
     result = list(sorted(bad))
     return result
 </t>
-<t tx="felix.20211111172843.104">def _good_commands(self):
+<t tx="felix.20211120022537.106">def _good_commands(self):
     """Defined commands that should be available in a connected client"""
     good_list = [
 
@@ -18810,7 +18900,7 @@ if __name__ == '__main__':
     ]
     return good_list
 </t>
-<t tx="felix.20211111172843.105">def get_all_server_commands(self, param):
+<t tx="felix.20211120022537.107">def get_all_server_commands(self, param):
     """
     Public server method:
     Return the names of all callable public methods of the server.
@@ -18823,7 +18913,7 @@ if __name__ == '__main__':
         print('', flush=True)
     return self._make_response({"server-commands": names})
 </t>
-<t tx="felix.20211111172843.106">def _get_all_server_commands(self):
+<t tx="felix.20211120022537.108">def _get_all_server_commands(self):
     """
     Private server method:
     Return the names of all callable public methods of the server.
@@ -18832,7 +18922,7 @@ if __name__ == '__main__':
     members = inspect.getmembers(self, inspect.ismethod)
     return sorted([name for (name, value) in members if not name.startswith('_')])
 </t>
-<t tx="felix.20211111172843.107">def _init_connection(self, web_socket):  # pragma: no cover (tested in client).
+<t tx="felix.20211120022537.109">def _init_connection(self, web_socket):  # pragma: no cover (tested in client).
     """Begin the connection."""
     global connectionsTotal
     if connectionsTotal == 1:
@@ -18843,16 +18933,7 @@ if __name__ == '__main__':
         # already exist, so "spectator-clients" setup
         pass # nothing for now
 </t>
-<t tx="felix.20211111172843.108">def shut_down(self, param):
-    """Shut down the server."""
-    tag = 'shut_down'
-    n = len(g.app.commanders())
-    if n:  # pragma: no cover
-        raise ServerError(f"{tag}: {n} open outlines")
-    raise TerminateServer("client requested shut down")
-</t>
-<t tx="felix.20211111172843.109"></t>
-<t tx="felix.20211111172843.11">def idle_check_commander(self, c):
+<t tx="felix.20211120022537.11">def idle_check_commander(self, c):
     """
     Check all external files corresponding to @&lt;file&gt; nodes in c for
     changes.
@@ -18876,7 +18957,16 @@ if __name__ == '__main__':
         package = {"async": "info", "message": self.infoMessage}
         g.leoServer._send_async_output(package, True)
 </t>
-<t tx="felix.20211111172843.110">def _ap_to_p(self, ap):
+<t tx="felix.20211120022537.110">def shut_down(self, param):
+    """Shut down the server."""
+    tag = 'shut_down'
+    n = len(g.app.commanders())
+    if n:  # pragma: no cover
+        raise ServerError(f"{tag}: {n} open outlines")
+    raise TerminateServer("client requested shut down")
+</t>
+<t tx="felix.20211120022537.111"></t>
+<t tx="felix.20211120022537.112">def _ap_to_p(self, ap):
     """
     Convert ap (archived position, a dict) to a valid Leo position.
 
@@ -18935,7 +19025,7 @@ if __name__ == '__main__':
         return False # Return false on any error so caller can react
     return p
 </t>
-<t tx="felix.20211111172843.111">def _check_c(self):
+<t tx="felix.20211120022537.113">def _check_c(self):
     """Return self.c or raise ServerError if self.c is None."""
     tag = '_check_c'
     c = self.c
@@ -18943,14 +19033,14 @@ if __name__ == '__main__':
         raise ServerError(f"{tag}: no open commander")
     return c
 </t>
-<t tx="felix.20211111172843.112">def _check_outline(self, c):
+<t tx="felix.20211120022537.114">def _check_outline(self, c):
     """Check self.c for consistency."""
     # Check that all positions exist.
     self._check_outline_positions(c)
     # Test round-tripping.
     self._test_round_trip_positions(c)
 </t>
-<t tx="felix.20211111172843.113">def _check_outline_positions(self, c):
+<t tx="felix.20211120022537.115">def _check_outline_positions(self, c):
     """Verify that all positions in c exist."""
     tag = '_check_outline_positions'
     for p in c.all_positions(copy=False):
@@ -18960,7 +19050,7 @@ if __name__ == '__main__':
             self._dump_position(p)
             raise ServerError(message)
 </t>
-<t tx="felix.20211111172843.114">def _do_leo_command_by_name(self, command_name, param):
+<t tx="felix.20211120022537.116">def _do_leo_command_by_name(self, command_name, param):
     """
     Generic call to a command in Leo's Commands class or any subcommander class.
 
@@ -19009,7 +19099,7 @@ if __name__ == '__main__':
         return self._make_response({"return-value": value})
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.115">def _do_leo_function_by_name(self, function_name, param):
+<t tx="felix.20211120022537.117">def _do_leo_function_by_name(self, function_name, param):
     """
     Generic call to a method in Leo's Commands class or any subcommander class.
 
@@ -19055,7 +19145,7 @@ if __name__ == '__main__':
         return self._make_response({"return-value": value})
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.116">def _do_message(self, d):
+<t tx="felix.20211120022537.118">def _do_message(self, d):
     """
     Handle d, a python dict representing the incoming request.
     The d dict must have the three (3) following keys:
@@ -19127,7 +19217,7 @@ if __name__ == '__main__':
         raise ServerError(f"{tag}: no response: {action!r}")
     return result
 </t>
-<t tx="felix.20211111172843.117">def _do_server_command(self, action, param):
+<t tx="felix.20211120022537.119">def _do_server_command(self, action, param):
     tag = '_do_server_command'
     # Disallow hidden methods.
     if action.startswith('_'):  # pragma: no cover
@@ -19140,32 +19230,7 @@ if __name__ == '__main__':
         raise ServerError(f"{tag}: not callable: {func!r}")  # pragma: no cover
     return func(param)
 </t>
-<t tx="felix.20211111172843.118">def _dump_outline(self, c):  # pragma: no cover
-    """Dump the outline."""
-    tag = '_dump_outline'
-    print(f"{tag}: {c.shortFileName()}...\n", flush=True)
-    for p in c.all_positions():
-        self._dump_position(p)
-    print('', flush=True)
-
-def _dump_position(self, p):  # pragma: no cover
-    level_s = ' ' * 2 * p.level()
-    print(f"{level_s}{p.childIndex():2} {p.v.gnx} {p.h}", flush=True)
-</t>
-<t tx="felix.20211111172843.119">def _emit_signon(self):
-    """Simulate the Initial Leo Log Entry"""
-    tag = 'emit_signon'
-    if self.loop:
-        g.app.computeSignon()
-        signon = []
-        for z in (g.app.signon, g.app.signon1):
-            for z2 in z.split('\n'):
-                signon.append(z2.strip())
-        g.es("\n".join(signon))
-    else:
-        raise ServerError(f"{tag}: no loop ready for emit_signon")
-</t>
-<t tx="felix.20211111172843.12">def idle_check_leo_file(self, c):
+<t tx="felix.20211120022537.12">def idle_check_leo_file(self, c):
     """Check c's .leo file for external changes."""
     path = c.fileName()
     if not self.has_changed(path):
@@ -19180,7 +19245,32 @@ def _dump_position(self, p):  # pragma: no cover
         g.app.closeLeoWindow(self.lastCommander.frame, finish_quit=False)
         g.leoServer.open_file({"filename":path }) # ignore returned value
 </t>
-<t tx="felix.20211111172843.120">def _get_commander_method(self, command):
+<t tx="felix.20211120022537.120">def _dump_outline(self, c):  # pragma: no cover
+    """Dump the outline."""
+    tag = '_dump_outline'
+    print(f"{tag}: {c.shortFileName()}...\n", flush=True)
+    for p in c.all_positions():
+        self._dump_position(p)
+    print('', flush=True)
+
+def _dump_position(self, p):  # pragma: no cover
+    level_s = ' ' * 2 * p.level()
+    print(f"{level_s}{p.childIndex():2} {p.v.gnx} {p.h}", flush=True)
+</t>
+<t tx="felix.20211120022537.121">def _emit_signon(self):
+    """Simulate the Initial Leo Log Entry"""
+    tag = 'emit_signon'
+    if self.loop:
+        g.app.computeSignon()
+        signon = []
+        for z in (g.app.signon, g.app.signon1):
+            for z2 in z.split('\n'):
+                signon.append(z2.strip())
+        g.es("\n".join(signon))
+    else:
+        raise ServerError(f"{tag}: no loop ready for emit_signon")
+</t>
+<t tx="felix.20211120022537.122">def _get_commander_method(self, command):
     """ Return the given method (p_command) in the Commands class or subcommanders."""
     # First, try the commands class.
     c = self._check_c()
@@ -19222,7 +19312,7 @@ def _dump_position(self, p):  # pragma: no cover
                 return func
     return None
 </t>
-<t tx="felix.20211111172843.121">def _get_focus(self):
+<t tx="felix.20211120022537.123">def _get_focus(self):
     """Server helper method to get the focused panel name string"""
     tag = '_get_focus'
     try:
@@ -19232,7 +19322,7 @@ def _dump_position(self, p):  # pragma: no cover
         raise ServerError(f"{tag}: exception trying to get the focused widget: {e}")
     return focus
 </t>
-<t tx="felix.20211111172843.122">def _get_p(self, param, strict = False):
+<t tx="felix.20211120022537.124">def _get_p(self, param, strict = False):
     """
     Return _ap_to_p(param["ap"]) or c.p.,
     or False if the strict flag is set
@@ -19257,7 +19347,7 @@ def _dump_position(self, p):  # pragma: no cover
 
     return c.p
 </t>
-<t tx="felix.20211111172843.123">def _get_position_d(self, p):
+<t tx="felix.20211120022537.125">def _get_position_d(self, p):
     """
     Return a python dict that is adding
     graphical representation data and flags
@@ -19267,10 +19357,13 @@ def _dump_position(self, p):  # pragma: no cover
     d = self._p_to_ap(p)
     d['headline'] = p.h
     d['level'] = p.level()
-    # TODO : Send p.v.u as simple boolean flag and let user inspect.
     if p.v.u:
-        d['u'] = p.v.u
-    # TODO : Maybe Send body length, icon#, non-optional names, and/or other...
+        if g.leoServer.leoServerConfig and g.leoServer.leoServerConfig.get("uAsBoolean", False):
+            # uAsBoolean is 'thruthy'
+            d['u'] = True
+        else:
+            # Normal output if no options set
+            d['u'] = p.v.u
     if bool(p.b):
         d['hasBody'] = True
     if p.hasChildren():
@@ -19289,14 +19382,14 @@ def _dump_position(self, p):  # pragma: no cover
         d['selected'] = True
     return d
 </t>
-<t tx="felix.20211111172843.124">def _is_jsonable(self, x):
+<t tx="felix.20211120022537.126">def _is_jsonable(self, x):
     try:
         json.dumps(x, cls=SetEncoder)
         return True
     except (TypeError, OverflowError):
         return False
 </t>
-<t tx="felix.20211111172843.125">def _make_minimal_response(self, package=None):
+<t tx="felix.20211120022537.127">def _make_minimal_response(self, package=None):
     """
     Return a json string representing a response dict.
 
@@ -19321,7 +19414,7 @@ def _dump_position(self, p):  # pragma: no cover
 
     return json.dumps(package, separators=(',', ':'), cls=SetEncoder)
 </t>
-<t tx="felix.20211111172843.126">def _make_response(self, package=None):
+<t tx="felix.20211120022537.128">def _make_response(self, package=None):
     """
     Return a json string representing a response dict.
 
@@ -19390,7 +19483,7 @@ def _dump_position(self, p):  # pragma: no cover
 
     return json.dumps(package, separators=(',', ':'), cls=SetEncoder)
 </t>
-<t tx="felix.20211111172843.127">def _p_to_ap(self, p):
+<t tx="felix.20211120022537.129">def _p_to_ap(self, p):
     """
     * From Leo plugin leoflexx.py *
 
@@ -19408,28 +19501,7 @@ def _dump_position(self, p):  # pragma: no cover
         'stack': stack,
     }
 </t>
-<t tx="felix.20211111172843.128">def _positionFromGnx(self, gnx):
-    """Return first p node with this gnx or false"""
-    c = self._check_c()
-    for p in c.all_unique_positions():
-        if p.v.gnx == gnx:
-            return p
-    return False
-</t>
-<t tx="felix.20211111172843.129">def _send_async_output(self, package, toAll = False):
-    """
-    Send data asynchronously to the client
-    """
-    tag = "send async output"
-    jsonPackage = json.dumps(package, separators=(',', ':'), cls=SetEncoder)
-    if "async" not in package:
-        InternalServerError(f"\n{tag}: async member missing in package {jsonPackage} \n")
-    if self.loop:
-        self.loop.create_task(self._async_output(jsonPackage, toAll))
-    else:
-        InternalServerError(f"\n{tag}: loop not ready {jsonPackage} \n")
-</t>
-<t tx="felix.20211111172843.13">def idle_check_at_file_node(self, c, p):
+<t tx="felix.20211120022537.13">def idle_check_at_file_node(self, c, p):
     """Check the @&lt;file&gt; node at p for external changes."""
     trace = False
     path = g.fullPath(c, p)
@@ -19455,7 +19527,28 @@ def _dump_position(self, p):  # pragma: no cover
         self.set_time(path)
         self.checksum_d[path] = self.checksum(path)
 </t>
-<t tx="felix.20211111172843.130">async def _async_output(self, json, toAll = False):  # pragma: no cover (tested in server)
+<t tx="felix.20211120022537.130">def _positionFromGnx(self, gnx):
+    """Return first p node with this gnx or false"""
+    c = self._check_c()
+    for p in c.all_unique_positions():
+        if p.v.gnx == gnx:
+            return p
+    return False
+</t>
+<t tx="felix.20211120022537.131">def _send_async_output(self, package, toAll = False):
+    """
+    Send data asynchronously to the client
+    """
+    tag = "send async output"
+    jsonPackage = json.dumps(package, separators=(',', ':'), cls=SetEncoder)
+    if "async" not in package:
+        InternalServerError(f"\n{tag}: async member missing in package {jsonPackage} \n")
+    if self.loop:
+        self.loop.create_task(self._async_output(jsonPackage, toAll))
+    else:
+        InternalServerError(f"\n{tag}: loop not ready {jsonPackage} \n")
+</t>
+<t tx="felix.20211120022537.132">async def _async_output(self, json, toAll = False):  # pragma: no cover (tested in server)
     """Output json string to the web_socket"""
     global connectionsTotal
     tag = '_async_output'
@@ -19471,7 +19564,7 @@ def _dump_position(self, p):  # pragma: no cover
         else:
             g.trace(f"{tag}: no web socket. json: {json!r}")
 </t>
-<t tx="felix.20211111172843.131">def _test_round_trip_positions(self, c):  # pragma: no cover (tested in client).
+<t tx="felix.20211120022537.133">def _test_round_trip_positions(self, c):  # pragma: no cover (tested in client).
     """Test the round tripping of p_to_ap and ap_to_p."""
     tag = '_test_round_trip_positions'
     for p in c.all_unique_positions():
@@ -19481,7 +19574,7 @@ def _dump_position(self, p):  # pragma: no cover
             self._dump_outline(c)
             raise ServerError(f"{tag}: round-trip failed: ap: {ap!r}, p: {p!r}, p2: {p2!r}")
 </t>
-<t tx="felix.20211111172843.132">def _yieldAllRootChildren(self):
+<t tx="felix.20211120022537.134">def _yieldAllRootChildren(self):
     """Return all root children P nodes"""
     c = self._check_c()
     p = c.rootPosition()
@@ -19490,7 +19583,7 @@ def _dump_position(self, p):  # pragma: no cover
         p.moveToNext()
 
 </t>
-<t tx="felix.20211111172843.133">def main():  # pragma: no cover (tested in client)
+<t tx="felix.20211120022537.135">def main():  # pragma: no cover (tested in client)
     """python script for leo integration via leoBridge"""
     global websockets
     global wsHost, wsPort, wsLimit, wsPersist, wsSkipDirty, argFile
@@ -19557,7 +19650,7 @@ def _dump_position(self, p):  # pragma: no cover
         asyncio.set_event_loop(None)
         print("Stopped leobridge server", flush=True)
 </t>
-<t tx="felix.20211111172843.134">def cancel_tasks(to_cancel, loop):
+<t tx="felix.20211120022537.136">def cancel_tasks(to_cancel, loop):
     if not to_cancel:
         return
 
@@ -19578,7 +19671,7 @@ def _dump_position(self, p):  # pragma: no cover
                 }
             )
 </t>
-<t tx="felix.20211111172843.135">def center_tk_frame(top):
+<t tx="felix.20211120022537.137">def center_tk_frame(top):
     """Center the top-level Frame."""
     # https://stackoverflow.com/questions/3352918
     top.update_idletasks()
@@ -19589,7 +19682,7 @@ def _dump_position(self, p):  # pragma: no cover
     y = screen_height/2 - size[1]/2
     top.geometry("+%d+%d" % (x, y))
 </t>
-<t tx="felix.20211111172843.136">def close_Server():
+<t tx="felix.20211120022537.138">def close_Server():
     """
     Close the server by stopping the loop
     """
@@ -19599,7 +19692,7 @@ def _dump_position(self, p):  # pragma: no cover
     else:
         print('Loop was not running', flush=True)
 </t>
-<t tx="felix.20211111172843.137">def general_yes_no_dialog(
+<t tx="felix.20211120022537.139">def general_yes_no_dialog(
     c,
     title,  # Not used.
     message=None,  # Must exist.
@@ -19633,7 +19726,12 @@ def _dump_position(self, p):  # pragma: no cover
         pass
     return tk_runAskYesNoCancelDialog(c)
 </t>
-<t tx="felix.20211111172843.138">def tk_runAskYesNoCancelDialog(c):
+<t tx="felix.20211120022537.14">def open_with(self, c, d):
+    """open-with is bypassed in leoserver (for now)"""
+    return
+
+</t>
+<t tx="felix.20211120022537.140">def tk_runAskYesNoCancelDialog(c):
     """
     Tk version of LeoQtGui.runAskYesNoCancelDialog, with *only* Yes/No buttons.
     """
@@ -19666,7 +19764,7 @@ def _dump_position(self, p):  # pragma: no cover
     root.destroy()
     return val
 </t>
-<t tx="felix.20211111172843.139">def create_yes_no_frame(message, top):
+<t tx="felix.20211120022537.141">def create_yes_no_frame(message, top):
     """Create the dialog's frame."""
     frame = Tk.Frame(top)
     frame.pack(side="top", expand=1, fill="both")
@@ -19680,12 +19778,7 @@ def _dump_position(self, p):  # pragma: no cover
     b = Tk.Button(f, width=6, text="No", bd=2, underline=0, command=noButton)
     b.pack(side="left", padx=5, pady=10)
 </t>
-<t tx="felix.20211111172843.14">def open_with(self, c, d):
-    """open-with is bypassed in leoserver (for now)"""
-    return
-
-</t>
-<t tx="felix.20211111172843.140">def noButton(event=None):
+<t tx="felix.20211120022537.142">def noButton(event=None):
     """Do default click action in ok button."""
     nonlocal val
     print(f"Not saved: {c.fileName()}")
@@ -19699,7 +19792,7 @@ def yesButton(event=None):
     val = "yes"
     top.destroy()
 </t>
-<t tx="felix.20211111172843.141">def qt_runAskYesNoCancelDialog(c):
+<t tx="felix.20211120022537.143">def qt_runAskYesNoCancelDialog(c):
     """
     Qt version of LeoQtGui.runAskYesNoCancelDialog, with *only* Yes/No buttons.
     """
@@ -19735,7 +19828,7 @@ def yesButton(event=None):
     print(f"Not saved: {c.fileName()}")
     return 'no'
 </t>
-<t tx="felix.20211111172843.142">def get_args():  # pragma: no cover
+<t tx="felix.20211120022537.144">def get_args():  # pragma: no cover
     """
     Get arguments from the command line and sets them globally.
     """
@@ -19808,7 +19901,7 @@ def yesButton(event=None):
     if wsLimit &lt; 1:
         wsLimit = 1
 </t>
-<t tx="felix.20211111172843.143">async def notify_clients(action, excludedConn = None):
+<t tx="felix.20211120022537.145">async def notify_clients(action, excludedConn = None):
     global connectionsTotal
     if connectionsPool:  # asyncio.wait doesn't accept an empty list
         opened = bool(controller.c) # c can be none if no files opened
@@ -19825,12 +19918,12 @@ def yesButton(event=None):
             await asyncio.wait([asyncio.create_task(client.send(m)) for client in clientSetCopy])
 
 </t>
-<t tx="felix.20211111172843.144">async def register_client(websocket):
+<t tx="felix.20211120022537.146">async def register_client(websocket):
     global connectionsTotal
     connectionsPool.add(websocket)
     await notify_clients("unregister", websocket)
 </t>
-<t tx="felix.20211111172843.145">def save_dirty():
+<t tx="felix.20211120022537.147">def save_dirty():
     """
     Ask the user about dirty files if any remained opened.
     """
@@ -19842,12 +19935,12 @@ def yesButton(event=None):
         if commander.isChanged() and commander.fileName():
             commander.close() # Patched 'ask' methods will open dialog
 </t>
-<t tx="felix.20211111172843.146">async def unregister_client(websocket):
+<t tx="felix.20211120022537.148">async def unregister_client(websocket):
     global connectionsTotal
     connectionsPool.remove(websocket)
     await notify_clients("unregister")
 </t>
-<t tx="felix.20211111172843.147">async def ws_handler(websocket, path):
+<t tx="felix.20211120022537.149">async def ws_handler(websocket, path):
     """
     The web socket handler: server.ws_server.
 
@@ -19933,8 +20026,8 @@ def yesButton(event=None):
                 task.cancel()
             close_Server() # Stops the run_forever loop
 </t>
-<t tx="felix.20211111172843.15"></t>
-<t tx="felix.20211111172843.16">def ask(self, c, path, p=None):
+<t tx="felix.20211120022537.15"></t>
+<t tx="felix.20211120022537.16">def ask(self, c, path, p=None):
     """
     Ask user whether to overwrite an @&lt;file&gt; tree.
     Return True if the user agrees by default, or skips and asks
@@ -19982,7 +20075,7 @@ def yesButton(event=None):
     self.waitingForAnswer = True # Block the loop and further checks until 'clientResult'
     return False # return false so as not to refresh until 'clientResult' says so
 </t>
-<t tx="felix.20211111172843.17">def is_enabled(self, c):
+<t tx="felix.20211120022537.17">def is_enabled(self, c):
     """Return the cached @bool check_for_changed_external_file setting."""
     # check with the leoServer config first
     if g.leoServer.leoServerConfig:
@@ -19994,7 +20087,7 @@ def yesButton(event=None):
     # let original function resolve
     return super().is_enabled(c)
 </t>
-<t tx="felix.20211111172843.18">def warn(self, c, path, p):
+<t tx="felix.20211120022537.18">def warn(self, c, path, p):
     """
     Warn that an @asis or @nosent node has been changed externally.
 
@@ -20030,11 +20123,11 @@ def yesButton(event=None):
     g.leoServer._send_async_output(package, True)
     self.waitingForAnswer = True
 </t>
-<t tx="felix.20211111172843.19">class LeoServer:
+<t tx="felix.20211120022537.19">class LeoServer:
     """Leo Server Controller"""
     @others
 </t>
-<t tx="felix.20211111172843.2">import argparse
+<t tx="felix.20211120022537.2">import argparse
 import asyncio
 import inspect
 import json
@@ -20061,7 +20154,7 @@ from leo.core.leoNodes import Position
 from leo.core.leoGui import StringFindTabManager
 from leo.core.leoExternalFiles import ExternalFilesController
 </t>
-<t tx="felix.20211111172843.20">def __init__(self, testing=False):
+<t tx="felix.20211120022537.20">def __init__(self, testing=False):
 
     import leo.core.leoApp as leoApp
     import leo.core.leoBridge as leoBridge
@@ -20121,8 +20214,8 @@ from leo.core.leoExternalFiles import ExternalFilesController
     if not testing:
         print(f"LeoServer: init leoBridge in {t2-t1:4.2} sec.", flush=True)
 </t>
-<t tx="felix.20211111172843.21"></t>
-<t tx="felix.20211111172843.22">def _runAskOkDialog(self, c, title, message=None, text="Ok"):
+<t tx="felix.20211120022537.21"></t>
+<t tx="felix.20211120022537.22">def _runAskOkDialog(self, c, title, message=None, text="Ok"):
     """Create and run an askOK dialog ."""
     # Called by many commands in Leo
     if message:
@@ -20132,7 +20225,7 @@ from leo.core.leoExternalFiles import ExternalFilesController
     package = {"async": "info", "message": s}
     g.leoServer._send_async_output(package)
 </t>
-<t tx="felix.20211111172843.23">def _runAskYesNoDialog(self, c, title, message=None, yes_all=False, no_all=False):
+<t tx="felix.20211120022537.23">def _runAskYesNoDialog(self, c, title, message=None, yes_all=False, no_all=False):
     """Create and run an askYesNo dialog."""
     # used in ask with title: 'Overwrite the version in Leo?'
     # used in revert with title: 'Revert'
@@ -20151,7 +20244,7 @@ from leo.core.leoExternalFiles import ExternalFilesController
     g.leoServer._send_async_output(package)
     return "yes"
 </t>
-<t tx="felix.20211111172843.24">def _runAskYesNoCancelDialog(self, c, title,
+<t tx="felix.20211120022537.24">def _runAskYesNoCancelDialog(self, c, title,
     message=None, yesMessage="Yes", noMessage="No",
     yesToAllMessage=None, defaultButton="Yes", cancelMessage=None,
 ):
@@ -20167,7 +20260,7 @@ from leo.core.leoExternalFiles import ExternalFilesController
     g.leoServer._send_async_output(package)
     return "yes"
 </t>
-<t tx="felix.20211111172843.25">def _es(self, * args, **keys):  # pragma: no cover (tested in client).
+<t tx="felix.20211120022537.25">def _es(self, * args, **keys):  # pragma: no cover (tested in client).
     """Output to the Log Pane"""
     d = {
         'color': None,
@@ -20186,7 +20279,7 @@ from leo.core.leoExternalFiles import ExternalFilesController
         package["color"] = color
     self._send_async_output(package, True)
 </t>
-<t tx="felix.20211111172843.26">def _getScript(self, c, p,
+<t tx="felix.20211120022537.26">def _getScript(self, c, p,
                useSelectedText=True,
                forcePythonSentinels=True,
                useSentinels=True,
@@ -20216,30 +20309,30 @@ from leo.core.leoExternalFiles import ExternalFilesController
         script = ''
     return script
 </t>
-<t tx="felix.20211111172843.27">async def _asyncIdleLoop(self, seconds, func):
+<t tx="felix.20211120022537.27">async def _asyncIdleLoop(self, seconds, func):
     while True:
         await asyncio.sleep(seconds)
         func(self)
 </t>
-<t tx="felix.20211111172843.28">def _idleTime(self, fn, delay, tag):
+<t tx="felix.20211120022537.28">def _idleTime(self, fn, delay, tag):
     asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
 </t>
-<t tx="felix.20211111172843.29">def _show_find_success(self, c, in_headline, insert, p):
+<t tx="felix.20211120022537.29">def _show_find_success(self, c, in_headline, insert, p):
     """Handle a successful find match."""
     if in_headline:
         g.app.gui.set_focus(c, self.headlineWidget)
     # no return
 </t>
-<t tx="felix.20211111172843.3">class SetEncoder(json.JSONEncoder):
+<t tx="felix.20211120022537.3">class SetEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, set):
             return list(obj)
         return json.JSONEncoder.default(self, obj)
 </t>
-<t tx="felix.20211111172843.30"></t>
-<t tx="felix.20211111172843.31"># These will fail unless the open_file inits c.theScriptingController.
+<t tx="felix.20211120022537.30"></t>
+<t tx="felix.20211120022537.31"># These will fail unless the open_file inits c.theScriptingController.
 </t>
-<t tx="felix.20211111172843.32">def _check_button_command(self, tag):  # pragma: no cover (no scripting controller)
+<t tx="felix.20211120022537.32">def _check_button_command(self, tag):  # pragma: no cover (no scripting controller)
     """
     Check that a button command is possible.
     Raise ServerError if not. Otherwise, return sc.buttonsDict.
@@ -20251,7 +20344,7 @@ from leo.core.leoExternalFiles import ExternalFilesController
         raise ServerError(f"{tag}: no scripting controller")
     return sc.buttonsDict
 </t>
-<t tx="felix.20211111172843.33">def click_button(self, param):  # pragma: no cover (no scripting controller)
+<t tx="felix.20211120022537.33">def click_button(self, param):  # pragma: no cover (no scripting controller)
     """Handles buttons clicked in client from the '@button' panel"""
     tag = 'click_button'
     index = param.get("index")
@@ -20274,7 +20367,7 @@ from leo.core.leoExternalFiles import ExternalFilesController
     # Tag along a possible return value with info sent back by _make_response
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.34">def get_buttons(self, param):  # pragma: no cover (no scripting controller)
+<t tx="felix.20211120022537.34">def get_buttons(self, param):  # pragma: no cover (no scripting controller)
     """
     Gets the currently opened file's @buttons list
     as an array of dict.
@@ -20295,7 +20388,7 @@ from leo.core.leoExternalFiles import ExternalFilesController
         "buttons": buttons
     })
 </t>
-<t tx="felix.20211111172843.35">def remove_button(self, param):  # pragma: no cover (no scripting controller)
+<t tx="felix.20211120022537.35">def remove_button(self, param):  # pragma: no cover (no scripting controller)
     """Remove button by index 'key string'."""
     tag = 'remove_button'
     index = param.get("index")
@@ -20317,7 +20410,7 @@ from leo.core.leoExternalFiles import ExternalFilesController
 
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.36">def goto_script(self, param):  # pragma: no cover (no scripting controller)
+<t tx="felix.20211120022537.36">def goto_script(self, param):  # pragma: no cover (no scripting controller)
     """Goto the script this button originates."""
     tag = 'goto_script'
     index = param.get("index")
@@ -20349,8 +20442,8 @@ from leo.core.leoExternalFiles import ExternalFilesController
 
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.37"></t>
-<t tx="felix.20211111172843.38">def open_file(self, param):
+<t tx="felix.20211120022537.37"></t>
+<t tx="felix.20211120022537.38">def open_file(self, param):
     """
     Open a leo file with the given filename.
     Create a new document if no name.
@@ -20382,7 +20475,7 @@ from leo.core.leoExternalFiles import ExternalFilesController
 
     return self._make_response(result)
 </t>
-<t tx="felix.20211111172843.39">def open_files(self, param):
+<t tx="felix.20211120022537.39">def open_files(self, param):
     """
     Opens an array of leo files.
     Returns an object with total opened files
@@ -20398,7 +20491,7 @@ from leo.core.leoExternalFiles import ExternalFilesController
     result = {"total": total, "filename": filename}
     return self._make_response(result)
 </t>
-<t tx="felix.20211111172843.4">class InternalServerError(Exception):  # pragma: no cover
+<t tx="felix.20211120022537.4">class InternalServerError(Exception):  # pragma: no cover
     """The server violated its own coding conventions."""
     pass
 
@@ -20410,7 +20503,7 @@ class TerminateServer(Exception):  # pragma: no cover
     """Ask the server to terminate."""
     pass
 </t>
-<t tx="felix.20211111172843.40">def set_opened_file(self, param):
+<t tx="felix.20211120022537.40">def set_opened_file(self, param):
     """
     Choose the new active commander from array of opened files.
     Returns an object with total opened files
@@ -20428,7 +20521,7 @@ class TerminateServer(Exception):  # pragma: no cover
         return self._make_response(result)
     raise ServerError(f"{tag}: commander at index {index} does not exist")
 </t>
-<t tx="felix.20211111172843.41">def close_file(self, param):
+<t tx="felix.20211120022537.41">def close_file(self, param):
     """
     Closes an outline opened with open_file.
     Use a 'forced' flag to force close.
@@ -20459,7 +20552,7 @@ class TerminateServer(Exception):  # pragma: no cover
         result = {"total": 0}
     return self._make_response(result)
 </t>
-<t tx="felix.20211111172843.42">def save_file(self, param):  # pragma: no cover (too dangerous).
+<t tx="felix.20211120022537.42">def save_file(self, param):  # pragma: no cover (too dangerous).
     """Save the leo outline."""
     tag = 'save_file'
     c = self._check_c()
@@ -20475,7 +20568,7 @@ class TerminateServer(Exception):  # pragma: no cover
 
     return self._make_response()  # Just send empty as 'ok'
 </t>
-<t tx="felix.20211111172843.43">def import_any_file(self, param):
+<t tx="felix.20211120022537.43">def import_any_file(self, param):
     """
     Import file(s) from array of file names
     """
@@ -20528,8 +20621,8 @@ class TerminateServer(Exception):  # pragma: no cover
             )
     return self._make_response()  # Just send empty as 'ok'
 </t>
-<t tx="felix.20211111172843.44"></t>
-<t tx="felix.20211111172843.45">def get_search_settings(self, param):
+<t tx="felix.20211120022537.44"></t>
+<t tx="felix.20211120022537.45">def get_search_settings(self, param):
     """
     Gets search options
     """
@@ -20543,7 +20636,7 @@ class TerminateServer(Exception):  # pragma: no cover
         raise ServerError(f"{tag}: exception getting search settings: {e}")
     return self._make_response(result)
 </t>
-<t tx="felix.20211111172843.46">def set_search_settings(self, param):
+<t tx="felix.20211120022537.46">def set_search_settings(self, param):
     """
     Sets search options. Init widgets and ivars from param.searchSettings
     """
@@ -20617,7 +20710,7 @@ class TerminateServer(Exception):  # pragma: no cover
         raise ServerError(f"{tag}: exception getting search settings: {e}")
     return self._make_response(result)
 </t>
-<t tx="felix.20211111172843.47">def find_all(self, param):
+<t tx="felix.20211120022537.47">def find_all(self, param):
     """Run Leo's find all command and return results."""
     tag = 'find_all'
     c = self._check_c()
@@ -20630,7 +20723,7 @@ class TerminateServer(Exception):  # pragma: no cover
     focus = self._get_focus()
     return self._make_response({"found": result, "focus": focus})
 </t>
-<t tx="felix.20211111172843.48">def find_next(self, param):
+<t tx="felix.20211120022537.48">def find_next(self, param):
     """Run Leo's find-next command and return results."""
     tag = 'find_next'
     c = self._check_c()
@@ -20669,7 +20762,7 @@ class TerminateServer(Exception):  # pragma: no cover
                 "newpos": newpos, "focus": focus}
     return self._make_response(result)
 </t>
-<t tx="felix.20211111172843.49">def find_previous(self, param):
+<t tx="felix.20211120022537.49">def find_previous(self, param):
     """Run Leo's find-previous command and return results."""
     tag = 'find_previous'
     c = self._check_c()
@@ -20707,13 +20800,13 @@ class TerminateServer(Exception):  # pragma: no cover
                 "newpos": newpos, "focus": focus}
     return self._make_response(result)
 </t>
-<t tx="felix.20211111172843.5">class ServerExternalFilesController(ExternalFilesController):
+<t tx="felix.20211120022537.5">class ServerExternalFilesController(ExternalFilesController):
     """EFC Modified from Leo's sources"""
     # pylint: disable=no-else-return
 
     @others
 </t>
-<t tx="felix.20211111172843.50">def replace(self, param):
+<t tx="felix.20211120022537.50">def replace(self, param):
     """Run Leo's replace command and return results."""
     tag = 'replace'
     c = self._check_c()
@@ -20727,7 +20820,7 @@ class TerminateServer(Exception):  # pragma: no cover
     result = {"found": True, "focus": focus}
     return self._make_response(result)
 </t>
-<t tx="felix.20211111172843.51">def replace_then_find(self, param):
+<t tx="felix.20211120022537.51">def replace_then_find(self, param):
     """Run Leo's replace then find next command and return results."""
     tag = 'replace_then_find'
     c = self._check_c()
@@ -20740,7 +20833,7 @@ class TerminateServer(Exception):  # pragma: no cover
     focus = self._get_focus()
     return self._make_response({"found": result, "focus": focus})
 </t>
-<t tx="felix.20211111172843.52">def replace_all(self, param):
+<t tx="felix.20211120022537.52">def replace_all(self, param):
     """Run Leo's replace all command and return results."""
     tag = 'replace_all'
     c = self._check_c()
@@ -20753,7 +20846,7 @@ class TerminateServer(Exception):  # pragma: no cover
     focus = self._get_focus()
     return self._make_response({"found": result, "focus": focus})
 </t>
-<t tx="felix.20211111172843.53">def clone_find_all(self, param):
+<t tx="felix.20211120022537.53">def clone_find_all(self, param):
     """Run Leo's clone-find-all command and return results."""
     tag = 'clone_find_all'
     c = self._check_c()
@@ -20766,7 +20859,7 @@ class TerminateServer(Exception):  # pragma: no cover
     focus = self._get_focus()
     return self._make_response({"found": result, "focus": focus})
 </t>
-<t tx="felix.20211111172843.54">def clone_find_all_flattened(self, param):
+<t tx="felix.20211120022537.54">def clone_find_all_flattened(self, param):
     """Run Leo's clone-find-all-flattened command and return results."""
     tag = 'clone_find_all_flattened'
     c = self._check_c()
@@ -20779,7 +20872,7 @@ class TerminateServer(Exception):  # pragma: no cover
     focus = self._get_focus()
     return self._make_response({"found": result, "focus": focus})
 </t>
-<t tx="felix.20211111172843.55">def find_var(self, param):
+<t tx="felix.20211120022537.55">def find_var(self, param):
     """Run Leo's find-var command and return results."""
     tag = 'find_var'
     c = self._check_c()
@@ -20791,7 +20884,7 @@ class TerminateServer(Exception):  # pragma: no cover
     focus = self._get_focus()
     return self._make_response({"found": True, "focus": focus})
 </t>
-<t tx="felix.20211111172843.56">def clone_find_all_flattened_marked(self, param):
+<t tx="felix.20211120022537.56">def clone_find_all_flattened_marked(self, param):
     """Run Leo's clone-find-all-flattened-marked command."""
     tag = 'clone_find_all_flattened_marked'
     c = self._check_c()
@@ -20803,7 +20896,7 @@ class TerminateServer(Exception):  # pragma: no cover
     focus = self._get_focus()
     return self._make_response({"found": True, "focus": focus})
 </t>
-<t tx="felix.20211111172843.57">def clone_find_all_marked(self, param):
+<t tx="felix.20211120022537.57">def clone_find_all_marked(self, param):
     """Run Leo's clone-find-all-marked command """
     tag = 'clone_find_all_marked'
     c = self._check_c()
@@ -20815,7 +20908,7 @@ class TerminateServer(Exception):  # pragma: no cover
     focus = self._get_focus()
     return self._make_response({"found": True, "focus": focus})
 </t>
-<t tx="felix.20211111172843.58">def find_def(self, param):
+<t tx="felix.20211120022537.58">def find_def(self, param):
     """Run Leo's find-def command and return results."""
     tag = 'find_def'
     c = self._check_c()
@@ -20827,7 +20920,7 @@ class TerminateServer(Exception):  # pragma: no cover
     focus = self._get_focus()
     return self._make_response({"found": True, "focus": focus})
 </t>
-<t tx="felix.20211111172843.59">def goto_global_line(self, param):
+<t tx="felix.20211120022537.59">def goto_global_line(self, param):
     """Run Leo's goto-global-line command and return results."""
     tag = 'goto_global_line'
     c = self._check_c()
@@ -20840,7 +20933,7 @@ class TerminateServer(Exception):  # pragma: no cover
     focus = self._get_focus()
     return self._make_response({"found": found, "focus": focus})
 </t>
-<t tx="felix.20211111172843.6">def __init__(self):
+<t tx="felix.20211120022537.6">def __init__(self):
     """Ctor for ExternalFiles class."""
     super().__init__()
 
@@ -20861,7 +20954,7 @@ class TerminateServer(Exception):  # pragma: no cover
     self.lastPNode = None  # last p node that was asked for if not set to "AllYes\AllNo"
     self.lastCommander = None
 </t>
-<t tx="felix.20211111172843.60">def clone_find_tag(self, param):
+<t tx="felix.20211120022537.60">def clone_find_tag(self, param):
     """Run Leo's clone-find-tag command and return results."""
     tag = 'clone_find_tag'
     c = self._check_c()
@@ -20878,7 +20971,7 @@ class TerminateServer(Exception):  # pragma: no cover
         print('', flush=True)
     return self._make_response({"n": n})
 </t>
-<t tx="felix.20211111172843.61">def tag_children(self, param):
+<t tx="felix.20211120022537.61">def tag_children(self, param):
     """Run Leo's tag-children command"""
     # This is not a find command!
     tag = 'tag_children'
@@ -20891,8 +20984,8 @@ class TerminateServer(Exception):  # pragma: no cover
     fc.do_tag_children(c.p, tag_param)
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.62"></t>
-<t tx="felix.20211111172843.63">def get_all_open_commanders(self, param):
+<t tx="felix.20211120022537.62"></t>
+<t tx="felix.20211120022537.63">def get_all_open_commanders(self, param):
     """Return array describing each commander in g.app.commanders()."""
     files = [
         {
@@ -20903,7 +20996,7 @@ class TerminateServer(Exception):  # pragma: no cover
     ]
     return self._make_minimal_response({"files": files})
 </t>
-<t tx="felix.20211111172843.64">def get_all_positions(self, param):
+<t tx="felix.20211120022537.64">def get_all_positions(self, param):
     """
     Return a list of position data for all positions.
 
@@ -20915,7 +21008,7 @@ class TerminateServer(Exception):  # pragma: no cover
     ]
     return self._make_minimal_response({"position-data-list": result})
 </t>
-<t tx="felix.20211111172843.65">def get_all_gnx(self, param):
+<t tx="felix.20211120022537.65">def get_all_gnx(self, param):
     """Get gnx array from all unique nodes"""
     if self.log_flag:  # pragma: no cover
         print('\nget_all_gnx\n', flush=True)
@@ -20923,7 +21016,7 @@ class TerminateServer(Exception):  # pragma: no cover
     all_gnx = [p.v.gnx for p in c.all_unique_positions(copy=False)]
     return self._make_minimal_response({"gnx": all_gnx})
 </t>
-<t tx="felix.20211111172843.66">def get_body(self, param):
+<t tx="felix.20211120022537.66">def get_body(self, param):
     """
     Return the body content body specified via GNX.
     """
@@ -20936,7 +21029,7 @@ class TerminateServer(Exception):  # pragma: no cover
     # Support asking for unknown gnx when client switches rapidly
     return self._make_minimal_response({"body": body})
 </t>
-<t tx="felix.20211111172843.67">def get_body_length(self, param):
+<t tx="felix.20211120022537.67">def get_body_length(self, param):
     """
     Return p.b's length in bytes, where p is c.p if param["ap"] is missing.
     """
@@ -20948,7 +21041,7 @@ class TerminateServer(Exception):  # pragma: no cover
         return self._make_minimal_response({"len": len(w_v.b.encode('utf-8'))})
     return self._make_minimal_response({"len": 0})  # empty as default
 </t>
-<t tx="felix.20211111172843.68">def get_body_states(self, param):
+<t tx="felix.20211120022537.68">def get_body_states(self, param):
     """
     Return body data for p, where p is c.p if param["ap"] is missing.
     The cursor positions are given as {"line": line, "col": col, "index": i}
@@ -20985,6 +21078,9 @@ class TerminateServer(Exception):  # pragma: no cover
     )
     # Get the body wrap state
     wrap = g.scanAllAtWrapDirectives(c, p)
+    tabWidth = g.scanAllAtTabWidthDirectives(c, p)
+    if not isinstance(tabWidth, int):
+        tabWidth = False
     # get values from wrapper if it's the selected node.
     if c.p.v.gnx == p.v.gnx:
         insert = wrapper.getInsertPoint()
@@ -20993,6 +21089,7 @@ class TerminateServer(Exception):  # pragma: no cover
         states = {
             'language': language.lower(),
             'wrap': wrap,
+            'tabWidth': tabWidth,
             'selection': {
                 "gnx": p.v.gnx,
                 "scroll": scroll,
@@ -21009,6 +21106,7 @@ class TerminateServer(Exception):  # pragma: no cover
         states = {
             'language': language.lower(),
             'wrap': wrap,
+            'tabWidth': tabWidth,
             'selection': {
                 "gnx": p.v.gnx,
                 "scroll": scroll,
@@ -21019,7 +21117,7 @@ class TerminateServer(Exception):  # pragma: no cover
         }
     return self._make_minimal_response(states)
 </t>
-<t tx="felix.20211111172843.69">def get_children(self, param):
+<t tx="felix.20211120022537.69">def get_children(self, param):
     """
     Return the node data for children of p,
     where p is root if param.ap is missing
@@ -21042,7 +21140,7 @@ class TerminateServer(Exception):  # pragma: no cover
             children = [self._get_position_d(child) for child in self._yieldAllRootChildren()]
     return self._make_minimal_response({"children": children})
 </t>
-<t tx="felix.20211111172843.7">def clientResult(self, p_result):
+<t tx="felix.20211120022537.7">def clientResult(self, p_result):
     """Received result from connected client that was 'asked' yes/no/... """
     # Got the result to an asked question/warning from the client
     if not self.waitingForAnswer:
@@ -21088,14 +21186,14 @@ class TerminateServer(Exception):  # pragma: no cover
     if self.lastCommander:
         self.idle_check_commander(self.lastCommander)
 </t>
-<t tx="felix.20211111172843.70">def get_focus(self, param):
+<t tx="felix.20211120022537.70">def get_focus(self, param):
     """
     Return a representation of the focused widget,
     one of ("body", "tree", "headline", repr(the_widget)).
     """
     return self._make_minimal_response({"focus": self._get_focus()})
 </t>
-<t tx="felix.20211111172843.71">def get_parent(self, param):
+<t tx="felix.20211120022537.71">def get_parent(self, param):
     """Return the node data for the parent of position p, where p is c.p if param["ap"] is missing."""
     self._check_c()
     p = self._get_p(param)
@@ -21103,7 +21201,7 @@ class TerminateServer(Exception):  # pragma: no cover
     data = self._get_position_d(parent) if parent else None
     return self._make_minimal_response({"node": data})
 </t>
-<t tx="felix.20211111172843.72">def get_position_data(self, param):
+<t tx="felix.20211120022537.72">def get_position_data(self, param):
     """
     Return a dict of position data for all positions.
 
@@ -21116,7 +21214,7 @@ class TerminateServer(Exception):  # pragma: no cover
     }
     return self._make_minimal_response({"position-data-dict": result})
 </t>
-<t tx="felix.20211111172843.73">def get_ua(self, param):
+<t tx="felix.20211120022537.73">def get_ua(self, param):
     """Return p.v.u, making sure it can be serialized."""
     self._check_c()
     p = self._get_p(param)
@@ -21129,7 +21227,7 @@ class TerminateServer(Exception):  # pragma: no cover
     # _make_response adds all the cheap redraw data.
     return self._make_response(response)
 </t>
-<t tx="felix.20211111172843.74">def get_ui_states(self, param):
+<t tx="felix.20211120022537.74">def get_ui_states(self, param):
     """
     Return the enabled/disabled UI states for the open commander, or defaults if None.
     """
@@ -21148,8 +21246,8 @@ class TerminateServer(Exception):  # pragma: no cover
         raise ServerError(f"{tag}: Exception setting state: {e}")
     return self._make_minimal_response({"states": states})
 </t>
-<t tx="felix.20211111172843.75"></t>
-<t tx="felix.20211111172843.76">def clone_node(self, param):
+<t tx="felix.20211120022537.75"></t>
+<t tx="felix.20211120022537.76">def clone_node(self, param):
     """
     Clone a node.
     Try to keep selection, then return the selected node that remains.
@@ -21168,7 +21266,7 @@ class TerminateServer(Exception):  # pragma: no cover
     return self._make_response()
 
 </t>
-<t tx="felix.20211111172843.77">def contract_node(self, param):
+<t tx="felix.20211120022537.77">def contract_node(self, param):
     """
     Contract (Collapse) the node at position p, where p is c.p if p is missing.
     """
@@ -21176,7 +21274,7 @@ class TerminateServer(Exception):  # pragma: no cover
     p.contract()
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.78">def cut_node(self, param):  # pragma: no cover (too dangerous, for now)
+<t tx="felix.20211120022537.78">def cut_node(self, param):  # pragma: no cover (too dangerous, for now)
     """
     Cut a node, don't select it.
     Try to keep selection, then return the selected node that remains.
@@ -21200,7 +21298,7 @@ class TerminateServer(Exception):  # pragma: no cover
                 c.selectPosition(oldPosition)
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.79">def delete_node(self, param):  # pragma: no cover (too dangerous, for now)
+<t tx="felix.20211120022537.79">def delete_node(self, param):  # pragma: no cover (too dangerous, for now)
     """
     Delete a node, don't select it.
     Try to keep selection, then return the selected node that remains.
@@ -21224,8 +21322,8 @@ class TerminateServer(Exception):  # pragma: no cover
                 c.selectPosition(oldPosition)
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.8"></t>
-<t tx="felix.20211111172843.80">def expand_node(self, param):
+<t tx="felix.20211120022537.8"></t>
+<t tx="felix.20211120022537.80">def expand_node(self, param):
     """
     Expand the node at position p, where p is c.p if p is missing.
     """
@@ -21233,7 +21331,7 @@ class TerminateServer(Exception):  # pragma: no cover
     p.expand()
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.81">def insert_node(self, param):
+<t tx="felix.20211120022537.81">def insert_node(self, param):
     """
     Insert a node at given node, then select it once created, and finally return it
     """
@@ -21243,7 +21341,7 @@ class TerminateServer(Exception):  # pragma: no cover
     c.insertHeadline()  # Handles undo, sets c.p
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.82">def insert_child_node(self, param):
+<t tx="felix.20211120022537.82">def insert_child_node(self, param):
     """
     Insert a child node at given node, then select it once created, and finally return it
     """
@@ -21253,7 +21351,7 @@ class TerminateServer(Exception):  # pragma: no cover
     c.insertHeadline(op_name='Insert Child', as_child=True)
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.83">def insert_named_node(self, param):
+<t tx="felix.20211120022537.83">def insert_named_node(self, param):
     """
     Insert a node at given node, set its headline, select it and finally return it
     """
@@ -21271,7 +21369,7 @@ class TerminateServer(Exception):  # pragma: no cover
     c.setChanged()
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.84">def insert_child_named_node(self, param):
+<t tx="felix.20211120022537.84">def insert_child_named_node(self, param):
     """
     Insert a child node at given node, set its headline, select it and finally return it
     """
@@ -21291,7 +21389,7 @@ class TerminateServer(Exception):  # pragma: no cover
     c.selectPosition(newNode)
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.85">def page_down(self, param):
+<t tx="felix.20211120022537.85">def page_down(self, param):
     """
     Selects a node "n" steps down in the tree to simulate page down.
     """
@@ -21301,7 +21399,7 @@ class TerminateServer(Exception):  # pragma: no cover
         c.selectVisNext()
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.86">def page_up(self, param):
+<t tx="felix.20211120022537.86">def page_up(self, param):
     """
     Selects a node "N" steps up in the tree to simulate page up.
     """
@@ -21311,7 +21409,7 @@ class TerminateServer(Exception):  # pragma: no cover
         c.selectVisBack()
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.87">def redo(self, param):
+<t tx="felix.20211120022537.87">def redo(self, param):
     """Undo last un-doable operation"""
     c = self._check_c()
     u = c.undoer
@@ -21319,7 +21417,7 @@ class TerminateServer(Exception):  # pragma: no cover
         u.redo()
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.88">def set_body(self, param):
+<t tx="felix.20211120022537.88">def set_body(self, param):
     """
     Undoably set body text of a v node.
     (Only if new string is different from actual existing body string)
@@ -21353,7 +21451,7 @@ class TerminateServer(Exception):  # pragma: no cover
             v.b = body
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.89">def set_current_position(self, param):
+<t tx="felix.20211120022537.89">def set_current_position(self, param):
     """Select position p. Or try to get p with gnx if not found."""
     tag = "set_current_position"
     c = self._check_c()
@@ -21374,14 +21472,14 @@ class TerminateServer(Exception):  # pragma: no cover
 
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.9">def check_overwrite(self, c, path):
+<t tx="felix.20211120022537.9">def check_overwrite(self, c, path):
     if self.has_changed(path):
         package = {"async": "info", "message": "Overwritten "+ path}
         g.leoServer._send_async_output(package, True)
     return True
 
 </t>
-<t tx="felix.20211111172843.90">def set_headline(self, param):
+<t tx="felix.20211120022537.90">def set_headline(self, param):
     """
     Undoably set p.h, where p is c.p if package["ap"] is missing.
     """
@@ -21394,7 +21492,7 @@ class TerminateServer(Exception):  # pragma: no cover
     u.afterChangeNodeContents(p, 'Change Headline', bunch)
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.91">def set_selection(self, param):
+<t tx="felix.20211120022537.91">def set_selection(self, param):
     """
     Set the selection range for p.b, where p is c.p if package["ap"] is missing.
 
@@ -21444,7 +21542,31 @@ class TerminateServer(Exception):  # pragma: no cover
     v.selectionLength = abs(startSel - endSel)
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.92">def toggle_mark(self, param):
+<t tx="felix.20211120022537.92">def set_ua_member(self, param):
+    """
+    Set a single member of a node's ua.
+    """
+    self._check_c()
+    p = self._get_p(param)
+    name = param.get('name')
+    value = param.get('value', '')
+    if not p.v.u:
+        p.v.u = {}  # assert at least an empty dict if null or non existent
+    if name and isinstance(name, str):
+        p.v.u[name] = value
+    return self._make_response()
+</t>
+<t tx="felix.20211120022537.93">def set_ua(self, param):
+    """
+    Replace / set the whole user attribute dict of a node.
+    """
+    self._check_c()
+    p = self._get_p(param)
+    ua = param.get('ua', {})
+    p.v.u = ua
+    return self._make_response()
+</t>
+<t tx="felix.20211120022537.94">def toggle_mark(self, param):
     """
     Toggle the mark at position p.
     Try to keep selection, then return the selected node that remains.
@@ -21462,7 +21584,7 @@ class TerminateServer(Exception):  # pragma: no cover
     # return selected node either ways
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.93">def mark_node(self, param):
+<t tx="felix.20211120022537.95">def mark_node(self, param):
     """
     Mark a node.
     Try to keep selection, then return the selected node that remains.
@@ -21476,7 +21598,7 @@ class TerminateServer(Exception):  # pragma: no cover
         return self.toggle_mark(param)
 
 </t>
-<t tx="felix.20211111172843.94">def unmark_node(self, param):
+<t tx="felix.20211120022537.96">def unmark_node(self, param):
     """
     Unmark a node.
     Try to keep selection, then return the selected node that remains.
@@ -21489,7 +21611,7 @@ class TerminateServer(Exception):  # pragma: no cover
     else:
         return self.toggle_mark(param)
 </t>
-<t tx="felix.20211111172843.95">def undo(self, param):
+<t tx="felix.20211120022537.97">def undo(self, param):
     """Undo last un-doable operation"""
     c = self._check_c()
     u = c.undoer
@@ -21498,8 +21620,8 @@ class TerminateServer(Exception):  # pragma: no cover
     # Félix: Caller can get focus using other calls.
     return self._make_response()
 </t>
-<t tx="felix.20211111172843.96"></t>
-<t tx="felix.20211111172843.97">def get_version(self, param):
+<t tx="felix.20211120022537.98"></t>
+<t tx="felix.20211120022537.99">def get_version(self, param):
     """
     Return this server program name and version as a string representation
     along with the three version members as numbers 'major', 'minor' and 'patch'.
@@ -21507,94 +21629,6 @@ class TerminateServer(Exception):  # pragma: no cover
     # uses the __version__ global constant and the v1, v2, v3 global version numbers
     result = {"version": __version__ , "major": v1, "minor": v2, "patch": v3}
     return self._make_minimal_response(result)
-</t>
-<t tx="felix.20211111172843.98">def do_nothing(self, param):
-    """Simply return states from _make_response"""
-    return self._make_response()
-</t>
-<t tx="felix.20211111172843.99">def set_ask_result(self, param):
-    """Got the result to an asked question/warning from client"""
-    tag = "set_ask_result"
-    result = param.get("result")
-    if not result:
-        raise ServerError(f"{tag}: no param result")
-    g.app.externalFilesController.clientResult(result)
-    return self._make_response()
-</t>
-<t tx="felix.20211111214657.1">/**
- * * Refreshes body pane's statuses such as applied language file type, word-wrap state, etc.
- */
-public refreshBodyStates(): void {
-    if (!this._bodyTextDocument || !this.lastSelectedNode) {
-        return;
-    }
-
-    // * Set document language along with the proper cursor position, selection range and scrolling position
-    let q_bodyStates: Promise&lt;LeoBridgePackage&gt; | undefined;
-    q_bodyStates = this.sendAction(
-        Constants.LEOBRIDGE.GET_BODY_STATES,
-        utils.buildNodeCommandJson(this.lastSelectedNode!.apJson)
-    );
-    q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
-        let w_language: string = p_bodyStates.language!;
-        let w_wrap: boolean = !!p_bodyStates.wrap;
-
-        // TODO : Apply Wrap
-        // console.log('WRAP: ', w_wrap);
-
-        // Replace language string if in 'exceptions' array
-        w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
-        // Apply language if the selected node is still the same after all those events
-        if (this._bodyTextDocument &amp;&amp;
-            !this._bodyTextDocument.isClosed &amp;&amp;
-            this.lastSelectedNode &amp;&amp;
-            w_language !== this._bodyTextDocument.languageId &amp;&amp;
-            utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
-        ) {
-            vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, w_language).then(
-                () =&gt; { }, // ok - language found
-                (p_error) =&gt; {
-                    let w_langName = p_error.toString().split('\n')[0];
-                    if (w_langName.length &gt; 36) {
-                        w_langName = w_langName.substring(36);
-                        vscode.window.showInformationMessage(w_langName + " language not yet supported.");
-                        return;
-                    }
-                    vscode.window.showInformationMessage("Language not yet supported.");
-                }
-            );
-        }
-    });
-}
-
-</t>
-<t tx="felix.20211111233213.1">/**
- * * Refresh body states after a small debounced delay.
- */
-public debouncedRefreshBodyStates() {
-    if (this._bodyStatesTimer) {
-        clearTimeout(this._bodyStatesTimer);
-    }
-    this._bodyStatesTimer = setTimeout(() =&gt; {
-        // this.triggerBodySave(true);
-        this._bodySaveDocument(this._bodyLastChangedDocument!);
-        this.refreshBodyStates();
-    }, Constants.BODY_STATES_DEBOUNCE_DELAY);
-}
-
-</t>
-<t tx="felix.20211114150842.1">{
-  "command": "leointeg.undoFromOutline",
-  "key": "ctrl+z",
-  "mac": "cmd+z",
-  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !inputFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
-},
-{
-  "command": "leointeg.redoFromOutline",
-  "key": "ctrl+shift+z",
-  "mac": "cmd+shift+z",
-  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; !inputFocus &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
-},
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
