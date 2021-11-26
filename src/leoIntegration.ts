@@ -39,8 +39,7 @@ import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
 export class LeoIntegration {
     // * Status Flags
     public activated: boolean = true; // Set to false when deactivating the extension
-    public finishedStartup: boolean = false;
-    private _leoIsConnecting: boolean = false; // Used in connect method, to prevent other attempts while trying
+
     private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Is set when leoBridge has a leo controller ready
     private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Might need to be re-set when switching visibility
     private _hasShownContextOpenMessage: boolean = false; // Used to show this information only once
@@ -244,9 +243,10 @@ export class LeoIntegration {
         this._leoTreeView.onDidCollapseElement((p_event) =>
             this._onChangeCollapsedState(p_event, false, this._leoTreeView)
         );
+        // * Trigger 'show tree in Leo's view'
         this._leoTreeView.onDidChangeVisibility((p_event) =>
             this._onTreeViewVisibilityChanged(p_event, false)
-        ); // * Trigger 'show tree in Leo's view'
+        );
         this._leoTreeExView = vscode.window.createTreeView(Constants.TREEVIEW_EXPLORER_ID, {
             showCollapseAll: false,
             treeDataProvider: this._leoTreeProvider,
@@ -257,9 +257,11 @@ export class LeoIntegration {
         this._leoTreeExView.onDidCollapseElement((p_event) =>
             this._onChangeCollapsedState(p_event, false, this._leoTreeExView)
         );
+        // * Trigger 'show tree in explorer view'
         this._leoTreeExView.onDidChangeVisibility((p_event) =>
             this._onTreeViewVisibilityChanged(p_event, true)
-        ); // * Trigger 'show tree in explorer view'
+        );
+        // * Init this._lastTreeView based on config only assuming explorer is default sidebar view
         this._lastTreeView = this.config.treeInExplorer ? this._leoTreeExView : this._leoTreeView;
 
         // * Create Leo Opened Documents Treeview Providers and tree views
@@ -439,7 +441,7 @@ export class LeoIntegration {
             // * (via settings) Connect to Leo Bridge server automatically without starting one first
             this.connect();
         } else {
-            this.finishedStartup = true;
+            this.leoStates.leoStartupFinished = true;
         }
     }
 
@@ -447,6 +449,7 @@ export class LeoIntegration {
      * * Starts an instance of a leoBridge server, and may connect to it afterwards, based on configuration flags.
      */
     public startServer(): void {
+        this.leoStates.leoStartupFinished = false;
         if (!this._leoTerminalPane) {
             this._leoTerminalPane = vscode.window.createOutputChannel(
                 Constants.GUI.TERMINAL_PANE_TITLE
@@ -467,7 +470,7 @@ export class LeoIntegration {
                             this.connect();
                         }, 2000);
                     } else {
-                        this.finishedStartup = true;
+                        this.leoStates.leoStartupFinished = true;
                     }
                 },
                 (p_reason) => {
@@ -517,17 +520,18 @@ export class LeoIntegration {
      * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
      */
     public connect(): void {
-        if (this.leoStates.leoBridgeReady || this._leoIsConnecting) {
+        if (this.leoStates.leoBridgeReady || this.leoStates.leoConnecting) {
             vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
             return;
         }
-        this._leoIsConnecting = true;
+        this.leoStates.leoConnecting = true;
+        this.leoStates.leoStartupFinished = false;
         this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess(
             this._serverService.usingPort // This will be zero if no port found
         );
         this._leoBridgeReadyPromise.then(
             (p_package) => {
-                this._leoIsConnecting = false;
+                this.leoStates.leoConnecting = false;
                 // Check if hard-coded first package signature
                 if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
                     this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
@@ -544,7 +548,7 @@ export class LeoIntegration {
                         }, 0);
                     } else {
                         this.leoStates.leoBridgeReady = true;
-                        this.finishedStartup = true;
+                        this.leoStates.leoStartupFinished = true;
                     }
                     if (w_opened) {
                         p_package.filename = p_package.commander!.fileName;
@@ -562,7 +566,6 @@ export class LeoIntegration {
                 // TODO : #14 @boltex COULD BE SOME FILES ALREADY OPENED OR NONE!
             },
             (p_reason) => {
-                this._leoIsConnecting = false;
                 this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + ': ' + p_reason);
             }
         );
@@ -588,9 +591,9 @@ export class LeoIntegration {
         // to change the 'viewsWelcome' content.
         // bring back to !leoBridgeReady && !leoServerStarted && !startServerAutomatically && !connectToServerAutomatically"
         utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
-        utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
-        this.finishedStartup = true;
-
+        // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
+        this.leoStates.leoStartupFinished = true;
+        this.leoStates.leoConnecting = false;
         this.leoStates.fileOpenedReady = false;
         this.leoStates.leoBridgeReady = false;
         this._leoBridgeReadyPromise = undefined;
@@ -612,7 +615,7 @@ export class LeoIntegration {
                 ).then(() => {
                     this.leoSettingsWebview.changedConfiguration();
                     vscode.window.showInformationMessage("Leo-Editor installation folder chosen as " + p_chosenPath[0].fsPath);
-                    if (!this.finishedStartup && this.config.startServerAutomatically) {
+                    if (!this.leoStates.leoStartupFinished && this.config.startServerAutomatically) {
                         this.startServer();
                     }
                 });
@@ -647,12 +650,12 @@ export class LeoIntegration {
             ).then(
                 (p_openFileResult: LeoBridgePackage) => {
                     this.leoStates.leoBridgeReady = true;
-                    this.finishedStartup = true;
+                    this.leoStates.leoStartupFinished = true;
                     return this.setupOpenedLeoDocument(p_openFileResult);
                 },
                 (p_errorOpen) => {
                     this.leoStates.leoBridgeReady = true;
-                    this.finishedStartup = true;
+                    this.leoStates.leoStartupFinished = true;
                     console.log('in .then not opened or already opened');
                     return Promise.reject(p_errorOpen);
                 }

@@ -441,9 +441,8 @@
 <v t="ekr.20200815123601.28"><vh>viewsWelcome</vh>
 <v t="ekr.20200815123601.29"><vh>Leo Integration</vh>
 <v t="ekr.20200815123601.30"><vh>Not Ready: [start], [connect] and settings</vh></v>
-<v t="ekr.20200815123601.31"><vh>Not Ready Auto Start: [connect] and settings</vh></v>
-<v t="ekr.20200815123601.32"><vh>Not Ready Server Started: [connect] and settings</vh></v>
-<v t="ekr.20200815123601.33"><vh>Not Ready: Connecting</vh></v>
+<v t="ekr.20200815123601.31"><vh>Not Ready : [connect] and settings</vh></v>
+<v t="ekr.20200815123601.33"><vh>Not Ready: Connecting...</vh></v>
 <v t="ekr.20200815123601.34"><vh>Ready: [open] and settings</vh></v>
 </v>
 <v t="ekr.20200815123601.35"><vh>Leo Documents</vh>
@@ -3704,45 +3703,34 @@ print('done')
 <t tx="ekr.20200815123601.30">{
   "view": "leoIntegration",
   "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically"
+  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; leoStartupFinished &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting"
 },
 {
   "view": "leoIntegrationExplorer",
   "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically"
+  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; leoStartupFinished &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting"
 },
 </t>
 <t tx="ekr.20200815123601.31">{
   "view": "leoIntegration",
   "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; startServerAutomatically &amp;&amp; !connectToServerAutomatically"
+  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; startServerAutomatically &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting"
 },
 {
   "view": "leoIntegrationExplorer",
   "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; startServerAutomatically &amp;&amp; !connectToServerAutomatically"
-},
-</t>
-<t tx="ekr.20200815123601.32">{
-  "view": "leoIntegration",
-  "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically"
-},
-{
-  "view": "leoIntegrationExplorer",
-  "contents": "Not Connected\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically"
+  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; startServerAutomatically &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; leoServerStarted &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting"
 },
 </t>
 <t tx="ekr.20200815123601.33">{
   "view": "leoIntegration",
   "contents": "Connecting...",
-  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; connectToServerAutomatically"
+  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoConnecting || !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; connectToServerAutomatically &amp;&amp; !leoConnecting &amp;&amp; !leoStartupFinished"
 },
 {
   "view": "leoIntegrationExplorer",
   "contents": "Connecting...",
-  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; connectToServerAutomatically"
+  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoConnecting || !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; connectToServerAutomatically &amp;&amp; !leoConnecting  &amp;&amp; !leoStartupFinished"
 },
 </t>
 <t tx="ekr.20200815123601.34">{
@@ -6724,6 +6712,8 @@ public static CONFIG_NAMES = {
  */
 public static CONTEXT_FLAGS = {
     // Main flags for connection and opened file
+    STARTUP_FINISHED: "leoStartupFinished", // Initial extension finished auto-server-start-connect
+    CONNECTING: "leoConnecting", // Initial extension finished auto-server-start-connect
     BRIDGE_READY: "leoBridgeReady", // Connected to leoBridge
     TREE_OPENED: "leoTreeOpened", // At least one Leo file opened
     TREE_TITLED: "leoTreeTitled", // Tree is a Leo file and not a new untitled document
@@ -7189,13 +7179,15 @@ public buildFromSavedSettings(): void {
         utils.setContext(FLAGS.SHOW_MARK_BODY, this.showMarkOnBody);
         utils.setContext(FLAGS.SHOW_SORT_BODY, this.showSortOnBody);
 
-        if (!this._leoIntegration.finishedStartup &amp;&amp; this.leoEditorPath) {
+        utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
+
+        if (!this._leoIntegration.leoStates.leoStartupFinished &amp;&amp; this.leoEditorPath) {
             // Only relevant 'viewWelcome' content at startup.
             utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically);  // ok
-            utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
+            // utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
         } else {
-            utils.setContext(FLAGS.AUTO_START_SERVER, false); // Cannot start automatically
-            utils.setContext(FLAGS.AUTO_CONNECT, false);
+            utils.setContext(FLAGS.AUTO_START_SERVER, false); // Save option but not context flag
+            //utils.setContext(FLAGS.AUTO_CONNECT, false);
         }
     }
 }
@@ -8929,6 +8921,26 @@ import { LeoPackageStates } from "./types";
  */
 export class LeoStates {
 
+    // * Currently establishing connection to a server
+    private _leoConnecting: boolean = false;
+    get leoConnecting(): boolean {
+        return this._leoConnecting;
+    }
+    set leoConnecting(p_value: boolean) {
+        this._leoConnecting = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.CONNECTING, p_value);
+    }
+
+    // * Finished startup check for server-start and auto-connect
+    private _leoStartupFinished: boolean = false;
+    get leoStartupFinished(): boolean {
+        return this._leoStartupFinished;
+    }
+    set leoStartupFinished(p_value: boolean) {
+        this._leoStartupFinished = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.STARTUP_FINISHED, p_value);
+    }
+
     @others
 }
 </t>
@@ -10042,12 +10054,12 @@ private _openLastFiles(): Promise&lt;vscode.TextEditor&gt; {
         ).then(
             (p_openFileResult: LeoBridgePackage) =&gt; {
                 this.leoStates.leoBridgeReady = true;
-                this.finishedStartup = true;
+                this.leoStates.leoStartupFinished = true;
                 return this.setupOpenedLeoDocument(p_openFileResult);
             },
             (p_errorOpen) =&gt; {
                 this.leoStates.leoBridgeReady = true;
-                this.finishedStartup = true;
+                this.leoStates.leoStartupFinished = true;
                 console.log('in .then not opened or already opened');
                 return Promise.reject(p_errorOpen);
             }
@@ -10153,8 +10165,7 @@ private _triggerGetStates(): void {
 export class LeoIntegration {
     // * Status Flags
     public activated: boolean = true; // Set to false when deactivating the extension
-    public finishedStartup: boolean = false;
-    private _leoIsConnecting: boolean = false; // Used in connect method, to prevent other attempts while trying
+
     private _leoBridgeReadyPromise: Promise&lt;LeoBridgePackage&gt; | undefined; // Is set when leoBridge has a leo controller ready
     private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Might need to be re-set when switching visibility
     private _hasShownContextOpenMessage: boolean = false; // Used to show this information only once
@@ -10601,9 +10612,10 @@ private _onActiveEditorChanged(
     this._leoTreeView.onDidCollapseElement((p_event) =&gt;
         this._onChangeCollapsedState(p_event, false, this._leoTreeView)
     );
+    // * Trigger 'show tree in Leo's view'
     this._leoTreeView.onDidChangeVisibility((p_event) =&gt;
         this._onTreeViewVisibilityChanged(p_event, false)
-    ); // * Trigger 'show tree in Leo's view'
+    );
     this._leoTreeExView = vscode.window.createTreeView(Constants.TREEVIEW_EXPLORER_ID, {
         showCollapseAll: false,
         treeDataProvider: this._leoTreeProvider,
@@ -10614,9 +10626,11 @@ private _onActiveEditorChanged(
     this._leoTreeExView.onDidCollapseElement((p_event) =&gt;
         this._onChangeCollapsedState(p_event, false, this._leoTreeExView)
     );
+    // * Trigger 'show tree in explorer view'
     this._leoTreeExView.onDidChangeVisibility((p_event) =&gt;
         this._onTreeViewVisibilityChanged(p_event, true)
-    ); // * Trigger 'show tree in explorer view'
+    );
+    // * Init this._lastTreeView based on config only assuming explorer is default sidebar view
     this._lastTreeView = this.config.treeInExplorer ? this._leoTreeExView : this._leoTreeView;
 
     // * Create Leo Opened Documents Treeview Providers and tree views
@@ -11655,7 +11669,7 @@ public startNetworkServices(): void {
         // * (via settings) Connect to Leo Bridge server automatically without starting one first
         this.connect();
     } else {
-        this.finishedStartup = true;
+        this.leoStates.leoStartupFinished = true;
     }
 }
 
@@ -11951,6 +11965,7 @@ public statusBarOnClick(): Thenable&lt;unknown&gt; {
  * * Starts an instance of a leoBridge server, and may connect to it afterwards, based on configuration flags.
  */
 public startServer(): void {
+    this.leoStates.leoStartupFinished = false;
     if (!this._leoTerminalPane) {
         this._leoTerminalPane = vscode.window.createOutputChannel(
             Constants.GUI.TERMINAL_PANE_TITLE
@@ -11971,7 +11986,7 @@ public startServer(): void {
                         this.connect();
                     }, 2000);
                 } else {
-                    this.finishedStartup = true;
+                    this.leoStates.leoStartupFinished = true;
                 }
             },
             (p_reason) =&gt; {
@@ -12150,17 +12165,18 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
  * * Initiate a connection to the leoBridge server, then show view title, log pane, and set 'bridge ready' flags.
  */
 public connect(): void {
-    if (this.leoStates.leoBridgeReady || this._leoIsConnecting) {
+    if (this.leoStates.leoBridgeReady || this.leoStates.leoConnecting) {
         vscode.window.showInformationMessage(Constants.USER_MESSAGES.ALREADY_CONNECTED);
         return;
     }
-    this._leoIsConnecting = true;
+    this.leoStates.leoConnecting = true;
+    this.leoStates.leoStartupFinished = false;
     this._leoBridgeReadyPromise = this._leoBridge.initLeoProcess(
         this._serverService.usingPort // This will be zero if no port found
     );
     this._leoBridgeReadyPromise.then(
         (p_package) =&gt; {
-            this._leoIsConnecting = false;
+            this.leoStates.leoConnecting = false;
             // Check if hard-coded first package signature
             if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
                 this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
@@ -12177,7 +12193,7 @@ public connect(): void {
                     }, 0);
                 } else {
                     this.leoStates.leoBridgeReady = true;
-                    this.finishedStartup = true;
+                    this.leoStates.leoStartupFinished = true;
                 }
                 if (w_opened) {
                     p_package.filename = p_package.commander!.fileName;
@@ -12195,7 +12211,6 @@ public connect(): void {
             // TODO : #14 @boltex COULD BE SOME FILES ALREADY OPENED OR NONE!
         },
         (p_reason) =&gt; {
-            this._leoIsConnecting = false;
             this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + ': ' + p_reason);
         }
     );
@@ -12222,9 +12237,9 @@ public cancelConnect(p_message?: string): void {
     // to change the 'viewsWelcome' content.
     // bring back to !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically"
     utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
-    utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
-    this.finishedStartup = true;
-
+    // utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
+    this.leoStates.leoStartupFinished = true;
+    this.leoStates.leoConnecting = false;
     this.leoStates.fileOpenedReady = false;
     this.leoStates.leoBridgeReady = false;
     this._leoBridgeReadyPromise = undefined;
@@ -16679,7 +16694,7 @@ public chooseLeoFolder(): void {
             ).then(() =&gt; {
                 this.leoSettingsWebview.changedConfiguration();
                 vscode.window.showInformationMessage("Leo-Editor installation folder chosen as " + p_chosenPath[0].fsPath);
-                if (!this.finishedStartup &amp;&amp; this.config.startServerAutomatically) {
+                if (!this.leoStates.leoStartupFinished &amp;&amp; this.config.startServerAutomatically) {
                     this.startServer();
                 }
             });
@@ -17232,7 +17247,7 @@ public checkEnablePreview(p_forced?: boolean): void {
             this.setEnablePreview();
             vscode.window.showInformationMessage("'Enable Preview' setting was set");
         } else {
-            if (!this._leoIntegration.finishedStartup) {
+            if (!this._leoIntegration.leoStates.leoStartupFinished) {
                 return;
             }
             vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
@@ -17277,7 +17292,7 @@ public checkCloseEmptyGroups(p_forced?: boolean): void {
             this.clearCloseEmptyGroups();
             vscode.window.showInformationMessage("'Close Empty Groups' setting was cleared");
         } else {
-            if (!this._leoIntegration.finishedStartup) {
+            if (!this._leoIntegration.leoStates.leoStartupFinished) {
                 return;
             }
             vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
@@ -17378,7 +17393,7 @@ public checkCloseOnFileDelete(p_forced?: boolean): void {
             vscode.window.showInformationMessage("'Close on File Delete' setting was set");
 
         } else {
-            if (!this._leoIntegration.finishedStartup) {
+            if (!this._leoIntegration.leoStates.leoStartupFinished) {
                 return;
             }
             vscode.window.showWarningMessage("'Close on File Delete' setting is recommended (currently disabled)", "Fix it")
@@ -17573,6 +17588,7 @@ public gotoScript(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
 - Added Write (dirty) \@\&lt;file\&gt; commands and keybindings.
 - Fixed flags and icons shown above the body pane for hoist/dehoist commands.
 - Fixed 'clean/dirty' state of leo body documents whith the 'triggerBodySave' method which makes sure the body text is sent to the leo server before anything would close or destroy the body pane. (when focusing on another document or outside of vscode, etc.)
+- Fixed "view welcome-content" of outline for contexts before the bridge is connected, and settings were changed. (e.g. when auto start and/or auto-connect were off at startup)
 
 </t>
 <t tx="felix.20211111214657.1">/**

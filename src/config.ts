@@ -224,7 +224,7 @@ export class Config implements ConfigMembers {
                 this.setEnablePreview();
                 vscode.window.showInformationMessage("'Enable Preview' setting was set");
             } else {
-                if (!this._leoIntegration.finishedStartup) {
+                if (!this._leoIntegration.leoStates.leoStartupFinished) {
                     return;
                 }
                 vscode.window.showWarningMessage("'Enable Preview' setting is recommended (currently disabled)", "Fix it")
@@ -254,7 +254,7 @@ export class Config implements ConfigMembers {
                 this.clearCloseEmptyGroups();
                 vscode.window.showInformationMessage("'Close Empty Groups' setting was cleared");
             } else {
-                if (!this._leoIntegration.finishedStartup) {
+                if (!this._leoIntegration.leoStates.leoStartupFinished) {
                     return;
                 }
                 vscode.window.showWarningMessage("'Close Empty Groups' setting is NOT recommended!", "Fix it")
@@ -285,7 +285,7 @@ export class Config implements ConfigMembers {
                 vscode.window.showInformationMessage("'Close on File Delete' setting was set");
 
             } else {
-                if (!this._leoIntegration.finishedStartup) {
+                if (!this._leoIntegration.leoStates.leoStartupFinished) {
                     return;
                 }
                 vscode.window.showWarningMessage("'Close on File Delete' setting is recommended (currently disabled)", "Fix it")
@@ -382,13 +382,15 @@ export class Config implements ConfigMembers {
             utils.setContext(FLAGS.SHOW_MARK_BODY, this.showMarkOnBody);
             utils.setContext(FLAGS.SHOW_SORT_BODY, this.showSortOnBody);
 
-            if (!this._leoIntegration.finishedStartup && this.leoEditorPath) {
+            utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
+
+            if (!this._leoIntegration.leoStates.leoStartupFinished && this.leoEditorPath) {
                 // Only relevant 'viewWelcome' content at startup.
                 utils.setContext(FLAGS.AUTO_START_SERVER, this.startServerAutomatically);  // ok
-                utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
+                // utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
             } else {
-                utils.setContext(FLAGS.AUTO_START_SERVER, false); // Cannot start automatically
-                utils.setContext(FLAGS.AUTO_CONNECT, false);
+                utils.setContext(FLAGS.AUTO_START_SERVER, false); // Save option but not context flag
+                //utils.setContext(FLAGS.AUTO_CONNECT, false);
             }
         }
     }

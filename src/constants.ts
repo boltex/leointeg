@@ -295,6 +295,8 @@ export class Constants {
      */
     public static CONTEXT_FLAGS = {
         // Main flags for connection and opened file
+        STARTUP_FINISHED: "leoStartupFinished", // Initial extension finished auto-server-start-connect
+        CONNECTING: "leoConnecting", // Initial extension finished auto-server-start-connect
         BRIDGE_READY: "leoBridgeReady", // Connected to leoBridge
         TREE_OPENED: "leoTreeOpened", // At least one Leo file opened
         TREE_TITLED: "leoTreeTitled", // Tree is a Leo file and not a new untitled document
