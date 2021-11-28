@@ -4,12 +4,6 @@
     "injectionSelector": "L:source.leobody",
     "patterns": [
         {
-            "include": "#leo-comments"
-        },
-        {
-            "include": "#leo-raw"
-        },
-        {
             "include": "#leo-sectionref"
         },
         {
@@ -17,6 +11,12 @@
         },
         {
             "include": "#leo-languages"
+        },
+        {
+            "include": "#leo-section-delims"
+        },
+        {
+            "include": "#leo-comments"
         }
     ],
     "repository": {
@@ -24,13 +24,13 @@
             "patterns": [
                 {
                     "name": "comment.block.leobody",
-                    "begin": "(^@doc\\s*$|^@\\s*$)",
+                    "begin": "^(@doc|@)($|\\s+)",
                     "beginCaptures": {
                         "1": {
                             "name": "keyword"
                         }
                     },
-                    "end": "(^@code\\s*$|^@c\\s*$)",
+                    "end": "^(@code|@c)($|\\s+)",
                     "endCaptures": {
                         "1": {
                             "name": "keyword"
@@ -39,7 +39,7 @@
                 }
             ]
         },
-        "leo-raw": {
+        "leo-section-delims": {
             "patterns": [
                 {
                     "begin": "^(@raw)($|\\s+)",
@@ -96,6 +96,10 @@
                 },
                 {
                     "match": "^(@first|@last)($|\\s+)",
+                    "name": "keyword"
+                },
+                {
+                    "match": "^(@section-delims)($|\\s+)",
                     "name": "keyword"
                 },
                 {

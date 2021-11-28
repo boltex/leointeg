@@ -10,6 +10,7 @@
 - Fixed 'clean/dirty' state of leo body documents with the 'triggerBodySave' method which makes sure the body text is sent to the leo server before anything would close or destroy the body pane. (when focusing on another document or outside of vscode, etc.)
 - Fixed "view welcome-content" of outline for contexts before the bridge is connected, and settings were changed. (e.g. when auto start and/or auto-connect were off at startup)
 - Fixed Leo's comment/code blocks directives "@doc"/"@code" and their shorthand versions "@"/"@c".
+- Fixed color syntax to match Leo's PR #2303 which removes @raw and @end_raw and adds @section-delims.
 
 ## 1.0.3
 
