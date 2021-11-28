@@ -1438,11 +1438,25 @@ private _refreshOutline(p_incrementTreeID: boolean, p_revealType?: RevealType): 
         this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
     }
     // Force showing last used Leo outline first
-    if (this.lastSelectedNode &amp;&amp; !(this._leoTreeExView.visible || this._leoTreeView.visible)) {
-        this._lastTreeView.reveal(this.lastSelectedNode).then(() =&gt; {
+    try {
+        if (this.lastSelectedNode &amp;&amp; !(this._leoTreeExView.visible || this._leoTreeView.visible)) {
+
+            this._lastTreeView.reveal(this.lastSelectedNode).then(
+                () =&gt; {
+                    this._retriedRefresh = false;
+                    this._leoTreeProvider.refreshTreeRoot();
+                },
+                (p_reason) =&gt; {
+                    // Reveal failed: retry once.
+                    this._leoTreeProvider.refreshTreeRoot();
+                }
+            );
+
+        } else {
             this._leoTreeProvider.refreshTreeRoot();
-        });
-    } else {
+        }
+    } catch (error) {
+        // Also retry once on error
         this._leoTreeProvider.refreshTreeRoot();
     }
 }
@@ -1458,11 +1472,38 @@ private _revealTreeViewNode(
     p_leoNode: LeoNode,
     p_options?: { select?: boolean; focus?: boolean; expand?: boolean | number }
 ): Thenable&lt;void&gt; {
+    let w_treeview: vscode.TreeView&lt;LeoNode&gt; | false = false;
     if (this._leoTreeView.visible) {
-        return this._leoTreeView.reveal(p_leoNode, p_options);
+        w_treeview = this._leoTreeView;
     }
     if (this._leoTreeExView.visible &amp;&amp; this.config.treeInExplorer) {
-        return this._leoTreeExView.reveal(p_leoNode, p_options);
+        w_treeview = this._leoTreeExView;
+    }
+    try {
+        if (w_treeview) {
+            return w_treeview.reveal(p_leoNode, p_options).then(
+                () =&gt; {
+                    // ok
+                    this._retriedRefresh = false;
+                },
+                (p_reason) =&gt; {
+                    if (!this._retriedRefresh) {
+                        this._retriedRefresh = true;
+                        // Reveal failed. Retry refreshOutline once
+                        this._refreshOutline(true, RevealType.RevealSelect);
+                    }
+                }
+            );
+        }
+
+    } catch (p_error) {
+        console.error("_revealTreeViewNode error: ", p_error);
+        // Retry refreshOutline once
+        if (!this._retriedRefresh) {
+            this._retriedRefresh = true;
+            // Reveal failed. Retry refreshOutline once
+            this._refreshOutline(true, RevealType.RevealSelect);
+        }
     }
     return Promise.resolve(); // Defaults to resolving even if both are hidden
 }
@@ -10197,6 +10238,7 @@ export class LeoIntegration {
     private _leoTreeView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Tree View Container with an Activity Bar icon
     private _leoTreeExView: vscode.TreeView&lt;LeoNode&gt;; // Outline tree view added to the Explorer Sidebar
     private _lastTreeView: vscode.TreeView&lt;LeoNode&gt;; // Last visible treeview
+    private _retriedRefresh: boolean = false;
     private _treeId: number = 0; // Starting salt for tree node murmurhash generated Ids
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
@@ -10955,10 +10997,26 @@ public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
  */
 public showOutline(p_focusOutline?: boolean): void {
     if (this.lastSelectedNode) {
-        this._lastTreeView.reveal(this.lastSelectedNode, {
-            select: true,
-            focus: p_focusOutline,
-        });
+        try {
+            this._lastTreeView.reveal(this.lastSelectedNode, {
+                select: true,
+                focus: p_focusOutline,
+            }).then(
+                () =&gt; {
+                    // ok
+                },
+                (p_reason) =&gt; {
+                    // showOutline failed: try refresh only once.
+                    this._refreshOutline(true, RevealType.RevealSelect);
+                }
+            );
+
+        } catch (p_error) {
+            console.error("showOutline error: ", p_error);
+            // showOutline failed: try refresh only once.
+            this._refreshOutline(true, RevealType.RevealSelect);
+        }
+
     }
 }
 
@@ -12045,18 +12103,9 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
         })
     ).then((p_result: LeoBridgePackage) =&gt; {
         console.log('get focus results: ', p_result);
-
-        // this.launchRefresh({ buttons: true }, false);
-        // return vscode.window.showInformationMessage(
-        //     ' back from test, called from ' +
-        //     (p_fromOutline ? "outline" : "body") +
-        //     ', with result: ' +
-        //     JSON.stringify(p_result)
-        // );
     });
     // * test ua's
     return this.sendAction(
-        // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
         Constants.LEOBRIDGE.SET_UA_MEMBER,
         JSON.stringify({
             name: 'uaTestName',
@@ -12064,14 +12113,6 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
         })
     ).then((p_result: LeoBridgePackage) =&gt; {
         console.log('get focus results: ', p_result);
-
-        // this.launchRefresh({ buttons: true }, false);
-        // return vscode.window.showInformationMessage(
-        //     ' back from test, called from ' +
-        //     (p_fromOutline ? "outline" : "body") +
-        //     ', with result: ' +
-        //     JSON.stringify(p_result)
-        // );
         this.launchRefresh(
             {
                 tree: true
@@ -17587,7 +17628,7 @@ public gotoScript(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
 - Fixed bug that prevented context some menu items on \@\&lt;files\&gt; nodes and other special nodes.
 - Added Write (dirty) \@\&lt;file\&gt; commands and keybindings.
 - Fixed flags and icons shown above the body pane for hoist/dehoist commands.
-- Fixed 'clean/dirty' state of leo body documents whith the 'triggerBodySave' method which makes sure the body text is sent to the leo server before anything would close or destroy the body pane. (when focusing on another document or outside of vscode, etc.)
+- Fixed 'clean/dirty' state of leo body documents with the 'triggerBodySave' method which makes sure the body text is sent to the leo server before anything would close or destroy the body pane. (when focusing on another document or outside of vscode, etc.)
 - Fixed "view welcome-content" of outline for contexts before the bridge is connected, and settings were changed. (e.g. when auto start and/or auto-connect were off at startup)
 
 </t>

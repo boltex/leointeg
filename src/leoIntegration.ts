@@ -71,6 +71,7 @@ export class LeoIntegration {
     private _leoTreeView: vscode.TreeView<LeoNode>; // Outline tree view added to the Tree View Container with an Activity Bar icon
     private _leoTreeExView: vscode.TreeView<LeoNode>; // Outline tree view added to the Explorer Sidebar
     private _lastTreeView: vscode.TreeView<LeoNode>; // Last visible treeview
+    private _retriedRefresh: boolean = false;
     private _treeId: number = 0; // Starting salt for tree node murmurhash generated Ids
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
@@ -1424,10 +1425,26 @@ export class LeoIntegration {
      */
     public showOutline(p_focusOutline?: boolean): void {
         if (this.lastSelectedNode) {
-            this._lastTreeView.reveal(this.lastSelectedNode, {
-                select: true,
-                focus: p_focusOutline,
-            });
+            try {
+                this._lastTreeView.reveal(this.lastSelectedNode, {
+                    select: true,
+                    focus: p_focusOutline,
+                }).then(
+                    () => {
+                        // ok
+                    },
+                    (p_reason) => {
+                        // showOutline failed: try refresh only once.
+                        this._refreshOutline(true, RevealType.RevealSelect);
+                    }
+                );
+
+            } catch (p_error) {
+                console.error("showOutline error: ", p_error);
+                // showOutline failed: try refresh only once.
+                this._refreshOutline(true, RevealType.RevealSelect);
+            }
+
         }
     }
 
@@ -1473,11 +1490,25 @@ export class LeoIntegration {
             this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
         }
         // Force showing last used Leo outline first
-        if (this.lastSelectedNode && !(this._leoTreeExView.visible || this._leoTreeView.visible)) {
-            this._lastTreeView.reveal(this.lastSelectedNode).then(() => {
+        try {
+            if (this.lastSelectedNode && !(this._leoTreeExView.visible || this._leoTreeView.visible)) {
+
+                this._lastTreeView.reveal(this.lastSelectedNode).then(
+                    () => {
+                        this._retriedRefresh = false;
+                        this._leoTreeProvider.refreshTreeRoot();
+                    },
+                    (p_reason) => {
+                        // Reveal failed: retry once.
+                        this._leoTreeProvider.refreshTreeRoot();
+                    }
+                );
+
+            } else {
                 this._leoTreeProvider.refreshTreeRoot();
-            });
-        } else {
+            }
+        } catch (error) {
+            // Also retry once on error
             this._leoTreeProvider.refreshTreeRoot();
         }
     }
@@ -1492,11 +1523,38 @@ export class LeoIntegration {
         p_leoNode: LeoNode,
         p_options?: { select?: boolean; focus?: boolean; expand?: boolean | number }
     ): Thenable<void> {
+        let w_treeview: vscode.TreeView<LeoNode> | false = false;
         if (this._leoTreeView.visible) {
-            return this._leoTreeView.reveal(p_leoNode, p_options);
+            w_treeview = this._leoTreeView;
         }
         if (this._leoTreeExView.visible && this.config.treeInExplorer) {
-            return this._leoTreeExView.reveal(p_leoNode, p_options);
+            w_treeview = this._leoTreeExView;
+        }
+        try {
+            if (w_treeview) {
+                return w_treeview.reveal(p_leoNode, p_options).then(
+                    () => {
+                        // ok
+                        this._retriedRefresh = false;
+                    },
+                    (p_reason) => {
+                        if (!this._retriedRefresh) {
+                            this._retriedRefresh = true;
+                            // Reveal failed. Retry refreshOutline once
+                            this._refreshOutline(true, RevealType.RevealSelect);
+                        }
+                    }
+                );
+            }
+
+        } catch (p_error) {
+            console.error("_revealTreeViewNode error: ", p_error);
+            // Retry refreshOutline once
+            if (!this._retriedRefresh) {
+                this._retriedRefresh = true;
+                // Reveal failed. Retry refreshOutline once
+                this._refreshOutline(true, RevealType.RevealSelect);
+            }
         }
         return Promise.resolve(); // Defaults to resolving even if both are hidden
     }
@@ -3531,18 +3589,9 @@ export class LeoIntegration {
             })
         ).then((p_result: LeoBridgePackage) => {
             console.log('get focus results: ', p_result);
-
-            // this.launchRefresh({ buttons: true }, false);
-            // return vscode.window.showInformationMessage(
-            //     ' back from test, called from ' +
-            //     (p_fromOutline ? "outline" : "body") +
-            //     ', with result: ' +
-            //     JSON.stringify(p_result)
-            // );
         });
         // * test ua's
         return this.sendAction(
-            // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
             Constants.LEOBRIDGE.SET_UA_MEMBER,
             JSON.stringify({
                 name: 'uaTestName',
@@ -3550,14 +3599,6 @@ export class LeoIntegration {
             })
         ).then((p_result: LeoBridgePackage) => {
             console.log('get focus results: ', p_result);
-
-            // this.launchRefresh({ buttons: true }, false);
-            // return vscode.window.showInformationMessage(
-            //     ' back from test, called from ' +
-            //     (p_fromOutline ? "outline" : "body") +
-            //     ', with result: ' +
-            //     JSON.stringify(p_result)
-            // );
             this.launchRefresh(
                 {
                     tree: true

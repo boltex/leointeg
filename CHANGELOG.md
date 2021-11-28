@@ -7,7 +7,7 @@
 - Fixed bug that prevented context some menu items on \@\<files\> nodes and other special nodes.
 - Added Write (dirty) \@\<file\> commands and keybindings.
 - Fixed flags and icons shown above the body pane for hoist/dehoist commands.
-- Fixed 'clean/dirty' state of leo body documents whith the 'triggerBodySave' method which makes sure the body text is sent to the leo server before anything would close or destroy the body pane. (when focusing on another document or outside of vscode, etc.)
+- Fixed 'clean/dirty' state of leo body documents with the 'triggerBodySave' method which makes sure the body text is sent to the leo server before anything would close or destroy the body pane. (when focusing on another document or outside of vscode, etc.)
 - Fixed "view welcome-content" of outline for contexts before the bridge is connected, and settings were changed. (e.g. when auto start and/or auto-connect were off at startup)
 
 ## 1.0.3
