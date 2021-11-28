@@ -23,19 +23,19 @@
         "leo-comments": {
             "patterns": [
                 {
-                    "begin": "^(@doc|@)($|\\s+)",
-                    "end": "^(@code|@c)($|\\s+)",
+                    "name": "comment.block.leobody",
+                    "begin": "(^@doc\\s*$|^@\\s*$)",
                     "beginCaptures": {
-                        "0": {
+                        "1": {
                             "name": "keyword"
                         }
                     },
+                    "end": "(^@code\\s*$|^@c\\s*$)",
                     "endCaptures": {
-                        "0": {
+                        "1": {
                             "name": "keyword"
                         }
-                    },
-                    "name": "comment"
+                    }
                 }
             ]
         },
@@ -87,7 +87,7 @@
                     "name": "keyword"
                 },
                 {
-                    "match": "^(@c|@code|@encoding|@ignore|@lineending|@path|@pagewidth|@tabwidth)($|\\s+)",
+                    "match": "^(@encoding|@ignore|@lineending|@path|@pagewidth|@tabwidth)($|\\s+)",
                     "name": "keyword"
                 },
                 {
