@@ -2260,6 +2260,12 @@ export class LeoIntegration {
                     Constants.LEOBRIDGE.GET_COMMANDS
                 ).then((p_result: LeoBridgePackage) => {
                     if (p_result.commands && p_result.commands.length) {
+                        const w_regexp = new RegExp('\\s+', 'g');
+                        p_result.commands.forEach(p_command => {
+                            if (p_command.detail) {
+                                p_command.detail = p_command.detail.trim().replace(w_regexp, ' ');
+                            }
+                        });
                         return p_result.commands;
                     } else {
                         return [];

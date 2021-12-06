@@ -601,6 +601,7 @@
 <v t="felix.20200718040540.15"><vh>rename</vh></v>
 <v t="felix.20200718040540.16"><vh>delete</vh></v>
 <v t="felix.20200718040540.17"><vh>copy</vh></v>
+<v t="felix.20211129222933.1"><vh>_tryFullRefresh</vh></v>
 <v t="felix.20200718040540.18"><vh>_fireSoon</vh></v>
 </v>
 </v>
@@ -1139,11 +1140,14 @@ public showAskModalDialog(p_askArg: runAskYesNoDialogParameters): void {
             w_sendResultPromise.then(() =&gt; {
                 //  this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
                 return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
-            })
-                .then((p_package) =&gt; {
-                    // refresh and reveal selection
-                    this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
-                });
+            }).then((p_package) =&gt; {
+                // refresh and reveal selection
+                this._leoIntegration.launchRefresh(
+                    { tree: true, body: true, states: true, buttons: true, documents: true },
+                    false,
+                    p_package.node
+                );
+            });
         }
     });
 }
@@ -3744,7 +3748,7 @@ print('done')
 <t tx="ekr.20200815123601.30">{
   "view": "leoIntegration",
   "contents": "Not Connected\n[Start Server](command:leointeg.startServer)\n[Connect to Server](command:leointeg.connectToServer)\nServer startup and connection can be automated in LeoInteg's [configuration settings](command:leointeg.showSettingsPage)",
-  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; leoStartupFinished &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting"
+  "when": "!leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; leoStartupFinished &amp;&amp; !leoConnecting || !leoBridgeReady &amp;&amp; !leoServerStarted &amp;&amp; !startServerAutomatically &amp;&amp; !connectToServerAutomatically &amp;&amp; !leoConnecting"
 },
 {
   "view": "leoIntegrationExplorer",
@@ -4015,6 +4019,10 @@ print('done')
 </t>
 <t tx="ekr.20200815123601.51">{
   "command": "leointeg.insertNodeSelection",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.insertChildNodeSelection",
   "when": "leoTreeOpened"
 },
 {
@@ -4489,7 +4497,7 @@ print('done')
   "command": "leointeg.executeScript",
   "key": "ctrl+b",
   "mac": "cmd+b",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
   "command": "leointeg.minibuffer",
@@ -4547,6 +4555,18 @@ print('done')
   "key": "ctrl+s",
   "mac": "cmd+s",
   "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
+  "command": "leointeg.newLeoFile",
+  "key": "ctrl+n",
+  "mac": "cmd+n",
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+},
+{
+  "command": "leointeg.openLeoFile",
+  "key": "ctrl+o",
+  "mac": "cmd+o",
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.writeAtFileNodes",
@@ -4852,7 +4872,7 @@ print('done')
   "command": "leointeg.insertChildNodeSelectionInterrupt",
   "key": "ctrl+insert",
   "mac": "cmd+insert",
-  "when": "leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
+  "when": "!terminalFocus &amp;&amp; !panelFocus &amp;&amp; leoTreeOpened &amp;&amp; !sideBarFocus &amp;&amp; !editorTextFocus"
 },
 {
   "command": "leointeg.cloneNodeSelection",
@@ -4966,7 +4986,7 @@ print('done')
 {
   "command": "leointeg.gotoNextVisible",
   "key": "alt+down",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.gotoPrevVisible",
@@ -4996,7 +5016,7 @@ print('done')
 {
   "command": "leointeg.expandAndGoRight",
   "key": "alt+right",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; !editorHasSelection  &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; !editorHasSelection  &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 </t>
 <t tx="ekr.20200815123601.89">"resourceLabelFormatters": [
@@ -7470,6 +7490,9 @@ import { BodyTimeInfo } from "./types";
                 console.error("readFile: ERROR File not in _openedBodiesGnx! readFile missing refreshes?");
                 // throw vscode.FileSystemError.FileNotFound();
                 // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+                if (!this._errorRefreshFlag) {
+                    this._tryFullRefresh();
+                }
                 return Promise.resolve(Buffer.from(""));
             } else {
                 return this._leoIntegration.sendAction(
@@ -7477,6 +7500,7 @@ import { BodyTimeInfo } from "./types";
                     JSON.stringify({ "gnx": w_gnx })
                 ).then((p_result) =&gt; {
                     if (p_result.body) {
+                        this._errorRefreshFlag = false; // got body so reset possible flag!
                         this._lastGnx = w_gnx;
                         this._lastBodyData = p_result.body;
                         const w_buffer: Uint8Array = Buffer.from(p_result.body);
@@ -7488,10 +7512,12 @@ import { BodyTimeInfo } from "./types";
                         this._lastBodyData = "";
                         return Promise.resolve(Buffer.from(""));
                     } else {
+                        if (!this._errorRefreshFlag) {
+                            this._tryFullRefresh();
+                        }
                         if (this._lastGnx === w_gnx) {
                             // was last gnx of closed file about to be switched to new document selected
                             console.log('Passed in not found: ' + w_gnx);
-
                             return Promise.resolve(Buffer.from(this._lastBodyData));
                         }
                         console.error("ERROR =&gt; readFile of unknown GNX"); // is possibleGnxList updated correctly?
@@ -7600,6 +7626,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     // * Flag normally false
     public preventSaveToLeo: boolean = false;
+    private _errorRefreshFlag: boolean = false;
 
     // * Last file read data with the readFile method
     private _lastGnx: string = ""; // gnx of last file read
@@ -14512,6 +14539,12 @@ public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
                 Constants.LEOBRIDGE.GET_COMMANDS
             ).then((p_result: LeoBridgePackage) =&gt; {
                 if (p_result.commands &amp;&amp; p_result.commands.length) {
+                    const w_regexp = new RegExp('\\s+', 'g');
+                    p_result.commands.forEach(p_command =&gt; {
+                        if (p_command.detail) {
+                            p_command.detail = p_command.detail.trim().replace(w_regexp, ' ');
+                        }
+                    });
                     return p_result.commands;
                 } else {
                     return [];
@@ -14601,12 +14634,12 @@ public static VSCODE_COMMANDS = {
 <t tx="felix.20201215210439.1">"view/title": [
   {
     "command": "leointeg.openLeoFile",
-    "when": "view =~ /^leoDocuments/ &amp;&amp; leoBridgeReady",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.newLeoFile",
-    "when": "view =~ /^leoDocuments/ &amp;&amp; leoBridgeReady",
+    "when": "view =~ /^leoIntegration|^leoDocuments/ &amp;&amp; leoBridgeReady",
     "group": "navigation@1"
   },
   {
@@ -14642,16 +14675,6 @@ public static VSCODE_COMMANDS = {
   {
     "command": "leointeg.stopServer",
     "when": "view =~ /^leoIntegration/ &amp;&amp; !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoServerStarted",
-    "group": "navigation@1"
-  },
-  {
-    "command": "leointeg.openLeoFile",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoBridgeReady",
-    "group": "navigation@1"
-  },
-  {
-    "command": "leointeg.newLeoFile",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoBridgeReady",
     "group": "navigation@1"
   },
   {
@@ -15323,7 +15346,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.findNextFromOutline",
   "key": "f3",
-  "when": "leoFindFocus || leoTreeOpened &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.findNext",
@@ -15333,7 +15356,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.findPreviousFromOutline",
   "key": "f2",
-  "when": "leoFindFocus || leoTreeOpened &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; !editorTextFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
 },
 {
   "command": "leointeg.findPrevious",
@@ -15385,7 +15408,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.setFindSuboutlineOnlyOption",
   "key": "ctrl+alt+s",
   "mac": "cmd+alt+s",
-  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.toggleFindIgnoreCaseOption",
@@ -15397,7 +15420,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.toggleFindMarkChangesOption",
   "key": "ctrl+alt+c",
   "mac": "cmd+alt+c",
-  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.toggleFindMarkFindsOption",
@@ -15409,7 +15432,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.toggleFindRegexpOption",
   "key": "ctrl+alt+x",
   "mac": "cmd+alt+x",
-  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.toggleFindWordOption",
@@ -15421,7 +15444,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.toggleFindSearchBodyOption",
   "key": "ctrl+alt+b",
   "mac": "cmd+alt+b",
-  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.toggleFindSearchHeadlineOption",
@@ -17249,7 +17272,7 @@ private _bodySaveDeactivate(
 <t tx="felix.20210812004050.1">{
   "command": "workbench.files.action.collapseExplorerFolders",
   "key": "alt+-",
-  "when": "!inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme != leo || !inSearchEditor &amp;&amp; explorerViewletFocus"
+  "when": "!inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme == untitled || !inSearchEditor &amp;&amp; !sideBarFocus &amp;&amp; resourceScheme == file || !inSearchEditor &amp;&amp; explorerViewletFocus"
 }
 </t>
 <t tx="felix.20210816230003.1">## 0.1.17
@@ -21689,6 +21712,24 @@ class TerminateServer(Exception):  # pragma: no cover
     # uses the __version__ global constant and the v1, v2, v3 global version numbers
     result = {"version": __version__ , "major": v1, "minor": v2, "patch": v3}
     return self._make_minimal_response(result)
+</t>
+<t tx="felix.20211129222933.1">private _tryFullRefresh(): void {
+    this._errorRefreshFlag = true;
+    this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
+        .then((p_package) =&gt; {
+            // refresh and reveal selection
+            const w_node = this._leoIntegration.apToLeoNode(p_package.node!);
+            this._leoIntegration.lastSelectedNode = w_node;
+            this._leoIntegration.showOutline();
+            // ! maybe overkill
+            this._leoIntegration.launchRefresh(
+                { tree: true, body: true, states: true, buttons: true, documents: true },
+                false,
+                p_package.node
+            );
+        });
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

@@ -113,11 +113,14 @@ export class LeoAsync {
                 w_sendResultPromise.then(() => {
                     //  this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
-                })
-                    .then((p_package) => {
-                        // refresh and reveal selection
-                        this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
-                    });
+                }).then((p_package) => {
+                    // refresh and reveal selection
+                    this._leoIntegration.launchRefresh(
+                        { tree: true, body: true, states: true, buttons: true, documents: true },
+                        false,
+                        p_package.node
+                    );
+                });
             }
         });
     }
