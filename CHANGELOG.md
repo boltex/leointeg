@@ -1,10 +1,22 @@
 # Change Log
 
+## 1.0.4
+
+- Fixed typos and small bugs.
+- Fixed refresh type for mark/unmark node.
+- Fixed bug that prevented context some menu items on \@\<files\> nodes and other special nodes.
+- Added Write (dirty) \@\<file\> commands and keybindings.
+- Fixed flags and icons shown above the body pane for hoist/dehoist commands.
+- Fixed 'clean/dirty' state of leo body documents with the 'triggerBodySave' method which makes sure the body text is sent to the leo server before anything would close or destroy the body pane. (when focusing on another document or outside of vscode, etc.)
+- Fixed "view welcome-content" of outline for contexts before the bridge is connected, and settings were changed. (e.g. when auto start and/or auto-connect were off at startup)
+- Fixed Leo's comment/code blocks directives "@doc"/"@code" and their shorthand versions "@"/"@c".
+- Fixed color syntax to match Leo's PR #2303 which removes @raw and @end_raw and adds @section-delims.
+
 ## 1.0.3
 
 - Fixed 'F3' bug: findNext didn't trigger because the context was not (re)set properly on focus-out from the 'find panel'.
 - Changed all context 'when' clauses to be more 'precise & unique' in relation to other extensions, such as leojs.
-- Added the reStructuredText (rest) .rst language support (syntax coloring and snippets)
+- Added the reStructuredText (rest) .rst language support. (syntax coloring and snippets)
 - Fixed at-button panel to refresh after adding a button
 - Added 'Goto Script' command to the context menu of at-buttons, to 'find and goto' the source node of the button script.
 

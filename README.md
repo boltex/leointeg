@@ -208,6 +208,7 @@ and using the node's gnx as identifier.
 - [Arjan](https://github.com/ar-jan) for his suggestions and ideas
 - [Thomas](https://github.com/tbpassin) for his contributions and support
 - [Viktor](https://github.com/ranvik14) for his contributions and support
+- [Gaurami](https://github.com/ATikhonov2) for his suggestions, bug reports and support
 
 ---
 

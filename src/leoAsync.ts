@@ -113,11 +113,14 @@ export class LeoAsync {
                 w_sendResultPromise.then(() => {
                     //  this._leoIntegration.launchRefresh({ tree: true, body: true, buttons: true, states: true, documents: true }, false);
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
-                })
-                    .then((p_package) => {
-                        // refresh and reveal selection
-                        this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
-                    });
+                }).then((p_package) => {
+                    // refresh and reveal selection
+                    this._leoIntegration.launchRefresh(
+                        { tree: true, body: true, states: true, buttons: true, documents: true },
+                        false,
+                        p_package.node
+                    );
+                });
             }
         });
     }
@@ -143,25 +146,27 @@ export class LeoAsync {
      * @param p_infoArg an async package object { "message": string; }
      */
     public showChangesDetectedInfoMessage(p_infoArg: runInfoMessageDialogParameters): void {
-        let w_message = Constants.USER_MESSAGES.CHANGES_DETECTED;
+        let w_message = "";
         switch (p_infoArg.message) {
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_REFRESHED:
-                w_message += Constants.USER_MESSAGES.REFRESHED;
-
-                // this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false);
+                w_message = Constants.USER_MESSAGES.CHANGES_DETECTED + Constants.USER_MESSAGES.REFRESHED;
 
                 this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                     .then((p_package) => {
                         // refresh and reveal selection
-                        this._leoIntegration.launchRefresh({ tree: true, body: true, states: true, documents: true }, false, p_package.node);
+                        this._leoIntegration.launchRefresh(
+                            { tree: true, body: true, states: true, buttons: true, documents: true },
+                            false,
+                            p_package.node
+                        );
                     });
 
                 break;
             case Constants.ASYNC_INFO_MESSAGE_CODES.ASYNC_IGNORED:
-                w_message += Constants.USER_MESSAGES.IGNORED;
+                w_message = Constants.USER_MESSAGES.CHANGES_DETECTED + Constants.USER_MESSAGES.IGNORED;
                 break;
             default:
-                w_message = w_message + " " + p_infoArg.message;
+                w_message = p_infoArg.message;
                 break;
         }
         vscode.window.showInformationMessage(w_message);

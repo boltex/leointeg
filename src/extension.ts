@@ -16,6 +16,8 @@ var LeoInteg: LeoIntegration | undefined = undefined;
  */
 export function activate(p_context: vscode.ExtensionContext) {
 
+    const w_start = process.hrtime(); // For calculating total startup time duration
+
     // * Reset Extension context flags (used in 'when' clauses in package.json)
     utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, false); // Connected to a leobridge server?
     utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, false); // Having a Leo file opened on that server?
@@ -28,26 +30,26 @@ export function activate(p_context: vscode.ExtensionContext) {
     }
     const w_leoSettingsWebview: LeoSettingsProvider = w_leo.leoSettingsWebview;
     const w_previousVersion = p_context.globalState.get<string>(Constants.VERSION_STATE_KEY);
-    const w_start = process.hrtime(); // For calculating total startup time duration
 
     // Shortcut pointers for readability
     const U = undefined;
     const BRIDGE = Constants.LEOBRIDGE;
     const CMD = Constants.COMMANDS;
+    // * Refresh helper variables: 'states' refresh will also refresh documents pane.
     const NO_REFRESH: ReqRefresh = {};
     const REFRESH_NODE_BODY: ReqRefresh = {
         node: true, // Reveal the returned 'selected position' without changes to the tree
         body: true, // Goto/select another node needs the body pane refreshed
-        states: true
+        states: true // * Also refreshes documents pane if node's 'changed' state differ.
     };
     const REFRESH_TREE: ReqRefresh = {
         tree: true,
-        states: true
+        states: true // * Also refreshes documents pane if node's 'changed' state differ.
     };
     const REFRESH_TREE_BODY: ReqRefresh = {
         tree: true,
         body: true,
-        states: true
+        states: true // * Also refreshes documents pane if node's 'changed' state differ.
     };
 
     const w_commands: [string, (...args: any[]) => any][] = [
@@ -106,6 +108,32 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
+
+        [CMD.WRITE_AT_FILE_NODES, () => w_leo.nodeCommand({
+            action: BRIDGE.WRITE_AT_FILE_NODES,
+            node: U,
+            refreshType: REFRESH_TREE,
+            fromOutline: false
+        })],
+        [CMD.WRITE_AT_FILE_NODES_FO, () => w_leo.nodeCommand({
+            action: BRIDGE.WRITE_AT_FILE_NODES,
+            node: U,
+            refreshType: REFRESH_TREE,
+            fromOutline: true
+        })],
+        [CMD.WRITE_DIRTY_AT_FILE_NODES, () => w_leo.nodeCommand({
+            action: BRIDGE.WRITE_DIRTY_AT_FILE_NODES,
+            node: U,
+            refreshType: REFRESH_TREE,
+            fromOutline: false
+        })],
+        [CMD.WRITE_DIRTY_AT_FILE_NODES_FO, () => w_leo.nodeCommand({
+            action: BRIDGE.WRITE_DIRTY_AT_FILE_NODES,
+            node: U,
+            refreshType: REFRESH_TREE,
+            fromOutline: true
+        })],
+
         [CMD.GIT_DIFF, () => w_leo.nodeCommand({
             action: BRIDGE.GIT_DIFF,
             node: U,
@@ -694,10 +722,10 @@ export function activate(p_context: vscode.ExtensionContext) {
             w_leo.startNetworkServices();
             // Save version # for next startup comparison
             p_context.globalState.update(Constants.VERSION_STATE_KEY, w_leoIntegVersion);
-            
+
             // * Log time taken for startup
             // console.log('leoInteg startup launched in ', utils.getDurationMs(w_start), 'ms');
-            
+
         });
 }
 

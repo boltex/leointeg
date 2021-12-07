@@ -4,12 +4,6 @@
     "injectionSelector": "L:source.leobody",
     "patterns": [
         {
-            "include": "#leo-comments"
-        },
-        {
-            "include": "#leo-raw"
-        },
-        {
             "include": "#leo-sectionref"
         },
         {
@@ -17,29 +11,35 @@
         },
         {
             "include": "#leo-languages"
+        },
+        {
+            "include": "#leo-section-delims"
+        },
+        {
+            "include": "#leo-comments"
         }
     ],
     "repository": {
         "leo-comments": {
             "patterns": [
                 {
+                    "name": "comment.block.leobody",
                     "begin": "^(@doc|@)($|\\s+)",
-                    "end": "^(@code|@c)($|\\s+)",
                     "beginCaptures": {
-                        "0": {
+                        "1": {
                             "name": "keyword"
                         }
                     },
+                    "end": "^(@code|@c)($|\\s+)",
                     "endCaptures": {
-                        "0": {
+                        "1": {
                             "name": "keyword"
                         }
-                    },
-                    "name": "comment"
+                    }
                 }
             ]
         },
-        "leo-raw": {
+        "leo-section-delims": {
             "patterns": [
                 {
                     "begin": "^(@raw)($|\\s+)",
@@ -87,7 +87,7 @@
                     "name": "keyword"
                 },
                 {
-                    "match": "^(@c|@code|@encoding|@ignore|@lineending|@path|@pagewidth|@tabwidth)($|\\s+)",
+                    "match": "^(@encoding|@ignore|@lineending|@path|@pagewidth|@tabwidth)($|\\s+)",
                     "name": "keyword"
                 },
                 {
@@ -96,6 +96,10 @@
                 },
                 {
                     "match": "^(@first|@last)($|\\s+)",
+                    "name": "keyword"
+                },
+                {
+                    "match": "^(@section-delims)($|\\s+)",
                     "name": "keyword"
                 },
                 {

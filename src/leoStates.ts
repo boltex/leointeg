@@ -12,6 +12,26 @@ import { LeoPackageStates } from "./types";
  */
 export class LeoStates {
 
+    // * Currently establishing connection to a server
+    private _leoConnecting: boolean = false;
+    get leoConnecting(): boolean {
+        return this._leoConnecting;
+    }
+    set leoConnecting(p_value: boolean) {
+        this._leoConnecting = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.CONNECTING, p_value);
+    }
+
+    // * Finished startup check for server-start and auto-connect
+    private _leoStartupFinished: boolean = false;
+    get leoStartupFinished(): boolean {
+        return this._leoStartupFinished;
+    }
+    set leoStartupFinished(p_value: boolean) {
+        this._leoStartupFinished = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.STARTUP_FINISHED, p_value);
+    }
+
     // * Connected to a Leo bridge server
     private _leoBridgeReady: boolean = false;
     get leoBridgeReady(): boolean {
@@ -180,7 +200,7 @@ export class LeoStates {
     ) { }
 
     public setSelectedNodeFlags(p_node: LeoNode): void {
-        this.leoRoot = false; // * RESET the root flag : It is set by vscode instead right after getting list of children for root of outline
+        this.leoRoot = p_node.isRoot; // * ALSO set in setRoot of LeoNode class
         this.leoMarked = p_node.marked;
         this.leoCloned = p_node.cloned;
         this.leoDirty = p_node.dirty;
@@ -190,7 +210,7 @@ export class LeoStates {
     }
 
     public setLeoStateFlags(p_states: LeoPackageStates): void {
-        this.leoChanged = p_states.changed;
+        this.leoChanged = p_states.changed; // Documents will be refresh if this changes
         this.leoCanUndo = p_states.canUndo;
         this.leoCanRedo = p_states.canRedo;
         this.leoCanDemote = p_states.canDemote;

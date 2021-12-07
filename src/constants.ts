@@ -49,6 +49,7 @@ export class Constants {
     public static BUTTONS_DEBOUNCE_DELAY: number = 80;
     public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
     public static STATES_DEBOUNCE_DELAY: number = 100;
+    public static BODY_STATES_DEBOUNCE_DELAY: number = 200;
 
     public static LOG_ALERT_COLOR: string = 'red';
 
@@ -294,6 +295,8 @@ export class Constants {
      */
     public static CONTEXT_FLAGS = {
         // Main flags for connection and opened file
+        STARTUP_FINISHED: "leoStartupFinished", // Initial extension finished auto-server-start-connect
+        CONNECTING: "leoConnecting", // Initial extension finished auto-server-start-connect
         BRIDGE_READY: "leoBridgeReady", // Connected to leoBridge
         TREE_OPENED: "leoTreeOpened", // At least one Leo file opened
         TREE_TITLED: "leoTreeTitled", // Tree is a Leo file and not a new untitled document
@@ -407,6 +410,10 @@ export class Constants {
 
     /**
      * * Commands for leobridgeserver.py
+     * A Command is a string, which is either:
+     *  - The name of public method in leoserver.py, prefixed with '!'.
+     *  - The name of a Leo command, prefixed with '-'
+     *  - The name of a method of a Leo class, without prefix.
      */
     public static LEOBRIDGE = {
         TEST: "!test",
@@ -429,8 +436,11 @@ export class Constants {
         SET_HEADLINE: "!set_headline", // "setNewHeadline",
         EXPAND_NODE: "!expand_node", // "expandNode",
         COLLAPSE_NODE: "!contract_node", // "collapseNode",
-        CONTRACT_ALL: "contractAllHeadlines", // * Direct Leo Command
+        CONTRACT_ALL: "contractAllHeadlines",
         GET_STATES: "!get_ui_states", // "getStates",
+        GET_UA: "!get_ua",
+        SET_UA_MEMBER: "!set_ua_member",
+        SET_UA: "!set_ua",
         // * Leo Documents
         GET_OPENED_FILES: "!get_all_open_commanders", //"getOpenedFiles",
         SET_OPENED_FILE: "!set_opened_file", // "setOpenedFile",
@@ -447,53 +457,55 @@ export class Constants {
         // * Goto operations
         PAGE_UP: "!page_up", // "pageUp",
         PAGE_DOWN: "!page_down", // "pageDown",
-        GOTO_FIRST_VISIBLE: "goToFirstVisibleNode", // * Direct Leo Command
-        GOTO_LAST_VISIBLE: "goToLastVisibleNode", // * Direct Leo Command
-        GOTO_LAST_SIBLING: "goToLastSibling", // * Direct Leo Command
-        GOTO_NEXT_VISIBLE: "selectVisNext", // * Direct Leo Command
-        GOTO_PREV_VISIBLE: "selectVisBack", // * Direct Leo Command
-        GOTO_NEXT_MARKED: "goToNextMarkedHeadline", // * Direct Leo Command
-        GOTO_NEXT_CLONE: "goToNextClone", // * Direct Leo Command
-        CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent", // * Direct Leo Command
-        EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild", // * Direct Leo Command
+        GOTO_FIRST_VISIBLE: "goToFirstVisibleNode",
+        GOTO_LAST_VISIBLE: "goToLastVisibleNode",
+        GOTO_LAST_SIBLING: "goToLastSibling",
+        GOTO_NEXT_VISIBLE: "selectVisNext",
+        GOTO_PREV_VISIBLE: "selectVisBack",
+        GOTO_NEXT_MARKED: "goToNextMarkedHeadline",
+        GOTO_NEXT_CLONE: "goToNextClone",
+        CONTRACT_OR_GO_LEFT: "contractNodeOrGoToParent",
+        EXPAND_AND_GO_RIGHT: "expandNodeAndGoToFirstChild",
         // * Leo Operations
         MARK_PNODE: "!mark_node", // "markPNode",
         UNMARK_PNODE: "!unmark_node", // "unmarkPNode",
-        COPY_PNODE: "copyOutline", // * Direct Leo Command
+        COPY_PNODE: "copyOutline",
         CUT_PNODE: "!cut_node", // "cutPNode",
-        PASTE_PNODE: "pasteOutline", // * Direct Leo Command
-        PASTE_CLONE_PNODE: "pasteOutlineRetainingClones", // * Direct Leo Command
+        PASTE_PNODE: "pasteOutline",
+        PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
         DELETE_PNODE: "!delete_node", // "deletePNode",
-        MOVE_PNODE_DOWN: "moveOutlineDown", // * Direct Leo Command
-        MOVE_PNODE_LEFT: "moveOutlineLeft", // * Direct Leo Command
-        MOVE_PNODE_RIGHT: "moveOutlineRight", // * Direct Leo Command
-        MOVE_PNODE_UP: "moveOutlineUp", // * Direct Leo Command
+        MOVE_PNODE_DOWN: "moveOutlineDown",
+        MOVE_PNODE_LEFT: "moveOutlineLeft",
+        MOVE_PNODE_RIGHT: "moveOutlineRight",
+        MOVE_PNODE_UP: "moveOutlineUp",
         INSERT_PNODE: "!insert_node", // "insertPNode",
         INSERT_NAMED_PNODE: "!insert_named_node", // "insertNamedPNode",
         INSERT_CHILD_PNODE: "!insert_child_node",
         INSERT_CHILD_NAMED_PNODE: "!insert_child_named_node",
         CLONE_PNODE: "!clone_node", // "clonePNode",
-        PROMOTE_PNODE: "promote", // * Direct Leo Command
-        DEMOTE_PNODE: "demote", // * Direct Leo Command
-        REFRESH_FROM_DISK_PNODE: "refreshFromDisk", // * Direct Leo Command
-        SORT_CHILDREN: "sortChildren", // * Direct Leo Command
-        SORT_SIBLINGS: "sortSiblings", // * Direct Leo Command
+        PROMOTE_PNODE: "promote",
+        DEMOTE_PNODE: "demote",
+        REFRESH_FROM_DISK_PNODE: "refreshFromDisk",
+        WRITE_AT_FILE_NODES: '-write-at-file-nodes',
+        WRITE_DIRTY_AT_FILE_NODES: '-write-dirty-at-file-nodes',
+        SORT_CHILDREN: "sortChildren",
+        SORT_SIBLINGS: "sortSiblings",
         UNDO: "!undo",
         REDO: "!redo",
-        EXECUTE_SCRIPT: "executeScript", // * Direct Leo Command
-        HOIST_PNODE: "hoist", // * Direct Leo Command
-        DEHOIST: "dehoist", // * Direct Leo Command
-        EXTRACT: "extract", // * Direct Leo Command
-        EXTRACT_NAMES: "extractSectionNames", // * Direct Leo Command
-        COPY_MARKED: "copyMarked", // * Direct Leo Command
-        DIFF_MARKED_NODES: "deleteMarked", // * Direct Leo Command
-        MARK_CHANGED_ITEMS: "markChangedHeadlines", // * Direct Leo Command
-        MARK_SUBHEADS: "markSubheads", // * Direct Leo Command
-        UNMARK_ALL: "unmarkAll", // * Direct Leo Command
-        CLONE_MARKED_NODES: "cloneMarked", // * Direct Leo Command
-        DELETE_MARKED_NODES: "deleteMarked", // * Direct Leo Command
-        MOVE_MARKED_NODES: "moveMarked", // * Direct Leo Command
-        GIT_DIFF: "gitDiff", // * Direct Leo Command
+        EXECUTE_SCRIPT: "executeScript",
+        HOIST_PNODE: "hoist",
+        DEHOIST: "dehoist",
+        EXTRACT: "extract",
+        EXTRACT_NAMES: "extractSectionNames",
+        COPY_MARKED: "copyMarked",
+        DIFF_MARKED_NODES: "-diff-marked-nodes",
+        MARK_CHANGED_ITEMS: "markChangedHeadlines",
+        MARK_SUBHEADS: "markSubheads",
+        UNMARK_ALL: "unmarkAll",
+        CLONE_MARKED_NODES: "cloneMarked",
+        DELETE_MARKED_NODES: "deleteMarked",
+        MOVE_MARKED_NODES: "moveMarked",
+        GIT_DIFF: "gitDiff",
         GET_FOCUS: "!get_focus",
         GET_SEARCH_SETTINGS: "!get_search_settings",
         SET_SEARCH_SETTINGS: "!set_search_settings",
@@ -513,8 +525,8 @@ export class Constants {
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
         CLONE_FIND_MARKED: "!clone_find_all_marked",
         CLONE_FIND_FLATTENED_MARKED: "!clone_find_all_flattened_marked",
-        GOTO_PREV_HISTORY: "goToPrevHistory", // * Direct Leo Command
-        GOTO_NEXT_HISTORY: "goToNextHistory" // * Direct Leo Command
+        GOTO_PREV_HISTORY: "goToPrevHistory",
+        GOTO_NEXT_HISTORY: "goToNextHistory"
     };
 
     /**
@@ -605,6 +617,10 @@ export class Constants {
         PROMOTE: Constants.NAME + ".promote",
         DEMOTE: Constants.NAME + ".demote",
         REFRESH_FROM_DISK: Constants.NAME + ".refreshFromDisk",
+        WRITE_AT_FILE_NODES: Constants.NAME + ".writeAtFileNodes",
+        WRITE_AT_FILE_NODES_FO: Constants.NAME + ".writeAtFileNodesFromOutline",
+        WRITE_DIRTY_AT_FILE_NODES: Constants.NAME + ".writeDirtyAtFileNodes",
+        WRITE_DIRTY_AT_FILE_NODES_FO: Constants.NAME + ".writeDirtyAtFileNodesFromOutline",
         // * Commands from keyboard, while focus on BODY (command-palette returns to BODY for now)
         MARK_SELECTION: Constants.NAME + ".markSelection",
         UNMARK_SELECTION: Constants.NAME + ".unmarkSelection",

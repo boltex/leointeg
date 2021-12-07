@@ -13,6 +13,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
 
     // * Flag normally false
     public preventSaveToLeo: boolean = false;
+    private _errorRefreshFlag: boolean = false;
 
     // * Last file read data with the readFile method
     private _lastGnx: string = ""; // gnx of last file read
@@ -151,6 +152,9 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                     console.error("readFile: ERROR File not in _openedBodiesGnx! readFile missing refreshes?");
                     // throw vscode.FileSystemError.FileNotFound();
                     // (Instead of FileNotFound) should be caught by _onActiveEditorChanged or _changedVisibleTextEditors
+                    if (!this._errorRefreshFlag) {
+                        this._tryFullRefresh();
+                    }
                     return Promise.resolve(Buffer.from(""));
                 } else {
                     return this._leoIntegration.sendAction(
@@ -158,6 +162,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                         JSON.stringify({ "gnx": w_gnx })
                     ).then((p_result) => {
                         if (p_result.body) {
+                            this._errorRefreshFlag = false; // got body so reset possible flag!
                             this._lastGnx = w_gnx;
                             this._lastBodyData = p_result.body;
                             const w_buffer: Uint8Array = Buffer.from(p_result.body);
@@ -169,10 +174,12 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                             this._lastBodyData = "";
                             return Promise.resolve(Buffer.from(""));
                         } else {
+                            if (!this._errorRefreshFlag) {
+                                this._tryFullRefresh();
+                            }
                             if (this._lastGnx === w_gnx) {
                                 // was last gnx of closed file about to be switched to new document selected
                                 console.log('Passed in not found: ' + w_gnx);
-
                                 return Promise.resolve(Buffer.from(this._lastBodyData));
                             }
                             console.error("ERROR => readFile of unknown GNX"); // is possibleGnxList updated correctly?
@@ -252,6 +259,23 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
     public copy(p_uri: vscode.Uri): void {
         console.warn('Called copy on ', p_uri.fsPath); // should not happen
         throw vscode.FileSystemError.NoPermissions();
+    }
+
+    private _tryFullRefresh(): void {
+        this._errorRefreshFlag = true;
+        this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
+            .then((p_package) => {
+                // refresh and reveal selection
+                const w_node = this._leoIntegration.apToLeoNode(p_package.node!);
+                this._leoIntegration.lastSelectedNode = w_node;
+                this._leoIntegration.showOutline();
+                // ! maybe overkill
+                this._leoIntegration.launchRefresh(
+                    { tree: true, body: true, states: true, buttons: true, documents: true },
+                    false,
+                    p_package.node
+                );
+            });
     }
 
     private _fireSoon(...p_events: vscode.FileChangeEvent[]): void {
