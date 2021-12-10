@@ -8564,6 +8564,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider&lt;LeoNode&gt
 
     readonly onDidChangeTreeData: vscode.Event&lt;LeoNode | undefined&gt; = this._onDidChangeTreeData.event;
 
+    private _rootNode: LeoNode | undefined;
+
     constructor(private _leoIntegration: LeoIntegration) { }
 
     @others
@@ -8574,6 +8576,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider&lt;LeoNode&gt
  */
 public refreshTreeRoot(): void {
     // TODO : have this return a promise that resolves when the selected node is encountered by ap_to_p
+    this._rootNode = undefined;
     this._onDidChangeTreeData.fire(undefined);
 }
 
@@ -8600,7 +8603,8 @@ public refreshTreeRoot(): void {
         ).then((p_package: LeoBridgePackage) =&gt; {
             const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
             if (w_nodes &amp;&amp; w_nodes.length === 1) {
-                w_nodes[0].setRoot();
+                this._rootNode = w_nodes[0];
+                this._rootNode.setRoot();
             }
             return w_nodes;
         });
@@ -8617,7 +8621,21 @@ public refreshTreeRoot(): void {
     // ! Parent asked for this way will go up till root and effectively refresh whole tree.
     // console.log('ERROR! GET PARENT CALLED! on: ', element.label);
 
+
+
     if (this._leoIntegration.leoStates.fileOpenedReady) {
+        console.log('get parent ' + element.label + ' IS ROOT: ', element.apJson === this._rootNode!.apJson);
+        if (this._rootNode &amp;&amp; element.label === this._rootNode.label) {
+            console.log('same label');
+            console.log(element.apJson);
+            console.log(this._rootNode.apJson);
+        }
+        if (this._rootNode &amp;&amp; element.apJson === this._rootNode.apJson) {
+            console.log(element.label + " is root!");
+
+            return null; // Default gives no parent
+        }
+
         return this._leoIntegration.sendAction(
             Constants.LEOBRIDGE.GET_PARENT,
             element ? utils.buildNodeCommandJson(element.apJson) : "{}"
@@ -11061,13 +11079,12 @@ public apToLeoNode(
     p_revealSelected?: boolean,
     p_specificNode?: LeoNode
 ): LeoNode {
-    const w_callerStrings: string[] = (new Error()).stack!.split("\n")[2].trim().split(" ")[1].split("/");
-    const w_caller: string = w_callerStrings[w_callerStrings.length - 1].split(":")[0];
-    console.log(
-        'making: ' + p_ap.headline + ' stack : ' + p_ap.stack.length +
-        " from " + w_caller
-
-    );
+    // const w_callerStrings: string[] = (new Error()).stack!.split("\n")[2].trim().split(" ")[1].split("/");
+    // const w_caller: string = w_callerStrings[w_callerStrings.length - 1].split(":")[0];
+    // console.log(
+    //     'making: ' + p_ap.headline + ' stack : ' + p_ap.stack.length +
+    //     " from " + w_caller
+    // );
 
     let w_collapse: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
     if (p_ap.hasChildren) {
