@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20211210001626.1"><vh>1.0.5</vh></v>
 <v t="felix.20211018004333.1"><vh>1.0.4</vh></v>
 <v t="felix.20211007215423.1"><vh>1.0.3</vh></v>
 <v t="felix.20210928231455.1"><vh>1.0.2</vh></v>
@@ -2441,7 +2442,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "author": {
     "name": "Félix"
   },
@@ -8619,21 +8620,15 @@ public refreshTreeRoot(): void {
 
     // ! Might be called if nodes are revealed while in vscode's refresh process
     // ! Parent asked for this way will go up till root and effectively refresh whole tree.
-    // console.log('ERROR! GET PARENT CALLED! on: ', element.label);
-
-
-
     if (this._leoIntegration.leoStates.fileOpenedReady) {
-        console.log('get parent ' + element.label + ' IS ROOT: ', element.apJson === this._rootNode!.apJson);
-        if (this._rootNode &amp;&amp; element.label === this._rootNode.label) {
-            console.log('same label');
-            console.log(element.apJson);
-            console.log(this._rootNode.apJson);
-        }
-        if (this._rootNode &amp;&amp; element.apJson === this._rootNode.apJson) {
-            console.log(element.label + " is root!");
-
-            return null; // Default gives no parent
+        // Check if joisted and is already up to root node
+        if (this._rootNode &amp;&amp; element.gnx === this._rootNode.gnx &amp;&amp; element.childIndex === this._rootNode.childIndex) {
+            if (
+                JSON.stringify(JSON.parse(this._rootNode.apJson).stack) ===
+                JSON.stringify(JSON.parse(element.apJson).stack)
+            ) {
+                return null; // Default gives no parent
+            }
         }
 
         return this._leoIntegration.sendAction(
@@ -11079,12 +11074,6 @@ public apToLeoNode(
     p_revealSelected?: boolean,
     p_specificNode?: LeoNode
 ): LeoNode {
-    // const w_callerStrings: string[] = (new Error()).stack!.split("\n")[2].trim().split(" ")[1].split("/");
-    // const w_caller: string = w_callerStrings[w_callerStrings.length - 1].split(":")[0];
-    // console.log(
-    //     'making: ' + p_ap.headline + ' stack : ' + p_ap.stack.length +
-    //     " from " + w_caller
-    // );
 
     let w_collapse: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
     if (p_ap.hasChildren) {
@@ -21755,6 +21744,11 @@ class TerminateServer(Exception):  # pragma: no cover
             );
         });
 }
+
+</t>
+<t tx="felix.20211210001626.1">## 1.0.5
+
+- Fixed bug where the selection could not change (visual update in outline) when hoisted on a node deeper than top-level of tree (sibling of root node).
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
