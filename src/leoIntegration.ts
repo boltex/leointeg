@@ -1669,6 +1669,13 @@ export class LeoIntegration {
         p_revealSelected?: boolean,
         p_specificNode?: LeoNode
     ): LeoNode {
+        const w_callerStrings: string[] = (new Error()).stack!.split("\n")[2].trim().split(" ")[1].split("/");
+        const w_caller: string = w_callerStrings[w_callerStrings.length - 1].split(":")[0];
+        console.log(
+            'making: ' + p_ap.headline + ' stack : ' + p_ap.stack.length +
+            " from " + w_caller
+        );
+
         let w_collapse: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
         if (p_ap.hasChildren) {
             w_collapse = p_ap.expanded

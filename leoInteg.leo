@@ -11061,6 +11061,14 @@ public apToLeoNode(
     p_revealSelected?: boolean,
     p_specificNode?: LeoNode
 ): LeoNode {
+    const w_callerStrings: string[] = (new Error()).stack!.split("\n")[2].trim().split(" ")[1].split("/");
+    const w_caller: string = w_callerStrings[w_callerStrings.length - 1].split(":")[0];
+    console.log(
+        'making: ' + p_ap.headline + ' stack : ' + p_ap.stack.length +
+        " from " + w_caller
+
+    );
+
     let w_collapse: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
     if (p_ap.hasChildren) {
         w_collapse = p_ap.expanded
@@ -22635,7 +22643,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.4&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.5&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden "
@@ -22646,7 +22654,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 1.0.4
+            See What's New in LeoInteg 1.0.5
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
