@@ -1669,7 +1669,6 @@ export class LeoIntegration {
         p_revealSelected?: boolean,
         p_specificNode?: LeoNode
     ): LeoNode {
-
         let w_collapse: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
         if (p_ap.hasChildren) {
             w_collapse = p_ap.expanded
