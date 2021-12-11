@@ -318,6 +318,7 @@
 <v t="felix.20210621233316.45"><vh>server.get_position_data</vh></v>
 <v t="felix.20210621233316.46"><vh>server.get_ua</vh></v>
 <v t="felix.20210621233316.48"><vh>server.get_ui_states</vh></v>
+<v t="felix.20211210213603.1"><vh>server.get_undos</vh></v>
 </v>
 <v t="felix.20210621233316.49"><vh>server:node commands</vh>
 <v t="felix.20210621233316.50"><vh>server.clone_node</vh></v>
@@ -21749,6 +21750,20 @@ public debouncedRefreshBodyStates() {
 
 - Fixed bug where the selection could not change (visual update in outline) when hoisted on a node deeper than top-level of tree (sibling of root node).
 
+</t>
+<t tx="felix.20211210213603.1">def get_undos(self, param):
+    """Return list of undo operations"""
+    c = self._check_c()
+    undoer = c.undoer
+    undos = []
+    try:
+        for bead in undoer.beads:
+            undos.append(bead.undoType)
+        response = {"bead": undoer.bead, "undos": undos}
+    except Exception:  # pragma: no cover
+        response = {"bead": 0, "undos": []}
+    # _make_response adds all the cheap redraw data.
+    return self._make_response(response)
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
