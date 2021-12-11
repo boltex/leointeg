@@ -3572,6 +3572,12 @@ export class LeoIntegration {
     public test(p_fromOutline?: boolean): Thenable<unknown> {
         // return this.statusBarOnClick();
 
+        // this.sendAction(
+        //     "!get_undos", JSON.stringify({ something: "not used" })
+        // ).then((p_result: LeoBridgePackage) => {
+        //     console.log('got back undos: ', p_result);
+        // });
+
         // vscode.commands.executeCommand(Constants.COMMANDS.MARK_SELECTION)
         //     .then((p_result) => {
         //         console.log(

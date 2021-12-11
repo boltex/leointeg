@@ -12310,6 +12310,12 @@ public startServer(): void {
 public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
     // return this.statusBarOnClick();
 
+    // this.sendAction(
+    //     "!get_undos", JSON.stringify({ something: "not used" })
+    // ).then((p_result: LeoBridgePackage) =&gt; {
+    //     console.log('got back undos: ', p_result);
+    // });
+
     // vscode.commands.executeCommand(Constants.COMMANDS.MARK_SELECTION)
     //     .then((p_result) =&gt; {
     //         console.log(
