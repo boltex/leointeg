@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.5
+
+- Fixed bug where the selection could not change (visual update in outline) when hoisted on a node deeper than top-level of tree (sibling of root node).
+
 ## 1.0.4
 
 - Fixed typos and small bugs.

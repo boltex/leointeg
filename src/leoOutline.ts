@@ -15,6 +15,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     readonly onDidChangeTreeData: vscode.Event<LeoNode | undefined> = this._onDidChangeTreeData.event;
 
+    private _rootNode: LeoNode | undefined;
+
     constructor(private _leoIntegration: LeoIntegration) { }
 
     /**
@@ -22,6 +24,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
      */
     public refreshTreeRoot(): void {
         // TODO : have this return a promise that resolves when the selected node is encountered by ap_to_p
+        this._rootNode = undefined;
         this._onDidChangeTreeData.fire(undefined);
     }
 
@@ -46,7 +49,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
             ).then((p_package: LeoBridgePackage) => {
                 const w_nodes = this._leoIntegration.arrayToLeoNodesArray(p_package.children!);
                 if (w_nodes && w_nodes.length === 1) {
-                    w_nodes[0].setRoot();
+                    this._rootNode = w_nodes[0];
+                    this._rootNode.setRoot();
                 }
                 return w_nodes;
             });
@@ -60,9 +64,17 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
         // ! Might be called if nodes are revealed while in vscode's refresh process
         // ! Parent asked for this way will go up till root and effectively refresh whole tree.
-        // console.log('ERROR! GET PARENT CALLED! on: ', element.label);
-
         if (this._leoIntegration.leoStates.fileOpenedReady) {
+            // Check if joisted and is already up to root node
+            if (this._rootNode && element.gnx === this._rootNode.gnx && element.childIndex === this._rootNode.childIndex) {
+                if (
+                    JSON.stringify(JSON.parse(this._rootNode.apJson).stack) ===
+                    JSON.stringify(JSON.parse(element.apJson).stack)
+                ) {
+                    return null; // Default gives no parent
+                }
+            }
+
             return this._leoIntegration.sendAction(
                 Constants.LEOBRIDGE.GET_PARENT,
                 element ? utils.buildNodeCommandJson(element.apJson) : "{}"
