@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20220216005511.1"><vh>1.0.6</vh></v>
 <v t="felix.20211210001626.1"><vh>1.0.5</vh></v>
 <v t="felix.20211018004333.1"><vh>1.0.4</vh></v>
 <v t="felix.20211007215423.1"><vh>1.0.3</vh></v>
@@ -756,6 +757,7 @@
 <v t="felix.20200719025231.49"><vh>closeBody</vh></v>
 <v t="felix.20210718155134.1"><vh>cleanupBody</vh></v>
 <v t="felix.20200719025231.50"><vh>showBody</vh></v>
+<v t="felix.20220215235325.1"><vh>_setBodyLanguage</vh></v>
 <v t="felix.20211111214657.1"><vh>refreshBodyStates</vh></v>
 <v t="felix.20211111233213.1"><vh>debouncedRefreshBodyStates</vh></v>
 </v>
@@ -2443,7 +2445,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "author": {
     "name": "Félix"
   },
@@ -2454,7 +2456,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.62.0"
+    "vscode": "^1.64.0"
   },
   "keywords": [
     "leo",
@@ -2487,10 +2489,12 @@ print('done')
     "lint": "tslint -p ./"
   },
   "devDependencies": {
+    "@types/debounce": "^1.2.0",
     "@types/glob": "^7.1.3",
     "@types/mocha": "^7.0.2",
+    "@types/murmurhash-js": "^1.0.3",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.62.0",
+    "@types/vscode": "^1.64.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -2514,8 +2518,6 @@ print('done')
     "webpack-cli": "^3.3.12"
   },
   "dependencies": {
-    "@types/debounce": "^1.2.0",
-    "@types/murmurhash-js": "^1.0.3",
     "bufferutil": "^4.0.1",
     "debounce": "^1.2.0",
     "hasbin": "^1.2.3",
@@ -6782,6 +6784,7 @@ public static VERSION_STATE_KEY: string = "leoIntegVersion";
 public static FILE_EXTENSION: string = "leo";
 public static JS_FILE_EXTENSION: string = "leojs";
 
+public static LEO_LANGUAGE_PREFIX: string = "leobody."; // all lowercase
 public static URI_LEO_SCHEME: string = "leo";
 public static URI_FILE_SCHEME: string = "file";
 public static URI_SCHEME_HEADER: string = "leo:/";
@@ -6889,9 +6892,11 @@ public static USER_MESSAGES = {
     NO_ALL: "No to all",
     MINIBUFFER_PROMPT: "Minibuffer Full Command",
     CHANGES_DETECTED: "Changes to external files were detected.",
-    REFRESHED: " Nodes refreshed.", // with voluntary leading space
-    IGNORED: " They were ignored.", // with voluntary leading space
-    TOO_FAST: "leoInteg is busy! " // with voluntary trailing space
+    REFRESHED: " Nodes refreshed.", // with leading space
+    IGNORED: " They were ignored.", // with leading space
+    TOO_FAST: "leoInteg is busy! ", // with trailing space
+    UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
+    LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
 };
 
 </t>
@@ -10507,6 +10512,8 @@ export class LeoIntegration {
     private _bodyTextDocument: vscode.TextDocument | undefined; // Set when selected in tree by user, or opening a Leo file in showBody. and by _locateOpenedBody.
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
 
+    private _languageFlagged: string[] = [];
+
     private _bodyPreviewMode: boolean = true;
 
     private _editorTouched: boolean = false; // Flag for applying editor changes to body when 'icon' state change and 'undo' back to untouched
@@ -11515,18 +11522,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                         utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
                     ) {
                         this._needRefresh = false;
-                        vscode.languages.setTextDocumentLanguage(p_document, w_language).then(
-                            () =&gt; { }, // ok - language found
-                            (p_error) =&gt; {
-                                let w_langName = p_error.toString().split('\n')[0];
-                                if (w_langName.length &gt; 36) {
-                                    w_langName = w_langName.substring(36);
-                                    vscode.window.showInformationMessage(w_langName + " language not yet supported.");
-                                    return;
-                                }
-                                vscode.window.showInformationMessage("Language not yet supported.");
-                            }
-                        );
+                        this._setBodyLanguage(p_document, w_language);
                     } else if (!p_document.isClosed &amp;&amp;
                         this.lastSelectedNode &amp;&amp;
                         utils.leoUriToStr(p_document.uri) !== this.lastSelectedNode.gnx) {
@@ -14623,6 +14619,7 @@ export function getDurationMs(p_start: [number, number]): number {
  */
 public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
     cplusplus: 'cpp',
+    fortran90: 'fortran',
     md: 'markdown',
     rest: 'restructuredtext',
     rst: 'restructuredtext'
@@ -21657,7 +21654,7 @@ public refreshBodyStates(): void {
         // console.log('WRAP: ', w_wrap);
 
         // Replace language string if in 'exceptions' array
-        w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
+        w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
         // Apply language if the selected node is still the same after all those events
         if (this._bodyTextDocument &amp;&amp;
             !this._bodyTextDocument.isClosed &amp;&amp;
@@ -21665,18 +21662,7 @@ public refreshBodyStates(): void {
             w_language !== this._bodyTextDocument.languageId &amp;&amp;
             utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
         ) {
-            vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, w_language).then(
-                () =&gt; { }, // ok - language found
-                (p_error) =&gt; {
-                    let w_langName = p_error.toString().split('\n')[0];
-                    if (w_langName.length &gt; 36) {
-                        w_langName = w_langName.substring(36);
-                        vscode.window.showInformationMessage(w_langName + " language not yet supported.");
-                        return;
-                    }
-                    vscode.window.showInformationMessage("Language not yet supported.");
-                }
-            );
+            this._setBodyLanguage(this._bodyTextDocument, w_language);
         }
     });
 }
@@ -21770,6 +21756,36 @@ public debouncedRefreshBodyStates() {
         response = {"bead": 0, "undos": []}
     # _make_response adds all the cheap redraw data.
     return self._make_response(response)
+</t>
+<t tx="felix.20220215235325.1">/**
+ * * Sets vscode's body-pane editor's language
+ */
+private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): Thenable&lt;vscode.TextDocument&gt; {
+    return vscode.languages.setTextDocumentLanguage(p_document, p_language).then(
+        (p_mewDocument) =&gt; { return p_mewDocument; }, // ok - language found
+        (p_error) =&gt; {
+            let w_langName: string = p_error.toString().split('\n')[0];
+            if (w_langName.length &gt; 36 &amp;&amp; w_langName.includes(Constants.LEO_LANGUAGE_PREFIX)) {
+                w_langName = w_langName.substring(36);
+            } else {
+                w_langName = "";
+            }
+            if (w_langName &amp;&amp; !this._languageFlagged.includes(w_langName)) {
+                this._languageFlagged.push(w_langName);
+                vscode.window.showInformationMessage(w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED);
+            } else if (!w_langName) {
+                vscode.window.showInformationMessage(Constants.USER_MESSAGES.UNKNOWN_LANGUAGE_NOT_SUPPORTED);
+            }
+            return p_document;
+        }
+    );
+}
+
+</t>
+<t tx="felix.20220216005511.1">## 1.0.6
+
+- Prevent reappearance of unknown-language warnings in a session for a given language.
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
@@ -22674,7 +22690,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.5&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.6&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden "
@@ -22685,7 +22701,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 1.0.5
+            See What's New in LeoInteg 1.0.6
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;

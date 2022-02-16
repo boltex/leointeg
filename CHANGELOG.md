@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.6
+
+- Prevent reappearance of unknown-language warnings in a session for a given language.
+
 ## 1.0.5
 
 - Fixed bug where the selection could not change (visual update in outline) when hoisted on a node deeper than top-level of tree (sibling of root node).
