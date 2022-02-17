@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.0.6
+
+- Prevent reappearance of unknown-language warnings in a session for a given language.
+- Added Fortran and Fortran90 syntax-coloring and snippets support.
+- Clicking on LeoInteg's status bar indicator now shows the log pane.
+
 ## 1.0.5
 
 - Fixed bug where the selection could not change (visual update in outline) when hoisted on a node deeper than top-level of tree (sibling of root node).

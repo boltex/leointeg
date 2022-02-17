@@ -110,6 +110,8 @@ export class LeoIntegration {
     private _bodyTextDocument: vscode.TextDocument | undefined; // Set when selected in tree by user, or opening a Leo file in showBody. and by _locateOpenedBody.
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
 
+    private _languageFlagged: string[] = [];
+
     private _bodyPreviewMode: boolean = true;
 
     private _editorTouched: boolean = false; // Flag for applying editor changes to body when 'icon' state change and 'undo' back to untouched
@@ -1110,7 +1112,7 @@ export class LeoIntegration {
      * * Tabbed on another editor
      * @param p_editors text editor array (to be checked for changes in this method)
      */
-    public _changedVisibleTextEditors(p_editors: vscode.TextEditor[]): void {
+    public _changedVisibleTextEditors(p_editors: readonly vscode.TextEditor[]): void {
         if (p_editors && p_editors.length) {
             // May be no changes - so check length
             p_editors.forEach((p_textEditor) => {
@@ -2042,18 +2044,7 @@ export class LeoIntegration {
                             utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
                         ) {
                             this._needRefresh = false;
-                            vscode.languages.setTextDocumentLanguage(p_document, w_language).then(
-                                () => { }, // ok - language found
-                                (p_error) => {
-                                    let w_langName = p_error.toString().split('\n')[0];
-                                    if (w_langName.length > 36) {
-                                        w_langName = w_langName.substring(36);
-                                        vscode.window.showInformationMessage(w_langName + " language not yet supported.");
-                                        return;
-                                    }
-                                    vscode.window.showInformationMessage("Language not yet supported.");
-                                }
-                            );
+                            this._setBodyLanguage(p_document, w_language);
                         } else if (!p_document.isClosed &&
                             this.lastSelectedNode &&
                             utils.leoUriToStr(p_document.uri) !== this.lastSelectedNode.gnx) {
@@ -2189,6 +2180,30 @@ export class LeoIntegration {
     }
 
     /**
+     * * Sets vscode's body-pane editor's language
+     */
+    private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): Thenable<vscode.TextDocument> {
+        return vscode.languages.setTextDocumentLanguage(p_document, p_language).then(
+            (p_mewDocument) => { return p_mewDocument; }, // ok - language found
+            (p_error) => {
+                let w_langName: string = p_error.toString().split('\n')[0];
+                if (w_langName.length > 36 && w_langName.includes(Constants.LEO_LANGUAGE_PREFIX)) {
+                    w_langName = w_langName.substring(36);
+                } else {
+                    w_langName = "";
+                }
+                if (w_langName && !this._languageFlagged.includes(w_langName)) {
+                    this._languageFlagged.push(w_langName);
+                    vscode.window.showInformationMessage(w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED);
+                } else if (!w_langName) {
+                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.UNKNOWN_LANGUAGE_NOT_SUPPORTED);
+                }
+                return p_document;
+            }
+        );
+    }
+
+    /**
      * * Refreshes body pane's statuses such as applied language file type, word-wrap state, etc.
      */
     public refreshBodyStates(): void {
@@ -2210,7 +2225,7 @@ export class LeoIntegration {
             // console.log('WRAP: ', w_wrap);
 
             // Replace language string if in 'exceptions' array
-            w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
+            w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
             // Apply language if the selected node is still the same after all those events
             if (this._bodyTextDocument &&
                 !this._bodyTextDocument.isClosed &&
@@ -2218,18 +2233,7 @@ export class LeoIntegration {
                 w_language !== this._bodyTextDocument.languageId &&
                 utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
             ) {
-                vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, w_language).then(
-                    () => { }, // ok - language found
-                    (p_error) => {
-                        let w_langName = p_error.toString().split('\n')[0];
-                        if (w_langName.length > 36) {
-                            w_langName = w_langName.substring(36);
-                            vscode.window.showInformationMessage(w_langName + " language not yet supported.");
-                            return;
-                        }
-                        vscode.window.showInformationMessage("Language not yet supported.");
-                    }
-                );
+                this._setBodyLanguage(this._bodyTextDocument, w_language);
             }
         });
     }
@@ -3553,6 +3557,11 @@ export class LeoIntegration {
      * @returns Thenable from the statusBar click customizable behavior
      */
     public statusBarOnClick(): Thenable<unknown> {
+
+        this.showLogPane();
+        return Promise.resolve(true);
+
+        /*
         if (this.leoStates.fileOpenedReady) {
             return this.minibuffer();
             // return this.switchLeoFile();
@@ -3562,6 +3571,7 @@ export class LeoIntegration {
                 Constants.GUI.QUICK_OPEN_LEO_COMMANDS
             );
         }
+        */
     }
 
     /**

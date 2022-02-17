@@ -28,6 +28,7 @@ export class Constants {
     public static FILE_EXTENSION: string = "leo";
     public static JS_FILE_EXTENSION: string = "leojs";
 
+    public static LEO_LANGUAGE_PREFIX: string = "leobody."; // all lowercase
     public static URI_LEO_SCHEME: string = "leo";
     public static URI_FILE_SCHEME: string = "file";
     public static URI_SCHEME_HEADER: string = "leo:/";
@@ -151,9 +152,11 @@ export class Constants {
         NO_ALL: "No to all",
         MINIBUFFER_PROMPT: "Minibuffer Full Command",
         CHANGES_DETECTED: "Changes to external files were detected.",
-        REFRESHED: " Nodes refreshed.", // with voluntary leading space
-        IGNORED: " They were ignored.", // with voluntary leading space
-        TOO_FAST: "leoInteg is busy! " // with voluntary trailing space
+        REFRESHED: " Nodes refreshed.", // with leading space
+        IGNORED: " They were ignored.", // with leading space
+        TOO_FAST: "leoInteg is busy! ", // with trailing space
+        UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
+        LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
     };
 
     /**
