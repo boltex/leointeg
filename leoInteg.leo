@@ -2607,6 +2607,28 @@ print('done')
     "configuration": "./language-configurations/leobody.css.language-configuration.json"
   },
   {
+    "id": "leobody.fortran",
+    "aliases": [
+      "Leo Body Fortran",
+      "leobody.fortran"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.fortran.language-configuration.json"
+  },
+  {
+    "id": "leobody.fortran90",
+    "aliases": [
+      "Leo Body Fortran90",
+      "leobody.fortran90"
+    ],
+    "extensions": [
+      ""
+    ],
+    "configuration": "./language-configurations/leobody.fortran.language-configuration.json"
+  },
+  {
     "id": "leobody.html",
     "aliases": [
       "Leo Body HTML",
@@ -2722,6 +2744,16 @@ print('done')
     "path": "./syntaxes/leobody.css.tmLanguage.json"
   },
   {
+    "language": "leobody.fortran",
+    "scopeName": "source.leobody.fortran",
+    "path": "./syntaxes/leobody.fortran.tmLanguage.json"
+  },
+  {
+    "language": "leobody.fortran90",
+    "scopeName": "source.leobody.fortran90",
+    "path": "./syntaxes/leobody.fortran90.tmLanguage.json"
+  },
+  {
     "language": "leobody.html",
     "scopeName": "source.leobody.html",
     "path": "./syntaxes/leobody.html.tmLanguage.json"
@@ -2757,36 +2789,26 @@ print('done')
     "path": "./syntaxes/leobody.rust.tmLanguage.json"
   },
   {
-    "//TODO 1": "MAKE PHP/HTML/CSS/JS EMBEDDED FUNCTIONALITY WORK TOO",
     "injectTo": [
-      "source.leobody.plain",
-      "source.leobody.python",
-      "source.leobody.typescript",
-      "source.leobody.javascript",
       "source.leobody.c",
       "source.leobody.cpp",
       "source.leobody.css",
+      "source.leobody.fortran",
+      "source.leobody.fortran90",
       "source.leobody.html",
       "source.leobody.java",
+      "source.leobody.javascript",
       "source.leobody.json",
       "source.leobody.markdown",
       "source.leobody.php",
+      "source.leobody.plain",
+      "source.leobody.python",
       "source.leobody.restructuredtext",
-      "source.leobody.rust"
+      "source.leobody.rust",
+      "source.leobody.typescript"
     ],
     "path": "./syntaxes/leobody.tmLanguage.json",
-    "scopeName": "leo.injection",
-    "//TODO 2": "MAKE EMBEDDED LANGUAGE SWITCHES WORK",
-    "//tokenTypes": {
-      "//meta.embedded.block.leobody.python": "other",
-      "//meta.embedded.block.leobody.typescript": "other",
-      "//...": "..."
-    },
-    "//embeddedLanguages": {
-      "//meta.embedded.block.leobody.python": "leobody.python",
-      "//meta.embedded.block.leobody.typescript": "leobody.typescript",
-      "//...": "..."
-    }
+    "scopeName": "leo.injection"
   }
 ],
 </t>
@@ -2798,6 +2820,10 @@ print('done')
   {
     "language": "leobody.cpp",
     "path": "./snippets/cpp.code-snippets"
+  },
+  {
+    "language": "leobody.fortran90",
+    "path": "./snippets/fortran90.code-snippets"
   },
   {
     "language": "leobody.javascript",
@@ -14619,7 +14645,6 @@ export function getDurationMs(p_start: [number, number]): number {
  */
 public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
     cplusplus: 'cpp',
-    fortran90: 'fortran',
     md: 'markdown',
     rest: 'restructuredtext',
     rst: 'restructuredtext'
@@ -15119,7 +15144,7 @@ public _changedTextEditorViewColumn(
  * * Tabbed on another editor
  * @param p_editors text editor array (to be checked for changes in this method)
  */
-public _changedVisibleTextEditors(p_editors: vscode.TextEditor[]): void {
+public _changedVisibleTextEditors(p_editors: readonly vscode.TextEditor[]): void {
     if (p_editors &amp;&amp; p_editors.length) {
         // May be no changes - so check length
         p_editors.forEach((p_textEditor) =&gt; {

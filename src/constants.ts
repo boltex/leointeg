@@ -406,7 +406,6 @@ export class Constants {
      */
     public static LANGUAGE_CODES: { [key: string]: string | undefined } = {
         cplusplus: 'cpp',
-        fortran90: 'fortran',
         md: 'markdown',
         rest: 'restructuredtext',
         rst: 'restructuredtext'
