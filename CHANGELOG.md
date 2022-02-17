@@ -3,6 +3,8 @@
 ## 1.0.6
 
 - Prevent reappearance of unknown-language warnings in a session for a given language.
+- Added Fortran and Fortran90 syntax-coloring and snippets support.
+- Clicking on LeoInteg's status bar indicator now shows the log pane.
 
 ## 1.0.5
 

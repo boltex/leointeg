@@ -3557,6 +3557,11 @@ export class LeoIntegration {
      * @returns Thenable from the statusBar click customizable behavior
      */
     public statusBarOnClick(): Thenable<unknown> {
+
+        this.showLogPane();
+        return Promise.resolve(true);
+
+        /*
         if (this.leoStates.fileOpenedReady) {
             return this.minibuffer();
             // return this.switchLeoFile();
@@ -3566,6 +3571,7 @@ export class LeoIntegration {
                 Constants.GUI.QUICK_OPEN_LEO_COMMANDS
             );
         }
+        */
     }
 
     /**

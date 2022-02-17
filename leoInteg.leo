@@ -12259,6 +12259,11 @@ public openLeoFile(p_leoFileUri?: vscode.Uri): Promise&lt;vscode.TextEditor | un
  * @returns Thenable from the statusBar click customizable behavior
  */
 public statusBarOnClick(): Thenable&lt;unknown&gt; {
+
+    this.showLogPane();
+    return Promise.resolve(true);
+
+    /*
     if (this.leoStates.fileOpenedReady) {
         return this.minibuffer();
         // return this.switchLeoFile();
@@ -12268,6 +12273,7 @@ public statusBarOnClick(): Thenable&lt;unknown&gt; {
             Constants.GUI.QUICK_OPEN_LEO_COMMANDS
         );
     }
+    */
 }
 
 </t>
@@ -21810,6 +21816,8 @@ private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): T
 <t tx="felix.20220216005511.1">## 1.0.6
 
 - Prevent reappearance of unknown-language warnings in a session for a given language.
+- Added Fortran and Fortran90 syntax-coloring and snippets support.
+- Clicking on LeoInteg's status bar indicator now shows the log pane.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
