@@ -262,18 +262,19 @@
 <v t="felix.20210621233316.4"><vh>class LeoServer</vh>
 <v t="felix.20210621233316.5"><vh>server.__init__</vh></v>
 <v t="felix.20210622235127.1"><vh>server:leo overridden methods</vh>
-<v t="felix.20210711194729.1"><vh>_runAskOkDialog</vh></v>
-<v t="felix.20210711194736.1"><vh>_runAskYesNoDialog</vh></v>
-<v t="felix.20210711194745.1"><vh>_runAskYesNoCancelDialog</vh></v>
-<v t="felix.20210622235209.1"><vh>_es</vh></v>
-<v t="felix.20210626002856.1"><vh>_getScript</vh></v>
-<v t="felix.20210627004238.1"><vh>_asyncIdleLoop</vh></v>
-<v t="felix.20210627004039.1"><vh>_idleTime</vh></v>
-<v t="felix.20210626003327.1"><vh>_show_find_success</vh></v>
+<v t="felix.20210711194729.1"><vh>LeoServer._runAskOkDialog</vh></v>
+<v t="felix.20210711194736.1"><vh>LeoServer._runAskYesNoDialog</vh></v>
+<v t="felix.20210711194745.1"><vh>LeoServer._runAskYesNoCancelDialog</vh></v>
+<v t="felix.20210622235209.1"><vh>LeoServer._es</vh></v>
+<v t="felix.20210626002856.1"><vh>LeoServer._getScript</vh></v>
+<v t="felix.20210627004238.1"><vh>LeoServer._asyncIdleLoop</vh></v>
+<v t="felix.20210627004039.1"><vh>LeoServer._idleTime</vh></v>
+<v t="felix.20210626003327.1"><vh>LeoServer._show_find_success</vh></v>
 </v>
 <v t="felix.20210621233316.6"><vh>server:public commands</vh>
 <v t="felix.20210621233316.7"><vh>server:button commands</vh>
 <v t="felix.20210621233316.8"><vh>_check_button_command</vh></v>
+<v t="felix.20220220203658.1"><vh>_get_rclickTree</vh></v>
 <v t="felix.20210621233316.9"><vh>server.click_button</vh></v>
 <v t="felix.20210621233316.10"><vh>server.get_buttons</vh></v>
 <v t="felix.20210621233316.11"><vh>server.remove_button</vh></v>
@@ -799,6 +800,7 @@
 </v>
 <v t="felix.20200719033306.1"><vh>AtButtons</vh>
 <v t="ekr.20200815090517.1"><vh>clickAtButton</vh></v>
+<v t="felix.20220221003719.1"><vh>_handleRClicks</vh></v>
 <v t="felix.20211017002435.1"><vh>gotoScript</vh></v>
 <v t="ekr.20200815090517.2"><vh>removeAtButton</vh></v>
 </v>
@@ -890,6 +892,8 @@
 <v t="felix.20200718194857.18"><vh>runInfoMessageDialogParameters</vh></v>
 <v t="felix.20200718194857.19"><vh>AskMessageItem</vh></v>
 <v t="felix.20200718194857.20"><vh>ChooseDocumentItem</vh></v>
+<v t="felix.20220220191549.1"><vh>ChooseRClickItem</vh></v>
+<v t="felix.20220221001803.1"><vh>RClick</vh></v>
 </v>
 <v t="felix.20200718195558.1"><vh>@clean src/utils.ts</vh>
 <v t="felix.20210706233101.1"><vh>uniqueId</vh></v>
@@ -1679,10 +1683,53 @@ public nodeCommand(p_userCommand: UserCommand): Promise&lt;LeoBridgePackage&gt; 
 public clickAtButton(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
-            return this.sendAction(
-                Constants.LEOBRIDGE.CLICK_BUTTON,
-                JSON.stringify({ index: p_node.button.index })
-            );
+
+            if (p_node.rclicks.length) {
+                // Has rclicks so show menu to choose
+                this._rclickSelected = [];
+
+                /* const w_choices: ChooseRClickItem[] = [];
+                let w_index = 0;
+                w_choices.push(
+                    { label: p_node.button.name, picked: true, alwaysShow: true, index: w_index++ },
+                    ...p_node.rclicks.map((p_rclick): ChooseRClickItem =&gt; { return { label: p_rclick.name, index: w_index++ }; })
+                );
+
+                const w_options: vscode.QuickPickOptions = {
+                    placeHolder: Constants.USER_MESSAGES.CHOOSE_BUTTON
+                };
+                return vscode.window.showQuickPick(w_choices, w_options) */
+                return this._handleRClicks(p_node.rclicks, p_node.button.name).then((p_picked) =&gt; {
+                    if (
+                        p_picked
+                    ) {
+                        // check if only one in this._rclickSelected and is zero: normal press
+                        if (this._rclickSelected.length === 1 &amp;&amp; this._rclickSelected[0] === 0) {
+                            // Normal button
+                            return this.sendAction(
+                                Constants.LEOBRIDGE.CLICK_BUTTON,
+                                JSON.stringify({ index: p_node.button.index })
+                            );
+                        }
+                        // if not decrement first one, and send this._rclickSelected as array of choices
+                        this._rclickSelected[0] = this._rclickSelected[0] - 1;
+                        return this.sendAction(
+                            Constants.LEOBRIDGE.CLICK_BUTTON,
+                            JSON.stringify({ index: p_node.button.index, rclick: this._rclickSelected })
+                        );
+                    }
+                    // Escaped
+                    return Promise.reject();
+                });
+
+
+            } else {
+                // Normal button
+                return this.sendAction(
+                    Constants.LEOBRIDGE.CLICK_BUTTON,
+                    JSON.stringify({ index: p_node.button.index })
+                );
+            }
         })
         .then((p_clickButtonResult: LeoBridgePackage) =&gt; {
             return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
@@ -1775,6 +1822,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
         {
             light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON),
             dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_RCLICK),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_RCLICK)
         },
         {
             light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_ADD),
@@ -5268,7 +5319,7 @@ def yesButton(event=None):
     # None of these grabs focus from the console window.
     dialog.raise_()
     dialog.setFocus()
-    app.processEvents()
+    app.processEvents()  # type:ignore
     # val is the same as the creation order.
     # Tested with both Qt6 and Qt5.
     val = dialog.exec() if isQt6 else dialog.exec_()
@@ -6847,6 +6898,8 @@ public static GUI = {
     ICON_DARK_DOCUMENT_DIRTY: "resources/dark/document-dirty.svg",
     ICON_LIGHT_BUTTON: "resources/light/button.svg",
     ICON_DARK_BUTTON: "resources/dark/button.svg",
+    ICON_LIGHT_BUTTON_RCLICK: "resources/light/button-rclick.svg",
+    ICON_DARK_BUTTON_RCLICK: "resources/dark/button-rclick.svg",
     ICON_LIGHT_BUTTON_ADD: "resources/light/button-add.svg",
     ICON_DARK_BUTTON_ADD: "resources/dark/button-add.svg",
     ICON_LIGHT_PATH: "resources/light/box",
@@ -6916,6 +6969,7 @@ public static USER_MESSAGES = {
     NO: "No",
     YES_ALL: "Yes to all",
     NO_ALL: "No to all",
+    CHOOSE_BUTTON: "Choose @button or @rclick",
     MINIBUFFER_PROMPT: "Minibuffer Full Command",
     CHANGES_DETECTED: "Changes to external files were detected.",
     REFRESHED: " Nodes refreshed.", // with leading space
@@ -8227,7 +8281,7 @@ public isBusy(): boolean {
 </t>
 <t tx="felix.20200718162303.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
-import { LeoButton, Icon } from "./types";
+import { LeoButton, Icon, RClick } from "./types";
 import * as utils from "./utils";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -8242,6 +8296,8 @@ export class LeoButtonNode extends vscode.TreeItem {
 
     // Context string that is checked in package.json with 'when' clauses
     public contextValue: string;
+    public rclicks: RClick[];
+
     private _id: string;
 
     // is the special 'add' button used to create button from a given node's script
@@ -8269,6 +8325,7 @@ export class LeoButtonNode extends vscode.TreeItem {
         };
         this._isAdd = (this.button.index.startsWith(Constants.BUTTON_STRINGS.NULL_WIDGET) &amp;&amp;
             this.button.name === Constants.BUTTON_STRINGS.SCRIPT_BUTTON);
+        this.rclicks = button.rclicks ? button.rclicks : [];
         this.contextValue = this._isAdd ? Constants.BUTTON_STRINGS.ADD_BUTTON : Constants.BUTTON_STRINGS.NORMAL_BUTTON;
     }
 
@@ -8277,7 +8334,7 @@ export class LeoButtonNode extends vscode.TreeItem {
 </t>
 <t tx="felix.20200718162435.1">// @ts-ignore
 public get iconPath(): Icon {
-    return this._leoIntegration.buttonIcons[this._isAdd ? 1 : 0];
+    return this._leoIntegration.buttonIcons[this._isAdd ? 2 : this.rclicks.length ? 1 : 0];
 }
 
 </t>
@@ -8357,8 +8414,8 @@ public refreshTreeRoot(): void {
                 const w_list: LeoButtonNode[] = [];
                 const w_buttons: LeoButton[] = p_package.buttons;
                 if (w_buttons &amp;&amp; w_buttons.length) {
-                    w_buttons.forEach((i_button: LeoButton) =&gt; {
-                        w_list.push(new LeoButtonNode(i_button, this._leoIntegration));
+                    w_buttons.forEach((p_button: LeoButton) =&gt; {
+                        w_list.push(new LeoButtonNode(p_button, this._leoIntegration));
                     });
                 }
                 return w_list;
@@ -9511,6 +9568,7 @@ export interface LeoDocument {
  */
 export interface LeoButton {
     name: string;
+    rclicks?: RClick[];
     index: string; // STRING KEY
 }
 
@@ -10318,7 +10376,9 @@ import {
     UserCommand,
     BodySelectionInfo,
     LeoGuiFindTabManagerSettings,
-    LeoSearchSettings
+    LeoSearchSettings,
+    ChooseRClickItem,
+    RClick
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
@@ -10572,6 +10632,7 @@ export class LeoIntegration {
     private _leoButtonsProvider: LeoButtonsProvider;
     private _leoButtons: vscode.TreeView&lt;LeoButtonNode&gt;;
     private _leoButtonsExplorer: vscode.TreeView&lt;LeoButtonNode&gt;;
+    private _rclickSelected: number[] = [];
 
     // * Leo Find Panel
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
@@ -17128,18 +17189,19 @@ Written by Félix Malboeuf and Edward K. Ream.
 """
 # pylint: disable=import-self,raise-missing-from,wrong-import-position
 &lt;&lt; imports &gt;&gt;
-version_tuple = (1, 0, 0)
+version_tuple = (1, 0, 1)
 v1, v2, v3 = version_tuple
 __version__ = f"leoserver.py version {v1}.{v2}.{v3}"
 g = None  # The bridge's leoGlobals module.
 
 # Server defaults
 SERVER_STARTED_TOKEN = "LeoBridge started" # Output when started successfully
-connectionsPool = set() # Websocket connections (to be sent 'notify' messages)
+# Websocket connections (to be sent 'notify' messages)
+connectionsPool = set()  # type:ignore
 connectionsTotal = 0 # Current connected client total
 # Customizable server options
 argFile = ""
-traces = []
+traces: List = []
 wsLimit = 1
 wsPersist = False
 wsSkipDirty = False
@@ -17156,18 +17218,31 @@ if __name__ == '__main__':
     Gets the currently opened file's @buttons list
     as an array of dict.
 
-    Typescript interface:
+    Typescript RClick recursive interface:
+    RClick: {name: string, children: RClick[]}
+
+    Typescript return interface:
         {
             name: string;
             index: string;
+            rclicks: RClick[];
         }[]
     """
     d = self._check_button_command('get_buttons')
+
     buttons = []
     # Some button keys are objects so we have to convert first
     for key in d:
-        entry = {"name": d[key], "index": str(key)}
+        rclickList = []
+        if  hasattr(key, 'rclicks'):
+            rclickList = self._get_rclickTree(key.rclicks)
+            # buttonRClicks = key.rclicks
+            # for rc in buttonRClicks:
+            #     rclickList.append(rc.position.h)
+
+        entry = {"name": d[key], "index": str(key), "rclicks": rclickList}
         buttons.append(entry)
+
     return self._make_minimal_response({
         "buttons": buttons
     })
@@ -17280,6 +17355,7 @@ if __name__ == '__main__':
                     print(f"{tag}: got: {d}", flush=True)
                 answer = controller._do_message(d)
             except TerminateServer as e:
+                # pylint: disable=no-value-for-parameter,unexpected-keyword-arg
                 raise websockets.exceptions.ConnectionClosed(code=1000, reason=e)
             except ServerError as e:
                 data = f"{d}" if d else f"json syntax error: {json_message!r}"
@@ -17598,6 +17674,7 @@ import socket
 import textwrap
 import time
 import tkinter as Tk
+from typing import List, Union
 # Third-party.
 # #2300
 try:
@@ -17653,7 +17730,7 @@ from leo.core.leoExternalFiles import ExternalFilesController
             w.clear()
             w.insert(s)
         # Check boxes.
-        table = (
+        table2 = (
             ('ignore_case', 'check_box_ignore_case'),
             ('mark_changes', 'check_box_mark_changes'),
             ('mark_finds', 'check_box_mark_finds'),
@@ -17662,19 +17739,19 @@ from leo.core.leoExternalFiles import ExternalFilesController
             ('search_headline', 'check_box_search_headline'),
             ('whole_word', 'check_box_whole_word'),
         )
-        for setting_name, widget_ivar in table:
+        for setting_name, widget_ivar in table2:
             w = getattr(ftm, widget_ivar)
             val = searchSettings.get(setting_name)
             setattr(find, setting_name, val)
             if val != w.isChecked():
                 w.toggle()
         # Radio buttons
-        table = (
+        table3 = (
             ('node_only', 'node_only', 'radio_button_node_only'),
             ('entire_outline', None, 'radio_button_entire_outline'),
             ('suboutline_only', 'suboutline_only', 'radio_button_suboutline_only'),
         )
-        for setting_name, ivar, widget_ivar in table:
+        for setting_name, ivar, widget_ivar in table3:
             w = getattr(ftm, widget_ivar)
             val = searchSettings.get(setting_name, False)
             if ivar is not None:
@@ -19043,7 +19120,6 @@ class TerminateServer(Exception):  # pragma: no cover
         'show-fonts',
 
         'show-invisibles',
-        'show-next-tip',
         'show-node-uas',
         'show-outline-dock',
         'show-plugin-handlers',
@@ -19052,6 +19128,7 @@ class TerminateServer(Exception):  # pragma: no cover
         'show-settings-outline',
         'show-spell-info',
         'show-stats',
+        'show-tips',
 
         'style-set-selected',
 
@@ -19482,14 +19559,12 @@ class TerminateServer(Exception):  # pragma: no cover
         # Save Files.
         'file-save',
         'file-save-as',
-        'file-save-as-unzipped',
         'file-save-by-name',
         'file-save-to',
         'save',
         'save-as',
         'save-file',
         'save-file-as',
-        'save-file-as-unzipped',
         'save-file-by-name',
         'save-file-to',
         'save-to',
@@ -20028,7 +20103,20 @@ def _dump_position(self, p):  # pragma: no cover
         raise ServerError(f"{tag}: button {index!r} does not exist")
 
     try:
-        button.command()
+        w_rclick = param.get("rclick", False)
+        if w_rclick and button.rclicks:
+            # not zero
+            toChooseFrom = button.rclicks
+            for i_rc in  w_rclick:
+                w_rclickChosen = toChooseFrom[i_rc]
+                toChooseFrom = w_rclickChosen.children
+            if w_rclickChosen:
+                c = self._check_c()
+                sc = getattr(c, "theScriptingController", None)
+                sc.executeScriptFromButton(button, "", w_rclickChosen.position, "")
+
+        else:
+            button.command()
     except Exception as e:
         raise ServerError(f"{tag}: exception clicking button {index!r}: {e}")
     # Tag along a possible return value with info sent back by _make_response
@@ -20441,7 +20529,7 @@ def _dump_position(self, p):  # pragma: no cover
     # Keys are full paths, values are modification times.
     # DO NOT alter directly, use set_time(path) and
     # get_time(path), see set_time() for notes.
-    self.yesno_all_time = 0  # previous yes/no to all answer, time of answer
+    self.yesno_all_time: Union[None, bool, float] = None  # previous yes/no to all answer, time of answer
     self.yesno_all_answer = None  # answer, 'yes-all', or 'no-all'
 
     # if yesAll/noAll forced, then just show info message after idle_check_commander
@@ -21786,7 +21874,7 @@ public debouncedRefreshBodyStates() {
     except Exception:  # pragma: no cover
         response = {"bead": 0, "undos": []}
     # _make_response adds all the cheap redraw data.
-    return self._make_response(response)
+    return self._make_minimal_response(response)
 </t>
 <t tx="felix.20220215235325.1">/**
  * * Sets vscode's body-pane editor's language
@@ -21818,6 +21906,74 @@ private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): T
 - Prevent reappearance of unknown-language warnings in a session for a given language.
 - Added Fortran and Fortran90 syntax-coloring and snippets support.
 - Clicking on LeoInteg's status bar indicator now shows the log pane.
+- Added support for "@rclick" nodes to work along "@button" nodes
+
+</t>
+<t tx="felix.20220220191549.1">/**
+ * * Used to select a button's rclick by index
+ */
+export interface ChooseRClickItem extends vscode.QuickPickItem {
+    index: number;
+    rclick?: RClick;
+}
+
+</t>
+<t tx="felix.20220220203658.1">def _get_rclickTree(self, rclicks):
+    rclickList = []
+
+    for rc in rclicks:
+        children = []
+        if rc.children:
+            children = self._get_rclickTree(rc.children)
+        rclickList.append({"name": rc.position.h, "children":children })
+
+    return rclickList
+
+
+</t>
+<t tx="felix.20220221001803.1">/**
+ * * Returned from Leo with buttons data
+ */
+export interface RClick {
+    name: string;
+    children: RClick[];
+}
+
+</t>
+<t tx="felix.20220221003719.1">/**
+ * * Show input window to select
+ */
+private _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Thenable&lt;ChooseRClickItem&gt; {
+    const w_choices: ChooseRClickItem[] = [];
+    let w_index = 0;
+    if (topLevelName) {
+        w_choices.push(
+            { label: topLevelName, picked: true, alwaysShow: true, index: w_index++ }
+        );
+    }
+    w_choices.push(
+        ...p_rclicks.map((p_rclick): ChooseRClickItem =&gt; { return { label: p_rclick.name, index: w_index++, rclick: p_rclick }; })
+    );
+
+    const w_options: vscode.QuickPickOptions = {
+        placeHolder: Constants.USER_MESSAGES.CHOOSE_BUTTON
+    };
+    return vscode.window.showQuickPick(w_choices, w_options).then((p_picked) =&gt; {
+        if (p_picked) {
+            this._rclickSelected.push(p_picked.index);
+            if (topLevelName &amp;&amp; p_picked.index === 0) {
+                return Promise.resolve(p_picked);
+            }
+            if (p_picked.rclick &amp;&amp; p_picked.rclick.children &amp;&amp; p_picked.rclick.children.length) {
+                return this._handleRClicks(p_picked.rclick.children);
+            } else {
+                return Promise.resolve(p_picked);
+            }
+        }
+        // Escaped
+        return Promise.reject();
+    });
+}
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

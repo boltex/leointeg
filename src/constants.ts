@@ -82,6 +82,8 @@ export class Constants {
         ICON_DARK_DOCUMENT_DIRTY: "resources/dark/document-dirty.svg",
         ICON_LIGHT_BUTTON: "resources/light/button.svg",
         ICON_DARK_BUTTON: "resources/dark/button.svg",
+        ICON_LIGHT_BUTTON_RCLICK: "resources/light/button-rclick.svg",
+        ICON_DARK_BUTTON_RCLICK: "resources/dark/button-rclick.svg",
         ICON_LIGHT_BUTTON_ADD: "resources/light/button-add.svg",
         ICON_DARK_BUTTON_ADD: "resources/dark/button-add.svg",
         ICON_LIGHT_PATH: "resources/light/box",
@@ -150,6 +152,7 @@ export class Constants {
         NO: "No",
         YES_ALL: "Yes to all",
         NO_ALL: "No to all",
+        CHOOSE_BUTTON: "Choose @button or @rclick",
         MINIBUFFER_PROMPT: "Minibuffer Full Command",
         CHANGES_DETECTED: "Changes to external files were detected.",
         REFRESHED: " Nodes refreshed.", // with leading space

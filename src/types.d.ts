@@ -207,6 +207,7 @@ export interface LeoDocument {
  */
 export interface LeoButton {
     name: string;
+    rclicks?: RClick[];
     index: string; // STRING KEY
 }
 
@@ -347,5 +348,21 @@ export interface AskMessageItem extends vscode.MessageItem {
  */
 export interface ChooseDocumentItem extends vscode.QuickPickItem {
     value: number;
+}
+
+/**
+ * * Used to select a button's rclick by index
+ */
+export interface ChooseRClickItem extends vscode.QuickPickItem {
+    index: number;
+    rclick?: RClick;
+}
+
+/**
+ * * Returned from Leo with buttons data
+ */
+export interface RClick {
+    name: string;
+    children: RClick[];
 }
 

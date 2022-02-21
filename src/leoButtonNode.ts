@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
-import { LeoButton, Icon } from "./types";
+import { LeoButton, Icon, RClick } from "./types";
 import * as utils from "./utils";
 import { LeoIntegration } from "./leoIntegration";
 
@@ -11,6 +11,8 @@ export class LeoButtonNode extends vscode.TreeItem {
 
     // Context string that is checked in package.json with 'when' clauses
     public contextValue: string;
+    public rclicks: RClick[];
+
     private _id: string;
 
     // is the special 'add' button used to create button from a given node's script
@@ -38,12 +40,13 @@ export class LeoButtonNode extends vscode.TreeItem {
         };
         this._isAdd = (this.button.index.startsWith(Constants.BUTTON_STRINGS.NULL_WIDGET) &&
             this.button.name === Constants.BUTTON_STRINGS.SCRIPT_BUTTON);
+        this.rclicks = button.rclicks ? button.rclicks : [];
         this.contextValue = this._isAdd ? Constants.BUTTON_STRINGS.ADD_BUTTON : Constants.BUTTON_STRINGS.NORMAL_BUTTON;
     }
 
     // @ts-ignore
     public get iconPath(): Icon {
-        return this._leoIntegration.buttonIcons[this._isAdd ? 1 : 0];
+        return this._leoIntegration.buttonIcons[this._isAdd ? 2 : this.rclicks.length ? 1 : 0];
     }
 
     // @ts-ignore

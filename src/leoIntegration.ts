@@ -14,7 +14,9 @@ import {
     UserCommand,
     BodySelectionInfo,
     LeoGuiFindTabManagerSettings,
-    LeoSearchSettings
+    LeoSearchSettings,
+    ChooseRClickItem,
+    RClick
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
@@ -144,6 +146,7 @@ export class LeoIntegration {
     private _leoButtonsProvider: LeoButtonsProvider;
     private _leoButtons: vscode.TreeView<LeoButtonNode>;
     private _leoButtonsExplorer: vscode.TreeView<LeoButtonNode>;
+    private _rclickSelected: number[] = [];
 
     // * Leo Find Panel
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
@@ -3460,10 +3463,53 @@ export class LeoIntegration {
     public clickAtButton(p_node: LeoButtonNode): Promise<boolean> {
         return this._isBusyTriggerSave(false)
             .then((p_saveResult) => {
-                return this.sendAction(
-                    Constants.LEOBRIDGE.CLICK_BUTTON,
-                    JSON.stringify({ index: p_node.button.index })
-                );
+
+                if (p_node.rclicks.length) {
+                    // Has rclicks so show menu to choose
+                    this._rclickSelected = [];
+
+                    /* const w_choices: ChooseRClickItem[] = [];
+                    let w_index = 0;
+                    w_choices.push(
+                        { label: p_node.button.name, picked: true, alwaysShow: true, index: w_index++ },
+                        ...p_node.rclicks.map((p_rclick): ChooseRClickItem => { return { label: p_rclick.name, index: w_index++ }; })
+                    );
+
+                    const w_options: vscode.QuickPickOptions = {
+                        placeHolder: Constants.USER_MESSAGES.CHOOSE_BUTTON
+                    };
+                    return vscode.window.showQuickPick(w_choices, w_options) */
+                    return this._handleRClicks(p_node.rclicks, p_node.button.name).then((p_picked) => {
+                        if (
+                            p_picked
+                        ) {
+                            // check if only one in this._rclickSelected and is zero: normal press
+                            if (this._rclickSelected.length === 1 && this._rclickSelected[0] === 0) {
+                                // Normal button
+                                return this.sendAction(
+                                    Constants.LEOBRIDGE.CLICK_BUTTON,
+                                    JSON.stringify({ index: p_node.button.index })
+                                );
+                            }
+                            // if not decrement first one, and send this._rclickSelected as array of choices
+                            this._rclickSelected[0] = this._rclickSelected[0] - 1;
+                            return this.sendAction(
+                                Constants.LEOBRIDGE.CLICK_BUTTON,
+                                JSON.stringify({ index: p_node.button.index, rclick: this._rclickSelected })
+                            );
+                        }
+                        // Escaped
+                        return Promise.reject();
+                    });
+
+
+                } else {
+                    // Normal button
+                    return this.sendAction(
+                        Constants.LEOBRIDGE.CLICK_BUTTON,
+                        JSON.stringify({ index: p_node.button.index })
+                    );
+                }
             })
             .then((p_clickButtonResult: LeoBridgePackage) => {
                 return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
@@ -3473,6 +3519,41 @@ export class LeoIntegration {
                 this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
                 return Promise.resolve(true); // TODO launchRefresh should be a returned promise
             });
+    }
+
+    /**
+     * * Show input window to select
+     */
+    private _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Thenable<ChooseRClickItem> {
+        const w_choices: ChooseRClickItem[] = [];
+        let w_index = 0;
+        if (topLevelName) {
+            w_choices.push(
+                { label: topLevelName, picked: true, alwaysShow: true, index: w_index++ }
+            );
+        }
+        w_choices.push(
+            ...p_rclicks.map((p_rclick): ChooseRClickItem => { return { label: p_rclick.name, index: w_index++, rclick: p_rclick }; })
+        );
+
+        const w_options: vscode.QuickPickOptions = {
+            placeHolder: Constants.USER_MESSAGES.CHOOSE_BUTTON
+        };
+        return vscode.window.showQuickPick(w_choices, w_options).then((p_picked) => {
+            if (p_picked) {
+                this._rclickSelected.push(p_picked.index);
+                if (topLevelName && p_picked.index === 0) {
+                    return Promise.resolve(p_picked);
+                }
+                if (p_picked.rclick && p_picked.rclick.children && p_picked.rclick.children.length) {
+                    return this._handleRClicks(p_picked.rclick.children);
+                } else {
+                    return Promise.resolve(p_picked);
+                }
+            }
+            // Escaped
+            return Promise.reject();
+        });
     }
 
     /**
