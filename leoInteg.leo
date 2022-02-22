@@ -20104,7 +20104,7 @@ def _dump_position(self, p):  # pragma: no cover
 
     try:
         w_rclick = param.get("rclick", False)
-        if w_rclick and button.rclicks:
+        if w_rclick and hasattr(button, 'rclicks'):
             # not zero
             toChooseFrom = button.rclicks
             for i_rc in  w_rclick:
