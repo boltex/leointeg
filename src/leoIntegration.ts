@@ -50,6 +50,7 @@ export class LeoIntegration {
     public leoStates: LeoStates;
     public verbose: boolean = false;
     public trace: boolean = false;
+    public clipboardContent: string = "";
 
     // * Frontend command stack
     private _commandStack: CommandStack;
@@ -2516,6 +2517,62 @@ export class LeoIntegration {
         } else {
             return Promise.reject('Insert node not added on command stack');
         }
+    }
+
+    public copyNode(
+        p_node?: LeoNode,
+        p_fromOutline?: boolean
+    ): Promise<LeoBridgePackage> {
+
+
+        return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+    }
+
+    public cutNode(
+        p_node?: LeoNode,
+        p_fromOutline?: boolean
+    ): Promise<LeoBridgePackage> {
+
+        return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+
+    }
+
+    public pasteNode(
+        p_node?: LeoNode,
+        p_fromOutline?: boolean
+    ): Promise<LeoBridgePackage> {
+
+        return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+
+    }
+
+    public pasteAsCloneNode(
+        p_node?: LeoNode,
+        p_fromOutline?: boolean
+    ): Promise<LeoBridgePackage> {
+
+        return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+
+    }
+
+    public replaceClipboardWith(s: string): Thenable<void> {
+        this.clipboardContent = s; // also set immediate clipboard string
+        return vscode.env.clipboard.writeText(s);
+    }
+
+    public asyncGetTextFromClipboard(): Thenable<string> {
+        return vscode.env.clipboard.readText().then((s) => {
+            // also set immediate clipboard string for possible future read
+            this.clipboardContent = s;
+            return this.getTextFromClipboard();
+        });
+    }
+
+    /**
+     * Returns clipboard content
+    */
+    public getTextFromClipboard(): string {
+        return this.clipboardContent;
     }
 
     /**

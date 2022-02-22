@@ -769,6 +769,15 @@
 <v t="felix.20200719025231.54"><vh>changeMark</vh></v>
 <v t="felix.20200719025231.55"><vh>editHeadline</vh></v>
 <v t="felix.20200719025231.56"><vh>insertNode</vh></v>
+<v t="felix.20220222012540.1"><vh>copyNode</vh></v>
+<v t="felix.20220222012528.1"><vh>cutNode</vh></v>
+<v t="felix.20220222012552.1"><vh>pasteNode</vh></v>
+<v t="felix.20220222012602.1"><vh>pasteAsCloneNode</vh></v>
+</v>
+<v t="felix.20220222014050.1"><vh>Clipboard</vh>
+<v t="felix.20220222014050.2"><vh>replaceClipboardWith</vh></v>
+<v t="felix.20220222014050.3"><vh>asyncGetTextFromClipboard</vh></v>
+<v t="felix.20220222014050.4"><vh>getTextFromClipboard</vh></v>
 </v>
 <v t="felix.20210530225640.1"><vh>Search</vh>
 <v t="felix.20210516233931.1"><vh>startSearch</vh></v>
@@ -10536,6 +10545,7 @@ export class LeoIntegration {
     public leoStates: LeoStates;
     public verbose: boolean = false;
     public trace: boolean = false;
+    public clipboardContent: string = "";
 
     // * Frontend command stack
     private _commandStack: CommandStack;
@@ -21973,6 +21983,70 @@ private _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Thenable&lt;
         // Escaped
         return Promise.reject();
     });
+}
+
+</t>
+<t tx="felix.20220222012528.1">public cutNode(
+    p_node?: LeoNode,
+    p_fromOutline?: boolean
+): Promise&lt;LeoBridgePackage&gt; {
+
+    return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+
+}
+
+</t>
+<t tx="felix.20220222012540.1">public copyNode(
+    p_node?: LeoNode,
+    p_fromOutline?: boolean
+): Promise&lt;LeoBridgePackage&gt; {
+
+
+    return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+}
+
+</t>
+<t tx="felix.20220222012552.1">public pasteNode(
+    p_node?: LeoNode,
+    p_fromOutline?: boolean
+): Promise&lt;LeoBridgePackage&gt; {
+
+    return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+
+}
+
+</t>
+<t tx="felix.20220222012602.1">public pasteAsCloneNode(
+    p_node?: LeoNode,
+    p_fromOutline?: boolean
+): Promise&lt;LeoBridgePackage&gt; {
+
+    return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+
+}
+
+</t>
+<t tx="felix.20220222014050.1"></t>
+<t tx="felix.20220222014050.2">public replaceClipboardWith(s: string): Thenable&lt;void&gt; {
+    this.clipboardContent = s; // also set immediate clipboard string
+    return vscode.env.clipboard.writeText(s);
+}
+
+</t>
+<t tx="felix.20220222014050.3">public asyncGetTextFromClipboard(): Thenable&lt;string&gt; {
+    return vscode.env.clipboard.readText().then((s) =&gt; {
+        // also set immediate clipboard string for possible future read
+        this.clipboardContent = s;
+        return this.getTextFromClipboard();
+    });
+}
+
+</t>
+<t tx="felix.20220222014050.4">/**
+ * Returns clipboard content
+*/
+public getTextFromClipboard(): string {
+    return this.clipboardContent;
 }
 
 </t>
