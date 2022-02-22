@@ -21742,7 +21742,7 @@ public gotoScript(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
         })
         .then((p_package) =&gt; {
             // refresh and reveal selection
-            this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
+            this.launchRefresh({ tree: true, body: true, states: true, buttons: false, documents: false }, false, p_package.node);
             return Promise.resolve(true); // TODO launchRefresh should be a returned promise
         });
 }
