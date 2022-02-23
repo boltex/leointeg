@@ -9929,7 +9929,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 
 - Websocket Python Library\
   _Install with :_ `pip install websockets`\
-  (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
+  (See [websockets.readthedocs.io/](https://websockets.readthedocs.io/))
 
 </t>
 <t tx="felix.20200718222035.1">## Features
