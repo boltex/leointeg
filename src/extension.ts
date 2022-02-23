@@ -148,20 +148,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         // cut/copy/paste/delete given node.
         [CMD.COPY, (p_node: LeoNode) => w_leo.copyNode(p_node, true)],
         [CMD.CUT, (p_node: LeoNode) => w_leo.cutNode(p_node, true)],
-        // [CMD.COPY, (p_node: LeoNode) => w_leo.nodeCommand({
-        //     action: BRIDGE.COPY_PNODE,
-        //     node: p_node,
-        //     refreshType: NO_REFRESH,
-        //     fromOutline: true,
-        //     keepSelection: true
-        // })],
-        // [CMD.CUT, (p_node: LeoNode) => w_leo.nodeCommand({
-        //     action: BRIDGE.CUT_PNODE,
-        //     node: p_node,
-        //     refreshType: REFRESH_TREE_BODY,
-        //     fromOutline: true,
-        //     keepSelection: true
-        // })],
+
         [CMD.DELETE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.DELETE_PNODE,
             node: p_node,
@@ -169,45 +156,14 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true,
             keepSelection: true
         })],
-        [CMD.PASTE, (p_node: LeoNode) => w_leo.editHeadline(p_node, true)],
-        [CMD.PASTE_CLONE, (p_node: LeoNode) => w_leo.editHeadline(p_node, true)],
-        // [CMD.PASTE, (p_node: LeoNode) => w_leo.nodeCommand({
-        //     action: BRIDGE.PASTE_PNODE,
-        //     node: p_node,
-        //     refreshType: REFRESH_TREE_BODY,
-        //     fromOutline: true,
-        //     keepSelection: false
-        // })],
-        // [CMD.PASTE_CLONE, (p_node: LeoNode) => w_leo.nodeCommand({
-        //     action: BRIDGE.PASTE_CLONE_PNODE,
-        //     node: p_node,
-        //     refreshType: REFRESH_TREE_BODY,
-        //     fromOutline: true,
-        //     keepSelection: false
-        // })],
+        [CMD.PASTE, (p_node: LeoNode) => w_leo.pasteNode(p_node, true)],
+        [CMD.PASTE_CLONE, (p_node: LeoNode) => w_leo.pasteAsCloneNode(p_node, true)],
 
         // cut/copy/paste/delete current selection (self.commander.p)
-        [CMD.COPY_SELECTION, () => w_leo.editHeadline(U, false)],
-        [CMD.CUT_SELECTION, () => w_leo.editHeadline(U, false)],
-        [CMD.CUT_SELECTION_FO, () => w_leo.editHeadline(U, true)],
-        // [CMD.COPY_SELECTION, () => w_leo.nodeCommand({
-        //     action: BRIDGE.COPY_PNODE,
-        //     node: U,
-        //     refreshType: NO_REFRESH,
-        //     fromOutline: false
-        // })],
-        // [CMD.CUT_SELECTION, () => w_leo.nodeCommand({
-        //     action: BRIDGE.CUT_PNODE,
-        //     node: U,
-        //     refreshType: REFRESH_TREE_BODY,
-        //     fromOutline: false
-        // })],
-        // [CMD.CUT_SELECTION_FO, () => w_leo.nodeCommand({
-        //     action: BRIDGE.CUT_PNODE,
-        //     node: U,
-        //     refreshType: REFRESH_TREE_BODY,
-        //     fromOutline: true
-        // })],
+        [CMD.COPY_SELECTION, () => w_leo.copyNode(U, false)],
+        [CMD.CUT_SELECTION, () => w_leo.cutNode(U, false)],
+        [CMD.CUT_SELECTION_FO, () => w_leo.cutNode(U, true)],
+
         [CMD.DELETE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.DELETE_PNODE,
             node: U,
@@ -220,34 +176,10 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
-        [CMD.PASTE_CLONE_SELECTION, () => w_leo.editHeadline(U, false)],
-        [CMD.PASTE_CLONE_SELECTION_FO, () => w_leo.editHeadline(U, true)],
-        [CMD.PASTE_SELECTION, () => w_leo.editHeadline(U, false)],
-        [CMD.PASTE_SELECTION_FO, () => w_leo.editHeadline(U, true)],
-        // [CMD.PASTE_CLONE_SELECTION, () => w_leo.nodeCommand({
-        //     action: BRIDGE.PASTE_CLONE_PNODE,
-        //     node: U,
-        //     refreshType: REFRESH_TREE_BODY,
-        //     fromOutline: false
-        // })],
-        // [CMD.PASTE_CLONE_SELECTION_FO, () => w_leo.nodeCommand({
-        //     action: BRIDGE.PASTE_CLONE_PNODE,
-        //     node: U,
-        //     refreshType: REFRESH_TREE_BODY,
-        //     fromOutline: true
-        // })],
-        // [CMD.PASTE_SELECTION, () => w_leo.nodeCommand({
-        //     action: BRIDGE.PASTE_PNODE,
-        //     node: U,
-        //     refreshType: REFRESH_TREE_BODY,
-        //     fromOutline: false
-        // })],
-        // [CMD.PASTE_SELECTION_FO, () => w_leo.nodeCommand({
-        //     action: BRIDGE.PASTE_PNODE,
-        //     node: U,
-        //     refreshType: REFRESH_TREE_BODY,
-        //     fromOutline: true
-        // })],
+        [CMD.PASTE_SELECTION, () => w_leo.pasteNode(U, false)],
+        [CMD.PASTE_SELECTION_FO, () => w_leo.pasteNode(U, true)],
+        [CMD.PASTE_CLONE_SELECTION, () => w_leo.pasteAsCloneNode(U, false)],
+        [CMD.PASTE_CLONE_SELECTION_FO, () => w_leo.pasteAsCloneNode(U, true)],
 
         [CMD.CONTRACT_ALL, () => w_leo.nodeCommand({
             action: BRIDGE.CONTRACT_ALL,

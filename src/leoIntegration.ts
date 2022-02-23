@@ -2535,10 +2535,8 @@ export class LeoIntegration {
                 if (q_commandResult) {
                     return q_commandResult.then(p_package => {
                         if (p_package.string) {
-                            console.log('Copy Node got string:', p_package.string);
                             this.replaceClipboardWith(p_package.string);
                         } else {
-                            console.log('Copy Node no package string!!');
                         }
                         return p_package;
                     });
@@ -2568,10 +2566,8 @@ export class LeoIntegration {
                 if (q_commandResult) {
                     return q_commandResult.then(p_package => {
                         if (p_package.string) {
-                            console.log('Cut Node got string:', p_package.string);
                             this.replaceClipboardWith(p_package.string);
                         } else {
-                            console.log('Cut Node no package string!!');
                         }
                         return p_package;
                     });
