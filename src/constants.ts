@@ -475,10 +475,18 @@ export class Constants {
         // * Leo Operations
         MARK_PNODE: "!mark_node", // "markPNode",
         UNMARK_PNODE: "!unmark_node", // "unmarkPNode",
-        COPY_PNODE: "copyOutline",
+
+        //COPY_PNODE: "copyOutline",
+        COPY_PNODE: "!copy_node",
+
         CUT_PNODE: "!cut_node", // "cutPNode",
-        PASTE_PNODE: "pasteOutline",
-        PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
+
+        // PASTE_PNODE: "pasteOutline",
+        PASTE_PNODE: "!paste_node",
+
+        // PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
+        PASTE_CLONE_PNODE: "!paste_as_clone_node",
+
         DELETE_PNODE: "!delete_node", // "deletePNode",
         MOVE_PNODE_DOWN: "moveOutlineDown",
         MOVE_PNODE_LEFT: "moveOutlineLeft",

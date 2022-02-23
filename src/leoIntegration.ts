@@ -2523,36 +2523,114 @@ export class LeoIntegration {
         p_node?: LeoNode,
         p_fromOutline?: boolean
     ): Promise<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true)
+            .then(() => {
 
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.COPY_PNODE,
+                    node: p_node,
+                    refreshType: {},
+                    fromOutline: !!p_fromOutline,
+                });
+                if (q_commandResult) {
+                    return q_commandResult.then(p_package => {
+                        if (p_package.string) {
+                            console.log('Copy Node got string:', p_package.string);
+                            this.replaceClipboardWith(p_package.string);
+                        } else {
+                            console.log('Copy Node no package string!!');
+                        }
+                        return p_package;
+                    });
 
-        return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+                } else {
+                    return Promise.reject('Copy Node not added on command stack');
+                }
+
+            });
+
     }
 
     public cutNode(
         p_node?: LeoNode,
         p_fromOutline?: boolean
     ): Promise<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true)
+            .then(() => {
 
-        return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.CUT_PNODE,
+                    node: p_node,
+                    refreshType: { tree: true, states: true, documents: true, },
 
+                    fromOutline: !!p_fromOutline,
+                });
+                if (q_commandResult) {
+                    return q_commandResult.then(p_package => {
+                        if (p_package.string) {
+                            console.log('Cut Node got string:', p_package.string);
+                            this.replaceClipboardWith(p_package.string);
+                        } else {
+                            console.log('Cut Node no package string!!');
+                        }
+                        return p_package;
+                    });
+
+                } else {
+                    return Promise.reject('Cut Node not added on command stack');
+                }
+            });
     }
 
     public pasteNode(
         p_node?: LeoNode,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Thenable<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true).then(() => {
 
-        return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+            return this.asyncGetTextFromClipboard().then((p_text) => {
+
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.PASTE_PNODE,
+                    node: p_node,
+                    refreshType: { tree: true, states: true, documents: true, },
+                    name: p_text,
+                    fromOutline: !!p_fromOutline,
+                });
+                if (q_commandResult) {
+                    return q_commandResult;
+                } else {
+                    return Promise.reject('Cut Node not added on command stack');
+                }
+
+            });
+        });
 
     }
 
     public pasteAsCloneNode(
         p_node?: LeoNode,
         p_fromOutline?: boolean
-    ): Promise<LeoBridgePackage> {
+    ): Thenable<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true).then(() => {
 
-        return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+            return this.asyncGetTextFromClipboard().then((p_text) => {
 
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.PASTE_CLONE_PNODE,
+                    node: p_node,
+                    refreshType: { tree: true, states: true, documents: true, },
+                    name: p_text,
+                    fromOutline: !!p_fromOutline,
+                });
+                if (q_commandResult) {
+                    return q_commandResult;
+                } else {
+                    return Promise.reject('Cut Node not added on command stack');
+                }
+
+            });
+        });
     }
 
     public replaceClipboardWith(s: string): Thenable<void> {

@@ -1932,20 +1932,22 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.HEADLINE_SELECTION_FO, () =&gt; w_leo.editHeadline(U, true)],
 
 // cut/copy/paste/delete given node.
-[CMD.COPY, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
-    action: BRIDGE.COPY_PNODE,
-    node: p_node,
-    refreshType: NO_REFRESH,
-    fromOutline: true,
-    keepSelection: true
-})],
-[CMD.CUT, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
-    action: BRIDGE.CUT_PNODE,
-    node: p_node,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
-    keepSelection: true
-})],
+[CMD.COPY, (p_node: LeoNode) =&gt; w_leo.copyNode(p_node, true)],
+[CMD.CUT, (p_node: LeoNode) =&gt; w_leo.cutNode(p_node, true)],
+// [CMD.COPY, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
+//     action: BRIDGE.COPY_PNODE,
+//     node: p_node,
+//     refreshType: NO_REFRESH,
+//     fromOutline: true,
+//     keepSelection: true
+// })],
+// [CMD.CUT, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
+//     action: BRIDGE.CUT_PNODE,
+//     node: p_node,
+//     refreshType: REFRESH_TREE_BODY,
+//     fromOutline: true,
+//     keepSelection: true
+// })],
 [CMD.DELETE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: p_node,
@@ -1953,40 +1955,45 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: true,
     keepSelection: true
 })],
-[CMD.PASTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
-    action: BRIDGE.PASTE_PNODE,
-    node: p_node,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
-    keepSelection: false
-})],
-[CMD.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
-    action: BRIDGE.PASTE_CLONE_PNODE,
-    node: p_node,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
-    keepSelection: false
-})],
+[CMD.PASTE, (p_node: LeoNode) =&gt; w_leo.editHeadline(p_node, true)],
+[CMD.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leo.editHeadline(p_node, true)],
+// [CMD.PASTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
+//     action: BRIDGE.PASTE_PNODE,
+//     node: p_node,
+//     refreshType: REFRESH_TREE_BODY,
+//     fromOutline: true,
+//     keepSelection: false
+// })],
+// [CMD.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
+//     action: BRIDGE.PASTE_CLONE_PNODE,
+//     node: p_node,
+//     refreshType: REFRESH_TREE_BODY,
+//     fromOutline: true,
+//     keepSelection: false
+// })],
 
 // cut/copy/paste/delete current selection (self.commander.p)
-[CMD.COPY_SELECTION, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.COPY_PNODE,
-    node: U,
-    refreshType: NO_REFRESH,
-    fromOutline: false
-})],
-[CMD.CUT_SELECTION, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.CUT_PNODE,
-    node: U,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
-})],
-[CMD.CUT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.CUT_PNODE,
-    node: U,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
-})],
+[CMD.COPY_SELECTION, () =&gt; w_leo.editHeadline(U, false)],
+[CMD.CUT_SELECTION, () =&gt; w_leo.editHeadline(U, false)],
+[CMD.CUT_SELECTION_FO, () =&gt; w_leo.editHeadline(U, true)],
+// [CMD.COPY_SELECTION, () =&gt; w_leo.nodeCommand({
+//     action: BRIDGE.COPY_PNODE,
+//     node: U,
+//     refreshType: NO_REFRESH,
+//     fromOutline: false
+// })],
+// [CMD.CUT_SELECTION, () =&gt; w_leo.nodeCommand({
+//     action: BRIDGE.CUT_PNODE,
+//     node: U,
+//     refreshType: REFRESH_TREE_BODY,
+//     fromOutline: false
+// })],
+// [CMD.CUT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
+//     action: BRIDGE.CUT_PNODE,
+//     node: U,
+//     refreshType: REFRESH_TREE_BODY,
+//     fromOutline: true
+// })],
 [CMD.DELETE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: U,
@@ -1999,30 +2006,34 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
-[CMD.PASTE_CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.PASTE_CLONE_PNODE,
-    node: U,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
-})],
-[CMD.PASTE_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.PASTE_CLONE_PNODE,
-    node: U,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
-})],
-[CMD.PASTE_SELECTION, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.PASTE_PNODE,
-    node: U,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
-})],
-[CMD.PASTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.PASTE_PNODE,
-    node: U,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
-})],
+[CMD.PASTE_CLONE_SELECTION, () =&gt; w_leo.editHeadline(U, false)],
+[CMD.PASTE_CLONE_SELECTION_FO, () =&gt; w_leo.editHeadline(U, true)],
+[CMD.PASTE_SELECTION, () =&gt; w_leo.editHeadline(U, false)],
+[CMD.PASTE_SELECTION_FO, () =&gt; w_leo.editHeadline(U, true)],
+// [CMD.PASTE_CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
+//     action: BRIDGE.PASTE_CLONE_PNODE,
+//     node: U,
+//     refreshType: REFRESH_TREE_BODY,
+//     fromOutline: false
+// })],
+// [CMD.PASTE_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
+//     action: BRIDGE.PASTE_CLONE_PNODE,
+//     node: U,
+//     refreshType: REFRESH_TREE_BODY,
+//     fromOutline: true
+// })],
+// [CMD.PASTE_SELECTION, () =&gt; w_leo.nodeCommand({
+//     action: BRIDGE.PASTE_PNODE,
+//     node: U,
+//     refreshType: REFRESH_TREE_BODY,
+//     fromOutline: false
+// })],
+// [CMD.PASTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
+//     action: BRIDGE.PASTE_PNODE,
+//     node: U,
+//     refreshType: REFRESH_TREE_BODY,
+//     fromOutline: true
+// })],
 
 [CMD.CONTRACT_ALL, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_ALL,
@@ -6592,10 +6603,18 @@ public static LEOBRIDGE = {
     // * Leo Operations
     MARK_PNODE: "!mark_node", // "markPNode",
     UNMARK_PNODE: "!unmark_node", // "unmarkPNode",
-    COPY_PNODE: "copyOutline",
+
+    //COPY_PNODE: "copyOutline",
+    COPY_PNODE: "!copy_node",
+
     CUT_PNODE: "!cut_node", // "cutPNode",
-    PASTE_PNODE: "pasteOutline",
-    PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
+
+    // PASTE_PNODE: "pasteOutline",
+    PASTE_PNODE: "!paste_node",
+
+    // PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
+    PASTE_CLONE_PNODE: "!paste_as_clone_node",
+
     DELETE_PNODE: "!delete_node", // "deletePNode",
     MOVE_PNODE_DOWN: "moveOutlineDown",
     MOVE_PNODE_LEFT: "moveOutlineLeft",
@@ -9553,6 +9572,7 @@ export interface LeoBridgePackage {
     searchSettings?: LeoGuiFindTabManagerSettings // get_search_settings
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
+    string?: string; // from cut / copy outline
     total?: number; // set_opened_file, open_file(s), close_file
     version?: string;
     major?: number;
@@ -21990,9 +22010,31 @@ private _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Thenable&lt;
     p_node?: LeoNode,
     p_fromOutline?: boolean
 ): Promise&lt;LeoBridgePackage&gt; {
+    return this._isBusyTriggerSave(false, true)
+        .then(() =&gt; {
 
-    return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+            const q_commandResult = this.nodeCommand({
+                action: Constants.LEOBRIDGE.CUT_PNODE,
+                node: p_node,
+                refreshType: { tree: true, states: true, documents: true, },
 
+                fromOutline: !!p_fromOutline,
+            });
+            if (q_commandResult) {
+                return q_commandResult.then(p_package =&gt; {
+                    if (p_package.string) {
+                        console.log('Cut Node got string:', p_package.string);
+                        this.replaceClipboardWith(p_package.string);
+                    } else {
+                        console.log('Cut Node no package string!!');
+                    }
+                    return p_package;
+                });
+
+            } else {
+                return Promise.reject('Cut Node not added on command stack');
+            }
+        });
 }
 
 </t>
@@ -22000,18 +22042,58 @@ private _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Thenable&lt;
     p_node?: LeoNode,
     p_fromOutline?: boolean
 ): Promise&lt;LeoBridgePackage&gt; {
+    return this._isBusyTriggerSave(false, true)
+        .then(() =&gt; {
 
+            const q_commandResult = this.nodeCommand({
+                action: Constants.LEOBRIDGE.COPY_PNODE,
+                node: p_node,
+                refreshType: {},
+                fromOutline: !!p_fromOutline,
+            });
+            if (q_commandResult) {
+                return q_commandResult.then(p_package =&gt; {
+                    if (p_package.string) {
+                        console.log('Copy Node got string:', p_package.string);
+                        this.replaceClipboardWith(p_package.string);
+                    } else {
+                        console.log('Copy Node no package string!!');
+                    }
+                    return p_package;
+                });
 
-    return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+            } else {
+                return Promise.reject('Copy Node not added on command stack');
+            }
+
+        });
+
 }
 
 </t>
 <t tx="felix.20220222012552.1">public pasteNode(
     p_node?: LeoNode,
     p_fromOutline?: boolean
-): Promise&lt;LeoBridgePackage&gt; {
+): Thenable&lt;LeoBridgePackage&gt; {
+    return this._isBusyTriggerSave(false, true).then(() =&gt; {
 
-    return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+        return this.asyncGetTextFromClipboard().then((p_text) =&gt; {
+
+            const q_commandResult = this.nodeCommand({
+                action: Constants.LEOBRIDGE.PASTE_PNODE,
+                node: p_node,
+                refreshType: { tree: true, states: true, documents: true, },
+                name: p_text,
+                fromOutline: !!p_fromOutline,
+            });
+            if (q_commandResult) {
+                return q_commandResult;
+            } else {
+                return Promise.reject('Cut Node not added on command stack');
+            }
+
+        });
+    });
 
 }
 
@@ -22019,10 +22101,26 @@ private _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Thenable&lt;
 <t tx="felix.20220222012602.1">public pasteAsCloneNode(
     p_node?: LeoNode,
     p_fromOutline?: boolean
-): Promise&lt;LeoBridgePackage&gt; {
+): Thenable&lt;LeoBridgePackage&gt; {
+    return this._isBusyTriggerSave(false, true).then(() =&gt; {
 
-    return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
+        return this.asyncGetTextFromClipboard().then((p_text) =&gt; {
 
+            const q_commandResult = this.nodeCommand({
+                action: Constants.LEOBRIDGE.PASTE_CLONE_PNODE,
+                node: p_node,
+                refreshType: { tree: true, states: true, documents: true, },
+                name: p_text,
+                fromOutline: !!p_fromOutline,
+            });
+            if (q_commandResult) {
+                return q_commandResult;
+            } else {
+                return Promise.reject('Cut Node not added on command stack');
+            }
+
+        });
+    });
 }
 
 </t>
