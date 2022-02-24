@@ -159,7 +159,7 @@ export class LeoIntegration {
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(
         Constants.GUI.LOG_PANE_TITLE
     );
-    private _leoTerminalPane: vscode.OutputChannel | undefined;
+    // private _leoTerminalPane: vscode.OutputChannel | undefined; // ! local server output should be in log pane #
 
     // * Status Bar
     private _leoStatusBar: LeoStatusBar;
@@ -457,11 +457,7 @@ export class LeoIntegration {
      */
     public startServer(): void {
         this.leoStates.leoStartupFinished = false;
-        if (!this._leoTerminalPane) {
-            this._leoTerminalPane = vscode.window.createOutputChannel(
-                Constants.GUI.TERMINAL_PANE_TITLE
-            );
-        }
+        this.showLogPane();
         this._serverService
             .startServer(
                 this.config.leoPythonCommand,
@@ -509,11 +505,6 @@ export class LeoIntegration {
      */
     public killServer(): void {
         this._serverService.killServer();
-        if (this.activated) {
-            this._leoTerminalPane?.clear();
-            this._leoTerminalPane?.dispose();
-            this._leoTerminalPane = undefined;
-        }
     }
 
     /**
@@ -731,34 +722,6 @@ export class LeoIntegration {
                 return Promise.resolve(undefined);
             }
         });
-    }
-
-    /**
-     * * Reveals the leoBridge server terminal output if not already visible
-     */
-    public showTerminalPane(): void {
-        if (this._leoTerminalPane) {
-            this._leoTerminalPane.show(true);
-        }
-    }
-
-    /**
-     * * Hides the leoBridge server terminal output
-     */
-    public hideTerminalPane(): void {
-        if (this._leoTerminalPane) {
-            this._leoTerminalPane.hide();
-        }
-    }
-
-    /**
-     * * Adds a message string to leoInteg's leoBridge server terminal output.
-     * @param p_message The string to be added in the log
-     */
-    public addTerminalPaneEntry(p_message: string): void {
-        if (this._leoTerminalPane) {
-            this._leoTerminalPane.appendLine(p_message);
-        }
     }
 
     /**
@@ -2529,7 +2492,7 @@ export class LeoIntegration {
                 const q_commandResult = this.nodeCommand({
                     action: Constants.LEOBRIDGE.COPY_PNODE,
                     node: p_node,
-                    refreshType: {},
+                    refreshType: {}, // none
                     fromOutline: !!p_fromOutline,
                 });
                 if (q_commandResult) {
@@ -2559,8 +2522,7 @@ export class LeoIntegration {
                 const q_commandResult = this.nodeCommand({
                     action: Constants.LEOBRIDGE.CUT_PNODE,
                     node: p_node,
-                    refreshType: { tree: true, states: true, documents: true, },
-
+                    refreshType: { tree: true, body: true, states: true },
                     fromOutline: !!p_fromOutline,
                 });
                 if (q_commandResult) {
@@ -2589,7 +2551,7 @@ export class LeoIntegration {
                 const q_commandResult = this.nodeCommand({
                     action: Constants.LEOBRIDGE.PASTE_PNODE,
                     node: p_node,
-                    refreshType: { tree: true, states: true, documents: true, },
+                    refreshType: { tree: true, body: true, states: true },
                     name: p_text,
                     fromOutline: !!p_fromOutline,
                 });
@@ -2615,7 +2577,7 @@ export class LeoIntegration {
                 const q_commandResult = this.nodeCommand({
                     action: Constants.LEOBRIDGE.PASTE_CLONE_PNODE,
                     node: p_node,
-                    refreshType: { tree: true, states: true, documents: true, },
+                    refreshType: { tree: true, body: true, states: true },
                     name: p_text,
                     fromOutline: !!p_fromOutline,
                 });
