@@ -41,13 +41,13 @@ import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
 export class LeoIntegration {
     // * Status Flags
     public activated: boolean = true; // Set to false when deactivating the extension
-
     private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Is set when leoBridge has a leo controller ready
     private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Might need to be re-set when switching visibility
     private _hasShownContextOpenMessage: boolean = false; // Used to show this information only once
 
     // * State flags
     public leoStates: LeoStates;
+    private _startingServer: boolean = false; // Used to prevent re-starting while starting until success of fail
     public verbose: boolean = false;
     public trace: boolean = false;
     public clipboardContent: string = "";
@@ -456,6 +456,10 @@ export class LeoIntegration {
      * * Starts an instance of a leoBridge server, and may connect to it afterwards, based on configuration flags.
      */
     public startServer(): void {
+        if (this._startingServer) {
+            return;
+        }
+        this._startingServer = true;
         this.leoStates.leoStartupFinished = false;
         this.showLogPane();
         this._serverService
@@ -469,15 +473,18 @@ export class LeoIntegration {
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                     if (this.config.connectToServerAutomatically) {
                         setTimeout(() => {
-                            // Wait 2 full seconds
+                            // wait a few milliseconds
                             this.connect();
-                        }, 2000);
+                            this._startingServer = false;
+                        }, 1500);
                     } else {
+                        this._startingServer = false;
                         this.leoStates.leoStartupFinished = true;
                     }
                 },
                 (p_reason) => {
                     // This context flag will remove the 'connecting' welcome view
+                    this._startingServer = false;
                     utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
                     utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
                     if (
@@ -490,12 +497,11 @@ export class LeoIntegration {
                                     vscode.commands.executeCommand(Constants.COMMANDS.CHOOSE_LEO_FOLDER);
                                 }
                             });
-
-                        return;
+                    } else {
+                        vscode.window.showErrorMessage(
+                            Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason,
+                        );
                     }
-                    vscode.window.showErrorMessage(
-                        Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason,
-                    );
                 }
             );
     }
