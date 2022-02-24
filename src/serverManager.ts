@@ -142,7 +142,7 @@ export class ServerService {
                 windowsHide: true,
             };
 
-            this._leoIntegration.addTerminalPaneEntry(
+            this._leoIntegration.addLogPaneEntry(
                 'Starting server with command: ' +
                 w_pythonPath + " " + w_args.join(" ")
             );
@@ -232,7 +232,7 @@ export class ServerService {
                         this._resolvePromise(p_line); // * Server confirmed started
                     }
                 }
-                this._leoIntegration.addTerminalPaneEntry(p_line); // Output message anyways
+                this._leoIntegration.addLogPaneEntry(p_line); // Output message anyways
             }
         });
     }

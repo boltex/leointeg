@@ -185,6 +185,7 @@ export interface LeoBridgePackage {
     searchSettings?: LeoGuiFindTabManagerSettings // get_search_settings
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
+    string?: string; // from cut / copy outline
     total?: number; // set_opened_file, open_file(s), close_file
     version?: string;
     major?: number;

@@ -237,7 +237,7 @@
 <v t="felix.20201129184357.1"><vh>printAction</vh></v>
 <v t="felix.20191126232435.1"><vh>main leoBridgeServer loop</vh></v>
 </v>
-<v t="felix.20210621233316.1"><vh>@@file leoserver.py</vh>
+<v t="felix.20210621233316.1"><vh>@@@file leoserver.py</vh>
 <v t="felix.20210621233316.2"><vh>&lt;&lt; imports &gt;&gt;</vh></v>
 <v t="felix.20210712224107.1"><vh>setup JSON encoder</vh></v>
 <v t="felix.20210621233316.3"><vh>Exception classes</vh></v>
@@ -694,10 +694,7 @@
 <v t="felix.20200719025231.14"><vh>_removeLastFile</vh></v>
 <v t="felix.20200719025231.15"><vh>showRecentLeoFiles</vh></v>
 </v>
-<v t="ekr.20200815085229.1"><vh>Log &amp; Terminal panes</vh>
-<v t="ekr.20200815085316.1"><vh>showTerminalPane</vh></v>
-<v t="ekr.20200815085316.2"><vh>hideTerminalPane</vh></v>
-<v t="ekr.20200815085316.3"><vh>addTerminalPaneEntry</vh></v>
+<v t="ekr.20200815085229.1"><vh>Log pane</vh>
 <v t="ekr.20200815085316.4"><vh>showLogPane</vh></v>
 <v t="ekr.20200815085316.5"><vh>hideLogPane</vh></v>
 <v t="ekr.20200815085316.6"><vh>addLogPaneEntry</vh></v>
@@ -769,6 +766,15 @@
 <v t="felix.20200719025231.54"><vh>changeMark</vh></v>
 <v t="felix.20200719025231.55"><vh>editHeadline</vh></v>
 <v t="felix.20200719025231.56"><vh>insertNode</vh></v>
+<v t="felix.20220222012540.1"><vh>copyNode</vh></v>
+<v t="felix.20220222012528.1"><vh>cutNode</vh></v>
+<v t="felix.20220222012552.1"><vh>pasteNode</vh></v>
+<v t="felix.20220222012602.1"><vh>pasteAsCloneNode</vh></v>
+</v>
+<v t="felix.20220222014050.1"><vh>Clipboard</vh>
+<v t="felix.20220222014050.2"><vh>replaceClipboardWith</vh></v>
+<v t="felix.20220222014050.3"><vh>asyncGetTextFromClipboard</vh></v>
+<v t="felix.20220222014050.4"><vh>getTextFromClipboard</vh></v>
 </v>
 <v t="felix.20210530225640.1"><vh>Search</vh>
 <v t="felix.20210516233931.1"><vh>startSearch</vh></v>
@@ -1317,37 +1323,6 @@ def simulateDialog(self, key, defaultVal):
 */
 </t>
 <t tx="ekr.20200815085229.1"></t>
-<t tx="ekr.20200815085316.1">/**
- * * Reveals the leoBridge server terminal output if not already visible
- */
-public showTerminalPane(): void {
-    if (this._leoTerminalPane) {
-        this._leoTerminalPane.show(true);
-    }
-}
-
-</t>
-<t tx="ekr.20200815085316.2">/**
- * * Hides the leoBridge server terminal output
- */
-public hideTerminalPane(): void {
-    if (this._leoTerminalPane) {
-        this._leoTerminalPane.hide();
-    }
-}
-
-</t>
-<t tx="ekr.20200815085316.3">/**
- * * Adds a message string to leoInteg's leoBridge server terminal output.
- * @param p_message The string to be added in the log
- */
-public addTerminalPaneEntry(p_message: string): void {
-    if (this._leoTerminalPane) {
-        this._leoTerminalPane.appendLine(p_message);
-    }
-}
-
-</t>
 <t tx="ekr.20200815085316.4">/**
  * * Reveals the log pane if not already visible
  */
@@ -1777,7 +1752,7 @@ private _processServerOutput(p_data: string): void {
                     this._resolvePromise(p_line); // * Server confirmed started
                 }
             }
-            this._leoIntegration.addTerminalPaneEntry(p_line); // Output message anyways
+            this._leoIntegration.addLogPaneEntry(p_line); // Output message anyways
         }
     });
 }
@@ -1923,20 +1898,9 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.HEADLINE_SELECTION_FO, () =&gt; w_leo.editHeadline(U, true)],
 
 // cut/copy/paste/delete given node.
-[CMD.COPY, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
-    action: BRIDGE.COPY_PNODE,
-    node: p_node,
-    refreshType: NO_REFRESH,
-    fromOutline: true,
-    keepSelection: true
-})],
-[CMD.CUT, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
-    action: BRIDGE.CUT_PNODE,
-    node: p_node,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
-    keepSelection: true
-})],
+[CMD.COPY, (p_node: LeoNode) =&gt; w_leo.copyNode(p_node, true)],
+[CMD.CUT, (p_node: LeoNode) =&gt; w_leo.cutNode(p_node, true)],
+
 [CMD.DELETE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: p_node,
@@ -1944,40 +1908,14 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: true,
     keepSelection: true
 })],
-[CMD.PASTE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
-    action: BRIDGE.PASTE_PNODE,
-    node: p_node,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
-    keepSelection: false
-})],
-[CMD.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
-    action: BRIDGE.PASTE_CLONE_PNODE,
-    node: p_node,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: true,
-    keepSelection: false
-})],
+[CMD.PASTE, (p_node: LeoNode) =&gt; w_leo.pasteNode(p_node, true)],
+[CMD.PASTE_CLONE, (p_node: LeoNode) =&gt; w_leo.pasteAsCloneNode(p_node, true)],
 
 // cut/copy/paste/delete current selection (self.commander.p)
-[CMD.COPY_SELECTION, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.COPY_PNODE,
-    node: U,
-    refreshType: NO_REFRESH,
-    fromOutline: false
-})],
-[CMD.CUT_SELECTION, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.CUT_PNODE,
-    node: U,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
-})],
-[CMD.CUT_SELECTION_FO, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.CUT_PNODE,
-    node: U,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
-})],
+[CMD.COPY_SELECTION, () =&gt; w_leo.copyNode(U, false)],
+[CMD.CUT_SELECTION, () =&gt; w_leo.cutNode(U, false)],
+[CMD.CUT_SELECTION_FO, () =&gt; w_leo.cutNode(U, true)],
+
 [CMD.DELETE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DELETE_PNODE,
     node: U,
@@ -1990,30 +1928,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
-[CMD.PASTE_CLONE_SELECTION, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.PASTE_CLONE_PNODE,
-    node: U,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
-})],
-[CMD.PASTE_CLONE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.PASTE_CLONE_PNODE,
-    node: U,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
-})],
-[CMD.PASTE_SELECTION, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.PASTE_PNODE,
-    node: U,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: false
-})],
-[CMD.PASTE_SELECTION_FO, () =&gt; w_leo.nodeCommand({
-    action: BRIDGE.PASTE_PNODE,
-    node: U,
-    refreshType: REFRESH_TREE_BODY,
-    fromOutline: true
-})],
+[CMD.PASTE_SELECTION, () =&gt; w_leo.pasteNode(U, false)],
+[CMD.PASTE_SELECTION_FO, () =&gt; w_leo.pasteNode(U, true)],
+[CMD.PASTE_CLONE_SELECTION, () =&gt; w_leo.pasteAsCloneNode(U, false)],
+[CMD.PASTE_CLONE_SELECTION_FO, () =&gt; w_leo.pasteAsCloneNode(U, true)],
 
 [CMD.CONTRACT_ALL, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.CONTRACT_ALL,
@@ -6583,10 +6501,18 @@ public static LEOBRIDGE = {
     // * Leo Operations
     MARK_PNODE: "!mark_node", // "markPNode",
     UNMARK_PNODE: "!unmark_node", // "unmarkPNode",
-    COPY_PNODE: "copyOutline",
+
+    //COPY_PNODE: "copyOutline",
+    COPY_PNODE: "!copy_node",
+
     CUT_PNODE: "!cut_node", // "cutPNode",
-    PASTE_PNODE: "pasteOutline",
-    PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
+
+    // PASTE_PNODE: "pasteOutline",
+    PASTE_PNODE: "!paste_node",
+
+    // PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
+    PASTE_CLONE_PNODE: "!paste_as_clone_node",
+
     DELETE_PNODE: "!delete_node", // "deletePNode",
     MOVE_PNODE_DOWN: "moveOutlineDown",
     MOVE_PNODE_LEFT: "moveOutlineLeft",
@@ -9203,7 +9129,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
             windowsHide: true,
         };
 
-        this._leoIntegration.addTerminalPaneEntry(
+        this._leoIntegration.addLogPaneEntry(
             'Starting server with command: ' +
             w_pythonPath + " " + w_args.join(" ")
         );
@@ -9544,6 +9470,7 @@ export interface LeoBridgePackage {
     searchSettings?: LeoGuiFindTabManagerSettings // get_search_settings
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
+    string?: string; // from cut / copy outline
     total?: number; // set_opened_file, open_file(s), close_file
     version?: string;
     major?: number;
@@ -9968,7 +9895,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 
 - Websocket Python Library\
   _Install with :_ `pip install websockets`\
-  (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
+  (See [websockets.readthedocs.io/](https://websockets.readthedocs.io/))
 
 </t>
 <t tx="felix.20200718222035.1">## Features
@@ -10527,15 +10454,16 @@ private _triggerGetStates(): void {
 export class LeoIntegration {
     // * Status Flags
     public activated: boolean = true; // Set to false when deactivating the extension
-
     private _leoBridgeReadyPromise: Promise&lt;LeoBridgePackage&gt; | undefined; // Is set when leoBridge has a leo controller ready
     private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Might need to be re-set when switching visibility
     private _hasShownContextOpenMessage: boolean = false; // Used to show this information only once
 
     // * State flags
     public leoStates: LeoStates;
+    private _startingServer: boolean = false; // Used to prevent re-starting while starting until success of fail
     public verbose: boolean = false;
     public trace: boolean = false;
+    public clipboardContent: string = "";
 
     // * Frontend command stack
     private _commandStack: CommandStack;
@@ -10644,7 +10572,7 @@ export class LeoIntegration {
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(
         Constants.GUI.LOG_PANE_TITLE
     );
-    private _leoTerminalPane: vscode.OutputChannel | undefined;
+    // private _leoTerminalPane: vscode.OutputChannel | undefined; // ! local server output should be in log pane #
 
     // * Status Bar
     private _leoStatusBar: LeoStatusBar;
@@ -12342,12 +12270,12 @@ public statusBarOnClick(): Thenable&lt;unknown&gt; {
  * * Starts an instance of a leoBridge server, and may connect to it afterwards, based on configuration flags.
  */
 public startServer(): void {
-    this.leoStates.leoStartupFinished = false;
-    if (!this._leoTerminalPane) {
-        this._leoTerminalPane = vscode.window.createOutputChannel(
-            Constants.GUI.TERMINAL_PANE_TITLE
-        );
+    if (this._startingServer) {
+        return;
     }
+    this._startingServer = true;
+    this.leoStates.leoStartupFinished = false;
+    this.showLogPane();
     this._serverService
         .startServer(
             this.config.leoPythonCommand,
@@ -12359,15 +12287,18 @@ public startServer(): void {
                 utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                 if (this.config.connectToServerAutomatically) {
                     setTimeout(() =&gt; {
-                        // Wait 2 full seconds
+                        // wait a few milliseconds
                         this.connect();
-                    }, 2000);
+                        this._startingServer = false;
+                    }, 1500);
                 } else {
+                    this._startingServer = false;
                     this.leoStates.leoStartupFinished = true;
                 }
             },
             (p_reason) =&gt; {
                 // This context flag will remove the 'connecting' welcome view
+                this._startingServer = false;
                 utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
                 utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
                 if (
@@ -12380,12 +12311,11 @@ public startServer(): void {
                                 vscode.commands.executeCommand(Constants.COMMANDS.CHOOSE_LEO_FOLDER);
                             }
                         });
-
-                    return;
+                } else {
+                    vscode.window.showErrorMessage(
+                        Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason,
+                    );
                 }
-                vscode.window.showErrorMessage(
-                    Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason,
-                );
             }
         );
 }
@@ -20104,7 +20034,7 @@ def _dump_position(self, p):  # pragma: no cover
 
     try:
         w_rclick = param.get("rclick", False)
-        if w_rclick and button.rclicks:
+        if w_rclick and hasattr(button, 'rclicks'):
             # not zero
             toChooseFrom = button.rclicks
             for i_rc in  w_rclick:
@@ -20996,11 +20926,6 @@ public killServer(): void {
  */
 public killServer(): void {
     this._serverService.killServer();
-    if (this.activated) {
-        this._leoTerminalPane?.clear();
-        this._leoTerminalPane?.dispose();
-        this._leoTerminalPane = undefined;
-    }
 }
 
 </t>
@@ -21732,7 +21657,7 @@ public gotoScript(p_node: LeoButtonNode): Promise&lt;boolean&gt; {
         })
         .then((p_package) =&gt; {
             // refresh and reveal selection
-            this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
+            this.launchRefresh({ tree: true, body: true, states: true, buttons: false, documents: false }, false, p_package.node);
             return Promise.resolve(true); // TODO launchRefresh should be a returned promise
         });
 }
@@ -21973,6 +21898,143 @@ private _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Thenable&lt;
         // Escaped
         return Promise.reject();
     });
+}
+
+</t>
+<t tx="felix.20220222012528.1">public cutNode(
+    p_node?: LeoNode,
+    p_fromOutline?: boolean
+): Promise&lt;LeoBridgePackage&gt; {
+    return this._isBusyTriggerSave(false, true)
+        .then(() =&gt; {
+
+            const q_commandResult = this.nodeCommand({
+                action: Constants.LEOBRIDGE.CUT_PNODE,
+                node: p_node,
+                refreshType: { tree: true, body: true, states: true },
+                fromOutline: !!p_fromOutline,
+            });
+            if (q_commandResult) {
+                return q_commandResult.then(p_package =&gt; {
+                    if (p_package.string) {
+                        this.replaceClipboardWith(p_package.string);
+                    } else {
+                    }
+                    return p_package;
+                });
+
+            } else {
+                return Promise.reject('Cut Node not added on command stack');
+            }
+        });
+}
+
+</t>
+<t tx="felix.20220222012540.1">public copyNode(
+    p_node?: LeoNode,
+    p_fromOutline?: boolean
+): Promise&lt;LeoBridgePackage&gt; {
+    return this._isBusyTriggerSave(false, true)
+        .then(() =&gt; {
+
+            const q_commandResult = this.nodeCommand({
+                action: Constants.LEOBRIDGE.COPY_PNODE,
+                node: p_node,
+                refreshType: {}, // none
+                fromOutline: !!p_fromOutline,
+            });
+            if (q_commandResult) {
+                return q_commandResult.then(p_package =&gt; {
+                    if (p_package.string) {
+                        this.replaceClipboardWith(p_package.string);
+                    } else {
+                    }
+                    return p_package;
+                });
+
+            } else {
+                return Promise.reject('Copy Node not added on command stack');
+            }
+
+        });
+
+}
+
+</t>
+<t tx="felix.20220222012552.1">public pasteNode(
+    p_node?: LeoNode,
+    p_fromOutline?: boolean
+): Thenable&lt;LeoBridgePackage&gt; {
+    return this._isBusyTriggerSave(false, true).then(() =&gt; {
+
+        return this.asyncGetTextFromClipboard().then((p_text) =&gt; {
+
+            const q_commandResult = this.nodeCommand({
+                action: Constants.LEOBRIDGE.PASTE_PNODE,
+                node: p_node,
+                refreshType: { tree: true, body: true, states: true },
+                name: p_text,
+                fromOutline: !!p_fromOutline,
+            });
+            if (q_commandResult) {
+                return q_commandResult;
+            } else {
+                return Promise.reject('Cut Node not added on command stack');
+            }
+
+        });
+    });
+
+}
+
+</t>
+<t tx="felix.20220222012602.1">public pasteAsCloneNode(
+    p_node?: LeoNode,
+    p_fromOutline?: boolean
+): Thenable&lt;LeoBridgePackage&gt; {
+    return this._isBusyTriggerSave(false, true).then(() =&gt; {
+
+        return this.asyncGetTextFromClipboard().then((p_text) =&gt; {
+
+            const q_commandResult = this.nodeCommand({
+                action: Constants.LEOBRIDGE.PASTE_CLONE_PNODE,
+                node: p_node,
+                refreshType: { tree: true, body: true, states: true },
+                name: p_text,
+                fromOutline: !!p_fromOutline,
+            });
+            if (q_commandResult) {
+                return q_commandResult;
+            } else {
+                return Promise.reject('Cut Node not added on command stack');
+            }
+
+        });
+    });
+}
+
+</t>
+<t tx="felix.20220222014050.1"></t>
+<t tx="felix.20220222014050.2">public replaceClipboardWith(s: string): Thenable&lt;void&gt; {
+    this.clipboardContent = s; // also set immediate clipboard string
+    return vscode.env.clipboard.writeText(s);
+}
+
+</t>
+<t tx="felix.20220222014050.3">public asyncGetTextFromClipboard(): Thenable&lt;string&gt; {
+    return vscode.env.clipboard.readText().then((s) =&gt; {
+        // also set immediate clipboard string for possible future read
+        this.clipboardContent = s;
+        return this.getTextFromClipboard();
+    });
+}
+
+</t>
+<t tx="felix.20220222014050.4">/**
+ * Returns clipboard content
+*/
+public getTextFromClipboard(): string {
+    return this.clipboardContent;
 }
 
 </t>

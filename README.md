@@ -22,7 +22,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 - Websocket Python Library\
   _Install with :_ `pip install websockets`\
-  (See [websockets.readthedocs.io/en/stable/intro.html](https://websockets.readthedocs.io/en/stable/intro.html))
+  (See [websockets.readthedocs.io/](https://websockets.readthedocs.io/))
 
 ## Features
 

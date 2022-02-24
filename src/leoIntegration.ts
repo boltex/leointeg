@@ -41,15 +41,16 @@ import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
 export class LeoIntegration {
     // * Status Flags
     public activated: boolean = true; // Set to false when deactivating the extension
-
     private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Is set when leoBridge has a leo controller ready
     private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Might need to be re-set when switching visibility
     private _hasShownContextOpenMessage: boolean = false; // Used to show this information only once
 
     // * State flags
     public leoStates: LeoStates;
+    private _startingServer: boolean = false; // Used to prevent re-starting while starting until success of fail
     public verbose: boolean = false;
     public trace: boolean = false;
+    public clipboardContent: string = "";
 
     // * Frontend command stack
     private _commandStack: CommandStack;
@@ -158,7 +159,7 @@ export class LeoIntegration {
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(
         Constants.GUI.LOG_PANE_TITLE
     );
-    private _leoTerminalPane: vscode.OutputChannel | undefined;
+    // private _leoTerminalPane: vscode.OutputChannel | undefined; // ! local server output should be in log pane #
 
     // * Status Bar
     private _leoStatusBar: LeoStatusBar;
@@ -455,12 +456,12 @@ export class LeoIntegration {
      * * Starts an instance of a leoBridge server, and may connect to it afterwards, based on configuration flags.
      */
     public startServer(): void {
-        this.leoStates.leoStartupFinished = false;
-        if (!this._leoTerminalPane) {
-            this._leoTerminalPane = vscode.window.createOutputChannel(
-                Constants.GUI.TERMINAL_PANE_TITLE
-            );
+        if (this._startingServer) {
+            return;
         }
+        this._startingServer = true;
+        this.leoStates.leoStartupFinished = false;
+        this.showLogPane();
         this._serverService
             .startServer(
                 this.config.leoPythonCommand,
@@ -472,15 +473,18 @@ export class LeoIntegration {
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                     if (this.config.connectToServerAutomatically) {
                         setTimeout(() => {
-                            // Wait 2 full seconds
+                            // wait a few milliseconds
                             this.connect();
-                        }, 2000);
+                            this._startingServer = false;
+                        }, 1500);
                     } else {
+                        this._startingServer = false;
                         this.leoStates.leoStartupFinished = true;
                     }
                 },
                 (p_reason) => {
                     // This context flag will remove the 'connecting' welcome view
+                    this._startingServer = false;
                     utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
                     utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
                     if (
@@ -493,12 +497,11 @@ export class LeoIntegration {
                                     vscode.commands.executeCommand(Constants.COMMANDS.CHOOSE_LEO_FOLDER);
                                 }
                             });
-
-                        return;
+                    } else {
+                        vscode.window.showErrorMessage(
+                            Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason,
+                        );
                     }
-                    vscode.window.showErrorMessage(
-                        Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason,
-                    );
                 }
             );
     }
@@ -508,11 +511,6 @@ export class LeoIntegration {
      */
     public killServer(): void {
         this._serverService.killServer();
-        if (this.activated) {
-            this._leoTerminalPane?.clear();
-            this._leoTerminalPane?.dispose();
-            this._leoTerminalPane = undefined;
-        }
     }
 
     /**
@@ -730,34 +728,6 @@ export class LeoIntegration {
                 return Promise.resolve(undefined);
             }
         });
-    }
-
-    /**
-     * * Reveals the leoBridge server terminal output if not already visible
-     */
-    public showTerminalPane(): void {
-        if (this._leoTerminalPane) {
-            this._leoTerminalPane.show(true);
-        }
-    }
-
-    /**
-     * * Hides the leoBridge server terminal output
-     */
-    public hideTerminalPane(): void {
-        if (this._leoTerminalPane) {
-            this._leoTerminalPane.hide();
-        }
-    }
-
-    /**
-     * * Adds a message string to leoInteg's leoBridge server terminal output.
-     * @param p_message The string to be added in the log
-     */
-    public addTerminalPaneEntry(p_message: string): void {
-        if (this._leoTerminalPane) {
-            this._leoTerminalPane.appendLine(p_message);
-        }
     }
 
     /**
@@ -2518,6 +2488,135 @@ export class LeoIntegration {
         }
     }
 
+    public copyNode(
+        p_node?: LeoNode,
+        p_fromOutline?: boolean
+    ): Promise<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true)
+            .then(() => {
+
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.COPY_PNODE,
+                    node: p_node,
+                    refreshType: {}, // none
+                    fromOutline: !!p_fromOutline,
+                });
+                if (q_commandResult) {
+                    return q_commandResult.then(p_package => {
+                        if (p_package.string) {
+                            this.replaceClipboardWith(p_package.string);
+                        } else {
+                        }
+                        return p_package;
+                    });
+
+                } else {
+                    return Promise.reject('Copy Node not added on command stack');
+                }
+
+            });
+
+    }
+
+    public cutNode(
+        p_node?: LeoNode,
+        p_fromOutline?: boolean
+    ): Promise<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true)
+            .then(() => {
+
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.CUT_PNODE,
+                    node: p_node,
+                    refreshType: { tree: true, body: true, states: true },
+                    fromOutline: !!p_fromOutline,
+                });
+                if (q_commandResult) {
+                    return q_commandResult.then(p_package => {
+                        if (p_package.string) {
+                            this.replaceClipboardWith(p_package.string);
+                        } else {
+                        }
+                        return p_package;
+                    });
+
+                } else {
+                    return Promise.reject('Cut Node not added on command stack');
+                }
+            });
+    }
+
+    public pasteNode(
+        p_node?: LeoNode,
+        p_fromOutline?: boolean
+    ): Thenable<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true).then(() => {
+
+            return this.asyncGetTextFromClipboard().then((p_text) => {
+
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.PASTE_PNODE,
+                    node: p_node,
+                    refreshType: { tree: true, body: true, states: true },
+                    name: p_text,
+                    fromOutline: !!p_fromOutline,
+                });
+                if (q_commandResult) {
+                    return q_commandResult;
+                } else {
+                    return Promise.reject('Cut Node not added on command stack');
+                }
+
+            });
+        });
+
+    }
+
+    public pasteAsCloneNode(
+        p_node?: LeoNode,
+        p_fromOutline?: boolean
+    ): Thenable<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true).then(() => {
+
+            return this.asyncGetTextFromClipboard().then((p_text) => {
+
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.PASTE_CLONE_PNODE,
+                    node: p_node,
+                    refreshType: { tree: true, body: true, states: true },
+                    name: p_text,
+                    fromOutline: !!p_fromOutline,
+                });
+                if (q_commandResult) {
+                    return q_commandResult;
+                } else {
+                    return Promise.reject('Cut Node not added on command stack');
+                }
+
+            });
+        });
+    }
+
+    public replaceClipboardWith(s: string): Thenable<void> {
+        this.clipboardContent = s; // also set immediate clipboard string
+        return vscode.env.clipboard.writeText(s);
+    }
+
+    public asyncGetTextFromClipboard(): Thenable<string> {
+        return vscode.env.clipboard.readText().then((s) => {
+            // also set immediate clipboard string for possible future read
+            this.clipboardContent = s;
+            return this.getTextFromClipboard();
+        });
+    }
+
+    /**
+     * Returns clipboard content
+    */
+    public getTextFromClipboard(): string {
+        return this.clipboardContent;
+    }
+
     /**
      * * Opens the find panel and selects all & focuses on the find field.
      */
@@ -3574,7 +3673,7 @@ export class LeoIntegration {
             })
             .then((p_package) => {
                 // refresh and reveal selection
-                this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
+                this.launchRefresh({ tree: true, body: true, states: true, buttons: false, documents: false }, false, p_package.node);
                 return Promise.resolve(true); // TODO launchRefresh should be a returned promise
             });
     }
