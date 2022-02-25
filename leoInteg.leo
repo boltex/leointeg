@@ -237,7 +237,7 @@
 <v t="felix.20201129184357.1"><vh>printAction</vh></v>
 <v t="felix.20191126232435.1"><vh>main leoBridgeServer loop</vh></v>
 </v>
-<v t="felix.20210621233316.1"><vh>@@@file leoserver.py</vh>
+<v t="felix.20210621233316.1"><vh>@@file leoserver.py</vh>
 <v t="felix.20210621233316.2"><vh>&lt;&lt; imports &gt;&gt;</vh></v>
 <v t="felix.20210712224107.1"><vh>setup JSON encoder</vh></v>
 <v t="felix.20210621233316.3"><vh>Exception classes</vh></v>
@@ -325,7 +325,8 @@
 <v t="felix.20210621233316.49"><vh>server:node commands</vh>
 <v t="felix.20210621233316.50"><vh>server.clone_node</vh></v>
 <v t="felix.20210621233316.51"><vh>server.contract_node</vh></v>
-<v t="felix.20210621233316.52"><vh>server.cut_node</vh></v>
+<v t="felix.20210621233316.52"><vh>server.copy_node</vh></v>
+<v t="felix.20220222172507.1"><vh>server.cut_node</vh></v>
 <v t="felix.20210621233316.53"><vh>server.delete_node</vh></v>
 <v t="felix.20210621233316.54"><vh>server.expand_node</vh></v>
 <v t="felix.20210621233316.55"><vh>server.insert_node</vh></v>
@@ -334,6 +335,8 @@
 <v t="felix.20210703021441.1"><vh>server.insert_child_named_node</vh></v>
 <v t="felix.20210621233316.57"><vh>server.page_down</vh></v>
 <v t="felix.20210621233316.58"><vh>server.page_up</vh></v>
+<v t="felix.20220222173659.1"><vh>server.paste_node</vh></v>
+<v t="felix.20220222173707.1"><vh>paste_as_clone_node</vh></v>
 <v t="felix.20210621233316.59"><vh>server.redo</vh></v>
 <v t="felix.20210621233316.60"><vh>server.set_body</vh></v>
 <v t="felix.20210621233316.61"><vh>server.set_current_position</vh></v>
@@ -17210,12 +17213,12 @@ if __name__ == '__main__':
 
     try:
         try:
-            server = websockets.serve(ws_handler, wsHost, wsPort)  # pylint: disable=no-member
+            server = websockets.serve(ws_handler, wsHost, wsPort, max_size=None)  # pylint: disable=no-member
             realtime_server = loop.run_until_complete(server)
         except OSError as e:
             print(e)
             print("Trying with IPv4 Family", flush=True)
-            server = websockets.serve(ws_handler, wsHost, wsPort, family=socket.AF_INET)  # pylint: disable=no-member
+            server = websockets.serve(ws_handler, wsHost, wsPort, family=socket.AF_INET, max_size=None)  # pylint: disable=no-member
             realtime_server = loop.run_until_complete(server)
 
         signon = SERVER_STARTED_TOKEN + f" at {wsHost} on port: {wsPort}.\n"
@@ -18253,29 +18256,24 @@ class TerminateServer(Exception):  # pragma: no cover
     p.contract()
     return self._make_response()
 </t>
-<t tx="felix.20210621233316.52">def cut_node(self, param):  # pragma: no cover (too dangerous, for now)
+<t tx="felix.20210621233316.52">def copy_node(self, param):  # pragma: no cover (too dangerous, for now)
     """
-    Cut a node, don't select it.
-    Try to keep selection, then return the selected node that remains.
+    Copy a node, don't select it.
+    Try to keep selection, then return the selected node.
     """
     c = self._check_c()
     p = self._get_p(param)
     if p == c.p:
-        c.cutOutline()  # already on this node, so cut it
+        s = c.fileCommands.outline_to_clipboard_string()
     else:
         oldPosition = c.p  # not same node, save position to possibly return to
         c.selectPosition(p)
-        c.cutOutline()
+        s = c.fileCommands.outline_to_clipboard_string()
         if c.positionExists(oldPosition):
             # select if old position still valid
             c.selectPosition(oldPosition)
-        else:
-            oldPosition._childIndex = oldPosition._childIndex-1
-            # Try again with childIndex decremented
-            if c.positionExists(oldPosition):
-                # additional try with lowered childIndex
-                c.selectPosition(oldPosition)
-    return self._make_response()
+    return self._make_response({"string": s})
+
 </t>
 <t tx="felix.20210621233316.53">def delete_node(self, param):  # pragma: no cover (too dangerous, for now)
     """
@@ -22037,6 +22035,88 @@ public getTextFromClipboard(): string {
     return this.clipboardContent;
 }
 
+</t>
+<t tx="felix.20220222172507.1">def cut_node(self, param):  # pragma: no cover (too dangerous, for now)
+    """
+    Cut a node, don't select it.
+    Try to keep selection, then return the selected node that remains.
+    """
+    c = self._check_c()
+    p = self._get_p(param)
+    if p == c.p:
+        s = c.fileCommands.outline_to_clipboard_string()
+        c.cutOutline()  # already on this node, so cut it
+    else:
+        oldPosition = c.p  # not same node, save position to possibly return to
+        c.selectPosition(p)
+        s = c.fileCommands.outline_to_clipboard_string()
+        c.cutOutline()
+        if c.positionExists(oldPosition):
+            # select if old position still valid
+            c.selectPosition(oldPosition)
+        else:
+            oldPosition._childIndex = oldPosition._childIndex-1
+            # Try again with childIndex decremented
+            if c.positionExists(oldPosition):
+                # additional try with lowered childIndex
+                c.selectPosition(oldPosition)
+    return self._make_response({"string": s})
+</t>
+<t tx="felix.20220222173659.1">def paste_node(self, param):
+    """
+    Pastes a node,
+    Try to keep selection, then return the selected node.
+    """
+    tag = 'paste_node'
+    c = self._check_c()
+    p = self._get_p(param)
+    s = param.get('name')
+    if s is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no string given")
+    if p == c.p:
+        c.pasteOutline(s=s)
+    else:
+        oldPosition = c.p  # not same node, save position to possibly return to
+        c.selectPosition(p)
+        c.pasteOutline(s=s)
+        if c.positionExists(oldPosition):
+            # select if old position still valid
+            c.selectPosition(oldPosition)
+        else:
+            oldPosition._childIndex = oldPosition._childIndex+1
+            # Try again with childIndex incremented
+            if c.positionExists(oldPosition):
+                # additional try with higher childIndex
+                c.selectPosition(oldPosition)
+    return self._make_response()
+</t>
+<t tx="felix.20220222173707.1">def paste_as_clone_node(self, param):
+    """
+    Pastes a node as a clone,
+    Try to keep selection, then return the selected node.
+    """
+    tag = 'paste_as_clone_node'
+    c = self._check_c()
+    p = self._get_p(param)
+    s = param.get('name')
+    if s is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no string given")
+    if p == c.p:
+        c.pasteOutlineRetainingClones(s=s)
+    else:
+        oldPosition = c.p  # not same node, save position to possibly return to
+        c.selectPosition(p)
+        c.pasteOutlineRetainingClones(s=s)
+        if c.positionExists(oldPosition):
+            # select if old position still valid
+            c.selectPosition(oldPosition)
+        else:
+            oldPosition._childIndex = oldPosition._childIndex+1
+            # Try again with childIndex incremented
+            if c.positionExists(oldPosition):
+                # additional try with higher childIndex
+                c.selectPosition(oldPosition)
+    return self._make_response()
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
