@@ -3779,7 +3779,13 @@ export class LeoIntegration {
 
         //     });
 
+        // * test QuickSearchController
+        //
+
+        return Promise.resolve("");
+
         // * test ua's
+        /*
         this.sendAction(
             // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
             Constants.LEOBRIDGE.SET_UA,
@@ -3808,6 +3814,7 @@ export class LeoIntegration {
                 false
             );
         });
+        */
 
         // Test setting scroll / selection range
 

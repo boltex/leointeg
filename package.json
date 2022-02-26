@@ -667,6 +667,11 @@
     ],
     "commands": [
       {
+        "command": "leointeg.test",
+        "category": "Leo",
+        "title": "test"
+      },
+      {
         "command": "leointeg.setEnablePreview",
         "category": "Leo",
         "title": "Set Enable-Preview"
