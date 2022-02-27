@@ -2,10 +2,12 @@
 
 ## 1.0.6
 
-- Prevent reappearance of unknown-language warnings in a session for a given language.
+- Prevent reappearance of unknown-language warnings in a session, for a given language.
 - Added Fortran and Fortran90 syntax-coloring and snippets support.
 - Clicking on LeoInteg's status bar indicator now shows the log pane.
-- Added support for "@rclick" nodes to work along "@button" nodes
+- Added support for "@rclick" nodes along "@button" nodes, by presenting a menu if they are present when clicking one.
+- Copy paste from/to anywhere! Clipboard operations are now using the system's clipboard instead of Leo's internal clipboard. (Requires Leo minimal version of at least 6.6-b2)
+- Removed LeoBridge server output pane: The server and 'Print' terminal outputs from leo now appears in the log pane.
 
 ## 1.0.5
 

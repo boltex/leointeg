@@ -6904,6 +6904,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
+    MINIMUM_VERSION: "Missing Command: Please update Leo (min 6.6-b2 required)",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
 };
@@ -7947,8 +7948,21 @@ import { LeoAsync } from "./leoAsync";
  * @param p_data given JSON data
  */
 private _processAnswer(p_data: string): void {
-    // console.log('got data', p_data);
     const w_parsedData = this._tryParseJSON(p_data);
+    // Check for ServerError
+
+    if (w_parsedData &amp;&amp; w_parsedData['ServerError']) {
+        const w_serverError: string = w_parsedData['ServerError'];
+        // action not found
+        if (w_serverError.includes("action not found")) {
+            // Show update suggestion if not already shown
+            if (!this._updateWarningShown) {
+                this._updateWarningShown = true;
+                vscode.window.showErrorMessage(Constants.USER_MESSAGES.MINIMUM_VERSION);
+            }
+        }
+    }
+
     if (w_parsedData &amp;&amp; (w_parsedData.id === 0 || w_parsedData.id)) {
         this._resolveBridgeReady(w_parsedData);
         this._callAction();
@@ -8034,7 +8048,9 @@ export class LeoBridge {
     private _websocket: WebSocket | null = null;
     private _leoAsync: LeoAsync;
 
-    private _receivedTotal: number = 0;
+    private _updateWarningShown: boolean = false;
+
+    private _receivedTotal: number = 0; // Websocket message received total
 
     // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
     // private _hasbin = require('hasbin');
@@ -9871,7 +9887,6 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 ![Screenshot](https://raw.githubusercontent.com/boltex/leointeg/master/resources/animated-screenshot.gif)
 
 @others
-
 ---
 
 **🤍 To sponsor, donate or contribute see my [user page](https://boltex.github.io/) 🦁 Enjoy!**
@@ -9892,7 +9907,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Leo Editor 6.5 or later\
+- Leo Editor 6.6b2 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
@@ -10069,6 +10084,8 @@ and using the node's gnx as identifier.
 - [Thomas](https://github.com/tbpassin) for his contributions and support
 - [Viktor](https://github.com/ranvik14) for his contributions and support
 - [Gaurami](https://github.com/ATikhonov2) for his suggestions, bug reports and support
+- [Kevin Henderson](https://github.com/kghenderson) for his suggestions and support
+
 </t>
 <t tx="felix.20200718222417.1">## 0.1.12
 
@@ -21826,10 +21843,12 @@ private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): T
 </t>
 <t tx="felix.20220216005511.1">## 1.0.6
 
-- Prevent reappearance of unknown-language warnings in a session for a given language.
+- Prevent reappearance of unknown-language warnings in a session, for a given language.
 - Added Fortran and Fortran90 syntax-coloring and snippets support.
 - Clicking on LeoInteg's status bar indicator now shows the log pane.
-- Added support for "@rclick" nodes to work along "@button" nodes
+- Added support for "@rclick" nodes along "@button" nodes, by presenting a menu if they are present when clicking one.
+- Copy paste from/to anywhere! Clipboard operations are now using the system's clipboard instead of Leo's internal clipboard. (Requires Leo minimal version of at least 6.6-b2)
+- Removed LeoBridge server output pane: The server and 'Print' terminal outputs from leo now appears in the log pane.
 
 </t>
 <t tx="felix.20220220191549.1">/**
