@@ -22,7 +22,9 @@ export class LeoBridge {
     private _websocket: WebSocket | null = null;
     private _leoAsync: LeoAsync;
 
-    private _receivedTotal: number = 0;
+    private _updateWarningShown: boolean = false;
+
+    private _receivedTotal: number = 0; // Websocket message received total
 
     // TODO : #10 @boltex See if this can help with anaconda/miniconda issues
     // private _hasbin = require('hasbin');
@@ -190,8 +192,21 @@ export class LeoBridge {
      * @param p_data given JSON data
      */
     private _processAnswer(p_data: string): void {
-        // console.log('got data', p_data);
         const w_parsedData = this._tryParseJSON(p_data);
+        // Check for ServerError
+
+        if (w_parsedData && w_parsedData['ServerError']) {
+            const w_serverError: string = w_parsedData['ServerError'];
+            // action not found
+            if (w_serverError.includes("action not found")) {
+                // Show update suggestion if not already shown
+                if (!this._updateWarningShown) {
+                    this._updateWarningShown = true;
+                    vscode.window.showErrorMessage(Constants.USER_MESSAGES.MINIMUM_VERSION);
+                }
+            }
+        }
+
         if (w_parsedData && (w_parsedData.id === 0 || w_parsedData.id)) {
             this._resolveBridgeReady(w_parsedData);
             this._callAction();

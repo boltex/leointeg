@@ -127,6 +127,10 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
             dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON)
         },
         {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_RCLICK),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_RCLICK)
+        },
+        {
             light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_ADD),
             dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_ADD)
         }

@@ -14,7 +14,9 @@ import {
     UserCommand,
     BodySelectionInfo,
     LeoGuiFindTabManagerSettings,
-    LeoSearchSettings
+    LeoSearchSettings,
+    ChooseRClickItem,
+    RClick
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
@@ -39,15 +41,16 @@ import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
 export class LeoIntegration {
     // * Status Flags
     public activated: boolean = true; // Set to false when deactivating the extension
-
     private _leoBridgeReadyPromise: Promise<LeoBridgePackage> | undefined; // Is set when leoBridge has a leo controller ready
     private _currentOutlineTitle: string = Constants.GUI.TREEVIEW_TITLE_INTEGRATION; // Might need to be re-set when switching visibility
     private _hasShownContextOpenMessage: boolean = false; // Used to show this information only once
 
     // * State flags
     public leoStates: LeoStates;
+    private _startingServer: boolean = false; // Used to prevent re-starting while starting until success of fail
     public verbose: boolean = false;
     public trace: boolean = false;
+    public clipboardContent: string = "";
 
     // * Frontend command stack
     private _commandStack: CommandStack;
@@ -73,6 +76,7 @@ export class LeoIntegration {
     private _lastTreeView: vscode.TreeView<LeoNode>; // Last visible treeview
     private _retriedRefresh: boolean = false;
     private _treeId: number = 0; // Starting salt for tree node murmurhash generated Ids
+    private _renamingHeadline: string = "";
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
     get lastSelectedNode(): LeoNode | undefined {
@@ -110,6 +114,8 @@ export class LeoIntegration {
     private _bodyTextDocument: vscode.TextDocument | undefined; // Set when selected in tree by user, or opening a Leo file in showBody. and by _locateOpenedBody.
     private _bodyMainSelectionColumn: vscode.ViewColumn | undefined; // Column of last body 'textEditor' found, set to 1
 
+    private _languageFlagged: string[] = [];
+
     private _bodyPreviewMode: boolean = true;
 
     private _editorTouched: boolean = false; // Flag for applying editor changes to body when 'icon' state change and 'undo' back to untouched
@@ -142,6 +148,7 @@ export class LeoIntegration {
     private _leoButtonsProvider: LeoButtonsProvider;
     private _leoButtons: vscode.TreeView<LeoButtonNode>;
     private _leoButtonsExplorer: vscode.TreeView<LeoButtonNode>;
+    private _rclickSelected: number[] = [];
 
     // * Leo Find Panel
     private _leoFindPanelProvider: vscode.WebviewViewProvider;
@@ -153,7 +160,7 @@ export class LeoIntegration {
     private _leoLogPane: vscode.OutputChannel = vscode.window.createOutputChannel(
         Constants.GUI.LOG_PANE_TITLE
     );
-    private _leoTerminalPane: vscode.OutputChannel | undefined;
+    // private _leoTerminalPane: vscode.OutputChannel | undefined; // ! local server output should be in log pane #
 
     // * Status Bar
     private _leoStatusBar: LeoStatusBar;
@@ -450,12 +457,12 @@ export class LeoIntegration {
      * * Starts an instance of a leoBridge server, and may connect to it afterwards, based on configuration flags.
      */
     public startServer(): void {
-        this.leoStates.leoStartupFinished = false;
-        if (!this._leoTerminalPane) {
-            this._leoTerminalPane = vscode.window.createOutputChannel(
-                Constants.GUI.TERMINAL_PANE_TITLE
-            );
+        if (this._startingServer) {
+            return;
         }
+        this._startingServer = true;
+        this.leoStates.leoStartupFinished = false;
+        this.showLogPane();
         this._serverService
             .startServer(
                 this.config.leoPythonCommand,
@@ -467,15 +474,18 @@ export class LeoIntegration {
                     utils.setContext(Constants.CONTEXT_FLAGS.SERVER_STARTED, true); // server started
                     if (this.config.connectToServerAutomatically) {
                         setTimeout(() => {
-                            // Wait 2 full seconds
+                            // wait a few milliseconds
                             this.connect();
-                        }, 2000);
+                            this._startingServer = false;
+                        }, 1500);
                     } else {
+                        this._startingServer = false;
                         this.leoStates.leoStartupFinished = true;
                     }
                 },
                 (p_reason) => {
                     // This context flag will remove the 'connecting' welcome view
+                    this._startingServer = false;
                     utils.setContext(Constants.CONTEXT_FLAGS.AUTO_START_SERVER, false);
                     utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, false);
                     if (
@@ -488,12 +498,11 @@ export class LeoIntegration {
                                     vscode.commands.executeCommand(Constants.COMMANDS.CHOOSE_LEO_FOLDER);
                                 }
                             });
-
-                        return;
+                    } else {
+                        vscode.window.showErrorMessage(
+                            Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason,
+                        );
                     }
-                    vscode.window.showErrorMessage(
-                        Constants.USER_MESSAGES.START_SERVER_ERROR + p_reason,
-                    );
                 }
             );
     }
@@ -503,11 +512,6 @@ export class LeoIntegration {
      */
     public killServer(): void {
         this._serverService.killServer();
-        if (this.activated) {
-            this._leoTerminalPane?.clear();
-            this._leoTerminalPane?.dispose();
-            this._leoTerminalPane = undefined;
-        }
     }
 
     /**
@@ -725,34 +729,6 @@ export class LeoIntegration {
                 return Promise.resolve(undefined);
             }
         });
-    }
-
-    /**
-     * * Reveals the leoBridge server terminal output if not already visible
-     */
-    public showTerminalPane(): void {
-        if (this._leoTerminalPane) {
-            this._leoTerminalPane.show(true);
-        }
-    }
-
-    /**
-     * * Hides the leoBridge server terminal output
-     */
-    public hideTerminalPane(): void {
-        if (this._leoTerminalPane) {
-            this._leoTerminalPane.hide();
-        }
-    }
-
-    /**
-     * * Adds a message string to leoInteg's leoBridge server terminal output.
-     * @param p_message The string to be added in the log
-     */
-    public addTerminalPaneEntry(p_message: string): void {
-        if (this._leoTerminalPane) {
-            this._leoTerminalPane.appendLine(p_message);
-        }
     }
 
     /**
@@ -1110,7 +1086,7 @@ export class LeoIntegration {
      * * Tabbed on another editor
      * @param p_editors text editor array (to be checked for changes in this method)
      */
-    public _changedVisibleTextEditors(p_editors: vscode.TextEditor[]): void {
+    public _changedVisibleTextEditors(p_editors: readonly vscode.TextEditor[]): void {
         if (p_editors && p_editors.length) {
             // May be no changes - so check length
             p_editors.forEach((p_textEditor) => {
@@ -1485,7 +1461,7 @@ export class LeoIntegration {
         if (p_incrementTreeID) {
             this._treeId++;
         }
-        if (p_revealType !== undefined) {
+        if (typeof p_revealType !== "undefined") {
             // To check if selected node should self-select while redrawing whole tree
             this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
         }
@@ -2042,18 +2018,7 @@ export class LeoIntegration {
                             utils.leoUriToStr(p_document.uri) === this.lastSelectedNode.gnx
                         ) {
                             this._needRefresh = false;
-                            vscode.languages.setTextDocumentLanguage(p_document, w_language).then(
-                                () => { }, // ok - language found
-                                (p_error) => {
-                                    let w_langName = p_error.toString().split('\n')[0];
-                                    if (w_langName.length > 36) {
-                                        w_langName = w_langName.substring(36);
-                                        vscode.window.showInformationMessage(w_langName + " language not yet supported.");
-                                        return;
-                                    }
-                                    vscode.window.showInformationMessage("Language not yet supported.");
-                                }
-                            );
+                            this._setBodyLanguage(p_document, w_language);
                         } else if (!p_document.isClosed &&
                             this.lastSelectedNode &&
                             utils.leoUriToStr(p_document.uri) !== this.lastSelectedNode.gnx) {
@@ -2189,6 +2154,30 @@ export class LeoIntegration {
     }
 
     /**
+     * * Sets vscode's body-pane editor's language
+     */
+    private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): Thenable<vscode.TextDocument> {
+        return vscode.languages.setTextDocumentLanguage(p_document, p_language).then(
+            (p_mewDocument) => { return p_mewDocument; }, // ok - language found
+            (p_error) => {
+                let w_langName: string = p_error.toString().split('\n')[0];
+                if (w_langName.length > 36 && w_langName.includes(Constants.LEO_LANGUAGE_PREFIX)) {
+                    w_langName = w_langName.substring(36);
+                } else {
+                    w_langName = "";
+                }
+                if (w_langName && !this._languageFlagged.includes(w_langName)) {
+                    this._languageFlagged.push(w_langName);
+                    vscode.window.showInformationMessage(w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED);
+                } else if (!w_langName) {
+                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.UNKNOWN_LANGUAGE_NOT_SUPPORTED);
+                }
+                return p_document;
+            }
+        );
+    }
+
+    /**
      * * Refreshes body pane's statuses such as applied language file type, word-wrap state, etc.
      */
     public refreshBodyStates(): void {
@@ -2210,7 +2199,7 @@ export class LeoIntegration {
             // console.log('WRAP: ', w_wrap);
 
             // Replace language string if in 'exceptions' array
-            w_language = 'leobody.' + (Constants.LANGUAGE_CODES[w_language] || w_language);
+            w_language = Constants.LEO_LANGUAGE_PREFIX + (Constants.LANGUAGE_CODES[w_language] || w_language);
             // Apply language if the selected node is still the same after all those events
             if (this._bodyTextDocument &&
                 !this._bodyTextDocument.isClosed &&
@@ -2218,18 +2207,7 @@ export class LeoIntegration {
                 w_language !== this._bodyTextDocument.languageId &&
                 utils.leoUriToStr(this._bodyTextDocument.uri) === this.lastSelectedNode.gnx
             ) {
-                vscode.languages.setTextDocumentLanguage(this._bodyTextDocument, w_language).then(
-                    () => { }, // ok - language found
-                    (p_error) => {
-                        let w_langName = p_error.toString().split('\n')[0];
-                        if (w_langName.length > 36) {
-                            w_langName = w_langName.substring(36);
-                            vscode.window.showInformationMessage(w_langName + " language not yet supported.");
-                            return;
-                        }
-                        vscode.window.showInformationMessage("Language not yet supported.");
-                    }
-                );
+                this._setBodyLanguage(this._bodyTextDocument, w_language);
             }
         });
     }
@@ -2429,6 +2407,7 @@ export class LeoIntegration {
                 if (p_node) {
                     this._headlineInputOptions.prompt =
                         Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE;
+                    this._renamingHeadline = p_node.label;
                     this._headlineInputOptions.value = p_node.label; // preset input pop up
                     return vscode.window.showInputBox(this._headlineInputOptions);
                 } else {
@@ -2436,7 +2415,8 @@ export class LeoIntegration {
                 }
             })
             .then((p_newHeadline) => {
-                if (p_newHeadline) {
+                if ((typeof p_newHeadline !== "undefined") && p_newHeadline !== this._renamingHeadline) {
+                    // Is different!
                     p_node!.label = p_newHeadline; // ! When labels change, ids will change and its selection and expansion states cannot be kept stable anymore.
                     const q_commandResult = this.nodeCommand({
                         action: Constants.LEOBRIDGE.SET_HEADLINE,
@@ -2509,6 +2489,135 @@ export class LeoIntegration {
         } else {
             return Promise.reject('Insert node not added on command stack');
         }
+    }
+
+    public copyNode(
+        p_node?: LeoNode,
+        p_fromOutline?: boolean
+    ): Promise<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true)
+            .then(() => {
+
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.COPY_PNODE,
+                    node: p_node,
+                    refreshType: {}, // none
+                    fromOutline: !!p_fromOutline,
+                });
+                if (q_commandResult) {
+                    return q_commandResult.then(p_package => {
+                        if (p_package.string) {
+                            this.replaceClipboardWith(p_package.string);
+                        } else {
+                        }
+                        return p_package;
+                    });
+
+                } else {
+                    return Promise.reject('Copy Node not added on command stack');
+                }
+
+            });
+
+    }
+
+    public cutNode(
+        p_node?: LeoNode,
+        p_fromOutline?: boolean
+    ): Promise<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true)
+            .then(() => {
+
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.CUT_PNODE,
+                    node: p_node,
+                    refreshType: { tree: true, body: true, states: true },
+                    fromOutline: !!p_fromOutline,
+                });
+                if (q_commandResult) {
+                    return q_commandResult.then(p_package => {
+                        if (p_package.string) {
+                            this.replaceClipboardWith(p_package.string);
+                        } else {
+                        }
+                        return p_package;
+                    });
+
+                } else {
+                    return Promise.reject('Cut Node not added on command stack');
+                }
+            });
+    }
+
+    public pasteNode(
+        p_node?: LeoNode,
+        p_fromOutline?: boolean
+    ): Thenable<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true).then(() => {
+
+            return this.asyncGetTextFromClipboard().then((p_text) => {
+
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.PASTE_PNODE,
+                    node: p_node,
+                    refreshType: { tree: true, body: true, states: true },
+                    name: p_text,
+                    fromOutline: !!p_fromOutline,
+                });
+                if (q_commandResult) {
+                    return q_commandResult;
+                } else {
+                    return Promise.reject('Cut Node not added on command stack');
+                }
+
+            });
+        });
+
+    }
+
+    public pasteAsCloneNode(
+        p_node?: LeoNode,
+        p_fromOutline?: boolean
+    ): Thenable<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true).then(() => {
+
+            return this.asyncGetTextFromClipboard().then((p_text) => {
+
+                const q_commandResult = this.nodeCommand({
+                    action: Constants.LEOBRIDGE.PASTE_CLONE_PNODE,
+                    node: p_node,
+                    refreshType: { tree: true, body: true, states: true },
+                    name: p_text,
+                    fromOutline: !!p_fromOutline,
+                });
+                if (q_commandResult) {
+                    return q_commandResult;
+                } else {
+                    return Promise.reject('Cut Node not added on command stack');
+                }
+
+            });
+        });
+    }
+
+    public replaceClipboardWith(s: string): Thenable<void> {
+        this.clipboardContent = s; // also set immediate clipboard string
+        return vscode.env.clipboard.writeText(s);
+    }
+
+    public asyncGetTextFromClipboard(): Thenable<string> {
+        return vscode.env.clipboard.readText().then((s) => {
+            // also set immediate clipboard string for possible future read
+            this.clipboardContent = s;
+            return this.getTextFromClipboard();
+        });
+    }
+
+    /**
+     * Returns clipboard content
+    */
+    public getTextFromClipboard(): string {
+        return this.clipboardContent;
     }
 
     /**
@@ -3456,10 +3565,53 @@ export class LeoIntegration {
     public clickAtButton(p_node: LeoButtonNode): Promise<boolean> {
         return this._isBusyTriggerSave(false)
             .then((p_saveResult) => {
-                return this.sendAction(
-                    Constants.LEOBRIDGE.CLICK_BUTTON,
-                    JSON.stringify({ index: p_node.button.index })
-                );
+
+                if (p_node.rclicks.length) {
+                    // Has rclicks so show menu to choose
+                    this._rclickSelected = [];
+
+                    /* const w_choices: ChooseRClickItem[] = [];
+                    let w_index = 0;
+                    w_choices.push(
+                        { label: p_node.button.name, picked: true, alwaysShow: true, index: w_index++ },
+                        ...p_node.rclicks.map((p_rclick): ChooseRClickItem => { return { label: p_rclick.name, index: w_index++ }; })
+                    );
+
+                    const w_options: vscode.QuickPickOptions = {
+                        placeHolder: Constants.USER_MESSAGES.CHOOSE_BUTTON
+                    };
+                    return vscode.window.showQuickPick(w_choices, w_options) */
+                    return this._handleRClicks(p_node.rclicks, p_node.button.name).then((p_picked) => {
+                        if (
+                            p_picked
+                        ) {
+                            // check if only one in this._rclickSelected and is zero: normal press
+                            if (this._rclickSelected.length === 1 && this._rclickSelected[0] === 0) {
+                                // Normal button
+                                return this.sendAction(
+                                    Constants.LEOBRIDGE.CLICK_BUTTON,
+                                    JSON.stringify({ index: p_node.button.index })
+                                );
+                            }
+                            // if not decrement first one, and send this._rclickSelected as array of choices
+                            this._rclickSelected[0] = this._rclickSelected[0] - 1;
+                            return this.sendAction(
+                                Constants.LEOBRIDGE.CLICK_BUTTON,
+                                JSON.stringify({ index: p_node.button.index, rclick: this._rclickSelected })
+                            );
+                        }
+                        // Escaped
+                        return Promise.reject();
+                    });
+
+
+                } else {
+                    // Normal button
+                    return this.sendAction(
+                        Constants.LEOBRIDGE.CLICK_BUTTON,
+                        JSON.stringify({ index: p_node.button.index })
+                    );
+                }
             })
             .then((p_clickButtonResult: LeoBridgePackage) => {
                 return this.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
@@ -3469,6 +3621,41 @@ export class LeoIntegration {
                 this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
                 return Promise.resolve(true); // TODO launchRefresh should be a returned promise
             });
+    }
+
+    /**
+     * * Show input window to select
+     */
+    private _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Thenable<ChooseRClickItem> {
+        const w_choices: ChooseRClickItem[] = [];
+        let w_index = 0;
+        if (topLevelName) {
+            w_choices.push(
+                { label: topLevelName, picked: true, alwaysShow: true, index: w_index++ }
+            );
+        }
+        w_choices.push(
+            ...p_rclicks.map((p_rclick): ChooseRClickItem => { return { label: p_rclick.name, index: w_index++, rclick: p_rclick }; })
+        );
+
+        const w_options: vscode.QuickPickOptions = {
+            placeHolder: Constants.USER_MESSAGES.CHOOSE_BUTTON
+        };
+        return vscode.window.showQuickPick(w_choices, w_options).then((p_picked) => {
+            if (p_picked) {
+                this._rclickSelected.push(p_picked.index);
+                if (topLevelName && p_picked.index === 0) {
+                    return Promise.resolve(p_picked);
+                }
+                if (p_picked.rclick && p_picked.rclick.children && p_picked.rclick.children.length) {
+                    return this._handleRClicks(p_picked.rclick.children);
+                } else {
+                    return Promise.resolve(p_picked);
+                }
+            }
+            // Escaped
+            return Promise.reject();
+        });
     }
 
     /**
@@ -3489,7 +3676,7 @@ export class LeoIntegration {
             })
             .then((p_package) => {
                 // refresh and reveal selection
-                this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
+                this.launchRefresh({ tree: true, body: true, states: true, buttons: false, documents: false }, false, p_package.node);
                 return Promise.resolve(true); // TODO launchRefresh should be a returned promise
             });
     }
@@ -3553,6 +3740,11 @@ export class LeoIntegration {
      * @returns Thenable from the statusBar click customizable behavior
      */
     public statusBarOnClick(): Thenable<unknown> {
+
+        this.showLogPane();
+        return Promise.resolve(true);
+
+        /*
         if (this.leoStates.fileOpenedReady) {
             return this.minibuffer();
             // return this.switchLeoFile();
@@ -3562,6 +3754,7 @@ export class LeoIntegration {
                 Constants.GUI.QUICK_OPEN_LEO_COMMANDS
             );
         }
+        */
     }
 
     /**

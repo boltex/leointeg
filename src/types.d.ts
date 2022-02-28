@@ -185,6 +185,7 @@ export interface LeoBridgePackage {
     searchSettings?: LeoGuiFindTabManagerSettings // get_search_settings
     selection?: BodySelectionInfo; // get_body_states
     states?: LeoPackageStates; // get_ui_states
+    string?: string; // from cut / copy outline
     total?: number; // set_opened_file, open_file(s), close_file
     version?: string;
     major?: number;
@@ -207,6 +208,7 @@ export interface LeoDocument {
  */
 export interface LeoButton {
     name: string;
+    rclicks?: RClick[];
     index: string; // STRING KEY
 }
 
@@ -347,5 +349,21 @@ export interface AskMessageItem extends vscode.MessageItem {
  */
 export interface ChooseDocumentItem extends vscode.QuickPickItem {
     value: number;
+}
+
+/**
+ * * Used to select a button's rclick by index
+ */
+export interface ChooseRClickItem extends vscode.QuickPickItem {
+    index: number;
+    rclick?: RClick;
+}
+
+/**
+ * * Returned from Leo with buttons data
+ */
+export interface RClick {
+    name: string;
+    children: RClick[];
 }
 

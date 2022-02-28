@@ -28,6 +28,7 @@ export class Constants {
     public static FILE_EXTENSION: string = "leo";
     public static JS_FILE_EXTENSION: string = "leojs";
 
+    public static LEO_LANGUAGE_PREFIX: string = "leobody."; // all lowercase
     public static URI_LEO_SCHEME: string = "leo";
     public static URI_FILE_SCHEME: string = "file";
     public static URI_SCHEME_HEADER: string = "leo:/";
@@ -81,6 +82,8 @@ export class Constants {
         ICON_DARK_DOCUMENT_DIRTY: "resources/dark/document-dirty.svg",
         ICON_LIGHT_BUTTON: "resources/light/button.svg",
         ICON_DARK_BUTTON: "resources/dark/button.svg",
+        ICON_LIGHT_BUTTON_RCLICK: "resources/light/button-rclick.svg",
+        ICON_DARK_BUTTON_RCLICK: "resources/dark/button-rclick.svg",
         ICON_LIGHT_BUTTON_ADD: "resources/light/button-add.svg",
         ICON_DARK_BUTTON_ADD: "resources/dark/button-add.svg",
         ICON_LIGHT_PATH: "resources/light/box",
@@ -149,11 +152,15 @@ export class Constants {
         NO: "No",
         YES_ALL: "Yes to all",
         NO_ALL: "No to all",
+        CHOOSE_BUTTON: "Choose @button or @rclick",
         MINIBUFFER_PROMPT: "Minibuffer Full Command",
         CHANGES_DETECTED: "Changes to external files were detected.",
-        REFRESHED: " Nodes refreshed.", // with voluntary leading space
-        IGNORED: " They were ignored.", // with voluntary leading space
-        TOO_FAST: "leoInteg is busy! " // with voluntary trailing space
+        REFRESHED: " Nodes refreshed.", // with leading space
+        IGNORED: " They were ignored.", // with leading space
+        TOO_FAST: "leoInteg is busy! ", // with trailing space
+        MINIMUM_VERSION: "Missing Command: Please update Leo (min 6.6-b2 required)",
+        UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
+        LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
     };
 
     /**
@@ -469,10 +476,18 @@ export class Constants {
         // * Leo Operations
         MARK_PNODE: "!mark_node", // "markPNode",
         UNMARK_PNODE: "!unmark_node", // "unmarkPNode",
-        COPY_PNODE: "copyOutline",
+
+        //COPY_PNODE: "copyOutline",
+        COPY_PNODE: "!copy_node",
+
         CUT_PNODE: "!cut_node", // "cutPNode",
-        PASTE_PNODE: "pasteOutline",
-        PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
+
+        // PASTE_PNODE: "pasteOutline",
+        PASTE_PNODE: "!paste_node",
+
+        // PASTE_CLONE_PNODE: "pasteOutlineRetainingClones",
+        PASTE_CLONE_PNODE: "!paste_as_clone_node",
+
         DELETE_PNODE: "!delete_node", // "deletePNode",
         MOVE_PNODE_DOWN: "moveOutlineDown",
         MOVE_PNODE_LEFT: "moveOutlineLeft",

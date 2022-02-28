@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.0.6
+
+- Prevent reappearance of unknown-language warnings in a session, for a given language.
+- Added Fortran and Fortran90 syntax-coloring and snippets support.
+- Clicking on LeoInteg's status bar indicator now shows the log pane.
+- Added support for "@rclick" nodes along "@button" nodes, by presenting a menu if they are present when clicking one.
+- Copy paste from/to anywhere! Clipboard operations are now using the system's clipboard instead of Leo's internal clipboard. (Requires Leo minimal version of at least 6.6-b2)
+- Removed LeoBridge server output pane: The server and 'Print' terminal outputs from leo now appears in the log pane.
+- Headlines can now be changed to an empty string, as per Leo's standards.
+
 ## 1.0.5
 
 - Fixed bug where the selection could not change (visual update in outline) when hoisted on a node deeper than top-level of tree (sibling of root node).
