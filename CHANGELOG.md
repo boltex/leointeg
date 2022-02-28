@@ -8,6 +8,7 @@
 - Added support for "@rclick" nodes along "@button" nodes, by presenting a menu if they are present when clicking one.
 - Copy paste from/to anywhere! Clipboard operations are now using the system's clipboard instead of Leo's internal clipboard. (Requires Leo minimal version of at least 6.6-b2)
 - Removed LeoBridge server output pane: The server and 'Print' terminal outputs from leo now appears in the log pane.
+- Headlines can now be changed to an empty string, as per Leo's standards.
 
 ## 1.0.5
 

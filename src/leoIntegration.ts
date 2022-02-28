@@ -76,6 +76,7 @@ export class LeoIntegration {
     private _lastTreeView: vscode.TreeView<LeoNode>; // Last visible treeview
     private _retriedRefresh: boolean = false;
     private _treeId: number = 0; // Starting salt for tree node murmurhash generated Ids
+    private _renamingHeadline: string = "";
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
     get lastSelectedNode(): LeoNode | undefined {
@@ -1460,7 +1461,7 @@ export class LeoIntegration {
         if (p_incrementTreeID) {
             this._treeId++;
         }
-        if (p_revealType !== undefined) {
+        if (typeof p_revealType !== "undefined") {
             // To check if selected node should self-select while redrawing whole tree
             this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
         }
@@ -2406,6 +2407,7 @@ export class LeoIntegration {
                 if (p_node) {
                     this._headlineInputOptions.prompt =
                         Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE;
+                    this._renamingHeadline = p_node.label;
                     this._headlineInputOptions.value = p_node.label; // preset input pop up
                     return vscode.window.showInputBox(this._headlineInputOptions);
                 } else {
@@ -2413,7 +2415,8 @@ export class LeoIntegration {
                 }
             })
             .then((p_newHeadline) => {
-                if (p_newHeadline) {
+                if ((typeof p_newHeadline !== "undefined") && p_newHeadline !== this._renamingHeadline) {
+                    // Is different!
                     p_node!.label = p_newHeadline; // ! When labels change, ids will change and its selection and expansion states cannot be kept stable anymore.
                     const q_commandResult = this.nodeCommand({
                         action: Constants.LEOBRIDGE.SET_HEADLINE,

@@ -1423,7 +1423,7 @@ private _refreshOutline(p_incrementTreeID: boolean, p_revealType?: RevealType): 
     if (p_incrementTreeID) {
         this._treeId++;
     }
-    if (p_revealType !== undefined) {
+    if (typeof p_revealType !== "undefined") {
         // To check if selected node should self-select while redrawing whole tree
         this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
     }
@@ -10509,6 +10509,7 @@ export class LeoIntegration {
     private _lastTreeView: vscode.TreeView&lt;LeoNode&gt;; // Last visible treeview
     private _retriedRefresh: boolean = false;
     private _treeId: number = 0; // Starting salt for tree node murmurhash generated Ids
+    private _renamingHeadline: string = "";
 
     private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
     get lastSelectedNode(): LeoNode | undefined {
@@ -11792,6 +11793,7 @@ public editHeadline(
             if (p_node) {
                 this._headlineInputOptions.prompt =
                     Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE;
+                this._renamingHeadline = p_node.label;
                 this._headlineInputOptions.value = p_node.label; // preset input pop up
                 return vscode.window.showInputBox(this._headlineInputOptions);
             } else {
@@ -11799,7 +11801,8 @@ public editHeadline(
             }
         })
         .then((p_newHeadline) =&gt; {
-            if (p_newHeadline) {
+            if ((typeof p_newHeadline !== "undefined") &amp;&amp; p_newHeadline !== this._renamingHeadline) {
+                // Is different!
                 p_node!.label = p_newHeadline; // ! When labels change, ids will change and its selection and expansion states cannot be kept stable anymore.
                 const q_commandResult = this.nodeCommand({
                     action: Constants.LEOBRIDGE.SET_HEADLINE,
@@ -21849,6 +21852,7 @@ private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): T
 - Added support for "@rclick" nodes along "@button" nodes, by presenting a menu if they are present when clicking one.
 - Copy paste from/to anywhere! Clipboard operations are now using the system's clipboard instead of Leo's internal clipboard. (Requires Leo minimal version of at least 6.6-b2)
 - Removed LeoBridge server output pane: The server and 'Print' terminal outputs from leo now appears in the log pane.
+- Headlines can now be changed to an empty string, as per Leo's standards.
 
 </t>
 <t tx="felix.20220220191549.1">/**
