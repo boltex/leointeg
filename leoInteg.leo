@@ -255,7 +255,7 @@
 <v t="ekr.20200815123601.11"><vh>grammars</vh></v>
 <v t="ekr.20200815123601.12"><vh>snippets</vh></v>
 <v t="ekr.20200815123601.13"><vh>commands</vh>
-<v t="felix.20220226010811.1"><vh>test REMOVE IN PROD</vh></v>
+<v t="felix.20220228223901.1"><vh>TEST - REMOVE IN PROD</vh></v>
 <v t="ekr.20200815123601.15"><vh>Show Webviews</vh></v>
 <v t="ekr.20200815123601.16"><vh>Server</vh></v>
 <v t="ekr.20200815123601.17"><vh>Scripting &amp; @buttons</vh></v>
@@ -17863,7 +17863,7 @@ public getTextFromClipboard(): string {
 }
 
 </t>
-<t tx="felix.20220226010811.1">{
+<t tx="felix.20220228223901.1">{
   "command": "leointeg.test",
   "category": "Leo",
   "title": "test"
