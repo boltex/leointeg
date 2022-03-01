@@ -109,7 +109,20 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                 <title>Leo Find Panel</title>
             </head>
             <body>
-                <label class="first" for="findText">Find:</label>
+                <label class="float-left" for="navText">Nav:</label>
+                <div class="float-right">
+                    <input type="checkbox" id="showParents" name="showParents" >
+                    <label for="showParents">Show parents</label>
+                </div>
+                <select class="float-right" name="searchOptions" id="searchOptions">
+                    <option value="0">All</option>
+                    <option value="1">Subtree</option>
+                    <option value="2">File</option>
+                    <option value="3">Chapter</option>
+                    <option value="4">Node</option>
+                </select>
+                <input type="text" id="navText" name="navText">
+                <label class="mb-0" for="findText">Find:</label>
                 <input type="text" id="findText" name="findText" placeholder="<find pattern here>" >
                 <label for="replaceText">Replace:</label>
                 <input type="text" id="replaceText" name="replaceText" >
@@ -127,12 +140,14 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                         <label for="markChanges">Mark <u>c</u>hanges</label>
                     </div>
                     <div class="col">
+                        <!-- RADIOS -->
                         <input type="radio" id="entireOutline" name="searchScope" value="0">
                         <label for="entireOutline"><u>E</u>ntire outline</label><br>
                         <input type="radio" id="subOutlineOnly" name="searchScope" value="1">
                         <label for="subOutlineOnly"><u>S</u>uboutline Only</label><br>
                         <input type="radio" id="nodeOnly" name="searchScope" value="2">
                         <label for="nodeOnly"><u>N</u>ode only</label><br>
+                        <!-- CHECKBOXES -->
                         <input type="checkbox" id="searchHeadline" name="searchHeadline" >
                         <label for="searchHeadline">Search <u>h</u>eadline</label><br>
                         <input type="checkbox" id="searchBody" name="searchBody" >

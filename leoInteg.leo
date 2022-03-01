@@ -2244,7 +2244,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "author": {
     "name": "Félix"
   },
@@ -18112,7 +18112,20 @@ import * as utils from "../utils";
             &lt;title&gt;Leo Find Panel&lt;/title&gt;
         &lt;/head&gt;
         &lt;body&gt;
-            &lt;label class="first" for="findText"&gt;Find:&lt;/label&gt;
+            &lt;label class="float-left" for="navText"&gt;Nav:&lt;/label&gt;
+            &lt;div class="float-right"&gt;
+                &lt;input type="checkbox" id="showParents" name="showParents" &gt;
+                &lt;label for="showParents"&gt;Show parents&lt;/label&gt;
+            &lt;/div&gt;
+            &lt;select class="float-right" name="searchOptions" id="searchOptions"&gt;
+                &lt;option value="0"&gt;All&lt;/option&gt;
+                &lt;option value="1"&gt;Subtree&lt;/option&gt;
+                &lt;option value="2"&gt;File&lt;/option&gt;
+                &lt;option value="3"&gt;Chapter&lt;/option&gt;
+                &lt;option value="4"&gt;Node&lt;/option&gt;
+            &lt;/select&gt;
+            &lt;input type="text" id="navText" name="navText"&gt;
+            &lt;label class="mb-0" for="findText"&gt;Find:&lt;/label&gt;
             &lt;input type="text" id="findText" name="findText" placeholder="&lt;find pattern here&gt;" &gt;
             &lt;label for="replaceText"&gt;Replace:&lt;/label&gt;
             &lt;input type="text" id="replaceText" name="replaceText" &gt;
@@ -18130,12 +18143,14 @@ import * as utils from "../utils";
                     &lt;label for="markChanges"&gt;Mark &lt;u&gt;c&lt;/u&gt;hanges&lt;/label&gt;
                 &lt;/div&gt;
                 &lt;div class="col"&gt;
+                    &lt;!-- RADIOS --&gt;
                     &lt;input type="radio" id="entireOutline" name="searchScope" value="0"&gt;
                     &lt;label for="entireOutline"&gt;&lt;u&gt;E&lt;/u&gt;ntire outline&lt;/label&gt;&lt;br&gt;
                     &lt;input type="radio" id="subOutlineOnly" name="searchScope" value="1"&gt;
                     &lt;label for="subOutlineOnly"&gt;&lt;u&gt;S&lt;/u&gt;uboutline Only&lt;/label&gt;&lt;br&gt;
                     &lt;input type="radio" id="nodeOnly" name="searchScope" value="2"&gt;
                     &lt;label for="nodeOnly"&gt;&lt;u&gt;N&lt;/u&gt;ode only&lt;/label&gt;&lt;br&gt;
+                    &lt;!-- CHECKBOXES --&gt;
                     &lt;input type="checkbox" id="searchHeadline" name="searchHeadline" &gt;
                     &lt;label for="searchHeadline"&gt;Search &lt;u&gt;h&lt;/u&gt;eadline&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="searchBody" name="searchBody" &gt;
@@ -18630,6 +18645,24 @@ body {
   display: inline-block;
 }
 
+.mt-8 {
+  margin-top: 8px;
+  display: inline-block;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+  display: inline-block;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
 ol,
 ul {
   padding-left: var(--container-padding);
@@ -18686,6 +18719,20 @@ button.secondary {
 
 button.secondary:hover {
   background: var(--vscode-button-secondaryHoverBackground);
+}
+
+select {
+  background: none;
+  color: var(--vscode-input-foreground);
+  cursor: pointer;
+  width: 50px;
+}
+select option {
+  background-color: var(--vscode-input-background);
+}
+select option:focus {
+  background-color: var(--vscode-input-background);
+  outline-color: var(--vscode-input-border);
 }
 
 input:not([type="radio"]):not([type="checkbox"]),
@@ -18772,7 +18819,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.6&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.7&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden "
@@ -18783,7 +18830,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 1.0.6
+            See What's New in LeoInteg 1.0.7
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;

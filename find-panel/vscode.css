@@ -35,6 +35,24 @@ body {
   display: inline-block;
 }
 
+.mt-8 {
+  margin-top: 8px;
+  display: inline-block;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+  display: inline-block;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
 ol,
 ul {
   padding-left: var(--container-padding);
@@ -91,6 +109,20 @@ button.secondary {
 
 button.secondary:hover {
   background: var(--vscode-button-secondaryHoverBackground);
+}
+
+select {
+  background: none;
+  color: var(--vscode-input-foreground);
+  cursor: pointer;
+  width: 50px;
+}
+select option {
+  background-color: var(--vscode-input-background);
+}
+select option:focus {
+  background-color: var(--vscode-input-background);
+  outline-color: var(--vscode-input-border);
 }
 
 input:not([type="radio"]):not([type="checkbox"]),
