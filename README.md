@@ -16,7 +16,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Requirements
 
-- Leo Editor 6.5 or later\
+- Leo Editor 6.6b2 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
@@ -209,6 +209,7 @@ and using the node's gnx as identifier.
 - [Thomas](https://github.com/tbpassin) for his contributions and support
 - [Viktor](https://github.com/ranvik14) for his contributions and support
 - [Gaurami](https://github.com/ATikhonov2) for his suggestions, bug reports and support
+- [Kevin Henderson](https://github.com/kghenderson) for his suggestions and support
 
 ---
 
