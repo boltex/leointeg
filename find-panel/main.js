@@ -11,7 +11,7 @@
     let timer; // for debouncing sending the settings from this webview to leointeg
     let dirty = false;
 
-    let firstTabEl = 'navText'; // used to be 'findText' before nav inputs
+    let firstTabEl = 'searchOptions'; // used to be 'findText' before nav inputs
     let lastTabEl = 'searchBody';
 
     let navSettings = {

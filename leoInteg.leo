@@ -17854,7 +17854,7 @@ public getTextFromClipboard(): string {
     let timer; // for debouncing sending the settings from this webview to leointeg
     let dirty = false;
 
-    let firstTabEl = 'navText'; // used to be 'findText' before nav inputs
+    let firstTabEl = 'searchOptions'; // used to be 'findText' before nav inputs
     let lastTabEl = 'searchBody';
 
     let navSettings = {
@@ -18554,7 +18554,7 @@ body {
 }
 
 .no-overflow {
-  text-overflow: unset;
+  text-overflow: unset !important;
 }
 
 ol,
@@ -18616,13 +18616,17 @@ button.secondary:hover {
 }
 
 select {
-  background: none;
+  background: var(--vscode-dropdown-background);
   color: var(--vscode-input-foreground);
+  border-color: var(--vscode-dropdown-border);
   cursor: pointer;
   width: 50px;
+  left: 15%;
+  position: relative;
+  border-radius: 2px;
 }
 select option {
-  background-color: var(--vscode-input-background);
+  background-color: var(--vscode-dropdown-listBackground);
 }
 select option:focus {
   background-color: var(--vscode-input-background);
