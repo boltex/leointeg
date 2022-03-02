@@ -9,7 +9,8 @@
     const vscode = acquireVsCodeApi();
 
     let timer; // for debouncing sending the settings from this webview to leointeg
-    let dirty = false;
+    let dirty = false; // all but nav input
+    let navDirty = false; // nav input only
 
     let firstTabEl = 'searchOptions'; // used to be 'findText' before nav inputs
     let lastTabEl = 'searchBody';
@@ -87,6 +88,11 @@
     function sendSearchConfig() {
         dirty = false; // clear dirty flag
         vscode.postMessage({ type: 'searchConfig', value: searchSettings });
+    }
+
+    function sendNavConfig() {
+        navDirty = false; // clear dirty flag
+        vscode.postMessage({ type: 'navConfig', value: navSettings });
     }
 
     function processChange() {
