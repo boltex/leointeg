@@ -30,7 +30,7 @@ body {
 }
 
 .first {
-  margin-top: 8px;
+  margin-top: 2px;
   margin-bottom: 0;
   display: inline-block;
 }
@@ -42,7 +42,14 @@ body {
 
 .mb-0 {
   margin-bottom: 0;
-  display: inline-block;
+}
+
+.mt-0 {
+  margin-top: 0;
+}
+
+.align-right {
+  text-align: right;
 }
 
 .float-left {
@@ -51,6 +58,10 @@ body {
 
 .float-right {
   float: right;
+}
+
+.no-overflow {
+  text-overflow: unset;
 }
 
 ol,

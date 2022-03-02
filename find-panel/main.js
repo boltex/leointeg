@@ -243,6 +243,7 @@
     window.addEventListener('message', (event) => {
         const message = event.data; // The json data that the extension sent
         switch (message.type) {
+            // * Nav Tab Controls
             // Focus and select all text in 'nav' field
             case 'selectNav': {
                 focusOnField('navText');
@@ -257,6 +258,7 @@
                 break;
             }
 
+            // * Find Tab Controls
             // Focus and select all text in 'find' field
             case 'selectFind': {
                 focusOnField('findText');

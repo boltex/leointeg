@@ -109,19 +109,25 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                 <title>Leo Find Panel</title>
             </head>
             <body>
-                <label class="float-left" for="navText">Nav:</label>
-                <div class="float-right">
-                    <input type="checkbox" id="showParents" name="showParents" >
-                    <label for="showParents">Show parents</label>
+                <div class="row mb-0">
+                    <div class="col no-overflow">
+                        <label class="first" for="navText">Nav:</label>
+                        <select name="searchOptions" id="searchOptions">
+                            <option value="0">All</option>
+                            <option value="1">Subtree</option>
+                            <option value="2">File</option>
+                            <option value="3">Chapter</option>
+                            <option value="4">Node</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <input type="checkbox" id="showParents" name="showParents" >
+                        <label for="showParents">Show parents</label>
+                    </div>
                 </div>
-                <select class="float-right" name="searchOptions" id="searchOptions">
-                    <option value="0">All</option>
-                    <option value="1">Subtree</option>
-                    <option value="2">File</option>
-                    <option value="3">Chapter</option>
-                    <option value="4">Node</option>
-                </select>
-                <input type="text" id="navText" name="navText">
+
+                <input class="mt-0" type="text" id="navText" name="navText">
+
                 <label class="mb-0" for="findText">Find:</label>
                 <input type="text" id="findText" name="findText" placeholder="<find pattern here>" >
                 <label for="replaceText">Replace:</label>

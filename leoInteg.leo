@@ -18086,6 +18086,7 @@ public getTextFromClipboard(): string {
     window.addEventListener('message', (event) =&gt; {
         const message = event.data; // The json data that the extension sent
         switch (message.type) {
+            // * Nav Tab Controls
             // Focus and select all text in 'nav' field
             case 'selectNav': {
                 focusOnField('navText');
@@ -18100,6 +18101,7 @@ public getTextFromClipboard(): string {
                 break;
             }
 
+            // * Find Tab Controls
             // Focus and select all text in 'find' field
             case 'selectFind': {
                 focusOnField('findText');
@@ -18371,19 +18373,25 @@ import * as utils from "../utils";
             &lt;title&gt;Leo Find Panel&lt;/title&gt;
         &lt;/head&gt;
         &lt;body&gt;
-            &lt;label class="float-left" for="navText"&gt;Nav:&lt;/label&gt;
-            &lt;div class="float-right"&gt;
-                &lt;input type="checkbox" id="showParents" name="showParents" &gt;
-                &lt;label for="showParents"&gt;Show parents&lt;/label&gt;
+            &lt;div class="row mb-0"&gt;
+                &lt;div class="col no-overflow"&gt;
+                    &lt;label class="first" for="navText"&gt;Nav:&lt;/label&gt;
+                    &lt;select name="searchOptions" id="searchOptions"&gt;
+                        &lt;option value="0"&gt;All&lt;/option&gt;
+                        &lt;option value="1"&gt;Subtree&lt;/option&gt;
+                        &lt;option value="2"&gt;File&lt;/option&gt;
+                        &lt;option value="3"&gt;Chapter&lt;/option&gt;
+                        &lt;option value="4"&gt;Node&lt;/option&gt;
+                    &lt;/select&gt;
+                &lt;/div&gt;
+                &lt;div class="col"&gt;
+                    &lt;input type="checkbox" id="showParents" name="showParents" &gt;
+                    &lt;label for="showParents"&gt;Show parents&lt;/label&gt;
+                &lt;/div&gt;
             &lt;/div&gt;
-            &lt;select class="float-right" name="searchOptions" id="searchOptions"&gt;
-                &lt;option value="0"&gt;All&lt;/option&gt;
-                &lt;option value="1"&gt;Subtree&lt;/option&gt;
-                &lt;option value="2"&gt;File&lt;/option&gt;
-                &lt;option value="3"&gt;Chapter&lt;/option&gt;
-                &lt;option value="4"&gt;Node&lt;/option&gt;
-            &lt;/select&gt;
-            &lt;input type="text" id="navText" name="navText"&gt;
+
+            &lt;input class="mt-0" type="text" id="navText" name="navText"&gt;
+
             &lt;label class="mb-0" for="findText"&gt;Find:&lt;/label&gt;
             &lt;input type="text" id="findText" name="findText" placeholder="&lt;find pattern here&gt;" &gt;
             &lt;label for="replaceText"&gt;Replace:&lt;/label&gt;
@@ -18515,7 +18523,7 @@ body {
 }
 
 .first {
-  margin-top: 8px;
+  margin-top: 2px;
   margin-bottom: 0;
   display: inline-block;
 }
@@ -18527,7 +18535,14 @@ body {
 
 .mb-0 {
   margin-bottom: 0;
-  display: inline-block;
+}
+
+.mt-0 {
+  margin-top: 0;
+}
+
+.align-right {
+  text-align: right;
 }
 
 .float-left {
@@ -18536,6 +18551,10 @@ body {
 
 .float-right {
   float: right;
+}
+
+.no-overflow {
+  text-overflow: unset;
 }
 
 ol,
