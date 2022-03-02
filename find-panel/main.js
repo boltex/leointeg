@@ -8,6 +8,9 @@
     // @ts-expect-error
     const vscode = acquireVsCodeApi();
 
+    let timer; // for debouncing sending the settings from this webview to leointeg
+    let dirty = false;
+
     let firstTabEl = 'navText'; // used to be 'findText' before nav inputs
     let lastTabEl = 'searchBody';
 
@@ -31,56 +34,6 @@
         searchScope: 0, // 0 is entire outline (1: sub-outline, 2: node only)
     };
 
-    document.addEventListener('focusin', (event) => {
-        vscode.postMessage({ type: 'gotFocus' });
-    });
-    document.addEventListener('focusout', (event) => {
-        vscode.postMessage({ type: 'lostFocus' });
-    });
-
-    // Handle messages sent from the extension to the webview
-    window.addEventListener('message', (event) => {
-        const message = event.data; // The json data that the extension sent
-        switch (message.type) {
-            // Focus and select all text in 'nav' field
-            case 'selectNav': {
-                focusOnField('navText');
-                break;
-            }
-            case 'getNavSettings': {
-                getNavSettings();
-                break;
-            }
-            case 'setNavSettings': {
-                setNavSettings(message.value);
-                break;
-            }
-
-            // Focus and select all text in 'find' field
-            case 'selectFind': {
-                focusOnField('findText');
-                break;
-            }
-            // Focus and select all text in 'replace' field
-            case 'selectReplace': {
-                focusOnField('replaceText');
-                break;
-            }
-            case 'getSettings': {
-                getSettings();
-                break;
-            }
-            case 'setSettings': {
-                setSettings(message.value);
-                break;
-            }
-            case 'setSearchSetting': {
-                setSearchSetting(message.id);
-                break;
-            }
-        }
-    });
-
     let inputIds = ['findText', 'replaceText'];
     let checkboxIds = [
         'wholeWord',
@@ -92,6 +45,13 @@
         'searchBody',
     ];
     let radioIds = ['entireOutline', 'subOutlineOnly', 'nodeOnly'];
+
+    function getNavSettings() {
+        // getNavSettings
+    }
+    function setNavSettings(p_settings) {
+        // setNavSettings
+    }
 
     /**
      * @param {string} p_id
@@ -129,8 +89,6 @@
         vscode.postMessage({ type: 'searchConfig', value: searchSettings });
     }
 
-    let timer; // for debouncing sending the settings from this webview to leointeg
-    let dirty = false;
     function processChange() {
         clearTimeout(timer);
         dirty = true;
@@ -138,43 +96,6 @@
             sendSearchConfig();
         }, 300);
     }
-
-    inputIds.forEach((p_inputId) => {
-        document.getElementById(p_inputId).onkeypress = function (p_event) {
-            // @ts-expect-error
-            if (!p_event) p_event = window.event;
-            var keyCode = p_event.code || p_event.key;
-            if (keyCode == 'Enter') {
-                if (timer) {
-                    clearTimeout(timer);
-                    sendSearchConfig();
-                }
-                vscode.postMessage({ type: 'leoFindNext' });
-                return false;
-            }
-        };
-        document.getElementById(p_inputId).addEventListener('input', function (p_event) {
-            // @ts-expect-error
-            searchSettings[p_inputId] = this.value;
-            processChange();
-        });
-    });
-    checkboxIds.forEach((p_inputId) => {
-        document.getElementById(p_inputId).addEventListener('change', function (p_event) {
-            // @ts-expect-error
-            searchSettings[p_inputId] = this.checked;
-            processChange();
-        });
-    });
-    radioIds.forEach((p_inputId) => {
-        document.getElementById(p_inputId).addEventListener('change', function (p_event) {
-            searchSettings['searchScope'] = parseInt(
-                // @ts-expect-error
-                document.querySelector('input[name="searchScope"]:checked').value
-            );
-            processChange();
-        });
-    });
 
     /**
      * @param {string} p_inputId
@@ -247,10 +168,6 @@
         // checkOtherKeys(p_event);
     }
 
-    // TODO :  CAPTURE FOCUS IN OVERALL PANEL AND SET CONTEXT-VAR OF 'FOCUSED PANEL'
-
-    document.onkeydown = checkKeyDown;
-
     /**
      * @param {string} p_id
      */
@@ -274,6 +191,96 @@
         }
     }
 
-    // FINISH STARTUP
+    inputIds.forEach((p_inputId) => {
+        document.getElementById(p_inputId).onkeypress = function (p_event) {
+            // @ts-expect-error
+            if (!p_event) p_event = window.event;
+            var keyCode = p_event.code || p_event.key;
+            if (keyCode == 'Enter') {
+                if (timer) {
+                    clearTimeout(timer);
+                    sendSearchConfig();
+                }
+                vscode.postMessage({ type: 'leoFindNext' });
+                return false;
+            }
+        };
+        document.getElementById(p_inputId).addEventListener('input', function (p_event) {
+            // @ts-expect-error
+            searchSettings[p_inputId] = this.value;
+            processChange();
+        });
+    });
+
+    checkboxIds.forEach((p_inputId) => {
+        document.getElementById(p_inputId).addEventListener('change', function (p_event) {
+            // @ts-expect-error
+            searchSettings[p_inputId] = this.checked;
+            processChange();
+        });
+    });
+
+    radioIds.forEach((p_inputId) => {
+        document.getElementById(p_inputId).addEventListener('change', function (p_event) {
+            searchSettings['searchScope'] = parseInt(
+                // @ts-expect-error
+                document.querySelector('input[name="searchScope"]:checked').value
+            );
+            processChange();
+        });
+    });
+
+    document.onkeydown = checkKeyDown;
+
+    document.addEventListener('focusin', (event) => {
+        vscode.postMessage({ type: 'gotFocus' });
+    });
+    document.addEventListener('focusout', (event) => {
+        vscode.postMessage({ type: 'lostFocus' });
+    });
+
+    // Handle messages sent from the extension to the webview
+    window.addEventListener('message', (event) => {
+        const message = event.data; // The json data that the extension sent
+        switch (message.type) {
+            // Focus and select all text in 'nav' field
+            case 'selectNav': {
+                focusOnField('navText');
+                break;
+            }
+            case 'getNavSettings': {
+                getNavSettings();
+                break;
+            }
+            case 'setNavSettings': {
+                setNavSettings(message.value);
+                break;
+            }
+
+            // Focus and select all text in 'find' field
+            case 'selectFind': {
+                focusOnField('findText');
+                break;
+            }
+            // Focus and select all text in 'replace' field
+            case 'selectReplace': {
+                focusOnField('replaceText');
+                break;
+            }
+            case 'getSettings': {
+                getSettings();
+                break;
+            }
+            case 'setSettings': {
+                setSettings(message.value);
+                break;
+            }
+            case 'setSearchSetting': {
+                setSearchSetting(message.id);
+                break;
+            }
+        }
+    });
+
     vscode.postMessage({ type: 'refreshSearchConfig' });
 })();

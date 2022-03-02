@@ -771,33 +771,7 @@
 <v t="fil.20210603223013.1"><vh>Files: Find Panel Webview</vh>
 <v t="fil.20210603223013.2"><vh>@clean find-panel/main.css</vh></v>
 <v t="fil.20210603223013.4"><vh>@clean find-panel/main.js</vh>
-<v t="fil.20210603223013.5"><vh>function</vh>
-<v t="fil.20210603223013.6"><vh>window.addEventListener =&gt;</vh></v>
-<v t="fil.20210603223013.7"><vh>function setSearchSetting</vh></v>
-<v t="fil.20210603223013.8"><vh>function setSettings</vh>
-<v t="fil.20210603223013.9"><vh>inputIds.forEach =&gt;</vh></v>
-<v t="fil.20210603223013.10"><vh>checkboxIds.forEach =&gt;</vh></v>
-</v>
-<v t="fil.20210603223013.11"><vh>function sendSearchConfig</vh></v>
-<v t="fil.20210603223013.12"><vh>function processChange</vh>
-<v t="fil.20210603223013.13"><vh>timer = setTimeout =&gt;</vh></v>
-</v>
-<v t="fil.20210603223013.14"><vh>inputIds.forEach =&gt;</vh>
-<v t="fil.20210603223013.15"><vh>document.getElementById(p_inputId).onkeypress = function</vh></v>
-<v t="fil.20210603223013.16"><vh>document.getElementById(p_inputId).addEventListener('input', function</vh></v>
-</v>
-<v t="fil.20210603223013.17"><vh>checkboxIds.forEach =&gt;</vh>
-<v t="fil.20210603223013.18"><vh>document.getElementById(p_inputId).addEventListener('change', function</vh></v>
-</v>
-<v t="fil.20210603223013.19"><vh>radioIds.forEach =&gt;</vh>
-<v t="fil.20210603223013.20"><vh>document.getElementById(p_inputId).addEventListener('change', function</vh></v>
-</v>
-<v t="fil.20210603223013.21"><vh>function toggleCheckbox</vh></v>
-<v t="fil.20210603223013.22"><vh>function setRadio</vh></v>
-<v t="fil.20210603223013.23"><vh>function checkKeyDown</vh></v>
-<v t="fil.20210603223013.24"><vh>function focusOnField</vh></v>
-<v t="fil.20210603223013.26"><vh>function getSettings</vh></v>
-</v>
+<v t="felix.20220301224252.1"><vh>main function</vh></v>
 </v>
 <v t="fil.20210603223014.2"><vh>@clean find-panel/reset.css</vh></v>
 <v t="fil.20210603223014.4"><vh>@clean find-panel/vscode.css</vh></v>
@@ -17867,6 +17841,293 @@ public getTextFromClipboard(): string {
   "title": "test"
 },
 </t>
+<t tx="felix.20220301224252.1">// @ts-check
+
+// This script will be run within the webview itself
+// It cannot access the main VS Code APIs directly.
+// Send message to leoInteg with vscode.postMessage({ keyNameEx1: someValue, ... });
+// Receive messages from leoInteg with window.addEventListener('message', event =&gt; { ... });
+(function () {
+    // @ts-expect-error
+    const vscode = acquireVsCodeApi();
+
+    let timer; // for debouncing sending the settings from this webview to leointeg
+    let dirty = false;
+
+    let firstTabEl = 'navText'; // used to be 'findText' before nav inputs
+    let lastTabEl = 'searchBody';
+
+    let navSettings = {
+        navText: '',
+        showParents: true,
+        searchOptions: 0,
+    };
+
+    // * LeoSearchSettings Type
+    let searchSettings = {
+        findText: '',
+        replaceText: '',
+        wholeWord: false,
+        ignoreCase: true,
+        regExp: false,
+        markFinds: false,
+        markChanges: false,
+        searchHeadline: true,
+        searchBody: true,
+        searchScope: 0, // 0 is entire outline (1: sub-outline, 2: node only)
+    };
+
+    let inputIds = ['findText', 'replaceText'];
+    let checkboxIds = [
+        'wholeWord',
+        'ignoreCase',
+        'regExp',
+        'markFinds',
+        'markChanges',
+        'searchHeadline',
+        'searchBody',
+    ];
+    let radioIds = ['entireOutline', 'subOutlineOnly', 'nodeOnly'];
+
+    function getNavSettings() {
+        // getNavSettings
+    }
+    function setNavSettings(p_settings) {
+        // setNavSettings
+    }
+
+    /**
+     * @param {string} p_id
+     */
+    function setSearchSetting(p_id) {
+        if (checkboxIds.includes(p_id)) {
+            toggleCheckbox(p_id);
+        } else if (radioIds.includes(p_id)) {
+            setRadio(p_id);
+        }
+    }
+
+    /**
+     * @param {any} p_settings
+     */
+    function setSettings(p_settings) {
+        // When opening a Leo document, set default values of fields
+        inputIds.forEach((p_inputId) =&gt; {
+            // @ts-expect-error
+            document.getElementById(p_inputId).value = p_settings[p_inputId];
+            searchSettings[p_inputId] = p_settings[p_inputId];
+        });
+        checkboxIds.forEach((p_inputId) =&gt; {
+            // @ts-expect-error
+            document.getElementById(p_inputId).checked = p_settings[p_inputId];
+            searchSettings[p_inputId] = p_settings[p_inputId];
+        });
+        // @ts-expect-error
+        document.getElementById(radioIds[p_settings['searchScope']]).checked = true;
+        searchSettings.searchScope = p_settings['searchScope'];
+    }
+
+    function sendSearchConfig() {
+        dirty = false; // clear dirty flag
+        vscode.postMessage({ type: 'searchConfig', value: searchSettings });
+    }
+
+    function processChange() {
+        clearTimeout(timer);
+        dirty = true;
+        timer = setTimeout(() =&gt; {
+            sendSearchConfig();
+        }, 300);
+    }
+
+    /**
+     * @param {string} p_inputId
+     */
+    function toggleCheckbox(p_inputId) {
+        let w_checkbox = document.getElementById(p_inputId);
+        let w_setTo = true;
+        // @ts-expect-error
+        if (w_checkbox.checked) {
+            w_setTo = false;
+        }
+        // @ts-expect-error
+        w_checkbox.checked = w_setTo;
+        searchSettings[p_inputId] = w_setTo;
+        if (timer) {
+            clearTimeout(timer);
+        }
+        sendSearchConfig();
+    }
+
+    /**
+     * @param {string} p_inputId
+     */
+    function setRadio(p_inputId) {
+        // @ts-expect-error
+        document.getElementById(p_inputId).checked = true;
+        searchSettings['searchScope'] = parseInt(
+            // @ts-expect-error
+            document.querySelector('input[name="searchScope"]:checked').value
+        );
+        if (timer) {
+            clearTimeout(timer);
+        }
+        sendSearchConfig();
+    }
+
+    /**
+     *
+     * @param {KeyboardEvent} p_event
+     */
+    function checkKeyDown(p_event) {
+        // @ts-expect-error
+        if (!p_event) p_event = window.event;
+        var keyCode = p_event.code || p_event.key;
+
+        if (keyCode === 'Tab') {
+            var actEl = document.activeElement;
+            if (p_event.shiftKey) {
+                // shift + tab so if first got last
+                var firstEl = document.getElementById(firstTabEl);
+                if (actEl === firstEl) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    document.getElementById(lastTabEl).focus();
+                    return;
+                }
+            } else {
+                // tab, so if last goto first
+                var lastEl = document.getElementById(lastTabEl);
+                if (actEl === lastEl) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    focusOnField(firstTabEl);
+                    return;
+                }
+            }
+        }
+        // checkOtherKeys(p_event);
+    }
+
+    /**
+     * @param {string} p_id
+     */
+    function focusOnField(p_id) {
+        const inputField = document.querySelector('#' + p_id);
+        // @ts-expect-error
+        inputField.select();
+        // TODO : TEST IF NEEDED TO PREVENT FLICKER ON FIRST TRY?
+        setTimeout(() =&gt; {
+            // @ts-expect-error
+            inputField.select();
+        }, 0);
+    }
+
+    function getSettings() {
+        // clear dirty, clear timer,
+        if (dirty) {
+            dirty = false;
+            clearTimeout(timer);
+            sendSearchConfig(); // just trigger send settings
+        }
+    }
+
+    inputIds.forEach((p_inputId) =&gt; {
+        document.getElementById(p_inputId).onkeypress = function (p_event) {
+            // @ts-expect-error
+            if (!p_event) p_event = window.event;
+            var keyCode = p_event.code || p_event.key;
+            if (keyCode == 'Enter') {
+                if (timer) {
+                    clearTimeout(timer);
+                    sendSearchConfig();
+                }
+                vscode.postMessage({ type: 'leoFindNext' });
+                return false;
+            }
+        };
+        document.getElementById(p_inputId).addEventListener('input', function (p_event) {
+            // @ts-expect-error
+            searchSettings[p_inputId] = this.value;
+            processChange();
+        });
+    });
+
+    checkboxIds.forEach((p_inputId) =&gt; {
+        document.getElementById(p_inputId).addEventListener('change', function (p_event) {
+            // @ts-expect-error
+            searchSettings[p_inputId] = this.checked;
+            processChange();
+        });
+    });
+
+    radioIds.forEach((p_inputId) =&gt; {
+        document.getElementById(p_inputId).addEventListener('change', function (p_event) {
+            searchSettings['searchScope'] = parseInt(
+                // @ts-expect-error
+                document.querySelector('input[name="searchScope"]:checked').value
+            );
+            processChange();
+        });
+    });
+
+    document.onkeydown = checkKeyDown;
+
+    document.addEventListener('focusin', (event) =&gt; {
+        vscode.postMessage({ type: 'gotFocus' });
+    });
+    document.addEventListener('focusout', (event) =&gt; {
+        vscode.postMessage({ type: 'lostFocus' });
+    });
+
+    // Handle messages sent from the extension to the webview
+    window.addEventListener('message', (event) =&gt; {
+        const message = event.data; // The json data that the extension sent
+        switch (message.type) {
+            // Focus and select all text in 'nav' field
+            case 'selectNav': {
+                focusOnField('navText');
+                break;
+            }
+            case 'getNavSettings': {
+                getNavSettings();
+                break;
+            }
+            case 'setNavSettings': {
+                setNavSettings(message.value);
+                break;
+            }
+
+            // Focus and select all text in 'find' field
+            case 'selectFind': {
+                focusOnField('findText');
+                break;
+            }
+            // Focus and select all text in 'replace' field
+            case 'selectReplace': {
+                focusOnField('replaceText');
+                break;
+            }
+            case 'getSettings': {
+                getSettings();
+                break;
+            }
+            case 'setSettings': {
+                setSettings(message.value);
+                break;
+            }
+            case 'setSearchSetting': {
+                setSearchSetting(message.id);
+                break;
+            }
+        }
+    });
+
+    vscode.postMessage({ type: 'refreshSearchConfig' });
+})();
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -18171,77 +18432,6 @@ import * as utils from "../utils";
 }
 </t>
 <t tx="fil.20210603223013.1"></t>
-<t tx="fil.20210603223013.10">checkboxIds.forEach((p_inputId) =&gt; {
-    // @ts-expect-error
-    document.getElementById(p_inputId).checked = p_settings[p_inputId];
-    searchSettings[p_inputId] = p_settings[p_inputId];
-});
-// @ts-expect-error
-document.getElementById(radioIds[p_settings['searchScope']]).checked = true;
-searchSettings.searchScope = p_settings['searchScope'];
-</t>
-<t tx="fil.20210603223013.11">function sendSearchConfig() {
-    dirty = false; // clear dirty flag
-    vscode.postMessage({ type: 'searchConfig', value: searchSettings });
-}
-
-let timer; // for debouncing sending the settings from this webview to leointeg
-let dirty = false;
-</t>
-<t tx="fil.20210603223013.12">function processChange() {
-    clearTimeout(timer);
-    dirty = true;
-    timer = setTimeout(() =&gt; {
-        sendSearchConfig();
-    }, 300);
-}
-
-</t>
-<t tx="fil.20210603223013.13"></t>
-<t tx="fil.20210603223013.14">inputIds.forEach((p_inputId) =&gt; {
-    @others
-});
-</t>
-<t tx="fil.20210603223013.15">document.getElementById(p_inputId).onkeypress = function (p_event) {
-    // @ts-expect-error
-    if (!p_event) p_event = window.event;
-    var keyCode = p_event.code || p_event.key;
-    if (keyCode == 'Enter') {
-        if (timer) {
-            clearTimeout(timer);
-            sendSearchConfig();
-        }
-        vscode.postMessage({ type: 'leoFindNext' });
-        return false;
-    }
-};
-</t>
-<t tx="fil.20210603223013.16">document.getElementById(p_inputId).addEventListener('input', function (p_event) {
-    // @ts-expect-error
-    searchSettings[p_inputId] = this.value;
-    processChange();
-});
-</t>
-<t tx="fil.20210603223013.17">checkboxIds.forEach((p_inputId) =&gt; {
-    document.getElementById(p_inputId).addEventListener('change', function (p_event) {
-        // @ts-expect-error
-        searchSettings[p_inputId] = this.checked;
-        processChange();
-    });
-});
-</t>
-<t tx="fil.20210603223013.18"></t>
-<t tx="fil.20210603223013.19">radioIds.forEach((p_inputId) =&gt; {
-    document.getElementById(p_inputId).addEventListener('change', function (p_event) {
-        searchSettings['searchScope'] = parseInt(
-            // @ts-expect-error
-            document.querySelector('input[name="searchScope"]:checked').value
-        );
-        processChange();
-    });
-});
-
-</t>
 <t tx="fil.20210603223013.2">@language css
 div.row {
   overflow-x: hidden;
@@ -18256,241 +18446,9 @@ div.col {
   overflow: hidden;
 }
 </t>
-<t tx="fil.20210603223013.20"></t>
-<t tx="fil.20210603223013.21">/**
- * @param {string} p_inputId
- */
-function toggleCheckbox(p_inputId) {
-    let w_checkbox = document.getElementById(p_inputId);
-    let w_setTo = true;
-    // @ts-expect-error
-    if (w_checkbox.checked) {
-        w_setTo = false;
-    }
-    // @ts-expect-error
-    w_checkbox.checked = w_setTo;
-    searchSettings[p_inputId] = w_setTo;
-    if (timer) {
-        clearTimeout(timer);
-    }
-    sendSearchConfig();
-}
-
-</t>
-<t tx="fil.20210603223013.22">/**
- * @param {string} p_inputId
- */
-function setRadio(p_inputId) {
-    // @ts-expect-error
-    document.getElementById(p_inputId).checked = true;
-    searchSettings['searchScope'] = parseInt(
-        // @ts-expect-error
-        document.querySelector('input[name="searchScope"]:checked').value
-    );
-    if (timer) {
-        clearTimeout(timer);
-    }
-    sendSearchConfig();
-}
-
-</t>
-<t tx="fil.20210603223013.23">/**
- *
- * @param {KeyboardEvent} p_event
- */
-function checkKeyDown(p_event) {
-    // @ts-expect-error
-    if (!p_event) p_event = window.event;
-    var keyCode = p_event.code || p_event.key;
-
-    if (keyCode === 'Tab') {
-        var actEl = document.activeElement;
-        if (p_event.shiftKey) {
-            // shift + tab so if first got last
-            var firstEl = document.getElementById(firstTabEl);
-            if (actEl === firstEl) {
-                p_event.preventDefault();
-                p_event.stopPropagation();
-                p_event.stopImmediatePropagation();
-                document.getElementById(lastTabEl).focus();
-                return;
-            }
-        } else {
-            // tab, so if last goto first
-            var lastEl = document.getElementById(lastTabEl);
-            if (actEl === lastEl) {
-                p_event.preventDefault();
-                p_event.stopPropagation();
-                p_event.stopImmediatePropagation();
-                focusOnField(firstTabEl);
-                return;
-            }
-        }
-    }
-    // checkOtherKeys(p_event);
-}
-
-// TODO :  CAPTURE FOCUS IN OVERALL PANEL AND SET CONTEXT-VAR OF 'FOCUSED PANEL'
-
-document.onkeydown = checkKeyDown;
-
-</t>
-<t tx="fil.20210603223013.24">/**
- * @param {string} p_id
- */
-function focusOnField(p_id) {
-    const inputField = document.querySelector('#' + p_id);
-    // @ts-expect-error
-    inputField.select();
-    // TODO : TEST IF NEEDED TO PREVENT FLICKER ON FIRST TRY?
-    setTimeout(() =&gt; {
-        // @ts-expect-error
-        inputField.select();
-    }, 0);
-}
-
-</t>
-<t tx="fil.20210603223013.26">function getSettings() {
-    // clear dirty, clear timer,
-    if (dirty) {
-        dirty = false;
-        clearTimeout(timer);
-        sendSearchConfig(); // just trigger send settings
-    }
-}
-
-// FINISH STARTUP
-vscode.postMessage({ type: 'refreshSearchConfig' });
-</t>
-<t tx="fil.20210603223013.4">// @ts-check
-
-// This script will be run within the webview itself
-// It cannot access the main VS Code APIs directly.
-// Send message to leoInteg with vscode.postMessage({ keyNameEx1: someValue, ... });
-// Receive messages from leoInteg with window.addEventListener('message', event =&gt; { ... });
-@others
+<t tx="fil.20210603223013.4">@others
 @language javascript
 @tabwidth -4
-</t>
-<t tx="fil.20210603223013.5">(function () {
-    // @ts-expect-error
-    const vscode = acquireVsCodeApi();
-
-    let firstTabEl = 'navText'; // used to be 'findText' before nav inputs
-    let lastTabEl = 'searchBody';
-
-    let navSettings = {
-        navText: '',
-        showParents: true,
-        searchOptions: 0,
-    };
-
-    // * LeoSearchSettings Type
-    let searchSettings = {
-        findText: '',
-        replaceText: '',
-        wholeWord: false,
-        ignoreCase: true,
-        regExp: false,
-        markFinds: false,
-        markChanges: false,
-        searchHeadline: true,
-        searchBody: true,
-        searchScope: 0, // 0 is entire outline (1: sub-outline, 2: node only)
-    };
-
-    document.addEventListener('focusin', (event) =&gt; {
-        vscode.postMessage({ type: 'gotFocus' });
-    });
-    document.addEventListener('focusout', (event) =&gt; {
-        vscode.postMessage({ type: 'lostFocus' });
-    });
-
-    // Handle messages sent from the extension to the webview
-    @others
-})();
-</t>
-<t tx="fil.20210603223013.6">window.addEventListener('message', (event) =&gt; {
-    const message = event.data; // The json data that the extension sent
-    switch (message.type) {
-        // Focus and select all text in 'nav' field
-        case 'selectNav': {
-            focusOnField('navText');
-            break;
-        }
-        case 'getNavSettings': {
-            getNavSettings();
-            break;
-        }
-        case 'setNavSettings': {
-            setNavSettings(message.value);
-            break;
-        }
-
-        // Focus and select all text in 'find' field
-        case 'selectFind': {
-            focusOnField('findText');
-            break;
-        }
-        // Focus and select all text in 'replace' field
-        case 'selectReplace': {
-            focusOnField('replaceText');
-            break;
-        }
-        case 'getSettings': {
-            getSettings();
-            break;
-        }
-        case 'setSettings': {
-            setSettings(message.value);
-            break;
-        }
-        case 'setSearchSetting': {
-            setSearchSetting(message.id);
-            break;
-        }
-    }
-});
-
-let inputIds = ['findText', 'replaceText'];
-let checkboxIds = [
-    'wholeWord',
-    'ignoreCase',
-    'regExp',
-    'markFinds',
-    'markChanges',
-    'searchHeadline',
-    'searchBody',
-];
-let radioIds = ['entireOutline', 'subOutlineOnly', 'nodeOnly'];
-
-</t>
-<t tx="fil.20210603223013.7">/**
- * @param {string} p_id
- */
-function setSearchSetting(p_id) {
-    if (checkboxIds.includes(p_id)) {
-        toggleCheckbox(p_id);
-    } else if (radioIds.includes(p_id)) {
-        setRadio(p_id);
-    }
-}
-
-</t>
-<t tx="fil.20210603223013.8">/**
- * @param {any} p_settings
- */
-function setSettings(p_settings) {
-    // When opening a Leo document, set default values of fields
-    @others
-}
-
-</t>
-<t tx="fil.20210603223013.9">inputIds.forEach((p_inputId) =&gt; {
-    // @ts-expect-error
-    document.getElementById(p_inputId).value = p_settings[p_inputId];
-    searchSettings[p_inputId] = p_settings[p_inputId];
-});
 </t>
 <t tx="fil.20210603223014.2">@language css
 html {
