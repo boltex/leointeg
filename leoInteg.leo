@@ -15499,6 +15499,10 @@ export const enum LeoSearchScope {
  * * Leo's GUI search settings internal structure
  */
 export interface LeoGuiFindTabManagerSettings {
+    // Nav options
+    nav_text: string;
+    show_parents: boolean;
+    search_options: number;
     //Find/change strings...
     find_text: string,
     change_text: string,
@@ -15524,7 +15528,11 @@ public saveSearchSettings(p_settings: LeoSearchSettings): Promise&lt;LeoBridgePa
     this._lastSettingsUsed = p_settings;
     // convert to LeoGuiFindTabManagerSettings
     const w_settings: LeoGuiFindTabManagerSettings = {
-        //Find/change strings...
+        // Nav settings
+        nav_text: p_settings.navText,
+        show_parents: p_settings.showParents,
+        search_options: p_settings.searchOptions,
+        // Find/change strings...
         find_text: p_settings.findText,
         change_text: p_settings.replaceText,
         // Find options...
@@ -15566,6 +15574,9 @@ public loadSearchSettings(): void {
         (p_result: LeoBridgePackage) =&gt; {
             const w_searchSettings: LeoGuiFindTabManagerSettings = p_result.searchSettings!;
             const w_settings: LeoSearchSettings = {
+                navText: w_searchSettings.nav_text,
+                showParents: w_searchSettings.show_parents,
+                searchOptions: w_searchSettings.search_options,
                 //Find/change strings...
                 findText: w_searchSettings.find_text,
                 replaceText: w_searchSettings.change_text,
@@ -17892,11 +17903,10 @@ public getTextFromClipboard(): string {
     ];
     let radioIds = ['entireOutline', 'subOutlineOnly', 'nodeOnly'];
 
-    function navEnter() {
-        // User pressed enter in the nav text input
-    }
     function navTextChange() {
         // User changed text in nav text input
+        // DEBOUNCE .25 seconds
+        console.log('! navTextChange ! navText is --&gt; ', searchSettings.navText);
     }
 
     /**
@@ -18044,7 +18054,7 @@ public getTextFromClipboard(): string {
         if (keyCode == 'Enter') {
             if (timer) {
                 clearTimeout(timer);
-                navEnter();
+                sendSearchConfig();
             }
             vscode.postMessage({ type: 'leoNavEnter' });
             return false;

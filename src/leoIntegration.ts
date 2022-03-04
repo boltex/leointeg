@@ -2910,6 +2910,9 @@ export class LeoIntegration {
             (p_result: LeoBridgePackage) => {
                 const w_searchSettings: LeoGuiFindTabManagerSettings = p_result.searchSettings!;
                 const w_settings: LeoSearchSettings = {
+                    navText: w_searchSettings.nav_text,
+                    showParents: w_searchSettings.show_parents,
+                    searchOptions: w_searchSettings.search_options,
                     //Find/change strings...
                     findText: w_searchSettings.find_text,
                     replaceText: w_searchSettings.change_text,
@@ -2956,7 +2959,11 @@ export class LeoIntegration {
         this._lastSettingsUsed = p_settings;
         // convert to LeoGuiFindTabManagerSettings
         const w_settings: LeoGuiFindTabManagerSettings = {
-            //Find/change strings...
+            // Nav settings
+            nav_text: p_settings.navText,
+            show_parents: p_settings.showParents,
+            search_options: p_settings.searchOptions,
+            // Find/change strings...
             find_text: p_settings.findText,
             change_text: p_settings.replaceText,
             // Find options...

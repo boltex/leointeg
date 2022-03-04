@@ -45,11 +45,10 @@
     ];
     let radioIds = ['entireOutline', 'subOutlineOnly', 'nodeOnly'];
 
-    function navEnter() {
-        // User pressed enter in the nav text input
-    }
     function navTextChange() {
         // User changed text in nav text input
+        // DEBOUNCE .25 seconds
+        console.log('! navTextChange ! navText is --> ', searchSettings.navText);
     }
 
     /**
@@ -197,7 +196,7 @@
         if (keyCode == 'Enter') {
             if (timer) {
                 clearTimeout(timer);
-                navEnter();
+                sendSearchConfig();
             }
             vscode.postMessage({ type: 'leoNavEnter' });
             return false;

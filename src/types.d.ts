@@ -247,6 +247,10 @@ export interface LeoSearchSettings {
  * * Leo's GUI search settings internal structure
  */
 export interface LeoGuiFindTabManagerSettings {
+    // Nav options
+    nav_text: string;
+    show_parents: boolean;
+    search_options: number;
     //Find/change strings...
     find_text: string,
     change_text: string,
