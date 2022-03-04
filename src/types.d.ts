@@ -225,7 +225,11 @@ export const enum LeoSearchScope {
  * * LeoInteg search settings structure for use with the 'find' webview
  */
 export interface LeoSearchSettings {
-    //Find/change strings...
+    // Nav options
+    navText: string;
+    showParents: boolean;
+    searchOptions: number;
+    // Find/change strings...
     findText: string;
     replaceText: string;
     // Find options...

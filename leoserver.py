@@ -372,6 +372,10 @@ class QuickSearchController:
         self.frozen = False
         self._search_patterns = []
 
+        self.navText = ''
+        self.showParents = True
+        self.searchOptions = 0
+
         def searcher(inp):
             #print("searcher", inp)
             if self.frozen:
@@ -1112,8 +1116,8 @@ class LeoServer:
             c = self.bridge.openLeoFile(filename)
             # Add ftm. This won't happen if opened outside leoserver
             c.findCommands.ftm = StringFindTabManager(c)
-            # TODO ADD QUICKSEARCHCONTROLLER!
-            #
+            cc = QuickSearchController(c)
+            setattr(c, 'scon', cc) # Patch up quick-search controller to the commander
         if not c:  # pragma: no cover
             raise ServerError(f"{tag}: bridge did not open {filename!r}")
         if not c.frame.body.wrapper:  # pragma: no cover
@@ -1276,6 +1280,9 @@ class LeoServer:
             settings = c.findCommands.ftm.get_settings()
             # Use the "__dict__" of the settings, to be serializable as a json string.
             result = {"searchSettings": settings.__dict__}
+            result.searchSettings["navText"] = c.scon.navText
+            result.searchSettings["showParents"] = c.scon.showParents
+            result.searchSettings["searchOptions"] = c.scon.searchOptions
         except Exception as e:
             raise ServerError(f"{tag}: exception getting search settings: {e}")
         return self._make_response(result)
@@ -1293,6 +1300,10 @@ class LeoServer:
             raise ServerError(f"{tag}: searchSettings object is missing")
         # Try to set the search settings
         try:
+            # nav settings
+            c.scon.navText = searchSettings.get('navText')
+            c.scon.showParents = searchSettings.get('showParents')
+            c.scon.searchOptions = searchSettings.get('searchOptions')
             # Find/change text boxes.
             table = (
                 ('find_findbox', 'find_text', ''),

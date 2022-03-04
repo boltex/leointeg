@@ -15350,7 +15350,11 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
  * * LeoInteg search settings structure for use with the 'find' webview
  */
 export interface LeoSearchSettings {
-    //Find/change strings...
+    // Nav options
+    navText: string;
+    showParents: boolean;
+    searchOptions: number;
+    // Find/change strings...
     findText: string;
     replaceText: string;
     // Find options...
@@ -17853,19 +17857,17 @@ public getTextFromClipboard(): string {
 
     let timer; // for debouncing sending the settings from this webview to leointeg
     let dirty = false; // all but nav input
-    let navDirty = false; // nav input only
 
     let firstTabEl = 'searchOptions'; // used to be 'findText' before nav inputs
     let lastTabEl = 'searchBody';
 
-    let navSettings = {
+    // * LeoSearchSettings Type
+    let searchSettings = {
+        // Nav settings
         navText: '',
         showParents: true,
         searchOptions: 0,
-    };
-
-    // * LeoSearchSettings Type
-    let searchSettings = {
+        // Find/replace
         findText: '',
         replaceText: '',
         wholeWord: false,
@@ -17890,11 +17892,11 @@ public getTextFromClipboard(): string {
     ];
     let radioIds = ['entireOutline', 'subOutlineOnly', 'nodeOnly'];
 
-    function getNavSettings() {
-        // getNavSettings
+    function navEnter() {
+        // User pressed enter in the nav text input
     }
-    function setNavSettings(p_settings) {
-        // setNavSettings
+    function navTextChange() {
+        // User changed text in nav text input
     }
 
     /**
@@ -17931,11 +17933,6 @@ public getTextFromClipboard(): string {
     function sendSearchConfig() {
         dirty = false; // clear dirty flag
         vscode.postMessage({ type: 'searchConfig', value: searchSettings });
-    }
-
-    function sendNavConfig() {
-        navDirty = false; // clear dirty flag
-        vscode.postMessage({ type: 'navConfig', value: navSettings });
     }
 
     function processChange() {
@@ -18040,6 +18037,35 @@ public getTextFromClipboard(): string {
         }
     }
 
+    document.getElementById('navText').onkeypress = function (p_event) {
+        // @ts-expect-error
+        if (!p_event) p_event = window.event;
+        var keyCode = p_event.code || p_event.key;
+        if (keyCode == 'Enter') {
+            if (timer) {
+                clearTimeout(timer);
+                navEnter();
+            }
+            vscode.postMessage({ type: 'leoNavEnter' });
+            return false;
+        }
+        document.getElementById('navText').addEventListener('input', function (p_event) {
+            // @ts-expect-error
+            searchSettings.navText = this.value;
+            navTextChange(); // DEBOUNCE THIS Dont process change too fast!
+        });
+    };
+    document.getElementById('showParents').addEventListener('change', function (p_event) {
+        // @ts-expect-error
+        searchSettings.showParents = this.checked;
+        processChange();
+    });
+    document.getElementById('searchOptions').addEventListener('change', function (p_event) {
+        // @ts-expect-error
+        searchSettings.searchOptions = this.value;
+        processChange();
+    });
+
     inputIds.forEach((p_inputId) =&gt; {
         document.getElementById(p_inputId).onkeypress = function (p_event) {
             // @ts-expect-error
@@ -18098,15 +18124,6 @@ public getTextFromClipboard(): string {
                 focusOnField('navText');
                 break;
             }
-            case 'getNavSettings': {
-                getNavSettings();
-                break;
-            }
-            case 'setNavSettings': {
-                setNavSettings(message.value);
-                break;
-            }
-
             // * Find Tab Controls
             // Focus and select all text in 'find' field
             case 'selectFind': {
