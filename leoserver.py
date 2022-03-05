@@ -12,9 +12,13 @@ Written by Félix Malboeuf and Edward K. Ream.
 #@+node:felix.20210621233316.2: ** << imports >>
 import argparse
 import asyncio
+import fnmatch
 import inspect
+import itertools
 import json
 import os
+from collections import OrderedDict
+import re
 import sys
 import socket
 import textwrap
@@ -34,7 +38,7 @@ assert os.path.exists(leo_path), repr(leo_path)
 if leo_path not in sys.path:
     sys.path.append(leo_path)
 # Leo
-from leo.core.leoNodes import Position
+from leo.core.leoNodes import Position, PosList
 from leo.core.leoGui import StringFindTabManager
 from leo.core.leoExternalFiles import ExternalFilesController
 #@-<< imports >>
@@ -354,6 +358,31 @@ class ServerExternalFilesController(ExternalFilesController):
         g.leoServer._send_async_output(package, True)
         self.waitingForAnswer = True
     #@-others
+#@+node:jlunz.20151027094647.1: ** class OrderedDefaultDict (OrderedDict)
+class OrderedDefaultDict(OrderedDict):
+    """
+    Credit:  http://stackoverflow.com/questions/4126348/
+    how-do-i-rewrite-this-function-to-implement-ordereddict/4127426#4127426
+    """
+    def __init__(self, *args, **kwargs):
+        if not args:
+            self.default_factory = None
+        else:
+            if not (args[0] is None or callable(args[0])):
+                raise TypeError('first argument must be callable or None')
+            self.default_factory = args[0]
+            args = args[1:]
+        super().__init__(*args, **kwargs)
+
+    def __missing__(self, key):
+        if self.default_factory is None:
+            raise KeyError(key)
+        self[key] = default = self.default_factory()
+        return default
+
+    def __reduce__(self):  # optional, for pickle support
+        args = (self.default_factory,) if self.default_factory else ()
+        return self.__class__, args, None, None, self.items()
 #@+node:felix.20220225003906.1: ** class QuickSearchController
 class QuickSearchController:
 
@@ -372,7 +401,7 @@ class QuickSearchController:
         self.frozen = False
         self._search_patterns = []
 
-        self.navText = ''
+        self.navText = 'default nav text'
         self.showParents = True
         self.searchOptions = 0
 
@@ -514,7 +543,7 @@ class QuickSearchController:
     #@+node:felix.20220225003906.10: *3* doNodeHistory
     def doNodeHistory(self):
 
-        nh = leoNodes.PosList(po[0] for po in self.c.nodeHistory.beadList)
+        nh = PosList(po[0] for po in self.c.nodeHistory.beadList)
         nh.reverse()
         self.clear()
         self.addHeadlineMatches(nh)
@@ -677,7 +706,7 @@ class QuickSearchController:
         """ Return list (a PosList) of all nodes where zero or more characters at
         the beginning of the headline match regex
         """
-        res = leoNodes.PosList()
+        res = PosList()
         try:
             pat = re.compile(regex, flags)
         except Exception:
@@ -695,7 +724,7 @@ class QuickSearchController:
         one or more times.
 
         """
-        res = leoNodes.PosList()
+        res = PosList()
         try:
             pat = re.compile(regex, flags)
         except Exception:
@@ -716,7 +745,7 @@ class QuickSearchController:
 
         self.clear()
         c = self.c
-        pl = leoNodes.PosList()
+        pl = PosList()
         for p in c.all_positions():
             if p.isMarked():
                 pl.append(p.copy())
@@ -729,27 +758,30 @@ class QuickSearchController:
         tgt = self.its.get(it and id(it))
         if not tgt:
             return
+
         # if Ctrl key is down, delete item and
         # children (based on indent) and return
-        modifiers = QtWidgets.QApplication.keyboardModifiers()
-        if modifiers == KeyboardModifier.ControlModifier:
-            row = self.lw.row(it)
-            init_indent = len(it.text()) - len(str(it.text()).lstrip())
-            self.lw.blockSignals(True)
-            while row < self.lw.count():
-                self.lw.item(row).setHidden(True)
-                row += 1
-                cur = self.lw.item(row)
-                # #1751.
-                if not cur:
-                    break
-                s = cur.text() or ''
-                indent = len(s) - len(str(s).lstrip())
-                if indent <= init_indent:
-                    break
-            self.lw.setCurrentRow(row)
-            self.lw.blockSignals(False)
-            return
+        #
+        # modifiers = QtWidgets.QApplication.keyboardModifiers()
+        # if modifiers == KeyboardModifier.ControlModifier:
+        #     row = self.lw.row(it)
+        #     init_indent = len(it.text()) - len(str(it.text()).lstrip())
+        #     self.lw.blockSignals(True)
+        #     while row < self.lw.count():
+        #         self.lw.item(row).setHidden(True)
+        #         row += 1
+        #         cur = self.lw.item(row)
+        #         # #1751.
+        #         if not cur:
+        #             break
+        #         s = cur.text() or ''
+        #         indent = len(s) - len(str(s).lstrip())
+        #         if indent <= init_indent:
+        #             break
+        #     self.lw.setCurrentRow(row)
+        #     self.lw.blockSignals(False)
+        #     return
+
         # generic callable
         if callable(tgt):
             tgt()
@@ -1280,9 +1312,9 @@ class LeoServer:
             settings = c.findCommands.ftm.get_settings()
             # Use the "__dict__" of the settings, to be serializable as a json string.
             result = {"searchSettings": settings.__dict__}
-            result.searchSettings["navText"] = c.scon.navText
-            result.searchSettings["showParents"] = c.scon.showParents
-            result.searchSettings["searchOptions"] = c.scon.searchOptions
+            result["searchSettings"]["nav_text"] = c.scon.navText
+            result["searchSettings"]["show_parents"] = c.scon.showParents
+            result["searchSettings"]["search_options"] = c.scon.searchOptions
         except Exception as e:
             raise ServerError(f"{tag}: exception getting search settings: {e}")
         return self._make_response(result)
@@ -1301,9 +1333,10 @@ class LeoServer:
         # Try to set the search settings
         try:
             # nav settings
-            c.scon.navText = searchSettings.get('navText')
-            c.scon.showParents = searchSettings.get('showParents')
-            c.scon.searchOptions = searchSettings.get('searchOptions')
+            c.scon.navText = searchSettings.get('nav_text')
+            c.scon.showParents = searchSettings.get('show_parents')
+            c.scon.searchOptions = searchSettings.get('search_options')
+
             # Find/change text boxes.
             table = (
                 ('find_findbox', 'find_text', ''),

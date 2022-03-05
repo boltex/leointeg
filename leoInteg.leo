@@ -15595,7 +15595,7 @@ public loadSearchSettings(): void {
                     (w_searchSettings.node_only ? 2 : 0),
             };
             if (w_settings.searchScope &gt; 2) {
-                console.error('searchScope SHOULD BE 0,1,2 only: ', w_settings.searchScope);
+                console.error('searchScope SHOULD BE 0, 1, 2 only: ', w_settings.searchScope);
             }
             this._lastSettingsUsed = w_settings;
             if (this._findPanelWebviewExplorerView) {
@@ -17924,6 +17924,22 @@ public getTextFromClipboard(): string {
      * @param {any} p_settings
      */
     function setSettings(p_settings) {
+        console.log('p_settings', p_settings);
+
+        // Nav controls
+        // @ts-expect-error
+        document.getElementById("navText").value = p_settings["navText"];
+        searchSettings["navText"] = p_settings["navText"];
+
+        // showParents
+        // @ts-expect-error
+        document.getElementById("showParents").checked = p_settings["showParents"];
+        searchSettings["showParents"] = p_settings["showParents"];
+        // searchOptions
+        // @ts-expect-error
+        document.getElementById("searchOptions").value = p_settings["searchOptions"];
+        searchSettings["searchOptions"] = p_settings["searchOptions"];
+
         // When opening a Leo document, set default values of fields
         inputIds.forEach((p_inputId) =&gt; {
             // @ts-expect-error

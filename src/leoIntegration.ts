@@ -2931,7 +2931,7 @@ export class LeoIntegration {
                         (w_searchSettings.node_only ? 2 : 0),
                 };
                 if (w_settings.searchScope > 2) {
-                    console.error('searchScope SHOULD BE 0,1,2 only: ', w_settings.searchScope);
+                    console.error('searchScope SHOULD BE 0, 1, 2 only: ', w_settings.searchScope);
                 }
                 this._lastSettingsUsed = w_settings;
                 if (this._findPanelWebviewExplorerView) {
