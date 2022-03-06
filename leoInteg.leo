@@ -17924,8 +17924,6 @@ public getTextFromClipboard(): string {
      * @param {any} p_settings
      */
     function setSettings(p_settings) {
-        console.log('p_settings', p_settings);
-
         // Nav controls
         // @ts-expect-error
         document.getElementById("navText").value = p_settings["navText"];

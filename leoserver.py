@@ -1301,6 +1301,45 @@ class LeoServer:
                 )
         return self._make_response()  # Just send empty as 'ok'
     #@+node:felix.20210621233316.19: *4* server.search commands
+    #@+node:felix.20220305211743.1: *5* server.nav_headline_search
+    def nav_headline_search(self, param):
+        """
+        Performs nav 'headline only' search and fills results of go to panel
+        """
+        tag = 'nav_headline_search'
+        c = self._check_c()
+        try:
+            pass
+            result = {"test": "a string"}
+        except Exception as e:
+            raise ServerError(f"{tag}: exception doing nav headline search: {e}")
+        return self._make_response(result)
+    #@+node:felix.20220305211828.1: *5* server.nav_search
+    def nav_search(self, param):
+        """
+        Performs nav search and fills results of go to panel
+        """
+        tag = 'nav_search'
+        c = self._check_c()
+        try:
+            pass
+            result = {"test": "a string"}
+        except Exception as e:
+            raise ServerError(f"{tag}: exception doing nav search: {e}")
+        return self._make_response(result)
+    #@+node:felix.20220305215239.1: *5* server.get_goto_panel
+    def get_goto_panel(self, param):
+        """
+        Gets the content of the goto panel
+        """
+        tag = 'get_goto_panel'
+        c = self._check_c()
+        try:
+            pass
+            result = {"test": "a string"}
+        except Exception as e:
+            raise ServerError(f"{tag}: exception doing nav search: {e}")
+        return self._make_response(result)
     #@+node:felix.20210621233316.20: *5* server.get_search_settings
     def get_search_settings(self, param):
         """
