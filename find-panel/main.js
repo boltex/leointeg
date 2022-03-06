@@ -10,6 +10,7 @@
 
     let timer; // for debouncing sending the settings from this webview to leointeg
     let dirty = false; // all but nav input
+    let navTextDirty = false;
 
     let firstTabEl = 'searchOptions'; // used to be 'findText' before nav inputs
     let lastTabEl = 'searchBody';
@@ -47,7 +48,11 @@
 
     function navTextChange() {
         // User changed text in nav text input
+
         // DEBOUNCE .25 seconds
+
+        // ALSO set navTextDirty = false if sent to leoserver!
+
         console.log('! navTextChange ! navText is --> ', searchSettings.navText);
     }
 
@@ -208,8 +213,11 @@
         if (!p_event) p_event = window.event;
         var keyCode = p_event.code || p_event.key;
         if (keyCode == 'Enter') {
-            if (timer) {
-                clearTimeout(timer);
+            if (navTextDirty) {
+                navTextDirty = false;
+                if (timer) {
+                    clearTimeout(timer);
+                }
                 sendSearchConfig();
             }
             vscode.postMessage({ type: 'leoNavEnter' });
@@ -218,6 +226,7 @@
         document.getElementById('navText').addEventListener('input', function (p_event) {
             // @ts-expect-error
             searchSettings.navText = this.value;
+            navTextDirty = true;
             navTextChange(); // DEBOUNCE THIS Dont process change too fast!
         });
     };

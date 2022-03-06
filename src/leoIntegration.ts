@@ -2620,8 +2620,20 @@ export class LeoIntegration {
         return this.clipboardContent;
     }
 
-    public navEnter(): void {
-        //
+    public navEnter(): Thenable<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true).then(() => {
+
+            return this.sendAction(
+                Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
+                JSON.stringify({ test: "test" })
+            ).then((p_package) => {
+                // @ts-expect-error
+                console.log('back from NAV_HEADLINE_SEARCH', p_package.test);
+
+                return p_package;
+            });
+
+        });
 
     }
 

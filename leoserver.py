@@ -1308,9 +1308,11 @@ class LeoServer:
         """
         tag = 'nav_headline_search'
         c = self._check_c()
+        # c.scon.navText
+        # c.scon.showParents
+        # c.scon.searchOptions
         try:
-            print(tag)
-            result = {"test": "a string"}
+            result = {"test": c.scon.navText}
         except Exception as e:
             raise ServerError(f"{tag}: exception doing nav headline search: {e}")
         return self._make_response(result)

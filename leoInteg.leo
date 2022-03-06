@@ -6163,6 +6163,9 @@ public static LEOBRIDGE = {
     MOVE_MARKED_NODES: "moveMarked",
     GIT_DIFF: "gitDiff",
     GET_FOCUS: "!get_focus",
+    NAV_HEADLINE_SEARCH: "!nav_headline_search",
+    NAV_SEARCH: "!nav_search",
+    GET_GOTO_PANEL: "!get_goto_panel",
     GET_SEARCH_SETTINGS: "!get_search_settings",
     SET_SEARCH_SETTINGS: "!set_search_settings",
     START_SEARCH: "!start_search",
@@ -17870,6 +17873,7 @@ public getTextFromClipboard(): string {
 
     let timer; // for debouncing sending the settings from this webview to leointeg
     let dirty = false; // all but nav input
+    let navTextDirty = false;
 
     let firstTabEl = 'searchOptions'; // used to be 'findText' before nav inputs
     let lastTabEl = 'searchBody';
@@ -17907,7 +17911,11 @@ public getTextFromClipboard(): string {
 
     function navTextChange() {
         // User changed text in nav text input
+
         // DEBOUNCE .25 seconds
+
+        // ALSO set navTextDirty = false if sent to leoserver!
+
         console.log('! navTextChange ! navText is --&gt; ', searchSettings.navText);
     }
 
@@ -18068,8 +18076,11 @@ public getTextFromClipboard(): string {
         if (!p_event) p_event = window.event;
         var keyCode = p_event.code || p_event.key;
         if (keyCode == 'Enter') {
-            if (timer) {
-                clearTimeout(timer);
+            if (navTextDirty) {
+                navTextDirty = false;
+                if (timer) {
+                    clearTimeout(timer);
+                }
                 sendSearchConfig();
             }
             vscode.postMessage({ type: 'leoNavEnter' });
@@ -18078,6 +18089,7 @@ public getTextFromClipboard(): string {
         document.getElementById('navText').addEventListener('input', function (p_event) {
             // @ts-expect-error
             searchSettings.navText = this.value;
+            navTextDirty = true;
             navTextChange(); // DEBOUNCE THIS Dont process change too fast!
         });
     };
@@ -18179,8 +18191,20 @@ public getTextFromClipboard(): string {
     vscode.postMessage({ type: 'refreshSearchConfig' });
 })();
 </t>
-<t tx="felix.20220305225942.1">public navEnter(): void {
-    //
+<t tx="felix.20220305225942.1">public navEnter(): Thenable&lt;LeoBridgePackage&gt; {
+    return this._isBusyTriggerSave(false, true).then(() =&gt; {
+
+        return this.sendAction(
+            Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
+            JSON.stringify({ test: "test" })
+        ).then((p_package) =&gt; {
+            // @ts-expect-error
+            console.log('back from NAV_HEADLINE_SEARCH', p_package.test);
+
+            return p_package;
+        });
+
+    });
 
 }
 
