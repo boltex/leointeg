@@ -33,6 +33,14 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.onDidReceiveMessage((data) => {
             switch (data.type) {
+                case 'leoNavEnter': {
+                    this._leoIntegration.navEnter();
+                    break;
+                }
+                case 'leoNavTextChange': {
+                    this._leoIntegration.navTextChange();
+                    break;
+                }
                 case 'gotFocus': {
                     // utils.setContext("sideBarFocus", true);
                     // utils.setContext("focusedView", "leoFindPanel");

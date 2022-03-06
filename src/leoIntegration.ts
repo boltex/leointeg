@@ -2620,6 +2620,16 @@ export class LeoIntegration {
         return this.clipboardContent;
     }
 
+    public navEnter(): void {
+        //
+
+    }
+
+    public navTextChange(): void {
+        //
+
+    }
+
     /**
      * * Opens the find panel and selects all & focuses on the find field.
      */

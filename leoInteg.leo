@@ -607,6 +607,8 @@
 <v t="felix.20220222014050.4"><vh>getTextFromClipboard</vh></v>
 </v>
 <v t="felix.20210530225640.1"><vh>Search</vh>
+<v t="felix.20220305225942.1"><vh>navEnter</vh></v>
+<v t="felix.20220305231404.1"><vh>navTextChange</vh></v>
 <v t="felix.20210516233931.1"><vh>startSearch</vh></v>
 <v t="felix.20210613212439.1"><vh>newHeadline</vh></v>
 <v t="felix.20210613205741.1"><vh>_inputFindPattern</vh></v>
@@ -18177,6 +18179,18 @@ public getTextFromClipboard(): string {
     vscode.postMessage({ type: 'refreshSearchConfig' });
 })();
 </t>
+<t tx="felix.20220305225942.1">public navEnter(): void {
+    //
+
+}
+
+</t>
+<t tx="felix.20220305231404.1">public navTextChange(): void {
+    //
+
+}
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -18343,6 +18357,14 @@ import * as utils from "../utils";
 
     webviewView.webview.onDidReceiveMessage((data) =&gt; {
         switch (data.type) {
+            case 'leoNavEnter': {
+                this._leoIntegration.navEnter();
+                break;
+            }
+            case 'leoNavTextChange': {
+                this._leoIntegration.navTextChange();
+                break;
+            }
             case 'gotFocus': {
                 // utils.setContext("sideBarFocus", true);
                 // utils.setContext("focusedView", "leoFindPanel");
