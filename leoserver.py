@@ -1330,6 +1330,7 @@ class LeoServer:
             result = {}
             navlist = [ {"key": k, "h": c.scon.its[k][0]["label"], "t": c.scon.its[k][0]["type"] } for k in c.scon.its.keys()]
             result["navList"] = navlist
+            result["lw"]= c.scon.lw
             result["navText"] = c.scon.navText
 
             # navlist = [ {"t": "h", "h": p.h, "gnx": p.gnx} for p in headlineMatchPositions]
@@ -1354,6 +1355,7 @@ class LeoServer:
             result = {}
             navlist = [ {"key": k, "h": c.scon.its[k][0]["label"], "t": c.scon.its[k][0]["type"] } for k in c.scon.its.keys()]
             result["navList"] = navlist
+            result["lw"]= c.scon.lw
             result["navText"] = c.scon.navText
 
         except Exception as e:

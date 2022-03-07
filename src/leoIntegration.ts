@@ -2633,7 +2633,8 @@ export class LeoIntegration {
                 console.log('back from nav text ENTER : ', p_package.navText);
                 // @ts-expect-error
                 console.log('back from navList : ', p_package.navList);
-
+                // @ts-expect-error
+                console.log('back from lw : ', p_package.lw);
                 return p_package;
             });
 
@@ -2653,6 +2654,8 @@ export class LeoIntegration {
                 console.log('back from nav text ENTER : ', p_package.navText);
                 // @ts-expect-error
                 console.log('back from navList : ', p_package.navList);
+                // @ts-expect-error
+                console.log('back from lw : ', p_package.lw);
 
                 return p_package;
             });
