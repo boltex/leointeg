@@ -2624,11 +2624,15 @@ export class LeoIntegration {
         return this._isBusyTriggerSave(false, true).then(() => {
 
             return this.sendAction(
-                Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
+                Constants.LEOBRIDGE.NAV_SEARCH,
+                // Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
                 JSON.stringify({ test: "test" })
             ).then((p_package) => {
+                //
                 // @ts-expect-error
-                console.log('back from NAV_HEADLINE_SEARCH', p_package.test);
+                console.log('back from nav text ENTER : ', p_package.navText);
+                // @ts-expect-error
+                console.log('back from navList : ', p_package.navList);
 
                 return p_package;
             });
@@ -2637,8 +2641,24 @@ export class LeoIntegration {
 
     }
 
-    public navTextChange(): void {
-        //
+    public navTextChange(): Thenable<LeoBridgePackage> {
+        return this._isBusyTriggerSave(false, true).then(() => {
+
+            return this.sendAction(
+                Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
+                JSON.stringify({ test: "test" })
+            ).then((p_package) => {
+                //
+                // @ts-expect-error
+                console.log('back from nav text ENTER : ', p_package.navText);
+                // @ts-expect-error
+                console.log('back from navList : ', p_package.navList);
+
+                return p_package;
+            });
+
+        });
+
 
     }
 

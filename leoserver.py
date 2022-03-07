@@ -391,7 +391,11 @@ class QuickSearchController:
     def __init__(self, c):
         self.c = c
         self.lw = [] # empty list
-        self.its = {}  # Keys are id(w),values are tuples (p,pos)
+
+        # Keys are id(w),values are either tuples in tuples (w (p,pos)) or tuples (w, f)
+        # (function f is when built from addGeneric)
+        self.its = {}
+
         # self.worker = threadutil.UnitWorker()
         # self.widgetUI = ui
         self.fileDirectives = ["@clean", "@file", "@asis", "@edit",
@@ -401,9 +405,11 @@ class QuickSearchController:
         self.frozen = False
         self._search_patterns = []
 
-        self.navText = 'default nav text'
+        self.navText = ''
         self.showParents = True
         self.searchOptions = 0
+        self.searchOptionsStrings = ["All", "Subtree", "File",
+                                     "Chapter", "Node"]
 
         def searcher(inp):
             #print("searcher", inp)
@@ -460,7 +466,7 @@ class QuickSearchController:
 
     #@+node:felix.20220225003906.4: *3* addItem
     def addItem(self, it, val):
-        self.its[id(it)] = val
+        self.its[id(it)] = (it, val)
         return len(self.its) > 300
     #@+node:felix.20220225003906.5: *3* addBodyMatches
     def addBodyMatches(self, poslist):
@@ -521,7 +527,7 @@ class QuickSearchController:
         """ Add generic callback """
         # it = QtWidgets.QListWidgetItem(text, self.lw)
         it = {"type": "generic", "label": text, "list": self.lw}
-        self.its[id(it)] = f
+        self.its[id(it)] = (it, f)
         return it
     #@+node:felix.20220225003906.8: *3* addHeadlineMatches
     def addHeadlineMatches(self, poslist):
@@ -552,7 +558,8 @@ class QuickSearchController:
         self.clear()
         def sHistSelect(x):
             def _f():
-                self.widgetUI.lineEdit.setText(x)
+                # self.widgetUI.lineEdit.setText(x)
+                self.c.scon.navText = x
                 self.doSearch(x)
             return _f
         for pat in self._search_patterns:
@@ -596,7 +603,7 @@ class QuickSearchController:
             hpat = pat[2:]
             bpat = pat[2:]
             flags = 0
-        combo = self.widgetUI.comboBox.currentText()
+        combo = self.searchOptionsStrings[self.searchOptions]
         if combo == "All":
             hNodes = self.c.all_positions()
             bNodes = self.c.all_positions()
@@ -653,7 +660,7 @@ class QuickSearchController:
             bm_keys = [match.key() for match in bm]
             numOfHm = len(hm)  #do this before trim to get accurate count
             hm = [match for match in hm if match.key() not in bm_keys]
-            if self.widgetUI.showParents.isChecked():
+            if self.showParents:
                 parents = OrderedDefaultDict(list)
                 for nodeList in [hm, bm]:
                     for node in nodeList:
@@ -667,11 +674,11 @@ class QuickSearchController:
                 lineMatchHits = self.addBodyMatches(bm)
 
             hits = numOfHm + lineMatchHits
-            self.lw.insertItem(0, "{} hits".format(hits))
+            self.lw.insert(0, "{} hits".format(hits))
 
         else:
             if combo == "File":
-                self.lw.insertItem(0, "External file directive not found " +
+                self.lw.insert(0, "External file directive not found " +
                                       "during search")
     #@+node:felix.20220225003906.15: *3* bgSearch
     def bgSearch(self, pat):
@@ -688,7 +695,7 @@ class QuickSearchController:
             hpat = pat[2:]
             # bpat = pat[2:]
             flags = 0
-        combo = self.widgetUI.comboBox.currentText()
+        combo =  self.searchOptionsStrings[self.searchOptions]
         if combo == "All":
             hNodes = self.c.all_positions()
         elif combo == "Subtree":
@@ -696,7 +703,10 @@ class QuickSearchController:
         else:
             hNodes = [self.c.p]
         hm = self.find_h(hpat, hNodes, flags)
-        # self.addHeadlineMatches(hm)
+
+        self.clear() # needed for external client ui replacement: fills self.its
+        self.addHeadlineMatches(hm) # added for external client ui replacement: fills self.its
+
         # bm = self.c.find_b(bpat, flags)
         # self.addBodyMatches(bm)
         return hm, []
@@ -783,10 +793,10 @@ class QuickSearchController:
         #     return
 
         # generic callable
-        if callable(tgt):
+        if callable(tgt[1]):
             tgt()
-        elif len(tgt) == 2:
-            p, pos = tgt
+        elif len(tgt[1]) == 2:
+            p, pos = tgt[1]
             if hasattr(p, 'v'):  #p might be "Root"
                 if not c.positionExists(p):
                     g.es("Node moved or deleted.\nMaybe re-do search.",
@@ -1221,7 +1231,8 @@ class LeoServer:
                 # c.close() # Stops too much if last file closed
                 g.app.closeLeoWindow(c.frame, finish_quit=False)
             else:
-                # Cannot close, return empty response without 'total' (ask to save, ignore or cancel)
+                # Cannot close, return empty response without 'total'
+                # (ask to save, ignore or cancel)
                 return self._make_response()
         # New 'c': Select the first open outline, if any.
         commanders = g.app.commanders()
@@ -1305,6 +1316,7 @@ class LeoServer:
     def nav_headline_search(self, param):
         """
         Performs nav 'headline only' search and fills results of go to panel
+        Triggered by just typing in nav input box
         """
         tag = 'nav_headline_search'
         c = self._check_c()
@@ -1312,7 +1324,17 @@ class LeoServer:
         # c.scon.showParents
         # c.scon.searchOptions
         try:
-            result = {"test": c.scon.navText}
+            inp = c.scon.navText
+            exp = inp.replace(" ", "*")
+            c.scon.bgSearch(exp)
+            result = {}
+            navlist = [ {"key": k, "h": c.scon.its[k][0]["label"], "t": c.scon.its[k][0]["type"] } for k in c.scon.its.keys()]
+            result["navList"] = navlist
+            result["navText"] = c.scon.navText
+
+            # navlist = [ {"t": "h", "h": p.h, "gnx": p.gnx} for p in headlineMatchPositions]
+            # result["navList"] = navlist
+
         except Exception as e:
             raise ServerError(f"{tag}: exception doing nav headline search: {e}")
         return self._make_response(result)
@@ -1322,12 +1344,18 @@ class LeoServer:
     def nav_search(self, param):
         """
         Performs nav search and fills results of go to panel
+        Triggered by pressing 'Enter' in the nav input box
         """
         tag = 'nav_search'
         c = self._check_c()
         try:
             print(tag)
-            result = {"test": "a string"}
+            c.scon.doSearch(c.scon.navText)
+            result = {}
+            navlist = [ {"key": k, "h": c.scon.its[k][0]["label"], "t": c.scon.its[k][0]["type"] } for k in c.scon.its.keys()]
+            result["navList"] = navlist
+            result["navText"] = c.scon.navText
+
         except Exception as e:
             raise ServerError(f"{tag}: exception doing nav search: {e}")
         return self._make_response(result)
@@ -1426,7 +1454,9 @@ class LeoServer:
                         w.toggle()
             # Ensure one radio button is set.
             w = ftm.radio_button_entire_outline
-            if not searchSettings.get('node_only', False) and not searchSettings.get('suboutline_only', False):
+            nodeOnly = searchSettings.get('node_only', False)
+            suboutlineOnly = searchSettings.get('suboutline_only', False)
+            if not nodeOnly and not suboutlineOnly:
                 setattr(find, 'entire_outline', True)
                 if not w.isChecked():
                     w.toggle()
@@ -1856,7 +1886,10 @@ class LeoServer:
         return self._make_minimal_response({"focus": self._get_focus()})
     #@+node:felix.20210621233316.44: *5* server.get_parent
     def get_parent(self, param):
-        """Return the node data for the parent of position p, where p is c.p if param["ap"] is missing."""
+        """
+        Return the node data for the parent of position p,
+        where p is c.p if param["ap"] is missing.
+        """
         self._check_c()
         p = self._get_p(param)
         parent = p.parent()
@@ -4391,7 +4424,8 @@ def main():  # pragma: no cover (tested in client)
             "  - leo.core.leoclient is an example client written in python.\n",
             "  - leoInteg (https://github.com/boltex/leointeg) is written in typescript.\n"
         ])
-        # usage = 'leoserver.py [-a <address>] [-p <port>] [-l <limit>] [-f <file>] [--dirty] [--persist]'
+        # Usage:
+        # leoserver.py [-a <address>] [-p <port>] [-l <limit>] [-f <file>] [--dirty] [--persist]
         usage = 'python leo.core.leoserver [options...]'
         trace_s = 'request,response,verbose'
         valid_traces = [z.strip() for z in trace_s.split(',')]

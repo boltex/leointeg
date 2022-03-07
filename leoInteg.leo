@@ -18195,11 +18195,15 @@ public getTextFromClipboard(): string {
     return this._isBusyTriggerSave(false, true).then(() =&gt; {
 
         return this.sendAction(
-            Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
+            Constants.LEOBRIDGE.NAV_SEARCH,
+            // Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
             JSON.stringify({ test: "test" })
         ).then((p_package) =&gt; {
+            //
             // @ts-expect-error
-            console.log('back from NAV_HEADLINE_SEARCH', p_package.test);
+            console.log('back from nav text ENTER : ', p_package.navText);
+            // @ts-expect-error
+            console.log('back from navList : ', p_package.navList);
 
             return p_package;
         });
@@ -18209,8 +18213,24 @@ public getTextFromClipboard(): string {
 }
 
 </t>
-<t tx="felix.20220305231404.1">public navTextChange(): void {
-    //
+<t tx="felix.20220305231404.1">public navTextChange(): Thenable&lt;LeoBridgePackage&gt; {
+    return this._isBusyTriggerSave(false, true).then(() =&gt; {
+
+        return this.sendAction(
+            Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
+            JSON.stringify({ test: "test" })
+        ).then((p_package) =&gt; {
+            //
+            // @ts-expect-error
+            console.log('back from nav text ENTER : ', p_package.navText);
+            // @ts-expect-error
+            console.log('back from navList : ', p_package.navList);
+
+            return p_package;
+        });
+
+    });
+
 
 }
 
@@ -18483,12 +18503,12 @@ import * as utils from "../utils";
                 &lt;/div&gt;
             &lt;/div&gt;
 
-            &lt;input class="mt-0" type="text" id="navText" name="navText"&gt;
+            &lt;input class="mt-0" type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
 
-            &lt;label class="mb-0" for="findText"&gt;Find:&lt;/label&gt;
+            &lt;label class="mb-0" for="findText"&gt;Find/Replace:&lt;/label&gt;
             &lt;input type="text" id="findText" name="findText" placeholder="&lt;find pattern here&gt;" &gt;
-            &lt;label for="replaceText"&gt;Replace:&lt;/label&gt;
-            &lt;input type="text" id="replaceText" name="replaceText" &gt;
+            &lt;!-- &lt;label for="replaceText"&gt;Replace:&lt;/label&gt; --&gt;
+            &lt;input type="text" id="replaceText" name="replaceText" placeholder="&lt;replace pattern here&gt;" &gt;
             &lt;div class="row"&gt;
                 &lt;div class="col"&gt;
                     &lt;input type="checkbox" id="wholeWord" name="wholeWord" &gt;
@@ -18734,6 +18754,8 @@ textarea {
   border: none;
   font-family: var(--vscode-font-family);
   padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+  padding: 3px var(--input-padding-horizontal);
+  border-radius: 2px;
   color: var(--vscode-input-foreground);
   outline-color: var(--vscode-input-border);
   background-color: var(--vscode-input-background);
