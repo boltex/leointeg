@@ -270,6 +270,7 @@
 <v t="ekr.20200815123601.25"><vh>Hoist/Dehoist</vh></v>
 <v t="ekr.20200815123601.26"><vh>Undo/Redo</vh></v>
 <v t="felix.20210517001143.1"><vh>Search</vh></v>
+<v t="felix.20220307235733.1"><vh>Nav</vh></v>
 <v t="felix.20210517001459.1"><vh>Mark Nodes</vh></v>
 </v>
 <v t="ekr.20200815123601.28"><vh>viewsWelcome</vh>
@@ -455,6 +456,8 @@
 <v t="felix.20200718153505.13"><vh>_send</vh></v>
 </v>
 </v>
+<v t="felix.20220307233825.1"><vh>@clean src/leoGoto.ts</vh></v>
+<v t="felix.20220307233828.1"><vh>@clean src/leoGotoNodes.ts</vh></v>
 <v t="felix.20200718162303.1"><vh>@clean src/leoButtonNode.ts</vh>
 <v t="felix.20200718162303.2"><vh>class LeoButtonNode</vh>
 <v t="felix.20200718162435.1"><vh>iconPath</vh></v>
@@ -4864,6 +4867,13 @@ print('done')
       "title": "Leo Find",
       "when": "treeInExplorer &amp;&amp; leoTreeOpened",
       "visibility": "collapsed"
+    },
+    {
+      "id": "leoGotoPanelExplorer",
+      "name": "Leo Goto",
+      "contextualTitle": "Leo",
+      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
+      "visibility": "collapsed"
     }
   ],
   "leoIntegrationView": [
@@ -4892,6 +4902,12 @@ print('done')
       "name": "Find",
       "title": "Find",
       "when": "leoTreeOpened",
+      "visibility": "collapsed"
+    },
+    {
+      "id": "leoGotoPanel",
+      "contextualTitle": "Leo",
+      "name": "Goto",
       "visibility": "collapsed"
     }
   ]
@@ -6163,9 +6179,17 @@ public static LEOBRIDGE = {
     MOVE_MARKED_NODES: "moveMarked",
     GIT_DIFF: "gitDiff",
     GET_FOCUS: "!get_focus",
+
     NAV_HEADLINE_SEARCH: "!nav_headline_search",
     NAV_SEARCH: "!nav_search",
-    GET_GOTO_PANEL: "!get_goto_panel",
+
+    GET_GOTO_PANEL: "!get_goto_panel", // To fill up panel when changing leo documents
+
+    FIND_QUICK_TIMELINE: "!find_quick_timeline",
+    FIND_QUICK_CHANGED: "!find_quick_changed",
+    FIND_QUICK_HISTORY: "!find_quick_history",
+    FIND_QUICK_MARKED: "!find_quick_marked",
+
     GET_SEARCH_SETTINGS: "!get_search_settings",
     SET_SEARCH_SETTINGS: "!set_search_settings",
     START_SEARCH: "!start_search",
@@ -6339,6 +6363,15 @@ public static COMMANDS = {
     CLONE_MARKED_NODES: Constants.NAME + ".cloneMarkedNodes",
     DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
     MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes",
+
+    FIND_QUICK: Constants.NAME + ".findQuick",
+    FIND_QUICK_SELECTED: Constants.NAME + ".findQuickSelected",
+    FIND_QUICK_TIMELINE: Constants.NAME + ".findQuickTimeline",
+    FIND_QUICK_CHANGED: Constants.NAME + ".findQuickChanged",
+    FIND_QUICK_HISTORY: Constants.NAME + ".history",
+    FIND_QUICK_MARKED: Constants.NAME + ".markedList",
+    FIND_QUICK_GO_ANYWHERE: Constants.NAME + ".goAnywhere",
+
     START_SEARCH: Constants.NAME + ".startSearch",
     FIND_ALL: Constants.NAME + ".findAll",
     FIND_NEXT: Constants.NAME + ".findNext",
@@ -6400,6 +6433,9 @@ public static BUTTONS_EXPLORER_ID: string = "leoButtonsExplorer";
 
 public static FIND_ID: string = "leoFindPanel";
 public static FIND_EXPLORER_ID: string = "leoFindPanelExplorer";
+
+public static GOTO_ID: string = "leoGotoPanel";
+public static GOTO_EXPLORER_ID: string = "leoGotoPanelExplorer";
 
 public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
@@ -9701,6 +9737,7 @@ and using the node's gnx as identifier.
 - [Viktor](https://github.com/ranvik14) for his contributions and support
 - [Gaurami](https://github.com/ATikhonov2) for his suggestions, bug reports and support
 - [Kevin Henderson](https://github.com/kghenderson) for his suggestions and support
+- [Ville M. Vainio](https://github.com/vivainio) for his contributions and suggestions
 
 </t>
 <t tx="felix.20200718222417.1">## 0.1.12
@@ -18205,7 +18242,7 @@ public getTextFromClipboard(): string {
             // @ts-expect-error
             console.log('back from navList : ', p_package.navList);
             // @ts-expect-error
-            console.log('back from lw : ', p_package.lw);
+            console.log('back from messages : ', p_package.messages);
             return p_package;
         });
 
@@ -18223,11 +18260,11 @@ public getTextFromClipboard(): string {
         ).then((p_package) =&gt; {
             //
             // @ts-expect-error
-            console.log('back from nav text ENTER : ', p_package.navText);
+            console.log('back from nav text change : ', p_package.navText);
             // @ts-expect-error
             console.log('back from navList : ', p_package.navList);
             // @ts-expect-error
-            console.log('back from lw : ', p_package.lw);
+            console.log('messages : ', p_package.messages);
 
             return p_package;
         });
@@ -18237,6 +18274,44 @@ public getTextFromClipboard(): string {
 
 }
 
+</t>
+<t tx="felix.20220307233825.1"></t>
+<t tx="felix.20220307233828.1"></t>
+<t tx="felix.20220307235733.1">{
+  "command": "leointeg.findQuick",
+  "category": "Leo",
+  "title": "Focus on Nav tab"
+},
+{
+  "command": "leointeg.findQuickSelected",
+  "category": "Leo",
+  "title": "Focus on Nav tab with selected text as search string"
+},
+{
+  "command": "leointeg.findQuickTimeline",
+  "category": "Leo",
+  "title": "List nodes in reverse gnx order"
+},
+{
+  "command": "leointeg.findQuickChanged",
+  "category": "Leo",
+  "title": "List all dirty nodes"
+},
+{
+  "command": "leointeg.goAnywhere",
+  "category": "Leo",
+  "title": "Go Anywhere"
+},
+{
+  "command": "leointeg.history",
+  "category": "Leo",
+  "title": "List nodes from history"
+},
+{
+  "command": "leointeg.markedList",
+  "category": "Leo",
+  "title": "List all marked nodes"
+},
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

@@ -23,6 +23,9 @@ export class Constants {
     public static FIND_ID: string = "leoFindPanel";
     public static FIND_EXPLORER_ID: string = "leoFindPanelExplorer";
 
+    public static GOTO_ID: string = "leoGotoPanel";
+    public static GOTO_EXPLORER_ID: string = "leoGotoPanelExplorer";
+
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";
@@ -522,9 +525,17 @@ export class Constants {
         MOVE_MARKED_NODES: "moveMarked",
         GIT_DIFF: "gitDiff",
         GET_FOCUS: "!get_focus",
+
         NAV_HEADLINE_SEARCH: "!nav_headline_search",
         NAV_SEARCH: "!nav_search",
-        GET_GOTO_PANEL: "!get_goto_panel",
+
+        GET_GOTO_PANEL: "!get_goto_panel", // To fill up panel when changing leo documents
+
+        FIND_QUICK_TIMELINE: "!find_quick_timeline",
+        FIND_QUICK_CHANGED: "!find_quick_changed",
+        FIND_QUICK_HISTORY: "!find_quick_history",
+        FIND_QUICK_MARKED: "!find_quick_marked",
+
         GET_SEARCH_SETTINGS: "!get_search_settings",
         SET_SEARCH_SETTINGS: "!set_search_settings",
         START_SEARCH: "!start_search",
@@ -697,6 +708,15 @@ export class Constants {
         CLONE_MARKED_NODES: Constants.NAME + ".cloneMarkedNodes",
         DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
         MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes",
+
+        FIND_QUICK: Constants.NAME + ".findQuick",
+        FIND_QUICK_SELECTED: Constants.NAME + ".findQuickSelected",
+        FIND_QUICK_TIMELINE: Constants.NAME + ".findQuickTimeline",
+        FIND_QUICK_CHANGED: Constants.NAME + ".findQuickChanged",
+        FIND_QUICK_HISTORY: Constants.NAME + ".history",
+        FIND_QUICK_MARKED: Constants.NAME + ".markedList",
+        FIND_QUICK_GO_ANYWHERE: Constants.NAME + ".goAnywhere",
+
         START_SEARCH: Constants.NAME + ".startSearch",
         FIND_ALL: Constants.NAME + ".findAll",
         FIND_NEXT: Constants.NAME + ".findNext",

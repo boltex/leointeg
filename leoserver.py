@@ -472,7 +472,7 @@ class QuickSearchController:
     def addBodyMatches(self, poslist):
         lineMatchHits = 0
         for p in poslist:
-            it = {"type": "body", "label": p.h, "list": self.lw}
+            it = {"type": "headline", "label": p.h}
             # it = QtWidgets.QListWidgetItem(p.h, self.lw)
             # f = it.font()
             # f.setBold(True)
@@ -483,7 +483,7 @@ class QuickSearchController:
             for ml, pos in ms:
                 lineMatchHits += 1
                 # it = QtWidgets.QListWidgetItem("    " + ml, self.lw)
-                it = {"type": "body2", "label": ml, "list": self.lw}
+                it = {"type": "body", "label": ml}
                 if self.addItem(it, (p, pos)):
                     return lineMatchHits
         return lineMatchHits
@@ -495,10 +495,10 @@ class QuickSearchController:
                 v = self.c.fileCommands.gnxDict.get(parent_key)
                 h = v.h if v else parent_key
                 # it = QtWidgets.QListWidgetItem(h, self.lw)
-                it = {"type": "parent", "label": h, "list": self.lw}
+                it = {"type": "parent", "label": h}
             else:
                 # it = QtWidgets.QListWidgetItem(parent_key.h, self.lw)
-                it = {"type": "parent", "label": parent_key.h, "list": self.lw}
+                it = {"type": "parent", "label": parent_key.h}
             # f = it.font()
             # f.setItalic(True)
             # it.setFont(f)
@@ -506,7 +506,7 @@ class QuickSearchController:
                 return lineMatchHits
             for p in parent_value:
                 # it = QtWidgets.QListWidgetItem("    " + p.h, self.lw)
-                it = {"type": "parent2", "label": p.h, "list": self.lw}
+                it = {"type": "headline", "label": p.h}
                 # f = it.font()
                 # f.setBold(True)
                 # it.setFont(f)
@@ -517,7 +517,7 @@ class QuickSearchController:
                     for ml, pos in ms:
                         lineMatchHits += 1
                         # it = QtWidgets.QListWidgetItem("    " + "    " + ml, self.lw)
-                        it = {"type": "parent3", "label": ml, "list": self.lw}
+                        it = {"type": "body", "label": ml}
                         if self.addItem(it, (p, pos)):
                             return lineMatchHits
         return lineMatchHits
@@ -526,14 +526,14 @@ class QuickSearchController:
     def addGeneric(self, text, f):
         """ Add generic callback """
         # it = QtWidgets.QListWidgetItem(text, self.lw)
-        it = {"type": "generic", "label": text, "list": self.lw}
+        it = {"type": "generic", "label": text}
         self.its[id(it)] = (it, f)
         return it
     #@+node:felix.20220225003906.8: *3* addHeadlineMatches
     def addHeadlineMatches(self, poslist):
 
         for p in poslist:
-            it = {"type": "headline", "label": p.h, "list": self.lw}
+            it = {"type": "headline", "label": p.h}
             # it = QtWidgets.QListWidgetItem(p.h, self.lw)
             # f = it.font()
             # f.setBold(True)
@@ -808,7 +808,7 @@ class QuickSearchController:
                     w = c.frame.body.wrapper
                     w.setSelectionRange(st, en)
                     w.seeInsertPoint()
-                self.lw.setFocus()
+                # self.lw.setFocus() # don't set focus on sidepanel
     #@+node:felix.20220225003906.21: *4* onActivated
     def onActivated(self, event):
 
@@ -1320,9 +1320,6 @@ class LeoServer:
         """
         tag = 'nav_headline_search'
         c = self._check_c()
-        # c.scon.navText
-        # c.scon.showParents
-        # c.scon.searchOptions
         try:
             inp = c.scon.navText
             exp = inp.replace(" ", "*")
@@ -1330,12 +1327,8 @@ class LeoServer:
             result = {}
             navlist = [ {"key": k, "h": c.scon.its[k][0]["label"], "t": c.scon.its[k][0]["type"] } for k in c.scon.its.keys()]
             result["navList"] = navlist
-            result["lw"]= c.scon.lw
+            result["messages"]= c.scon.lw
             result["navText"] = c.scon.navText
-
-            # navlist = [ {"t": "h", "h": p.h, "gnx": p.gnx} for p in headlineMatchPositions]
-            # result["navList"] = navlist
-
         except Exception as e:
             raise ServerError(f"{tag}: exception doing nav headline search: {e}")
         return self._make_response(result)
@@ -1350,14 +1343,12 @@ class LeoServer:
         tag = 'nav_search'
         c = self._check_c()
         try:
-            print(tag)
             c.scon.doSearch(c.scon.navText)
             result = {}
             navlist = [ {"key": k, "h": c.scon.its[k][0]["label"], "t": c.scon.its[k][0]["type"] } for k in c.scon.its.keys()]
             result["navList"] = navlist
-            result["lw"]= c.scon.lw
+            result["messages"]= c.scon.lw
             result["navText"] = c.scon.navText
-
         except Exception as e:
             raise ServerError(f"{tag}: exception doing nav search: {e}")
         return self._make_response(result)
@@ -1371,8 +1362,11 @@ class LeoServer:
         tag = 'get_goto_panel'
         c = self._check_c()
         try:
-            print(tag)
-            result = {"test": "a string"}
+            result = {}
+            navlist = [ {"key": k, "h": c.scon.its[k][0]["label"], "t": c.scon.its[k][0]["type"] } for k in c.scon.its.keys()]
+            result["navList"] = navlist
+            result["messages"]= c.scon.lw
+            result["navText"] = c.scon.navText
         except Exception as e:
             raise ServerError(f"{tag}: exception doing nav search: {e}")
         return self._make_response(result)

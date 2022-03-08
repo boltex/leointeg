@@ -309,6 +309,13 @@
           "title": "Leo Find",
           "when": "treeInExplorer && leoTreeOpened",
           "visibility": "collapsed"
+        },
+        {
+          "id": "leoGotoPanelExplorer",
+          "name": "Leo Goto",
+          "contextualTitle": "Leo",
+          "when": "treeInExplorer && leoTreeOpened",
+          "visibility": "collapsed"
         }
       ],
       "leoIntegrationView": [
@@ -337,6 +344,12 @@
           "name": "Find",
           "title": "Find",
           "when": "leoTreeOpened",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "leoGotoPanel",
+          "contextualTitle": "Leo",
+          "name": "Goto",
           "visibility": "collapsed"
         }
       ]
@@ -1711,6 +1724,41 @@
         "category": "Leo",
         "shortTitle": "Find Search Headline",
         "title": "Toggle Find Search Headline Option"
+      },
+      {
+        "command": "leointeg.findQuick",
+        "category": "Leo",
+        "title": "Focus on Nav tab"
+      },
+      {
+        "command": "leointeg.findQuickSelected",
+        "category": "Leo",
+        "title": "Focus on Nav tab with selected text as search string"
+      },
+      {
+        "command": "leointeg.findQuickTimeline",
+        "category": "Leo",
+        "title": "List nodes in reverse gnx order"
+      },
+      {
+        "command": "leointeg.findQuickChanged",
+        "category": "Leo",
+        "title": "List all dirty nodes"
+      },
+      {
+        "command": "leointeg.goAnywhere",
+        "category": "Leo",
+        "title": "Go Anywhere"
+      },
+      {
+        "command": "leointeg.history",
+        "category": "Leo",
+        "title": "List nodes from history"
+      },
+      {
+        "command": "leointeg.markedList",
+        "category": "Leo",
+        "title": "List all marked nodes"
       },
       {
         "command": "leointeg.mark",
