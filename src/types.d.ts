@@ -212,6 +212,12 @@ export interface LeoButton {
     index: string; // STRING KEY
 }
 
+export interface LeoGoto {
+    id: string; // or number??
+    type: string;
+    label: string;
+}
+
 /**
  * * LeoInteg's Enum type for the search scope radio buttons of the find panel.
  */

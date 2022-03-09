@@ -720,6 +720,7 @@
 <v t="felix.20200718194857.10"><vh>LeoBridgePackage</vh></v>
 <v t="felix.20200718194857.11"><vh>LeoDocument</vh></v>
 <v t="felix.20200718194857.12"><vh>LeoButton</vh></v>
+<v t="felix.20220308203528.1"><vh>LeoGoto</vh></v>
 <v t="felix.20210522152922.1"><vh>LeoSearchScope</vh></v>
 <v t="felix.20210522152739.1"><vh>LeoSearchSettings</vh></v>
 <v t="felix.20210523162125.1"><vh>LeoGuiFindTabManagerSettings</vh></v>
@@ -6180,10 +6181,10 @@ public static LEOBRIDGE = {
     GIT_DIFF: "gitDiff",
     GET_FOCUS: "!get_focus",
 
+    GET_GOTO_PANEL: "!get_goto_panel", // To fill up panel when changing leo documents
+
     NAV_HEADLINE_SEARCH: "!nav_headline_search",
     NAV_SEARCH: "!nav_search",
-
-    GET_GOTO_PANEL: "!get_goto_panel", // To fill up panel when changing leo documents
 
     FIND_QUICK_TIMELINE: "!find_quick_timeline",
     FIND_QUICK_CHANGED: "!find_quick_changed",
@@ -18275,8 +18276,107 @@ public getTextFromClipboard(): string {
 }
 
 </t>
-<t tx="felix.20220307233825.1"></t>
-<t tx="felix.20220307233828.1"></t>
+<t tx="felix.20220307233825.1">import * as vscode from "vscode";
+import { LeoIntegration } from "./leoIntegration";
+import { LeoGotoNode } from "./leoGotoNode";
+import { ProviderResult } from "vscode";
+import { Constants } from "./constants";
+import { LeoGoto } from "./types";
+
+/**
+ * * Opened Leo documents shown as a list with this TreeDataProvider implementation
+ */
+export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&gt; {
+
+    private _onDidChangeTreeData: vscode.EventEmitter&lt;LeoGotoNode | undefined&gt; = new vscode.EventEmitter&lt;LeoGotoNode | undefined&gt;();
+
+    readonly onDidChangeTreeData: vscode.Event&lt;LeoGotoNode | undefined&gt; = this._onDidChangeTreeData.event;
+
+    constructor(private _leoIntegration: LeoIntegration) { }
+
+    /**
+     * * Refresh the whole outline
+     */
+    public refreshTreeRoot(): void {
+        this._onDidChangeTreeData.fire(undefined);
+    }
+
+    public getTreeItem(element: LeoGotoNode): Thenable&lt;LeoGotoNode&gt; | LeoGotoNode {
+        return element;
+    }
+
+    public getChildren(element?: LeoGotoNode): Thenable&lt;LeoGotoNode[]&gt; {
+
+        // if called with element, or not ready, give back empty array as there won't be any children
+        if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
+            // ! TEMPORARY TEST !
+            return Promise.resolve([]); // Defaults to an empty list of children
+
+        } else {
+            return Promise.resolve([]); // Defaults to an empty list of children
+        }
+    }
+
+    public getParent(element: LeoGotoNode): ProviderResult&lt;LeoGotoNode&gt; | null {
+        // Leo documents are just a list, as such, entries are always child of root, so return null
+        return null;
+    }
+
+}
+</t>
+<t tx="felix.20220307233828.1">import * as vscode from "vscode";
+import { Constants } from "./constants";
+import { LeoGoto, Icon } from "./types";
+import * as utils from "./utils";
+import { LeoIntegration } from "./leoIntegration";
+
+/**
+ * * Opened Leo documents tree view node item implementation for usage in a TreeDataProvider
+ */
+export class LeoGotoNode extends vscode.TreeItem {
+
+    // Context string is checked in package.json with 'when' clauses
+    public contextValue: string;
+    private _id: string;
+
+    constructor(
+        public gotoEntry: LeoGoto,
+        private _leoIntegration: LeoIntegration
+    ) {
+        super(gotoEntry.name);
+        // Setup this instance
+        this._id = utils.getUniqueId();
+        // const w_isNamed: boolean = !!this.gotoEntry.name;
+        this.label = gotoEntry.label;
+        // this.tooltip = w_isNamed ? this.gotoEntry.name : Constants.UNTITLED_FILE_NAME;
+        // this.command = {
+        //     command: Constants.COMMANDS.SET_OPENED_FILE,
+        //     title: '',
+        //     arguments: [this.gotoEntry.index]
+        // };
+        // // If this was created as a selected node, make sure it's selected as we may have opened/closed document
+        // if (this.gotoEntry.selected) {
+        //     this._leoIntegration.setDocumentSelection(this);
+        //     this.contextValue = w_isNamed ? Constants.CONTEXT_FLAGS.GOTO_SELECTED_TITLED : Constants.CONTEXT_FLAGS.GOTO_SELECTED_UNTITLED;
+        // } else {
+        //     this.contextValue = w_isNamed ? Constants.CONTEXT_FLAGS.GOTO_TITLED : Constants.CONTEXT_FLAGS.GOTO_UNTITLED;
+        // }
+    }
+
+    // @ts-ignore
+    public get iconPath(): Icon {
+        return false;  // this._leoIntegration.documentIcons[this.gotoEntry.changed ? 1 : 0];
+    }
+
+    // @ts-ignore
+    public get id(): string {
+        // Add prefix and suffix salt to numeric index to prevent accidental duplicates
+        // Should be unique when refreshed
+        return "g" + this.id + "o";
+    }
+
+}
+</t>
 <t tx="felix.20220307235733.1">{
   "command": "leointeg.findQuick",
   "category": "Leo",
@@ -18312,6 +18412,13 @@ public getTextFromClipboard(): string {
   "category": "Leo",
   "title": "List all marked nodes"
 },
+</t>
+<t tx="felix.20220308203528.1">export interface LeoGoto {
+    id: string; // or number??
+    type: string;
+    label: string;
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

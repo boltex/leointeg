@@ -526,10 +526,10 @@ export class Constants {
         GIT_DIFF: "gitDiff",
         GET_FOCUS: "!get_focus",
 
+        GET_GOTO_PANEL: "!get_goto_panel", // To fill up panel when changing leo documents
+
         NAV_HEADLINE_SEARCH: "!nav_headline_search",
         NAV_SEARCH: "!nav_search",
-
-        GET_GOTO_PANEL: "!get_goto_panel", // To fill up panel when changing leo documents
 
         FIND_QUICK_TIMELINE: "!find_quick_timeline",
         FIND_QUICK_CHANGED: "!find_quick_changed",
