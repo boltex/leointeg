@@ -2620,6 +2620,55 @@ export class LeoIntegration {
         return this.clipboardContent;
     }
 
+    /**
+     * Opens the Nav tab and focus on nav text input
+    */
+    public findQuick(): Thenable<unknown> {
+        return Promise.resolve();
+    }
+
+    /**
+     * Opens the Nav tab and focus on nav text input
+    */
+    public findQuickSelected(): Thenable<unknown> {
+        return Promise.resolve();
+    }
+
+    /**
+     * Opens the Nav tab and focus on nav text input
+    */
+    public findQuickTimeline(): Thenable<unknown> {
+        return Promise.resolve();
+    }
+
+    /**
+     * Opens the Nav tab and focus on nav text input
+    */
+    public findQuickChanged(): Thenable<unknown> {
+        return Promise.resolve();
+    }
+
+    /**
+     * Opens the Nav tab and focus on nav text input
+    */
+    public findQuickHistory(): Thenable<unknown> {
+        return Promise.resolve();
+    }
+
+    /**
+     * Opens the Nav tab and focus on nav text input
+    */
+    public findQuick_marked(): Thenable<unknown> {
+        return Promise.resolve();
+    }
+
+    /**
+     * Opens the Nav tab and focus on nav text input
+    */
+    public findQuickGoAnywhere(): Thenable<unknown> {
+        return Promise.resolve();
+    }
+
     public navEnter(): Thenable<LeoBridgePackage> {
         return this._isBusyTriggerSave(false, true).then(() => {
 

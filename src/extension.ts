@@ -604,6 +604,14 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.NEXT_NODE, () => w_leo.prevNextNode(true)],
         [CMD.NEXT_NODE_FO, () => w_leo.prevNextNode(true)],
 
+        [CMD.FIND_QUICK, () => w_leo.findQuick()],
+        [CMD.FIND_QUICK_SELECTED, () => w_leo.findQuickSelected()],
+        [CMD.FIND_QUICK_TIMELINE, () => w_leo.findQuickTimeline()],
+        [CMD.FIND_QUICK_CHANGED, () => w_leo.findQuickChanged()],
+        [CMD.FIND_QUICK_HISTORY, () => w_leo.findQuickHistory()],
+        [CMD.FIND_QUICK_MARKED, () => w_leo.findQuick_marked()],
+        [CMD.FIND_QUICK_GO_ANYWHERE, () => w_leo.findQuickGoAnywhere()],
+
         [CMD.START_SEARCH, () => w_leo.startSearch()],
         [CMD.FIND_ALL, () => w_leo.findAll(false)],
         [CMD.FIND_NEXT, () => w_leo.find(false, false)],

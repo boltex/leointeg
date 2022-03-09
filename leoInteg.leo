@@ -609,6 +609,15 @@
 <v t="felix.20220222014050.3"><vh>asyncGetTextFromClipboard</vh></v>
 <v t="felix.20220222014050.4"><vh>getTextFromClipboard</vh></v>
 </v>
+<v t="felix.20220308213523.1"><vh>Nav</vh>
+<v t="felix.20220308213538.1"><vh>findQuick</vh></v>
+<v t="felix.20220308213547.1"><vh>findQuickSelected</vh></v>
+<v t="felix.20220308213552.1"><vh>findQuickTimeline</vh></v>
+<v t="felix.20220308213557.1"><vh>findQuickChanged</vh></v>
+<v t="felix.20220308213600.1"><vh>findQuickHistory</vh></v>
+<v t="felix.20220308213605.1"><vh>findQuick_marked</vh></v>
+<v t="felix.20220308213619.1"><vh>findQuickGoAnywhere</vh></v>
+</v>
 <v t="felix.20210530225640.1"><vh>Search</vh>
 <v t="felix.20220305225942.1"><vh>navEnter</vh></v>
 <v t="felix.20220305231404.1"><vh>navTextChange</vh></v>
@@ -2163,6 +2172,14 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.PREV_NODE_FO, () =&gt; w_leo.prevNextNode(false)],
 [CMD.NEXT_NODE, () =&gt; w_leo.prevNextNode(true)],
 [CMD.NEXT_NODE_FO, () =&gt; w_leo.prevNextNode(true)],
+
+[CMD.FIND_QUICK, () =&gt; w_leo.findQuick()],
+[CMD.FIND_QUICK_SELECTED, () =&gt; w_leo.findQuickSelected()],
+[CMD.FIND_QUICK_TIMELINE, () =&gt; w_leo.findQuickTimeline()],
+[CMD.FIND_QUICK_CHANGED, () =&gt; w_leo.findQuickChanged()],
+[CMD.FIND_QUICK_HISTORY, () =&gt; w_leo.findQuickHistory()],
+[CMD.FIND_QUICK_MARKED, () =&gt; w_leo.findQuick_marked()],
+[CMD.FIND_QUICK_GO_ANYWHERE, () =&gt; w_leo.findQuickGoAnywhere()],
 
 [CMD.START_SEARCH, () =&gt; w_leo.startSearch()],
 [CMD.FIND_ALL, () =&gt; w_leo.findAll(false)],
@@ -18417,6 +18434,63 @@ export class LeoGotoNode extends vscode.TreeItem {
     id: string; // or number??
     type: string;
     label: string;
+}
+
+</t>
+<t tx="felix.20220308213523.1"></t>
+<t tx="felix.20220308213538.1">/**
+ * Opens the Nav tab and focus on nav text input
+*/
+public findQuick(): Thenable&lt;unknown&gt; {
+    return Promise.resolve();
+}
+
+</t>
+<t tx="felix.20220308213547.1">/**
+ * Opens the Nav tab and focus on nav text input
+*/
+public findQuickSelected(): Thenable&lt;unknown&gt; {
+    return Promise.resolve();
+}
+
+</t>
+<t tx="felix.20220308213552.1">/**
+ * Opens the Nav tab and focus on nav text input
+*/
+public findQuickTimeline(): Thenable&lt;unknown&gt; {
+    return Promise.resolve();
+}
+
+</t>
+<t tx="felix.20220308213557.1">/**
+ * Opens the Nav tab and focus on nav text input
+*/
+public findQuickChanged(): Thenable&lt;unknown&gt; {
+    return Promise.resolve();
+}
+
+</t>
+<t tx="felix.20220308213600.1">/**
+ * Opens the Nav tab and focus on nav text input
+*/
+public findQuickHistory(): Thenable&lt;unknown&gt; {
+    return Promise.resolve();
+}
+
+</t>
+<t tx="felix.20220308213605.1">/**
+ * Opens the Nav tab and focus on nav text input
+*/
+public findQuick_marked(): Thenable&lt;unknown&gt; {
+    return Promise.resolve();
+}
+
+</t>
+<t tx="felix.20220308213619.1">/**
+ * Opens the Nav tab and focus on nav text input
+*/
+public findQuickGoAnywhere(): Thenable&lt;unknown&gt; {
+    return Promise.resolve();
 }
 
 </t>
