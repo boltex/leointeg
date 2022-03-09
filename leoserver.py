@@ -1311,7 +1311,7 @@ class LeoServer:
                     # Experimental: attempt to use permissive section ref logic.
                 )
         return self._make_response()  # Just send empty as 'ok'
-    #@+node:felix.20210621233316.19: *4* server.search commands
+    #@+node:felix.20220309010334.1: *4* server.nav commands
     #@+node:felix.20220305211743.1: *5* server.nav_headline_search
     def nav_headline_search(self, param):
         """
@@ -1372,6 +1372,28 @@ class LeoServer:
         return self._make_response(result)
 
 
+    #@+node:felix.20220309010558.1: *5* server.find_quick_timeline
+    def find_quick_timeline(self, param):
+        # fill with timeline order gnx nodes
+        return  self.get_goto_panel(param)
+
+
+    #@+node:felix.20220309010607.1: *5* find_quick_changed
+    def find_quick_changed(self, param):
+        # fill with list of all dirty nodes
+        return  self.get_goto_panel(param)
+
+    #@+node:felix.20220309010647.1: *5* server.find_quick_history
+    def find_quick_history(self, param):
+        # fill with list from history
+        return  self.get_goto_panel(param)
+
+    #@+node:felix.20220309010704.1: *5* server.find_quick_marked
+    def find_quick_marked(self, param):
+        # fill with list of marked nodes
+        return  self.get_goto_panel(param)
+
+    #@+node:felix.20210621233316.19: *4* server.search commands
     #@+node:felix.20210621233316.20: *5* server.get_search_settings
     def get_search_settings(self, param):
         """
