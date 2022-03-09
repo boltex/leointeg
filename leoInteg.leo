@@ -307,6 +307,7 @@
 <v t="ekr.20200815123601.52"><vh>Goto Nodes</vh></v>
 <v t="ekr.20200815123601.53"><vh>Hoist/Dehoist</vh></v>
 <v t="ekr.20200815123601.54"><vh>Undo/Redo</vh></v>
+<v t="felix.20220308220651.1"><vh>Nav</vh></v>
 <v t="felix.20210530153353.1"><vh>Search</vh></v>
 <v t="felix.20210530153359.1"><vh>Mark Nodes</vh></v>
 <v t="ekr.20200815123601.56"><vh>Hidden Commands</vh>
@@ -18493,6 +18494,35 @@ public findQuickGoAnywhere(): Thenable&lt;unknown&gt; {
     return Promise.resolve();
 }
 
+</t>
+<t tx="felix.20220308220651.1">{
+  "command": "leointeg.findQuick",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.findQuickSelected",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.findQuickTimeline",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.findQuickChanged",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.goAnywhere",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.history",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.markedList",
+  "when": "leoTreeOpened"
+},
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

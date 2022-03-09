@@ -2144,6 +2144,34 @@
           "when": "leoTreeOpened"
         },
         {
+          "command": "leointeg.findQuick",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.findQuickSelected",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.findQuickTimeline",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.findQuickChanged",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.goAnywhere",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.history",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.markedList",
+          "when": "leoTreeOpened"
+        },
+        {
           "command": "leointeg.startSearch",
           "when": "leoTreeOpened"
         },
