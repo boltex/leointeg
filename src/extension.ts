@@ -609,7 +609,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.FIND_QUICK_TIMELINE, () => w_leo.findQuickTimeline()],
         [CMD.FIND_QUICK_CHANGED, () => w_leo.findQuickChanged()],
         [CMD.FIND_QUICK_HISTORY, () => w_leo.findQuickHistory()],
-        [CMD.FIND_QUICK_MARKED, () => w_leo.findQuick_marked()],
+        [CMD.FIND_QUICK_MARKED, () => w_leo.findQuickMarked()],
         [CMD.FIND_QUICK_GO_ANYWHERE, () => w_leo.findQuickGoAnywhere()],
 
         [CMD.START_SEARCH, () => w_leo.startSearch()],

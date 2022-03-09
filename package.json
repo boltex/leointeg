@@ -1947,6 +1947,16 @@
         "when": "leoBridgeReady && leoTreeOpened"
       },
       {
+        "view": "leoGotoPanel",
+        "contents": "Not connected",
+        "when": "!leoTreeOpened"
+      },
+      {
+        "view": "leoGotoPanelExplorer",
+        "contents": "Not connected",
+        "when": "!leoTreeOpened"
+      },
+      {
         "view": "leoFindPanel",
         "contents": "Not connected",
         "when": "!leoTreeOpened"

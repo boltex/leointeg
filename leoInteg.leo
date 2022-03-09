@@ -458,7 +458,7 @@
 </v>
 </v>
 <v t="felix.20220307233825.1"><vh>@clean src/leoGoto.ts</vh></v>
-<v t="felix.20220307233828.1"><vh>@clean src/leoGotoNodes.ts</vh></v>
+<v t="felix.20220307233828.1"><vh>@clean src/leoGotoNode.ts</vh></v>
 <v t="felix.20200718162303.1"><vh>@clean src/leoButtonNode.ts</vh>
 <v t="felix.20200718162303.2"><vh>class LeoButtonNode</vh>
 <v t="felix.20200718162435.1"><vh>iconPath</vh></v>
@@ -2179,7 +2179,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.FIND_QUICK_TIMELINE, () =&gt; w_leo.findQuickTimeline()],
 [CMD.FIND_QUICK_CHANGED, () =&gt; w_leo.findQuickChanged()],
 [CMD.FIND_QUICK_HISTORY, () =&gt; w_leo.findQuickHistory()],
-[CMD.FIND_QUICK_MARKED, () =&gt; w_leo.findQuick_marked()],
+[CMD.FIND_QUICK_MARKED, () =&gt; w_leo.findQuickMarked()],
 [CMD.FIND_QUICK_GO_ANYWHERE, () =&gt; w_leo.findQuickGoAnywhere()],
 
 [CMD.START_SEARCH, () =&gt; w_leo.startSearch()],
@@ -15442,6 +15442,16 @@ export const enum LeoSearchScope {
 </t>
 <t tx="felix.20210522233604.1"></t>
 <t tx="felix.20210522233744.1">{
+  "view": "leoGotoPanel",
+  "contents": "Not connected",
+  "when": "!leoTreeOpened"
+},
+{
+  "view": "leoGotoPanelExplorer",
+  "contents": "Not connected",
+  "when": "!leoTreeOpened"
+},
+{
   "view": "leoFindPanel",
   "contents": "Not connected",
   "when": "!leoTreeOpened"
@@ -18296,8 +18306,8 @@ public getTextFromClipboard(): string {
 </t>
 <t tx="felix.20220307233825.1">import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
-import { LeoGotoNode } from "./leoGotoNode";
 import { ProviderResult } from "vscode";
+import { LeoGotoNode } from "./leoGotoNode";
 import { Constants } from "./constants";
 import { LeoGoto } from "./types";
 
@@ -18354,14 +18364,13 @@ import { LeoIntegration } from "./leoIntegration";
 export class LeoGotoNode extends vscode.TreeItem {
 
     // Context string is checked in package.json with 'when' clauses
-    public contextValue: string;
     private _id: string;
 
     constructor(
         public gotoEntry: LeoGoto,
         private _leoIntegration: LeoIntegration
     ) {
-        super(gotoEntry.name);
+        super(gotoEntry.label);
         // Setup this instance
         this._id = utils.getUniqueId();
         // const w_isNamed: boolean = !!this.gotoEntry.name;
@@ -18382,15 +18391,15 @@ export class LeoGotoNode extends vscode.TreeItem {
     }
 
     // @ts-ignore
-    public get iconPath(): Icon {
-        return false;  // this._leoIntegration.documentIcons[this.gotoEntry.changed ? 1 : 0];
-    }
+    // public get iconPath(): Icon| vscode.ThemeIcon|string {
+    //     return false;  // this._leoIntegration.documentIcons[this.gotoEntry.changed ? 1 : 0];
+    // }
 
     // @ts-ignore
     public get id(): string {
         // Add prefix and suffix salt to numeric index to prevent accidental duplicates
         // Should be unique when refreshed
-        return "g" + this.id + "o";
+        return "g" + this._id + "o";
     }
 
 }
@@ -18443,54 +18452,68 @@ export class LeoGotoNode extends vscode.TreeItem {
  * Opens the Nav tab and focus on nav text input
 */
 public findQuick(): Thenable&lt;unknown&gt; {
+    console.log('findQuick');
+
     return Promise.resolve();
 }
 
 </t>
 <t tx="felix.20220308213547.1">/**
- * Opens the Nav tab and focus on nav text input
+ * Opens the Nav tab with the selected text as the search string
 */
 public findQuickSelected(): Thenable&lt;unknown&gt; {
+    console.log('findQuickSelected');
+
     return Promise.resolve();
 }
 
 </t>
 <t tx="felix.20220308213552.1">/**
- * Opens the Nav tab and focus on nav text input
+ * Lists all nodes in reversed gnx order, newest to oldest
 */
 public findQuickTimeline(): Thenable&lt;unknown&gt; {
+    console.log('findQuickTimeline');
+
     return Promise.resolve();
 }
 
 </t>
 <t tx="felix.20220308213557.1">/**
- * Opens the Nav tab and focus on nav text input
+ * Lists all nodes that are changed (aka "dirty") since last save.
 */
 public findQuickChanged(): Thenable&lt;unknown&gt; {
+    console.log('findQuickChanged');
+
     return Promise.resolve();
 }
 
 </t>
 <t tx="felix.20220308213600.1">/**
- * Opens the Nav tab and focus on nav text input
+ * Lists nodes from c.nodeHistory.
 */
 public findQuickHistory(): Thenable&lt;unknown&gt; {
+    console.log('findQuickHistory');
+
     return Promise.resolve();
 }
 
 </t>
 <t tx="felix.20220308213605.1">/**
- * Opens the Nav tab and focus on nav text input
+ * List all marked nodes.
 */
-public findQuick_marked(): Thenable&lt;unknown&gt; {
+public findQuickMarked(): Thenable&lt;unknown&gt; {
+    console.log('findQuickMarked');
+
     return Promise.resolve();
 }
 
 </t>
 <t tx="felix.20220308213619.1">/**
- * Opens the Nav tab and focus on nav text input
+ * Opens goto panel
 */
 public findQuickGoAnywhere(): Thenable&lt;unknown&gt; {
+    console.log('findQuickGoAnywhere');
+
     return Promise.resolve();
 }
 

@@ -2624,48 +2624,62 @@ export class LeoIntegration {
      * Opens the Nav tab and focus on nav text input
     */
     public findQuick(): Thenable<unknown> {
+        console.log('findQuick');
+
         return Promise.resolve();
     }
 
     /**
-     * Opens the Nav tab and focus on nav text input
+     * Opens the Nav tab with the selected text as the search string
     */
     public findQuickSelected(): Thenable<unknown> {
+        console.log('findQuickSelected');
+
         return Promise.resolve();
     }
 
     /**
-     * Opens the Nav tab and focus on nav text input
+     * Lists all nodes in reversed gnx order, newest to oldest
     */
     public findQuickTimeline(): Thenable<unknown> {
+        console.log('findQuickTimeline');
+
         return Promise.resolve();
     }
 
     /**
-     * Opens the Nav tab and focus on nav text input
+     * Lists all nodes that are changed (aka "dirty") since last save.
     */
     public findQuickChanged(): Thenable<unknown> {
+        console.log('findQuickChanged');
+
         return Promise.resolve();
     }
 
     /**
-     * Opens the Nav tab and focus on nav text input
+     * Lists nodes from c.nodeHistory.
     */
     public findQuickHistory(): Thenable<unknown> {
+        console.log('findQuickHistory');
+
         return Promise.resolve();
     }
 
     /**
-     * Opens the Nav tab and focus on nav text input
+     * List all marked nodes.
     */
-    public findQuick_marked(): Thenable<unknown> {
+    public findQuickMarked(): Thenable<unknown> {
+        console.log('findQuickMarked');
+
         return Promise.resolve();
     }
 
     /**
-     * Opens the Nav tab and focus on nav text input
+     * Opens goto panel
     */
     public findQuickGoAnywhere(): Thenable<unknown> {
+        console.log('findQuickGoAnywhere');
+
         return Promise.resolve();
     }
 

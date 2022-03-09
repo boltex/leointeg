@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { LeoIntegration } from "./leoIntegration";
-import { LeoGotoNode } from "./leoGotoNode";
 import { ProviderResult } from "vscode";
+import { LeoGotoNode } from "./leoGotoNode";
 import { Constants } from "./constants";
 import { LeoGoto } from "./types";
 
