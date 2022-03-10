@@ -1324,14 +1324,9 @@ class LeoServer:
             inp = c.scon.navText
             exp = inp.replace(" ", "*")
             c.scon.bgSearch(exp)
-            result = {}
-            navlist = [ {"key": k, "h": c.scon.its[k][0]["label"], "t": c.scon.its[k][0]["type"] } for k in c.scon.its.keys()]
-            result["navList"] = navlist
-            result["messages"]= c.scon.lw
-            result["navText"] = c.scon.navText
         except Exception as e:
             raise ServerError(f"{tag}: exception doing nav headline search: {e}")
-        return self._make_response(result)
+        return  self.get_goto_panel(param)
 
 
     #@+node:felix.20220305211828.1: *5* server.nav_search
@@ -1344,14 +1339,9 @@ class LeoServer:
         c = self._check_c()
         try:
             c.scon.doSearch(c.scon.navText)
-            result = {}
-            navlist = [ {"key": k, "h": c.scon.its[k][0]["label"], "t": c.scon.its[k][0]["type"] } for k in c.scon.its.keys()]
-            result["navList"] = navlist
-            result["messages"]= c.scon.lw
-            result["navText"] = c.scon.navText
         except Exception as e:
             raise ServerError(f"{tag}: exception doing nav search: {e}")
-        return self._make_response(result)
+        return  self.get_goto_panel(param)
 
 
     #@+node:felix.20220305215239.1: *5* server.get_goto_panel
@@ -1375,22 +1365,29 @@ class LeoServer:
     #@+node:felix.20220309010558.1: *5* server.find_quick_timeline
     def find_quick_timeline(self, param):
         # fill with timeline order gnx nodes
+        c = self._check_c()
+        c.scon.doTimeline()
         return  self.get_goto_panel(param)
-
 
     #@+node:felix.20220309010607.1: *5* find_quick_changed
     def find_quick_changed(self, param):
         # fill with list of all dirty nodes
+        c = self._check_c()
+        c.scon.doChanged()
         return  self.get_goto_panel(param)
 
     #@+node:felix.20220309010647.1: *5* server.find_quick_history
     def find_quick_history(self, param):
         # fill with list from history
+        c = self._check_c()
+        c.scon.doNodeHistory()
         return  self.get_goto_panel(param)
 
     #@+node:felix.20220309010704.1: *5* server.find_quick_marked
     def find_quick_marked(self, param):
         # fill with list of marked nodes
+        c = self._check_c()
+        c.scon.doShowMarked()
         return  self.get_goto_panel(param)
 
     #@+node:felix.20210621233316.19: *4* server.search commands
