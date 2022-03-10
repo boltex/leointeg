@@ -942,11 +942,6 @@
         "title": "Git Diff"
       },
       {
-        "command": "leointeg.selectTreeNode",
-        "category": "Leo",
-        "title": "Select Node"
-      },
-      {
         "command": "leointeg.openAside",
         "category": "Leo",
         "title": "Open to the Side"
@@ -2367,10 +2362,6 @@
         },
         {
           "command": "leointeg.writeDirtyAtFileNodesFromOutline",
-          "when": "false"
-        },
-        {
-          "command": "leointeg.selectTreeNode",
           "when": "false"
         },
         {

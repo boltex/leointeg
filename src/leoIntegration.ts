@@ -34,6 +34,7 @@ import { LeoButtonsProvider } from './leoButtons';
 import { LeoButtonNode } from './leoButtonNode';
 import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
 import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
+import { LeoGotoNode } from './leoGotoNode';
 
 /**
  * * Orchestrates Leo integration into vscode
@@ -2623,9 +2624,26 @@ export class LeoIntegration {
     /**
      * Opens the Nav tab and focus on nav text input
     */
-    public findQuick(): Thenable<unknown> {
-        console.log('findQuick');
-
+    public findQuick(p_string?: string): Thenable<unknown> {
+        let w_panelID = '';
+        let w_panel: vscode.WebviewView | undefined;
+        if (this._lastTreeView === this._leoTreeExView) {
+            w_panelID = Constants.FIND_EXPLORER_ID;
+            w_panel = this._findPanelWebviewExplorerView;
+        } else {
+            w_panelID = Constants.FIND_ID;
+            w_panel = this._findPanelWebviewView;
+        }
+        vscode.commands.executeCommand(w_panelID + '.focus').then((p_result) => {
+            if (w_panel && w_panel.show && !w_panel.visible) {
+                w_panel.show(false);
+            }
+            const w_message: { [key: string]: string } = { type: 'selectNav' };
+            if (p_string && p_string?.trim()) {
+                w_message["text"] = p_string.trim();
+            }
+            w_panel?.webview.postMessage(w_message);
+        });
         return Promise.resolve();
     }
 
@@ -2633,9 +2651,17 @@ export class LeoIntegration {
      * Opens the Nav tab with the selected text as the search string
     */
     public findQuickSelected(): Thenable<unknown> {
-        console.log('findQuickSelected');
-
-        return Promise.resolve();
+        if (vscode.window.activeTextEditor) {
+            const editor = vscode.window.activeTextEditor;
+            const selection = editor.selection;
+            if (!selection.isEmpty) {
+                const text = editor.document.getText(selection);
+                console.log('findQuickSelected with text: ', text);
+                return this.findQuick(text);
+            }
+        }
+        console.log('findQuickSelected without text! ');
+        return this.findQuick();
     }
 
     /**
@@ -2643,8 +2669,11 @@ export class LeoIntegration {
     */
     public findQuickTimeline(): Thenable<unknown> {
         console.log('findQuickTimeline');
-
-        return Promise.resolve();
+        return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE)
+            .then((p_result: LeoBridgePackage) => {
+                //
+                return Promise.resolve();
+            });
     }
 
     /**
@@ -2653,7 +2682,11 @@ export class LeoIntegration {
     public findQuickChanged(): Thenable<unknown> {
         console.log('findQuickChanged');
 
-        return Promise.resolve();
+        return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED)
+            .then((p_result: LeoBridgePackage) => {
+                //
+                return Promise.resolve();
+            });
     }
 
     /**
@@ -2662,7 +2695,11 @@ export class LeoIntegration {
     public findQuickHistory(): Thenable<unknown> {
         console.log('findQuickHistory');
 
-        return Promise.resolve();
+        return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY)
+            .then((p_result: LeoBridgePackage) => {
+                //
+                return Promise.resolve();
+            });
     }
 
     /**
@@ -2671,7 +2708,11 @@ export class LeoIntegration {
     public findQuickMarked(): Thenable<unknown> {
         console.log('findQuickMarked');
 
-        return Promise.resolve();
+        return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED)
+            .then((p_result: LeoBridgePackage) => {
+                //
+                return Promise.resolve();
+            });
     }
 
     /**
@@ -2679,6 +2720,12 @@ export class LeoIntegration {
     */
     public findQuickGoAnywhere(): Thenable<unknown> {
         console.log('findQuickGoAnywhere');
+
+        return Promise.resolve();
+    }
+
+    public gotoNavEntry(p_node: LeoGotoNode): Thenable<unknown> {
+        console.log('Clicked NAV ENTRY! ', p_node);
 
         return Promise.resolve();
     }

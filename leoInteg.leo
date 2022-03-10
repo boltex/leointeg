@@ -618,6 +618,7 @@
 <v t="felix.20220308213600.1"><vh>findQuickHistory</vh></v>
 <v t="felix.20220308213605.1"><vh>findQuick_marked</vh></v>
 <v t="felix.20220308213619.1"><vh>findQuickGoAnywhere</vh></v>
+<v t="felix.20220309215616.1"><vh>gotoNavEntry</vh></v>
 </v>
 <v t="felix.20210530225640.1"><vh>Search</vh>
 <v t="felix.20220305225942.1"><vh>navEnter</vh></v>
@@ -2181,6 +2182,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.FIND_QUICK_HISTORY, () =&gt; w_leo.findQuickHistory()],
 [CMD.FIND_QUICK_MARKED, () =&gt; w_leo.findQuickMarked()],
 [CMD.FIND_QUICK_GO_ANYWHERE, () =&gt; w_leo.findQuickGoAnywhere()],
+[CMD.GOTO_NAV_ENTRY, (p_node: LeoGotoNode) =&gt; w_leo.gotoNavEntry(p_node)],
 
 [CMD.START_SEARCH, () =&gt; w_leo.startSearch()],
 [CMD.FIND_ALL, () =&gt; w_leo.findAll(false)],
@@ -2924,11 +2926,6 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.20">{
-  "command": "leointeg.selectTreeNode",
-  "category": "Leo",
-  "title": "Select Node"
-},
-{
   "command": "leointeg.openAside",
   "category": "Leo",
   "title": "Open to the Side"
@@ -4007,10 +4004,6 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.61">{
-  "command": "leointeg.selectTreeNode",
-  "when": "false"
-},
-{
   "command": "leointeg.openAside",
   "when": "false"
 },
@@ -6208,6 +6201,7 @@ public static LEOBRIDGE = {
     FIND_QUICK_CHANGED: "!find_quick_changed",
     FIND_QUICK_HISTORY: "!find_quick_history",
     FIND_QUICK_MARKED: "!find_quick_marked",
+    GOTO_NAV_ENTRY: "!goto_nav_entry",
 
     GET_SEARCH_SETTINGS: "!get_search_settings",
     SET_SEARCH_SETTINGS: "!set_search_settings",
@@ -6390,6 +6384,7 @@ public static COMMANDS = {
     FIND_QUICK_HISTORY: Constants.NAME + ".history",
     FIND_QUICK_MARKED: Constants.NAME + ".markedList",
     FIND_QUICK_GO_ANYWHERE: Constants.NAME + ".goAnywhere",
+    GOTO_NAV_ENTRY: Constants.NAME + ".gotoNav",
 
     START_SEARCH: Constants.NAME + ".startSearch",
     FIND_ALL: Constants.NAME + ".findAll",
@@ -7138,6 +7133,7 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
+import { LeoGotoNode } from "./leoGotoNode";
 
 var LeoInteg: LeoIntegration | undefined = undefined;
 
@@ -10015,6 +10011,7 @@ import { LeoButtonsProvider } from './leoButtons';
 import { LeoButtonNode } from './leoButtonNode';
 import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
 import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
+import { LeoGotoNode } from './leoGotoNode';
 
 @others
 @language typescript
@@ -18320,7 +18317,13 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
 
     readonly onDidChangeTreeData: vscode.Event&lt;LeoGotoNode | undefined&gt; = this._onDidChangeTreeData.event;
 
+    private _entries: any[] = [];
+
     constructor(private _leoIntegration: LeoIntegration) { }
+
+    public setEntries(p_entries: any[]): void {
+        this._entries = p_entries;
+    }
 
     /**
      * * Refresh the whole outline
@@ -18337,6 +18340,9 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
 
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
+            if (this._entries.length) {
+                // ! MAKE ENTRIES !
+            }
             // ! TEMPORARY TEST !
             return Promise.resolve([]); // Defaults to an empty list of children
 
@@ -18373,21 +18379,17 @@ export class LeoGotoNode extends vscode.TreeItem {
         super(gotoEntry.label);
         // Setup this instance
         this._id = utils.getUniqueId();
-        // const w_isNamed: boolean = !!this.gotoEntry.name;
+
         this.label = gotoEntry.label;
+
         // this.tooltip = w_isNamed ? this.gotoEntry.name : Constants.UNTITLED_FILE_NAME;
-        // this.command = {
-        //     command: Constants.COMMANDS.SET_OPENED_FILE,
-        //     title: '',
-        //     arguments: [this.gotoEntry.index]
-        // };
-        // // If this was created as a selected node, make sure it's selected as we may have opened/closed document
-        // if (this.gotoEntry.selected) {
-        //     this._leoIntegration.setDocumentSelection(this);
-        //     this.contextValue = w_isNamed ? Constants.CONTEXT_FLAGS.GOTO_SELECTED_TITLED : Constants.CONTEXT_FLAGS.GOTO_SELECTED_UNTITLED;
-        // } else {
-        //     this.contextValue = w_isNamed ? Constants.CONTEXT_FLAGS.GOTO_TITLED : Constants.CONTEXT_FLAGS.GOTO_UNTITLED;
-        // }
+
+        this.command = {
+            command: Constants.COMMANDS.GOTO_NAV_ENTRY,
+            title: '',
+            arguments: [this]
+        };
+
     }
 
     // @ts-ignore
@@ -18451,9 +18453,26 @@ export class LeoGotoNode extends vscode.TreeItem {
 <t tx="felix.20220308213538.1">/**
  * Opens the Nav tab and focus on nav text input
 */
-public findQuick(): Thenable&lt;unknown&gt; {
-    console.log('findQuick');
-
+public findQuick(p_string?: string): Thenable&lt;unknown&gt; {
+    let w_panelID = '';
+    let w_panel: vscode.WebviewView | undefined;
+    if (this._lastTreeView === this._leoTreeExView) {
+        w_panelID = Constants.FIND_EXPLORER_ID;
+        w_panel = this._findPanelWebviewExplorerView;
+    } else {
+        w_panelID = Constants.FIND_ID;
+        w_panel = this._findPanelWebviewView;
+    }
+    vscode.commands.executeCommand(w_panelID + '.focus').then((p_result) =&gt; {
+        if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
+            w_panel.show(false);
+        }
+        const w_message: { [key: string]: string } = { type: 'selectNav' };
+        if (p_string &amp;&amp; p_string?.trim()) {
+            w_message["text"] = p_string.trim();
+        }
+        w_panel?.webview.postMessage(w_message);
+    });
     return Promise.resolve();
 }
 
@@ -18462,9 +18481,17 @@ public findQuick(): Thenable&lt;unknown&gt; {
  * Opens the Nav tab with the selected text as the search string
 */
 public findQuickSelected(): Thenable&lt;unknown&gt; {
-    console.log('findQuickSelected');
-
-    return Promise.resolve();
+    if (vscode.window.activeTextEditor) {
+        const editor = vscode.window.activeTextEditor;
+        const selection = editor.selection;
+        if (!selection.isEmpty) {
+            const text = editor.document.getText(selection);
+            console.log('findQuickSelected with text: ', text);
+            return this.findQuick(text);
+        }
+    }
+    console.log('findQuickSelected without text! ');
+    return this.findQuick();
 }
 
 </t>
@@ -18473,8 +18500,11 @@ public findQuickSelected(): Thenable&lt;unknown&gt; {
 */
 public findQuickTimeline(): Thenable&lt;unknown&gt; {
     console.log('findQuickTimeline');
-
-    return Promise.resolve();
+    return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE)
+        .then((p_result: LeoBridgePackage) =&gt; {
+            //
+            return Promise.resolve();
+        });
 }
 
 </t>
@@ -18484,7 +18514,11 @@ public findQuickTimeline(): Thenable&lt;unknown&gt; {
 public findQuickChanged(): Thenable&lt;unknown&gt; {
     console.log('findQuickChanged');
 
-    return Promise.resolve();
+    return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED)
+        .then((p_result: LeoBridgePackage) =&gt; {
+            //
+            return Promise.resolve();
+        });
 }
 
 </t>
@@ -18494,7 +18528,11 @@ public findQuickChanged(): Thenable&lt;unknown&gt; {
 public findQuickHistory(): Thenable&lt;unknown&gt; {
     console.log('findQuickHistory');
 
-    return Promise.resolve();
+    return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY)
+        .then((p_result: LeoBridgePackage) =&gt; {
+            //
+            return Promise.resolve();
+        });
 }
 
 </t>
@@ -18504,7 +18542,11 @@ public findQuickHistory(): Thenable&lt;unknown&gt; {
 public findQuickMarked(): Thenable&lt;unknown&gt; {
     console.log('findQuickMarked');
 
-    return Promise.resolve();
+    return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED)
+        .then((p_result: LeoBridgePackage) =&gt; {
+            //
+            return Promise.resolve();
+        });
 }
 
 </t>
@@ -18546,6 +18588,13 @@ public findQuickGoAnywhere(): Thenable&lt;unknown&gt; {
   "command": "leointeg.markedList",
   "when": "leoTreeOpened"
 },
+</t>
+<t tx="felix.20220309215616.1">public gotoNavEntry(p_node: LeoGotoNode): Thenable&lt;unknown&gt; {
+    console.log('Clicked NAV ENTRY! ', p_node);
+
+    return Promise.resolve();
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

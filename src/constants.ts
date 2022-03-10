@@ -535,6 +535,7 @@ export class Constants {
         FIND_QUICK_CHANGED: "!find_quick_changed",
         FIND_QUICK_HISTORY: "!find_quick_history",
         FIND_QUICK_MARKED: "!find_quick_marked",
+        GOTO_NAV_ENTRY: "!goto_nav_entry",
 
         GET_SEARCH_SETTINGS: "!get_search_settings",
         SET_SEARCH_SETTINGS: "!set_search_settings",
@@ -716,6 +717,7 @@ export class Constants {
         FIND_QUICK_HISTORY: Constants.NAME + ".history",
         FIND_QUICK_MARKED: Constants.NAME + ".markedList",
         FIND_QUICK_GO_ANYWHERE: Constants.NAME + ".goAnywhere",
+        GOTO_NAV_ENTRY: Constants.NAME + ".gotoNav",
 
         START_SEARCH: Constants.NAME + ".startSearch",
         FIND_ALL: Constants.NAME + ".findAll",

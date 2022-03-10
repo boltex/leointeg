@@ -19,21 +19,17 @@ export class LeoGotoNode extends vscode.TreeItem {
         super(gotoEntry.label);
         // Setup this instance
         this._id = utils.getUniqueId();
-        // const w_isNamed: boolean = !!this.gotoEntry.name;
+
         this.label = gotoEntry.label;
+
         // this.tooltip = w_isNamed ? this.gotoEntry.name : Constants.UNTITLED_FILE_NAME;
-        // this.command = {
-        //     command: Constants.COMMANDS.SET_OPENED_FILE,
-        //     title: '',
-        //     arguments: [this.gotoEntry.index]
-        // };
-        // // If this was created as a selected node, make sure it's selected as we may have opened/closed document
-        // if (this.gotoEntry.selected) {
-        //     this._leoIntegration.setDocumentSelection(this);
-        //     this.contextValue = w_isNamed ? Constants.CONTEXT_FLAGS.GOTO_SELECTED_TITLED : Constants.CONTEXT_FLAGS.GOTO_SELECTED_UNTITLED;
-        // } else {
-        //     this.contextValue = w_isNamed ? Constants.CONTEXT_FLAGS.GOTO_TITLED : Constants.CONTEXT_FLAGS.GOTO_UNTITLED;
-        // }
+
+        this.command = {
+            command: Constants.COMMANDS.GOTO_NAV_ENTRY,
+            title: '',
+            arguments: [this]
+        };
+
     }
 
     // @ts-ignore

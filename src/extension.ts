@@ -6,6 +6,7 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
+import { LeoGotoNode } from "./leoGotoNode";
 
 var LeoInteg: LeoIntegration | undefined = undefined;
 
@@ -611,6 +612,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.FIND_QUICK_HISTORY, () => w_leo.findQuickHistory()],
         [CMD.FIND_QUICK_MARKED, () => w_leo.findQuickMarked()],
         [CMD.FIND_QUICK_GO_ANYWHERE, () => w_leo.findQuickGoAnywhere()],
+        [CMD.GOTO_NAV_ENTRY, (p_node: LeoGotoNode) => w_leo.gotoNavEntry(p_node)],
 
         [CMD.START_SEARCH, () => w_leo.startSearch()],
         [CMD.FIND_ALL, () => w_leo.findAll(false)],

@@ -1369,7 +1369,7 @@ class LeoServer:
         c.scon.doTimeline()
         return  self.get_goto_panel(param)
 
-    #@+node:felix.20220309010607.1: *5* find_quick_changed
+    #@+node:felix.20220309010607.1: *5* server.find_quick_changed
     def find_quick_changed(self, param):
         # fill with list of all dirty nodes
         c = self._check_c()
@@ -1389,6 +1389,14 @@ class LeoServer:
         c = self._check_c()
         c.scon.doShowMarked()
         return  self.get_goto_panel(param)
+
+    #@+node:felix.20220309205509.1: *5* server.goto_nav_entry
+    def goto_nav_entry(self, param):
+        pass
+        # activate entry in c.scon.its
+        return self._make_response()
+
+
 
     #@+node:felix.20210621233316.19: *4* server.search commands
     #@+node:felix.20210621233316.20: *5* server.get_search_settings
