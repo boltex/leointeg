@@ -18450,34 +18450,54 @@ export class LeoGotoNode extends vscode.TreeItem {
   "title": "Focus on Nav tab"
 },
 {
-  "command": "leointeg.findQuickSelected",
-  "category": "Leo",
-  "title": "Focus on Nav tab with selected text as search string"
-},
-{
-  "command": "leointeg.findQuickTimeline",
-  "category": "Leo",
-  "title": "List nodes in reverse gnx order"
-},
-{
-  "command": "leointeg.findQuickChanged",
-  "category": "Leo",
-  "title": "List all dirty nodes"
-},
-{
   "command": "leointeg.goAnywhere",
   "category": "Leo",
   "title": "Go Anywhere"
 },
 {
+  "command": "leointeg.findQuickSelected",
+  "category": "Leo",
+  "title": "Focus on Nav tab with selected text as search string",
+  "icon": {
+    "light": "resources/light/find-quick-selected.svg",
+    "dark": "resources/dark/find-quick-selected.svg"
+  }
+},
+{
+  "command": "leointeg.findQuickTimeline",
+  "category": "Leo",
+  "title": "List nodes in reverse gnx order",
+  "icon": {
+    "light": "resources/light/find-quick-timeline.svg",
+    "dark": "resources/dark/find-quick-timeline.svg"
+  }
+},
+{
+  "command": "leointeg.findQuickChanged",
+  "category": "Leo",
+  "title": "List all dirty nodes",
+  "icon": {
+    "light": "resources/light/find-quick-changed.svg",
+    "dark": "resources/dark/find-quick-changed.svg"
+  }
+},
+{
   "command": "leointeg.history",
   "category": "Leo",
-  "title": "List nodes from history"
+  "title": "List nodes from history",
+  "icon": {
+    "light": "resources/light/find-quick-history.svg",
+    "dark": "resources/dark/find-quick-history.svg"
+  }
 },
 {
   "command": "leointeg.markedList",
   "category": "Leo",
-  "title": "List all marked nodes"
+  "title": "List all marked nodes",
+  "icon": {
+    "light": "resources/light/find-quick-marked.svg",
+    "dark": "resources/dark/find-quick-marked.svg"
+  }
 },
 </t>
 <t tx="felix.20220308203528.1">export interface LeoGoto {
