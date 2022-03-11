@@ -548,6 +548,7 @@
 <v t="felix.20200719025231.26"><vh>_onTreeViewVisibilityChanged</vh></v>
 <v t="felix.20200719025231.27"><vh>_onDocTreeViewVisibilityChanged</vh></v>
 <v t="ekr.20200815085705.1"><vh>_onButtonsTreeViewVisibilityChanged</vh></v>
+<v t="felix.20220310224330.1"><vh>_onGotoTreeViewVisibilityChanged</vh></v>
 <v t="felix.20200719025231.29"><vh>_onActiveEditorChanged</vh></v>
 <v t="felix.20210418014039.1"><vh>_changedTextEditorViewColumn</vh></v>
 <v t="felix.20210418014040.1"><vh>_changedVisibleTextEditors</vh></v>
@@ -6479,6 +6480,7 @@ public static BUTTONS_DEBOUNCE_DELAY: number = 80;
 public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
 public static STATES_DEBOUNCE_DELAY: number = 100;
 public static BODY_STATES_DEBOUNCE_DELAY: number = 200;
+public static GOTO_DEBOUNCE_DELAY: number = 50;
 
 public static LOG_ALERT_COLOR: string = 'red';
 
@@ -9327,6 +9329,7 @@ export interface ReqRefresh {
     states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
     buttons?: boolean; // Buttons needs refresh
     documents?: boolean; // Documents needs refresh
+    nav?: boolean; // NAv panel needs refresh
 }
 
 </t>
@@ -10012,6 +10015,7 @@ import { LeoButtonNode } from './leoButtonNode';
 import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
 import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
 import { LeoGotoNode } from './leoGotoNode';
+import { LeoGotoProvider } from './leoGoto';
 
 @others
 @language typescript
@@ -10204,6 +10208,11 @@ export class LeoIntegration {
     private _leoDocumentsExplorer: vscode.TreeView&lt;LeoDocumentNode&gt;;
     private _currentDocumentChanged: boolean = false; // if clean and an edit is done: refresh opened documents view
 
+    // * Goto nav panel
+    private _leoGotoProvider: LeoGotoProvider;
+    private _leoGoto: vscode.TreeView&lt;LeoGotoNode&gt;;
+    private _leoGotoExplorer: vscode.TreeView&lt;LeoGotoNode&gt;;
+
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _refreshType: ReqRefresh = {}; // Flags for commands to require parts of UI to refresh
     private _fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
@@ -10299,6 +10308,13 @@ export class LeoIntegration {
 
     // * Debounced method used to get content of the at-buttons pane
     public refreshButtonsPane: (() =&gt; void) &amp; {
+        clear(): void;
+    } &amp; {
+        flush(): void;
+    };
+
+    // * Debounced method used to get content of the at-buttons pane
+    public refreshGotoPane: (() =&gt; void) &amp; {
         clear(): void;
     } &amp; {
         flush(): void;
@@ -10651,6 +10667,23 @@ private _onActiveEditorChanged(
         this._onButtonsTreeViewVisibilityChanged(p_event, true)
     );
 
+    // * Create goto Treeview Providers and tree views
+    this._leoGotoProvider = new LeoGotoProvider(this);
+    this._leoGoto = vscode.window.createTreeView(Constants.GOTO_ID, {
+        showCollapseAll: false,
+        treeDataProvider: this._leoGotoProvider,
+    });
+    this._leoGoto.onDidChangeVisibility((p_event) =&gt;
+        this._onGotoTreeViewVisibilityChanged(p_event, false)
+    );
+    this._leoGotoExplorer = vscode.window.createTreeView(Constants.GOTO_EXPLORER_ID, {
+        showCollapseAll: false,
+        treeDataProvider: this._leoGotoProvider,
+    });
+    this._leoGotoExplorer.onDidChangeVisibility((p_event) =&gt;
+        this._onGotoTreeViewVisibilityChanged(p_event, true)
+    );
+
     // * Create Body Pane
     this._leoFileSystem = new LeoBodyProvider(this);
     this._bodyMainSelectionColumn = 1;
@@ -10737,6 +10770,10 @@ private _onActiveEditorChanged(
     this.refreshButtonsPane = debounce(
         () =&gt; { this._leoButtonsProvider.refreshTreeRoot(); },
         Constants.BUTTONS_DEBOUNCE_DELAY
+    );
+    this.refreshGotoPane = debounce(
+        () =&gt; { this._leoGotoProvider.refreshTreeRoot(); },
+        Constants.GOTO_DEBOUNCE_DELAY
     );
     this.refreshAll = debounce(
         () =&gt; {
@@ -18329,6 +18366,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
+        console.log('TRIGGER REFRESH ALL GOTO NAV !! ');
         this._onDidChangeTreeData.fire(undefined);
     }
 
@@ -18337,7 +18375,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
     }
 
     public getChildren(element?: LeoGotoNode): Thenable&lt;LeoGotoNode[]&gt; {
-
+        console.log('----------------------- getChildren GOTO NAV !! ');
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
             if (this._entries.length) {
@@ -18503,7 +18541,7 @@ public findQuickTimeline(): Thenable&lt;unknown&gt; {
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE)
         .then((p_result: LeoBridgePackage) =&gt; {
             //
-            return Promise.resolve();
+            return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
         });
 }
 
@@ -18517,7 +18555,7 @@ public findQuickChanged(): Thenable&lt;unknown&gt; {
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED)
         .then((p_result: LeoBridgePackage) =&gt; {
             //
-            return Promise.resolve();
+            return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
         });
 }
 
@@ -18531,7 +18569,7 @@ public findQuickHistory(): Thenable&lt;unknown&gt; {
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY)
         .then((p_result: LeoBridgePackage) =&gt; {
             //
-            return Promise.resolve();
+            return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
         });
 }
 
@@ -18545,17 +18583,17 @@ public findQuickMarked(): Thenable&lt;unknown&gt; {
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED)
         .then((p_result: LeoBridgePackage) =&gt; {
             //
-            return Promise.resolve();
+            return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
         });
 }
 
 </t>
 <t tx="felix.20220308213619.1">/**
- * Opens goto panel
+ * Opens goto and focus in panel
 */
 public findQuickGoAnywhere(): Thenable&lt;unknown&gt; {
     console.log('findQuickGoAnywhere');
-
+    // open and focus nav panel
     return Promise.resolve();
 }
 
@@ -18594,6 +18632,23 @@ public findQuickGoAnywhere(): Thenable&lt;unknown&gt; {
 
     return Promise.resolve();
 }
+
+</t>
+<t tx="felix.20220310224330.1">    /**
+     * * Handle the change of visibility of either goto treeview and refresh it if its visible
+     * @param p_event The treeview-visibility-changed event passed by vscode
+     * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
+     */
+    private _onGotoTreeViewVisibilityChanged(
+        p_event: vscode.TreeViewVisibilityChangeEvent,
+        p_explorerView: boolean
+    ): void {
+        if (p_explorerView) {
+        } // (Facultative/unused) Do something different if explorer view is used
+        if (p_event.visible) {
+            this.refreshGotoPane();
+        }
+    }
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

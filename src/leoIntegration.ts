@@ -35,6 +35,7 @@ import { LeoButtonNode } from './leoButtonNode';
 import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
 import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
 import { LeoGotoNode } from './leoGotoNode';
+import { LeoGotoProvider } from './leoGoto';
 
 /**
  * * Orchestrates Leo integration into vscode
@@ -102,6 +103,11 @@ export class LeoIntegration {
     private _leoDocuments: vscode.TreeView<LeoDocumentNode>;
     private _leoDocumentsExplorer: vscode.TreeView<LeoDocumentNode>;
     private _currentDocumentChanged: boolean = false; // if clean and an edit is done: refresh opened documents view
+
+    // * Goto nav panel
+    private _leoGotoProvider: LeoGotoProvider;
+    private _leoGoto: vscode.TreeView<LeoGotoNode>;
+    private _leoGotoExplorer: vscode.TreeView<LeoGotoNode>;
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _refreshType: ReqRefresh = {}; // Flags for commands to require parts of UI to refresh
@@ -198,6 +204,13 @@ export class LeoIntegration {
 
     // * Debounced method used to get content of the at-buttons pane
     public refreshButtonsPane: (() => void) & {
+        clear(): void;
+    } & {
+        flush(): void;
+    };
+
+    // * Debounced method used to get content of the at-buttons pane
+    public refreshGotoPane: (() => void) & {
         clear(): void;
     } & {
         flush(): void;
@@ -307,6 +320,23 @@ export class LeoIntegration {
             this._onButtonsTreeViewVisibilityChanged(p_event, true)
         );
 
+        // * Create goto Treeview Providers and tree views
+        this._leoGotoProvider = new LeoGotoProvider(this);
+        this._leoGoto = vscode.window.createTreeView(Constants.GOTO_ID, {
+            showCollapseAll: false,
+            treeDataProvider: this._leoGotoProvider,
+        });
+        this._leoGoto.onDidChangeVisibility((p_event) =>
+            this._onGotoTreeViewVisibilityChanged(p_event, false)
+        );
+        this._leoGotoExplorer = vscode.window.createTreeView(Constants.GOTO_EXPLORER_ID, {
+            showCollapseAll: false,
+            treeDataProvider: this._leoGotoProvider,
+        });
+        this._leoGotoExplorer.onDidChangeVisibility((p_event) =>
+            this._onGotoTreeViewVisibilityChanged(p_event, true)
+        );
+
         // * Create Body Pane
         this._leoFileSystem = new LeoBodyProvider(this);
         this._bodyMainSelectionColumn = 1;
@@ -393,6 +423,10 @@ export class LeoIntegration {
         this.refreshButtonsPane = debounce(
             () => { this._leoButtonsProvider.refreshTreeRoot(); },
             Constants.BUTTONS_DEBOUNCE_DELAY
+        );
+        this.refreshGotoPane = debounce(
+            () => { this._leoGotoProvider.refreshTreeRoot(); },
+            Constants.GOTO_DEBOUNCE_DELAY
         );
         this.refreshAll = debounce(
             () => {
@@ -1036,6 +1070,22 @@ export class LeoIntegration {
             this.refreshButtonsPane();
         }
     }
+
+        /**
+         * * Handle the change of visibility of either goto treeview and refresh it if its visible
+         * @param p_event The treeview-visibility-changed event passed by vscode
+         * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
+         */
+        private _onGotoTreeViewVisibilityChanged(
+            p_event: vscode.TreeViewVisibilityChangeEvent,
+            p_explorerView: boolean
+        ): void {
+            if (p_explorerView) {
+            } // (Facultative/unused) Do something different if explorer view is used
+            if (p_event.visible) {
+                this.refreshGotoPane();
+            }
+        }
 
     /**
      * * Handles detection of the active editor having changed from one to another, or closed
@@ -2672,7 +2722,7 @@ export class LeoIntegration {
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE)
             .then((p_result: LeoBridgePackage) => {
                 //
-                return Promise.resolve();
+                return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
             });
     }
 
@@ -2685,7 +2735,7 @@ export class LeoIntegration {
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED)
             .then((p_result: LeoBridgePackage) => {
                 //
-                return Promise.resolve();
+                return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
             });
     }
 
@@ -2698,7 +2748,7 @@ export class LeoIntegration {
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY)
             .then((p_result: LeoBridgePackage) => {
                 //
-                return Promise.resolve();
+                return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
             });
     }
 
@@ -2711,16 +2761,16 @@ export class LeoIntegration {
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED)
             .then((p_result: LeoBridgePackage) => {
                 //
-                return Promise.resolve();
+                return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
             });
     }
 
     /**
-     * Opens goto panel
+     * Opens goto and focus in panel
     */
     public findQuickGoAnywhere(): Thenable<unknown> {
         console.log('findQuickGoAnywhere');
-
+        // open and focus nav panel
         return Promise.resolve();
     }
 

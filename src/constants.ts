@@ -54,6 +54,7 @@ export class Constants {
     public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
     public static STATES_DEBOUNCE_DELAY: number = 100;
     public static BODY_STATES_DEBOUNCE_DELAY: number = 200;
+    public static GOTO_DEBOUNCE_DELAY: number = 50;
 
     public static LOG_ALERT_COLOR: string = 'red';
 

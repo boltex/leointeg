@@ -26,6 +26,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
+        console.log('TRIGGER REFRESH ALL GOTO NAV !! ');
         this._onDidChangeTreeData.fire(undefined);
     }
 
@@ -34,7 +35,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
     }
 
     public getChildren(element?: LeoGotoNode): Thenable<LeoGotoNode[]> {
-
+        console.log('----------------------- getChildren GOTO NAV !! ');
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady && !element) {
             if (this._entries.length) {
