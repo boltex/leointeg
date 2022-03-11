@@ -14617,6 +14617,31 @@ public static VSCODE_COMMANDS = {
     "group": "navigation@2"
   },
   {
+    "command": "leointeg.findQuickSelected",
+    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.findQuickTimeline",
+    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.findQuickChanged",
+    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.history",
+    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.markedList",
+    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
     "command": "leointeg.showSettingsPage",
     "when": "view =~ /^leoIntegration/ &amp;&amp; !leoTreeOpened",
     "group": "navigation@2"
@@ -18260,6 +18285,15 @@ public getTextFromClipboard(): string {
             // Focus and select all text in 'nav' field
             case 'selectNav': {
                 focusOnField('navText');
+                if (message.text || message.text === "") {
+                    // @ts-expect-error
+                    document.getElementById("navText").value = message.text;
+                    searchSettings["navText"] = message.text;
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    sendSearchConfig();
+                }
                 break;
             }
             // * Find Tab Controls
@@ -18457,7 +18491,7 @@ export class LeoGotoNode extends vscode.TreeItem {
 {
   "command": "leointeg.findQuickSelected",
   "category": "Leo",
-  "title": "Focus on Nav tab with selected text as search string",
+  "title": "Nav search with current selection",
   "icon": {
     "light": "resources/light/find-quick-selected.svg",
     "dark": "resources/dark/find-quick-selected.svg"

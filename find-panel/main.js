@@ -297,6 +297,15 @@
             // Focus and select all text in 'nav' field
             case 'selectNav': {
                 focusOnField('navText');
+                if (message.text || message.text === "") {
+                    // @ts-expect-error
+                    document.getElementById("navText").value = message.text;
+                    searchSettings["navText"] = message.text;
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    sendSearchConfig();
+                }
                 break;
             }
             // * Find Tab Controls
