@@ -9140,6 +9140,7 @@ export interface LeoBridgePackage {
     len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
+    navList?: LeoGoto[]; // get_buttons
     commands?: vscode.QuickPickItem[]; // getCommands
     commander?: {
         changed: boolean,
@@ -18336,7 +18337,7 @@ public getTextFromClipboard(): string {
             //
             // @ts-expect-error
             console.log('back from nav text ENTER : ', p_package.navText);
-            // @ts-expect-error
+
             console.log('back from navList : ', p_package.navList);
             // @ts-expect-error
             console.log('back from messages : ', p_package.messages);
@@ -18358,7 +18359,7 @@ public getTextFromClipboard(): string {
             //
             // @ts-expect-error
             console.log('back from nav text change : ', p_package.navText);
-            // @ts-expect-error
+
             console.log('back from navList : ', p_package.navList);
             // @ts-expect-error
             console.log('messages : ', p_package.messages);
@@ -18388,13 +18389,9 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
 
     readonly onDidChangeTreeData: vscode.Event&lt;LeoGotoNode | undefined&gt; = this._onDidChangeTreeData.event;
 
-    private _entries: any[] = [];
 
     constructor(private _leoIntegration: LeoIntegration) { }
 
-    public setEntries(p_entries: any[]): void {
-        this._entries = p_entries;
-    }
 
     /**
      * * Refresh the whole outline
@@ -18409,14 +18406,28 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
     }
 
     public getChildren(element?: LeoGotoNode): Thenable&lt;LeoGotoNode[]&gt; {
+
         console.log('----------------------- getChildren GOTO NAV !! ');
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
-            if (this._entries.length) {
-                // ! MAKE ENTRIES !
-            }
-            // ! TEMPORARY TEST !
-            return Promise.resolve([]); // Defaults to an empty list of children
+
+
+            // call action to get get list, and convert to LeoButtonNode(s) array
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package =&gt; {
+                if (p_package &amp;&amp; p_package.navList) {
+                    const w_list: LeoGotoNode[] = [];
+                    const w_navList: LeoGoto[] = p_package.navList;
+                    if (w_navList &amp;&amp; w_navList.length) {
+                        w_navList.forEach((p_goto: LeoGoto) =&gt; {
+                            w_list.push(new LeoGotoNode(p_goto, this._leoIntegration));
+                        });
+                    }
+                    return w_list;
+                } else {
+                    return [];
+                }
+            });
+
 
         } else {
             return Promise.resolve([]); // Defaults to an empty list of children
@@ -18448,11 +18459,11 @@ export class LeoGotoNode extends vscode.TreeItem {
         public gotoEntry: LeoGoto,
         private _leoIntegration: LeoIntegration
     ) {
-        super(gotoEntry.label);
+        super(gotoEntry.h);
         // Setup this instance
         this._id = utils.getUniqueId();
 
-        this.label = gotoEntry.label;
+        this.label = gotoEntry.h;
 
         // this.tooltip = w_isNamed ? this.gotoEntry.name : Constants.UNTITLED_FILE_NAME;
 
@@ -18535,9 +18546,13 @@ export class LeoGotoNode extends vscode.TreeItem {
 },
 </t>
 <t tx="felix.20220308203528.1">export interface LeoGoto {
-    id: string; // or number??
-    type: string;
-    label: string;
+    // "key": k,
+    // "h": ["label"],
+    // "t": ["type"]
+    //
+    key: string; // or number??
+    h: string;
+    t: "body" | "headline" | "parent" | "generic";
 }
 
 </t>
@@ -18688,21 +18703,21 @@ public findQuickGoAnywhere(): Thenable&lt;unknown&gt; {
 }
 
 </t>
-<t tx="felix.20220310224330.1">    /**
-     * * Handle the change of visibility of either goto treeview and refresh it if its visible
-     * @param p_event The treeview-visibility-changed event passed by vscode
-     * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
-     */
-    private _onGotoTreeViewVisibilityChanged(
-        p_event: vscode.TreeViewVisibilityChangeEvent,
-        p_explorerView: boolean
-    ): void {
-        if (p_explorerView) {
-        } // (Facultative/unused) Do something different if explorer view is used
-        if (p_event.visible) {
-            this.refreshGotoPane();
-        }
+<t tx="felix.20220310224330.1">/**
+ * * Handle the change of visibility of either goto treeview and refresh it if its visible
+ * @param p_event The treeview-visibility-changed event passed by vscode
+ * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
+ */
+private _onGotoTreeViewVisibilityChanged(
+    p_event: vscode.TreeViewVisibilityChangeEvent,
+    p_explorerView: boolean
+): void {
+    if (p_explorerView) {
+    } // (Facultative/unused) Do something different if explorer view is used
+    if (p_event.visible) {
+        this.refreshGotoPane();
     }
+}
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

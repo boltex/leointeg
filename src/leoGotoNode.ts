@@ -16,11 +16,11 @@ export class LeoGotoNode extends vscode.TreeItem {
         public gotoEntry: LeoGoto,
         private _leoIntegration: LeoIntegration
     ) {
-        super(gotoEntry.label);
+        super(gotoEntry.h);
         // Setup this instance
         this._id = utils.getUniqueId();
 
-        this.label = gotoEntry.label;
+        this.label = gotoEntry.h;
 
         // this.tooltip = w_isNamed ? this.gotoEntry.name : Constants.UNTITLED_FILE_NAME;
 

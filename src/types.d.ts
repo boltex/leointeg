@@ -168,6 +168,7 @@ export interface LeoBridgePackage {
     len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
+    navList?: LeoGoto[]; // get_buttons
     commands?: vscode.QuickPickItem[]; // getCommands
     commander?: {
         changed: boolean,
@@ -214,9 +215,13 @@ export interface LeoButton {
 }
 
 export interface LeoGoto {
-    id: string; // or number??
-    type: string;
-    label: string;
+    // "key": k,
+    // "h": ["label"],
+    // "t": ["type"]
+    //
+    key: string; // or number??
+    h: string;
+    t: "body" | "headline" | "parent" | "generic";
 }
 
 /**

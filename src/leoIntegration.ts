@@ -1071,21 +1071,21 @@ export class LeoIntegration {
         }
     }
 
-        /**
-         * * Handle the change of visibility of either goto treeview and refresh it if its visible
-         * @param p_event The treeview-visibility-changed event passed by vscode
-         * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
-         */
-        private _onGotoTreeViewVisibilityChanged(
-            p_event: vscode.TreeViewVisibilityChangeEvent,
-            p_explorerView: boolean
-        ): void {
-            if (p_explorerView) {
-            } // (Facultative/unused) Do something different if explorer view is used
-            if (p_event.visible) {
-                this.refreshGotoPane();
-            }
+    /**
+     * * Handle the change of visibility of either goto treeview and refresh it if its visible
+     * @param p_event The treeview-visibility-changed event passed by vscode
+     * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
+     */
+    private _onGotoTreeViewVisibilityChanged(
+        p_event: vscode.TreeViewVisibilityChangeEvent,
+        p_explorerView: boolean
+    ): void {
+        if (p_explorerView) {
+        } // (Facultative/unused) Do something different if explorer view is used
+        if (p_event.visible) {
+            this.refreshGotoPane();
         }
+    }
 
     /**
      * * Handles detection of the active editor having changed from one to another, or closed
@@ -2791,7 +2791,7 @@ export class LeoIntegration {
                 //
                 // @ts-expect-error
                 console.log('back from nav text ENTER : ', p_package.navText);
-                // @ts-expect-error
+
                 console.log('back from navList : ', p_package.navList);
                 // @ts-expect-error
                 console.log('back from messages : ', p_package.messages);
@@ -2812,7 +2812,7 @@ export class LeoIntegration {
                 //
                 // @ts-expect-error
                 console.log('back from nav text change : ', p_package.navText);
-                // @ts-expect-error
+
                 console.log('back from navList : ', p_package.navList);
                 // @ts-expect-error
                 console.log('messages : ', p_package.messages);

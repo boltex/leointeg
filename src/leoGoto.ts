@@ -14,13 +14,9 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
 
     readonly onDidChangeTreeData: vscode.Event<LeoGotoNode | undefined> = this._onDidChangeTreeData.event;
 
-    private _entries: any[] = [];
 
     constructor(private _leoIntegration: LeoIntegration) { }
 
-    public setEntries(p_entries: any[]): void {
-        this._entries = p_entries;
-    }
 
     /**
      * * Refresh the whole outline
@@ -35,14 +31,28 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
     }
 
     public getChildren(element?: LeoGotoNode): Thenable<LeoGotoNode[]> {
+
         console.log('----------------------- getChildren GOTO NAV !! ');
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady && !element) {
-            if (this._entries.length) {
-                // ! MAKE ENTRIES !
-            }
-            // ! TEMPORARY TEST !
-            return Promise.resolve([]); // Defaults to an empty list of children
+
+
+            // call action to get get list, and convert to LeoButtonNode(s) array
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package => {
+                if (p_package && p_package.navList) {
+                    const w_list: LeoGotoNode[] = [];
+                    const w_navList: LeoGoto[] = p_package.navList;
+                    if (w_navList && w_navList.length) {
+                        w_navList.forEach((p_goto: LeoGoto) => {
+                            w_list.push(new LeoGotoNode(p_goto, this._leoIntegration));
+                        });
+                    }
+                    return w_list;
+                } else {
+                    return [];
+                }
+            });
+
 
         } else {
             return Promise.resolve([]); // Defaults to an empty list of children
