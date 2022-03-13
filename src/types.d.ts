@@ -171,6 +171,7 @@ export interface LeoBridgePackage {
     navList?: LeoGoto[]; // get_goto
     navText?: string; // get_goto
     messages?: string[]; // get_goto
+    navFlags?: { isTag: boolean, showParents: boolean }; // get_goto
     commands?: vscode.QuickPickItem[]; // getCommands
     commander?: {
         changed: boolean,
@@ -237,6 +238,7 @@ export const enum LeoSearchScope {
 export interface LeoSearchSettings {
     // Nav options
     navText: string;
+    isTag: boolean;
     showParents: boolean;
     searchOptions: number;
     // Find/change strings...
@@ -259,6 +261,7 @@ export interface LeoSearchSettings {
 export interface LeoGuiFindTabManagerSettings {
     // Nav options
     nav_text: string;
+    is_tag: boolean;
     show_parents: boolean;
     search_options: number;
     //Find/change strings...

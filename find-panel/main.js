@@ -20,6 +20,7 @@
         // Nav settings
         navText: '',
         showParents: true,
+        isTag: false,
         searchOptions: 0,
         // Find/replace
         findText: '',
@@ -80,6 +81,11 @@
         // @ts-expect-error
         document.getElementById("showParents").checked = p_settings["showParents"];
         searchSettings["showParents"] = p_settings["showParents"];
+
+        // isTag
+        // @ts-expect-error
+        document.getElementById("isTag").checked = p_settings["isTag"];
+        searchSettings["isTag"] = p_settings["isTag"];
         // searchOptions
         // @ts-expect-error
         document.getElementById("searchOptions").value = p_settings["searchOptions"];
@@ -235,9 +241,14 @@
         searchSettings.showParents = this.checked;
         processChange();
     });
+    document.getElementById('isTag').addEventListener('change', function (p_event) {
+        // @ts-expect-error
+        searchSettings.isTag = this.checked;
+        processChange();
+    });
     document.getElementById('searchOptions').addEventListener('change', function (p_event) {
         // @ts-expect-error
-        searchSettings.searchOptions = this.value;
+        searchSettings.searchOptions = Number(this.value);
         processChange();
     });
 

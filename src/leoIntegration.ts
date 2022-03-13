@@ -3115,6 +3115,7 @@ export class LeoIntegration {
             (p_result: LeoBridgePackage) => {
                 const w_searchSettings: LeoGuiFindTabManagerSettings = p_result.searchSettings!;
                 const w_settings: LeoSearchSettings = {
+                    isTag: w_searchSettings.is_tag,
                     navText: w_searchSettings.nav_text,
                     showParents: w_searchSettings.show_parents,
                     searchOptions: w_searchSettings.search_options,
@@ -3165,6 +3166,7 @@ export class LeoIntegration {
         // convert to LeoGuiFindTabManagerSettings
         const w_settings: LeoGuiFindTabManagerSettings = {
             // Nav settings
+            is_tag: p_settings.isTag,
             nav_text: p_settings.navText,
             show_parents: p_settings.showParents,
             search_options: p_settings.searchOptions,

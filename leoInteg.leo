@@ -9143,6 +9143,7 @@ export interface LeoBridgePackage {
     navList?: LeoGoto[]; // get_goto
     navText?: string; // get_goto
     messages?: string[]; // get_goto
+    navFlags?: { isTag: boolean, showParents: boolean }; // get_goto
     commands?: vscode.QuickPickItem[]; // getCommands
     commander?: {
         changed: boolean,
@@ -15478,6 +15479,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
 export interface LeoSearchSettings {
     // Nav options
     navText: string;
+    isTag: boolean;
     showParents: boolean;
     searchOptions: number;
     // Find/change strings...
@@ -15647,6 +15649,7 @@ export const enum LeoSearchScope {
 export interface LeoGuiFindTabManagerSettings {
     // Nav options
     nav_text: string;
+    is_tag: boolean;
     show_parents: boolean;
     search_options: number;
     //Find/change strings...
@@ -15675,6 +15678,7 @@ public saveSearchSettings(p_settings: LeoSearchSettings): Promise&lt;LeoBridgePa
     // convert to LeoGuiFindTabManagerSettings
     const w_settings: LeoGuiFindTabManagerSettings = {
         // Nav settings
+        is_tag: p_settings.isTag,
         nav_text: p_settings.navText,
         show_parents: p_settings.showParents,
         search_options: p_settings.searchOptions,
@@ -15720,6 +15724,7 @@ public loadSearchSettings(): void {
         (p_result: LeoBridgePackage) =&gt; {
             const w_searchSettings: LeoGuiFindTabManagerSettings = p_result.searchSettings!;
             const w_settings: LeoSearchSettings = {
+                isTag: w_searchSettings.is_tag,
                 navText: w_searchSettings.nav_text,
                 showParents: w_searchSettings.show_parents,
                 searchOptions: w_searchSettings.search_options,
@@ -18024,6 +18029,7 @@ public getTextFromClipboard(): string {
         // Nav settings
         navText: '',
         showParents: true,
+        isTag: false,
         searchOptions: 0,
         // Find/replace
         findText: '',
@@ -18084,6 +18090,11 @@ public getTextFromClipboard(): string {
         // @ts-expect-error
         document.getElementById("showParents").checked = p_settings["showParents"];
         searchSettings["showParents"] = p_settings["showParents"];
+
+        // isTag
+        // @ts-expect-error
+        document.getElementById("isTag").checked = p_settings["isTag"];
+        searchSettings["isTag"] = p_settings["isTag"];
         // searchOptions
         // @ts-expect-error
         document.getElementById("searchOptions").value = p_settings["searchOptions"];
@@ -18239,9 +18250,14 @@ public getTextFromClipboard(): string {
         searchSettings.showParents = this.checked;
         processChange();
     });
+    document.getElementById('isTag').addEventListener('change', function (p_event) {
+        // @ts-expect-error
+        searchSettings.isTag = this.checked;
+        processChange();
+    });
     document.getElementById('searchOptions').addEventListener('change', function (p_event) {
         // @ts-expect-error
-        searchSettings.searchOptions = this.value;
+        searchSettings.searchOptions = Number(this.value);
         processChange();
     });
 
@@ -18413,7 +18429,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
-        console.log('TRIGGER REFRESH ALL GOTO NAV !! ');
+        console.log('TRIGGER refresh all goto nav CALLED!! ');
         this._onDidChangeTreeData.fire(undefined);
     }
 
@@ -18431,6 +18447,8 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
             // call action to get get list, and convert to LeoButtonNode(s) array
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package =&gt; {
                 if (p_package &amp;&amp; p_package.navList) {
+                    console.log('----------------------- GOT children from nav', p_package);
+
                     const w_list: LeoGotoNode[] = [];
                     this._topNode = undefined;
                     const w_navList: LeoGoto[] = p_package.navList;

@@ -407,6 +407,7 @@ class QuickSearchController:
 
         self.navText = ''
         self.showParents = True
+        self.isTag = False
         self.searchOptions = 0
         self.searchOptionsStrings = ["All", "Subtree", "File",
                                      "Chapter", "Node"]
@@ -1357,6 +1358,7 @@ class LeoServer:
             result["navList"] = navlist
             result["messages"]= c.scon.lw
             result["navText"] = c.scon.navText
+            result["navOptions"] = {"isTag":c.scon.isTag, "showParents": c.scon.showParents}
         except Exception as e:
             raise ServerError(f"{tag}: exception doing nav search: {e}")
         return self._make_response(result)
@@ -1412,6 +1414,7 @@ class LeoServer:
             result = {"searchSettings": settings.__dict__}
             result["searchSettings"]["nav_text"] = c.scon.navText
             result["searchSettings"]["show_parents"] = c.scon.showParents
+            result["searchSettings"]["is_tag"] = c.scon.isTag
             result["searchSettings"]["search_options"] = c.scon.searchOptions
         except Exception as e:
             raise ServerError(f"{tag}: exception getting search settings: {e}")
@@ -1433,6 +1436,7 @@ class LeoServer:
             # nav settings
             c.scon.navText = searchSettings.get('nav_text')
             c.scon.showParents = searchSettings.get('show_parents')
+            c.scon.isTag = searchSettings.get('is_tag')
             c.scon.searchOptions = searchSettings.get('search_options')
 
             # Find/change text boxes.
