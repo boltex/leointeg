@@ -15,8 +15,22 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
     readonly onDidChangeTreeData: vscode.Event<LeoGotoNode | undefined> = this._onDidChangeTreeData.event;
 
 
+    private _lastGotoView: vscode.TreeView<LeoGotoNode> | undefined;
+
+    private _topNode: LeoGotoNode | undefined;
+
     constructor(private _leoIntegration: LeoIntegration) { }
 
+    public showGotoPanel(): Thenable<void> {
+        if (this._lastGotoView && this._topNode) {
+            return this._lastGotoView.reveal(this._topNode, { select: false, focus: false });
+        }
+        return Promise.resolve();
+    }
+
+    public setLastGotoView(p_view: vscode.TreeView<LeoGotoNode>): void {
+        this._lastGotoView = p_view;
+    }
 
     /**
      * * Refresh the whole outline
@@ -41,10 +55,15 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package => {
                 if (p_package && p_package.navList) {
                     const w_list: LeoGotoNode[] = [];
+                    this._topNode = undefined;
                     const w_navList: LeoGoto[] = p_package.navList;
                     if (w_navList && w_navList.length) {
                         w_navList.forEach((p_goto: LeoGoto) => {
-                            w_list.push(new LeoGotoNode(p_goto, this._leoIntegration));
+                            const w_newNode = new LeoGotoNode(p_goto, this._leoIntegration);
+                            if (!this._topNode) {
+                                this._topNode = w_newNode;
+                            }
+                            w_list.push(w_newNode);
                         });
                     }
                     return w_list;

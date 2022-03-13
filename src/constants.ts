@@ -162,7 +162,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_VERSION: "Missing Command: Please update Leo (min 6.6-b2 required)",
+        MINIMUM_VERSION: "Missing Command: Please update Leo (min 6.6-final required)",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
     };

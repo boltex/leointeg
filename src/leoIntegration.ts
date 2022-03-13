@@ -336,6 +336,9 @@ export class LeoIntegration {
         this._leoGotoExplorer.onDidChangeVisibility((p_event) =>
             this._onGotoTreeViewVisibilityChanged(p_event, true)
         );
+        // * Set 'last' goto tree view visible
+        this._leoGotoProvider.setLastGotoView(this.config.treeInExplorer ? this._leoGotoExplorer : this._leoGoto);
+
 
         // * Create Body Pane
         this._leoFileSystem = new LeoBodyProvider(this);
@@ -1080,9 +1083,11 @@ export class LeoIntegration {
         p_event: vscode.TreeViewVisibilityChangeEvent,
         p_explorerView: boolean
     ): void {
+
         if (p_explorerView) {
         } // (Facultative/unused) Do something different if explorer view is used
         if (p_event.visible) {
+            this._leoGotoProvider.setLastGotoView(p_explorerView ? this._leoGotoExplorer : this._leoGoto);
             this.refreshGotoPane();
         }
     }
@@ -2721,7 +2726,7 @@ export class LeoIntegration {
         console.log('findQuickTimeline');
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE)
             .then((p_result: LeoBridgePackage) => {
-                //
+                this._leoGotoProvider.refreshTreeRoot();
                 return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
             });
     }
@@ -2734,7 +2739,7 @@ export class LeoIntegration {
 
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED)
             .then((p_result: LeoBridgePackage) => {
-                //
+                this._leoGotoProvider.refreshTreeRoot();
                 return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
             });
     }
@@ -2747,7 +2752,7 @@ export class LeoIntegration {
 
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY)
             .then((p_result: LeoBridgePackage) => {
-                //
+                this._leoGotoProvider.refreshTreeRoot();
                 return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
             });
     }
@@ -2760,7 +2765,7 @@ export class LeoIntegration {
 
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED)
             .then((p_result: LeoBridgePackage) => {
-                //
+                this._leoGotoProvider.refreshTreeRoot();
                 return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
             });
     }
@@ -2771,6 +2776,14 @@ export class LeoIntegration {
     public findQuickGoAnywhere(): Thenable<unknown> {
         console.log('findQuickGoAnywhere');
         // open and focus nav panel
+        let w_panel = "";
+        if (this._lastTreeView === this._leoTreeExView) {
+            w_panel = Constants.GOTO_EXPLORER_ID;
+        } else {
+            w_panel = Constants.GOTO_ID;
+        }
+        vscode.commands.executeCommand(w_panel + '.focus');
+
         return Promise.resolve();
     }
 

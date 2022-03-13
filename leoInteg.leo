@@ -6572,7 +6572,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
-    MINIMUM_VERSION: "Missing Command: Please update Leo (min 6.6-b2 required)",
+    MINIMUM_VERSION: "Missing Command: Please update Leo (min 6.6-final required)",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
 };
@@ -9880,7 +9880,7 @@ If you're having problems with the procedures below, try [running this sample ex
 
 - **use Leo's 'devel' branch** (This is temporary until Leo's 6.4 release)
 
-- Make sure you have [Node.js](https://nodejs.org/en/download/) and [Git](https://git-scm.com/downloads) installed.
+- Make sure you have [Node.js](https://nodejs.org/en/download/) and [Git](https://git-scm.com/downloads) installed. Version up to **14.19** of node works fine for compiling this project.
 
 - Also check your vscode, and other software versions by opening the 'about' dialog from the help menu. You should at least match or exceed the versions below.
 
@@ -10684,6 +10684,9 @@ private _onActiveEditorChanged(
     this._leoGotoExplorer.onDidChangeVisibility((p_event) =&gt;
         this._onGotoTreeViewVisibilityChanged(p_event, true)
     );
+    // * Set 'last' goto tree view visible
+    this._leoGotoProvider.setLastGotoView(this.config.treeInExplorer ? this._leoGotoExplorer : this._leoGoto);
+
 
     // * Create Body Pane
     this._leoFileSystem = new LeoBodyProvider(this);
@@ -18390,8 +18393,22 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
     readonly onDidChangeTreeData: vscode.Event&lt;LeoGotoNode | undefined&gt; = this._onDidChangeTreeData.event;
 
 
+    private _lastGotoView: vscode.TreeView&lt;LeoGotoNode&gt; | undefined;
+
+    private _topNode: LeoGotoNode | undefined;
+
     constructor(private _leoIntegration: LeoIntegration) { }
 
+    public showGotoPanel(): Thenable&lt;void&gt; {
+        if (this._lastGotoView &amp;&amp; this._topNode) {
+            return this._lastGotoView.reveal(this._topNode, { select: false, focus: false });
+        }
+        return Promise.resolve();
+    }
+
+    public setLastGotoView(p_view: vscode.TreeView&lt;LeoGotoNode&gt;): void {
+        this._lastGotoView = p_view;
+    }
 
     /**
      * * Refresh the whole outline
@@ -18416,10 +18433,15 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package =&gt; {
                 if (p_package &amp;&amp; p_package.navList) {
                     const w_list: LeoGotoNode[] = [];
+                    this._topNode = undefined;
                     const w_navList: LeoGoto[] = p_package.navList;
                     if (w_navList &amp;&amp; w_navList.length) {
                         w_navList.forEach((p_goto: LeoGoto) =&gt; {
-                            w_list.push(new LeoGotoNode(p_goto, this._leoIntegration));
+                            const w_newNode = new LeoGotoNode(p_goto, this._leoIntegration);
+                            if (!this._topNode) {
+                                this._topNode = w_newNode;
+                            }
+                            w_list.push(w_newNode);
                         });
                     }
                     return w_list;
@@ -18609,7 +18631,7 @@ public findQuickTimeline(): Thenable&lt;unknown&gt; {
     console.log('findQuickTimeline');
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE)
         .then((p_result: LeoBridgePackage) =&gt; {
-            //
+            this._leoGotoProvider.refreshTreeRoot();
             return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
         });
 }
@@ -18623,7 +18645,7 @@ public findQuickChanged(): Thenable&lt;unknown&gt; {
 
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED)
         .then((p_result: LeoBridgePackage) =&gt; {
-            //
+            this._leoGotoProvider.refreshTreeRoot();
             return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
         });
 }
@@ -18637,7 +18659,7 @@ public findQuickHistory(): Thenable&lt;unknown&gt; {
 
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY)
         .then((p_result: LeoBridgePackage) =&gt; {
-            //
+            this._leoGotoProvider.refreshTreeRoot();
             return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
         });
 }
@@ -18651,7 +18673,7 @@ public findQuickMarked(): Thenable&lt;unknown&gt; {
 
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED)
         .then((p_result: LeoBridgePackage) =&gt; {
-            //
+            this._leoGotoProvider.refreshTreeRoot();
             return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
         });
 }
@@ -18663,6 +18685,14 @@ public findQuickMarked(): Thenable&lt;unknown&gt; {
 public findQuickGoAnywhere(): Thenable&lt;unknown&gt; {
     console.log('findQuickGoAnywhere');
     // open and focus nav panel
+    let w_panel = "";
+    if (this._lastTreeView === this._leoTreeExView) {
+        w_panel = Constants.GOTO_EXPLORER_ID;
+    } else {
+        w_panel = Constants.GOTO_ID;
+    }
+    vscode.commands.executeCommand(w_panel + '.focus');
+
     return Promise.resolve();
 }
 
@@ -18712,9 +18742,11 @@ private _onGotoTreeViewVisibilityChanged(
     p_event: vscode.TreeViewVisibilityChangeEvent,
     p_explorerView: boolean
 ): void {
+
     if (p_explorerView) {
     } // (Facultative/unused) Do something different if explorer view is used
     if (p_event.visible) {
+        this._leoGotoProvider.setLastGotoView(p_explorerView ? this._leoGotoExplorer : this._leoGoto);
         this.refreshGotoPane();
     }
 }
