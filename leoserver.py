@@ -1326,7 +1326,7 @@ class LeoServer:
             c.scon.bgSearch(exp)
         except Exception as e:
             raise ServerError(f"{tag}: exception doing nav headline search: {e}")
-        return  self.get_goto_panel(param)
+        return  self._make_response()
 
 
     #@+node:felix.20220305211828.1: *5* server.nav_search
@@ -1341,7 +1341,7 @@ class LeoServer:
             c.scon.doSearch(c.scon.navText)
         except Exception as e:
             raise ServerError(f"{tag}: exception doing nav search: {e}")
-        return  self.get_goto_panel(param)
+        return  self._make_response()
 
 
     #@+node:felix.20220305215239.1: *5* server.get_goto_panel
@@ -1367,28 +1367,28 @@ class LeoServer:
         # fill with timeline order gnx nodes
         c = self._check_c()
         c.scon.doTimeline()
-        return  self.get_goto_panel(param)
+        return  self._make_response()
 
     #@+node:felix.20220309010607.1: *5* server.find_quick_changed
     def find_quick_changed(self, param):
         # fill with list of all dirty nodes
         c = self._check_c()
         c.scon.doChanged()
-        return  self.get_goto_panel(param)
+        return  self._make_response()
 
     #@+node:felix.20220309010647.1: *5* server.find_quick_history
     def find_quick_history(self, param):
         # fill with list from history
         c = self._check_c()
         c.scon.doNodeHistory()
-        return  self.get_goto_panel(param)
+        return  self._make_response()
 
     #@+node:felix.20220309010704.1: *5* server.find_quick_marked
     def find_quick_marked(self, param):
         # fill with list of marked nodes
         c = self._check_c()
         c.scon.doShowMarked()
-        return  self.get_goto_panel(param)
+        return  self._make_response()
 
     #@+node:felix.20220309205509.1: *5* server.goto_nav_entry
     def goto_nav_entry(self, param):

@@ -9140,7 +9140,9 @@ export interface LeoBridgePackage {
     len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
-    navList?: LeoGoto[]; // get_buttons
+    navList?: LeoGoto[]; // get_goto
+    navText?: string; // get_goto
+    messages?: string[]; // get_goto
     commands?: vscode.QuickPickItem[]; // getCommands
     commander?: {
         changed: boolean,
@@ -18337,13 +18339,12 @@ public getTextFromClipboard(): string {
             // Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
             JSON.stringify({ test: "test" })
         ).then((p_package) =&gt; {
-            //
-            // @ts-expect-error
-            console.log('back from nav text ENTER : ', p_package.navText);
 
-            console.log('back from navList : ', p_package.navList);
-            // @ts-expect-error
-            console.log('back from messages : ', p_package.messages);
+            // console.log('back from nav text ENTER : ', p_package.navText);
+
+            // console.log('back from navList : ', p_package.navList);
+
+            // console.log('back from messages : ', p_package.messages);
             return p_package;
         });
 
@@ -18359,13 +18360,12 @@ public getTextFromClipboard(): string {
             Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
             JSON.stringify({ test: "test" })
         ).then((p_package) =&gt; {
-            //
-            // @ts-expect-error
-            console.log('back from nav text change : ', p_package.navText);
 
-            console.log('back from navList : ', p_package.navList);
-            // @ts-expect-error
-            console.log('messages : ', p_package.messages);
+            // console.log('back from nav text change : ', p_package.navText);
+
+            // console.log('back from navList : ', p_package.navList);
+
+            // console.log('messages : ', p_package.messages);
 
             return p_package;
         });
