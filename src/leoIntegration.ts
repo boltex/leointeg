@@ -2801,12 +2801,7 @@ export class LeoIntegration {
                 // Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
                 JSON.stringify({ test: "test" })
             ).then((p_package) => {
-
-                // console.log('back from nav text ENTER : ', p_package.navText);
-
-                // console.log('back from navList : ', p_package.navList);
-
-                // console.log('back from messages : ', p_package.messages);
+                this._leoGotoProvider.refreshTreeRoot();
                 return p_package;
             });
 
@@ -2821,13 +2816,7 @@ export class LeoIntegration {
                 Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
                 JSON.stringify({ test: "test" })
             ).then((p_package) => {
-
-                // console.log('back from nav text change : ', p_package.navText);
-
-                // console.log('back from navList : ', p_package.navList);
-
-                // console.log('messages : ', p_package.messages);
-
+                this._leoGotoProvider.refreshTreeRoot();
                 return p_package;
             });
 

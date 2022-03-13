@@ -217,10 +217,6 @@ export interface LeoButton {
 }
 
 export interface LeoGoto {
-    // "key": k,
-    // "h": ["label"],
-    // "t": ["type"]
-    //
     key: string; // or number??
     h: string;
     t: "body" | "headline" | "parent" | "generic";

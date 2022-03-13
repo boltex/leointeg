@@ -128,7 +128,10 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                             <option value="4">Node</option>
                         </select>
                     </div>
-                    <div class="col">
+                    <div class="col-nav">
+                        <input type="checkbox" id="isTag" name="isTag" >
+                        <label for="isTag">Tag</label>
+
                         <input type="checkbox" id="showParents" name="showParents" >
                         <label for="showParents">Show parents</label>
                     </div>

@@ -15517,6 +15517,16 @@ export const enum LeoSearchScope {
   "when": "!leoTreeOpened"
 },
 {
+  "view": "leoGotoPanel",
+  "contents": "No Results",
+  "when": "leoTreeOpened"
+},
+{
+  "view": "leoGotoPanelExplorer",
+  "contents": "No Results",
+  "when": "leoTreeOpened"
+},
+{
   "view": "leoFindPanel",
   "contents": "Not connected",
   "when": "!leoTreeOpened"
@@ -18339,12 +18349,7 @@ public getTextFromClipboard(): string {
             // Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
             JSON.stringify({ test: "test" })
         ).then((p_package) =&gt; {
-
-            // console.log('back from nav text ENTER : ', p_package.navText);
-
-            // console.log('back from navList : ', p_package.navList);
-
-            // console.log('back from messages : ', p_package.messages);
+            this._leoGotoProvider.refreshTreeRoot();
             return p_package;
         });
 
@@ -18360,13 +18365,7 @@ public getTextFromClipboard(): string {
             Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
             JSON.stringify({ test: "test" })
         ).then((p_package) =&gt; {
-
-            // console.log('back from nav text change : ', p_package.navText);
-
-            // console.log('back from navList : ', p_package.navList);
-
-            // console.log('messages : ', p_package.messages);
-
+            this._leoGotoProvider.refreshTreeRoot();
             return p_package;
         });
 
@@ -18476,16 +18475,28 @@ export class LeoGotoNode extends vscode.TreeItem {
 
     // Context string is checked in package.json with 'when' clauses
     private _id: string;
+    private _description: string | boolean;
 
     constructor(
         public gotoEntry: LeoGoto,
         private _leoIntegration: LeoIntegration
     ) {
-        super(gotoEntry.h);
+        super(gotoEntry.t === "headline" ? "     " + gotoEntry.h : "");
+        // if parent
+
+        this._description = false;
+        if (this.gotoEntry.t === 'body') {
+            this._description = "       " + this.gotoEntry.h;
+        } else if (this.gotoEntry.t === 'parent') {
+            this._description = this.gotoEntry.h;
+        } else if (this.gotoEntry.t === 'generic') {
+            this._description = "&lt; " + this.gotoEntry.h + " &gt;";
+        }
+
         // Setup this instance
         this._id = utils.getUniqueId();
 
-        this.label = gotoEntry.h;
+        // this.label = gotoEntry.h;
 
         // this.tooltip = w_isNamed ? this.gotoEntry.name : Constants.UNTITLED_FILE_NAME;
 
@@ -18495,6 +18506,20 @@ export class LeoGotoNode extends vscode.TreeItem {
             arguments: [this]
         };
 
+    }
+
+    // @ts-ignore
+    public get tooltip(): string {
+        const w_t = this.gotoEntry.t;
+        if (w_t !== "generic") {
+            return w_t.charAt(0).toUpperCase() + w_t.slice(1);
+        }
+        return this.gotoEntry.h;
+    }
+
+    // @ts-ignore
+    public get description(): string | boolean {
+        return this._description;
     }
 
     // @ts-ignore
@@ -18568,10 +18593,6 @@ export class LeoGotoNode extends vscode.TreeItem {
 },
 </t>
 <t tx="felix.20220308203528.1">export interface LeoGoto {
-    // "key": k,
-    // "h": ["label"],
-    // "t": ["type"]
-    //
     key: string; // or number??
     h: string;
     t: "body" | "headline" | "parent" | "generic";
@@ -19014,7 +19035,10 @@ import * as utils from "../utils";
                         &lt;option value="4"&gt;Node&lt;/option&gt;
                     &lt;/select&gt;
                 &lt;/div&gt;
-                &lt;div class="col"&gt;
+                &lt;div class="col-nav"&gt;
+                    &lt;input type="checkbox" id="isTag" name="isTag" &gt;
+                    &lt;label for="isTag"&gt;Tag&lt;/label&gt;
+
                     &lt;input type="checkbox" id="showParents" name="showParents" &gt;
                     &lt;label for="showParents"&gt;Show parents&lt;/label&gt;
                 &lt;/div&gt;
@@ -19079,6 +19103,12 @@ div.row {
 div.col {
   width: 50%;
   max-width: 9.5em;
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+div.col-nav {
+  width: 50%;
   display: inline-block;
   text-overflow: ellipsis;
   overflow: hidden;

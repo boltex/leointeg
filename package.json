@@ -1972,6 +1972,16 @@
         "when": "!leoTreeOpened"
       },
       {
+        "view": "leoGotoPanel",
+        "contents": "No Results",
+        "when": "leoTreeOpened"
+      },
+      {
+        "view": "leoGotoPanelExplorer",
+        "contents": "No Results",
+        "when": "leoTreeOpened"
+      },
+      {
         "view": "leoFindPanel",
         "contents": "Not connected",
         "when": "!leoTreeOpened"
