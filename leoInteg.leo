@@ -6556,9 +6556,12 @@ public static USER_MESSAGES = {
     TITLE_GOTO_GLOBAL_LINE: "Goto global line",
     PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
     PROMPT_GOTO_GLOBAL_LINE: "Line number",
+
     TITLE_TAG_CHILDREN: "Tag Children",
-    PLACEHOLDER_TAG_CHILDREN: "&lt;tag&gt;",
-    PROMPT_TAG_CHILDREN: "Enter a tag name",
+    TITLE_TAG_NODE: "Tag Node",
+    PLACEHOLDER_TAG: "&lt;tag&gt;",
+    PROMPT_TAG: "Enter a tag name",
+
     TITLE_FIND_TAG: "Find Tag",
     PLACEHOLDER_CLONE_FIND_TAG: "&lt;tag&gt;",
     PROMPT_CLONE_FIND_TAG: "Enter a tag name",
@@ -16871,8 +16874,8 @@ public tagChildren(): void {
         .then((p_saveResult: boolean) =&gt; {
             return vscode.window.showInputBox({
                 title: Constants.USER_MESSAGES.TITLE_TAG_CHILDREN,
-                placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG_CHILDREN,
-                prompt: Constants.USER_MESSAGES.PROMPT_TAG_CHILDREN,
+                placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
+                prompt: Constants.USER_MESSAGES.PROMPT_TAG,
             });
         })
         .then((p_inputResult?: string) =&gt; {
@@ -16880,14 +16883,11 @@ public tagChildren(): void {
                 this.sendAction(
                     Constants.LEOBRIDGE.TAG_CHILDREN,
                     JSON.stringify({ tag: p_inputResult.trim() })
-                ).then((p_resultFind: LeoBridgePackage) =&gt; {
-                    if (!p_resultFind.found) {
-                        // Not found
-                    }
+                ).then((p_resultTag: LeoBridgePackage) =&gt; {
                     this.launchRefresh(
                         {
                             tree: true,
-                            body: true,
+                            body: false,
                             documents: false,
                             buttons: false,
                             states: true,
@@ -18448,7 +18448,6 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
-        console.log('refresh treeRoot goto nav CALLED!! ');
         this._onDidChangeTreeData.fire(undefined);
     }
 
@@ -18458,8 +18457,6 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
 
     public getChildren(element?: LeoGotoNode): Thenable&lt;LeoGotoNode[]&gt; {
 
-        console.log('----------------------- getChildren GOTO NAV !! ');
-
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
 
@@ -18467,8 +18464,6 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
             // call action to get get list, and convert to LeoButtonNode(s) array
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package =&gt; {
                 if (p_package &amp;&amp; p_package.navList) {
-
-                    console.log('----------------------- GOT children from nav', p_package);
 
                     const w_list: LeoGotoNode[] = [];
                     this._topNode = undefined;
@@ -18821,7 +18816,33 @@ private _onGotoTreeViewVisibilityChanged(
  * * Tag Children
  */
 public tagNode(): void {
-
+    this.triggerBodySave(false)
+        .then((p_saveResult: boolean) =&gt; {
+            return vscode.window.showInputBox({
+                title: Constants.USER_MESSAGES.TITLE_TAG_NODE,
+                placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
+                prompt: Constants.USER_MESSAGES.PROMPT_TAG,
+            });
+        })
+        .then((p_inputResult?: string) =&gt; {
+            if (p_inputResult &amp;&amp; p_inputResult.trim()) {
+                this.sendAction(
+                    Constants.LEOBRIDGE.TAG_NODE,
+                    JSON.stringify({ tag: p_inputResult.trim() })
+                ).then((p_resultTag: LeoBridgePackage) =&gt; {
+                    this.launchRefresh(
+                        {
+                            tree: true,
+                            body: false,
+                            documents: false,
+                            buttons: false,
+                            states: true,
+                        },
+                        false
+                    );
+                });
+            }
+        });
 }
 
 </t>
@@ -18829,7 +18850,22 @@ public tagNode(): void {
  * * Tag Children
  */
 public removeTags(): void {
-
+    this.triggerBodySave(false).then((p_saveResult: boolean) =&gt; {
+        this.sendAction(
+            Constants.LEOBRIDGE.REMOVE_TAGS
+        ).then((p_resultTag: LeoBridgePackage) =&gt; {
+            this.launchRefresh(
+                {
+                    tree: true,
+                    body: false,
+                    documents: false,
+                    buttons: false,
+                    states: true,
+                },
+                false
+            );
+        });
+    });
 }
 
 </t>

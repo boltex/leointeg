@@ -1811,6 +1811,34 @@ class LeoServer:
         # Unlike find commands, do_tag_children does not use a settings dict.
         fc.do_tag_children(c.p, tag_param)
         return self._make_response()
+    #@+node:felix.20220313215348.1: *5* tag_node
+    def tag_node(self, param):
+        """Set tag on selected node"""
+        # This is not a find command!
+        tag = 'tag_node'
+        c = self._check_c()
+        fc = c.findCommands
+        tag_param = param.get("tag")
+        if tag_param is None:  # pragma: no cover
+            raise ServerError(f"{tag}: no tag")
+        # Unlike find commands, do_tag_children does not use a settings dict.
+        # fc.do_tag_children(c.p, tag_param)
+        pass
+        # ! SET TAG ON NODE !
+        return self._make_response()
+    #@+node:felix.20220313215353.1: *5* remove_tags
+    def remove_tags(self, param):
+        """Remove tags on selected node"""
+        # This is not a find command!
+        tag = 'remove_tags'
+        c = self._check_c()
+        fc = c.findCommands
+
+        # Unlike find commands, do_tag_children does not use a settings dict.
+        # fc.do_tag_children(c.p, tag_param)
+        pass
+        # ! REMOVE TAGS ON NODE !
+        return self._make_response()
     #@+node:felix.20210621233316.35: *4* server:getter commands
     #@+node:felix.20210621233316.36: *5* server.get_all_open_commanders
     def get_all_open_commanders(self, param):

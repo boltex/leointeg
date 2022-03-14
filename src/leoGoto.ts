@@ -36,7 +36,6 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
-        console.log('refresh treeRoot goto nav CALLED!! ');
         this._onDidChangeTreeData.fire(undefined);
     }
 
@@ -46,8 +45,6 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
 
     public getChildren(element?: LeoGotoNode): Thenable<LeoGotoNode[]> {
 
-        console.log('----------------------- getChildren GOTO NAV !! ');
-
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady && !element) {
 
@@ -55,8 +52,6 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
             // call action to get get list, and convert to LeoButtonNode(s) array
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package => {
                 if (p_package && p_package.navList) {
-
-                    console.log('----------------------- GOT children from nav', p_package);
 
                     const w_list: LeoGotoNode[] = [];
                     this._topNode = undefined;

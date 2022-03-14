@@ -136,9 +136,12 @@ export class Constants {
         TITLE_GOTO_GLOBAL_LINE: "Goto global line",
         PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
         PROMPT_GOTO_GLOBAL_LINE: "Line number",
+
         TITLE_TAG_CHILDREN: "Tag Children",
-        PLACEHOLDER_TAG_CHILDREN: "<tag>",
-        PROMPT_TAG_CHILDREN: "Enter a tag name",
+        TITLE_TAG_NODE: "Tag Node",
+        PLACEHOLDER_TAG: "<tag>",
+        PROMPT_TAG: "Enter a tag name",
+
         TITLE_FIND_TAG: "Find Tag",
         PLACEHOLDER_CLONE_FIND_TAG: "<tag>",
         PROMPT_CLONE_FIND_TAG: "Enter a tag name",

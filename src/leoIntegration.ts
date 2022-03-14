@@ -3236,8 +3236,8 @@ export class LeoIntegration {
             .then((p_saveResult: boolean) => {
                 return vscode.window.showInputBox({
                     title: Constants.USER_MESSAGES.TITLE_TAG_CHILDREN,
-                    placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG_CHILDREN,
-                    prompt: Constants.USER_MESSAGES.PROMPT_TAG_CHILDREN,
+                    placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
+                    prompt: Constants.USER_MESSAGES.PROMPT_TAG,
                 });
             })
             .then((p_inputResult?: string) => {
@@ -3245,14 +3245,11 @@ export class LeoIntegration {
                     this.sendAction(
                         Constants.LEOBRIDGE.TAG_CHILDREN,
                         JSON.stringify({ tag: p_inputResult.trim() })
-                    ).then((p_resultFind: LeoBridgePackage) => {
-                        if (!p_resultFind.found) {
-                            // Not found
-                        }
+                    ).then((p_resultTag: LeoBridgePackage) => {
                         this.launchRefresh(
                             {
                                 tree: true,
-                                body: true,
+                                body: false,
                                 documents: false,
                                 buttons: false,
                                 states: true,
@@ -3268,14 +3265,55 @@ export class LeoIntegration {
      * * Tag Children
      */
     public tagNode(): void {
-
+        this.triggerBodySave(false)
+            .then((p_saveResult: boolean) => {
+                return vscode.window.showInputBox({
+                    title: Constants.USER_MESSAGES.TITLE_TAG_NODE,
+                    placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
+                    prompt: Constants.USER_MESSAGES.PROMPT_TAG,
+                });
+            })
+            .then((p_inputResult?: string) => {
+                if (p_inputResult && p_inputResult.trim()) {
+                    this.sendAction(
+                        Constants.LEOBRIDGE.TAG_NODE,
+                        JSON.stringify({ tag: p_inputResult.trim() })
+                    ).then((p_resultTag: LeoBridgePackage) => {
+                        this.launchRefresh(
+                            {
+                                tree: true,
+                                body: false,
+                                documents: false,
+                                buttons: false,
+                                states: true,
+                            },
+                            false
+                        );
+                    });
+                }
+            });
     }
 
     /**
      * * Tag Children
      */
     public removeTags(): void {
-
+        this.triggerBodySave(false).then((p_saveResult: boolean) => {
+            this.sendAction(
+                Constants.LEOBRIDGE.REMOVE_TAGS
+            ).then((p_resultTag: LeoBridgePackage) => {
+                this.launchRefresh(
+                    {
+                        tree: true,
+                        body: false,
+                        documents: false,
+                        buttons: false,
+                        states: true,
+                    },
+                    false
+                );
+            });
+        });
     }
 
     /**
