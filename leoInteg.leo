@@ -18517,10 +18517,11 @@ import * as utils from "./utils";
 export class LeoGotoNode extends vscode.TreeItem {
 
     // Context string is checked in package.json with 'when' clauses
+    public entryType: string;
     private _id: string;
     private _description: string | boolean;
-    private _type: string;
     private _headline: string;
+    public key: string;
 
     constructor(
         gotoEntry: LeoGoto,
@@ -18528,26 +18529,27 @@ export class LeoGotoNode extends vscode.TreeItem {
     ) {
         let w_spacing = "";
         if (navOptions.showParents &amp;&amp; !navOptions.isTag) {
-            w_spacing = "  ";
+            w_spacing = "    ";
         }
         super(gotoEntry.t === "headline" ? (w_spacing + gotoEntry.h) : "");
 
         // Setup this instance
         this._id = utils.getUniqueId();
-        this._type = gotoEntry.t;
+        this.entryType = gotoEntry.t;
+        this.key = gotoEntry.key;
         this._headline = gotoEntry.h.trim();
 
         this._description = false;
-        if (this._type === 'body') {
+        if (this.entryType === 'body') {
             if (navOptions.showParents) {
                 this._description = "    " + this._headline;
             } else {
                 this._description = "  " + this._headline;
             }
-        } else if (this._type === 'parent') {
+        } else if (this.entryType === 'parent') {
             this._description = this._headline.trim();
-        } else if (this._type === 'generic') {
-            this._description = "&lt; " + this._headline + " &gt;";
+        } else if (this.entryType === 'generic') {
+            this._description = this._headline;
         }
 
         this.command = {
@@ -18560,8 +18562,8 @@ export class LeoGotoNode extends vscode.TreeItem {
 
     // @ts-ignore
     public get tooltip(): string {
-        if (this._type !== "generic") {
-            return this._type.charAt(0).toUpperCase() + this._type.slice(1);
+        if (this.entryType !== "generic") {
+            return this.entryType.charAt(0).toUpperCase() + this.entryType.slice(1);
         }
         return this._headline;
     }
@@ -18698,7 +18700,6 @@ public findQuickSelected(): Thenable&lt;unknown&gt; {
  * Lists all nodes in reversed gnx order, newest to oldest
 */
 public findQuickTimeline(): Thenable&lt;unknown&gt; {
-    console.log('findQuickTimeline');
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE)
         .then((p_result: LeoBridgePackage) =&gt; {
             this._leoGotoProvider.refreshTreeRoot();
@@ -18711,8 +18712,6 @@ public findQuickTimeline(): Thenable&lt;unknown&gt; {
  * Lists all nodes that are changed (aka "dirty") since last save.
 */
 public findQuickChanged(): Thenable&lt;unknown&gt; {
-    console.log('findQuickChanged');
-
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED)
         .then((p_result: LeoBridgePackage) =&gt; {
             this._leoGotoProvider.refreshTreeRoot();
@@ -18725,8 +18724,6 @@ public findQuickChanged(): Thenable&lt;unknown&gt; {
  * Lists nodes from c.nodeHistory.
 */
 public findQuickHistory(): Thenable&lt;unknown&gt; {
-    console.log('findQuickHistory');
-
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY)
         .then((p_result: LeoBridgePackage) =&gt; {
             this._leoGotoProvider.refreshTreeRoot();
@@ -18739,8 +18736,6 @@ public findQuickHistory(): Thenable&lt;unknown&gt; {
  * List all marked nodes.
 */
 public findQuickMarked(): Thenable&lt;unknown&gt; {
-    console.log('findQuickMarked');
-
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED)
         .then((p_result: LeoBridgePackage) =&gt; {
             this._leoGotoProvider.refreshTreeRoot();
@@ -18798,7 +18793,41 @@ public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable&lt
 </t>
 <t tx="felix.20220309215616.1">public gotoNavEntry(p_node: LeoGotoNode): Thenable&lt;unknown&gt; {
     console.log('Clicked NAV ENTRY! ', p_node);
-
+    if (this._lastSettingsUsed?.isTag &amp;&amp; p_node.entryType === 'generic') { // IS TAG
+        // ! do equivalent of search for tag !
+    }
+    if (p_node.entryType !== 'generic') {
+        return this._isBusyTriggerSave(false, true)
+            .then((p_saveResult) =&gt; {
+                return this.sendAction(
+                    Constants.LEOBRIDGE.GOTO_NAV_ENTRY,
+                    JSON.stringify({ key: p_node.key })
+                );
+            })
+            .then((p_findResult: LeoBridgePackage) =&gt; {
+                if (!p_findResult.focus) {
+                    vscode.window.showInformationMessage('Not found');
+                } else {
+                    let w_focusOnOutline = false;
+                    const w_focus = p_findResult.focus.toLowerCase();
+                    if (w_focus.includes('tree') || w_focus.includes('head')) {
+                        // tree
+                        w_focusOnOutline = true;
+                    }
+                    this.launchRefresh(
+                        {
+                            tree: true,
+                            body: true,
+                            scroll: !w_focusOnOutline,
+                            documents: false,
+                            buttons: false,
+                            states: true,
+                        },
+                        w_focusOnOutline
+                    );
+                }
+            });
+    }
     return Promise.resolve();
 }
 
@@ -18857,7 +18886,7 @@ public tagNode(): void {
 
 </t>
 <t tx="felix.20220313211907.1">/**
- * * Remove Tag
+ * * Remove single Tag on selected node
  */
 public removeTag(): void {
     this.triggerBodySave(false)

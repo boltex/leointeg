@@ -2723,7 +2723,6 @@ export class LeoIntegration {
      * Lists all nodes in reversed gnx order, newest to oldest
     */
     public findQuickTimeline(): Thenable<unknown> {
-        console.log('findQuickTimeline');
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE)
             .then((p_result: LeoBridgePackage) => {
                 this._leoGotoProvider.refreshTreeRoot();
@@ -2735,8 +2734,6 @@ export class LeoIntegration {
      * Lists all nodes that are changed (aka "dirty") since last save.
     */
     public findQuickChanged(): Thenable<unknown> {
-        console.log('findQuickChanged');
-
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED)
             .then((p_result: LeoBridgePackage) => {
                 this._leoGotoProvider.refreshTreeRoot();
@@ -2748,8 +2745,6 @@ export class LeoIntegration {
      * Lists nodes from c.nodeHistory.
     */
     public findQuickHistory(): Thenable<unknown> {
-        console.log('findQuickHistory');
-
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY)
             .then((p_result: LeoBridgePackage) => {
                 this._leoGotoProvider.refreshTreeRoot();
@@ -2761,8 +2756,6 @@ export class LeoIntegration {
      * List all marked nodes.
     */
     public findQuickMarked(): Thenable<unknown> {
-        console.log('findQuickMarked');
-
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED)
             .then((p_result: LeoBridgePackage) => {
                 this._leoGotoProvider.refreshTreeRoot();
@@ -2789,7 +2782,41 @@ export class LeoIntegration {
 
     public gotoNavEntry(p_node: LeoGotoNode): Thenable<unknown> {
         console.log('Clicked NAV ENTRY! ', p_node);
-
+        if (this._lastSettingsUsed?.isTag && p_node.entryType === 'generic') { // IS TAG
+            // ! do equivalent of search for tag !
+        }
+        if (p_node.entryType !== 'generic') {
+            return this._isBusyTriggerSave(false, true)
+                .then((p_saveResult) => {
+                    return this.sendAction(
+                        Constants.LEOBRIDGE.GOTO_NAV_ENTRY,
+                        JSON.stringify({ key: p_node.key })
+                    );
+                })
+                .then((p_findResult: LeoBridgePackage) => {
+                    if (!p_findResult.focus) {
+                        vscode.window.showInformationMessage('Not found');
+                    } else {
+                        let w_focusOnOutline = false;
+                        const w_focus = p_findResult.focus.toLowerCase();
+                        if (w_focus.includes('tree') || w_focus.includes('head')) {
+                            // tree
+                            w_focusOnOutline = true;
+                        }
+                        this.launchRefresh(
+                            {
+                                tree: true,
+                                body: true,
+                                scroll: !w_focusOnOutline,
+                                documents: false,
+                                buttons: false,
+                                states: true,
+                            },
+                            w_focusOnOutline
+                        );
+                    }
+                });
+        }
         return Promise.resolve();
     }
 
@@ -3295,7 +3322,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Remove Tag
+     * * Remove single Tag on selected node
      */
     public removeTag(): void {
         this.triggerBodySave(false)

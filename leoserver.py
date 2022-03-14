@@ -820,8 +820,10 @@ class QuickSearchController:
     def onSelectItem(self, it, it_prev=None):
 
         c = self.c
-        tgt = self.its.get(it and id(it))
+        tgt = self.its.get(it)
         if not tgt:
+            print("no target" + str(it))
+            print("its:  "+ str(self.its))
             return
 
         # if Ctrl key is down, delete item and
@@ -1459,7 +1461,17 @@ class LeoServer:
     def goto_nav_entry(self, param):
         pass
         # activate entry in c.scon.its
-        return self._make_response()
+        c = self._check_c()
+        # c.scon.doTimeline()
+        it = param.get('key')
+        c.scon.onSelectItem(it)
+
+                # get focus again after the operation
+        focus = self._get_focus()
+
+        result = {"focus": focus}
+
+        return self._make_response(result)
 
 
 

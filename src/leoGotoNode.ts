@@ -9,10 +9,11 @@ import * as utils from "./utils";
 export class LeoGotoNode extends vscode.TreeItem {
 
     // Context string is checked in package.json with 'when' clauses
+    public entryType: string;
     private _id: string;
     private _description: string | boolean;
-    private _type: string;
     private _headline: string;
+    public key: string;
 
     constructor(
         gotoEntry: LeoGoto,
@@ -20,26 +21,27 @@ export class LeoGotoNode extends vscode.TreeItem {
     ) {
         let w_spacing = "";
         if (navOptions.showParents && !navOptions.isTag) {
-            w_spacing = "  ";
+            w_spacing = "    ";
         }
         super(gotoEntry.t === "headline" ? (w_spacing + gotoEntry.h) : "");
 
         // Setup this instance
         this._id = utils.getUniqueId();
-        this._type = gotoEntry.t;
+        this.entryType = gotoEntry.t;
+        this.key = gotoEntry.key;
         this._headline = gotoEntry.h.trim();
 
         this._description = false;
-        if (this._type === 'body') {
+        if (this.entryType === 'body') {
             if (navOptions.showParents) {
                 this._description = "    " + this._headline;
             } else {
                 this._description = "  " + this._headline;
             }
-        } else if (this._type === 'parent') {
+        } else if (this.entryType === 'parent') {
             this._description = this._headline.trim();
-        } else if (this._type === 'generic') {
-            this._description = "< " + this._headline + " >";
+        } else if (this.entryType === 'generic') {
+            this._description = this._headline;
         }
 
         this.command = {
@@ -52,8 +54,8 @@ export class LeoGotoNode extends vscode.TreeItem {
 
     // @ts-ignore
     public get tooltip(): string {
-        if (this._type !== "generic") {
-            return this._type.charAt(0).toUpperCase() + this._type.slice(1);
+        if (this.entryType !== "generic") {
+            return this.entryType.charAt(0).toUpperCase() + this.entryType.slice(1);
         }
         return this._headline;
     }
