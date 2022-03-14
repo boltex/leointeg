@@ -1661,6 +1661,16 @@
         "title": "Tag Children"
       },
       {
+        "command": "leointeg.tagNode",
+        "category": "Leo",
+        "title": "Tag Node"
+      },
+      {
+        "command": "leointeg.removeTags",
+        "category": "Leo",
+        "title": "Remove Tags"
+      },
+      {
         "command": "leointeg.setFindEverywhereOption",
         "category": "Leo",
         "shortTitle": "Find Everywhere",

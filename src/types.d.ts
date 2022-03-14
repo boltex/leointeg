@@ -171,7 +171,7 @@ export interface LeoBridgePackage {
     navList?: LeoGoto[]; // get_goto
     navText?: string; // get_goto
     messages?: string[]; // get_goto
-    navFlags?: { isTag: boolean, showParents: boolean }; // get_goto
+    navOptions?: { isTag: boolean, showParents: boolean }; // get_goto
     commands?: vscode.QuickPickItem[]; // getCommands
     commander?: {
         changed: boolean,

@@ -590,6 +590,9 @@ class QuickSearchController:
     #@+node:felix.20220225003906.14: *3* doSearch
     def doSearch(self, pat):
 
+        if(self.isTag):
+            return self.doTag(pat)
+
         hitBase = False
         self.clear()
         self.pushSearchHistory(pat)
@@ -681,10 +684,38 @@ class QuickSearchController:
             if combo == "File":
                 self.lw.insert(0, "External file directive not found " +
                                       "during search")
+    #@+node:felix.20220313183922.1: *3* doTag
+    def doTag(self, pat):
+
+        if not pat.startswith('r:'):
+            hpat = fnmatch.translate('*' + pat + '*').replace(r"\Z(?ms)", "")
+            # bpat = fnmatch.translate(pat).rstrip('$').replace(r"\Z(?ms)","")
+            flags = re.IGNORECASE
+        else:
+            hpat = pat[2:]
+            # bpat = pat[2:]
+            flags = 0
+        combo =  self.searchOptionsStrings[self.searchOptions]
+        if combo == "All":
+            hNodes = self.c.all_positions()
+        elif combo == "Subtree":
+            hNodes = self.c.p.self_and_subtree()
+        else:
+            hNodes = [self.c.p]
+        hm = self.find_tag(hpat, hNodes, flags)
+
+        self.clear() # needed for external client ui replacement: fills self.its
+        self.addHeadlineMatches(hm) # added for external client ui replacement: fills self.its
+
+        # bm = self.c.find_b(bpat, flags)
+        # self.addBodyMatches(bm)
+        return hm, []
+        # self.lw.insertItem(0, "%d hits"%self.lw.count())
     #@+node:felix.20220225003906.15: *3* bgSearch
     def bgSearch(self, pat):
 
-        #self.clear()
+        if(self.isTag):
+            return self.doTag(pat)
 
         if self.frozen:
             return None
@@ -728,6 +759,29 @@ class QuickSearchController:
                 # #2012: Don't inject pc.mo.
                 pc = p.copy()
                 res.append(pc)
+        return res
+    #@+node:felix.20220313185430.1: *3* find_tag
+    def find_tag(self, regex, nodes, flags=re.IGNORECASE):
+        """ Return list (a PosList) of all nodes where zero or more characters at
+        the beginning of the headline match regex
+        """
+        res = PosList()
+        try:
+            pat = re.compile(regex, flags)
+        except Exception:
+            return res
+        for p in nodes:
+
+            uaTag = None
+            if(0):
+                uaTag = "something"
+
+            if(uaTag):
+                m = re.match(pat, uaTag)
+                if m:
+                    # #2012: Don't inject pc.mo.
+                    pc = p.copy()
+                    res.append(pc)
         return res
     #@+node:felix.20220225003906.17: *3* find_b
     def find_b(self, regex, nodes, flags=re.IGNORECASE | re.MULTILINE):
@@ -1161,6 +1215,15 @@ class LeoServer:
             c.findCommands.ftm = StringFindTabManager(c)
             cc = QuickSearchController(c)
             setattr(c, 'scon', cc) # Patch up quick-search controller to the commander
+            try:
+                if not getattr(c, 'theTagController', None):
+                    g.app.pluginsController.loadOnePlugin('nodetags.py', verbose=True)
+                    print("ENABLED TAG CONTROLLER ")
+                    print(str(getattr(c, 'theTagController', None)))
+                else:
+                    print("already enabled ")
+            except Exception as e:
+                print('CANNOT CREATE nodetags PLUGIN!')
         if not c:  # pragma: no cover
             raise ServerError(f"{tag}: bridge did not open {filename!r}")
         if not c.frame.body.wrapper:  # pragma: no cover

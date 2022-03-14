@@ -182,6 +182,8 @@
 <v t="felix.20210601152841.1"><vh>goto_global_line</vh></v>
 <v t="felix.20210620213815.1"><vh>clone_find_tag</vh></v>
 <v t="felix.20210620213822.1"><vh>tag_children</vh></v>
+<v t="felix.20220313212109.1"><vh>tag_node</vh></v>
+<v t="felix.20220313212118.1"><vh>remove_tags</vh></v>
 </v>
 <v t="felix.20200924223910.1"><vh>At Buttons</vh>
 <v t="felix.20200924210020.1"><vh>get_buttons</vh></v>
@@ -637,6 +639,8 @@
 <v t="felix.20210524215215.1"><vh>saveSearchSettings</vh></v>
 <v t="felix.20210601164915.1"><vh>gotoGlobalLine</vh></v>
 <v t="felix.20210620220655.1"><vh>tagChildren</vh></v>
+<v t="felix.20220313211902.1"><vh>tag_node</vh></v>
+<v t="felix.20220313211907.1"><vh>remove_tags</vh></v>
 <v t="felix.20210620220702.1"><vh>cloneFindTag</vh></v>
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
@@ -2200,6 +2204,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.REPLACE_ALL, () =&gt; w_leo.findAll(true)],
 [CMD.GOTO_GLOBAL_LINE, () =&gt; w_leo.gotoGlobalLine()],
 [CMD.TAG_CHILDREN, () =&gt; w_leo.tagChildren()],
+[CMD.TAG_NODE, () =&gt; w_leo.tagNode()],
+[CMD.REMOVE_TAGS, () =&gt; w_leo.removeTags()],
 
 [CMD.CLONE_FIND_ALL, () =&gt; w_leo.cloneFind(false, false)],
 [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; w_leo.cloneFind(false, true)],
@@ -6217,6 +6223,8 @@ public static LEOBRIDGE = {
     REPLACE_ALL: "!replace_all",
     GOTO_GLOBAL_LINE: "!goto_global_line",
     TAG_CHILDREN: "!tag_children",
+    TAG_NODE: "!tag_node",
+    REMOVE_TAGS: "!remove_tags",
     CLONE_FIND_TAG: "!clone_find_tag",
     CLONE_FIND_ALL: "!clone_find_all",
     CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
@@ -6407,6 +6415,8 @@ public static COMMANDS = {
     CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
     GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
     TAG_CHILDREN: Constants.NAME + ".tagChildren",
+    TAG_NODE: Constants.NAME + ".tagNode",
+    REMOVE_TAGS: Constants.NAME + ".removeTags",
     SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
     SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
     SET_FIND_SUBOUTLINE_ONLY_OPTION: Constants.NAME + ".setFindSuboutlineOnlyOption",
@@ -9143,7 +9153,7 @@ export interface LeoBridgePackage {
     navList?: LeoGoto[]; // get_goto
     navText?: string; // get_goto
     messages?: string[]; // get_goto
-    navFlags?: { isTag: boolean, showParents: boolean }; // get_goto
+    navOptions?: { isTag: boolean, showParents: boolean }; // get_goto
     commands?: vscode.QuickPickItem[]; // getCommands
     commander?: {
         changed: boolean,
@@ -15178,6 +15188,16 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "title": "Tag Children"
 },
 {
+  "command": "leointeg.tagNode",
+  "category": "Leo",
+  "title": "Tag Node"
+},
+{
+  "command": "leointeg.removeTags",
+  "category": "Leo",
+  "title": "Remove Tags"
+},
+{
   "command": "leointeg.setFindEverywhereOption",
   "category": "Leo",
   "shortTitle": "Find Everywhere",
@@ -18361,11 +18381,10 @@ public getTextFromClipboard(): string {
     return this._isBusyTriggerSave(false, true).then(() =&gt; {
 
         return this.sendAction(
-            Constants.LEOBRIDGE.NAV_SEARCH,
-            // Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
-            JSON.stringify({ test: "test" })
+            Constants.LEOBRIDGE.NAV_SEARCH
         ).then((p_package) =&gt; {
             this._leoGotoProvider.refreshTreeRoot();
+            this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
             return p_package;
         });
 
@@ -18378,10 +18397,10 @@ public getTextFromClipboard(): string {
     return this._isBusyTriggerSave(false, true).then(() =&gt; {
 
         return this.sendAction(
-            Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
-            JSON.stringify({ test: "test" })
+            Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH
         ).then((p_package) =&gt; {
             this._leoGotoProvider.refreshTreeRoot();
+            this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
             return p_package;
         });
 
@@ -18429,7 +18448,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
      * * Refresh the whole outline
      */
     public refreshTreeRoot(): void {
-        console.log('TRIGGER refresh all goto nav CALLED!! ');
+        console.log('refresh treeRoot goto nav CALLED!! ');
         this._onDidChangeTreeData.fire(undefined);
     }
 
@@ -18440,6 +18459,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
     public getChildren(element?: LeoGotoNode): Thenable&lt;LeoGotoNode[]&gt; {
 
         console.log('----------------------- getChildren GOTO NAV !! ');
+
         // if called with element, or not ready, give back empty array as there won't be any children
         if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
 
@@ -18447,6 +18467,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
             // call action to get get list, and convert to LeoButtonNode(s) array
             return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package =&gt; {
                 if (p_package &amp;&amp; p_package.navList) {
+
                     console.log('----------------------- GOT children from nav', p_package);
 
                     const w_list: LeoGotoNode[] = [];
@@ -18454,7 +18475,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
                     const w_navList: LeoGoto[] = p_package.navList;
                     if (w_navList &amp;&amp; w_navList.length) {
                         w_navList.forEach((p_goto: LeoGoto) =&gt; {
-                            const w_newNode = new LeoGotoNode(p_goto, this._leoIntegration);
+                            const w_newNode = new LeoGotoNode(p_goto, p_package.navOptions!);
                             if (!this._topNode) {
                                 this._topNode = w_newNode;
                             }
@@ -18482,9 +18503,8 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
 </t>
 <t tx="felix.20220307233828.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
-import { LeoGoto, Icon } from "./types";
+import { LeoGoto } from "./types";
 import * as utils from "./utils";
-import { LeoIntegration } from "./leoIntegration";
 
 /**
  * * Opened Leo documents tree view node item implementation for usage in a TreeDataProvider
@@ -18494,45 +18514,51 @@ export class LeoGotoNode extends vscode.TreeItem {
     // Context string is checked in package.json with 'when' clauses
     private _id: string;
     private _description: string | boolean;
+    private _type: string;
+    private _headline: string;
 
     constructor(
-        public gotoEntry: LeoGoto,
-        private _leoIntegration: LeoIntegration
+        gotoEntry: LeoGoto,
+        navOptions: { isTag: boolean, showParents: boolean }
     ) {
-        super(gotoEntry.t === "headline" ? "     " + gotoEntry.h : "");
-        // if parent
-
-        this._description = false;
-        if (this.gotoEntry.t === 'body') {
-            this._description = "       " + this.gotoEntry.h;
-        } else if (this.gotoEntry.t === 'parent') {
-            this._description = this.gotoEntry.h;
-        } else if (this.gotoEntry.t === 'generic') {
-            this._description = "&lt; " + this.gotoEntry.h + " &gt;";
+        let w_spacing = "";
+        if (navOptions.showParents &amp;&amp; !navOptions.isTag) {
+            w_spacing = "  ";
         }
+        super(gotoEntry.t === "headline" ? (w_spacing + gotoEntry.h) : "");
 
         // Setup this instance
         this._id = utils.getUniqueId();
+        this._type = gotoEntry.t;
+        this._headline = gotoEntry.h.trim();
 
-        // this.label = gotoEntry.h;
-
-        // this.tooltip = w_isNamed ? this.gotoEntry.name : Constants.UNTITLED_FILE_NAME;
+        this._description = false;
+        if (this._type === 'body') {
+            if (navOptions.showParents) {
+                this._description = "    " + this._headline;
+            } else {
+                this._description = "  " + this._headline;
+            }
+        } else if (this._type === 'parent') {
+            this._description = this._headline.trim();
+        } else if (this._type === 'generic') {
+            this._description = "&lt; " + this._headline + " &gt;";
+        }
 
         this.command = {
             command: Constants.COMMANDS.GOTO_NAV_ENTRY,
             title: '',
             arguments: [this]
         };
-
+        this.iconPath = undefined;
     }
 
     // @ts-ignore
     public get tooltip(): string {
-        const w_t = this.gotoEntry.t;
-        if (w_t !== "generic") {
-            return w_t.charAt(0).toUpperCase() + w_t.slice(1);
+        if (this._type !== "generic") {
+            return this._type.charAt(0).toUpperCase() + this._type.slice(1);
         }
-        return this.gotoEntry.h;
+        return this._headline;
     }
 
     // @ts-ignore
@@ -18542,7 +18568,7 @@ export class LeoGotoNode extends vscode.TreeItem {
 
     // @ts-ignore
     // public get iconPath(): Icon| vscode.ThemeIcon|string {
-    //     return false;  // this._leoIntegration.documentIcons[this.gotoEntry.changed ? 1 : 0];
+    //     return false;
     // }
 
     // @ts-ignore
@@ -18721,16 +18747,16 @@ public findQuickMarked(): Thenable&lt;unknown&gt; {
 <t tx="felix.20220308213619.1">/**
  * Opens goto and focus in panel
 */
-public findQuickGoAnywhere(): Thenable&lt;unknown&gt; {
+public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable&lt;unknown&gt; {
     console.log('findQuickGoAnywhere');
-    // open and focus nav panel
+    // open and optionally focus nav panel
     let w_panel = "";
     if (this._lastTreeView === this._leoTreeExView) {
         w_panel = Constants.GOTO_EXPLORER_ID;
     } else {
         w_panel = Constants.GOTO_ID;
     }
-    vscode.commands.executeCommand(w_panel + '.focus');
+    vscode.commands.executeCommand(w_panel + '.focus', p_options);
 
     return Promise.resolve();
 }
@@ -18789,6 +18815,42 @@ private _onGotoTreeViewVisibilityChanged(
         this.refreshGotoPane();
     }
 }
+
+</t>
+<t tx="felix.20220313211902.1">/**
+ * * Tag Children
+ */
+public tagNode(): void {
+
+}
+
+</t>
+<t tx="felix.20220313211907.1">/**
+ * * Tag Children
+ */
+public removeTags(): void {
+
+}
+
+</t>
+<t tx="felix.20220313212109.1">def tag_node(self, param):
+    """Tag selected node with given string"""
+    # This is not a find command!
+    c = self.commander
+    fc = c.findCommands
+    the_tag = param.get("tag")
+    if the_tag:
+        # fc.do_tag_children(c.p, the_tag)
+        pass
+    return self.sendLeoBridgePackage()
+
+</t>
+<t tx="felix.20220313212118.1">def remove_tags(self, param):
+    """Remove tags on selected node"""
+    # This is not a find command!
+    c = self.commander
+
+    return self.sendLeoBridgePackage()
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

@@ -2773,16 +2773,16 @@ export class LeoIntegration {
     /**
      * Opens goto and focus in panel
     */
-    public findQuickGoAnywhere(): Thenable<unknown> {
+    public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable<unknown> {
         console.log('findQuickGoAnywhere');
-        // open and focus nav panel
+        // open and optionally focus nav panel
         let w_panel = "";
         if (this._lastTreeView === this._leoTreeExView) {
             w_panel = Constants.GOTO_EXPLORER_ID;
         } else {
             w_panel = Constants.GOTO_ID;
         }
-        vscode.commands.executeCommand(w_panel + '.focus');
+        vscode.commands.executeCommand(w_panel + '.focus', p_options);
 
         return Promise.resolve();
     }
@@ -2797,11 +2797,10 @@ export class LeoIntegration {
         return this._isBusyTriggerSave(false, true).then(() => {
 
             return this.sendAction(
-                Constants.LEOBRIDGE.NAV_SEARCH,
-                // Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
-                JSON.stringify({ test: "test" })
+                Constants.LEOBRIDGE.NAV_SEARCH
             ).then((p_package) => {
                 this._leoGotoProvider.refreshTreeRoot();
+                this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
                 return p_package;
             });
 
@@ -2813,10 +2812,10 @@ export class LeoIntegration {
         return this._isBusyTriggerSave(false, true).then(() => {
 
             return this.sendAction(
-                Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH,
-                JSON.stringify({ test: "test" })
+                Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH
             ).then((p_package) => {
                 this._leoGotoProvider.refreshTreeRoot();
+                this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
                 return p_package;
             });
 
@@ -3263,6 +3262,20 @@ export class LeoIntegration {
                     });
                 }
             });
+    }
+
+    /**
+     * * Tag Children
+     */
+    public tagNode(): void {
+
+    }
+
+    /**
+     * * Tag Children
+     */
+    public removeTags(): void {
+
     }
 
     /**
