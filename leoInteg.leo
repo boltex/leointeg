@@ -640,7 +640,8 @@
 <v t="felix.20210601164915.1"><vh>gotoGlobalLine</vh></v>
 <v t="felix.20210620220655.1"><vh>tagChildren</vh></v>
 <v t="felix.20220313211902.1"><vh>tag_node</vh></v>
-<v t="felix.20220313211907.1"><vh>remove_tags</vh></v>
+<v t="felix.20220313211907.1"><vh>remove_tag</vh></v>
+<v t="felix.20220313221212.1"><vh>remove_tags</vh></v>
 <v t="felix.20210620220702.1"><vh>cloneFindTag</vh></v>
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
@@ -2205,6 +2206,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.GOTO_GLOBAL_LINE, () =&gt; w_leo.gotoGlobalLine()],
 [CMD.TAG_CHILDREN, () =&gt; w_leo.tagChildren()],
 [CMD.TAG_NODE, () =&gt; w_leo.tagNode()],
+[CMD.REMOVE_TAG, () =&gt; w_leo.removeTag()],
 [CMD.REMOVE_TAGS, () =&gt; w_leo.removeTags()],
 
 [CMD.CLONE_FIND_ALL, () =&gt; w_leo.cloneFind(false, false)],
@@ -6224,6 +6226,7 @@ public static LEOBRIDGE = {
     GOTO_GLOBAL_LINE: "!goto_global_line",
     TAG_CHILDREN: "!tag_children",
     TAG_NODE: "!tag_node",
+    REMOVE_TAG: "!remove_tag",
     REMOVE_TAGS: "!remove_tags",
     CLONE_FIND_TAG: "!clone_find_tag",
     CLONE_FIND_ALL: "!clone_find_all",
@@ -6416,6 +6419,7 @@ public static COMMANDS = {
     GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
     TAG_CHILDREN: Constants.NAME + ".tagChildren",
     TAG_NODE: Constants.NAME + ".tagNode",
+    REMOVE_TAG: Constants.NAME + ".removeTag",
     REMOVE_TAGS: Constants.NAME + ".removeTags",
     SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
     SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
@@ -6558,6 +6562,7 @@ public static USER_MESSAGES = {
     PROMPT_GOTO_GLOBAL_LINE: "Line number",
 
     TITLE_TAG_CHILDREN: "Tag Children",
+    TITLE_REMOVE_TAG: "Remove Tag",
     TITLE_TAG_NODE: "Tag Node",
     PLACEHOLDER_TAG: "&lt;tag&gt;",
     PROMPT_TAG: "Enter a tag name",
@@ -15196,9 +15201,14 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "title": "Tag Node"
 },
 {
+  "command": "leointeg.removeTag",
+  "category": "Leo",
+  "title": "Remove Tag"
+},
+{
   "command": "leointeg.removeTags",
   "category": "Leo",
-  "title": "Remove Tags"
+  "title": "Remove All Tags"
 },
 {
   "command": "leointeg.setFindEverywhereOption",
@@ -18813,7 +18823,7 @@ private _onGotoTreeViewVisibilityChanged(
 
 </t>
 <t tx="felix.20220313211902.1">/**
- * * Tag Children
+ * * Tag Node
  */
 public tagNode(): void {
     this.triggerBodySave(false)
@@ -18847,25 +18857,36 @@ public tagNode(): void {
 
 </t>
 <t tx="felix.20220313211907.1">/**
- * * Tag Children
+ * * Remove Tag
  */
-public removeTags(): void {
-    this.triggerBodySave(false).then((p_saveResult: boolean) =&gt; {
-        this.sendAction(
-            Constants.LEOBRIDGE.REMOVE_TAGS
-        ).then((p_resultTag: LeoBridgePackage) =&gt; {
-            this.launchRefresh(
-                {
-                    tree: true,
-                    body: false,
-                    documents: false,
-                    buttons: false,
-                    states: true,
-                },
-                false
-            );
+public removeTag(): void {
+    this.triggerBodySave(false)
+        .then((p_saveResult: boolean) =&gt; {
+            return vscode.window.showInputBox({
+                title: Constants.USER_MESSAGES.TITLE_REMOVE_TAG,
+                placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
+                prompt: Constants.USER_MESSAGES.PROMPT_TAG,
+            });
+        })
+        .then((p_inputResult?: string) =&gt; {
+            if (p_inputResult &amp;&amp; p_inputResult.trim()) {
+                this.sendAction(
+                    Constants.LEOBRIDGE.REMOVE_TAG,
+                    JSON.stringify({ tag: p_inputResult.trim() })
+                ).then((p_resultTag: LeoBridgePackage) =&gt; {
+                    this.launchRefresh(
+                        {
+                            tree: true,
+                            body: false,
+                            documents: false,
+                            buttons: false,
+                            states: true,
+                        },
+                        false
+                    );
+                });
+            }
         });
-    });
 }
 
 </t>
@@ -18887,6 +18908,29 @@ public removeTags(): void {
     c = self.commander
 
     return self.sendLeoBridgePackage()
+
+</t>
+<t tx="felix.20220313221212.1">/**
+ * * Remove all tags on selected node
+ */
+public removeTags(): void {
+    this.triggerBodySave(false).then((p_saveResult: boolean) =&gt; {
+        this.sendAction(
+            Constants.LEOBRIDGE.REMOVE_TAGS
+        ).then((p_resultTag: LeoBridgePackage) =&gt; {
+            this.launchRefresh(
+                {
+                    tree: true,
+                    body: false,
+                    documents: false,
+                    buttons: false,
+                    states: true,
+                },
+                false
+            );
+        });
+    });
+}
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

@@ -3262,7 +3262,7 @@ export class LeoIntegration {
     }
 
     /**
-     * * Tag Children
+     * * Tag Node
      */
     public tagNode(): void {
         this.triggerBodySave(false)
@@ -3295,7 +3295,40 @@ export class LeoIntegration {
     }
 
     /**
-     * * Tag Children
+     * * Remove Tag
+     */
+    public removeTag(): void {
+        this.triggerBodySave(false)
+            .then((p_saveResult: boolean) => {
+                return vscode.window.showInputBox({
+                    title: Constants.USER_MESSAGES.TITLE_REMOVE_TAG,
+                    placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
+                    prompt: Constants.USER_MESSAGES.PROMPT_TAG,
+                });
+            })
+            .then((p_inputResult?: string) => {
+                if (p_inputResult && p_inputResult.trim()) {
+                    this.sendAction(
+                        Constants.LEOBRIDGE.REMOVE_TAG,
+                        JSON.stringify({ tag: p_inputResult.trim() })
+                    ).then((p_resultTag: LeoBridgePackage) => {
+                        this.launchRefresh(
+                            {
+                                tree: true,
+                                body: false,
+                                documents: false,
+                                buttons: false,
+                                states: true,
+                            },
+                            false
+                        );
+                    });
+                }
+            });
+    }
+
+    /**
+     * * Remove all tags on selected node
      */
     public removeTags(): void {
         this.triggerBodySave(false).then((p_saveResult: boolean) => {

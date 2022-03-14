@@ -1817,22 +1817,35 @@ class LeoServer:
         # This is not a find command!
         tag = 'tag_node'
         c = self._check_c()
-        fc = c.findCommands
         tag_param = param.get("tag")
         if tag_param is None:  # pragma: no cover
             raise ServerError(f"{tag}: no tag")
         # Unlike find commands, do_tag_children does not use a settings dict.
         # fc.do_tag_children(c.p, tag_param)
-        pass
-        # ! SET TAG ON NODE !
+        p = self._get_p(param)
+        tc = getattr(c, 'theTagController', None)
+        tc.add_tag(p, tag)
         return self._make_response()
-    #@+node:felix.20220313215353.1: *5* remove_tags
+    #@+node:felix.20220313215353.1: *5* remove_tag
+    def remove_tag(self, param):
+        """Remove specific tag on selected node"""
+        # This is not a find command!
+        tag = 'remove_tag'
+        c = self._check_c()
+        # fc = c.findCommands
+
+        # Unlike find commands, do_tag_children does not use a settings dict.
+        # fc.do_tag_children(c.p, tag_param)
+        pass
+        # ! REMOVE TAG ON NODE !
+        return self._make_response()
+    #@+node:felix.20220313220807.1: *5* remove_tags
     def remove_tags(self, param):
-        """Remove tags on selected node"""
+        """Remove all tags on selected node"""
         # This is not a find command!
         tag = 'remove_tags'
         c = self._check_c()
-        fc = c.findCommands
+        # fc = c.findCommands
 
         # Unlike find commands, do_tag_children does not use a settings dict.
         # fc.do_tag_children(c.p, tag_param)

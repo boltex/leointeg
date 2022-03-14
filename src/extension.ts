@@ -630,6 +630,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.GOTO_GLOBAL_LINE, () => w_leo.gotoGlobalLine()],
         [CMD.TAG_CHILDREN, () => w_leo.tagChildren()],
         [CMD.TAG_NODE, () => w_leo.tagNode()],
+        [CMD.REMOVE_TAG, () => w_leo.removeTag()],
         [CMD.REMOVE_TAGS, () => w_leo.removeTags()],
 
         [CMD.CLONE_FIND_ALL, () => w_leo.cloneFind(false, false)],

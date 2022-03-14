@@ -138,6 +138,7 @@ export class Constants {
         PROMPT_GOTO_GLOBAL_LINE: "Line number",
 
         TITLE_TAG_CHILDREN: "Tag Children",
+        TITLE_REMOVE_TAG: "Remove Tag",
         TITLE_TAG_NODE: "Tag Node",
         PLACEHOLDER_TAG: "<tag>",
         PROMPT_TAG: "Enter a tag name",
@@ -555,6 +556,7 @@ export class Constants {
         GOTO_GLOBAL_LINE: "!goto_global_line",
         TAG_CHILDREN: "!tag_children",
         TAG_NODE: "!tag_node",
+        REMOVE_TAG: "!remove_tag",
         REMOVE_TAGS: "!remove_tags",
         CLONE_FIND_TAG: "!clone_find_tag",
         CLONE_FIND_ALL: "!clone_find_all",
@@ -746,6 +748,7 @@ export class Constants {
         GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
         TAG_CHILDREN: Constants.NAME + ".tagChildren",
         TAG_NODE: Constants.NAME + ".tagNode",
+        REMOVE_TAG: Constants.NAME + ".removeTag",
         REMOVE_TAGS: Constants.NAME + ".removeTags",
         SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
         SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
