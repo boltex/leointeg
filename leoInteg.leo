@@ -18083,6 +18083,7 @@ public getTextFromClipboard(): string {
         searchScope: 0, // 0 is entire outline (1: sub-outline, 2: node only)
     };
 
+    // * Search related controls (No nav inputs)
     let inputIds = ['findText', 'replaceText'];
     let checkboxIds = [
         'wholeWord',
@@ -18308,7 +18309,7 @@ public getTextFromClipboard(): string {
             // @ts-expect-error
             searchSettings.navText = this.value;
             navTextDirty = true;
-            navTextChange(); // DEBOUNCE THIS Dont process change too fast!
+            navTextChange(); // DEBOUNCE THIS! Don't process change too fast!
         });
     };
     document.getElementById('showParents').addEventListener('change', function (p_event) {
