@@ -15,6 +15,15 @@
     let firstTabEl = 'searchOptions'; // used to be 'findText' before nav inputs
     let lastTabEl = 'searchBody';
 
+    /**
+     * * Flag for freezing the nav 'search as you type' headlines (concept from original nav plugin)
+     * Only used if not tag.
+     * - Resets when switching to tag, or when clearing the input field.
+     * - Sets when pressing Enter with non-empty input field && not tag mode.
+     */
+    let frozen = false;
+    let navSearchTimer // for debouncing the search-headline while typing if unfrozen
+
     // * LeoSearchSettings Type
     let searchSettings = {
         // Nav settings
@@ -48,13 +57,32 @@
     let radioIds = ['entireOutline', 'subOutlineOnly', 'nodeOnly'];
 
     function navTextChange() {
+        // cancel timer, reset 'debounced' timer after checks, if still needed
+        if (navSearchTimer) {
+            clearTimeout(navSearchTimer)
+        }
+
+        // * Needed Checks
+        if (searchSettings.navText.length === 0) {
+            setFrozen(false);
+        }
         // User changed text in nav text input
+        if (frozen || searchSettings.navText.length < 3) {
+            return; // dont even continue if not long enough or already frozen
+        }
 
-        // DEBOUNCE .25 seconds
+        // DEBOUNCE .25 to .5 seconds with navSearchTimer
+        navSearchTimer = setTimeout(() => {
+            if (navTextDirty) {
+                navTextDirty = false;
+                if (navSearchTimer) {
+                    clearTimeout(navSearchTimer)
+                }
+                sendSearchConfig();
+            }
+            vscode.postMessage({ type: 'leoNavTextChange' });
+        }, 400); // milliseconds
 
-        // ALSO set navTextDirty = false if sent to leoserver!
-
-        console.log('! navTextChange ! navText is --> ', searchSettings.navText);
     }
 
     /**
@@ -66,6 +94,10 @@
         } else if (radioIds.includes(p_id)) {
             setRadio(p_id);
         }
+    }
+
+    function setFrozen(p_focus) {
+        frozen = p_focus;
     }
 
     /**
@@ -218,7 +250,11 @@
         // @ts-expect-error
         if (!p_event) p_event = window.event;
         var keyCode = p_event.code || p_event.key;
-        if (keyCode == 'Enter') {
+        if (keyCode === 'Enter') {
+            if (!searchSettings.isTag && searchSettings.navText.length > 3) {
+                setFrozen(true);
+            }
+            frozen = true;
             if (navTextDirty) {
                 navTextDirty = false;
                 if (timer) {

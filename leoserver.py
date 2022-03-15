@@ -402,7 +402,6 @@ class QuickSearchController:
                                "@auto", "@auto-md", "@auto-org",
                                "@auto-otl", "@auto-rst"]
 
-        self.frozen = False
         self._search_patterns = []
 
         self.navText = ''
@@ -413,9 +412,6 @@ class QuickSearchController:
                                      "Chapter", "Node"]
 
         def searcher(inp):
-            #print("searcher", inp)
-            if self.frozen:
-                return None
             exp = inp.replace(" ", "*")
             res = self.bgSearch(exp)
             return res
@@ -423,8 +419,6 @@ class QuickSearchController:
         def dumper():
             # always run on ui thread
             pass # ? Needed ?
-            # if self.frozen:
-            #     return
             # out = self.worker.output
             # self.throttler.add(out)
 
@@ -432,8 +426,6 @@ class QuickSearchController:
             """ dumps the last output """
             # we do get called with empty list on occasion
             if not lst:
-                return
-            if self.frozen:
                 return
             hm, bm = lst[-1]
             self.clear()
@@ -461,14 +453,11 @@ class QuickSearchController:
             res.append((li, (m.start(), m.end())))
         return res
 
-    #@+node:felix.20220225003906.3: *3* freeze
-    def freeze(self, val=True):
-        self.frozen = val
-
     #@+node:felix.20220225003906.4: *3* addItem
     def addItem(self, it, val):
         self.its[id(it)] = (it, val)
-        return len(self.its) > 300
+        # TODO : Support original system with threadutil.UnitWorker()
+        return len(self.its) > 999 # Limit to 999 for now
     #@+node:felix.20220225003906.5: *3* addBodyMatches
     def addBodyMatches(self, poslist):
         lineMatchHits = 0
@@ -717,8 +706,6 @@ class QuickSearchController:
         if(self.isTag):
             return self.doTag(pat)
 
-        if self.frozen:
-            return None
         if not pat.startswith('r:'):
             hpat = fnmatch.translate('*' + pat + '*').replace(r"\Z(?ms)", "")
             # bpat = fnmatch.translate(pat).rstrip('$').replace(r"\Z(?ms)","")
