@@ -703,7 +703,7 @@ class QuickSearchController:
     #@+node:felix.20220225003906.15: *3* bgSearch
     def bgSearch(self, pat):
 
-        if(self.isTag):
+        if self.isTag:
             return self.doTag(pat)
 
         if not pat.startswith('r:'):
@@ -1831,12 +1831,14 @@ class LeoServer:
         # This is not a find command!
         tag = 'remove_tag'
         c = self._check_c()
-        # fc = c.findCommands
-
+        tag_param = param.get("tag")
+        if tag_param is None:  # pragma: no cover
+            raise ServerError(f"{tag}: no tag")
         # Unlike find commands, do_tag_children does not use a settings dict.
         # fc.do_tag_children(c.p, tag_param)
-        pass
-        # ! REMOVE TAG ON NODE !
+        p = self._get_p(param)
+        tc = getattr(c, 'theTagController', None)
+        tc.remove_tag(p, tag)
         return self._make_response()
     #@+node:felix.20220313220807.1: *5* remove_tags
     def remove_tags(self, param):
@@ -1848,8 +1850,11 @@ class LeoServer:
 
         # Unlike find commands, do_tag_children does not use a settings dict.
         # fc.do_tag_children(c.p, tag_param)
-        pass
-        # ! REMOVE TAGS ON NODE !
+        p = self._get_p(param)
+        v = p.v
+        del v.u['__node_tags']
+        tc = getattr(c, 'theTagController', None)
+        tc.initialize_taglist(p, tag) # reset tag list: some may have been removed
         return self._make_response()
     #@+node:felix.20210621233316.35: *4* server:getter commands
     #@+node:felix.20210621233316.36: *5* server.get_all_open_commanders

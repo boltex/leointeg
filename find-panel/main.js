@@ -17,7 +17,6 @@
 
     /**
      * * Flag for freezing the nav 'search as you type' headlines (concept from original nav plugin)
-     * Only used if not tag.
      * - Resets when switching to tag, or when clearing the input field.
      * - Sets when pressing Enter with non-empty input field && not tag mode.
      */
@@ -66,7 +65,22 @@
         // * Needed Checks
         if (searchSettings.navText.length === 0) {
             setFrozen(false);
+            // if tagging but empty: SEND SEARCH LIST-ALL-TAGS COMMAND
+            if (searchSettings.isTag) {
+                navSearchTimer = setTimeout(() => {
+                    if (navTextDirty) {
+                        navTextDirty = false;
+                        if (navSearchTimer) {
+                            clearTimeout(navSearchTimer)
+                        }
+                        sendSearchConfig();
+                    }
+                    vscode.postMessage({ type: 'leoNavTextChange' });
+                }, 250); // quarter second
+            }
+
         }
+
         // User changed text in nav text input
         if (frozen || searchSettings.navText.length < 3) {
             return; // dont even continue if not long enough or already frozen
@@ -82,7 +96,7 @@
                 sendSearchConfig();
             }
             vscode.postMessage({ type: 'leoNavTextChange' });
-        }, 400); // milliseconds
+        }, 400); // almost half second
 
     }
 
@@ -252,7 +266,7 @@
         if (!p_event) p_event = window.event;
         var keyCode = p_event.code || p_event.key;
         if (keyCode === 'Enter') {
-            if (!searchSettings.isTag && searchSettings.navText.length > 3) {
+            if (searchSettings.navText.length > 3) {
                 setFrozen(true);
             }
             frozen = true;
@@ -280,7 +294,11 @@
     });
     document.getElementById('isTag').addEventListener('change', function (p_event) {
         // @ts-expect-error
-        searchSettings.isTag = this.checked;
+        let w_checked = this.checked;
+        if (searchSettings.isTag !== w_checked) {
+            setFrozen(false); // Switched tagging so reset freeze
+        }
+        searchSettings.isTag = w_checked;
         processChange();
     });
     document.getElementById('searchOptions').addEventListener('change', function (p_event) {
