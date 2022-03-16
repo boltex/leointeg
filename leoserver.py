@@ -1819,11 +1819,12 @@ class LeoServer:
         tag_param = param.get("tag")
         if tag_param is None:  # pragma: no cover
             raise ServerError(f"{tag}: no tag")
-        # Unlike find commands, do_tag_children does not use a settings dict.
-        # fc.do_tag_children(c.p, tag_param)
-        p = self._get_p(param)
-        tc = getattr(c, 'theTagController', None)
-        tc.add_tag(p, tag)
+        try:
+            p = self._get_p(param)
+            tc = getattr(c, 'theTagController', None)
+            tc.add_tag(p, tag_param)
+        except Exception as e:
+            raise ServerError(f"{tag}: Running tag_node gave exception: {e}")
         return self._make_response()
     #@+node:felix.20220313215353.1: *5* remove_tag
     def remove_tag(self, param):
@@ -1834,11 +1835,14 @@ class LeoServer:
         tag_param = param.get("tag")
         if tag_param is None:  # pragma: no cover
             raise ServerError(f"{tag}: no tag")
-        # Unlike find commands, do_tag_children does not use a settings dict.
-        # fc.do_tag_children(c.p, tag_param)
-        p = self._get_p(param)
-        tc = getattr(c, 'theTagController', None)
-        tc.remove_tag(p, tag)
+        try:
+            p = self._get_p(param)
+            v = p.v
+            tc = getattr(c, 'theTagController', None)
+            if v.u and '__node_tags' in v.u:
+                tc.remove_tag(p, tag_param)
+        except Exception as e:
+            raise ServerError(f"{tag}: Running remove_tag gave exception: {e}")
         return self._make_response()
     #@+node:felix.20220313220807.1: *5* remove_tags
     def remove_tags(self, param):
@@ -1846,15 +1850,15 @@ class LeoServer:
         # This is not a find command!
         tag = 'remove_tags'
         c = self._check_c()
-        # fc = c.findCommands
-
-        # Unlike find commands, do_tag_children does not use a settings dict.
-        # fc.do_tag_children(c.p, tag_param)
-        p = self._get_p(param)
-        v = p.v
-        del v.u['__node_tags']
-        tc = getattr(c, 'theTagController', None)
-        tc.initialize_taglist() # reset tag list: some may have been removed
+        try:
+            p = self._get_p(param)
+            v = p.v
+            if v.u and '__node_tags' in v.u:
+                del v.u['__node_tags']
+                tc = getattr(c, 'theTagController', None)
+                tc.initialize_taglist() # reset tag list: some may have been removed
+        except Exception as e:
+            raise ServerError(f"{tag}: Running remove_tags gave exception: {e}")
         return self._make_response()
     #@+node:felix.20210621233316.35: *4* server:getter commands
     #@+node:felix.20210621233316.36: *5* server.get_all_open_commanders
