@@ -2848,7 +2848,6 @@ export class LeoIntegration {
 
         });
 
-
     }
 
     /**
@@ -3325,19 +3324,56 @@ export class LeoIntegration {
      * * Remove single Tag on selected node
      */
     public removeTag(): void {
-        this.triggerBodySave(false)
-            .then((p_saveResult: boolean) => {
-                return vscode.window.showInputBox({
-                    title: Constants.USER_MESSAGES.TITLE_REMOVE_TAG,
-                    placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
-                    prompt: Constants.USER_MESSAGES.PROMPT_TAG,
+
+        if (this.lastSelectedNode && this.lastSelectedNode.u &&
+            this.lastSelectedNode.u.__node_tags && this.lastSelectedNode.u.__node_tags.length) {
+            this.triggerBodySave(false)
+                .then((p_saveResult: boolean) => {
+                    return vscode.window.showQuickPick(this.lastSelectedNode!.u.__node_tags, {
+                        title: Constants.USER_MESSAGES.TITLE_REMOVE_TAG,
+                        placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
+                        canPickMany: false
+                        // prompt: Constants.USER_MESSAGES.PROMPT_TAG,
+                    });
+                })
+                .then((p_inputResult?: string) => {
+                    if (p_inputResult && p_inputResult.trim()) {
+                        this.sendAction(
+                            Constants.LEOBRIDGE.REMOVE_TAG,
+                            JSON.stringify({ tag: p_inputResult.trim() })
+                        ).then((p_resultTag: LeoBridgePackage) => {
+                            this.launchRefresh(
+                                {
+                                    tree: true,
+                                    body: false,
+                                    documents: false,
+                                    buttons: false,
+                                    states: true,
+                                },
+                                false
+                            );
+                        });
+                    }
                 });
-            })
-            .then((p_inputResult?: string) => {
-                if (p_inputResult && p_inputResult.trim()) {
+        } else if (this.lastSelectedNode) {
+            vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.label);
+        } else {
+            return;
+        }
+
+    }
+
+    /**
+     * * Remove all tags on selected node
+     */
+    public removeTags(): void {
+
+        if (this.lastSelectedNode && this.lastSelectedNode.u &&
+            this.lastSelectedNode.u.__node_tags && this.lastSelectedNode.u.__node_tags.length) {
+            this.triggerBodySave(false)
+                .then((p_saveResult: boolean) => {
                     this.sendAction(
-                        Constants.LEOBRIDGE.REMOVE_TAG,
-                        JSON.stringify({ tag: p_inputResult.trim() })
+                        Constants.LEOBRIDGE.REMOVE_TAGS
                     ).then((p_resultTag: LeoBridgePackage) => {
                         this.launchRefresh(
                             {
@@ -3350,30 +3386,13 @@ export class LeoIntegration {
                             false
                         );
                     });
-                }
-            });
-    }
+                });
+        } else if (this.lastSelectedNode) {
+            vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.label);
+        } else {
+            return;
+        }
 
-    /**
-     * * Remove all tags on selected node
-     */
-    public removeTags(): void {
-        this.triggerBodySave(false).then((p_saveResult: boolean) => {
-            this.sendAction(
-                Constants.LEOBRIDGE.REMOVE_TAGS
-            ).then((p_resultTag: LeoBridgePackage) => {
-                this.launchRefresh(
-                    {
-                        tree: true,
-                        body: false,
-                        documents: false,
-                        buttons: false,
-                        states: true,
-                    },
-                    false
-                );
-            });
-        });
     }
 
     /**

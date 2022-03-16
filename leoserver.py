@@ -1452,15 +1452,9 @@ class LeoServer:
         # c.scon.doTimeline()
         it = param.get('key')
         c.scon.onSelectItem(it)
-
-                # get focus again after the operation
         focus = self._get_focus()
-
         result = {"focus": focus}
-
         return self._make_response(result)
-
-
 
     #@+node:felix.20210621233316.19: *4* server.search commands
     #@+node:felix.20210621233316.20: *5* server.get_search_settings
@@ -1810,7 +1804,7 @@ class LeoServer:
         # Unlike find commands, do_tag_children does not use a settings dict.
         fc.do_tag_children(c.p, tag_param)
         return self._make_response()
-    #@+node:felix.20220313215348.1: *5* tag_node
+    #@+node:felix.20220313215348.1: *5* server.tag_node
     def tag_node(self, param):
         """Set tag on selected node"""
         # This is not a find command!
@@ -1826,7 +1820,7 @@ class LeoServer:
         except Exception as e:
             raise ServerError(f"{tag}: Running tag_node gave exception: {e}")
         return self._make_response()
-    #@+node:felix.20220313215353.1: *5* remove_tag
+    #@+node:felix.20220313215353.1: *5* server.remove_tag
     def remove_tag(self, param):
         """Remove specific tag on selected node"""
         # This is not a find command!
@@ -1844,7 +1838,7 @@ class LeoServer:
         except Exception as e:
             raise ServerError(f"{tag}: Running remove_tag gave exception: {e}")
         return self._make_response()
-    #@+node:felix.20220313220807.1: *5* remove_tags
+    #@+node:felix.20220313220807.1: *5* server.remove_tags
     def remove_tags(self, param):
         """Remove all tags on selected node"""
         # This is not a find command!
