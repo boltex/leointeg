@@ -8410,7 +8410,20 @@ private _getNodeContextValue(): string {
 public get description(): string {
     // * some smaller grayed-out text accompanying the main label
     if (this.u) {
-        return "\u{1F4CE} (" + Object.keys(this.u).length + ")";
+        let desc = "";
+        if (Object.keys(this.u).length) {
+            desc = "\u{1F4CE} (" + Object.keys(this.u).length + ")";
+            if (this.u.__node_tags &amp;&amp; this.u.__node_tags) {
+                if (Object.keys(this.u).length === 1) {
+                    // was only tag, so reset it
+                    desc = "";
+                } else {
+                    desc = desc + " "; // add space
+                }
+                desc = desc + "\u{1F3F7} (" + Object.keys(this.u.__node_tags).length + ")";
+            }
+        }
+        return desc;
     } else {
         // return "id:" + this.id; // ! debug test
         // return "gnx:" + this.gnx; // ! debug test
@@ -8422,9 +8435,17 @@ public get description(): string {
 <t tx="felix.20200718171849.1">// @ts-ignore
 public get tooltip(): string {
     if (this.u) {
+
+        if (Object.keys(this.u).length === 1 &amp;&amp; this.u.__node_tags &amp;&amp; this.u.__node_tags.length) {
+            // list tags instead
+            return this.label + "\n\u{1F3F7} " + this.u.__node_tags.join('\n\u{1F3F7} ');
+        }
+
         //  "\ntotal keys is :" + Object.keys(this.u).length
         return this.label + "\n" +
             JSON.stringify(this.u, undefined, 2);
+
+
     } else {
         return this.label; // * Whole headline as tooltip
     }
