@@ -111,6 +111,9 @@
         }
     }
 
+    /**
+     * @param {boolean} p_focus
+     */
     function setFrozen(p_focus) {
         frozen = p_focus;
     }

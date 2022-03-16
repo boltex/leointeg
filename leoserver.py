@@ -1854,7 +1854,7 @@ class LeoServer:
         v = p.v
         del v.u['__node_tags']
         tc = getattr(c, 'theTagController', None)
-        tc.initialize_taglist(p, tag) # reset tag list: some may have been removed
+        tc.initialize_taglist() # reset tag list: some may have been removed
         return self._make_response()
     #@+node:felix.20210621233316.35: *4* server:getter commands
     #@+node:felix.20210621233316.36: *5* server.get_all_open_commanders
