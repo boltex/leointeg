@@ -579,7 +579,7 @@ class QuickSearchController:
     #@+node:felix.20220225003906.14: *3* doSearch
     def doSearch(self, pat):
 
-        if(self.isTag):
+        if self.isTag:
             return self.doTag(pat)
 
         hitBase = False
@@ -675,6 +675,31 @@ class QuickSearchController:
                                       "during search")
     #@+node:felix.20220313183922.1: *3* doTag
     def doTag(self, pat):
+        """
+        Search for tags: outputs position list
+        If empty pattern, list tags *strings* instead
+        """
+        if not pat:
+            # No string : list all tags as messages
+            # TODO !
+            d = {}
+            for p in c.all_unique_positions():
+                u = p.v.u
+                tags = set(u.get('__node_tags', set([])))
+                for tag in tags:
+                    aList = d.get(tag, [])
+                    aList.append(p.h)
+                    d[tag] = aList
+            if d:
+                for key in sorted(d):
+                    aList = d.get(key)
+                    for h in sorted(aList):
+                        print(f"{key:>8} {h}")
+            else:
+                if not g.unitTesting:
+                    print(f"no tags in {c.shortFileName()}")
+
+
 
         if not pat.startswith('r:'):
             hpat = fnmatch.translate('*' + pat + '*').replace(r"\Z(?ms)", "")
@@ -691,6 +716,7 @@ class QuickSearchController:
             hNodes = self.c.p.self_and_subtree()
         else:
             hNodes = [self.c.p]
+
         hm = self.find_tag(hpat, hNodes, flags)
 
         self.clear() # needed for external client ui replacement: fills self.its
@@ -732,7 +758,8 @@ class QuickSearchController:
         # self.lw.insertItem(0, "%d hits"%self.lw.count())
     #@+node:felix.20220225003906.16: *3* find_h
     def find_h(self, regex, nodes, flags=re.IGNORECASE):
-        """ Return list (a PosList) of all nodes where zero or more characters at
+        """
+        Return list (a PosList) of all nodes where zero or more characters at
         the beginning of the headline match regex
         """
         res = PosList()
@@ -749,26 +776,12 @@ class QuickSearchController:
         return res
     #@+node:felix.20220313185430.1: *3* find_tag
     def find_tag(self, regex, nodes, flags=re.IGNORECASE):
-        """ Return list (a PosList) of all nodes where zero or more characters at
-        the beginning of the headline match regex
         """
+        Return list (a PosList) of all nodes that have matching tags
+        """
+        # TODO : USE update_list(self) instead from @file ../plugins/nodetags.py
         res = PosList()
-        try:
-            pat = re.compile(regex, flags)
-        except Exception:
-            return res
-        for p in nodes:
 
-            uaTag = None
-            if(0):
-                uaTag = "something"
-
-            if(uaTag):
-                m = re.match(pat, uaTag)
-                if m:
-                    # #2012: Don't inject pc.mo.
-                    pc = p.copy()
-                    res.append(pc)
         return res
     #@+node:felix.20220225003906.17: *3* find_b
     def find_b(self, regex, nodes, flags=re.IGNORECASE | re.MULTILINE):
