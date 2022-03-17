@@ -16911,9 +16911,15 @@ public tagChildren(): void {
         })
         .then((p_inputResult?: string) =&gt; {
             if (p_inputResult &amp;&amp; p_inputResult.trim()) {
+                p_inputResult = p_inputResult.trim();
+                // check for special chars first
+                if (p_inputResult.split(/(&amp;|\||-|\^)/)) {
+                    vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &amp;|^-');
+                    return;
+                }
                 this.sendAction(
                     Constants.LEOBRIDGE.TAG_CHILDREN,
-                    JSON.stringify({ tag: p_inputResult.trim() })
+                    JSON.stringify({ tag: p_inputResult })
                 ).then((p_resultTag: LeoBridgePackage) =&gt; {
                     this.launchRefresh(
                         {
@@ -18942,10 +18948,17 @@ public tagNode(): void {
             });
         })
         .then((p_inputResult?: string) =&gt; {
+
             if (p_inputResult &amp;&amp; p_inputResult.trim()) {
+                p_inputResult = p_inputResult.trim();
+                // check for special chars first
+                if (p_inputResult.split(/(&amp;|\||-|\^)/)) {
+                    vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &amp;|^-');
+                    return;
+                }
                 this.sendAction(
                     Constants.LEOBRIDGE.TAG_NODE,
-                    JSON.stringify({ tag: p_inputResult.trim() })
+                    JSON.stringify({ tag: p_inputResult })
                 ).then((p_resultTag: LeoBridgePackage) =&gt; {
                     this.launchRefresh(
                         {

@@ -54,7 +54,7 @@ connectionsPool = set()  # type:ignore
 connectionsTotal = 0 # Current connected client total
 # Customizable server options
 argFile = ""
-traces: List = []
+traces: List = [] # list of traces names, to be used as flags to output traces
 wsLimit = 1
 wsPersist = False
 wsSkipDirty = False
