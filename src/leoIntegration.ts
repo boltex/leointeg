@@ -3270,7 +3270,7 @@ export class LeoIntegration {
                 if (p_inputResult && p_inputResult.trim()) {
                     p_inputResult = p_inputResult.trim();
                     // check for special chars first
-                    if (p_inputResult.split(/(&|\||-|\^)/)) {
+                    if (p_inputResult.split(/(&|\||-|\^)/).length > 1) {
                         vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &|^-');
                         return;
                     }
@@ -3310,7 +3310,7 @@ export class LeoIntegration {
                 if (p_inputResult && p_inputResult.trim()) {
                     p_inputResult = p_inputResult.trim();
                     // check for special chars first
-                    if (p_inputResult.split(/(&|\||-|\^)/)) {
+                    if (p_inputResult.split(/(&|\||-|\^)/).length > 1) {
                         vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &|^-');
                         return;
                     }
@@ -3380,7 +3380,6 @@ export class LeoIntegration {
      * * Remove all tags on selected node
      */
     public removeTags(): void {
-
         if (this.lastSelectedNode && this.lastSelectedNode.u &&
             this.lastSelectedNode.u.__node_tags && this.lastSelectedNode.u.__node_tags.length) {
             this.triggerBodySave(false)
@@ -3405,7 +3404,6 @@ export class LeoIntegration {
         } else {
             return;
         }
-
     }
 
     /**

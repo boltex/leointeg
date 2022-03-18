@@ -16913,7 +16913,7 @@ public tagChildren(): void {
             if (p_inputResult &amp;&amp; p_inputResult.trim()) {
                 p_inputResult = p_inputResult.trim();
                 // check for special chars first
-                if (p_inputResult.split(/(&amp;|\||-|\^)/)) {
+                if (p_inputResult.split(/(&amp;|\||-|\^)/).length &gt; 1) {
                     vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &amp;|^-');
                     return;
                 }
@@ -18952,7 +18952,7 @@ public tagNode(): void {
             if (p_inputResult &amp;&amp; p_inputResult.trim()) {
                 p_inputResult = p_inputResult.trim();
                 // check for special chars first
-                if (p_inputResult.split(/(&amp;|\||-|\^)/)) {
+                if (p_inputResult.split(/(&amp;|\||-|\^)/).length &gt; 1) {
                     vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &amp;|^-');
                     return;
                 }
@@ -19044,7 +19044,6 @@ public removeTag(): void {
  * * Remove all tags on selected node
  */
 public removeTags(): void {
-
     if (this.lastSelectedNode &amp;&amp; this.lastSelectedNode.u &amp;&amp;
         this.lastSelectedNode.u.__node_tags &amp;&amp; this.lastSelectedNode.u.__node_tags.length) {
         this.triggerBodySave(false)
@@ -19069,7 +19068,6 @@ public removeTags(): void {
     } else {
         return;
     }
-
 }
 
 </t>

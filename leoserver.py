@@ -681,7 +681,8 @@ class QuickSearchController:
         """
         if not pat:
             # No string : list all tags as messages
-            # TODO !
+            c = self.c
+            self.clear()
             d = {}
             for p in c.all_unique_positions():
                 u = p.v.u
@@ -692,39 +693,28 @@ class QuickSearchController:
                     d[tag] = aList
             if d:
                 for key in sorted(d):
-                    aList = d.get(key)
-                    for h in sorted(aList):
-                        print(f"{key:>8} {h}")
+                    # key is unique tag
+                    self.lw.append(key)
+                    #
+                    # aList = d.get(key)
+                    # for h in sorted(aList):
+                    #     self.lw.push(key)
+                    #     print(f"{key:>8} {h}")
+                return
             else:
-                if not g.unitTesting:
-                    print(f"no tags in {c.shortFileName()}")
+                return
+                # if not g.unitTesting:
+                #     print(f"no tags in {c.shortFileName()}")
 
 
-
-        if not pat.startswith('r:'):
-            hpat = fnmatch.translate('*' + pat + '*').replace(r"\Z(?ms)", "")
-            # bpat = fnmatch.translate(pat).rstrip('$').replace(r"\Z(?ms)","")
-            flags = re.IGNORECASE
-        else:
-            hpat = pat[2:]
-            # bpat = pat[2:]
-            flags = 0
-        combo =  self.searchOptionsStrings[self.searchOptions]
-        if combo == "All":
-            hNodes = self.c.all_positions()
-        elif combo == "Subtree":
-            hNodes = self.c.p.self_and_subtree()
-        else:
-            hNodes = [self.c.p]
-
-        hm = self.find_tag(hpat, hNodes, flags)
+        hm = self.find_tag(pat)
 
         self.clear() # needed for external client ui replacement: fills self.its
         self.addHeadlineMatches(hm) # added for external client ui replacement: fills self.its
 
         # bm = self.c.find_b(bpat, flags)
         # self.addBodyMatches(bm)
-        return hm, []
+        return hm, [] # unused
         # self.lw.insertItem(0, "%d hits"%self.lw.count())
     #@+node:felix.20220225003906.15: *3* bgSearch
     def bgSearch(self, pat):
@@ -775,13 +765,55 @@ class QuickSearchController:
                 res.append(pc)
         return res
     #@+node:felix.20220313185430.1: *3* find_tag
-    def find_tag(self, regex, nodes, flags=re.IGNORECASE):
+    def find_tag(self, pat):
         """
         Return list (a PosList) of all nodes that have matching tags
         """
-        # TODO : USE update_list(self) instead from @file ../plugins/nodetags.py
+        #  USE update_list(self) from @file ../plugins/nodetags.py
+        c = self.c
+
         res = PosList()
 
+        tc = getattr(c, 'theTagController', None)
+        gnxDict = c.fileCommands.gnxDict
+        key = pat.strip()
+
+        query = re.split(r'(&|\||-|\^)', key)
+        tags = []
+        operations = []
+        for i, s in enumerate(query):
+            if i % 2 == 0:
+                tags.append(s.strip())
+            else:
+                operations.append(s.strip())
+        tags.reverse()
+        operations.reverse()
+
+        resultset = set(tc.get_tagged_gnxes(tags.pop()))
+        while operations:
+            op = operations.pop()
+            nodes = set(tc.get_tagged_gnxes(tags.pop()))
+            if op == '&':
+                resultset &= nodes
+            elif op == '|':
+                resultset |= nodes
+            elif op == '-':
+                resultset -= nodes
+            elif op == '^':
+                resultset ^= nodes
+
+        for gnx in resultset:
+            n = gnxDict.get(gnx)
+            if n is not None:
+                p = c.vnode2position(n)
+                pc = p.copy()
+                res.append(pc)
+        #         item = QtWidgets.QListWidgetItem(n.h)
+        #         self.listWidget.addItem(item)
+        #         self.mapping[id(item)] = n
+        # count = self.listWidget.count()
+        # self.label.clear()
+        # self.label.setText("Total: %s nodes" % count)
         return res
     #@+node:felix.20220225003906.17: *3* find_b
     def find_b(self, regex, nodes, flags=re.IGNORECASE | re.MULTILINE):
