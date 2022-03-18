@@ -2785,6 +2785,13 @@ export class LeoIntegration {
         if (this._lastSettingsUsed?.isTag && p_node.entryType === 'generic') { // IS TAG
             // ! do equivalent of search for tag !
         }
+        if (p_node.entryType === 'tag') {
+
+            // ****************************************************************
+            // TODO Handle Tag List -> replace search term with tag and search!
+            // ****************************************************************
+
+        }
         if (p_node.entryType !== 'generic') {
             return this._isBusyTriggerSave(false, true)
                 .then((p_saveResult) => {

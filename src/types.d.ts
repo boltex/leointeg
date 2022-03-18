@@ -220,7 +220,7 @@ export interface LeoButton {
 export interface LeoGoto {
     key: string; // or number??
     h: string;
-    t: "body" | "headline" | "parent" | "generic";
+    t: "tag" | "body" | "headline" | "parent" | "generic";
 }
 
 /**

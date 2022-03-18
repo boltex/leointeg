@@ -18615,7 +18615,11 @@ export class LeoGotoNode extends vscode.TreeItem {
         if (navOptions.showParents &amp;&amp; !navOptions.isTag) {
             w_spacing = "    ";
         }
-        super(gotoEntry.t === "headline" ? (w_spacing + gotoEntry.h) : "");
+        let w_label = "";
+        if (["tag", "headline"].includes(gotoEntry.t)) {
+            w_label = w_spacing + gotoEntry.h;
+        }
+        super(w_label);
 
         // Setup this instance
         this._id = utils.getUniqueId();
@@ -18730,7 +18734,7 @@ export class LeoGotoNode extends vscode.TreeItem {
 <t tx="felix.20220308203528.1">export interface LeoGoto {
     key: string; // or number??
     h: string;
-    t: "body" | "headline" | "parent" | "generic";
+    t: "tag" | "body" | "headline" | "parent" | "generic";
 }
 
 </t>
@@ -18879,6 +18883,13 @@ public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable&lt
     console.log('Clicked NAV ENTRY! ', p_node);
     if (this._lastSettingsUsed?.isTag &amp;&amp; p_node.entryType === 'generic') { // IS TAG
         // ! do equivalent of search for tag !
+    }
+    if (p_node.entryType === 'tag') {
+
+        // ****************************************************************
+        // TODO Handle Tag List -&gt; replace search term with tag and search!
+        // ****************************************************************
+
     }
     if (p_node.entryType !== 'generic') {
         return this._isBusyTriggerSave(false, true)

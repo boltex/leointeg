@@ -23,7 +23,11 @@ export class LeoGotoNode extends vscode.TreeItem {
         if (navOptions.showParents && !navOptions.isTag) {
             w_spacing = "    ";
         }
-        super(gotoEntry.t === "headline" ? (w_spacing + gotoEntry.h) : "");
+        let w_label = "";
+        if (["tag", "headline"].includes(gotoEntry.t)) {
+            w_label = w_spacing + gotoEntry.h;
+        }
+        super(w_label);
 
         // Setup this instance
         this._id = utils.getUniqueId();
