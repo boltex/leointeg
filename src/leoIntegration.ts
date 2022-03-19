@@ -2671,14 +2671,14 @@ export class LeoIntegration {
 
     /**
      * Returns clipboard content
-    */
+     */
     public getTextFromClipboard(): string {
         return this.clipboardContent;
     }
 
     /**
      * Opens the Nav tab and focus on nav text input
-    */
+     */
     public findQuick(p_string?: string): Thenable<unknown> {
         let w_panelID = '';
         let w_panel: vscode.WebviewView | undefined;
@@ -2704,7 +2704,7 @@ export class LeoIntegration {
 
     /**
      * Opens the Nav tab with the selected text as the search string
-    */
+     */
     public findQuickSelected(): Thenable<unknown> {
         if (vscode.window.activeTextEditor) {
             const editor = vscode.window.activeTextEditor;
@@ -2721,7 +2721,7 @@ export class LeoIntegration {
 
     /**
      * Lists all nodes in reversed gnx order, newest to oldest
-    */
+     */
     public findQuickTimeline(): Thenable<unknown> {
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE)
             .then((p_result: LeoBridgePackage) => {
@@ -2732,7 +2732,7 @@ export class LeoIntegration {
 
     /**
      * Lists all nodes that are changed (aka "dirty") since last save.
-    */
+     */
     public findQuickChanged(): Thenable<unknown> {
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED)
             .then((p_result: LeoBridgePackage) => {
@@ -2743,7 +2743,7 @@ export class LeoIntegration {
 
     /**
      * Lists nodes from c.nodeHistory.
-    */
+     */
     public findQuickHistory(): Thenable<unknown> {
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY)
             .then((p_result: LeoBridgePackage) => {
@@ -2754,7 +2754,7 @@ export class LeoIntegration {
 
     /**
      * List all marked nodes.
-    */
+     */
     public findQuickMarked(): Thenable<unknown> {
         return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED)
             .then((p_result: LeoBridgePackage) => {
@@ -2765,7 +2765,7 @@ export class LeoIntegration {
 
     /**
      * Opens goto and focus in panel
-    */
+     */
     public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable<unknown> {
         console.log('findQuickGoAnywhere');
         // open and optionally focus nav panel

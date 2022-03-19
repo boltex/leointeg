@@ -18052,7 +18052,7 @@ private _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Thenable&lt;
 </t>
 <t tx="felix.20220222014050.4">/**
  * Returns clipboard content
-*/
+ */
 public getTextFromClipboard(): string {
     return this.clipboardContent;
 }
@@ -18520,7 +18520,6 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
 
     readonly onDidChangeTreeData: vscode.Event&lt;LeoGotoNode | undefined&gt; = this._onDidChangeTreeData.event;
 
-
     private _lastGotoView: vscode.TreeView&lt;LeoGotoNode&gt; | undefined;
 
     private _topNode: LeoGotoNode | undefined;
@@ -18605,7 +18604,7 @@ export class LeoGotoNode extends vscode.TreeItem {
     private _id: string;
     private _description: string | boolean;
     private _headline: string;
-    public key: string;
+    public key: number; // id from python
 
     constructor(
         gotoEntry: LeoGoto,
@@ -18732,7 +18731,7 @@ export class LeoGotoNode extends vscode.TreeItem {
 },
 </t>
 <t tx="felix.20220308203528.1">export interface LeoGoto {
-    key: string; // or number??
+    key: number; // id from python
     h: string;
     t: "tag" | "body" | "headline" | "parent" | "generic";
 }
@@ -18741,7 +18740,7 @@ export class LeoGotoNode extends vscode.TreeItem {
 <t tx="felix.20220308213523.1"></t>
 <t tx="felix.20220308213538.1">/**
  * Opens the Nav tab and focus on nav text input
-*/
+ */
 public findQuick(p_string?: string): Thenable&lt;unknown&gt; {
     let w_panelID = '';
     let w_panel: vscode.WebviewView | undefined;
@@ -18768,7 +18767,7 @@ public findQuick(p_string?: string): Thenable&lt;unknown&gt; {
 </t>
 <t tx="felix.20220308213547.1">/**
  * Opens the Nav tab with the selected text as the search string
-*/
+ */
 public findQuickSelected(): Thenable&lt;unknown&gt; {
     if (vscode.window.activeTextEditor) {
         const editor = vscode.window.activeTextEditor;
@@ -18786,7 +18785,7 @@ public findQuickSelected(): Thenable&lt;unknown&gt; {
 </t>
 <t tx="felix.20220308213552.1">/**
  * Lists all nodes in reversed gnx order, newest to oldest
-*/
+ */
 public findQuickTimeline(): Thenable&lt;unknown&gt; {
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE)
         .then((p_result: LeoBridgePackage) =&gt; {
@@ -18798,7 +18797,7 @@ public findQuickTimeline(): Thenable&lt;unknown&gt; {
 </t>
 <t tx="felix.20220308213557.1">/**
  * Lists all nodes that are changed (aka "dirty") since last save.
-*/
+ */
 public findQuickChanged(): Thenable&lt;unknown&gt; {
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED)
         .then((p_result: LeoBridgePackage) =&gt; {
@@ -18810,7 +18809,7 @@ public findQuickChanged(): Thenable&lt;unknown&gt; {
 </t>
 <t tx="felix.20220308213600.1">/**
  * Lists nodes from c.nodeHistory.
-*/
+ */
 public findQuickHistory(): Thenable&lt;unknown&gt; {
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY)
         .then((p_result: LeoBridgePackage) =&gt; {
@@ -18822,7 +18821,7 @@ public findQuickHistory(): Thenable&lt;unknown&gt; {
 </t>
 <t tx="felix.20220308213605.1">/**
  * List all marked nodes.
-*/
+ */
 public findQuickMarked(): Thenable&lt;unknown&gt; {
     return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED)
         .then((p_result: LeoBridgePackage) =&gt; {
@@ -18834,7 +18833,7 @@ public findQuickMarked(): Thenable&lt;unknown&gt; {
 </t>
 <t tx="felix.20220308213619.1">/**
  * Opens goto and focus in panel
-*/
+ */
 public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable&lt;unknown&gt; {
     console.log('findQuickGoAnywhere');
     // open and optionally focus nav panel

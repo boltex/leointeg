@@ -218,7 +218,7 @@ export interface LeoButton {
 }
 
 export interface LeoGoto {
-    key: string; // or number??
+    key: number; // id from python
     h: string;
     t: "tag" | "body" | "headline" | "parent" | "generic";
 }

@@ -13,7 +13,7 @@ export class LeoGotoNode extends vscode.TreeItem {
     private _id: string;
     private _description: string | boolean;
     private _headline: string;
-    public key: string;
+    public key: number; // id from python
 
     constructor(
         gotoEntry: LeoGoto,

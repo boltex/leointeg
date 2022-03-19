@@ -519,9 +519,16 @@ class QuickSearchController:
         it = {"type": "generic", "label": text}
         self.its[id(it)] = (it, f)
         return it
+
+    #@+node:felix.20220318222437.1: *3* addTag
+    def addTag(self, text):
+        """ add Tag label """
+        it = {"type": "tag", "label": text}
+        self.its[id(it)] = (it, None)
+        return it
+
     #@+node:felix.20220225003906.8: *3* addHeadlineMatches
     def addHeadlineMatches(self, poslist):
-
         for p in poslist:
             it = {"type": "headline", "label": p.h}
             # it = QtWidgets.QListWidgetItem(p.h, self.lw)
@@ -532,17 +539,16 @@ class QuickSearchController:
                 return
     #@+node:felix.20220225003906.9: *3* clear
     def clear(self):
-
         self.its = {}
         self.lw.clear()
 
     #@+node:felix.20220225003906.10: *3* doNodeHistory
     def doNodeHistory(self):
-
         nh = PosList(po[0] for po in self.c.nodeHistory.beadList)
         nh.reverse()
         self.clear()
         self.addHeadlineMatches(nh)
+
     #@+node:felix.20220225003906.11: *3* doSearchHistory
     def doSearchHistory(self):
         self.clear()
@@ -563,7 +569,6 @@ class QuickSearchController:
 
     #@+node:felix.20220225003906.12: *3* doTimeline
     def doTimeline(self):
-
         c = self.c
         timeline = [p.copy() for p in c.all_unique_positions()]
         timeline.sort(key=lambda x: x.gnx, reverse=True)
@@ -571,14 +576,12 @@ class QuickSearchController:
         self.addHeadlineMatches(timeline)
     #@+node:felix.20220225003906.13: *3* doChanged
     def doChanged(self):
-
         c = self.c
         changed = [p.copy() for p in c.all_unique_positions() if p.isDirty()]
         self.clear()
         self.addHeadlineMatches(changed)
     #@+node:felix.20220225003906.14: *3* doSearch
     def doSearch(self, pat):
-
         if self.isTag:
             return self.doTag(pat)
 
@@ -680,7 +683,7 @@ class QuickSearchController:
         If empty pattern, list tags *strings* instead
         """
         if not pat:
-            # No string : list all tags as messages
+            # No pattern! list all tags as string
             c = self.c
             self.clear()
             d = {}
@@ -694,7 +697,7 @@ class QuickSearchController:
             if d:
                 for key in sorted(d):
                     # key is unique tag
-                    self.lw.append(key)
+                    self.addTag(key)
                     #
                     # aList = d.get(key)
                     # for h in sorted(aList):
@@ -706,7 +709,7 @@ class QuickSearchController:
                 # if not g.unitTesting:
                 #     print(f"no tags in {c.shortFileName()}")
 
-
+        # else: non empty pattern, so find tag!
         hm = self.find_tag(pat)
 
         self.clear() # needed for external client ui replacement: fills self.its

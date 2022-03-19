@@ -14,7 +14,6 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
 
     readonly onDidChangeTreeData: vscode.Event<LeoGotoNode | undefined> = this._onDidChangeTreeData.event;
 
-
     private _lastGotoView: vscode.TreeView<LeoGotoNode> | undefined;
 
     private _topNode: LeoGotoNode | undefined;
