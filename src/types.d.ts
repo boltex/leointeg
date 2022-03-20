@@ -217,10 +217,12 @@ export interface LeoButton {
     index: string; // STRING KEY
 }
 
+export type TGotoTypes = "tag" | "headline" | "body" | "parent" | "generic";
+
 export interface LeoGoto {
     key: number; // id from python
     h: string;
-    t: "tag" | "body" | "headline" | "parent" | "generic";
+    t: TGotoTypes;
 }
 
 /**

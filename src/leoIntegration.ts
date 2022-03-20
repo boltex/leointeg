@@ -831,6 +831,7 @@ export class LeoIntegration {
 
     /**
      * * Promise that triggers body save (rejects if busy), and resolves when done
+     * @param p_all Flag for 'isBusy' check: will block if bridge is busy, not just commands on stack
      * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
      * @returns a promise that resolves when the possible saving process is finished
      */
@@ -2711,11 +2712,9 @@ export class LeoIntegration {
             const selection = editor.selection;
             if (!selection.isEmpty) {
                 const text = editor.document.getText(selection);
-                console.log('findQuickSelected with text: ', text);
                 return this.findQuick(text);
             }
         }
-        console.log('findQuickSelected without text! ');
         return this.findQuick();
     }
 
@@ -2781,17 +2780,54 @@ export class LeoIntegration {
     }
 
     public gotoNavEntry(p_node: LeoGotoNode): Thenable<unknown> {
+
         console.log('Clicked NAV ENTRY! ', p_node);
-        if (this._lastSettingsUsed?.isTag && p_node.entryType === 'generic') { // IS TAG
-            // ! do equivalent of search for tag !
-        }
+
         if (p_node.entryType === 'tag') {
 
-            // ****************************************************************
-            // TODO Handle Tag List -> replace search term with tag and search!
-            // ****************************************************************
+            console.log('It IS a TAG STRING ENTRY !!');
+
+            return this._isBusyTriggerSave(false, true)
+                .then((p_saveResult) => {
+
+                    let w_string: string = p_node.label as string;
+
+                    let w_panelID = '';
+                    let w_panel: vscode.WebviewView | undefined;
+                    if (this._lastTreeView === this._leoTreeExView) {
+                        w_panelID = Constants.FIND_EXPLORER_ID;
+                        w_panel = this._findPanelWebviewExplorerView;
+                    } else {
+                        w_panelID = Constants.FIND_ID;
+                        w_panel = this._findPanelWebviewView;
+                    }
+                    vscode.commands.executeCommand(w_panelID + '.focus').then((p_result) => {
+                        if (w_panel && w_panel.show && !w_panel.visible) {
+                            w_panel.show(false);
+                        }
+                        const w_message: { [key: string]: string } = { type: 'selectNav' };
+                        if (w_string && w_string?.trim()) {
+                            w_message["text"] = w_string.trim();
+                        }
+                        return w_panel!.webview.postMessage(w_message);
+                    }).then(() => {
+                        // Do search
+                        setTimeout(() => {
+                            this.sendAction(
+                                Constants.LEOBRIDGE.NAV_SEARCH
+                            ).then((p_package) => {
+                                this._leoGotoProvider.refreshTreeRoot();
+                                this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+                                return p_package;
+                            });
+                        }, 10);
+
+                    });
+                });
 
         }
+
+        // Was not a tag
         if (p_node.entryType !== 'generic') {
             return this._isBusyTriggerSave(false, true)
                 .then((p_saveResult) => {

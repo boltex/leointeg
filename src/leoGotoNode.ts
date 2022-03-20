@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
-import { LeoGoto } from "./types";
+import { LeoGoto, TGotoTypes } from "./types";
 import * as utils from "./utils";
 
 /**
@@ -9,7 +9,7 @@ import * as utils from "./utils";
 export class LeoGotoNode extends vscode.TreeItem {
 
     // Context string is checked in package.json with 'when' clauses
-    public entryType: string;
+    public entryType: TGotoTypes;
     private _id: string;
     private _description: string | boolean;
     private _headline: string;

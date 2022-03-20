@@ -100,9 +100,6 @@
 
     }
 
-    /**
-     * @param {string} p_id
-     */
     function setSearchSetting(p_id) {
         if (checkboxIds.includes(p_id)) {
             toggleCheckbox(p_id);
@@ -111,16 +108,10 @@
         }
     }
 
-    /**
-     * @param {boolean} p_focus
-     */
     function setFrozen(p_focus) {
         frozen = p_focus;
     }
 
-    /**
-     * @param {any} p_settings
-     */
     function setSettings(p_settings) {
         // Nav controls
         // @ts-expect-error
@@ -136,6 +127,7 @@
         // @ts-expect-error
         document.getElementById("isTag").checked = p_settings["isTag"];
         searchSettings["isTag"] = p_settings["isTag"];
+        setNavPlaceholder()
         // searchOptions
         // @ts-expect-error
         document.getElementById("searchOptions").value = p_settings["searchOptions"];
@@ -170,9 +162,6 @@
         }, 300);
     }
 
-    /**
-     * @param {string} p_inputId
-     */
     function toggleCheckbox(p_inputId) {
         let w_checkbox = document.getElementById(p_inputId);
         let w_setTo = true;
@@ -189,9 +178,6 @@
         sendSearchConfig();
     }
 
-    /**
-     * @param {string} p_inputId
-     */
     function setRadio(p_inputId) {
         // @ts-expect-error
         document.getElementById(p_inputId).checked = true;
@@ -205,13 +191,10 @@
         sendSearchConfig();
     }
 
-    /**
-     *
-     * @param {KeyboardEvent} p_event
-     */
     function checkKeyDown(p_event) {
-        // @ts-expect-error
-        if (!p_event) p_event = window.event;
+        if (!p_event) {
+            p_event = window.event;
+        }
         var keyCode = p_event.code || p_event.key;
 
         if (keyCode === 'Tab') {
@@ -238,12 +221,8 @@
                 }
             }
         }
-        // checkOtherKeys(p_event);
     }
 
-    /**
-     * @param {string} p_id
-     */
     function focusOnField(p_id) {
         const inputField = document.querySelector('#' + p_id);
         // @ts-expect-error
@@ -264,32 +243,44 @@
         }
     }
 
+    function setNavPlaceholder() {
+        let w_input = document.getElementById('navText');
+        if (searchSettings.isTag) {
+            // @ts-expect-error
+            w_input.placeholder = "<tag pattern here>";
+        } else {
+            // @ts-expect-error
+            w_input.placeholder = "<nav pattern here>";
+        }
+    }
+
+    // * Nav text input detection
     document.getElementById('navText').onkeypress = function (p_event) {
         // @ts-expect-error
         if (!p_event) p_event = window.event;
         var keyCode = p_event.code || p_event.key;
         if (keyCode === 'Enter') {
-            if (searchSettings.navText.length > 3) {
+            if (searchSettings.navText.length > 3 || searchSettings.isTag) {
                 setFrozen(true);
-            }
-            frozen = true;
-            if (navTextDirty) {
-                navTextDirty = false;
-                if (timer) {
-                    clearTimeout(timer);
+                if (navTextDirty) {
+                    navTextDirty = false;
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    sendSearchConfig();
                 }
-                sendSearchConfig();
+                vscode.postMessage({ type: 'leoNavEnter' });
             }
-            vscode.postMessage({ type: 'leoNavEnter' });
             return false;
         }
-        document.getElementById('navText').addEventListener('input', function (p_event) {
-            // @ts-expect-error
-            searchSettings.navText = this.value;
-            navTextDirty = true;
-            navTextChange(); // DEBOUNCE THIS! Don't process change too fast!
-        });
     };
+    document.getElementById('navText').addEventListener('input', function (p_event) {
+        // @ts-expect-error
+        searchSettings.navText = this.value;
+        navTextDirty = true;
+        navTextChange(); // DEBOUNCE THIS! Don't process change too fast!
+    });
+
     document.getElementById('showParents').addEventListener('change', function (p_event) {
         // @ts-expect-error
         searchSettings.showParents = this.checked;
@@ -302,8 +293,12 @@
             setFrozen(false); // Switched tagging so reset freeze
         }
         searchSettings.isTag = w_checked;
+        // Set placeholder text
+        setNavPlaceholder();
         processChange();
     });
+
+    // * Find & Replace controls change detection
     document.getElementById('searchOptions').addEventListener('change', function (p_event) {
         // @ts-expect-error
         searchSettings.searchOptions = Number(this.value);
@@ -315,7 +310,7 @@
             // @ts-expect-error
             if (!p_event) p_event = window.event;
             var keyCode = p_event.code || p_event.key;
-            if (keyCode == 'Enter') {
+            if (keyCode === 'Enter') {
                 if (timer) {
                     clearTimeout(timer);
                     sendSearchConfig();

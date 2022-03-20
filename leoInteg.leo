@@ -737,6 +737,7 @@
 <v t="felix.20200718194857.10"><vh>LeoBridgePackage</vh></v>
 <v t="felix.20200718194857.11"><vh>LeoDocument</vh></v>
 <v t="felix.20200718194857.12"><vh>LeoButton</vh></v>
+<v t="felix.20220319202027.1"><vh>TGotoTypes</vh></v>
 <v t="felix.20220308203528.1"><vh>LeoGoto</vh></v>
 <v t="felix.20210522152922.1"><vh>LeoSearchScope</vh></v>
 <v t="felix.20210522152739.1"><vh>LeoSearchSettings</vh></v>
@@ -14507,6 +14508,7 @@ export function removeFileFromWorkspace(p_context: vscode.ExtensionContext, p_fi
 </t>
 <t tx="felix.20201107224112.1">/**
  * * Promise that triggers body save (rejects if busy), and resolves when done
+ * @param p_all Flag for 'isBusy' check: will block if bridge is busy, not just commands on stack
  * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
  * @returns a promise that resolves when the possible saving process is finished
  */
@@ -18166,9 +18168,6 @@ public getTextFromClipboard(): string {
 
     }
 
-    /**
-     * @param {string} p_id
-     */
     function setSearchSetting(p_id) {
         if (checkboxIds.includes(p_id)) {
             toggleCheckbox(p_id);
@@ -18177,16 +18176,10 @@ public getTextFromClipboard(): string {
         }
     }
 
-    /**
-     * @param {boolean} p_focus
-     */
     function setFrozen(p_focus) {
         frozen = p_focus;
     }
 
-    /**
-     * @param {any} p_settings
-     */
     function setSettings(p_settings) {
         // Nav controls
         // @ts-expect-error
@@ -18202,6 +18195,7 @@ public getTextFromClipboard(): string {
         // @ts-expect-error
         document.getElementById("isTag").checked = p_settings["isTag"];
         searchSettings["isTag"] = p_settings["isTag"];
+        setNavPlaceholder()
         // searchOptions
         // @ts-expect-error
         document.getElementById("searchOptions").value = p_settings["searchOptions"];
@@ -18236,9 +18230,6 @@ public getTextFromClipboard(): string {
         }, 300);
     }
 
-    /**
-     * @param {string} p_inputId
-     */
     function toggleCheckbox(p_inputId) {
         let w_checkbox = document.getElementById(p_inputId);
         let w_setTo = true;
@@ -18255,9 +18246,6 @@ public getTextFromClipboard(): string {
         sendSearchConfig();
     }
 
-    /**
-     * @param {string} p_inputId
-     */
     function setRadio(p_inputId) {
         // @ts-expect-error
         document.getElementById(p_inputId).checked = true;
@@ -18271,13 +18259,10 @@ public getTextFromClipboard(): string {
         sendSearchConfig();
     }
 
-    /**
-     *
-     * @param {KeyboardEvent} p_event
-     */
     function checkKeyDown(p_event) {
-        // @ts-expect-error
-        if (!p_event) p_event = window.event;
+        if (!p_event) {
+            p_event = window.event;
+        }
         var keyCode = p_event.code || p_event.key;
 
         if (keyCode === 'Tab') {
@@ -18304,12 +18289,8 @@ public getTextFromClipboard(): string {
                 }
             }
         }
-        // checkOtherKeys(p_event);
     }
 
-    /**
-     * @param {string} p_id
-     */
     function focusOnField(p_id) {
         const inputField = document.querySelector('#' + p_id);
         // @ts-expect-error
@@ -18330,32 +18311,44 @@ public getTextFromClipboard(): string {
         }
     }
 
+    function setNavPlaceholder() {
+        let w_input = document.getElementById('navText');
+        if (searchSettings.isTag) {
+            // @ts-expect-error
+            w_input.placeholder = "&lt;tag pattern here&gt;";
+        } else {
+            // @ts-expect-error
+            w_input.placeholder = "&lt;nav pattern here&gt;";
+        }
+    }
+
+    // * Nav text input detection
     document.getElementById('navText').onkeypress = function (p_event) {
         // @ts-expect-error
         if (!p_event) p_event = window.event;
         var keyCode = p_event.code || p_event.key;
         if (keyCode === 'Enter') {
-            if (searchSettings.navText.length &gt; 3) {
+            if (searchSettings.navText.length &gt; 3 || searchSettings.isTag) {
                 setFrozen(true);
-            }
-            frozen = true;
-            if (navTextDirty) {
-                navTextDirty = false;
-                if (timer) {
-                    clearTimeout(timer);
+                if (navTextDirty) {
+                    navTextDirty = false;
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    sendSearchConfig();
                 }
-                sendSearchConfig();
+                vscode.postMessage({ type: 'leoNavEnter' });
             }
-            vscode.postMessage({ type: 'leoNavEnter' });
             return false;
         }
-        document.getElementById('navText').addEventListener('input', function (p_event) {
-            // @ts-expect-error
-            searchSettings.navText = this.value;
-            navTextDirty = true;
-            navTextChange(); // DEBOUNCE THIS! Don't process change too fast!
-        });
     };
+    document.getElementById('navText').addEventListener('input', function (p_event) {
+        // @ts-expect-error
+        searchSettings.navText = this.value;
+        navTextDirty = true;
+        navTextChange(); // DEBOUNCE THIS! Don't process change too fast!
+    });
+
     document.getElementById('showParents').addEventListener('change', function (p_event) {
         // @ts-expect-error
         searchSettings.showParents = this.checked;
@@ -18368,8 +18361,12 @@ public getTextFromClipboard(): string {
             setFrozen(false); // Switched tagging so reset freeze
         }
         searchSettings.isTag = w_checked;
+        // Set placeholder text
+        setNavPlaceholder();
         processChange();
     });
+
+    // * Find &amp; Replace controls change detection
     document.getElementById('searchOptions').addEventListener('change', function (p_event) {
         // @ts-expect-error
         searchSettings.searchOptions = Number(this.value);
@@ -18381,7 +18378,7 @@ public getTextFromClipboard(): string {
             // @ts-expect-error
             if (!p_event) p_event = window.event;
             var keyCode = p_event.code || p_event.key;
-            if (keyCode == 'Enter') {
+            if (keyCode === 'Enter') {
                 if (timer) {
                     clearTimeout(timer);
                     sendSearchConfig();
@@ -18591,7 +18588,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
 </t>
 <t tx="felix.20220307233828.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
-import { LeoGoto } from "./types";
+import { LeoGoto, TGotoTypes } from "./types";
 import * as utils from "./utils";
 
 /**
@@ -18600,7 +18597,7 @@ import * as utils from "./utils";
 export class LeoGotoNode extends vscode.TreeItem {
 
     // Context string is checked in package.json with 'when' clauses
-    public entryType: string;
+    public entryType: TGotoTypes;
     private _id: string;
     private _description: string | boolean;
     private _headline: string;
@@ -18733,7 +18730,7 @@ export class LeoGotoNode extends vscode.TreeItem {
 <t tx="felix.20220308203528.1">export interface LeoGoto {
     key: number; // id from python
     h: string;
-    t: "tag" | "body" | "headline" | "parent" | "generic";
+    t: TGotoTypes;
 }
 
 </t>
@@ -18774,11 +18771,9 @@ public findQuickSelected(): Thenable&lt;unknown&gt; {
         const selection = editor.selection;
         if (!selection.isEmpty) {
             const text = editor.document.getText(selection);
-            console.log('findQuickSelected with text: ', text);
             return this.findQuick(text);
         }
     }
-    console.log('findQuickSelected without text! ');
     return this.findQuick();
 }
 
@@ -18879,17 +18874,54 @@ public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable&lt
 },
 </t>
 <t tx="felix.20220309215616.1">public gotoNavEntry(p_node: LeoGotoNode): Thenable&lt;unknown&gt; {
+
     console.log('Clicked NAV ENTRY! ', p_node);
-    if (this._lastSettingsUsed?.isTag &amp;&amp; p_node.entryType === 'generic') { // IS TAG
-        // ! do equivalent of search for tag !
-    }
+
     if (p_node.entryType === 'tag') {
 
-        // ****************************************************************
-        // TODO Handle Tag List -&gt; replace search term with tag and search!
-        // ****************************************************************
+        console.log('It IS a TAG STRING ENTRY !!');
+
+        return this._isBusyTriggerSave(false, true)
+            .then((p_saveResult) =&gt; {
+
+                let w_string: string = p_node.label as string;
+
+                let w_panelID = '';
+                let w_panel: vscode.WebviewView | undefined;
+                if (this._lastTreeView === this._leoTreeExView) {
+                    w_panelID = Constants.FIND_EXPLORER_ID;
+                    w_panel = this._findPanelWebviewExplorerView;
+                } else {
+                    w_panelID = Constants.FIND_ID;
+                    w_panel = this._findPanelWebviewView;
+                }
+                vscode.commands.executeCommand(w_panelID + '.focus').then((p_result) =&gt; {
+                    if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
+                        w_panel.show(false);
+                    }
+                    const w_message: { [key: string]: string } = { type: 'selectNav' };
+                    if (w_string &amp;&amp; w_string?.trim()) {
+                        w_message["text"] = w_string.trim();
+                    }
+                    return w_panel!.webview.postMessage(w_message);
+                }).then(() =&gt; {
+                    // Do search
+                    setTimeout(() =&gt; {
+                        this.sendAction(
+                            Constants.LEOBRIDGE.NAV_SEARCH
+                        ).then((p_package) =&gt; {
+                            this._leoGotoProvider.refreshTreeRoot();
+                            this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+                            return p_package;
+                        });
+                    }, 10);
+
+                });
+            });
 
     }
+
+    // Was not a tag
     if (p_node.entryType !== 'generic') {
         return this._isBusyTriggerSave(false, true)
             .then((p_saveResult) =&gt; {
@@ -19079,6 +19111,9 @@ public removeTags(): void {
         return;
     }
 }
+
+</t>
+<t tx="felix.20220319202027.1">export type TGotoTypes = "tag" | "headline" | "body" | "parent" | "generic";
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

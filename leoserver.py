@@ -582,9 +582,6 @@ class QuickSearchController:
         self.addHeadlineMatches(changed)
     #@+node:felix.20220225003906.14: *3* doSearch
     def doSearch(self, pat):
-        if self.isTag:
-            return self.doTag(pat)
-
         hitBase = False
         self.clear()
         self.pushSearchHistory(pat)
@@ -684,6 +681,7 @@ class QuickSearchController:
         """
         if not pat:
             # No pattern! list all tags as string
+            print("No pattern! list all tags as string")
             c = self.c
             self.clear()
             d = {}
@@ -710,6 +708,7 @@ class QuickSearchController:
                 #     print(f"no tags in {c.shortFileName()}")
 
         # else: non empty pattern, so find tag!
+        print("Find tag has pattern given!, so find tag!")
         hm = self.find_tag(pat)
 
         self.clear() # needed for external client ui replacement: fills self.its
@@ -721,10 +720,6 @@ class QuickSearchController:
         # self.lw.insertItem(0, "%d hits"%self.lw.count())
     #@+node:felix.20220225003906.15: *3* bgSearch
     def bgSearch(self, pat):
-
-        if self.isTag:
-            return self.doTag(pat)
-
         if not pat.startswith('r:'):
             hpat = fnmatch.translate('*' + pat + '*').replace(r"\Z(?ms)", "")
             # bpat = fnmatch.translate(pat).rstrip('$').replace(r"\Z(?ms)","")
@@ -1421,10 +1416,14 @@ class LeoServer:
         """
         tag = 'nav_headline_search'
         c = self._check_c()
+        # Tag search override!
         try:
             inp = c.scon.navText
-            exp = inp.replace(" ", "*")
-            c.scon.bgSearch(exp)
+            if c.scon.isTag:
+                c.scon.doTag(inp)
+            else:
+                exp = inp.replace(" ", "*")
+                c.scon.bgSearch(exp)
         except Exception as e:
             raise ServerError(f"{tag}: exception doing nav headline search: {e}")
         return  self._make_response()
@@ -1438,8 +1437,13 @@ class LeoServer:
         """
         tag = 'nav_search'
         c = self._check_c()
+        # Tag search override!
         try:
-            c.scon.doSearch(c.scon.navText)
+            inp = c.scon.navText
+            if c.scon.isTag:
+                c.scon.doTag(inp)
+            else:
+                c.scon.doSearch(inp)
         except Exception as e:
             raise ServerError(f"{tag}: exception doing nav search: {e}")
         return  self._make_response()
