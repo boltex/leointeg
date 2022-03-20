@@ -64,6 +64,7 @@ export class LeoIntegration {
     public nodeIcons: Icon[] = []; // Singleton static array of all icon paths used in leoNodes for rendering in treeview
     public documentIcons: Icon[] = [];
     public buttonIcons: Icon[] = [];
+    public gotoIcons: Icon[] = [];
 
     // * File Browser
     private _leoFilesBrowser: LeoFilesBrowser; // Browsing dialog service singleton used in the openLeoFile and save-as methods
@@ -240,6 +241,7 @@ export class LeoIntegration {
         this.nodeIcons = utils.buildNodeIconPaths(_context);
         this.documentIcons = utils.buildDocumentIconPaths(_context);
         this.buttonIcons = utils.buildButtonsIconPaths(_context);
+        this.gotoIcons = utils.buildGotoIconPaths(_context);
 
         // * Create file browser instance
         this._leoFilesBrowser = new LeoFilesBrowser(_context);
@@ -2763,11 +2765,9 @@ export class LeoIntegration {
     }
 
     /**
-     * Opens goto and focus in panel
+     * Opens goto and focus in depending on passed options
      */
     public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable<unknown> {
-        console.log('findQuickGoAnywhere');
-        // open and optionally focus nav panel
         let w_panel = "";
         if (this._lastTreeView === this._leoTreeExView) {
             w_panel = Constants.GOTO_EXPLORER_ID;
@@ -2879,6 +2879,8 @@ export class LeoIntegration {
     }
 
     public navTextChange(): Thenable<LeoBridgePackage> {
+        console.log('NAV TEXT CHANGE ! ', JSON.stringify(this._lastSettingsUsed));
+
         return this._isBusyTriggerSave(false, true).then(() => {
 
             return this.sendAction(

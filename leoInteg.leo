@@ -765,6 +765,7 @@
 <v t="felix.20200718195558.3"><vh>buildNodeIconPaths</vh></v>
 <v t="felix.20200718195558.4"><vh>buildDocumentIconPaths</vh></v>
 <v t="ekr.20200815091945.1"><vh>buildButtonsIconPaths</vh></v>
+<v t="felix.20220320172705.1"><vh>buildGotoIconPaths</vh></v>
 <v t="felix.20200718195558.6"><vh>buildNodeAndTextJson</vh></v>
 <v t="felix.20210614235023.1"><vh>chooseLeoFolderDialog</vh></v>
 <v t="felix.20201018163510.1"><vh>getDurationMilliseconds</vh></v>
@@ -6504,16 +6505,28 @@ public static LOG_ALERT_COLOR: string = 'red';
  * * Strings used in the workbench interface panels (not for messages or dialogs)
  */
 public static GUI = {
+
+    ICON_LIGHT_PARENT: "resources/light/parent.svg",
+    ICON_DARK_PARENT: "resources/dark/parent.svg",
+    ICON_LIGHT_BODY: "resources/light/body.svg",
+    ICON_DARK_BODY: "resources/dark/body.svg",
+    ICON_LIGHT_NODE: "resources/light/node.svg",
+    ICON_DARK_NODE: "resources/dark/node.svg",
+    ICON_LIGHT_TAG: "resources/light/tag.svg",
+    ICON_DARK_TAG: "resources/dark/tag.svg",
+
     ICON_LIGHT_DOCUMENT: "resources/light/document.svg",
     ICON_DARK_DOCUMENT: "resources/dark/document.svg",
     ICON_LIGHT_DOCUMENT_DIRTY: "resources/light/document-dirty.svg",
     ICON_DARK_DOCUMENT_DIRTY: "resources/dark/document-dirty.svg",
+
     ICON_LIGHT_BUTTON: "resources/light/button.svg",
     ICON_DARK_BUTTON: "resources/dark/button.svg",
     ICON_LIGHT_BUTTON_RCLICK: "resources/light/button-rclick.svg",
     ICON_DARK_BUTTON_RCLICK: "resources/dark/button-rclick.svg",
     ICON_LIGHT_BUTTON_ADD: "resources/light/button-add.svg",
     ICON_DARK_BUTTON_ADD: "resources/dark/button-add.svg",
+
     ICON_LIGHT_PATH: "resources/light/box",
     ICON_DARK_PATH: "resources/dark/box",
     ICON_FILE_EXT: ".svg",
@@ -10212,6 +10225,7 @@ export class LeoIntegration {
     public nodeIcons: Icon[] = []; // Singleton static array of all icon paths used in leoNodes for rendering in treeview
     public documentIcons: Icon[] = [];
     public buttonIcons: Icon[] = [];
+    public gotoIcons: Icon[] = [];
 
     // * File Browser
     private _leoFilesBrowser: LeoFilesBrowser; // Browsing dialog service singleton used in the openLeoFile and save-as methods
@@ -10631,6 +10645,7 @@ private _onActiveEditorChanged(
     this.nodeIcons = utils.buildNodeIconPaths(_context);
     this.documentIcons = utils.buildDocumentIconPaths(_context);
     this.buttonIcons = utils.buildButtonsIconPaths(_context);
+    this.gotoIcons = utils.buildGotoIconPaths(_context);
 
     // * Create file browser instance
     this._leoFilesBrowser = new LeoFilesBrowser(_context);
@@ -18486,6 +18501,8 @@ public getTextFromClipboard(): string {
 
 </t>
 <t tx="felix.20220305231404.1">public navTextChange(): Thenable&lt;LeoBridgePackage&gt; {
+    console.log('NAV TEXT CHANGE ! ', JSON.stringify(this._lastSettingsUsed));
+
     return this._isBusyTriggerSave(false, true).then(() =&gt; {
 
         return this.sendAction(
@@ -18659,7 +18676,8 @@ export class LeoGotoNode extends vscode.TreeItem {
 
     // @ts-ignore
     // public get iconPath(): Icon| vscode.ThemeIcon|string {
-    //     return false;
+    // return this._leoIntegration.gotoIcons[this.documentEntry.changed ? 1 : 0];
+
     // }
 
     // @ts-ignore
@@ -18827,11 +18845,9 @@ public findQuickMarked(): Thenable&lt;unknown&gt; {
 
 </t>
 <t tx="felix.20220308213619.1">/**
- * Opens goto and focus in panel
+ * Opens goto and focus in depending on passed options
  */
 public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable&lt;unknown&gt; {
-    console.log('findQuickGoAnywhere');
-    // open and optionally focus nav panel
     let w_panel = "";
     if (this._lastTreeView === this._leoTreeExView) {
         w_panel = Constants.GOTO_EXPLORER_ID;
@@ -19114,6 +19130,29 @@ public removeTags(): void {
 
 </t>
 <t tx="felix.20220319202027.1">export type TGotoTypes = "tag" | "headline" | "body" | "parent" | "generic";
+
+</t>
+<t tx="felix.20220320172705.1">/**
+ * * Build all possible strings for the goto panel
+ * @param p_context Needed to get to absolute paths on the system
+ * @returns An array containing icons for the goto anywhere tree view
+ */
+export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
+    return [
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_RCLICK),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_RCLICK)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_ADD),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_ADD)
+        }
+    ];
+}
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";

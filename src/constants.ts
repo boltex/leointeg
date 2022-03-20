@@ -80,16 +80,28 @@ export class Constants {
      * * Strings used in the workbench interface panels (not for messages or dialogs)
      */
     public static GUI = {
+
+        ICON_LIGHT_PARENT: "resources/light/parent.svg",
+        ICON_DARK_PARENT: "resources/dark/parent.svg",
+        ICON_LIGHT_BODY: "resources/light/body.svg",
+        ICON_DARK_BODY: "resources/dark/body.svg",
+        ICON_LIGHT_NODE: "resources/light/node.svg",
+        ICON_DARK_NODE: "resources/dark/node.svg",
+        ICON_LIGHT_TAG: "resources/light/tag.svg",
+        ICON_DARK_TAG: "resources/dark/tag.svg",
+
         ICON_LIGHT_DOCUMENT: "resources/light/document.svg",
         ICON_DARK_DOCUMENT: "resources/dark/document.svg",
         ICON_LIGHT_DOCUMENT_DIRTY: "resources/light/document-dirty.svg",
         ICON_DARK_DOCUMENT_DIRTY: "resources/dark/document-dirty.svg",
+
         ICON_LIGHT_BUTTON: "resources/light/button.svg",
         ICON_DARK_BUTTON: "resources/dark/button.svg",
         ICON_LIGHT_BUTTON_RCLICK: "resources/light/button-rclick.svg",
         ICON_DARK_BUTTON_RCLICK: "resources/dark/button-rclick.svg",
         ICON_LIGHT_BUTTON_ADD: "resources/light/button-add.svg",
         ICON_DARK_BUTTON_ADD: "resources/dark/button-add.svg",
+
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",

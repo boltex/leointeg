@@ -71,7 +71,8 @@ export class LeoGotoNode extends vscode.TreeItem {
 
     // @ts-ignore
     // public get iconPath(): Icon| vscode.ThemeIcon|string {
-    //     return false;
+    // return this._leoIntegration.gotoIcons[this.documentEntry.changed ? 1 : 0];
+
     // }
 
     // @ts-ignore
