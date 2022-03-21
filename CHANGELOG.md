@@ -3,6 +3,7 @@
 ## 1.0.7
 
 - Added 'Goto Anywhere' panel, with buttons for showing lists from common node attributes searches.
+- Made commands available through vscode for find-quick-timeline, find-quick-changed, history and marked-list
 - Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'.
 
 ## 1.0.6

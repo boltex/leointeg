@@ -185,6 +185,7 @@ body > div > div > label:active {
 }
 
 #freeze {
+  cursor: default;
   position: absolute;
   right: 0.9em;
   line-height: 1em;

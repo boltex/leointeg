@@ -19210,6 +19210,7 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 <t tx="felix.20220321001559.1">## 1.0.7
 
 - Added 'Goto Anywhere' panel, with buttons for showing lists from common node attributes searches.
+- Made commands available through vscode for find-quick-timeline, find-quick-changed, history and marked-list
 - Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'.
 
 </t>
@@ -19484,8 +19485,8 @@ import * as utils from "../utils";
                 &lt;/div&gt;
             &lt;/div&gt;
 
-            &lt;input class="mt-0" type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
-            &lt;div id="freeze"&gt;&amp;#x2744;&lt;/div&gt;
+            &lt;input class="mt-0" title="Live search - Enter to freeze" type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
+            &lt;div id="freeze" title="Clear field to unfreeze"&gt;&amp;#x2744;&lt;/div&gt;
 
             &lt;label class="mb-0" for="findText"&gt;Find/Replace:&lt;/label&gt;
             &lt;input type="text" id="findText" name="findText" placeholder="&lt;find pattern here&gt;" &gt;
@@ -19779,6 +19780,7 @@ body &gt; div &gt; div &gt; label:active {
 }
 
 #freeze {
+  cursor: default;
   position: absolute;
   right: 0.9em;
   line-height: 1em;
