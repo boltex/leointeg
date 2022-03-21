@@ -57,7 +57,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider<LeoGotoNode> {
                     const w_navList: LeoGoto[] = p_package.navList;
                     if (w_navList && w_navList.length) {
                         w_navList.forEach((p_goto: LeoGoto) => {
-                            const w_newNode = new LeoGotoNode(p_goto, p_package.navOptions!);
+                            const w_newNode = new LeoGotoNode(this._leoIntegration, p_goto, p_package.navOptions!);
                             if (!this._topNode) {
                                 this._topNode = w_newNode;
                             }

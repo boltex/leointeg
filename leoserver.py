@@ -406,24 +406,27 @@ class QuickSearchController:
 
         self.navText = ''
         self.showParents = True
-        self.isTag = False
+        self.isTag = False # added concept to combine tag pane functionality
         self.searchOptions = 0
         self.searchOptionsStrings = ["All", "Subtree", "File",
                                      "Chapter", "Node"]
 
         def searcher(inp):
+            # Todo: maybe re-use original QuickSearchController threadutil behavior
             exp = inp.replace(" ", "*")
             res = self.bgSearch(exp)
             return res
 
         def dumper():
+            # Todo: maybe re-use original QuickSearchController threadutil behavior
             # always run on ui thread
-            pass # ? Needed ?
+            pass
             # out = self.worker.output
             # self.throttler.add(out)
 
         def throttledDump(lst):
             """ dumps the last output """
+            # Todo: maybe re-use original QuickSearchController threadutil behavior
             # we do get called with empty list on occasion
             if not lst:
                 return
@@ -432,10 +435,10 @@ class QuickSearchController:
             self.addHeadlineMatches(hm)
             self.addBodyMatches(bm)
 
+        # ***** below is original QuickSearchController threadutil behavior *****
         # ? self.throttler = threadutil.NowOrLater(throttledDump)
-
         # ? self.worker.set_worker(searcher)
-        #self.worker.set_output_f(dumper)
+        # ? self.worker.set_output_f(dumper)
         # ? self.worker.resultReady.connect(dumper)
         # ? self.worker.start()
         # we want both single-clicks and activations (press enter)
@@ -445,7 +448,6 @@ class QuickSearchController:
 
     #@+node:felix.20220225224130.1: *3* matchlines
     def matchlines(self, b, miter):
-
         res = []
         for m in miter:
             st, en = g.getLine(b, m.start())
@@ -456,7 +458,7 @@ class QuickSearchController:
     #@+node:felix.20220225003906.4: *3* addItem
     def addItem(self, it, val):
         self.its[id(it)] = (it, val)
-        # TODO : Support original system with threadutil.UnitWorker()
+        # changed to 999 from 3000 to replace old threadutil behavior
         return len(self.its) > 999 # Limit to 999 for now
     #@+node:felix.20220225003906.5: *3* addBodyMatches
     def addBodyMatches(self, poslist):
@@ -681,7 +683,6 @@ class QuickSearchController:
         """
         if not pat:
             # No pattern! list all tags as string
-            print("No pattern! list all tags as string")
             c = self.c
             self.clear()
             d = {}
@@ -708,7 +709,6 @@ class QuickSearchController:
                 #     print(f"no tags in {c.shortFileName()}")
 
         # else: non empty pattern, so find tag!
-        print("Find tag has pattern given!, so find tag!")
         hm = self.find_tag(pat)
 
         self.clear() # needed for external client ui replacement: fills self.its
@@ -815,7 +815,8 @@ class QuickSearchController:
         return res
     #@+node:felix.20220225003906.17: *3* find_b
     def find_b(self, regex, nodes, flags=re.IGNORECASE | re.MULTILINE):
-        """ Return list (a PosList) of all nodes whose body matches regex
+        """
+        Return list (a PosList) of all nodes whose body matches regex
         one or more times.
 
         """
@@ -837,7 +838,6 @@ class QuickSearchController:
         return res
     #@+node:felix.20220225003906.18: *3* doShowMarked
     def doShowMarked(self):
-
         self.clear()
         c = self.c
         pl = PosList()
@@ -898,9 +898,8 @@ class QuickSearchController:
                 # self.lw.setFocus() # don't set focus on sidepanel
     #@+node:felix.20220225003906.21: *4* onActivated
     def onActivated(self, event):
-
+        # Todo: Remove this method if Not used in leoserver
         c = self.c
-
         c.bodyWantsFocusNow()
     #@-others
 #@+node:felix.20210621233316.4: ** class LeoServer
@@ -1247,15 +1246,6 @@ class LeoServer:
             c.findCommands.ftm = StringFindTabManager(c)
             cc = QuickSearchController(c)
             setattr(c, 'scon', cc) # Patch up quick-search controller to the commander
-            try:
-                if not getattr(c, 'theTagController', None):
-                    g.app.pluginsController.loadOnePlugin('nodetags.py', verbose=True)
-                    print("ENABLED TAG CONTROLLER ")
-                    print(str(getattr(c, 'theTagController', None)))
-                else:
-                    print("already enabled ")
-            except Exception as e:
-                print('CANNOT CREATE nodetags PLUGIN!')
         if not c:  # pragma: no cover
             raise ServerError(f"{tag}: bridge did not open {filename!r}")
         if not c.frame.body.wrapper:  # pragma: no cover

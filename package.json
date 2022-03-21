@@ -1757,7 +1757,7 @@
       {
         "command": "leointeg.findQuickTimeline",
         "category": "Leo",
-        "title": "List nodes in reverse gnx order",
+        "title": "List timeline of nodes in reverse gnx order",
         "icon": {
           "light": "resources/light/find-quick-timeline.svg",
           "dark": "resources/dark/find-quick-timeline.svg"
@@ -1766,7 +1766,7 @@
       {
         "command": "leointeg.findQuickChanged",
         "category": "Leo",
-        "title": "List all dirty nodes",
+        "title": "List all changed/dirty nodes",
         "icon": {
           "light": "resources/light/find-quick-changed.svg",
           "dark": "resources/dark/find-quick-changed.svg"
@@ -1775,7 +1775,7 @@
       {
         "command": "leointeg.history",
         "category": "Leo",
-        "title": "List nodes from history",
+        "title": "List visited nodes from history",
         "icon": {
           "light": "resources/light/find-quick-history.svg",
           "dark": "resources/dark/find-quick-history.svg"

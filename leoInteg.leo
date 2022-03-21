@@ -6508,10 +6508,10 @@ public static GUI = {
 
     ICON_LIGHT_PARENT: "resources/light/parent.svg",
     ICON_DARK_PARENT: "resources/dark/parent.svg",
-    ICON_LIGHT_BODY: "resources/light/body.svg",
-    ICON_DARK_BODY: "resources/dark/body.svg",
     ICON_LIGHT_NODE: "resources/light/node.svg",
     ICON_DARK_NODE: "resources/dark/node.svg",
+    ICON_LIGHT_BODY: "resources/light/body.svg",
+    ICON_DARK_BODY: "resources/dark/body.svg",
     ICON_LIGHT_TAG: "resources/light/tag.svg",
     ICON_DARK_TAG: "resources/dark/tag.svg",
 
@@ -9650,6 +9650,8 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
+- **Nav and Tags** panes integrated in the 'Find' pane
+- **Goto Anywhere panel** to navigate directly from various search types
 - Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
   - Open body panes to the side in any 'column'
   - Outline editing commands
@@ -9812,7 +9814,8 @@ and using the node's gnx as identifier.
 - [Viktor](https://github.com/ranvik14) for his contributions and support
 - [Gaurami](https://github.com/ATikhonov2) for his suggestions, bug reports and support
 - [Kevin Henderson](https://github.com/kghenderson) for his suggestions and support
-- [Ville M. Vainio](https://github.com/vivainio) for his contributions and suggestions
+- [Ville M. Vainio](https://github.com/vivainio) for his Nav tab original concept
+- [Jacob M. Peck](https://github.com/gatesphere) for his Tags tab original concept
 
 </t>
 <t tx="felix.20200718222417.1">## 0.1.12
@@ -18104,6 +18107,7 @@ public getTextFromClipboard(): string {
      * - Sets when pressing Enter with non-empty input field &amp;&amp; not tag mode.
      */
     let frozen = false;
+    document.getElementById("freeze").style.display = 'none';
     let navSearchTimer // for debouncing the search-headline while typing if unfrozen
 
     // * LeoSearchSettings Type
@@ -18193,6 +18197,11 @@ public getTextFromClipboard(): string {
 
     function setFrozen(p_focus) {
         frozen = p_focus;
+        if (frozen) {
+            document.getElementById("freeze").style.display = '';
+        } else {
+            document.getElementById("freeze").style.display = 'none';
+        }
     }
 
     function setSettings(p_settings) {
@@ -18210,7 +18219,7 @@ public getTextFromClipboard(): string {
         // @ts-expect-error
         document.getElementById("isTag").checked = p_settings["isTag"];
         searchSettings["isTag"] = p_settings["isTag"];
-        setNavPlaceholder()
+        handleIsTagSwitch(false);
         // searchOptions
         // @ts-expect-error
         document.getElementById("searchOptions").value = p_settings["searchOptions"];
@@ -18326,15 +18335,34 @@ public getTextFromClipboard(): string {
         }
     }
 
-    function setNavPlaceholder() {
+    function handleIsTagSwitch(p_wasSet) {
         let w_input = document.getElementById('navText');
+        let w_showParent = document.getElementById('showParents');
+        let w_navSelect = document.getElementById('searchOptions');
         if (searchSettings.isTag) {
             // @ts-expect-error
             w_input.placeholder = "&lt;tag pattern here&gt;";
+            // @ts-expect-error
+            w_showParent.disabled = true;
+            // @ts-expect-error
+            w_navSelect.disabled = true;
+            if (p_wasSet) {
+                // if nav text is empty: show all tags
+                setTimeout(() =&gt; {
+                    clearTimeout(timer);
+                    sendSearchConfig();
+                    navTextChange();
+                }, 100);
+            }
         } else {
             // @ts-expect-error
             w_input.placeholder = "&lt;nav pattern here&gt;";
+            // @ts-expect-error
+            w_showParent.disabled = false;
+            // @ts-expect-error
+            w_navSelect.disabled = false;
         }
+
     }
 
     // * Nav text input detection
@@ -18349,6 +18377,9 @@ public getTextFromClipboard(): string {
                     navTextDirty = false;
                     if (timer) {
                         clearTimeout(timer);
+                    }
+                    if (navSearchTimer) {
+                        clearTimeout(navSearchTimer)
                     }
                     sendSearchConfig();
                 }
@@ -18370,15 +18401,20 @@ public getTextFromClipboard(): string {
         processChange();
     });
     document.getElementById('isTag').addEventListener('change', function (p_event) {
+
         // @ts-expect-error
         let w_checked = this.checked;
+        let w_wasSet = false;
         if (searchSettings.isTag !== w_checked) {
             setFrozen(false); // Switched tagging so reset freeze
+            if (w_checked) {
+                w_wasSet = true;
+            }
         }
         searchSettings.isTag = w_checked;
         // Set placeholder text
-        setNavPlaceholder();
         processChange();
+        handleIsTagSwitch(w_wasSet);
     });
 
     // * Find &amp; Replace controls change detection
@@ -18501,7 +18537,6 @@ public getTextFromClipboard(): string {
 
 </t>
 <t tx="felix.20220305231404.1">public navTextChange(): Thenable&lt;LeoBridgePackage&gt; {
-    console.log('NAV TEXT CHANGE ! ', JSON.stringify(this._lastSettingsUsed));
 
     return this._isBusyTriggerSave(false, true).then(() =&gt; {
 
@@ -18577,7 +18612,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
                     const w_navList: LeoGoto[] = p_package.navList;
                     if (w_navList &amp;&amp; w_navList.length) {
                         w_navList.forEach((p_goto: LeoGoto) =&gt; {
-                            const w_newNode = new LeoGotoNode(p_goto, p_package.navOptions!);
+                            const w_newNode = new LeoGotoNode(this._leoIntegration, p_goto, p_package.navOptions!);
                             if (!this._topNode) {
                                 this._topNode = w_newNode;
                             }
@@ -18605,6 +18640,7 @@ export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&g
 </t>
 <t tx="felix.20220307233828.1">import * as vscode from "vscode";
 import { Constants } from "./constants";
+import { LeoIntegration } from "./leoIntegration";
 import { LeoGoto, TGotoTypes } from "./types";
 import * as utils from "./utils";
 
@@ -18618,39 +18654,51 @@ export class LeoGotoNode extends vscode.TreeItem {
     private _id: string;
     private _description: string | boolean;
     private _headline: string;
+    private _iconIndex: number; // default to tag
+    private _leoIntegration: LeoIntegration;
     public key: number; // id from python
 
     constructor(
-        gotoEntry: LeoGoto,
-        navOptions: { isTag: boolean, showParents: boolean }
+        p_leoIntegration: LeoIntegration,
+        p_gotoEntry: LeoGoto,
+        p_navOptions: { isTag: boolean, showParents: boolean },
+
     ) {
         let w_spacing = "";
-        if (navOptions.showParents &amp;&amp; !navOptions.isTag) {
+        if (p_navOptions.showParents &amp;&amp; !p_navOptions.isTag) {
             w_spacing = "    ";
         }
         let w_label = "";
-        if (["tag", "headline"].includes(gotoEntry.t)) {
-            w_label = w_spacing + gotoEntry.h;
+        if (["tag", "headline"].includes(p_gotoEntry.t)) {
+            w_label = w_spacing + p_gotoEntry.h;
         }
         super(w_label);
 
         // Setup this instance
+        this._leoIntegration = p_leoIntegration;
         this._id = utils.getUniqueId();
-        this.entryType = gotoEntry.t;
-        this.key = gotoEntry.key;
-        this._headline = gotoEntry.h.trim();
+        this.entryType = p_gotoEntry.t;
+        this.key = p_gotoEntry.key;
+        this._headline = p_gotoEntry.h.trim();
 
         this._description = false;
         if (this.entryType === 'body') {
-            if (navOptions.showParents) {
+            this._iconIndex = 2;
+            if (p_navOptions.showParents) {
                 this._description = "    " + this._headline;
             } else {
                 this._description = "  " + this._headline;
             }
         } else if (this.entryType === 'parent') {
+            this._iconIndex = 0;
             this._description = this._headline.trim();
         } else if (this.entryType === 'generic') {
+            this._iconIndex = 4;
             this._description = this._headline;
+        } else if (this.entryType === 'headline') {
+            this._iconIndex = 1;
+        } else {
+            this._iconIndex = 3; // tag
         }
 
         this.command = {
@@ -18658,7 +18706,7 @@ export class LeoGotoNode extends vscode.TreeItem {
             title: '',
             arguments: [this]
         };
-        this.iconPath = undefined;
+
     }
 
     // @ts-ignore
@@ -18675,10 +18723,13 @@ export class LeoGotoNode extends vscode.TreeItem {
     }
 
     // @ts-ignore
-    // public get iconPath(): Icon| vscode.ThemeIcon|string {
-    // return this._leoIntegration.gotoIcons[this.documentEntry.changed ? 1 : 0];
-
-    // }
+    public get iconPath(): Icon | vscode.ThemeIcon | string {
+        if (this._iconIndex &lt; 4) {
+            return this._leoIntegration.gotoIcons[this._iconIndex];
+        }
+        // else return undefined for generic text without icon
+        return undefined;
+    }
 
     // @ts-ignore
     public get id(): string {
@@ -18711,7 +18762,7 @@ export class LeoGotoNode extends vscode.TreeItem {
 {
   "command": "leointeg.findQuickTimeline",
   "category": "Leo",
-  "title": "List nodes in reverse gnx order",
+  "title": "List timeline of nodes in reverse gnx order",
   "icon": {
     "light": "resources/light/find-quick-timeline.svg",
     "dark": "resources/dark/find-quick-timeline.svg"
@@ -18720,7 +18771,7 @@ export class LeoGotoNode extends vscode.TreeItem {
 {
   "command": "leointeg.findQuickChanged",
   "category": "Leo",
-  "title": "List all dirty nodes",
+  "title": "List all changed/dirty nodes",
   "icon": {
     "light": "resources/light/find-quick-changed.svg",
     "dark": "resources/dark/find-quick-changed.svg"
@@ -18729,7 +18780,7 @@ export class LeoGotoNode extends vscode.TreeItem {
 {
   "command": "leointeg.history",
   "category": "Leo",
-  "title": "List nodes from history",
+  "title": "List visited nodes from history",
   "icon": {
     "light": "resources/light/find-quick-history.svg",
     "dark": "resources/dark/find-quick-history.svg"
@@ -18891,11 +18942,7 @@ public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable&lt
 </t>
 <t tx="felix.20220309215616.1">public gotoNavEntry(p_node: LeoGotoNode): Thenable&lt;unknown&gt; {
 
-    console.log('Clicked NAV ENTRY! ', p_node);
-
     if (p_node.entryType === 'tag') {
-
-        console.log('It IS a TAG STRING ENTRY !!');
 
         return this._isBusyTriggerSave(false, true)
             .then((p_saveResult) =&gt; {
@@ -19140,16 +19187,20 @@ public removeTags(): void {
 export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
     return [
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON)
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_PARENT),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_PARENT)
         },
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_RCLICK),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_RCLICK)
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_NODE),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_NODE)
         },
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_ADD),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_ADD)
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BODY),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BODY)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_TAG),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_TAG)
         }
     ];
 }
@@ -19427,6 +19478,7 @@ import * as utils from "../utils";
             &lt;/div&gt;
 
             &lt;input class="mt-0" type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
+            &lt;div id="freeze"&gt;&amp;#x2744;&lt;/div&gt;
 
             &lt;label class="mb-0" for="findText"&gt;Find/Replace:&lt;/label&gt;
             &lt;input type="text" id="findText" name="findText" placeholder="&lt;find pattern here&gt;" &gt;
@@ -19667,6 +19719,9 @@ select {
   position: relative;
   border-radius: 2px;
 }
+select:disabled {
+  opacity: 0.5;
+}
 select option {
   background-color: var(--vscode-dropdown-listBackground);
 }
@@ -19689,7 +19744,9 @@ textarea {
   outline-color: var(--vscode-input-border);
   background-color: var(--vscode-input-background);
 }
-
+input:disabled {
+  opacity: 0.5;
+}
 input[type="checkbox"]:focus + label {
   border: 1px solid var(--vscode-button-background);
 }
@@ -19712,6 +19769,17 @@ body &gt; div &gt; div &gt; label:focus,
 body &gt; div &gt; div &gt; label:active {
   outline-color: none !important;
   border: none !important;
+}
+
+#freeze {
+  position: absolute;
+  right: 0.9em;
+  line-height: 1em;
+  top: 1.05em;
+  font-size: 1.8em;
+  color: #5c87ff80;
+  padding: 0;
+  margin: 0;
 }
 </t>
 <t tx="fil.20210603223933.1"></t>

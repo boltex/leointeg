@@ -145,16 +145,20 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
     return [
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON)
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_PARENT),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_PARENT)
         },
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_RCLICK),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_RCLICK)
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_NODE),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_NODE)
         },
         {
-            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BUTTON_ADD),
-            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BUTTON_ADD)
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BODY),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BODY)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_TAG),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_TAG)
         }
     ];
 }

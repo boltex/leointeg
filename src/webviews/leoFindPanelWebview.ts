@@ -138,6 +138,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                 </div>
 
                 <input class="mt-0" type="text" id="navText" name="navText" placeholder="<nav pattern here>">
+                <div id="freeze">&#x2744;</div>
 
                 <label class="mb-0" for="findText">Find/Replace:</label>
                 <input type="text" id="findText" name="findText" placeholder="<find pattern here>" >

@@ -132,6 +132,9 @@ select {
   position: relative;
   border-radius: 2px;
 }
+select:disabled {
+  opacity: 0.5;
+}
 select option {
   background-color: var(--vscode-dropdown-listBackground);
 }
@@ -154,7 +157,9 @@ textarea {
   outline-color: var(--vscode-input-border);
   background-color: var(--vscode-input-background);
 }
-
+input:disabled {
+  opacity: 0.5;
+}
 input[type="checkbox"]:focus + label {
   border: 1px solid var(--vscode-button-background);
 }
@@ -177,4 +182,15 @@ body > div > div > label:focus,
 body > div > div > label:active {
   outline-color: none !important;
   border: none !important;
+}
+
+#freeze {
+  position: absolute;
+  right: 0.9em;
+  line-height: 1em;
+  top: 1.05em;
+  font-size: 1.8em;
+  color: #5c87ff80;
+  padding: 0;
+  margin: 0;
 }

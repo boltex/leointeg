@@ -83,10 +83,10 @@ export class Constants {
 
         ICON_LIGHT_PARENT: "resources/light/parent.svg",
         ICON_DARK_PARENT: "resources/dark/parent.svg",
-        ICON_LIGHT_BODY: "resources/light/body.svg",
-        ICON_DARK_BODY: "resources/dark/body.svg",
         ICON_LIGHT_NODE: "resources/light/node.svg",
         ICON_DARK_NODE: "resources/dark/node.svg",
+        ICON_LIGHT_BODY: "resources/light/body.svg",
+        ICON_DARK_BODY: "resources/dark/body.svg",
         ICON_LIGHT_TAG: "resources/light/tag.svg",
         ICON_DARK_TAG: "resources/dark/tag.svg",
 

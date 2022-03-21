@@ -2781,11 +2781,7 @@ export class LeoIntegration {
 
     public gotoNavEntry(p_node: LeoGotoNode): Thenable<unknown> {
 
-        console.log('Clicked NAV ENTRY! ', p_node);
-
         if (p_node.entryType === 'tag') {
-
-            console.log('It IS a TAG STRING ENTRY !!');
 
             return this._isBusyTriggerSave(false, true)
                 .then((p_saveResult) => {
@@ -2879,7 +2875,6 @@ export class LeoIntegration {
     }
 
     public navTextChange(): Thenable<LeoBridgePackage> {
-        console.log('NAV TEXT CHANGE ! ', JSON.stringify(this._lastSettingsUsed));
 
         return this._isBusyTriggerSave(false, true).then(() => {
 

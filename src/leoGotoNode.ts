@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { Constants } from "./constants";
+import { LeoIntegration } from "./leoIntegration";
 import { LeoGoto, TGotoTypes } from "./types";
 import * as utils from "./utils";
 
@@ -13,39 +14,51 @@ export class LeoGotoNode extends vscode.TreeItem {
     private _id: string;
     private _description: string | boolean;
     private _headline: string;
+    private _iconIndex: number; // default to tag
+    private _leoIntegration: LeoIntegration;
     public key: number; // id from python
 
     constructor(
-        gotoEntry: LeoGoto,
-        navOptions: { isTag: boolean, showParents: boolean }
+        p_leoIntegration: LeoIntegration,
+        p_gotoEntry: LeoGoto,
+        p_navOptions: { isTag: boolean, showParents: boolean },
+
     ) {
         let w_spacing = "";
-        if (navOptions.showParents && !navOptions.isTag) {
+        if (p_navOptions.showParents && !p_navOptions.isTag) {
             w_spacing = "    ";
         }
         let w_label = "";
-        if (["tag", "headline"].includes(gotoEntry.t)) {
-            w_label = w_spacing + gotoEntry.h;
+        if (["tag", "headline"].includes(p_gotoEntry.t)) {
+            w_label = w_spacing + p_gotoEntry.h;
         }
         super(w_label);
 
         // Setup this instance
+        this._leoIntegration = p_leoIntegration;
         this._id = utils.getUniqueId();
-        this.entryType = gotoEntry.t;
-        this.key = gotoEntry.key;
-        this._headline = gotoEntry.h.trim();
+        this.entryType = p_gotoEntry.t;
+        this.key = p_gotoEntry.key;
+        this._headline = p_gotoEntry.h.trim();
 
         this._description = false;
         if (this.entryType === 'body') {
-            if (navOptions.showParents) {
+            this._iconIndex = 2;
+            if (p_navOptions.showParents) {
                 this._description = "    " + this._headline;
             } else {
                 this._description = "  " + this._headline;
             }
         } else if (this.entryType === 'parent') {
+            this._iconIndex = 0;
             this._description = this._headline.trim();
         } else if (this.entryType === 'generic') {
+            this._iconIndex = 4;
             this._description = this._headline;
+        } else if (this.entryType === 'headline') {
+            this._iconIndex = 1;
+        } else {
+            this._iconIndex = 3; // tag
         }
 
         this.command = {
@@ -53,7 +66,7 @@ export class LeoGotoNode extends vscode.TreeItem {
             title: '',
             arguments: [this]
         };
-        this.iconPath = undefined;
+
     }
 
     // @ts-ignore
@@ -70,10 +83,13 @@ export class LeoGotoNode extends vscode.TreeItem {
     }
 
     // @ts-ignore
-    // public get iconPath(): Icon| vscode.ThemeIcon|string {
-    // return this._leoIntegration.gotoIcons[this.documentEntry.changed ? 1 : 0];
-
-    // }
+    public get iconPath(): Icon | vscode.ThemeIcon | string {
+        if (this._iconIndex < 4) {
+            return this._leoIntegration.gotoIcons[this._iconIndex];
+        }
+        // else return undefined for generic text without icon
+        return undefined;
+    }
 
     // @ts-ignore
     public get id(): string {

@@ -21,6 +21,7 @@
      * - Sets when pressing Enter with non-empty input field && not tag mode.
      */
     let frozen = false;
+    document.getElementById("freeze").style.display = 'none';
     let navSearchTimer // for debouncing the search-headline while typing if unfrozen
 
     // * LeoSearchSettings Type
@@ -110,6 +111,11 @@
 
     function setFrozen(p_focus) {
         frozen = p_focus;
+        if (frozen) {
+            document.getElementById("freeze").style.display = '';
+        } else {
+            document.getElementById("freeze").style.display = 'none';
+        }
     }
 
     function setSettings(p_settings) {
@@ -127,7 +133,7 @@
         // @ts-expect-error
         document.getElementById("isTag").checked = p_settings["isTag"];
         searchSettings["isTag"] = p_settings["isTag"];
-        setNavPlaceholder()
+        handleIsTagSwitch(false);
         // searchOptions
         // @ts-expect-error
         document.getElementById("searchOptions").value = p_settings["searchOptions"];
@@ -243,15 +249,34 @@
         }
     }
 
-    function setNavPlaceholder() {
+    function handleIsTagSwitch(p_wasSet) {
         let w_input = document.getElementById('navText');
+        let w_showParent = document.getElementById('showParents');
+        let w_navSelect = document.getElementById('searchOptions');
         if (searchSettings.isTag) {
             // @ts-expect-error
             w_input.placeholder = "<tag pattern here>";
+            // @ts-expect-error
+            w_showParent.disabled = true;
+            // @ts-expect-error
+            w_navSelect.disabled = true;
+            if (p_wasSet) {
+                // if nav text is empty: show all tags
+                setTimeout(() => {
+                    clearTimeout(timer);
+                    sendSearchConfig();
+                    navTextChange();
+                }, 100);
+            }
         } else {
             // @ts-expect-error
             w_input.placeholder = "<nav pattern here>";
+            // @ts-expect-error
+            w_showParent.disabled = false;
+            // @ts-expect-error
+            w_navSelect.disabled = false;
         }
+
     }
 
     // * Nav text input detection
@@ -266,6 +291,9 @@
                     navTextDirty = false;
                     if (timer) {
                         clearTimeout(timer);
+                    }
+                    if (navSearchTimer) {
+                        clearTimeout(navSearchTimer)
                     }
                     sendSearchConfig();
                 }
@@ -287,15 +315,20 @@
         processChange();
     });
     document.getElementById('isTag').addEventListener('change', function (p_event) {
+
         // @ts-expect-error
         let w_checked = this.checked;
+        let w_wasSet = false;
         if (searchSettings.isTag !== w_checked) {
             setFrozen(false); // Switched tagging so reset freeze
+            if (w_checked) {
+                w_wasSet = true;
+            }
         }
         searchSettings.isTag = w_checked;
         // Set placeholder text
-        setNavPlaceholder();
         processChange();
+        handleIsTagSwitch(w_wasSet);
     });
 
     // * Find & Replace controls change detection
