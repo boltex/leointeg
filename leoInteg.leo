@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20220321001559.1"><vh>1.0.7</vh></v>
 <v t="felix.20220216005511.1"><vh>1.0.6</vh></v>
 <v t="felix.20211210001626.1"><vh>1.0.5</vh></v>
 <v t="felix.20211018004333.1"><vh>1.0.4</vh></v>
@@ -19204,6 +19205,12 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
         }
     ];
 }
+
+</t>
+<t tx="felix.20220321001559.1">## 1.0.7
+
+- Added 'Goto Anywhere' panel, with buttons for showing lists from common node attributes searches.
+- Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'.
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
