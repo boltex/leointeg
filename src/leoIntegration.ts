@@ -2826,7 +2826,7 @@ export class LeoIntegration {
         }
 
         // Was not a tag
-        if (p_node.entryType !== 'generic') {
+        if (p_node.entryType !== 'generic' && p_node.entryType !== 'parent') {
             return this._isBusyTriggerSave(false, true)
                 .then((p_saveResult) => {
                     return this.sendAction(

@@ -18997,7 +18997,7 @@ public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable&lt
     }
 
     // Was not a tag
-    if (p_node.entryType !== 'generic') {
+    if (p_node.entryType !== 'generic' &amp;&amp; p_node.entryType !== 'parent') {
         return this._isBusyTriggerSave(false, true)
             .then((p_saveResult) =&gt; {
                 return this.sendAction(
