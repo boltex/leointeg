@@ -702,22 +702,15 @@ class QuickSearchController:
                     # for h in sorted(aList):
                     #     self.lw.push(key)
                     #     print(f"{key:>8} {h}")
-                return
-            else:
-                return
-                # if not g.unitTesting:
-                #     print(f"no tags in {c.shortFileName()}")
+
+            # elif not g.unitTesting:
+            #     print(f"no tags in {c.shortFileName()}")
+            return
 
         # else: non empty pattern, so find tag!
         hm = self.find_tag(pat)
-
         self.clear() # needed for external client ui replacement: fills self.its
         self.addHeadlineMatches(hm) # added for external client ui replacement: fills self.its
-
-        # bm = self.c.find_b(bpat, flags)
-        # self.addBodyMatches(bm)
-        return hm, [] # unused
-        # self.lw.insertItem(0, "%d hits"%self.lw.count())
     #@+node:felix.20220225003906.15: *3* bgSearch
     def bgSearch(self, pat):
         if not pat.startswith('r:'):
@@ -1448,7 +1441,13 @@ class LeoServer:
         c = self._check_c()
         try:
             result = {}
-            navlist = [ {"key": k, "h": c.scon.its[k][0]["label"], "t": c.scon.its[k][0]["type"] } for k in c.scon.its.keys()]
+            navlist = [
+                {
+                    "key": k,
+                    "h": c.scon.its[k][0]["label"],
+                    "t": c.scon.its[k][0]["type"]
+                } for k in c.scon.its.keys()
+            ]
             result["navList"] = navlist
             result["messages"]= c.scon.lw
             result["navText"] = c.scon.navText
@@ -2267,6 +2266,7 @@ class LeoServer:
         # set this node's new headline
         newNode.h = newHeadline
         newNode.setDirty()
+        c.setChanged()
         c.undoer.afterInsertNode(
             newNode, 'Insert Node', bunch)
         c.selectPosition(newNode)
@@ -2288,6 +2288,7 @@ class LeoServer:
         # set this node's new headline
         newNode.h = newHeadline
         newNode.setDirty()
+        c.setChanged()
         c.undoer.afterInsertNode(
             newNode, 'Insert Node', bunch)
         c.selectPosition(newNode)
@@ -2439,8 +2440,13 @@ class LeoServer:
         c = self._check_c()
         p = self._get_p(param)
         u = c.undoer
-        h = param.get('name', '')
+        h: str = param.get('name', '')
+        oldH: str = p.h
+        if h == oldH:
+            self._make_response()
         bunch = u.beforeChangeNodeContents(p)
+        p.setDirty()
+        c.setChanged()
         p.h = h
         u.afterChangeNodeContents(p, 'Change Headline', bunch)
         return self._make_response()

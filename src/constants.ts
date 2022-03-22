@@ -777,10 +777,28 @@ export class Constants {
         SET_CLOSE_ON_FILE_DELETE: Constants.NAME + ".setCloseOnFileDelete",
     };
 
+    public static addMinibufferCommands: { label: string, detail: string }[] = [
+        { "label": "find-quick", "detail": "Opens the Nav tab." },
+        { "label": "find-quick-selected", "detail": "Opens the Nav tab with the selected text as the search string." },
+        { "label": "focus-to-nav", "detail": "Puts focus in Nav tab." },
+        { "label": "find-quick-timeline", "detail": "Lists all nodes in reversed gnx order, newest to oldest." },
+        { "label": "find-quick-changed", "detail": "Lists all nodes that are changed (aka \"dirty\") since last save." },
+        { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
+        { "label": "marked-list", "detail": "List all marked nodes." },
+    ];
+
     /**
      * * Overridden 'good' minibuffer commands
      */
     public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
+        "find-quick": Constants.COMMANDS.FIND_QUICK,
+        "find-quick-selected": Constants.COMMANDS.FIND_QUICK,
+        "focus-to-nav": Constants.COMMANDS.FIND_QUICK,
+        "find-quick-timeline": Constants.COMMANDS.FIND_QUICK_TIMELINE,
+        "find-quick-changed": Constants.COMMANDS.FIND_QUICK_CHANGED,
+        "history": Constants.COMMANDS.FIND_QUICK_HISTORY,
+        "marked-list": Constants.COMMANDS.FIND_QUICK_MARKED,
+
         "tag-children": Constants.COMMANDS.TAG_CHILDREN,
         "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
         "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,

@@ -2303,11 +2303,13 @@ export class LeoIntegration {
                                 p_command.detail = p_command.detail.trim().replace(w_regexp, ' ');
                             }
                         });
+                        p_result.commands.push(...Constants.addMinibufferCommands);
                         return p_result.commands;
                     } else {
                         return [];
                     }
                 });
+                // Add Nav tab special commands
                 const w_options: vscode.QuickPickOptions = {
                     placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
                     matchOnDetail: true,

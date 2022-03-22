@@ -404,6 +404,7 @@
 <v t="felix.20201103000337.1"><vh>body language code strings</vh></v>
 <v t="felix.20200718020912.13"><vh>leoBridge action strings</vh></v>
 <v t="felix.20200718020912.15"><vh>commands strings</vh></v>
+<v t="felix.20220321211021.1"><vh>additional minibuffer commands</vh></v>
 <v t="felix.20210602151654.1"><vh>minibuffer overridden commands</vh></v>
 </v>
 </v>
@@ -14576,11 +14577,13 @@ public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
                             p_command.detail = p_command.detail.trim().replace(w_regexp, ' ');
                         }
                     });
+                    p_result.commands.push(...Constants.addMinibufferCommands);
                     return p_result.commands;
                 } else {
                     return [];
                 }
             });
+            // Add Nav tab special commands
             const w_options: vscode.QuickPickOptions = {
                 placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
                 matchOnDetail: true,
@@ -16411,6 +16414,14 @@ public gotoGlobalLine(): void {
  * * Overridden 'good' minibuffer commands
  */
 public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
+    "find-quick": Constants.COMMANDS.FIND_QUICK,
+    "find-quick-selected": Constants.COMMANDS.FIND_QUICK,
+    "focus-to-nav": Constants.COMMANDS.FIND_QUICK,
+    "find-quick-timeline": Constants.COMMANDS.FIND_QUICK_TIMELINE,
+    "find-quick-changed": Constants.COMMANDS.FIND_QUICK_CHANGED,
+    "history": Constants.COMMANDS.FIND_QUICK_HISTORY,
+    "marked-list": Constants.COMMANDS.FIND_QUICK_MARKED,
+
     "tag-children": Constants.COMMANDS.TAG_CHILDREN,
     "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
     "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
@@ -19212,6 +19223,17 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 - Added 'Goto Anywhere' panel, with buttons for showing lists from common node attributes searches.
 - Made commands available through vscode for find-quick-timeline, find-quick-changed, history and marked-list
 - Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'.
+
+</t>
+<t tx="felix.20220321211021.1">public static addMinibufferCommands: { label: string, detail: string }[] = [
+    { "label": "find-quick", "detail": "Opens the Nav tab." },
+    { "label": "find-quick-selected", "detail": "Opens the Nav tab with the selected text as the search string." },
+    { "label": "focus-to-nav", "detail": "Puts focus in Nav tab." },
+    { "label": "find-quick-timeline", "detail": "Lists all nodes in reversed gnx order, newest to oldest." },
+    { "label": "find-quick-changed", "detail": "Lists all nodes that are changed (aka \"dirty\") since last save." },
+    { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
+    { "label": "marked-list", "detail": "List all marked nodes." },
+];
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
