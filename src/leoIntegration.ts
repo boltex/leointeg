@@ -2834,12 +2834,13 @@ export class LeoIntegration {
                         JSON.stringify({ key: p_node.key })
                     );
                 })
-                .then((p_findResult: LeoBridgePackage) => {
-                    if (!p_findResult.focus) {
+                .then((p_navEntryResult: LeoBridgePackage) => {
+                    if (!p_navEntryResult.focus) {
                         vscode.window.showInformationMessage('Not found');
                     } else {
                         let w_focusOnOutline = false;
-                        const w_focus = p_findResult.focus.toLowerCase();
+                        const w_focus = p_navEntryResult.focus.toLowerCase();
+
                         if (w_focus.includes('tree') || w_focus.includes('head')) {
                             // tree
                             w_focusOnOutline = true;
