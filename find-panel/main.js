@@ -203,6 +203,13 @@
         }
         var keyCode = p_event.code || p_event.key;
 
+        if (p_event.ctrlKey && !p_event.shiftKey && p_event.keyCode === 70) {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            focusOnField('findText');
+            return;
+        }
+
         if (keyCode === 'Tab') {
             var actEl = document.activeElement;
             if (p_event.shiftKey) {

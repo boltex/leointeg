@@ -35,6 +35,10 @@ body {
   display: inline-block;
 }
 
+.mt-1 {
+  margin-top: 1px;
+}
+
 .mt-8 {
   margin-top: 8px;
   display: inline-block;
@@ -42,6 +46,10 @@ body {
 
 .mb-0 {
   margin-bottom: 0;
+}
+
+.mb-6 {
+  margin-bottom: 6px;
 }
 
 .mt-0 {
@@ -194,4 +202,8 @@ body > div > div > label:active {
   color: #5c87ff80;
   padding: 0;
   margin: 0;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }

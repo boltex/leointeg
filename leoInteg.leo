@@ -931,6 +931,7 @@
 </v>
 <v t="felix.20200718191946.1"><vh>@clean src/serverManager.ts</vh>
 <v t="felix.20200718191946.2"><vh>class ServerService</vh>
+<v t="felix.20220323232702.1"><vh>checkLeoId</vh></v>
 <v t="felix.20200718191946.4"><vh>startServer</vh></v>
 <v t="felix.20210717192921.1"><vh>killServer</vh></v>
 <v t="ekr.20200815091220.1"><vh>_gotTerminalData</vh></v>
@@ -6887,6 +6888,8 @@ public static LAST_FILES_KEY: string = "leoLastFiles";
 public static DEFAULT_PYTHON: string = "python3";
 public static WIN32_PYTHON: string = "py";
 public static SERVER_NAME: string = "/leoserver.py";
+public static LEO_ID_NAME: string = ".leoID.txt";
+public static SERVER_PATH: string = "/leo/core";
 public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
 public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
 
@@ -9167,6 +9170,7 @@ export class ServerService {
 
     @others
 }
+
 </t>
 <t tx="felix.20200718191946.4">/**
  * * Get command from settings or best command for the current OS
@@ -9205,7 +9209,9 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
     // Show problems when running the server, if any.
     // this._leoIntegration.showTerminalPane(); // #203 Do not 'force' show the server output
 
-    return utils.findNextAvailablePort(p_port).then((p_availablePort) =&gt; {
+    return this.checkLeoId(p_leoEditorPath).then(() =&gt; {
+        return utils.findNextAvailablePort(p_port);
+    }).then((p_availablePort) =&gt; {
         if (!p_availablePort) {
             // vscode.window.showInformationMessage("Port " + p_port+" already in use.");
             return Promise.reject("Port " + p_port + " already in use.");
@@ -9214,7 +9220,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         this.usingPort = p_availablePort;
 
         // Leo Editor installation path is mandatory - Start with Leo Editor's folder
-        let w_serverScriptPath = p_leoEditorPath + "/leo/core";
+        let w_serverScriptPath = p_leoEditorPath + Constants.SERVER_PATH;
 
         try {
             if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
@@ -23043,6 +23049,13 @@ def pushSearchHistory(self, pat):
         }
         var keyCode = p_event.code || p_event.key;
 
+        if (p_event.ctrlKey &amp;&amp; !p_event.shiftKey &amp;&amp; p_event.keyCode === 70) {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            focusOnField('findText');
+            return;
+        }
+
         if (keyCode === 'Tab') {
             var actEl = document.activeElement;
             if (p_event.shiftKey) {
@@ -24233,6 +24246,29 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 ];
 
 </t>
+<t tx="felix.20220323232702.1">public checkLeoId(p_leoEditorPath: string): Promise&lt;any&gt; {
+
+    // Check if .leoID.txt exists : MAY NOT BE NEEDED BECAUSE LEO CHECKS OS.SYS
+
+    try {
+        if (fs.existsSync(p_leoEditorPath + Constants.LEO_ID_NAME)) {
+
+            // console.log('LEO ID EXISTS');
+
+        } else {
+
+            // console.log('LEO ID DOES NOT EXISTS');
+
+            // return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
+        }
+    } catch (p_err) {
+        console.error(p_err);
+        return Promise.reject("checkLeoId: Failed checking if file exist");
+    }
+    return Promise.resolve();
+}
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -24504,7 +24540,7 @@ import * as utils from "../utils";
                 &lt;/div&gt;
             &lt;/div&gt;
 
-            &lt;input class="mt-0" title="Live search - Enter to freeze" type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
+            &lt;input class="mt-0 mb-6" title="Live search - Enter to freeze" type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
             &lt;div id="freeze" title="Clear field to unfreeze"&gt;&amp;#x2744;&lt;/div&gt;
 
             &lt;label class="mb-0" for="findText"&gt;Find/Replace:&lt;/label&gt;
@@ -24649,6 +24685,10 @@ body {
   display: inline-block;
 }
 
+.mt-1 {
+  margin-top: 1px;
+}
+
 .mt-8 {
   margin-top: 8px;
   display: inline-block;
@@ -24656,6 +24696,10 @@ body {
 
 .mb-0 {
   margin-bottom: 0;
+}
+
+.mb-6 {
+  margin-bottom: 6px;
 }
 
 .mt-0 {
@@ -24808,6 +24852,10 @@ body &gt; div &gt; div &gt; label:active {
   color: #5c87ff80;
   padding: 0;
   margin: 0;
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
 </t>
 <t tx="fil.20210603223933.1"></t>
