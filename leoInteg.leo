@@ -5326,18 +5326,21 @@ def yesButton(event=None):
     @others  # define all helper functions.
     try:
         # Careful: raise the Tk dialog if there are errors in the Qt code.
-        if 1:  # Prefer Qt.
-            from leo.core.leoQt import isQt6, QtGui, QtWidgets
-            from leo.core.leoQt import ButtonRole, Information
-            if QtGui and QtWidgets:
-                app = QtWidgets.QApplication([])
-                assert app
-                val = qt_runAskYesNoCancelDialog(c)
-                assert val in ('yes', 'no')
-                return val
+        from leo.core.leoQt import isQt6, QtGui, QtWidgets
+        from leo.core.leoQt import ButtonRole, Information
+        if QtGui and QtWidgets:
+            app = QtWidgets.QApplication([])
+            assert app
+            val = qt_runAskYesNoCancelDialog(c)
+            assert val in ('yes', 'no')
+            return val
     except Exception:
         pass
-    return tk_runAskYesNoCancelDialog(c)
+    if Tk:
+        return tk_runAskYesNoCancelDialog(c)
+    # #2512: There is no way to raise a dialog.
+    return 'yes'  # Just save the file!
+    
 </t>
 <t tx="felix.20191126232434.13">def open_file(self, param):
     """
@@ -17913,9 +17916,12 @@ import sys
 import socket
 import textwrap
 import time
-import tkinter as Tk
-from typing import List, Union
+from typing import Any, Dict, List, Union
 # Third-party.
+try:
+    import tkinter as Tk
+except Exception:
+    Tk = None
 # #2300
 try:
     import websockets
@@ -18062,7 +18068,6 @@ from leo.core.leoExternalFiles import ExternalFilesController
         fc.in_headline = True
     elif fromBody and inOutline:
         fc.in_headline = False
-        # w = c.frame.body.wrapper
         c.bodyWantsFocus()
         c.bodyWantsFocusNow()
     #
@@ -22472,7 +22477,6 @@ public getTextFromClipboard(): string {
     for pat in self._search_patterns:
         self.addGeneric(pat, sHistSelect(pat))
 
-
 def pushSearchHistory(self, pat):
     if pat in self._search_patterns:
         return
@@ -22506,7 +22510,7 @@ def pushSearchHistory(self, pat):
     else:
         hpat = pat[2:]
         bpat = pat[2:]
-        flags = 0
+        flags = 0  # type:ignore
     combo = self.searchOptionsStrings[self.searchOptions]
     if combo == "All":
         hNodes = self.c.all_positions()
@@ -22593,7 +22597,7 @@ def pushSearchHistory(self, pat):
     else:
         hpat = pat[2:]
         # bpat = pat[2:]
-        flags = 0
+        flags = 0  # type:ignore
     combo =  self.searchOptionsStrings[self.searchOptions]
     if combo == "All":
         hNodes = self.c.all_positions()
@@ -22685,47 +22689,13 @@ def pushSearchHistory(self, pat):
     self.searchOptionsStrings = ["All", "Subtree", "File",
                                  "Chapter", "Node"]
 
-    def searcher(inp):
-        # Todo: maybe re-use original QuickSearchController threadutil behavior
-        exp = inp.replace(" ", "*")
-        res = self.bgSearch(exp)
-        return res
-
-    def dumper():
-        # Todo: maybe re-use original QuickSearchController threadutil behavior
-        # always run on ui thread
-        pass
-        # out = self.worker.output
-        # self.throttler.add(out)
-
-    def throttledDump(lst):
-        """ dumps the last output """
-        # Todo: maybe re-use original QuickSearchController threadutil behavior
-        # we do get called with empty list on occasion
-        if not lst:
-            return
-        hm, bm = lst[-1]
-        self.clear()
-        self.addHeadlineMatches(hm)
-        self.addBodyMatches(bm)
-
-    # ***** below is original QuickSearchController threadutil behavior *****
-    # ? self.throttler = threadutil.NowOrLater(throttledDump)
-    # ? self.worker.set_worker(searcher)
-    # ? self.worker.set_output_f(dumper)
-    # ? self.worker.resultReady.connect(dumper)
-    # ? self.worker.start()
-    # we want both single-clicks and activations (press enter)
-    # ? w.itemActivated.connect(self.onActivated)
-    # ? w.itemPressed.connect(self.onSelectItem)
-    # ? w.currentItemChanged.connect(self.onSelectItem)
-
 </t>
 <t tx="felix.20220225003906.20">def onSelectItem(self, it, it_prev=None):
     c = self.c
     tgt = self.its.get(it)
     if not tgt:
-        print("onSelectItem: no target found for 'it' as key:" + str(it))
+        if not g.unitTesting:
+            print("onSelectItem: no target found for 'it' as key:" + str(it))
         return
 
     # generic callable
@@ -22741,10 +22711,14 @@ def pushSearchHistory(self, pat):
                     return
                 c.selectPosition(p)
                 if pos is not None:
+                    if hasattr(g.app.gui, 'show_find_success'):  # pragma: no cover
+                        g.app.gui.show_find_success(c, False, 0, p)
                     st, en = pos
                     w = c.frame.body.wrapper
                     w.setSelectionRange(st, en)
                     w.seeInsertPoint()
+                    c.bodyWantsFocus()
+                    c.bodyWantsFocusNow()
                 else:
                     if hasattr(g.app.gui, 'show_find_success'):  # pragma: no cover
                         g.app.gui.show_find_success(c, True, 0, p)
@@ -23335,7 +23309,7 @@ def pushSearchHistory(self, pat):
     tag = 'get_goto_panel'
     c = self._check_c()
     try:
-        result = {}
+        result: Dict[str, Any] = {}
         navlist = [
             {
                 "key": k,
@@ -23927,7 +23901,7 @@ private _onGotoTreeViewVisibilityChanged(
         # No pattern! list all tags as string
         c = self.c
         self.clear()
-        d = {}
+        d: Dict[str, Any] = {}
         for p in c.all_unique_positions():
             u = p.v.u
             tags = set(u.get('__node_tags', set([])))
@@ -23939,16 +23913,7 @@ private _onGotoTreeViewVisibilityChanged(
             for key in sorted(d):
                 # key is unique tag
                 self.addTag(key)
-                #
-                # aList = d.get(key)
-                # for h in sorted(aList):
-                #     self.lw.push(key)
-                #     print(f"{key:&gt;8} {h}")
-
-        # elif not g.unitTesting:
-        #     print(f"no tags in {c.shortFileName()}")
         return
-
     # else: non empty pattern, so find tag!
     hm = self.find_tag(pat)
     self.clear() # needed for external client ui replacement: fills self.its
@@ -24121,7 +24086,8 @@ public removeTag(): void {
     try:
         p = self._get_p(param)
         tc = getattr(c, 'theTagController', None)
-        tc.add_tag(p, tag_param)
+        if hasattr(tc, 'add_tag'):
+            tc.add_tag(p, tag_param)
     except Exception as e:
         raise ServerError(f"{tag}: Running tag_node gave exception: {e}")
     return self._make_response()
