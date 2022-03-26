@@ -23138,7 +23138,7 @@ def pushSearchHistory(self, pat):
         if (!p_event) p_event = window.event;
         var keyCode = p_event.code || p_event.key;
         if (keyCode === 'Enter') {
-            if (searchSettings.navText.length &gt; 3 || searchSettings.isTag) {
+            if (searchSettings.navText.length &gt;= 3 || searchSettings.isTag) {
                 setFrozen(true);
                 if (navTextDirty) {
                     navTextDirty = false;
@@ -24522,8 +24522,12 @@ import * as utils from "../utils";
         &lt;body&gt;
             &lt;div class="row mb-0"&gt;
                 &lt;div class="col no-overflow"&gt;
-                    &lt;label class="first" for="navText"&gt;Nav:&lt;/label&gt;
-                    &lt;select name="searchOptions" id="searchOptions"&gt;
+                    &lt;label for="navText"&gt;Nav:&lt;/label&gt;
+                    &lt;select
+                        name="searchOptions"
+                        id="searchOptions"
+                        title="Confine search to:&amp;#013; - All: regular search for all nodes&amp;#013; - Subtree: current node and it's children&amp;#013; - File: only search under a node with an @&lt;file&gt; directive&amp;#013; - Chapter: only search under a node with an @chapter directer&amp;#013; - Node: only search currently selected node"
+                    &gt;
                         &lt;option value="0"&gt;All&lt;/option&gt;
                         &lt;option value="1"&gt;Subtree&lt;/option&gt;
                         &lt;option value="2"&gt;File&lt;/option&gt;
@@ -24533,46 +24537,51 @@ import * as utils from "../utils";
                 &lt;/div&gt;
                 &lt;div class="col-nav"&gt;
                     &lt;input type="checkbox" id="isTag" name="isTag" &gt;
-                    &lt;label for="isTag"&gt;Tag&lt;/label&gt;
+                    &lt;label class="label-fix" for="isTag" title="Search Tag attributes, set algebra is supported:&amp;#013;&amp;amp; both the given tags&amp;#013;&amp;vert; either of the given tags (or both)&amp;#013;&amp;#45; the first tag, but not the second tag&amp;#013;&amp;#94; either of the given tags (but *not* both)&amp;#013;"
+                    &gt;Tag&lt;/label&gt;
 
                     &lt;input type="checkbox" id="showParents" name="showParents" &gt;
-                    &lt;label for="showParents"&gt;Show parents&lt;/label&gt;
+                    &lt;label class="label-fix" for="showParents" title="List parents of nodes in text searches."&gt;Show parents&lt;/label&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
-
-            &lt;input class="mt-0 mb-6" title="Live search - Enter to freeze" type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
-            &lt;div id="freeze" title="Clear field to unfreeze"&gt;&amp;#x2744;&lt;/div&gt;
+            &lt;div class="input-holder mt-0 mb-6"&gt;
+                &lt;input title="Typing searches headlines, Enter also searches body text and freeze." type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
+            &lt;/div&gt;
+            &lt;div id="freeze" title="Clear field to unfreeze."&gt;&amp;#x2744;&lt;/div&gt;
 
             &lt;label class="mb-0" for="findText"&gt;Find/Replace:&lt;/label&gt;
-            &lt;input type="text" id="findText" name="findText" placeholder="&lt;find pattern here&gt;" &gt;
-            &lt;!-- &lt;label for="replaceText"&gt;Replace:&lt;/label&gt; --&gt;
-            &lt;input type="text" id="replaceText" name="replaceText" placeholder="&lt;replace pattern here&gt;" &gt;
+            &lt;div class="input-holder mt-4 mb-4"&gt;
+                &lt;input title="Enter or F3 will find and goto the next match.&amp;#013;F2 for the previous match" type="text" id="findText" name="findText" placeholder="&lt;find pattern here&gt;" &gt;
+            &lt;/div&gt;
+            &lt;div class="input-holder mb-4"&gt;
+                &lt;input type="text" id="replaceText" name="replaceText" placeholder="&lt;replace pattern here&gt;" &gt;
+            &lt;/div&gt;
             &lt;div class="row"&gt;
                 &lt;div class="col"&gt;
                     &lt;input type="checkbox" id="wholeWord" name="wholeWord" &gt;
-                    &lt;label for="wholeWord"&gt;Whole &lt;u&gt;w&lt;/u&gt;ord&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="wholeWord"&gt;Whole &lt;u&gt;w&lt;/u&gt;ord&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="ignoreCase" name="ignoreCase" &gt;
-                    &lt;label for="ignoreCase"&gt;&lt;u&gt;I&lt;/u&gt;gnore case&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="ignoreCase"&gt;&lt;u&gt;I&lt;/u&gt;gnore case&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="regExp" name="regExp" &gt;
-                    &lt;label for="regExp"&gt;Rege&lt;u&gt;x&lt;/u&gt;p&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="regExp"&gt;Rege&lt;u&gt;x&lt;/u&gt;p&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="markFinds" name="markFinds" &gt;
-                    &lt;label for="markFinds"&gt;Mark &lt;u&gt;f&lt;/u&gt;inds&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="markFinds"&gt;Mark &lt;u&gt;f&lt;/u&gt;inds&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="markChanges" name="markChanges" &gt;
-                    &lt;label for="markChanges"&gt;Mark &lt;u&gt;c&lt;/u&gt;hanges&lt;/label&gt;
+                    &lt;label class="label-fix" for="markChanges"&gt;Mark &lt;u&gt;c&lt;/u&gt;hanges&lt;/label&gt;
                 &lt;/div&gt;
                 &lt;div class="col"&gt;
                     &lt;!-- RADIOS --&gt;
                     &lt;input type="radio" id="entireOutline" name="searchScope" value="0"&gt;
-                    &lt;label for="entireOutline"&gt;&lt;u&gt;E&lt;/u&gt;ntire outline&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="entireOutline"&gt;&lt;u&gt;E&lt;/u&gt;ntire outline&lt;/label&gt;&lt;br&gt;
                     &lt;input type="radio" id="subOutlineOnly" name="searchScope" value="1"&gt;
-                    &lt;label for="subOutlineOnly"&gt;&lt;u&gt;S&lt;/u&gt;uboutline Only&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="subOutlineOnly"&gt;&lt;u&gt;S&lt;/u&gt;uboutline Only&lt;/label&gt;&lt;br&gt;
                     &lt;input type="radio" id="nodeOnly" name="searchScope" value="2"&gt;
-                    &lt;label for="nodeOnly"&gt;&lt;u&gt;N&lt;/u&gt;ode only&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="nodeOnly"&gt;&lt;u&gt;N&lt;/u&gt;ode only&lt;/label&gt;&lt;br&gt;
                     &lt;!-- CHECKBOXES --&gt;
                     &lt;input type="checkbox" id="searchHeadline" name="searchHeadline" &gt;
-                    &lt;label for="searchHeadline"&gt;Search &lt;u&gt;h&lt;/u&gt;eadline&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="searchHeadline"&gt;Search &lt;u&gt;h&lt;/u&gt;eadline&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="searchBody" name="searchBody" &gt;
-                    &lt;label for="searchBody"&gt;Search &lt;u&gt;b&lt;/u&gt;ody&lt;/label&gt;
+                    &lt;label class="label-fix" for="searchBody"&gt;Search &lt;u&gt;b&lt;/u&gt;ody&lt;/label&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
             &lt;script nonce="${nonce}" src="${scriptUri}"&gt;&lt;/script&gt;
@@ -24610,6 +24619,52 @@ div.col-nav {
   text-overflow: ellipsis;
   overflow: hidden;
 }
+
+.mt-0 {
+  margin-top: 0;
+}
+
+.mt-4 {
+  margin-top: 4px;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.mb-4 {
+  margin-bottom: 4px;
+}
+
+.mb-6 {
+  margin-bottom: 6px;
+}
+
+.input-holder {
+  padding: 0;
+  margin-right: 6px;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.no-overflow {
+  text-overflow: unset !important;
+}
+
+.label-fix {
+  vertical-align: top;
+  line-height: 18px;
+}
 </t>
 <t tx="fil.20210603223013.4">@others
 @language javascript
@@ -24617,14 +24672,19 @@ div.col-nav {
 </t>
 <t tx="fil.20210603223014.2">@language css
 html {
-	box-sizing: border-box;
-	font-size: 13px;
+  box-sizing: border-box;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+html:hover {
+  overflow: overlay;
 }
 
 *,
 *:before,
 *:after {
-	box-sizing: inherit;
+  box-sizing: inherit;
 }
 
 body,
@@ -24637,14 +24697,14 @@ h6,
 p,
 ol,
 ul {
-	margin: 0;
-	padding: 0;
-	font-weight: normal;
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
 }
 
 img {
-	max-width: 100%;
-	height: auto;
+  max-width: 100%;
+  height: auto;
 }
 </t>
 <t tx="fil.20210603223014.4">@language css
@@ -24654,11 +24714,7 @@ img {
   --input-margin-vertical: 4px;
   --input-margin-horizontal: 0;
   height: 100%;
-  padding-right: 20px;
-}
-
-comment {
-  --container-padding: 20px;
+  padding-right: 14px;
 }
 
 html:focus {
@@ -24677,49 +24733,6 @@ body {
   font-size: var(--vscode-font-size);
   font-weight: var(--vscode-font-weight);
   font-family: var(--vscode-font-family);
-}
-
-.first {
-  margin-top: 2px;
-  margin-bottom: 0;
-  display: inline-block;
-}
-
-.mt-1 {
-  margin-top: 1px;
-}
-
-.mt-8 {
-  margin-top: 8px;
-  display: inline-block;
-}
-
-.mb-0 {
-  margin-bottom: 0;
-}
-
-.mb-6 {
-  margin-bottom: 6px;
-}
-
-.mt-0 {
-  margin-top: 0;
-}
-
-.align-right {
-  text-align: right;
-}
-
-.float-left {
-  float: left;
-}
-
-.float-right {
-  float: right;
-}
-
-.no-overflow {
-  text-overflow: unset !important;
 }
 
 ol,
@@ -24792,6 +24805,7 @@ select {
 }
 select:disabled {
   opacity: 0.5;
+  cursor: default;
 }
 select option {
   background-color: var(--vscode-dropdown-listBackground);
@@ -24815,14 +24829,20 @@ textarea {
   outline-color: var(--vscode-input-border);
   background-color: var(--vscode-input-background);
 }
-input:disabled {
-  opacity: 0.5;
+
+input[type="checkbox"],
+input[type="radio"] {
+  cursor: pointer;
 }
 input[type="checkbox"]:focus + label {
   border: 1px solid var(--vscode-button-background);
 }
 input[type="radio"]:focus + label {
   border: 1px solid var(--vscode-button-background);
+}
+input:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 input::placeholder,
@@ -24854,7 +24874,7 @@ body &gt; div &gt; div &gt; label:active {
   margin: 0;
 }
 
-::-webkit-scrollbar {
+.comment {
   display: none;
 }
 </t>

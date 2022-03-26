@@ -119,8 +119,12 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
             <body>
                 <div class="row mb-0">
                     <div class="col no-overflow">
-                        <label class="first" for="navText">Nav:</label>
-                        <select name="searchOptions" id="searchOptions">
+                        <label for="navText">Nav:</label>
+                        <select
+                            name="searchOptions"
+                            id="searchOptions"
+                            title="Confine search to:&#013; - All: regular search for all nodes&#013; - Subtree: current node and it's children&#013; - File: only search under a node with an @<file> directive&#013; - Chapter: only search under a node with an @chapter directer&#013; - Node: only search currently selected node"
+                        >
                             <option value="0">All</option>
                             <option value="1">Subtree</option>
                             <option value="2">File</option>
@@ -130,46 +134,51 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                     </div>
                     <div class="col-nav">
                         <input type="checkbox" id="isTag" name="isTag" >
-                        <label for="isTag">Tag</label>
+                        <label class="label-fix" for="isTag" title="Search Tag attributes, set algebra is supported:&#013;&amp; both the given tags&#013;&vert; either of the given tags (or both)&#013;&#45; the first tag, but not the second tag&#013;&#94; either of the given tags (but *not* both)&#013;"
+                        >Tag</label>
 
                         <input type="checkbox" id="showParents" name="showParents" >
-                        <label for="showParents">Show parents</label>
+                        <label class="label-fix" for="showParents" title="List parents of nodes in text searches.">Show parents</label>
                     </div>
                 </div>
-
-                <input class="mt-0 mb-6" title="Live search - Enter to freeze" type="text" id="navText" name="navText" placeholder="<nav pattern here>">
-                <div id="freeze" title="Clear field to unfreeze">&#x2744;</div>
+                <div class="input-holder mt-0 mb-6">
+                    <input title="Typing searches headlines, Enter also searches body text and freeze." type="text" id="navText" name="navText" placeholder="<nav pattern here>">
+                </div>
+                <div id="freeze" title="Clear field to unfreeze.">&#x2744;</div>
 
                 <label class="mb-0" for="findText">Find/Replace:</label>
-                <input type="text" id="findText" name="findText" placeholder="<find pattern here>" >
-                <!-- <label for="replaceText">Replace:</label> -->
-                <input type="text" id="replaceText" name="replaceText" placeholder="<replace pattern here>" >
+                <div class="input-holder mt-4 mb-4">
+                    <input title="Enter or F3 will find and goto the next match.&#013;F2 for the previous match" type="text" id="findText" name="findText" placeholder="<find pattern here>" >
+                </div>
+                <div class="input-holder mb-4">
+                    <input type="text" id="replaceText" name="replaceText" placeholder="<replace pattern here>" >
+                </div>
                 <div class="row">
                     <div class="col">
                         <input type="checkbox" id="wholeWord" name="wholeWord" >
-                        <label for="wholeWord">Whole <u>w</u>ord</label><br>
+                        <label class="label-fix" for="wholeWord">Whole <u>w</u>ord</label><br>
                         <input type="checkbox" id="ignoreCase" name="ignoreCase" >
-                        <label for="ignoreCase"><u>I</u>gnore case</label><br>
+                        <label class="label-fix" for="ignoreCase"><u>I</u>gnore case</label><br>
                         <input type="checkbox" id="regExp" name="regExp" >
-                        <label for="regExp">Rege<u>x</u>p</label><br>
+                        <label class="label-fix" for="regExp">Rege<u>x</u>p</label><br>
                         <input type="checkbox" id="markFinds" name="markFinds" >
-                        <label for="markFinds">Mark <u>f</u>inds</label><br>
+                        <label class="label-fix" for="markFinds">Mark <u>f</u>inds</label><br>
                         <input type="checkbox" id="markChanges" name="markChanges" >
-                        <label for="markChanges">Mark <u>c</u>hanges</label>
+                        <label class="label-fix" for="markChanges">Mark <u>c</u>hanges</label>
                     </div>
                     <div class="col">
                         <!-- RADIOS -->
                         <input type="radio" id="entireOutline" name="searchScope" value="0">
-                        <label for="entireOutline"><u>E</u>ntire outline</label><br>
+                        <label class="label-fix" for="entireOutline"><u>E</u>ntire outline</label><br>
                         <input type="radio" id="subOutlineOnly" name="searchScope" value="1">
-                        <label for="subOutlineOnly"><u>S</u>uboutline Only</label><br>
+                        <label class="label-fix" for="subOutlineOnly"><u>S</u>uboutline Only</label><br>
                         <input type="radio" id="nodeOnly" name="searchScope" value="2">
-                        <label for="nodeOnly"><u>N</u>ode only</label><br>
+                        <label class="label-fix" for="nodeOnly"><u>N</u>ode only</label><br>
                         <!-- CHECKBOXES -->
                         <input type="checkbox" id="searchHeadline" name="searchHeadline" >
-                        <label for="searchHeadline">Search <u>h</u>eadline</label><br>
+                        <label class="label-fix" for="searchHeadline">Search <u>h</u>eadline</label><br>
                         <input type="checkbox" id="searchBody" name="searchBody" >
-                        <label for="searchBody">Search <u>b</u>ody</label>
+                        <label class="label-fix" for="searchBody">Search <u>b</u>ody</label>
                     </div>
                 </div>
                 <script nonce="${nonce}" src="${scriptUri}"></script>

@@ -292,7 +292,7 @@
         if (!p_event) p_event = window.event;
         var keyCode = p_event.code || p_event.key;
         if (keyCode === 'Enter') {
-            if (searchSettings.navText.length > 3 || searchSettings.isTag) {
+            if (searchSettings.navText.length >= 3 || searchSettings.isTag) {
                 setFrozen(true);
                 if (navTextDirty) {
                     navTextDirty = false;
