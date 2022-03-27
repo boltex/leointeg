@@ -17464,7 +17464,7 @@ connectionsPool = set()  # type:ignore
 connectionsTotal = 0  # Current connected client total
 # Customizable server options
 argFile = ""
-traces: List = [] # list of traces names, to be used as flags to output traces
+traces: List = []  # list of traces names, to be used as flags to output traces
 wsLimit = 1
 wsPersist = False
 wsSkipDirty = False
@@ -17777,7 +17777,7 @@ if __name__ == '__main__':
         # Add ftm. This won't happen if opened outside leoserver
         c.findCommands.ftm = StringFindTabManager(c)
         cc = QuickSearchController(c)
-        setattr(c, 'scon', cc) # Patch up quick-search controller to the commander
+        setattr(c, 'scon', cc)  # Patch up quick-search controller to the commander
     if not c:  # pragma: no cover
         raise ServerError(f"{tag}: bridge did not open {filename!r}")
     if not c.frame.body.wrapper:  # pragma: no cover
@@ -22626,7 +22626,7 @@ def pushSearchHistory(self, pat):
         hpat = pat[2:]
         # bpat = pat[2:]
         flags = 0  # type:ignore
-    combo =  self.searchOptionsStrings[self.searchOptions]
+    combo = self.searchOptionsStrings[self.searchOptions]
     if combo == "All":
         hNodes = self.c.all_positions()
     elif combo == "Subtree":
@@ -22635,8 +22635,8 @@ def pushSearchHistory(self, pat):
         hNodes = [self.c.p]
     hm = self.find_h(hpat, hNodes, flags)
 
-    self.clear() # needed for external client ui replacement: fills self.its
-    self.addHeadlineMatches(hm) # added for external client ui replacement: fills self.its
+    self.clear()  # needed for external client ui replacement: fills self.its
+    self.addHeadlineMatches(hm)  # added for external client ui replacement: fills self.its
 
     # bm = self.c.find_b(bpat, flags)
     # self.addBodyMatches(bm)
@@ -22696,7 +22696,7 @@ def pushSearchHistory(self, pat):
 <t tx="felix.20220225003906.19"></t>
 <t tx="felix.20220225003906.2">def __init__(self, c):
     self.c = c
-    self.lw = [] # empty list
+    self.lw = []  # empty list
 
     # Keys are id(w),values are either tuples in tuples (w (p,pos)) or tuples (w, f)
     # (function f is when built from addGeneric)
@@ -22712,7 +22712,7 @@ def pushSearchHistory(self, pat):
 
     self.navText = ''
     self.showParents = True
-    self.isTag = False # added concept to combine tag pane functionality
+    self.isTag = False  # added concept to combine tag pane functionality
     self.searchOptions = 0
     self.searchOptionsStrings = ["All", "Subtree", "File",
                                  "Chapter", "Node"]
@@ -22758,7 +22758,7 @@ def pushSearchHistory(self, pat):
 <t tx="felix.20220225003906.4">def addItem(self, it, val):
     self.its[id(it)] = (it, val)
     # changed to 999 from 3000 to replace old threadutil behavior
-    return len(self.its) &gt; 999 # Limit to 999 for now
+    return len(self.its) &gt; 999  # Limit to 999 for now
 </t>
 <t tx="felix.20220225003906.5">def addBodyMatches(self, poslist):
     lineMatchHits = 0
@@ -23306,7 +23306,7 @@ def pushSearchHistory(self, pat):
             c.scon.bgSearch(exp)
     except Exception as e:
         raise ServerError(f"{tag}: exception doing nav headline search: {e}")
-    return  self._make_response()
+    return self._make_response()
 
 
 </t>
@@ -23326,7 +23326,7 @@ def pushSearchHistory(self, pat):
             c.scon.doSearch(inp)
     except Exception as e:
         raise ServerError(f"{tag}: exception doing nav search: {e}")
-    return  self._make_response()
+    return self._make_response()
 
 
 </t>
@@ -23346,9 +23346,9 @@ def pushSearchHistory(self, pat):
             } for k in c.scon.its.keys()
         ]
         result["navList"] = navlist
-        result["messages"]= c.scon.lw
+        result["messages"] = c.scon.lw
         result["navText"] = c.scon.navText
-        result["navOptions"] = {"isTag":c.scon.isTag, "showParents": c.scon.showParents}
+        result["navOptions"] = {"isTag": c.scon.isTag, "showParents": c.scon.showParents}
     except Exception as e:
         raise ServerError(f"{tag}: exception doing nav search: {e}")
     return self._make_response(result)
@@ -23780,28 +23780,28 @@ public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable&lt
     # fill with timeline order gnx nodes
     c = self._check_c()
     c.scon.doTimeline()
-    return  self._make_response()
+    return self._make_response()
 
 </t>
 <t tx="felix.20220309010607.1">def find_quick_changed(self, param):
     # fill with list of all dirty nodes
     c = self._check_c()
     c.scon.doChanged()
-    return  self._make_response()
+    return self._make_response()
 
 </t>
 <t tx="felix.20220309010647.1">def find_quick_history(self, param):
     # fill with list from history
     c = self._check_c()
     c.scon.doNodeHistory()
-    return  self._make_response()
+    return self._make_response()
 
 </t>
 <t tx="felix.20220309010704.1">def find_quick_marked(self, param):
     # fill with list of marked nodes
     c = self._check_c()
     c.scon.doShowMarked()
-    return  self._make_response()
+    return self._make_response()
 
 </t>
 <t tx="felix.20220309205509.1">def goto_nav_entry(self, param):
@@ -23944,8 +23944,8 @@ private _onGotoTreeViewVisibilityChanged(
         return
     # else: non empty pattern, so find tag!
     hm = self.find_tag(pat)
-    self.clear() # needed for external client ui replacement: fills self.its
-    self.addHeadlineMatches(hm) # added for external client ui replacement: fills self.its
+    self.clear()  # needed for external client ui replacement: fills self.its
+    self.addHeadlineMatches(hm)  # added for external client ui replacement: fills self.its
 </t>
 <t tx="felix.20220313185430.1">def find_tag(self, pat):
     """
@@ -24149,7 +24149,7 @@ public removeTag(): void {
         if v.u and '__node_tags' in v.u:
             del v.u['__node_tags']
             tc = getattr(c, 'theTagController', None)
-            tc.initialize_taglist() # reset tag list: some may have been removed
+            tc.initialize_taglist()  # reset tag list: some may have been removed
     except Exception as e:
         raise ServerError(f"{tag}: Running remove_tags gave exception: {e}")
     return self._make_response()
@@ -24291,9 +24291,9 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
             g.es_exception()
             leoID = 'None'
         if len(leoID) &gt; 2:
-            g.app.leoID = leoID;
-            g.app.nodeIndices.defaultId = leoID;
-            g.app.nodeIndices.userId = leoID;
+            g.app.leoID = leoID
+            g.app.nodeIndices.defaultId = leoID
+            g.app.nodeIndices.userId = leoID
     return self._make_response()
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
