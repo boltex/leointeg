@@ -578,6 +578,9 @@ export class LeoIntegration {
             (p_package) => {
                 this.leoStates.leoConnecting = false;
                 // Check if hard-coded first package signature
+
+                // console.log('get CONNECT results: ', p_package);
+
                 if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
                     this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
                 } else {
@@ -605,6 +608,25 @@ export class LeoIntegration {
                     if (!this.config.connectToServerAutomatically) {
                         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                     }
+
+                    /*
+                    this.sendAction(
+                        // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+                        Constants.LEOBRIDGE.SET_LEOID,
+                        JSON.stringify({ leoID: "bacon" })
+
+                    ).then((p_result: LeoBridgePackage) => {
+                        console.log('set leoid results: ', p_result);
+                    }).then(() => {
+                        return this.sendAction(
+                            // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+                            Constants.LEOBRIDGE.GET_LEOID
+                        );
+                    }).then((p_result: LeoBridgePackage) => {
+                        console.log('get leoid results: ', p_result);
+                    });
+                    */
+
                 }
 
                 // TODO : Finish Closing and possibly SAME FOR OPENING AND CONNECTING

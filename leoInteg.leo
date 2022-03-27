@@ -393,6 +393,8 @@
 </v>
 <v t="felix.20210621233316.68"><vh>server:server commands</vh>
 <v t="felix.20210914230846.1"><vh>server.get_version</vh></v>
+<v t="felix.20220326190000.1"><vh>server.get_leoid</vh></v>
+<v t="felix.20220326190008.1"><vh>server.set_leoid</vh></v>
 <v t="felix.20210818012827.1"><vh>server.do_nothing</vh></v>
 <v t="felix.20210621233316.69"><vh>server.set_ask_result</vh></v>
 <v t="felix.20210621233316.70"><vh>server.set_config</vh></v>
@@ -5340,7 +5342,7 @@ def yesButton(event=None):
         return tk_runAskYesNoCancelDialog(c)
     # #2512: There is no way to raise a dialog.
     return 'yes'  # Just save the file!
-    
+
 </t>
 <t tx="felix.20191126232434.13">def open_file(self, param):
     """
@@ -6512,6 +6514,8 @@ public static LEOBRIDGE = {
     TEST: "!test",
     DO_NOTHING: "!do_nothing",
     GET_VERSION: "!get_version",
+    GET_LEOID: "!get_leoid",
+    SET_LEOID: "!set_leoid",
     // * Server Commands
     GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
     APPLY_CONFIG: "!set_config", // "applyConfig",
@@ -12686,6 +12690,9 @@ public connect(): void {
         (p_package) =&gt; {
             this.leoStates.leoConnecting = false;
             // Check if hard-coded first package signature
+
+            // console.log('get CONNECT results: ', p_package);
+
             if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
                 this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
             } else {
@@ -12713,6 +12720,25 @@ public connect(): void {
                 if (!this.config.connectToServerAutomatically) {
                     vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                 }
+
+                /*
+                this.sendAction(
+                    // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+                    Constants.LEOBRIDGE.SET_LEOID,
+                    JSON.stringify({ leoID: "bacon" })
+
+                ).then((p_result: LeoBridgePackage) =&gt; {
+                    console.log('set leoid results: ', p_result);
+                }).then(() =&gt; {
+                    return this.sendAction(
+                        // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+                        Constants.LEOBRIDGE.GET_LEOID
+                    );
+                }).then((p_result: LeoBridgePackage) =&gt; {
+                    console.log('get leoid results: ', p_result);
+                });
+                */
+
             }
 
             // TODO : Finish Closing and possibly SAME FOR OPENING AND CONNECTING
@@ -17575,7 +17601,7 @@ if __name__ == '__main__':
         await register_client(websocket)
         # Start by sending empty as 'ok'.
         n = 0
-        await websocket.send(controller._make_response())
+        await websocket.send(controller._make_response({"leoID": g.app.leoID}))
         controller._emit_signon()
 
         # Websocket connection message handling loop
@@ -24234,6 +24260,35 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
     return Promise.resolve();
 }
 
+</t>
+<t tx="felix.20220326190000.1">def get_leoid(self, param):
+    """
+    returns g.app.leoID
+    """
+    # uses the __version__ global constant and the v1, v2, v3 global version numbers
+    result = {"leoID": g.app.leoID}
+    return self._make_minimal_response(result)
+</t>
+<t tx="felix.20220326190008.1">def set_leoid(self, param):
+    """
+    sets g.app.leoID
+    """
+    # uses the __version__ global constant and the v1, v2, v3 global version numbers
+    leoID = param.get('leoID', '')
+    # Same test/fix as in Leo
+    if leoID:
+        try:
+            leoID = leoID.replace('.', '').replace(',', '').replace('"', '').replace("'", '')
+            # Remove *all* whitespace: https://stackoverflow.com/questions/3739909
+            leoID = ''.join(leoID.split())
+        except Exception:
+            g.es_exception()
+            leoID = 'None'
+        if len(leoID) &gt; 2:
+            g.app.leoID = leoID;
+            g.app.nodeIndices.defaultId = leoID;
+            g.app.nodeIndices.userId = leoID;
+    return self._make_response()
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

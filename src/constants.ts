@@ -448,6 +448,8 @@ export class Constants {
         TEST: "!test",
         DO_NOTHING: "!do_nothing",
         GET_VERSION: "!get_version",
+        GET_LEOID: "!get_leoid",
+        SET_LEOID: "!set_leoid",
         // * Server Commands
         GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
         APPLY_CONFIG: "!set_config", // "applyConfig",
