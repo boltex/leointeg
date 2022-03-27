@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20220321001559.1"><vh>1.0.7</vh></v>
 <v t="felix.20220216005511.1"><vh>1.0.6</vh></v>
 <v t="felix.20211210001626.1"><vh>1.0.5</vh></v>
 <v t="felix.20211018004333.1"><vh>1.0.4</vh></v>
@@ -182,6 +183,8 @@
 <v t="felix.20210601152841.1"><vh>goto_global_line</vh></v>
 <v t="felix.20210620213815.1"><vh>clone_find_tag</vh></v>
 <v t="felix.20210620213822.1"><vh>tag_children</vh></v>
+<v t="felix.20220313212109.1"><vh>tag_node</vh></v>
+<v t="felix.20220313212118.1"><vh>remove_tags</vh></v>
 </v>
 <v t="felix.20200924223910.1"><vh>At Buttons</vh>
 <v t="felix.20200924210020.1"><vh>get_buttons</vh></v>
@@ -259,6 +262,32 @@
 <v t="felix.20210626222905.16"><vh>sefc.warn</vh></v>
 </v>
 </v>
+<v t="jlunz.20151027094647.1"><vh>class OrderedDefaultDict (OrderedDict)</vh></v>
+<v t="felix.20220225003906.1"><vh>class QuickSearchController</vh>
+<v t="felix.20220225003906.2"><vh>__init__</vh></v>
+<v t="felix.20220225224130.1"><vh>matchlines</vh></v>
+<v t="felix.20220225003906.4"><vh>addItem</vh></v>
+<v t="felix.20220225003906.5"><vh>addBodyMatches</vh></v>
+<v t="felix.20220225003906.6"><vh>addParentMatches</vh></v>
+<v t="felix.20220225003906.7"><vh>addGeneric</vh></v>
+<v t="felix.20220318222437.1"><vh>addTag</vh></v>
+<v t="felix.20220225003906.8"><vh>addHeadlineMatches</vh></v>
+<v t="felix.20220225003906.9"><vh>clear</vh></v>
+<v t="felix.20220225003906.10"><vh>doNodeHistory</vh></v>
+<v t="felix.20220225003906.11"><vh>doSearchHistory</vh></v>
+<v t="felix.20220225003906.12"><vh>doTimeline</vh></v>
+<v t="felix.20220225003906.13"><vh>doChanged</vh></v>
+<v t="felix.20220225003906.14"><vh>doSearch</vh></v>
+<v t="felix.20220313183922.1"><vh>doTag</vh></v>
+<v t="felix.20220225003906.15"><vh>bgSearch</vh></v>
+<v t="felix.20220225003906.16"><vh>find_h</vh></v>
+<v t="felix.20220313185430.1"><vh>find_tag</vh></v>
+<v t="felix.20220225003906.17"><vh>find_b</vh></v>
+<v t="felix.20220225003906.18"><vh>doShowMarked</vh></v>
+<v t="felix.20220225003906.19"><vh>Event handlers</vh>
+<v t="felix.20220225003906.20"><vh>onSelectItem (quicksearch.py)</vh></v>
+</v>
+</v>
 <v t="felix.20210621233316.4"><vh>class LeoServer</vh>
 <v t="felix.20210621233316.5"><vh>server.__init__</vh></v>
 <v t="felix.20210622235127.1"><vh>server:leo overridden methods</vh>
@@ -288,6 +317,16 @@
 <v t="felix.20210621233316.17"><vh>server.save_file</vh></v>
 <v t="felix.20210621233316.18"><vh>server.import_any_file</vh></v>
 </v>
+<v t="felix.20220309010334.1"><vh>server.nav commands</vh>
+<v t="felix.20220305211743.1"><vh>server.nav_headline_search</vh></v>
+<v t="felix.20220305211828.1"><vh>server.nav_search</vh></v>
+<v t="felix.20220305215239.1"><vh>server.get_goto_panel</vh></v>
+<v t="felix.20220309010558.1"><vh>server.find_quick_timeline</vh></v>
+<v t="felix.20220309010607.1"><vh>server.find_quick_changed</vh></v>
+<v t="felix.20220309010647.1"><vh>server.find_quick_history</vh></v>
+<v t="felix.20220309010704.1"><vh>server.find_quick_marked</vh></v>
+<v t="felix.20220309205509.1"><vh>server.goto_nav_entry</vh></v>
+</v>
 <v t="felix.20210621233316.19"><vh>server.search commands</vh>
 <v t="felix.20210621233316.20"><vh>server.get_search_settings</vh></v>
 <v t="felix.20210621233316.21"><vh>server.set_search_settings</vh></v>
@@ -306,6 +345,9 @@
 <v t="felix.20210621233316.32"><vh>server.goto_global_line</vh></v>
 <v t="felix.20210621233316.33"><vh>server.clone_find_tag</vh></v>
 <v t="felix.20210621233316.34"><vh>server.tag_children</vh></v>
+<v t="felix.20220313215348.1"><vh>server.tag_node</vh></v>
+<v t="felix.20220313215353.1"><vh>server.remove_tag</vh></v>
+<v t="felix.20220313220807.1"><vh>server.remove_tags</vh></v>
 </v>
 <v t="felix.20210621233316.35"><vh>server:getter commands</vh>
 <v t="felix.20210621233316.36"><vh>server.get_all_open_commanders</vh></v>
@@ -351,6 +393,8 @@
 </v>
 <v t="felix.20210621233316.68"><vh>server:server commands</vh>
 <v t="felix.20210914230846.1"><vh>server.get_version</vh></v>
+<v t="felix.20220326190000.1"><vh>server.get_leoid</vh></v>
+<v t="felix.20220326190008.1"><vh>server.set_leoid</vh></v>
 <v t="felix.20210818012827.1"><vh>server.do_nothing</vh></v>
 <v t="felix.20210621233316.69"><vh>server.set_ask_result</vh></v>
 <v t="felix.20210621233316.70"><vh>server.set_config</vh></v>
@@ -443,6 +487,7 @@
 <v t="ekr.20200815123601.25"><vh>Hoist/Dehoist</vh></v>
 <v t="ekr.20200815123601.26"><vh>Undo/Redo</vh></v>
 <v t="felix.20210517001143.1"><vh>Search</vh></v>
+<v t="felix.20220307235733.1"><vh>Nav</vh></v>
 <v t="felix.20210517001459.1"><vh>Mark Nodes</vh></v>
 </v>
 <v t="ekr.20200815123601.28"><vh>viewsWelcome</vh>
@@ -479,6 +524,7 @@
 <v t="ekr.20200815123601.52"><vh>Goto Nodes</vh></v>
 <v t="ekr.20200815123601.53"><vh>Hoist/Dehoist</vh></v>
 <v t="ekr.20200815123601.54"><vh>Undo/Redo</vh></v>
+<v t="felix.20220308220651.1"><vh>Nav</vh></v>
 <v t="felix.20210530153353.1"><vh>Search</vh></v>
 <v t="felix.20210530153359.1"><vh>Mark Nodes</vh></v>
 <v t="ekr.20200815123601.56"><vh>Hidden Commands</vh>
@@ -572,6 +618,7 @@
 <v t="felix.20201103000337.1"><vh>body language code strings</vh></v>
 <v t="felix.20200718020912.13"><vh>leoBridge action strings</vh></v>
 <v t="felix.20200718020912.15"><vh>commands strings</vh></v>
+<v t="felix.20220321211021.1"><vh>additional minibuffer commands</vh></v>
 <v t="felix.20210602151654.1"><vh>minibuffer overridden commands</vh></v>
 </v>
 </v>
@@ -628,6 +675,8 @@
 <v t="felix.20200718153505.13"><vh>_send</vh></v>
 </v>
 </v>
+<v t="felix.20220307233825.1"><vh>@clean src/leoGoto.ts</vh></v>
+<v t="felix.20220307233828.1"><vh>@clean src/leoGotoNode.ts</vh></v>
 <v t="felix.20200718162303.1"><vh>@clean src/leoButtonNode.ts</vh>
 <v t="felix.20200718162303.2"><vh>class LeoButtonNode</vh>
 <v t="felix.20200718162435.1"><vh>iconPath</vh></v>
@@ -717,6 +766,7 @@
 <v t="felix.20200719025231.26"><vh>_onTreeViewVisibilityChanged</vh></v>
 <v t="felix.20200719025231.27"><vh>_onDocTreeViewVisibilityChanged</vh></v>
 <v t="ekr.20200815085705.1"><vh>_onButtonsTreeViewVisibilityChanged</vh></v>
+<v t="felix.20220310224330.1"><vh>_onGotoTreeViewVisibilityChanged</vh></v>
 <v t="felix.20200719025231.29"><vh>_onActiveEditorChanged</vh></v>
 <v t="felix.20210418014039.1"><vh>_changedTextEditorViewColumn</vh></v>
 <v t="felix.20210418014040.1"><vh>_changedVisibleTextEditors</vh></v>
@@ -779,7 +829,19 @@
 <v t="felix.20220222014050.3"><vh>asyncGetTextFromClipboard</vh></v>
 <v t="felix.20220222014050.4"><vh>getTextFromClipboard</vh></v>
 </v>
+<v t="felix.20220308213523.1"><vh>Nav</vh>
+<v t="felix.20220308213538.1"><vh>findQuick</vh></v>
+<v t="felix.20220308213547.1"><vh>findQuickSelected</vh></v>
+<v t="felix.20220308213552.1"><vh>findQuickTimeline</vh></v>
+<v t="felix.20220308213557.1"><vh>findQuickChanged</vh></v>
+<v t="felix.20220308213600.1"><vh>findQuickHistory</vh></v>
+<v t="felix.20220308213605.1"><vh>findQuick_marked</vh></v>
+<v t="felix.20220308213619.1"><vh>findQuickGoAnywhere</vh></v>
+<v t="felix.20220309215616.1"><vh>gotoNavEntry</vh></v>
+</v>
 <v t="felix.20210530225640.1"><vh>Search</vh>
+<v t="felix.20220305225942.1"><vh>navEnter</vh></v>
+<v t="felix.20220305231404.1"><vh>navTextChange</vh></v>
 <v t="felix.20210516233931.1"><vh>startSearch</vh></v>
 <v t="felix.20210613212439.1"><vh>newHeadline</vh></v>
 <v t="felix.20210613205741.1"><vh>_inputFindPattern</vh></v>
@@ -793,6 +855,9 @@
 <v t="felix.20210524215215.1"><vh>saveSearchSettings</vh></v>
 <v t="felix.20210601164915.1"><vh>gotoGlobalLine</vh></v>
 <v t="felix.20210620220655.1"><vh>tagChildren</vh></v>
+<v t="felix.20220313211902.1"><vh>tag_node</vh></v>
+<v t="felix.20220313211907.1"><vh>remove_tag</vh></v>
+<v t="felix.20220313221212.1"><vh>remove_tags</vh></v>
 <v t="felix.20210620220702.1"><vh>cloneFindTag</vh></v>
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
@@ -868,6 +933,7 @@
 </v>
 <v t="felix.20200718191946.1"><vh>@clean src/serverManager.ts</vh>
 <v t="felix.20200718191946.2"><vh>class ServerService</vh>
+<v t="felix.20220323232702.1"><vh>checkLeoId</vh></v>
 <v t="felix.20200718191946.4"><vh>startServer</vh></v>
 <v t="felix.20210717192921.1"><vh>killServer</vh></v>
 <v t="ekr.20200815091220.1"><vh>_gotTerminalData</vh></v>
@@ -888,6 +954,8 @@
 <v t="felix.20200718194857.10"><vh>LeoBridgePackage</vh></v>
 <v t="felix.20200718194857.11"><vh>LeoDocument</vh></v>
 <v t="felix.20200718194857.12"><vh>LeoButton</vh></v>
+<v t="felix.20220319202027.1"><vh>TGotoTypes</vh></v>
+<v t="felix.20220308203528.1"><vh>LeoGoto</vh></v>
 <v t="felix.20210522152922.1"><vh>LeoSearchScope</vh></v>
 <v t="felix.20210522152739.1"><vh>LeoSearchSettings</vh></v>
 <v t="felix.20210523162125.1"><vh>LeoGuiFindTabManagerSettings</vh></v>
@@ -914,6 +982,7 @@
 <v t="felix.20200718195558.3"><vh>buildNodeIconPaths</vh></v>
 <v t="felix.20200718195558.4"><vh>buildDocumentIconPaths</vh></v>
 <v t="ekr.20200815091945.1"><vh>buildButtonsIconPaths</vh></v>
+<v t="felix.20220320172705.1"><vh>buildGotoIconPaths</vh></v>
 <v t="felix.20200718195558.6"><vh>buildNodeAndTextJson</vh></v>
 <v t="felix.20210614235023.1"><vh>chooseLeoFolderDialog</vh></v>
 <v t="felix.20201018163510.1"><vh>getDurationMilliseconds</vh></v>
@@ -944,35 +1013,7 @@
 <v t="fil.20210603223013.1"><vh>Files: Find Panel Webview</vh>
 <v t="fil.20210603223013.2"><vh>@clean find-panel/main.css</vh></v>
 <v t="fil.20210603223013.4"><vh>@clean find-panel/main.js</vh>
-<v t="fil.20210603223013.5"><vh>function</vh>
-<v t="fil.20210603223013.6"><vh>window.addEventListener =&gt;</vh></v>
-<v t="fil.20210603223013.7"><vh>function setSearchSetting</vh></v>
-<v t="fil.20210603223013.8"><vh>function setSettings</vh>
-<v t="fil.20210603223013.9"><vh>inputIds.forEach =&gt;</vh></v>
-<v t="fil.20210603223013.10"><vh>checkboxIds.forEach =&gt;</vh></v>
-</v>
-<v t="fil.20210603223013.11"><vh>function sendSearchConfig</vh></v>
-<v t="fil.20210603223013.12"><vh>function processChange</vh>
-<v t="fil.20210603223013.13"><vh>timer = setTimeout =&gt;</vh></v>
-</v>
-<v t="fil.20210603223013.14"><vh>inputIds.forEach =&gt;</vh>
-<v t="fil.20210603223013.15"><vh>document.getElementById(p_inputId).onkeypress = function</vh></v>
-<v t="fil.20210603223013.16"><vh>document.getElementById(p_inputId).addEventListener('input', function</vh></v>
-</v>
-<v t="fil.20210603223013.17"><vh>checkboxIds.forEach =&gt;</vh>
-<v t="fil.20210603223013.18"><vh>document.getElementById(p_inputId).addEventListener('change', function</vh></v>
-</v>
-<v t="fil.20210603223013.19"><vh>radioIds.forEach =&gt;</vh>
-<v t="fil.20210603223013.20"><vh>document.getElementById(p_inputId).addEventListener('change', function</vh></v>
-</v>
-<v t="fil.20210603223013.21"><vh>function toggleCheckbox</vh></v>
-<v t="fil.20210603223013.22"><vh>function setRadio</vh></v>
-<v t="fil.20210603223013.23"><vh>function checkKeyDown</vh></v>
-<v t="fil.20210603223013.24"><vh>function focusOnField</vh>
-<v t="fil.20210603223013.25"><vh>setTimeout =&gt;</vh></v>
-</v>
-<v t="fil.20210603223013.26"><vh>function getSettings</vh></v>
-</v>
+<v t="felix.20220301224252.1"><vh>main function</vh></v>
 </v>
 <v t="fil.20210603223014.2"><vh>@clean find-panel/reset.css</vh></v>
 <v t="fil.20210603223014.4"><vh>@clean find-panel/vscode.css</vh></v>
@@ -2359,6 +2400,15 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.NEXT_NODE, () =&gt; w_leo.prevNextNode(true)],
 [CMD.NEXT_NODE_FO, () =&gt; w_leo.prevNextNode(true)],
 
+[CMD.FIND_QUICK, () =&gt; w_leo.findQuick()],
+[CMD.FIND_QUICK_SELECTED, () =&gt; w_leo.findQuickSelected()],
+[CMD.FIND_QUICK_TIMELINE, () =&gt; w_leo.findQuickTimeline()],
+[CMD.FIND_QUICK_CHANGED, () =&gt; w_leo.findQuickChanged()],
+[CMD.FIND_QUICK_HISTORY, () =&gt; w_leo.findQuickHistory()],
+[CMD.FIND_QUICK_MARKED, () =&gt; w_leo.findQuickMarked()],
+[CMD.FIND_QUICK_GO_ANYWHERE, () =&gt; w_leo.findQuickGoAnywhere()],
+[CMD.GOTO_NAV_ENTRY, (p_node: LeoGotoNode) =&gt; w_leo.gotoNavEntry(p_node)],
+
 [CMD.START_SEARCH, () =&gt; w_leo.startSearch()],
 [CMD.FIND_ALL, () =&gt; w_leo.findAll(false)],
 [CMD.FIND_NEXT, () =&gt; w_leo.find(false, false)],
@@ -2374,6 +2424,9 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.REPLACE_ALL, () =&gt; w_leo.findAll(true)],
 [CMD.GOTO_GLOBAL_LINE, () =&gt; w_leo.gotoGlobalLine()],
 [CMD.TAG_CHILDREN, () =&gt; w_leo.tagChildren()],
+[CMD.TAG_NODE, () =&gt; w_leo.tagNode()],
+[CMD.REMOVE_TAG, () =&gt; w_leo.removeTag()],
+[CMD.REMOVE_TAGS, () =&gt; w_leo.removeTags()],
 
 [CMD.CLONE_FIND_ALL, () =&gt; w_leo.cloneFind(false, false)],
 [CMD.CLONE_FIND_ALL_FLATTENED, () =&gt; w_leo.cloneFind(false, true)],
@@ -2417,7 +2470,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "author": {
     "name": "Félix"
   },
@@ -3101,11 +3154,6 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.20">{
-  "command": "leointeg.selectTreeNode",
-  "category": "Leo",
-  "title": "Select Node"
-},
-{
   "command": "leointeg.openAside",
   "category": "Leo",
   "title": "Open to the Side"
@@ -4184,10 +4232,6 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.61">{
-  "command": "leointeg.selectTreeNode",
-  "when": "false"
-},
-{
   "command": "leointeg.openAside",
   "when": "false"
 },
@@ -5063,6 +5107,13 @@ print('done')
       "title": "Leo Find",
       "when": "treeInExplorer &amp;&amp; leoTreeOpened",
       "visibility": "collapsed"
+    },
+    {
+      "id": "leoGotoPanelExplorer",
+      "name": "Leo Goto",
+      "contextualTitle": "Leo",
+      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
+      "visibility": "collapsed"
     }
   ],
   "leoIntegrationView": [
@@ -5092,6 +5143,12 @@ print('done')
       "title": "Find",
       "when": "leoTreeOpened",
       "visibility": "collapsed"
+    },
+    {
+      "id": "leoGotoPanel",
+      "contextualTitle": "Leo",
+      "name": "Goto",
+      "visibility": "collapsed"
     }
   ]
 },
@@ -5118,24 +5175,24 @@ print('done')
     if "keep" in param:
         keepSelection = param["keep"]
 
-    func = self._get_commander_method(function_name) # GET FUNC
+    func = self._get_commander_method(function_name)  # GET FUNC
     if not func:  # pragma: no cover
         raise ServerError(f"{tag}: Leo command not found: {function_name!r}")
 
     p = self._get_p(param)
     try:
         if p == c.p:
-            value = func(event={"c":c})  # no need for re-selection
+            value = func(event={"c": c})  # no need for re-selection
         else:
             old_p = c.p  # preserve old position
             c.selectPosition(p)  # set position upon which to perform the command
-            value = func(event={"c":c})
+            value = func(event={"c": c})
             if keepSelection and c.positionExists(old_p):
                 # Only if 'keep' old position was set, and old_p still exists
                 c.selectPosition(old_p)
     except Exception as e:
         print(f"_do_leo_command Recovered from Error {e!s}", flush=True)
-        return self._make_response() # Return empty on error
+        return self._make_response()  # Return empty on error
     #
     # Tag along a possible return value with info sent back by _make_response
     if self._is_jsonable(value):
@@ -5210,8 +5267,8 @@ def yesButton(event=None):
     screen_width = top.winfo_screenwidth()
     screen_height = top.winfo_screenheight()
     size = tuple(int(_) for _ in top.geometry().split('+')[0].split('x'))
-    x = screen_width/2 - size[0]/2
-    y = screen_height/2 - size[1]/2
+    x = screen_width / 2 - size[0] / 2
+    y = screen_height / 2 - size[1] / 2
     top.geometry("+%d+%d" % (x, y))
 </t>
 <t tx="ekr.20210825170952.1">def qt_runAskYesNoCancelDialog(c):
@@ -5271,18 +5328,21 @@ def yesButton(event=None):
     @others  # define all helper functions.
     try:
         # Careful: raise the Tk dialog if there are errors in the Qt code.
-        if 1:  # Prefer Qt.
-            from leo.core.leoQt import isQt6, QtGui, QtWidgets
-            from leo.core.leoQt import ButtonRole, Information
-            if QtGui and QtWidgets:
-                app = QtWidgets.QApplication([])
-                assert app
-                val = qt_runAskYesNoCancelDialog(c)
-                assert val in ('yes', 'no')
-                return val
+        from leo.core.leoQt import isQt6, QtGui, QtWidgets
+        from leo.core.leoQt import ButtonRole, Information
+        if QtGui and QtWidgets:
+            app = QtWidgets.QApplication([])
+            assert app
+            val = qt_runAskYesNoCancelDialog(c)
+            assert val in ('yes', 'no')
+            return val
     except Exception:
         pass
-    return tk_runAskYesNoCancelDialog(c)
+    if Tk:
+        return tk_runAskYesNoCancelDialog(c)
+    # #2512: There is no way to raise a dialog.
+    return 'yes'  # Just save the file!
+
 </t>
 <t tx="felix.20191126232434.13">def open_file(self, param):
     """
@@ -6454,6 +6514,8 @@ public static LEOBRIDGE = {
     TEST: "!test",
     DO_NOTHING: "!do_nothing",
     GET_VERSION: "!get_version",
+    GET_LEOID: "!get_leoid",
+    SET_LEOID: "!set_leoid",
     // * Server Commands
     GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
     APPLY_CONFIG: "!set_config", // "applyConfig",
@@ -6550,6 +6612,18 @@ public static LEOBRIDGE = {
     MOVE_MARKED_NODES: "moveMarked",
     GIT_DIFF: "gitDiff",
     GET_FOCUS: "!get_focus",
+
+    GET_GOTO_PANEL: "!get_goto_panel", // To fill up panel when changing leo documents
+
+    NAV_HEADLINE_SEARCH: "!nav_headline_search",
+    NAV_SEARCH: "!nav_search",
+
+    FIND_QUICK_TIMELINE: "!find_quick_timeline",
+    FIND_QUICK_CHANGED: "!find_quick_changed",
+    FIND_QUICK_HISTORY: "!find_quick_history",
+    FIND_QUICK_MARKED: "!find_quick_marked",
+    GOTO_NAV_ENTRY: "!goto_nav_entry",
+
     GET_SEARCH_SETTINGS: "!get_search_settings",
     SET_SEARCH_SETTINGS: "!set_search_settings",
     START_SEARCH: "!start_search",
@@ -6563,6 +6637,9 @@ public static LEOBRIDGE = {
     REPLACE_ALL: "!replace_all",
     GOTO_GLOBAL_LINE: "!goto_global_line",
     TAG_CHILDREN: "!tag_children",
+    TAG_NODE: "!tag_node",
+    REMOVE_TAG: "!remove_tag",
+    REMOVE_TAGS: "!remove_tags",
     CLONE_FIND_TAG: "!clone_find_tag",
     CLONE_FIND_ALL: "!clone_find_all",
     CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
@@ -6723,6 +6800,16 @@ public static COMMANDS = {
     CLONE_MARKED_NODES: Constants.NAME + ".cloneMarkedNodes",
     DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
     MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes",
+
+    FIND_QUICK: Constants.NAME + ".findQuick",
+    FIND_QUICK_SELECTED: Constants.NAME + ".findQuickSelected",
+    FIND_QUICK_TIMELINE: Constants.NAME + ".findQuickTimeline",
+    FIND_QUICK_CHANGED: Constants.NAME + ".findQuickChanged",
+    FIND_QUICK_HISTORY: Constants.NAME + ".history",
+    FIND_QUICK_MARKED: Constants.NAME + ".markedList",
+    FIND_QUICK_GO_ANYWHERE: Constants.NAME + ".goAnywhere",
+    GOTO_NAV_ENTRY: Constants.NAME + ".gotoNav",
+
     START_SEARCH: Constants.NAME + ".startSearch",
     FIND_ALL: Constants.NAME + ".findAll",
     FIND_NEXT: Constants.NAME + ".findNext",
@@ -6743,6 +6830,9 @@ public static COMMANDS = {
     CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
     GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
     TAG_CHILDREN: Constants.NAME + ".tagChildren",
+    TAG_NODE: Constants.NAME + ".tagNode",
+    REMOVE_TAG: Constants.NAME + ".removeTag",
+    REMOVE_TAGS: Constants.NAME + ".removeTags",
     SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
     SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
     SET_FIND_SUBOUTLINE_ONLY_OPTION: Constants.NAME + ".setFindSuboutlineOnlyOption",
@@ -6785,6 +6875,9 @@ public static BUTTONS_EXPLORER_ID: string = "leoButtonsExplorer";
 public static FIND_ID: string = "leoFindPanel";
 public static FIND_EXPLORER_ID: string = "leoFindPanelExplorer";
 
+public static GOTO_ID: string = "leoGotoPanel";
+public static GOTO_EXPLORER_ID: string = "leoGotoPanelExplorer";
+
 public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
 public static FILE_EXTENSION: string = "leo";
@@ -6802,6 +6895,8 @@ public static LAST_FILES_KEY: string = "leoLastFiles";
 public static DEFAULT_PYTHON: string = "python3";
 public static WIN32_PYTHON: string = "py";
 public static SERVER_NAME: string = "/leoserver.py";
+public static LEO_ID_NAME: string = ".leoID.txt";
+public static SERVER_PATH: string = "/leo/core";
 public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
 public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
 
@@ -6813,6 +6908,7 @@ public static BUTTONS_DEBOUNCE_DELAY: number = 80;
 public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
 public static STATES_DEBOUNCE_DELAY: number = 100;
 public static BODY_STATES_DEBOUNCE_DELAY: number = 200;
+public static GOTO_DEBOUNCE_DELAY: number = 50;
 
 public static LOG_ALERT_COLOR: string = 'red';
 
@@ -6821,16 +6917,28 @@ public static LOG_ALERT_COLOR: string = 'red';
  * * Strings used in the workbench interface panels (not for messages or dialogs)
  */
 public static GUI = {
+
+    ICON_LIGHT_PARENT: "resources/light/parent.svg",
+    ICON_DARK_PARENT: "resources/dark/parent.svg",
+    ICON_LIGHT_NODE: "resources/light/node.svg",
+    ICON_DARK_NODE: "resources/dark/node.svg",
+    ICON_LIGHT_BODY: "resources/light/body.svg",
+    ICON_DARK_BODY: "resources/dark/body.svg",
+    ICON_LIGHT_TAG: "resources/light/tag.svg",
+    ICON_DARK_TAG: "resources/dark/tag.svg",
+
     ICON_LIGHT_DOCUMENT: "resources/light/document.svg",
     ICON_DARK_DOCUMENT: "resources/dark/document.svg",
     ICON_LIGHT_DOCUMENT_DIRTY: "resources/light/document-dirty.svg",
     ICON_DARK_DOCUMENT_DIRTY: "resources/dark/document-dirty.svg",
+
     ICON_LIGHT_BUTTON: "resources/light/button.svg",
     ICON_DARK_BUTTON: "resources/dark/button.svg",
     ICON_LIGHT_BUTTON_RCLICK: "resources/light/button-rclick.svg",
     ICON_DARK_BUTTON_RCLICK: "resources/dark/button-rclick.svg",
     ICON_LIGHT_BUTTON_ADD: "resources/light/button-add.svg",
     ICON_DARK_BUTTON_ADD: "resources/dark/button-add.svg",
+
     ICON_LIGHT_PATH: "resources/light/box",
     ICON_DARK_PATH: "resources/dark/box",
     ICON_FILE_EXT: ".svg",
@@ -6878,9 +6986,13 @@ public static USER_MESSAGES = {
     TITLE_GOTO_GLOBAL_LINE: "Goto global line",
     PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
     PROMPT_GOTO_GLOBAL_LINE: "Line number",
+
     TITLE_TAG_CHILDREN: "Tag Children",
-    PLACEHOLDER_TAG_CHILDREN: "&lt;tag&gt;",
-    PROMPT_TAG_CHILDREN: "Enter a tag name",
+    TITLE_REMOVE_TAG: "Remove Tag",
+    TITLE_TAG_NODE: "Tag Node",
+    PLACEHOLDER_TAG: "&lt;tag&gt;",
+    PROMPT_TAG: "Enter a tag name",
+
     TITLE_FIND_TAG: "Find Tag",
     PLACEHOLDER_CLONE_FIND_TAG: "&lt;tag&gt;",
     PROMPT_CLONE_FIND_TAG: "Enter a tag name",
@@ -6904,7 +7016,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
-    MINIMUM_VERSION: "Missing Command: Please update Leo (min 6.6-b2 required)",
+    MINIMUM_VERSION: "Missing Command: Please update Leo (min 6.6-final required)",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
 };
@@ -7467,6 +7579,7 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
+import { LeoGotoNode } from "./leoGotoNode";
 
 var LeoInteg: LeoIntegration | undefined = undefined;
 
@@ -8723,7 +8836,20 @@ private _getNodeContextValue(): string {
 public get description(): string {
     // * some smaller grayed-out text accompanying the main label
     if (this.u) {
-        return "\u{1F4CE} (" + Object.keys(this.u).length + ")";
+        let desc = "";
+        if (Object.keys(this.u).length) {
+            desc = "\u{1F4CE} (" + Object.keys(this.u).length + ")";
+            if (this.u.__node_tags &amp;&amp; this.u.__node_tags) {
+                if (Object.keys(this.u).length === 1) {
+                    // was only tag, so reset it
+                    desc = "";
+                } else {
+                    desc = desc + " "; // add space
+                }
+                desc = desc + "\u{1F3F7} (" + Object.keys(this.u.__node_tags).length + ")";
+            }
+        }
+        return desc;
     } else {
         // return "id:" + this.id; // ! debug test
         // return "gnx:" + this.gnx; // ! debug test
@@ -8735,9 +8861,17 @@ public get description(): string {
 <t tx="felix.20200718171849.1">// @ts-ignore
 public get tooltip(): string {
     if (this.u) {
+
+        if (Object.keys(this.u).length === 1 &amp;&amp; this.u.__node_tags &amp;&amp; this.u.__node_tags.length) {
+            // list tags instead
+            return this.label + "\n\u{1F3F7} " + this.u.__node_tags.join('\n\u{1F3F7} ');
+        }
+
         //  "\ntotal keys is :" + Object.keys(this.u).length
         return this.label + "\n" +
             JSON.stringify(this.u, undefined, 2);
+
+
     } else {
         return this.label; // * Whole headline as tooltip
     }
@@ -9043,6 +9177,7 @@ export class ServerService {
 
     @others
 }
+
 </t>
 <t tx="felix.20200718191946.4">/**
  * * Get command from settings or best command for the current OS
@@ -9081,7 +9216,9 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
     // Show problems when running the server, if any.
     // this._leoIntegration.showTerminalPane(); // #203 Do not 'force' show the server output
 
-    return utils.findNextAvailablePort(p_port).then((p_availablePort) =&gt; {
+    return this.checkLeoId(p_leoEditorPath).then(() =&gt; {
+        return utils.findNextAvailablePort(p_port);
+    }).then((p_availablePort) =&gt; {
         if (!p_availablePort) {
             // vscode.window.showInformationMessage("Port " + p_port+" already in use.");
             return Promise.reject("Port " + p_port + " already in use.");
@@ -9090,7 +9227,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
         this.usingPort = p_availablePort;
 
         // Leo Editor installation path is mandatory - Start with Leo Editor's folder
-        let w_serverScriptPath = p_leoEditorPath + "/leo/core";
+        let w_serverScriptPath = p_leoEditorPath + Constants.SERVER_PATH;
 
         try {
             if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
@@ -9471,6 +9608,10 @@ export interface LeoBridgePackage {
     len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
+    navList?: LeoGoto[]; // get_goto
+    navText?: string; // get_goto
+    messages?: string[]; // get_goto
+    navOptions?: { isTag: boolean, showParents: boolean }; // get_goto
     commands?: vscode.QuickPickItem[]; // getCommands
     commander?: {
         changed: boolean,
@@ -9660,6 +9801,7 @@ export interface ReqRefresh {
     states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
     buttons?: boolean; // Buttons needs refresh
     documents?: boolean; // Documents needs refresh
+    nav?: boolean; // NAv panel needs refresh
 }
 
 </t>
@@ -9923,17 +10065,21 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
+- **Nav and Tags** panes integrated in the **Find** pane
+- **Goto Anywhere panel** to navigate directly from various search types
 - Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
   - Open body panes to the side in any 'column'
   - Outline editing commands
-  - Find operations
+  - Find/Replace operations
   - Clipboard operations
   - Undo/Redo commands
 
 ![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
 </t>
-<t tx="felix.20200718222043.1">## Keybindings
+<t tx="felix.20200718222043.1">## Leo Commands and Keybindings
+
+Below are the most basic Commands. Most of Leo's other commands are also available with their original default keybindings.
 
 | Outline Commands           |     |                  |                  |
 | :------------------------- | :-- | :--------------- | :--------------- |
@@ -10085,6 +10231,8 @@ and using the node's gnx as identifier.
 - [Viktor](https://github.com/ranvik14) for his contributions and support
 - [Gaurami](https://github.com/ATikhonov2) for his suggestions, bug reports and support
 - [Kevin Henderson](https://github.com/kghenderson) for his suggestions and support
+- [Ville M. Vainio](https://github.com/vivainio) for his Nav tab original concept
+- [Jacob M. Peck](https://github.com/gatesphere) for his Tags tab original concept
 
 </t>
 <t tx="felix.20200718222417.1">## 0.1.12
@@ -10208,7 +10356,7 @@ If you're having problems with the procedures below, try [running this sample ex
 
 - **use Leo's 'devel' branch** (This is temporary until Leo's 6.4 release)
 
-- Make sure you have [Node.js](https://nodejs.org/en/download/) and [Git](https://git-scm.com/downloads) installed.
+- Make sure you have [Node.js](https://nodejs.org/en/download/) and [Git](https://git-scm.com/downloads) installed. Version up to **14.19** of node works fine for compiling this project.
 
 - Also check your vscode, and other software versions by opening the 'about' dialog from the help menu. You should at least match or exceed the versions below.
 
@@ -10343,6 +10491,8 @@ import { LeoButtonsProvider } from './leoButtons';
 import { LeoButtonNode } from './leoButtonNode';
 import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
 import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
+import { LeoGotoNode } from './leoGotoNode';
+import { LeoGotoProvider } from './leoGoto';
 
 @others
 @language typescript
@@ -10495,6 +10645,7 @@ export class LeoIntegration {
     public nodeIcons: Icon[] = []; // Singleton static array of all icon paths used in leoNodes for rendering in treeview
     public documentIcons: Icon[] = [];
     public buttonIcons: Icon[] = [];
+    public gotoIcons: Icon[] = [];
 
     // * File Browser
     private _leoFilesBrowser: LeoFilesBrowser; // Browsing dialog service singleton used in the openLeoFile and save-as methods
@@ -10534,6 +10685,11 @@ export class LeoIntegration {
     private _leoDocuments: vscode.TreeView&lt;LeoDocumentNode&gt;;
     private _leoDocumentsExplorer: vscode.TreeView&lt;LeoDocumentNode&gt;;
     private _currentDocumentChanged: boolean = false; // if clean and an edit is done: refresh opened documents view
+
+    // * Goto nav panel
+    private _leoGotoProvider: LeoGotoProvider;
+    private _leoGoto: vscode.TreeView&lt;LeoGotoNode&gt;;
+    private _leoGotoExplorer: vscode.TreeView&lt;LeoGotoNode&gt;;
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _refreshType: ReqRefresh = {}; // Flags for commands to require parts of UI to refresh
@@ -10630,6 +10786,13 @@ export class LeoIntegration {
 
     // * Debounced method used to get content of the at-buttons pane
     public refreshButtonsPane: (() =&gt; void) &amp; {
+        clear(): void;
+    } &amp; {
+        flush(): void;
+    };
+
+    // * Debounced method used to get content of the at-buttons pane
+    public refreshGotoPane: (() =&gt; void) &amp; {
         clear(): void;
     } &amp; {
         flush(): void;
@@ -10902,6 +11065,7 @@ private _onActiveEditorChanged(
     this.nodeIcons = utils.buildNodeIconPaths(_context);
     this.documentIcons = utils.buildDocumentIconPaths(_context);
     this.buttonIcons = utils.buildButtonsIconPaths(_context);
+    this.gotoIcons = utils.buildGotoIconPaths(_context);
 
     // * Create file browser instance
     this._leoFilesBrowser = new LeoFilesBrowser(_context);
@@ -10981,6 +11145,26 @@ private _onActiveEditorChanged(
     this._leoButtonsExplorer.onDidChangeVisibility((p_event) =&gt;
         this._onButtonsTreeViewVisibilityChanged(p_event, true)
     );
+
+    // * Create goto Treeview Providers and tree views
+    this._leoGotoProvider = new LeoGotoProvider(this);
+    this._leoGoto = vscode.window.createTreeView(Constants.GOTO_ID, {
+        showCollapseAll: false,
+        treeDataProvider: this._leoGotoProvider,
+    });
+    this._leoGoto.onDidChangeVisibility((p_event) =&gt;
+        this._onGotoTreeViewVisibilityChanged(p_event, false)
+    );
+    this._leoGotoExplorer = vscode.window.createTreeView(Constants.GOTO_EXPLORER_ID, {
+        showCollapseAll: false,
+        treeDataProvider: this._leoGotoProvider,
+    });
+    this._leoGotoExplorer.onDidChangeVisibility((p_event) =&gt;
+        this._onGotoTreeViewVisibilityChanged(p_event, true)
+    );
+    // * Set 'last' goto tree view visible
+    this._leoGotoProvider.setLastGotoView(this.config.treeInExplorer ? this._leoGotoExplorer : this._leoGoto);
+
 
     // * Create Body Pane
     this._leoFileSystem = new LeoBodyProvider(this);
@@ -11068,6 +11252,10 @@ private _onActiveEditorChanged(
     this.refreshButtonsPane = debounce(
         () =&gt; { this._leoButtonsProvider.refreshTreeRoot(); },
         Constants.BUTTONS_DEBOUNCE_DELAY
+    );
+    this.refreshGotoPane = debounce(
+        () =&gt; { this._leoGotoProvider.refreshTreeRoot(); },
+        Constants.GOTO_DEBOUNCE_DELAY
     );
     this.refreshAll = debounce(
         () =&gt; {
@@ -12369,7 +12557,13 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
 
     //     });
 
+    // * test QuickSearchController
+    //
+
+    return Promise.resolve("");
+
     // * test ua's
+    /*
     this.sendAction(
         // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
         Constants.LEOBRIDGE.SET_UA,
@@ -12398,6 +12592,7 @@ public test(p_fromOutline?: boolean): Thenable&lt;unknown&gt; {
             false
         );
     });
+    */
 
     // Test setting scroll / selection range
 
@@ -12497,6 +12692,9 @@ public connect(): void {
         (p_package) =&gt; {
             this.leoStates.leoConnecting = false;
             // Check if hard-coded first package signature
+
+            // console.log('get CONNECT results: ', p_package);
+
             if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
                 this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
             } else {
@@ -12524,6 +12722,25 @@ public connect(): void {
                 if (!this.config.connectToServerAutomatically) {
                     vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                 }
+
+                /*
+                this.sendAction(
+                    // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+                    Constants.LEOBRIDGE.SET_LEOID,
+                    JSON.stringify({ leoID: "bacon" })
+
+                ).then((p_result: LeoBridgePackage) =&gt; {
+                    console.log('set leoid results: ', p_result);
+                }).then(() =&gt; {
+                    return this.sendAction(
+                        // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+                        Constants.LEOBRIDGE.GET_LEOID
+                    );
+                }).then((p_result: LeoBridgePackage) =&gt; {
+                    console.log('get leoid results: ', p_result);
+                });
+                */
+
             }
 
             // TODO : Finish Closing and possibly SAME FOR OPENING AND CONNECTING
@@ -14748,6 +14965,7 @@ export function removeFileFromWorkspace(p_context: vscode.ExtensionContext, p_fi
 </t>
 <t tx="felix.20201107224112.1">/**
  * * Promise that triggers body save (rejects if busy), and resolves when done
+ * @param p_all Flag for 'isBusy' check: will block if bridge is busy, not just commands on stack
  * @param p_forcedVsCodeSave Flag to also have vscode 'save' the content of this editor through the filesystem
  * @returns a promise that resolves when the possible saving process is finished
  */
@@ -14796,11 +15014,13 @@ public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
                             p_command.detail = p_command.detail.trim().replace(w_regexp, ' ');
                         }
                     });
+                    p_result.commands.push(...Constants.addMinibufferCommands);
                     return p_result.commands;
                 } else {
                     return [];
                 }
             });
+            // Add Nav tab special commands
             const w_options: vscode.QuickPickOptions = {
                 placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
                 matchOnDetail: true,
@@ -14902,6 +15122,31 @@ public static VSCODE_COMMANDS = {
     "command": "leointeg.showLogPane",
     "when": "view =~ /^leoFindPanel|^leoDocuments|^leoButtons/ &amp;&amp; leoBridgeReady",
     "group": "navigation@2"
+  },
+  {
+    "command": "leointeg.findQuickSelected",
+    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.findQuickTimeline",
+    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.findQuickChanged",
+    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.history",
+    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.markedList",
+    "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
   },
   {
     "command": "leointeg.showSettingsPage",
@@ -15433,6 +15678,21 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "title": "Tag Children"
 },
 {
+  "command": "leointeg.tagNode",
+  "category": "Leo",
+  "title": "Tag Node"
+},
+{
+  "command": "leointeg.removeTag",
+  "category": "Leo",
+  "title": "Remove Tag"
+},
+{
+  "command": "leointeg.removeTags",
+  "category": "Leo",
+  "title": "Remove All Tags"
+},
+{
   "command": "leointeg.setFindEverywhereOption",
   "category": "Leo",
   "shortTitle": "Find Everywhere",
@@ -15732,7 +15992,12 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
  * * LeoInteg search settings structure for use with the 'find' webview
  */
 export interface LeoSearchSettings {
-    //Find/change strings...
+    // Nav options
+    navText: string;
+    isTag: boolean;
+    showParents: boolean;
+    searchOptions: number;
+    // Find/change strings...
     findText: string;
     replaceText: string;
     // Find options...
@@ -15759,6 +16024,26 @@ export const enum LeoSearchScope {
 </t>
 <t tx="felix.20210522233604.1"></t>
 <t tx="felix.20210522233744.1">{
+  "view": "leoGotoPanel",
+  "contents": "Not connected",
+  "when": "!leoTreeOpened"
+},
+{
+  "view": "leoGotoPanelExplorer",
+  "contents": "Not connected",
+  "when": "!leoTreeOpened"
+},
+{
+  "view": "leoGotoPanel",
+  "contents": "No Results",
+  "when": "leoTreeOpened"
+},
+{
+  "view": "leoGotoPanelExplorer",
+  "contents": "No Results",
+  "when": "leoTreeOpened"
+},
+{
   "view": "leoFindPanel",
   "contents": "Not connected",
   "when": "!leoTreeOpened"
@@ -15877,6 +16162,11 @@ export const enum LeoSearchScope {
  * * Leo's GUI search settings internal structure
  */
 export interface LeoGuiFindTabManagerSettings {
+    // Nav options
+    nav_text: string;
+    is_tag: boolean;
+    show_parents: boolean;
+    search_options: number;
     //Find/change strings...
     find_text: string,
     change_text: string,
@@ -15902,7 +16192,12 @@ public saveSearchSettings(p_settings: LeoSearchSettings): Promise&lt;LeoBridgePa
     this._lastSettingsUsed = p_settings;
     // convert to LeoGuiFindTabManagerSettings
     const w_settings: LeoGuiFindTabManagerSettings = {
-        //Find/change strings...
+        // Nav settings
+        is_tag: p_settings.isTag,
+        nav_text: p_settings.navText,
+        show_parents: p_settings.showParents,
+        search_options: p_settings.searchOptions,
+        // Find/change strings...
         find_text: p_settings.findText,
         change_text: p_settings.replaceText,
         // Find options...
@@ -15944,6 +16239,10 @@ public loadSearchSettings(): void {
         (p_result: LeoBridgePackage) =&gt; {
             const w_searchSettings: LeoGuiFindTabManagerSettings = p_result.searchSettings!;
             const w_settings: LeoSearchSettings = {
+                isTag: w_searchSettings.is_tag,
+                navText: w_searchSettings.nav_text,
+                showParents: w_searchSettings.show_parents,
+                searchOptions: w_searchSettings.search_options,
                 //Find/change strings...
                 findText: w_searchSettings.find_text,
                 replaceText: w_searchSettings.change_text,
@@ -15962,7 +16261,7 @@ public loadSearchSettings(): void {
                     (w_searchSettings.node_only ? 2 : 0),
             };
             if (w_settings.searchScope &gt; 2) {
-                console.error('searchScope SHOULD BE 0,1,2 only: ', w_settings.searchScope);
+                console.error('searchScope SHOULD BE 0, 1, 2 only: ', w_settings.searchScope);
             }
             this._lastSettingsUsed = w_settings;
             if (this._findPanelWebviewExplorerView) {
@@ -16552,6 +16851,14 @@ public gotoGlobalLine(): void {
  * * Overridden 'good' minibuffer commands
  */
 public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
+    "find-quick": Constants.COMMANDS.FIND_QUICK,
+    "find-quick-selected": Constants.COMMANDS.FIND_QUICK,
+    "focus-to-nav": Constants.COMMANDS.FIND_QUICK,
+    "find-quick-timeline": Constants.COMMANDS.FIND_QUICK_TIMELINE,
+    "find-quick-changed": Constants.COMMANDS.FIND_QUICK_CHANGED,
+    "history": Constants.COMMANDS.FIND_QUICK_HISTORY,
+    "marked-list": Constants.COMMANDS.FIND_QUICK_MARKED,
+
     "tag-children": Constants.COMMANDS.TAG_CHILDREN,
     "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
     "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
@@ -17067,23 +17374,26 @@ public tagChildren(): void {
         .then((p_saveResult: boolean) =&gt; {
             return vscode.window.showInputBox({
                 title: Constants.USER_MESSAGES.TITLE_TAG_CHILDREN,
-                placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG_CHILDREN,
-                prompt: Constants.USER_MESSAGES.PROMPT_TAG_CHILDREN,
+                placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
+                prompt: Constants.USER_MESSAGES.PROMPT_TAG,
             });
         })
         .then((p_inputResult?: string) =&gt; {
             if (p_inputResult &amp;&amp; p_inputResult.trim()) {
+                p_inputResult = p_inputResult.trim();
+                // check for special chars first
+                if (p_inputResult.split(/(&amp;|\||-|\^)/).length &gt; 1) {
+                    vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &amp;|^-');
+                    return;
+                }
                 this.sendAction(
                     Constants.LEOBRIDGE.TAG_CHILDREN,
-                    JSON.stringify({ tag: p_inputResult.trim() })
-                ).then((p_resultFind: LeoBridgePackage) =&gt; {
-                    if (!p_resultFind.found) {
-                        // Not found
-                    }
+                    JSON.stringify({ tag: p_inputResult })
+                ).then((p_resultTag: LeoBridgePackage) =&gt; {
                     this.launchRefresh(
                         {
                             tree: true,
-                            body: true,
+                            body: false,
                             documents: false,
                             buttons: false,
                             states: true,
@@ -17148,13 +17458,13 @@ __version__ = f"leoserver.py version {v1}.{v2}.{v3}"
 g = None  # The bridge's leoGlobals module.
 
 # Server defaults
-SERVER_STARTED_TOKEN = "LeoBridge started" # Output when started successfully
+SERVER_STARTED_TOKEN = "LeoBridge started"  # Output when started successfully
 # Websocket connections (to be sent 'notify' messages)
 connectionsPool = set()  # type:ignore
-connectionsTotal = 0 # Current connected client total
+connectionsTotal = 0  # Current connected client total
 # Customizable server options
 argFile = ""
-traces: List = []
+traces: List = [] # list of traces names, to be used as flags to output traces
 wsLimit = 1
 wsPersist = False
 wsSkipDirty = False
@@ -17187,7 +17497,7 @@ if __name__ == '__main__':
     # Some button keys are objects so we have to convert first
     for key in d:
         rclickList = []
-        if  hasattr(key, 'rclicks'):
+        if hasattr(key, 'rclicks'):
             rclickList = self._get_rclickTree(key.rclicks)
             # buttonRClicks = key.rclicks
             # for rc in buttonRClicks:
@@ -17215,16 +17525,16 @@ if __name__ == '__main__':
     print("", flush=True)
 
     # Sets sHost, wsPort, wsLimit, wsPersist, wsSkipDirty fileArg and traces
-    get_args() # Set global values from the command line arguments
+    get_args()  # Set global values from the command line arguments
     print("Starting LeoBridge... (Launch with -h for help)", flush=True)
 
     # Open leoBridge.
-    controller = LeoServer() # Single instance of LeoServer, i.e., an instance of leoBridge
+    controller = LeoServer()  # Single instance of LeoServer, i.e., an instance of leoBridge
     if argFile:
         # Open specified file argument
         try:
             print(f"Opening file: {argFile}", flush=True)
-            controller.open_file({"filename":argFile})
+            controller.open_file({"filename": argFile})
         except Exception:
             print("Opening file failed", flush=True)
 
@@ -17285,15 +17595,15 @@ if __name__ == '__main__':
             print(f"{tag}: User Refused, Total: {connectionsTotal}, Limit: {wsLimit}", flush=True)
             await websocket.close(1001)
             return
-        connected = True # local variable
-        connectionsTotal += 1 # global variable
+        connected = True  # local variable
+        connectionsTotal += 1  # global variable
         print(f"{tag}: User Connected, Total: {connectionsTotal}, Limit: {wsLimit}", flush=True)
         # If first connection set it as the main client connection
         controller._init_connection(websocket)
         await register_client(websocket)
         # Start by sending empty as 'ok'.
         n = 0
-        await websocket.send(controller._make_response())
+        await websocket.send(controller._make_response({"leoID": g.app.leoID}))
         controller._emit_signon()
 
         # Websocket connection message handling loop
@@ -17344,7 +17654,7 @@ if __name__ == '__main__':
     finally:
         if connected:
             connectionsTotal -= 1
-            await  unregister_client(websocket)
+            await unregister_client(websocket)
             print(f"{tag} connection finished.  Total: {connectionsTotal}, Limit: {wsLimit}")
         # Check for persistence flag if all connections are closed
         if connectionsTotal == 0 and not wsPersist:
@@ -17352,7 +17662,7 @@ if __name__ == '__main__':
             # Preemptive closing of tasks
             for task in asyncio.all_tasks():
                 task.cancel()
-            close_Server() # Stops the run_forever loop
+            close_Server()  # Stops the run_forever loop
 </t>
 <t tx="felix.20210621233316.107">def get_args():  # pragma: no cover
     """
@@ -17377,7 +17687,8 @@ if __name__ == '__main__':
         "  - leo.core.leoclient is an example client written in python.\n",
         "  - leoInteg (https://github.com/boltex/leointeg) is written in typescript.\n"
     ])
-    # usage = 'leoserver.py [-a &lt;address&gt;] [-p &lt;port&gt;] [-l &lt;limit&gt;] [-f &lt;file&gt;] [--dirty] [--persist]'
+    # Usage:
+    # leoserver.py [-a &lt;address&gt;] [-p &lt;port&gt;] [-l &lt;limit&gt;] [-f &lt;file&gt;] [--dirty] [--persist]
     usage = 'python leo.core.leoserver [options...]'
     trace_s = 'request,response,verbose'
     valid_traces = [z.strip() for z in trace_s.split(',')]
@@ -17389,7 +17700,7 @@ if __name__ == '__main__':
     add('-p', '--port', dest='wsPort', type=int, default=wsPort, metavar='N',
         help='port number. Defaults to ' + str(wsPort))
     add('-l', '--limit', dest='wsLimit', type=int, default=wsLimit, metavar='N',
-        help='maximum number of clients. Defaults to '+ str(wsLimit))
+        help='maximum number of clients. Defaults to ' + str(wsLimit))
     add('-f', '--file', dest='argFile', type=leo_file, metavar='PATH',
         help='open a .leo file at startup')
     add('--persist', dest='wsPersist', action='store_true',
@@ -17441,7 +17752,7 @@ if __name__ == '__main__':
             key = i_key
     if key:
         try:
-            del d [key]
+            del d[key]
         except Exception as e:
             raise ServerError(f"{tag}: exception removing button {index!r}: {e}")
     else:
@@ -17465,6 +17776,8 @@ if __name__ == '__main__':
         c = self.bridge.openLeoFile(filename)
         # Add ftm. This won't happen if opened outside leoserver
         c.findCommands.ftm = StringFindTabManager(c)
+        cc = QuickSearchController(c)
+        setattr(c, 'scon', cc) # Patch up quick-search controller to the commander
     if not c:  # pragma: no cover
         raise ServerError(f"{tag}: bridge did not open {filename!r}")
     if not c.frame.body.wrapper:  # pragma: no cover
@@ -17473,7 +17786,7 @@ if __name__ == '__main__':
     self.c = c
     c.selectPosition(c.rootPosition())  # Required.
     # Check the outline!
-    c.recreateGnxDict() # refresh c.fileCommands.gnxDict used in ap_to_p
+    c.recreateGnxDict()  # refresh c.fileCommands.gnxDict used in ap_to_p
     self._check_outline(c)
     if self.log_flag:  # pragma: no cover
         self._dump_outline(c)
@@ -17530,13 +17843,14 @@ if __name__ == '__main__':
             if c.fileName():
                 c.revert()
             else:
-                c.changed = False # Needed in g.app.closeLeoWindow
+                c.changed = False  # Needed in g.app.closeLeoWindow
         # Then, if still possible, close it.
         if forced or not c.changed:
             # c.close() # Stops too much if last file closed
             g.app.closeLeoWindow(c.frame, finish_quit=False)
         else:
-            # Cannot close, return empty response without 'total' (ask to save, ignore or cancel)
+            # Cannot close, return empty response without 'total'
+            # (ask to save, ignore or cancel)
             return self._make_response()
     # New 'c': Select the first open outline, if any.
     commanders = g.app.commanders()
@@ -17619,16 +17933,23 @@ if __name__ == '__main__':
 <t tx="felix.20210621233316.19"></t>
 <t tx="felix.20210621233316.2">import argparse
 import asyncio
+import fnmatch
 import inspect
+import itertools
 import json
 import os
+from collections import OrderedDict
+import re
 import sys
 import socket
 import textwrap
 import time
-import tkinter as Tk
-from typing import List, Union
+from typing import Any, Dict, List, Union
 # Third-party.
+try:
+    import tkinter as Tk
+except Exception:
+    Tk = None
 # #2300
 try:
     import websockets
@@ -17641,7 +17962,7 @@ assert os.path.exists(leo_path), repr(leo_path)
 if leo_path not in sys.path:
     sys.path.append(leo_path)
 # Leo
-from leo.core.leoNodes import Position
+from leo.core.leoNodes import Position, PosList
 from leo.core.leoGui import StringFindTabManager
 from leo.core.leoExternalFiles import ExternalFilesController
 </t>
@@ -17655,6 +17976,10 @@ from leo.core.leoExternalFiles import ExternalFilesController
         settings = c.findCommands.ftm.get_settings()
         # Use the "__dict__" of the settings, to be serializable as a json string.
         result = {"searchSettings": settings.__dict__}
+        result["searchSettings"]["nav_text"] = c.scon.navText
+        result["searchSettings"]["show_parents"] = c.scon.showParents
+        result["searchSettings"]["is_tag"] = c.scon.isTag
+        result["searchSettings"]["search_options"] = c.scon.searchOptions
     except Exception as e:
         raise ServerError(f"{tag}: exception getting search settings: {e}")
     return self._make_response(result)
@@ -17672,6 +17997,12 @@ from leo.core.leoExternalFiles import ExternalFilesController
         raise ServerError(f"{tag}: searchSettings object is missing")
     # Try to set the search settings
     try:
+        # nav settings
+        c.scon.navText = searchSettings.get('nav_text')
+        c.scon.showParents = searchSettings.get('show_parents')
+        c.scon.isTag = searchSettings.get('is_tag')
+        c.scon.searchOptions = searchSettings.get('search_options')
+
         # Find/change text boxes.
         table = (
             ('find_findbox', 'find_text', ''),
@@ -17714,7 +18045,9 @@ from leo.core.leoExternalFiles import ExternalFilesController
                     w.toggle()
         # Ensure one radio button is set.
         w = ftm.radio_button_entire_outline
-        if not searchSettings.get('node_only', False) and not searchSettings.get('suboutline_only', False):
+        nodeOnly = searchSettings.get('node_only', False)
+        suboutlineOnly = searchSettings.get('suboutline_only', False)
+        if not nodeOnly and not suboutlineOnly:
             setattr(find, 'entire_outline', True)
             if not w.isChecked():
                 w.toggle()
@@ -17763,7 +18096,6 @@ from leo.core.leoExternalFiles import ExternalFilesController
         fc.in_headline = True
     elif fromBody and inOutline:
         fc.in_headline = False
-        # w = c.frame.body.wrapper
         c.bodyWantsFocus()
         c.bodyWantsFocusNow()
     #
@@ -18041,7 +18373,7 @@ class TerminateServer(Exception):  # pragma: no cover
 
     def row_col_wrapper_dict(i):
         if not i:
-            i = 0 # prevent none type
+            i = 0  # prevent none type
         # BUG: this uses current selection wrapper only, use
         # g.convertPythonIndexToRowCol instead !
         junk, line, col = wrapper.toPythonIndexRowCol(i)
@@ -18049,7 +18381,7 @@ class TerminateServer(Exception):  # pragma: no cover
 
     def row_col_pv_dict(i, s):
         if not i:
-            i = 0 # prevent none type
+            i = 0  # prevent none type
         # BUG: this uses current selection wrapper only, use
         # g.convertPythonIndexToRowCol instead !
         line, col = g.convertPythonIndexToRowCol(s, i)
@@ -18111,7 +18443,7 @@ class TerminateServer(Exception):  # pragma: no cover
     where p is root if param.ap is missing
     """
     c = self._check_c()
-    children = [] # default empty array
+    children = []  # default empty array
     if param.get("ap"):
         # Maybe empty param, for tree-root children(s).
         # _get_p called with the strict=True parameter because
@@ -18136,7 +18468,10 @@ class TerminateServer(Exception):  # pragma: no cover
     return self._make_minimal_response({"focus": self._get_focus()})
 </t>
 <t tx="felix.20210621233316.44">def get_parent(self, param):
-    """Return the node data for the parent of position p, where p is c.p if param["ap"] is missing."""
+    """
+    Return the node data for the parent of position p,
+    where p is c.p if param["ap"] is missing.
+    """
     self._check_c()
     p = self._get_p(param)
     parent = p.parent()
@@ -18210,10 +18545,10 @@ class TerminateServer(Exception):  # pragma: no cover
     # Start the bridge.
     self.bridge = leoBridge.controller(
         gui='nullGui',
-        loadPlugins=True,   # True: attempt to load plugins.
+        loadPlugins=True,  # True: attempt to load plugins.
         readSettings=True,  # True: read standard settings files.
-        silent=True,         # True: don't print signon messages.
-        verbose=False,       # True: prints messages that would be sent to the log pane.
+        silent=True,  # True: don't print signon messages.
+        verbose=False,  # True: prints messages that would be sent to the log pane.
     )
     self.g = g = self.bridge.globals()  # Also sets global 'g' object
     g.in_leo_server = True  # #2098.
@@ -18223,7 +18558,7 @@ class TerminateServer(Exception):  # pragma: no cover
     g.es = self._es  # pointer - not a function call
     #
     # Set in _init_connection
-    self.web_socket = None # Main Control Client
+    self.web_socket = None  # Main Control Client
     self.loop = None
     #
     # To inspect commands
@@ -18312,7 +18647,7 @@ class TerminateServer(Exception):  # pragma: no cover
             # select if old position still valid
             c.selectPosition(oldPosition)
         else:
-            oldPosition._childIndex = oldPosition._childIndex-1
+            oldPosition._childIndex = oldPosition._childIndex - 1
             # Try again with childIndex decremented
             if c.positionExists(oldPosition):
                 # additional try with lowered childIndex
@@ -18349,6 +18684,7 @@ class TerminateServer(Exception):  # pragma: no cover
     # set this node's new headline
     newNode.h = newHeadline
     newNode.setDirty()
+    c.setChanged()
     c.undoer.afterInsertNode(
         newNode, 'Insert Node', bunch)
     c.selectPosition(newNode)
@@ -18398,7 +18734,7 @@ class TerminateServer(Exception):  # pragma: no cover
         raise ServerError(f"{tag}: no body given")
     for p in c.all_positions():
         if p.v.gnx == gnx:
-            if body==p.v.b:
+            if body == p.v.b:
                 return self._make_response()
                 # Just exit if there is no need to change at all.
             bunch = u.beforeChangeNodeContents(p)
@@ -18446,8 +18782,13 @@ class TerminateServer(Exception):  # pragma: no cover
     c = self._check_c()
     p = self._get_p(param)
     u = c.undoer
-    h = param.get('name', '')
+    h: str = param.get('name', '')
+    oldH: str = p.h
+    if h == oldH:
+        return self._make_response()
     bunch = u.beforeChangeNodeContents(p)
+    p.setDirty()
+    c.setChanged()
     p.h = h
     u.afterChangeNodeContents(p, 'Change Headline', bunch)
     return self._make_response()
@@ -18476,7 +18817,7 @@ class TerminateServer(Exception):  # pragma: no cover
     convert = g.convertRowColToPythonIndex
     start = param.get('start', 0)
     end = param.get('end', 0)
-    active = param.get('insert', 0) # temp var to check if int.
+    active = param.get('insert', 0)  # temp var to check if int.
     scroll = param.get('scroll', 0)
     # If sent as number, use 'as is'
     if isinstance(active, int):
@@ -18570,7 +18911,7 @@ class TerminateServer(Exception):  # pragma: no cover
 </t>
 <t tx="felix.20210621233316.70">def set_config(self, param):
     """Got auto-reload's config from client"""
-    self.leoServerConfig = param # PARAM IS THE CONFIG-DICT
+    self.leoServerConfig = param  # PARAM IS THE CONFIG-DICT
     return self._make_response()
 </t>
 <t tx="felix.20210621233316.71">def error(self, param):
@@ -18633,12 +18974,12 @@ class TerminateServer(Exception):  # pragma: no cover
         'delete-last-icon',
         'delete-node-icons',
         'insert-icon',
-        'set-ua', # TODO : Should be easy to implement
-        'export-headlines', # export TODO
-        'export-jupyter-notebook', # export TODO
-        'outline-to-cweb', # export TODO
-        'outline-to-noweb', # export TODO
-        'remove-sentinels', # import TODO
+        'set-ua',  # TODO : Should be easy to implement
+        'export-headlines',  # export TODO
+        'export-jupyter-notebook',  # export TODO
+        'outline-to-cweb',  # export TODO
+        'outline-to-noweb',  # export TODO
+        'remove-sentinels',  # import TODO
 
         'save-all',
         'save-file-as-zipped',
@@ -18668,7 +19009,7 @@ class TerminateServer(Exception):  # pragma: no cover
         'help-for-regular-expressions',
         'help-for-scripting',
         'help-for-settings',
-        'join-leo-irc', # Some online irc - parameters not working anymore
+        'join-leo-irc',  # Some online irc - parameters not working anymore
 
         'print-body',
         'print-cmd-docstrings',
@@ -18689,7 +19030,7 @@ class TerminateServer(Exception):  # pragma: no cover
         'save-buffers-kill-leo',
         'screen-capture-5sec',
         'screen-capture-now',
-        'set-reference-file', # TODO : maybe offer this
+        'set-reference-file',  # TODO : maybe offer this
         'show-style-sheet',
         'sort-recent-files',
         'view-lossage',
@@ -19765,7 +20106,7 @@ class TerminateServer(Exception):  # pragma: no cover
         self.loop = asyncio.get_event_loop()
     else:
         # already exist, so "spectator-clients" setup
-        pass # nothing for now
+        pass  # nothing for now
 </t>
 <t tx="felix.20210621233316.77">def shut_down(self, param):
     """Shut down the server."""
@@ -19795,7 +20136,7 @@ class TerminateServer(Exception):  # pragma: no cover
         if not isinstance(outer_stack, (list, tuple)):  # pragma: no cover.
             raise ServerError(f"{tag}: stack must be tuple or list: {outer_stack}")
         #
-        def d_to_childIndex_v (d):
+        def d_to_childIndex_v(d):
             """Helper: return childIndex and v from d ["childIndex"] and d["gnx"]."""
             childIndex = d.get('childIndex')
             if childIndex is None:  # pragma: no cover.
@@ -19832,7 +20173,7 @@ class TerminateServer(Exception):  # pragma: no cover
                 # f"{tag}: position: {p!r}\n"
                 f"{tag}: v {v!r} childIndex: {childIndex!r}\n"
                 f"{tag}: stack: {stack!r}", flush=True)
-        return False # Return false on any error so caller can react
+        return False  # Return false on any error so caller can react
     return p
 </t>
 <t tx="felix.20210621233316.8">def _check_button_command(self, tag):  # pragma: no cover (no scripting controller)
@@ -19897,24 +20238,24 @@ class TerminateServer(Exception):  # pragma: no cover
     if "keep" in param:
         keepSelection = param["keep"]
 
-    func = c.commandsDict.get(command_name) # Getting from kebab-cased 'Command Name'
+    func = c.commandsDict.get(command_name)  # Getting from kebab-cased 'Command Name'
     if not func:  # pragma: no cover
         raise ServerError(f"{tag}: Leo command not found: {command_name!r}")
 
     p = self._get_p(param)
     try:
         if p == c.p:
-            value = func(event={"c":c})  # no need for re-selection
+            value = func(event={"c": c})  # no need for re-selection
         else:
             old_p = c.p  # preserve old position
             c.selectPosition(p)  # set position upon which to perform the command
-            value = func(event={"c":c})
+            value = func(event={"c": c})
             if keepSelection and c.positionExists(old_p):
                 # Only if 'keep' old position was set, and old_p still exists
                 c.selectPosition(old_p)
     except Exception as e:
         print(f"_do_leo_command Recovered from Error {e!s}", flush=True)
-        return self._make_response() # Return empty on error
+        return self._make_response()  # Return empty on error
     #
     # Tag along a possible return value with info sent back by _make_response
     if self._is_jsonable(value):
@@ -19953,7 +20294,7 @@ class TerminateServer(Exception):  # pragma: no cover
         raise ServerError(f"{tag}: no action")
 
     # TODO : make/force always an object from the client connected.
-    param = d.get('param', {}) # Can be none or a string
+    param = d.get('param', {})  # Can be none or a string
     # Set log flag.
     if param:
         self.log_flag = param.get("log")
@@ -19981,10 +20322,10 @@ class TerminateServer(Exception):  # pragma: no cover
 
     # Execute the requested action.
     if action[0] == "!":
-        action = action[1:] # Remove exclamation point "!"
+        action = action[1:]  # Remove exclamation point "!"
         func = self._do_server_command  # Server has this method.
     elif action[0] == '-':
-        action = action[1:] # Remove dash "-"
+        action = action[1:]  # Remove dash "-"
         func = self._do_leo_command_by_name  # It's a command name.
     else:
         func = self._do_leo_function_by_name  # It's the name of a method in some commander.
@@ -20018,7 +20359,7 @@ def _dump_position(self, p):  # pragma: no cover
     level_s = ' ' * 2 * p.level()
     print(f"{level_s}{p.childIndex():2} {p.v.gnx} {p.h}", flush=True)
 </t>
-<t tx="felix.20210621233316.89">async def _async_output(self, json, toAll = False):  # pragma: no cover (tested in server)
+<t tx="felix.20210621233316.89">async def _async_output(self, json, toAll=False):  # pragma: no cover (tested in server)
     """Output json string to the web_socket"""
     global connectionsTotal
     tag = '_async_output'
@@ -20055,7 +20396,7 @@ def _dump_position(self, p):  # pragma: no cover
         if w_rclick and hasattr(button, 'rclicks'):
             # not zero
             toChooseFrom = button.rclicks
-            for i_rc in  w_rclick:
+            for i_rc in w_rclick:
                 w_rclickChosen = toChooseFrom[i_rc]
                 toChooseFrom = w_rclickChosen.children
             if w_rclickChosen:
@@ -20070,7 +20411,7 @@ def _dump_position(self, p):  # pragma: no cover
     # Tag along a possible return value with info sent back by _make_response
     return self._make_response()
 </t>
-<t tx="felix.20210621233316.90">def _get_p(self, param, strict = False):
+<t tx="felix.20210621233316.90">def _get_p(self, param, strict=False):
     """
     Return _ap_to_p(param["ap"]) or c.p.,
     or False if the strict flag is set
@@ -20168,7 +20509,7 @@ def _dump_position(self, p):  # pragma: no cover
         package = {}
     p = package.get("p")
     if p:
-        del package ["p"]
+        del package["p"]
     # Raise an *internal* error if checks fail.
     if isinstance(package, str):  # pragma: no cover
         raise InternalServerError(f"{tag}: bad package kwarg: {package!r}")
@@ -20182,21 +20523,21 @@ def _dump_position(self, p):  # pragma: no cover
         raise InternalServerError(f"{tag}: empty c.p")
 
     # Always add id
-    package ["id"] = self.current_id
+    package["id"] = self.current_id
 
     # The following keys are relevant only if there is an open commander.
     if c:
         # Allow commands, especially _get_redraw_d, to specify p!
         p = p or c.p
-        package ["commander"] = {
+        package["commander"] = {
             "changed": c.isChanged(),
-            "fileName": c.fileName(), # Can be None for new files.
+            "fileName": c.fileName(),  # Can be None for new files.
         }
         # Add all the node data, including:
         # - "node": self._p_to_ap(p) # Contains p.gnx, p.childIndex and p.stack.
         # - All the *cheap* redraw data for p.
         redraw_d = self._get_position_d(p)
-        package ["node"] = redraw_d
+        package["node"] = redraw_d
 
     # Handle traces.
     if trace and verbose:  # pragma: no cover
@@ -20230,7 +20571,7 @@ def _dump_position(self, p):  # pragma: no cover
         package = {}
 
     # Always add id.
-    package ["id"] = self.current_id
+    package["id"] = self.current_id
 
     return json.dumps(package, separators=(',', ':'), cls=SetEncoder)
 </t>
@@ -20270,7 +20611,7 @@ def _dump_position(self, p):  # pragma: no cover
             self._dump_outline(c)
             raise ServerError(f"{tag}: round-trip failed: ap: {ap!r}, p: {p!r}, p2: {p2!r}")
 </t>
-<t tx="felix.20210622232409.1">def _send_async_output(self, package, toAll = False):
+<t tx="felix.20210622232409.1">def _send_async_output(self, package, toAll=False):
     """
     Send data asynchronously to the client
     """
@@ -20284,7 +20625,7 @@ def _dump_position(self, p):  # pragma: no cover
         InternalServerError(f"\n{tag}: loop not ready {jsonPackage} \n")
 </t>
 <t tx="felix.20210622235127.1"></t>
-<t tx="felix.20210622235209.1">def _es(self, * args, **keys):  # pragma: no cover (tested in client).
+<t tx="felix.20210622235209.1">def _es(self, *args, **keys):  # pragma: no cover (tested in client).
     """Output to the Log Pane"""
     d = {
         'color': None,
@@ -20464,7 +20805,7 @@ def _dump_position(self, p):  # pragma: no cover
 </t>
 <t tx="felix.20210626222905.19">def check_overwrite(self, c, path):
     if self.has_changed(path):
-        package = {"async": "info", "message": "Overwritten "+ path}
+        package = {"async": "info", "message": "Overwritten " + path}
         g.leoServer._send_async_output(package, True)
     return True
 
@@ -20527,12 +20868,12 @@ def _dump_position(self, p):  # pragma: no cover
             # Fix #1081: issue a warning.
             self.warn(c, path, p=p)
         elif self.ask(c, path, p=p):
-            old_p = c.p # To restore selection if refresh option set to yes-all &amp; is descendant of at-file
+            old_p = c.p  # To restore selection if refresh option set to yes-all &amp; is descendant of at-file
             c.selectPosition(self.lastPNode)
-            c.refreshFromDisk() # Ends with selection on new c.p which is the at-file node
+            c.refreshFromDisk()  # Ends with selection on new c.p which is the at-file node
             # check with leoServer's config first, and if new c.p is ancestor of old_p
             if g.leoServer.leoServerConfig:
-                if g.leoServer.leoServerConfig["defaultReloadIgnore"].lower()=='yes-all':
+                if g.leoServer.leoServerConfig["defaultReloadIgnore"].lower() == 'yes-all':
                     if c.positionExists(old_p) and c.p.isAncestorOf(old_p):
                         c.selectPosition(old_p)
 
@@ -20574,7 +20915,7 @@ def _dump_position(self, p):  # pragma: no cover
         if bool(p_result and 'yes' in p_result.lower()):
             # self.lastCommander.close() Stops too much if last file closed
             g.app.closeLeoWindow(self.lastCommander.frame, finish_quit=False)
-            g.leoServer.open_file({"filename":path }) # ignore returned value
+            g.leoServer.open_file({"filename": path})  # ignore returned value
 
     # Always update the path &amp; time to prevent future warnings for this path.
     if path:
@@ -20609,7 +20950,7 @@ def _dump_position(self, p):  # pragma: no cover
         self.yesno_all_time = time.time()  # Still reloading?  Extend time
         # if yesAll/noAll forced, then just show info message
         yesno_all_bool = bool('yes' in self.yesno_all_answer.lower())
-        return yesno_all_bool # We already have our answer here, so return it
+        return yesno_all_bool  # We already have our answer here, so return it
     if not p:
         where = 'the outline node'
     else:
@@ -20631,12 +20972,12 @@ def _dump_position(self, p):  # pragma: no cover
     package = {"async": "ask", "ask": 'Overwrite the version in Leo?',
                  "message": s, "yes_all": not _is_leo, "no_all": not _is_leo}
 
-    g.leoServer._send_async_output(package) # Ask the connected client
-    self.waitingForAnswer = True # Block the loop and further checks until 'clientResult'
-    return False # return false so as not to refresh until 'clientResult' says so
+    g.leoServer._send_async_output(package)  # Ask the connected client
+    self.waitingForAnswer = True  # Block the loop and further checks until 'clientResult'
+    return False  # return false so as not to refresh until 'clientResult' says so
 </t>
 <t tx="felix.20210627004039.1">def _idleTime(self, fn, delay, tag):
-    asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay/1000, fn))
+    asyncio.get_event_loop().create_task(self._asyncIdleLoop(delay / 1000, fn))
 </t>
 <t tx="felix.20210627004238.1">async def _asyncIdleLoop(self, seconds, func):
     while True:
@@ -20656,7 +20997,7 @@ def _dump_position(self, p):  # pragma: no cover
         #reload Commander
         # self.lastCommander.close() Stops too much if last file closed
         g.app.closeLeoWindow(self.lastCommander.frame, finish_quit=False)
-        g.leoServer.open_file({"filename":path }) # ignore returned value
+        g.leoServer.open_file({"filename": path})  # ignore returned value
 </t>
 <t tx="felix.20210703013251.1">"leoIntegration.showEditionOnBody": {
   "scope": "application",
@@ -20744,6 +21085,7 @@ def _dump_position(self, p):  # pragma: no cover
     # set this node's new headline
     newNode.h = newHeadline
     newNode.setDirty()
+    c.setChanged()
     c.undoer.afterInsertNode(
         newNode, 'Insert Node', bunch)
     c.selectPosition(newNode)
@@ -20753,7 +21095,7 @@ def _dump_position(self, p):  # pragma: no cover
     try:
         json.dumps(x, cls=SetEncoder)
         return True
-    except (TypeError, OverflowError):
+    except(TypeError, OverflowError):
         return False
 </t>
 <t tx="felix.20210706233101.1">/**
@@ -20796,11 +21138,11 @@ export function getUniqueId(): string {
     if title.startswith('Overwrite'):
         s = "@&lt;file&gt; tree was overwritten"
     elif title.startswith('Revert'):
-        s= "Leo outline reverted to last saved contents"
+        s = "Leo outline reverted to last saved contents"
     elif title.startswith('Create'):
-        s= "myLeoSettings.leo created"
+        s = "myLeoSettings.leo created"
     elif title.startswith('Move'):
-        s= "Marked nodes were moved"
+        s = "Marked nodes were moved"
     package = {"async": "info", "message": s}
     g.leoServer._send_async_output(package)
     return "yes"
@@ -20814,9 +21156,9 @@ export function getUniqueId(): string {
     # used in prompt for save with title: 'Confirm'
     s = "runAskYesNoCancelDialog called"
     if title.startswith('Overwrite'):
-        s= "File Overwritten"
+        s = "File Overwritten"
     elif title.startswith('Confirm'):
-        s= "File Saved"
+        s = "File Saved"
     package = {"async": "info", "message": s}
     g.leoServer._send_async_output(package)
     return "yes"
@@ -21145,11 +21487,11 @@ public closeLeoProcess(): void {
 }
 
 </t>
-<t tx="felix.20210803174312.1">async def notify_clients(action, excludedConn = None):
+<t tx="felix.20210803174312.1">async def notify_clients(action, excludedConn=None):
     global connectionsTotal
     if connectionsPool:  # asyncio.wait doesn't accept an empty list
-        opened = bool(controller.c) # c can be none if no files opened
-        m =  json.dumps({
+        opened = bool(controller.c)  # c can be none if no files opened
+        m = json.dumps({
             "async": "refresh",
             "action": action,
             "opened": opened,
@@ -21229,7 +21571,7 @@ private _bodySaveDeactivate(
     commanders = g.app.commanders()
     for commander in commanders:
         if commander.isChanged() and commander.fileName():
-            commander.close() # Patched 'ask' methods will open dialog
+            commander.close()  # Patched 'ask' methods will open dialog
 </t>
 <t tx="felix.20210807214524.1">def cancel_tasks(to_cancel, loop):
     if not to_cancel:
@@ -21473,7 +21815,7 @@ public setCloseOnFileDelete(): Thenable&lt;void&gt; {
     along with the three version members as numbers 'major', 'minor' and 'patch'.
     """
     # uses the __version__ global constant and the v1, v2, v3 global version numbers
-    result = {"version": __version__ , "major": v1, "minor": v2, "patch": v3}
+    result = {"version": __version__, "major": v1, "minor": v2, "patch": v3}
     return self._make_minimal_response(result)
 </t>
 <t tx="felix.20210914231602.1">def _get_all_server_commands(self):
@@ -21871,7 +22213,7 @@ export interface ChooseRClickItem extends vscode.QuickPickItem {
         children = []
         if rc.children:
             children = self._get_rclickTree(rc.children)
-        rclickList.append({"name": rc.position.h, "children":children })
+        rclickList.append({"name": rc.position.h, "children": children})
 
     return rclickList
 
@@ -22053,7 +22395,7 @@ private _handleRClicks(p_rclicks: RClick[], topLevelName?: string): Thenable&lt;
 </t>
 <t tx="felix.20220222014050.4">/**
  * Returns clipboard content
-*/
+ */
 public getTextFromClipboard(): string {
     return this.clipboardContent;
 }
@@ -22078,7 +22420,7 @@ public getTextFromClipboard(): string {
             # select if old position still valid
             c.selectPosition(oldPosition)
         else:
-            oldPosition._childIndex = oldPosition._childIndex-1
+            oldPosition._childIndex = oldPosition._childIndex - 1
             # Try again with childIndex decremented
             if c.positionExists(oldPosition):
                 # additional try with lowered childIndex
@@ -22106,7 +22448,7 @@ public getTextFromClipboard(): string {
             # select if old position still valid
             c.selectPosition(oldPosition)
         else:
-            oldPosition._childIndex = oldPosition._childIndex+1
+            oldPosition._childIndex = oldPosition._childIndex + 1
             # Try again with childIndex incremented
             if c.positionExists(oldPosition):
                 # additional try with higher childIndex
@@ -22134,11 +22476,1824 @@ public getTextFromClipboard(): string {
             # select if old position still valid
             c.selectPosition(oldPosition)
         else:
-            oldPosition._childIndex = oldPosition._childIndex+1
+            oldPosition._childIndex = oldPosition._childIndex + 1
             # Try again with childIndex incremented
             if c.positionExists(oldPosition):
                 # additional try with higher childIndex
                 c.selectPosition(oldPosition)
+    return self._make_response()
+</t>
+<t tx="felix.20220225003906.1">class QuickSearchController:
+
+    @others
+</t>
+<t tx="felix.20220225003906.10">def doNodeHistory(self):
+    nh = PosList(po[0] for po in self.c.nodeHistory.beadList)
+    nh.reverse()
+    self.clear()
+    self.addHeadlineMatches(nh)
+
+</t>
+<t tx="felix.20220225003906.11">def doSearchHistory(self):
+    self.clear()
+    def sHistSelect(x):
+        def _f():
+            # self.widgetUI.lineEdit.setText(x)
+            self.c.scon.navText = x
+            self.doSearch(x)
+        return _f
+    for pat in self._search_patterns:
+        self.addGeneric(pat, sHistSelect(pat))
+
+def pushSearchHistory(self, pat):
+    if pat in self._search_patterns:
+        return
+    self._search_patterns = ([pat] + self._search_patterns)[:30]
+
+</t>
+<t tx="felix.20220225003906.12">def doTimeline(self):
+    c = self.c
+    timeline = [p.copy() for p in c.all_unique_positions()]
+    timeline.sort(key=lambda x: x.gnx, reverse=True)
+    self.clear()
+    self.addHeadlineMatches(timeline)
+</t>
+<t tx="felix.20220225003906.13">def doChanged(self):
+    c = self.c
+    changed = [p.copy() for p in c.all_unique_positions() if p.isDirty()]
+    self.clear()
+    self.addHeadlineMatches(changed)
+</t>
+<t tx="felix.20220225003906.14">def doSearch(self, pat):
+    hitBase = False
+    self.clear()
+    self.pushSearchHistory(pat)
+    if not pat.startswith('r:'):
+        hpat = fnmatch.translate('*' + pat + '*').replace(r"\Z(?ms)", "")
+        bpat = fnmatch.translate(pat).rstrip('$').replace(r"\Z(?ms)", "")
+        # in python 3.6 there is no (?ms) at the end
+        # only \Z
+        bpat = bpat.replace(r'\Z', '')
+        flags = re.IGNORECASE
+    else:
+        hpat = pat[2:]
+        bpat = pat[2:]
+        flags = 0  # type:ignore
+    combo = self.searchOptionsStrings[self.searchOptions]
+    if combo == "All":
+        hNodes = self.c.all_positions()
+        bNodes = self.c.all_positions()
+    elif combo == "Subtree":
+        hNodes = self.c.p.self_and_subtree()
+        bNodes = self.c.p.self_and_subtree()
+    elif combo == "File":
+        found = False
+        node = self.c.p
+        while not found and not hitBase:
+            h = node.h
+            if h:
+                h = h.split()[0]
+            if h in self.fileDirectives:
+                found = True
+            else:
+                if node.level() == 0:
+                    hitBase = True
+                else:
+                    node = node.parent()
+        hNodes = node.self_and_subtree()
+        bNodes = node.self_and_subtree()
+    elif combo == "Chapter":
+        found = False
+        node = self.c.p
+        while not found and not hitBase:
+            h = node.h
+            if h:
+                h = h.split()[0]
+            if h == "@chapter":
+                found = True
+            else:
+                if node.level() == 0:
+                    hitBase = True
+                else:
+                    node = node.parent()
+        if hitBase:
+            # If I hit the base then revert to all positions
+            # this is basically the "main" chapter
+            hitBase = False  #reset
+            hNodes = self.c.all_positions()
+            bNodes = self.c.all_positions()
+        else:
+            hNodes = node.self_and_subtree()
+            bNodes = node.self_and_subtree()
+
+    else:
+        hNodes = [self.c.p]
+        bNodes = [self.c.p]
+
+    if not hitBase:
+        hm = self.find_h(hpat, hNodes, flags)
+        bm = self.find_b(bpat, bNodes, flags)
+        bm_keys = [match.key() for match in bm]
+        numOfHm = len(hm)  #do this before trim to get accurate count
+        hm = [match for match in hm if match.key() not in bm_keys]
+        if self.showParents:
+            parents = OrderedDefaultDict(list)
+            for nodeList in [hm, bm]:
+                for node in nodeList:
+                    if node.level() == 0:
+                        parents["Root"].append(node)
+                    else:
+                        parents[node.parent().gnx].append(node)
+            lineMatchHits = self.addParentMatches(parents)
+        else:
+            self.addHeadlineMatches(hm)
+            lineMatchHits = self.addBodyMatches(bm)
+
+        hits = numOfHm + lineMatchHits
+        self.lw.insert(0, "{} hits".format(hits))
+
+    else:
+        if combo == "File":
+            self.lw.insert(0, "External file directive not found " +
+                                  "during search")
+</t>
+<t tx="felix.20220225003906.15">def bgSearch(self, pat):
+    if not pat.startswith('r:'):
+        hpat = fnmatch.translate('*' + pat + '*').replace(r"\Z(?ms)", "")
+        # bpat = fnmatch.translate(pat).rstrip('$').replace(r"\Z(?ms)","")
+        flags = re.IGNORECASE
+    else:
+        hpat = pat[2:]
+        # bpat = pat[2:]
+        flags = 0  # type:ignore
+    combo =  self.searchOptionsStrings[self.searchOptions]
+    if combo == "All":
+        hNodes = self.c.all_positions()
+    elif combo == "Subtree":
+        hNodes = self.c.p.self_and_subtree()
+    else:
+        hNodes = [self.c.p]
+    hm = self.find_h(hpat, hNodes, flags)
+
+    self.clear() # needed for external client ui replacement: fills self.its
+    self.addHeadlineMatches(hm) # added for external client ui replacement: fills self.its
+
+    # bm = self.c.find_b(bpat, flags)
+    # self.addBodyMatches(bm)
+    return hm, []
+    # self.lw.insertItem(0, "%d hits"%self.lw.count())
+</t>
+<t tx="felix.20220225003906.16">def find_h(self, regex, nodes, flags=re.IGNORECASE):
+    """
+    Return list (a PosList) of all nodes where zero or more characters at
+    the beginning of the headline match regex
+    """
+    res = PosList()
+    try:
+        pat = re.compile(regex, flags)
+    except Exception:
+        return res
+    for p in nodes:
+        m = re.match(pat, p.h)
+        if m:
+            # #2012: Don't inject pc.mo.
+            pc = p.copy()
+            res.append(pc)
+    return res
+</t>
+<t tx="felix.20220225003906.17">def find_b(self, regex, nodes, flags=re.IGNORECASE | re.MULTILINE):
+    """
+    Return list (a PosList) of all nodes whose body matches regex
+    one or more times.
+
+    """
+    res = PosList()
+    try:
+        pat = re.compile(regex, flags)
+    except Exception:
+        return res
+    for p in nodes:
+        m = re.finditer(pat, p.b)
+        t1, t2 = itertools.tee(m, 2)
+        try:
+            t1.__next__()
+        except StopIteration:
+            continue
+        pc = p.copy()
+        pc.matchiter = t2
+        res.append(pc)
+    return res
+</t>
+<t tx="felix.20220225003906.18">def doShowMarked(self):
+    self.clear()
+    c = self.c
+    pl = PosList()
+    for p in c.all_positions():
+        if p.isMarked():
+            pl.append(p.copy())
+    self.addHeadlineMatches(pl)
+</t>
+<t tx="felix.20220225003906.19"></t>
+<t tx="felix.20220225003906.2">def __init__(self, c):
+    self.c = c
+    self.lw = [] # empty list
+
+    # Keys are id(w),values are either tuples in tuples (w (p,pos)) or tuples (w, f)
+    # (function f is when built from addGeneric)
+    self.its = {}
+
+    # self.worker = threadutil.UnitWorker()
+    # self.widgetUI = ui
+    self.fileDirectives = ["@clean", "@file", "@asis", "@edit",
+                           "@auto", "@auto-md", "@auto-org",
+                           "@auto-otl", "@auto-rst"]
+
+    self._search_patterns = []
+
+    self.navText = ''
+    self.showParents = True
+    self.isTag = False # added concept to combine tag pane functionality
+    self.searchOptions = 0
+    self.searchOptionsStrings = ["All", "Subtree", "File",
+                                 "Chapter", "Node"]
+
+</t>
+<t tx="felix.20220225003906.20">def onSelectItem(self, it, it_prev=None):
+    c = self.c
+    tgt = self.its.get(it)
+    if not tgt:
+        if not g.unitTesting:
+            print("onSelectItem: no target found for 'it' as key:" + str(it))
+        return
+
+    # generic callable
+    try:
+        if callable(tgt[1]):
+            tgt()
+        elif len(tgt[1]) == 2:
+            p, pos = tgt[1]
+            if hasattr(p, 'v'):  #p might be "Root"
+                if not c.positionExists(p):
+                    g.es("Node moved or deleted.\nMaybe re-do search.",
+                        color='red')
+                    return
+                c.selectPosition(p)
+                if pos is not None:
+                    if hasattr(g.app.gui, 'show_find_success'):  # pragma: no cover
+                        g.app.gui.show_find_success(c, False, 0, p)
+                    st, en = pos
+                    w = c.frame.body.wrapper
+                    w.setSelectionRange(st, en)
+                    w.seeInsertPoint()
+                    c.bodyWantsFocus()
+                    c.bodyWantsFocusNow()
+                else:
+                    if hasattr(g.app.gui, 'show_find_success'):  # pragma: no cover
+                        g.app.gui.show_find_success(c, True, 0, p)
+    except Exception:
+        raise ServerError("QuickSearchController onSelectItem error")
+
+
+</t>
+<t tx="felix.20220225003906.4">def addItem(self, it, val):
+    self.its[id(it)] = (it, val)
+    # changed to 999 from 3000 to replace old threadutil behavior
+    return len(self.its) &gt; 999 # Limit to 999 for now
+</t>
+<t tx="felix.20220225003906.5">def addBodyMatches(self, poslist):
+    lineMatchHits = 0
+    for p in poslist:
+        it = {"type": "headline", "label": p.h}
+        # it = QtWidgets.QListWidgetItem(p.h, self.lw)
+        # f = it.font()
+        # f.setBold(True)
+        # it.setFont(f)
+        if self.addItem(it, (p, None)):
+            return lineMatchHits
+        ms = self.matchlines(p.b, p.matchiter)
+        for ml, pos in ms:
+            lineMatchHits += 1
+            # it = QtWidgets.QListWidgetItem("    " + ml, self.lw)
+            it = {"type": "body", "label": ml}
+            if self.addItem(it, (p, pos)):
+                return lineMatchHits
+    return lineMatchHits
+</t>
+<t tx="felix.20220225003906.6">def addParentMatches(self, parent_list):
+    lineMatchHits = 0
+    for parent_key, parent_value in parent_list.items():
+        if isinstance(parent_key, str):
+            v = self.c.fileCommands.gnxDict.get(parent_key)
+            h = v.h if v else parent_key
+            # it = QtWidgets.QListWidgetItem(h, self.lw)
+            it = {"type": "parent", "label": h}
+        else:
+            # it = QtWidgets.QListWidgetItem(parent_key.h, self.lw)
+            it = {"type": "parent", "label": parent_key.h}
+        # f = it.font()
+        # f.setItalic(True)
+        # it.setFont(f)
+        if self.addItem(it, (parent_key, None)):
+            return lineMatchHits
+        for p in parent_value:
+            # it = QtWidgets.QListWidgetItem("    " + p.h, self.lw)
+            it = {"type": "headline", "label": p.h}
+            # f = it.font()
+            # f.setBold(True)
+            # it.setFont(f)
+            if self.addItem(it, (p, None)):
+                return lineMatchHits
+            if hasattr(p, "matchiter"):  #p might be not have body matches
+                ms = self.matchlines(p.b, p.matchiter)
+                for ml, pos in ms:
+                    lineMatchHits += 1
+                    # it = QtWidgets.QListWidgetItem("    " + "    " + ml, self.lw)
+                    it = {"type": "body", "label": ml}
+                    if self.addItem(it, (p, pos)):
+                        return lineMatchHits
+    return lineMatchHits
+
+</t>
+<t tx="felix.20220225003906.7">def addGeneric(self, text, f):
+    """ Add generic callback """
+    # it = QtWidgets.QListWidgetItem(text, self.lw)
+    it = {"type": "generic", "label": text}
+    self.its[id(it)] = (it, f)
+    return it
+
+</t>
+<t tx="felix.20220225003906.8">def addHeadlineMatches(self, poslist):
+    for p in poslist:
+        it = {"type": "headline", "label": p.h}
+        # it = QtWidgets.QListWidgetItem(p.h, self.lw)
+        # f = it.font()
+        # f.setBold(True)
+        # it.setFont(f)
+        if self.addItem(it, (p, None)):
+            return
+</t>
+<t tx="felix.20220225003906.9">def clear(self):
+    self.its = {}
+    self.lw.clear()
+
+</t>
+<t tx="felix.20220225224130.1">def matchlines(self, b, miter):
+    res = []
+    for m in miter:
+        st, en = g.getLine(b, m.start())
+        li = b[st:en].strip()
+        res.append((li, (m.start(), m.end())))
+    return res
+
+</t>
+<t tx="felix.20220301224252.1">// @ts-check
+
+// This script will be run within the webview itself
+// It cannot access the main VS Code APIs directly.
+// Send message to leoInteg with vscode.postMessage({ keyNameEx1: someValue, ... });
+// Receive messages from leoInteg with window.addEventListener('message', event =&gt; { ... });
+(function () {
+    // @ts-expect-error
+    const vscode = acquireVsCodeApi();
+
+    let timer; // for debouncing sending the settings from this webview to leointeg
+    let dirty = false; // all but nav input
+    let navTextDirty = false;
+
+    let firstTabEl = 'searchOptions'; // used to be 'findText' before nav inputs
+    let lastTabEl = 'searchBody';
+
+    /**
+     * * Flag for freezing the nav 'search as you type' headlines (concept from original nav plugin)
+     * - Resets when switching to tag, or when clearing the input field.
+     * - Sets when pressing Enter with non-empty input field &amp;&amp; not tag mode.
+     */
+    let frozen = false;
+    document.getElementById("freeze").style.display = 'none';
+    let navSearchTimer // for debouncing the search-headline while typing if unfrozen
+
+    // * LeoSearchSettings Type
+    let searchSettings = {
+        // Nav settings
+        navText: '',
+        showParents: true,
+        isTag: false,
+        searchOptions: 0,
+        // Find/replace
+        findText: '',
+        replaceText: '',
+        wholeWord: false,
+        ignoreCase: true,
+        regExp: false,
+        markFinds: false,
+        markChanges: false,
+        searchHeadline: true,
+        searchBody: true,
+        searchScope: 0, // 0 is entire outline (1: sub-outline, 2: node only)
+    };
+
+    // * Search related controls (No nav inputs)
+    let inputIds = ['findText', 'replaceText'];
+    let checkboxIds = [
+        'wholeWord',
+        'ignoreCase',
+        'regExp',
+        'markFinds',
+        'markChanges',
+        'searchHeadline',
+        'searchBody',
+    ];
+    let radioIds = ['entireOutline', 'subOutlineOnly', 'nodeOnly'];
+
+    function navTextChange() {
+        // cancel timer, reset 'debounced' timer after checks, if still needed
+        if (navSearchTimer) {
+            clearTimeout(navSearchTimer)
+        }
+
+        // * Needed Checks
+        if (searchSettings.navText.length === 0) {
+            setFrozen(false);
+            // if tagging but empty: SEND SEARCH LIST-ALL-TAGS COMMAND
+            if (searchSettings.isTag) {
+                navSearchTimer = setTimeout(() =&gt; {
+                    if (navTextDirty) {
+                        navTextDirty = false;
+                        if (navSearchTimer) {
+                            clearTimeout(navSearchTimer)
+                        }
+                        sendSearchConfig();
+                    }
+                    vscode.postMessage({ type: 'leoNavTextChange' });
+                }, 250); // quarter second
+            }
+
+        }
+
+        // User changed text in nav text input
+        if (frozen || searchSettings.navText.length &lt; 3) {
+            return; // dont even continue if not long enough or already frozen
+        }
+
+        // DEBOUNCE .25 to .5 seconds with navSearchTimer
+        navSearchTimer = setTimeout(() =&gt; {
+            if (navTextDirty) {
+                navTextDirty = false;
+                if (navSearchTimer) {
+                    clearTimeout(navSearchTimer)
+                }
+                sendSearchConfig();
+            }
+            vscode.postMessage({ type: 'leoNavTextChange' });
+        }, 400); // almost half second
+
+    }
+
+    function setSearchSetting(p_id) {
+        if (checkboxIds.includes(p_id)) {
+            toggleCheckbox(p_id);
+        } else if (radioIds.includes(p_id)) {
+            setRadio(p_id);
+        }
+    }
+
+    function setFrozen(p_focus) {
+        frozen = p_focus;
+        if (frozen) {
+            document.getElementById("freeze").style.display = '';
+        } else {
+            document.getElementById("freeze").style.display = 'none';
+        }
+    }
+
+    function setSettings(p_settings) {
+        // Nav controls
+        // @ts-expect-error
+        document.getElementById("navText").value = p_settings["navText"];
+        searchSettings["navText"] = p_settings["navText"];
+
+        // showParents
+        // @ts-expect-error
+        document.getElementById("showParents").checked = p_settings["showParents"];
+        searchSettings["showParents"] = p_settings["showParents"];
+
+        // isTag
+        // @ts-expect-error
+        document.getElementById("isTag").checked = p_settings["isTag"];
+        searchSettings["isTag"] = p_settings["isTag"];
+        handleIsTagSwitch(false);
+        // searchOptions
+        // @ts-expect-error
+        document.getElementById("searchOptions").value = p_settings["searchOptions"];
+        searchSettings["searchOptions"] = p_settings["searchOptions"];
+
+        // When opening a Leo document, set default values of fields
+        inputIds.forEach((p_inputId) =&gt; {
+            // @ts-expect-error
+            document.getElementById(p_inputId).value = p_settings[p_inputId];
+            searchSettings[p_inputId] = p_settings[p_inputId];
+        });
+        checkboxIds.forEach((p_inputId) =&gt; {
+            // @ts-expect-error
+            document.getElementById(p_inputId).checked = p_settings[p_inputId];
+            searchSettings[p_inputId] = p_settings[p_inputId];
+        });
+        // @ts-expect-error
+        document.getElementById(radioIds[p_settings['searchScope']]).checked = true;
+        searchSettings.searchScope = p_settings['searchScope'];
+    }
+
+    function sendSearchConfig() {
+        dirty = false; // clear dirty flag
+        vscode.postMessage({ type: 'searchConfig', value: searchSettings });
+    }
+
+    function processChange() {
+        clearTimeout(timer);
+        dirty = true;
+        timer = setTimeout(() =&gt; {
+            sendSearchConfig();
+        }, 300);
+    }
+
+    function toggleCheckbox(p_inputId) {
+        let w_checkbox = document.getElementById(p_inputId);
+        let w_setTo = true;
+        // @ts-expect-error
+        if (w_checkbox.checked) {
+            w_setTo = false;
+        }
+        // @ts-expect-error
+        w_checkbox.checked = w_setTo;
+        searchSettings[p_inputId] = w_setTo;
+        if (timer) {
+            clearTimeout(timer);
+        }
+        sendSearchConfig();
+    }
+
+    function setRadio(p_inputId) {
+        // @ts-expect-error
+        document.getElementById(p_inputId).checked = true;
+        searchSettings['searchScope'] = parseInt(
+            // @ts-expect-error
+            document.querySelector('input[name="searchScope"]:checked').value
+        );
+        if (timer) {
+            clearTimeout(timer);
+        }
+        sendSearchConfig();
+    }
+
+    function checkKeyDown(p_event) {
+        if (!p_event) {
+            p_event = window.event;
+        }
+        var keyCode = p_event.code || p_event.key;
+
+        if (p_event.ctrlKey &amp;&amp; !p_event.shiftKey &amp;&amp; p_event.keyCode === 70) {
+            p_event.preventDefault();
+            p_event.stopPropagation();
+            focusOnField('findText');
+            return;
+        }
+
+        if (keyCode === 'Tab') {
+            var actEl = document.activeElement;
+            if (p_event.shiftKey) {
+                // shift + tab so if first got last
+                var firstEl = document.getElementById(firstTabEl);
+                if (actEl === firstEl) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    document.getElementById(lastTabEl).focus();
+                    return;
+                }
+            } else {
+                // tab, so if last goto first
+                var lastEl = document.getElementById(lastTabEl);
+                if (actEl === lastEl) {
+                    p_event.preventDefault();
+                    p_event.stopPropagation();
+                    p_event.stopImmediatePropagation();
+                    focusOnField(firstTabEl);
+                    return;
+                }
+            }
+        }
+    }
+
+    function focusOnField(p_id) {
+        const inputField = document.querySelector('#' + p_id);
+        // @ts-expect-error
+        inputField.select();
+        // TODO : TEST IF NEEDED TO PREVENT FLICKER ON FIRST TRY?
+        setTimeout(() =&gt; {
+            // @ts-expect-error
+            inputField.select();
+        }, 0);
+    }
+
+    function getSettings() {
+        // clear dirty, clear timer,
+        if (dirty) {
+            dirty = false;
+            clearTimeout(timer);
+            sendSearchConfig(); // just trigger send settings
+        }
+    }
+
+    function handleIsTagSwitch(p_wasSet) {
+        let w_input = document.getElementById('navText');
+        let w_showParent = document.getElementById('showParents');
+        let w_navSelect = document.getElementById('searchOptions');
+        if (searchSettings.isTag) {
+            // @ts-expect-error
+            w_input.placeholder = "&lt;tag pattern here&gt;";
+            // @ts-expect-error
+            w_showParent.disabled = true;
+            // @ts-expect-error
+            w_navSelect.disabled = true;
+            if (p_wasSet) {
+                // if nav text is empty: show all tags
+                setTimeout(() =&gt; {
+                    clearTimeout(timer);
+                    sendSearchConfig();
+                    navTextChange();
+                }, 100);
+            }
+        } else {
+            // @ts-expect-error
+            w_input.placeholder = "&lt;nav pattern here&gt;";
+            // @ts-expect-error
+            w_showParent.disabled = false;
+            // @ts-expect-error
+            w_navSelect.disabled = false;
+        }
+
+    }
+
+    // * Nav text input detection
+    document.getElementById('navText').onkeypress = function (p_event) {
+        // @ts-expect-error
+        if (!p_event) p_event = window.event;
+        var keyCode = p_event.code || p_event.key;
+        if (keyCode === 'Enter') {
+            if (searchSettings.navText.length &gt;= 3 || searchSettings.isTag) {
+                setFrozen(true);
+                if (navTextDirty) {
+                    navTextDirty = false;
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    if (navSearchTimer) {
+                        clearTimeout(navSearchTimer)
+                    }
+                    sendSearchConfig();
+                }
+                vscode.postMessage({ type: 'leoNavEnter' });
+            }
+            return false;
+        }
+    };
+    document.getElementById('navText').addEventListener('input', function (p_event) {
+        // @ts-expect-error
+        searchSettings.navText = this.value;
+        navTextDirty = true;
+        navTextChange(); // DEBOUNCE THIS! Don't process change too fast!
+    });
+
+    document.getElementById('showParents').addEventListener('change', function (p_event) {
+        // @ts-expect-error
+        searchSettings.showParents = this.checked;
+        processChange();
+    });
+    document.getElementById('isTag').addEventListener('change', function (p_event) {
+
+        // @ts-expect-error
+        let w_checked = this.checked;
+        let w_wasSet = false;
+        if (searchSettings.isTag !== w_checked) {
+            setFrozen(false); // Switched tagging so reset freeze
+            if (w_checked) {
+                w_wasSet = true;
+            }
+        }
+        searchSettings.isTag = w_checked;
+        // Set placeholder text
+        processChange();
+        handleIsTagSwitch(w_wasSet);
+    });
+
+    // * Find &amp; Replace controls change detection
+    document.getElementById('searchOptions').addEventListener('change', function (p_event) {
+        // @ts-expect-error
+        searchSettings.searchOptions = Number(this.value);
+        processChange();
+    });
+
+    inputIds.forEach((p_inputId) =&gt; {
+        document.getElementById(p_inputId).onkeypress = function (p_event) {
+            // @ts-expect-error
+            if (!p_event) p_event = window.event;
+            var keyCode = p_event.code || p_event.key;
+            if (keyCode === 'Enter') {
+                if (timer) {
+                    clearTimeout(timer);
+                    sendSearchConfig();
+                }
+                vscode.postMessage({ type: 'leoFindNext' });
+                return false;
+            }
+        };
+        document.getElementById(p_inputId).addEventListener('input', function (p_event) {
+            // @ts-expect-error
+            searchSettings[p_inputId] = this.value;
+            processChange();
+        });
+    });
+
+    checkboxIds.forEach((p_inputId) =&gt; {
+        document.getElementById(p_inputId).addEventListener('change', function (p_event) {
+            // @ts-expect-error
+            searchSettings[p_inputId] = this.checked;
+            processChange();
+        });
+    });
+
+    radioIds.forEach((p_inputId) =&gt; {
+        document.getElementById(p_inputId).addEventListener('change', function (p_event) {
+            searchSettings['searchScope'] = parseInt(
+                // @ts-expect-error
+                document.querySelector('input[name="searchScope"]:checked').value
+            );
+            processChange();
+        });
+    });
+
+    document.onkeydown = checkKeyDown;
+
+    document.addEventListener('focusin', (event) =&gt; {
+        vscode.postMessage({ type: 'gotFocus' });
+    });
+    document.addEventListener('focusout', (event) =&gt; {
+        vscode.postMessage({ type: 'lostFocus' });
+    });
+
+    // Handle messages sent from the extension to the webview
+    window.addEventListener('message', (event) =&gt; {
+        const message = event.data; // The json data that the extension sent
+        switch (message.type) {
+            // * Nav Tab Controls
+            // Focus and select all text in 'nav' field
+            case 'selectNav': {
+                focusOnField('navText');
+                if (message.text || message.text === "") {
+                    // @ts-expect-error
+                    document.getElementById("navText").value = message.text;
+                    searchSettings["navText"] = message.text;
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    sendSearchConfig();
+                }
+                break;
+            }
+            // * Find Tab Controls
+            // Focus and select all text in 'find' field
+            case 'selectFind': {
+                focusOnField('findText');
+                break;
+            }
+            // Focus and select all text in 'replace' field
+            case 'selectReplace': {
+                focusOnField('replaceText');
+                break;
+            }
+            case 'getSettings': {
+                getSettings();
+                break;
+            }
+            case 'setSettings': {
+                setSettings(message.value);
+                break;
+            }
+            case 'setSearchSetting': {
+                setSearchSetting(message.id);
+                break;
+            }
+        }
+    });
+
+    vscode.postMessage({ type: 'refreshSearchConfig' });
+})();
+</t>
+<t tx="felix.20220305211743.1">def nav_headline_search(self, param):
+    """
+    Performs nav 'headline only' search and fills results of go to panel
+    Triggered by just typing in nav input box
+    """
+    tag = 'nav_headline_search'
+    c = self._check_c()
+    # Tag search override!
+    try:
+        inp = c.scon.navText
+        if c.scon.isTag:
+            c.scon.doTag(inp)
+        else:
+            exp = inp.replace(" ", "*")
+            c.scon.bgSearch(exp)
+    except Exception as e:
+        raise ServerError(f"{tag}: exception doing nav headline search: {e}")
+    return  self._make_response()
+
+
+</t>
+<t tx="felix.20220305211828.1">def nav_search(self, param):
+    """
+    Performs nav search and fills results of go to panel
+    Triggered by pressing 'Enter' in the nav input box
+    """
+    tag = 'nav_search'
+    c = self._check_c()
+    # Tag search override!
+    try:
+        inp = c.scon.navText
+        if c.scon.isTag:
+            c.scon.doTag(inp)
+        else:
+            c.scon.doSearch(inp)
+    except Exception as e:
+        raise ServerError(f"{tag}: exception doing nav search: {e}")
+    return  self._make_response()
+
+
+</t>
+<t tx="felix.20220305215239.1">def get_goto_panel(self, param):
+    """
+    Gets the content of the goto panel
+    """
+    tag = 'get_goto_panel'
+    c = self._check_c()
+    try:
+        result: Dict[str, Any] = {}
+        navlist = [
+            {
+                "key": k,
+                "h": c.scon.its[k][0]["label"],
+                "t": c.scon.its[k][0]["type"]
+            } for k in c.scon.its.keys()
+        ]
+        result["navList"] = navlist
+        result["messages"]= c.scon.lw
+        result["navText"] = c.scon.navText
+        result["navOptions"] = {"isTag":c.scon.isTag, "showParents": c.scon.showParents}
+    except Exception as e:
+        raise ServerError(f"{tag}: exception doing nav search: {e}")
+    return self._make_response(result)
+
+
+</t>
+<t tx="felix.20220305225942.1">public navEnter(): Thenable&lt;LeoBridgePackage&gt; {
+    return this._isBusyTriggerSave(false, true).then(() =&gt; {
+
+        return this.sendAction(
+            Constants.LEOBRIDGE.NAV_SEARCH
+        ).then((p_package) =&gt; {
+            this._leoGotoProvider.refreshTreeRoot();
+            this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+            return p_package;
+        });
+
+    });
+
+}
+
+</t>
+<t tx="felix.20220305231404.1">public navTextChange(): Thenable&lt;LeoBridgePackage&gt; {
+
+    return this._isBusyTriggerSave(false, true).then(() =&gt; {
+
+        return this.sendAction(
+            Constants.LEOBRIDGE.NAV_HEADLINE_SEARCH
+        ).then((p_package) =&gt; {
+            this._leoGotoProvider.refreshTreeRoot();
+            this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+            return p_package;
+        });
+
+    });
+
+}
+
+</t>
+<t tx="felix.20220307233825.1">import * as vscode from "vscode";
+import { LeoIntegration } from "./leoIntegration";
+import { ProviderResult } from "vscode";
+import { LeoGotoNode } from "./leoGotoNode";
+import { Constants } from "./constants";
+import { LeoGoto } from "./types";
+
+/**
+ * * Opened Leo documents shown as a list with this TreeDataProvider implementation
+ */
+export class LeoGotoProvider implements vscode.TreeDataProvider&lt;LeoGotoNode&gt; {
+
+    private _onDidChangeTreeData: vscode.EventEmitter&lt;LeoGotoNode | undefined&gt; = new vscode.EventEmitter&lt;LeoGotoNode | undefined&gt;();
+
+    readonly onDidChangeTreeData: vscode.Event&lt;LeoGotoNode | undefined&gt; = this._onDidChangeTreeData.event;
+
+    private _lastGotoView: vscode.TreeView&lt;LeoGotoNode&gt; | undefined;
+
+    private _topNode: LeoGotoNode | undefined;
+
+    constructor(private _leoIntegration: LeoIntegration) { }
+
+    public showGotoPanel(): Thenable&lt;void&gt; {
+        if (this._lastGotoView &amp;&amp; this._topNode) {
+            return this._lastGotoView.reveal(this._topNode, { select: false, focus: false });
+        }
+        return Promise.resolve();
+    }
+
+    public setLastGotoView(p_view: vscode.TreeView&lt;LeoGotoNode&gt;): void {
+        this._lastGotoView = p_view;
+    }
+
+    /**
+     * * Refresh the whole outline
+     */
+    public refreshTreeRoot(): void {
+        this._onDidChangeTreeData.fire(undefined);
+    }
+
+    public getTreeItem(element: LeoGotoNode): Thenable&lt;LeoGotoNode&gt; | LeoGotoNode {
+        return element;
+    }
+
+    public getChildren(element?: LeoGotoNode): Thenable&lt;LeoGotoNode[]&gt; {
+
+        // if called with element, or not ready, give back empty array as there won't be any children
+        if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
+
+
+            // call action to get get list, and convert to LeoButtonNode(s) array
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_GOTO_PANEL).then(p_package =&gt; {
+                if (p_package &amp;&amp; p_package.navList) {
+
+                    const w_list: LeoGotoNode[] = [];
+                    this._topNode = undefined;
+                    const w_navList: LeoGoto[] = p_package.navList;
+                    if (w_navList &amp;&amp; w_navList.length) {
+                        w_navList.forEach((p_goto: LeoGoto) =&gt; {
+                            const w_newNode = new LeoGotoNode(this._leoIntegration, p_goto, p_package.navOptions!);
+                            if (!this._topNode) {
+                                this._topNode = w_newNode;
+                            }
+                            w_list.push(w_newNode);
+                        });
+                    }
+                    return w_list;
+                } else {
+                    return [];
+                }
+            });
+
+
+        } else {
+            return Promise.resolve([]); // Defaults to an empty list of children
+        }
+    }
+
+    public getParent(element: LeoGotoNode): ProviderResult&lt;LeoGotoNode&gt; | null {
+        // Leo documents are just a list, as such, entries are always child of root, so return null
+        return null;
+    }
+
+}
+</t>
+<t tx="felix.20220307233828.1">import * as vscode from "vscode";
+import { Constants } from "./constants";
+import { LeoIntegration } from "./leoIntegration";
+import { LeoGoto, TGotoTypes } from "./types";
+import * as utils from "./utils";
+
+/**
+ * * Opened Leo documents tree view node item implementation for usage in a TreeDataProvider
+ */
+export class LeoGotoNode extends vscode.TreeItem {
+
+    // Context string is checked in package.json with 'when' clauses
+    public entryType: TGotoTypes;
+    private _id: string;
+    private _description: string | boolean;
+    private _headline: string;
+    private _iconIndex: number; // default to tag
+    private _leoIntegration: LeoIntegration;
+    public key: number; // id from python
+
+    constructor(
+        p_leoIntegration: LeoIntegration,
+        p_gotoEntry: LeoGoto,
+        p_navOptions: { isTag: boolean, showParents: boolean },
+
+    ) {
+        let w_spacing = "";
+        if (p_navOptions.showParents &amp;&amp; !p_navOptions.isTag) {
+            w_spacing = "    ";
+        }
+        let w_label = "";
+        if (["tag", "headline"].includes(p_gotoEntry.t)) {
+            w_label = w_spacing + p_gotoEntry.h;
+        }
+        super(w_label);
+
+        // Setup this instance
+        this._leoIntegration = p_leoIntegration;
+        this._id = utils.getUniqueId();
+        this.entryType = p_gotoEntry.t;
+        this.key = p_gotoEntry.key;
+        this._headline = p_gotoEntry.h.trim();
+
+        this._description = false;
+        if (this.entryType === 'body') {
+            this._iconIndex = 2;
+            if (p_navOptions.showParents) {
+                this._description = "    " + this._headline;
+            } else {
+                this._description = "  " + this._headline;
+            }
+        } else if (this.entryType === 'parent') {
+            this._iconIndex = 0;
+            this._description = this._headline.trim();
+        } else if (this.entryType === 'generic') {
+            this._iconIndex = 4;
+            this._description = this._headline;
+        } else if (this.entryType === 'headline') {
+            this._iconIndex = 1;
+        } else {
+            this._iconIndex = 3; // tag
+        }
+
+        this.command = {
+            command: Constants.COMMANDS.GOTO_NAV_ENTRY,
+            title: '',
+            arguments: [this]
+        };
+
+    }
+
+    // @ts-ignore
+    public get tooltip(): string {
+        if (this.entryType !== "generic") {
+            return this.entryType.charAt(0).toUpperCase() + this.entryType.slice(1);
+        }
+        return this._headline;
+    }
+
+    // @ts-ignore
+    public get description(): string | boolean {
+        return this._description;
+    }
+
+    // @ts-ignore
+    public get iconPath(): Icon | vscode.ThemeIcon | string {
+        if (this._iconIndex &lt; 4) {
+            return this._leoIntegration.gotoIcons[this._iconIndex];
+        }
+        // else return undefined for generic text without icon
+        return undefined;
+    }
+
+    // @ts-ignore
+    public get id(): string {
+        // Add prefix and suffix salt to numeric index to prevent accidental duplicates
+        // Should be unique when refreshed
+        return "g" + this._id + "o";
+    }
+
+}
+</t>
+<t tx="felix.20220307235733.1">{
+  "command": "leointeg.findQuick",
+  "category": "Leo",
+  "title": "Focus on Nav tab"
+},
+{
+  "command": "leointeg.goAnywhere",
+  "category": "Leo",
+  "title": "Go Anywhere"
+},
+{
+  "command": "leointeg.findQuickSelected",
+  "category": "Leo",
+  "title": "Nav search with current selection",
+  "icon": {
+    "light": "resources/light/find-quick-selected.svg",
+    "dark": "resources/dark/find-quick-selected.svg"
+  }
+},
+{
+  "command": "leointeg.findQuickTimeline",
+  "category": "Leo",
+  "title": "List timeline of nodes in reverse gnx order",
+  "icon": {
+    "light": "resources/light/find-quick-timeline.svg",
+    "dark": "resources/dark/find-quick-timeline.svg"
+  }
+},
+{
+  "command": "leointeg.findQuickChanged",
+  "category": "Leo",
+  "title": "List all changed/dirty nodes",
+  "icon": {
+    "light": "resources/light/find-quick-changed.svg",
+    "dark": "resources/dark/find-quick-changed.svg"
+  }
+},
+{
+  "command": "leointeg.history",
+  "category": "Leo",
+  "title": "List visited nodes from history",
+  "icon": {
+    "light": "resources/light/find-quick-history.svg",
+    "dark": "resources/dark/find-quick-history.svg"
+  }
+},
+{
+  "command": "leointeg.markedList",
+  "category": "Leo",
+  "title": "List all marked nodes",
+  "icon": {
+    "light": "resources/light/find-quick-marked.svg",
+    "dark": "resources/dark/find-quick-marked.svg"
+  }
+},
+</t>
+<t tx="felix.20220308203528.1">export interface LeoGoto {
+    key: number; // id from python
+    h: string;
+    t: TGotoTypes;
+}
+
+</t>
+<t tx="felix.20220308213523.1"></t>
+<t tx="felix.20220308213538.1">/**
+ * Opens the Nav tab and focus on nav text input
+ */
+public findQuick(p_string?: string): Thenable&lt;unknown&gt; {
+    let w_panelID = '';
+    let w_panel: vscode.WebviewView | undefined;
+    if (this._lastTreeView === this._leoTreeExView) {
+        w_panelID = Constants.FIND_EXPLORER_ID;
+        w_panel = this._findPanelWebviewExplorerView;
+    } else {
+        w_panelID = Constants.FIND_ID;
+        w_panel = this._findPanelWebviewView;
+    }
+    vscode.commands.executeCommand(w_panelID + '.focus').then((p_result) =&gt; {
+        if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
+            w_panel.show(false);
+        }
+        const w_message: { [key: string]: string } = { type: 'selectNav' };
+        if (p_string &amp;&amp; p_string?.trim()) {
+            w_message["text"] = p_string.trim();
+        }
+        w_panel?.webview.postMessage(w_message);
+    });
+    return Promise.resolve();
+}
+
+</t>
+<t tx="felix.20220308213547.1">/**
+ * Opens the Nav tab with the selected text as the search string
+ */
+public findQuickSelected(): Thenable&lt;unknown&gt; {
+    if (vscode.window.activeTextEditor) {
+        const editor = vscode.window.activeTextEditor;
+        const selection = editor.selection;
+        if (!selection.isEmpty) {
+            const text = editor.document.getText(selection);
+            return this.findQuick(text);
+        }
+    }
+    return this.findQuick();
+}
+
+</t>
+<t tx="felix.20220308213552.1">/**
+ * Lists all nodes in reversed gnx order, newest to oldest
+ */
+public findQuickTimeline(): Thenable&lt;unknown&gt; {
+    return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_TIMELINE)
+        .then((p_result: LeoBridgePackage) =&gt; {
+            this._leoGotoProvider.refreshTreeRoot();
+            return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
+        });
+}
+
+</t>
+<t tx="felix.20220308213557.1">/**
+ * Lists all nodes that are changed (aka "dirty") since last save.
+ */
+public findQuickChanged(): Thenable&lt;unknown&gt; {
+    return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_CHANGED)
+        .then((p_result: LeoBridgePackage) =&gt; {
+            this._leoGotoProvider.refreshTreeRoot();
+            return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
+        });
+}
+
+</t>
+<t tx="felix.20220308213600.1">/**
+ * Lists nodes from c.nodeHistory.
+ */
+public findQuickHistory(): Thenable&lt;unknown&gt; {
+    return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_HISTORY)
+        .then((p_result: LeoBridgePackage) =&gt; {
+            this._leoGotoProvider.refreshTreeRoot();
+            return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
+        });
+}
+
+</t>
+<t tx="felix.20220308213605.1">/**
+ * List all marked nodes.
+ */
+public findQuickMarked(): Thenable&lt;unknown&gt; {
+    return this.sendAction(Constants.LEOBRIDGE.FIND_QUICK_MARKED)
+        .then((p_result: LeoBridgePackage) =&gt; {
+            this._leoGotoProvider.refreshTreeRoot();
+            return this.findQuickGoAnywhere(); // Finish by opening and focussing nav pane
+        });
+}
+
+</t>
+<t tx="felix.20220308213619.1">/**
+ * Opens goto and focus in depending on passed options
+ */
+public findQuickGoAnywhere(p_options?: { preserveFocus?: boolean }): Thenable&lt;unknown&gt; {
+    let w_panel = "";
+    if (this._lastTreeView === this._leoTreeExView) {
+        w_panel = Constants.GOTO_EXPLORER_ID;
+    } else {
+        w_panel = Constants.GOTO_ID;
+    }
+    vscode.commands.executeCommand(w_panel + '.focus', p_options);
+
+    return Promise.resolve();
+}
+
+</t>
+<t tx="felix.20220308220651.1">{
+  "command": "leointeg.findQuick",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.findQuickSelected",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.findQuickTimeline",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.findQuickChanged",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.goAnywhere",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.history",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.markedList",
+  "when": "leoTreeOpened"
+},
+</t>
+<t tx="felix.20220309010334.1"></t>
+<t tx="felix.20220309010558.1">def find_quick_timeline(self, param):
+    # fill with timeline order gnx nodes
+    c = self._check_c()
+    c.scon.doTimeline()
+    return  self._make_response()
+
+</t>
+<t tx="felix.20220309010607.1">def find_quick_changed(self, param):
+    # fill with list of all dirty nodes
+    c = self._check_c()
+    c.scon.doChanged()
+    return  self._make_response()
+
+</t>
+<t tx="felix.20220309010647.1">def find_quick_history(self, param):
+    # fill with list from history
+    c = self._check_c()
+    c.scon.doNodeHistory()
+    return  self._make_response()
+
+</t>
+<t tx="felix.20220309010704.1">def find_quick_marked(self, param):
+    # fill with list of marked nodes
+    c = self._check_c()
+    c.scon.doShowMarked()
+    return  self._make_response()
+
+</t>
+<t tx="felix.20220309205509.1">def goto_nav_entry(self, param):
+    # activate entry in c.scon.its
+    tag = 'goto_nav_entry'
+    c = self._check_c()
+    # c.scon.doTimeline()
+    try:
+        it = param.get('key')
+        c.scon.onSelectItem(it)
+        focus = self._get_focus()
+        result = {"focus": focus}
+    except Exception as e:
+        raise ServerError(f"{tag}: exception selecting a nav entry: {e}")
+    return self._make_response(result)
+
+</t>
+<t tx="felix.20220309215616.1">public gotoNavEntry(p_node: LeoGotoNode): Thenable&lt;unknown&gt; {
+
+    if (p_node.entryType === 'tag') {
+
+        return this._isBusyTriggerSave(false, true)
+            .then((p_saveResult) =&gt; {
+
+                let w_string: string = p_node.label as string;
+
+                let w_panelID = '';
+                let w_panel: vscode.WebviewView | undefined;
+                if (this._lastTreeView === this._leoTreeExView) {
+                    w_panelID = Constants.FIND_EXPLORER_ID;
+                    w_panel = this._findPanelWebviewExplorerView;
+                } else {
+                    w_panelID = Constants.FIND_ID;
+                    w_panel = this._findPanelWebviewView;
+                }
+                vscode.commands.executeCommand(w_panelID + '.focus').then((p_result) =&gt; {
+                    if (w_panel &amp;&amp; w_panel.show &amp;&amp; !w_panel.visible) {
+                        w_panel.show(false);
+                    }
+                    const w_message: { [key: string]: string } = { type: 'selectNav' };
+                    if (w_string &amp;&amp; w_string?.trim()) {
+                        w_message["text"] = w_string.trim();
+                    }
+                    return w_panel!.webview.postMessage(w_message);
+                }).then(() =&gt; {
+                    // Do search
+                    setTimeout(() =&gt; {
+                        this.sendAction(
+                            Constants.LEOBRIDGE.NAV_SEARCH
+                        ).then((p_package) =&gt; {
+                            this._leoGotoProvider.refreshTreeRoot();
+                            this.findQuickGoAnywhere({ preserveFocus: true }); // show but dont change focus
+                            return p_package;
+                        });
+                    }, 10);
+
+                });
+            });
+
+    }
+
+    // Was not a tag
+    if (p_node.entryType !== 'generic' &amp;&amp; p_node.entryType !== 'parent') {
+        return this._isBusyTriggerSave(false, true)
+            .then((p_saveResult) =&gt; {
+                return this.sendAction(
+                    Constants.LEOBRIDGE.GOTO_NAV_ENTRY,
+                    JSON.stringify({ key: p_node.key })
+                );
+            })
+            .then((p_navEntryResult: LeoBridgePackage) =&gt; {
+                if (!p_navEntryResult.focus) {
+                    vscode.window.showInformationMessage('Not found');
+                } else {
+                    let w_focusOnOutline = false;
+                    const w_focus = p_navEntryResult.focus.toLowerCase();
+
+                    if (w_focus.includes('tree') || w_focus.includes('head')) {
+                        // tree
+                        w_focusOnOutline = true;
+                    }
+                    this.launchRefresh(
+                        {
+                            tree: true,
+                            body: true,
+                            scroll: !w_focusOnOutline,
+                            documents: false,
+                            buttons: false,
+                            states: true,
+                        },
+                        w_focusOnOutline
+                    );
+                }
+            });
+    }
+    return Promise.resolve();
+}
+
+</t>
+<t tx="felix.20220310224330.1">/**
+ * * Handle the change of visibility of either goto treeview and refresh it if its visible
+ * @param p_event The treeview-visibility-changed event passed by vscode
+ * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
+ */
+private _onGotoTreeViewVisibilityChanged(
+    p_event: vscode.TreeViewVisibilityChangeEvent,
+    p_explorerView: boolean
+): void {
+
+    if (p_explorerView) {
+    } // (Facultative/unused) Do something different if explorer view is used
+    if (p_event.visible) {
+        this._leoGotoProvider.setLastGotoView(p_explorerView ? this._leoGotoExplorer : this._leoGoto);
+        this.refreshGotoPane();
+    }
+}
+
+</t>
+<t tx="felix.20220313183922.1">def doTag(self, pat):
+    """
+    Search for tags: outputs position list
+    If empty pattern, list tags *strings* instead
+    """
+    if not pat:
+        # No pattern! list all tags as string
+        c = self.c
+        self.clear()
+        d: Dict[str, Any] = {}
+        for p in c.all_unique_positions():
+            u = p.v.u
+            tags = set(u.get('__node_tags', set([])))
+            for tag in tags:
+                aList = d.get(tag, [])
+                aList.append(p.h)
+                d[tag] = aList
+        if d:
+            for key in sorted(d):
+                # key is unique tag
+                self.addTag(key)
+        return
+    # else: non empty pattern, so find tag!
+    hm = self.find_tag(pat)
+    self.clear() # needed for external client ui replacement: fills self.its
+    self.addHeadlineMatches(hm) # added for external client ui replacement: fills self.its
+</t>
+<t tx="felix.20220313185430.1">def find_tag(self, pat):
+    """
+    Return list (a PosList) of all nodes that have matching tags
+    """
+    #  USE update_list(self) from @file ../plugins/nodetags.py
+    c = self.c
+
+    res = PosList()
+
+    tc = getattr(c, 'theTagController', None)
+    gnxDict = c.fileCommands.gnxDict
+    key = pat.strip()
+
+    query = re.split(r'(&amp;|\||-|\^)', key)
+    tags = []
+    operations = []
+    for i, s in enumerate(query):
+        if i % 2 == 0:
+            tags.append(s.strip())
+        else:
+            operations.append(s.strip())
+    tags.reverse()
+    operations.reverse()
+
+    resultset = set(tc.get_tagged_gnxes(tags.pop()))
+    while operations:
+        op = operations.pop()
+        nodes = set(tc.get_tagged_gnxes(tags.pop()))
+        if op == '&amp;':
+            resultset &amp;= nodes
+        elif op == '|':
+            resultset |= nodes
+        elif op == '-':
+            resultset -= nodes
+        elif op == '^':
+            resultset ^= nodes
+
+    for gnx in resultset:
+        n = gnxDict.get(gnx)
+        if n is not None:
+            p = c.vnode2position(n)
+            pc = p.copy()
+            res.append(pc)
+    #         item = QtWidgets.QListWidgetItem(n.h)
+    #         self.listWidget.addItem(item)
+    #         self.mapping[id(item)] = n
+    # count = self.listWidget.count()
+    # self.label.clear()
+    # self.label.setText("Total: %s nodes" % count)
+    return res
+</t>
+<t tx="felix.20220313211902.1">/**
+ * * Tag Node
+ */
+public tagNode(): void {
+    this.triggerBodySave(false)
+        .then((p_saveResult: boolean) =&gt; {
+            return vscode.window.showInputBox({
+                title: Constants.USER_MESSAGES.TITLE_TAG_NODE,
+                placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
+                prompt: Constants.USER_MESSAGES.PROMPT_TAG,
+            });
+        })
+        .then((p_inputResult?: string) =&gt; {
+
+            if (p_inputResult &amp;&amp; p_inputResult.trim()) {
+                p_inputResult = p_inputResult.trim();
+                // check for special chars first
+                if (p_inputResult.split(/(&amp;|\||-|\^)/).length &gt; 1) {
+                    vscode.window.showInformationMessage('Cannot add tags containing any of these characters: &amp;|^-');
+                    return;
+                }
+                this.sendAction(
+                    Constants.LEOBRIDGE.TAG_NODE,
+                    JSON.stringify({ tag: p_inputResult })
+                ).then((p_resultTag: LeoBridgePackage) =&gt; {
+                    this.launchRefresh(
+                        {
+                            tree: true,
+                            body: false,
+                            documents: false,
+                            buttons: false,
+                            states: true,
+                        },
+                        false
+                    );
+                });
+            }
+        });
+}
+
+</t>
+<t tx="felix.20220313211907.1">/**
+ * * Remove single Tag on selected node
+ */
+public removeTag(): void {
+
+    if (this.lastSelectedNode &amp;&amp; this.lastSelectedNode.u &amp;&amp;
+        this.lastSelectedNode.u.__node_tags &amp;&amp; this.lastSelectedNode.u.__node_tags.length) {
+        this.triggerBodySave(false)
+            .then((p_saveResult: boolean) =&gt; {
+                return vscode.window.showQuickPick(this.lastSelectedNode!.u.__node_tags, {
+                    title: Constants.USER_MESSAGES.TITLE_REMOVE_TAG,
+                    placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
+                    canPickMany: false
+                    // prompt: Constants.USER_MESSAGES.PROMPT_TAG,
+                });
+            })
+            .then((p_inputResult?: string) =&gt; {
+                if (p_inputResult &amp;&amp; p_inputResult.trim()) {
+                    this.sendAction(
+                        Constants.LEOBRIDGE.REMOVE_TAG,
+                        JSON.stringify({ tag: p_inputResult.trim() })
+                    ).then((p_resultTag: LeoBridgePackage) =&gt; {
+                        this.launchRefresh(
+                            {
+                                tree: true,
+                                body: false,
+                                documents: false,
+                                buttons: false,
+                                states: true,
+                            },
+                            false
+                        );
+                    });
+                }
+            });
+    } else if (this.lastSelectedNode) {
+        vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.label);
+    } else {
+        return;
+    }
+
+}
+
+</t>
+<t tx="felix.20220313212109.1">def tag_node(self, param):
+    """Tag selected node with given string"""
+    # This is not a find command!
+    c = self.commander
+    fc = c.findCommands
+    the_tag = param.get("tag")
+    if the_tag:
+        # fc.do_tag_children(c.p, the_tag)
+        pass
+    return self.sendLeoBridgePackage()
+
+</t>
+<t tx="felix.20220313212118.1">def remove_tags(self, param):
+    """Remove tags on selected node"""
+    # This is not a find command!
+    c = self.commander
+
+    return self.sendLeoBridgePackage()
+
+</t>
+<t tx="felix.20220313215348.1">def tag_node(self, param):
+    """Set tag on selected node"""
+    # This is not a find command!
+    tag = 'tag_node'
+    c = self._check_c()
+    tag_param = param.get("tag")
+    if tag_param is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no tag")
+    try:
+        p = self._get_p(param)
+        tc = getattr(c, 'theTagController', None)
+        if hasattr(tc, 'add_tag'):
+            tc.add_tag(p, tag_param)
+    except Exception as e:
+        raise ServerError(f"{tag}: Running tag_node gave exception: {e}")
+    return self._make_response()
+</t>
+<t tx="felix.20220313215353.1">def remove_tag(self, param):
+    """Remove specific tag on selected node"""
+    # This is not a find command!
+    tag = 'remove_tag'
+    c = self._check_c()
+    tag_param = param.get("tag")
+    if tag_param is None:  # pragma: no cover
+        raise ServerError(f"{tag}: no tag")
+    try:
+        p = self._get_p(param)
+        v = p.v
+        tc = getattr(c, 'theTagController', None)
+        if v.u and '__node_tags' in v.u:
+            tc.remove_tag(p, tag_param)
+    except Exception as e:
+        raise ServerError(f"{tag}: Running remove_tag gave exception: {e}")
+    return self._make_response()
+</t>
+<t tx="felix.20220313220807.1">def remove_tags(self, param):
+    """Remove all tags on selected node"""
+    # This is not a find command!
+    tag = 'remove_tags'
+    c = self._check_c()
+    try:
+        p = self._get_p(param)
+        v = p.v
+        if v.u and '__node_tags' in v.u:
+            del v.u['__node_tags']
+            tc = getattr(c, 'theTagController', None)
+            tc.initialize_taglist() # reset tag list: some may have been removed
+    except Exception as e:
+        raise ServerError(f"{tag}: Running remove_tags gave exception: {e}")
+    return self._make_response()
+</t>
+<t tx="felix.20220313221212.1">/**
+ * * Remove all tags on selected node
+ */
+public removeTags(): void {
+    if (this.lastSelectedNode &amp;&amp; this.lastSelectedNode.u &amp;&amp;
+        this.lastSelectedNode.u.__node_tags &amp;&amp; this.lastSelectedNode.u.__node_tags.length) {
+        this.triggerBodySave(false)
+            .then((p_saveResult: boolean) =&gt; {
+                this.sendAction(
+                    Constants.LEOBRIDGE.REMOVE_TAGS
+                ).then((p_resultTag: LeoBridgePackage) =&gt; {
+                    this.launchRefresh(
+                        {
+                            tree: true,
+                            body: false,
+                            documents: false,
+                            buttons: false,
+                            states: true,
+                        },
+                        false
+                    );
+                });
+            });
+    } else if (this.lastSelectedNode) {
+        vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.label);
+    } else {
+        return;
+    }
+}
+
+</t>
+<t tx="felix.20220318222437.1">def addTag(self, text):
+    """ add Tag label """
+    it = {"type": "tag", "label": text}
+    self.its[id(it)] = (it, None)
+    return it
+
+</t>
+<t tx="felix.20220319202027.1">export type TGotoTypes = "tag" | "headline" | "body" | "parent" | "generic";
+
+</t>
+<t tx="felix.20220320172705.1">/**
+ * * Build all possible strings for the goto panel
+ * @param p_context Needed to get to absolute paths on the system
+ * @returns An array containing icons for the goto anywhere tree view
+ */
+export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
+    return [
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_PARENT),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_PARENT)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_NODE),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_NODE)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BODY),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BODY)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_TAG),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_TAG)
+        }
+    ];
+}
+
+</t>
+<t tx="felix.20220321001559.1">## 1.0.7
+
+- Added 'Goto Anywhere' panel, with buttons for showing lists from common node attributes searches:
+  - 'Timeline' nodes by creation date
+  - Changed/Dirty nodes
+  - History of visited nodes
+  - Marked nodes
+- Made those same commands available through vscode commands system for user keybindings.
+- Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'.
+
+</t>
+<t tx="felix.20220321211021.1">public static addMinibufferCommands: { label: string, detail: string }[] = [
+    { "label": "find-quick", "detail": "Opens the Nav tab." },
+    { "label": "find-quick-selected", "detail": "Opens the Nav tab with the selected text as the search string." },
+    { "label": "focus-to-nav", "detail": "Puts focus in Nav tab." },
+    { "label": "find-quick-timeline", "detail": "Lists all nodes in reversed gnx order, newest to oldest." },
+    { "label": "find-quick-changed", "detail": "Lists all nodes that are changed (aka \"dirty\") since last save." },
+    { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
+    { "label": "marked-list", "detail": "List all marked nodes." },
+];
+
+</t>
+<t tx="felix.20220323232702.1">public checkLeoId(p_leoEditorPath: string): Promise&lt;any&gt; {
+
+    // Check if .leoID.txt exists : MAY NOT BE NEEDED BECAUSE LEO CHECKS OS.SYS
+
+    try {
+        if (fs.existsSync(p_leoEditorPath + Constants.LEO_ID_NAME)) {
+
+            // console.log('LEO ID EXISTS');
+
+        } else {
+
+            // console.log('LEO ID DOES NOT EXISTS');
+
+            // return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
+        }
+    } catch (p_err) {
+        console.error(p_err);
+        return Promise.reject("checkLeoId: Failed checking if file exist");
+    }
+    return Promise.resolve();
+}
+
+</t>
+<t tx="felix.20220326190000.1">def get_leoid(self, param):
+    """
+    returns g.app.leoID
+    """
+    # uses the __version__ global constant and the v1, v2, v3 global version numbers
+    result = {"leoID": g.app.leoID}
+    return self._make_minimal_response(result)
+</t>
+<t tx="felix.20220326190008.1">def set_leoid(self, param):
+    """
+    sets g.app.leoID
+    """
+    # uses the __version__ global constant and the v1, v2, v3 global version numbers
+    leoID = param.get('leoID', '')
+    # Same test/fix as in Leo
+    if leoID:
+        try:
+            leoID = leoID.replace('.', '').replace(',', '').replace('"', '').replace("'", '')
+            # Remove *all* whitespace: https://stackoverflow.com/questions/3739909
+            leoID = ''.join(leoID.split())
+        except Exception:
+            g.es_exception()
+            leoID = 'None'
+        if len(leoID) &gt; 2:
+            g.app.leoID = leoID;
+            g.app.nodeIndices.defaultId = leoID;
+            g.app.nodeIndices.userId = leoID;
     return self._make_response()
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
@@ -22307,6 +24462,14 @@ import * as utils from "../utils";
 
     webviewView.webview.onDidReceiveMessage((data) =&gt; {
         switch (data.type) {
+            case 'leoNavEnter': {
+                this._leoIntegration.navEnter();
+                break;
+            }
+            case 'leoNavTextChange': {
+                this._leoIntegration.navTextChange();
+                break;
+            }
             case 'gotFocus': {
                 // utils.setContext("sideBarFocus", true);
                 // utils.setContext("focusedView", "leoFindPanel");
@@ -22384,34 +24547,68 @@ import * as utils from "../utils";
             &lt;title&gt;Leo Find Panel&lt;/title&gt;
         &lt;/head&gt;
         &lt;body&gt;
-            &lt;label class="first" for="findText"&gt;Find:&lt;/label&gt;
-            &lt;input type="text" id="findText" name="findText" placeholder="&lt;find pattern here&gt;" &gt;
-            &lt;label for="replaceText"&gt;Replace:&lt;/label&gt;
-            &lt;input type="text" id="replaceText" name="replaceText" &gt;
+            &lt;div class="row mb-0"&gt;
+                &lt;div class="col no-overflow"&gt;
+                    &lt;label for="navText"&gt;Nav:&lt;/label&gt;
+                    &lt;select
+                        name="searchOptions"
+                        id="searchOptions"
+                        title="Confine search to:&amp;#013; - All: regular search for all nodes&amp;#013; - Subtree: current node and it's children&amp;#013; - File: only search under a node with an @&lt;file&gt; directive&amp;#013; - Chapter: only search under a node with an @chapter directer&amp;#013; - Node: only search currently selected node"
+                    &gt;
+                        &lt;option value="0"&gt;All&lt;/option&gt;
+                        &lt;option value="1"&gt;Subtree&lt;/option&gt;
+                        &lt;option value="2"&gt;File&lt;/option&gt;
+                        &lt;option value="3"&gt;Chapter&lt;/option&gt;
+                        &lt;option value="4"&gt;Node&lt;/option&gt;
+                    &lt;/select&gt;
+                &lt;/div&gt;
+                &lt;div class="col-nav"&gt;
+                    &lt;input type="checkbox" id="isTag" name="isTag" &gt;
+                    &lt;label class="label-fix" for="isTag" title="Search Tag attributes, set algebra is supported:&amp;#013;&amp;amp; both the given tags&amp;#013;&amp;vert; either of the given tags (or both)&amp;#013;&amp;#45; the first tag, but not the second tag&amp;#013;&amp;#94; either of the given tags (but *not* both)&amp;#013;"
+                    &gt;Tag&lt;/label&gt;
+
+                    &lt;input type="checkbox" id="showParents" name="showParents" &gt;
+                    &lt;label class="label-fix" for="showParents" title="List parents of nodes in text searches."&gt;Show parents&lt;/label&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class="input-holder mt-0 mb-6"&gt;
+                &lt;input title="Typing searches headlines, Enter also searches body text and freeze." type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
+            &lt;/div&gt;
+            &lt;div id="freeze" title="Clear field to unfreeze."&gt;&amp;#x2744;&lt;/div&gt;
+
+            &lt;label class="mb-0" for="findText"&gt;Find/Replace:&lt;/label&gt;
+            &lt;div class="input-holder mt-4 mb-4"&gt;
+                &lt;input title="Enter or F3 will find and goto the next match.&amp;#013;F2 for the previous match" type="text" id="findText" name="findText" placeholder="&lt;find pattern here&gt;" &gt;
+            &lt;/div&gt;
+            &lt;div class="input-holder mb-4"&gt;
+                &lt;input type="text" id="replaceText" name="replaceText" placeholder="&lt;replace pattern here&gt;" &gt;
+            &lt;/div&gt;
             &lt;div class="row"&gt;
                 &lt;div class="col"&gt;
                     &lt;input type="checkbox" id="wholeWord" name="wholeWord" &gt;
-                    &lt;label for="wholeWord"&gt;Whole &lt;u&gt;w&lt;/u&gt;ord&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="wholeWord"&gt;Whole &lt;u&gt;w&lt;/u&gt;ord&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="ignoreCase" name="ignoreCase" &gt;
-                    &lt;label for="ignoreCase"&gt;&lt;u&gt;I&lt;/u&gt;gnore case&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="ignoreCase"&gt;&lt;u&gt;I&lt;/u&gt;gnore case&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="regExp" name="regExp" &gt;
-                    &lt;label for="regExp"&gt;Rege&lt;u&gt;x&lt;/u&gt;p&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="regExp"&gt;Rege&lt;u&gt;x&lt;/u&gt;p&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="markFinds" name="markFinds" &gt;
-                    &lt;label for="markFinds"&gt;Mark &lt;u&gt;f&lt;/u&gt;inds&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="markFinds"&gt;Mark &lt;u&gt;f&lt;/u&gt;inds&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="markChanges" name="markChanges" &gt;
-                    &lt;label for="markChanges"&gt;Mark &lt;u&gt;c&lt;/u&gt;hanges&lt;/label&gt;
+                    &lt;label class="label-fix" for="markChanges"&gt;Mark &lt;u&gt;c&lt;/u&gt;hanges&lt;/label&gt;
                 &lt;/div&gt;
                 &lt;div class="col"&gt;
+                    &lt;!-- RADIOS --&gt;
                     &lt;input type="radio" id="entireOutline" name="searchScope" value="0"&gt;
-                    &lt;label for="entireOutline"&gt;&lt;u&gt;E&lt;/u&gt;ntire outline&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="entireOutline"&gt;&lt;u&gt;E&lt;/u&gt;ntire outline&lt;/label&gt;&lt;br&gt;
                     &lt;input type="radio" id="subOutlineOnly" name="searchScope" value="1"&gt;
-                    &lt;label for="subOutlineOnly"&gt;&lt;u&gt;S&lt;/u&gt;uboutline Only&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="subOutlineOnly"&gt;&lt;u&gt;S&lt;/u&gt;uboutline Only&lt;/label&gt;&lt;br&gt;
                     &lt;input type="radio" id="nodeOnly" name="searchScope" value="2"&gt;
-                    &lt;label for="nodeOnly"&gt;&lt;u&gt;N&lt;/u&gt;ode only&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="nodeOnly"&gt;&lt;u&gt;N&lt;/u&gt;ode only&lt;/label&gt;&lt;br&gt;
+                    &lt;!-- CHECKBOXES --&gt;
                     &lt;input type="checkbox" id="searchHeadline" name="searchHeadline" &gt;
-                    &lt;label for="searchHeadline"&gt;Search &lt;u&gt;h&lt;/u&gt;eadline&lt;/label&gt;&lt;br&gt;
+                    &lt;label class="label-fix" for="searchHeadline"&gt;Search &lt;u&gt;h&lt;/u&gt;eadline&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="searchBody" name="searchBody" &gt;
-                    &lt;label for="searchBody"&gt;Search &lt;u&gt;b&lt;/u&gt;ody&lt;/label&gt;
+                    &lt;label class="label-fix" for="searchBody"&gt;Search &lt;u&gt;b&lt;/u&gt;ody&lt;/label&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
             &lt;script nonce="${nonce}" src="${scriptUri}"&gt;&lt;/script&gt;
@@ -22430,77 +24627,6 @@ import * as utils from "../utils";
 }
 </t>
 <t tx="fil.20210603223013.1"></t>
-<t tx="fil.20210603223013.10">checkboxIds.forEach((p_inputId) =&gt; {
-                            //@ts-expect-error
-    document.getElementById(p_inputId).checked = p_settings[p_inputId];
-    searchSettings[p_inputId] = p_settings[p_inputId];
-});
-                        //@ts-expect-error
-document.getElementById(radioIds[p_settings['searchScope']]).checked = true;
-searchSettings.searchScope = p_settings['searchScope'];
-</t>
-<t tx="fil.20210603223013.11">function sendSearchConfig() {
-    dirty = false; // clear dirty flag
-    vscode.postMessage({ type: 'searchConfig', value: searchSettings });
-}
-
-let timer; // for debouncing sending the settings from this webview to leointeg
-let dirty = false;
-</t>
-<t tx="fil.20210603223013.12">function processChange() {
-    clearTimeout(timer);
-    dirty = true;
-    timer = setTimeout(() =&gt; {
-        sendSearchConfig();
-    }, 300);
-}
-
-</t>
-<t tx="fil.20210603223013.13"></t>
-<t tx="fil.20210603223013.14">inputIds.forEach((p_inputId) =&gt; {
-    @others
-});
-</t>
-<t tx="fil.20210603223013.15">document.getElementById(p_inputId).onkeypress = function (p_event) {
-                            //@ts-expect-error
-    if (!p_event) p_event = window.event;
-    var keyCode = p_event.code || p_event.key;
-    if (keyCode == 'Enter') {
-        if (timer) {
-            clearTimeout(timer);
-            sendSearchConfig();
-        }
-        vscode.postMessage({ type: 'leoFindNext' });
-        return false;
-    }
-};
-</t>
-<t tx="fil.20210603223013.16">document.getElementById(p_inputId).addEventListener('input', function (p_event) {
-                            //@ts-expect-error
-    searchSettings[p_inputId] = this.value;
-    processChange();
-});
-</t>
-<t tx="fil.20210603223013.17">checkboxIds.forEach((p_inputId) =&gt; {
-    document.getElementById(p_inputId).addEventListener('change', function (p_event) {
-                    //@ts-expect-error
-        searchSettings[p_inputId] = this.checked;
-        processChange();
-    });
-});
-</t>
-<t tx="fil.20210603223013.18"></t>
-<t tx="fil.20210603223013.19">radioIds.forEach((p_inputId) =&gt; {
-    document.getElementById(p_inputId).addEventListener('change', function (p_event) {
-        searchSettings['searchScope'] = parseInt(
-                        //@ts-expect-error
-            document.querySelector('input[name="searchScope"]:checked').value
-        );
-        processChange();
-    });
-});
-
-</t>
 <t tx="fil.20210603223013.2">@language css
 div.row {
   overflow-x: hidden;
@@ -22514,334 +24640,78 @@ div.col {
   text-overflow: ellipsis;
   overflow: hidden;
 }
-</t>
-<t tx="fil.20210603223013.20"></t>
-<t tx="fil.20210603223013.21">/**
- * @param {string} p_inputId
- */
-function toggleCheckbox(p_inputId) {
-    let w_checkbox = document.getElementById(p_inputId);
-    let w_setTo = true;
-                //@ts-expect-error
-    if (w_checkbox.checked) {
-        w_setTo = false;
-    }
-                //@ts-expect-error
-    w_checkbox.checked = w_setTo;
-    searchSettings[p_inputId] = w_setTo;
-    if (timer) {
-        clearTimeout(timer);
-    }
-    sendSearchConfig();
+div.col-nav {
+  width: 50%;
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
-</t>
-<t tx="fil.20210603223013.22">/**
- * @param {string} p_inputId
- */
-function setRadio(p_inputId) {
-                //@ts-expect-error
-    document.getElementById(p_inputId).checked = true;
-    searchSettings['searchScope'] = parseInt(
-                    //@ts-expect-error
-        document.querySelector('input[name="searchScope"]:checked').value
-    );
-    if (timer) {
-        clearTimeout(timer);
-    }
-    sendSearchConfig();
+.mt-0 {
+  margin-top: 0;
 }
 
-</t>
-<t tx="fil.20210603223013.23">/**
- *
- * @param {KeyboardEvent} p_event
- */
-function checkKeyDown(p_event) {
-                //@ts-expect-error
-    if (!p_event) p_event = window.event;
-    var keyCode = p_event.code || p_event.key;
-
-    if (keyCode === 'Tab') {
-        var actEl = document.activeElement;
-        if (p_event.shiftKey) {
-            var firstEl = document.getElementById('findText');
-            if (actEl === firstEl) {
-                p_event.preventDefault();
-                p_event.stopPropagation();
-                p_event.stopImmediatePropagation();
-                document.getElementById('searchBody').focus();
-                return;
-            }
-        } else {
-            var lastEl = document.getElementById('searchBody');
-            if (actEl === lastEl) {
-                p_event.preventDefault();
-                p_event.stopPropagation();
-                p_event.stopImmediatePropagation();
-                focusOnField('findText');
-                return;
-            }
-        }
-    }
-    // checkOtherKeys(p_event);
+.mt-4 {
+  margin-top: 4px;
 }
 
-// TODO :  CAPTURE FOCUS IN OVERALL PANEL AND SET CONTEXT-VAR OF 'FOCUSED PANEL'
-
-// TODO : ALSO CYCLE TABS !!
-// TODO : ALSO CAPTURE CTRL+T TO FOCUS OUT OF HERE
-
-// TODO : CHECK FOR ALT+CTRL+SHORTCUTS FOR TOGGLES AND RADIOS
-// document.addEventListener ("keydown", function (zEvent) {
-//     if (zEvent.ctrlKey  &amp;&amp;  zEvent.altKey  &amp;&amp;  zEvent.key === "e") {  // case sensitive
-//         // DO YOUR STUFF HERE
-//     }
-// } );
-
-document.onkeydown = checkKeyDown;
-
-// ! Not Used Anymore ! now uses real vscode keybindings
-/*
-function checkOtherKeys(p_event) {
-    var keyCode = p_event.code || p_event.key;
-    if (keyCode === 'F2') {
-        p_event.preventDefault();
-        p_event.stopPropagation();
-        p_event.stopImmediatePropagation();
-        vscode.postMessage({ type: 'leoFindPrevious' });
-        return;
-    }
-    if (keyCode === 'F3') {
-        p_event.preventDefault();
-        p_event.stopPropagation();
-        p_event.stopImmediatePropagation();
-        vscode.postMessage({ type: 'leoFindNext' });
-        return;
-    }
-    if ((keyCode === 'f' || keyCode === 'KeyF') &amp;&amp; p_event.ctrlKey) {
-        p_event.preventDefault();
-        p_event.stopPropagation();
-        p_event.stopImmediatePropagation();
-        focusOnField('findText');
-        return;
-    }
-    if ((keyCode === 't' || keyCode === 'KeyT') &amp;&amp; p_event.ctrlKey) {
-        p_event.preventDefault();
-        p_event.stopPropagation();
-        p_event.stopImmediatePropagation();
-        vscode.postMessage({ type: 'focusOnTree' });
-        return;
-    }
-    if ((keyCode === '=' || keyCode === 'Equal') &amp;&amp; p_event.ctrlKey) {
-        p_event.preventDefault();
-        p_event.stopPropagation();
-        p_event.stopImmediatePropagation();
-        vscode.postMessage({ type: 'replace' });
-        return;
-    }
-    if ((keyCode === '-' || keyCode === 'Minus') &amp;&amp; p_event.ctrlKey) {
-        p_event.preventDefault();
-        p_event.stopPropagation();
-        p_event.stopImmediatePropagation();
-        vscode.postMessage({ type: 'replaceThenFind' });
-        return;
-    }
-    if (p_event.ctrlKey &amp;&amp; p_event.altKey) {
-        switch (keyCode) {
-            case 'w':
-            case 'KeyW':
-                toggleCheckbox('wholeWord');
-                return;
-            case 'i':
-            case 'KeyI':
-                toggleCheckbox('ignoreCase');
-                return;
-            case 'x':
-            case 'KeyX':
-                toggleCheckbox('regExp');
-                return;
-            case 'f':
-            case 'KeyF':
-                toggleCheckbox('markFinds');
-                return;
-            case 'c':
-            case 'KeyC':
-                toggleCheckbox('markChanges');
-                return;
-            case 'h':
-            case 'KeyH':
-                toggleCheckbox('searchHeadline');
-                return;
-            case 'b':
-            case 'KeyB':
-                toggleCheckbox('searchBody');
-                return;
-            case 'e':
-            case 'KeyE':
-                setRadio('entireOutline');
-                return;
-            case 's':
-            case 'KeyS':
-                setRadio('subOutlineOnly');
-                return;
-            case 'n':
-            case 'KeyN':
-                setRadio('nodeOnly');
-                return;
-            default:
-                break;
-        }
-    }
-}
-*/
-
-</t>
-<t tx="fil.20210603223013.24">/**
- * @param {string} p_id
- */
-function focusOnField(p_id) {
-    const inputField = document.querySelector('#' + p_id);
-                //@ts-expect-error
-    inputField.select();
-    // TODO : TEST IF NEEDED TO PREVENT FLICKER ON FIRST TRY?
-    setTimeout(() =&gt; {
-                    //@ts-expect-error
-        inputField.select();
-    }, 0);
+.mb-0 {
+  margin-bottom: 0;
 }
 
-</t>
-<t tx="fil.20210603223013.25"></t>
-<t tx="fil.20210603223013.26">function getSettings() {
-    // clear dirty, clear timer,
-    if (dirty) {
-        dirty = false;
-        clearTimeout(timer);
-        sendSearchConfig(); // just trigger send settings
-    }
+.mb-4 {
+  margin-bottom: 4px;
 }
 
-// FINISH STARTUP
-vscode.postMessage({ type: 'refreshSearchConfig' });
-</t>
-<t tx="fil.20210603223013.4">//@ts-check
+.mb-6 {
+  margin-bottom: 6px;
+}
 
-// This script will be run within the webview itself
-// It cannot access the main VS Code APIs directly.
-// Send message to leoInteg with vscode.postMessage({ keyNameEx1: someValue, ... });
-// Receive messages from leoInteg with window.addEventListener('message', event =&gt; { ... });
-@others
+.input-holder {
+  padding: 0;
+  margin-right: 6px;
+}
+
+.align-right {
+  text-align: right;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.no-overflow {
+  text-overflow: unset !important;
+}
+
+.label-fix {
+  vertical-align: top;
+  line-height: 18px;
+}
+</t>
+<t tx="fil.20210603223013.4">@others
 @language javascript
 @tabwidth -4
 </t>
-<t tx="fil.20210603223013.5">(function () {
-    //@ts-expect-error
-    const vscode = acquireVsCodeApi();
-
-    // * LeoSearchSettings Type
-    let searchSettings = {
-        findText: '',
-        replaceText: '',
-        wholeWord: false,
-        ignoreCase: true,
-        regExp: false,
-        markFinds: false,
-        markChanges: false,
-        searchHeadline: true,
-        searchBody: true,
-        searchScope: 0, // 0 is entire outline (1: sub-outline, 2: node only)
-    };
-
-    document.addEventListener('focusin', (event) =&gt; {
-        vscode.postMessage({ type: 'gotFocus' });
-    });
-    document.addEventListener('focusout', (event) =&gt; {
-        vscode.postMessage({ type: 'lostFocus' });
-    });
-
-    // Handle messages sent from the extension to the webview
-    @others
-})();
-</t>
-<t tx="fil.20210603223013.6">window.addEventListener('message', (event) =&gt; {
-    const message = event.data; // The json data that the extension sent
-    switch (message.type) {
-        // Focus and select all text in 'find' field
-        case 'selectFind': {
-            focusOnField('findText');
-            break;
-        }
-        // Focus and select all text in 'replace' field
-        case 'selectReplace': {
-            focusOnField('replaceText');
-            break;
-        }
-        case 'getSettings': {
-            getSettings();
-            break;
-        }
-        case 'setSettings': {
-            setSettings(message.value);
-            break;
-        }
-        case 'setSearchSetting': {
-            setSearchSetting(message.id);
-            break;
-        }
-    }
-});
-
-let inputIds = ['findText', 'replaceText'];
-let checkboxIds = [
-    'wholeWord',
-    'ignoreCase',
-    'regExp',
-    'markFinds',
-    'markChanges',
-    'searchHeadline',
-    'searchBody',
-];
-let radioIds = ['entireOutline', 'subOutlineOnly', 'nodeOnly'];
-
-</t>
-<t tx="fil.20210603223013.7">/**
- * @param {string} p_id
- */
-function setSearchSetting(p_id) {
-    if (checkboxIds.includes(p_id)) {
-        toggleCheckbox(p_id);
-    } else if (radioIds.includes(p_id)) {
-        setRadio(p_id);
-    }
-}
-
-</t>
-<t tx="fil.20210603223013.8">/**
- * @param {any} p_settings
- */
-function setSettings(p_settings) {
-    // When opening a Leo document, set default values of fields
-    @others
-}
-
-</t>
-<t tx="fil.20210603223013.9">inputIds.forEach((p_inputId) =&gt; {
-                            //@ts-expect-error
-    document.getElementById(p_inputId).value = p_settings[p_inputId];
-    searchSettings[p_inputId] = p_settings[p_inputId];
-});
-</t>
 <t tx="fil.20210603223014.2">@language css
 html {
-	box-sizing: border-box;
-	font-size: 13px;
+  box-sizing: border-box;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+html:hover {
+  overflow: overlay;
 }
 
 *,
 *:before,
 *:after {
-	box-sizing: inherit;
+  box-sizing: inherit;
 }
 
 body,
@@ -22854,14 +24724,14 @@ h6,
 p,
 ol,
 ul {
-	margin: 0;
-	padding: 0;
-	font-weight: normal;
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
 }
 
 img {
-	max-width: 100%;
-	height: auto;
+  max-width: 100%;
+  height: auto;
 }
 </t>
 <t tx="fil.20210603223014.4">@language css
@@ -22871,11 +24741,7 @@ img {
   --input-margin-vertical: 4px;
   --input-margin-horizontal: 0;
   height: 100%;
-  padding-right: 20px;
-}
-
-comment {
-  --container-padding: 20px;
+  padding-right: 14px;
 }
 
 html:focus {
@@ -22894,12 +24760,6 @@ body {
   font-size: var(--vscode-font-size);
   font-weight: var(--vscode-font-weight);
   font-family: var(--vscode-font-family);
-}
-
-.first {
-  margin-top: 8px;
-  margin-bottom: 0;
-  display: inline-block;
 }
 
 ol,
@@ -22960,6 +24820,28 @@ button.secondary:hover {
   background: var(--vscode-button-secondaryHoverBackground);
 }
 
+select {
+  background: var(--vscode-dropdown-background);
+  color: var(--vscode-input-foreground);
+  border-color: var(--vscode-dropdown-border);
+  cursor: pointer;
+  width: 50px;
+  left: 15%;
+  position: relative;
+  border-radius: 2px;
+}
+select:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+select option {
+  background-color: var(--vscode-dropdown-listBackground);
+}
+select option:focus {
+  background-color: var(--vscode-input-background);
+  outline-color: var(--vscode-input-border);
+}
+
 input:not([type="radio"]):not([type="checkbox"]),
 textarea {
   display: block;
@@ -22968,16 +24850,26 @@ textarea {
   border: none;
   font-family: var(--vscode-font-family);
   padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+  padding: 3px var(--input-padding-horizontal);
+  border-radius: 2px;
   color: var(--vscode-input-foreground);
   outline-color: var(--vscode-input-border);
   background-color: var(--vscode-input-background);
 }
 
+input[type="checkbox"],
+input[type="radio"] {
+  cursor: pointer;
+}
 input[type="checkbox"]:focus + label {
   border: 1px solid var(--vscode-button-background);
 }
 input[type="radio"]:focus + label {
   border: 1px solid var(--vscode-button-background);
+}
+input:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 input::placeholder,
@@ -22995,6 +24887,22 @@ body &gt; div &gt; div &gt; label:focus,
 body &gt; div &gt; div &gt; label:active {
   outline-color: none !important;
   border: none !important;
+}
+
+#freeze {
+  cursor: default;
+  position: absolute;
+  right: 0.9em;
+  line-height: 1em;
+  top: 1.05em;
+  font-size: 1.8em;
+  color: #5c87ff80;
+  padding: 0;
+  margin: 0;
+}
+
+.comment {
+  display: none;
 }
 </t>
 <t tx="fil.20210603223933.1"></t>
@@ -23044,7 +24952,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.6&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.7&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden "
@@ -23055,7 +24963,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 1.0.6
+            See What's New in LeoInteg 1.0.7
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
@@ -25790,6 +27698,31 @@ public clearRecentLeoFiles(): void {
     vscode.window.showInformationMessage(Constants.USER_MESSAGES.CLEARED_RECENT);
 }
 
+</t>
+<t tx="jlunz.20151027094647.1">class OrderedDefaultDict(OrderedDict):
+    """
+    Credit:  http://stackoverflow.com/questions/4126348/
+    how-do-i-rewrite-this-function-to-implement-ordereddict/4127426#4127426
+    """
+    def __init__(self, *args, **kwargs):
+        if not args:
+            self.default_factory = None
+        else:
+            if not (args[0] is None or callable(args[0])):
+                raise TypeError('first argument must be callable or None')
+            self.default_factory = args[0]
+            args = args[1:]
+        super().__init__(*args, **kwargs)
+
+    def __missing__(self, key):
+        if self.default_factory is None:
+            raise KeyError(key)
+        self[key] = default = self.default_factory()
+        return default
+
+    def __reduce__(self):  # optional, for pickle support
+        args = (self.default_factory,) if self.default_factory else ()
+        return self.__class__, args, None, None, self.items()
 </t>
 </tnodes>
 </leo_file>

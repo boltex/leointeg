@@ -87,6 +87,7 @@ export interface ReqRefresh {
     states?: boolean; // States needs refresh (changed, canUndo, canRedo, canDemote, canPromote, canDehoist)
     buttons?: boolean; // Buttons needs refresh
     documents?: boolean; // Documents needs refresh
+    nav?: boolean; // NAv panel needs refresh
 }
 
 /**
@@ -167,6 +168,10 @@ export interface LeoBridgePackage {
     len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
+    navList?: LeoGoto[]; // get_goto
+    navText?: string; // get_goto
+    messages?: string[]; // get_goto
+    navOptions?: { isTag: boolean, showParents: boolean }; // get_goto
     commands?: vscode.QuickPickItem[]; // getCommands
     commander?: {
         changed: boolean,
@@ -212,6 +217,14 @@ export interface LeoButton {
     index: string; // STRING KEY
 }
 
+export type TGotoTypes = "tag" | "headline" | "body" | "parent" | "generic";
+
+export interface LeoGoto {
+    key: number; // id from python
+    h: string;
+    t: TGotoTypes;
+}
+
 /**
  * * LeoInteg's Enum type for the search scope radio buttons of the find panel.
  */
@@ -225,7 +238,12 @@ export const enum LeoSearchScope {
  * * LeoInteg search settings structure for use with the 'find' webview
  */
 export interface LeoSearchSettings {
-    //Find/change strings...
+    // Nav options
+    navText: string;
+    isTag: boolean;
+    showParents: boolean;
+    searchOptions: number;
+    // Find/change strings...
     findText: string;
     replaceText: string;
     // Find options...
@@ -243,6 +261,11 @@ export interface LeoSearchSettings {
  * * Leo's GUI search settings internal structure
  */
 export interface LeoGuiFindTabManagerSettings {
+    // Nav options
+    nav_text: string;
+    is_tag: boolean;
+    show_parents: boolean;
+    search_options: number;
     //Find/change strings...
     find_text: string,
     change_text: string,

@@ -138,6 +138,32 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 }
 
 /**
+ * * Build all possible strings for the goto panel
+ * @param p_context Needed to get to absolute paths on the system
+ * @returns An array containing icons for the goto anywhere tree view
+ */
+export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
+    return [
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_PARENT),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_PARENT)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_NODE),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_NODE)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_BODY),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_BODY)
+        },
+        {
+            light: p_context.asAbsolutePath(Constants.GUI.ICON_LIGHT_TAG),
+            dark: p_context.asAbsolutePath(Constants.GUI.ICON_DARK_TAG)
+        }
+    ];
+}
+
+/**
  * * Builds and returns a JSON string with 'node' and 'name' members
  * @param p_nodeJson Targeted tree node in the proper JSON format
  * @param p_command from which to extract possible name and 'keep selection' flag

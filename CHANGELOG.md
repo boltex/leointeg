@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.0.7
+
+- Added 'Goto Anywhere' panel, with buttons for showing lists from common node attributes searches:
+  - 'Timeline' nodes by creation date
+  - Changed/Dirty nodes
+  - History of visited nodes
+  - Marked nodes
+- Made those same commands available through vscode commands system for user keybindings.
+- Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'.
+
 ## 1.0.6
 
 - Prevent reappearance of unknown-language warnings in a session, for a given language.

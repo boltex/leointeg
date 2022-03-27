@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "author": {
     "name": "Félix"
   },
@@ -309,6 +309,13 @@
           "title": "Leo Find",
           "when": "treeInExplorer && leoTreeOpened",
           "visibility": "collapsed"
+        },
+        {
+          "id": "leoGotoPanelExplorer",
+          "name": "Leo Goto",
+          "contextualTitle": "Leo",
+          "when": "treeInExplorer && leoTreeOpened",
+          "visibility": "collapsed"
         }
       ],
       "leoIntegrationView": [
@@ -337,6 +344,12 @@
           "name": "Find",
           "title": "Find",
           "when": "leoTreeOpened",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "leoGotoPanel",
+          "contextualTitle": "Leo",
+          "name": "Goto",
           "visibility": "collapsed"
         }
       ]
@@ -922,11 +935,6 @@
         "command": "leointeg.gitDiff",
         "category": "Leo",
         "title": "Git Diff"
-      },
-      {
-        "command": "leointeg.selectTreeNode",
-        "category": "Leo",
-        "title": "Select Node"
       },
       {
         "command": "leointeg.openAside",
@@ -1648,6 +1656,21 @@
         "title": "Tag Children"
       },
       {
+        "command": "leointeg.tagNode",
+        "category": "Leo",
+        "title": "Tag Node"
+      },
+      {
+        "command": "leointeg.removeTag",
+        "category": "Leo",
+        "title": "Remove Tag"
+      },
+      {
+        "command": "leointeg.removeTags",
+        "category": "Leo",
+        "title": "Remove All Tags"
+      },
+      {
         "command": "leointeg.setFindEverywhereOption",
         "category": "Leo",
         "shortTitle": "Find Everywhere",
@@ -1706,6 +1729,61 @@
         "category": "Leo",
         "shortTitle": "Find Search Headline",
         "title": "Toggle Find Search Headline Option"
+      },
+      {
+        "command": "leointeg.findQuick",
+        "category": "Leo",
+        "title": "Focus on Nav tab"
+      },
+      {
+        "command": "leointeg.goAnywhere",
+        "category": "Leo",
+        "title": "Go Anywhere"
+      },
+      {
+        "command": "leointeg.findQuickSelected",
+        "category": "Leo",
+        "title": "Nav search with current selection",
+        "icon": {
+          "light": "resources/light/find-quick-selected.svg",
+          "dark": "resources/dark/find-quick-selected.svg"
+        }
+      },
+      {
+        "command": "leointeg.findQuickTimeline",
+        "category": "Leo",
+        "title": "List timeline of nodes in reverse gnx order",
+        "icon": {
+          "light": "resources/light/find-quick-timeline.svg",
+          "dark": "resources/dark/find-quick-timeline.svg"
+        }
+      },
+      {
+        "command": "leointeg.findQuickChanged",
+        "category": "Leo",
+        "title": "List all changed/dirty nodes",
+        "icon": {
+          "light": "resources/light/find-quick-changed.svg",
+          "dark": "resources/dark/find-quick-changed.svg"
+        }
+      },
+      {
+        "command": "leointeg.history",
+        "category": "Leo",
+        "title": "List visited nodes from history",
+        "icon": {
+          "light": "resources/light/find-quick-history.svg",
+          "dark": "resources/dark/find-quick-history.svg"
+        }
+      },
+      {
+        "command": "leointeg.markedList",
+        "category": "Leo",
+        "title": "List all marked nodes",
+        "icon": {
+          "light": "resources/light/find-quick-marked.svg",
+          "dark": "resources/dark/find-quick-marked.svg"
+        }
       },
       {
         "command": "leointeg.mark",
@@ -1892,6 +1970,26 @@
         "view": "leoButtonsExplorer",
         "contents": "There are no @buttons in this outline",
         "when": "leoBridgeReady && leoTreeOpened"
+      },
+      {
+        "view": "leoGotoPanel",
+        "contents": "Not connected",
+        "when": "!leoTreeOpened"
+      },
+      {
+        "view": "leoGotoPanelExplorer",
+        "contents": "Not connected",
+        "when": "!leoTreeOpened"
+      },
+      {
+        "view": "leoGotoPanel",
+        "contents": "No Results",
+        "when": "leoTreeOpened"
+      },
+      {
+        "view": "leoGotoPanelExplorer",
+        "contents": "No Results",
+        "when": "leoTreeOpened"
       },
       {
         "view": "leoFindPanel",
@@ -2091,6 +2189,34 @@
           "when": "leoTreeOpened"
         },
         {
+          "command": "leointeg.findQuick",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.findQuickSelected",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.findQuickTimeline",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.findQuickChanged",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.goAnywhere",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.history",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.markedList",
+          "when": "leoTreeOpened"
+        },
+        {
           "command": "leointeg.startSearch",
           "when": "leoTreeOpened"
         },
@@ -2276,10 +2402,6 @@
         },
         {
           "command": "leointeg.writeDirtyAtFileNodesFromOutline",
-          "when": "false"
-        },
-        {
-          "command": "leointeg.selectTreeNode",
           "when": "false"
         },
         {
@@ -2701,6 +2823,31 @@
           "command": "leointeg.showLogPane",
           "when": "view =~ /^leoFindPanel|^leoDocuments|^leoButtons/ && leoBridgeReady",
           "group": "navigation@2"
+        },
+        {
+          "command": "leointeg.findQuickSelected",
+          "when": "view =~ /^leoGotoPanel/ && leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.findQuickTimeline",
+          "when": "view =~ /^leoGotoPanel/ && leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.findQuickChanged",
+          "when": "view =~ /^leoGotoPanel/ && leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.history",
+          "when": "view =~ /^leoGotoPanel/ && leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.markedList",
+          "when": "view =~ /^leoGotoPanel/ && leoTreeOpened",
+          "group": "navigation@1"
         },
         {
           "command": "leointeg.showSettingsPage",

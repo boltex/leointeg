@@ -6,6 +6,7 @@ import { LeoIntegration } from "./leoIntegration";
 import { LeoNode } from "./leoNode";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
+import { LeoGotoNode } from "./leoGotoNode";
 
 var LeoInteg: LeoIntegration | undefined = undefined;
 
@@ -604,6 +605,15 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.NEXT_NODE, () => w_leo.prevNextNode(true)],
         [CMD.NEXT_NODE_FO, () => w_leo.prevNextNode(true)],
 
+        [CMD.FIND_QUICK, () => w_leo.findQuick()],
+        [CMD.FIND_QUICK_SELECTED, () => w_leo.findQuickSelected()],
+        [CMD.FIND_QUICK_TIMELINE, () => w_leo.findQuickTimeline()],
+        [CMD.FIND_QUICK_CHANGED, () => w_leo.findQuickChanged()],
+        [CMD.FIND_QUICK_HISTORY, () => w_leo.findQuickHistory()],
+        [CMD.FIND_QUICK_MARKED, () => w_leo.findQuickMarked()],
+        [CMD.FIND_QUICK_GO_ANYWHERE, () => w_leo.findQuickGoAnywhere()],
+        [CMD.GOTO_NAV_ENTRY, (p_node: LeoGotoNode) => w_leo.gotoNavEntry(p_node)],
+
         [CMD.START_SEARCH, () => w_leo.startSearch()],
         [CMD.FIND_ALL, () => w_leo.findAll(false)],
         [CMD.FIND_NEXT, () => w_leo.find(false, false)],
@@ -619,6 +629,9 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.REPLACE_ALL, () => w_leo.findAll(true)],
         [CMD.GOTO_GLOBAL_LINE, () => w_leo.gotoGlobalLine()],
         [CMD.TAG_CHILDREN, () => w_leo.tagChildren()],
+        [CMD.TAG_NODE, () => w_leo.tagNode()],
+        [CMD.REMOVE_TAG, () => w_leo.removeTag()],
+        [CMD.REMOVE_TAGS, () => w_leo.removeTags()],
 
         [CMD.CLONE_FIND_ALL, () => w_leo.cloneFind(false, false)],
         [CMD.CLONE_FIND_ALL_FLATTENED, () => w_leo.cloneFind(false, true)],

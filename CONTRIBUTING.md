@@ -18,7 +18,7 @@ If you're having problems with the procedures below, try [running this sample ex
 
 - **use Leo's 'devel' branch** (This is temporary until Leo's 6.4 release)
 
-- Make sure you have [Node.js](https://nodejs.org/en/download/) and [Git](https://git-scm.com/downloads) installed.
+- Make sure you have [Node.js](https://nodejs.org/en/download/) and [Git](https://git-scm.com/downloads) installed. Version up to **14.19** of node works fine for compiling this project.
 
 - Also check your vscode, and other software versions by opening the 'about' dialog from the help menu. You should at least match or exceed the versions below.
 

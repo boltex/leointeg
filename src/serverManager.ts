@@ -38,6 +38,28 @@ export class ServerService {
         this._isWin32 = this._platform === "win32";
     }
 
+    public checkLeoId(p_leoEditorPath: string): Promise<any> {
+
+        // Check if .leoID.txt exists : MAY NOT BE NEEDED BECAUSE LEO CHECKS OS.SYS
+
+        try {
+            if (fs.existsSync(p_leoEditorPath + Constants.LEO_ID_NAME)) {
+
+                // console.log('LEO ID EXISTS');
+
+            } else {
+
+                // console.log('LEO ID DOES NOT EXISTS');
+
+                // return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
+            }
+        } catch (p_err) {
+            console.error(p_err);
+            return Promise.reject("checkLeoId: Failed checking if file exist");
+        }
+        return Promise.resolve();
+    }
+
     /**
      * * Get command from settings or best command for the current OS
      * @param p_leoPythonCommand String command to start python on this computer
@@ -75,7 +97,9 @@ export class ServerService {
         // Show problems when running the server, if any.
         // this._leoIntegration.showTerminalPane(); // #203 Do not 'force' show the server output
 
-        return utils.findNextAvailablePort(p_port).then((p_availablePort) => {
+        return this.checkLeoId(p_leoEditorPath).then(() => {
+            return utils.findNextAvailablePort(p_port);
+        }).then((p_availablePort) => {
             if (!p_availablePort) {
                 // vscode.window.showInformationMessage("Port " + p_port+" already in use.");
                 return Promise.reject("Port " + p_port + " already in use.");
@@ -84,7 +108,7 @@ export class ServerService {
             this.usingPort = p_availablePort;
 
             // Leo Editor installation path is mandatory - Start with Leo Editor's folder
-            let w_serverScriptPath = p_leoEditorPath + "/leo/core";
+            let w_serverScriptPath = p_leoEditorPath + Constants.SERVER_PATH;
 
             try {
                 if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
@@ -238,3 +262,4 @@ export class ServerService {
     }
 
 }
+
