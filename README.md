@@ -31,18 +31,20 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
-- **Nav and Tags** panes integrated in the 'Find' pane
+- **Nav and Tags** panes integrated in the **Find** pane
 - **Goto Anywhere panel** to navigate directly from various search types
 - Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
   - Open body panes to the side in any 'column'
   - Outline editing commands
-  - Find operations
+  - Find/Replace operations
   - Clipboard operations
   - Undo/Redo commands
 
 ![Menu](https://raw.githubusercontent.com/boltex/leointeg/master/resources/context-hover-menus.png)
 
-## Keybindings
+## Leo Commands and Keybindings
+
+Below are the most basic Commands. Most of Leo's other commands are also available with their original default keybindings.
 
 | Outline Commands           |     |                  |                  |
 | :------------------------- | :-- | :--------------- | :--------------- |
