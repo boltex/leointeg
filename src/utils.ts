@@ -43,6 +43,31 @@ export function hashNode(p_ap: ArchivedPosition, p_salt: string, p_withCollapse?
 }
 
 /**
+ * * Make sure that the given Leo ID will not corrupt a .leo file.
+ * @Returns the valid id string, or empty "" string for cancellation or invalid string
+ */
+export function cleanLeoID(id_: string): string {
+    const old_id: string = id_.toString();
+    if (!id_) {
+        return "";
+    }
+    try {
+        id_ = id_.replace(/\./g, "").replace(/\,/g, "").replace(/\"/g, "").replace(/\'/g, "");
+        //  Remove *all* whitespace: https://stackoverflow.com/questions/3739909
+        id_ = id_.split(' ').join('');
+    }
+    catch (exception) {
+        // g.es_exception(exception);
+        id_ = '';
+    }
+    // Last, check if not alphanum or less than 3 in length
+    if (!isAlphaNum(id_) || id_.length < 3) {
+        id_ = "";
+    }
+    return id_;
+}
+
+/**
  * * Performs the actual addition into workspaceState context
  * @param p_context Needed to get to vscode workspace storage
  * @param p_file path+file name string
@@ -239,6 +264,22 @@ export function isHexColor(p_hexString: string): boolean {
     return typeof p_hexString === 'string'
         && p_hexString.length === 6
         && !isNaN(Number('0x' + p_hexString));
+}
+
+export function isAlphaNum(str: string): boolean {
+    let code;
+    let i;
+    let len;
+
+    for (i = 0, len = str.length; i < len; i++) {
+        code = str.charCodeAt(i);
+        if (!(code > 47 && code < 58) && // numeric (0-9)
+            !(code > 64 && code < 91) && // upper alpha (A-Z)
+            !(code > 96 && code < 123)) { // lower alpha (a-z)
+            return false;
+        }
+    }
+    return true;
 }
 
 /**

@@ -979,6 +979,7 @@
 <v t="felix.20210706233106.1"><vh>getUniqueId</vh></v>
 <v t="felix.20200718195558.2"><vh>padNumber2</vh></v>
 <v t="ekr.20200815091619.1"><vh>hashNode</vh></v>
+<v t="felix.20220327223745.1"><vh>cleanLeoID</vh></v>
 <v t="felix.20201106200100.1"><vh>addFileToGlobal</vh></v>
 <v t="felix.20201106200109.1"><vh>removeFileFromGlobal</vh></v>
 <v t="felix.20200718195558.3"><vh>buildNodeIconPaths</vh></v>
@@ -991,6 +992,7 @@
 <v t="felix.20200718195558.7"><vh>getFileFromPath</vh></v>
 <v t="felix.20200718195558.8"><vh>isIconChangedByEdit</vh></v>
 <v t="felix.20200718195558.9"><vh>isHexColor</vh></v>
+<v t="felix.20220327230102.1"><vh>isAlphaNum</vh></v>
 <v t="felix.20200718195558.10"><vh>strToLeoUri</vh></v>
 <v t="felix.20200718195558.11"><vh>leoUriToStr</vh></v>
 <v t="felix.20200718195558.12"><vh>setContext</vh></v>
@@ -24323,16 +24325,35 @@ set leoIDMissing(p_value: boolean) {
 public setLeoID(): Thenable&lt;unknown&gt; {
 
     // showInputBox
-    const w_idInputOption: vscode.InputBoxOptions = {};
-    vscode.window.showInputBox(w_idInputOption).then((p_idResult) =&gt; {
+    const w_idInputOption: vscode.InputBoxOptions = {
+        title: 'Enter Leo id', // Over input
+        prompt: "leoID.txt not found\n\n" +
+            "Please enter an id that identifies you uniquely.\n" +
+            "Your git/cvs/bzr login name is a good choice.\n\n" +
+            "Leo uses this id to uniquely identify nodes.\n\n" +
+            "Your id should contain only letters and numbers\n" +
+            "and must be at least 3 characters in length.", // Under input
+        validateInput: (value) =&gt; {
+            if (!utils.cleanLeoID(value)) {
+                return "Invalid Leo ID: \n" +
+                    "Your id should contain only letters and numbers\n" +
+                    "and must be at least 3 characters in length.";
+            } else {
+                return "";
+            }
+        }
+    };
+
+    return vscode.window.showInputBox(w_idInputOption).then((p_idResult) =&gt; {
+
         // p_idResult is string | undefined
 
         // Ask to save to .leoID.txt in Leo's dir.
 
-        // f"Invalid Leo ID: {old_id!r}\n\n"
-        // "Your id should contain only letters and numbers\n"
-        // "and must be at least 3 characters in length."))
+        // "Invalid Leo ID: {old_id!r}\n\n"
+        //
 
+        return true;
     });
 
     /*
@@ -24355,7 +24376,49 @@ public setLeoID(): Thenable&lt;unknown&gt; {
         });
     */
 
-    return Promise.resolve();
+}
+
+</t>
+<t tx="felix.20220327223745.1">/**
+ * * Make sure that the given Leo ID will not corrupt a .leo file.
+ * @Returns the valid id string, or empty "" string for cancellation or invalid string
+ */
+export function cleanLeoID(id_: string): string {
+    const old_id: string = id_.toString();
+    if (!id_) {
+        return "";
+    }
+    try {
+        id_ = id_.replace(/\./g, "").replace(/\,/g, "").replace(/\"/g, "").replace(/\'/g, "");
+        //  Remove *all* whitespace: https://stackoverflow.com/questions/3739909
+        id_ = id_.split(' ').join('');
+    }
+    catch (exception) {
+        // g.es_exception(exception);
+        id_ = '';
+    }
+    // Last, check if not alphanum or less than 3 in length
+    if (!isAlphaNum(id_) || id_.length &lt; 3) {
+        id_ = "";
+    }
+    return id_;
+}
+
+</t>
+<t tx="felix.20220327230102.1">export function isAlphaNum(str: string): boolean {
+    let code;
+    let i;
+    let len;
+
+    for (i = 0, len = str.length; i &lt; len; i++) {
+        code = str.charCodeAt(i);
+        if (!(code &gt; 47 &amp;&amp; code &lt; 58) &amp;&amp; // numeric (0-9)
+            !(code &gt; 64 &amp;&amp; code &lt; 91) &amp;&amp; // upper alpha (A-Z)
+            !(code &gt; 96 &amp;&amp; code &lt; 123)) { // lower alpha (a-z)
+            return false;
+        }
+    }
+    return true;
 }
 
 </t>

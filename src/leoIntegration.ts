@@ -666,16 +666,35 @@ export class LeoIntegration {
     public setLeoID(): Thenable<unknown> {
 
         // showInputBox
-        const w_idInputOption: vscode.InputBoxOptions = {};
-        vscode.window.showInputBox(w_idInputOption).then((p_idResult) => {
+        const w_idInputOption: vscode.InputBoxOptions = {
+            title: 'Enter Leo id', // Over input
+            prompt: "leoID.txt not found\n\n" +
+                "Please enter an id that identifies you uniquely.\n" +
+                "Your git/cvs/bzr login name is a good choice.\n\n" +
+                "Leo uses this id to uniquely identify nodes.\n\n" +
+                "Your id should contain only letters and numbers\n" +
+                "and must be at least 3 characters in length.", // Under input
+            validateInput: (value) => {
+                if (!utils.cleanLeoID(value)) {
+                    return "Invalid Leo ID: \n" +
+                        "Your id should contain only letters and numbers\n" +
+                        "and must be at least 3 characters in length.";
+                } else {
+                    return "";
+                }
+            }
+        };
+
+        return vscode.window.showInputBox(w_idInputOption).then((p_idResult) => {
+
             // p_idResult is string | undefined
 
             // Ask to save to .leoID.txt in Leo's dir.
 
-            // f"Invalid Leo ID: {old_id!r}\n\n"
-            // "Your id should contain only letters and numbers\n"
-            // "and must be at least 3 characters in length."))
+            // "Invalid Leo ID: {old_id!r}\n\n"
+            //
 
+            return true;
         });
 
         /*
@@ -698,7 +717,6 @@ export class LeoIntegration {
             });
         */
 
-        return Promise.resolve();
     }
 
     /**
