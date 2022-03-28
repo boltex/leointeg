@@ -10474,6 +10474,7 @@ More information can be found on the repository's [Issues Page](https://github.c
 </t>
 <t tx="felix.20200719025231.1">import * as vscode from 'vscode';
 import { debounce } from 'debounce';
+import * as fs from 'fs';
 import * as utils from './utils';
 import { Constants } from './constants';
 import {
@@ -24258,16 +24259,18 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 </t>
 <t tx="felix.20220323232702.1">public checkLeoId(p_leoEditorPath: string): Promise&lt;any&gt; {
 
+    // TODO : Move this method to utils
+
     // Check if .leoID.txt exists : MAY NOT BE NEEDED BECAUSE LEO CHECKS OS.SYS
 
     try {
         if (fs.existsSync(p_leoEditorPath + Constants.LEO_ID_NAME)) {
 
-            // console.log('LEO ID EXISTS');
+            console.log('LEO ID EXISTS');
 
         } else {
 
-            // console.log('LEO ID DOES NOT EXISTS');
+            console.log('LEO ID DOES NOT EXISTS');
 
             // return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
         }
@@ -24347,12 +24350,60 @@ public setLeoID(): Thenable&lt;unknown&gt; {
     return vscode.window.showInputBox(w_idInputOption).then((p_idResult) =&gt; {
 
         // p_idResult is string | undefined
+        if (p_idResult) {
+            p_idResult = utils.cleanLeoID(p_idResult);
+        }
+        if (p_idResult) {
+            // ok
+            this.sendAction(
+                // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+                Constants.LEOBRIDGE.SET_LEOID,
+                JSON.stringify({ leoID: p_idResult })
 
-        // Ask to save to .leoID.txt in Leo's dir.
+            );
+            // if leo home exists:
 
-        // "Invalid Leo ID: {old_id!r}\n\n"
-        //
+            // CHeck if .leoID.txt exists: this._serverService.checkLeoId(this.config.leoEditorPath)
 
+            let w_leoDir = this.config.leoEditorPath;
+            if (w_leoDir &amp;&amp; fs.existsSync(w_leoDir)) {
+                //   Ask to save to .leoID.txt in Leo's dir.
+                //
+                return vscode.window.showInformationMessage(
+                    "Save Leo ID to Leo's home directory?",
+                    {
+                        modal: true,
+                        detail: "Write your id: '" + p_idResult + "' in '" + w_leoDir + Constants.LEO_ID_NAME + "'?"
+                    },
+                    "Yes", "No"
+                )
+                    .then(answer =&gt; {
+                        if (answer === "Yes") {
+                            // TODO
+                            // Run function
+                            // try
+                            // WRITE FILE
+                            // ('', tag, 'created in', theDir)
+
+                            // catch
+                            // ('can not create', tag, 'in', theDir)
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+            }
+
+        } else {
+            // invalid or canceled
+            // Show a message with button to call this command again
+            vscode.window.showWarningMessage("Leo ID not set", "Set Leo ID")
+                .then(p_chosenButton =&gt; {
+                    if (p_chosenButton === "Set Leo ID") {
+                        vscode.commands.executeCommand(Constants.COMMANDS.SET_LEOID);
+                    }
+                });
+        }
         return true;
     });
 

@@ -40,16 +40,18 @@ export class ServerService {
 
     public checkLeoId(p_leoEditorPath: string): Promise<any> {
 
+        // TODO : Move this method to utils
+
         // Check if .leoID.txt exists : MAY NOT BE NEEDED BECAUSE LEO CHECKS OS.SYS
 
         try {
             if (fs.existsSync(p_leoEditorPath + Constants.LEO_ID_NAME)) {
 
-                // console.log('LEO ID EXISTS');
+                console.log('LEO ID EXISTS');
 
             } else {
 
-                // console.log('LEO ID DOES NOT EXISTS');
+                console.log('LEO ID DOES NOT EXISTS');
 
                 // return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
             }
