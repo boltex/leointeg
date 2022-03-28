@@ -576,61 +576,52 @@ export class LeoIntegration {
         );
         this._leoBridgeReadyPromise.then(
             (p_package) => {
-                this.leoStates.leoConnecting = false;
-                // Check if hard-coded first package signature
-
-                // console.log('get CONNECT results: ', p_package);
-
+                // Check if hard-coded first package signature / id
                 if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
                     this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
                 } else {
-                    const w_opened: boolean = !!p_package.commander;
-                    const w_lastFiles: string[] =
-                        this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
-                    if (w_lastFiles.length && !w_opened) {
-                        // This context flag will trigger 'Connecting...' placeholder
-                        utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
+                    // Connected ok
 
-                        setTimeout(() => {
-                            this._openLastFiles(); // Try to open last opened files, if any
-                        }, 0);
+                    let q_leoID: Thenable<unknown>;
+                    // Check for missing leoID
+                    if (p_package['leoID'] && p_package['leoID'] === 'None') {
+                        // Unset leoID !
+                        this.leoStates.leoIDMissing = true;
+                        q_leoID = this.setLeoID();
+
                     } else {
-                        this.leoStates.leoBridgeReady = true;
-                        this.leoStates.leoStartupFinished = true;
-                    }
-                    if (w_opened) {
-                        p_package.filename = p_package.commander!.fileName;
-                        this.setupOpenedLeoDocument(p_package, true);
+                        q_leoID = Promise.resolve();
                     }
 
-                    // this.showLogPane(); // #203 Do not 'force' show the log pane
+                    q_leoID.then(() => {
+                        const w_opened: boolean = !!p_package.commander;
+                        const w_lastFiles: string[] =
+                            this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
+                        if (w_lastFiles.length && !w_opened) {
+                            // This context flag will trigger 'Connecting...' placeholder
+                            utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
 
-                    if (!this.config.connectToServerAutomatically) {
-                        vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
-                    }
+                            setTimeout(() => {
+                                this._openLastFiles(); // Try to open last opened files, if any
+                            }, 0);
+                        } else {
+                            this.leoStates.leoConnecting = false;
+                            this.leoStates.leoBridgeReady = true;
+                            this.leoStates.leoStartupFinished = true;
+                        }
 
-                    /*
-                    this.sendAction(
-                        // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
-                        Constants.LEOBRIDGE.SET_LEOID,
-                        JSON.stringify({ leoID: "bacon" })
+                        if (w_opened) {
+                            p_package.filename = p_package.commander!.fileName;
+                            this.setupOpenedLeoDocument(p_package, true);
+                        }
 
-                    ).then((p_result: LeoBridgePackage) => {
-                        console.log('set leoid results: ', p_result);
-                    }).then(() => {
-                        return this.sendAction(
-                            // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
-                            Constants.LEOBRIDGE.GET_LEOID
-                        );
-                    }).then((p_result: LeoBridgePackage) => {
-                        console.log('get leoid results: ', p_result);
+                        if (!this.config.connectToServerAutomatically) {
+                            vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
+                        }
                     });
-                    */
 
                 }
 
-                // TODO : Finish Closing and possibly SAME FOR OPENING AND CONNECTING
-                // TODO : #14 @boltex COULD BE SOME FILES ALREADY OPENED OR NONE!
             },
             (p_reason) => {
                 this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + ': ' + p_reason);
@@ -666,6 +657,48 @@ export class LeoIntegration {
         this._leoBridgeReadyPromise = undefined;
         this._leoStatusBar.update(false);
         this._refreshOutline(false, RevealType.NoReveal);
+    }
+
+    /**
+     * * Inputs user for ID, then sets on server. If install path is known, also asks to save.
+     * @returns a promise that resolves when the id is sent to the server or input is canceled
+     */
+    public setLeoID(): Thenable<unknown> {
+
+        // showInputBox
+        const w_idInputOption: vscode.InputBoxOptions = {};
+        vscode.window.showInputBox(w_idInputOption).then((p_idResult) => {
+            // p_idResult is string | undefined
+
+            // Ask to save to .leoID.txt in Leo's dir.
+
+            // f"Invalid Leo ID: {old_id!r}\n\n"
+            // "Your id should contain only letters and numbers\n"
+            // "and must be at least 3 characters in length."))
+
+        });
+
+        /*
+            console.log('get CONNECT results: ', p_package);
+
+            this.sendAction(
+                // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+                Constants.LEOBRIDGE.SET_LEOID,
+                JSON.stringify({ leoID: "bacon" })
+
+            ).then((p_result: LeoBridgePackage) => {
+                console.log('set leoid results: ', p_result);
+            }).then(() => {
+                return this.sendAction(
+                    // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+                    Constants.LEOBRIDGE.GET_LEOID
+                );
+            }).then((p_result: LeoBridgePackage) => {
+                console.log('get leoid results: ', p_result);
+            });
+        */
+
+        return Promise.resolve();
     }
 
     /**
@@ -716,11 +749,15 @@ export class LeoIntegration {
                 JSON.stringify({ files: w_lastFiles })
             ).then(
                 (p_openFileResult: LeoBridgePackage) => {
+                    // set connecting false
+                    this.leoStates.leoConnecting = false;
                     this.leoStates.leoBridgeReady = true;
                     this.leoStates.leoStartupFinished = true;
                     return this.setupOpenedLeoDocument(p_openFileResult);
                 },
                 (p_errorOpen) => {
+                    // set connecting false
+                    this.leoStates.leoConnecting = false;
                     this.leoStates.leoBridgeReady = true;
                     this.leoStates.leoStartupFinished = true;
                     console.log('in .then not opened or already opened');
