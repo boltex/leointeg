@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { debounce } from 'debounce';
 import * as fs from 'fs';
+import * as path from "path";
 import * as utils from './utils';
 import { Constants } from './constants';
 import {
@@ -582,10 +583,9 @@ export class LeoIntegration {
                     this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
                 } else {
                     // Connected ok
-
                     let q_leoID: Thenable<unknown>;
-                    // Check for missing leoID
-                    if (p_package['leoID'] && p_package['leoID'] === 'None') {
+                    // Check for missing leoID: if set explicitly to null
+                    if (p_package['leoID'] === null) {
                         // Unset leoID !
                         this.leoStates.leoIDMissing = true;
                         q_leoID = this.setLeoID();
@@ -669,21 +669,18 @@ export class LeoIntegration {
         // showInputBox
         const w_idInputOption: vscode.InputBoxOptions = {
             title: 'Enter Leo id', // Over input
-            prompt: "leoID.txt not found\n\n" +
-                "Please enter an id that identifies you uniquely.\n" +
-                "Your git/cvs/bzr login name is a good choice.\n\n" +
-                "Leo uses this id to uniquely identify nodes.\n\n" +
-                "Your id should contain only letters and numbers\n" +
-                "and must be at least 3 characters in length.", // Under input
+            prompt: "leoID.txt not found: " +
+                "Enter an id that identifies you uniquely. \n" +
+                "Leo uses this id to uniquely identify nodes.",
             validateInput: (value) => {
                 if (!utils.cleanLeoID(value)) {
-                    return "Invalid Leo ID: \n" +
-                        "Your id should contain only letters and numbers\n" +
+                    return "Your id should contain only letters and numbers\n" +
                         "and must be at least 3 characters in length.";
                 } else {
                     return "";
                 }
-            }
+            },
+            ignoreFocusOut: true
         };
 
         return vscode.window.showInputBox(w_idInputOption).then((p_idResult) => {
@@ -693,44 +690,58 @@ export class LeoIntegration {
                 p_idResult = utils.cleanLeoID(p_idResult);
             }
             if (p_idResult) {
-                // ok
+                // OK: id valid!
                 this.sendAction(
-                    // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
                     Constants.LEOBRIDGE.SET_LEOID,
                     JSON.stringify({ leoID: p_idResult })
-
                 );
                 // if leo home exists:
-
-                // CHeck if .leoID.txt exists: this._serverService.checkLeoId(this.config.leoEditorPath)
-
                 let w_leoDir = this.config.leoEditorPath;
                 if (w_leoDir && fs.existsSync(w_leoDir)) {
-                    //   Ask to save to .leoID.txt in Leo's dir.
-                    //
+                    // Ask to save to .leoID.txt in Leo's dir.
+                    let w_joinedLeoIDPath = path.join(w_leoDir, Constants.LEO_ID_NAME);
+
                     return vscode.window.showInformationMessage(
-                        "Save Leo ID to Leo's home directory?",
+                        "Save Leo ID?",
                         {
                             modal: true,
-                            detail: "Write your id: '" + p_idResult + "' in '" + w_leoDir + Constants.LEO_ID_NAME + "'?"
+                            detail: "Write your id: '" + p_idResult + "' in '" + Constants.LEO_ID_NAME + "'?"
                         },
-                        "Yes", "No"
-                    )
-                        .then(answer => {
-                            if (answer === "Yes") {
-                                // TODO
-                                // Run function
-                                // try
-                                // WRITE FILE
-                                // ('', tag, 'created in', theDir)
+                        "Save ID"
+                    ).then(answer => {
+                        if (answer === "Save ID") {
 
-                                // catch
-                                // ('can not create', tag, 'in', theDir)
+                            // home is
+                            // process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
+
+                            // Mimic Leo: SHOULD TRY TO WRITE IN ORDER
+
+                            // 1 home + .leo folder
+                            // fn for leoid /home/felix/.leo/.leoID.txt
+
+                            // 2 and 3 : add some path to leo home. (leo/config and leo/core)
+                            // fn for leoid /home/felix/leo-editor/leo/config/.leoID.txt
+                            // fn for leoid /home/felix/leo-editor/leo/core/.leoID.txt
+
+
+                            try {
+                                fs.writeFileSync(w_joinedLeoIDPath, p_idResult!, { encoding: 'utf8', flag: 'w' });
+                                if (fs.existsSync(w_joinedLeoIDPath)) {
+                                    vscode.window.showInformationMessage(Constants.LEO_ID_NAME + " created in " + w_leoDir);
+
+                                } else {
+                                    vscode.window.showWarningMessage("can not create " + Constants.LEO_ID_NAME + " in " + w_leoDir);
+                                }
                                 return true;
-                            } else {
+                            } catch (p_err) {
+                                vscode.window.showWarningMessage("can not create " + Constants.LEO_ID_NAME + " in " + w_leoDir);
                                 return false;
                             }
-                        });
+                        } else {
+                            vscode.window.showInformationMessage("Using ID " + p_idResult + " for this Leo session only.");
+                            return false;
+                        }
+                    });
                 }
 
             } else {
