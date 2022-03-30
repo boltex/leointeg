@@ -696,53 +696,87 @@ export class LeoIntegration {
                     JSON.stringify({ leoID: p_idResult })
                 );
                 // if leo home exists:
-                let w_leoDir = this.config.leoEditorPath;
-                if (w_leoDir && fs.existsSync(w_leoDir)) {
-                    // Ask to save to .leoID.txt in Leo's dir.
-                    let w_joinedLeoIDPath = path.join(w_leoDir, Constants.LEO_ID_NAME);
+                // Ask to save to .leoID.txt in Leo's dir.
 
-                    return vscode.window.showInformationMessage(
-                        "Save Leo ID?",
-                        {
-                            modal: true,
-                            detail: "Write your id: '" + p_idResult + "' in '" + Constants.LEO_ID_NAME + "'?"
-                        },
-                        "Save ID"
-                    ).then(answer => {
-                        if (answer === "Save ID") {
+                return vscode.window.showInformationMessage(
+                    "Save Leo ID?",
+                    {
+                        modal: true,
+                        detail: "Write your id: '" + p_idResult + "' in '" + Constants.LEO_ID_NAME + "'?"
+                    },
+                    "Save ID"
+                ).then(answer => {
+                    if (answer === "Save ID") {
+                        let w_leoDir = this.config.leoEditorPath;
+                        let w_joinedLeoIDPath: string = ""; // = path.join(w_leoDir, Constants.LEO_ID_NAME);
+                        let w_leoUserHome: string = ""; // = path.join(w_leoDir, Constants.LEO_ID_NAME);
+                        // let w_joinedLeoIDPath: string = ""; // = path.join(w_leoDir, Constants.LEO_ID_NAME);
 
-                            // home is
-                            // process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE
+                        // home is
+                        const w_userHome: undefined | string = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
 
-                            // Mimic Leo: SHOULD TRY TO WRITE IN ORDER
-
-                            // 1 home + .leo folder
-                            // fn for leoid /home/felix/.leo/.leoID.txt
-
-                            // 2 and 3 : add some path to leo home. (leo/config and leo/core)
-                            // fn for leoid /home/felix/leo-editor/leo/config/.leoID.txt
-                            // fn for leoid /home/felix/leo-editor/leo/core/.leoID.txt
-
-
+                        if (w_userHome) {
+                            w_leoUserHome = path.join(w_userHome, ".leo");
+                            w_joinedLeoIDPath = path.join(w_userHome, ".leo", Constants.LEO_ID_NAME);
+                        }
+                        console.log('first w_joinedLeoIDPath: ', w_joinedLeoIDPath);
+                        if (fs.existsSync(w_leoUserHome)) {
+                            // .leo in user home exists
                             try {
                                 fs.writeFileSync(w_joinedLeoIDPath, p_idResult!, { encoding: 'utf8', flag: 'w' });
                                 if (fs.existsSync(w_joinedLeoIDPath)) {
-                                    vscode.window.showInformationMessage(Constants.LEO_ID_NAME + " created in " + w_leoDir);
-
+                                    vscode.window.showInformationMessage(Constants.LEO_ID_NAME + " created in " + w_leoUserHome);
+                                    return true;
                                 } else {
-                                    vscode.window.showWarningMessage("can not create " + Constants.LEO_ID_NAME + " in " + w_leoDir);
+                                    // vscode.window.showWarningMessage("can not create " + Constants.LEO_ID_NAME + " in " + w_leoHome);
                                 }
-                                return true;
                             } catch (p_err) {
-                                vscode.window.showWarningMessage("can not create " + Constants.LEO_ID_NAME + " in " + w_leoDir);
-                                return false;
+                                // vscode.window.showWarningMessage("can not create " + Constants.LEO_ID_NAME + " in " + w_leoHome);
+                                // return false;
                             }
-                        } else {
-                            vscode.window.showInformationMessage("Using ID " + p_idResult + " for this Leo session only.");
-                            return false;
                         }
-                    });
-                }
+
+                        const w_leoCore = path.join(w_leoDir, Constants.SERVER_PATH);
+                        w_joinedLeoIDPath = path.join(w_leoDir, Constants.SERVER_PATH, Constants.LEO_ID_NAME);
+                        console.log('second w_joinedLeoIDPath: ', w_joinedLeoIDPath);
+                        if (fs.existsSync(w_leoCore)) {
+                            // .leo in user home exists
+                            try {
+                                fs.writeFileSync(w_joinedLeoIDPath, p_idResult!, { encoding: 'utf8', flag: 'w' });
+                                if (fs.existsSync(w_joinedLeoIDPath)) {
+                                    vscode.window.showInformationMessage(Constants.LEO_ID_NAME + " created in " + w_leoCore);
+                                    return true;
+                                } else {
+                                    // vscode.window.showWarningMessage("can not create " + Constants.LEO_ID_NAME + " in " + w_leoHome);
+                                }
+                            } catch (p_err) {
+                                // vscode.window.showWarningMessage("can not create " + Constants.LEO_ID_NAME + " in " + w_leoHome);
+                                // return false;
+                            }
+                        }
+                        const w_leoConfig = path.join(w_leoDir, Constants.CONFIG_PATH);
+                        w_joinedLeoIDPath = path.join(w_leoDir, Constants.CONFIG_PATH, Constants.LEO_ID_NAME);
+                        if (fs.existsSync(w_leoConfig)) {
+                            // .leo in user home exists
+                            try {
+                                fs.writeFileSync(w_joinedLeoIDPath, p_idResult!, { encoding: 'utf8', flag: 'w' });
+                                if (fs.existsSync(w_joinedLeoIDPath)) {
+                                    vscode.window.showInformationMessage(Constants.LEO_ID_NAME + " created in " + w_leoConfig);
+                                    return true;
+                                } else {
+                                    // vscode.window.showWarningMessage("can not create " + Constants.LEO_ID_NAME + " in " + w_leoHome);
+                                }
+                            } catch (p_err) {
+                                // vscode.window.showWarningMessage("can not create " + Constants.LEO_ID_NAME + " in " + w_leoHome);
+                                // return false;
+                            }
+                        }
+
+                    } else {
+                        vscode.window.showInformationMessage("Using ID " + p_idResult + " for this Leo session only.");
+                    }
+                    return false;
+                });
 
             } else {
                 // invalid or canceled

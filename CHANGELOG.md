@@ -9,6 +9,7 @@
   - Marked nodes
 - Made those same commands available through vscode commands system for user keybindings.
 - Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'.
+- Added leoID check upon connection, and implemented a dialog to capture and set the leoID on the server, equivalent to https://leoeditor.com/running.html?highlight=leoid#running-leo-the-first-time
 
 ## 1.0.6
 
