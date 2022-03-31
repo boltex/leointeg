@@ -16,7 +16,7 @@ export class LeoBridge {
     private _callStack: LeoAction[] = [];
     private _actionBusy: boolean = false; // Action was started from the bottom, but has yet to resolve
 
-    private _leoBridgeSerialId: number = 0; // TODO : Error checking (should be Constants.STARTING_PACKAGE_ID or 0 or 2...?)
+    private _leoBridgeSerialId: number = 0;
     private _readyPromise: Promise<LeoBridgePackage> | undefined;
 
     private _websocket: WebSocket | null = null;

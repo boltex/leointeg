@@ -164,6 +164,7 @@ export interface LeoBridgePackage {
     // * Common to all result packages
     id: number;
     // * Possible answers from a "Constants.LEOBRIDGE" command
+    leoID?: string;
     gnx?: string[]; // get_all_gnx
     len?: number; // get_body_length
     body?: string; // get_body

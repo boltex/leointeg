@@ -538,6 +538,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.START_SERVER, () => w_leo.startServer()],
         [CMD.STOP_SERVER, () => w_leo.killServer()],
         [CMD.CHOOSE_LEO_FOLDER, () => w_leo.chooseLeoFolder()],
+        [CMD.SET_LEOID, () => w_leo.setLeoID()],
 
         // Called by nodes in tree when selected either by mouse, or with enter
         [CMD.SELECT_NODE, (p_node: LeoNode) => w_leo.selectTreeNode(p_node, false, false)],

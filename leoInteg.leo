@@ -736,6 +736,7 @@
 <v t="felix.20210802162424.1"><vh>stopConnection</vh></v>
 <v t="felix.20200719025231.8"><vh>connect</vh></v>
 <v t="felix.20200719025231.9"><vh>cancelConnect</vh></v>
+<v t="felix.20220327211552.1"><vh>setLeoID</vh></v>
 <v t="felix.20210613210351.1"><vh>chooseLeoFolder</vh></v>
 <v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
 </v>
@@ -897,15 +898,16 @@
 <v t="felix.20200718192351.1"><vh>@clean src/leoStates.ts</vh>
 <v t="felix.20200718192411.1"><vh>class LeoStates</vh>
 <v t="felix.20200718193719.1"><vh>General State Flags</vh>
-<v t="felix.20200718193219.1"><vh>leoBridgeReady &amp; helper</vh></v>
-<v t="felix.20200718193222.1"><vh>fileOpenedReady &amp; helper</vh></v>
+<v t="felix.20200718193219.1"><vh>leoBridgeReady</vh></v>
+<v t="felix.20220327193813.1"><vh>leoIDMissing</vh></v>
+<v t="felix.20200718193222.1"><vh>fileOpenedReady</vh></v>
 <v t="felix.20200718193226.1"><vh>leoOpenedFileName</vh></v>
-<v t="felix.20200718193230.1"><vh>leoChanged &amp; helper</vh></v>
-<v t="felix.20200718193233.1"><vh>leoCanUndo &amp; helper</vh></v>
-<v t="felix.20200718193235.1"><vh>leoCanRedo &amp; helper</vh></v>
-<v t="felix.20200718193238.1"><vh>leoCanDemote &amp; helper</vh></v>
-<v t="felix.20200718193241.1"><vh>leoCanPromote &amp; helper</vh></v>
-<v t="felix.20200718193244.1"><vh>leoCanDehoist &amp; helper</vh></v>
+<v t="felix.20200718193230.1"><vh>leoChanged</vh></v>
+<v t="felix.20200718193233.1"><vh>leoCanUndo</vh></v>
+<v t="felix.20200718193235.1"><vh>leoCanRedo</vh></v>
+<v t="felix.20200718193238.1"><vh>leoCanDemote</vh></v>
+<v t="felix.20200718193241.1"><vh>leoCanPromote</vh></v>
+<v t="felix.20200718193244.1"><vh>leoCanDehoist</vh></v>
 </v>
 <v t="felix.20200718193731.1"><vh>Selected Node Flags</vh>
 <v t="felix.20200718193338.1"><vh>leoMarked</vh></v>
@@ -933,7 +935,6 @@
 </v>
 <v t="felix.20200718191946.1"><vh>@clean src/serverManager.ts</vh>
 <v t="felix.20200718191946.2"><vh>class ServerService</vh>
-<v t="felix.20220323232702.1"><vh>checkLeoId</vh></v>
 <v t="felix.20200718191946.4"><vh>startServer</vh></v>
 <v t="felix.20210717192921.1"><vh>killServer</vh></v>
 <v t="ekr.20200815091220.1"><vh>_gotTerminalData</vh></v>
@@ -977,6 +978,7 @@
 <v t="felix.20210706233106.1"><vh>getUniqueId</vh></v>
 <v t="felix.20200718195558.2"><vh>padNumber2</vh></v>
 <v t="ekr.20200815091619.1"><vh>hashNode</vh></v>
+<v t="felix.20220327223745.1"><vh>cleanLeoID</vh></v>
 <v t="felix.20201106200100.1"><vh>addFileToGlobal</vh></v>
 <v t="felix.20201106200109.1"><vh>removeFileFromGlobal</vh></v>
 <v t="felix.20200718195558.3"><vh>buildNodeIconPaths</vh></v>
@@ -989,6 +991,7 @@
 <v t="felix.20200718195558.7"><vh>getFileFromPath</vh></v>
 <v t="felix.20200718195558.8"><vh>isIconChangedByEdit</vh></v>
 <v t="felix.20200718195558.9"><vh>isHexColor</vh></v>
+<v t="felix.20220327230102.1"><vh>isAlphaNum</vh></v>
 <v t="felix.20200718195558.10"><vh>strToLeoUri</vh></v>
 <v t="felix.20200718195558.11"><vh>leoUriToStr</vh></v>
 <v t="felix.20200718195558.12"><vh>setContext</vh></v>
@@ -2333,6 +2336,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.START_SERVER, () =&gt; w_leo.startServer()],
 [CMD.STOP_SERVER, () =&gt; w_leo.killServer()],
 [CMD.CHOOSE_LEO_FOLDER, () =&gt; w_leo.chooseLeoFolder()],
+[CMD.SET_LEOID, () =&gt; w_leo.setLeoID()],
 
 // Called by nodes in tree when selected either by mouse, or with enter
 [CMD.SELECT_NODE, (p_node: LeoNode) =&gt; w_leo.selectTreeNode(p_node, false, false)],
@@ -2946,6 +2950,11 @@ print('done')
     "light": "resources/light/connect.svg",
     "dark": "resources/dark/connect.svg"
   }
+},
+{
+  "command": "leointeg.setLeoID",
+  "title": "Set LeoID",
+  "category": "Leo"
 },
 </t>
 <t tx="ekr.20200815123601.17">{
@@ -3934,6 +3943,10 @@ print('done')
 {
   "command": "leointeg.connectToServer",
   "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened"
+},
+{
+  "command": "leointeg.setLeoID",
+  "when": "leoBridgeReady &amp;&amp; leoIDMissing"
 },
 </t>
 <t tx="ekr.20200815123601.45">{
@@ -6663,6 +6676,7 @@ public static COMMANDS = {
     START_SERVER: Constants.NAME + ".startServer",
     STOP_SERVER: Constants.NAME + ".stopServer",
     CONNECT: Constants.NAME + ".connectToServer",
+    SET_LEOID: Constants.NAME + ".setLeoID",
     SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
     OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
     CLEAR_RECENT_FILES: Constants.NAME + ".clearRecentFiles",
@@ -6897,6 +6911,7 @@ public static WIN32_PYTHON: string = "py";
 public static SERVER_NAME: string = "/leoserver.py";
 public static LEO_ID_NAME: string = ".leoID.txt";
 public static SERVER_PATH: string = "/leo/core";
+public static CONFIG_PATH: string = "/leo/config";
 public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
 public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
 
@@ -7096,6 +7111,7 @@ public static CONTEXT_FLAGS = {
     TREE_OPENED: "leoTreeOpened", // At least one Leo file opened
     TREE_TITLED: "leoTreeTitled", // Tree is a Leo file and not a new untitled document
     SERVER_STARTED: "leoServerStarted", // Auto-start or manually started
+    LEOID_MISSING: "leoIDMissing", // To be used as flag for #248
     // 'states' flags for currently opened tree view
     LEO_CHANGED: "leoChanged",
     LEO_CAN_UNDO: "leoCanUndo",
@@ -8155,7 +8171,7 @@ export class LeoBridge {
     private _callStack: LeoAction[] = [];
     private _actionBusy: boolean = false; // Action was started from the bottom, but has yet to resolve
 
-    private _leoBridgeSerialId: number = 0; // TODO : Error checking (should be Constants.STARTING_PACKAGE_ID or 0 or 2...?)
+    private _leoBridgeSerialId: number = 0;
     private _readyPromise: Promise&lt;LeoBridgePackage&gt; | undefined;
 
     private _websocket: WebSocket | null = null;
@@ -9213,12 +9229,7 @@ public startServer(p_leoPythonCommand: string, p_leoEditorPath: string, p_port: 
 
     let w_pythonPath = ""; // Command of child.spawn call
 
-    // Show problems when running the server, if any.
-    // this._leoIntegration.showTerminalPane(); // #203 Do not 'force' show the server output
-
-    return this.checkLeoId(p_leoEditorPath).then(() =&gt; {
-        return utils.findNextAvailablePort(p_port);
-    }).then((p_availablePort) =&gt; {
+    return utils.findNextAvailablePort(p_port).then((p_availablePort) =&gt; {
         if (!p_availablePort) {
             // vscode.window.showInformationMessage("Port " + p_port+" already in use.");
             return Promise.reject("Port " + p_port + " already in use.");
@@ -9604,6 +9615,7 @@ export interface LeoBridgePackage {
     // * Common to all result packages
     id: number;
     // * Possible answers from a "Constants.LEOBRIDGE" command
+    leoID?: string;
     gnx?: string[]; // get_all_gnx
     len?: number; // get_body_length
     body?: string; // get_body
@@ -10049,7 +10061,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Leo Editor 6.6b2 or later\
+- Leo Editor 6.6-final or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
@@ -10457,6 +10469,8 @@ More information can be found on the repository's [Issues Page](https://github.c
 </t>
 <t tx="felix.20200719025231.1">import * as vscode from 'vscode';
 import { debounce } from 'debounce';
+import * as fs from 'fs';
+import * as path from "path";
 import * as utils from './utils';
 import { Constants } from './constants';
 import {
@@ -10512,11 +10526,15 @@ private _openLastFiles(): Promise&lt;vscode.TextEditor&gt; {
             JSON.stringify({ files: w_lastFiles })
         ).then(
             (p_openFileResult: LeoBridgePackage) =&gt; {
+                // set connecting false
+                this.leoStates.leoConnecting = false;
                 this.leoStates.leoBridgeReady = true;
                 this.leoStates.leoStartupFinished = true;
                 return this.setupOpenedLeoDocument(p_openFileResult);
             },
             (p_errorOpen) =&gt; {
+                // set connecting false
+                this.leoStates.leoConnecting = false;
                 this.leoStates.leoBridgeReady = true;
                 this.leoStates.leoStartupFinished = true;
                 console.log('in .then not opened or already opened');
@@ -12690,61 +12708,51 @@ public connect(): void {
     );
     this._leoBridgeReadyPromise.then(
         (p_package) =&gt; {
-            this.leoStates.leoConnecting = false;
-            // Check if hard-coded first package signature
-
-            // console.log('get CONNECT results: ', p_package);
-
+            // Check if hard-coded first package signature / id
             if (p_package.id !== Constants.STARTING_PACKAGE_ID) {
                 this.cancelConnect(Constants.USER_MESSAGES.CONNECT_ERROR);
             } else {
-                const w_opened: boolean = !!p_package.commander;
-                const w_lastFiles: string[] =
-                    this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
-                if (w_lastFiles.length &amp;&amp; !w_opened) {
-                    // This context flag will trigger 'Connecting...' placeholder
-                    utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
+                // Connected ok
+                let q_leoID: Thenable&lt;unknown&gt;;
+                // Check for missing leoID: if set explicitly to null
+                if (p_package['leoID'] === null) {
+                    // Unset leoID !
+                    this.leoStates.leoIDMissing = true;
+                    q_leoID = this.setLeoID();
 
-                    setTimeout(() =&gt; {
-                        this._openLastFiles(); // Try to open last opened files, if any
-                    }, 0);
                 } else {
-                    this.leoStates.leoBridgeReady = true;
-                    this.leoStates.leoStartupFinished = true;
-                }
-                if (w_opened) {
-                    p_package.filename = p_package.commander!.fileName;
-                    this.setupOpenedLeoDocument(p_package, true);
+                    q_leoID = Promise.resolve();
                 }
 
-                // this.showLogPane(); // #203 Do not 'force' show the log pane
+                q_leoID.then(() =&gt; {
+                    const w_opened: boolean = !!p_package.commander;
+                    const w_lastFiles: string[] =
+                        this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
+                    if (w_lastFiles.length &amp;&amp; !w_opened) {
+                        // This context flag will trigger 'Connecting...' placeholder
+                        utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
 
-                if (!this.config.connectToServerAutomatically) {
-                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
-                }
+                        setTimeout(() =&gt; {
+                            this._openLastFiles(); // Try to open last opened files, if any
+                        }, 0);
+                    } else {
+                        this.leoStates.leoConnecting = false;
+                        this.leoStates.leoBridgeReady = true;
+                        this.leoStates.leoStartupFinished = true;
+                    }
 
-                /*
-                this.sendAction(
-                    // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
-                    Constants.LEOBRIDGE.SET_LEOID,
-                    JSON.stringify({ leoID: "bacon" })
+                    if (w_opened) {
+                        p_package.filename = p_package.commander!.fileName;
+                        this.setupOpenedLeoDocument(p_package, true);
+                    }
 
-                ).then((p_result: LeoBridgePackage) =&gt; {
-                    console.log('set leoid results: ', p_result);
-                }).then(() =&gt; {
-                    return this.sendAction(
-                        // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
-                        Constants.LEOBRIDGE.GET_LEOID
-                    );
-                }).then((p_result: LeoBridgePackage) =&gt; {
-                    console.log('get leoid results: ', p_result);
+                    if (!this.config.connectToServerAutomatically) {
+                        vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
+                    }
                 });
-                */
 
             }
 
-            // TODO : Finish Closing and possibly SAME FOR OPENING AND CONNECTING
-            // TODO : #14 @boltex COULD BE SOME FILES ALREADY OPENED OR NONE!
         },
         (p_reason) =&gt; {
             this.cancelConnect(Constants.USER_MESSAGES.CONNECT_FAILED + ': ' + p_reason);
@@ -24231,6 +24239,7 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
   - Marked nodes
 - Made those same commands available through vscode commands system for user keybindings.
 - Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'.
+- Added leoID check upon connection, and implemented a dialog to capture and set the leoID on the server, equivalent to https://leoeditor.com/running.html?highlight=leoid#running-leo-the-first-time
 
 </t>
 <t tx="felix.20220321211021.1">public static addMinibufferCommands: { label: string, detail: string }[] = [
@@ -24242,29 +24251,6 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
     { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
     { "label": "marked-list", "detail": "List all marked nodes." },
 ];
-
-</t>
-<t tx="felix.20220323232702.1">public checkLeoId(p_leoEditorPath: string): Promise&lt;any&gt; {
-
-    // Check if .leoID.txt exists : MAY NOT BE NEEDED BECAUSE LEO CHECKS OS.SYS
-
-    try {
-        if (fs.existsSync(p_leoEditorPath + Constants.LEO_ID_NAME)) {
-
-            // console.log('LEO ID EXISTS');
-
-        } else {
-
-            // console.log('LEO ID DOES NOT EXISTS');
-
-            // return Promise.reject(Constants.USER_MESSAGES.CANNOT_FIND_SERVER_SCRIPT);
-        }
-    } catch (p_err) {
-        console.error(p_err);
-        return Promise.reject("checkLeoId: Failed checking if file exist");
-    }
-    return Promise.resolve();
-}
 
 </t>
 <t tx="felix.20220326190000.1">def get_leoid(self, param):
@@ -24295,6 +24281,189 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
             g.app.nodeIndices.defaultId = leoID
             g.app.nodeIndices.userId = leoID
     return self._make_response()
+</t>
+<t tx="felix.20220327193813.1">private _leoIDMissing: boolean = false;
+get leoIDMissing(): boolean {
+    return this._leoIDMissing;
+}
+set leoIDMissing(p_value: boolean) {
+    this._leoIDMissing = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.LEOID_MISSING, p_value);
+}
+
+</t>
+<t tx="felix.20220327211552.1">/**
+ * * Inputs user for ID, then sets on server. If install path is known, also asks to save.
+ * @returns a promise that resolves when the id is sent to the server or input is canceled
+ */
+public setLeoID(): Thenable&lt;unknown&gt; {
+
+    // showInputBox
+    const w_idInputOption: vscode.InputBoxOptions = {
+        title: 'Enter Leo id', // Over input
+        prompt: "leoID.txt not found: " +
+            "Enter an id that identifies you uniquely. \n" +
+            "Leo uses this id to uniquely identify nodes.",
+        validateInput: (value) =&gt; {
+            if (!utils.cleanLeoID(value)) {
+                return "Your id should contain only letters and numbers\n" +
+                    "and must be at least 3 characters in length.";
+            } else {
+                return "";
+            }
+        },
+        ignoreFocusOut: true
+    };
+
+    return vscode.window.showInputBox(w_idInputOption).then((p_idResult) =&gt; {
+
+        // p_idResult is string | undefined
+        if (p_idResult) {
+            p_idResult = utils.cleanLeoID(p_idResult);
+        }
+        if (p_idResult) {
+            // OK: id valid!
+            this.sendAction(
+                Constants.LEOBRIDGE.SET_LEOID,
+                JSON.stringify({ leoID: p_idResult })
+            );
+            this.leoStates.leoIDMissing = false; // At least set for this session
+
+            // Ask to save to .leoID.txt in Leo's dir.
+            return vscode.window.showInformationMessage(
+                "Save Leo ID?",
+                {
+                    modal: true,
+                    detail: "Write id '" + p_idResult + "' in " + Constants.LEO_ID_NAME + "?"
+                },
+                "Save ID"
+            ).then(answer =&gt; {
+                if (answer === "Save ID") {
+                    const w_leoDir = this.config.leoEditorPath;
+                    const w_userHome: undefined | string = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
+
+                    const w_folders = [];
+                    if (w_userHome) {
+                        w_folders.push([
+                            path.join(w_userHome, ".leo"),
+                            path.join(w_userHome, ".leo", Constants.LEO_ID_NAME)
+                        ]);
+                    }
+                    w_folders.push([
+                        path.join(w_leoDir, Constants.CONFIG_PATH),
+                        path.join(w_leoDir, Constants.CONFIG_PATH, Constants.LEO_ID_NAME)
+                    ]);
+                    w_folders.push([
+                        path.join(w_leoDir, Constants.SERVER_PATH),
+                        path.join(w_leoDir, Constants.SERVER_PATH, Constants.LEO_ID_NAME)
+                    ]);
+
+                    let w_wroteFile = false;
+                    w_folders.forEach(p_dir_file =&gt; {
+                        if (!w_wroteFile &amp;&amp; fs.existsSync(p_dir_file[0])) {
+                            // .leo in user home exists
+                            try {
+                                fs.writeFileSync(p_dir_file[1], p_idResult!, { encoding: 'utf8', flag: 'w' });
+                                if (fs.existsSync(p_dir_file[1])) {
+                                    vscode.window.showInformationMessage(Constants.LEO_ID_NAME + " created in " + p_dir_file[0]);
+                                    w_wroteFile = true;
+                                    return true;
+                                }
+                            } catch (p_err) {
+                                console.log('Could not write ' + p_dir_file[1]);
+                            }
+                        }
+                    });
+                    if (w_wroteFile) {
+                        return true;
+                    } else {
+                        vscode.window.showWarningMessage("can not create " + Constants.LEO_ID_NAME);
+                    }
+
+                } else {
+                    vscode.window.showInformationMessage("Using ID " + p_idResult + " for this Leo session only.");
+                }
+                return false;
+            });
+
+        } else {
+            // invalid or canceled
+            // Show a message with button to call this command again
+            vscode.window.showWarningMessage("Leo ID not set", "Set Leo ID")
+                .then(p_chosenButton =&gt; {
+                    if (p_chosenButton === "Set Leo ID") {
+                        vscode.commands.executeCommand(Constants.COMMANDS.SET_LEOID);
+                    }
+                });
+        }
+        return true;
+    });
+
+    /*
+        console.log('get CONNECT results: ', p_package);
+
+        this.sendAction(
+            // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+            Constants.LEOBRIDGE.SET_LEOID,
+            JSON.stringify({ leoID: "bacon" })
+
+        ).then((p_result: LeoBridgePackage) =&gt; {
+            console.log('set leoid results: ', p_result);
+        }).then(() =&gt; {
+            return this.sendAction(
+                // Constants.LEOBRIDGE.TEST, JSON.stringify({ testParam: "Some String" })
+                Constants.LEOBRIDGE.GET_LEOID
+            );
+        }).then((p_result: LeoBridgePackage) =&gt; {
+            console.log('get leoid results: ', p_result);
+        });
+    */
+
+}
+
+</t>
+<t tx="felix.20220327223745.1">/**
+ * * Make sure that the given Leo ID will not corrupt a .leo file.
+ * @Returns the valid id string, or empty "" string for cancellation or invalid string
+ */
+export function cleanLeoID(id_: string): string {
+    const old_id: string = id_.toString();
+    if (!id_) {
+        return "";
+    }
+    try {
+        id_ = id_.replace(/\./g, "").replace(/\,/g, "").replace(/\"/g, "").replace(/\'/g, "");
+        //  Remove *all* whitespace: https://stackoverflow.com/questions/3739909
+        id_ = id_.split(' ').join('');
+    }
+    catch (exception) {
+        // g.es_exception(exception);
+        id_ = '';
+    }
+    // Last, check if not alphanum or less than 3 in length
+    if (!isAlphaNum(id_) || id_.length &lt; 3) {
+        id_ = "";
+    }
+    return id_;
+}
+
+</t>
+<t tx="felix.20220327230102.1">export function isAlphaNum(str: string): boolean {
+    let code;
+    let i;
+    let len;
+
+    for (i = 0, len = str.length; i &lt; len; i++) {
+        code = str.charCodeAt(i);
+        if (!(code &gt; 47 &amp;&amp; code &lt; 58) &amp;&amp; // numeric (0-9)
+            !(code &gt; 64 &amp;&amp; code &lt; 91) &amp;&amp; // upper alpha (A-Z)
+            !(code &gt; 96 &amp;&amp; code &lt; 123)) { // lower alpha (a-z)
+            return false;
+        }
+    }
+    return true;
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

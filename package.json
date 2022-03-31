@@ -742,6 +742,11 @@
         }
       },
       {
+        "command": "leointeg.setLeoID",
+        "title": "Set LeoID",
+        "category": "Leo"
+      },
+      {
         "command": "leointeg.executeScript",
         "title": "Execute Script",
         "category": "Leo",
@@ -2015,6 +2020,10 @@
         {
           "command": "leointeg.connectToServer",
           "when": "!leoBridgeReady && !leoTreeOpened"
+        },
+        {
+          "command": "leointeg.setLeoID",
+          "when": "leoBridgeReady && leoIDMissing"
         },
         {
           "command": "leointeg.executeScript",

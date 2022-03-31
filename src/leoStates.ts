@@ -42,6 +42,15 @@ export class LeoStates {
         utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, p_value);
     }
 
+    private _leoIDMissing: boolean = false;
+    get leoIDMissing(): boolean {
+        return this._leoIDMissing;
+    }
+    set leoIDMissing(p_value: boolean) {
+        this._leoIDMissing = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.LEOID_MISSING, p_value);
+    }
+
     // * A Leo file is opened
     private _fileOpenedReady: boolean = false; // Sets context flag along with treeview title
     get fileOpenedReady(): boolean {
