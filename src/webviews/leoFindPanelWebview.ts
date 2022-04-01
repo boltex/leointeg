@@ -117,7 +117,7 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                 <title>Leo Find Panel</title>
             </head>
             <body>
-                <div class="row mb-0">
+                <div class="row mb-0 nav-element">
                     <div class="col no-overflow">
                         <label for="navText">Nav:</label>
                         <select
@@ -141,10 +141,10 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                         <label class="label-fix" for="showParents" title="List parents of nodes in text searches.">Show parents</label>
                     </div>
                 </div>
-                <div class="input-holder mt-0 mb-6">
+                <div class="input-holder mt-0 mb-6 nav-element">
                     <input title="Typing searches headlines, Enter also searches body text and freeze." type="text" id="navText" name="navText" placeholder="<nav pattern here>">
                 </div>
-                <div id="freeze" title="Clear field to unfreeze.">&#x2744;</div>
+                <div class="nav-element" id="freeze" title="Clear field to unfreeze.">&#x2744;</div>
 
                 <label class="mb-0" for="findText">Find/Replace:</label>
                 <div class="input-holder mt-4 mb-4">

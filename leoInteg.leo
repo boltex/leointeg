@@ -22867,6 +22867,7 @@ def pushSearchHistory(self, pat):
     let timer; // for debouncing sending the settings from this webview to leointeg
     let dirty = false; // all but nav input
     let navTextDirty = false;
+    let showNavElements = true;
 
     let firstTabEl = 'searchOptions'; // used to be 'findText' before nav inputs
     let lastTabEl = 'searchBody';
@@ -22975,25 +22976,39 @@ def pushSearchHistory(self, pat):
     }
 
     function setSettings(p_settings) {
-        // Nav controls
-        // @ts-expect-error
-        document.getElementById("navText").value = p_settings["navText"];
-        searchSettings["navText"] = p_settings["navText"];
+        if (p_settings["navText"] || p_settings["navText"] === '') {
 
-        // showParents
-        // @ts-expect-error
-        document.getElementById("showParents").checked = p_settings["showParents"];
-        searchSettings["showParents"] = p_settings["showParents"];
+            // Nav controls
+            // @ts-expect-error
+            document.getElementById("navText").value = p_settings["navText"];
+            searchSettings["navText"] = p_settings["navText"];
 
-        // isTag
-        // @ts-expect-error
-        document.getElementById("isTag").checked = p_settings["isTag"];
-        searchSettings["isTag"] = p_settings["isTag"];
-        handleIsTagSwitch(false);
-        // searchOptions
-        // @ts-expect-error
-        document.getElementById("searchOptions").value = p_settings["searchOptions"];
-        searchSettings["searchOptions"] = p_settings["searchOptions"];
+            // showParents
+            // @ts-expect-error
+            document.getElementById("showParents").checked = p_settings["showParents"];
+            searchSettings["showParents"] = p_settings["showParents"];
+
+            // isTag
+            // @ts-expect-error
+            document.getElementById("isTag").checked = p_settings["isTag"];
+            searchSettings["isTag"] = p_settings["isTag"];
+            handleIsTagSwitch(false);
+
+            // searchOptions
+            // @ts-expect-error
+            document.getElementById("searchOptions").value = p_settings["searchOptions"];
+            searchSettings["searchOptions"] = p_settings["searchOptions"];
+        } else {
+            // ! Not at least Leo 6.6 final : hide top elements !
+            showNavElements = false;
+            firstTabEl = 'findText';
+            var elements = document.getElementsByClassName("nav-element")
+
+            for (var i = 0; i &lt; elements.length; i++) {
+                // @ts-expect-error
+                elements[i].style.display = "none";
+            }
+        }
 
         // When opening a Leo document, set default values of fields
         inputIds.forEach((p_inputId) =&gt; {
@@ -24716,7 +24731,7 @@ import * as utils from "../utils";
             &lt;title&gt;Leo Find Panel&lt;/title&gt;
         &lt;/head&gt;
         &lt;body&gt;
-            &lt;div class="row mb-0"&gt;
+            &lt;div class="row mb-0 nav-element"&gt;
                 &lt;div class="col no-overflow"&gt;
                     &lt;label for="navText"&gt;Nav:&lt;/label&gt;
                     &lt;select
@@ -24740,10 +24755,10 @@ import * as utils from "../utils";
                     &lt;label class="label-fix" for="showParents" title="List parents of nodes in text searches."&gt;Show parents&lt;/label&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
-            &lt;div class="input-holder mt-0 mb-6"&gt;
+            &lt;div class="input-holder mt-0 mb-6 nav-element"&gt;
                 &lt;input title="Typing searches headlines, Enter also searches body text and freeze." type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
             &lt;/div&gt;
-            &lt;div id="freeze" title="Clear field to unfreeze."&gt;&amp;#x2744;&lt;/div&gt;
+            &lt;div class="nav-element" id="freeze" title="Clear field to unfreeze."&gt;&amp;#x2744;&lt;/div&gt;
 
             &lt;label class="mb-0" for="findText"&gt;Find/Replace:&lt;/label&gt;
             &lt;div class="input-holder mt-4 mb-4"&gt;
