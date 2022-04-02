@@ -1442,7 +1442,7 @@ private _onButtonsTreeViewVisibilityChanged(
     if (p_explorerView) {
     } // (Facultative/unused) Do something different if explorer view is used
     if (p_event.visible) {
-        this.refreshButtonsPane();
+        // this.refreshButtonsPane();
     }
 }
 
@@ -7031,7 +7031,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
-    MINIMUM_VERSION: "Missing Command: Please update Leo (min 6.6-final required)",
+    MINIMUM_VERSION: "Please update: Leo 6.6 req for missing command: ",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
 };
@@ -8083,11 +8083,14 @@ private _processAnswer(p_data: string): void {
     if (w_parsedData &amp;&amp; w_parsedData['ServerError']) {
         const w_serverError: string = w_parsedData['ServerError'];
         // action not found
-        if (w_serverError.includes("action not found")) {
+        let w_position = w_serverError.indexOf("action not found");
+        if (w_position &gt;= 0) {
+            let w_action = w_serverError.substring(w_position + 16);
             // Show update suggestion if not already shown
-            if (!this._updateWarningShown) {
-                this._updateWarningShown = true;
-                vscode.window.showErrorMessage(Constants.USER_MESSAGES.MINIMUM_VERSION);
+            let w_timeStampSec = Math.floor(Date.now() / 1000);
+            if (this._updateWarningShown + 5 &lt; w_timeStampSec) {
+                this._updateWarningShown = w_timeStampSec;
+                vscode.window.showErrorMessage(Constants.USER_MESSAGES.MINIMUM_VERSION + w_action);
             }
         }
     }
@@ -8177,7 +8180,7 @@ export class LeoBridge {
     private _websocket: WebSocket | null = null;
     private _leoAsync: LeoAsync;
 
-    private _updateWarningShown: boolean = false;
+    private _updateWarningShown: number = 0; // timestamp in seconds
 
     private _receivedTotal: number = 0; // Websocket message received total
 
@@ -11027,7 +11030,7 @@ private _onDocTreeViewVisibilityChanged(
     if (p_explorerView) {
     } // (Facultative/unused) Do something different if explorer view is used
     if (p_event.visible) {
-        this.refreshDocumentsPane();
+        // this.refreshDocumentsPane();
     }
 }
 
@@ -23938,7 +23941,7 @@ private _onGotoTreeViewVisibilityChanged(
     } // (Facultative/unused) Do something different if explorer view is used
     if (p_event.visible) {
         this._leoGotoProvider.setLastGotoView(p_explorerView ? this._leoGotoExplorer : this._leoGoto);
-        this.refreshGotoPane();
+        // this.refreshGotoPane();
     }
 }
 
@@ -24748,51 +24751,51 @@ import * as utils from "../utils";
                 &lt;/div&gt;
                 &lt;div class="col-nav"&gt;
                     &lt;input type="checkbox" id="isTag" name="isTag" &gt;
-                    &lt;label class="label-fix" for="isTag" title="Search Tag attributes, set algebra is supported:&amp;#013;&amp;amp; both the given tags&amp;#013;&amp;vert; either of the given tags (or both)&amp;#013;&amp;#45; the first tag, but not the second tag&amp;#013;&amp;#94; either of the given tags (but *not* both)&amp;#013;"
+                    &lt;label class="label-fix" for="isTag" title="Search Tag attributes, set algebra is supported:&amp;#013;&amp;amp; both the given tags&amp;#013;&amp;vert; either of the given tags (or both)&amp;#013;&amp;#45; the first tag, but not the second tag&amp;#013;&amp;#94; either of the given tags (but *not* both)"
                     &gt;Tag&lt;/label&gt;
 
                     &lt;input type="checkbox" id="showParents" name="showParents" &gt;
-                    &lt;label class="label-fix" for="showParents" title="List parents of nodes in text searches."&gt;Show parents&lt;/label&gt;
+                    &lt;label class="label-fix" for="showParents" title="List parents of nodes in text searches"&gt;Show parents&lt;/label&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
             &lt;div class="input-holder mt-0 mb-6 nav-element"&gt;
-                &lt;input title="Typing searches headlines, Enter also searches body text and freeze." type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
+                &lt;input title="Typing searches headlines, Enter also searches body text and freeze" type="text" id="navText" name="navText" placeholder="&lt;nav pattern here&gt;"&gt;
             &lt;/div&gt;
-            &lt;div class="nav-element" id="freeze" title="Clear field to unfreeze."&gt;&amp;#x2744;&lt;/div&gt;
+            &lt;div class="nav-element" id="freeze" title="Clear field to unfreeze"&gt;&amp;#x2744;&lt;/div&gt;
 
             &lt;label class="mb-0" for="findText"&gt;Find/Replace:&lt;/label&gt;
             &lt;div class="input-holder mt-4 mb-4"&gt;
-                &lt;input title="Enter or F3 will find and goto the next match.&amp;#013;F2 for the previous match" type="text" id="findText" name="findText" placeholder="&lt;find pattern here&gt;" &gt;
+                &lt;input title="Enter or F3 to find and goto the next match&amp;#013;F2 for the previous match" type="text" id="findText" name="findText" placeholder="&lt;find pattern here&gt;" &gt;
             &lt;/div&gt;
             &lt;div class="input-holder mb-4"&gt;
-                &lt;input type="text" id="replaceText" name="replaceText" placeholder="&lt;replace pattern here&gt;" &gt;
+                &lt;input title="Replace (Ctrl+=)&amp;#013;Replace &amp;amp; Find Next (Ctrl+-)" type="text" id="replaceText" name="replaceText" placeholder="&lt;replace pattern here&gt;" &gt;
             &lt;/div&gt;
             &lt;div class="row"&gt;
                 &lt;div class="col"&gt;
                     &lt;input type="checkbox" id="wholeWord" name="wholeWord" &gt;
-                    &lt;label class="label-fix" for="wholeWord"&gt;Whole &lt;u&gt;w&lt;/u&gt;ord&lt;/label&gt;&lt;br&gt;
+                    &lt;label title="Match Whole Word (Ctrl+Alt+W)" class="label-fix" for="wholeWord"&gt;Whole &lt;u&gt;w&lt;/u&gt;ord&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="ignoreCase" name="ignoreCase" &gt;
-                    &lt;label class="label-fix" for="ignoreCase"&gt;&lt;u&gt;I&lt;/u&gt;gnore case&lt;/label&gt;&lt;br&gt;
+                    &lt;label title="Matches Ignore Case (Ctrl+Alt+I)" class="label-fix" for="ignoreCase"&gt;&lt;u&gt;I&lt;/u&gt;gnore case&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="regExp" name="regExp" &gt;
-                    &lt;label class="label-fix" for="regExp"&gt;Rege&lt;u&gt;x&lt;/u&gt;p&lt;/label&gt;&lt;br&gt;
+                    &lt;label title="Use Regular Expression (Ctrl+Alt+X)" class="label-fix" for="regExp"&gt;Rege&lt;u&gt;x&lt;/u&gt;p&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="markFinds" name="markFinds" &gt;
-                    &lt;label class="label-fix" for="markFinds"&gt;Mark &lt;u&gt;f&lt;/u&gt;inds&lt;/label&gt;&lt;br&gt;
+                    &lt;label title="Mark Found nodes (Ctrl+Alt+F)" class="label-fix" for="markFinds"&gt;Mark &lt;u&gt;f&lt;/u&gt;inds&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="markChanges" name="markChanges" &gt;
-                    &lt;label class="label-fix" for="markChanges"&gt;Mark &lt;u&gt;c&lt;/u&gt;hanges&lt;/label&gt;
+                    &lt;label title="Mark Changed nodes (Ctrl+Alt+C)" class="label-fix" for="markChanges"&gt;Mark &lt;u&gt;c&lt;/u&gt;hanges&lt;/label&gt;
                 &lt;/div&gt;
                 &lt;div class="col"&gt;
                     &lt;!-- RADIOS --&gt;
                     &lt;input type="radio" id="entireOutline" name="searchScope" value="0"&gt;
-                    &lt;label class="label-fix" for="entireOutline"&gt;&lt;u&gt;E&lt;/u&gt;ntire outline&lt;/label&gt;&lt;br&gt;
+                    &lt;label title="Search in Whole Outline (Ctrl+Alt+E)" class="label-fix" for="entireOutline"&gt;&lt;u&gt;E&lt;/u&gt;ntire outline&lt;/label&gt;&lt;br&gt;
                     &lt;input type="radio" id="subOutlineOnly" name="searchScope" value="1"&gt;
-                    &lt;label class="label-fix" for="subOutlineOnly"&gt;&lt;u&gt;S&lt;/u&gt;uboutline Only&lt;/label&gt;&lt;br&gt;
+                    &lt;label title="Limit to Selected Outline (Ctrl+Alt+S)" class="label-fix" for="subOutlineOnly"&gt;&lt;u&gt;S&lt;/u&gt;uboutline Only&lt;/label&gt;&lt;br&gt;
                     &lt;input type="radio" id="nodeOnly" name="searchScope" value="2"&gt;
-                    &lt;label class="label-fix" for="nodeOnly"&gt;&lt;u&gt;N&lt;/u&gt;ode only&lt;/label&gt;&lt;br&gt;
+                    &lt;label title="Limit to Selected Node (Ctrl+Alt+N)" class="label-fix" for="nodeOnly"&gt;&lt;u&gt;N&lt;/u&gt;ode only&lt;/label&gt;&lt;br&gt;
                     &lt;!-- CHECKBOXES --&gt;
                     &lt;input type="checkbox" id="searchHeadline" name="searchHeadline" &gt;
-                    &lt;label class="label-fix" for="searchHeadline"&gt;Search &lt;u&gt;h&lt;/u&gt;eadline&lt;/label&gt;&lt;br&gt;
+                    &lt;label title="Search in Headlines (Ctrl+Alt+H)" class="label-fix" for="searchHeadline"&gt;Search &lt;u&gt;h&lt;/u&gt;eadline&lt;/label&gt;&lt;br&gt;
                     &lt;input type="checkbox" id="searchBody" name="searchBody" &gt;
-                    &lt;label class="label-fix" for="searchBody"&gt;Search &lt;u&gt;b&lt;/u&gt;ody&lt;/label&gt;
+                    &lt;label title="Search in Body Text (Ctrl+Alt+B)" class="label-fix" for="searchBody"&gt;Search &lt;u&gt;b&lt;/u&gt;ody&lt;/label&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
             &lt;script nonce="${nonce}" src="${scriptUri}"&gt;&lt;/script&gt;

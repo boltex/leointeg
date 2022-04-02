@@ -1204,7 +1204,7 @@ export class LeoIntegration {
         if (p_explorerView) {
         } // (Facultative/unused) Do something different if explorer view is used
         if (p_event.visible) {
-            this.refreshDocumentsPane();
+            // this.refreshDocumentsPane();
         }
     }
 
@@ -1220,7 +1220,7 @@ export class LeoIntegration {
         if (p_explorerView) {
         } // (Facultative/unused) Do something different if explorer view is used
         if (p_event.visible) {
-            this.refreshButtonsPane();
+            // this.refreshButtonsPane();
         }
     }
 
@@ -1238,7 +1238,7 @@ export class LeoIntegration {
         } // (Facultative/unused) Do something different if explorer view is used
         if (p_event.visible) {
             this._leoGotoProvider.setLastGotoView(p_explorerView ? this._leoGotoExplorer : this._leoGoto);
-            this.refreshGotoPane();
+            // this.refreshGotoPane();
         }
     }
 

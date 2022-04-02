@@ -134,51 +134,51 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                     </div>
                     <div class="col-nav">
                         <input type="checkbox" id="isTag" name="isTag" >
-                        <label class="label-fix" for="isTag" title="Search Tag attributes, set algebra is supported:&#013;&amp; both the given tags&#013;&vert; either of the given tags (or both)&#013;&#45; the first tag, but not the second tag&#013;&#94; either of the given tags (but *not* both)&#013;"
+                        <label class="label-fix" for="isTag" title="Search Tag attributes, set algebra is supported:&#013;&amp; both the given tags&#013;&vert; either of the given tags (or both)&#013;&#45; the first tag, but not the second tag&#013;&#94; either of the given tags (but *not* both)"
                         >Tag</label>
 
                         <input type="checkbox" id="showParents" name="showParents" >
-                        <label class="label-fix" for="showParents" title="List parents of nodes in text searches.">Show parents</label>
+                        <label class="label-fix" for="showParents" title="List parents of nodes in text searches">Show parents</label>
                     </div>
                 </div>
                 <div class="input-holder mt-0 mb-6 nav-element">
-                    <input title="Typing searches headlines, Enter also searches body text and freeze." type="text" id="navText" name="navText" placeholder="<nav pattern here>">
+                    <input title="Typing searches headlines, Enter also searches body text and freeze" type="text" id="navText" name="navText" placeholder="<nav pattern here>">
                 </div>
-                <div class="nav-element" id="freeze" title="Clear field to unfreeze.">&#x2744;</div>
+                <div class="nav-element" id="freeze" title="Clear field to unfreeze">&#x2744;</div>
 
                 <label class="mb-0" for="findText">Find/Replace:</label>
                 <div class="input-holder mt-4 mb-4">
-                    <input title="Enter or F3 will find and goto the next match.&#013;F2 for the previous match" type="text" id="findText" name="findText" placeholder="<find pattern here>" >
+                    <input title="Enter or F3 to find and goto the next match&#013;F2 for the previous match" type="text" id="findText" name="findText" placeholder="<find pattern here>" >
                 </div>
                 <div class="input-holder mb-4">
-                    <input type="text" id="replaceText" name="replaceText" placeholder="<replace pattern here>" >
+                    <input title="Replace (Ctrl+=)&#013;Replace &amp; Find Next (Ctrl+-)" type="text" id="replaceText" name="replaceText" placeholder="<replace pattern here>" >
                 </div>
                 <div class="row">
                     <div class="col">
                         <input type="checkbox" id="wholeWord" name="wholeWord" >
-                        <label class="label-fix" for="wholeWord">Whole <u>w</u>ord</label><br>
+                        <label title="Match Whole Word (Ctrl+Alt+W)" class="label-fix" for="wholeWord">Whole <u>w</u>ord</label><br>
                         <input type="checkbox" id="ignoreCase" name="ignoreCase" >
-                        <label class="label-fix" for="ignoreCase"><u>I</u>gnore case</label><br>
+                        <label title="Matches Ignore Case (Ctrl+Alt+I)" class="label-fix" for="ignoreCase"><u>I</u>gnore case</label><br>
                         <input type="checkbox" id="regExp" name="regExp" >
-                        <label class="label-fix" for="regExp">Rege<u>x</u>p</label><br>
+                        <label title="Use Regular Expression (Ctrl+Alt+X)" class="label-fix" for="regExp">Rege<u>x</u>p</label><br>
                         <input type="checkbox" id="markFinds" name="markFinds" >
-                        <label class="label-fix" for="markFinds">Mark <u>f</u>inds</label><br>
+                        <label title="Mark Found nodes (Ctrl+Alt+F)" class="label-fix" for="markFinds">Mark <u>f</u>inds</label><br>
                         <input type="checkbox" id="markChanges" name="markChanges" >
-                        <label class="label-fix" for="markChanges">Mark <u>c</u>hanges</label>
+                        <label title="Mark Changed nodes (Ctrl+Alt+C)" class="label-fix" for="markChanges">Mark <u>c</u>hanges</label>
                     </div>
                     <div class="col">
                         <!-- RADIOS -->
                         <input type="radio" id="entireOutline" name="searchScope" value="0">
-                        <label class="label-fix" for="entireOutline"><u>E</u>ntire outline</label><br>
+                        <label title="Search in Whole Outline (Ctrl+Alt+E)" class="label-fix" for="entireOutline"><u>E</u>ntire outline</label><br>
                         <input type="radio" id="subOutlineOnly" name="searchScope" value="1">
-                        <label class="label-fix" for="subOutlineOnly"><u>S</u>uboutline Only</label><br>
+                        <label title="Limit to Selected Outline (Ctrl+Alt+S)" class="label-fix" for="subOutlineOnly"><u>S</u>uboutline Only</label><br>
                         <input type="radio" id="nodeOnly" name="searchScope" value="2">
-                        <label class="label-fix" for="nodeOnly"><u>N</u>ode only</label><br>
+                        <label title="Limit to Selected Node (Ctrl+Alt+N)" class="label-fix" for="nodeOnly"><u>N</u>ode only</label><br>
                         <!-- CHECKBOXES -->
                         <input type="checkbox" id="searchHeadline" name="searchHeadline" >
-                        <label class="label-fix" for="searchHeadline">Search <u>h</u>eadline</label><br>
+                        <label title="Search in Headlines (Ctrl+Alt+H)" class="label-fix" for="searchHeadline">Search <u>h</u>eadline</label><br>
                         <input type="checkbox" id="searchBody" name="searchBody" >
-                        <label class="label-fix" for="searchBody">Search <u>b</u>ody</label>
+                        <label title="Search in Body Text (Ctrl+Alt+B)" class="label-fix" for="searchBody">Search <u>b</u>ody</label>
                     </div>
                 </div>
                 <script nonce="${nonce}" src="${scriptUri}"></script>

@@ -22,7 +22,7 @@ export class LeoBridge {
     private _websocket: WebSocket | null = null;
     private _leoAsync: LeoAsync;
 
-    private _updateWarningShown: boolean = false;
+    private _updateWarningShown: number = 0; // timestamp in seconds
 
     private _receivedTotal: number = 0; // Websocket message received total
 
@@ -198,11 +198,14 @@ export class LeoBridge {
         if (w_parsedData && w_parsedData['ServerError']) {
             const w_serverError: string = w_parsedData['ServerError'];
             // action not found
-            if (w_serverError.includes("action not found")) {
+            let w_position = w_serverError.indexOf("action not found");
+            if (w_position >= 0) {
+                let w_action = w_serverError.substring(w_position + 16);
                 // Show update suggestion if not already shown
-                if (!this._updateWarningShown) {
-                    this._updateWarningShown = true;
-                    vscode.window.showErrorMessage(Constants.USER_MESSAGES.MINIMUM_VERSION);
+                let w_timeStampSec = Math.floor(Date.now() / 1000);
+                if (this._updateWarningShown + 5 < w_timeStampSec) {
+                    this._updateWarningShown = w_timeStampSec;
+                    vscode.window.showErrorMessage(Constants.USER_MESSAGES.MINIMUM_VERSION + w_action);
                 }
             }
         }
