@@ -16,7 +16,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Requirements
 
-- Leo Editor 6.6-final or later\
+- Leo Editor 6.6 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
@@ -31,9 +31,10 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
-- **Nav and Tags** panes integrated in the **Find** pane
-- **Goto Anywhere panel** to navigate directly from various search types
-- Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
+- **Find Panel** that responds to Leo's original keybindings, Ctrl+F, F2, F3... when focus is set in the outline or body panes
+- **Nav and Tag panel** controls are integrated in the Find panel
+- **Goto Anywhere panel** to navigate directly from a list of nodes
+- Access **Leo commands** with context menus, hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
   - Open body panes to the side in any 'column'
   - Outline editing commands
   - Find/Replace operations
@@ -44,7 +45,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Leo Commands and Keybindings
 
-Below are the most basic Commands. Most of Leo's other commands are also available with their original default keybindings.
+Here are the most useful Commands. Most of Leo's other commands are also available with their original keybindings.
 
 | Outline Commands           |     |                  |                  |
 | :------------------------- | :-- | :--------------- | :--------------- |
@@ -161,7 +162,7 @@ For more information about the Leo server see [Using leoserver.py](https://leoed
 
 ## Issues
 
-Main issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
+Common issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
 
 ### Linux Keybindings
 
@@ -173,7 +174,7 @@ for more information.
 
 ### Keybindings Conflicts Resolution
 
-If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane,
+If you have a keybinding conflict for a command that you would like **not** to be resolved by Leo when the focus is on the body pane,
 add **`&& resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Move Outline Keyboard Commands
@@ -183,7 +184,7 @@ For some users, the **`Alt+[Arrow Keys]`**, **`Ctrl+D`** and **`Ctrl+T`** keybin
 To help with this conflict, tree-browsing, outline-move keyboard commands, and switch focus command will only trigger
 with the additional condition of having no text selection in the editor.
 
-So select at least one character to use the previously assigned original keyboard commands while focus is in the body pane.
+So select at least one character to use the previously assigned original keyboard commands, while focus is in the body pane.
 
 > Refer to the [issue tracker](https://github.com/boltex/leointeg/issues) page to learn more about the known issues, or to contribute with additional information if you encounter some yourself.
 
@@ -198,7 +199,7 @@ and re-uses code from the [leoflexx.py plugin](https://github.com/leo-editor/leo
 The outline pane is made by implementing a
 [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics),
 while the body-pane's _virtual document_ is made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api)
-and using the node's gnx as identifier.
+and using the outline's selected node 'gnx' as identifier.
 
 ---
 

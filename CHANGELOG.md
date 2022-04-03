@@ -2,14 +2,16 @@
 
 ## 1.0.7
 
+- Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'. (Requires Leo minimal version of at least 6.6-final)
+- Outline now shows distinct icons and labels to distinguish generic user-attributes from 'tags'.
 - Added 'Goto Anywhere' panel, with buttons for showing lists from common node attributes searches:
   - 'Timeline' nodes by creation date
   - Changed/Dirty nodes
   - History of visited nodes
   - Marked nodes
-- Made those same commands available through vscode commands system for user keybindings.
-- Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'.
-- Added leoID check upon connection, and implemented a dialog to capture and set the leoID on the server, equivalent to https://leoeditor.com/running.html?highlight=leoid#running-leo-the-first-time
+  - Nav search with currently selected body text
+- Made those same commands available through vscode command palettes and user keybindings.
+- Added leoID check upon connection, and implemented a dialog to capture and set the leoID on the server, equivalent to <https://leoeditor.com/running.html?highlight=leoid#running-leo-the-first-time>
 
 ## 1.0.6
 

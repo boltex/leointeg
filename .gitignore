@@ -7,5 +7,6 @@ node_modules
 *.vsix
 CodingFlow.txt
 ekr-leoInteg.leo
+leoserver.py
 leobridgeserver.py
 testpaste.xml

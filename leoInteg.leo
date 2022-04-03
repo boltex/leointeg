@@ -6665,6 +6665,7 @@ public static LEOBRIDGE = {
 </t>
 <t tx="felix.20200718020912.15">/**
  * * All commands this expansion exposes (in package.json, contributes &gt; commands)
+ * * And those not exposed in package.json, like 'gotoNav' which can only be invoked from mouse action
  */
 public static COMMANDS = {
     // * Access to the Settings/Welcome Webview
@@ -7031,7 +7032,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
-    MINIMUM_VERSION: "Please update: Leo 6.6 req for missing command: ",
+    MINIMUM_VERSION: "Please update: Leo 6.6 required for command: ",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
 };
@@ -8088,7 +8089,7 @@ private _processAnswer(p_data: string): void {
             let w_action = w_serverError.substring(w_position + 16);
             // Show update suggestion if not already shown
             let w_timeStampSec = Math.floor(Date.now() / 1000);
-            if (this._updateWarningShown + 5 &lt; w_timeStampSec) {
+            if (this._updateWarningShown + 3 &lt; w_timeStampSec) { // Limit to re-show for 3 sec.
                 this._updateWarningShown = w_timeStampSec;
                 vscode.window.showErrorMessage(Constants.USER_MESSAGES.MINIMUM_VERSION + w_action);
             }
@@ -10064,7 +10065,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Leo Editor 6.6-final or later\
+- Leo Editor 6.6 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
@@ -10080,9 +10081,10 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 - A **welcome screen** that also gives access to this extension's **settings**.
 - **Derived files change detection**. See [External Files](#derive-external-files) below for more details
 - **'@button' panel** for [creating your own commands with @buttons](https://leoeditor.com/tutorial-tips.html#use-button-nodes)
-- **Nav and Tags** panes integrated in the **Find** pane
-- **Goto Anywhere panel** to navigate directly from various search types
-- Access **Leo commands** with context menus, outline-node hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
+- **Find Panel** that responds to Leo's original keybindings, Ctrl+F, F2, F3... when focus is set in the outline or body panes
+- **Nav and Tag panel** controls are integrated in the Find panel
+- **Goto Anywhere panel** to navigate directly from a list of nodes
+- Access **Leo commands** with context menus, hover icons, keyboard shortcuts, the command palette **`Ctrl+Shift+P`** or Leo's minibuffer **`Alt+X`**:
   - Open body panes to the side in any 'column'
   - Outline editing commands
   - Find/Replace operations
@@ -10094,7 +10096,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718222043.1">## Leo Commands and Keybindings
 
-Below are the most basic Commands. Most of Leo's other commands are also available with their original default keybindings.
+Here are the most useful Commands. Most of Leo's other commands are also available with their original keybindings.
 
 | Outline Commands           |     |                  |                  |
 | :------------------------- | :-- | :--------------- | :--------------- |
@@ -10191,7 +10193,7 @@ This occurs when an outline node or a body pane has focus:
 </t>
 <t tx="felix.20200718222108.1">## Issues
 
-Main issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
+Common issues are listed below. See the repository's [Issues Page](https://github.com/boltex/leointeg/issues) to submit issues.
 
 ### Linux Keybindings
 
@@ -10203,7 +10205,7 @@ for more information.
 
 ### Keybindings Conflicts Resolution
 
-If you have a keybinding conflict that you would like to be resolved by Leo when the focus is on the body pane,
+If you have a keybinding conflict for a command that you would like **not** to be resolved by Leo when the focus is on the body pane,
 add **`&amp;&amp; resourceScheme != 'leo'`** to the keybinding's "_when_" condition. (Use **`Ctrl+K Ctrl+S`** in vscode to open the Keyboards Shortcuts panel)
 
 ### Move Outline Keyboard Commands
@@ -10213,7 +10215,7 @@ For some users, the **`Alt+[Arrow Keys]`**, **`Ctrl+D`** and **`Ctrl+T`** keybin
 To help with this conflict, tree-browsing, outline-move keyboard commands, and switch focus command will only trigger
 with the additional condition of having no text selection in the editor.
 
-So select at least one character to use the previously assigned original keyboard commands while focus is in the body pane.
+So select at least one character to use the previously assigned original keyboard commands, while focus is in the body pane.
 
 &gt; Refer to the [issue tracker](https://github.com/boltex/leointeg/issues) page to learn more about the known issues, or to contribute with additional information if you encounter some yourself.
 
@@ -10229,7 +10231,7 @@ and re-uses code from the [leoflexx.py plugin](https://github.com/leo-editor/leo
 The outline pane is made by implementing a
 [TreeDataProvider for vscode's TreeView API](https://code.visualstudio.com/api/extension-guides/tree-view#tree-view-api-basics),
 while the body-pane's _virtual document_ is made by [implementing a filesystem provider](https://code.visualstudio.com/api/extension-guides/virtual-documents#file-system-api)
-and using the node's gnx as identifier.
+and using the outline's selected node 'gnx' as identifier.
 
 ---
 
@@ -24250,14 +24252,16 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
 </t>
 <t tx="felix.20220321001559.1">## 1.0.7
 
+- Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'. (Requires Leo minimal version of at least 6.6-final)
+- Outline now shows distinct icons and labels to distinguish generic user-attributes from 'tags'.
 - Added 'Goto Anywhere' panel, with buttons for showing lists from common node attributes searches:
   - 'Timeline' nodes by creation date
   - Changed/Dirty nodes
   - History of visited nodes
   - Marked nodes
-- Made those same commands available through vscode commands system for user keybindings.
-- Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'.
-- Added leoID check upon connection, and implemented a dialog to capture and set the leoID on the server, equivalent to https://leoeditor.com/running.html?highlight=leoid#running-leo-the-first-time
+  - Nav search with currently selected body text
+- Made those same commands available through vscode command palettes and user keybindings.
+- Added leoID check upon connection, and implemented a dialog to capture and set the leoID on the server, equivalent to &lt;https://leoeditor.com/running.html?highlight=leoid#running-leo-the-first-time&gt;
 
 </t>
 <t tx="felix.20220321211021.1">public static addMinibufferCommands: { label: string, detail: string }[] = [

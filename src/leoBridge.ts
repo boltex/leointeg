@@ -203,7 +203,7 @@ export class LeoBridge {
                 let w_action = w_serverError.substring(w_position + 16);
                 // Show update suggestion if not already shown
                 let w_timeStampSec = Math.floor(Date.now() / 1000);
-                if (this._updateWarningShown + 5 < w_timeStampSec) {
+                if (this._updateWarningShown + 3 < w_timeStampSec) { // Limit to re-show for 3 sec.
                     this._updateWarningShown = w_timeStampSec;
                     vscode.window.showErrorMessage(Constants.USER_MESSAGES.MINIMUM_VERSION + w_action);
                 }
