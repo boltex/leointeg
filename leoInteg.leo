@@ -1442,7 +1442,7 @@ private _onButtonsTreeViewVisibilityChanged(
     if (p_explorerView) {
     } // (Facultative/unused) Do something different if explorer view is used
     if (p_event.visible) {
-        // this.refreshButtonsPane();
+        // this.refreshButtonsPane(); // No need to refresh because no selection needs to be set
     }
 }
 
@@ -11030,7 +11030,7 @@ private _onDocTreeViewVisibilityChanged(
     if (p_explorerView) {
     } // (Facultative/unused) Do something different if explorer view is used
     if (p_event.visible) {
-        // this.refreshDocumentsPane();
+        this.refreshDocumentsPane(); // Have to force refresh to force selection!
     }
 }
 
@@ -23941,7 +23941,7 @@ private _onGotoTreeViewVisibilityChanged(
     } // (Facultative/unused) Do something different if explorer view is used
     if (p_event.visible) {
         this._leoGotoProvider.setLastGotoView(p_explorerView ? this._leoGotoExplorer : this._leoGoto);
-        // this.refreshGotoPane();
+        // this.refreshGotoPane();  // No need to refresh because no selection needs to be set
     }
 }
 
