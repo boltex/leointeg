@@ -23,6 +23,9 @@ export class Constants {
     public static FIND_ID: string = "leoFindPanel";
     public static FIND_EXPLORER_ID: string = "leoFindPanelExplorer";
 
+    public static GOTO_ID: string = "leoGotoPanel";
+    public static GOTO_EXPLORER_ID: string = "leoGotoPanelExplorer";
+
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";
@@ -40,6 +43,9 @@ export class Constants {
     public static DEFAULT_PYTHON: string = "python3";
     public static WIN32_PYTHON: string = "py";
     public static SERVER_NAME: string = "/leoserver.py";
+    public static LEO_ID_NAME: string = ".leoID.txt";
+    public static SERVER_PATH: string = "/leo/core";
+    public static CONFIG_PATH: string = "/leo/config";
     public static SERVER_STARTED_TOKEN: string = "LeoBridge started";
     public static TCPIP_DEFAULT_PROTOCOL: string = "ws://";
 
@@ -51,6 +57,7 @@ export class Constants {
     public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
     public static STATES_DEBOUNCE_DELAY: number = 100;
     public static BODY_STATES_DEBOUNCE_DELAY: number = 200;
+    public static GOTO_DEBOUNCE_DELAY: number = 50;
 
     public static LOG_ALERT_COLOR: string = 'red';
 
@@ -76,16 +83,28 @@ export class Constants {
      * * Strings used in the workbench interface panels (not for messages or dialogs)
      */
     public static GUI = {
+
+        ICON_LIGHT_PARENT: "resources/light/parent.svg",
+        ICON_DARK_PARENT: "resources/dark/parent.svg",
+        ICON_LIGHT_NODE: "resources/light/node.svg",
+        ICON_DARK_NODE: "resources/dark/node.svg",
+        ICON_LIGHT_BODY: "resources/light/body.svg",
+        ICON_DARK_BODY: "resources/dark/body.svg",
+        ICON_LIGHT_TAG: "resources/light/tag.svg",
+        ICON_DARK_TAG: "resources/dark/tag.svg",
+
         ICON_LIGHT_DOCUMENT: "resources/light/document.svg",
         ICON_DARK_DOCUMENT: "resources/dark/document.svg",
         ICON_LIGHT_DOCUMENT_DIRTY: "resources/light/document-dirty.svg",
         ICON_DARK_DOCUMENT_DIRTY: "resources/dark/document-dirty.svg",
+
         ICON_LIGHT_BUTTON: "resources/light/button.svg",
         ICON_DARK_BUTTON: "resources/dark/button.svg",
         ICON_LIGHT_BUTTON_RCLICK: "resources/light/button-rclick.svg",
         ICON_DARK_BUTTON_RCLICK: "resources/dark/button-rclick.svg",
         ICON_LIGHT_BUTTON_ADD: "resources/light/button-add.svg",
         ICON_DARK_BUTTON_ADD: "resources/dark/button-add.svg",
+
         ICON_LIGHT_PATH: "resources/light/box",
         ICON_DARK_PATH: "resources/dark/box",
         ICON_FILE_EXT: ".svg",
@@ -132,9 +151,13 @@ export class Constants {
         TITLE_GOTO_GLOBAL_LINE: "Goto global line",
         PLACEHOLDER_GOTO_GLOBAL_LINE: "#",
         PROMPT_GOTO_GLOBAL_LINE: "Line number",
+
         TITLE_TAG_CHILDREN: "Tag Children",
-        PLACEHOLDER_TAG_CHILDREN: "<tag>",
-        PROMPT_TAG_CHILDREN: "Enter a tag name",
+        TITLE_REMOVE_TAG: "Remove Tag",
+        TITLE_TAG_NODE: "Tag Node",
+        PLACEHOLDER_TAG: "<tag>",
+        PROMPT_TAG: "Enter a tag name",
+
         TITLE_FIND_TAG: "Find Tag",
         PLACEHOLDER_CLONE_FIND_TAG: "<tag>",
         PROMPT_CLONE_FIND_TAG: "Enter a tag name",
@@ -158,7 +181,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_VERSION: "Missing Command: Please update Leo (min 6.6-b2 required)",
+        MINIMUM_VERSION: "Please update: Leo 6.6 required for command: ",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
     };
@@ -308,6 +331,7 @@ export class Constants {
         TREE_OPENED: "leoTreeOpened", // At least one Leo file opened
         TREE_TITLED: "leoTreeTitled", // Tree is a Leo file and not a new untitled document
         SERVER_STARTED: "leoServerStarted", // Auto-start or manually started
+        LEOID_MISSING: "leoIDMissing", // To be used as flag for #248
         // 'states' flags for currently opened tree view
         LEO_CHANGED: "leoChanged",
         LEO_CAN_UNDO: "leoCanUndo",
@@ -426,6 +450,8 @@ export class Constants {
         TEST: "!test",
         DO_NOTHING: "!do_nothing",
         GET_VERSION: "!get_version",
+        GET_LEOID: "!get_leoid",
+        SET_LEOID: "!set_leoid",
         // * Server Commands
         GET_COMMANDS: "!get_all_leo_commands", // "getCommands",
         APPLY_CONFIG: "!set_config", // "applyConfig",
@@ -522,6 +548,18 @@ export class Constants {
         MOVE_MARKED_NODES: "moveMarked",
         GIT_DIFF: "gitDiff",
         GET_FOCUS: "!get_focus",
+
+        GET_GOTO_PANEL: "!get_goto_panel", // To fill up panel when changing leo documents
+
+        NAV_HEADLINE_SEARCH: "!nav_headline_search",
+        NAV_SEARCH: "!nav_search",
+
+        FIND_QUICK_TIMELINE: "!find_quick_timeline",
+        FIND_QUICK_CHANGED: "!find_quick_changed",
+        FIND_QUICK_HISTORY: "!find_quick_history",
+        FIND_QUICK_MARKED: "!find_quick_marked",
+        GOTO_NAV_ENTRY: "!goto_nav_entry",
+
         GET_SEARCH_SETTINGS: "!get_search_settings",
         SET_SEARCH_SETTINGS: "!set_search_settings",
         START_SEARCH: "!start_search",
@@ -535,6 +573,9 @@ export class Constants {
         REPLACE_ALL: "!replace_all",
         GOTO_GLOBAL_LINE: "!goto_global_line",
         TAG_CHILDREN: "!tag_children",
+        TAG_NODE: "!tag_node",
+        REMOVE_TAG: "!remove_tag",
+        REMOVE_TAGS: "!remove_tags",
         CLONE_FIND_TAG: "!clone_find_tag",
         CLONE_FIND_ALL: "!clone_find_all",
         CLONE_FIND_ALL_FLATTENED: "!clone_find_all_flattened",
@@ -546,6 +587,7 @@ export class Constants {
 
     /**
      * * All commands this expansion exposes (in package.json, contributes > commands)
+     * * And those not exposed in package.json, like 'gotoNav' which can only be invoked from mouse action
      */
     public static COMMANDS = {
         // * Access to the Settings/Welcome Webview
@@ -557,6 +599,7 @@ export class Constants {
         START_SERVER: Constants.NAME + ".startServer",
         STOP_SERVER: Constants.NAME + ".stopServer",
         CONNECT: Constants.NAME + ".connectToServer",
+        SET_LEOID: Constants.NAME + ".setLeoID",
         SET_OPENED_FILE: Constants.NAME + ".setOpenedFile",
         OPEN_FILE: Constants.NAME + ".openLeoFile", // sets focus on BODY
         CLEAR_RECENT_FILES: Constants.NAME + ".clearRecentFiles",
@@ -694,6 +737,16 @@ export class Constants {
         CLONE_MARKED_NODES: Constants.NAME + ".cloneMarkedNodes",
         DELETE_MARKED_NODES: Constants.NAME + ".deleteMarkedNodes",
         MOVE_MARKED_NODES: Constants.NAME + ".moveMarkedNodes",
+
+        FIND_QUICK: Constants.NAME + ".findQuick",
+        FIND_QUICK_SELECTED: Constants.NAME + ".findQuickSelected",
+        FIND_QUICK_TIMELINE: Constants.NAME + ".findQuickTimeline",
+        FIND_QUICK_CHANGED: Constants.NAME + ".findQuickChanged",
+        FIND_QUICK_HISTORY: Constants.NAME + ".history",
+        FIND_QUICK_MARKED: Constants.NAME + ".markedList",
+        FIND_QUICK_GO_ANYWHERE: Constants.NAME + ".goAnywhere",
+        GOTO_NAV_ENTRY: Constants.NAME + ".gotoNav",
+
         START_SEARCH: Constants.NAME + ".startSearch",
         FIND_ALL: Constants.NAME + ".findAll",
         FIND_NEXT: Constants.NAME + ".findNext",
@@ -714,6 +767,9 @@ export class Constants {
         CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
         GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
         TAG_CHILDREN: Constants.NAME + ".tagChildren",
+        TAG_NODE: Constants.NAME + ".tagNode",
+        REMOVE_TAG: Constants.NAME + ".removeTag",
+        REMOVE_TAGS: Constants.NAME + ".removeTags",
         SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
         SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
         SET_FIND_SUBOUTLINE_ONLY_OPTION: Constants.NAME + ".setFindSuboutlineOnlyOption",
@@ -729,10 +785,28 @@ export class Constants {
         SET_CLOSE_ON_FILE_DELETE: Constants.NAME + ".setCloseOnFileDelete",
     };
 
+    public static addMinibufferCommands: { label: string, detail: string }[] = [
+        { "label": "find-quick", "detail": "Opens the Nav tab." },
+        { "label": "find-quick-selected", "detail": "Opens the Nav tab with the selected text as the search string." },
+        { "label": "focus-to-nav", "detail": "Puts focus in Nav tab." },
+        { "label": "find-quick-timeline", "detail": "Lists all nodes in reversed gnx order, newest to oldest." },
+        { "label": "find-quick-changed", "detail": "Lists all nodes that are changed (aka \"dirty\") since last save." },
+        { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
+        { "label": "marked-list", "detail": "List all marked nodes." },
+    ];
+
     /**
      * * Overridden 'good' minibuffer commands
      */
     public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
+        "find-quick": Constants.COMMANDS.FIND_QUICK,
+        "find-quick-selected": Constants.COMMANDS.FIND_QUICK,
+        "focus-to-nav": Constants.COMMANDS.FIND_QUICK,
+        "find-quick-timeline": Constants.COMMANDS.FIND_QUICK_TIMELINE,
+        "find-quick-changed": Constants.COMMANDS.FIND_QUICK_CHANGED,
+        "history": Constants.COMMANDS.FIND_QUICK_HISTORY,
+        "marked-list": Constants.COMMANDS.FIND_QUICK_MARKED,
+
         "tag-children": Constants.COMMANDS.TAG_CHILDREN,
         "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
         "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,

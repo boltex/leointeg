@@ -72,9 +72,6 @@ export class ServerService {
 
         let w_pythonPath = ""; // Command of child.spawn call
 
-        // Show problems when running the server, if any.
-        // this._leoIntegration.showTerminalPane(); // #203 Do not 'force' show the server output
-
         return utils.findNextAvailablePort(p_port).then((p_availablePort) => {
             if (!p_availablePort) {
                 // vscode.window.showInformationMessage("Port " + p_port+" already in use.");
@@ -84,7 +81,7 @@ export class ServerService {
             this.usingPort = p_availablePort;
 
             // Leo Editor installation path is mandatory - Start with Leo Editor's folder
-            let w_serverScriptPath = p_leoEditorPath + "/leo/core";
+            let w_serverScriptPath = p_leoEditorPath + Constants.SERVER_PATH;
 
             try {
                 if (fs.existsSync(w_serverScriptPath + Constants.SERVER_NAME)) {
@@ -238,3 +235,4 @@ export class ServerService {
     }
 
 }
+

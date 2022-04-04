@@ -4,11 +4,7 @@
   --input-margin-vertical: 4px;
   --input-margin-horizontal: 0;
   height: 100%;
-  padding-right: 20px;
-}
-
-comment {
-  --container-padding: 20px;
+  padding-right: 14px;
 }
 
 html:focus {
@@ -27,12 +23,6 @@ body {
   font-size: var(--vscode-font-size);
   font-weight: var(--vscode-font-weight);
   font-family: var(--vscode-font-family);
-}
-
-.first {
-  margin-top: 8px;
-  margin-bottom: 0;
-  display: inline-block;
 }
 
 ol,
@@ -93,6 +83,28 @@ button.secondary:hover {
   background: var(--vscode-button-secondaryHoverBackground);
 }
 
+select {
+  background: var(--vscode-dropdown-background);
+  color: var(--vscode-input-foreground);
+  border-color: var(--vscode-dropdown-border);
+  cursor: pointer;
+  width: 50px;
+  left: 15%;
+  position: relative;
+  border-radius: 2px;
+}
+select:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+select option {
+  background-color: var(--vscode-dropdown-listBackground);
+}
+select option:focus {
+  background-color: var(--vscode-input-background);
+  outline-color: var(--vscode-input-border);
+}
+
 input:not([type="radio"]):not([type="checkbox"]),
 textarea {
   display: block;
@@ -101,16 +113,26 @@ textarea {
   border: none;
   font-family: var(--vscode-font-family);
   padding: var(--input-padding-vertical) var(--input-padding-horizontal);
+  padding: 3px var(--input-padding-horizontal);
+  border-radius: 2px;
   color: var(--vscode-input-foreground);
   outline-color: var(--vscode-input-border);
   background-color: var(--vscode-input-background);
 }
 
+input[type="checkbox"],
+input[type="radio"] {
+  cursor: pointer;
+}
 input[type="checkbox"]:focus + label {
   border: 1px solid var(--vscode-button-background);
 }
 input[type="radio"]:focus + label {
   border: 1px solid var(--vscode-button-background);
+}
+input:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 input::placeholder,
@@ -128,4 +150,20 @@ body > div > div > label:focus,
 body > div > div > label:active {
   outline-color: none !important;
   border: none !important;
+}
+
+#freeze {
+  cursor: default;
+  position: absolute;
+  right: 0.9em;
+  line-height: 1em;
+  top: 1.05em;
+  font-size: 1.8em;
+  color: #5c87ff80;
+  padding: 0;
+  margin: 0;
+}
+
+.comment {
+  display: none;
 }
