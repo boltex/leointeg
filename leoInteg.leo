@@ -3834,7 +3834,7 @@ print('done')
 {
   "view": "leoIntegrationExplorer",
   "contents": "Connecting...",
-  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoConnecting || !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; connectToServerAutomatically &amp;&amp; !leoConnecting  &amp;&amp; !leoStartupFinished"
+  "when": "!leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; leoConnecting || !leoBridgeReady &amp;&amp; !leoTreeOpened &amp;&amp; connectToServerAutomatically &amp;&amp; !leoConnecting &amp;&amp; !leoStartupFinished"
 },
 </t>
 <t tx="ekr.20200815123601.34">{
@@ -5055,7 +5055,7 @@ print('done')
 {
   "command": "leointeg.gotoPrevVisible",
   "key": "alt+up",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; !editorHasSelection  &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.contractOrGoLeft",
@@ -5065,7 +5065,7 @@ print('done')
 {
   "command": "leointeg.contractOrGoLeft",
   "key": "alt+left",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; !editorHasSelection  &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.expandAndGoRight",
@@ -5075,7 +5075,7 @@ print('done')
 {
   "command": "leointeg.expandAndGoRight",
   "key": "alt+right",
-  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; !editorHasSelection  &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; !editorHasSelection &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 </t>
 <t tx="ekr.20200815123601.89">"resourceLabelFormatters": [
@@ -10101,7 +10101,9 @@ Here are the most useful Commands. Most of Leo's other commands are also availab
 | Outline Commands           |     |                  |                  |
 | :------------------------- | :-- | :--------------- | :--------------- |
 | `Ctrl + I`                 | or  | `Shift + Insert` | Insert Node      |
+| `Ctrl + Insert`            |     |                  | Insert Child     |
 | `Ctrl + H`                 |     |                  | Edit Headline    |
+| `Ctrl + M`                 |     |                  | Mark / Unmark    |
 | `Ctrl + Shift + C`         |     |                  | Copy Node        |
 | `Ctrl + Shift + X`         |     |                  | Cut Node         |
 | `Ctrl + Shift + V`         |     |                  | Paste Node       |
@@ -10120,18 +10122,18 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 
 | Common Operations  |     |           |                     |
 | :----------------- | :-- | :-------- | :------------------ |
-| `Alt + -`          |     |           | Contract All        |
-| `Ctrl + M`         |     |           | Mark / Unmark       |
-| `Ctrl + B`         |     |           | Execute Script      |
 | `Ctrl + T`         |     |           | Toggle Outline/Body |
 | `Tab`              | or  | `Alt + D` | Focus on Body       |
 | `Alt + T`          |     |           | Focus on Outline    |
+| `Alt + -`          |     |           | Contract All        |
+| `Ctrl + B`         |     |           | Execute Script      |
 | `Ctrl + Shift + D` |     |           | Extract             |
 | `Ctrl + Shift + N` |     |           | Extract Names       |
 | `Alt + A`          |     |           | Sort Siblings       |
 | `Ctrl + F`         |     |           | Start Search        |
 | `F3`               |     |           | Find Next           |
 | `F2`               |     |           | Find Previous       |
+| `Alt + X`          |     |           | Minibuffer Palette  |
 
 | Tree Navigation    |     |                 |                          |
 | :----------------- | :-- | :-------------- | :----------------------- |
@@ -10140,8 +10142,6 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 |                    |     | `End` \*        | Go To Last Visible Node  |
 | `Alt + N`          |     |                 | Go To Next Clone         |
 | `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree              |
-| `Ctrl + T`         |     |                 | Switch Tree/Body Focus   |
-| `Tab`              |     |                 | Focus from Tree to Body  |
 | `Alt + G`          |     |                 | Go To Global Line        |
 
 \* _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
@@ -17223,12 +17223,12 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
   },
   {
     "command": "leointeg.markSelection",
-    "when": "showMarkOnBody &amp;&amp; !leoMarked  &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "showMarkOnBody &amp;&amp; !leoMarked &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
     "group": "navigation@18"
   },
   {
     "command": "leointeg.unmarkSelection",
-    "when": "showMarkOnBody &amp;&amp; leoMarked  &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "showMarkOnBody &amp;&amp; leoMarked &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
     "group": "navigation@19"
   },
   {

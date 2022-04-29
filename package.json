@@ -1914,7 +1914,7 @@
       {
         "view": "leoIntegrationExplorer",
         "contents": "Connecting...",
-        "when": "!leoBridgeReady && !leoTreeOpened && leoConnecting || !leoBridgeReady && !leoTreeOpened && connectToServerAutomatically && !leoConnecting  && !leoStartupFinished"
+        "when": "!leoBridgeReady && !leoTreeOpened && leoConnecting || !leoBridgeReady && !leoTreeOpened && connectToServerAutomatically && !leoConnecting && !leoStartupFinished"
       },
       {
         "view": "leoIntegration",
@@ -2766,12 +2766,12 @@
         },
         {
           "command": "leointeg.markSelection",
-          "when": "showMarkOnBody && !leoMarked  && resourceScheme == leo && leoTreeOpened",
+          "when": "showMarkOnBody && !leoMarked && resourceScheme == leo && leoTreeOpened",
           "group": "navigation@18"
         },
         {
           "command": "leointeg.unmarkSelection",
-          "when": "showMarkOnBody && leoMarked  && resourceScheme == leo && leoTreeOpened",
+          "when": "showMarkOnBody && leoMarked && resourceScheme == leo && leoTreeOpened",
           "group": "navigation@19"
         },
         {
@@ -3584,7 +3584,7 @@
       {
         "command": "leointeg.gotoPrevVisible",
         "key": "alt+up",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened && !editorHasSelection  && editorTextFocus && resourceScheme == leo"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.contractOrGoLeft",
@@ -3594,7 +3594,7 @@
       {
         "command": "leointeg.contractOrGoLeft",
         "key": "alt+left",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened && !editorHasSelection  && editorTextFocus && resourceScheme == leo"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.expandAndGoRight",
@@ -3604,7 +3604,7 @@
       {
         "command": "leointeg.expandAndGoRight",
         "key": "alt+right",
-        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened && !editorHasSelection  && editorTextFocus && resourceScheme == leo"
+        "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoDocuments|^leoButtons/ || leoTreeOpened && !editorHasSelection && editorTextFocus && resourceScheme == leo"
       },
       {
         "command": "leointeg.undoFromOutline",
