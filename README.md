@@ -47,18 +47,19 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 Here are the most useful Commands. Most of Leo's other commands are also available with their original keybindings.
 
-| Outline Commands           |     |                  |                  |
-| :------------------------- | :-- | :--------------- | :--------------- |
-| `Ctrl + I`                 | or  | `Shift + Insert` | Insert Node      |
-| `Ctrl + Insert`            |     |                  | Insert Child     |
-| `Ctrl + H`                 |     |                  | Edit Headline    |
-| `Ctrl + M`                 |     |                  | Mark / Unmark    |
-| `Ctrl + Shift + C`         |     |                  | Copy Node        |
-| `Ctrl + Shift + X`         |     |                  | Cut Node         |
-| `Ctrl + Shift + V`         |     |                  | Paste Node       |
-| `Ctrl + Shift + Backspace` | or  | `Delete`         | Delete Node      |
-| `Ctrl + Backquote`         |     |                  | Clone Node       |
-| `Ctrl + {`                 | and | `Ctrl + }`       | Promote / Demote |
+| Outline Commands           |     |                    |                  |
+| :------------------------- | :-- | :----------------- | :--------------- |
+| `Ctrl + Z`                 |     | `Ctrl + Shift + Z` | Undo / Redo      |
+| `Ctrl + I`                 | or  | `Shift + Insert`   | Insert Node      |
+| `Ctrl + Insert`            |     |                    | Insert Child     |
+| `Ctrl + H`                 |     |                    | Edit Headline    |
+| `Ctrl + M`                 |     |                    | Mark / Unmark    |
+| `Ctrl + Shift + C`         |     |                    | Copy Node        |
+| `Ctrl + Shift + X`         |     |                    | Cut Node         |
+| `Ctrl + Shift + V`         |     |                    | Paste Node       |
+| `Ctrl + Shift + Backspace` | or  | `Delete`           | Delete Node      |
+| `Ctrl + Backquote`         |     |                    | Clone Node       |
+| `Ctrl + {`                 | and | `Ctrl + }`         | Promote / Demote |
 
 | Moving Outline Nodes |     |                         |                    |
 | :------------------- | :-- | :---------------------- | :----------------- |
@@ -94,6 +95,14 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | `Alt + G`          |     |                 | Go To Global Line        |
 
 \* _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
+
+| File Commands        |     |                         |                    |
+| :------------------- | :-- | :---------------------- | :----------------- |
+| `Ctrl + S`           |     |                         | Save Leo Document  |
+| `Ctrl + N`           |     |                         | New Leo Document   |
+| `Ctrl + O`           |     |                         | Open Leo Document  |
+| `Ctrl + Shift + W`   |     |                         | Write File Nodes   |
+| `Ctrl + Shift + Q`   |     |                         | Write Dirty Files  |
 
 ---
 
