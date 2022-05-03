@@ -603,8 +603,11 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         [CMD.PREV_NODE, () => w_leo.prevNextNode(false)],
         [CMD.PREV_NODE_FO, () => w_leo.prevNextNode(false)],
+        [CMD.PREV_NODE_DISABLED, () => { }],
+
         [CMD.NEXT_NODE, () => w_leo.prevNextNode(true)],
         [CMD.NEXT_NODE_FO, () => w_leo.prevNextNode(true)],
+        [CMD.NEXT_NODE_DISABLED, () => { }],
 
         [CMD.FIND_QUICK, () => w_leo.findQuick()],
         [CMD.FIND_QUICK_SELECTED, () => w_leo.findQuickSelected()],

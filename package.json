@@ -974,6 +974,15 @@
         }
       },
       {
+        "command": "leointeg.prevDisabled",
+        "category": "Leo",
+        "title": "Can't go back",
+        "icon": {
+          "light": "resources/light/prev-disabled.svg",
+          "dark": "resources/dark/prev-disabled.svg"
+        }
+      },
+      {
         "command": "leointeg.prevFromOutline",
         "category": "Leo",
         "title": "Prev",
@@ -989,6 +998,15 @@
         "icon": {
           "light": "resources/light/next.svg",
           "dark": "resources/dark/next.svg"
+        }
+      },
+      {
+        "command": "leointeg.nextDisabled",
+        "category": "Leo",
+        "title": "Can't go forward",
+        "icon": {
+          "light": "resources/light/next-disabled.svg",
+          "dark": "resources/dark/next-disabled.svg"
         }
       },
       {

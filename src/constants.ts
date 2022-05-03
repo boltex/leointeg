@@ -654,8 +654,10 @@ export class Constants {
         CONTRACT_ALL_FO: Constants.NAME + ".contractAllFromOutline", // from button, return focus on OUTLINE
         PREV_NODE: Constants.NAME + ".prev",
         PREV_NODE_FO: Constants.NAME + ".prevFromOutline",
+        PREV_NODE_DISABLED: Constants.NAME + ".prevDisabled",
         NEXT_NODE: Constants.NAME + ".next",
         NEXT_NODE_FO: Constants.NAME + ".nextFromOutline",
+        NEXT_NODE_DISABLED: Constants.NAME + ".nextDisabled",
         // * Commands from tree panel buttons or context: focus on OUTLINE
         MARK: Constants.NAME + ".mark",
         UNMARK: Constants.NAME + ".unmark",

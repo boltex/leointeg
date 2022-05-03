@@ -2401,8 +2401,11 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 
 [CMD.PREV_NODE, () =&gt; w_leo.prevNextNode(false)],
 [CMD.PREV_NODE_FO, () =&gt; w_leo.prevNextNode(false)],
+[CMD.PREV_NODE_DISABLED, () =&gt; { }],
+
 [CMD.NEXT_NODE, () =&gt; w_leo.prevNextNode(true)],
 [CMD.NEXT_NODE_FO, () =&gt; w_leo.prevNextNode(true)],
+[CMD.NEXT_NODE_DISABLED, () =&gt; { }],
 
 [CMD.FIND_QUICK, () =&gt; w_leo.findQuick()],
 [CMD.FIND_QUICK_SELECTED, () =&gt; w_leo.findQuickSelected()],
@@ -6732,8 +6735,10 @@ public static COMMANDS = {
     CONTRACT_ALL_FO: Constants.NAME + ".contractAllFromOutline", // from button, return focus on OUTLINE
     PREV_NODE: Constants.NAME + ".prev",
     PREV_NODE_FO: Constants.NAME + ".prevFromOutline",
+    PREV_NODE_DISABLED: Constants.NAME + ".prevDisabled",
     NEXT_NODE: Constants.NAME + ".next",
     NEXT_NODE_FO: Constants.NAME + ".nextFromOutline",
+    NEXT_NODE_DISABLED: Constants.NAME + ".nextDisabled",
     // * Commands from tree panel buttons or context: focus on OUTLINE
     MARK: Constants.NAME + ".mark",
     UNMARK: Constants.NAME + ".unmark",
