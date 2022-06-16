@@ -2,7 +2,7 @@
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "author": {
     "name": "Félix"
   },
@@ -13,7 +13,7 @@
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.64.0"
+    "vscode": "^1.68.0"
   },
   "keywords": [
     "leo",
@@ -3781,7 +3781,7 @@
     "@types/mocha": "^7.0.2",
     "@types/murmurhash-js": "^1.0.3",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.64.0",
+    "@types/vscode": "^1.68.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",

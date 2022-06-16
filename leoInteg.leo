@@ -2477,7 +2477,7 @@ print('done')
   "name": "leointeg",
   "displayName": "Leo Editor Integration with Visual Studio Code",
   "description": "Use Leo, the literate editor with outline, directly in vscode.",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "author": {
     "name": "Félix"
   },
@@ -2488,7 +2488,7 @@ print('done')
     "url": "https://github.com/boltex/leointeg"
   },
   "engines": {
-    "vscode": "^1.64.0"
+    "vscode": "^1.68.0"
   },
   "keywords": [
     "leo",
@@ -2526,7 +2526,7 @@ print('done')
     "@types/mocha": "^7.0.2",
     "@types/murmurhash-js": "^1.0.3",
     "@types/node": "^14.11.2",
-    "@types/vscode": "^1.64.0",
+    "@types/vscode": "^1.68.0",
     "@types/ws": "^7.2.6",
     "clean-webpack-plugin": "^3.0.0",
     "csp-html-webpack-plugin": "^4.0.0",
@@ -25190,7 +25190,7 @@ body &gt; div &gt; div &gt; label:active {
       &lt;section id="welcome"
                class="section--full mb-0"&gt;
         &lt;h2 class="section__title section__title--primary"&gt;
-          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.7&lt;/span&gt;
+          Welcome to &lt;span class="highlight"&gt;LeoInteg 1.0.8&lt;/span&gt;
         &lt;/h2&gt;
         &lt;div class="center mt-1"&gt;
           &lt;a class="button button--flat is-sidebar-hidden "
@@ -25201,7 +25201,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;a class="button button--flat"
              title="LeoInteg's Features"
              href="https://github.com/boltex/leointeg#features"&gt;
-            See What's New in LeoInteg 1.0.7
+            See What's New in LeoInteg 1.0.8
           &lt;/a&gt;
         &lt;/div&gt;
         &lt;p class="blurb center ml-0 mr-0"&gt;
