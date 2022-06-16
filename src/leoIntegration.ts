@@ -1984,6 +1984,8 @@ export class LeoIntegration {
         // ? Set timestamps ?
         // this._leoFileSystem.setRenameTime(p_newGnx);
 
+        // TODO : USE TABGROUPS !
+
         let w_visibleCount = 0;
         vscode.window.visibleTextEditors.forEach((p_editor) => {
             if (p_editor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
@@ -2027,6 +2029,9 @@ export class LeoIntegration {
     private _locateOpenedBody(p_gnx: string): boolean {
         let w_found = false;
         // * Only gets to visible editors, not every tab per editor
+
+        // TODO : USE TABGROUPS !
+
         vscode.window.visibleTextEditors.forEach((p_textEditor) => {
             if (utils.leoUriToStr(p_textEditor.document.uri) === p_gnx) {
                 w_found = true;
@@ -2044,6 +2049,9 @@ export class LeoIntegration {
      */
     private _findUriColumn(p_uri: vscode.Uri): vscode.ViewColumn | undefined {
         let w_column: vscode.ViewColumn | undefined;
+
+        // TODO : USE TABGROUPS !
+
         vscode.window.visibleTextEditors.forEach((p_textEditor) => {
             if (p_textEditor.document.uri.fsPath === p_uri.fsPath) {
                 w_column = p_textEditor.viewColumn;
@@ -2058,6 +2066,9 @@ export class LeoIntegration {
      */
     private _findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
         let w_column: vscode.ViewColumn | undefined;
+
+        // TODO : USE TABGROUPS !
+
         vscode.window.visibleTextEditors.forEach((p_textEditor) => {
             if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {
                 w_column = p_textEditor.viewColumn;
@@ -2111,6 +2122,9 @@ export class LeoIntegration {
         } else {
             q_closed = Promise.resolve(true);
         }
+
+        // TODO : USE TABGROUPS !
+
         vscode.window.visibleTextEditors.forEach((p_textEditor) => {
             if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
                 vscode.commands.executeCommand(
@@ -2250,6 +2264,8 @@ export class LeoIntegration {
                         }
                     });
                 }
+
+                // TODO : USE TABGROUPS !
 
                 // Find body pane's position if already opened with same gnx (language still needs to be set per position)
                 vscode.window.visibleTextEditors.forEach((p_textEditor) => {

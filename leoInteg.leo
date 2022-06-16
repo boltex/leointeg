@@ -3198,6 +3198,15 @@ print('done')
   }
 },
 {
+  "command": "leointeg.prevDisabled",
+  "category": "Leo",
+  "title": "Can't go back",
+  "icon": {
+    "light": "resources/light/prev-disabled.svg",
+    "dark": "resources/dark/prev-disabled.svg"
+  }
+},
+{
   "command": "leointeg.prevFromOutline",
   "category": "Leo",
   "title": "Prev",
@@ -3213,6 +3222,15 @@ print('done')
   "icon": {
     "light": "resources/light/next.svg",
     "dark": "resources/dark/next.svg"
+  }
+},
+{
+  "command": "leointeg.nextDisabled",
+  "category": "Leo",
+  "title": "Can't go forward",
+  "icon": {
+    "light": "resources/light/next-disabled.svg",
+    "dark": "resources/dark/next-disabled.svg"
   }
 },
 {
@@ -6775,13 +6793,10 @@ public static COMMANDS = {
     MOVE_LEFT_SELECTION: Constants.NAME + ".moveOutlineLeftSelection",
     MOVE_RIGHT_SELECTION: Constants.NAME + ".moveOutlineRightSelection",
     MOVE_UP_SELECTION: Constants.NAME + ".moveOutlineUpSelection",
-
     INSERT_SELECTION: Constants.NAME + ".insertNodeSelection", // Can be interrupted
     INSERT_SELECTION_INTERRUPT: Constants.NAME + ".insertNodeSelectionInterrupt", // Interrupted version
-
     INSERT_CHILD_SELECTION: Constants.NAME + ".insertChildNodeSelection", // Can be interrupted
     INSERT_CHILD_SELECTION_INTERRUPT: Constants.NAME + ".insertChildNodeSelectionInterrupt", // Can be interrupted
-
     CLONE_SELECTION: Constants.NAME + ".cloneNodeSelection",
     PROMOTE_SELECTION: Constants.NAME + ".promoteSelection",
     DEMOTE_SELECTION: Constants.NAME + ".demoteSelection",
@@ -6789,7 +6804,6 @@ public static COMMANDS = {
     // * Commands from keyboard, while focus on OUTLINE
     MARK_SELECTION_FO: Constants.NAME + ".markSelectionFromOutline",
     UNMARK_SELECTION_FO: Constants.NAME + ".unmarkSelectionFromOutline",
-    // COPY_SELECTION Nothing to refresh/focus for "copy a node" so no "FO" version
     CUT_SELECTION_FO: Constants.NAME + ".cutNodeSelectionFromOutline",
     PASTE_SELECTION_FO: Constants.NAME + ".pasteNodeAtSelectionFromOutline",
     PASTE_CLONE_SELECTION_FO: Constants.NAME + ".pasteNodeAsCloneAtSelectionFromOutline",
@@ -6843,11 +6857,13 @@ public static COMMANDS = {
     REPLACE_THEN_FIND: Constants.NAME + ".replaceThenFind",
     REPLACE_THEN_FIND_FO: Constants.NAME + ".replaceThenFindFromOutline",
     REPLACE_ALL: Constants.NAME + ".replaceAll",
+
     CLONE_FIND_ALL: Constants.NAME + ".cloneFindAll",
     CLONE_FIND_ALL_FLATTENED: Constants.NAME + ".cloneFindAllFlattened",
     CLONE_FIND_TAG: Constants.NAME + ".cloneFindTag",
     CLONE_FIND_MARKED: Constants.NAME + ".cloneFindMarked",
     CLONE_FIND_FLATTENED_MARKED: Constants.NAME + ".cloneFindFlattenedMarked",
+
     GOTO_GLOBAL_LINE: Constants.NAME + ".gotoGlobalLine",
     TAG_CHILDREN: Constants.NAME + ".tagChildren",
     TAG_NODE: Constants.NAME + ".tagNode",
@@ -8864,14 +8880,14 @@ public get description(): string {
         let desc = "";
         if (Object.keys(this.u).length) {
             desc = "\u{1F4CE} (" + Object.keys(this.u).length + ")";
-            if (this.u.__node_tags &amp;&amp; this.u.__node_tags) {
+            if (this.u.__node_tags &amp;&amp; this.u.__node_tags.length) {
                 if (Object.keys(this.u).length === 1) {
                     // was only tag, so reset it
                     desc = "";
                 } else {
                     desc = desc + " "; // add space
                 }
-                desc = desc + "\u{1F3F7} (" + Object.keys(this.u.__node_tags).length + ")";
+                desc = desc + "\u{1F3F7} (" + this.u.__node_tags.length + ")";
             }
         }
         return desc;
@@ -11627,6 +11643,8 @@ private _switchBody(
     // ? Set timestamps ?
     // this._leoFileSystem.setRenameTime(p_newGnx);
 
+    // TODO : USE TABGROUPS !
+
     let w_visibleCount = 0;
     vscode.window.visibleTextEditors.forEach((p_editor) =&gt; {
         if (p_editor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
@@ -11671,6 +11689,9 @@ private _switchBody(
 private _locateOpenedBody(p_gnx: string): boolean {
     let w_found = false;
     // * Only gets to visible editors, not every tab per editor
+
+    // TODO : USE TABGROUPS !
+
     vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
         if (utils.leoUriToStr(p_textEditor.document.uri) === p_gnx) {
             w_found = true;
@@ -11694,6 +11715,9 @@ public closeBody(): Thenable&lt;any&gt; {
     } else {
         q_closed = Promise.resolve(true);
     }
+
+    // TODO : USE TABGROUPS !
+
     vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
         if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
             vscode.commands.executeCommand(
@@ -11809,6 +11833,8 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                     }
                 });
             }
+
+            // TODO : USE TABGROUPS !
 
             // Find body pane's position if already opened with same gnx (language still needs to be set per position)
             vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
@@ -15486,6 +15512,9 @@ private _checkPreviewMode(p_editor: vscode.TextEditor): void {
  */
 private _findUriColumn(p_uri: vscode.Uri): vscode.ViewColumn | undefined {
     let w_column: vscode.ViewColumn | undefined;
+
+    // TODO : USE TABGROUPS !
+
     vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
         if (p_textEditor.document.uri.fsPath === p_uri.fsPath) {
             w_column = p_textEditor.viewColumn;
@@ -15501,6 +15530,9 @@ private _findUriColumn(p_uri: vscode.Uri): vscode.ViewColumn | undefined {
  */
 private _findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
     let w_column: vscode.ViewColumn | undefined;
+
+    // TODO : USE TABGROUPS !
+
     vscode.window.visibleTextEditors.forEach((p_textEditor) =&gt; {
         if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {
             w_column = p_textEditor.viewColumn;
@@ -21952,6 +21984,7 @@ public getLeoJsFileUrl(): Promise&lt;string&gt; {
  * * Closes all visible text editors that have Leo filesystem scheme
  */
 function closeLeoTextEditors() {
+    // TODO : USE TABGROUPS !
     vscode.window.visibleTextEditors.forEach(p_textEditor =&gt; {
         if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
             if (p_textEditor.hide) {

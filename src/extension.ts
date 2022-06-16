@@ -717,6 +717,7 @@ export function deactivate(): Promise<boolean> {
  * * Closes all visible text editors that have Leo filesystem scheme
  */
 function closeLeoTextEditors() {
+    // TODO : USE TABGROUPS !
     vscode.window.visibleTextEditors.forEach(p_textEditor => {
         if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
             if (p_textEditor.hide) {

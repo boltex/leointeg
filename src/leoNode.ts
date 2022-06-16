@@ -115,14 +115,14 @@ export class LeoNode extends vscode.TreeItem {
             let desc = "";
             if (Object.keys(this.u).length) {
                 desc = "\u{1F4CE} (" + Object.keys(this.u).length + ")";
-                if (this.u.__node_tags && this.u.__node_tags) {
+                if (this.u.__node_tags && this.u.__node_tags.length) {
                     if (Object.keys(this.u).length === 1) {
                         // was only tag, so reset it
                         desc = "";
                     } else {
                         desc = desc + " "; // add space
                     }
-                    desc = desc + "\u{1F3F7} (" + Object.keys(this.u.__node_tags).length + ")";
+                    desc = desc + "\u{1F3F7} (" + this.u.__node_tags.length + ")";
                 }
             }
             return desc;
