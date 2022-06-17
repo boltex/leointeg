@@ -892,6 +892,7 @@
 <v t="felix.20200718180428.4"><vh>refreshTreeRoot</vh></v>
 <v t="felix.20200718180428.5"><vh>getTreeItem</vh></v>
 <v t="felix.20200718180428.6"><vh>getChildren</vh></v>
+<v t="felix.20220616211850.1"><vh>resolveTreeItem</vh></v>
 <v t="felix.20200718180428.7"><vh>getParent</vh></v>
 </v>
 </v>
@@ -2033,7 +2034,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.GOTO_FIRST_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_FIRST_VISIBLE,
     node: U,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 [CMD.GOTO_LAST_SIBLING, () =&gt; w_leo.nodeCommand({
@@ -2045,7 +2046,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.GOTO_LAST_VISIBLE, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.GOTO_LAST_VISIBLE,
     node: U,
-    refreshType: REFRESH_NODE_BODY,
+    refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
 [CMD.GOTO_NEXT_VISIBLE, () =&gt; w_leo.nodeCommand({
@@ -2069,6 +2070,18 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 })],
 [CMD.PAGE_DOWN, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PAGE_DOWN,
+    node: U,
+    refreshType: REFRESH_NODE_BODY,
+    fromOutline: true
+})],
+[CMD.SCROLL_TOP, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.SCROLL_TOP,
+    node: U,
+    refreshType: REFRESH_NODE_BODY,
+    fromOutline: true
+})],
+[CMD.SCROLL_BOTTOM, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.SCROLL_BOTTOM,
     node: U,
     refreshType: REFRESH_NODE_BODY,
     fromOutline: true
@@ -3641,6 +3654,16 @@ print('done')
   "title": "Page Down"
 },
 {
+  "command": "leointeg.scrollTop",
+  "category": "Leo",
+  "title": "Scroll to Outline Top"
+},
+{
+  "command": "leointeg.scrollBottom",
+  "category": "Leo",
+  "title": "Scroll to Outline Bottom"
+},
+{
   "command": "leointeg.gotoLastSibling",
   "category": "Leo",
   "title": "Goto Last Sibling"
@@ -4470,6 +4493,14 @@ print('done')
   "when": "false"
 },
 {
+  "command": "leointeg.scrollTop",
+  "when": "false"
+},
+{
+  "command": "leointeg.scrollBottom",
+  "when": "false"
+},
+{
   "command": "leointeg.pageUp",
   "when": "false"
 },
@@ -5019,7 +5050,7 @@ print('done')
 },
 </t>
 <t tx="ekr.20200815123601.88">{
-  "command": "leointeg.gotoFirstVisible",
+  "command": "leointeg.scrollTop",
   "key": "alt+home",
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
@@ -5029,12 +5060,12 @@ print('done')
   "when": "leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
-  "command": "leointeg.gotoFirstVisible",
+  "command": "leointeg.scrollTop",
   "key": "home",
   "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
 {
-  "command": "leointeg.gotoLastVisible",
+  "command": "leointeg.scrollBottom",
   "key": "end",
   "when": "leoTreeBrowse &amp;&amp; leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration/"
 },
@@ -6588,6 +6619,8 @@ public static LEOBRIDGE = {
     // * Goto operations
     PAGE_UP: "!page_up", // "pageUp",
     PAGE_DOWN: "!page_down", // "pageDown",
+    SCROLL_TOP: "!scroll_top", // Utility function
+    SCROLL_BOTTOM: "!scroll_bottom", // Utility function
     GOTO_FIRST_VISIBLE: "goToFirstVisibleNode",
     GOTO_LAST_VISIBLE: "goToLastVisibleNode",
     GOTO_LAST_SIBLING: "goToLastSibling",
@@ -6723,6 +6756,8 @@ public static COMMANDS = {
     // * Goto operations that always finish with focus in outline
     PAGE_UP: Constants.NAME + ".pageUp",
     PAGE_DOWN: Constants.NAME + ".pageDown",
+    SCROLL_TOP: Constants.NAME + ".scrollTop",
+    SCROLL_BOTTOM: Constants.NAME + ".scrollBottom",
     GOTO_FIRST_VISIBLE: Constants.NAME + ".gotoFirstVisible",
     GOTO_LAST_VISIBLE: Constants.NAME + ".gotoLastVisible",
     GOTO_LAST_SIBLING: Constants.NAME + ".gotoLastSibling",
@@ -7417,6 +7452,8 @@ export class Config implements ConfigMembers {
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
 
+    public uAsNumber: boolean = true;
+
     private _isBusySettingConfig: boolean = false;
     private _needsTreeRefresh: boolean = false;
 
@@ -7471,6 +7508,8 @@ public getConfig(): ConfigMembers {
 
         setDetached: this.setDetached,
         limitUsers: this.limitUsers,
+
+        uAsNumber: true
     };
 }
 
@@ -8878,16 +8917,18 @@ public get description(): string {
     // * some smaller grayed-out text accompanying the main label
     if (this.u) {
         let desc = "";
-        if (Object.keys(this.u).length) {
-            desc = "\u{1F4CE} (" + Object.keys(this.u).length + ")";
-            if (this.u.__node_tags &amp;&amp; this.u.__node_tags.length) {
-                if (Object.keys(this.u).length === 1) {
+        let uaQty = Object.keys(this.u).length;
+        if (uaQty) {
+            const tagsQty = this.u.__node_tags ? this.u.__node_tags.length : 0;
+            desc = "\u{1F4CE} (" + (tagsQty ? uaQty - 1 : uaQty) + ")";
+            if (tagsQty) {
+                if (uaQty === 1) {
                     // was only tag, so reset it
                     desc = "";
                 } else {
                     desc = desc + " "; // add space
                 }
-                desc = desc + "\u{1F3F7} (" + this.u.__node_tags.length + ")";
+                desc = desc + "\u{1F3F7} (" + tagsQty + ")";
             }
         }
         return desc;
@@ -8900,23 +8941,23 @@ public get description(): string {
 
 </t>
 <t tx="felix.20200718171849.1">// @ts-ignore
-public get tooltip(): string {
-    if (this.u) {
+// public get tooltip(): string {
+//     if (this.u) {
 
-        if (Object.keys(this.u).length === 1 &amp;&amp; this.u.__node_tags &amp;&amp; this.u.__node_tags.length) {
-            // list tags instead
-            return this.label + "\n\u{1F3F7} " + this.u.__node_tags.join('\n\u{1F3F7} ');
-        }
+//         if (Object.keys(this.u).length === 1 &amp;&amp; this.u.__node_tags &amp;&amp; this.u.__node_tags.length) {
+//             // list tags instead
+//             return this.label + "\n\u{1F3F7} " + this.u.__node_tags.join('\n\u{1F3F7} ');
+//         }
 
-        //  "\ntotal keys is :" + Object.keys(this.u).length
-        return this.label + "\n" +
-            JSON.stringify(this.u, undefined, 2);
+//         //  "\ntotal keys is :" + Object.keys(this.u).length
+//         return this.label + "\n" +
+//             JSON.stringify(this.u, undefined, 2);
 
 
-    } else {
-        return this.label; // * Whole headline as tooltip
-    }
-}
+//     } else {
+//         return this.label; // * Whole headline as tooltip
+//     }
+// }
 
 </t>
 <t tx="felix.20200718171854.1">// Optional id for the tree item that has to be unique across tree.
@@ -9669,6 +9710,7 @@ export interface LeoBridgePackage {
     states?: LeoPackageStates; // get_ui_states
     string?: string; // from cut / copy outline
     total?: number; // set_opened_file, open_file(s), close_file
+    ua?: any;
     version?: string;
     major?: number;
     minor?: number;
@@ -9805,6 +9847,8 @@ export interface ConfigMembers {
 
     setDetached: boolean;
     limitUsers: number
+
+    uAsNumber: boolean; // 'true' flag starting at leoInteg 1.0.8
 }
 
 </t>
@@ -10086,7 +10130,7 @@ Thanks for trying out the development version of LeoInteg! :sunglasses: Contribu
 </t>
 <t tx="felix.20200718221645.1">## Requirements
 
-- Leo Editor 6.6 or later\
+- Leo Editor 6.6.3 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
@@ -10157,24 +10201,24 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | `F2`               |     |           | Find Previous       |
 | `Alt + X`          |     |           | Minibuffer Palette  |
 
-| Tree Navigation    |     |                 |                          |
-| :----------------- | :-- | :-------------- | :----------------------- |
-| `Alt + Home`       | or  | `Home` \*       | Go To First Visible Node |
-| `Alt + End`        |     |                 | Go To Last Sibling       |
-|                    |     | `End` \*        | Go To Last Visible Node  |
-| `Alt + N`          |     |                 | Go To Next Clone         |
-| `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree              |
-| `Alt + G`          |     |                 | Go To Global Line        |
+| Tree Navigation    |     |                 |                             |
+| :----------------- | :-- | :-------------- | :-------------------------- |
+| `Alt + Home`       | or  | `Home` \*       | Scroll to top of outline    |
+| `Alt + End`        |     |                 | Go To Last Sibling          |
+|                    |     | `End` \*        | Scroll to bottom of outline |
+| `Alt + N`          |     |                 | Go To Next Clone            |
+| `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree                 |
+| `Alt + G`          |     |                 | Go To Global Line           |
 
-\* _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
+**\*** _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
 
-| File Commands        |     |                         |                    |
-| :------------------- | :-- | :---------------------- | :----------------- |
-| `Ctrl + S`           |     |                         | Save Leo Document  |
-| `Ctrl + N`           |     |                         | New Leo Document   |
-| `Ctrl + O`           |     |                         | Open Leo Document  |
-| `Ctrl + Shift + W`   |     |                         | Write File Nodes   |
-| `Ctrl + Shift + Q`   |     |                         | Write Dirty Files  |
+| File Commands      |     |                         |                   |
+| :----------------- | :-- | :---------------------- | :---------------- |
+| `Ctrl + S`         |     |                         | Save Leo Document |
+| `Ctrl + N`         |     |                         | New Leo Document  |
+| `Ctrl + O`         |     |                         | Open Leo Document |
+| `Ctrl + Shift + W` |     |                         | Write File Nodes  |
+| `Ctrl + Shift + Q` |     |                         | Write Dirty Files |
 
 ---
 
@@ -24531,6 +24575,40 @@ export function cleanLeoID(id_: string): string {
         }
     }
     return true;
+}
+
+</t>
+<t tx="felix.20220616211850.1">public resolveTreeItem(item: LeoNode, element: LeoNode, token: vscode.CancellationToken): vscode.ProviderResult&lt;LeoNode&gt; {
+
+    return this._leoIntegration.sendAction(
+        Constants.LEOBRIDGE.GET_UA,
+        element ? utils.buildNodeCommandJson(element.apJson) : "{}"
+    ).then((p_package: LeoBridgePackage) =&gt; {
+        if (p_package.ua &amp;&amp; p_package.ua !== null) {
+
+            let uaQty = Object.keys(p_package.ua).length;
+            const tagQty = p_package.ua.__node_tags ? p_package.ua.__node_tags.length : 0;
+
+            if (tagQty) {
+                // list tags instead
+                item.tooltip = item.label + "\n\u{1F3F7} " + p_package.ua.__node_tags.join('\n\u{1F3F7} ') + "\n";
+                delete p_package.ua.__node_tags;
+            } else {
+                item.tooltip = item.label + "\n";
+            }
+
+            if ((uaQty + tagQty) &gt; 1) {
+                item.tooltip = JSON.stringify(p_package.ua, undefined, 2);
+            }
+
+        } else {
+            item.tooltip = item.label;
+        }
+        return item;
+
+    });
+
+
 }
 
 </t>

@@ -235,7 +235,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.GOTO_FIRST_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_FIRST_VISIBLE,
             node: U,
-            refreshType: REFRESH_NODE_BODY,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
         [CMD.GOTO_LAST_SIBLING, () => w_leo.nodeCommand({
@@ -247,7 +247,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.GOTO_LAST_VISIBLE, () => w_leo.nodeCommand({
             action: BRIDGE.GOTO_LAST_VISIBLE,
             node: U,
-            refreshType: REFRESH_NODE_BODY,
+            refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
         [CMD.GOTO_NEXT_VISIBLE, () => w_leo.nodeCommand({
@@ -271,6 +271,18 @@ export function activate(p_context: vscode.ExtensionContext) {
         })],
         [CMD.PAGE_DOWN, () => w_leo.nodeCommand({
             action: BRIDGE.PAGE_DOWN,
+            node: U,
+            refreshType: REFRESH_NODE_BODY,
+            fromOutline: true
+        })],
+        [CMD.SCROLL_TOP, () => w_leo.nodeCommand({
+            action: BRIDGE.SCROLL_TOP,
+            node: U,
+            refreshType: REFRESH_NODE_BODY,
+            fromOutline: true
+        })],
+        [CMD.SCROLL_BOTTOM, () => w_leo.nodeCommand({
+            action: BRIDGE.SCROLL_BOTTOM,
             node: U,
             refreshType: REFRESH_NODE_BODY,
             fromOutline: true

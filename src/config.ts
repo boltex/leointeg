@@ -49,6 +49,8 @@ export class Config implements ConfigMembers {
     public setDetached: boolean = Constants.CONFIG_DEFAULTS.SET_DETACHED;
     public limitUsers: number = Constants.CONFIG_DEFAULTS.LIMIT_USERS;
 
+    public uAsNumber: boolean = true;
+
     private _isBusySettingConfig: boolean = false;
     private _needsTreeRefresh: boolean = false;
 
@@ -100,6 +102,8 @@ export class Config implements ConfigMembers {
 
             setDetached: this.setDetached,
             limitUsers: this.limitUsers,
+
+            uAsNumber: true
         };
     }
 

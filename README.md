@@ -16,7 +16,7 @@ or on [github](https://github.com/leo-editor/leo-editor), and VS Code at [code.v
 
 ## Requirements
 
-- Leo Editor 6.6 or later\
+- Leo Editor 6.6.3 or later\
   _Install with :_ `pip install leo`\
    _Or with git._ (See [Installing Leo with git](http://leoeditor.com/installing.html#installing-leo-with-git))
 
@@ -85,24 +85,24 @@ _Move Outline commands need the 'Alt' key modifier only when focus is on body pa
 | `F2`               |     |           | Find Previous       |
 | `Alt + X`          |     |           | Minibuffer Palette  |
 
-| Tree Navigation    |     |                 |                          |
-| :----------------- | :-- | :-------------- | :----------------------- |
-| `Alt + Home`       | or  | `Home` \*       | Go To First Visible Node |
-| `Alt + End`        |     |                 | Go To Last Sibling       |
-|                    |     | `End` \*        | Go To Last Visible Node  |
-| `Alt + N`          |     |                 | Go To Next Clone         |
-| `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree              |
-| `Alt + G`          |     |                 | Go To Global Line        |
+| Tree Navigation    |     |                 |                             |
+| :----------------- | :-- | :-------------- | :-------------------------- |
+| `Alt + Home`       | or  | `Home` \*       | Scroll to top of outline    |
+| `Alt + End`        |     |                 | Go To Last Sibling          |
+|                    |     | `End` \*        | Scroll to bottom of outline |
+| `Alt + N`          |     |                 | Go To Next Clone            |
+| `Alt + Arrow Keys` | or  | `Arrow Keys` \* | Browse Tree                 |
+| `Alt + G`          |     |                 | Go To Global Line           |
 
-\* _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
+**\*** _With the **'Leo Tree Browsing'** setting enabled by default, all arrows and numeric keypad keys change the outline's selection directly_
 
-| File Commands        |     |                         |                    |
-| :------------------- | :-- | :---------------------- | :----------------- |
-| `Ctrl + S`           |     |                         | Save Leo Document  |
-| `Ctrl + N`           |     |                         | New Leo Document   |
-| `Ctrl + O`           |     |                         | Open Leo Document  |
-| `Ctrl + Shift + W`   |     |                         | Write File Nodes   |
-| `Ctrl + Shift + Q`   |     |                         | Write Dirty Files  |
+| File Commands      |     |                         |                   |
+| :----------------- | :-- | :---------------------- | :---------------- |
+| `Ctrl + S`         |     |                         | Save Leo Document |
+| `Ctrl + N`         |     |                         | New Leo Document  |
+| `Ctrl + O`         |     |                         | Open Leo Document |
+| `Ctrl + Shift + W` |     |                         | Write File Nodes  |
+| `Ctrl + Shift + Q` |     |                         | Write Dirty Files |
 
 ---
 

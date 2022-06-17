@@ -113,16 +113,18 @@ export class LeoNode extends vscode.TreeItem {
         // * some smaller grayed-out text accompanying the main label
         if (this.u) {
             let desc = "";
-            if (Object.keys(this.u).length) {
-                desc = "\u{1F4CE} (" + Object.keys(this.u).length + ")";
-                if (this.u.__node_tags && this.u.__node_tags.length) {
-                    if (Object.keys(this.u).length === 1) {
+            let uaQty = Object.keys(this.u).length;
+            if (uaQty) {
+                const tagsQty = this.u.__node_tags ? this.u.__node_tags.length : 0;
+                desc = "\u{1F4CE} (" + (tagsQty ? uaQty - 1 : uaQty) + ")";
+                if (tagsQty) {
+                    if (uaQty === 1) {
                         // was only tag, so reset it
                         desc = "";
                     } else {
                         desc = desc + " "; // add space
                     }
-                    desc = desc + "\u{1F3F7} (" + this.u.__node_tags.length + ")";
+                    desc = desc + "\u{1F3F7} (" + tagsQty + ")";
                 }
             }
             return desc;
@@ -134,22 +136,22 @@ export class LeoNode extends vscode.TreeItem {
     }
 
     // @ts-ignore
-    public get tooltip(): string {
-        if (this.u) {
+    // public get tooltip(): string {
+    //     if (this.u) {
 
-            if (Object.keys(this.u).length === 1 && this.u.__node_tags && this.u.__node_tags.length) {
-                // list tags instead
-                return this.label + "\n\u{1F3F7} " + this.u.__node_tags.join('\n\u{1F3F7} ');
-            }
+    //         if (Object.keys(this.u).length === 1 && this.u.__node_tags && this.u.__node_tags.length) {
+    //             // list tags instead
+    //             return this.label + "\n\u{1F3F7} " + this.u.__node_tags.join('\n\u{1F3F7} ');
+    //         }
 
-            //  "\ntotal keys is :" + Object.keys(this.u).length
-            return this.label + "\n" +
-                JSON.stringify(this.u, undefined, 2);
+    //         //  "\ntotal keys is :" + Object.keys(this.u).length
+    //         return this.label + "\n" +
+    //             JSON.stringify(this.u, undefined, 2);
 
 
-        } else {
-            return this.label; // * Whole headline as tooltip
-        }
-    }
+    //     } else {
+    //         return this.label; // * Whole headline as tooltip
+    //     }
+    // }
 
 }

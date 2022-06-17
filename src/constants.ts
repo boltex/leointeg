@@ -490,6 +490,8 @@ export class Constants {
         // * Goto operations
         PAGE_UP: "!page_up", // "pageUp",
         PAGE_DOWN: "!page_down", // "pageDown",
+        SCROLL_TOP: "!scroll_top", // Utility function
+        SCROLL_BOTTOM: "!scroll_bottom", // Utility function
         GOTO_FIRST_VISIBLE: "goToFirstVisibleNode",
         GOTO_LAST_VISIBLE: "goToLastVisibleNode",
         GOTO_LAST_SIBLING: "goToLastSibling",
@@ -624,6 +626,8 @@ export class Constants {
         // * Goto operations that always finish with focus in outline
         PAGE_UP: Constants.NAME + ".pageUp",
         PAGE_DOWN: Constants.NAME + ".pageDown",
+        SCROLL_TOP: Constants.NAME + ".scrollTop",
+        SCROLL_BOTTOM: Constants.NAME + ".scrollBottom",
         GOTO_FIRST_VISIBLE: Constants.NAME + ".gotoFirstVisible",
         GOTO_LAST_VISIBLE: Constants.NAME + ".gotoLastVisible",
         GOTO_LAST_SIBLING: Constants.NAME + ".gotoLastSibling",

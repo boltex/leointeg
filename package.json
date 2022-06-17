@@ -1431,6 +1431,16 @@
         "title": "Page Down"
       },
       {
+        "command": "leointeg.scrollTop",
+        "category": "Leo",
+        "title": "Scroll to Outline Top"
+      },
+      {
+        "command": "leointeg.scrollBottom",
+        "category": "Leo",
+        "title": "Scroll to Outline Bottom"
+      },
+      {
         "command": "leointeg.gotoLastSibling",
         "category": "Leo",
         "title": "Goto Last Sibling"
@@ -2632,6 +2642,14 @@
           "when": "false"
         },
         {
+          "command": "leointeg.scrollTop",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.scrollBottom",
+          "when": "false"
+        },
+        {
           "command": "leointeg.pageUp",
           "when": "false"
         },
@@ -3545,7 +3563,7 @@
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
-        "command": "leointeg.gotoFirstVisible",
+        "command": "leointeg.scrollTop",
         "key": "alt+home",
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
@@ -3555,12 +3573,12 @@
         "when": "leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
-        "command": "leointeg.gotoFirstVisible",
+        "command": "leointeg.scrollTop",
         "key": "home",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },
       {
-        "command": "leointeg.gotoLastVisible",
+        "command": "leointeg.scrollBottom",
         "key": "end",
         "when": "leoTreeBrowse && leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration/"
       },

@@ -51,6 +51,8 @@ export interface ConfigMembers {
 
     setDetached: boolean;
     limitUsers: number
+
+    uAsNumber: boolean; // 'true' flag starting at leoInteg 1.0.8
 }
 
 /**
@@ -193,6 +195,7 @@ export interface LeoBridgePackage {
     states?: LeoPackageStates; // get_ui_states
     string?: string; // from cut / copy outline
     total?: number; // set_opened_file, open_file(s), close_file
+    ua?: any;
     version?: string;
     major?: number;
     minor?: number;

@@ -57,6 +57,39 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         }
     }
 
+    public resolveTreeItem(item: LeoNode, element: LeoNode, token: vscode.CancellationToken): vscode.ProviderResult<LeoNode> {
+
+        return this._leoIntegration.sendAction(
+            Constants.LEOBRIDGE.GET_UA,
+            element ? utils.buildNodeCommandJson(element.apJson) : "{}"
+        ).then((p_package: LeoBridgePackage) => {
+            if (p_package.ua && p_package.ua !== null) {
+
+                let uaQty = Object.keys(p_package.ua).length;
+                const tagQty = p_package.ua.__node_tags ? p_package.ua.__node_tags.length : 0;
+
+                if (tagQty) {
+                    // list tags instead
+                    item.tooltip = item.label + "\n\u{1F3F7} " + p_package.ua.__node_tags.join('\n\u{1F3F7} ') + "\n";
+                    delete p_package.ua.__node_tags;
+                } else {
+                    item.tooltip = item.label + "\n";
+                }
+
+                if ((uaQty + tagQty) > 1) {
+                    item.tooltip = JSON.stringify(p_package.ua, undefined, 2);
+                }
+
+            } else {
+                item.tooltip = item.label;
+            }
+            return item;
+
+        });
+
+
+    }
+
     public getParent(element: LeoNode): ProviderResult<LeoNode> | null {
         // * This method should be implemented in order to access reveal API.
         // ! But it should NOT have to be called if only trying to 'select' already revealed nodes
