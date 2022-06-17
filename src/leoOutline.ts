@@ -61,12 +61,12 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
         return this._leoIntegration.sendAction(
             Constants.LEOBRIDGE.GET_UA,
-            element ? utils.buildNodeCommandJson(element.apJson) : "{}"
+            utils.buildNodeCommandJson(element.apJson)
         ).then((p_package: LeoBridgePackage) => {
             if (p_package.ua && p_package.ua !== null) {
 
                 let uaQty = Object.keys(p_package.ua).length;
-                const tagQty = p_package.ua.__node_tags ? p_package.ua.__node_tags.length : 0;
+                const tagQty = (uaQty && p_package.ua.__node_tags) ? p_package.ua.__node_tags.length : 0;
 
                 if (tagQty) {
                     // list tags instead
@@ -76,8 +76,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
                     item.tooltip = item.label + "\n";
                 }
 
-                if ((uaQty + tagQty) > 1) {
-                    item.tooltip = JSON.stringify(p_package.ua, undefined, 2);
+                if (uaQty) {
+                    item.tooltip += JSON.stringify(p_package.ua, undefined, 2);
                 }
 
             } else {

@@ -139,7 +139,8 @@ export interface ArchivedPosition {
     marked: boolean;        // p.isMarked()
     atFile: boolean         // p.isAnyAtFileNode():
     selected: boolean;      // p == commander.p
-    u?: any;               // User Attributes
+    u?: number;             // User-attributes displayed qty
+    nodeTags?: number;       // 'tags' user-attributes displayed qty
     stack: {
         gnx: string;        // stack_v.gnx
         childIndex: number; // stack_childIndex

@@ -24,7 +24,8 @@ export class LeoNode extends vscode.TreeItem {
         public atFile: boolean,
         public hasBody: boolean,
         public selected: boolean,
-        public u: any,
+        public description: string,
+        public tags: number,
         private _leoIntegration: LeoIntegration,
         private _id: string
     ) {
@@ -109,31 +110,32 @@ export class LeoNode extends vscode.TreeItem {
     public get id(): string { return this._id; }
 
     // @ts-ignore
-    public get description(): string {
-        // * some smaller grayed-out text accompanying the main label
-        if (this.u) {
-            let desc = "";
-            let uaQty = Object.keys(this.u).length;
-            if (uaQty) {
-                const tagsQty = this.u.__node_tags ? this.u.__node_tags.length : 0;
-                desc = "\u{1F4CE} (" + (tagsQty ? uaQty - 1 : uaQty) + ")";
-                if (tagsQty) {
-                    if (uaQty === 1) {
-                        // was only tag, so reset it
-                        desc = "";
-                    } else {
-                        desc = desc + " "; // add space
-                    }
-                    desc = desc + "\u{1F3F7} (" + tagsQty + ")";
-                }
-            }
-            return desc;
-        } else {
-            // return "id:" + this.id; // ! debug test
-            // return "gnx:" + this.gnx; // ! debug test
-            return ""; // Falsy will not be shown
-        }
-    }
+    // public get description(): string {
+    //     // * some smaller grayed-out text accompanying the main label
+    //     if (this.u) {
+    //         let desc = "";
+    //         desc = "test";
+    //         // let uaQty = Object.keys(this.u).length;
+    //         // if (uaQty) {
+    //         //     const tagsQty = this.u.__node_tags ? this.u.__node_tags.length : 0;
+    //         //     desc = "\u{1F4CE} (" + (tagsQty ? uaQty - 1 : uaQty) + ")";
+    //         //     if (tagsQty) {
+    //         //         if (uaQty === 1) {
+    //         //             // was only tag, so reset it
+    //         //             desc = "";
+    //         //         } else {
+    //         //             desc = desc + " "; // add space
+    //         //         }
+    //         //         desc = desc + "\u{1F3F7} (" + tagsQty + ")";
+    //         //     }
+    //         // }
+    //         return desc;
+    //     } else {
+    //         // return "id:" + this.id; // ! debug test
+    //         // return "gnx:" + this.gnx; // ! debug test
+    //         return ""; // Falsy will not be shown
+    //     }
+    // }
 
     // @ts-ignore
     // public get tooltip(): string {

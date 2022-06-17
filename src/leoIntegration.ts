@@ -1858,10 +1858,21 @@ export class LeoIntegration {
                 : vscode.TreeItemCollapsibleState.Collapsed;
         }
         // * Unknown attributes are one-way read-only data, don't carry this in for string key for leo/python side of things
-        let w_u = false;
-        if (p_ap.u) {
-            w_u = p_ap.u;
-            delete p_ap.u;
+        let w_description: string = "";
+        if (p_ap.u || p_ap.nodeTags) {
+            const tagsQty = p_ap.nodeTags ? p_ap.nodeTags : 0;
+            if (p_ap.u) {
+                w_description = "\u{1F4CE} (" + p_ap.u + ")";
+                delete p_ap.u;
+            }
+            if (tagsQty) {
+                if (w_description) {
+                    w_description = w_description + " "; // add space
+                }
+                w_description = w_description + "\u{1F3F7} (" + tagsQty + ")";
+                delete p_ap.nodeTags;
+            }
+
         }
         const w_leoNode = new LeoNode(
             p_ap.headline, // label-headline
@@ -1875,7 +1886,8 @@ export class LeoIntegration {
             !!p_ap.atFile, // atFile
             !!p_ap.hasBody, // hasBody
             !!p_ap.selected, // only used in LeoNode for setting isRoot
-            w_u, // unknownAttributes
+            w_description, // unknownAttributes
+            p_ap.nodeTags ? p_ap.nodeTags : 0,
             this, // _leoIntegration pointer
             utils.hashNode(p_ap, this._treeId.toString(36))
         );
@@ -3544,11 +3556,36 @@ export class LeoIntegration {
      */
     public removeTag(): void {
 
-        if (this.lastSelectedNode && this.lastSelectedNode.u &&
-            this.lastSelectedNode.u.__node_tags && this.lastSelectedNode.u.__node_tags.length) {
+        if (this.lastSelectedNode && this.lastSelectedNode.tags) {
             this.triggerBodySave(false)
-                .then((p_saveResult: boolean) => {
-                    return vscode.window.showQuickPick(this.lastSelectedNode!.u.__node_tags, {
+                .then((p_saveResult) => {
+                    return this.sendAction(
+                        Constants.LEOBRIDGE.GET_UA
+
+                    );
+
+                })
+                .then((p_package: LeoBridgePackage) => {
+                    if (p_package.ua && p_package.ua !== null) {
+
+                        let uaQty = Object.keys(p_package.ua).length;
+                        let tagQty = 0;
+                        if (uaQty) {
+                            tagQty = p_package.ua.__node_tags ? p_package.ua.__node_tags.length : 0;
+                        }
+                        if (tagQty) {
+                            return p_package.ua.__node_tags;
+                        }
+
+                    } else {
+                        return [];
+                    }
+                })
+                .then((p_nodeTags: string[]) => {
+                    if (!p_nodeTags.length) {
+                        return "";
+                    }
+                    return vscode.window.showQuickPick(p_nodeTags, {
                         title: Constants.USER_MESSAGES.TITLE_REMOVE_TAG,
                         placeHolder: Constants.USER_MESSAGES.PLACEHOLDER_TAG,
                         canPickMany: false
@@ -3586,8 +3623,7 @@ export class LeoIntegration {
      * * Remove all tags on selected node
      */
     public removeTags(): void {
-        if (this.lastSelectedNode && this.lastSelectedNode.u &&
-            this.lastSelectedNode.u.__node_tags && this.lastSelectedNode.u.__node_tags.length) {
+        if (this.lastSelectedNode && this.lastSelectedNode.tags) {
             this.triggerBodySave(false)
                 .then((p_saveResult: boolean) => {
                     this.sendAction(
