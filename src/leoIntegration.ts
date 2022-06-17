@@ -1859,8 +1859,9 @@ export class LeoIntegration {
         }
         // * Unknown attributes are one-way read-only data, don't carry this in for string key for leo/python side of things
         let w_description: string = "";
+        let tagsQty = 0;
         if (p_ap.u || p_ap.nodeTags) {
-            const tagsQty = p_ap.nodeTags ? p_ap.nodeTags : 0;
+            tagsQty = p_ap.nodeTags ? p_ap.nodeTags : 0;
             if (p_ap.u) {
                 w_description = "\u{1F4CE} (" + p_ap.u + ")";
                 delete p_ap.u;
@@ -1887,7 +1888,7 @@ export class LeoIntegration {
             !!p_ap.hasBody, // hasBody
             !!p_ap.selected, // only used in LeoNode for setting isRoot
             w_description, // unknownAttributes
-            p_ap.nodeTags ? p_ap.nodeTags : 0,
+            tagsQty,
             this, // _leoIntegration pointer
             utils.hashNode(p_ap, this._treeId.toString(36))
         );
@@ -3555,6 +3556,7 @@ export class LeoIntegration {
      * * Remove single Tag on selected node
      */
     public removeTag(): void {
+        console.log('removeTag', this.lastSelectedNode?.tags);
 
         if (this.lastSelectedNode && this.lastSelectedNode.tags) {
             this.triggerBodySave(false)
@@ -3567,6 +3569,7 @@ export class LeoIntegration {
                 })
                 .then((p_package: LeoBridgePackage) => {
                     if (p_package.ua && p_package.ua !== null) {
+                        console.log('got ua',);
 
                         let uaQty = Object.keys(p_package.ua).length;
                         let tagQty = 0;

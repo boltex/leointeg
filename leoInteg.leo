@@ -11602,17 +11602,19 @@ public apToLeoNode(
     }
     // * Unknown attributes are one-way read-only data, don't carry this in for string key for leo/python side of things
     let w_description: string = "";
+    let tagsQty = 0;
     if (p_ap.u || p_ap.nodeTags) {
-        const tagsQty = p_ap.nodeTags ? p_ap.nodeTags : 0;
+        tagsQty = p_ap.nodeTags ? p_ap.nodeTags : 0;
         if (p_ap.u) {
             w_description = "\u{1F4CE} (" + p_ap.u + ")";
             delete p_ap.u;
         }
         if (tagsQty) {
-            if (p_ap.u) {
+            if (w_description) {
                 w_description = w_description + " "; // add space
             }
             w_description = w_description + "\u{1F3F7} (" + tagsQty + ")";
+            delete p_ap.nodeTags;
         }
 
     }
@@ -11629,7 +11631,7 @@ public apToLeoNode(
         !!p_ap.hasBody, // hasBody
         !!p_ap.selected, // only used in LeoNode for setting isRoot
         w_description, // unknownAttributes
-        p_ap.nodeTags ? p_ap.nodeTags : 0,
+        tagsQty,
         this, // _leoIntegration pointer
         utils.hashNode(p_ap, this._treeId.toString(36))
     );
@@ -24176,6 +24178,7 @@ public tagNode(): void {
  * * Remove single Tag on selected node
  */
 public removeTag(): void {
+    console.log('removeTag', this.lastSelectedNode?.tags);
 
     if (this.lastSelectedNode &amp;&amp; this.lastSelectedNode.tags) {
         this.triggerBodySave(false)
@@ -24188,6 +24191,7 @@ public removeTag(): void {
             })
             .then((p_package: LeoBridgePackage) =&gt; {
                 if (p_package.ua &amp;&amp; p_package.ua !== null) {
+                    console.log('got ua',);
 
                     let uaQty = Object.keys(p_package.ua).length;
                     let tagQty = 0;
@@ -24624,8 +24628,7 @@ export function cleanLeoID(id_: string): string {
     ).then((p_package: LeoBridgePackage) =&gt; {
         if (p_package.ua &amp;&amp; p_package.ua !== null) {
 
-            let uaQty = Object.keys(p_package.ua).length;
-            const tagQty = p_package.ua.__node_tags ? p_package.ua.__node_tags.length : 0;
+            const tagQty = (Object.keys(p_package.ua).length &amp;&amp; p_package.ua.__node_tags) ? p_package.ua.__node_tags.length : 0;
 
             if (tagQty) {
                 // list tags instead
@@ -24635,6 +24638,7 @@ export function cleanLeoID(id_: string): string {
                 item.tooltip = item.label + "\n";
             }
 
+            // Recalculate
             if (Object.keys(p_package.ua).length) {
                 item.tooltip += JSON.stringify(p_package.ua, undefined, 2);
             }

@@ -65,8 +65,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         ).then((p_package: LeoBridgePackage) => {
             if (p_package.ua && p_package.ua !== null) {
 
-                let uaQty = Object.keys(p_package.ua).length;
-                const tagQty = (uaQty && p_package.ua.__node_tags) ? p_package.ua.__node_tags.length : 0;
+                const tagQty = (Object.keys(p_package.ua).length && p_package.ua.__node_tags) ? p_package.ua.__node_tags.length : 0;
 
                 if (tagQty) {
                     // list tags instead
@@ -76,7 +75,8 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
                     item.tooltip = item.label + "\n";
                 }
 
-                if (uaQty) {
+                // Recalculate
+                if (Object.keys(p_package.ua).length) {
                     item.tooltip += JSON.stringify(p_package.ua, undefined, 2);
                 }
 
