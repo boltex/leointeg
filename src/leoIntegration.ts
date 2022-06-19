@@ -3374,14 +3374,15 @@ export class LeoIntegration {
                     markChanges: w_searchSettings.mark_changes,
                     searchHeadline: w_searchSettings.search_headline,
                     searchBody: w_searchSettings.search_body,
-                    // 0, 1 or 2 for outline, sub-outline, or node.
+                    // 0, 1, 2 or 3 for outline, sub-outline, node-only or file-only.
                     searchScope:
                         0 +
                         (w_searchSettings.suboutline_only ? 1 : 0) +
-                        (w_searchSettings.node_only ? 2 : 0),
+                        (w_searchSettings.node_only ? 2 : 0) +
+                        (w_searchSettings.file_only ? 3 : 0),
                 };
-                if (w_settings.searchScope > 2) {
-                    console.error('searchScope SHOULD BE 0, 1, 2 only: ', w_settings.searchScope);
+                if (w_settings.searchScope > 3) {
+                    console.error('searchScope SHOULD BE 0, 1, 2, 3 only: ', w_settings.searchScope);
                 }
                 this._lastSettingsUsed = w_settings;
                 if (this._findPanelWebviewExplorerView) {
@@ -3422,6 +3423,7 @@ export class LeoIntegration {
             mark_changes: p_settings.markChanges,
             mark_finds: p_settings.markFinds,
             node_only: !!(p_settings.searchScope === 2),
+            file_only: !!(p_settings.searchScope === 3),
             pattern_match: p_settings.regExp,
             search_body: p_settings.searchBody,
             search_headline: p_settings.searchHeadline,

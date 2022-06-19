@@ -657,6 +657,7 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         [CMD.SET_FIND_EVERYWHERE_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.ENTIRE_OUTLINE)],
         [CMD.SET_FIND_NODE_ONLY_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.NODE_ONLY)],
+        [CMD.SET_FIND_FILE_ONLY_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.FILE_ONLY)],
         [CMD.SET_FIND_SUBOUTLINE_ONLY_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SUBOUTLINE_ONLY)],
         [CMD.TOGGLE_FIND_IGNORE_CASE_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.IGNORE_CASE)],
         [CMD.TOGGLE_FIND_MARK_CHANGES_OPTION, () => w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.MARK_CHANGES)],

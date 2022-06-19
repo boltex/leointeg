@@ -1716,6 +1716,12 @@
         "title": "Set Find in Node Only Option"
       },
       {
+        "command": "leointeg.setFindFileOnlyOption",
+        "category": "Leo",
+        "shortTitle": "Find in External Files",
+        "title": "Set Find in External Files Only Option"
+      },
+      {
         "command": "leointeg.setFindSuboutlineOnlyOption",
         "category": "Leo",
         "shortTitle": "Find in SubOutline",
@@ -2295,6 +2301,10 @@
         },
         {
           "command": "leointeg.setFindNodeOnlyOption",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.setFindFileOnlyOption",
           "when": "leoTreeOpened"
         },
         {
@@ -3719,6 +3729,12 @@
         "command": "leointeg.setFindNodeOnlyOption",
         "key": "ctrl+alt+n",
         "mac": "cmd+alt+n",
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
+      },
+      {
+        "command": "leointeg.setFindFileOnlyOption",
+        "key": "ctrl+alt+l",
+        "mac": "cmd+alt+l",
         "when": "leoFindFocus || leoTreeOpened && sideBarFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened && editorTextFocus && resourceScheme == leo"
       },
       {

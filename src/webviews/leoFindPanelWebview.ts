@@ -174,6 +174,8 @@ export class LeoFindPanelProvider implements vscode.WebviewViewProvider {
                         <label title="Limit to Selected Outline (Ctrl+Alt+S)" class="label-fix" for="subOutlineOnly"><u>S</u>uboutline Only</label><br>
                         <input type="radio" id="nodeOnly" name="searchScope" value="2">
                         <label title="Limit to Selected Node (Ctrl+Alt+N)" class="label-fix" for="nodeOnly"><u>N</u>ode only</label><br>
+                        <input type="radio" id="fileOnly" name="searchScope" value="3">
+                        <label title="Limit to External Files (Ctrl+Alt+L)" class="label-fix" for="fileOnly">Fi<u>l</u>e only</label><br>
                         <!-- CHECKBOXES -->
                         <input type="checkbox" id="searchHeadline" name="searchHeadline" >
                         <label title="Search in Headlines (Ctrl+Alt+H)" class="label-fix" for="searchHeadline">Search <u>h</u>eadline</label><br>

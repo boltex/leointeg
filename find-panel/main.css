@@ -4,6 +4,7 @@ div.row {
 }
 
 div.col {
+  vertical-align: top;
   width: 50%;
   max-width: 9.5em;
   display: inline-block;

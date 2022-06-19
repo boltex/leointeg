@@ -2456,6 +2456,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 
 [CMD.SET_FIND_EVERYWHERE_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.ENTIRE_OUTLINE)],
 [CMD.SET_FIND_NODE_ONLY_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.NODE_ONLY)],
+[CMD.SET_FIND_FILE_ONLY_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.FILE_ONLY)],
 [CMD.SET_FIND_SUBOUTLINE_ONLY_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.SUBOUTLINE_ONLY)],
 [CMD.TOGGLE_FIND_IGNORE_CASE_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.IGNORE_CASE)],
 [CMD.TOGGLE_FIND_MARK_CHANGES_OPTION, () =&gt; w_leo.setSearchSetting(Constants.FIND_INPUTS_IDS.MARK_CHANGES)],
@@ -6906,6 +6907,7 @@ public static COMMANDS = {
     REMOVE_TAGS: Constants.NAME + ".removeTags",
     SET_FIND_EVERYWHERE_OPTION: Constants.NAME + ".setFindEverywhereOption",
     SET_FIND_NODE_ONLY_OPTION: Constants.NAME + ".setFindNodeOnlyOption",
+    SET_FIND_FILE_ONLY_OPTION: Constants.NAME + ".setFindFileOnlyOption",
     SET_FIND_SUBOUTLINE_ONLY_OPTION: Constants.NAME + ".setFindSuboutlineOnlyOption",
     TOGGLE_FIND_IGNORE_CASE_OPTION: Constants.NAME + ".toggleFindIgnoreCaseOption",
     TOGGLE_FIND_MARK_CHANGES_OPTION: Constants.NAME + ".toggleFindMarkChangesOption",
@@ -15824,6 +15826,12 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "title": "Set Find in Node Only Option"
 },
 {
+  "command": "leointeg.setFindFileOnlyOption",
+  "category": "Leo",
+  "shortTitle": "Find in External Files",
+  "title": "Set Find in External Files Only Option"
+},
+{
   "command": "leointeg.setFindSuboutlineOnlyOption",
   "category": "Leo",
   "shortTitle": "Find in SubOutline",
@@ -16035,6 +16043,12 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
 },
 {
+  "command": "leointeg.setFindFileOnlyOption",
+  "key": "ctrl+alt+l",
+  "mac": "cmd+alt+l",
+  "when": "leoFindFocus || leoTreeOpened &amp;&amp; sideBarFocus &amp;&amp; focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/ || leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+},
+{
   "command": "leointeg.setFindSuboutlineOnlyOption",
   "key": "ctrl+alt+s",
   "mac": "cmd+alt+s",
@@ -16127,7 +16141,7 @@ export interface LeoSearchSettings {
     markChanges: boolean;
     searchHeadline: boolean;
     searchBody: boolean;
-    searchScope: LeoSearchScope; // 0, 1 or 2 for outline, sub-outline, or node.
+    searchScope: LeoSearchScope; // 0, 1, 2  or 3 for outline, sub-outline, node-only or file-only.
 }
 
 </t>
@@ -16137,7 +16151,8 @@ export interface LeoSearchSettings {
 export const enum LeoSearchScope {
     entireOutline = 0,
     subOutlineOnly,
-    nodeOnly
+    nodeOnly,
+    fileOnly
 }
 
 </t>
@@ -16294,6 +16309,7 @@ export interface LeoGuiFindTabManagerSettings {
     mark_changes: boolean,
     mark_finds: boolean,
     node_only: boolean,
+    file_only: boolean,
     pattern_match: boolean,
     search_body: boolean,
     search_headline: boolean,
@@ -16324,6 +16340,7 @@ public saveSearchSettings(p_settings: LeoSearchSettings): Promise&lt;LeoBridgePa
         mark_changes: p_settings.markChanges,
         mark_finds: p_settings.markFinds,
         node_only: !!(p_settings.searchScope === 2),
+        file_only: !!(p_settings.searchScope === 3),
         pattern_match: p_settings.regExp,
         search_body: p_settings.searchBody,
         search_headline: p_settings.searchHeadline,
@@ -16373,14 +16390,15 @@ public loadSearchSettings(): void {
                 markChanges: w_searchSettings.mark_changes,
                 searchHeadline: w_searchSettings.search_headline,
                 searchBody: w_searchSettings.search_body,
-                // 0, 1 or 2 for outline, sub-outline, or node.
+                // 0, 1, 2 or 3 for outline, sub-outline, node-only or file-only.
                 searchScope:
                     0 +
                     (w_searchSettings.suboutline_only ? 1 : 0) +
-                    (w_searchSettings.node_only ? 2 : 0),
+                    (w_searchSettings.node_only ? 2 : 0) +
+                    (w_searchSettings.file_only ? 3 : 0),
             };
-            if (w_settings.searchScope &gt; 2) {
-                console.error('searchScope SHOULD BE 0, 1, 2 only: ', w_settings.searchScope);
+            if (w_settings.searchScope &gt; 3) {
+                console.error('searchScope SHOULD BE 0, 1, 2, 3 only: ', w_settings.searchScope);
             }
             this._lastSettingsUsed = w_settings;
             if (this._findPanelWebviewExplorerView) {
@@ -16496,6 +16514,10 @@ public getBridgeFocus(): void {
 },
 {
   "command": "leointeg.setFindNodeOnlyOption",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.setFindFileOnlyOption",
   "when": "leoTreeOpened"
 },
 {
@@ -16800,6 +16822,7 @@ public static FIND_INPUTS_IDS = {
     FIND_TEXT: "findText",
     REPLACE_TEXT: "replaceText",
     ENTIRE_OUTLINE: "entireOutline",
+    FILE_ONLY: "fileOnly",
     NODE_ONLY: "nodeOnly",
     SUBOUTLINE_ONLY: "subOutlineOnly",
     IGNORE_CASE: "ignoreCase",
@@ -22981,8 +23004,10 @@ def pushSearchHistory(self, pat):
     let navTextDirty = false;
     let showNavElements = true;
 
-    let firstTabEl = 'searchOptions'; // used to be 'findText' before nav inputs
-    let lastTabEl = 'searchBody';
+    let firstTabElId = 'searchOptions'; // used to be 'findText' before nav inputs
+    let lastTabElId = 'searchBody';
+    let firstTabEl;
+    let lastTabEl;
 
     /**
      * * Flag for freezing the nav 'search as you type' headlines (concept from original nav plugin)
@@ -22990,7 +23015,11 @@ def pushSearchHistory(self, pat):
      * - Sets when pressing Enter with non-empty input field &amp;&amp; not tag mode.
      */
     let frozen = false;
-    document.getElementById("freeze").style.display = 'none';
+    let frozenEl;
+    frozenEl = document.getElementById("freeze");
+    if (frozenEl) {
+        frozenEl.style.display = 'none';
+    }
     let navSearchTimer // for debouncing the search-headline while typing if unfrozen
 
     // * LeoSearchSettings Type
@@ -23024,7 +23053,7 @@ def pushSearchHistory(self, pat):
         'searchHeadline',
         'searchBody',
     ];
-    let radioIds = ['entireOutline', 'subOutlineOnly', 'nodeOnly'];
+    let radioIds = ['entireOutline', 'subOutlineOnly', 'nodeOnly', 'fileOnly'];
 
     function navTextChange() {
         // cancel timer, reset 'debounced' timer after checks, if still needed
@@ -23080,10 +23109,14 @@ def pushSearchHistory(self, pat):
 
     function setFrozen(p_focus) {
         frozen = p_focus;
+        frozenEl = document.getElementById("freeze");
+        if (!frozenEl) {
+            return;
+        }
         if (frozen) {
-            document.getElementById("freeze").style.display = '';
+            frozenEl.style.display = '';
         } else {
-            document.getElementById("freeze").style.display = 'none';
+            frozenEl.style.display = 'none';
         }
     }
 
@@ -23113,7 +23146,7 @@ def pushSearchHistory(self, pat):
         } else {
             // ! Not at least Leo 6.6 final : hide top elements !
             showNavElements = false;
-            firstTabEl = 'findText';
+            firstTabElId = 'findText';
             var elements = document.getElementsByClassName("nav-element")
 
             for (var i = 0; i &lt; elements.length; i++) {
@@ -23197,22 +23230,26 @@ def pushSearchHistory(self, pat):
             var actEl = document.activeElement;
             if (p_event.shiftKey) {
                 // shift + tab so if first got last
-                var firstEl = document.getElementById(firstTabEl);
+                var firstEl = document.getElementById(firstTabElId);
                 if (actEl === firstEl) {
                     p_event.preventDefault();
                     p_event.stopPropagation();
                     p_event.stopImmediatePropagation();
-                    document.getElementById(lastTabEl).focus();
+                    lastTabEl = document.getElementById(lastTabElId);
+                    if (lastTabEl) {
+                        lastTabEl.focus();
+                    }
+
                     return;
                 }
             } else {
                 // tab, so if last goto first
-                var lastEl = document.getElementById(lastTabEl);
+                var lastEl = document.getElementById(lastTabElId);
                 if (actEl === lastEl) {
                     p_event.preventDefault();
                     p_event.stopPropagation();
                     p_event.stopImmediatePropagation();
-                    focusOnField(firstTabEl);
+                    focusOnField(firstTabElId);
                     return;
                 }
             }
@@ -23270,101 +23307,122 @@ def pushSearchHistory(self, pat):
     }
 
     // * Nav text input detection
-    document.getElementById('navText').onkeypress = function (p_event) {
-        // @ts-expect-error
-        if (!p_event) p_event = window.event;
-        var keyCode = p_event.code || p_event.key;
-        if (keyCode === 'Enter') {
-            if (searchSettings.navText.length &gt;= 3 || searchSettings.isTag) {
-                setFrozen(true);
-                if (navTextDirty) {
-                    navTextDirty = false;
-                    if (timer) {
-                        clearTimeout(timer);
-                    }
-                    if (navSearchTimer) {
-                        clearTimeout(navSearchTimer)
-                    }
-                    sendSearchConfig();
-                }
-                vscode.postMessage({ type: 'leoNavEnter' });
-            }
-            return false;
-        }
-    };
-    document.getElementById('navText').addEventListener('input', function (p_event) {
-        // @ts-expect-error
-        searchSettings.navText = this.value;
-        navTextDirty = true;
-        navTextChange(); // DEBOUNCE THIS! Don't process change too fast!
-    });
-
-    document.getElementById('showParents').addEventListener('change', function (p_event) {
-        // @ts-expect-error
-        searchSettings.showParents = this.checked;
-        processChange();
-    });
-    document.getElementById('isTag').addEventListener('change', function (p_event) {
-
-        // @ts-expect-error
-        let w_checked = this.checked;
-        let w_wasSet = false;
-        if (searchSettings.isTag !== w_checked) {
-            setFrozen(false); // Switched tagging so reset freeze
-            if (w_checked) {
-                w_wasSet = true;
-            }
-        }
-        searchSettings.isTag = w_checked;
-        // Set placeholder text
-        processChange();
-        handleIsTagSwitch(w_wasSet);
-    });
-
-    // * Find &amp; Replace controls change detection
-    document.getElementById('searchOptions').addEventListener('change', function (p_event) {
-        // @ts-expect-error
-        searchSettings.searchOptions = Number(this.value);
-        processChange();
-    });
-
-    inputIds.forEach((p_inputId) =&gt; {
-        document.getElementById(p_inputId).onkeypress = function (p_event) {
+    let navTextEl = document.getElementById('navText');
+    if (navTextEl) {
+        navTextEl.onkeypress = function (p_event) {
             // @ts-expect-error
             if (!p_event) p_event = window.event;
             var keyCode = p_event.code || p_event.key;
             if (keyCode === 'Enter') {
-                if (timer) {
-                    clearTimeout(timer);
-                    sendSearchConfig();
+                if (searchSettings.navText.length &gt;= 3 || searchSettings.isTag) {
+                    setFrozen(true);
+                    if (navTextDirty) {
+                        navTextDirty = false;
+                        if (timer) {
+                            clearTimeout(timer);
+                        }
+                        if (navSearchTimer) {
+                            clearTimeout(navSearchTimer)
+                        }
+                        sendSearchConfig();
+                    }
+                    vscode.postMessage({ type: 'leoNavEnter' });
                 }
-                vscode.postMessage({ type: 'leoFindNext' });
                 return false;
             }
         };
-        document.getElementById(p_inputId).addEventListener('input', function (p_event) {
+        navTextEl.addEventListener('input', function (p_event) {
             // @ts-expect-error
-            searchSettings[p_inputId] = this.value;
+            searchSettings.navText = this.value;
+            navTextDirty = true;
+            navTextChange(); // DEBOUNCE THIS! Don't process change too fast!
+        });
+    }
+
+    let showParentsEl = document.getElementById("showParents");
+    if (showParentsEl) {
+        showParentsEl.addEventListener('change', function (p_event) {
+            // @ts-expect-error
+            searchSettings.showParents = this.checked;
             processChange();
         });
-    });
+    }
 
-    checkboxIds.forEach((p_inputId) =&gt; {
-        document.getElementById(p_inputId).addEventListener('change', function (p_event) {
+    let isTagEl = document.getElementById("isTag");
+    if (isTagEl) {
+        isTagEl.addEventListener('change', function (p_event) {
+
             // @ts-expect-error
-            searchSettings[p_inputId] = this.checked;
+            let w_checked = this.checked;
+            let w_wasSet = false;
+            if (searchSettings.isTag !== w_checked) {
+                setFrozen(false); // Switched tagging so reset freeze
+                if (w_checked) {
+                    w_wasSet = true;
+                }
+            }
+            searchSettings.isTag = w_checked;
+            // Set placeholder text
+            processChange();
+            handleIsTagSwitch(w_wasSet);
+        });
+    }
+
+    // * Find &amp; Replace controls change detection
+    let searchOptionsEl = document.getElementById("searchOptions");
+    if (searchOptionsEl) {
+        searchOptionsEl.addEventListener('change', function (p_event) {
+            // @ts-expect-error
+            searchSettings.searchOptions = Number(this.value);
             processChange();
         });
-    });
+    }
 
-    radioIds.forEach((p_inputId) =&gt; {
-        document.getElementById(p_inputId).addEventListener('change', function (p_event) {
-            searchSettings['searchScope'] = parseInt(
+    let inputEl;
+    inputIds.forEach((p_inputId) =&gt; {
+        inputEl = document.getElementById(p_inputId);
+        if (inputEl) {
+            inputEl.onkeypress = function (p_event) {
                 // @ts-expect-error
-                document.querySelector('input[name="searchScope"]:checked').value
-            );
-            processChange();
-        });
+                if (!p_event) p_event = window.event;
+                var keyCode = p_event.code || p_event.key;
+                if (keyCode === 'Enter') {
+                    if (timer) {
+                        clearTimeout(timer);
+                        sendSearchConfig();
+                    }
+                    vscode.postMessage({ type: 'leoFindNext' });
+                    return false;
+                }
+            };
+            inputEl.addEventListener('input', function (p_event) {
+                // @ts-expect-error
+                searchSettings[p_inputId] = this.value;
+                processChange();
+            });
+        }
+    });
+    checkboxIds.forEach((p_inputId) =&gt; {
+        inputEl = document.getElementById(p_inputId);
+        if (inputEl) {
+            inputEl.addEventListener('change', function (p_event) {
+                // @ts-expect-error
+                searchSettings[p_inputId] = this.checked;
+                processChange();
+            });
+        }
+    });
+    radioIds.forEach((p_inputId) =&gt; {
+        inputEl = document.getElementById(p_inputId);
+        if (inputEl) {
+            inputEl.addEventListener('change', function (p_event) {
+                searchSettings['searchScope'] = parseInt(
+                    // @ts-expect-error
+                    document.querySelector('input[name="searchScope"]:checked').value
+                );
+                processChange();
+            });
+        }
     });
 
     document.onkeydown = checkKeyDown;
@@ -24962,6 +25020,8 @@ import * as utils from "../utils";
                     &lt;label title="Limit to Selected Outline (Ctrl+Alt+S)" class="label-fix" for="subOutlineOnly"&gt;&lt;u&gt;S&lt;/u&gt;uboutline Only&lt;/label&gt;&lt;br&gt;
                     &lt;input type="radio" id="nodeOnly" name="searchScope" value="2"&gt;
                     &lt;label title="Limit to Selected Node (Ctrl+Alt+N)" class="label-fix" for="nodeOnly"&gt;&lt;u&gt;N&lt;/u&gt;ode only&lt;/label&gt;&lt;br&gt;
+                    &lt;input type="radio" id="fileOnly" name="searchScope" value="3"&gt;
+                    &lt;label title="Limit to External Files (Ctrl+Alt+L)" class="label-fix" for="fileOnly"&gt;Fi&lt;u&gt;l&lt;/u&gt;e only&lt;/label&gt;&lt;br&gt;
                     &lt;!-- CHECKBOXES --&gt;
                     &lt;input type="checkbox" id="searchHeadline" name="searchHeadline" &gt;
                     &lt;label title="Search in Headlines (Ctrl+Alt+H)" class="label-fix" for="searchHeadline"&gt;Search &lt;u&gt;h&lt;/u&gt;eadline&lt;/label&gt;&lt;br&gt;
@@ -24992,6 +25052,7 @@ div.row {
 }
 
 div.col {
+  vertical-align: top;
   width: 50%;
   max-width: 9.5em;
   display: inline-block;
