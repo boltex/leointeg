@@ -111,6 +111,24 @@ export class LeoStates {
         utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_REDO, p_value);
     }
 
+    private _leoCanGoBack: boolean = false;
+    get leoCanGoBack(): boolean {
+        return this._leoCanGoBack;
+    }
+    set leoCanGoBack(p_value: boolean) {
+        this._leoCanGoBack = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_BACK, p_value);
+    }
+
+    private _leoCanGoNext: boolean = false;
+    get leoCanGoNext(): boolean {
+        return this._leoCanGoNext;
+    }
+    set leoCanGoNext(p_value: boolean) {
+        this._leoCanGoNext = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_NEXT, p_value);
+    }
+
     private _leoCanDemote: boolean = false;
     get leoCanDemote(): boolean {
         return this._leoCanDemote;
@@ -127,6 +145,15 @@ export class LeoStates {
     set leoCanPromote(p_value: boolean) {
         this._leoCanPromote = p_value;
         utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_PROMOTE, p_value);
+    }
+
+    private _leoCanHoist: boolean = false;
+    get leoCanHoist(): boolean {
+        return this._leoCanHoist;
+    }
+    set leoCanHoist(p_value: boolean) {
+        this._leoCanHoist = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_HOIST, p_value);
     }
 
     private _leoCanDehoist: boolean = false;
@@ -175,7 +202,7 @@ export class LeoStates {
         utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_EMPTY, p_value);
     }
 
-    private _leoChild: boolean = false;
+    private _leoChild: boolean = false; // Has child
     get leoChild(): boolean {
         return this._leoChild;
     }
@@ -193,23 +220,14 @@ export class LeoStates {
         utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_ATFILE, p_value);
     }
 
-    // * Special is-root 'state' flag about current selection, for visibility and commands availability
-    private _leoRoot: boolean = false;
-    get leoRoot(): boolean {
-        return this._leoRoot;
-    }
-    set leoRoot(p_value: boolean) {
-        this._leoRoot = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_ROOT, p_value);
-    }
-
     constructor(
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
     ) { }
 
     public setSelectedNodeFlags(p_node: LeoNode): void {
-        this.leoRoot = p_node.isRoot; // * ALSO set in setRoot of LeoNode class
+        this.leoCanHoist = !p_node.isRoot; // * ALSO set in setRoot of LeoNode class
+
         this.leoMarked = p_node.marked;
         this.leoCloned = p_node.cloned;
         this.leoDirty = p_node.dirty;
@@ -220,10 +238,17 @@ export class LeoStates {
 
     public setLeoStateFlags(p_states: LeoPackageStates): void {
         this.leoChanged = p_states.changed; // Documents will be refresh if this changes
+
         this.leoCanUndo = p_states.canUndo;
         this.leoCanRedo = p_states.canRedo;
+
+        this.leoCanGoBack = p_states.canGoBack;
+        this.leoCanGoNext = p_states.canGoNext;
+
         this.leoCanDemote = p_states.canDemote;
         this.leoCanPromote = p_states.canPromote;
+
+        this.leoCanHoist = p_states.canHoist;
         this.leoCanDehoist = p_states.canDehoist;
     }
 }

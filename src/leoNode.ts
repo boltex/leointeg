@@ -55,10 +55,15 @@ export class LeoNode extends vscode.TreeItem {
      */
     public setRoot(): void {
         this.isRoot = true;
+
+        /*
+         * Now using canHoist / canDehoist
         if (this.selected) {
             // Set this special global 'selected node' flag
             this._leoIntegration.leoStates.leoRoot = true;
         }
+        */
+
         this.contextValue = this._getNodeContextValue();
     }
 

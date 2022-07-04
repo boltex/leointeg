@@ -1886,7 +1886,7 @@ export class LeoIntegration {
             !!p_ap.marked, // marked
             !!p_ap.atFile, // atFile
             !!p_ap.hasBody, // hasBody
-            !!p_ap.selected, // only used in LeoNode for setting isRoot
+            !!p_ap.selected, // only used in LeoNode for setting selection
             w_description, // unknownAttributes
             tagsQty,
             this, // _leoIntegration pointer

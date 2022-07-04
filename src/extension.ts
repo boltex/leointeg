@@ -294,6 +294,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: false
         })],
+        [CMD.DEHOIST_DISABLED, () => { }],
         [CMD.DEHOIST_FO, () => w_leo.nodeCommand({
             action: BRIDGE.DEHOIST,
             node: U,
@@ -306,6 +307,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
+        [CMD.HOIST_DISABLED, () => { }],
         [CMD.HOIST_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.HOIST_PNODE,
             node: U,
@@ -458,6 +460,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true,
             keepSelection: true
         })],
+        [CMD.DEMOTE_DISABLED, () => { }],
         [CMD.DEMOTE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.DEMOTE_PNODE,
             node: U,
@@ -477,6 +480,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true,
             keepSelection: true
         })],
+        [CMD.PROMOTE_DISABLED, () => { }],
         [CMD.PROMOTE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.PROMOTE_PNODE,
             node: U,

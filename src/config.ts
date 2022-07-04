@@ -16,27 +16,27 @@ export class Config implements ConfigMembers {
     public leoTreeBrowse: boolean = Constants.CONFIG_DEFAULTS.LEO_TREE_BROWSE;
     public treeKeepFocus: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS;
     public treeKeepFocusWhenAside: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE;
-    public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
+    // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
     public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
     public showOpenAside: boolean = Constants.CONFIG_DEFAULTS.SHOW_OPEN_ASIDE;
     public showEditOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDIT;
-    public showArrowsOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ARROWS;
+    // public showArrowsOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ARROWS;
     public showAddOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ADD;
     public showMarkOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK;
     public showCloneOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLONE;
     public showCopyOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_COPY;
 
-    public showEditionOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDITION_BODY;
-    public showClipboardOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLIPBOARD_BODY;
-    public showPromoteOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_PROMOTE_BODY;
-    public showExecuteOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EXECUTE_BODY;
-    public showExtractOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EXTRACT_BODY;
-    public showImportOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_IMPORT_BODY;
-    public showRefreshOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_REFRESH_BODY;
-    public showHoistOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_HOIST_BODY;
-    public showMarkOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK_BODY;
-    public showSortOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_SORT_BODY;
+    // public showEditionOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDITION_BODY;
+    // public showClipboardOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLIPBOARD_BODY;
+    // public showPromoteOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_PROMOTE_BODY;
+    // public showExecuteOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EXECUTE_BODY;
+    // public showExtractOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EXTRACT_BODY;
+    // public showImportOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_IMPORT_BODY;
+    // public showRefreshOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_REFRESH_BODY;
+    // public showHoistOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_HOIST_BODY;
+    // public showMarkOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK_BODY;
+    // public showSortOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_SORT_BODY;
 
     public invertNodeContrast: boolean = Constants.CONFIG_DEFAULTS.INVERT_NODES;
     public leoPythonCommand: string = Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND;
@@ -70,27 +70,27 @@ export class Config implements ConfigMembers {
             leoTreeBrowse: this.leoTreeBrowse,
             treeKeepFocus: this.treeKeepFocus,
             treeKeepFocusWhenAside: this.treeKeepFocusWhenAside,
-            statusBarString: this.statusBarString,
+            // statusBarString: this.statusBarString,
             statusBarColor: this.statusBarColor,
             treeInExplorer: this.treeInExplorer,
             showOpenAside: this.showOpenAside,
             showEditOnNodes: this.showEditOnNodes,
-            showArrowsOnNodes: this.showArrowsOnNodes,
+            // showArrowsOnNodes: this.showArrowsOnNodes,
             showAddOnNodes: this.showAddOnNodes,
             showMarkOnNodes: this.showMarkOnNodes,
             showCloneOnNodes: this.showCloneOnNodes,
             showCopyOnNodes: this.showCopyOnNodes,
 
-            showEditionOnBody: this.showEditionOnBody,
-            showClipboardOnBody: this.showClipboardOnBody,
-            showPromoteOnBody: this.showPromoteOnBody,
-            showExecuteOnBody: this.showExecuteOnBody,
-            showExtractOnBody: this.showExtractOnBody,
-            showImportOnBody: this.showImportOnBody,
-            showRefreshOnBody: this.showRefreshOnBody,
-            showHoistOnBody: this.showHoistOnBody,
-            showMarkOnBody: this.showMarkOnBody,
-            showSortOnBody: this.showSortOnBody,
+            // showEditionOnBody: this.showEditionOnBody,
+            // showClipboardOnBody: this.showClipboardOnBody,
+            // showPromoteOnBody: this.showPromoteOnBody,
+            // showExecuteOnBody: this.showExecuteOnBody,
+            // showExtractOnBody: this.showExtractOnBody,
+            // showImportOnBody: this.showImportOnBody,
+            // showRefreshOnBody: this.showRefreshOnBody,
+            // showHoistOnBody: this.showHoistOnBody,
+            // showMarkOnBody: this.showMarkOnBody,
+            // showSortOnBody: this.showSortOnBody,
 
             invertNodeContrast: this.invertNodeContrast,
             leoPythonCommand: this.leoPythonCommand,
@@ -322,10 +322,10 @@ export class Config implements ConfigMembers {
             this.leoTreeBrowse = GET(NAME).get(NAMES.LEO_TREE_BROWSE, DEFAULTS.LEO_TREE_BROWSE);
             this.treeKeepFocus = GET(NAME).get(NAMES.TREE_KEEP_FOCUS, DEFAULTS.TREE_KEEP_FOCUS);
             this.treeKeepFocusWhenAside = GET(NAME).get(NAMES.TREE_KEEP_FOCUS_WHEN_ASIDE, DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE);
-            this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
-            if (this.statusBarString.length > 8) {
-                this.statusBarString = DEFAULTS.STATUSBAR_STRING;
-            }
+            // this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
+            // if (this.statusBarString.length > 8) {
+            //     this.statusBarString = DEFAULTS.STATUSBAR_STRING;
+            // }
             this.statusBarColor = GET(NAME).get(NAMES.STATUSBAR_COLOR, DEFAULTS.STATUSBAR_COLOR);
             if (!utils.isHexColor(this.statusBarColor)) {
                 this.statusBarColor = DEFAULTS.STATUSBAR_COLOR;
@@ -333,22 +333,22 @@ export class Config implements ConfigMembers {
             this.treeInExplorer = GET(NAME).get(NAMES.TREE_IN_EXPLORER, DEFAULTS.TREE_IN_EXPLORER);
             this.showOpenAside = GET(NAME).get(NAMES.SHOW_OPEN_ASIDE, DEFAULTS.SHOW_OPEN_ASIDE);
             this.showEditOnNodes = GET(NAME).get(NAMES.SHOW_EDIT, DEFAULTS.SHOW_EDIT);
-            this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
+            // this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
             this.showAddOnNodes = GET(NAME).get(NAMES.SHOW_ADD, DEFAULTS.SHOW_ADD);
             this.showMarkOnNodes = GET(NAME).get(NAMES.SHOW_MARK, DEFAULTS.SHOW_MARK);
             this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
             this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
 
-            this.showEditionOnBody = GET(NAME).get(NAMES.SHOW_EDITION_BODY, DEFAULTS.SHOW_EDITION_BODY);
-            this.showClipboardOnBody = GET(NAME).get(NAMES.SHOW_CLIPBOARD_BODY, DEFAULTS.SHOW_CLIPBOARD_BODY);
-            this.showPromoteOnBody = GET(NAME).get(NAMES.SHOW_PROMOTE_BODY, DEFAULTS.SHOW_PROMOTE_BODY);
-            this.showExecuteOnBody = GET(NAME).get(NAMES.SHOW_EXECUTE_BODY, DEFAULTS.SHOW_EXECUTE_BODY);
-            this.showExtractOnBody = GET(NAME).get(NAMES.SHOW_EXTRACT_BODY, DEFAULTS.SHOW_EXTRACT_BODY);
-            this.showImportOnBody = GET(NAME).get(NAMES.SHOW_IMPORT_BODY, DEFAULTS.SHOW_IMPORT_BODY);
-            this.showRefreshOnBody = GET(NAME).get(NAMES.SHOW_REFRESH_BODY, DEFAULTS.SHOW_REFRESH_BODY);
-            this.showHoistOnBody = GET(NAME).get(NAMES.SHOW_HOIST_BODY, DEFAULTS.SHOW_HOIST_BODY);
-            this.showMarkOnBody = GET(NAME).get(NAMES.SHOW_MARK_BODY, DEFAULTS.SHOW_MARK_BODY);
-            this.showSortOnBody = GET(NAME).get(NAMES.SHOW_SORT_BODY, DEFAULTS.SHOW_SORT_BODY);
+            // this.showEditionOnBody = GET(NAME).get(NAMES.SHOW_EDITION_BODY, DEFAULTS.SHOW_EDITION_BODY);
+            // this.showClipboardOnBody = GET(NAME).get(NAMES.SHOW_CLIPBOARD_BODY, DEFAULTS.SHOW_CLIPBOARD_BODY);
+            // this.showPromoteOnBody = GET(NAME).get(NAMES.SHOW_PROMOTE_BODY, DEFAULTS.SHOW_PROMOTE_BODY);
+            // this.showExecuteOnBody = GET(NAME).get(NAMES.SHOW_EXECUTE_BODY, DEFAULTS.SHOW_EXECUTE_BODY);
+            // this.showExtractOnBody = GET(NAME).get(NAMES.SHOW_EXTRACT_BODY, DEFAULTS.SHOW_EXTRACT_BODY);
+            // this.showImportOnBody = GET(NAME).get(NAMES.SHOW_IMPORT_BODY, DEFAULTS.SHOW_IMPORT_BODY);
+            // this.showRefreshOnBody = GET(NAME).get(NAMES.SHOW_REFRESH_BODY, DEFAULTS.SHOW_REFRESH_BODY);
+            // this.showHoistOnBody = GET(NAME).get(NAMES.SHOW_HOIST_BODY, DEFAULTS.SHOW_HOIST_BODY);
+            // this.showMarkOnBody = GET(NAME).get(NAMES.SHOW_MARK_BODY, DEFAULTS.SHOW_MARK_BODY);
+            // this.showSortOnBody = GET(NAME).get(NAMES.SHOW_SORT_BODY, DEFAULTS.SHOW_SORT_BODY);
 
             this.invertNodeContrast = GET(NAME).get(NAMES.INVERT_NODES, DEFAULTS.INVERT_NODES);
             this.leoEditorPath = GET(NAME).get(NAMES.LEO_EDITOR_PATH, DEFAULTS.LEO_EDITOR_PATH);
@@ -369,22 +369,22 @@ export class Config implements ConfigMembers {
             utils.setContext(FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
             utils.setContext(FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
             utils.setContext(FLAGS.SHOW_EDIT, this.showEditOnNodes);
-            utils.setContext(FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);
+            // utils.setContext(FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);
             utils.setContext(FLAGS.SHOW_ADD, this.showAddOnNodes);
             utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
             utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
             utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
 
-            utils.setContext(FLAGS.SHOW_EDITION_BODY, this.showEditionOnBody);
-            utils.setContext(FLAGS.SHOW_CLIPBOARD_BODY, this.showClipboardOnBody);
-            utils.setContext(FLAGS.SHOW_PROMOTE_BODY, this.showPromoteOnBody);
-            utils.setContext(FLAGS.SHOW_EXECUTE_BODY, this.showExecuteOnBody);
-            utils.setContext(FLAGS.SHOW_EXTRACT_BODY, this.showExtractOnBody);
-            utils.setContext(FLAGS.SHOW_IMPORT_BODY, this.showImportOnBody);
-            utils.setContext(FLAGS.SHOW_REFRESH_BODY, this.showRefreshOnBody);
-            utils.setContext(FLAGS.SHOW_HOIST_BODY, this.showHoistOnBody);
-            utils.setContext(FLAGS.SHOW_MARK_BODY, this.showMarkOnBody);
-            utils.setContext(FLAGS.SHOW_SORT_BODY, this.showSortOnBody);
+            // utils.setContext(FLAGS.SHOW_EDITION_BODY, this.showEditionOnBody);
+            // utils.setContext(FLAGS.SHOW_CLIPBOARD_BODY, this.showClipboardOnBody);
+            // utils.setContext(FLAGS.SHOW_PROMOTE_BODY, this.showPromoteOnBody);
+            // utils.setContext(FLAGS.SHOW_EXECUTE_BODY, this.showExecuteOnBody);
+            // utils.setContext(FLAGS.SHOW_EXTRACT_BODY, this.showExtractOnBody);
+            // utils.setContext(FLAGS.SHOW_IMPORT_BODY, this.showImportOnBody);
+            // utils.setContext(FLAGS.SHOW_REFRESH_BODY, this.showRefreshOnBody);
+            // utils.setContext(FLAGS.SHOW_HOIST_BODY, this.showHoistOnBody);
+            // utils.setContext(FLAGS.SHOW_MARK_BODY, this.showMarkOnBody);
+            // utils.setContext(FLAGS.SHOW_SORT_BODY, this.showSortOnBody);
 
             utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
 

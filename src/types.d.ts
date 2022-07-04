@@ -19,27 +19,27 @@ export interface ConfigMembers {
     leoTreeBrowse: boolean;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
-    statusBarString: string;
+    // statusBarString: string;
     statusBarColor: string;
     treeInExplorer: boolean;
     showOpenAside: boolean;
     showEditOnNodes: boolean;
-    showArrowsOnNodes: boolean;
+    // showArrowsOnNodes: boolean;
     showAddOnNodes: boolean;
     showMarkOnNodes: boolean;
     showCloneOnNodes: boolean;
     showCopyOnNodes: boolean;
 
-    showEditionOnBody: boolean; // clone delete insert(s)
-    showClipboardOnBody: boolean; // cut copy paste(s)
-    showPromoteOnBody: boolean; // promote demote
-    showExecuteOnBody: boolean; // extract(s)
-    showExtractOnBody: boolean;
-    showImportOnBody: boolean;
-    showRefreshOnBody: boolean;
-    showHoistOnBody: boolean;
-    showMarkOnBody: boolean;
-    showSortOnBody: boolean;
+    // showEditionOnBody: boolean; // clone delete insert(s)
+    // showClipboardOnBody: boolean; // cut copy paste(s)
+    // showPromoteOnBody: boolean; // promote demote
+    // showExecuteOnBody: boolean; // extract(s)
+    // showExtractOnBody: boolean;
+    // showImportOnBody: boolean;
+    // showRefreshOnBody: boolean;
+    // showHoistOnBody: boolean;
+    // showMarkOnBody: boolean;
+    // showSortOnBody: boolean;
 
     invertNodeContrast: boolean;
     leoEditorPath: string;
@@ -152,12 +152,21 @@ export interface ArchivedPosition {
  * * Object sent back from leoInteg's 'getStates' command
  */
 export interface LeoPackageStates {
+
     changed: boolean; // Leo document has changed (is dirty)
+
     canUndo: boolean; // Leo document can undo the last operation done
     canRedo: boolean; // Leo document can redo the last operation 'undone'
+
+    canGoBack: boolean;
+    canGoNext: boolean;
+
     canDemote: boolean; // Currently selected node can have its siblings demoted
     canPromote: boolean; // Currently selected node can have its children promoted
+
     canDehoist: boolean; // Leo Document is currently hoisted and can be de-hoisted
+    canHoist: boolean;
+
 }
 
 /**

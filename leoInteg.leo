@@ -29,6 +29,7 @@
 <v t="felix.20200718222118.1"><vh>Acknowledgments</vh></v>
 </v>
 <v t="felix.20200718220833.1"><vh>@clean CHANGELOG.md</vh>
+<v t="felix.20220702153409.1"><vh>1.0.8</vh></v>
 <v t="felix.20220321001559.1"><vh>1.0.7</vh></v>
 <v t="felix.20220216005511.1"><vh>1.0.6</vh></v>
 <v t="felix.20211210001626.1"><vh>1.0.5</vh></v>
@@ -464,7 +465,6 @@
 <v t="ekr.20200815123601.4"><vh>Interface Behavior</vh></v>
 <v t="ekr.20200815123601.5"><vh>Statusbar Indicator</vh></v>
 <v t="ekr.20200815123601.6"><vh>Interface Appearance</vh></v>
-<v t="felix.20210703013251.1"><vh>Body Pane Icons</vh></v>
 <v t="ekr.20200815123601.7"><vh>Leo Bridge Options</vh></v>
 </v>
 <v t="ekr.20200815123601.8"><vh>viewsContainers</vh></v>
@@ -906,8 +906,11 @@
 <v t="felix.20200718193230.1"><vh>leoChanged</vh></v>
 <v t="felix.20200718193233.1"><vh>leoCanUndo</vh></v>
 <v t="felix.20200718193235.1"><vh>leoCanRedo</vh></v>
+<v t="felix.20220704004247.1"><vh>leoCanGoBack</vh></v>
+<v t="felix.20220704004253.1"><vh>leoCanGoNext</vh></v>
 <v t="felix.20200718193238.1"><vh>leoCanDemote</vh></v>
 <v t="felix.20200718193241.1"><vh>leoCanPromote</vh></v>
+<v t="felix.20220704004530.1"><vh>leoCanHoist</vh></v>
 <v t="felix.20200718193244.1"><vh>leoCanDehoist</vh></v>
 </v>
 <v t="felix.20200718193731.1"><vh>Selected Node Flags</vh>
@@ -917,7 +920,6 @@
 <v t="felix.20200718193348.1"><vh>leoEmpty</vh></v>
 <v t="felix.20200718193350.1"><vh>leoChild</vh></v>
 <v t="felix.20200718193353.1"><vh>leoAtFile</vh></v>
-<v t="felix.20200718193403.1"><vh>leoRoot</vh></v>
 </v>
 <v t="felix.20200718193500.1"><vh>constructor</vh></v>
 <v t="felix.20200718192411.2"><vh>selectedNodeFlags</vh></v>
@@ -928,7 +930,6 @@
 <v t="felix.20200718185403.2"><vh>class LeoStatusBar</vh>
 <v t="felix.20200718185403.3"><vh>show</vh></v>
 <v t="felix.20200718185403.4"><vh>hide</vh></v>
-<v t="felix.20200718185403.5"><vh>setString</vh></v>
 <v t="felix.20200718185403.6"><vh>update</vh></v>
 <v t="felix.20200718185403.7"><vh>_updateLeoObjectIndicatorDebounced</vh></v>
 <v t="felix.20200718185403.8"><vh>_updateLeoObjectIndicator</vh></v>
@@ -1810,12 +1811,21 @@ private _processServerOutput(p_data: string): void {
  * * Object sent back from leoInteg's 'getStates' command
  */
 export interface LeoPackageStates {
+
     changed: boolean; // Leo document has changed (is dirty)
+
     canUndo: boolean; // Leo document can undo the last operation done
     canRedo: boolean; // Leo document can redo the last operation 'undone'
+
+    canGoBack: boolean;
+    canGoNext: boolean;
+
     canDemote: boolean; // Currently selected node can have its siblings demoted
     canPromote: boolean; // Currently selected node can have its children promoted
+
     canDehoist: boolean; // Leo Document is currently hoisted and can be de-hoisted
+    canHoist: boolean;
+
 }
 
 </t>
@@ -2093,6 +2103,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
+[CMD.DEHOIST_DISABLED, () =&gt; { }],
 [CMD.DEHOIST_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEHOIST,
     node: U,
@@ -2105,6 +2116,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
+[CMD.HOIST_DISABLED, () =&gt; { }],
 [CMD.HOIST_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: U,
@@ -2257,6 +2269,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: true,
     keepSelection: true
 })],
+[CMD.DEMOTE_DISABLED, () =&gt; { }],
 [CMD.DEMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEMOTE_PNODE,
     node: U,
@@ -2276,6 +2289,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: true,
     keepSelection: true
 })],
+[CMD.PROMOTE_DISABLED, () =&gt; { }],
 [CMD.PROMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: U,
@@ -3026,7 +3040,7 @@ print('done')
 </t>
 <t tx="ekr.20200815123601.19">{
   "command": "leointeg.openLeoFile",
-  "title": "Open Leo File",
+  "title": "Open with LeoInteg",
   "category": "Leo",
   "icon": {
     "light": "resources/light/folder.svg",
@@ -3561,6 +3575,15 @@ print('done')
   }
 },
 {
+  "command": "leointeg.promoteDisabled",
+  "category": "Leo",
+  "title": "Can't Promote",
+  "icon": {
+    "light": "resources/light/promote-disabled.svg",
+    "dark": "resources/dark/promote-disabled.svg"
+  }
+},
+{
   "command": "leointeg.promoteSelection",
   "category": "Leo",
   "title": "Promote Children",
@@ -3585,6 +3608,15 @@ print('done')
   "icon": {
     "light": "resources/light/demote.svg",
     "dark": "resources/dark/demote.svg"
+  }
+},
+{
+  "command": "leointeg.demoteDisabled",
+  "category": "Leo",
+  "title": "Can't Demote",
+  "icon": {
+    "light": "resources/light/demote-disabled.svg",
+    "dark": "resources/dark/demote-disabled.svg"
   }
 },
 {
@@ -3729,6 +3761,15 @@ print('done')
   }
 },
 {
+  "command": "leointeg.hoistDisabled",
+  "category": "Leo",
+  "title": "Can't Hoist",
+  "icon": {
+    "light": "resources/light/hoist-disabled.svg",
+    "dark": "resources/dark/hoist-disabled.svg"
+  }
+},
+{
   "command": "leointeg.hoistSelectionFromOutline",
   "category": "Leo",
   "title": "Hoist",
@@ -3744,6 +3785,15 @@ print('done')
   "icon": {
     "light": "resources/light/dehoist.svg",
     "dark": "resources/dark/dehoist.svg"
+  }
+},
+{
+  "command": "leointeg.deHoistDisabled",
+  "category": "Leo",
+  "title": "Can't De-Hoist",
+  "icon": {
+    "light": "resources/light/dehoist-disabled.svg",
+    "dark": "resources/dark/dehoist-disabled.svg"
   }
 },
 {
@@ -4095,13 +4145,7 @@ print('done')
   "when": "leoTreeOpened"
 },
 </t>
-<t tx="ekr.20200815123601.5">"leoIntegration.statusBarString": {
-  "scope": "application",
-  "default": "",
-  "type": "string",
-  "description": "Sets the message string of the Status Bar Indicator"
-},
-"leoIntegration.statusBarColor": {
+<t tx="ekr.20200815123601.5">"leoIntegration.statusBarColor": {
   "scope": "application",
   "default": "fb7c47",
   "type": "string",
@@ -4165,7 +4209,7 @@ print('done')
 </t>
 <t tx="ekr.20200815123601.53">{
   "command": "leointeg.hoistSelection",
-  "when": "leoTreeOpened &amp;&amp; !leoRoot"
+  "when": "leoTreeOpened &amp;&amp; leoCanHoist"
 },
 {
   "command": "leointeg.deHoist",
@@ -4230,12 +4274,6 @@ print('done')
   "default": true,
   "type": "boolean",
   "description": "Shows 'Edit Headline' button on tree nodes"
-},
-"leoIntegration.showArrowsOnNodes": {
-  "scope": "application",
-  "default": false,
-  "type": "boolean",
-  "description": "Shows 'Move Node' arrow buttons on tree nodes"
 },
 "leoIntegration.showAddOnNodes": {
   "scope": "application",
@@ -6810,7 +6848,9 @@ public static COMMANDS = {
     INSERT_CHILD: Constants.NAME + ".insertChildNode",
     CLONE: Constants.NAME + ".cloneNode",
     PROMOTE: Constants.NAME + ".promote",
+    PROMOTE_DISABLED: Constants.NAME + ".promoteDisabled",
     DEMOTE: Constants.NAME + ".demote",
+    DEMOTE_DISABLED: Constants.NAME + ".demoteDisabled",
     REFRESH_FROM_DISK: Constants.NAME + ".refreshFromDisk",
     WRITE_AT_FILE_NODES: Constants.NAME + ".writeAtFileNodes",
     WRITE_AT_FILE_NODES_FO: Constants.NAME + ".writeAtFileNodesFromOutline",
@@ -6856,9 +6896,11 @@ public static COMMANDS = {
     DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",
     REFRESH_FROM_DISK_SELECTION_FO: Constants.NAME + ".refreshFromDiskSelectionFromOutline",
     HOIST: Constants.NAME + ".hoistNode",
+    HOIST_DISABLED: Constants.NAME + ".hoistDisabled",
     HOIST_SELECTION: Constants.NAME + ".hoistSelection",
     HOIST_SELECTION_FO: Constants.NAME + ".hoistSelectionFromOutline",
     DEHOIST: Constants.NAME + ".deHoist",
+    DEHOIST_DISABLED: Constants.NAME + ".deHoistDisabled",
     DEHOIST_FO: Constants.NAME + ".deHoistFromOutline",
     EXTRACT: Constants.NAME + ".extract",
     EXTRACT_NAMES: Constants.NAME + ".extractNames",
@@ -7171,13 +7213,18 @@ public static CONTEXT_FLAGS = {
     TREE_TITLED: "leoTreeTitled", // Tree is a Leo file and not a new untitled document
     SERVER_STARTED: "leoServerStarted", // Auto-start or manually started
     LEOID_MISSING: "leoIDMissing", // To be used as flag for #248
+
     // 'states' flags for currently opened tree view
     LEO_CHANGED: "leoChanged",
     LEO_CAN_UNDO: "leoCanUndo",
     LEO_CAN_REDO: "leoCanRedo",
+    LEO_CAN_BACK: "leoCanGoBack",
+    LEO_CAN_NEXT: "leoCanGoNext",
     LEO_CAN_DEMOTE: "leoCanDemote",
     LEO_CAN_PROMOTE: "leoCanPromote",
     LEO_CAN_DEHOIST: "leoCanDehoist",
+    LEO_CAN_HOIST: "leoCanHoist", // isNotRoot equivalent
+
     // 'states' flags about current selection, for visibility and commands availability
     SELECTED_MARKED: "leoMarked", // no need for unmarked here, use !leoMarked
     SELECTED_CLONE: "leoCloned",
@@ -7185,21 +7232,26 @@ public static CONTEXT_FLAGS = {
     SELECTED_EMPTY: "leoEmpty",
     SELECTED_CHILD: "leoChild", // Has children
     SELECTED_ATFILE: "leoAtFile", // Can be refreshed
-    SELECTED_ROOT: "leoRoot", // ! Not given by Leo: Computed by leoInteg/vscode instead
+
+    // SELECTED_ROOT: "leoRoot", // ! REPLACED BY canHoist / canDehoist
+
     // Statusbar Flag 'keybindings in effect'
     LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
-    // Context Flags for 'when' clauses, used concatenated, for each outline node
+
+    // Outline nodes: text Flags for 'when' clauses. Used as concatenated strings.
     NODE_MARKED: "leoNodeMarked",  // Selected node is marked
     NODE_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked (Needed for regexp)
     NODE_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
     NODE_CLONED: "leoNodeCloned",
     NODE_ROOT: "leoNodeRoot",
     NODE_NOT_ROOT: "leoNodeNotRoot",
+
     // Flags for Leo documents tree view icons and hover node command buttons
     DOCUMENT_SELECTED_TITLED: "leoDocumentSelectedTitled",
     DOCUMENT_TITLED: "leoDocumentTitled",
     DOCUMENT_SELECTED_UNTITLED: "leoDocumentSelectedUntitled",
     DOCUMENT_UNTITLED: "leoDocumentUntitled",
+
     // Flags that match specific LeoInteg config settings
     LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
     TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER, // Leo outline also in the explorer view
@@ -7421,27 +7473,27 @@ export class Config implements ConfigMembers {
     public leoTreeBrowse: boolean = Constants.CONFIG_DEFAULTS.LEO_TREE_BROWSE;
     public treeKeepFocus: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS;
     public treeKeepFocusWhenAside: boolean = Constants.CONFIG_DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE;
-    public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
+    // public statusBarString: string = Constants.CONFIG_DEFAULTS.STATUSBAR_STRING;
     public statusBarColor: string = Constants.CONFIG_DEFAULTS.STATUSBAR_COLOR;
     public treeInExplorer: boolean = Constants.CONFIG_DEFAULTS.TREE_IN_EXPLORER;
     public showOpenAside: boolean = Constants.CONFIG_DEFAULTS.SHOW_OPEN_ASIDE;
     public showEditOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDIT;
-    public showArrowsOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ARROWS;
+    // public showArrowsOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ARROWS;
     public showAddOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_ADD;
     public showMarkOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK;
     public showCloneOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLONE;
     public showCopyOnNodes: boolean = Constants.CONFIG_DEFAULTS.SHOW_COPY;
 
-    public showEditionOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDITION_BODY;
-    public showClipboardOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLIPBOARD_BODY;
-    public showPromoteOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_PROMOTE_BODY;
-    public showExecuteOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EXECUTE_BODY;
-    public showExtractOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EXTRACT_BODY;
-    public showImportOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_IMPORT_BODY;
-    public showRefreshOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_REFRESH_BODY;
-    public showHoistOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_HOIST_BODY;
-    public showMarkOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK_BODY;
-    public showSortOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_SORT_BODY;
+    // public showEditionOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EDITION_BODY;
+    // public showClipboardOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_CLIPBOARD_BODY;
+    // public showPromoteOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_PROMOTE_BODY;
+    // public showExecuteOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EXECUTE_BODY;
+    // public showExtractOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_EXTRACT_BODY;
+    // public showImportOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_IMPORT_BODY;
+    // public showRefreshOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_REFRESH_BODY;
+    // public showHoistOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_HOIST_BODY;
+    // public showMarkOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_MARK_BODY;
+    // public showSortOnBody: boolean = Constants.CONFIG_DEFAULTS.SHOW_SORT_BODY;
 
     public invertNodeContrast: boolean = Constants.CONFIG_DEFAULTS.INVERT_NODES;
     public leoPythonCommand: string = Constants.CONFIG_DEFAULTS.LEO_PYTHON_COMMAND;
@@ -7478,27 +7530,27 @@ public getConfig(): ConfigMembers {
         leoTreeBrowse: this.leoTreeBrowse,
         treeKeepFocus: this.treeKeepFocus,
         treeKeepFocusWhenAside: this.treeKeepFocusWhenAside,
-        statusBarString: this.statusBarString,
+        // statusBarString: this.statusBarString,
         statusBarColor: this.statusBarColor,
         treeInExplorer: this.treeInExplorer,
         showOpenAside: this.showOpenAside,
         showEditOnNodes: this.showEditOnNodes,
-        showArrowsOnNodes: this.showArrowsOnNodes,
+        // showArrowsOnNodes: this.showArrowsOnNodes,
         showAddOnNodes: this.showAddOnNodes,
         showMarkOnNodes: this.showMarkOnNodes,
         showCloneOnNodes: this.showCloneOnNodes,
         showCopyOnNodes: this.showCopyOnNodes,
 
-        showEditionOnBody: this.showEditionOnBody,
-        showClipboardOnBody: this.showClipboardOnBody,
-        showPromoteOnBody: this.showPromoteOnBody,
-        showExecuteOnBody: this.showExecuteOnBody,
-        showExtractOnBody: this.showExtractOnBody,
-        showImportOnBody: this.showImportOnBody,
-        showRefreshOnBody: this.showRefreshOnBody,
-        showHoistOnBody: this.showHoistOnBody,
-        showMarkOnBody: this.showMarkOnBody,
-        showSortOnBody: this.showSortOnBody,
+        // showEditionOnBody: this.showEditionOnBody,
+        // showClipboardOnBody: this.showClipboardOnBody,
+        // showPromoteOnBody: this.showPromoteOnBody,
+        // showExecuteOnBody: this.showExecuteOnBody,
+        // showExtractOnBody: this.showExtractOnBody,
+        // showImportOnBody: this.showImportOnBody,
+        // showRefreshOnBody: this.showRefreshOnBody,
+        // showHoistOnBody: this.showHoistOnBody,
+        // showMarkOnBody: this.showMarkOnBody,
+        // showSortOnBody: this.showSortOnBody,
 
         invertNodeContrast: this.invertNodeContrast,
         leoPythonCommand: this.leoPythonCommand,
@@ -7572,10 +7624,10 @@ public buildFromSavedSettings(): void {
         this.leoTreeBrowse = GET(NAME).get(NAMES.LEO_TREE_BROWSE, DEFAULTS.LEO_TREE_BROWSE);
         this.treeKeepFocus = GET(NAME).get(NAMES.TREE_KEEP_FOCUS, DEFAULTS.TREE_KEEP_FOCUS);
         this.treeKeepFocusWhenAside = GET(NAME).get(NAMES.TREE_KEEP_FOCUS_WHEN_ASIDE, DEFAULTS.TREE_KEEP_FOCUS_WHEN_ASIDE);
-        this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
-        if (this.statusBarString.length &gt; 8) {
-            this.statusBarString = DEFAULTS.STATUSBAR_STRING;
-        }
+        // this.statusBarString = GET(NAME).get(NAMES.STATUSBAR_STRING, DEFAULTS.STATUSBAR_STRING);
+        // if (this.statusBarString.length &gt; 8) {
+        //     this.statusBarString = DEFAULTS.STATUSBAR_STRING;
+        // }
         this.statusBarColor = GET(NAME).get(NAMES.STATUSBAR_COLOR, DEFAULTS.STATUSBAR_COLOR);
         if (!utils.isHexColor(this.statusBarColor)) {
             this.statusBarColor = DEFAULTS.STATUSBAR_COLOR;
@@ -7583,22 +7635,22 @@ public buildFromSavedSettings(): void {
         this.treeInExplorer = GET(NAME).get(NAMES.TREE_IN_EXPLORER, DEFAULTS.TREE_IN_EXPLORER);
         this.showOpenAside = GET(NAME).get(NAMES.SHOW_OPEN_ASIDE, DEFAULTS.SHOW_OPEN_ASIDE);
         this.showEditOnNodes = GET(NAME).get(NAMES.SHOW_EDIT, DEFAULTS.SHOW_EDIT);
-        this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
+        // this.showArrowsOnNodes = GET(NAME).get(NAMES.SHOW_ARROWS, DEFAULTS.SHOW_ARROWS);
         this.showAddOnNodes = GET(NAME).get(NAMES.SHOW_ADD, DEFAULTS.SHOW_ADD);
         this.showMarkOnNodes = GET(NAME).get(NAMES.SHOW_MARK, DEFAULTS.SHOW_MARK);
         this.showCloneOnNodes = GET(NAME).get(NAMES.SHOW_CLONE, DEFAULTS.SHOW_CLONE);
         this.showCopyOnNodes = GET(NAME).get(NAMES.SHOW_COPY, DEFAULTS.SHOW_COPY);
 
-        this.showEditionOnBody = GET(NAME).get(NAMES.SHOW_EDITION_BODY, DEFAULTS.SHOW_EDITION_BODY);
-        this.showClipboardOnBody = GET(NAME).get(NAMES.SHOW_CLIPBOARD_BODY, DEFAULTS.SHOW_CLIPBOARD_BODY);
-        this.showPromoteOnBody = GET(NAME).get(NAMES.SHOW_PROMOTE_BODY, DEFAULTS.SHOW_PROMOTE_BODY);
-        this.showExecuteOnBody = GET(NAME).get(NAMES.SHOW_EXECUTE_BODY, DEFAULTS.SHOW_EXECUTE_BODY);
-        this.showExtractOnBody = GET(NAME).get(NAMES.SHOW_EXTRACT_BODY, DEFAULTS.SHOW_EXTRACT_BODY);
-        this.showImportOnBody = GET(NAME).get(NAMES.SHOW_IMPORT_BODY, DEFAULTS.SHOW_IMPORT_BODY);
-        this.showRefreshOnBody = GET(NAME).get(NAMES.SHOW_REFRESH_BODY, DEFAULTS.SHOW_REFRESH_BODY);
-        this.showHoistOnBody = GET(NAME).get(NAMES.SHOW_HOIST_BODY, DEFAULTS.SHOW_HOIST_BODY);
-        this.showMarkOnBody = GET(NAME).get(NAMES.SHOW_MARK_BODY, DEFAULTS.SHOW_MARK_BODY);
-        this.showSortOnBody = GET(NAME).get(NAMES.SHOW_SORT_BODY, DEFAULTS.SHOW_SORT_BODY);
+        // this.showEditionOnBody = GET(NAME).get(NAMES.SHOW_EDITION_BODY, DEFAULTS.SHOW_EDITION_BODY);
+        // this.showClipboardOnBody = GET(NAME).get(NAMES.SHOW_CLIPBOARD_BODY, DEFAULTS.SHOW_CLIPBOARD_BODY);
+        // this.showPromoteOnBody = GET(NAME).get(NAMES.SHOW_PROMOTE_BODY, DEFAULTS.SHOW_PROMOTE_BODY);
+        // this.showExecuteOnBody = GET(NAME).get(NAMES.SHOW_EXECUTE_BODY, DEFAULTS.SHOW_EXECUTE_BODY);
+        // this.showExtractOnBody = GET(NAME).get(NAMES.SHOW_EXTRACT_BODY, DEFAULTS.SHOW_EXTRACT_BODY);
+        // this.showImportOnBody = GET(NAME).get(NAMES.SHOW_IMPORT_BODY, DEFAULTS.SHOW_IMPORT_BODY);
+        // this.showRefreshOnBody = GET(NAME).get(NAMES.SHOW_REFRESH_BODY, DEFAULTS.SHOW_REFRESH_BODY);
+        // this.showHoistOnBody = GET(NAME).get(NAMES.SHOW_HOIST_BODY, DEFAULTS.SHOW_HOIST_BODY);
+        // this.showMarkOnBody = GET(NAME).get(NAMES.SHOW_MARK_BODY, DEFAULTS.SHOW_MARK_BODY);
+        // this.showSortOnBody = GET(NAME).get(NAMES.SHOW_SORT_BODY, DEFAULTS.SHOW_SORT_BODY);
 
         this.invertNodeContrast = GET(NAME).get(NAMES.INVERT_NODES, DEFAULTS.INVERT_NODES);
         this.leoEditorPath = GET(NAME).get(NAMES.LEO_EDITOR_PATH, DEFAULTS.LEO_EDITOR_PATH);
@@ -7619,22 +7671,22 @@ public buildFromSavedSettings(): void {
         utils.setContext(FLAGS.TREE_IN_EXPLORER, this.treeInExplorer);
         utils.setContext(FLAGS.SHOW_OPEN_ASIDE, this.showOpenAside);
         utils.setContext(FLAGS.SHOW_EDIT, this.showEditOnNodes);
-        utils.setContext(FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);
+        // utils.setContext(FLAGS.SHOW_ARROWS, this.showArrowsOnNodes);
         utils.setContext(FLAGS.SHOW_ADD, this.showAddOnNodes);
         utils.setContext(FLAGS.SHOW_MARK, this.showMarkOnNodes);
         utils.setContext(FLAGS.SHOW_CLONE, this.showCloneOnNodes);
         utils.setContext(FLAGS.SHOW_COPY, this.showCopyOnNodes);
 
-        utils.setContext(FLAGS.SHOW_EDITION_BODY, this.showEditionOnBody);
-        utils.setContext(FLAGS.SHOW_CLIPBOARD_BODY, this.showClipboardOnBody);
-        utils.setContext(FLAGS.SHOW_PROMOTE_BODY, this.showPromoteOnBody);
-        utils.setContext(FLAGS.SHOW_EXECUTE_BODY, this.showExecuteOnBody);
-        utils.setContext(FLAGS.SHOW_EXTRACT_BODY, this.showExtractOnBody);
-        utils.setContext(FLAGS.SHOW_IMPORT_BODY, this.showImportOnBody);
-        utils.setContext(FLAGS.SHOW_REFRESH_BODY, this.showRefreshOnBody);
-        utils.setContext(FLAGS.SHOW_HOIST_BODY, this.showHoistOnBody);
-        utils.setContext(FLAGS.SHOW_MARK_BODY, this.showMarkOnBody);
-        utils.setContext(FLAGS.SHOW_SORT_BODY, this.showSortOnBody);
+        // utils.setContext(FLAGS.SHOW_EDITION_BODY, this.showEditionOnBody);
+        // utils.setContext(FLAGS.SHOW_CLIPBOARD_BODY, this.showClipboardOnBody);
+        // utils.setContext(FLAGS.SHOW_PROMOTE_BODY, this.showPromoteOnBody);
+        // utils.setContext(FLAGS.SHOW_EXECUTE_BODY, this.showExecuteOnBody);
+        // utils.setContext(FLAGS.SHOW_EXTRACT_BODY, this.showExtractOnBody);
+        // utils.setContext(FLAGS.SHOW_IMPORT_BODY, this.showImportOnBody);
+        // utils.setContext(FLAGS.SHOW_REFRESH_BODY, this.showRefreshOnBody);
+        // utils.setContext(FLAGS.SHOW_HOIST_BODY, this.showHoistOnBody);
+        // utils.setContext(FLAGS.SHOW_MARK_BODY, this.showMarkOnBody);
+        // utils.setContext(FLAGS.SHOW_SORT_BODY, this.showSortOnBody);
 
         utils.setContext(FLAGS.AUTO_CONNECT, this.connectToServerAutomatically);
 
@@ -8879,10 +8931,15 @@ export class LeoNode extends vscode.TreeItem {
  */
 public setRoot(): void {
     this.isRoot = true;
+
+    /*
+     * Now using canHoist / canDehoist
     if (this.selected) {
         // Set this special global 'selected node' flag
         this._leoIntegration.leoStates.leoRoot = true;
     }
+    */
+
     this.contextValue = this._getNodeContextValue();
 }
 
@@ -9106,7 +9163,6 @@ export class LeoStatusBar {
     private _leoStatusBarItem: vscode.StatusBarItem;
     private _statusbarNormalColor = new vscode.ThemeColor(Constants.GUI.THEME_STATUSBAR);  // "statusBar.foreground"
     private _updateStatusBarTimeout: NodeJS.Timeout | undefined;
-    private _string: string = ""; // Use this string with indicator, using this will replace the default from config
 
     // * Represents having focus on a leo tree, body or document panel to enable leo keybindings
     private _statusBarFlag: boolean = false;
@@ -9126,7 +9182,7 @@ export class LeoStatusBar {
 
         this._leoStatusBarItem.command = Constants.COMMANDS.STATUS_BAR;
         // this._leoStatusBarItem.command = "leointeg.test"; // just call test function for now to help debugging
-        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR + this._leoIntegration.config.statusBarString;
+        this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR;
         this._leoStatusBarItem.tooltip = Constants.USER_MESSAGES.STATUSBAR_TOOLTIP_ON;
         _context.subscriptions.push(this._leoStatusBarItem);
         this._leoStatusBarItem.hide();
@@ -9148,15 +9204,6 @@ public show(): void {
  */
 public hide(): void {
     this._leoStatusBarItem.hide();
-}
-
-</t>
-<t tx="felix.20200718185403.5">/**
- * * Sets string to replace default from config &amp; refresh it
- */
-public setString(p_string: string): void {
-    this._string = p_string;
-    this._updateLeoObjectIndicator();
 }
 
 </t>
@@ -9203,7 +9250,6 @@ private _updateLeoObjectIndicator(): void {
     utils.setContext(Constants.CONTEXT_FLAGS.LEO_SELECTED, !!this.statusBarFlag);
 
     this._leoStatusBarItem.text = Constants.GUI.STATUSBAR_INDICATOR +
-        (this._string ? this._string : this._leoIntegration.config.statusBarString) + " " +
         (this._leoIntegration.leoStates.leoOpenedFileName ? utils.getFileFromPath(this._leoIntegration.leoStates.leoOpenedFileName) : Constants.UNTITLED_FILE_NAME);
 
     // Also check in constructor for statusBar properties (the createStatusBarItem call itself)
@@ -9466,7 +9512,8 @@ export class LeoStates {
 }
 </t>
 <t tx="felix.20200718192411.2">public setSelectedNodeFlags(p_node: LeoNode): void {
-    this.leoRoot = p_node.isRoot; // * ALSO set in setRoot of LeoNode class
+    this.leoCanHoist = !p_node.isRoot; // * ALSO set in setRoot of LeoNode class
+
     this.leoMarked = p_node.marked;
     this.leoCloned = p_node.cloned;
     this.leoDirty = p_node.dirty;
@@ -9478,10 +9525,17 @@ export class LeoStates {
 </t>
 <t tx="felix.20200718192411.3">public setLeoStateFlags(p_states: LeoPackageStates): void {
     this.leoChanged = p_states.changed; // Documents will be refresh if this changes
+
     this.leoCanUndo = p_states.canUndo;
     this.leoCanRedo = p_states.canRedo;
+
+    this.leoCanGoBack = p_states.canGoBack;
+    this.leoCanGoNext = p_states.canGoNext;
+
     this.leoCanDemote = p_states.canDemote;
     this.leoCanPromote = p_states.canPromote;
+
+    this.leoCanHoist = p_states.canHoist;
     this.leoCanDehoist = p_states.canDehoist;
 }
 </t>
@@ -9632,7 +9686,7 @@ set leoEmpty(p_value: boolean) {
 }
 
 </t>
-<t tx="felix.20200718193350.1">private _leoChild: boolean = false;
+<t tx="felix.20200718193350.1">private _leoChild: boolean = false; // Has child
 get leoChild(): boolean {
     return this._leoChild;
 }
@@ -9649,17 +9703,6 @@ get leoAtFile(): boolean {
 set leoAtFile(p_value: boolean) {
     this._leoAtFile = p_value;
     utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_ATFILE, p_value);
-}
-
-</t>
-<t tx="felix.20200718193403.1">// * Special is-root 'state' flag about current selection, for visibility and commands availability
-private _leoRoot: boolean = false;
-get leoRoot(): boolean {
-    return this._leoRoot;
-}
-set leoRoot(p_value: boolean) {
-    this._leoRoot = p_value;
-    utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_ROOT, p_value);
 }
 
 </t>
@@ -9819,27 +9862,27 @@ export interface ConfigMembers {
     leoTreeBrowse: boolean;
     treeKeepFocus: boolean;
     treeKeepFocusWhenAside: boolean;
-    statusBarString: string;
+    // statusBarString: string;
     statusBarColor: string;
     treeInExplorer: boolean;
     showOpenAside: boolean;
     showEditOnNodes: boolean;
-    showArrowsOnNodes: boolean;
+    // showArrowsOnNodes: boolean;
     showAddOnNodes: boolean;
     showMarkOnNodes: boolean;
     showCloneOnNodes: boolean;
     showCopyOnNodes: boolean;
 
-    showEditionOnBody: boolean; // clone delete insert(s)
-    showClipboardOnBody: boolean; // cut copy paste(s)
-    showPromoteOnBody: boolean; // promote demote
-    showExecuteOnBody: boolean; // extract(s)
-    showExtractOnBody: boolean;
-    showImportOnBody: boolean;
-    showRefreshOnBody: boolean;
-    showHoistOnBody: boolean;
-    showMarkOnBody: boolean;
-    showSortOnBody: boolean;
+    // showEditionOnBody: boolean; // clone delete insert(s)
+    // showClipboardOnBody: boolean; // cut copy paste(s)
+    // showPromoteOnBody: boolean; // promote demote
+    // showExecuteOnBody: boolean; // extract(s)
+    // showExtractOnBody: boolean;
+    // showImportOnBody: boolean;
+    // showRefreshOnBody: boolean;
+    // showHoistOnBody: boolean;
+    // showMarkOnBody: boolean;
+    // showSortOnBody: boolean;
 
     invertNodeContrast: boolean;
     leoEditorPath: string;
@@ -15304,34 +15347,89 @@ public static VSCODE_COMMANDS = {
     "group": "navigation@2"
   },
   {
-    "command": "leointeg.undoFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanUndo",
+    "command": "leointeg.prevFromOutline",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoBack",
     "group": "navigation@3"
+  },
+  {
+    "command": "leointeg.prevDisabled",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoBack",
+    "group": "navigation@3"
+  },
+  {
+    "command": "leointeg.nextFromOutline",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoNext",
+    "group": "navigation@4"
+  },
+  {
+    "command": "leointeg.nextDisabled",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoNext",
+    "group": "navigation@4"
+  },
+  {
+    "command": "leointeg.undoFromOutline",
+    "when": "view =~ /^leoIntegration|^leoUndo/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanUndo",
+    "group": "navigation@5"
   },
   {
     "command": "leointeg.undoDisabled",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanUndo",
-    "group": "navigation@3"
+    "when": "view =~ /^leoIntegration|^leoUndo/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanUndo",
+    "group": "navigation@5"
   },
   {
     "command": "leointeg.redoFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanRedo",
-    "group": "navigation@4"
+    "when": "view =~ /^leoIntegration|^leoUndo/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanRedo",
+    "group": "navigation@6"
   },
   {
     "command": "leointeg.redoDisabled",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanRedo",
-    "group": "navigation@4"
+    "when": "view =~ /^leoIntegration|^leoUndo/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanRedo",
+    "group": "navigation@6"
   },
   {
     "command": "leointeg.deHoistFromOutline",
     "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanDehoist",
-    "group": "navigation@5"
+    "group": "navigation@7"
+  },
+  {
+    "command": "leointeg.deHoistDisabled",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanDehoist",
+    "group": "navigation@7"
+  },
+  {
+    "command": "leointeg.hoistSelectionFromOutline",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanHoist",
+    "group": "navigation@8"
+  },
+  {
+    "command": "leointeg.hoistDisabled",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanHoist",
+    "group": "navigation@8"
+  },
+  {
+    "command": "leointeg.promoteSelectionFromOutline",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanPromote",
+    "group": "navigation@9"
+  },
+  {
+    "command": "leointeg.promoteDisabled",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanPromote",
+    "group": "navigation@9"
+  },
+  {
+    "command": "leointeg.demoteSelectionFromOutline",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanDemote",
+    "group": "navigation@10"
+  },
+  {
+    "command": "leointeg.demoteDisabled",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanDemote",
+    "group": "navigation@10"
   },
   {
     "command": "leointeg.contractAllFromOutline",
     "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@6"
+    "group": "navigation@11"
   }
 ],
 </t>
@@ -15367,44 +15465,24 @@ public static VSCODE_COMMANDS = {
     "group": "inline@2"
   },
   {
-    "command": "leointeg.moveOutlineDown",
-    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /^leoNode/",
-    "group": "inline@3"
-  },
-  {
-    "command": "leointeg.moveOutlineLeft",
-    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /^leoNode/",
-    "group": "inline@3"
-  },
-  {
-    "command": "leointeg.moveOutlineRight",
-    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /^leoNode/",
-    "group": "inline@3"
-  },
-  {
-    "command": "leointeg.moveOutlineUp",
-    "when": "showArrowsOnNodes &amp;&amp; viewItem =~ /^leoNode/",
-    "group": "inline@3"
-  },
-  {
     "command": "leointeg.copyNode",
     "when": "showCopyOnNodes &amp;&amp; viewItem =~ /^leoNode/",
-    "group": "inline@4"
+    "group": "inline@3"
   },
   {
     "command": "leointeg.cloneNode",
     "when": "showCloneOnNodes &amp;&amp; viewItem =~ /^leoNode/",
-    "group": "inline@4"
+    "group": "inline@3"
   },
   {
     "command": "leointeg.mark",
     "when": "showMarkOnNodes &amp;&amp; viewItem =~ /^leoNodeUnmarked/",
-    "group": "inline@5"
+    "group": "inline@4"
   },
   {
     "command": "leointeg.unmark",
     "when": "showMarkOnNodes &amp;&amp; viewItem =~ /^leoNodeMarked/",
-    "group": "inline@5"
+    "group": "inline@4"
   },
   {
     "command": "leointeg.openAside",
@@ -17261,119 +17339,49 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
 </t>
 <t tx="felix.20210610022645.1">"editor/title": [
   {
-    "command": "leointeg.showSettingsPage",
-    "when": "resourceScheme == leo",
-    "group": "2_custom"
+    "command": "leointeg.prev",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoBack",
+    "group": "navigation@1"
   },
   {
-    "command": "leointeg.prev",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "command": "leointeg.prevDisabled",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoBack",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.next",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoNext",
     "group": "navigation@2"
   },
   {
-    "command": "leointeg.hoistSelection",
-    "when": "showHoistOnBody &amp;&amp; !leoRoot &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@3"
-  },
-  {
-    "command": "leointeg.deHoist",
-    "when": "showHoistOnBody &amp;&amp; leoCanDehoist &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@4"
-  },
-  {
-    "command": "leointeg.promoteSelection",
-    "when": "showPromoteOnBody &amp;&amp; leoCanPromote &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@5"
-  },
-  {
-    "command": "leointeg.demoteSelection",
-    "when": "showPromoteOnBody &amp;&amp; leoCanDemote &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@6"
+    "command": "leointeg.nextDisabled",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoNext",
+    "group": "navigation@2"
   },
   {
     "command": "leointeg.executeScript",
-    "when": "showExecuteOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@7"
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@3"
   },
   {
     "command": "leointeg.extract",
-    "when": "showExtractOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@8"
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@4"
   },
   {
     "command": "leointeg.extractNames",
-    "when": "showExtractOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@9"
-  },
-  {
-    "command": "leointeg.cloneNodeSelection",
-    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@10"
-  },
-  {
-    "command": "leointeg.insertNodeSelection",
-    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@11"
-  },
-  {
-    "command": "leointeg.insertChildNodeSelection",
-    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@12"
-  },
-  {
-    "command": "leointeg.deleteSelection",
-    "when": "showEditionOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@13"
-  },
-  {
-    "command": "leointeg.cutNodeSelection",
-    "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@14"
-  },
-  {
-    "command": "leointeg.copyNodeSelection",
-    "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@15"
-  },
-  {
-    "command": "leointeg.pasteNodeAtSelection",
-    "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@16"
-  },
-  {
-    "command": "leointeg.pasteNodeAsCloneAtSelection",
-    "when": "showClipboardOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@17"
-  },
-  {
-    "command": "leointeg.markSelection",
-    "when": "showMarkOnBody &amp;&amp; !leoMarked &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@18"
-  },
-  {
-    "command": "leointeg.unmarkSelection",
-    "when": "showMarkOnBody &amp;&amp; leoMarked &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@19"
-  },
-  {
-    "command": "leointeg.sortSiblingsSelection",
-    "when": "showSortOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@20"
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@5"
   },
   {
     "command": "leointeg.importAnyFile",
-    "when": "showImportOnBody &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@21"
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
+    "group": "navigation@6"
   },
   {
-    "command": "leointeg.refreshFromDiskSelection",
-    "when": "showRefreshOnBody &amp;&amp; leoAtFile &amp;&amp; resourceScheme == leo &amp;&amp; leoTreeOpened",
-    "group": "navigation@22"
+    "command": "leointeg.showSettingsPage",
+    "when": "resourceScheme == leo",
+    "group": "navigation@7"
   }
 ],
 </t>
@@ -21141,67 +21149,6 @@ def _dump_position(self, p):  # pragma: no cover
         g.app.closeLeoWindow(self.lastCommander.frame, finish_quit=False)
         g.leoServer.open_file({"filename": path})  # ignore returned value
 </t>
-<t tx="felix.20210703013251.1">"leoIntegration.showEditionOnBody": {
-  "scope": "application",
-  "default": true,
-  "type": "boolean",
-  "description": "Shows clone, delete and insert nodes above the body pane"
-},
-"leoIntegration.showClipboardOnBody": {
-  "scope": "application",
-  "default": true,
-  "type": "boolean",
-  "description": "Shows cut, copy &amp; paste nodes above the body pane"
-},
-"leoIntegration.showPromoteOnBody": {
-  "scope": "application",
-  "default": true,
-  "type": "boolean",
-  "description": "Shows promote and demote above the body pane"
-},
-"leoIntegration.showExecuteOnBody": {
-  "scope": "application",
-  "default": true,
-  "type": "boolean",
-  "description": "Shows 'Execute Script' above the body pane"
-},
-"leoIntegration.showExtractOnBody": {
-  "scope": "application",
-  "default": true,
-  "type": "boolean",
-  "description": "Shows extract commands above the body pane"
-},
-"leoIntegration.showImportOnBody": {
-  "scope": "application",
-  "default": true,
-  "type": "boolean",
-  "description": "Shows 'Import File' above the body pane"
-},
-"leoIntegration.showRefreshOnBody": {
-  "scope": "application",
-  "default": true,
-  "type": "boolean",
-  "description": "Shows 'Refresh from disk' above the body pane"
-},
-"leoIntegration.showHoistOnBody": {
-  "scope": "application",
-  "default": true,
-  "type": "boolean",
-  "description": "Shows Hoist commands above the body pane"
-},
-"leoIntegration.showMarkOnBody": {
-  "scope": "application",
-  "default": true,
-  "type": "boolean",
-  "description": "Shows Mark commands above the body pane"
-},
-"leoIntegration.showSortOnBody": {
-  "scope": "application",
-  "default": true,
-  "type": "boolean",
-  "description": "Shows 'Sort Siblings' above the body pane"
-},
-</t>
 <t tx="felix.20210703021435.1">def insert_child_node(self, param):
     """
     Insert a child node at given node, then select it once created, and finally return it
@@ -24712,6 +24659,41 @@ export function cleanLeoID(id_: string): string {
 }
 
 </t>
+<t tx="felix.20220702153409.1">## 1.0.8
+
+- Added and improved icons sets for disabled icon-buttons and common actions.
+
+</t>
+<t tx="felix.20220704004247.1">private _leoCanGoBack: boolean = false;
+get leoCanGoBack(): boolean {
+    return this._leoCanGoBack;
+}
+set leoCanGoBack(p_value: boolean) {
+    this._leoCanGoBack = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_BACK, p_value);
+}
+
+</t>
+<t tx="felix.20220704004253.1">private _leoCanGoNext: boolean = false;
+get leoCanGoNext(): boolean {
+    return this._leoCanGoNext;
+}
+set leoCanGoNext(p_value: boolean) {
+    this._leoCanGoNext = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_NEXT, p_value);
+}
+
+</t>
+<t tx="felix.20220704004530.1">private _leoCanHoist: boolean = false;
+get leoCanHoist(): boolean {
+    return this._leoCanHoist;
+}
+set leoCanHoist(p_value: boolean) {
+    this._leoCanHoist = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_HOIST, p_value);
+}
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";
@@ -25683,7 +25665,7 @@ body &gt; div &gt; div &gt; label:active {
               &lt;label for="invertNodeContrast"&gt;Invert Node Contrast&lt;/label&gt;
             &lt;/div&gt;
             &lt;p class="section__header-hint"&gt;
-              Inverts the dirty/clean border of tree nodes
+              Inverts the dirty/clean border appearance of tree nodes
             &lt;/p&gt;
           &lt;/div&gt;
         &lt;/div&gt;
@@ -25722,9 +25704,9 @@ body &gt; div &gt; div &gt; label:active {
               &lt;img class="image__preview--float"
                    src="#{root}/resources/clone.png"
                    data-visibility="showCloneOnNodes" /&gt;
-              &lt;img class="image__preview--float"
+              &lt;!-- &lt;img class="image__preview--float"
                    src="#{root}/resources/arrows.png"
-                   data-visibility="showArrowsOnNodes" /&gt;
+                   data-visibility="showArrowsOnNodes" /&gt; --&gt;
               &lt;img class="image__preview--float"
                    src="#{root}/resources/add.png"
                    data-visibility="showAddOnNodes" /&gt;
@@ -25775,7 +25757,7 @@ body &gt; div &gt; div &gt; label:active {
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Shows 'Clone' on hover&lt;/span&gt;
             &lt;/div&gt;
-            &lt;div class="setting"&gt;
+            &lt;!-- &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;input id="showArrowsOnNodes"
                        name="showArrowsOnNodes"
@@ -25784,7 +25766,7 @@ body &gt; div &gt; div &gt; label:active {
                 &lt;label for="showArrowsOnNodes"&gt;Move&amp;nbsp;arrow&amp;nbsp;commands&lt;/label&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Shows 'Move' arrows on hover&lt;/span&gt;
-            &lt;/div&gt;
+            &lt;/div&gt; --&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;input id="showAddOnNodes"
@@ -25800,7 +25782,7 @@ body &gt; div &gt; div &gt; label:active {
         &lt;/div&gt;
       &lt;/section&gt;
 
-      &lt;section id="editor-commands"
+      &lt;!-- &lt;section id="editor-commands"
                class="section--settings"&gt;
         &lt;div class="section__content"&gt;
           &lt;div class="section__header"&gt;
@@ -25960,7 +25942,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;/div&gt;
 
         &lt;/div&gt;
-      &lt;/section&gt;
+      &lt;/section&gt; --&gt;
 
       &lt;section id="font-sizes"
                class="section--settings"&gt;
@@ -26029,7 +26011,7 @@ body &gt; div &gt; div &gt; label:active {
               Statusbar Indicator
             &lt;/h2&gt;
             &lt;p class="section__header-hint"&gt;
-              Keyboard icon can also include a label and be displayed in a specific color
+              Keyboard icon and currently opened Leo document can be shown in a specific color
             &lt;/p&gt;
           &lt;/div&gt;
 
@@ -26039,7 +26021,7 @@ body &gt; div &gt; div &gt; label:active {
           &lt;/div&gt;
 
           &lt;div class="settings"&gt;
-            &lt;div class="setting"&gt;
+            &lt;!--  &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="statusBarString"&gt;Status Bar Keyboard indicator&lt;/label&gt;
                 &lt;input id="statusBarString"
@@ -26050,7 +26032,7 @@ body &gt; div &gt; div &gt; label:active {
                        data-setting /&gt;
               &lt;/div&gt;
               &lt;span class="setting__hint"&gt;Leo's keybindings 'on/off' indicator text message&lt;/span&gt;
-            &lt;/div&gt;
+            &lt;/div&gt; --&gt;
             &lt;div class="setting"&gt;
               &lt;div class="setting__input"&gt;
                 &lt;label for="statusBarColor"&gt;Status Bar Color&lt;/label&gt;
@@ -26110,10 +26092,10 @@ body &gt; div &gt; div &gt; label:active {
             &lt;a href="#node-commands"
                title="Outline nodes settings"&gt;Node Hover Commands&lt;/a&gt;
           &lt;/li&gt;
-          &lt;li&gt;
+          &lt;!-- &lt;li&gt;
             &lt;a href="#editor-commands"
                title="Body editor menu settings"&gt;Body Editor Icons&lt;/a&gt;
-          &lt;/li&gt;
+          &lt;/li&gt; --&gt;
           &lt;li&gt;
             &lt;a href="#font-sizes"
                title="Font size settings"&gt;Font Sizes&lt;/a&gt;

@@ -333,13 +333,18 @@ export class Constants {
         TREE_TITLED: "leoTreeTitled", // Tree is a Leo file and not a new untitled document
         SERVER_STARTED: "leoServerStarted", // Auto-start or manually started
         LEOID_MISSING: "leoIDMissing", // To be used as flag for #248
+
         // 'states' flags for currently opened tree view
         LEO_CHANGED: "leoChanged",
         LEO_CAN_UNDO: "leoCanUndo",
         LEO_CAN_REDO: "leoCanRedo",
+        LEO_CAN_BACK: "leoCanGoBack",
+        LEO_CAN_NEXT: "leoCanGoNext",
         LEO_CAN_DEMOTE: "leoCanDemote",
         LEO_CAN_PROMOTE: "leoCanPromote",
         LEO_CAN_DEHOIST: "leoCanDehoist",
+        LEO_CAN_HOIST: "leoCanHoist", // isNotRoot equivalent
+
         // 'states' flags about current selection, for visibility and commands availability
         SELECTED_MARKED: "leoMarked", // no need for unmarked here, use !leoMarked
         SELECTED_CLONE: "leoCloned",
@@ -347,21 +352,26 @@ export class Constants {
         SELECTED_EMPTY: "leoEmpty",
         SELECTED_CHILD: "leoChild", // Has children
         SELECTED_ATFILE: "leoAtFile", // Can be refreshed
-        SELECTED_ROOT: "leoRoot", // ! Not given by Leo: Computed by leoInteg/vscode instead
+
+        // SELECTED_ROOT: "leoRoot", // ! REPLACED BY canHoist / canDehoist
+
         // Statusbar Flag 'keybindings in effect'
         LEO_SELECTED: "leoObjectSelected", // keybindings "On": Outline or body has focus
-        // Context Flags for 'when' clauses, used concatenated, for each outline node
+
+        // Outline nodes: text Flags for 'when' clauses. Used as concatenated strings.
         NODE_MARKED: "leoNodeMarked",  // Selected node is marked
         NODE_UNMARKED: "leoNodeUnmarked", // Selected node is unmarked (Needed for regexp)
         NODE_ATFILE: "leoNodeAtFile", // Selected node is an @file or @clean, etc...
         NODE_CLONED: "leoNodeCloned",
         NODE_ROOT: "leoNodeRoot",
         NODE_NOT_ROOT: "leoNodeNotRoot",
+
         // Flags for Leo documents tree view icons and hover node command buttons
         DOCUMENT_SELECTED_TITLED: "leoDocumentSelectedTitled",
         DOCUMENT_TITLED: "leoDocumentTitled",
         DOCUMENT_SELECTED_UNTITLED: "leoDocumentSelectedUntitled",
         DOCUMENT_UNTITLED: "leoDocumentUntitled",
+
         // Flags that match specific LeoInteg config settings
         LEO_TREE_BROWSE: Constants.CONFIG_NAMES.LEO_TREE_BROWSE, // Force ar'jan's suggestion of Leo's tree behavior override
         TREE_IN_EXPLORER: Constants.CONFIG_NAMES.TREE_IN_EXPLORER, // Leo outline also in the explorer view
@@ -680,7 +690,9 @@ export class Constants {
         INSERT_CHILD: Constants.NAME + ".insertChildNode",
         CLONE: Constants.NAME + ".cloneNode",
         PROMOTE: Constants.NAME + ".promote",
+        PROMOTE_DISABLED: Constants.NAME + ".promoteDisabled",
         DEMOTE: Constants.NAME + ".demote",
+        DEMOTE_DISABLED: Constants.NAME + ".demoteDisabled",
         REFRESH_FROM_DISK: Constants.NAME + ".refreshFromDisk",
         WRITE_AT_FILE_NODES: Constants.NAME + ".writeAtFileNodes",
         WRITE_AT_FILE_NODES_FO: Constants.NAME + ".writeAtFileNodesFromOutline",
@@ -726,9 +738,11 @@ export class Constants {
         DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",
         REFRESH_FROM_DISK_SELECTION_FO: Constants.NAME + ".refreshFromDiskSelectionFromOutline",
         HOIST: Constants.NAME + ".hoistNode",
+        HOIST_DISABLED: Constants.NAME + ".hoistDisabled",
         HOIST_SELECTION: Constants.NAME + ".hoistSelection",
         HOIST_SELECTION_FO: Constants.NAME + ".hoistSelectionFromOutline",
         DEHOIST: Constants.NAME + ".deHoist",
+        DEHOIST_DISABLED: Constants.NAME + ".deHoistDisabled",
         DEHOIST_FO: Constants.NAME + ".deHoistFromOutline",
         EXTRACT: Constants.NAME + ".extract",
         EXTRACT_NAMES: Constants.NAME + ".extractNames",

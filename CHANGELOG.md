@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.8
+
+- Added and improved icons sets for disabled icon-buttons and common actions.
+
 ## 1.0.7
 
 - Added 'Nav-tab' and 'Tags-tab' functionality to the 'Find panel'. (Requires Leo minimal version of at least 6.6-final)
