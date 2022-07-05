@@ -1873,8 +1873,8 @@ export class LeoIntegration {
                 w_description = w_description + "\u{1F3F7} (" + tagsQty + ")";
                 delete p_ap.nodeTags;
             }
-
         }
+
         const w_leoNode = new LeoNode(
             p_ap.headline, // label-headline
             p_ap.gnx, // gnx

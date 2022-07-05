@@ -935,6 +935,12 @@
 <v t="felix.20200718185403.8"><vh>_updateLeoObjectIndicator</vh></v>
 </v>
 </v>
+<v t="felix.20220705000805.1"><vh>@clean src/leoUndo.ts</vh>
+<v t="felix.20220705001810.1"><vh>class LeoUndoProvider</vh></v>
+</v>
+<v t="felix.20220705000807.1"><vh>@clean src/leoUndoNode.ts</vh>
+<v t="felix.20220705001820.1"><vh>class LeoUndoNode</vh></v>
+</v>
 <v t="felix.20200718191946.1"><vh>@clean src/serverManager.ts</vh>
 <v t="felix.20200718191946.2"><vh>class ServerService</vh>
 <v t="felix.20200718191946.4"><vh>startServer</vh></v>
@@ -957,6 +963,7 @@
 <v t="felix.20200718194857.10"><vh>LeoBridgePackage</vh></v>
 <v t="felix.20200718194857.11"><vh>LeoDocument</vh></v>
 <v t="felix.20200718194857.12"><vh>LeoButton</vh></v>
+<v t="felix.20220705001508.1"><vh>LeoUndo</vh></v>
 <v t="felix.20220319202027.1"><vh>TGotoTypes</vh></v>
 <v t="felix.20220308203528.1"><vh>LeoGoto</vh></v>
 <v t="felix.20210522152922.1"><vh>LeoSearchScope</vh></v>
@@ -1070,6 +1077,8 @@
 <v t="felix.20200718164130.2"></v>
 <v t="felix.20200718164509.2"></v>
 <v t="felix.20200718165108.2"></v>
+<v t="felix.20220705001820.1"></v>
+<v t="felix.20220705001810.1"></v>
 <v t="felix.20200718170429.2"></v>
 <v t="felix.20210522001814.1"></v>
 <v t="felix.20200719025231.2"></v>
@@ -11661,8 +11670,8 @@ public apToLeoNode(
             w_description = w_description + "\u{1F3F7} (" + tagsQty + ")";
             delete p_ap.nodeTags;
         }
-
     }
+
     const w_leoNode = new LeoNode(
         p_ap.headline, // label-headline
         p_ap.gnx, // gnx
@@ -11674,7 +11683,7 @@ public apToLeoNode(
         !!p_ap.marked, // marked
         !!p_ap.atFile, // atFile
         !!p_ap.hasBody, // hasBody
-        !!p_ap.selected, // only used in LeoNode for setting isRoot
+        !!p_ap.selected, // only used in LeoNode for setting selection
         w_description, // unknownAttributes
         tagsQty,
         this, // _leoIntegration pointer
@@ -24662,6 +24671,8 @@ export function cleanLeoID(id_: string): string {
 <t tx="felix.20220702153409.1">## 1.0.8
 
 - Added and improved icons sets for disabled icon-buttons and common actions.
+- Tooltips and description do not contain the whole u.a. when listing positions.
+  (Hovering the mouse triggers the retrieval of this info for a single node.)
 
 </t>
 <t tx="felix.20220704004247.1">private _leoCanGoBack: boolean = false;
@@ -24694,6 +24705,48 @@ set leoCanHoist(p_value: boolean) {
 }
 
 </t>
+<t tx="felix.20220705000805.1">import * as vscode from "vscode";
+import { LeoIntegration } from "./leoIntegration";
+import { LeoUndoNode } from "./leoUndoNode";
+import { ProviderResult } from "vscode";
+import { Constants } from "./constants";
+import { LeoUndo } from "./types";
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20220705000807.1">import * as vscode from "vscode";
+import { LeoIntegration } from "./leoIntegration";
+import { ProviderResult } from "vscode";
+import { Constants } from "./constants";
+import { LeoUndo } from "./types";
+
+@language typescript
+@tabwidth -4
+@others
+</t>
+<t tx="felix.20220705001508.1">/**
+ * * Undo structure
+ */
+export interface LeoUndo {
+
+    // undo from server
+    name: string;
+
+}
+
+</t>
+<t tx="felix.20220705001810.1">// leo undo provider class
+</t>
+<t tx="felix.20220705001820.1">/**
+ * * Opened Leo documents tree view node item implementation for usage in a TreeDataProvider
+ */
+export class LeoUndoNode extends vscode.TreeItem {
+
+    @others
+
+}</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";

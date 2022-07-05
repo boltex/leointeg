@@ -3,6 +3,8 @@
 ## 1.0.8
 
 - Added and improved icons sets for disabled icon-buttons and common actions.
+- Tooltips and description do not contain the whole u.a. when listing positions.
+  (Hovering the mouse triggers the retrieval of this info for a single node.)
 
 ## 1.0.7
 
