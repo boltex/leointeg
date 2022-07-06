@@ -737,6 +737,7 @@
 <v t="felix.20200719025231.8"><vh>connect</vh></v>
 <v t="felix.20200719025231.9"><vh>cancelConnect</vh></v>
 <v t="felix.20220327211552.1"><vh>setLeoID</vh></v>
+<v t="felix.20220705220032.1"><vh>checkVersion</vh></v>
 <v t="felix.20210613210351.1"><vh>chooseLeoFolder</vh></v>
 <v t="felix.20200719031346.1"><vh>sendConfigToServer</vh></v>
 </v>
@@ -3869,7 +3870,11 @@ print('done')
     "dark": "resources/dark/redo.svg"
   }
 },
-</t>
+{
+  "command": "leointeg.revertToUndo",
+  "category": "Leo",
+  "title": "Revert to Undo State"
+},</t>
 <t tx="ekr.20200815123601.28">"viewsWelcome": [
   @others
 ],
@@ -6824,6 +6829,7 @@ public static COMMANDS = {
     REDO: Constants.NAME + ".redo", // From command Palette
     REDO_FO: Constants.NAME + ".redoFromOutline", // from button, return focus on OUTLINE
     REDO_DISABLED: Constants.NAME + ".redoDisabled", // Disabled - nop
+    REVERT_TO_UNDO: Constants.NAME + ".revertToUndo",
     EXECUTE: Constants.NAME + ".executeScript",
     SHOW_BODY: Constants.NAME + ".showBody",
     SHOW_OUTLINE: Constants.NAME + ".showOutline",
@@ -7141,7 +7147,7 @@ public static USER_MESSAGES = {
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
     TOO_FAST: "leoInteg is busy! ", // with trailing space
-    MINIMUM_VERSION: "Please update: Leo 6.6 required for command: ",
+    MINIMUM_VERSION: "Please update: Leo 6.6.3 required.",
     UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
     LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
 };
@@ -8214,7 +8220,9 @@ private _processAnswer(p_data: string): void {
             let w_timeStampSec = Math.floor(Date.now() / 1000);
             if (this._updateWarningShown + 3 &lt; w_timeStampSec) { // Limit to re-show for 3 sec.
                 this._updateWarningShown = w_timeStampSec;
-                vscode.window.showErrorMessage(Constants.USER_MESSAGES.MINIMUM_VERSION + w_action);
+                vscode.window.showErrorMessage(
+                    Constants.USER_MESSAGES.MINIMUM_VERSION + " Command missing: " + w_action
+                );
             }
         }
     }
@@ -12908,6 +12916,8 @@ public connect(): void {
                     if (!this.config.connectToServerAutomatically) {
                         vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                     }
+
+                    this.checkVersion();
                 });
 
             }
@@ -24738,15 +24748,127 @@ export interface LeoUndo {
 
 </t>
 <t tx="felix.20220705001810.1">// leo undo provider class
+export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&gt; {
+
+    private _beadId = 0;
+
+    private _onDidChangeTreeData: vscode.EventEmitter&lt;LeoUndoNode | undefined&gt; = new vscode.EventEmitter&lt;LeoUndoNode | undefined&gt;();
+
+    readonly onDidChangeTreeData: vscode.Event&lt;LeoUndoNode | undefined&gt; = this._onDidChangeTreeData.event;
+
+    constructor(
+        // private _leoStates: LeoStates,
+        // private _leoUI: LeoUI,
+    ) { }
+
+    /**
+     * * Refresh the whole outline
+     */
+    public refreshTreeRoot(): void {
+        this._onDidChangeTreeData.fire(undefined);
+    }
+
+    public getTreeItem(element: LeoUndoNode): Thenable&lt;LeoUndoNode&gt; | LeoUndoNode {
+        return element;
+    }
+
+    public getChildren(element?: LeoUndoNode): LeoUndoNode[] {
+        const w_children: LeoUndoNode[] = [];
+
+
+        // if called with element, or not ready, give back empty array as there won't be any children
+        // if (this._leoStates.fileOpenedReady &amp;&amp; !element &amp;&amp; g.app.windowList.length) {
+        //     const c = g.app.windowList[this._leoUI.frameIndex].c;
+        //     const undoer = c.undoer;
+        //     if (undoer.beads.length) {
+        //         let i: number = 0;
+        //         undoer.beads.forEach(p_bead =&gt; {
+        //             let w_description: string = "";
+        //             let w_undoFlag: boolean = false;
+        //             if (i === undoer.bead) {
+        //                 w_description = "Undo";
+        //                 w_undoFlag = true;
+        //             }
+        //             if (i === undoer.bead + 1) {
+        //                 w_description = "Redo";
+        //             }
+        //             const w_node = new LeoUndoNode(
+        //                 p_bead.undoType || "unknown",
+        //                 w_description,
+        //                 (this._beadId++).toString()
+        //             );
+        //             w_children.push(w_node);
+        //             if (w_undoFlag) {
+        //                 this._leoUI.setUndoSelection(w_node);
+        //             }
+        //             i++;
+        //         });
+        //     } else {
+        //         const w_node = new LeoUndoNode(
+        //             "Unchanged",
+        //             "",
+        //             (this._beadId++).toString()
+        //         );
+        //         w_children.push(w_node);
+        //     }
+        // }
+
+
+        return w_children; // Defaults to an empty list of children
+    }
+
+    public getParent(element: LeoUndoNode): vscode.ProviderResult&lt;LeoUndoNode&gt; {
+        // Leo documents are just a list, as such, entries are always child of root, so return null
+        return undefined;
+    }
+
+    public resolveTreeItem(item: LeoUndoNode, element: LeoUndoNode, token: vscode.CancellationToken): vscode.ProviderResult&lt;LeoUndoNode&gt; {
+        // item.tooltip = "TODO Undo Tooltip";
+        return item;
+    }
+}
 </t>
 <t tx="felix.20220705001820.1">/**
  * * Opened Leo documents tree view node item implementation for usage in a TreeDataProvider
  */
 export class LeoUndoNode extends vscode.TreeItem {
 
-    @others
+    // Context string is checked in package.json with 'when' clauses
+    // public contextValue: string = "leoUndoNode";
 
-}</t>
+    constructor(
+        public label: string,
+        public description: string,
+        public id: string,
+        public contextValue: string,
+        public beadIndex: number
+    ) {
+        super(label);
+    }
+
+}
+</t>
+<t tx="felix.20220705220032.1">public checkVersion(): void {
+
+    this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_result: LeoBridgePackage) =&gt; {
+        // major: 1, minor: 0, patch: 2
+        let ok = false;
+        if (p_result &amp;&amp; p_result.major !== undefined &amp;&amp; p_result.minor !== undefined &amp;&amp; p_result.patch !== undefined) {
+
+            if (p_result.major &gt;= 1 &amp;&amp; p_result.minor &gt;= 0 &amp;&amp; p_result.patch &gt;= 2) {
+                ok = true;
+            }
+        }
+        if (!ok) {
+            vscode.window.showErrorMessage(
+                Constants.USER_MESSAGES.MINIMUM_VERSION
+            );
+        }
+    });
+
+}
+
+</t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
 import { LeoIntegration } from "../leoIntegration";

@@ -1549,6 +1549,11 @@
         }
       },
       {
+        "command": "leointeg.revertToUndo",
+        "category": "Leo",
+        "title": "Revert to Undo State"
+      },
+      {
         "command": "leointeg.startSearch",
         "category": "Leo",
         "title": "Start Search"

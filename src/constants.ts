@@ -182,7 +182,7 @@ export class Constants {
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space
         TOO_FAST: "leoInteg is busy! ", // with trailing space
-        MINIMUM_VERSION: "Please update: Leo 6.6 required for command: ",
+        MINIMUM_VERSION: "Please update: Leo 6.6.3 required.",
         UNKNOWN_LANGUAGE_NOT_SUPPORTED: "Language not yet supported.",
         LANGUAGE_NOT_SUPPORTED: " language not yet supported." // with leading space
     };
@@ -657,6 +657,7 @@ export class Constants {
         REDO: Constants.NAME + ".redo", // From command Palette
         REDO_FO: Constants.NAME + ".redoFromOutline", // from button, return focus on OUTLINE
         REDO_DISABLED: Constants.NAME + ".redoDisabled", // Disabled - nop
+        REVERT_TO_UNDO: Constants.NAME + ".revertToUndo",
         EXECUTE: Constants.NAME + ".executeScript",
         SHOW_BODY: Constants.NAME + ".showBody",
         SHOW_OUTLINE: Constants.NAME + ".showOutline",

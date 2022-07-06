@@ -619,6 +619,8 @@ export class LeoIntegration {
                         if (!this.config.connectToServerAutomatically) {
                             vscode.window.showInformationMessage(Constants.USER_MESSAGES.CONNECTED);
                         }
+
+                        this.checkVersion();
                     });
 
                 }
@@ -786,6 +788,26 @@ export class LeoIntegration {
                 console.log('get leoid results: ', p_result);
             });
         */
+
+    }
+
+    public checkVersion(): void {
+
+        this.sendAction(Constants.LEOBRIDGE.GET_VERSION).then((p_result: LeoBridgePackage) => {
+            // major: 1, minor: 0, patch: 2
+            let ok = false;
+            if (p_result && p_result.major !== undefined && p_result.minor !== undefined && p_result.patch !== undefined) {
+
+                if (p_result.major >= 1 && p_result.minor >= 0 && p_result.patch >= 2) {
+                    ok = true;
+                }
+            }
+            if (!ok) {
+                vscode.window.showErrorMessage(
+                    Constants.USER_MESSAGES.MINIMUM_VERSION
+                );
+            }
+        });
 
     }
 
