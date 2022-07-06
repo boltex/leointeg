@@ -26,6 +26,9 @@ export class Constants {
     public static GOTO_ID: string = "leoGotoPanel";
     public static GOTO_EXPLORER_ID: string = "leoGotoPanelExplorer";
 
+    public static UNDOS_ID: string = "leoUndos";
+    public static UNDOS_EXPLORER_ID: string = "leoUndosExplorer";
+
     public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
     public static FILE_EXTENSION: string = "leo";

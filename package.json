@@ -244,6 +244,13 @@
           "contextualTitle": "Leo",
           "when": "treeInExplorer && leoTreeOpened",
           "visibility": "collapsed"
+        },
+        {
+          "id": "leoUndosExplorer",
+          "name": "Leo Undo History",
+          "contextualTitle": "Leo",
+          "when": "treeInExplorer && leoTreeOpened",
+          "visibility": "collapsed"
         }
       ],
       "leoIntegrationView": [
@@ -278,6 +285,13 @@
           "id": "leoGotoPanel",
           "contextualTitle": "Leo",
           "name": "Goto",
+          "visibility": "collapsed"
+        },
+        {
+          "id": "leoUndos",
+          "contextualTitle": "Leo",
+          "name": "Undo History",
+          "when": "leoTreeOpened",
           "visibility": "collapsed"
         }
       ]

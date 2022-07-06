@@ -15,6 +15,7 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
     readonly onDidChangeTreeData: vscode.Event<LeoUndoNode | undefined> = this._onDidChangeTreeData.event;
 
     constructor(
+        private _leoIntegration: LeoIntegration
         // private _leoStates: LeoStates,
         // private _leoUI: LeoUI,
     ) { }

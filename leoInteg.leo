@@ -769,6 +769,7 @@
 <v t="felix.20200719025231.27"><vh>_onDocTreeViewVisibilityChanged</vh></v>
 <v t="ekr.20200815085705.1"><vh>_onButtonsTreeViewVisibilityChanged</vh></v>
 <v t="felix.20220310224330.1"><vh>_onGotoTreeViewVisibilityChanged</vh></v>
+<v t="felix.20220706000811.1"><vh>_onUndosTreeViewVisibilityChanged</vh></v>
 <v t="felix.20200719025231.29"><vh>_onActiveEditorChanged</vh></v>
 <v t="felix.20210418014039.1"><vh>_changedTextEditorViewColumn</vh></v>
 <v t="felix.20210418014040.1"><vh>_changedVisibleTextEditors</vh></v>
@@ -5232,6 +5233,13 @@ print('done')
       "contextualTitle": "Leo",
       "when": "treeInExplorer &amp;&amp; leoTreeOpened",
       "visibility": "collapsed"
+    },
+    {
+      "id": "leoUndosExplorer",
+      "name": "Leo Undo History",
+      "contextualTitle": "Leo",
+      "when": "treeInExplorer &amp;&amp; leoTreeOpened",
+      "visibility": "collapsed"
     }
   ],
   "leoIntegrationView": [
@@ -5266,6 +5274,13 @@ print('done')
       "id": "leoGotoPanel",
       "contextualTitle": "Leo",
       "name": "Goto",
+      "visibility": "collapsed"
+    },
+    {
+      "id": "leoUndos",
+      "contextualTitle": "Leo",
+      "name": "Undo History",
+      "when": "leoTreeOpened",
       "visibility": "collapsed"
     }
   ]
@@ -7007,6 +7022,9 @@ public static FIND_EXPLORER_ID: string = "leoFindPanelExplorer";
 
 public static GOTO_ID: string = "leoGotoPanel";
 public static GOTO_EXPLORER_ID: string = "leoGotoPanelExplorer";
+
+public static UNDOS_ID: string = "leoUndos";
+public static UNDOS_EXPLORER_ID: string = "leoUndosExplorer";
 
 public static VERSION_STATE_KEY: string = "leoIntegVersion";
 
@@ -10651,6 +10669,8 @@ import { LeoFindPanelProvider } from './webviews/leoFindPanelWebview';
 import { LeoSettingsProvider } from './webviews/leoSettingsWebview';
 import { LeoGotoNode } from './leoGotoNode';
 import { LeoGotoProvider } from './leoGoto';
+import { LeoUndosProvider } from './leoUndo';
+import { LeoUndoNode } from './leoUndoNode';
 
 @others
 @language typescript
@@ -10852,6 +10872,12 @@ export class LeoIntegration {
     private _leoGotoProvider: LeoGotoProvider;
     private _leoGoto: vscode.TreeView&lt;LeoGotoNode&gt;;
     private _leoGotoExplorer: vscode.TreeView&lt;LeoGotoNode&gt;;
+
+    // * Undos pane
+    private _leoUndosProvider!: LeoUndosProvider;
+    private _leoUndos!: vscode.TreeView&lt;LeoUndoNode&gt;;
+    private _leoUndosExplorer!: vscode.TreeView&lt;LeoUndoNode&gt;;
+    private _lastLeoUndos: vscode.TreeView&lt;LeoUndoNode&gt; | undefined;
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _refreshType: ReqRefresh = {}; // Flags for commands to require parts of UI to refresh
@@ -11326,6 +11352,23 @@ private _onActiveEditorChanged(
     );
     // * Set 'last' goto tree view visible
     this._leoGotoProvider.setLastGotoView(this.config.treeInExplorer ? this._leoGotoExplorer : this._leoGoto);
+
+    // * Create 'Undo History' Treeview Providers and tree views
+    this._leoUndosProvider = new LeoUndosProvider(this);
+    this._leoUndos = vscode.window.createTreeView(Constants.UNDOS_ID, {
+        showCollapseAll: false,
+        treeDataProvider: this._leoUndosProvider,
+    });
+    this._leoUndos.onDidChangeVisibility((p_event) =&gt;
+        this._onUndosTreeViewVisibilityChanged(p_event, false)
+    );
+    this._leoUndosExplorer = vscode.window.createTreeView(Constants.UNDOS_EXPLORER_ID, {
+        showCollapseAll: false,
+        treeDataProvider: this._leoUndosProvider,
+    });
+    this._leoButtonsExplorer.onDidChangeVisibility((p_event) =&gt;
+        this._onUndosTreeViewVisibilityChanged(p_event, true)
+    );
 
 
     // * Create Body Pane
@@ -24757,6 +24800,7 @@ export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&
     readonly onDidChangeTreeData: vscode.Event&lt;LeoUndoNode | undefined&gt; = this._onDidChangeTreeData.event;
 
     constructor(
+        private _leoIntegration: LeoIntegration
         // private _leoStates: LeoStates,
         // private _leoUI: LeoUI,
     ) { }
@@ -24866,6 +24910,21 @@ export class LeoUndoNode extends vscode.TreeItem {
         }
     });
 
+}
+
+</t>
+<t tx="felix.20220706000811.1">/**
+ * * Handle the change of visibility of either outline treeview and refresh it if its visible
+ * @param p_event The treeview-visibility-changed event passed by vscode
+ * @param p_explorerView Flags that the treeview who triggered this event is the one in the explorer view
+ */
+private _onUndosTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChangeEvent, p_explorerView: boolean): void {
+    if (p_explorerView) { } // (Facultative/unused) Do something different if explorer view is used
+    if (p_event.visible) {
+        this._lastLeoUndos = p_explorerView ? this._leoUndosExplorer : this._leoUndos;
+        // TODO: Check if needed
+        // this._leoUndosProvider.refreshTreeRoot(); // May not need to set selection...?
+    }
 }
 
 </t>
