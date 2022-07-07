@@ -509,6 +509,10 @@
 <v t="felix.20210522233604.1"><vh>leoFind</vh>
 <v t="felix.20210522233744.1"><vh>Not Ready</vh></v>
 </v>
+<v t="felix.20220706220024.1"><vh>leoUndos</vh>
+<v t="felix.20220706220120.1"><vh>Not Ready</vh></v>
+<v t="felix.20220706220128.1"><vh>Ready: No Undos</vh></v>
+</v>
 </v>
 <v t="ekr.20200815123601.42"><vh>menus</vh>
 <v t="ekr.20200815123601.43"><vh>commandPalette</vh>
@@ -880,6 +884,9 @@
 <v t="felix.20220221003719.1"><vh>_handleRClicks</vh></v>
 <v t="felix.20211017002435.1"><vh>gotoScript</vh></v>
 <v t="ekr.20200815090517.2"><vh>removeAtButton</vh></v>
+</v>
+<v t="felix.20220706223903.1"><vh>Undos</vh>
+<v t="felix.20220706223907.1"><vh>setUndoSelection</vh></v>
 </v>
 <v t="felix.20200719033511.1"><vh>Other</vh>
 <v t="felix.20210610022836.1"><vh>prevNextNode</vh></v>
@@ -3875,7 +3882,8 @@ print('done')
   "command": "leointeg.revertToUndo",
   "category": "Leo",
   "title": "Revert to Undo State"
-},</t>
+},
+</t>
 <t tx="ekr.20200815123601.28">"viewsWelcome": [
   @others
 ],
@@ -6668,6 +6676,7 @@ public static LEOBRIDGE = {
     COLLAPSE_NODE: "!contract_node", // "collapseNode",
     CONTRACT_ALL: "contractAllHeadlines",
     GET_STATES: "!get_ui_states", // "getStates",
+    GET_UNDOS: '!get_undos',
     GET_UA: "!get_ua",
     SET_UA_MEMBER: "!set_ua_member",
     SET_UA: "!set_ua",
@@ -7054,6 +7063,7 @@ public static STARTING_PACKAGE_ID: number = 1;
 public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
 public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
 public static BUTTONS_DEBOUNCE_DELAY: number = 80;
+public static UNDOS_DEBOUNCE_DELAY: number = 250;
 public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
 public static STATES_DEBOUNCE_DELAY: number = 100;
 public static BODY_STATES_DEBOUNCE_DELAY: number = 200;
@@ -9797,6 +9807,8 @@ export interface LeoBridgePackage {
     major?: number;
     minor?: number;
     patch?: number;
+    bead?: number;
+    undos?: string[];
 }
 
 </t>
@@ -10986,6 +10998,13 @@ export class LeoIntegration {
         flush(): void;
     };
 
+    // * Debounced method used to get content of the undos pane
+    public refreshUndosPane: (() =&gt; void) &amp; {
+        clear(): void;
+    } &amp; {
+        flush(): void;
+    };
+
     // * Debounced method used to refresh all
     public refreshAll: (() =&gt; void) &amp; {
         clear(): void;
@@ -11461,6 +11480,10 @@ private _onActiveEditorChanged(
     this.refreshGotoPane = debounce(
         () =&gt; { this._leoGotoProvider.refreshTreeRoot(); },
         Constants.GOTO_DEBOUNCE_DELAY
+    );
+    this.refreshUndosPane = debounce(
+        () =&gt; { this._leoUndosProvider.refreshTreeRoot(); },
+        Constants.UNDOS_DEBOUNCE_DELAY
     );
     this.refreshAll = debounce(
         () =&gt; {
@@ -16326,7 +16349,7 @@ export const enum LeoSearchScope {
   "view": "leoFindPanelExplorer",
   "contents": "Not connected",
   "when": "!leoTreeOpened"
-}
+},
 </t>
 <t tx="felix.20210523154200.1">def get_ui_states(self, param):
     """
@@ -24816,9 +24839,59 @@ export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&
         return element;
     }
 
-    public getChildren(element?: LeoUndoNode): LeoUndoNode[] {
+    public getChildren(element?: LeoUndoNode): Thenable&lt;LeoUndoNode[]&gt; {
         const w_children: LeoUndoNode[] = [];
 
+        if (this._leoIntegration.leoStates.fileOpenedReady &amp;&amp; !element) {
+
+            // call action to get get list, and convert to LeoButtonNode(s) array
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.GET_UNDOS).then(p_package =&gt; {
+                if (p_package &amp;&amp; p_package.undos) {
+
+                    // response = {"bead": undoer.bead, "undos": undos}
+                    const beads = p_package.undos;
+                    const bead = p_package.bead || 0;
+
+                    if (beads.length) {
+                        let i: number = 0;
+                        beads.forEach(p_bead =&gt; {
+                            let w_description: string = "";
+                            let w_undoFlag: boolean = false;
+                            if (i === bead) {
+                                w_description = "Undo";
+                                w_undoFlag = true;
+                            }
+                            if (i === bead + 1) {
+                                w_description = "Redo";
+                            }
+                            const w_node = new LeoUndoNode(
+                                p_bead || "unknown",
+                                w_description,
+                                (this._beadId++).toString()
+                            );
+                            w_children.push(w_node);
+                            if (w_undoFlag) {
+                                this._leoIntegration.setUndoSelection(w_node);
+                            }
+                            i++;
+                        });
+                    } else {
+                        const w_node = new LeoUndoNode(
+                            "Unchanged",
+                            "",
+                            (this._beadId++).toString()
+                        );
+                        w_children.push(w_node);
+                    }
+
+                    return w_children;
+                } else {
+                    return [];
+                }
+            });
+        } else {
+            return Promise.resolve([]); // Defaults to an empty list of children
+        }
 
         // if called with element, or not ready, give back empty array as there won't be any children
         // if (this._leoStates.fileOpenedReady &amp;&amp; !element &amp;&amp; g.app.windowList.length) {
@@ -24857,8 +24930,6 @@ export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&
         //     }
         // }
 
-
-        return w_children; // Defaults to an empty list of children
     }
 
     public getParent(element: LeoUndoNode): vscode.ProviderResult&lt;LeoUndoNode&gt; {
@@ -24878,14 +24949,14 @@ export class LeoUndosProvider implements vscode.TreeDataProvider&lt;LeoUndoNode&
 export class LeoUndoNode extends vscode.TreeItem {
 
     // Context string is checked in package.json with 'when' clauses
-    // public contextValue: string = "leoUndoNode";
+    public contextValue: string = "leoUndoNode";
 
     constructor(
         public label: string,
         public description: string,
         public id: string,
-        public contextValue: string,
-        public beadIndex: number
+        // public contextValue: string,
+        // public beadIndex: number
     ) {
         super(label);
     }
@@ -24925,6 +24996,36 @@ private _onUndosTreeViewVisibilityChanged(p_event: vscode.TreeViewVisibilityChan
         // TODO: Check if needed
         // this._leoUndosProvider.refreshTreeRoot(); // May not need to set selection...?
     }
+}
+
+</t>
+<t tx="felix.20220706220024.1"></t>
+<t tx="felix.20220706220120.1">{
+  "view": "leoUndos",
+  "contents": "There are no Leo files currently opened",
+  "when": "leoBridgeReady &amp;&amp; !leoTreeOpened"
+},
+{
+  "view": "leoUndosExplorer",
+  "contents": "There are no Leo files currently opened",
+  "when": "leoBridgeReady &amp;&amp; !leoTreeOpened"
+},
+</t>
+<t tx="felix.20220706220128.1">{
+  "view": "leoUndos",
+  "contents": "Can't undo",
+  "when": "leoBridgeReady &amp;&amp; leoTreeOpened"
+},
+{
+  "view": "leoUndosExplorer",
+  "contents": "Can't undo",
+  "when": "leoBridgeReady &amp;&amp; leoTreeOpened"
+}
+</t>
+<t tx="felix.20220706223903.1"></t>
+<t tx="felix.20220706223907.1">public setUndoSelection(p_node: LeoUndoNode): void {
+    //
+
 }
 
 </t>

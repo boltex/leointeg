@@ -57,6 +57,7 @@ export class Constants {
     public static STATUSBAR_DEBOUNCE_DELAY: number = 60;
     public static DOCUMENTS_DEBOUNCE_DELAY: number = 80;
     public static BUTTONS_DEBOUNCE_DELAY: number = 80;
+    public static UNDOS_DEBOUNCE_DELAY: number = 250;
     public static REFRESH_ALL_DEBOUNCE_DELAY: number = 333;
     public static STATES_DEBOUNCE_DELAY: number = 100;
     public static BODY_STATES_DEBOUNCE_DELAY: number = 200;
@@ -485,6 +486,7 @@ export class Constants {
         COLLAPSE_NODE: "!contract_node", // "collapseNode",
         CONTRACT_ALL: "contractAllHeadlines",
         GET_STATES: "!get_ui_states", // "getStates",
+        GET_UNDOS: '!get_undos',
         GET_UA: "!get_ua",
         SET_UA_MEMBER: "!set_ua_member",
         SET_UA: "!set_ua",

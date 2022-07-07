@@ -210,6 +210,8 @@ export interface LeoBridgePackage {
     major?: number;
     minor?: number;
     patch?: number;
+    bead?: number;
+    undos?: string[];
 }
 
 /**

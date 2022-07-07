@@ -227,6 +227,13 @@ export class LeoIntegration {
         flush(): void;
     };
 
+    // * Debounced method used to get content of the undos pane
+    public refreshUndosPane: (() => void) & {
+        clear(): void;
+    } & {
+        flush(): void;
+    };
+
     // * Debounced method used to refresh all
     public refreshAll: (() => void) & {
         clear(): void;
@@ -459,6 +466,10 @@ export class LeoIntegration {
         this.refreshGotoPane = debounce(
             () => { this._leoGotoProvider.refreshTreeRoot(); },
             Constants.GOTO_DEBOUNCE_DELAY
+        );
+        this.refreshUndosPane = debounce(
+            () => { this._leoUndosProvider.refreshTreeRoot(); },
+            Constants.UNDOS_DEBOUNCE_DELAY
         );
         this.refreshAll = debounce(
             () => {
@@ -1007,6 +1018,7 @@ export class LeoIntegration {
                         this.leoStates.setLeoStateFlags(p_package.states);
                     }
                 });
+            this.refreshUndosPane();
         }
     }
 
@@ -1056,6 +1068,7 @@ export class LeoIntegration {
         this._refreshOutline(false, RevealType.NoReveal);
         this.refreshDocumentsPane();
         this.refreshButtonsPane();
+        this.refreshUndosPane();
         this.closeBody();
     }
 
@@ -1124,6 +1137,7 @@ export class LeoIntegration {
         // * Refresh Opened tree views
         this.refreshDocumentsPane();
         this.refreshButtonsPane();
+        this.refreshUndosPane();
         this.loadSearchSettings();
         // * Maybe first Body appearance
         // return this.showBody(false);
@@ -4361,6 +4375,11 @@ export class LeoIntegration {
                 this.launchRefresh({ buttons: true }, false);
                 return Promise.resolve(true); // TODO launchRefresh should be a returned promise
             });
+    }
+
+    public setUndoSelection(p_node: LeoUndoNode): void {
+        //
+
     }
 
     /**

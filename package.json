@@ -2022,6 +2022,26 @@
         "view": "leoFindPanelExplorer",
         "contents": "Not connected",
         "when": "!leoTreeOpened"
+      },
+      {
+        "view": "leoUndos",
+        "contents": "There are no Leo files currently opened",
+        "when": "leoBridgeReady && !leoTreeOpened"
+      },
+      {
+        "view": "leoUndosExplorer",
+        "contents": "There are no Leo files currently opened",
+        "when": "leoBridgeReady && !leoTreeOpened"
+      },
+      {
+        "view": "leoUndos",
+        "contents": "Can't undo",
+        "when": "leoBridgeReady && leoTreeOpened"
+      },
+      {
+        "view": "leoUndosExplorer",
+        "contents": "Can't undo",
+        "when": "leoBridgeReady && leoTreeOpened"
       }
     ],
     "menus": {

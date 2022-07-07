@@ -10,14 +10,14 @@ import { LeoUndo } from "./types";
 export class LeoUndoNode extends vscode.TreeItem {
 
     // Context string is checked in package.json with 'when' clauses
-    // public contextValue: string = "leoUndoNode";
+    public contextValue: string = "leoUndoNode";
 
     constructor(
         public label: string,
         public description: string,
         public id: string,
-        public contextValue: string,
-        public beadIndex: number
+        // public contextValue: string,
+        // public beadIndex: number
     ) {
         super(label);
     }
