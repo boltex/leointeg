@@ -371,10 +371,9 @@ export class LeoIntegration {
             showCollapseAll: false,
             treeDataProvider: this._leoUndosProvider,
         });
-        this._leoButtonsExplorer.onDidChangeVisibility((p_event) =>
+        this._leoUndosExplorer.onDidChangeVisibility((p_event) =>
             this._onUndosTreeViewVisibilityChanged(p_event, true)
         );
-
 
         // * Create Body Pane
         this._leoFileSystem = new LeoBodyProvider(this);
@@ -4377,8 +4376,43 @@ export class LeoIntegration {
             });
     }
 
+    /**
+     * Reverts to a particular undo bead state
+     */
+    public revertToUndo(p_undo: LeoUndoNode): Promise<any> {
+        if (p_undo.label === 'Unchanged') {
+            return Promise.resolve();
+        }
+        let action = Constants.LEOBRIDGE.REDO;
+        let repeat = p_undo.beadIndex;
+        if (p_undo.beadIndex <= 0) {
+            action = Constants.LEOBRIDGE.UNDO;
+            repeat = (-p_undo.beadIndex) + 1;
+        }
+        return this.sendAction(
+            action,
+            JSON.stringify({ repeat: repeat })
+        ).then(p_package => {
+            this.launchRefresh({ tree: true, body: true, states: true, buttons: true, }, true);
+            return p_package;
+        });
+
+    }
+
+    /**
+     * highlights the current undo state without disturbing focus
+     */
     public setUndoSelection(p_node: LeoUndoNode): void {
-        //
+        setTimeout(() => {
+            if (this._lastLeoUndos && this._lastLeoUndos.visible) {
+                this._lastLeoUndos.reveal(p_node, { select: true, focus: false }).then(
+                    () => { }, // Ok - do nothing
+                    (p_error) => {
+                        console.log('setUndoSelection could not reveal');
+                    }
+                );
+            }
+        }, 0);
 
     }
 

@@ -17,7 +17,7 @@ export class LeoUndoNode extends vscode.TreeItem {
         public description: string,
         public id: string,
         // public contextValue: string,
-        // public beadIndex: number
+        public beadIndex: number
     ) {
         super(label);
     }

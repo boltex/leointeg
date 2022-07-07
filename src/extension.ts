@@ -7,6 +7,7 @@ import { LeoNode } from "./leoNode";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
 import { LeoGotoNode } from "./leoGotoNode";
+import { LeoUndoNode } from "./leoUndoNode";
 
 var LeoInteg: LeoIntegration | undefined = undefined;
 
@@ -549,6 +550,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
+        [CMD.REVERT_TO_UNDO, (p_undo: LeoUndoNode) => w_leo.revertToUndo(p_undo)],
 
         [CMD.CONNECT, () => w_leo.connect()],
         [CMD.START_SERVER, () => w_leo.startServer()],

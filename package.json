@@ -2699,6 +2699,10 @@
           "when": "false"
         },
         {
+          "command": "leointeg.revertToUndo",
+          "when": "false"
+        },
+        {
           "command": "leointeg.findNextFromOutline",
           "when": "false"
         },
@@ -3093,6 +3097,11 @@
           "command": "leointeg.gotoScript",
           "when": "leoTreeOpened && viewItem =~ /^leoButtonNode/",
           "group": "leoButtonContext1@2"
+        },
+        {
+          "command": "leointeg.revertToUndo",
+          "when": "leoTreeOpened && viewItem =~ /^leoUndoNode/",
+          "group": "leoUndosContext1@1"
         }
       ],
       "extension/context": [
@@ -3624,13 +3633,13 @@
         "command": "leointeg.undoFromOutline",
         "key": "ctrl+z",
         "mac": "cmd+z",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && !inputFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && !inputFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoUndos|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.redoFromOutline",
         "key": "ctrl+shift+z",
         "mac": "cmd+shift+z",
-        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && !inputFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoDocuments|^leoButtons/"
+        "when": "leoFindFocus || leoTreeOpened && sideBarFocus && !inputFocus && !editorTextFocus && focusedView =~ /^leoIntegration|^leoFindPanel|^leoUndos|^leoDocuments|^leoButtons/"
       },
       {
         "command": "leointeg.startSearch",

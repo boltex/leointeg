@@ -59,7 +59,9 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
                             const w_node = new LeoUndoNode(
                                 p_bead || "unknown",
                                 w_description,
-                                (this._beadId++).toString()
+                                (this._beadId++).toString(),
+                                i - bead // 0 is same (no undo) +/- undo redo.
+
                             );
                             w_children.push(w_node);
                             if (w_undoFlag) {
@@ -71,7 +73,8 @@ export class LeoUndosProvider implements vscode.TreeDataProvider<LeoUndoNode> {
                         const w_node = new LeoUndoNode(
                             "Unchanged",
                             "",
-                            (this._beadId++).toString()
+                            (this._beadId++).toString(),
+                            0
                         );
                         w_children.push(w_node);
                     }
