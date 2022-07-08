@@ -4617,7 +4617,7 @@ print('done')
 <t tx="ekr.20200815123601.68">"explorer/context": [
   {
     "command": "leointeg.openLeoFile",
-    "when": "resourceScheme == file &amp;&amp; resourceExtname == .leo",
+    "when": "resourceScheme == file &amp;&amp; resourceExtname == .leo || resourceScheme == file &amp;&amp; resourceExtname == .leojs",
     "group": "navigation@1"
   }
 ],
