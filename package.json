@@ -2729,7 +2729,7 @@
       "explorer/context": [
         {
           "command": "leointeg.openLeoFile",
-          "when": "resourceScheme == file && resourceExtname == .leo || resourceScheme == file && resourceExtname == .leojs",
+          "when": "leoBridgeReady && resourceScheme == file && resourceExtname == .leo || leoBridgeReady && resourceScheme == file && resourceExtname == .leojs",
           "group": "navigation@1"
         }
       ],
