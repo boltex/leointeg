@@ -2529,12 +2529,19 @@ print('done')
   "author": {
     "name": "Félix"
   },
+  "sponsor": {
+    "url": "https://boltex.github.io/"
+  },
   "publisher": "boltex",
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
     "url": "https://github.com/boltex/leointeg"
   },
+  "bugs": {
+    "url": "https://github.com/boltex/leointeg/issues"
+  },
+  "homepage": "https://github.com/boltex/leointeg#readme",
   "engines": {
     "vscode": "^1.68.0"
   },
