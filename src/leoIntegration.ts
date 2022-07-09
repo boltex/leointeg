@@ -2553,6 +2553,16 @@ export class LeoIntegration {
                                 p_command.detail = p_command.detail.trim().replace(w_regexp, ' ');
                             }
                         });
+                        // Remove unsupported commands
+                        for (const p_name of Constants.unsupportedMinibufferCommands) {
+                            const i_command = p_result.commands.findIndex((object) => {
+                                return object.label === p_name;
+                            });
+                            if (i_command !== -1) {
+                                p_result.commands.splice(i_command, 1);
+                            }
+                        }
+                        // Add some commands traditionally from plugins or other sources
                         p_result.commands.push(...Constants.addMinibufferCommands);
                         return p_result.commands;
                     } else {

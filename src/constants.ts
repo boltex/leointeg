@@ -819,6 +819,17 @@ export class Constants {
         { "label": "find-quick-changed", "detail": "Lists all nodes that are changed (aka \"dirty\") since last save." },
         { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
         { "label": "marked-list", "detail": "List all marked nodes." },
+        { "label": "tag-node", "detail": "Tag the selected node." },
+    ];
+
+    public static unsupportedMinibufferCommands: string[] = [
+        're-search',
+        're-search-forward',
+        're-search-backward',
+        'search-backward',
+        'word-search',
+        'word-search-forward',
+        'restart-leo'
     ];
 
     /**
@@ -833,7 +844,11 @@ export class Constants {
         "history": Constants.COMMANDS.FIND_QUICK_HISTORY,
         "marked-list": Constants.COMMANDS.FIND_QUICK_MARKED,
 
+        "goto-prev-history-node": Constants.COMMANDS.PREV_NODE_FO,
+        "goto-next-history-node": Constants.COMMANDS.NEXT_NODE_FO,
+
         "tag-children": Constants.COMMANDS.TAG_CHILDREN,
+        "tag-node": Constants.COMMANDS.TAG_NODE,
         "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
         "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
         "redo": Constants.COMMANDS.REDO,
@@ -892,8 +907,8 @@ export class Constants {
         'start-search': Constants.COMMANDS.START_SEARCH,
         'find-next': Constants.COMMANDS.FIND_NEXT,
         'find-prev': Constants.COMMANDS.FIND_PREVIOUS,
-        'search-backward': Constants.COMMANDS.FIND_NEXT,
-        'search-forward': Constants.COMMANDS.FIND_PREVIOUS,
+        'search-backward': Constants.COMMANDS.FIND_PREVIOUS,
+        'search-forward': Constants.COMMANDS.FIND_NEXT,
         'find-var': Constants.COMMANDS.FIND_VAR,
         'find-def': Constants.COMMANDS.FIND_DEF,
         'replace': Constants.COMMANDS.REPLACE,
@@ -909,10 +924,6 @@ export class Constants {
         'toggle-find-mark-finds-option': Constants.COMMANDS.TOGGLE_FIND_MARK_FINDS_OPTION,
         'toggle-find-regex-option': Constants.COMMANDS.TOGGLE_FIND_REGEXP_OPTION,
         'toggle-find-word-option': Constants.COMMANDS.TOGGLE_FIND_WORD_OPTION,
-
-        'goto-next-history-node': Constants.COMMANDS.PREV_NODE,
-        'goto-prev-history-node': Constants.COMMANDS.NEXT_NODE,
-
 
     };
 

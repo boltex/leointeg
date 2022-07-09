@@ -236,6 +236,7 @@
 <v t="felix.20200718020912.13"><vh>leoBridge action strings</vh></v>
 <v t="felix.20200718020912.15"><vh>commands strings</vh></v>
 <v t="felix.20220321211021.1"><vh>additional minibuffer commands</vh></v>
+<v t="felix.20220709005340.1"><vh>unsupported minibuffer commands</vh></v>
 <v t="felix.20210602151654.1"><vh>minibuffer overridden commands</vh></v>
 </v>
 </v>
@@ -11642,6 +11643,16 @@ public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
                             p_command.detail = p_command.detail.trim().replace(w_regexp, ' ');
                         }
                     });
+                    // Remove unsupported commands
+                    for (const p_name of Constants.unsupportedMinibufferCommands) {
+                        const i_command = p_result.commands.findIndex((object) =&gt; {
+                            return object.label === p_name;
+                        });
+                        if (i_command !== -1) {
+                            p_result.commands.splice(i_command, 1);
+                        }
+                    }
+                    // Add some commands traditionally from plugins or other sources
                     p_result.commands.push(...Constants.addMinibufferCommands);
                     return p_result.commands;
                 } else {
@@ -13276,7 +13287,11 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     "history": Constants.COMMANDS.FIND_QUICK_HISTORY,
     "marked-list": Constants.COMMANDS.FIND_QUICK_MARKED,
 
+    "goto-prev-history-node": Constants.COMMANDS.PREV_NODE_FO,
+    "goto-next-history-node": Constants.COMMANDS.NEXT_NODE_FO,
+
     "tag-children": Constants.COMMANDS.TAG_CHILDREN,
+    "tag-node": Constants.COMMANDS.TAG_NODE,
     "clone-find-tag": Constants.COMMANDS.CLONE_FIND_TAG,
     "import-file": Constants.COMMANDS.IMPORT_ANY_FILE,
     "redo": Constants.COMMANDS.REDO,
@@ -13335,8 +13350,8 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'start-search': Constants.COMMANDS.START_SEARCH,
     'find-next': Constants.COMMANDS.FIND_NEXT,
     'find-prev': Constants.COMMANDS.FIND_PREVIOUS,
-    'search-backward': Constants.COMMANDS.FIND_NEXT,
-    'search-forward': Constants.COMMANDS.FIND_PREVIOUS,
+    'search-backward': Constants.COMMANDS.FIND_PREVIOUS,
+    'search-forward': Constants.COMMANDS.FIND_NEXT,
     'find-var': Constants.COMMANDS.FIND_VAR,
     'find-def': Constants.COMMANDS.FIND_DEF,
     'replace': Constants.COMMANDS.REPLACE,
@@ -13352,10 +13367,6 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'toggle-find-mark-finds-option': Constants.COMMANDS.TOGGLE_FIND_MARK_FINDS_OPTION,
     'toggle-find-regex-option': Constants.COMMANDS.TOGGLE_FIND_REGEXP_OPTION,
     'toggle-find-word-option': Constants.COMMANDS.TOGGLE_FIND_WORD_OPTION,
-
-    'goto-next-history-node': Constants.COMMANDS.PREV_NODE,
-    'goto-prev-history-node': Constants.COMMANDS.NEXT_NODE,
-
 
 };
 
@@ -15927,6 +15938,7 @@ export function buildGotoIconPaths(p_context: vscode.ExtensionContext): Icon[] {
     { "label": "find-quick-changed", "detail": "Lists all nodes that are changed (aka \"dirty\") since last save." },
     { "label": "history", "detail": "Lists nodes from c.nodeHistory." },
     { "label": "marked-list", "detail": "List all marked nodes." },
+    { "label": "tag-node", "detail": "Tag the selected node." },
 ];
 
 </t>
@@ -16469,6 +16481,17 @@ public revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
     });
 
 }
+
+</t>
+<t tx="felix.20220709005340.1">public static unsupportedMinibufferCommands: string[] = [
+    're-search',
+    're-search-forward',
+    're-search-backward',
+    'search-backward',
+    'word-search',
+    'word-search-forward',
+    'restart-leo'
+];
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
