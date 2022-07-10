@@ -1354,6 +1354,7 @@ export class LeoIntegration {
      * @param p_columnChangeEvent  event describing the change of a text editor's view column
      */
     public _changedTextEditorViewColumn(
+
         p_columnChangeEvent: vscode.TextEditorViewColumnChangeEvent
     ): void {
         if (p_columnChangeEvent && p_columnChangeEvent.textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
@@ -2043,7 +2044,9 @@ export class LeoIntegration {
             ) {
                 // if needs switching by actually having different gnx
                 if (utils.leoUriToStr(this.bodyUri) !== p_node.gnx) {
-                    this._locateOpenedBody(utils.leoUriToStr(this.bodyUri)); // * LOCATE OLD GNX FOR PROPER COLUMN*
+                    // LOCATE OLD GNX FOR PROPER COLUMN*
+                    this._locateOpenedBody(utils.leoUriToStr(this.bodyUri));
+                    // Make sure any pending changes in old body are applied before switching
                     return this._bodyTextDocument.save().then(() => {
                         return this._switchBody(p_node.gnx, p_aside, p_showBodyKeepFocus);
                     });
@@ -2071,13 +2074,17 @@ export class LeoIntegration {
         // ? Set timestamps ?
         // this._leoFileSystem.setRenameTime(p_newGnx);
 
-        // TODO : USE TABGROUPS !
-
         let w_visibleCount = 0;
-        vscode.window.visibleTextEditors.forEach((p_editor) => {
-            if (p_editor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-                w_visibleCount++;
-            }
+
+        vscode.window.tabGroups.all.forEach((p_tabGroup) => {
+            p_tabGroup.tabs.forEach((p_tab) => {
+                if (
+                    (p_tab.input as vscode.TabInputText).uri &&
+                    (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
+                ) {
+                    w_visibleCount++;
+                }
+            });
         });
 
         if (this._bodyPreviewMode && this._bodyEnablePreview && w_visibleCount < 2) {
@@ -2087,12 +2094,44 @@ export class LeoIntegration {
             vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
             return q_showBody;
         } else {
-            // Gotta delete to close all and re-open, so:
+            const w_tabsToClose: vscode.Tab[] = [];
+            vscode.window.tabGroups.all.forEach((p_tabGroup) => {
+                p_tabGroup.tabs.forEach((p_tab) => {
+                    if (
+                        (p_tab.input as vscode.TabInputText).uri &&
+                        (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
+                        (p_tab.input as vscode.TabInputText).uri.fsPath !== w_oldUri.fsPath
+                    ) {
+                        // use vscode.window.tabGroups.close(t) to close other Leo bodies
+                        //vscode.window.tabGroups.close(p_tab, true);
+                        w_tabsToClose.push(p_tab);
+
+                        // Delete to close all other body tabs.
+                        // (w_oldUri will be deleted last below)
+                        // const w_edit = new vscode.WorkspaceEdit();
+                        // w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
+                        // vscode.workspace.applyEdit(w_edit);
+                    }
+                });
+            });
+
+            // Gotta delete to close all oldUri and re-open, so:
             // Promise to Delete first, synchronously (as thenable),
             // tagged along with automatically removeFromRecentlyOpened in parallel
             const w_edit = new vscode.WorkspaceEdit();
             w_edit.deleteFile(w_oldUri, { ignoreIfNotExists: true });
-            return vscode.workspace.applyEdit(w_edit).then(() => {
+
+            let q_closeAll: Thenable<unknown>;
+            if (w_tabsToClose.length) {
+                q_closeAll = vscode.window.tabGroups.close(w_tabsToClose, true);
+            } else {
+                q_closeAll = vscode.workspace.applyEdit(w_edit);
+            }
+
+            return q_closeAll.then(() => {
+                if (w_tabsToClose.length) {
+                    vscode.workspace.applyEdit(w_edit);
+                }
                 // Set new uri and remove from 'Recently opened'
                 this._bodyPreviewMode = true;
                 this.bodyUri = utils.strToLeoUri(p_newGnx);
@@ -2117,51 +2156,34 @@ export class LeoIntegration {
         let w_found = false;
         // * Only gets to visible editors, not every tab per editor
 
-        // TODO : USE TABGROUPS !
-
-        vscode.window.visibleTextEditors.forEach((p_textEditor) => {
-            if (utils.leoUriToStr(p_textEditor.document.uri) === p_gnx) {
-                w_found = true;
-                this._bodyTextDocument = p_textEditor.document;
-                this._bodyMainSelectionColumn = p_textEditor.viewColumn;
-            }
+        vscode.window.tabGroups.all.forEach((p_tabGroup) => {
+            p_tabGroup.tabs.forEach((p_tab) => {
+                if (
+                    (p_tab.input as vscode.TabInputText).uri &&
+                    utils.leoUriToStr((p_tab.input as vscode.TabInputText).uri) === p_gnx
+                ) {
+                    vscode.workspace.textDocuments.forEach((p_textDocument) => {
+                        if (
+                            utils.leoUriToStr(p_textDocument.uri) === p_gnx
+                        ) {
+                            w_found = true;
+                            this._bodyTextDocument = p_textDocument; // vscode.workspace.openTextDocument
+                            this._bodyMainSelectionColumn = p_tab.group.viewColumn;
+                        }
+                    });
+                }
+            });
         });
+
+        // vscode.window.visibleTextEditors.forEach((p_textEditor) => {
+        //     if (utils.leoUriToStr(p_textEditor.document.uri) === p_gnx) {
+        //         w_found = true;
+        //         this._bodyTextDocument = p_textEditor.document;
+        //         this._bodyMainSelectionColumn = p_textEditor.viewColumn;
+        //     }
+        // });
+
         return w_found;
-    }
-
-
-    /**
-     * * Find editor column based on uri
-     * @returns View Column if found, undefined otherwise
-     */
-    private _findUriColumn(p_uri: vscode.Uri): vscode.ViewColumn | undefined {
-        let w_column: vscode.ViewColumn | undefined;
-
-        // TODO : USE TABGROUPS !
-
-        vscode.window.visibleTextEditors.forEach((p_textEditor) => {
-            if (p_textEditor.document.uri.fsPath === p_uri.fsPath) {
-                w_column = p_textEditor.viewColumn;
-            }
-        });
-        return w_column;
-    }
-
-    /**
-     * * Find editor column based on gnx string
-     * @returns View Column if found, undefined otherwise
-     */
-    private _findGnxColumn(p_gnx: string): vscode.ViewColumn | undefined {
-        let w_column: vscode.ViewColumn | undefined;
-
-        // TODO : USE TABGROUPS !
-
-        vscode.window.visibleTextEditors.forEach((p_textEditor) => {
-            if (p_textEditor.document.uri.fsPath.substr(1) === p_gnx) {
-                w_column = p_textEditor.viewColumn;
-            }
-        });
-        return w_column;
     }
 
     /**
@@ -2170,6 +2192,8 @@ export class LeoIntegration {
      */
     private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
         const w_edit = new vscode.WorkspaceEdit();
+
+
         w_edit.deleteFile(p_textEditor.document.uri, { ignoreIfNotExists: true });
         vscode.workspace.applyEdit(w_edit);
         if (p_textEditor.hide) {
@@ -2210,7 +2234,9 @@ export class LeoIntegration {
             q_closed = Promise.resolve(true);
         }
 
-        // TODO : USE TABGROUPS !
+        // TODO : USE window.tabGroups !
+
+        // Use : vscode.window.tabGroups.close(THE_TAB)
 
         vscode.window.visibleTextEditors.forEach((p_textEditor) => {
             if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
@@ -2223,6 +2249,7 @@ export class LeoIntegration {
                 }
             }
         });
+
         return q_closed;
     }
 
@@ -2352,7 +2379,7 @@ export class LeoIntegration {
                     });
                 }
 
-                // TODO : USE TABGROUPS !
+                // TODO : USE window.tabGroups !
 
                 // Find body pane's position if already opened with same gnx (language still needs to be set per position)
                 vscode.window.visibleTextEditors.forEach((p_textEditor) => {
