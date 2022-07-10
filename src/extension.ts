@@ -711,8 +711,8 @@ export function activate(p_context: vscode.ExtensionContext) {
 /**
  * * Called when extension is deactivated
  */
-export function deactivate(): Promise<boolean> {
-    closeLeoTextEditors();
+export function deactivate(): Thenable<unknown> {
+    const q_closeLeoTabs = closeLeoTextEditors();
     if (LeoInteg) {
         LeoInteg.activated = false;
         LeoInteg.cleanupBody().then(() => {
@@ -728,22 +728,45 @@ export function deactivate(): Promise<boolean> {
         }
         );
     } else {
-        return Promise.resolve(false);
+        return q_closeLeoTabs;
     }
 }
 
 /**
  * * Closes all visible text editors that have Leo filesystem scheme
  */
-function closeLeoTextEditors() {
-    // TODO : USE TABGROUPS !
-    vscode.window.visibleTextEditors.forEach(p_textEditor => {
-        if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-            if (p_textEditor.hide) {
-                p_textEditor.hide();
+function closeLeoTextEditors(): Thenable<unknown> {
+    const w_foundTabs: vscode.Tab[] = [];
+
+    vscode.window.tabGroups.all.forEach((p_tabGroup) => {
+        p_tabGroup.tabs.forEach((p_tab) => {
+            if (
+                (p_tab.input as vscode.TabInputText).uri &&
+                (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
+            ) {
+                w_foundTabs.push(p_tab);
             }
-        }
+        });
     });
+
+    let q_closedTabs;
+    if (w_foundTabs.length) {
+        q_closedTabs = vscode.window.tabGroups.close(w_foundTabs, true);
+        w_foundTabs.forEach((p_tab) => {
+            vscode.commands.executeCommand(
+                'vscode.removeFromRecentlyOpened',
+                (p_tab.input as vscode.TabInputText).uri
+            );
+            // Delete to close all other body tabs.
+            // (w_oldUri will be deleted last below)
+            const w_edit = new vscode.WorkspaceEdit();
+            w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
+            vscode.workspace.applyEdit(w_edit);
+        });
+    } else {
+        q_closedTabs = Promise.resolve(true);
+    }
+    return q_closedTabs;
 }
 
 /**

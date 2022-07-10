@@ -2091,7 +2091,15 @@ export class LeoIntegration {
             // just show in same column and delete after
             this.bodyUri = utils.strToLeoUri(p_newGnx);
             const q_showBody = this.showBody(p_aside, p_preserveFocus);
-            vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri.path);
+
+            if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
+                // If old different: delete virtual LeoBody file
+                const w_edit = new vscode.WorkspaceEdit();
+                w_edit.deleteFile(w_oldUri, { ignoreIfNotExists: true });
+                vscode.workspace.applyEdit(w_edit); // delete old document
+                // Remove from potential 'recently opened'
+                vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', w_oldUri);
+            }
             return q_showBody;
         } else {
             const w_tabsToClose: vscode.Tab[] = [];
@@ -2103,7 +2111,7 @@ export class LeoIntegration {
                         (p_tab.input as vscode.TabInputText).uri.fsPath !== w_oldUri.fsPath
                     ) {
                         // use vscode.window.tabGroups.close(t) to close other Leo bodies
-                        //vscode.window.tabGroups.close(p_tab, true);
+                        // vscode.window.tabGroups.close(p_tab, true);
                         w_tabsToClose.push(p_tab);
 
                         // Delete to close all other body tabs.
@@ -2125,13 +2133,11 @@ export class LeoIntegration {
             if (w_tabsToClose.length) {
                 q_closeAll = vscode.window.tabGroups.close(w_tabsToClose, true);
             } else {
-                q_closeAll = vscode.workspace.applyEdit(w_edit);
+                q_closeAll = Promise.resolve();
             }
 
             return q_closeAll.then(() => {
-                if (w_tabsToClose.length) {
-                    vscode.workspace.applyEdit(w_edit);
-                }
+                vscode.workspace.applyEdit(w_edit); // delete old document
                 // Set new uri and remove from 'Recently opened'
                 this._bodyPreviewMode = true;
                 this.bodyUri = utils.strToLeoUri(p_newGnx);
@@ -2139,7 +2145,7 @@ export class LeoIntegration {
                 if (w_oldUri.fsPath !== this.bodyUri.fsPath) {
                     vscode.commands.executeCommand(
                         'vscode.removeFromRecentlyOpened',
-                        w_oldUri.path
+                        w_oldUri
                     );
                 }
                 return this.showBody(p_aside, p_preserveFocus);
@@ -2191,17 +2197,42 @@ export class LeoIntegration {
      * @param p_textEditor the editor to close
      */
     private _hideDeleteBody(p_textEditor: vscode.TextEditor): void {
+
         const w_edit = new vscode.WorkspaceEdit();
-
-
         w_edit.deleteFile(p_textEditor.document.uri, { ignoreIfNotExists: true });
         vscode.workspace.applyEdit(w_edit);
-        if (p_textEditor.hide) {
-            p_textEditor.hide();
+
+        const w_foundTabs: vscode.Tab[] = [];
+        vscode.window.tabGroups.all.forEach((p_tabGroup) => {
+            p_tabGroup.tabs.forEach((p_tab) => {
+                if (
+                    (p_tab.input as vscode.TabInputText).uri &&
+                    (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME &&
+                    (p_tab.input as vscode.TabInputText).uri.fsPath === p_textEditor.document.uri.fsPath
+                ) {
+                    // use vscode.window.tabGroups.close(t) to close other Leo bodies
+                    // vscode.window.tabGroups.close(p_tab, true);
+                    w_foundTabs.push(p_tab);
+
+                    // Delete to close all other body tabs.
+                    // (w_oldUri will be deleted last below)
+                    // const w_edit = new vscode.WorkspaceEdit();
+                    // w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
+                    // vscode.workspace.applyEdit(w_edit);
+                }
+            });
+        });
+        if (w_foundTabs.length) {
+            vscode.window.tabGroups.close(w_foundTabs, true);
         }
+
+        // if (p_textEditor.hide) {
+        //     p_textEditor.hide();
+        // }
+
         vscode.commands.executeCommand(
             'vscode.removeFromRecentlyOpened',
-            p_textEditor.document.uri.path
+            p_textEditor.document.uri
         );
     }
 
@@ -2226,31 +2257,70 @@ export class LeoIntegration {
      * @returns a promise that resolves when the file is closed and removed from recently opened list
      */
     public closeBody(): Thenable<any> {
-        // TODO : CLEAR UNDO HISTORY AND FILE HISTORY for this.bodyUri !
-        let q_closed;
-        if (this.bodyUri) {
-            q_closed = vscode.commands.executeCommand('vscode.removeFromRecentlyOpened', this.bodyUri.path);
-        } else {
-            q_closed = Promise.resolve(true);
-        }
 
-        // TODO : USE window.tabGroups !
-
-        // Use : vscode.window.tabGroups.close(THE_TAB)
-
-        vscode.window.visibleTextEditors.forEach((p_textEditor) => {
-            if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
-                vscode.commands.executeCommand(
-                    'vscode.removeFromRecentlyOpened',
-                    p_textEditor.document.uri.path
-                );
-                if (p_textEditor.hide) {
-                    p_textEditor.hide();
+        const w_foundTabs: vscode.Tab[] = [];
+        vscode.window.tabGroups.all.forEach((p_tabGroup) => {
+            p_tabGroup.tabs.forEach((p_tab) => {
+                if (
+                    (p_tab.input as vscode.TabInputText).uri &&
+                    (p_tab.input as vscode.TabInputText).uri.scheme === Constants.URI_LEO_SCHEME
+                ) {
+                    w_foundTabs.push(p_tab);
                 }
-            }
+            });
         });
 
-        return q_closed;
+        let q_closedTabs;
+        if (w_foundTabs.length) {
+            q_closedTabs = vscode.window.tabGroups.close(w_foundTabs, true);
+            w_foundTabs.forEach((p_tab) => {
+                vscode.commands.executeCommand(
+                    'vscode.removeFromRecentlyOpened',
+                    (p_tab.input as vscode.TabInputText).uri
+                );
+                // Delete to close all other body tabs.
+                // (w_oldUri will be deleted last below)
+                const w_edit = new vscode.WorkspaceEdit();
+                w_edit.deleteFile((p_tab.input as vscode.TabInputText).uri, { ignoreIfNotExists: true });
+                vscode.workspace.applyEdit(w_edit);
+            });
+        } else {
+            q_closedTabs = Promise.resolve(true);
+        }
+
+        let q_closedBody;
+        if (this.bodyUri) {
+            q_closedBody = vscode.commands.executeCommand(
+                'vscode.removeFromRecentlyOpened',
+                this.bodyUri
+            );
+        } else {
+            q_closedBody = Promise.resolve(true);
+        }
+
+        return Promise.all([q_closedTabs, q_closedBody]);
+
+        // .then(() => {
+        //     // console.log('cleaned both');
+        //     return this.closeBody();
+        // }, () => {
+        //     // console.log('cleaned both failed');
+        //     return true;
+        // });
+
+        // vscode.window.visibleTextEditors.forEach((p_textEditor) => {
+        //     if (p_textEditor.document.uri.scheme === Constants.URI_LEO_SCHEME) {
+        //         vscode.commands.executeCommand(
+        //             'vscode.removeFromRecentlyOpened',
+        //             p_textEditor.document.uri
+        //         );
+        //         if (p_textEditor.hide) {
+        //             p_textEditor.hide();
+        //         }
+        //     }
+        // });
+
+        // return q_closedBody;
     }
 
     /**
@@ -2379,15 +2449,32 @@ export class LeoIntegration {
                     });
                 }
 
-                // TODO : USE window.tabGroups !
-
                 // Find body pane's position if already opened with same gnx (language still needs to be set per position)
-                vscode.window.visibleTextEditors.forEach((p_textEditor) => {
-                    if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
-                        this._bodyMainSelectionColumn = p_textEditor.viewColumn;
-                        this._bodyTextDocument = p_textEditor.document;
-                    }
+                vscode.window.tabGroups.all.forEach((p_tabGroup) => {
+                    p_tabGroup.tabs.forEach((p_tab) => {
+                        if (
+                            (p_tab.input as vscode.TabInputText).uri &&
+                            (p_tab.input as vscode.TabInputText).uri.fsPath === p_document.uri.fsPath
+                        ) {
+                            vscode.workspace.textDocuments.forEach((p_textDocument) => {
+                                if (
+                                    p_textDocument.uri.fsPath === (p_tab.input as vscode.TabInputText).uri.fsPath
+                                ) {
+                                    this._bodyTextDocument = p_textDocument; // vscode.workspace.openTextDocument
+                                    this._bodyMainSelectionColumn = p_tab.group.viewColumn;
+                                }
+                            });
+                        }
+                    });
                 });
+
+                // vscode.window.visibleTextEditors.forEach((p_textEditor) => {
+                //     if (p_textEditor.document.uri.fsPath === p_document.uri.fsPath) {
+                //         this._bodyMainSelectionColumn = p_textEditor.viewColumn;
+                //         this._bodyTextDocument = p_textEditor.document;
+                //     }
+                // });
+
                 // Setup options for the preview state of the opened editor, and to choose which column it should appear
                 const w_showOptions: vscode.TextDocumentShowOptions = p_aside
                     ? {
