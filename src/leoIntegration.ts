@@ -122,7 +122,7 @@ export class LeoIntegration {
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _refreshType: ReqRefresh = {}; // Flags for commands to require parts of UI to refresh
-    private _fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
+    public fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
     private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
 
     // * Body Pane
@@ -472,13 +472,16 @@ export class LeoIntegration {
         );
         this.refreshAll = debounce(
             () => {
-                this.launchRefresh({
-                    tree: true,
-                    body: true,
-                    buttons: true,
-                    states: true,
-                    documents: true
-                }, false);
+                this.launchRefresh(
+                    {
+                        tree: true,
+                        body: true,
+                        buttons: true,
+                        states: true,
+                        documents: true
+                    },
+                    this.fromOutline, // ??? was 'false' before Jul 10 2022
+                );
             },
             Constants.REFRESH_ALL_DEBOUNCE_DELAY
         );
@@ -1434,7 +1437,7 @@ export class LeoIntegration {
             this._bodyLastChangedDocument = p_textDocumentChange.document;
             this._bodyLastChangedDocumentSaved = false;
             this._bodyPreviewMode = false;
-            this._fromOutline = false; // Focus is on body pane
+            this.fromOutline = false; // Focus is on body pane
             this._editorTouched = true; // To make sure to transfer content to Leo even if all undone
 
             // * If icon should change then do it now (if there's no document edit pending)
@@ -1833,10 +1836,10 @@ export class LeoIntegration {
         this._refreshType = Object.assign({}, p_refreshType);
         let w_revealType: RevealType;
         if (p_fromOutline) {
-            this._fromOutline = true;
+            this.fromOutline = true;
             w_revealType = RevealType.RevealSelectFocus;
         } else {
-            this._fromOutline = false;
+            this.fromOutline = false;
             w_revealType = RevealType.RevealSelect;
         }
         if (
@@ -1892,7 +1895,7 @@ export class LeoIntegration {
      */
     private _gotSelection(p_node: LeoNode): void {
         // * Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
-        let w_showBodyKeepFocus: boolean = this._fromOutline; // Will preserve focus where it is without forcing into the body pane if true
+        let w_showBodyKeepFocus: boolean = this.fromOutline; // Will preserve focus where it is without forcing into the body pane if true
         if (this._focusInterrupt) {
             this._focusInterrupt = false;
             w_showBodyKeepFocus = true;
@@ -1903,14 +1906,17 @@ export class LeoIntegration {
     /**
      * * Check if Leo should be focused on outline
      */
-    public getBridgeFocus(): void {
-        this.sendAction(Constants.LEOBRIDGE.GET_FOCUS).then((p_resultFocus: LeoBridgePackage) => {
+    public getBridgeFocus(): Thenable<LeoBridgePackage> {
+        return this.sendAction(Constants.LEOBRIDGE.GET_FOCUS).then((p_resultFocus: LeoBridgePackage) => {
             if (p_resultFocus.focus) {
                 const w_focus = p_resultFocus.focus.toLowerCase();
                 if (w_focus.includes('tree') || w_focus.includes('head')) {
-                    this._fromOutline = true;
+                    this.fromOutline = true;
+                } else {
+                    this.fromOutline = false;
                 }
             }
+            return p_resultFocus;
         });
     }
 
@@ -2441,7 +2447,7 @@ export class LeoIntegration {
                                     // refresh and reveal selection
                                     this.launchRefresh(
                                         { tree: true, body: true, states: true, buttons: true, documents: true },
-                                        false,
+                                        !!p_preserveFocus, // ??? was 'false' before Jul 10 2022
                                         p_package.node
                                     );
                                 });
@@ -2593,9 +2599,13 @@ export class LeoIntegration {
                 }
                 if (w_langName && !this._languageFlagged.includes(w_langName)) {
                     this._languageFlagged.push(w_langName);
-                    vscode.window.showInformationMessage(w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED);
+                    vscode.window.showInformationMessage(
+                        w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED
+                    );
                 } else if (!w_langName) {
-                    vscode.window.showInformationMessage(Constants.USER_MESSAGES.UNKNOWN_LANGUAGE_NOT_SUPPORTED);
+                    vscode.window.showInformationMessage(
+                        Constants.USER_MESSAGES.UNKNOWN_LANGUAGE_NOT_SUPPORTED + " : " + p_language
+                    );
                 }
                 return p_document;
             }
@@ -2890,7 +2900,7 @@ export class LeoIntegration {
         let w_fromOutline: boolean = !!p_fromOutline; // Use w_fromOutline for where we intend to leave focus when done with the insert
         if (p_interrupt) {
             this._focusInterrupt = true;
-            w_fromOutline = this._fromOutline; // Going to use last state
+            w_fromOutline = this.fromOutline; // Going to use last state
         }
         // if no node parameter, the front command stack CAN be busy, but if a node is passed, stack must be free
         if (!p_node || !this._isBusy()) {

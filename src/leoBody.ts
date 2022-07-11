@@ -272,7 +272,7 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
                 // ! maybe overkill
                 this._leoIntegration.launchRefresh(
                     { tree: true, body: true, states: true, buttons: true, documents: true },
-                    false,
+                    this._leoIntegration.fromOutline, // ??? was 'false' before Jul 10 2022
                     p_package.node
                 );
             });

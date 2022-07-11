@@ -2826,27 +2826,27 @@
         {
           "command": "leointeg.findQuickSelected",
           "when": "view =~ /^leoGotoPanel/ && leoTreeOpened",
-          "group": "navigation@1"
+          "group": "navigation@5"
         },
         {
           "command": "leointeg.findQuickTimeline",
           "when": "view =~ /^leoGotoPanel/ && leoTreeOpened",
-          "group": "navigation@1"
+          "group": "navigation@5"
         },
         {
           "command": "leointeg.findQuickChanged",
           "when": "view =~ /^leoGotoPanel/ && leoTreeOpened",
-          "group": "navigation@1"
+          "group": "navigation@5"
         },
         {
           "command": "leointeg.history",
           "when": "view =~ /^leoGotoPanel/ && leoTreeOpened",
-          "group": "navigation@1"
+          "group": "navigation@5"
         },
         {
           "command": "leointeg.markedList",
           "when": "view =~ /^leoGotoPanel/ && leoTreeOpened",
-          "group": "navigation@1"
+          "group": "navigation@5"
         },
         {
           "command": "leointeg.showSettingsPage",
@@ -2890,22 +2890,22 @@
         },
         {
           "command": "leointeg.prevFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoCanGoBack",
+          "when": "view =~ /^leoIntegration|^leoGotoPanel/ && leoTreeOpened && leoCanGoBack",
           "group": "navigation@3"
         },
         {
           "command": "leointeg.prevDisabled",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoCanGoBack",
+          "when": "view =~ /^leoIntegration|^leoGotoPanel/ && leoTreeOpened && !leoCanGoBack",
           "group": "navigation@3"
         },
         {
           "command": "leointeg.nextFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoCanGoNext",
+          "when": "view =~ /^leoIntegration|^leoGotoPanel/ && leoTreeOpened && leoCanGoNext",
           "group": "navigation@4"
         },
         {
           "command": "leointeg.nextDisabled",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoCanGoNext",
+          "when": "view =~ /^leoIntegration|^leoGotoPanel/ && leoTreeOpened && !leoCanGoNext",
           "group": "navigation@4"
         },
         {

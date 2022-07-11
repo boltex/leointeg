@@ -146,9 +146,9 @@ export class CommandStack {
                 // At least some type of refresh
                 this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline, p_package.node);
             }
-            // Reset refresh type and focus flag nonetheless
+            // Reset refresh type nonetheless
             this._finalRefreshType = {};
-            this._finalFromOutline = false;
+            // this._finalFromOutline = false; // ? MAYBE do NOT reset last finalFromOutline ?
         } else {
             // Size > 0, so call _runStackCommand again, keep _busy set to true
             this._runStackCommand().then((p_package: LeoBridgePackage) => {

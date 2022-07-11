@@ -1193,10 +1193,10 @@ public launchRefresh(
     this._refreshType = Object.assign({}, p_refreshType);
     let w_revealType: RevealType;
     if (p_fromOutline) {
-        this._fromOutline = true;
+        this.fromOutline = true;
         w_revealType = RevealType.RevealSelectFocus;
     } else {
-        this._fromOutline = false;
+        this.fromOutline = false;
         w_revealType = RevealType.RevealSelect;
     }
     if (
@@ -1253,7 +1253,7 @@ public launchRefresh(
  */
 private _gotSelection(p_node: LeoNode): void {
     // * Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
-    let w_showBodyKeepFocus: boolean = this._fromOutline; // Will preserve focus where it is without forcing into the body pane if true
+    let w_showBodyKeepFocus: boolean = this.fromOutline; // Will preserve focus where it is without forcing into the body pane if true
     if (this._focusInterrupt) {
         this._focusInterrupt = false;
         w_showBodyKeepFocus = true;
@@ -5799,9 +5799,9 @@ private _resolveResult(p_package: LeoBridgePackage): void {
             // At least some type of refresh
             this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline, p_package.node);
         }
-        // Reset refresh type and focus flag nonetheless
+        // Reset refresh type nonetheless
         this._finalRefreshType = {};
-        this._finalFromOutline = false;
+        // this._finalFromOutline = false; // ? MAYBE do NOT reset last finalFromOutline ?
     } else {
         // Size &gt; 0, so call _runStackCommand again, keep _busy set to true
         this._runStackCommand().then((p_package: LeoBridgePackage) =&gt; {
@@ -9212,7 +9212,7 @@ export class LeoIntegration {
 
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _refreshType: ReqRefresh = {}; // Flags for commands to require parts of UI to refresh
-    private _fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
+    public fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
     private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
 
     // * Body Pane
@@ -9807,13 +9807,16 @@ private _onActiveEditorChanged(
     );
     this.refreshAll = debounce(
         () =&gt; {
-            this.launchRefresh({
-                tree: true,
-                body: true,
-                buttons: true,
-                states: true,
-                documents: true
-            }, false);
+            this.launchRefresh(
+                {
+                    tree: true,
+                    body: true,
+                    buttons: true,
+                    states: true,
+                    documents: true
+                },
+                this.fromOutline, // ??? was 'false' before Jul 10 2022
+            );
         },
         Constants.REFRESH_ALL_DEBOUNCE_DELAY
     );
@@ -9835,7 +9838,7 @@ private _onDocumentChanged(p_textDocumentChange: vscode.TextDocumentChangeEvent)
         this._bodyLastChangedDocument = p_textDocumentChange.document;
         this._bodyLastChangedDocumentSaved = false;
         this._bodyPreviewMode = false;
-        this._fromOutline = false; // Focus is on body pane
+        this.fromOutline = false; // Focus is on body pane
         this._editorTouched = true; // To make sure to transfer content to Leo even if all undone
 
         // * If icon should change then do it now (if there's no document edit pending)
@@ -10436,7 +10439,7 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                                 // refresh and reveal selection
                                 this.launchRefresh(
                                     { tree: true, body: true, states: true, buttons: true, documents: true },
-                                    false,
+                                    !!p_preserveFocus, // ??? was 'false' before Jul 10 2022
                                     p_package.node
                                 );
                             });
@@ -10720,7 +10723,7 @@ public insertNode(
     let w_fromOutline: boolean = !!p_fromOutline; // Use w_fromOutline for where we intend to leave focus when done with the insert
     if (p_interrupt) {
         this._focusInterrupt = true;
-        w_fromOutline = this._fromOutline; // Going to use last state
+        w_fromOutline = this.fromOutline; // Going to use last state
     }
     // if no node parameter, the front command stack CAN be busy, but if a node is passed, stack must be free
     if (!p_node || !this._isBusy()) {
@@ -11939,22 +11942,22 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.prevFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoBack",
+    "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoBack",
     "group": "navigation@3"
   },
   {
     "command": "leointeg.prevDisabled",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoBack",
+    "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoBack",
     "group": "navigation@3"
   },
   {
     "command": "leointeg.nextFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoNext",
+    "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoNext",
     "group": "navigation@4"
   },
   {
     "command": "leointeg.nextDisabled",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoNext",
+    "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoNext",
     "group": "navigation@4"
   },
   {
@@ -12972,14 +12975,17 @@ public loadSearchSettings(): void {
 <t tx="felix.20210528012836.1">/**
  * * Check if Leo should be focused on outline
  */
-public getBridgeFocus(): void {
-    this.sendAction(Constants.LEOBRIDGE.GET_FOCUS).then((p_resultFocus: LeoBridgePackage) =&gt; {
+public getBridgeFocus(): Thenable&lt;LeoBridgePackage&gt; {
+    return this.sendAction(Constants.LEOBRIDGE.GET_FOCUS).then((p_resultFocus: LeoBridgePackage) =&gt; {
         if (p_resultFocus.focus) {
             const w_focus = p_resultFocus.focus.toLowerCase();
             if (w_focus.includes('tree') || w_focus.includes('head')) {
-                this._fromOutline = true;
+                this.fromOutline = true;
+            } else {
+                this.fromOutline = false;
             }
         }
+        return p_resultFocus;
     });
 }
 
@@ -14626,7 +14632,7 @@ public debouncedRefreshBodyStates() {
             // ! maybe overkill
             this._leoIntegration.launchRefresh(
                 { tree: true, body: true, states: true, buttons: true, documents: true },
-                false,
+                this._leoIntegration.fromOutline, // ??? was 'false' before Jul 10 2022
                 p_package.node
             );
         });
@@ -14653,9 +14659,13 @@ private _setBodyLanguage(p_document: vscode.TextDocument, p_language: string): T
             }
             if (w_langName &amp;&amp; !this._languageFlagged.includes(w_langName)) {
                 this._languageFlagged.push(w_langName);
-                vscode.window.showInformationMessage(w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED);
+                vscode.window.showInformationMessage(
+                    w_langName + Constants.USER_MESSAGES.LANGUAGE_NOT_SUPPORTED
+                );
             } else if (!w_langName) {
-                vscode.window.showInformationMessage(Constants.USER_MESSAGES.UNKNOWN_LANGUAGE_NOT_SUPPORTED);
+                vscode.window.showInformationMessage(
+                    Constants.USER_MESSAGES.UNKNOWN_LANGUAGE_NOT_SUPPORTED + " : " + p_language
+                );
             }
             return p_document;
         }
