@@ -11878,27 +11878,27 @@ public static VSCODE_COMMANDS = {
   {
     "command": "leointeg.findQuickSelected",
     "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@1"
+    "group": "navigation@5"
   },
   {
     "command": "leointeg.findQuickTimeline",
     "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@1"
+    "group": "navigation@5"
   },
   {
     "command": "leointeg.findQuickChanged",
     "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@1"
+    "group": "navigation@5"
   },
   {
     "command": "leointeg.history",
     "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@1"
+    "group": "navigation@5"
   },
   {
     "command": "leointeg.markedList",
     "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@1"
+    "group": "navigation@5"
   },
   {
     "command": "leointeg.showSettingsPage",
