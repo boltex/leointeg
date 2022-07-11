@@ -2137,7 +2137,7 @@ export class LeoIntegration {
             }
 
             return q_closeAll.then(() => {
-                vscode.workspace.applyEdit(w_edit); // delete old document
+                const q_delete = vscode.workspace.applyEdit(w_edit); // delete old document
                 // Set new uri and remove from 'Recently opened'
                 this._bodyPreviewMode = true;
                 this.bodyUri = utils.strToLeoUri(p_newGnx);
@@ -2148,7 +2148,9 @@ export class LeoIntegration {
                         w_oldUri
                     );
                 }
-                return this.showBody(p_aside, p_preserveFocus);
+                return q_delete.then(() => {
+                    return this.showBody(p_aside, p_preserveFocus);
+                });
             });
         }
     }

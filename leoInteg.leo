@@ -10214,7 +10214,7 @@ private _switchBody(
         }
 
         return q_closeAll.then(() =&gt; {
-            vscode.workspace.applyEdit(w_edit); // delete old document
+            const q_delete = vscode.workspace.applyEdit(w_edit); // delete old document
             // Set new uri and remove from 'Recently opened'
             this._bodyPreviewMode = true;
             this.bodyUri = utils.strToLeoUri(p_newGnx);
@@ -10225,7 +10225,9 @@ private _switchBody(
                     w_oldUri
                 );
             }
-            return this.showBody(p_aside, p_preserveFocus);
+            return q_delete.then(() =&gt; {
+                return this.showBody(p_aside, p_preserveFocus);
+            });
         });
     }
 }
