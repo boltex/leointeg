@@ -2161,10 +2161,10 @@ print('done')
   },
   "keywords": [
     "leo",
-    "literate",
     "tree",
     "outline",
-    "programming"
+    "editor",
+    "literate"
   ],
   "categories": [
     "Other"
