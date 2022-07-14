@@ -2114,6 +2114,10 @@
           "when": "leoTreeOpened"
         },
         {
+          "command": "leointeg.saveAsLeoJsFile",
+          "when": "leoTreeOpened"
+        },
+        {
           "command": "leointeg.refreshFromDiskSelection",
           "when": "leoTreeOpened && leoAtFile"
         },

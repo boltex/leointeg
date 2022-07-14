@@ -3737,6 +3737,10 @@ print('done')
   "when": "leoTreeOpened"
 },
 {
+  "command": "leointeg.saveAsLeoJsFile",
+  "when": "leoTreeOpened"
+},
+{
   "command": "leointeg.refreshFromDiskSelection",
   "when": "leoTreeOpened &amp;&amp; leoAtFile"
 },
@@ -16599,8 +16603,7 @@ public setUndoSelection(p_node: LeoUndoNode): void {
                 }
             );
         }
-    }, 0);
-
+    }, 100);
 }
 
 </t>

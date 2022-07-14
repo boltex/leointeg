@@ -4548,8 +4548,7 @@ export class LeoIntegration {
                     }
                 );
             }
-        }, 0);
-
+        }, 100);
     }
 
     /**
