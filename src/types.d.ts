@@ -181,6 +181,7 @@ export interface LeoBridgePackage {
     len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
+    chapters?: string[], // get_chapters
     navList?: LeoGoto[]; // get_goto
     navText?: string; // get_goto
     messages?: string[]; // get_goto

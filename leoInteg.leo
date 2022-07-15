@@ -5589,6 +5589,9 @@ public static USER_MESSAGES = {
     NO_ALL: "No to all",
     CHOOSE_BUTTON: "Choose @button or @rclick",
     MINIBUFFER_PROMPT: "Minibuffer Full Command",
+    SELECT_CHAPTER_PROMPT: "Select chapter",
+    SET_UA_NAME_PROMPT: "Set ua",
+    SET_UA_VAL_PROMPT: "Set ua to",
     CHANGES_DETECTED: "Changes to external files were detected.",
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
@@ -8197,6 +8200,7 @@ export interface LeoBridgePackage {
     len?: number; // get_body_length
     body?: string; // get_body
     buttons?: LeoButton[]; // get_buttons
+    chapters?: string[], // get_chapters
     navList?: LeoGoto[]; // get_goto
     navText?: string; // get_goto
     messages?: string[]; // get_goto
@@ -11892,6 +11896,7 @@ public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
             return vscode.window.showQuickPick(q_commandList, w_options);
         })
         .then((p_picked) =&gt; {
+            // * First check for overridden command: Exit by doing the overridden command
             if (
                 p_picked &amp;&amp;
                 p_picked.label &amp;&amp;
@@ -11901,6 +11906,7 @@ public minibuffer(): Thenable&lt;LeoBridgePackage | undefined&gt; {
                     Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
                 );
             }
+            // * Ok, it was really a minibuffer command
             if (p_picked &amp;&amp; p_picked.label) {
                 const w_commandResult = this.nodeCommand({
                     action: "-" + p_picked.label, // Adding HYPHEN prefix to specify a command-name
@@ -13546,6 +13552,8 @@ public static MINIBUFFER_OVERRIDDEN_COMMANDS: { [key: string]: string } = {
     'save-file-by-name': Constants.COMMANDS.SAVE_AS_FILE,
     'save-file-to': Constants.COMMANDS.SAVE_AS_FILE,
     'save-to': Constants.COMMANDS.SAVE_AS_FILE,
+
+    'set-ua': Constants.COMMANDS.SET_UA,
 
     'clone-find-all-flattened-marked': Constants.COMMANDS.CLONE_FIND_FLATTENED_MARKED,
     'clone-find-all-marked': Constants.COMMANDS.CLONE_FIND_MARKED,
@@ -16744,77 +16752,55 @@ public revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
  */
 public chapterSelect(): Thenable&lt;unknown&gt; {
 
-    // * TODO : EXAMPLE  FROM MINIBUFFER
-
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
-            const q_commandList: Thenable&lt;vscode.QuickPickItem[]&gt; = this.sendAction(
-                Constants.LEOBRIDGE.GET_COMMANDS
+            const q_chaptersList: Thenable&lt;vscode.QuickPickItem[]&gt; = this.sendAction(
+                Constants.LEOBRIDGE.GET_CHAPTERS
             ).then((p_result: LeoBridgePackage) =&gt; {
-                if (p_result.commands &amp;&amp; p_result.commands.length) {
-                    const w_regexp = new RegExp('\\s+', 'g');
-                    p_result.commands.forEach(p_command =&gt; {
-                        if (p_command.detail) {
-                            p_command.detail = p_command.detail.trim().replace(w_regexp, ' ');
-                        }
-                    });
-                    // Remove unsupported commands
-                    for (const p_name of Constants.unsupportedMinibufferCommands) {
-                        const i_command = p_result.commands.findIndex((object) =&gt; {
-                            return object.label === p_name;
+                if (p_result.chapters &amp;&amp; p_result.chapters.length) {
+                    const chapters: vscode.QuickPickItem[] = [];
+
+                    p_result.chapters.forEach(p_chapter =&gt; {
+                        chapters.push({
+                            label: p_chapter
                         });
-                        if (i_command !== -1) {
-                            p_result.commands.splice(i_command, 1);
-                        }
-                    }
-                    // Add some commands traditionally from plugins or other sources
-                    p_result.commands.push(...Constants.addMinibufferCommands);
-                    return p_result.commands;
+                    });
+
+                    return chapters;
                 } else {
                     return [];
                 }
             });
             // Add Nav tab special commands
             const w_options: vscode.QuickPickOptions = {
-                placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
-                matchOnDetail: true,
+                placeHolder: Constants.USER_MESSAGES.SELECT_CHAPTER_PROMPT
             };
-            return vscode.window.showQuickPick(q_commandList, w_options);
+            return vscode.window.showQuickPick(q_chaptersList, w_options);
         })
         .then((p_picked) =&gt; {
-            if (
-                p_picked &amp;&amp;
-                p_picked.label &amp;&amp;
-                Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
-            ) {
-                return vscode.commands.executeCommand(
-                    Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
-                );
-            }
+
             if (p_picked &amp;&amp; p_picked.label) {
-                const w_commandResult = this.nodeCommand({
-                    action: "-" + p_picked.label, // Adding HYPHEN prefix to specify a command-name
-                    node: undefined,
-                    refreshType: {
-                        tree: true,
-                        body: true,
-                        documents: true,
-                        buttons: true,
-                        states: true,
-                    },
-                    fromOutline: false, // true // TODO : Differentiate from outline?
+                return this.sendAction(
+                    Constants.LEOBRIDGE.CHAPTER_SELECT,
+                    JSON.stringify({ name: p_picked.label })
+                ).then((p_resultTag: LeoBridgePackage) =&gt; {
+                    this.launchRefresh(
+                        {
+                            tree: true,
+                            body: true,
+                            documents: false,
+                            buttons: false,
+                            states: true,
+                        },
+                        false
+                    );
                 });
-                return w_commandResult ? w_commandResult : Promise.reject('Command not added');
             } else {
                 // Canceled
                 return Promise.resolve(undefined);
             }
         });
 
-
-
-
-    return Promise.resolve();
 }
 
 </t>
@@ -16822,8 +16808,57 @@ public chapterSelect(): Thenable&lt;unknown&gt; {
  * Asks for uA name, and value, then sets is on the server
  */
 public setUa(): Thenable&lt;unknown&gt; {
+    let w_name = "";
+    // TODO : example from chapter select below
+    return this._isBusyTriggerSave(false)
+        .then((p_saveResult) =&gt; {
+            return vscode.window.showInputBox({
+                title: "",
+                prompt: "",
+                placeHolder: "ua name"
+            })
+                .then((p_uaName) =&gt; {
+                    // trim string and re-check if valid string
 
-    return Promise.resolve();
+                    if (p_uaName &amp;&amp; p_uaName.trim()) {
+                        p_uaName = p_uaName.trim();
+                        w_name = p_uaName;
+                        return vscode.window.showInputBox({
+                            title: "",
+                            prompt: "",
+                            placeHolder: "ua value"
+                        });
+                    }
+                    return Promise.resolve(undefined); // cancel
+
+                })
+                .then((p_uaVal) =&gt; {
+                    // check if invalid or canceled
+                    if (!w_name || p_uaVal === undefined) {
+                        return Promise.resolve();
+                    }
+                    // ok got both name and val
+                    return this.sendAction(
+                        Constants.LEOBRIDGE.SET_UA_MEMBER,
+                        JSON.stringify({ name: w_name, value: p_uaVal })
+                    ).then((p_resultTag: LeoBridgePackage) =&gt; {
+                        this.launchRefresh(
+                            {
+                                tree: true,
+                                body: true,
+                                documents: false,
+                                buttons: false,
+                                states: true,
+                            },
+                            false
+                        );
+                    });
+
+                });
+        });
+
+
+
 }
 
 </t>

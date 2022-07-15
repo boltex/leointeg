@@ -182,6 +182,9 @@ export class Constants {
         NO_ALL: "No to all",
         CHOOSE_BUTTON: "Choose @button or @rclick",
         MINIBUFFER_PROMPT: "Minibuffer Full Command",
+        SELECT_CHAPTER_PROMPT: "Select chapter",
+        SET_UA_NAME_PROMPT: "Set ua",
+        SET_UA_VAL_PROMPT: "Set ua to",
         CHANGES_DETECTED: "Changes to external files were detected.",
         REFRESHED: " Nodes refreshed.", // with leading space
         IGNORED: " They were ignored.", // with leading space

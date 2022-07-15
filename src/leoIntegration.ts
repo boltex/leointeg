@@ -2703,6 +2703,7 @@ export class LeoIntegration {
                 return vscode.window.showQuickPick(q_commandList, w_options);
             })
             .then((p_picked) => {
+                // * First check for overridden command: Exit by doing the overridden command
                 if (
                     p_picked &&
                     p_picked.label &&
@@ -2712,6 +2713,7 @@ export class LeoIntegration {
                         Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
                     );
                 }
+                // * Ok, it was really a minibuffer command
                 if (p_picked && p_picked.label) {
                     const w_commandResult = this.nodeCommand({
                         action: "-" + p_picked.label, // Adding HYPHEN prefix to specify a command-name
@@ -3051,8 +3053,57 @@ export class LeoIntegration {
      * Asks for uA name, and value, then sets is on the server
      */
     public setUa(): Thenable<unknown> {
+        let w_name = "";
+        // TODO : example from chapter select below
+        return this._isBusyTriggerSave(false)
+            .then((p_saveResult) => {
+                return vscode.window.showInputBox({
+                    title: "",
+                    prompt: "",
+                    placeHolder: "ua name"
+                })
+                    .then((p_uaName) => {
+                        // trim string and re-check if valid string
 
-        return Promise.resolve();
+                        if (p_uaName && p_uaName.trim()) {
+                            p_uaName = p_uaName.trim();
+                            w_name = p_uaName;
+                            return vscode.window.showInputBox({
+                                title: "",
+                                prompt: "",
+                                placeHolder: "ua value"
+                            });
+                        }
+                        return Promise.resolve(undefined); // cancel
+
+                    })
+                    .then((p_uaVal) => {
+                        // check if invalid or canceled
+                        if (!w_name || p_uaVal === undefined) {
+                            return Promise.resolve();
+                        }
+                        // ok got both name and val
+                        return this.sendAction(
+                            Constants.LEOBRIDGE.SET_UA_MEMBER,
+                            JSON.stringify({ name: w_name, value: p_uaVal })
+                        ).then((p_resultTag: LeoBridgePackage) => {
+                            this.launchRefresh(
+                                {
+                                    tree: true,
+                                    body: true,
+                                    documents: false,
+                                    buttons: false,
+                                    states: true,
+                                },
+                                false
+                            );
+                        });
+
+                    });
+            });
+
+
+
     }
 
     public replaceClipboardWith(s: string): Thenable<void> {
@@ -3081,77 +3132,55 @@ export class LeoIntegration {
      */
     public chapterSelect(): Thenable<unknown> {
 
-        // * TODO : EXAMPLE  FROM MINIBUFFER
-
         return this._isBusyTriggerSave(false)
             .then((p_saveResult) => {
-                const q_commandList: Thenable<vscode.QuickPickItem[]> = this.sendAction(
-                    Constants.LEOBRIDGE.GET_COMMANDS
+                const q_chaptersList: Thenable<vscode.QuickPickItem[]> = this.sendAction(
+                    Constants.LEOBRIDGE.GET_CHAPTERS
                 ).then((p_result: LeoBridgePackage) => {
-                    if (p_result.commands && p_result.commands.length) {
-                        const w_regexp = new RegExp('\\s+', 'g');
-                        p_result.commands.forEach(p_command => {
-                            if (p_command.detail) {
-                                p_command.detail = p_command.detail.trim().replace(w_regexp, ' ');
-                            }
-                        });
-                        // Remove unsupported commands
-                        for (const p_name of Constants.unsupportedMinibufferCommands) {
-                            const i_command = p_result.commands.findIndex((object) => {
-                                return object.label === p_name;
+                    if (p_result.chapters && p_result.chapters.length) {
+                        const chapters: vscode.QuickPickItem[] = [];
+
+                        p_result.chapters.forEach(p_chapter => {
+                            chapters.push({
+                                label: p_chapter
                             });
-                            if (i_command !== -1) {
-                                p_result.commands.splice(i_command, 1);
-                            }
-                        }
-                        // Add some commands traditionally from plugins or other sources
-                        p_result.commands.push(...Constants.addMinibufferCommands);
-                        return p_result.commands;
+                        });
+
+                        return chapters;
                     } else {
                         return [];
                     }
                 });
                 // Add Nav tab special commands
                 const w_options: vscode.QuickPickOptions = {
-                    placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
-                    matchOnDetail: true,
+                    placeHolder: Constants.USER_MESSAGES.SELECT_CHAPTER_PROMPT
                 };
-                return vscode.window.showQuickPick(q_commandList, w_options);
+                return vscode.window.showQuickPick(q_chaptersList, w_options);
             })
             .then((p_picked) => {
-                if (
-                    p_picked &&
-                    p_picked.label &&
-                    Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
-                ) {
-                    return vscode.commands.executeCommand(
-                        Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
-                    );
-                }
+
                 if (p_picked && p_picked.label) {
-                    const w_commandResult = this.nodeCommand({
-                        action: "-" + p_picked.label, // Adding HYPHEN prefix to specify a command-name
-                        node: undefined,
-                        refreshType: {
-                            tree: true,
-                            body: true,
-                            documents: true,
-                            buttons: true,
-                            states: true,
-                        },
-                        fromOutline: false, // true // TODO : Differentiate from outline?
+                    return this.sendAction(
+                        Constants.LEOBRIDGE.CHAPTER_SELECT,
+                        JSON.stringify({ name: p_picked.label })
+                    ).then((p_resultTag: LeoBridgePackage) => {
+                        this.launchRefresh(
+                            {
+                                tree: true,
+                                body: true,
+                                documents: false,
+                                buttons: false,
+                                states: true,
+                            },
+                            false
+                        );
                     });
-                    return w_commandResult ? w_commandResult : Promise.reject('Command not added');
                 } else {
                     // Canceled
                     return Promise.resolve(undefined);
                 }
             });
 
-
-
-
-        return Promise.resolve();
     }
 
     /**
