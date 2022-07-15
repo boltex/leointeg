@@ -1085,6 +1085,11 @@
         "title": "Delete Node"
       },
       {
+        "command": "leointeg.setUa",
+        "category": "Leo",
+        "title": "Set uA"
+      },
+      {
         "command": "leointeg.extract",
         "category": "Leo",
         "title": "Extract",
@@ -1513,6 +1518,43 @@
         "icon": {
           "light": "resources/light/dehoist.svg",
           "dark": "resources/dark/dehoist.svg"
+        }
+      },
+
+      {
+        "command": "leointeg.chapterNext",
+        "category": "Leo",
+        "title": "Chapter Next",
+        "icon": {
+          "light": "resources/light/chapter-next.svg",
+          "dark": "resources/dark/chapter-next.svg"
+        }
+      },
+      {
+        "command": "leointeg.chapterBack",
+        "category": "Leo",
+        "title": "Chapter Back",
+        "icon": {
+          "light": "resources/light/chapter-back.svg",
+          "dark": "resources/dark/chapter-back.svg"
+        }
+      },
+      {
+        "command": "leointeg.chapterMain",
+        "category": "Leo",
+        "title": "Chapter Main",
+        "icon": {
+          "light": "resources/light/chapter-main.svg",
+          "dark": "resources/dark/chapter-main.svg"
+        }
+      },
+      {
+        "command": "leointeg.chapterSelect",
+        "category": "Leo",
+        "title": "Chapter Select",
+        "icon": {
+          "light": "resources/light/chapter-select.svg",
+          "dark": "resources/dark/chapter-select.svg"
         }
       },
       {
@@ -2170,6 +2212,10 @@
           "when": "leoTreeOpened"
         },
         {
+          "command": "leointeg.setUa",
+          "when": "leoTreeOpened"
+        },
+        {
           "command": "leointeg.extract",
           "when": "leoTreeOpened"
         },
@@ -2236,6 +2282,22 @@
         {
           "command": "leointeg.deHoist",
           "when": "leoTreeOpened && leoCanDehoist"
+        },
+        {
+          "command": "leointeg.chapterNext",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.chapterBack",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.chapterMain",
+          "when": "leoTreeOpened"
+        },
+        {
+          "command": "leointeg.chapterSelect",
+          "when": "leoTreeOpened"
         },
         {
           "command": "leointeg.undo",

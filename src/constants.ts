@@ -554,6 +554,11 @@ export class Constants {
         EXECUTE_SCRIPT: "executeScript",
         HOIST_PNODE: "hoist",
         DEHOIST: "dehoist",
+        CHAPTER_NEXT: "-chapter-next",
+        CHAPTER_BACK: "-chapter-back",
+        CHAPTER_MAIN: "!chapter-main",
+        CHAPTER_SELECT: "!chapter-select",
+        GET_CHAPTERS: "!get_chapters",
         EXTRACT: "extract",
         EXTRACT_NAMES: "extractSectionNames",
         COPY_MARKED: "copyMarked",
@@ -705,6 +710,7 @@ export class Constants {
         WRITE_DIRTY_AT_FILE_NODES: Constants.NAME + ".writeDirtyAtFileNodes",
         WRITE_DIRTY_AT_FILE_NODES_FO: Constants.NAME + ".writeDirtyAtFileNodesFromOutline",
         // * Commands from keyboard, while focus on BODY (command-palette returns to BODY for now)
+        SET_UA: Constants.NAME + ".setUa",
         MARK_SELECTION: Constants.NAME + ".markSelection",
         UNMARK_SELECTION: Constants.NAME + ".unmarkSelection",
         COPY_SELECTION: Constants.NAME + ".copyNodeSelection", // Nothing to refresh/focus so no "FO" version
@@ -750,6 +756,10 @@ export class Constants {
         DEHOIST: Constants.NAME + ".deHoist",
         DEHOIST_DISABLED: Constants.NAME + ".deHoistDisabled",
         DEHOIST_FO: Constants.NAME + ".deHoistFromOutline",
+        CHAPTER_NEXT: Constants.NAME + ".chapterNext",
+        CHAPTER_BACK: Constants.NAME + ".chapterBack",
+        CHAPTER_MAIN: Constants.NAME + ".chapterMain",
+        CHAPTER_SELECT: Constants.NAME + ".chapterSelect",
         EXTRACT: Constants.NAME + ".extract",
         EXTRACT_NAMES: Constants.NAME + ".extractNames",
         COPY_MARKED: Constants.NAME + ".copyMarked",
@@ -884,6 +894,8 @@ export class Constants {
         'save-file-by-name': Constants.COMMANDS.SAVE_AS_FILE,
         'save-file-to': Constants.COMMANDS.SAVE_AS_FILE,
         'save-to': Constants.COMMANDS.SAVE_AS_FILE,
+
+        'set-ua': Constants.COMMANDS.SET_UA,
 
         'clone-find-all-flattened-marked': Constants.COMMANDS.CLONE_FIND_FLATTENED_MARKED,
         'clone-find-all-marked': Constants.COMMANDS.CLONE_FIND_MARKED,

@@ -178,6 +178,8 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
+
+        [CMD.SET_UA, () => w_leo.setUa()],
         [CMD.PASTE_SELECTION, () => w_leo.pasteNode(U, false)],
         [CMD.PASTE_SELECTION_FO, () => w_leo.pasteNode(U, true)],
         [CMD.PASTE_CLONE_SELECTION, () => w_leo.pasteAsCloneNode(U, false)],
@@ -321,6 +323,28 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE,
             fromOutline: true
         })],
+
+        [CMD.CHAPTER_NEXT, () => w_leo.nodeCommand({
+            action: BRIDGE.CHAPTER_NEXT,
+            node: U,
+            refreshType: REFRESH_TREE,
+            fromOutline: true
+        })],
+
+        [CMD.CHAPTER_BACK, () => w_leo.nodeCommand({
+            action: BRIDGE.CHAPTER_BACK,
+            node: U,
+            refreshType: REFRESH_TREE,
+            fromOutline: true
+        })],
+
+        [CMD.CHAPTER_MAIN, () => w_leo.nodeCommand({
+            action: BRIDGE.CHAPTER_MAIN,
+            node: U,
+            refreshType: REFRESH_TREE,
+            fromOutline: true
+        })],
+        [CMD.CHAPTER_SELECT, () => w_leo.chapterSelect()],
 
         [CMD.CLONE, (p_node: LeoNode) => w_leo.nodeCommand({
             action: BRIDGE.CLONE_PNODE,

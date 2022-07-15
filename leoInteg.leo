@@ -442,6 +442,7 @@
 <v t="felix.20220222012528.1"><vh>cutNode</vh></v>
 <v t="felix.20220222012552.1"><vh>pasteNode</vh></v>
 <v t="felix.20220222012602.1"><vh>pasteAsCloneNode</vh></v>
+<v t="felix.20220714224733.1"><vh>setUa</vh></v>
 </v>
 <v t="felix.20220222014050.1"><vh>Clipboard</vh>
 <v t="felix.20220222014050.2"><vh>replaceClipboardWith</vh></v>
@@ -449,6 +450,7 @@
 <v t="felix.20220222014050.4"><vh>getTextFromClipboard</vh></v>
 </v>
 <v t="felix.20220308213523.1"><vh>Nav</vh>
+<v t="felix.20220714002222.1"><vh>chapterSelect</vh></v>
 <v t="felix.20220308213538.1"><vh>findQuick</vh></v>
 <v t="felix.20220308213547.1"><vh>findQuickSelected</vh></v>
 <v t="felix.20220308213552.1"><vh>findQuickTimeline</vh></v>
@@ -462,7 +464,6 @@
 <v t="felix.20220305225942.1"><vh>navEnter</vh></v>
 <v t="felix.20220305231404.1"><vh>navTextChange</vh></v>
 <v t="felix.20210516233931.1"><vh>startSearch</vh></v>
-<v t="felix.20210613212439.1"><vh>newHeadline</vh></v>
 <v t="felix.20210613205741.1"><vh>_inputFindPattern</vh></v>
 <v t="felix.20210516234059.1"><vh>find</vh></v>
 <v t="felix.20210713000442.1"><vh>findSymbol</vh></v>
@@ -1619,6 +1620,8 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
+
+[CMD.SET_UA, () =&gt; w_leo.setUa()],
 [CMD.PASTE_SELECTION, () =&gt; w_leo.pasteNode(U, false)],
 [CMD.PASTE_SELECTION_FO, () =&gt; w_leo.pasteNode(U, true)],
 [CMD.PASTE_CLONE_SELECTION, () =&gt; w_leo.pasteAsCloneNode(U, false)],
@@ -1762,6 +1765,28 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE,
     fromOutline: true
 })],
+
+[CMD.CHAPTER_NEXT, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.CHAPTER_NEXT,
+    node: U,
+    refreshType: REFRESH_TREE,
+    fromOutline: true
+})],
+
+[CMD.CHAPTER_BACK, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.CHAPTER_BACK,
+    node: U,
+    refreshType: REFRESH_TREE,
+    fromOutline: true
+})],
+
+[CMD.CHAPTER_MAIN, () =&gt; w_leo.nodeCommand({
+    action: BRIDGE.CHAPTER_MAIN,
+    node: U,
+    refreshType: REFRESH_TREE,
+    fromOutline: true
+})],
+[CMD.CHAPTER_SELECT, () =&gt; w_leo.chapterSelect()],
 
 [CMD.CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
     action: BRIDGE.CLONE_PNODE,
@@ -3029,6 +3054,11 @@ print('done')
   "category": "Leo",
   "title": "Delete Node"
 },
+{
+  "command": "leointeg.setUa",
+  "category": "Leo",
+  "title": "Set uA"
+},
 </t>
 <t tx="ekr.20200815123601.22">{
   "command": "leointeg.moveOutlineDown",
@@ -3446,6 +3476,43 @@ print('done')
     "dark": "resources/dark/dehoist.svg"
   }
 },
+
+{
+  "command": "leointeg.chapterNext",
+  "category": "Leo",
+  "title": "Chapter Next",
+  "icon": {
+    "light": "resources/light/chapter-next.svg",
+    "dark": "resources/dark/chapter-next.svg"
+  }
+},
+{
+  "command": "leointeg.chapterBack",
+  "category": "Leo",
+  "title": "Chapter Back",
+  "icon": {
+    "light": "resources/light/chapter-back.svg",
+    "dark": "resources/dark/chapter-back.svg"
+  }
+},
+{
+  "command": "leointeg.chapterMain",
+  "category": "Leo",
+  "title": "Chapter Main",
+  "icon": {
+    "light": "resources/light/chapter-main.svg",
+    "dark": "resources/dark/chapter-main.svg"
+  }
+},
+{
+  "command": "leointeg.chapterSelect",
+  "category": "Leo",
+  "title": "Chapter Select",
+  "icon": {
+    "light": "resources/light/chapter-select.svg",
+    "dark": "resources/dark/chapter-select.svg"
+  }
+},
 </t>
 <t tx="ekr.20200815123601.26">{
   "command": "leointeg.undo",
@@ -3794,6 +3861,10 @@ print('done')
   "command": "leointeg.deleteSelection",
   "when": "leoTreeOpened"
 },
+{
+  "command": "leointeg.setUa",
+  "when": "leoTreeOpened"
+},
 </t>
 <t tx="ekr.20200815123601.5">"leoIntegration.statusBarColor": {
   "scope": "application",
@@ -3864,6 +3935,22 @@ print('done')
 {
   "command": "leointeg.deHoist",
   "when": "leoTreeOpened &amp;&amp; leoCanDehoist"
+},
+{
+  "command": "leointeg.chapterNext",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.chapterBack",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.chapterMain",
+  "when": "leoTreeOpened"
+},
+{
+  "command": "leointeg.chapterSelect",
+  "when": "leoTreeOpened"
 },
 </t>
 <t tx="ekr.20200815123601.54">{
@@ -5065,6 +5152,11 @@ public static LEOBRIDGE = {
     EXECUTE_SCRIPT: "executeScript",
     HOIST_PNODE: "hoist",
     DEHOIST: "dehoist",
+    CHAPTER_NEXT: "-chapter-next",
+    CHAPTER_BACK: "-chapter-back",
+    CHAPTER_MAIN: "!chapter-main",
+    CHAPTER_SELECT: "!chapter-select",
+    GET_CHAPTERS: "!get_chapters",
     EXTRACT: "extract",
     EXTRACT_NAMES: "extractSectionNames",
     COPY_MARKED: "copyMarked",
@@ -5217,6 +5309,7 @@ public static COMMANDS = {
     WRITE_DIRTY_AT_FILE_NODES: Constants.NAME + ".writeDirtyAtFileNodes",
     WRITE_DIRTY_AT_FILE_NODES_FO: Constants.NAME + ".writeDirtyAtFileNodesFromOutline",
     // * Commands from keyboard, while focus on BODY (command-palette returns to BODY for now)
+    SET_UA: Constants.NAME + ".setUa",
     MARK_SELECTION: Constants.NAME + ".markSelection",
     UNMARK_SELECTION: Constants.NAME + ".unmarkSelection",
     COPY_SELECTION: Constants.NAME + ".copyNodeSelection", // Nothing to refresh/focus so no "FO" version
@@ -5262,6 +5355,10 @@ public static COMMANDS = {
     DEHOIST: Constants.NAME + ".deHoist",
     DEHOIST_DISABLED: Constants.NAME + ".deHoistDisabled",
     DEHOIST_FO: Constants.NAME + ".deHoistFromOutline",
+    CHAPTER_NEXT: Constants.NAME + ".chapterNext",
+    CHAPTER_BACK: Constants.NAME + ".chapterBack",
+    CHAPTER_MAIN: Constants.NAME + ".chapterMain",
+    CHAPTER_SELECT: Constants.NAME + ".chapterSelect",
     EXTRACT: Constants.NAME + ".extract",
     EXTRACT_NAMES: Constants.NAME + ".extractNames",
     COPY_MARKED: Constants.NAME + ".copyMarked",
@@ -13750,7 +13847,6 @@ public chooseLeoFolder(): void {
 }
 
 </t>
-<t tx="felix.20210613212439.1"></t>
 <t tx="felix.20210614235023.1">/**
  * * Shows dialog for choosing the Leo Editor installation folder path
  * @returns A promise that resolves to the selected resources or undefined
@@ -16640,6 +16736,95 @@ public revertToUndo(p_undo: LeoUndoNode): Promise&lt;any&gt; {
     'word-search-forward',
     'restart-leo'
 ];
+
+</t>
+<t tx="felix.20220714002222.1">/**
+ * Offers choices of chapters below the input dialog to choose from
+ * and selects the chosen - or typed - chapter
+ */
+public chapterSelect(): Thenable&lt;unknown&gt; {
+
+    // * TODO : EXAMPLE  FROM MINIBUFFER
+
+    return this._isBusyTriggerSave(false)
+        .then((p_saveResult) =&gt; {
+            const q_commandList: Thenable&lt;vscode.QuickPickItem[]&gt; = this.sendAction(
+                Constants.LEOBRIDGE.GET_COMMANDS
+            ).then((p_result: LeoBridgePackage) =&gt; {
+                if (p_result.commands &amp;&amp; p_result.commands.length) {
+                    const w_regexp = new RegExp('\\s+', 'g');
+                    p_result.commands.forEach(p_command =&gt; {
+                        if (p_command.detail) {
+                            p_command.detail = p_command.detail.trim().replace(w_regexp, ' ');
+                        }
+                    });
+                    // Remove unsupported commands
+                    for (const p_name of Constants.unsupportedMinibufferCommands) {
+                        const i_command = p_result.commands.findIndex((object) =&gt; {
+                            return object.label === p_name;
+                        });
+                        if (i_command !== -1) {
+                            p_result.commands.splice(i_command, 1);
+                        }
+                    }
+                    // Add some commands traditionally from plugins or other sources
+                    p_result.commands.push(...Constants.addMinibufferCommands);
+                    return p_result.commands;
+                } else {
+                    return [];
+                }
+            });
+            // Add Nav tab special commands
+            const w_options: vscode.QuickPickOptions = {
+                placeHolder: Constants.USER_MESSAGES.MINIBUFFER_PROMPT,
+                matchOnDetail: true,
+            };
+            return vscode.window.showQuickPick(q_commandList, w_options);
+        })
+        .then((p_picked) =&gt; {
+            if (
+                p_picked &amp;&amp;
+                p_picked.label &amp;&amp;
+                Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
+            ) {
+                return vscode.commands.executeCommand(
+                    Constants.MINIBUFFER_OVERRIDDEN_COMMANDS[p_picked.label]
+                );
+            }
+            if (p_picked &amp;&amp; p_picked.label) {
+                const w_commandResult = this.nodeCommand({
+                    action: "-" + p_picked.label, // Adding HYPHEN prefix to specify a command-name
+                    node: undefined,
+                    refreshType: {
+                        tree: true,
+                        body: true,
+                        documents: true,
+                        buttons: true,
+                        states: true,
+                    },
+                    fromOutline: false, // true // TODO : Differentiate from outline?
+                });
+                return w_commandResult ? w_commandResult : Promise.reject('Command not added');
+            } else {
+                // Canceled
+                return Promise.resolve(undefined);
+            }
+        });
+
+
+
+
+    return Promise.resolve();
+}
+
+</t>
+<t tx="felix.20220714224733.1">/**
+ * Asks for uA name, and value, then sets is on the server
+ */
+public setUa(): Thenable&lt;unknown&gt; {
+
+    return Promise.resolve();
+}
 
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
