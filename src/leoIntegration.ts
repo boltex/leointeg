@@ -3054,24 +3054,22 @@ export class LeoIntegration {
      */
     public setUa(): Thenable<unknown> {
         let w_name = "";
-        // TODO : example from chapter select below
         return this._isBusyTriggerSave(false)
             .then((p_saveResult) => {
                 return vscode.window.showInputBox({
-                    title: "",
-                    prompt: "",
-                    placeHolder: "ua name"
+                    title: Constants.USER_MESSAGES.SET_UA_NAME_TITLE,
+                    prompt: Constants.USER_MESSAGES.SET_UA_NAME_PROMPT,
+                    placeHolder: Constants.USER_MESSAGES.SET_UA_NAME_PLACEHOLDER
                 })
                     .then((p_uaName) => {
                         // trim string and re-check if valid string
-
                         if (p_uaName && p_uaName.trim()) {
                             p_uaName = p_uaName.trim();
                             w_name = p_uaName;
                             return vscode.window.showInputBox({
-                                title: "",
-                                prompt: "",
-                                placeHolder: "ua value"
+                                title: Constants.USER_MESSAGES.SET_UA_VAL_TITLE,
+                                prompt: Constants.USER_MESSAGES.SET_UA_VAL_PROMPT,
+                                placeHolder: Constants.USER_MESSAGES.SET_UA_VAL_PLACEHOLDER
                             });
                         }
                         return Promise.resolve(undefined); // cancel
@@ -3079,7 +3077,7 @@ export class LeoIntegration {
                     })
                     .then((p_uaVal) => {
                         // check if invalid or canceled
-                        if (!w_name || p_uaVal === undefined) {
+                        if (!w_name || p_uaVal === null || p_uaVal === undefined) {
                             return Promise.resolve();
                         }
                         // ok got both name and val
@@ -3101,9 +3099,6 @@ export class LeoIntegration {
 
                     });
             });
-
-
-
     }
 
     public replaceClipboardWith(s: string): Thenable<void> {

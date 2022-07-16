@@ -5084,7 +5084,7 @@ public static LEOBRIDGE = {
     COLLAPSE_NODE: "!contract_node", // "collapseNode",
     CONTRACT_ALL: "contractAllHeadlines",
     GET_STATES: "!get_ui_states", // "getStates",
-    GET_UNDOS: '!get_undos',
+    GET_UNDOS: "!get_undos",
     GET_UA: "!get_ua",
     SET_UA_MEMBER: "!set_ua_member",
     SET_UA: "!set_ua",
@@ -5154,8 +5154,8 @@ public static LEOBRIDGE = {
     DEHOIST: "dehoist",
     CHAPTER_NEXT: "-chapter-next",
     CHAPTER_BACK: "-chapter-back",
-    CHAPTER_MAIN: "!chapter-main",
-    CHAPTER_SELECT: "!chapter-select",
+    CHAPTER_MAIN: "!chapter_main",
+    CHAPTER_SELECT: "!chapter_select",
     GET_CHAPTERS: "!get_chapters",
     EXTRACT: "extract",
     EXTRACT_NAMES: "extractSectionNames",
@@ -5590,8 +5590,12 @@ public static USER_MESSAGES = {
     CHOOSE_BUTTON: "Choose @button or @rclick",
     MINIBUFFER_PROMPT: "Minibuffer Full Command",
     SELECT_CHAPTER_PROMPT: "Select chapter",
-    SET_UA_NAME_PROMPT: "Set ua",
-    SET_UA_VAL_PROMPT: "Set ua to",
+    SET_UA_NAME_TITLE: "Set ua",
+    SET_UA_NAME_PLACEHOLDER: "Attribute Name",
+    SET_UA_NAME_PROMPT: "Set unknown attribute name",
+    SET_UA_VAL_TITLE: "Set ua to",
+    SET_UA_VAL_PLACEHOLDER: "Attribute Value",
+    SET_UA_VAL_PROMPT: "Set unknown attribute value",
     CHANGES_DETECTED: "Changes to external files were detected.",
     REFRESHED: " Nodes refreshed.", // with leading space
     IGNORED: " They were ignored.", // with leading space
@@ -16809,24 +16813,22 @@ public chapterSelect(): Thenable&lt;unknown&gt; {
  */
 public setUa(): Thenable&lt;unknown&gt; {
     let w_name = "";
-    // TODO : example from chapter select below
     return this._isBusyTriggerSave(false)
         .then((p_saveResult) =&gt; {
             return vscode.window.showInputBox({
-                title: "",
-                prompt: "",
-                placeHolder: "ua name"
+                title: Constants.USER_MESSAGES.SET_UA_NAME_TITLE,
+                prompt: Constants.USER_MESSAGES.SET_UA_NAME_PROMPT,
+                placeHolder: Constants.USER_MESSAGES.SET_UA_NAME_PLACEHOLDER
             })
                 .then((p_uaName) =&gt; {
                     // trim string and re-check if valid string
-
                     if (p_uaName &amp;&amp; p_uaName.trim()) {
                         p_uaName = p_uaName.trim();
                         w_name = p_uaName;
                         return vscode.window.showInputBox({
-                            title: "",
-                            prompt: "",
-                            placeHolder: "ua value"
+                            title: Constants.USER_MESSAGES.SET_UA_VAL_TITLE,
+                            prompt: Constants.USER_MESSAGES.SET_UA_VAL_PROMPT,
+                            placeHolder: Constants.USER_MESSAGES.SET_UA_VAL_PLACEHOLDER
                         });
                     }
                     return Promise.resolve(undefined); // cancel
@@ -16834,7 +16836,7 @@ public setUa(): Thenable&lt;unknown&gt; {
                 })
                 .then((p_uaVal) =&gt; {
                     // check if invalid or canceled
-                    if (!w_name || p_uaVal === undefined) {
+                    if (!w_name || p_uaVal === null || p_uaVal === undefined) {
                         return Promise.resolve();
                     }
                     // ok got both name and val
@@ -16856,9 +16858,6 @@ public setUa(): Thenable&lt;unknown&gt; {
 
                 });
         });
-
-
-
 }
 
 </t>
