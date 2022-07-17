@@ -4311,6 +4311,10 @@ print('done')
   "command": "leointeg.deHoistFromOutline",
   "when": "false"
 },
+{
+  "command": "leointeg.chapterMainDisabled",
+  "when": "false"
+},
 </t>
 <t tx="ekr.20200815123601.67">{
   "command": "leointeg.undoFromOutline",
@@ -4322,6 +4326,14 @@ print('done')
 },
 {
   "command": "leointeg.revertToUndo",
+  "when": "false"
+},
+{
+  "command": "leointeg.undoDisabled",
+  "when": "false"
+},
+{
+  "command": "leointeg.redoDisabled",
   "when": "false"
 },
 </t>

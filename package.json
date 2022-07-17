@@ -2772,6 +2772,10 @@
           "when": "false"
         },
         {
+          "command": "leointeg.chapterMainDisabled",
+          "when": "false"
+        },
+        {
           "command": "leointeg.undoFromOutline",
           "when": "false"
         },
@@ -2781,6 +2785,14 @@
         },
         {
           "command": "leointeg.revertToUndo",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.undoDisabled",
+          "when": "false"
+        },
+        {
+          "command": "leointeg.redoDisabled",
           "when": "false"
         },
         {
