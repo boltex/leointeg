@@ -344,6 +344,7 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE,
             fromOutline: true
         })],
+        [CMD.CHAPTER_MAIN_DISABLED, () => { }],
         [CMD.CHAPTER_SELECT, () => w_leo.chapterSelect()],
 
         [CMD.CLONE, (p_node: LeoNode) => w_leo.nodeCommand({

@@ -1520,7 +1520,6 @@
           "dark": "resources/dark/dehoist.svg"
         }
       },
-
       {
         "command": "leointeg.chapterNext",
         "category": "Leo",
@@ -1546,6 +1545,15 @@
         "icon": {
           "light": "resources/light/chapter-main.svg",
           "dark": "resources/dark/chapter-main.svg"
+        }
+      },
+      {
+        "command": "leointeg.chapterMainDisabled",
+        "category": "Leo",
+        "title": "Chapter Main",
+        "icon": {
+          "light": "resources/light/chapter-main-disabled.svg",
+          "dark": "resources/dark/chapter-main-disabled.svg"
         }
       },
       {
@@ -1634,7 +1642,11 @@
       {
         "command": "leointeg.findNextFromOutline",
         "category": "Leo",
-        "title": "Find Next"
+        "title": "Find Next",
+        "icon": {
+          "light": "resources/light/find-next.svg",
+          "dark": "resources/dark/find-next.svg"
+        }
       },
       {
         "command": "leointeg.findPrevious",
@@ -1644,7 +1656,11 @@
       {
         "command": "leointeg.findPreviousFromOutline",
         "category": "Leo",
-        "title": "Find Previous"
+        "title": "Find Previous",
+        "icon": {
+          "light": "resources/light/find-previous.svg",
+          "dark": "resources/dark/find-previous.svg"
+        }
       },
       {
         "command": "leointeg.findVar",
@@ -2764,14 +2780,6 @@
           "when": "false"
         },
         {
-          "command": "leointeg.undoDisabled",
-          "when": "false"
-        },
-        {
-          "command": "leointeg.redoDisabled",
-          "when": "false"
-        },
-        {
           "command": "leointeg.revertToUndo",
           "when": "false"
         },
@@ -2882,12 +2890,12 @@
         {
           "command": "leointeg.showSettingsPage",
           "when": "view =~ /^leoFindPanel|^leoDocuments|^leoButtons/ && leoBridgeReady",
-          "group": "navigation@2"
+          "group": "navigation@9"
         },
         {
           "command": "leointeg.showLogPane",
           "when": "view =~ /^leoFindPanel|^leoDocuments|^leoButtons/ && leoBridgeReady",
-          "group": "navigation@2"
+          "group": "navigation@9"
         },
         {
           "command": "leointeg.findQuickSelected",
@@ -2996,12 +3004,17 @@
         },
         {
           "command": "leointeg.deHoistFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoCanDehoist",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoCanDehoist && !leoTopHoistChapter",
           "group": "navigation@7"
         },
         {
           "command": "leointeg.deHoistDisabled",
           "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoCanDehoist",
+          "group": "navigation@7"
+        },
+        {
+          "command": "leointeg.chapterMain",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoCanDehoist && leoTopHoistChapter",
           "group": "navigation@7"
         },
         {
@@ -3013,6 +3026,41 @@
           "command": "leointeg.hoistDisabled",
           "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoCanHoist",
           "group": "navigation@8"
+        },
+        {
+          "command": "leointeg.findNextFromOutline",
+          "when": "view =~ /^leoFindPanel/ && leoTreeOpened",
+          "group": "navigation@2"
+        },
+        {
+          "command": "leointeg.findPreviousFromOutline",
+          "when": "view =~ /^leoFindPanel/ && leoTreeOpened",
+          "group": "navigation@1"
+        },
+        {
+          "command": "leointeg.chapterBack",
+          "when": "view =~ /^leoFindPanel|^leoGotoPanel/ && leoTreeOpened",
+          "group": "navigation@3"
+        },
+        {
+          "command": "leointeg.chapterNext",
+          "when": "view =~ /^leoFindPanel|^leoGotoPanel/ && leoTreeOpened",
+          "group": "navigation@4"
+        },
+        {
+          "command": "leointeg.chapterSelect",
+          "when": "view =~ /^leoFindPanel|^leoGotoPanel/ && leoTreeOpened",
+          "group": "navigation@5"
+        },
+        {
+          "command": "leointeg.chapterMain",
+          "when": "view =~ /^leoFindPanel|^leoGotoPanel/ && leoTreeOpened && leoInChapter && leoTopHoistChapter",
+          "group": "navigation@6"
+        },
+        {
+          "command": "leointeg.chapterMainDisabled",
+          "when": "view =~ /^leoFindPanel|^leoGotoPanel/ && leoTreeOpened && !leoTopHoistChapter || view =~ /^leoFindPanel|^leoGotoPanel/ && leoTreeOpened && !leoInChapter",
+          "group": "navigation@6"
         },
         {
           "command": "leointeg.promoteSelectionFromOutline",

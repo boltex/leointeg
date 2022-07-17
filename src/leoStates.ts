@@ -165,6 +165,22 @@ export class LeoStates {
         utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_DEHOIST, p_value);
     }
 
+    private _leoInChapter: boolean = false;
+    get leoInChapter(): boolean {
+        return this._leoInChapter;
+    }
+    set leoInChapter(p_value: boolean) {
+        this._leoInChapter = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.LEO_IN_CHAPTER, p_value);
+    }
+    private _leoTopHoistChapter: boolean = false;
+    get leoTopHoistChapter(): boolean {
+        return this._leoTopHoistChapter;
+    }
+    set leoTopHoistChapter(p_value: boolean) {
+        this._leoTopHoistChapter = p_value;
+        utils.setContext(Constants.CONTEXT_FLAGS.LEO_TOP_HOIST_CHAPTER, p_value);
+    }
     // * 'states' flags about current selection, for visibility and commands availability
     private _leoMarked: boolean = false;
     get leoMarked(): boolean {
@@ -250,5 +266,9 @@ export class LeoStates {
 
         this.leoCanHoist = p_states.canHoist;
         this.leoCanDehoist = p_states.canDehoist;
+
+        this.leoInChapter = p_states.inChapter;
+        this.leoTopHoistChapter = p_states.topHoistChapter;
+
     }
 }

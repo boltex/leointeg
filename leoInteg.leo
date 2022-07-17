@@ -535,6 +535,8 @@
 <v t="felix.20200718193241.1"><vh>leoCanPromote</vh></v>
 <v t="felix.20220704004530.1"><vh>leoCanHoist</vh></v>
 <v t="felix.20200718193244.1"><vh>leoCanDehoist</vh></v>
+<v t="felix.20220716153757.1"><vh>inChapter</vh></v>
+<v t="felix.20220716153803.1"><vh>topHoistChapter</vh></v>
 </v>
 <v t="felix.20200718193731.1"><vh>Selected Node Flags</vh>
 <v t="felix.20200718193338.1"><vh>leoMarked</vh></v>
@@ -1457,8 +1459,11 @@ export interface LeoPackageStates {
     canDemote: boolean; // Currently selected node can have its siblings demoted
     canPromote: boolean; // Currently selected node can have its children promoted
 
-    canDehoist: boolean; // Leo Document is currently hoisted and can be de-hoisted
-    canHoist: boolean;
+    canDehoist: boolean; // There least least one entry on stack
+    canHoist: boolean; // c.p is not root position and not already the hoisted node
+
+    inChapter: boolean; // cc.inChapter returned true
+    topHoistChapter: boolean; // Has entry on stack and top begins with '@chapter'
 
 }
 
@@ -1786,6 +1791,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE,
     fromOutline: true
 })],
+[CMD.CHAPTER_MAIN_DISABLED, () =&gt; { }],
 [CMD.CHAPTER_SELECT, () =&gt; w_leo.chapterSelect()],
 
 [CMD.CLONE, (p_node: LeoNode) =&gt; w_leo.nodeCommand({
@@ -3476,7 +3482,6 @@ print('done')
     "dark": "resources/dark/dehoist.svg"
   }
 },
-
 {
   "command": "leointeg.chapterNext",
   "category": "Leo",
@@ -3502,6 +3507,15 @@ print('done')
   "icon": {
     "light": "resources/light/chapter-main.svg",
     "dark": "resources/dark/chapter-main.svg"
+  }
+},
+{
+  "command": "leointeg.chapterMainDisabled",
+  "category": "Leo",
+  "title": "Chapter Main",
+  "icon": {
+    "light": "resources/light/chapter-main-disabled.svg",
+    "dark": "resources/dark/chapter-main-disabled.svg"
   }
 },
 {
@@ -4304,14 +4318,6 @@ print('done')
 },
 {
   "command": "leointeg.redoFromOutline",
-  "when": "false"
-},
-{
-  "command": "leointeg.undoDisabled",
-  "when": "false"
-},
-{
-  "command": "leointeg.redoDisabled",
   "when": "false"
 },
 {
@@ -5358,6 +5364,7 @@ public static COMMANDS = {
     CHAPTER_NEXT: Constants.NAME + ".chapterNext",
     CHAPTER_BACK: Constants.NAME + ".chapterBack",
     CHAPTER_MAIN: Constants.NAME + ".chapterMain",
+    CHAPTER_MAIN_DISABLED: Constants.NAME + ".chapterMainDisabled",
     CHAPTER_SELECT: Constants.NAME + ".chapterSelect",
     EXTRACT: Constants.NAME + ".extract",
     EXTRACT_NAMES: Constants.NAME + ".extractNames",
@@ -5692,6 +5699,8 @@ public static CONTEXT_FLAGS = {
     LEO_CAN_PROMOTE: "leoCanPromote",
     LEO_CAN_DEHOIST: "leoCanDehoist",
     LEO_CAN_HOIST: "leoCanHoist", // isNotRoot equivalent
+    LEO_IN_CHAPTER: "leoInChapter",
+    LEO_TOP_HOIST_CHAPTER: "leoTopHoistChapter",
 
     // 'states' flags about current selection, for visibility and commands availability
     SELECTED_MARKED: "leoMarked", // no need for unmarked here, use !leoMarked
@@ -8008,6 +8017,10 @@ export class LeoStates {
 
     this.leoCanHoist = p_states.canHoist;
     this.leoCanDehoist = p_states.canDehoist;
+
+    this.leoInChapter = p_states.inChapter;
+    this.leoTopHoistChapter = p_states.topHoistChapter;
+
 }
 </t>
 <t tx="felix.20200718193219.1">// * Connected to a Leo bridge server
@@ -11979,12 +11992,12 @@ public static VSCODE_COMMANDS = {
   {
     "command": "leointeg.showSettingsPage",
     "when": "view =~ /^leoFindPanel|^leoDocuments|^leoButtons/ &amp;&amp; leoBridgeReady",
-    "group": "navigation@2"
+    "group": "navigation@9"
   },
   {
     "command": "leointeg.showLogPane",
     "when": "view =~ /^leoFindPanel|^leoDocuments|^leoButtons/ &amp;&amp; leoBridgeReady",
-    "group": "navigation@2"
+    "group": "navigation@9"
   },
   {
     "command": "leointeg.findQuickSelected",
@@ -12093,12 +12106,17 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.deHoistFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanDehoist",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanDehoist &amp;&amp; !leoTopHoistChapter",
     "group": "navigation@7"
   },
   {
     "command": "leointeg.deHoistDisabled",
     "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanDehoist",
+    "group": "navigation@7"
+  },
+  {
+    "command": "leointeg.chapterMain",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanDehoist &amp;&amp; leoTopHoistChapter",
     "group": "navigation@7"
   },
   {
@@ -12110,6 +12128,41 @@ public static VSCODE_COMMANDS = {
     "command": "leointeg.hoistDisabled",
     "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanHoist",
     "group": "navigation@8"
+  },
+  {
+    "command": "leointeg.findNextFromOutline",
+    "when": "view =~ /^leoFindPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@2"
+  },
+  {
+    "command": "leointeg.findPreviousFromOutline",
+    "when": "view =~ /^leoFindPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@1"
+  },
+  {
+    "command": "leointeg.chapterBack",
+    "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@3"
+  },
+  {
+    "command": "leointeg.chapterNext",
+    "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@4"
+  },
+  {
+    "command": "leointeg.chapterSelect",
+    "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
+    "group": "navigation@5"
+  },
+  {
+    "command": "leointeg.chapterMain",
+    "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; leoInChapter &amp;&amp; leoTopHoistChapter",
+    "group": "navigation@6"
+  },
+  {
+    "command": "leointeg.chapterMainDisabled",
+    "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTopHoistChapter || view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; !leoInChapter",
+    "group": "navigation@6"
   },
   {
     "command": "leointeg.promoteSelectionFromOutline",
@@ -12481,7 +12534,11 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.findNextFromOutline",
   "category": "Leo",
-  "title": "Find Next"
+  "title": "Find Next",
+  "icon": {
+    "light": "resources/light/find-next.svg",
+    "dark": "resources/dark/find-next.svg"
+  }
 },
 {
   "command": "leointeg.findPrevious",
@@ -12491,7 +12548,11 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
 {
   "command": "leointeg.findPreviousFromOutline",
   "category": "Leo",
-  "title": "Find Previous"
+  "title": "Find Previous",
+  "icon": {
+    "light": "resources/light/find-previous.svg",
+    "dark": "resources/dark/find-previous.svg"
+  }
 },
 {
   "command": "leointeg.findVar",
@@ -16860,6 +16921,24 @@ public setUa(): Thenable&lt;unknown&gt; {
         });
 }
 
+</t>
+<t tx="felix.20220716153757.1">private _leoInChapter: boolean = false;
+get leoInChapter(): boolean {
+    return this._leoInChapter;
+}
+set leoInChapter(p_value: boolean) {
+    this._leoInChapter = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.LEO_IN_CHAPTER, p_value);
+}
+</t>
+<t tx="felix.20220716153803.1">private _leoTopHoistChapter: boolean = false;
+get leoTopHoistChapter(): boolean {
+    return this._leoTopHoistChapter;
+}
+set leoTopHoistChapter(p_value: boolean) {
+    this._leoTopHoistChapter = p_value;
+    utils.setContext(Constants.CONTEXT_FLAGS.LEO_TOP_HOIST_CHAPTER, p_value);
+}
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';

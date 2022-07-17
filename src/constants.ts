@@ -355,6 +355,8 @@ export class Constants {
         LEO_CAN_PROMOTE: "leoCanPromote",
         LEO_CAN_DEHOIST: "leoCanDehoist",
         LEO_CAN_HOIST: "leoCanHoist", // isNotRoot equivalent
+        LEO_IN_CHAPTER: "leoInChapter",
+        LEO_TOP_HOIST_CHAPTER: "leoTopHoistChapter",
 
         // 'states' flags about current selection, for visibility and commands availability
         SELECTED_MARKED: "leoMarked", // no need for unmarked here, use !leoMarked
@@ -766,6 +768,7 @@ export class Constants {
         CHAPTER_NEXT: Constants.NAME + ".chapterNext",
         CHAPTER_BACK: Constants.NAME + ".chapterBack",
         CHAPTER_MAIN: Constants.NAME + ".chapterMain",
+        CHAPTER_MAIN_DISABLED: Constants.NAME + ".chapterMainDisabled",
         CHAPTER_SELECT: Constants.NAME + ".chapterSelect",
         EXTRACT: Constants.NAME + ".extract",
         EXTRACT_NAMES: Constants.NAME + ".extractNames",

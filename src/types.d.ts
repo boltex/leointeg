@@ -164,8 +164,11 @@ export interface LeoPackageStates {
     canDemote: boolean; // Currently selected node can have its siblings demoted
     canPromote: boolean; // Currently selected node can have its children promoted
 
-    canDehoist: boolean; // Leo Document is currently hoisted and can be de-hoisted
-    canHoist: boolean;
+    canDehoist: boolean; // There least least one entry on stack
+    canHoist: boolean; // c.p is not root position and not already the hoisted node
+
+    inChapter: boolean; // cc.inChapter returned true
+    topHoistChapter: boolean; // Has entry on stack and top begins with '@chapter'
 
 }
 
