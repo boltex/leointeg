@@ -12079,22 +12079,22 @@ public static VSCODE_COMMANDS = {
   {
     "command": "leointeg.prevFromOutline",
     "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoBack",
-    "group": "navigation@2"
+    "group": "navigation@3"
   },
   {
     "command": "leointeg.prevDisabled",
     "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoBack",
-    "group": "navigation@2"
+    "group": "navigation@3"
   },
   {
     "command": "leointeg.nextFromOutline",
     "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoNext",
-    "group": "navigation@3"
+    "group": "navigation@4"
   },
   {
     "command": "leointeg.nextDisabled",
     "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoNext",
-    "group": "navigation@3"
+    "group": "navigation@4"
   },
   {
     "command": "leointeg.undoFromOutline",
@@ -12154,12 +12154,12 @@ public static VSCODE_COMMANDS = {
   {
     "command": "leointeg.chapterBack",
     "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@4"
+    "group": "navigation@5"
   },
   {
     "command": "leointeg.chapterNext",
     "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@4"
+    "group": "navigation@5"
   },
   {
     "command": "leointeg.chapterSelect",
