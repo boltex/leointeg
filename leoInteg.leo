@@ -12014,27 +12014,27 @@ public static VSCODE_COMMANDS = {
   {
     "command": "leointeg.findQuickSelected",
     "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@5"
+    "group": "navigation@1"
   },
   {
     "command": "leointeg.findQuickTimeline",
     "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@5"
+    "group": "navigation@1"
   },
   {
     "command": "leointeg.findQuickChanged",
     "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@5"
+    "group": "navigation@1"
   },
   {
     "command": "leointeg.history",
     "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@5"
+    "group": "navigation@1"
   },
   {
     "command": "leointeg.markedList",
     "when": "view =~ /^leoGotoPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@5"
+    "group": "navigation@1"
   },
   {
     "command": "leointeg.showSettingsPage",
@@ -12079,22 +12079,22 @@ public static VSCODE_COMMANDS = {
   {
     "command": "leointeg.prevFromOutline",
     "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoBack",
-    "group": "navigation@3"
+    "group": "navigation@2"
   },
   {
     "command": "leointeg.prevDisabled",
     "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoBack",
-    "group": "navigation@3"
+    "group": "navigation@2"
   },
   {
     "command": "leointeg.nextFromOutline",
     "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoNext",
-    "group": "navigation@4"
+    "group": "navigation@3"
   },
   {
     "command": "leointeg.nextDisabled",
     "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoNext",
-    "group": "navigation@4"
+    "group": "navigation@3"
   },
   {
     "command": "leointeg.undoFromOutline",
@@ -12154,7 +12154,7 @@ public static VSCODE_COMMANDS = {
   {
     "command": "leointeg.chapterBack",
     "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
-    "group": "navigation@3"
+    "group": "navigation@4"
   },
   {
     "command": "leointeg.chapterNext",
