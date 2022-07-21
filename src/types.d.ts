@@ -127,25 +127,32 @@ export interface LeoLogEntry {
  * * ArchivedPosition format package from Leo's leoflexx.py
  */
 export interface ArchivedPosition {
-    hasBody: boolean;       // bool(p.b),
-    hasChildren: boolean;   // p.hasChildren()
+    // * From server's _p_to_ap : childIndex, gnx and stack
     childIndex: number;     // p._childIndex
-    cloned: boolean;        // p.isCloned()
-    dirty: boolean;         // p.isDirty()
-    expanded: boolean;      // p.isExpanded()
     gnx: string;            // p.v.gnx
-    level: number;          // p.level()
-    headline: string;       // p.h
-    marked: boolean;        // p.isMarked()
-    atFile: boolean         // p.isAnyAtFileNode():
-    selected: boolean;      // p == commander.p
-    u?: number;             // User-attributes displayed qty
-    nodeTags?: number;       // 'tags' user-attributes displayed qty
     stack: {
         gnx: string;        // stack_v.gnx
         childIndex: number; // stack_childIndex
-        headline: string;   // stack_v.h
     }[];                    // for (stack_v, stack_childIndex) in p.stack]
+
+    // * Attributes for UI appearance
+    headline: string;       // p.h
+    cloned: boolean;        // p.isCloned()
+    dirty: boolean;         // p.isDirty()
+    expanded: boolean;      // p.isExpanded()
+    marked: boolean;        // p.isMarked()
+    atFile: boolean         // p.isAnyAtFileNode():
+    selected: boolean;      // p == commander.p
+    hasBody: boolean;       // bool(p.b),
+    hasChildren: boolean;   // p.hasChildren()
+
+    // * ALPHA FEATURE : Only If called with get_structure instead of get_children
+    children?: ArchivedPosition[];
+
+    // * unknown attributes
+    u?: number;             // User-attributes displayed qty
+    nodeTags?: number;      // 'tags' user-attributes displayed qty
+
 }
 
 /**
