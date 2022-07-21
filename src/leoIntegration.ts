@@ -1137,15 +1137,24 @@ export class LeoIntegration {
         // * Send config to python's side (for settings such as defaultReloadIgnore and checkForChangeExternalFiles)
         this.sendConfigToServer(this.config.getConfig());
         // * Refresh Opened tree views
+
+
         this.refreshDocumentsPane();
         this.refreshButtonsPane();
+
+
         this.refreshUndosPane();
         this.loadSearchSettings();
-        // * Maybe first Body appearance
-        // return this.showBody(false);
+
+        // Also refresh global states.
+        this._refreshType.states = true;
+        this.getStates();
+
+
         if (q_switchTextEditor) {
             return q_switchTextEditor;
         } else {
+            // * Maybe first Body appearance
             return this.showBody(false);
         }
     }
@@ -1955,6 +1964,23 @@ export class LeoIntegration {
                 delete p_ap.nodeTags;
             }
         }
+
+        // ! TODO REPLACE ID WITH !
+
+        /**
+         * * Builds a unique Id from gnx and stack, plus collapsed state,
+         * for vscode to distinguish the collapsed state.
+         */
+        // private _buildId(p_position: Position, p_collapsed: number): string {
+        //     // concatenate gnx, stacks gnx's, and collapsible state number.
+        //     // (vscode uses id for collapsible state)
+        //     let w_stringId = this.treeId.toString() +
+        //         p_position.v.gnx + p_position.childIndex().toString() +
+        //         p_position.stack.map(p_stackEntry => p_stackEntry[0].gnx + p_stackEntry[1].toString()).join("");
+        //     // NOT NEEDED -> p_collapsed.toString(); // Added Uniqueness: VSCode's collapsible state in id
+        //     return w_stringId;
+        // }
+
 
         const w_leoNode = new LeoNode(
             p_ap.headline, // label-headline
