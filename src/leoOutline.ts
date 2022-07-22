@@ -59,6 +59,13 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
 
     public resolveTreeItem(item: LeoNode, element: LeoNode, token: vscode.CancellationToken): vscode.ProviderResult<LeoNode> {
 
+        if (!item.description) {
+            // No ua's nor node tags.
+            item.tooltip = item.label;
+            return item;
+        }
+
+        // Has description, so get uA's from server.
         return this._leoIntegration.sendAction(
             Constants.LEOBRIDGE.GET_UA,
             utils.buildNodeCommandJson(element.apJson)
@@ -98,7 +105,7 @@ export class LeoOutlineProvider implements vscode.TreeDataProvider<LeoNode> {
         // ! Might be called if nodes are revealed while in vscode's refresh process
         // ! Parent asked for this way will go up till root and effectively refresh whole tree.
         if (this._leoIntegration.leoStates.fileOpenedReady) {
-            // Check if joisted and is already up to root node
+            // Check if hoisted and is already up to root node
             if (this._rootNode && element.gnx === this._rootNode.gnx && element.childIndex === this._rootNode.childIndex) {
                 if (
                     JSON.stringify(JSON.parse(this._rootNode.apJson).stack) ===

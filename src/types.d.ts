@@ -149,6 +149,9 @@ export interface ArchivedPosition {
     // * ALPHA FEATURE : Only If called with get_structure instead of get_children
     children?: ArchivedPosition[];
 
+    // * ALPHA FEATURE
+    _isRoot?: boolean; // Added front side by leoInteg, for internal usage
+
     // * unknown attributes
     u?: number;             // User-attributes displayed qty
     nodeTags?: number;      // 'tags' user-attributes displayed qty

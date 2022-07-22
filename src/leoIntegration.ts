@@ -40,6 +40,7 @@ import { LeoGotoNode } from './leoGotoNode';
 import { LeoGotoProvider } from './leoGoto';
 import { LeoUndosProvider } from './leoUndo';
 import { LeoUndoNode } from './leoUndoNode';
+import { LeoApOutlineNode } from './leoApOutline';
 
 /**
  * * Orchestrates Leo integration into vscode
@@ -1913,6 +1914,21 @@ export class LeoIntegration {
     }
 
     /**
+     * * Handle the selected node that was reached while converting received ap_nodes to LeoNodes
+     * @param p_element The "selected" ArchivedPosition element reached.
+     * @param p_node The LeoNode built from the AP element that was reached, used in vscode's tree.
+     */
+    public gotSelectedNode(p_element: ArchivedPosition, p_node: LeoApOutlineNode): void {
+        // * Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
+        // let w_showBodyKeepFocus: boolean = this.fromOutline; // Will preserve focus where it is without forcing into the body pane if true
+        // if (this._focusInterrupt) {
+        //     this._focusInterrupt = false;
+        //     w_showBodyKeepFocus = true;
+        // }
+        // this._tryApplyNodeToBody(p_node, false, w_showBodyKeepFocus);
+    }
+
+    /**
      * * Check if Leo should be focused on outline
      */
     public getBridgeFocus(): Thenable<LeoBridgePackage> {
@@ -1931,6 +1947,7 @@ export class LeoIntegration {
 
     /**
      * * Converts an archived position object to a LeoNode instance
+     * @deprecated
      * @param p_ap The archived position to convert
      * @param p_revealSelected Flag that will trigger the node to reveal, select, and focus if its selected node in Leo
      * @param p_specificNode Other specific LeoNode to be used to override when revealing the the selected node is encountered

@@ -411,6 +411,7 @@
 <v t="ekr.20200815085830.2"><vh>_revealTreeViewNode</vh></v>
 <v t="ekr.20200815085830.3"><vh>launchRefresh</vh></v>
 <v t="ekr.20200815085830.5"><vh>_gotSelection</vh></v>
+<v t="felix.20220721225622.1"><vh>_gotSelection</vh></v>
 <v t="felix.20210528012836.1"><vh>getBridgeFocus</vh></v>
 </v>
 <v t="felix.20200719030909.1"><vh>Conversion</vh>
@@ -518,6 +519,19 @@
 <v t="felix.20220616211850.1"><vh>resolveTreeItem</vh></v>
 <v t="felix.20200718180428.7"><vh>getParent</vh></v>
 </v>
+</v>
+<v t="felix.20220721204822.1"><vh>@clean src/leoApOutline.ts</vh>
+<v t="felix.20220721204822.2"><vh>class LeoOutlineProvider</vh>
+<v t="felix.20220721204822.3"><vh>constructor</vh></v>
+<v t="felix.20220721204822.4"><vh>refreshTreeRoot</vh></v>
+<v t="felix.20220721204822.5"><vh>buildId</vh></v>
+<v t="felix.20220721204822.6"><vh>incTreeId</vh></v>
+<v t="felix.20220721204822.7"><vh>getTreeItem</vh></v>
+<v t="felix.20220721204822.8"><vh>getChildren</vh></v>
+<v t="felix.20220721204822.9"><vh>getParent</vh></v>
+<v t="felix.20220721204822.10"><vh>resolveTreeItem</vh></v>
+</v>
+<v t="felix.20220721204822.11"><vh>class LeoNode</vh></v>
 </v>
 <v t="felix.20200718192351.1"><vh>@clean src/leoStates.ts</vh>
 <v t="felix.20200718192411.1"><vh>class LeoStates</vh>
@@ -7612,7 +7626,7 @@ public refreshTreeRoot(): void {
     // ! Might be called if nodes are revealed while in vscode's refresh process
     // ! Parent asked for this way will go up till root and effectively refresh whole tree.
     if (this._leoIntegration.leoStates.fileOpenedReady) {
-        // Check if joisted and is already up to root node
+        // Check if hoisted and is already up to root node
         if (this._rootNode &amp;&amp; element.gnx === this._rootNode.gnx &amp;&amp; element.childIndex === this._rootNode.childIndex) {
             if (
                 JSON.stringify(JSON.parse(this._rootNode.apJson).stack) ===
@@ -8492,6 +8506,9 @@ export interface ArchivedPosition {
     // * ALPHA FEATURE : Only If called with get_structure instead of get_children
     children?: ArchivedPosition[];
 
+    // * ALPHA FEATURE
+    _isRoot?: boolean; // Added front side by leoInteg, for internal usage
+
     // * unknown attributes
     u?: number;             // User-attributes displayed qty
     nodeTags?: number;      // 'tags' user-attributes displayed qty
@@ -9142,6 +9159,7 @@ import { LeoGotoNode } from './leoGotoNode';
 import { LeoGotoProvider } from './leoGoto';
 import { LeoUndosProvider } from './leoUndo';
 import { LeoUndoNode } from './leoUndoNode';
+import { LeoApOutlineNode } from './leoApOutline';
 
 @others
 @language typescript
@@ -10185,6 +10203,7 @@ public showOutline(p_focusOutline?: boolean): void {
 </t>
 <t tx="felix.20200719025231.38">/**
  * * Converts an archived position object to a LeoNode instance
+ * @deprecated
  * @param p_ap The archived position to convert
  * @param p_revealSelected Flag that will trigger the node to reveal, select, and focus if its selected node in Leo
  * @param p_specificNode Other specific LeoNode to be used to override when revealing the the selected node is encountered
@@ -16490,6 +16509,13 @@ export function cleanLeoID(id_: string): string {
 </t>
 <t tx="felix.20220616211850.1">public resolveTreeItem(item: LeoNode, element: LeoNode, token: vscode.CancellationToken): vscode.ProviderResult&lt;LeoNode&gt; {
 
+    if (!item.description) {
+        // No ua's nor node tags.
+        item.tooltip = item.label;
+        return item;
+    }
+
+    // Has description, so get uA's from server.
     return this._leoIntegration.sendAction(
         Constants.LEOBRIDGE.GET_UA,
         utils.buildNodeCommandJson(element.apJson)
@@ -16984,6 +17010,322 @@ set leoTopHoistChapter(p_value: boolean) {
     this._leoTopHoistChapter = p_value;
     utils.setContext(Constants.CONTEXT_FLAGS.LEO_TOP_HOIST_CHAPTER, p_value);
 }
+</t>
+<t tx="felix.20220721204822.1">import * as vscode from 'vscode';
+import { Constants } from "./constants";
+import * as utils from './utils';
+import { LeoIntegration } from './leoIntegration';
+import { ArchivedPosition, Icon, LeoBridgePackage } from './types';
+
+@language typescript
+@tabwidth -4
+@others
+
+</t>
+<t tx="felix.20220721204822.10">}
+
+</t>
+<t tx="felix.20220721204822.11">export class LeoApOutlineNode extends vscode.TreeItem {
+
+    constructor(
+        public label: string, // Node headline
+        public collapsibleState: vscode.TreeItemCollapsibleState,
+        public position: ArchivedPosition, // Pointer/reference for leo's node ArchivedPosition
+        public description: string,
+        public iconPath: Icon,
+        public id: string,
+        public contextValue: string // For contextual menu on each node (not the global 'selected node' flag!)
+    ) {
+        super(label, collapsibleState);
+        this.command = {
+            command: Constants.COMMANDS.SELECT_NODE,
+            title: '',
+            // using 'this' as LeoApOutlineNode instead of position, to match 'openToTheSide' paramter
+            arguments: [this]
+        };
+    }
+
+    @others
+}
+</t>
+<t tx="felix.20220721204822.2">export class LeoApOutlineProvider implements vscode.TreeDataProvider&lt;ArchivedPosition&gt; {
+
+    private _onDidChangeTreeData: vscode.EventEmitter&lt;ArchivedPosition | undefined&gt; = new vscode.EventEmitter&lt;ArchivedPosition | undefined&gt;();
+
+    readonly onDidChangeTreeData: vscode.Event&lt;ArchivedPosition | undefined&gt; = this._onDidChangeTreeData.event;
+
+    public treeId: number = 0; // Starting salt for generated tree node Ids
+
+    private _rootNode: ArchivedPosition | undefined;
+
+    @others
+}
+
+</t>
+<t tx="felix.20220721204822.3">constructor(
+    private _icons: Icon[],
+    private _leoIntegration: LeoIntegration
+) {
+}
+
+</t>
+<t tx="felix.20220721204822.4">/**
+ * * Refresh the whole outline
+ */
+public refreshTreeRoot(): void {
+    this._onDidChangeTreeData.fire(undefined);
+}
+
+</t>
+<t tx="felix.20220721204822.5">/**
+ * * Builds a unique Id from gnx and stack, plus collapsed state,
+ * for vscode to distinguish the collapsed state.
+ */
+private _buildId(p: ArchivedPosition, p_collapsed: number): string {
+    // concatenate gnx, stacks gnx's, and collapsible state number.
+    // (vscode uses id for collapsible state)
+    return this.treeId + p.gnx + p.childIndex + p.stack.map(s =&gt; s.gnx + s.childIndex).join("");
+    // NOT NEEDED -&gt; expanded.toString(); // Added Uniqueness: VSCode's collapsible state in id
+}
+
+</t>
+<t tx="felix.20220721204822.6">/**
+ * * Force uniqueness of ids generated for nodes in the  next tree refresh
+ */
+public incTreeId(): void {
+    this.treeId++;
+}
+
+</t>
+<t tx="felix.20220721204822.7">public getTreeItem(element: ArchivedPosition): Thenable&lt;LeoApOutlineNode&gt; | LeoApOutlineNode {
+
+    let w_collapse: vscode.TreeItemCollapsibleState = vscode.TreeItemCollapsibleState.None;
+    if (element.hasChildren) {
+        w_collapse = element.expanded ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed;
+    }
+    let w_contextValue = Constants.CONTEXT_FLAGS.NODE_UNMARKED;
+    if (element.marked) {
+        w_contextValue = Constants.CONTEXT_FLAGS.NODE_MARKED;
+    }
+    // then append 'leoNodeAtFile' to existing if needed
+    if (element.atFile) {
+        w_contextValue += Constants.CONTEXT_FLAGS.NODE_ATFILE;
+    }
+    // then append 'leoNodeCloned' to existing if needed
+    if (element.cloned) {
+        w_contextValue += Constants.CONTEXT_FLAGS.NODE_CLONED;
+    }
+    // and finally, check for 'root' too
+    if (element._isRoot) {
+        w_contextValue += Constants.CONTEXT_FLAGS.NODE_ROOT;
+    } else {
+        w_contextValue += Constants.CONTEXT_FLAGS.NODE_NOT_ROOT;
+    }
+    const w_icon: number =
+        (+element.dirty &lt;&lt; 3) |
+        (+element.cloned &lt;&lt; 2) |
+        (+element.marked &lt;&lt; 1) |
+        +element.hasBody;
+
+    // const w_u = (element.v.u &amp;&amp; Object.keys(element.v.u).length) ? element.v.u : false;
+    // let desc: string = "";
+    // // * some smaller grayed-out text accompanying the main label
+    // if (w_u) {
+
+    //     const w_uLength = Object.keys(w_u).length;
+    //     if (w_uLength) {
+    //         desc = "\u{1F4CE} (" + w_uLength + ")";
+    //         if (w_u.__node_tags) {
+    //             if (w_uLength === 1) {
+    //                 // was only tag, so reset it
+    //                 desc = "";
+    //             } else {
+    //                 desc = desc + " "; // add space
+    //             }
+    //             desc = desc + "\u{1F3F7} (" + Object.keys(w_u.__node_tags).length + ")";
+    //         }
+    //     }
+
+    // } else {
+    //     // desc = "id:" + this.id; // ! debug test
+    //     // desc = "gnx:" + this.gnx; // ! debug test
+    // }
+    let desc: string = "";
+    let tagsQty = 0;
+    if (element.u || element.nodeTags) {
+        tagsQty = element.nodeTags ? element.nodeTags : 0;
+        if (element.u) {
+            desc = "\u{1F4CE} (" + element.u + ")";
+            delete element.u;
+        }
+        if (tagsQty) {
+            if (desc) {
+                desc = desc + " "; // add space
+            }
+            desc = desc + "\u{1F3F7} (" + tagsQty + ")";
+            delete element.nodeTags;
+        }
+    }
+
+
+
+    const w_leoNode = new LeoApOutlineNode(
+        element.headline,
+        w_collapse,
+        element, // ArchivedPosition
+        desc,
+        this._icons[w_icon],
+        this._buildId(element, w_collapse),
+        w_contextValue
+    );
+    // Check if its the selected node and call signal it to the UI
+    if (element.selected) {
+        this._leoIntegration.gotSelectedNode(element, w_leoNode);
+    }
+    // Build a LeoNode (a vscode tree node) from the ArchivedPosition
+    return w_leoNode;
+}
+
+</t>
+<t tx="felix.20220721204822.8">public getChildren(element?: ArchivedPosition): Thenable&lt;ArchivedPosition[]&gt; {
+    if (!this._leoIntegration.leoStates.fileOpenedReady) {
+        return Promise.resolve([]); // Defaults to an empty list of children
+    }
+    if (element) {
+        return this._leoIntegration.sendAction(
+            Constants.LEOBRIDGE.GET_CHILDREN,
+            utils.buildNodeCommandJson(JSON.stringify(element))
+        ).then((p_package: LeoBridgePackage) =&gt; {
+            return p_package.children!;
+        });
+    } else {
+        return this._leoIntegration.sendAction(
+            Constants.LEOBRIDGE.GET_CHILDREN, "{}"
+        ).then((p_package: LeoBridgePackage) =&gt; {
+            const w_nodes = p_package.children!;
+            if (w_nodes &amp;&amp; w_nodes.length === 1) {
+                this._rootNode = w_nodes[0];
+                this._rootNode._isRoot = true;
+            }
+            return w_nodes;
+        });
+    }
+    // if (element) {
+    //     return [...element.children()];
+    // } else {
+    //     if (g.app.windowList[this._leoIntegration.frameIndex]) {
+    //         // Currently Selected Document's Commander
+    //         const w_c = g.app.windowList[this._leoIntegration.frameIndex].c;
+    //         if (w_c.hoistStack.length) {
+    //             // HOISTED: Topmost hoisted node starts the outline as single root 'child'
+    //             const w_rootPosition = w_c.hoistStack[w_c.hoistStack.length - 1].p;
+    //             w_rootPosition._isRoot = true;
+    //             return [w_rootPosition];
+    //         } else {
+    //             // NOT HOISTED: Normal list of root nodes
+    //             const w_rootNodes = [...w_c.all_Root_Children()];
+    //             if (w_rootNodes.length === 1) {
+    //                 // Exactly one: prevent hoisting on SINGLE top node
+    //                 w_rootNodes[0]._isRoot = true;
+    //             }
+    //             return w_rootNodes;
+    //         }
+    //     } else {
+    //         return []; // Attempted to access un-existent frame
+    //     }
+    // }
+}
+
+public getParent(element: ArchivedPosition): vscode.ProviderResult&lt;ArchivedPosition&gt; {
+    // if (element) {
+    //     const p_parent = element.parent();
+    //     if (p_parent.v) {
+    //         return p_parent;
+    //     } else {
+    //         return undefined;
+    //     }
+    // }
+    // return undefined;
+
+    if (this._leoIntegration.leoStates.fileOpenedReady) {
+        // Check if hoisted and is already up to root node
+        if (this._rootNode &amp;&amp; element.gnx === this._rootNode.gnx &amp;&amp; element.childIndex === this._rootNode.childIndex) {
+            if (
+                JSON.stringify(this._rootNode.stack) ===
+                JSON.stringify(element.stack)
+            ) {
+                return null; // Default gives no parent
+            }
+        }
+
+        return this._leoIntegration.sendAction(
+            Constants.LEOBRIDGE.GET_PARENT,
+            element ? utils.buildNodeCommandJson(JSON.stringify(element)) : "{}"
+        ).then((p_package: LeoBridgePackage) =&gt; {
+            if (p_package.node === null) {
+                return null;
+            } else {
+                return p_package.node;
+            }
+        });
+    } else {
+        return null; // Default gives no parent
+    }
+}
+
+public resolveTreeItem(item: LeoApOutlineNode, element: ArchivedPosition, token: vscode.CancellationToken): vscode.ProviderResult&lt;LeoApOutlineNode&gt; {
+
+    if (!item.description) {
+        // No ua's nor node tags.
+        item.tooltip = item.label;
+        return item;
+    }
+
+    // Has description, so get uA's from server.
+    return this._leoIntegration.sendAction(
+        Constants.LEOBRIDGE.GET_UA,
+        utils.buildNodeCommandJson(JSON.stringify(element))
+    ).then((p_package: LeoBridgePackage) =&gt; {
+        if (p_package.ua &amp;&amp; p_package.ua !== null) {
+
+            const tagQty = (Object.keys(p_package.ua).length &amp;&amp; p_package.ua.__node_tags) ? p_package.ua.__node_tags.length : 0;
+
+            if (tagQty) {
+                // list tags instead
+                item.tooltip = item.label + "\n\u{1F3F7} " + p_package.ua.__node_tags.join('\n\u{1F3F7} ') + "\n";
+                delete p_package.ua.__node_tags;
+            } else {
+                item.tooltip = item.label + "\n";
+            }
+
+            // Recalculate
+            if (Object.keys(p_package.ua).length) {
+                item.tooltip += JSON.stringify(p_package.ua, undefined, 2);
+            }
+
+        } else {
+            item.tooltip = item.label;
+        }
+        return item;
+
+    });
+</t>
+<t tx="felix.20220721204822.9"></t>
+<t tx="felix.20220721225622.1">/**
+ * * Handle the selected node that was reached while converting received ap_nodes to LeoNodes
+ * @param p_element The "selected" ArchivedPosition element reached.
+ * @param p_node The LeoNode built from the AP element that was reached, used in vscode's tree.
+ */
+public gotSelectedNode(p_element: ArchivedPosition, p_node: LeoApOutlineNode): void {
+    // * Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
+    // let w_showBodyKeepFocus: boolean = this.fromOutline; // Will preserve focus where it is without forcing into the body pane if true
+    // if (this._focusInterrupt) {
+    //     this._focusInterrupt = false;
+    //     w_showBodyKeepFocus = true;
+    // }
+    // this._tryApplyNodeToBody(p_node, false, w_showBodyKeepFocus);
+}
+
 </t>
 <t tx="fil.20210603195218.1">import * as vscode from "vscode";
 import * as path from 'path';
