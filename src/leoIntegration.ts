@@ -1919,13 +1919,20 @@ export class LeoIntegration {
      * @param p_node The LeoNode built from the AP element that was reached, used in vscode's tree.
      */
     public gotSelectedNode(p_element: ArchivedPosition, p_node: LeoApOutlineNode): void {
-        // * Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
-        // let w_showBodyKeepFocus: boolean = this.fromOutline; // Will preserve focus where it is without forcing into the body pane if true
-        // if (this._focusInterrupt) {
-        //     this._focusInterrupt = false;
-        //     w_showBodyKeepFocus = true;
-        // }
-        // this._tryApplyNodeToBody(p_node, false, w_showBodyKeepFocus);
+        /*
+        if (this._revealType) {
+            setTimeout(() => {
+                this._lastTreeView.reveal(p_element, {
+                    select: true,
+                    focus: (this._revealType.valueOf() >= RevealType.RevealSelectFocus.valueOf())
+                });
+                // Done, so reset reveal type 'flag'
+                this._revealType = RevealType.NoReveal;
+            }, 0);
+        }
+        // Set context flags
+        this.leoStates.setSelectedNodeFlags(p_element);
+        */
     }
 
     /**

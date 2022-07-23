@@ -521,7 +521,7 @@
 </v>
 </v>
 <v t="felix.20220721204822.1"><vh>@clean src/leoApOutline.ts</vh>
-<v t="felix.20220721204822.2"><vh>class LeoOutlineProvider</vh>
+<v t="felix.20220721204822.2"><vh>class LeoApOutlineProvider</vh>
 <v t="felix.20220721204822.3"><vh>constructor</vh></v>
 <v t="felix.20220721204822.4"><vh>refreshTreeRoot</vh></v>
 <v t="felix.20220721204822.5"><vh>buildId</vh></v>
@@ -531,7 +531,7 @@
 <v t="felix.20220721204822.9"><vh>getParent</vh></v>
 <v t="felix.20220721204822.10"><vh>resolveTreeItem</vh></v>
 </v>
-<v t="felix.20220721204822.11"><vh>class LeoNode</vh></v>
+<v t="felix.20220721204822.11"><vh>class LeoApNode</vh></v>
 </v>
 <v t="felix.20200718192351.1"><vh>@clean src/leoStates.ts</vh>
 <v t="felix.20200718192411.1"><vh>class LeoStates</vh>
@@ -17317,13 +17317,20 @@ public resolveTreeItem(item: LeoApOutlineNode, element: ArchivedPosition, token:
  * @param p_node The LeoNode built from the AP element that was reached, used in vscode's tree.
  */
 public gotSelectedNode(p_element: ArchivedPosition, p_node: LeoApOutlineNode): void {
-    // * Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
-    // let w_showBodyKeepFocus: boolean = this.fromOutline; // Will preserve focus where it is without forcing into the body pane if true
-    // if (this._focusInterrupt) {
-    //     this._focusInterrupt = false;
-    //     w_showBodyKeepFocus = true;
-    // }
-    // this._tryApplyNodeToBody(p_node, false, w_showBodyKeepFocus);
+    /*
+    if (this._revealType) {
+        setTimeout(() =&gt; {
+            this._lastTreeView.reveal(p_element, {
+                select: true,
+                focus: (this._revealType.valueOf() &gt;= RevealType.RevealSelectFocus.valueOf())
+            });
+            // Done, so reset reveal type 'flag'
+            this._revealType = RevealType.NoReveal;
+        }, 0);
+    }
+    // Set context flags
+    this.leoStates.setSelectedNodeFlags(p_element);
+    */
 }
 
 </t>
