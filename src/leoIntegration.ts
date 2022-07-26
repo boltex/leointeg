@@ -124,6 +124,7 @@ export class LeoIntegration {
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _refreshType: ReqRefresh = {}; // Flags for commands to require parts of UI to refresh
     public fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
+    public serverHasOpenedFile = false; // Server reported at least one opened file: for fileOpenedReady transition check.
     private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
 
     // * Body Pane
@@ -146,7 +147,7 @@ export class LeoIntegration {
     private _findPanelWebviewExplorerView: vscode.WebviewView | undefined;
     private _lastSettingsUsed: LeoSearchSettings | undefined; // Last settings loaded / saved for current document
 
-    // * Selection
+    // * Selection & scroll
     private _selectionDirty: boolean = false; // Flag set when cursor selection is changed
     private _selectionGnx: string = ''; // Packaged into 'BodySelectionInfo' structures, sent to Leo
     private _selection: vscode.Selection | undefined; // also packaged into 'BodySelectionInfo'
@@ -285,7 +286,6 @@ export class LeoIntegration {
         this._leoTreeView.onDidCollapseElement((p_event) =>
             this._onChangeCollapsedState(p_event, false, this._leoTreeView)
         );
-        // * Trigger 'show tree in Leo's view'
         this._leoTreeView.onDidChangeVisibility((p_event) =>
             this._onTreeViewVisibilityChanged(p_event, false)
         );
@@ -299,7 +299,6 @@ export class LeoIntegration {
         this._leoTreeExView.onDidCollapseElement((p_event) =>
             this._onChangeCollapsedState(p_event, false, this._leoTreeExView)
         );
-        // * Trigger 'show tree in explorer view'
         this._leoTreeExView.onDidChangeVisibility((p_event) =>
             this._onTreeViewVisibilityChanged(p_event, true)
         );
@@ -1651,74 +1650,6 @@ export class LeoIntegration {
     }
 
     /**
-     * * Places selection on the required node with a 'timeout'. Used after refreshing the opened Leo documents view.
-     * @param p_documentNode Document node instance in the Leo document view to be the 'selected' one.
-     */
-    public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
-        this._currentDocumentChanged = p_documentNode.documentEntry.changed;
-        this.leoStates.leoOpenedFileName = p_documentNode.documentEntry.name;
-        setTimeout(() => {
-            if (!this._leoDocuments.visible && !this._leoDocumentsExplorer.visible) {
-                return;
-            }
-            let w_trigger = false;
-            let w_docView: vscode.TreeView<LeoDocumentNode>;
-            if (this._leoDocuments.visible) {
-                w_docView = this._leoDocuments;
-            } else {
-                w_docView = this._leoDocumentsExplorer;
-            }
-            if (w_docView.selection.length && w_docView.selection[0] === p_documentNode) {
-                // console.log('already selected!');
-            } else {
-                w_trigger = true;
-            }
-            if (w_trigger) {
-                w_docView.reveal(p_documentNode, { select: true, focus: false })
-                    .then(
-                        (p_result) => {
-                            // Shown document node
-                        },
-                        (p_reason) => {
-                            if (this.trace || this.verbose) {
-                                console.log('shown doc error on reveal: ');
-                            }
-                        }
-                    );
-            }
-        });
-    }
-
-    /**
-     * * Show the outline, with Leo's selected node also selected, and optionally focussed
-     * @param p_focusOutline Flag for focus to be placed in outline
-     */
-    public showOutline(p_focusOutline?: boolean): void {
-        if (this.lastSelectedNode) {
-            try {
-                this._lastTreeView.reveal(this.lastSelectedNode, {
-                    select: true,
-                    focus: p_focusOutline,
-                }).then(
-                    () => {
-                        // ok
-                    },
-                    (p_reason) => {
-                        // showOutline failed: try refresh only once.
-                        this._refreshOutline(true, RevealType.RevealSelect);
-                    }
-                );
-
-            } catch (p_error) {
-                console.error("showOutline error: ", p_error);
-                // showOutline failed: try refresh only once.
-                this._refreshOutline(true, RevealType.RevealSelect);
-            }
-
-        }
-    }
-
-    /**
      * * Sets the outline pane top bar string message or refreshes with existing title if no title passed
      * @param p_title new string to replace the current title
      */
@@ -1737,6 +1668,29 @@ export class LeoIntegration {
     }
 
     /**
+     * * Show the outline, with Leo's selected node also selected, and optionally focussed
+     * @param p_focusOutline Flag for focus to be placed in outline
+     */
+    public showOutline(p_focusOutline?: boolean): void {
+        if (this.lastSelectedNode) {
+            this._lastTreeView.reveal(this.lastSelectedNode, {
+                select: true,
+                focus: !!p_focusOutline,
+            }).then(
+                () => {
+                    // ok
+                },
+                (p_reason) => {
+                    // showOutline failed: try refresh only once.
+                    console.log('showOutline could not reveal');
+
+                    // this._refreshOutline(true, RevealType.RevealSelect);
+                }
+            );
+        }
+    }
+
+    /**
      * * Refresh tree for 'node hover icons' to show up properly after changing their settings
      */
     public configTreeRefresh(): void {
@@ -1747,7 +1701,94 @@ export class LeoIntegration {
     }
 
     /**
-     * * Refreshes the outline. A reveal type can be passed along to specify the reveal type for the selected node
+     * * Setup global refresh options
+     * @param p_focusOutline Flag for focus to be placed in outline
+     * @param p_refreshType Refresh flags for each UI part
+     */
+    public _setupRefresh(p_focusOutline: boolean, p_refreshType: ReqRefresh): void {
+        // Set final "focus-placement" EITHER true or false
+        this.fromOutline = p_focusOutline;
+        // Set all properties WITHOUT clearing others. (ONLY 'true' properties)
+        Object.assign(this._refreshType, p_refreshType);
+    }
+
+    /**
+     * * Launches refresh for UI components and states
+     * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
+     * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
+     * @param p_ap An archived position
+     */
+    public launchRefresh(
+        p_refreshType: ReqRefresh,
+        p_fromOutline: boolean,
+        p_ap?: ArchivedPosition
+    ): void {
+        // Set w_revealType, it will ultimately set this._revealType.
+        // Used when finding the OUTLINE's selected node and setting or preventing focus into it
+        // Set this._fromOutline. Used when finding the selected node and showing the BODY to set or prevent focus in it
+        this._refreshType = Object.assign({}, p_refreshType);
+
+        let w_revealType: RevealType;
+
+        if (p_fromOutline) {
+            this.fromOutline = true;
+            w_revealType = RevealType.RevealSelectFocus;
+        } else {
+            this.fromOutline = false;
+            w_revealType = RevealType.RevealSelect;
+        }
+
+        if (
+            p_ap &&
+            this._refreshType.body &&
+            this._bodyLastChangedDocument &&
+            this._bodyLastChangedDocument.isDirty
+        ) {
+            // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
+            // do this only if gnx is different from what is coming from Leo in this refresh cycle
+            if (
+                p_ap.gnx !== utils.leoUriToStr(this._bodyLastChangedDocument.uri) &&
+                !this._bodyLastChangedDocumentSaved
+            ) {
+                this._bodyLastChangedDocument.save(); // Voluntarily save to 'clean' any pending body
+                this._bodyLastChangedDocumentSaved = true;
+            }
+
+            if (p_ap.gnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)) {
+                this._leoFileSystem.preventSaveToLeo = true;
+                this._bodyLastChangedDocument.save();
+            }
+        }
+
+        // * _focusInterrupt insertNode Override
+        if (this._focusInterrupt) {
+            // this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
+            w_revealType = RevealType.RevealSelect;
+        }
+        // * Either the whole tree refreshes, or a single tree node is revealed when just navigating
+        if (this._refreshType.tree) {
+            this._refreshType.tree = false;
+            this._refreshOutline(true, w_revealType);
+        } else if (this._refreshType.node && p_ap) {
+            // * Force single node "refresh" by revealing it, instead of "refreshing" it
+            this._refreshType.node = false;
+            const w_node = this.apToLeoNode(p_ap);
+            this.leoStates.setSelectedNodeFlags(w_node);
+            this._revealTreeViewNode(w_node, {
+                select: true,
+                focus: true, // FOCUS FORCED TO TRUE always leave focus on tree when navigating
+            });
+            if (this._refreshType.body) {
+                this._refreshType.body = false;
+                this._tryApplyNodeToBody(w_node, false, true); // ! NEEDS STACK AND THROTTLE!
+            }
+        }
+        this.getStates();
+    }
+
+    /**
+     * * Refreshes the outline.
+     * * A reveal type can be passed along to specify if the selected node should also get focus
      * @param p_incrementTreeID Flag meaning for the _treeId counter to be incremented
      * @param p_revealType Facultative reveal type to specify type of reveal when the 'selected node' is encountered
      */
@@ -1830,77 +1871,8 @@ export class LeoIntegration {
     }
 
     /**
-     * * Launches refresh for UI components and states
-     * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
-     * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
-     * @param p_ap An archived position
-     */
-    public launchRefresh(
-        p_refreshType: ReqRefresh,
-        p_fromOutline: boolean,
-        p_ap?: ArchivedPosition
-    ): void {
-        // Set w_revealType, it will ultimately set this._revealType.
-        // Used when finding the OUTLINE's selected node and setting or preventing focus into it
-        // Set this._fromOutline. Used when finding the selected node and showing the BODY to set or prevent focus in it
-        this._refreshType = Object.assign({}, p_refreshType);
-        let w_revealType: RevealType;
-        if (p_fromOutline) {
-            this.fromOutline = true;
-            w_revealType = RevealType.RevealSelectFocus;
-        } else {
-            this.fromOutline = false;
-            w_revealType = RevealType.RevealSelect;
-        }
-        if (
-            p_ap &&
-            this._refreshType.body &&
-            this._bodyLastChangedDocument &&
-            this._bodyLastChangedDocument.isDirty
-        ) {
-            // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
-            // do this only if gnx is different from what is coming from Leo in this refresh cycle
-            if (
-                p_ap.gnx !== utils.leoUriToStr(this._bodyLastChangedDocument.uri) &&
-                !this._bodyLastChangedDocumentSaved
-            ) {
-                this._bodyLastChangedDocument.save(); // Voluntarily save to 'clean' any pending body
-                this._bodyLastChangedDocumentSaved = true;
-            }
-
-            if (p_ap.gnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)) {
-                this._leoFileSystem.preventSaveToLeo = true;
-                this._bodyLastChangedDocument.save();
-            }
-        }
-        // * _focusInterrupt insertNode Override
-        if (this._focusInterrupt) {
-            // this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
-            w_revealType = RevealType.RevealSelect;
-        }
-        // * Either the whole tree refreshes, or a single tree node is revealed when just navigating
-        if (this._refreshType.tree) {
-            this._refreshType.tree = false;
-            this._refreshOutline(true, w_revealType);
-        } else if (this._refreshType.node && p_ap) {
-            // * Force single node "refresh" by revealing it, instead of "refreshing" it
-            this._refreshType.node = false;
-            const w_node = this.apToLeoNode(p_ap);
-            this.leoStates.setSelectedNodeFlags(w_node);
-            this._revealTreeViewNode(w_node, {
-                select: true,
-                focus: true, // FOCUS FORCED TO TRUE always leave focus on tree when navigating
-            });
-            if (this._refreshType.body) {
-                this._refreshType.body = false;
-                this._tryApplyNodeToBody(w_node, false, true); // ! NEEDS STACK AND THROTTLE!
-            }
-        }
-        this.getStates();
-    }
-
-    /**
      * * Handle the selected node that was reached while converting received ap_nodes to LeoNodes
+     * @deprecated
      * @param p_node The selected node that was reached while receiving 'children' from tree view api implementing Leo's outline
      */
     private _gotSelection(p_node: LeoNode): void {
@@ -1914,11 +1886,12 @@ export class LeoIntegration {
     }
 
     /**
-     * * Handle the selected node that was reached while converting received ap_nodes to LeoNodes
+     * * Handle the selected node that was reached while converting received ap_nodes.
      * @param p_element The "selected" ArchivedPosition element reached.
      * @param p_node The LeoNode built from the AP element that was reached, used in vscode's tree.
      */
     public gotSelectedNode(p_element: ArchivedPosition, p_node: LeoApOutlineNode): void {
+        // TODO : USE THIS INSTEAD !
         /*
         if (this._revealType) {
             setTimeout(() => {
@@ -2032,6 +2005,7 @@ export class LeoIntegration {
     /**
      * * Reveals the node that was detected as being the selected one while converting from archived positions
      * Also select it, or focus on it too depending on global this._revealType variable
+     * @deprecated
      * @param p_leoNode The node that was detected as the selected node in Leo
      */
     private _apToLeoNodeConvertReveal(p_leoNode: LeoNode): void {
@@ -4058,6 +4032,45 @@ export class LeoIntegration {
                     });
                 }
             });
+    }
+
+    /**
+     * * Places selection on the required node with a 'timeout'. Used after refreshing the opened Leo documents view.
+     * @param p_documentNode Document node instance in the Leo document view to be the 'selected' one.
+     */
+    public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
+        this._currentDocumentChanged = p_documentNode.documentEntry.changed;
+        this.leoStates.leoOpenedFileName = p_documentNode.documentEntry.name;
+        setTimeout(() => {
+            if (!this._leoDocuments.visible && !this._leoDocumentsExplorer.visible) {
+                return;
+            }
+            let w_trigger = false;
+            let w_docView: vscode.TreeView<LeoDocumentNode>;
+            if (this._leoDocuments.visible) {
+                w_docView = this._leoDocuments;
+            } else {
+                w_docView = this._leoDocumentsExplorer;
+            }
+            if (w_docView.selection.length && w_docView.selection[0] === p_documentNode) {
+                // console.log('already selected!');
+            } else {
+                w_trigger = true;
+            }
+            if (w_trigger) {
+                w_docView.reveal(p_documentNode, { select: true, focus: false })
+                    .then(
+                        (p_result) => {
+                            // Shown document node
+                        },
+                        (p_reason) => {
+                            if (this.trace || this.verbose) {
+                                console.log('shown doc error on reveal: ');
+                            }
+                        }
+                    );
+            }
+        });
     }
 
     /**

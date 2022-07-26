@@ -3804,7 +3804,7 @@
         "command": "leointeg.replace",
         "key": "ctrl+=",
         "mac": "cmd+=",
-        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoTreeOpened && editorTextFocus && editorHasSelection && resourceScheme == leo"
       },
       {
         "command": "leointeg.replaceFromOutline",
@@ -3816,7 +3816,7 @@
         "command": "leointeg.replaceThenFind",
         "key": "ctrl+-",
         "mac": "cmd+-",
-        "when": "leoTreeOpened && editorTextFocus && resourceScheme == leo"
+        "when": "leoTreeOpened && editorTextFocus && editorHasSelection && resourceScheme == leo"
       },
       {
         "command": "leointeg.replaceThenFindFromOutline",

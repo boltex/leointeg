@@ -403,15 +403,15 @@
 <v t="felix.20210806175431.1"><vh>_bodySaveDeactivate</vh></v>
 </v>
 <v t="felix.20200719030902.1"><vh>Refresh UI</vh>
-<v t="felix.20200719025231.34"><vh>setDocumentSelection</vh></v>
-<v t="felix.20200719025231.35"><vh>showOutline</vh></v>
 <v t="felix.20201114185218.1"><vh>setTreeViewTitle</vh></v>
+<v t="felix.20200719025231.35"><vh>showOutline</vh></v>
 <v t="ekr.20200815085806.1"><vh>configTreeRefresh</vh></v>
+<v t="felix.20220724224959.1"><vh>_setupRefresh</vh></v>
+<v t="ekr.20200815085830.3"><vh>launchRefresh</vh></v>
 <v t="ekr.20200815085830.1"><vh>_refreshOutline</vh></v>
 <v t="ekr.20200815085830.2"><vh>_revealTreeViewNode</vh></v>
-<v t="ekr.20200815085830.3"><vh>launchRefresh</vh></v>
 <v t="ekr.20200815085830.5"><vh>_gotSelection</vh></v>
-<v t="felix.20220721225622.1"><vh>_gotSelection</vh></v>
+<v t="felix.20220721225622.1"><vh>gotSelectedNode</vh></v>
 <v t="felix.20210528012836.1"><vh>getBridgeFocus</vh></v>
 </v>
 <v t="felix.20200719030909.1"><vh>Conversion</vh>
@@ -482,6 +482,7 @@
 <v t="felix.20210620220702.1"><vh>cloneFindTag</vh></v>
 </v>
 <v t="felix.20200719025231.57"><vh>Leo Documents</vh>
+<v t="felix.20220724215921.1"><vh>setDocumentSelection</vh></v>
 <v t="felix.20200719025231.58"><vh>saveAsLeoFile</vh></v>
 <v t="felix.20210915233602.1"><vh>saveAsLeoJsFile</vh></v>
 <v t="felix.20200719025231.59"><vh>saveLeoFile</vh></v>
@@ -1109,7 +1110,8 @@ public configTreeRefresh(): void {
 
 </t>
 <t tx="ekr.20200815085830.1">/**
- * * Refreshes the outline. A reveal type can be passed along to specify the reveal type for the selected node
+ * * Refreshes the outline.
+ * * A reveal type can be passed along to specify if the selected node should also get focus
  * @param p_incrementTreeID Flag meaning for the _treeId counter to be incremented
  * @param p_revealType Facultative reveal type to specify type of reveal when the 'selected node' is encountered
  */
@@ -1208,7 +1210,9 @@ public launchRefresh(
     // Used when finding the OUTLINE's selected node and setting or preventing focus into it
     // Set this._fromOutline. Used when finding the selected node and showing the BODY to set or prevent focus in it
     this._refreshType = Object.assign({}, p_refreshType);
+
     let w_revealType: RevealType;
+
     if (p_fromOutline) {
         this.fromOutline = true;
         w_revealType = RevealType.RevealSelectFocus;
@@ -1216,6 +1220,7 @@ public launchRefresh(
         this.fromOutline = false;
         w_revealType = RevealType.RevealSelect;
     }
+
     if (
         p_ap &amp;&amp;
         this._refreshType.body &amp;&amp;
@@ -1237,6 +1242,7 @@ public launchRefresh(
             this._bodyLastChangedDocument.save();
         }
     }
+
     // * _focusInterrupt insertNode Override
     if (this._focusInterrupt) {
         // this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
@@ -1266,6 +1272,7 @@ public launchRefresh(
 </t>
 <t tx="ekr.20200815085830.5">/**
  * * Handle the selected node that was reached while converting received ap_nodes to LeoNodes
+ * @deprecated
  * @param p_node The selected node that was reached while receiving 'children' from tree view api implementing Leo's outline
  */
 private _gotSelection(p_node: LeoNode): void {
@@ -9372,6 +9379,7 @@ export class LeoIntegration {
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _refreshType: ReqRefresh = {}; // Flags for commands to require parts of UI to refresh
     public fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
+    public serverHasOpenedFile = false; // Server reported at least one opened file: for fileOpenedReady transition check.
     private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
 
     // * Body Pane
@@ -9394,7 +9402,7 @@ export class LeoIntegration {
     private _findPanelWebviewExplorerView: vscode.WebviewView | undefined;
     private _lastSettingsUsed: LeoSearchSettings | undefined; // Last settings loaded / saved for current document
 
-    // * Selection
+    // * Selection &amp; scroll
     private _selectionDirty: boolean = false; // Flag set when cursor selection is changed
     private _selectionGnx: string = ''; // Packaged into 'BodySelectionInfo' structures, sent to Leo
     private _selection: vscode.Selection | undefined; // also packaged into 'BodySelectionInfo'
@@ -9787,7 +9795,6 @@ private _onActiveEditorChanged(
     this._leoTreeView.onDidCollapseElement((p_event) =&gt;
         this._onChangeCollapsedState(p_event, false, this._leoTreeView)
     );
-    // * Trigger 'show tree in Leo's view'
     this._leoTreeView.onDidChangeVisibility((p_event) =&gt;
         this._onTreeViewVisibilityChanged(p_event, false)
     );
@@ -9801,7 +9808,6 @@ private _onActiveEditorChanged(
     this._leoTreeExView.onDidCollapseElement((p_event) =&gt;
         this._onChangeCollapsedState(p_event, false, this._leoTreeExView)
     );
-    // * Trigger 'show tree in explorer view'
     this._leoTreeExView.onDidChangeVisibility((p_event) =&gt;
         this._onTreeViewVisibilityChanged(p_event, true)
     );
@@ -10130,73 +10136,26 @@ private _bodySaveDocument(
 }
 
 </t>
-<t tx="felix.20200719025231.34">/**
- * * Places selection on the required node with a 'timeout'. Used after refreshing the opened Leo documents view.
- * @param p_documentNode Document node instance in the Leo document view to be the 'selected' one.
- */
-public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
-    this._currentDocumentChanged = p_documentNode.documentEntry.changed;
-    this.leoStates.leoOpenedFileName = p_documentNode.documentEntry.name;
-    @others
-    setTimeout(() =&gt; {
-        if (!this._leoDocuments.visible &amp;&amp; !this._leoDocumentsExplorer.visible) {
-            return;
-        }
-        let w_trigger = false;
-        let w_docView: vscode.TreeView&lt;LeoDocumentNode&gt;;
-        if (this._leoDocuments.visible) {
-            w_docView = this._leoDocuments;
-        } else {
-            w_docView = this._leoDocumentsExplorer;
-        }
-        if (w_docView.selection.length &amp;&amp; w_docView.selection[0] === p_documentNode) {
-            // console.log('already selected!');
-        } else {
-            w_trigger = true;
-        }
-        if (w_trigger) {
-            w_docView.reveal(p_documentNode, { select: true, focus: false })
-                .then(
-                    (p_result) =&gt; {
-                        // Shown document node
-                    },
-                    (p_reason) =&gt; {
-                        if (this.trace || this.verbose) {
-                            console.log('shown doc error on reveal: ');
-                        }
-                    }
-                );
-        }
-    });
-}
-
-</t>
 <t tx="felix.20200719025231.35">/**
  * * Show the outline, with Leo's selected node also selected, and optionally focussed
  * @param p_focusOutline Flag for focus to be placed in outline
  */
 public showOutline(p_focusOutline?: boolean): void {
     if (this.lastSelectedNode) {
-        try {
-            this._lastTreeView.reveal(this.lastSelectedNode, {
-                select: true,
-                focus: p_focusOutline,
-            }).then(
-                () =&gt; {
-                    // ok
-                },
-                (p_reason) =&gt; {
-                    // showOutline failed: try refresh only once.
-                    this._refreshOutline(true, RevealType.RevealSelect);
-                }
-            );
+        this._lastTreeView.reveal(this.lastSelectedNode, {
+            select: true,
+            focus: !!p_focusOutline,
+        }).then(
+            () =&gt; {
+                // ok
+            },
+            (p_reason) =&gt; {
+                // showOutline failed: try refresh only once.
+                console.log('showOutline could not reveal');
 
-        } catch (p_error) {
-            console.error("showOutline error: ", p_error);
-            // showOutline failed: try refresh only once.
-            this._refreshOutline(true, RevealType.RevealSelect);
-        }
-
+                // this._refreshOutline(true, RevealType.RevealSelect);
+            }
+        );
     }
 }
 
@@ -10282,6 +10241,7 @@ public apToLeoNode(
 <t tx="felix.20200719025231.39">/**
  * * Reveals the node that was detected as being the selected one while converting from archived positions
  * Also select it, or focus on it too depending on global this._revealType variable
+ * @deprecated
  * @param p_leoNode The node that was detected as the selected node in Leo
  */
 private _apToLeoNodeConvertReveal(p_leoNode: LeoNode): void {
@@ -12899,7 +12859,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.replace",
   "key": "ctrl+=",
   "mac": "cmd+=",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.replaceFromOutline",
@@ -12911,7 +12871,7 @@ public find(p_fromOutline: boolean, p_reverse: boolean): Promise&lt;any&gt; {
   "command": "leointeg.replaceThenFind",
   "key": "ctrl+-",
   "mac": "cmd+-",
-  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; resourceScheme == leo"
+  "when": "leoTreeOpened &amp;&amp; editorTextFocus &amp;&amp; editorHasSelection &amp;&amp; resourceScheme == leo"
 },
 {
   "command": "leointeg.replaceThenFindFromOutline",
@@ -17312,11 +17272,12 @@ public resolveTreeItem(item: LeoApOutlineNode, element: ArchivedPosition, token:
 </t>
 <t tx="felix.20220721204822.9"></t>
 <t tx="felix.20220721225622.1">/**
- * * Handle the selected node that was reached while converting received ap_nodes to LeoNodes
+ * * Handle the selected node that was reached while converting received ap_nodes.
  * @param p_element The "selected" ArchivedPosition element reached.
  * @param p_node The LeoNode built from the AP element that was reached, used in vscode's tree.
  */
 public gotSelectedNode(p_element: ArchivedPosition, p_node: LeoApOutlineNode): void {
+    // TODO : USE THIS INSTEAD !
     /*
     if (this._revealType) {
         setTimeout(() =&gt; {
@@ -17331,6 +17292,60 @@ public gotSelectedNode(p_element: ArchivedPosition, p_node: LeoApOutlineNode): v
     // Set context flags
     this.leoStates.setSelectedNodeFlags(p_element);
     */
+}
+
+</t>
+<t tx="felix.20220724215921.1">/**
+ * * Places selection on the required node with a 'timeout'. Used after refreshing the opened Leo documents view.
+ * @param p_documentNode Document node instance in the Leo document view to be the 'selected' one.
+ */
+public setDocumentSelection(p_documentNode: LeoDocumentNode): void {
+    this._currentDocumentChanged = p_documentNode.documentEntry.changed;
+    this.leoStates.leoOpenedFileName = p_documentNode.documentEntry.name;
+    @others
+    setTimeout(() =&gt; {
+        if (!this._leoDocuments.visible &amp;&amp; !this._leoDocumentsExplorer.visible) {
+            return;
+        }
+        let w_trigger = false;
+        let w_docView: vscode.TreeView&lt;LeoDocumentNode&gt;;
+        if (this._leoDocuments.visible) {
+            w_docView = this._leoDocuments;
+        } else {
+            w_docView = this._leoDocumentsExplorer;
+        }
+        if (w_docView.selection.length &amp;&amp; w_docView.selection[0] === p_documentNode) {
+            // console.log('already selected!');
+        } else {
+            w_trigger = true;
+        }
+        if (w_trigger) {
+            w_docView.reveal(p_documentNode, { select: true, focus: false })
+                .then(
+                    (p_result) =&gt; {
+                        // Shown document node
+                    },
+                    (p_reason) =&gt; {
+                        if (this.trace || this.verbose) {
+                            console.log('shown doc error on reveal: ');
+                        }
+                    }
+                );
+        }
+    });
+}
+
+</t>
+<t tx="felix.20220724224959.1">/**
+ * * Setup global refresh options
+ * @param p_focusOutline Flag for focus to be placed in outline
+ * @param p_refreshType Refresh flags for each UI part
+ */
+public _setupRefresh(p_focusOutline: boolean, p_refreshType: ReqRefresh): void {
+    // Set final "focus-placement" EITHER true or false
+    this.fromOutline = p_focusOutline;
+    // Set all properties WITHOUT clearing others. (ONLY 'true' properties)
+    Object.assign(this._refreshType, p_refreshType);
 }
 
 </t>
