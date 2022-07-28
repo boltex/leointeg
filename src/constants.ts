@@ -673,10 +673,8 @@ export class Constants {
         // * Leo Operations
         UNDO: Constants.NAME + ".undo", // From command Palette
         UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE
-        UNDO_DISABLED: Constants.NAME + ".undoDisabled", // Disabled - nop
         REDO: Constants.NAME + ".redo", // From command Palette
         REDO_FO: Constants.NAME + ".redoFromOutline", // from button, return focus on OUTLINE
-        REDO_DISABLED: Constants.NAME + ".redoDisabled", // Disabled - nop
         REVERT_TO_UNDO: Constants.NAME + ".revertToUndo",
         EXECUTE: Constants.NAME + ".executeScript",
         SHOW_BODY: Constants.NAME + ".showBody",
@@ -690,10 +688,8 @@ export class Constants {
         CONTRACT_ALL_FO: Constants.NAME + ".contractAllFromOutline", // from button, return focus on OUTLINE
         PREV_NODE: Constants.NAME + ".prev",
         PREV_NODE_FO: Constants.NAME + ".prevFromOutline",
-        PREV_NODE_DISABLED: Constants.NAME + ".prevDisabled",
         NEXT_NODE: Constants.NAME + ".next",
         NEXT_NODE_FO: Constants.NAME + ".nextFromOutline",
-        NEXT_NODE_DISABLED: Constants.NAME + ".nextDisabled",
         // * Commands from tree panel buttons or context: focus on OUTLINE
         MARK: Constants.NAME + ".mark",
         UNMARK: Constants.NAME + ".unmark",
@@ -711,9 +707,7 @@ export class Constants {
         INSERT_CHILD: Constants.NAME + ".insertChildNode",
         CLONE: Constants.NAME + ".cloneNode",
         PROMOTE: Constants.NAME + ".promote",
-        PROMOTE_DISABLED: Constants.NAME + ".promoteDisabled",
         DEMOTE: Constants.NAME + ".demote",
-        DEMOTE_DISABLED: Constants.NAME + ".demoteDisabled",
         REFRESH_FROM_DISK: Constants.NAME + ".refreshFromDisk",
         WRITE_AT_FILE_NODES: Constants.NAME + ".writeAtFileNodes",
         WRITE_AT_FILE_NODES_FO: Constants.NAME + ".writeAtFileNodesFromOutline",
@@ -760,16 +754,13 @@ export class Constants {
         DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",
         REFRESH_FROM_DISK_SELECTION_FO: Constants.NAME + ".refreshFromDiskSelectionFromOutline",
         HOIST: Constants.NAME + ".hoistNode",
-        HOIST_DISABLED: Constants.NAME + ".hoistDisabled",
         HOIST_SELECTION: Constants.NAME + ".hoistSelection",
         HOIST_SELECTION_FO: Constants.NAME + ".hoistSelectionFromOutline",
         DEHOIST: Constants.NAME + ".deHoist",
-        DEHOIST_DISABLED: Constants.NAME + ".deHoistDisabled",
         DEHOIST_FO: Constants.NAME + ".deHoistFromOutline",
         CHAPTER_NEXT: Constants.NAME + ".chapterNext",
         CHAPTER_BACK: Constants.NAME + ".chapterBack",
         CHAPTER_MAIN: Constants.NAME + ".chapterMain",
-        CHAPTER_MAIN_DISABLED: Constants.NAME + ".chapterMainDisabled",
         CHAPTER_SELECT: Constants.NAME + ".chapterSelect",
         EXTRACT: Constants.NAME + ".extract",
         EXTRACT_NAMES: Constants.NAME + ".extractNames",

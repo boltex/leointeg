@@ -1792,7 +1792,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
-[CMD.DEHOIST_DISABLED, () =&gt; { }],
 [CMD.DEHOIST_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEHOIST,
     node: U,
@@ -1805,7 +1804,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     fromOutline: true
 })],
-[CMD.HOIST_DISABLED, () =&gt; { }],
 [CMD.HOIST_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.HOIST_PNODE,
     node: U,
@@ -1839,7 +1837,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE,
     fromOutline: true
 })],
-[CMD.CHAPTER_MAIN_DISABLED, () =&gt; { }],
 [CMD.CHAPTER_SELECT, () =&gt; w_leo.chapterSelect()],
 
 [CMD.CLONE, (p_ap: ArchivedPosition) =&gt; w_leo.nodeCommand({
@@ -1981,7 +1978,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: true,
     keepSelection: true
 })],
-[CMD.DEMOTE_DISABLED, () =&gt; { }],
 [CMD.DEMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.DEMOTE_PNODE,
     node: U,
@@ -2001,7 +1997,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     fromOutline: true,
     keepSelection: true
 })],
-[CMD.PROMOTE_DISABLED, () =&gt; { }],
 [CMD.PROMOTE_SELECTION, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.PROMOTE_PNODE,
     node: U,
@@ -2050,7 +2045,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
-[CMD.REDO_DISABLED, () =&gt; { }],
 [CMD.REDO_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.REDO,
     node: U,
@@ -2063,7 +2057,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
     refreshType: REFRESH_TREE_BODY,
     fromOutline: false
 })],
-[CMD.UNDO_DISABLED, () =&gt; { }],
 [CMD.UNDO_FO, () =&gt; w_leo.nodeCommand({
     action: BRIDGE.UNDO,
     node: U,
@@ -2141,11 +2134,9 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 
 [CMD.PREV_NODE, () =&gt; w_leo.prevNextNode(false)],
 [CMD.PREV_NODE_FO, () =&gt; w_leo.prevNextNode(false)],
-[CMD.PREV_NODE_DISABLED, () =&gt; { }],
 
 [CMD.NEXT_NODE, () =&gt; w_leo.prevNextNode(true)],
 [CMD.NEXT_NODE_FO, () =&gt; w_leo.prevNextNode(true)],
-[CMD.NEXT_NODE_DISABLED, () =&gt; { }],
 
 [CMD.FIND_QUICK, () =&gt; w_leo.findQuick()],
 [CMD.FIND_QUICK_SELECTED, () =&gt; w_leo.findQuickSelected()],
@@ -2938,24 +2929,17 @@ print('done')
   "command": "leointeg.prev",
   "category": "Leo",
   "title": "Prev",
+  "enablement": "leoCanGoBack",
   "icon": {
     "light": "resources/light/prev.svg",
     "dark": "resources/dark/prev.svg"
   }
 },
 {
-  "command": "leointeg.prevDisabled",
-  "category": "Leo",
-  "title": "Can't go back",
-  "icon": {
-    "light": "resources/light/prev-disabled.svg",
-    "dark": "resources/dark/prev-disabled.svg"
-  }
-},
-{
   "command": "leointeg.prevFromOutline",
   "category": "Leo",
   "title": "Prev",
+  "enablement": "leoCanGoBack",
   "icon": {
     "light": "resources/light/prev.svg",
     "dark": "resources/dark/prev.svg"
@@ -2965,24 +2949,17 @@ print('done')
   "command": "leointeg.next",
   "category": "Leo",
   "title": "Next",
+  "enablement": "leoCanGoNext",
   "icon": {
     "light": "resources/light/next.svg",
     "dark": "resources/dark/next.svg"
   }
 },
 {
-  "command": "leointeg.nextDisabled",
-  "category": "Leo",
-  "title": "Can't go forward",
-  "icon": {
-    "light": "resources/light/next-disabled.svg",
-    "dark": "resources/dark/next-disabled.svg"
-  }
-},
-{
   "command": "leointeg.nextFromOutline",
   "category": "Leo",
   "title": "Next",
+  "enablement": "leoCanGoNext",
   "icon": {
     "light": "resources/light/next.svg",
     "dark": "resources/dark/next.svg"
@@ -3298,18 +3275,10 @@ print('done')
   }
 },
 {
-  "command": "leointeg.promoteDisabled",
-  "category": "Leo",
-  "title": "Can't Promote",
-  "icon": {
-    "light": "resources/light/promote-disabled.svg",
-    "dark": "resources/dark/promote-disabled.svg"
-  }
-},
-{
   "command": "leointeg.promoteSelection",
   "category": "Leo",
   "title": "Promote Children",
+  "enablement": "leoCanPromote",
   "icon": {
     "light": "resources/light/promote.svg",
     "dark": "resources/dark/promote.svg"
@@ -3319,6 +3288,7 @@ print('done')
   "command": "leointeg.promoteSelectionFromOutline",
   "category": "Leo",
   "title": "Promote Children",
+  "enablement": "leoCanPromote",
   "icon": {
     "light": "resources/light/promote.svg",
     "dark": "resources/dark/promote.svg"
@@ -3334,18 +3304,10 @@ print('done')
   }
 },
 {
-  "command": "leointeg.demoteDisabled",
-  "category": "Leo",
-  "title": "Can't Demote",
-  "icon": {
-    "light": "resources/light/demote-disabled.svg",
-    "dark": "resources/dark/demote-disabled.svg"
-  }
-},
-{
   "command": "leointeg.demoteSelection",
   "category": "Leo",
   "title": "Demote Siblings",
+  "enablement": "leoCanDemote",
   "icon": {
     "light": "resources/light/demote.svg",
     "dark": "resources/dark/demote.svg"
@@ -3355,6 +3317,7 @@ print('done')
   "command": "leointeg.demoteSelectionFromOutline",
   "category": "Leo",
   "title": "Demote Siblings",
+  "enablement": "leoCanDemote",
   "icon": {
     "light": "resources/light/demote.svg",
     "dark": "resources/dark/demote.svg"
@@ -3478,24 +3441,17 @@ print('done')
   "command": "leointeg.hoistSelection",
   "category": "Leo",
   "title": "Hoist",
+  "enablement": "leoCanHoist",
   "icon": {
     "light": "resources/light/hoist.svg",
     "dark": "resources/dark/hoist.svg"
   }
 },
 {
-  "command": "leointeg.hoistDisabled",
-  "category": "Leo",
-  "title": "Can't Hoist",
-  "icon": {
-    "light": "resources/light/hoist-disabled.svg",
-    "dark": "resources/dark/hoist-disabled.svg"
-  }
-},
-{
   "command": "leointeg.hoistSelectionFromOutline",
   "category": "Leo",
   "title": "Hoist",
+  "enablement": "leoCanHoist",
   "icon": {
     "light": "resources/light/hoist.svg",
     "dark": "resources/dark/hoist.svg"
@@ -3505,24 +3461,17 @@ print('done')
   "command": "leointeg.deHoist",
   "category": "Leo",
   "title": "De-Hoist",
+  "enablement": "leoCanDehoist",
   "icon": {
     "light": "resources/light/dehoist.svg",
     "dark": "resources/dark/dehoist.svg"
   }
 },
 {
-  "command": "leointeg.deHoistDisabled",
-  "category": "Leo",
-  "title": "Can't De-Hoist",
-  "icon": {
-    "light": "resources/light/dehoist-disabled.svg",
-    "dark": "resources/dark/dehoist-disabled.svg"
-  }
-},
-{
   "command": "leointeg.deHoistFromOutline",
   "category": "Leo",
   "title": "De-Hoist",
+  "enablement": "leoCanDehoist &amp;&amp; !leoTopHoistChapter",
   "icon": {
     "light": "resources/light/dehoist.svg",
     "dark": "resources/dark/dehoist.svg"
@@ -3550,18 +3499,10 @@ print('done')
   "command": "leointeg.chapterMain",
   "category": "Leo",
   "title": "Chapter Main",
+  "enablement": "leoInChapter &amp;&amp; leoTopHoistChapter",
   "icon": {
     "light": "resources/light/chapter-main.svg",
     "dark": "resources/dark/chapter-main.svg"
-  }
-},
-{
-  "command": "leointeg.chapterMainDisabled",
-  "category": "Leo",
-  "title": "Chapter Main",
-  "icon": {
-    "light": "resources/light/chapter-main-disabled.svg",
-    "dark": "resources/dark/chapter-main-disabled.svg"
   }
 },
 {
@@ -3578,24 +3519,17 @@ print('done')
   "command": "leointeg.undo",
   "category": "Leo",
   "title": "Undo",
+  "enablement": "leoCanUndo",
   "icon": {
     "light": "resources/light/undo.svg",
     "dark": "resources/dark/undo.svg"
   }
 },
 {
-  "command": "leointeg.undoDisabled",
-  "category": "Leo",
-  "title": "Can't Undo",
-  "icon": {
-    "light": "resources/light/undo-disabled.svg",
-    "dark": "resources/dark/undo-disabled.svg"
-  }
-},
-{
   "command": "leointeg.undoFromOutline",
   "category": "Leo",
   "title": "Undo",
+  "enablement": "leoCanUndo",
   "icon": {
     "light": "resources/light/undo.svg",
     "dark": "resources/dark/undo.svg"
@@ -3605,24 +3539,17 @@ print('done')
   "command": "leointeg.redo",
   "category": "Leo",
   "title": "Redo",
+  "enablement": "leoCanRedo",
   "icon": {
     "light": "resources/light/redo.svg",
     "dark": "resources/dark/redo.svg"
   }
 },
 {
-  "command": "leointeg.redoDisabled",
-  "category": "Leo",
-  "title": "Can't Redo",
-  "icon": {
-    "light": "resources/light/redo-disabled.svg",
-    "dark": "resources/dark/redo-disabled.svg"
-  }
-},
-{
   "command": "leointeg.redoFromOutline",
   "category": "Leo",
   "title": "Redo",
+  "enablement": "leoCanRedo",
   "icon": {
     "light": "resources/light/redo.svg",
     "dark": "resources/dark/redo.svg"
@@ -4357,10 +4284,6 @@ print('done')
   "command": "leointeg.deHoistFromOutline",
   "when": "false"
 },
-{
-  "command": "leointeg.chapterMainDisabled",
-  "when": "false"
-},
 </t>
 <t tx="ekr.20200815123601.67">{
   "command": "leointeg.undoFromOutline",
@@ -4372,14 +4295,6 @@ print('done')
 },
 {
   "command": "leointeg.revertToUndo",
-  "when": "false"
-},
-{
-  "command": "leointeg.undoDisabled",
-  "when": "false"
-},
-{
-  "command": "leointeg.redoDisabled",
   "when": "false"
 },
 </t>
@@ -5326,10 +5241,8 @@ public static COMMANDS = {
     // * Leo Operations
     UNDO: Constants.NAME + ".undo", // From command Palette
     UNDO_FO: Constants.NAME + ".undoFromOutline", // from button, return focus on OUTLINE
-    UNDO_DISABLED: Constants.NAME + ".undoDisabled", // Disabled - nop
     REDO: Constants.NAME + ".redo", // From command Palette
     REDO_FO: Constants.NAME + ".redoFromOutline", // from button, return focus on OUTLINE
-    REDO_DISABLED: Constants.NAME + ".redoDisabled", // Disabled - nop
     REVERT_TO_UNDO: Constants.NAME + ".revertToUndo",
     EXECUTE: Constants.NAME + ".executeScript",
     SHOW_BODY: Constants.NAME + ".showBody",
@@ -5343,10 +5256,8 @@ public static COMMANDS = {
     CONTRACT_ALL_FO: Constants.NAME + ".contractAllFromOutline", // from button, return focus on OUTLINE
     PREV_NODE: Constants.NAME + ".prev",
     PREV_NODE_FO: Constants.NAME + ".prevFromOutline",
-    PREV_NODE_DISABLED: Constants.NAME + ".prevDisabled",
     NEXT_NODE: Constants.NAME + ".next",
     NEXT_NODE_FO: Constants.NAME + ".nextFromOutline",
-    NEXT_NODE_DISABLED: Constants.NAME + ".nextDisabled",
     // * Commands from tree panel buttons or context: focus on OUTLINE
     MARK: Constants.NAME + ".mark",
     UNMARK: Constants.NAME + ".unmark",
@@ -5364,9 +5275,7 @@ public static COMMANDS = {
     INSERT_CHILD: Constants.NAME + ".insertChildNode",
     CLONE: Constants.NAME + ".cloneNode",
     PROMOTE: Constants.NAME + ".promote",
-    PROMOTE_DISABLED: Constants.NAME + ".promoteDisabled",
     DEMOTE: Constants.NAME + ".demote",
-    DEMOTE_DISABLED: Constants.NAME + ".demoteDisabled",
     REFRESH_FROM_DISK: Constants.NAME + ".refreshFromDisk",
     WRITE_AT_FILE_NODES: Constants.NAME + ".writeAtFileNodes",
     WRITE_AT_FILE_NODES_FO: Constants.NAME + ".writeAtFileNodesFromOutline",
@@ -5413,16 +5322,13 @@ public static COMMANDS = {
     DEMOTE_SELECTION_FO: Constants.NAME + ".demoteSelectionFromOutline",
     REFRESH_FROM_DISK_SELECTION_FO: Constants.NAME + ".refreshFromDiskSelectionFromOutline",
     HOIST: Constants.NAME + ".hoistNode",
-    HOIST_DISABLED: Constants.NAME + ".hoistDisabled",
     HOIST_SELECTION: Constants.NAME + ".hoistSelection",
     HOIST_SELECTION_FO: Constants.NAME + ".hoistSelectionFromOutline",
     DEHOIST: Constants.NAME + ".deHoist",
-    DEHOIST_DISABLED: Constants.NAME + ".deHoistDisabled",
     DEHOIST_FO: Constants.NAME + ".deHoistFromOutline",
     CHAPTER_NEXT: Constants.NAME + ".chapterNext",
     CHAPTER_BACK: Constants.NAME + ".chapterBack",
     CHAPTER_MAIN: Constants.NAME + ".chapterMain",
-    CHAPTER_MAIN_DISABLED: Constants.NAME + ".chapterMainDisabled",
     CHAPTER_SELECT: Constants.NAME + ".chapterSelect",
     EXTRACT: Constants.NAME + ".extract",
     EXTRACT_NAMES: Constants.NAME + ".extractNames",
@@ -12236,67 +12142,37 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.prevFromOutline",
-    "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoBack",
-    "group": "navigation@3"
-  },
-  {
-    "command": "leointeg.prevDisabled",
-    "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoBack",
+    "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@3"
   },
   {
     "command": "leointeg.nextFromOutline",
-    "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoNext",
-    "group": "navigation@4"
-  },
-  {
-    "command": "leointeg.nextDisabled",
-    "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoNext",
+    "when": "view =~ /^leoIntegration|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@4"
   },
   {
     "command": "leointeg.undoFromOutline",
-    "when": "view =~ /^leoIntegration|^leoUndo/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanUndo",
-    "group": "navigation@5"
-  },
-  {
-    "command": "leointeg.undoDisabled",
-    "when": "view =~ /^leoIntegration|^leoUndo/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanUndo",
+    "when": "view =~ /^leoIntegration|^leoUndo/ &amp;&amp; leoTreeOpened",
     "group": "navigation@5"
   },
   {
     "command": "leointeg.redoFromOutline",
-    "when": "view =~ /^leoIntegration|^leoUndo/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanRedo",
-    "group": "navigation@6"
-  },
-  {
-    "command": "leointeg.redoDisabled",
-    "when": "view =~ /^leoIntegration|^leoUndo/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanRedo",
+    "when": "view =~ /^leoIntegration|^leoUndo/ &amp;&amp; leoTreeOpened",
     "group": "navigation@6"
   },
   {
     "command": "leointeg.deHoistFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanDehoist &amp;&amp; !leoTopHoistChapter",
-    "group": "navigation@7"
-  },
-  {
-    "command": "leointeg.deHoistDisabled",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanDehoist",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
     "group": "navigation@7"
   },
   {
     "command": "leointeg.chapterMain",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanDehoist &amp;&amp; leoTopHoistChapter",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
     "group": "navigation@7"
   },
   {
     "command": "leointeg.hoistSelectionFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanHoist",
-    "group": "navigation@8"
-  },
-  {
-    "command": "leointeg.hoistDisabled",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanHoist",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
     "group": "navigation@8"
   },
   {
@@ -12326,32 +12202,17 @@ public static VSCODE_COMMANDS = {
   },
   {
     "command": "leointeg.chapterMain",
-    "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; leoInChapter &amp;&amp; leoTopHoistChapter",
-    "group": "navigation@6"
-  },
-  {
-    "command": "leointeg.chapterMainDisabled",
-    "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; !leoTopHoistChapter || view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened &amp;&amp; !leoInChapter",
+    "when": "view =~ /^leoFindPanel|^leoGotoPanel/ &amp;&amp; leoTreeOpened",
     "group": "navigation@6"
   },
   {
     "command": "leointeg.promoteSelectionFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanPromote",
-    "group": "navigation@9"
-  },
-  {
-    "command": "leointeg.promoteDisabled",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanPromote",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
     "group": "navigation@9"
   },
   {
     "command": "leointeg.demoteSelectionFromOutline",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; leoCanDemote",
-    "group": "navigation@10"
-  },
-  {
-    "command": "leointeg.demoteDisabled",
-    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened &amp;&amp; !leoCanDemote",
+    "when": "view =~ /^leoIntegration/ &amp;&amp; leoTreeOpened",
     "group": "navigation@10"
   },
   {
@@ -13973,22 +13834,12 @@ public static IMPORT_FILE_TYPES: { [name: string]: string[]; } = {
 <t tx="felix.20210610022645.1">"editor/title": [
   {
     "command": "leointeg.prev",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoBack",
-    "group": "navigation@1"
-  },
-  {
-    "command": "leointeg.prevDisabled",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoBack",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
     "group": "navigation@1"
   },
   {
     "command": "leointeg.next",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened &amp;&amp; leoCanGoNext",
-    "group": "navigation@2"
-  },
-  {
-    "command": "leointeg.nextDisabled",
-    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened &amp;&amp; !leoCanGoNext",
+    "when": "resourceScheme == leo &amp;&amp; leoTreeOpened",
     "group": "navigation@2"
   },
   {
@@ -16716,6 +16567,10 @@ export function cleanLeoID(id_: string): string {
 - Added and improved icons sets for disabled icon-buttons and common actions.
 - Tooltips and description do not contain the whole u.a. when listing positions.
   (Hovering the mouse triggers the retrieval of this info for a single node.)
+- Initial node selection when opening Leo Documents: Fixed in leoserver 1.0.3 to come out in Leo 6.6.4.
+- Zoom-in/Zoom-out vscode commands now called instead of replace next/previous (on Ctrl+/-) if no text range selected.
+- Main tree outline view integration: Revised and refactored internal tree model.
+- Disabled commands created with enablement clauses instead of extraneous commands.
 
 </t>
 <t tx="felix.20220704004247.1">private _leoCanGoBack: boolean = false;

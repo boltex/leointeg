@@ -917,24 +917,17 @@
         "command": "leointeg.prev",
         "category": "Leo",
         "title": "Prev",
+        "enablement": "leoCanGoBack",
         "icon": {
           "light": "resources/light/prev.svg",
           "dark": "resources/dark/prev.svg"
         }
       },
       {
-        "command": "leointeg.prevDisabled",
-        "category": "Leo",
-        "title": "Can't go back",
-        "icon": {
-          "light": "resources/light/prev-disabled.svg",
-          "dark": "resources/dark/prev-disabled.svg"
-        }
-      },
-      {
         "command": "leointeg.prevFromOutline",
         "category": "Leo",
         "title": "Prev",
+        "enablement": "leoCanGoBack",
         "icon": {
           "light": "resources/light/prev.svg",
           "dark": "resources/dark/prev.svg"
@@ -944,24 +937,17 @@
         "command": "leointeg.next",
         "category": "Leo",
         "title": "Next",
+        "enablement": "leoCanGoNext",
         "icon": {
           "light": "resources/light/next.svg",
           "dark": "resources/dark/next.svg"
         }
       },
       {
-        "command": "leointeg.nextDisabled",
-        "category": "Leo",
-        "title": "Can't go forward",
-        "icon": {
-          "light": "resources/light/next-disabled.svg",
-          "dark": "resources/dark/next-disabled.svg"
-        }
-      },
-      {
         "command": "leointeg.nextFromOutline",
         "category": "Leo",
         "title": "Next",
+        "enablement": "leoCanGoNext",
         "icon": {
           "light": "resources/light/next.svg",
           "dark": "resources/dark/next.svg"
@@ -1292,18 +1278,10 @@
         }
       },
       {
-        "command": "leointeg.promoteDisabled",
-        "category": "Leo",
-        "title": "Can't Promote",
-        "icon": {
-          "light": "resources/light/promote-disabled.svg",
-          "dark": "resources/dark/promote-disabled.svg"
-        }
-      },
-      {
         "command": "leointeg.promoteSelection",
         "category": "Leo",
         "title": "Promote Children",
+        "enablement": "leoCanPromote",
         "icon": {
           "light": "resources/light/promote.svg",
           "dark": "resources/dark/promote.svg"
@@ -1313,6 +1291,7 @@
         "command": "leointeg.promoteSelectionFromOutline",
         "category": "Leo",
         "title": "Promote Children",
+        "enablement": "leoCanPromote",
         "icon": {
           "light": "resources/light/promote.svg",
           "dark": "resources/dark/promote.svg"
@@ -1328,18 +1307,10 @@
         }
       },
       {
-        "command": "leointeg.demoteDisabled",
-        "category": "Leo",
-        "title": "Can't Demote",
-        "icon": {
-          "light": "resources/light/demote-disabled.svg",
-          "dark": "resources/dark/demote-disabled.svg"
-        }
-      },
-      {
         "command": "leointeg.demoteSelection",
         "category": "Leo",
         "title": "Demote Siblings",
+        "enablement": "leoCanDemote",
         "icon": {
           "light": "resources/light/demote.svg",
           "dark": "resources/dark/demote.svg"
@@ -1349,6 +1320,7 @@
         "command": "leointeg.demoteSelectionFromOutline",
         "category": "Leo",
         "title": "Demote Siblings",
+        "enablement": "leoCanDemote",
         "icon": {
           "light": "resources/light/demote.svg",
           "dark": "resources/dark/demote.svg"
@@ -1470,24 +1442,17 @@
         "command": "leointeg.hoistSelection",
         "category": "Leo",
         "title": "Hoist",
+        "enablement": "leoCanHoist",
         "icon": {
           "light": "resources/light/hoist.svg",
           "dark": "resources/dark/hoist.svg"
         }
       },
       {
-        "command": "leointeg.hoistDisabled",
-        "category": "Leo",
-        "title": "Can't Hoist",
-        "icon": {
-          "light": "resources/light/hoist-disabled.svg",
-          "dark": "resources/dark/hoist-disabled.svg"
-        }
-      },
-      {
         "command": "leointeg.hoistSelectionFromOutline",
         "category": "Leo",
         "title": "Hoist",
+        "enablement": "leoCanHoist",
         "icon": {
           "light": "resources/light/hoist.svg",
           "dark": "resources/dark/hoist.svg"
@@ -1497,24 +1462,17 @@
         "command": "leointeg.deHoist",
         "category": "Leo",
         "title": "De-Hoist",
+        "enablement": "leoCanDehoist",
         "icon": {
           "light": "resources/light/dehoist.svg",
           "dark": "resources/dark/dehoist.svg"
         }
       },
       {
-        "command": "leointeg.deHoistDisabled",
-        "category": "Leo",
-        "title": "Can't De-Hoist",
-        "icon": {
-          "light": "resources/light/dehoist-disabled.svg",
-          "dark": "resources/dark/dehoist-disabled.svg"
-        }
-      },
-      {
         "command": "leointeg.deHoistFromOutline",
         "category": "Leo",
         "title": "De-Hoist",
+        "enablement": "leoCanDehoist && !leoTopHoistChapter",
         "icon": {
           "light": "resources/light/dehoist.svg",
           "dark": "resources/dark/dehoist.svg"
@@ -1542,18 +1500,10 @@
         "command": "leointeg.chapterMain",
         "category": "Leo",
         "title": "Chapter Main",
+        "enablement": "leoInChapter && leoTopHoistChapter",
         "icon": {
           "light": "resources/light/chapter-main.svg",
           "dark": "resources/dark/chapter-main.svg"
-        }
-      },
-      {
-        "command": "leointeg.chapterMainDisabled",
-        "category": "Leo",
-        "title": "Chapter Main",
-        "icon": {
-          "light": "resources/light/chapter-main-disabled.svg",
-          "dark": "resources/dark/chapter-main-disabled.svg"
         }
       },
       {
@@ -1569,24 +1519,17 @@
         "command": "leointeg.undo",
         "category": "Leo",
         "title": "Undo",
+        "enablement": "leoCanUndo",
         "icon": {
           "light": "resources/light/undo.svg",
           "dark": "resources/dark/undo.svg"
         }
       },
       {
-        "command": "leointeg.undoDisabled",
-        "category": "Leo",
-        "title": "Can't Undo",
-        "icon": {
-          "light": "resources/light/undo-disabled.svg",
-          "dark": "resources/dark/undo-disabled.svg"
-        }
-      },
-      {
         "command": "leointeg.undoFromOutline",
         "category": "Leo",
         "title": "Undo",
+        "enablement": "leoCanUndo",
         "icon": {
           "light": "resources/light/undo.svg",
           "dark": "resources/dark/undo.svg"
@@ -1596,24 +1539,17 @@
         "command": "leointeg.redo",
         "category": "Leo",
         "title": "Redo",
+        "enablement": "leoCanRedo",
         "icon": {
           "light": "resources/light/redo.svg",
           "dark": "resources/dark/redo.svg"
         }
       },
       {
-        "command": "leointeg.redoDisabled",
-        "category": "Leo",
-        "title": "Can't Redo",
-        "icon": {
-          "light": "resources/light/redo-disabled.svg",
-          "dark": "resources/dark/redo-disabled.svg"
-        }
-      },
-      {
         "command": "leointeg.redoFromOutline",
         "category": "Leo",
         "title": "Redo",
+        "enablement": "leoCanRedo",
         "icon": {
           "light": "resources/light/redo.svg",
           "dark": "resources/dark/redo.svg"
@@ -2772,10 +2708,6 @@
           "when": "false"
         },
         {
-          "command": "leointeg.chapterMainDisabled",
-          "when": "false"
-        },
-        {
           "command": "leointeg.undoFromOutline",
           "when": "false"
         },
@@ -2785,14 +2717,6 @@
         },
         {
           "command": "leointeg.revertToUndo",
-          "when": "false"
-        },
-        {
-          "command": "leointeg.undoDisabled",
-          "when": "false"
-        },
-        {
-          "command": "leointeg.redoDisabled",
           "when": "false"
         },
         {
@@ -2822,22 +2746,12 @@
       "editor/title": [
         {
           "command": "leointeg.prev",
-          "when": "resourceScheme == leo && leoTreeOpened && leoCanGoBack",
-          "group": "navigation@1"
-        },
-        {
-          "command": "leointeg.prevDisabled",
-          "when": "resourceScheme == leo && leoTreeOpened && !leoCanGoBack",
+          "when": "resourceScheme == leo && leoTreeOpened",
           "group": "navigation@1"
         },
         {
           "command": "leointeg.next",
-          "when": "resourceScheme == leo && leoTreeOpened && leoCanGoNext",
-          "group": "navigation@2"
-        },
-        {
-          "command": "leointeg.nextDisabled",
-          "when": "resourceScheme == leo && leoTreeOpened && !leoCanGoNext",
+          "when": "resourceScheme == leo && leoTreeOpened",
           "group": "navigation@2"
         },
         {
@@ -2976,67 +2890,37 @@
         },
         {
           "command": "leointeg.prevFromOutline",
-          "when": "view =~ /^leoIntegration|^leoGotoPanel/ && leoTreeOpened && leoCanGoBack",
-          "group": "navigation@3"
-        },
-        {
-          "command": "leointeg.prevDisabled",
-          "when": "view =~ /^leoIntegration|^leoGotoPanel/ && leoTreeOpened && !leoCanGoBack",
+          "when": "view =~ /^leoIntegration|^leoGotoPanel/ && leoTreeOpened",
           "group": "navigation@3"
         },
         {
           "command": "leointeg.nextFromOutline",
-          "when": "view =~ /^leoIntegration|^leoGotoPanel/ && leoTreeOpened && leoCanGoNext",
-          "group": "navigation@4"
-        },
-        {
-          "command": "leointeg.nextDisabled",
-          "when": "view =~ /^leoIntegration|^leoGotoPanel/ && leoTreeOpened && !leoCanGoNext",
+          "when": "view =~ /^leoIntegration|^leoGotoPanel/ && leoTreeOpened",
           "group": "navigation@4"
         },
         {
           "command": "leointeg.undoFromOutline",
-          "when": "view =~ /^leoIntegration|^leoUndo/ && leoTreeOpened && leoCanUndo",
-          "group": "navigation@5"
-        },
-        {
-          "command": "leointeg.undoDisabled",
-          "when": "view =~ /^leoIntegration|^leoUndo/ && leoTreeOpened && !leoCanUndo",
+          "when": "view =~ /^leoIntegration|^leoUndo/ && leoTreeOpened",
           "group": "navigation@5"
         },
         {
           "command": "leointeg.redoFromOutline",
-          "when": "view =~ /^leoIntegration|^leoUndo/ && leoTreeOpened && leoCanRedo",
-          "group": "navigation@6"
-        },
-        {
-          "command": "leointeg.redoDisabled",
-          "when": "view =~ /^leoIntegration|^leoUndo/ && leoTreeOpened && !leoCanRedo",
+          "when": "view =~ /^leoIntegration|^leoUndo/ && leoTreeOpened",
           "group": "navigation@6"
         },
         {
           "command": "leointeg.deHoistFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoCanDehoist && !leoTopHoistChapter",
-          "group": "navigation@7"
-        },
-        {
-          "command": "leointeg.deHoistDisabled",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoCanDehoist",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
           "group": "navigation@7"
         },
         {
           "command": "leointeg.chapterMain",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoCanDehoist && leoTopHoistChapter",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
           "group": "navigation@7"
         },
         {
           "command": "leointeg.hoistSelectionFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoCanHoist",
-          "group": "navigation@8"
-        },
-        {
-          "command": "leointeg.hoistDisabled",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoCanHoist",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
           "group": "navigation@8"
         },
         {
@@ -3066,32 +2950,17 @@
         },
         {
           "command": "leointeg.chapterMain",
-          "when": "view =~ /^leoFindPanel|^leoGotoPanel/ && leoTreeOpened && leoInChapter && leoTopHoistChapter",
-          "group": "navigation@6"
-        },
-        {
-          "command": "leointeg.chapterMainDisabled",
-          "when": "view =~ /^leoFindPanel|^leoGotoPanel/ && leoTreeOpened && !leoTopHoistChapter || view =~ /^leoFindPanel|^leoGotoPanel/ && leoTreeOpened && !leoInChapter",
+          "when": "view =~ /^leoFindPanel|^leoGotoPanel/ && leoTreeOpened",
           "group": "navigation@6"
         },
         {
           "command": "leointeg.promoteSelectionFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoCanPromote",
-          "group": "navigation@9"
-        },
-        {
-          "command": "leointeg.promoteDisabled",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoCanPromote",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
           "group": "navigation@9"
         },
         {
           "command": "leointeg.demoteSelectionFromOutline",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && leoCanDemote",
-          "group": "navigation@10"
-        },
-        {
-          "command": "leointeg.demoteDisabled",
-          "when": "view =~ /^leoIntegration/ && leoTreeOpened && !leoCanDemote",
+          "when": "view =~ /^leoIntegration/ && leoTreeOpened",
           "group": "navigation@10"
         },
         {

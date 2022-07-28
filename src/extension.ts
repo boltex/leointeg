@@ -297,7 +297,6 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: false
         })],
-        [CMD.DEHOIST_DISABLED, () => { }],
         [CMD.DEHOIST_FO, () => w_leo.nodeCommand({
             action: BRIDGE.DEHOIST,
             node: U,
@@ -310,7 +309,6 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
-        [CMD.HOIST_DISABLED, () => { }],
         [CMD.HOIST_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.HOIST_PNODE,
             node: U,
@@ -344,7 +342,6 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE,
             fromOutline: true
         })],
-        [CMD.CHAPTER_MAIN_DISABLED, () => { }],
         [CMD.CHAPTER_SELECT, () => w_leo.chapterSelect()],
 
         [CMD.CLONE, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
@@ -486,7 +483,6 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true,
             keepSelection: true
         })],
-        [CMD.DEMOTE_DISABLED, () => { }],
         [CMD.DEMOTE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.DEMOTE_PNODE,
             node: U,
@@ -506,7 +502,6 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true,
             keepSelection: true
         })],
-        [CMD.PROMOTE_DISABLED, () => { }],
         [CMD.PROMOTE_SELECTION, () => w_leo.nodeCommand({
             action: BRIDGE.PROMOTE_PNODE,
             node: U,
@@ -555,7 +550,6 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: false
         })],
-        [CMD.REDO_DISABLED, () => { }],
         [CMD.REDO_FO, () => w_leo.nodeCommand({
             action: BRIDGE.REDO,
             node: U,
@@ -568,7 +562,6 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: false
         })],
-        [CMD.UNDO_DISABLED, () => { }],
         [CMD.UNDO_FO, () => w_leo.nodeCommand({
             action: BRIDGE.UNDO,
             node: U,
@@ -646,11 +639,9 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         [CMD.PREV_NODE, () => w_leo.prevNextNode(false)],
         [CMD.PREV_NODE_FO, () => w_leo.prevNextNode(false)],
-        [CMD.PREV_NODE_DISABLED, () => { }],
 
         [CMD.NEXT_NODE, () => w_leo.prevNextNode(true)],
         [CMD.NEXT_NODE_FO, () => w_leo.prevNextNode(true)],
-        [CMD.NEXT_NODE_DISABLED, () => { }],
 
         [CMD.FIND_QUICK, () => w_leo.findQuick()],
         [CMD.FIND_QUICK_SELECTED, () => w_leo.findQuickSelected()],
