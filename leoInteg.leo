@@ -1329,9 +1329,6 @@ private async _tryApplyNodeToBody(
     this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
     this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
 
-    console.log('in _tryApplyNodeToBody this._bodyTextDocument:', this._bodyTextDocument);
-
-
     if (this._bodyTextDocument) {
         // if not first time and still opened - also not somewhat exactly opened somewhere.
         if (
@@ -1580,7 +1577,6 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SAVE_AS_FILE, () =&gt; w_leo.saveAsLeoFile()],
 [CMD.SAVE_AS_LEOJS, () =&gt; w_leo.saveAsLeoJsFile()],
 [CMD.SAVE_FILE, () =&gt; w_leo.saveLeoFile()],
-// [CMD.SAVE_DISABLED, () =&gt; { }],
 [CMD.SAVE_FILE_FO, () =&gt; w_leo.saveLeoFile(true)],
 [CMD.SWITCH_FILE, () =&gt; w_leo.switchLeoFile()],
 
@@ -5209,7 +5205,6 @@ public static COMMANDS = {
     SWITCH_FILE: Constants.NAME + ".switchLeoFile",
     NEW_FILE: Constants.NAME + ".newLeoFile",
     SAVE_FILE: Constants.NAME + ".saveLeoFile",
-    // SAVE_DISABLED: Constants.NAME + ".saveLeoFileDisabled", // Disabled - nop
     SAVE_FILE_FO: Constants.NAME + ".saveLeoFileFromOutline",
     SAVE_AS_FILE: Constants.NAME + ".saveAsLeoFile",
     SAVE_AS_LEOJS: Constants.NAME + ".saveAsLeoJsFile",
@@ -5749,7 +5744,7 @@ export class CommandStack {
 
     // Received selection from the last command that finished as JSON string representation
     // It will be re-sent as 'target node' instead of lastSelectedNode if present
-    private _selectedNode: string = ""; // Empty string is used as 'falsy'
+    private _selectedNodeJSON: string = ""; // Empty string is used as 'falsy'
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -5774,7 +5769,7 @@ public size(): number {
  */
 public newSelection(): void {
     if (!this._busy) {
-        this._selectedNode = "";
+        this._selectedNodeJSON = "";
     }
 }
 
@@ -5833,8 +5828,8 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
         w_nodeJson = JSON.stringify(w_command.node);
     } else {
         // Use received "selected node" unless first use, then use last selected node
-        if (this._selectedNode) {
-            w_nodeJson = this._selectedNode;
+        if (this._selectedNodeJSON) {
+            w_nodeJson = this._selectedNodeJSON;
         } else {
             w_nodeJson = this._leoIntegration.lastSelectedNode ? JSON.stringify(this._leoIntegration.lastSelectedNode) : "";
         }
@@ -5872,7 +5867,7 @@ private _runStackCommand(): Promise&lt;LeoBridgePackage&gt; {
 private _resolveResult(p_package: LeoBridgePackage): void {
     this._stack.shift(); // Finally remove resolved command from stack bottom
 
-    this._selectedNode = JSON.stringify(p_package.node);
+    this._selectedNodeJSON = JSON.stringify(p_package.node);
 
     if (!this.size()) {
         // If last is done then do refresh outline and focus on outline, or body, as required
@@ -10443,8 +10438,6 @@ public sendAction(
  * @returns a promise for the editor that will show the body pane
  */
 public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.TextEditor&gt; {
-    console.log('showBody!! bodyUri:  ' + this.bodyUri);
-
 
     // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
     if (this._refreshType.body) {
@@ -10468,9 +10461,6 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
             // * Set document language along with the proper cursor position, selection range and scrolling position
             let q_bodyStates: Promise&lt;LeoBridgePackage&gt; | undefined;
 
-            console.log('opened text document, before getting q_bodyStates, this._needLastSelectedRefresh: ', this._needLastSelectedRefresh);
-
-
             if (!this._needLastSelectedRefresh) {
 
                 q_bodyStates = this.sendAction(
@@ -10479,8 +10469,6 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                 );
 
                 q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
-
-                    console.log('got q_bodyStates, gonna apply language');
 
                     let w_language: string = p_bodyStates.language!;
                     let w_wrap: boolean = !!p_bodyStates.wrap;
@@ -10679,9 +10667,6 @@ public selectTreeNode(
     p_internalCall?: boolean,
     p_aside?: boolean
 ): Promise&lt;LeoBridgePackage | vscode.TextEditor&gt; {
-    console.log('selectTreeNode', p_node, p_internalCall);
-    console.log('this.lastSelectedNode', this.lastSelectedNode);
-
 
     this.triggerBodySave(true);
 
@@ -17362,6 +17347,10 @@ public gotSelectedNode(p_element: ArchivedPosition): void {
     if (this._focusInterrupt) {
         this._focusInterrupt = false;
         w_showBodyKeepFocus = true;
+    }
+    if (!this.lastSelectedNode || this._needLastSelectedRefresh) {
+        // lastSelectedNode will be set in _tryApplyNodeToBody !
+        this._needLastSelectedRefresh = false;
     }
     this._tryApplyNodeToBody(p_element, false, w_showBodyKeepFocus);
 

@@ -1984,6 +1984,10 @@ export class LeoIntegration {
             this._focusInterrupt = false;
             w_showBodyKeepFocus = true;
         }
+        if (!this.lastSelectedNode || this._needLastSelectedRefresh) {
+            // lastSelectedNode will be set in _tryApplyNodeToBody !
+            this._needLastSelectedRefresh = false;
+        }
         this._tryApplyNodeToBody(p_element, false, w_showBodyKeepFocus);
 
         // Set context flags
@@ -2134,9 +2138,6 @@ export class LeoIntegration {
 
         this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
         this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
-
-        console.log('in _tryApplyNodeToBody this._bodyTextDocument:', this._bodyTextDocument);
-
 
         if (this._bodyTextDocument) {
             // if not first time and still opened - also not somewhat exactly opened somewhere.
@@ -2477,8 +2478,6 @@ export class LeoIntegration {
      * @returns a promise for the editor that will show the body pane
      */
     public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise<vscode.TextEditor> {
-        console.log('showBody!! bodyUri:  ' + this.bodyUri);
-
 
         // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
         if (this._refreshType.body) {
@@ -2502,9 +2501,6 @@ export class LeoIntegration {
                 // * Set document language along with the proper cursor position, selection range and scrolling position
                 let q_bodyStates: Promise<LeoBridgePackage> | undefined;
 
-                console.log('opened text document, before getting q_bodyStates, this._needLastSelectedRefresh: ', this._needLastSelectedRefresh);
-
-
                 if (!this._needLastSelectedRefresh) {
 
                     q_bodyStates = this.sendAction(
@@ -2513,8 +2509,6 @@ export class LeoIntegration {
                     );
 
                     q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
-
-                        console.log('got q_bodyStates, gonna apply language');
 
                         let w_language: string = p_bodyStates.language!;
                         let w_wrap: boolean = !!p_bodyStates.wrap;
@@ -2862,9 +2856,6 @@ export class LeoIntegration {
         p_internalCall?: boolean,
         p_aside?: boolean
     ): Promise<LeoBridgePackage | vscode.TextEditor> {
-        console.log('selectTreeNode', p_node, p_internalCall);
-        console.log('this.lastSelectedNode', this.lastSelectedNode);
-
 
         this.triggerBodySave(true);
 

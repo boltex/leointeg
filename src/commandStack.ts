@@ -22,7 +22,7 @@ export class CommandStack {
 
     // Received selection from the last command that finished as JSON string representation
     // It will be re-sent as 'target node' instead of lastSelectedNode if present
-    private _selectedNode: string = ""; // Empty string is used as 'falsy'
+    private _selectedNodeJSON: string = ""; // Empty string is used as 'falsy'
 
     constructor(
         private _context: vscode.ExtensionContext,
@@ -43,7 +43,7 @@ export class CommandStack {
      */
     public newSelection(): void {
         if (!this._busy) {
-            this._selectedNode = "";
+            this._selectedNodeJSON = "";
         }
     }
 
@@ -99,8 +99,8 @@ export class CommandStack {
             w_nodeJson = JSON.stringify(w_command.node);
         } else {
             // Use received "selected node" unless first use, then use last selected node
-            if (this._selectedNode) {
-                w_nodeJson = this._selectedNode;
+            if (this._selectedNodeJSON) {
+                w_nodeJson = this._selectedNodeJSON;
             } else {
                 w_nodeJson = this._leoIntegration.lastSelectedNode ? JSON.stringify(this._leoIntegration.lastSelectedNode) : "";
             }
@@ -137,7 +137,7 @@ export class CommandStack {
     private _resolveResult(p_package: LeoBridgePackage): void {
         this._stack.shift(); // Finally remove resolved command from stack bottom
 
-        this._selectedNode = JSON.stringify(p_package.node);
+        this._selectedNodeJSON = JSON.stringify(p_package.node);
 
         if (!this.size()) {
             // If last is done then do refresh outline and focus on outline, or body, as required
