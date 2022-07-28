@@ -4407,12 +4407,26 @@ export class LeoIntegration {
                     this.serverOpenedFileName = p_openFileResult.filename!;
                     this.serverOpenedNode = p_openFileResult.node!;
 
+                    this.loadSearchSettings();
+                    this._setupRefresh(
+                        this.fromOutline,
+                        {
+                            tree: true,
+                            body: true,
+                            documents: true,
+                            buttons: true,
+                            states: true
+                        }
+                    );
+                    this.launchRefresh();
+
                     // this._setupOpenedLeoDocument(p_openFileResult);
                     return p_openFileResult; //
                 } else {
                     this.serverHasOpenedFile = false;
                     this.serverOpenedFileName = "";
                     this.serverOpenedNode = undefined;
+                    this.launchRefresh();
                     console.log('Select Opened Leo File Error');
                     return Promise.reject('Select Opened Leo File Error');
                 }
