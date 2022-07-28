@@ -7,6 +7,7 @@ import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
 import { LeoGotoNode } from "./leoGotoNode";
 import { LeoUndoNode } from "./leoUndoNode";
+import { LeoApOutlineNode } from "./leoApOutline";
 
 var LeoInteg: LeoIntegration | undefined = undefined;
 
@@ -583,7 +584,7 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.SET_LEOID, () => w_leo.setLeoID()],
 
         // Called by nodes in tree when selected either by mouse, or with enter
-        [CMD.SELECT_NODE, (p_ap: ArchivedPosition) => w_leo.selectTreeNode(p_ap, false, false)],
+        [CMD.SELECT_NODE, (p_node: LeoApOutlineNode) => w_leo.selectTreeNode(p_node.position, false, false)],
         [CMD.OPEN_ASIDE, (p_ap: ArchivedPosition) => w_leo.selectTreeNode(p_ap, false, true)],
 
         [CMD.SHOW_OUTLINE, () => w_leo.showOutline(true)], // Also focuses on outline

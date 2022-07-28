@@ -1329,6 +1329,9 @@ private async _tryApplyNodeToBody(
     this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
     this._commandStack.newSelection(); // Signal that a new selected node was reached and to stop using the received selection as target for next command
 
+    console.log('in _tryApplyNodeToBody this._bodyTextDocument:', this._bodyTextDocument);
+
+
     if (this._bodyTextDocument) {
         // if not first time and still opened - also not somewhat exactly opened somewhere.
         if (
@@ -2076,7 +2079,7 @@ export function buildButtonsIconPaths(p_context: vscode.ExtensionContext): Icon[
 [CMD.SET_LEOID, () =&gt; w_leo.setLeoID()],
 
 // Called by nodes in tree when selected either by mouse, or with enter
-[CMD.SELECT_NODE, (p_ap: ArchivedPosition) =&gt; w_leo.selectTreeNode(p_ap, false, false)],
+[CMD.SELECT_NODE, (p_node: LeoApOutlineNode) =&gt; w_leo.selectTreeNode(p_node.position, false, false)],
 [CMD.OPEN_ASIDE, (p_ap: ArchivedPosition) =&gt; w_leo.selectTreeNode(p_ap, false, true)],
 
 [CMD.SHOW_OUTLINE, () =&gt; w_leo.showOutline(true)], // Also focuses on outline
@@ -6249,6 +6252,7 @@ import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
 import { LeoGotoNode } from "./leoGotoNode";
 import { LeoUndoNode } from "./leoUndoNode";
+import { LeoApOutlineNode } from "./leoApOutline";
 
 var LeoInteg: LeoIntegration | undefined = undefined;
 
@@ -10533,6 +10537,9 @@ public sendAction(
  * @returns a promise for the editor that will show the body pane
  */
 public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.TextEditor&gt; {
+    console.log('showBody!! bodyUri:  ' + this.bodyUri);
+
+
     // First setup timeout asking for gnx file refresh in case we were resolving a refresh of type 'RefreshTreeAndBody'
     if (this._refreshType.body) {
         this._refreshType.body = false;
@@ -10555,6 +10562,9 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
             // * Set document language along with the proper cursor position, selection range and scrolling position
             let q_bodyStates: Promise&lt;LeoBridgePackage&gt; | undefined;
 
+            console.log('opened text document, before getting q_bodyStates, this._needLastSelectedRefresh: ', this._needLastSelectedRefresh);
+
+
             if (!this._needLastSelectedRefresh) {
 
                 q_bodyStates = this.sendAction(
@@ -10563,6 +10573,9 @@ public showBody(p_aside: boolean, p_preserveFocus?: boolean): Promise&lt;vscode.
                 );
 
                 q_bodyStates.then((p_bodyStates: LeoBridgePackage) =&gt; {
+
+                    console.log('got q_bodyStates, gonna apply language');
+
                     let w_language: string = p_bodyStates.language!;
                     let w_wrap: boolean = !!p_bodyStates.wrap;
                     let w_tabWidth: number | boolean = p_bodyStates.tabWidth || !!p_bodyStates.tabWidth;
@@ -10760,6 +10773,10 @@ public selectTreeNode(
     p_internalCall?: boolean,
     p_aside?: boolean
 ): Promise&lt;LeoBridgePackage | vscode.TextEditor&gt; {
+    console.log('selectTreeNode', p_node, p_internalCall);
+    console.log('this.lastSelectedNode', this.lastSelectedNode);
+
+
     this.triggerBodySave(true);
 
     // * check if used via context menu's "open-aside" on an unselected node: check if p_node is currently selected, if not select it
