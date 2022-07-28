@@ -2,8 +2,7 @@ import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
 import { LeoIntegration } from "./leoIntegration";
-import { LeoNode } from "./leoNode";
-import { LeoPackageStates } from "./types";
+import { ArchivedPosition, LeoPackageStates } from "./types";
 
 /**
  * * Global states service
@@ -12,6 +11,8 @@ import { LeoPackageStates } from "./types";
  */
 export class LeoStates {
 
+    public qLastContextChange: Thenable<unknown>; // Promise that the last state change is applied
+
     // * Currently establishing connection to a server
     private _leoConnecting: boolean = false;
     get leoConnecting(): boolean {
@@ -19,7 +20,7 @@ export class LeoStates {
     }
     set leoConnecting(p_value: boolean) {
         this._leoConnecting = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.CONNECTING, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.CONNECTING, p_value);
     }
 
     // * Finished startup check for server-start and auto-connect
@@ -29,7 +30,7 @@ export class LeoStates {
     }
     set leoStartupFinished(p_value: boolean) {
         this._leoStartupFinished = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.STARTUP_FINISHED, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.STARTUP_FINISHED, p_value);
     }
 
     // * Connected to a Leo bridge server
@@ -39,7 +40,7 @@ export class LeoStates {
     }
     set leoBridgeReady(p_value: boolean) {
         this._leoBridgeReady = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.BRIDGE_READY, p_value);
     }
 
     private _leoIDMissing: boolean = false;
@@ -48,7 +49,7 @@ export class LeoStates {
     }
     set leoIDMissing(p_value: boolean) {
         this._leoIDMissing = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEOID_MISSING, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEOID_MISSING, p_value);
     }
 
     // * A Leo file is opened
@@ -58,7 +59,7 @@ export class LeoStates {
     }
     set fileOpenedReady(p_value: boolean) {
         this._fileOpenedReady = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.TREE_OPENED, p_value);
         this._leoIntegration.setTreeViewTitle(
             p_value ? Constants.GUI.TREEVIEW_TITLE : Constants.GUI.TREEVIEW_TITLE_INTEGRATION
         );
@@ -72,10 +73,10 @@ export class LeoStates {
     set leoOpenedFileName(p_name: string) {
         if (p_name && p_name.length) {
             this._leoOpenedFileName = p_name;
-            utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, true);
+            this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, true);
         } else {
             this._leoOpenedFileName = "";
-            utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, false);
+            this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.TREE_TITLED, false);
         }
     }
 
@@ -90,7 +91,7 @@ export class LeoStates {
             this._leoIntegration.refreshDocumentsPane();
         }
         this._leoChanged = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CHANGED, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_CHANGED, p_value);
     }
 
     private _leoCanUndo: boolean = false;
@@ -99,7 +100,7 @@ export class LeoStates {
     }
     set leoCanUndo(p_value: boolean) {
         this._leoCanUndo = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_UNDO, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_UNDO, p_value);
     }
 
     private _leoCanRedo: boolean = false;
@@ -108,7 +109,7 @@ export class LeoStates {
     }
     set leoCanRedo(p_value: boolean) {
         this._leoCanRedo = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_REDO, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_REDO, p_value);
     }
 
     private _leoCanGoBack: boolean = false;
@@ -117,7 +118,7 @@ export class LeoStates {
     }
     set leoCanGoBack(p_value: boolean) {
         this._leoCanGoBack = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_BACK, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_BACK, p_value);
     }
 
     private _leoCanGoNext: boolean = false;
@@ -126,7 +127,7 @@ export class LeoStates {
     }
     set leoCanGoNext(p_value: boolean) {
         this._leoCanGoNext = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_NEXT, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_NEXT, p_value);
     }
 
     private _leoCanDemote: boolean = false;
@@ -135,7 +136,7 @@ export class LeoStates {
     }
     set leoCanDemote(p_value: boolean) {
         this._leoCanDemote = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_DEMOTE, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_DEMOTE, p_value);
     }
 
     private _leoCanPromote: boolean = false;
@@ -144,7 +145,7 @@ export class LeoStates {
     }
     set leoCanPromote(p_value: boolean) {
         this._leoCanPromote = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_PROMOTE, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_PROMOTE, p_value);
     }
 
     private _leoCanHoist: boolean = false;
@@ -153,7 +154,7 @@ export class LeoStates {
     }
     set leoCanHoist(p_value: boolean) {
         this._leoCanHoist = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_HOIST, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_HOIST, p_value);
     }
 
     private _leoCanDehoist: boolean = false;
@@ -162,7 +163,7 @@ export class LeoStates {
     }
     set leoCanDehoist(p_value: boolean) {
         this._leoCanDehoist = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_DEHOIST, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_CAN_DEHOIST, p_value);
     }
 
     private _leoInChapter: boolean = false;
@@ -171,7 +172,7 @@ export class LeoStates {
     }
     set leoInChapter(p_value: boolean) {
         this._leoInChapter = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_IN_CHAPTER, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_IN_CHAPTER, p_value);
     }
     private _leoTopHoistChapter: boolean = false;
     get leoTopHoistChapter(): boolean {
@@ -179,7 +180,7 @@ export class LeoStates {
     }
     set leoTopHoistChapter(p_value: boolean) {
         this._leoTopHoistChapter = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.LEO_TOP_HOIST_CHAPTER, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.LEO_TOP_HOIST_CHAPTER, p_value);
     }
     // * 'states' flags about current selection, for visibility and commands availability
     private _leoMarked: boolean = false;
@@ -188,7 +189,7 @@ export class LeoStates {
     }
     set leoMarked(p_value: boolean) {
         this._leoMarked = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_value);
     }
 
     private _leoCloned: boolean = false;
@@ -197,7 +198,7 @@ export class LeoStates {
     }
     set leoCloned(p_value: boolean) {
         this._leoCloned = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_CLONE, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_CLONE, p_value);
     }
 
     private _leoDirty: boolean = false;
@@ -206,7 +207,7 @@ export class LeoStates {
     }
     set leoDirty(p_value: boolean) {
         this._leoDirty = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_DIRTY, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_DIRTY, p_value);
     }
 
     private _leoEmpty: boolean = false;
@@ -215,7 +216,7 @@ export class LeoStates {
     }
     set leoEmpty(p_value: boolean) {
         this._leoEmpty = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_EMPTY, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_EMPTY, p_value);
     }
 
     private _leoChild: boolean = false; // Has child
@@ -224,7 +225,7 @@ export class LeoStates {
     }
     set leoChild(p_value: boolean) {
         this._leoChild = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_CHILD, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_CHILD, p_value);
     }
 
     private _leoAtFile: boolean = false;
@@ -233,22 +234,24 @@ export class LeoStates {
     }
     set leoAtFile(p_value: boolean) {
         this._leoAtFile = p_value;
-        utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_ATFILE, p_value);
+        this.qLastContextChange = utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_ATFILE, p_value);
     }
 
     constructor(
         private _context: vscode.ExtensionContext,
         private _leoIntegration: LeoIntegration
-    ) { }
+    ) {
+        this.qLastContextChange = Promise.resolve(); // Temporary.
+    }
 
-    public setSelectedNodeFlags(p_node: LeoNode): void {
-        this.leoCanHoist = !p_node.isRoot; // * ALSO set in setRoot of LeoNode class
+    public setSelectedNodeFlags(p_node: ArchivedPosition): void {
+        this.leoCanHoist = !p_node._isRoot; // * ALSO set in setRoot of LeoNode class
 
         this.leoMarked = p_node.marked;
         this.leoCloned = p_node.cloned;
         this.leoDirty = p_node.dirty;
         this.leoEmpty = !p_node.hasBody;
-        this.leoChild = !(p_node.collapsibleState === vscode.TreeItemCollapsibleState.None);
+        this.leoChild = p_node.hasChildren; // !(p_node.collapsibleState === vscode.TreeItemCollapsibleState.None);
         this.leoAtFile = p_node.atFile;
     }
 

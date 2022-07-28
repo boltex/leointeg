@@ -39,18 +39,37 @@ export class LeoAsync {
      * Note: 'Getters' and the 'do_nothing' actions are NOT shared by the server.
      * @param p_serverPackage the package sent along by the server
      */
-    public refresh(p_serverPackage: any): void {
+    public refresh(p_serverPackage: any): Promise<unknown> {
+        // setup refresh 'all' by default for now.
+        this._leoIntegration._setupRefresh(
+            this._leoIntegration.fromOutline,
+            {
+                tree: true,
+                body: true,
+                states: true,
+                buttons: true,
+                documents: true
+            }
+        );
         if (p_serverPackage.opened && this._leoIntegration.leoStates.fileOpenedReady) {
-            this._leoIntegration.refreshAll();
+            // * PASS (refresh all already setup)
+            // this._leoIntegration.refreshAll();
         } else if (p_serverPackage.opened && !this._leoIntegration.leoStates.fileOpenedReady) {
-            this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
+            return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                 .then((p_doNothingPackage) => {
                     p_doNothingPackage.filename = p_doNothingPackage.commander!.fileName;
-                    this._leoIntegration.setupOpenedLeoDocument(p_doNothingPackage, true);
+                    this._leoIntegration.serverHasOpenedFile = true;
+                    this._leoIntegration.serverOpenedFileName = p_doNothingPackage.filename!;
+                    this._leoIntegration.serverOpenedNode = p_doNothingPackage.node!;
+                    return this._leoIntegration.launchRefresh();
                 });
         } else {
-            this._leoIntegration.setupNoOpenedLeoDocument();
+            this._leoIntegration.serverHasOpenedFile = false;
+            this._leoIntegration.serverOpenedFileName = "";
+            this._leoIntegration.serverOpenedNode = undefined;
         }
+        this._leoIntegration.launchRefresh();
+        return Promise.resolve();
     }
 
     /**
@@ -115,11 +134,18 @@ export class LeoAsync {
                     return this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING);
                 }).then((p_package) => {
                     // refresh and reveal selection
-                    this._leoIntegration.launchRefresh(
-                        { tree: true, body: true, states: true, buttons: true, documents: true },
+                    this._leoIntegration._setupRefresh(
                         false,
+                        {
+                            tree: true,
+                            body: true,
+                            states: true,
+                            buttons: true,
+                            documents: true
+                        },
                         p_package.node
                     );
+                    this._leoIntegration.launchRefresh();
                 });
             }
         });
@@ -154,11 +180,12 @@ export class LeoAsync {
                 this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
                     .then((p_package) => {
                         // refresh and reveal selection
-                        this._leoIntegration.launchRefresh(
-                            { tree: true, body: true, states: true, buttons: true, documents: true },
+                        this._leoIntegration._setupRefresh(
                             false,
+                            { tree: true, body: true, states: true, buttons: true, documents: true },
                             p_package.node
                         );
+                        this._leoIntegration.launchRefresh();
                     });
 
                 break;

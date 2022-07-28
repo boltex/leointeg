@@ -128,7 +128,7 @@ export class LeoApOutlineProvider implements vscode.TreeDataProvider<ArchivedPos
         );
         // Check if its the selected node and call signal it to the UI
         if (element.selected) {
-            this._leoIntegration.gotSelectedNode(element, w_leoNode);
+            this._leoIntegration.gotSelectedNode(element);
         }
         // Build a LeoNode (a vscode tree node) from the ArchivedPosition
         return w_leoNode;
@@ -275,7 +275,7 @@ export class LeoApOutlineNode extends vscode.TreeItem {
         this.command = {
             command: Constants.COMMANDS.SELECT_NODE,
             title: '',
-            // using 'this' as LeoApOutlineNode instead of position, to match 'openToTheSide' paramter
+            // using 'this' as LeoApOutlineNode instead of position, to match 'openToTheSide' parameter
             arguments: [this]
         };
     }

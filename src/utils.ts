@@ -1,8 +1,7 @@
 import * as vscode from "vscode";
-import * as murmur from "murmurhash-js";
 import { Constants } from "./constants";
 import { Icon, UserCommand, ArchivedPosition } from "./types";
-import { LeoNode } from "./leoNode";
+
 var portfinder = require('portfinder');
 
 /**
@@ -25,21 +24,6 @@ export function getUniqueId(): string {
  */
 export function padNumber2(p_number: number): string {
     return ("0" + p_number).slice(-2);
-}
-
-/**
- * * Builds a string hash out of of an archived position, default without taking collapsed state into account
- * @param p_ap Archived position
- * @param p_salt To be added to the hashing process (Change when tree changes)
- */
-export function hashNode(p_ap: ArchivedPosition, p_salt: string, p_withCollapse?: boolean): string {
-    const w_string1: string = p_ap.headline + p_ap.gnx + p_ap.childIndex.toString(36);
-    const w_string2: string = w_string1 + p_ap.childIndex.toString(36) + JSON.stringify(p_ap.stack);
-    const w_first: string = murmur.murmur3(w_string2).toString(36);
-    if (p_withCollapse) {
-        p_salt += p_ap.expanded ? "1" : "0";
-    }
-    return p_salt + w_string1 + w_first + murmur.murmur3(w_first + w_string2).toString(36);
 }
 
 /**
@@ -248,7 +232,7 @@ export function getFileFromPath(p_path: string): string {
  * @param p_newHasBody Flag to signify presence of body content, to be compared with its current state
  * @returns True if it would change the icon with actual body content, false otherwise
  */
-export function isIconChangedByEdit(p_node: LeoNode, p_newHasBody: boolean): boolean {
+export function isIconChangedByEdit(p_node: ArchivedPosition, p_newHasBody: boolean): boolean {
     if (!p_node.dirty || (p_node.hasBody === !p_newHasBody)) {
         return true;
     }

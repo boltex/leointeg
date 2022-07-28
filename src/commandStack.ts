@@ -96,13 +96,13 @@ export class CommandStack {
         // (Commands such as 'collapse all' just ignore node parameter)
         if (w_command.node) {
             // Was node specific, so starting a new stack of commands
-            w_nodeJson = w_command.node.apJson;
+            w_nodeJson = JSON.stringify(w_command.node);
         } else {
             // Use received "selected node" unless first use, then use last selected node
             if (this._selectedNode) {
                 w_nodeJson = this._selectedNode;
             } else {
-                w_nodeJson = this._leoIntegration.lastSelectedNode ? this._leoIntegration.lastSelectedNode.apJson : "";
+                w_nodeJson = this._leoIntegration.lastSelectedNode ? JSON.stringify(this._leoIntegration.lastSelectedNode) : "";
             }
             if (!w_nodeJson) {
                 console.log('ERROR NO ARCHIVED POSITION JSON');
@@ -144,7 +144,12 @@ export class CommandStack {
             this._busy = false;
             if (Object.keys(this._finalRefreshType).length) {
                 // At least some type of refresh
-                this._leoIntegration.launchRefresh(this._finalRefreshType, this._finalFromOutline, p_package.node);
+                this._leoIntegration._setupRefresh(
+                    this._finalFromOutline,
+                    this._finalRefreshType,
+                    p_package.node
+                );
+                this._leoIntegration.launchRefresh();
             }
             // Reset refresh type nonetheless
             this._finalRefreshType = {};

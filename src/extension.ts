@@ -1,9 +1,8 @@
 import * as vscode from "vscode";
 import * as utils from "./utils";
 import { Constants } from "./constants";
-import { ReqRefresh } from "./types";
+import { ArchivedPosition, ReqRefresh } from "./types";
 import { LeoIntegration } from "./leoIntegration";
-import { LeoNode } from "./leoNode";
 import { LeoSettingsProvider } from "./webviews/leoSettingsWebview";
 import { LeoButtonNode } from "./leoButtonNode";
 import { LeoGotoNode } from "./leoGotoNode";
@@ -91,9 +90,9 @@ export function activate(p_context: vscode.ExtensionContext) {
 
         [CMD.SET_OPENED_FILE, (p_index: number) => w_leo.selectOpenedLeoDocument(p_index)],
 
-        [CMD.REFRESH_FROM_DISK, (p_node: LeoNode) => w_leo.nodeCommand({
+        [CMD.REFRESH_FROM_DISK, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.REFRESH_FROM_DISK_PNODE,
-            node: p_node,
+            node: p_ap,
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
             keepSelection: false
@@ -143,23 +142,23 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: false
         })],
 
-        [CMD.HEADLINE, (p_node: LeoNode) => w_leo.editHeadline(p_node, true)],
+        [CMD.HEADLINE, (p_ap: ArchivedPosition) => w_leo.editHeadline(p_ap, true)],
         [CMD.HEADLINE_SELECTION, () => w_leo.editHeadline(U, false)],
         [CMD.HEADLINE_SELECTION_FO, () => w_leo.editHeadline(U, true)],
 
         // cut/copy/paste/delete given node.
-        [CMD.COPY, (p_node: LeoNode) => w_leo.copyNode(p_node, true)],
-        [CMD.CUT, (p_node: LeoNode) => w_leo.cutNode(p_node, true)],
+        [CMD.COPY, (p_ap: ArchivedPosition) => w_leo.copyNode(p_ap, true)],
+        [CMD.CUT, (p_ap: ArchivedPosition) => w_leo.cutNode(p_ap, true)],
 
-        [CMD.DELETE, (p_node: LeoNode) => w_leo.nodeCommand({
+        [CMD.DELETE, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.DELETE_PNODE,
-            node: p_node,
+            node: p_ap,
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
             keepSelection: true
         })],
-        [CMD.PASTE, (p_node: LeoNode) => w_leo.pasteNode(p_node, true)],
-        [CMD.PASTE_CLONE, (p_node: LeoNode) => w_leo.pasteAsCloneNode(p_node, true)],
+        [CMD.PASTE, (p_ap: ArchivedPosition) => w_leo.pasteNode(p_ap, true)],
+        [CMD.PASTE_CLONE, (p_ap: ArchivedPosition) => w_leo.pasteAsCloneNode(p_ap, true)],
 
         // cut/copy/paste/delete current selection (self.commander.p)
         [CMD.COPY_SELECTION, () => w_leo.copyNode(U, false)],
@@ -210,9 +209,9 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true
         })],
 
-        [CMD.GOTO_NEXT_CLONE, (p_node: LeoNode) => w_leo.nodeCommand({
+        [CMD.GOTO_NEXT_CLONE, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.GOTO_NEXT_CLONE,
-            node: p_node,
+            node: p_ap,
             refreshType: REFRESH_NODE_BODY,
             fromOutline: true
         })],
@@ -304,9 +303,9 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
-        [CMD.HOIST, (p_node: LeoNode) => w_leo.nodeCommand({
+        [CMD.HOIST, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.HOIST_PNODE,
-            node: p_node,
+            node: p_ap,
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
@@ -347,9 +346,9 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.CHAPTER_MAIN_DISABLED, () => { }],
         [CMD.CHAPTER_SELECT, () => w_leo.chapterSelect()],
 
-        [CMD.CLONE, (p_node: LeoNode) => w_leo.nodeCommand({
+        [CMD.CLONE, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.CLONE_PNODE,
-            node: p_node,
+            node: p_ap,
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true
         })],
@@ -366,10 +365,10 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true
         })],
 
-        [CMD.INSERT, (p_node: LeoNode) => w_leo.insertNode(p_node, true, false)],
+        [CMD.INSERT, (p_ap: ArchivedPosition) => w_leo.insertNode(p_ap, true, false)],
         [CMD.INSERT_SELECTION, () => w_leo.insertNode(U, false, false)],
         [CMD.INSERT_SELECTION_FO, () => w_leo.insertNode(U, true, false)],
-        [CMD.INSERT_CHILD, (p_node: LeoNode) => w_leo.insertNode(p_node, true, true)],
+        [CMD.INSERT_CHILD, (p_ap: ArchivedPosition) => w_leo.insertNode(p_ap, true, true)],
         [CMD.INSERT_CHILD_SELECTION, () => w_leo.insertNode(U, false, true)],
         [CMD.INSERT_CHILD_SELECTION_FO, () => w_leo.insertNode(U, true, true)],
 
@@ -378,11 +377,11 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.INSERT_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, false, true)],
         [CMD.INSERT_CHILD_SELECTION_INTERRUPT, () => w_leo.insertNode(U, false, true, true)],
 
-        [CMD.MARK, (p_node: LeoNode) => w_leo.changeMark(true, p_node, true)],
+        [CMD.MARK, (p_ap: ArchivedPosition) => w_leo.changeMark(true, p_ap, true)],
         [CMD.MARK_SELECTION, () => w_leo.changeMark(true, U, false)],
         [CMD.MARK_SELECTION_FO, () => w_leo.changeMark(true, U, true)],
 
-        [CMD.UNMARK, (p_node: LeoNode) => w_leo.changeMark(false, p_node, true)],
+        [CMD.UNMARK, (p_ap: ArchivedPosition) => w_leo.changeMark(false, p_ap, true)],
         [CMD.UNMARK_SELECTION, () => w_leo.changeMark(false, U, false)],
         [CMD.UNMARK_SELECTION_FO, () => w_leo.changeMark(false, U, true)],
 
@@ -399,9 +398,9 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: false
         })],
 
-        [CMD.MOVE_DOWN, (p_node: LeoNode) => w_leo.nodeCommand({
+        [CMD.MOVE_DOWN, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_DOWN,
-            node: p_node,
+            node: p_ap,
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
             keepSelection: true
@@ -419,9 +418,9 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true
         })],
 
-        [CMD.MOVE_LEFT, (p_node: LeoNode) => w_leo.nodeCommand({
+        [CMD.MOVE_LEFT, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_LEFT,
-            node: p_node,
+            node: p_ap,
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
             keepSelection: true
@@ -439,9 +438,9 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true
         })],
 
-        [CMD.MOVE_RIGHT, (p_node: LeoNode) => w_leo.nodeCommand({
+        [CMD.MOVE_RIGHT, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_RIGHT,
-            node: p_node,
+            node: p_ap,
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
             keepSelection: true
@@ -459,9 +458,9 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true
         })],
 
-        [CMD.MOVE_UP, (p_node: LeoNode) => w_leo.nodeCommand({
+        [CMD.MOVE_UP, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.MOVE_PNODE_UP,
-            node: p_node,
+            node: p_ap,
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
             keepSelection: true
@@ -479,9 +478,9 @@ export function activate(p_context: vscode.ExtensionContext) {
             fromOutline: true
         })],
 
-        [CMD.DEMOTE, (p_node: LeoNode) => w_leo.nodeCommand({
+        [CMD.DEMOTE, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.DEMOTE_PNODE,
-            node: p_node,
+            node: p_ap,
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
             keepSelection: true
@@ -499,9 +498,9 @@ export function activate(p_context: vscode.ExtensionContext) {
             refreshType: REFRESH_TREE,
             fromOutline: true
         })],
-        [CMD.PROMOTE, (p_node: LeoNode) => w_leo.nodeCommand({
+        [CMD.PROMOTE, (p_ap: ArchivedPosition) => w_leo.nodeCommand({
             action: BRIDGE.PROMOTE_PNODE,
-            node: p_node,
+            node: p_ap,
             refreshType: REFRESH_TREE_BODY,
             fromOutline: true,
             keepSelection: true
@@ -584,8 +583,8 @@ export function activate(p_context: vscode.ExtensionContext) {
         [CMD.SET_LEOID, () => w_leo.setLeoID()],
 
         // Called by nodes in tree when selected either by mouse, or with enter
-        [CMD.SELECT_NODE, (p_node: LeoNode) => w_leo.selectTreeNode(p_node, false, false)],
-        [CMD.OPEN_ASIDE, (p_node: LeoNode) => w_leo.selectTreeNode(p_node, false, true)],
+        [CMD.SELECT_NODE, (p_ap: ArchivedPosition) => w_leo.selectTreeNode(p_ap, false, false)],
+        [CMD.OPEN_ASIDE, (p_ap: ArchivedPosition) => w_leo.selectTreeNode(p_ap, false, true)],
 
         [CMD.SHOW_OUTLINE, () => w_leo.showOutline(true)], // Also focuses on outline
 

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { debounce } from 'debounce';
+import { debounce } from "lodash";
 import * as fs from 'fs';
 import * as path from "path";
 import * as utils from './utils';
@@ -22,8 +22,7 @@ import {
 } from './types';
 import { Config } from './config';
 import { LeoFilesBrowser } from './leoFileBrowser';
-import { LeoNode } from './leoNode';
-import { LeoOutlineProvider } from './leoOutline';
+import { LeoApOutlineProvider, LeoApOutlineNode } from './leoApOutline';
 import { LeoBodyProvider } from './leoBody';
 import { LeoBridge } from './leoBridge';
 import { ServerService } from './serverManager';
@@ -40,7 +39,6 @@ import { LeoGotoNode } from './leoGotoNode';
 import { LeoGotoProvider } from './leoGoto';
 import { LeoUndosProvider } from './leoUndo';
 import { LeoUndoNode } from './leoUndoNode';
-import { LeoApOutlineNode } from './leoApOutline';
 
 /**
  * * Orchestrates Leo integration into vscode
@@ -63,10 +61,10 @@ export class LeoIntegration {
     private _commandStack: CommandStack;
 
     // * Configuration Settings Service
-    public config: Config; // Public configuration service singleton, used in leoSettingsWebview, leoBridge, and leoNode for inverted contrast
+    public config: Config; // Public configuration service singleton, used in leoSettingsWebview, leoBridge, for inverted contrast
 
     // * Icon Paths
-    public nodeIcons: Icon[] = []; // Singleton static array of all icon paths used in leoNodes for rendering in treeview
+    public nodeIcons: Icon[] = []; // Singleton static array of all icon paths used for rendering in treeview
     public documentIcons: Icon[] = [];
     public buttonIcons: Icon[] = [];
     public gotoIcons: Icon[] = [];
@@ -78,29 +76,31 @@ export class LeoIntegration {
     private _leoBridge: LeoBridge; // Singleton service to access leobridgeserver
 
     // * Outline Pane
-    private _leoTreeProvider: LeoOutlineProvider; // TreeDataProvider single instance
-    private _leoTreeView: vscode.TreeView<LeoNode>; // Outline tree view added to the Tree View Container with an Activity Bar icon
-    private _leoTreeExView: vscode.TreeView<LeoNode>; // Outline tree view added to the Explorer Sidebar
-    private _lastTreeView: vscode.TreeView<LeoNode>; // Last visible treeview
+    private _leoTreeProvider: LeoApOutlineProvider; // TreeDataProvider single instance
+    private _leoTreeView: vscode.TreeView<ArchivedPosition>; // Outline tree view added to the Tree View Container with an Activity Bar icon
+    private _leoTreeExView: vscode.TreeView<ArchivedPosition>; // Outline tree view added to the Explorer Sidebar
+    private _lastTreeView: vscode.TreeView<ArchivedPosition>; // Last visible treeview
     private _retriedRefresh: boolean = false;
-    private _treeId: number = 0; // Starting salt for tree node murmurhash generated Ids
     private _renamingHeadline: string = "";
 
-    private _lastSelectedNode: LeoNode | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
-    get lastSelectedNode(): LeoNode | undefined {
+    private _lastSelectedNode: ArchivedPosition | undefined; // Last selected node we got a hold of; leoTreeView.selection maybe newer and unprocessed
+    get lastSelectedNode(): ArchivedPosition | undefined {
         return this._lastSelectedNode;
     }
-    set lastSelectedNode(p_leoNode: LeoNode | undefined) {
+    set lastSelectedNode(p_ap: ArchivedPosition | undefined) {
         // Needs undefined type because it cannot be set in the constructor
-        this._lastSelectedNode = p_leoNode;
-        if (p_leoNode) {
-            utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_leoNode.marked); // Global context to 'flag' the selected node's marked state
+        this._lastSelectedNode = p_ap;
+        if (p_ap) {
+            utils.setContext(Constants.CONTEXT_FLAGS.SELECTED_MARKED, p_ap.marked); // Global context to 'flag' the selected node's marked state
         }
     }
 
     // * Outline Pane redraw/refresh flags. Also set when calling refreshTreeRoot
+
     // If there's no reveal and its the selected node, the old id will be re-used for the node. (see _id property in LeoNode)
+    // TODO : NEEDED ???
     private _revealType: RevealType = RevealType.NoReveal; // to be read/cleared in arrayToLeoNodesArray, to check if any should self-select
+
     private _preventShowBody = false; // Used when refreshing treeview from config: It requires not to open the body pane when refreshing
     private _needRefresh = false; // Used at the end of refresh process, when a setLanguage checks if gnx is same as lastSelectedNode
 
@@ -124,7 +124,11 @@ export class LeoIntegration {
     // * Commands stack finishing resolving "refresh flags", for type of refresh after finishing stack
     private _refreshType: ReqRefresh = {}; // Flags for commands to require parts of UI to refresh
     public fromOutline: boolean = false; // Last command issued had focus on outline, as opposed to the body
-    public serverHasOpenedFile = false; // Server reported at least one opened file: for fileOpenedReady transition check.
+    private _refreshNode: ArchivedPosition | undefined;
+
+    public serverHasOpenedFile: boolean = false; // Server reported at least one opened file: for fileOpenedReady transition check.
+    public serverOpenedFileName: string = ""; // Server last reported opened file name.
+    public serverOpenedNode: ArchivedPosition | undefined; // Server last reported opened file name.
     private _focusInterrupt: boolean = false; // Flag for preventing setting focus when interrupting (canceling) an 'insert node' text input dialog with another one
 
     // * Body Pane
@@ -202,46 +206,21 @@ export class LeoIntegration {
     private _bodyLastChangedDocumentSaved: boolean = true; // don't use 'isDirty' of the document!
 
     // * Debounced method used to get states for UI display flags (commands such as undo, redo, save, ...)
-    public getStates: (() => void) & {
-        clear(): void;
-    } & {
-        flush(): void;
-    };
-
+    public getStates: (() => void);
     // * Debounced method used to get opened Leo Files for the documents pane
-    public refreshDocumentsPane: (() => void) & {
-        clear(): void;
-    } & {
-        flush(): void;
-    };
+    public refreshDocumentsPane: (() => void);
 
     // * Debounced method used to get content of the at-buttons pane
-    public refreshButtonsPane: (() => void) & {
-        clear(): void;
-    } & {
-        flush(): void;
-    };
+    public refreshButtonsPane: (() => void);
 
     // * Debounced method used to get content of the at-buttons pane
-    public refreshGotoPane: (() => void) & {
-        clear(): void;
-    } & {
-        flush(): void;
-    };
+    public refreshGotoPane: (() => void);
 
     // * Debounced method used to get content of the undos pane
-    public refreshUndosPane: (() => void) & {
-        clear(): void;
-    } & {
-        flush(): void;
-    };
+    public refreshUndoPane: (() => void);
 
-    // * Debounced method used to refresh all
-    public refreshAll: (() => void) & {
-        clear(): void;
-    } & {
-        flush(): void;
-    };
+    // * Debounced method for refreshing the UI
+    public launchRefresh: (() => void);
 
     constructor(private _context: vscode.ExtensionContext) {
         // * Setup States
@@ -272,7 +251,7 @@ export class LeoIntegration {
         this._commandStack = new CommandStack(_context, this);
 
         // * Create a single data provider for both outline trees, Leo view and Explorer view
-        this._leoTreeProvider = new LeoOutlineProvider(this);
+        this._leoTreeProvider = new LeoApOutlineProvider(this.nodeIcons, this);
 
         // * Create Leo stand-alone view and Explorer view outline panes
         // Uses 'select node' command, so 'onDidChangeSelection' is not used
@@ -451,40 +430,36 @@ export class LeoIntegration {
 
         // * Debounced refresh flags and UI parts, other than the tree and body
         this.getStates = debounce(
-            () => { this._triggerGetStates(); },
-            Constants.STATES_DEBOUNCE_DELAY
+            this._triggerGetStates,
+            Constants.STATES_DEBOUNCE_DELAY,
+            { leading: false, trailing: true }
         );
         this.refreshDocumentsPane = debounce(
-            () => { this._leoDocumentsProvider.refreshTreeRoot(); },
-            Constants.DOCUMENTS_DEBOUNCE_DELAY
+            this._refreshDocumentsPane,
+            Constants.DOCUMENTS_DEBOUNCE_DELAY,
+            { leading: false, trailing: true }
         );
         this.refreshButtonsPane = debounce(
-            () => { this._leoButtonsProvider.refreshTreeRoot(); },
-            Constants.BUTTONS_DEBOUNCE_DELAY
+            this._refreshButtonsPane,
+            Constants.BUTTONS_DEBOUNCE_DELAY,
+            { leading: false, trailing: true }
         );
         this.refreshGotoPane = debounce(
-            () => { this._leoGotoProvider.refreshTreeRoot(); },
-            Constants.GOTO_DEBOUNCE_DELAY
+            this._refreshGotoPane,
+            Constants.GOTO_DEBOUNCE_DELAY,
+            { leading: false, trailing: true }
         );
-        this.refreshUndosPane = debounce(
-            () => { this._leoUndosProvider.refreshTreeRoot(); },
-            Constants.UNDOS_DEBOUNCE_DELAY
+        this.refreshUndoPane = debounce(
+            this._refreshUndoPane,
+            Constants.UNDOS_DEBOUNCE_DELAY,
+            { leading: false, trailing: true }
         );
-        this.refreshAll = debounce(
-            () => {
-                this.launchRefresh(
-                    {
-                        tree: true,
-                        body: true,
-                        buttons: true,
-                        states: true,
-                        documents: true
-                    },
-                    this.fromOutline, // ??? was 'false' before Jul 10 2022
-                );
-            },
-            Constants.REFRESH_ALL_DEBOUNCE_DELAY
+        this.launchRefresh = debounce(
+            this._launchRefresh,
+            Constants.REFRESH_DEBOUNCE_DELAY,
+            { leading: false, trailing: true }
         );
+
     }
 
     /**
@@ -633,10 +608,10 @@ export class LeoIntegration {
                     }
 
                     q_leoID.then(() => {
-                        const w_opened: boolean = !!p_package.commander;
+                        this.serverHasOpenedFile = !!p_package.commander;
                         const w_lastFiles: string[] =
                             this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
-                        if (w_lastFiles.length && !w_opened) {
+                        if (w_lastFiles.length && !this.serverHasOpenedFile) {
                             // This context flag will trigger 'Connecting...' placeholder
                             utils.setContext(Constants.CONTEXT_FLAGS.AUTO_CONNECT, true);
 
@@ -649,9 +624,22 @@ export class LeoIntegration {
                             this.leoStates.leoStartupFinished = true;
                         }
 
-                        if (w_opened) {
-                            p_package.filename = p_package.commander!.fileName;
-                            this.setupOpenedLeoDocument(p_package, true);
+                        if (this.serverHasOpenedFile) {
+                            this.serverOpenedFileName = p_package.commander!.fileName;
+                            this.serverOpenedNode = p_package.node!;
+                            // * TODO : SHOULD LAUNCH REFRESH
+                            // this._setupOpenedLeoDocument();
+                            this.loadSearchSettings();
+                            this._setupRefresh(
+                                this.fromOutline,
+                                {
+                                    tree: true,
+                                    body: true,
+                                    documents: true,
+                                    buttons: true,
+                                    states: true,
+                                }
+                            );
                         }
 
                         if (!this.config.connectToServerAutomatically) {
@@ -886,9 +874,9 @@ export class LeoIntegration {
 
     /**
      * * Open Leo files found in "context.workspaceState.leoFiles"
-     * @returns promise that resolves with editor of last opened from the list, or rejects if empty
+     * @returns promise that resolves immediately, or rejects if empty, or files not opened.
      */
-    private _openLastFiles(): Promise<vscode.TextEditor> {
+    private _openLastFiles(): Promise<LeoBridgePackage> {
         // Loop through context.workspaceState.<something> and check if they exist: open them
         const w_lastFiles: string[] = this._context.workspaceState.get(Constants.LAST_FILES_KEY) || [];
         if (w_lastFiles.length) {
@@ -901,13 +889,47 @@ export class LeoIntegration {
                     this.leoStates.leoConnecting = false;
                     this.leoStates.leoBridgeReady = true;
                     this.leoStates.leoStartupFinished = true;
-                    return this.setupOpenedLeoDocument(p_openFileResult);
+
+                    if (p_openFileResult.total) {
+                        this.serverHasOpenedFile = true;
+                        this.serverOpenedFileName = p_openFileResult.filename!;
+                        this.serverOpenedNode = p_openFileResult.node!;
+
+                        this.loadSearchSettings();
+                        this._setupRefresh(
+                            this.fromOutline,
+                            {
+                                tree: true,
+                                body: true,
+                                documents: true,
+                                buttons: true,
+                                states: true,
+                            }
+                        );
+                        this.launchRefresh();
+                        return Promise.resolve(p_openFileResult);
+
+                    } else {
+                        this.serverHasOpenedFile = false;
+                        this.serverOpenedFileName = "";
+                        this.serverOpenedNode = undefined;
+
+                        this.launchRefresh();
+                        return Promise.reject('Recent files list is empty');
+
+                    }
+
+                    // * TODO : SHOULD LAUNCH REFRESH INSTEAD !
+                    // return this._setupOpenedLeoDocument(p_openFileResult);
+
                 },
                 (p_errorOpen) => {
                     // set connecting false
                     this.leoStates.leoConnecting = false;
                     this.leoStates.leoBridgeReady = true;
                     this.leoStates.leoStartupFinished = true;
+                    this.launchRefresh();
+
                     console.log('in .then not opened or already opened');
                     return Promise.reject(p_errorOpen);
                 }
@@ -956,7 +978,7 @@ export class LeoIntegration {
      * * Shows the recent Leo files list, choosing one will open it
      * @returns A promise that resolves when the a file is finally opened, rejected otherwise
      */
-    public showRecentLeoFiles(): Thenable<vscode.TextEditor | undefined> {
+    public showRecentLeoFiles(): Thenable<LeoBridgePackage | undefined> {
         const w_recentFiles: string[] =
             this._context.workspaceState.get(Constants.RECENT_FILES_KEY) || [];
         let q_chooseFile: Thenable<string | undefined>;
@@ -1020,7 +1042,7 @@ export class LeoIntegration {
                         this.leoStates.setLeoStateFlags(p_package.states);
                     }
                 });
-            this.refreshUndosPane();
+            this.refreshUndoPane();
         }
     }
 
@@ -1063,50 +1085,40 @@ export class LeoIntegration {
     /**
      * * Setup leoInteg's UI for having no opened Leo documents
      */
-    public setupNoOpenedLeoDocument(): void {
+    private _setupNoOpenedLeoDocument(): void {
         this.leoStates.fileOpenedReady = false;
         this._bodyTextDocument = undefined;
         this.lastSelectedNode = undefined;
         this._refreshOutline(false, RevealType.NoReveal);
         this.refreshDocumentsPane();
         this.refreshButtonsPane();
-        this.refreshUndosPane();
+        this.refreshUndoPane();
         this.closeBody();
     }
 
     /**
      * * A Leo file was opened: setup leoInteg's UI accordingly.
-     * @param p_openFileResult Returned info about currently opened and editing document
-     * @param p_asClient specifies its not the originator of the opened file in multiple user context
      * @return a promise that resolves to an opened body pane text editor
      */
-    public setupOpenedLeoDocument(
-        p_openFileResult: LeoBridgePackage,
-        p_asClient?: boolean
-    ): Promise<vscode.TextEditor> {
+    private _setupOpenedLeoDocument(): void {
         this._needLastSelectedRefresh = true;
-        const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node!, false); // Just to get gnx for the body's fist appearance
-        this.leoStates.leoOpenedFileName = p_openFileResult.filename!;
-
-        if (!p_asClient) {
-            // * If not unnamed file add to recent list & last opened list
-            this._addRecentAndLastFile(p_openFileResult.filename!);
+        // const w_selectedLeoNode = this.apToLeoNode(p_openFileResult.node!, false); // Just to get gnx for the body's fist appearance
+        this.leoStates.leoOpenedFileName = this.serverOpenedFileName;
+        // * Startup flag
+        if (!this.leoStates.fileOpenedReady) {
+            this.leoStates.fileOpenedReady = true;
         }
-
-        let q_switchTextEditor: Promise<vscode.TextEditor> | false = false;
-        // * Could be already opened, so perform 'switch body' as if another node was selected
-        if (this._bodyTextDocument && this.bodyUri) {
-
-            q_switchTextEditor = new Promise((p_resolve, p_reject) => {
-                this._switchBody(w_selectedLeoNode.gnx, false, true).then((p_te) => {
-                    p_resolve(p_te);
-                });
-            });
-
-        } else {
-            this.bodyUri = utils.strToLeoUri(w_selectedLeoNode.gnx);
-        }
-
+        this._setupRefresh(
+            false,
+            {
+                tree: true,
+                body: true,
+                states: true,
+                buttons: true,
+                documents: true
+            },
+            this.serverOpenedNode
+        );
         // * Start body pane system
         if (!this._bodyFileSystemStarted) {
             this._context.subscriptions.push(
@@ -1119,13 +1131,31 @@ export class LeoIntegration {
             this._bodyFileSystemStarted = true;
         }
 
-        // * Startup flag
-        if (!this.leoStates.fileOpenedReady) {
-            this.leoStates.fileOpenedReady = true;
+        // * ALL DONE IN LAUNCH-REFRESH NOW
+        /*
+        let q_switchTextEditor: Promise<vscode.TextEditor> | false = false;
+        // * Could be already opened, so perform 'switch body' as if another node was selected
+        if (this._bodyTextDocument && this.bodyUri) {
+
+            q_switchTextEditor = new Promise((p_resolve, p_reject) => {
+                this._switchBody(this.serverOpenedNode!.gnx, false, true).then((p_te) => {
+                    p_resolve(p_te);
+                });
+            });
+
+        } else {
+            this.bodyUri = utils.strToLeoUri(this.serverOpenedNode!.gnx);
         }
 
         // * Maybe first valid redraw of tree along with the selected node and its body
         this._refreshOutline(true, RevealType.RevealSelectFocus); // p_revealSelection flag set
+        this.refreshDocumentsPane();
+        this.refreshButtonsPane();
+        this.refreshUndoPane();
+        // Also refresh global states.
+        this._refreshType.states = true;
+        this.getStates();
+
 
         // * Maybe first StatusBar appearance
         this._leoStatusBar.update(true, 0, true);
@@ -1138,25 +1168,20 @@ export class LeoIntegration {
         this.sendConfigToServer(this.config.getConfig());
         // * Refresh Opened tree views
 
-
-        this.refreshDocumentsPane();
-        this.refreshButtonsPane();
-
-
-        this.refreshUndosPane();
         this.loadSearchSettings();
-
-        // Also refresh global states.
-        this._refreshType.states = true;
-        this.getStates();
-
-
         if (q_switchTextEditor) {
             return q_switchTextEditor;
         } else {
             // * Maybe first Body appearance
             return this.showBody(false);
         }
+        */
+
+        this._leoStatusBar.update(true, 0, true);
+        this._leoStatusBar.show(); // Just selected a node
+        this.sendConfigToServer(this.config.getConfig());
+        this.loadSearchSettings();
+
     }
 
     /**
@@ -1220,14 +1245,14 @@ export class LeoIntegration {
      * @param p_treeView Pointer to the treeview itself, either the standalone treeview or the one under the explorer
      */
     private _onChangeCollapsedState(
-        p_event: vscode.TreeViewExpansionEvent<LeoNode>,
+        p_event: vscode.TreeViewExpansionEvent<ArchivedPosition>,
         p_expand: boolean,
-        p_treeView: vscode.TreeView<LeoNode>
+        p_treeView: vscode.TreeView<ArchivedPosition>
     ): void {
         // * Expanding or collapsing via the treeview interface selects the node to mimic Leo
         this.triggerBodySave(true);
         if (p_treeView.selection[0] && p_treeView.selection[0] === p_event.element) {
-            // * This happens if the tree selection is the same as the expanded/collapsed node: Just have Leo do the same
+            // * This happens if the tree selection is already the same as the expanded/collapsed node
             // Pass
         } else {
             // * This part only happens if the user clicked on the arrow without trying to select the node
@@ -1236,7 +1261,7 @@ export class LeoIntegration {
         }
         this.sendAction(
             p_expand ? Constants.LEOBRIDGE.EXPAND_NODE : Constants.LEOBRIDGE.COLLAPSE_NODE,
-            utils.buildNodeCommandJson(p_event.element.apJson)
+            utils.buildNodeCommandJson(JSON.stringify(p_event.element))
         ).then(() => {
             if (this.config.leoTreeBrowse) {
                 this._refreshOutline(true, RevealType.RevealSelect);
@@ -1705,41 +1730,59 @@ export class LeoIntegration {
      * @param p_focusOutline Flag for focus to be placed in outline
      * @param p_refreshType Refresh flags for each UI part
      */
-    public _setupRefresh(p_focusOutline: boolean, p_refreshType: ReqRefresh): void {
+    public _setupRefresh(p_focusOutline: boolean, p_refreshType: ReqRefresh, p_node?: ArchivedPosition): void {
         // Set final "focus-placement" EITHER true or false
         this.fromOutline = p_focusOutline;
         // Set all properties WITHOUT clearing others. (ONLY 'true' properties)
         Object.assign(this._refreshType, p_refreshType);
+        if (p_node) {
+            this._refreshNode = p_node;
+        } else if (this._refreshType.tree) {
+            this._refreshNode = undefined;
+        }
     }
 
     /**
      * * Launches refresh for UI components and states
-     * @param p_refreshType choose to refresh the outline, or the outline and body pane along with it
-     * @param p_fromOutline Signifies that the focus was, and should be brought back to, the outline
-     * @param p_ap An archived position
      */
-    public launchRefresh(
-        p_refreshType: ReqRefresh,
-        p_fromOutline: boolean,
-        p_ap?: ArchivedPosition
-    ): void {
+    public async _launchRefresh(): Promise<unknown> {
+
+        // private _launchRefresh(
+        //     p_refreshType: ReqRefresh,
+        //     p_fromOutline: boolean,
+        //     p_ap?: ArchivedPosition
+        // ): void {
         // Set w_revealType, it will ultimately set this._revealType.
         // Used when finding the OUTLINE's selected node and setting or preventing focus into it
         // Set this._fromOutline. Used when finding the selected node and showing the BODY to set or prevent focus in it
-        this._refreshType = Object.assign({}, p_refreshType);
+        // this._refreshType = Object.assign({}, p_refreshType);
+
+        // check states for having at least a document opened
+        if (this.leoStates.leoBridgeReady && this.leoStates.fileOpenedReady) {
+            // Had some opened
+            if (!this.serverHasOpenedFile) {
+                return this._setupNoOpenedLeoDocument(); // All closed now!
+            }
+        }
+        if (this.leoStates.leoBridgeReady && !this.leoStates.fileOpenedReady) {
+            // Was all closed
+            if (this.serverHasOpenedFile) {
+                this._setupOpenedLeoDocument();
+                // Has a commander opened, but wait for UI!
+                await this.leoStates.qLastContextChange;
+            }
+        }
 
         let w_revealType: RevealType;
 
-        if (p_fromOutline) {
-            this.fromOutline = true;
+        if (this.fromOutline) {
             w_revealType = RevealType.RevealSelectFocus;
         } else {
-            this.fromOutline = false;
             w_revealType = RevealType.RevealSelect;
         }
 
         if (
-            p_ap &&
+            this._refreshNode &&
             this._refreshType.body &&
             this._bodyLastChangedDocument &&
             this._bodyLastChangedDocument.isDirty
@@ -1747,14 +1790,14 @@ export class LeoIntegration {
             // When this refresh is launched with 'refresh body' requested, we need to lose any pending edits and save on vscode's side.
             // do this only if gnx is different from what is coming from Leo in this refresh cycle
             if (
-                p_ap.gnx !== utils.leoUriToStr(this._bodyLastChangedDocument.uri) &&
+                this._refreshNode.gnx !== utils.leoUriToStr(this._bodyLastChangedDocument.uri) &&
                 !this._bodyLastChangedDocumentSaved
             ) {
                 this._bodyLastChangedDocument.save(); // Voluntarily save to 'clean' any pending body
                 this._bodyLastChangedDocumentSaved = true;
             }
 
-            if (p_ap.gnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)) {
+            if (this._refreshNode.gnx === utils.leoUriToStr(this._bodyLastChangedDocument.uri)) {
                 this._leoFileSystem.preventSaveToLeo = true;
                 this._bodyLastChangedDocument.save();
             }
@@ -1765,25 +1808,26 @@ export class LeoIntegration {
             // this._focusInterrupt = false; // TODO : Test if reverting this in _gotSelection is 'ok'
             w_revealType = RevealType.RevealSelect;
         }
+
         // * Either the whole tree refreshes, or a single tree node is revealed when just navigating
         if (this._refreshType.tree) {
             this._refreshType.tree = false;
+            this._refreshType.node = false; // Also clears node
             this._refreshOutline(true, w_revealType);
-        } else if (this._refreshType.node && p_ap) {
+        } else if (this._refreshType.node && this._refreshNode) {
             // * Force single node "refresh" by revealing it, instead of "refreshing" it
             this._refreshType.node = false;
-            const w_node = this.apToLeoNode(p_ap);
-            this.leoStates.setSelectedNodeFlags(w_node);
-            this._revealTreeViewNode(w_node, {
+            this.leoStates.setSelectedNodeFlags(this._refreshNode);
+            this._revealTreeViewNode(this._refreshNode, {
                 select: true,
                 focus: true, // FOCUS FORCED TO TRUE always leave focus on tree when navigating
             });
             if (this._refreshType.body) {
                 this._refreshType.body = false;
-                this._tryApplyNodeToBody(w_node, false, true); // ! NEEDS STACK AND THROTTLE!
+                this._tryApplyNodeToBody(this._refreshNode, false, true); // ! NEEDS STACK AND THROTTLE!
             }
         }
-        this.getStates();
+        return this.getStates();
     }
 
     /**
@@ -1794,9 +1838,10 @@ export class LeoIntegration {
      */
     private _refreshOutline(p_incrementTreeID: boolean, p_revealType?: RevealType): void {
         if (p_incrementTreeID) {
-            this._treeId++;
+            // this._treeId++;
+            this._leoTreeProvider.incTreeId();
         }
-        if (typeof p_revealType !== "undefined") {
+        if (p_revealType !== undefined && p_revealType.valueOf() >= this._revealType.valueOf()) {
             // To check if selected node should self-select while redrawing whole tree
             this._revealType = p_revealType; // To be read/cleared (in arrayToLeoNodesArray instead of directly by nodes)
         }
@@ -1831,10 +1876,10 @@ export class LeoIntegration {
      * @returns Thenable from the reveal tree node action, resolves directly if no tree visible
      */
     private _revealTreeViewNode(
-        p_leoNode: LeoNode,
+        p_leoNode: ArchivedPosition,
         p_options?: { select?: boolean; focus?: boolean; expand?: boolean | number }
     ): Thenable<void> {
-        let w_treeview: vscode.TreeView<LeoNode> | false = false;
+        let w_treeview: vscode.TreeView<ArchivedPosition> | false = false;
         if (this._leoTreeView.visible) {
             w_treeview = this._leoTreeView;
         }
@@ -1871,11 +1916,42 @@ export class LeoIntegration {
     }
 
     /**
+     * * Public method exposed as 'refreshDocumentsPane' setter/getter to refresh the documents pane
+     * Document Panel May be refreshed by other services (states service, ...)
+     */
+    private _refreshDocumentsPane(): void {
+        this._leoDocumentsProvider.refreshTreeRoot();
+    }
+
+    /**
+     * * Public method exposed as 'refreshButtonsPane' setter/getter to refresh the buttons pane
+     * Buttons Panel May be refreshed by other services (states service, ...)
+     */
+    private _refreshButtonsPane(): void {
+        this._leoButtonsProvider.refreshTreeRoot();
+    }
+
+    /**
+     * * Public method exposed as 'refreshGotoPane' setter/getter to refresh the Goto pane
+     * Goto Panel May be refreshed by other services (states service, ...)
+     */
+    private _refreshGotoPane(): void {
+        this._leoGotoProvider.refreshTreeRoot();
+    }
+
+    /**
+     * * Refreshes the undo pane
+     */
+    private _refreshUndoPane(): void {
+        this._leoUndosProvider.refreshTreeRoot();
+    }
+
+    /**
      * * Handle the selected node that was reached while converting received ap_nodes to LeoNodes
-     * @deprecated
      * @param p_node The selected node that was reached while receiving 'children' from tree view api implementing Leo's outline
      */
-    private _gotSelection(p_node: LeoNode): void {
+    /*
+    private _gotSelection(p_node: ArchivedPosition): void {
         // * Use the 'from outline' concept to decide if focus should be on body or outline after editing a headline
         let w_showBodyKeepFocus: boolean = this.fromOutline; // Will preserve focus where it is without forcing into the body pane if true
         if (this._focusInterrupt) {
@@ -1884,15 +1960,13 @@ export class LeoIntegration {
         }
         this._tryApplyNodeToBody(p_node, false, w_showBodyKeepFocus);
     }
-
+     */
     /**
      * * Handle the selected node that was reached while converting received ap_nodes.
      * @param p_element The "selected" ArchivedPosition element reached.
-     * @param p_node The LeoNode built from the AP element that was reached, used in vscode's tree.
      */
-    public gotSelectedNode(p_element: ArchivedPosition, p_node: LeoApOutlineNode): void {
-        // TODO : USE THIS INSTEAD !
-        /*
+    public gotSelectedNode(p_element: ArchivedPosition): void {
+
         if (this._revealType) {
             setTimeout(() => {
                 this._lastTreeView.reveal(p_element, {
@@ -1903,9 +1977,17 @@ export class LeoIntegration {
                 this._revealType = RevealType.NoReveal;
             }, 0);
         }
+
+        // Apply node to body pane
+        let w_showBodyKeepFocus: boolean = this.fromOutline; // Will preserve focus where it is without forcing into the body pane if true
+        if (this._focusInterrupt) {
+            this._focusInterrupt = false;
+            w_showBodyKeepFocus = true;
+        }
+        this._tryApplyNodeToBody(p_element, false, w_showBodyKeepFocus);
+
         // Set context flags
         this.leoStates.setSelectedNodeFlags(p_element);
-        */
     }
 
     /**
@@ -1927,12 +2009,12 @@ export class LeoIntegration {
 
     /**
      * * Converts an archived position object to a LeoNode instance
-     * @deprecated
      * @param p_ap The archived position to convert
      * @param p_revealSelected Flag that will trigger the node to reveal, select, and focus if its selected node in Leo
      * @param p_specificNode Other specific LeoNode to be used to override when revealing the the selected node is encountered
      * @returns The converted Leo Node (For tree provider usage)
      */
+    /*
     public apToLeoNode(
         p_ap: ArchivedPosition,
         p_revealSelected?: boolean,
@@ -1962,23 +2044,6 @@ export class LeoIntegration {
             }
         }
 
-        // ! TODO REPLACE ID WITH !
-
-        /**
-         * * Builds a unique Id from gnx and stack, plus collapsed state,
-         * for vscode to distinguish the collapsed state.
-         */
-        // private _buildId(p_position: Position, p_collapsed: number): string {
-        //     // concatenate gnx, stacks gnx's, and collapsible state number.
-        //     // (vscode uses id for collapsible state)
-        //     let w_stringId = this.treeId.toString() +
-        //         p_position.v.gnx + p_position.childIndex().toString() +
-        //         p_position.stack.map(p_stackEntry => p_stackEntry[0].gnx + p_stackEntry[1].toString()).join("");
-        //     // NOT NEEDED -> p_collapsed.toString(); // Added Uniqueness: VSCode's collapsible state in id
-        //     return w_stringId;
-        // }
-
-
         const w_leoNode = new LeoNode(
             p_ap.headline, // label-headline
             p_ap.gnx, // gnx
@@ -2001,13 +2066,13 @@ export class LeoIntegration {
         }
         return w_leoNode;
     }
-
+     */
     /**
      * * Reveals the node that was detected as being the selected one while converting from archived positions
      * Also select it, or focus on it too depending on global this._revealType variable
-     * @deprecated
      * @param p_leoNode The node that was detected as the selected node in Leo
      */
+    /*
     private _apToLeoNodeConvertReveal(p_leoNode: LeoNode): void {
         this.leoStates.setSelectedNodeFlags(p_leoNode);
         // First setup flags for selecting and focusing based on the current reveal type needed
@@ -2031,12 +2096,15 @@ export class LeoIntegration {
                 );
         });
     }
+     */
 
     /**
      * * Converts an array of 'ap' to an array of leoNodes.  This is used in 'getChildren' of leoOutline.ts
      * @param p_array Array of archived positions to be converted to leoNodes for the vscode treeview
      * @returns An array of converted Leo Nodes (For tree provider usage)
      */
+
+    /*
     public arrayToLeoNodesArray(p_array: ArchivedPosition[]): LeoNode[] {
         const w_leoNodesArray: LeoNode[] = [];
         for (let w_apData of p_array) {
@@ -2045,6 +2113,7 @@ export class LeoIntegration {
         }
         return w_leoNodesArray;
     }
+     */
 
     /**
      * * Makes sure the body now reflects the selected node.
@@ -2055,12 +2124,12 @@ export class LeoIntegration {
      * @param p_force_open Flag to force opening the body pane editor
      * @returns a text editor of the p_node parameter's gnx (As 'leo' file scheme)
      */
-    private _tryApplyNodeToBody(
-        p_node: LeoNode,
+    private async _tryApplyNodeToBody(
+        p_node: ArchivedPosition,
         p_aside: boolean,
         p_showBodyKeepFocus: boolean,
         p_force_open?: boolean
-    ): Thenable<vscode.TextEditor> {
+    ): Promise<vscode.TextEditor> {
         // console.log('try to apply node -> ', p_node.gnx);
 
         this.lastSelectedNode = p_node; // Set the 'lastSelectedNode' this will also set the 'marked' node context
@@ -2431,7 +2500,7 @@ export class LeoIntegration {
 
                     q_bodyStates = this.sendAction(
                         Constants.LEOBRIDGE.GET_BODY_STATES,
-                        utils.buildNodeCommandJson(this.lastSelectedNode!.apJson)
+                        utils.buildNodeCommandJson(JSON.stringify(this.lastSelectedNode))
                     );
 
                     q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
@@ -2459,21 +2528,31 @@ export class LeoIntegration {
                             this.lastSelectedNode &&
                             utils.leoUriToStr(p_document.uri) !== this.lastSelectedNode.gnx) {
 
-                            // * check ONCE and retry.
+                            // * check ONCE(?) and retry.
                             // IF FLAG ALREADY SET ERROR MESSAGE & RETURN
                             if (this._needRefresh) {
+
+                                // * TODO MAYBE RETRY MORE THAN ONCE !
                                 vscode.window.showInformationMessage("Leo Refresh Failed");
                                 this._needRefresh = false; // reset flag
+
                             } else {
                                 // SET FLAG AND LAUNCH FULL REFRESH
                                 this._needRefresh = true;
                                 this.sendAction(Constants.LEOBRIDGE.DO_NOTHING).then((p_package) => {
-                                    // refresh and reveal selection
-                                    this.launchRefresh(
-                                        { tree: true, body: true, states: true, buttons: true, documents: true },
+                                    this._setupRefresh(
                                         !!p_preserveFocus, // ??? was 'false' before Jul 10 2022
+                                        {
+                                            tree: true,
+                                            body: true,
+                                            states: true,
+                                            buttons: true,
+                                            documents: true
+                                        },
                                         p_package.node
                                     );
+                                    // refresh and reveal selection
+                                    this.launchRefresh();
                                 });
                             }
 
@@ -2648,7 +2727,7 @@ export class LeoIntegration {
         let q_bodyStates: Promise<LeoBridgePackage> | undefined;
         q_bodyStates = this.sendAction(
             Constants.LEOBRIDGE.GET_BODY_STATES,
-            utils.buildNodeCommandJson(this.lastSelectedNode!.apJson)
+            utils.buildNodeCommandJson(JSON.stringify(this.lastSelectedNode!))
         );
         q_bodyStates.then((p_bodyStates: LeoBridgePackage) => {
             let w_language: string = p_bodyStates.language!;
@@ -2767,7 +2846,7 @@ export class LeoIntegration {
      * @returns a promise with the package gotten back from Leo when asked to select the tree node
      */
     public selectTreeNode(
-        p_node: LeoNode,
+        p_node: ArchivedPosition,
         p_internalCall?: boolean,
         p_aside?: boolean
     ): Promise<LeoBridgePackage | vscode.TextEditor> {
@@ -2794,7 +2873,7 @@ export class LeoIntegration {
         // * Set selected node in Leo via leoBridge
         const q_setSelectedNode = this.sendAction(
             Constants.LEOBRIDGE.SET_SELECTED_NODE,
-            utils.buildNodeCommandJson(p_node.apJson)
+            utils.buildNodeCommandJson(JSON.stringify(p_node))
         ).then((p_setSelectedResult) => {
             if (!p_internalCall) {
                 this._refreshType.states = true;
@@ -2842,7 +2921,7 @@ export class LeoIntegration {
      */
     public changeMark(
         p_isMark: boolean,
-        p_node?: LeoNode,
+        p_node?: ArchivedPosition,
         p_fromOutline?: boolean
     ): Promise<LeoBridgePackage> {
         // No need to wait for body-save trigger for marking/un-marking a node
@@ -2869,7 +2948,7 @@ export class LeoIntegration {
      * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
      */
     public editHeadline(
-        p_node?: LeoNode,
+        p_node?: ArchivedPosition,
         p_fromOutline?: boolean
     ): Promise<LeoBridgePackage | undefined> {
         return this._isBusyTriggerSave(false, true)
@@ -2880,8 +2959,8 @@ export class LeoIntegration {
                 if (p_node) {
                     this._headlineInputOptions.prompt =
                         Constants.USER_MESSAGES.PROMPT_EDIT_HEADLINE;
-                    this._renamingHeadline = p_node.label;
-                    this._headlineInputOptions.value = p_node.label; // preset input pop up
+                    this._renamingHeadline = p_node.headline;
+                    this._headlineInputOptions.value = p_node.headline; // preset input pop up
                     return vscode.window.showInputBox(this._headlineInputOptions);
                 } else {
                     return Promise.reject('No node selected');
@@ -2890,7 +2969,7 @@ export class LeoIntegration {
             .then((p_newHeadline) => {
                 if ((typeof p_newHeadline !== "undefined") && p_newHeadline !== this._renamingHeadline) {
                     // Is different!
-                    p_node!.label = p_newHeadline; // ! When labels change, ids will change and its selection and expansion states cannot be kept stable anymore.
+                    p_node!.headline = p_newHeadline; // ! When labels change, ids will change and its selection and expansion states cannot be kept stable anymore.
                     const q_commandResult = this.nodeCommand({
                         action: Constants.LEOBRIDGE.SET_HEADLINE,
                         node: p_node,
@@ -2918,7 +2997,7 @@ export class LeoIntegration {
      * @returns Promise of LeoBridgePackage from execution on leoBridgeServer
      */
     public insertNode(
-        p_node?: LeoNode,
+        p_node?: ArchivedPosition,
         p_fromOutline?: boolean,
         p_asChild?: boolean,
         p_interrupt?: boolean
@@ -2936,10 +3015,17 @@ export class LeoIntegration {
             return new Promise<LeoBridgePackage>((p_resolve, p_reject) => {
                 vscode.window.showInputBox(this._headlineInputOptions).then((p_newHeadline) => {
                     // * if node has child and is expanded: turn p_asChild to true!
-                    if (p_node && p_node.collapsibleState === vscode.TreeItemCollapsibleState.Expanded) {
+                    if (
+                        p_node &&
+                        p_node.expanded // === vscode.TreeItemCollapsibleState.Expanded
+                    ) {
                         p_asChild = true;
                     }
-                    if (!p_node && this.lastSelectedNode && this.lastSelectedNode.collapsibleState === vscode.TreeItemCollapsibleState.Expanded) {
+                    if (
+                        !p_node &&
+                        this.lastSelectedNode &&
+                        this.lastSelectedNode.expanded //  === vscode.TreeItemCollapsibleState.Expanded
+                    ) {
                         p_asChild = true;
                     }
                     let w_action = p_newHeadline
@@ -2965,7 +3051,7 @@ export class LeoIntegration {
     }
 
     public copyNode(
-        p_node?: LeoNode,
+        p_node?: ArchivedPosition,
         p_fromOutline?: boolean
     ): Promise<LeoBridgePackage> {
         return this._isBusyTriggerSave(false, true)
@@ -2995,7 +3081,7 @@ export class LeoIntegration {
     }
 
     public cutNode(
-        p_node?: LeoNode,
+        p_node?: ArchivedPosition,
         p_fromOutline?: boolean
     ): Promise<LeoBridgePackage> {
         return this._isBusyTriggerSave(false, true)
@@ -3023,7 +3109,7 @@ export class LeoIntegration {
     }
 
     public pasteNode(
-        p_node?: LeoNode,
+        p_node?: ArchivedPosition,
         p_fromOutline?: boolean
     ): Thenable<LeoBridgePackage> {
         return this._isBusyTriggerSave(false, true).then(() => {
@@ -3049,7 +3135,7 @@ export class LeoIntegration {
     }
 
     public pasteAsCloneNode(
-        p_node?: LeoNode,
+        p_node?: ArchivedPosition,
         p_fromOutline?: boolean
     ): Thenable<LeoBridgePackage> {
         return this._isBusyTriggerSave(false, true).then(() => {
@@ -3109,16 +3195,17 @@ export class LeoIntegration {
                             Constants.LEOBRIDGE.SET_UA_MEMBER,
                             JSON.stringify({ name: w_name, value: p_uaVal })
                         ).then((p_resultTag: LeoBridgePackage) => {
-                            this.launchRefresh(
+                            this._setupRefresh(
+                                false,
                                 {
                                     tree: true,
                                     body: true,
                                     documents: false,
                                     buttons: false,
                                     states: true,
-                                },
-                                false
+                                }
                             );
+                            this.launchRefresh();
                         });
 
                     });
@@ -3183,16 +3270,17 @@ export class LeoIntegration {
                         Constants.LEOBRIDGE.CHAPTER_SELECT,
                         JSON.stringify({ name: p_picked.label })
                     ).then((p_resultTag: LeoBridgePackage) => {
-                        this.launchRefresh(
+                        this._setupRefresh(
+                            false,
                             {
                                 tree: true,
                                 body: true,
                                 documents: false,
                                 buttons: false,
                                 states: true,
-                            },
-                            false
+                            }
                         );
+                        this.launchRefresh();
                     });
                 } else {
                     // Canceled
@@ -3366,7 +3454,9 @@ export class LeoIntegration {
                             // tree
                             w_focusOnOutline = true;
                         }
-                        this.launchRefresh(
+
+                        this._setupRefresh(
+                            w_focusOnOutline,
                             {
                                 tree: true,
                                 body: true,
@@ -3375,8 +3465,8 @@ export class LeoIntegration {
                                 buttons: false,
                                 states: true,
                             },
-                            w_focusOnOutline
                         );
+                        this.launchRefresh();
                     }
                 });
         }
@@ -3472,7 +3562,8 @@ export class LeoIntegration {
                         // tree
                         w_focusOnOutline = true;
                     }
-                    this.launchRefresh(
+                    this._setupRefresh(
+                        w_focusOnOutline,
                         {
                             tree: true,
                             body: true,
@@ -3481,8 +3572,8 @@ export class LeoIntegration {
                             buttons: false,
                             states: true,
                         },
-                        w_focusOnOutline
                     );
+                    this.launchRefresh();
                 }
             });
     }
@@ -3511,7 +3602,8 @@ export class LeoIntegration {
                         w_focusOnOutline = true;
                     }
                     this.loadSearchSettings();
-                    this.launchRefresh(
+                    this._setupRefresh(
+                        w_focusOnOutline,
                         {
                             tree: true,
                             body: true,
@@ -3520,8 +3612,8 @@ export class LeoIntegration {
                             buttons: false,
                             states: true,
                         },
-                        w_focusOnOutline
                     );
+                    this.launchRefresh();
                 }
             });
     }
@@ -3550,7 +3642,8 @@ export class LeoIntegration {
                         // tree
                         w_focusOnOutline = true;
                     }
-                    this.launchRefresh(
+                    this._setupRefresh(
+                        w_focusOnOutline,
                         {
                             tree: true,
                             body: true,
@@ -3558,9 +3651,9 @@ export class LeoIntegration {
                             documents: false,
                             buttons: false,
                             states: true,
-                        },
-                        w_focusOnOutline
+                        }
                     );
+                    this.launchRefresh();
                 }
             });
     }
@@ -3611,10 +3704,17 @@ export class LeoIntegration {
                                 w_focusOnOutline = true;
                             }
                             this.loadSearchSettings();
-                            this.launchRefresh(
-                                { tree: true, body: true, documents: false, buttons: false, states: true },
-                                w_focusOnOutline
+                            this._setupRefresh(
+                                w_focusOnOutline,
+                                {
+                                    tree: true,
+                                    body: true,
+                                    documents: false,
+                                    buttons: false,
+                                    states: true
+                                }
                             );
+                            this.launchRefresh();
                         });
                 }
             });
@@ -3673,10 +3773,17 @@ export class LeoIntegration {
                                 w_focusOnOutline = true;
                             }
                             this.loadSearchSettings();
-                            this.launchRefresh(
-                                { tree: true, body: true, documents: false, buttons: false, states: true },
-                                w_focusOnOutline
+                            this._setupRefresh(
+                                w_focusOnOutline,
+                                {
+                                    tree: true,
+                                    body: true,
+                                    documents: false,
+                                    buttons: false,
+                                    states: true
+                                }
                             );
+                            this.launchRefresh();
                         });
                 }
             });
@@ -3804,16 +3911,17 @@ export class LeoIntegration {
                             if (!p_resultGoto.found) {
                                 // Not found
                             }
-                            this.launchRefresh(
+                            this._setupRefresh(
+                                false,
                                 {
                                     tree: true,
                                     body: true,
                                     documents: false,
                                     buttons: false,
                                     states: true,
-                                },
-                                false
+                                }
                             );
+                            this.launchRefresh();
                         });
                     }
                 }
@@ -3844,16 +3952,17 @@ export class LeoIntegration {
                         Constants.LEOBRIDGE.TAG_CHILDREN,
                         JSON.stringify({ tag: p_inputResult })
                     ).then((p_resultTag: LeoBridgePackage) => {
-                        this.launchRefresh(
+                        this._setupRefresh(
+                            false,
                             {
                                 tree: true,
                                 body: false,
                                 documents: false,
                                 buttons: false,
                                 states: true,
-                            },
-                            false
+                            }
                         );
+                        this.launchRefresh();
                     });
                 }
             });
@@ -3884,16 +3993,17 @@ export class LeoIntegration {
                         Constants.LEOBRIDGE.TAG_NODE,
                         JSON.stringify({ tag: p_inputResult })
                     ).then((p_resultTag: LeoBridgePackage) => {
-                        this.launchRefresh(
+                        this._setupRefresh(
+                            false,
                             {
                                 tree: true,
                                 body: false,
                                 documents: false,
                                 buttons: false,
                                 states: true,
-                            },
-                            false
+                            }
                         );
+                        this.launchRefresh();
                     });
                 }
             });
@@ -3903,9 +4013,9 @@ export class LeoIntegration {
      * * Remove single Tag on selected node
      */
     public removeTag(): void {
-        console.log('removeTag', this.lastSelectedNode?.tags);
+        console.log('removeTag', this.lastSelectedNode?.nodeTags);
 
-        if (this.lastSelectedNode && this.lastSelectedNode.tags) {
+        if (this.lastSelectedNode && this.lastSelectedNode.nodeTags) {
             this.triggerBodySave(false)
                 .then((p_saveResult) => {
                     return this.sendAction(
@@ -3948,21 +4058,22 @@ export class LeoIntegration {
                             Constants.LEOBRIDGE.REMOVE_TAG,
                             JSON.stringify({ tag: p_inputResult.trim() })
                         ).then((p_resultTag: LeoBridgePackage) => {
-                            this.launchRefresh(
+                            this._setupRefresh(
+                                false,
                                 {
                                     tree: true,
                                     body: false,
                                     documents: false,
                                     buttons: false,
                                     states: true,
-                                },
-                                false
+                                }
                             );
+                            this.launchRefresh();
                         });
                     }
                 });
         } else if (this.lastSelectedNode) {
-            vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.label);
+            vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.headline);
         } else {
             return;
         }
@@ -3973,26 +4084,27 @@ export class LeoIntegration {
      * * Remove all tags on selected node
      */
     public removeTags(): void {
-        if (this.lastSelectedNode && this.lastSelectedNode.tags) {
+        if (this.lastSelectedNode && this.lastSelectedNode.nodeTags) {
             this.triggerBodySave(false)
                 .then((p_saveResult: boolean) => {
                     this.sendAction(
                         Constants.LEOBRIDGE.REMOVE_TAGS
                     ).then((p_resultTag: LeoBridgePackage) => {
-                        this.launchRefresh(
+                        this._setupRefresh(
+                            false,
                             {
                                 tree: true,
                                 body: false,
                                 documents: false,
                                 buttons: false,
                                 states: true,
-                            },
-                            false
+                            }
                         );
+                        this.launchRefresh();
                     });
                 });
         } else if (this.lastSelectedNode) {
-            vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.label);
+            vscode.window.showInformationMessage("No tags on node: " + this.lastSelectedNode.headline);
         } else {
             return;
         }
@@ -4019,16 +4131,17 @@ export class LeoIntegration {
                         if (!p_resultFind.found) {
                             // Not found
                         }
-                        this.launchRefresh(
+                        this._setupRefresh(
+                            false,
                             {
                                 tree: true,
                                 body: true,
                                 documents: false,
                                 buttons: false,
                                 states: true,
-                            },
-                            false
+                            }
                         );
+                        this.launchRefresh();
                     });
                 }
             });
@@ -4213,9 +4326,9 @@ export class LeoIntegration {
 
     /**
      * * Show switch document 'QuickPick' dialog and switch file if selection is made, or just return if no files are opened.
-     * @returns A promise that resolves with a textEditor of the selected node's body from the newly selected document
+     * @returns A promise that resolves with a LeoBridgePackage if document switched, or undefined if no switch/canceled.
      */
-    public switchLeoFile(): Promise<vscode.TextEditor | undefined> {
+    public switchLeoFile(): Promise<LeoBridgePackage | undefined> {
         return this._isBusyTriggerSave(true, true)
             .then((p_saveResult) => {
                 return this.sendAction(Constants.LEOBRIDGE.GET_OPENED_FILES);
@@ -4261,7 +4374,7 @@ export class LeoIntegration {
      * @param p_index position of the opened Leo document in the document array
      * @returns A promise that resolves with a textEditor of the selected node's body from the newly opened document
      */
-    public selectOpenedLeoDocument(p_index: number): Promise<vscode.TextEditor> {
+    public selectOpenedLeoDocument(p_index: number): Promise<LeoBridgePackage> {
         return this._isBusyTriggerSave(true, true)
             .then((p_saveResult) => {
                 return this.sendAction(
@@ -4271,9 +4384,19 @@ export class LeoIntegration {
             })
             .then((p_openFileResult: LeoBridgePackage) => {
                 // Like we just opened or made a new file
-                if (p_openFileResult.filename || p_openFileResult.filename === "") {
-                    return this.setupOpenedLeoDocument(p_openFileResult);
+                if (p_openFileResult.total) {
+                    // * TODO : LAUNCH REFRESH INSTEAD
+
+                    this.serverHasOpenedFile = true;
+                    this.serverOpenedFileName = p_openFileResult.filename!;
+                    this.serverOpenedNode = p_openFileResult.node!;
+
+                    // this._setupOpenedLeoDocument(p_openFileResult);
+                    return p_openFileResult; //
                 } else {
+                    this.serverHasOpenedFile = false;
+                    this.serverOpenedFileName = "";
+                    this.serverOpenedNode = undefined;
                     console.log('Select Opened Leo File Error');
                     return Promise.reject('Select Opened Leo File Error');
                 }
@@ -4311,21 +4434,27 @@ export class LeoIntegration {
                 // Has a total member: closed file
                 if (p_tryCloseResult.total || p_tryCloseResult.total === 0) {
                     this._removeLastFile(w_removeLastFileName);
-                    if (p_tryCloseResult.total === 0) {
-                        this.setupNoOpenedLeoDocument();
-                    } else {
+                    if (p_tryCloseResult.total) {
+                        // Still has opened Leo document(s)
                         this.loadSearchSettings();
-                        this.launchRefresh(
+                        this._setupRefresh(
+                            false,
                             {
                                 tree: true,
                                 body: true,
                                 documents: true,
                                 buttons: true,
                                 states: true,
-                            },
-                            false
+                            }
                         );
+                    } else {
+                        this.serverHasOpenedFile = false;
+                        this.serverOpenedFileName = "";
+                        this.serverOpenedNode = undefined;
+                        // this._setupNoOpenedLeoDocument();
                     }
+                    // Start refresh either way: opened/no opened is set in refresh.
+                    this.launchRefresh();
                     return Promise.resolve(true);
                 } else {
                     // No total member: did not close file
@@ -4392,21 +4521,27 @@ export class LeoIntegration {
                             if (p_closeResult) {
                                 // * back from CLOSE_FILE action, the last that can be performed (after saving if dirty or not)
                                 this._removeLastFile(w_removeLastFileName);
-                                if (p_closeResult && p_closeResult.total === 0) {
-                                    this.setupNoOpenedLeoDocument();
-                                } else {
+                                if (p_closeResult && p_closeResult.total) {
+                                    // Still has opened Leo document(s)
                                     this.loadSearchSettings();
-                                    this.launchRefresh(
+                                    this._setupRefresh(
+                                        false,
                                         {
                                             tree: true,
                                             body: true,
                                             documents: true,
                                             buttons: true,
                                             states: true,
-                                        },
-                                        false
+                                        }
                                     );
+                                } else {
+                                    this.serverHasOpenedFile = false;
+                                    this.serverOpenedFileName = "";
+                                    this.serverOpenedNode = undefined;
+                                    // this._setupNoOpenedLeoDocument();
                                 }
+                                // * Refresh either way.
+                                this.launchRefresh();
                                 return Promise.resolve(true);
                             }
                             // Canceled
@@ -4421,15 +4556,37 @@ export class LeoIntegration {
      * * If not shown already, it also shows the outline, body and log panes along with leaving focus in the outline
      * @returns A promise that resolves with a textEditor of the new file
      */
-    public newLeoFile(): Promise<vscode.TextEditor> {
+    public newLeoFile(): Promise<LeoBridgePackage> {
         return this._isBusyTriggerSave(true, true)
             .then((p_saveResult) => {
                 return this.sendAction(Constants.LEOBRIDGE.OPEN_FILE, JSON.stringify({ filename: "" }));
             })
             .then((p_openFileResult: LeoBridgePackage) => {
-                if (p_openFileResult.filename || p_openFileResult.filename === "") {
-                    return this.setupOpenedLeoDocument(p_openFileResult);
+                if (p_openFileResult.total) {
+                    this.serverHasOpenedFile = true;
+                    this.serverOpenedFileName = p_openFileResult.filename!;
+                    this.serverOpenedNode = p_openFileResult.node!;
+
+                    this.loadSearchSettings();
+                    this._setupRefresh(
+                        this.fromOutline,
+                        {
+                            tree: true,
+                            body: true,
+                            documents: true,
+                            buttons: true,
+                            states: true,
+                        }
+                    );
+                    this.launchRefresh();
+                    return p_openFileResult;
+                    // * TODO : SHOULD LAUNCH REFRESH INSTEAD
+                    // return this._setupOpenedLeoDocument(p_openFileResult);
                 } else {
+                    this.serverHasOpenedFile = false;
+                    this.serverOpenedFileName = "";
+                    this.serverOpenedNode = undefined;
+                    this.launchRefresh();
                     return Promise.reject('New Leo File Error');
                 }
             });
@@ -4441,7 +4598,7 @@ export class LeoIntegration {
      * @param p_leoFileUri optional uri for specifying a file, if missing, a dialog will open
      * @returns A promise that resolves with a textEditor of the chosen file
      */
-    public openLeoFile(p_leoFileUri?: vscode.Uri): Promise<vscode.TextEditor | undefined> {
+    public openLeoFile(p_leoFileUri?: vscode.Uri): Promise<LeoBridgePackage | undefined> {
         return this._isBusyTriggerSave(true, true)
             .then((p_saveResult) => {
                 let q_openedFile: Promise<LeoBridgePackage | undefined>; // Promise for opening a file
@@ -4473,13 +4630,40 @@ export class LeoIntegration {
             .then(
                 (p_openFileResult: LeoBridgePackage | undefined) => {
                     if (p_openFileResult) {
-                        return this.setupOpenedLeoDocument(p_openFileResult);
+                        if (p_openFileResult.total) {
+                            this.serverHasOpenedFile = true;
+                            this.serverOpenedFileName = p_openFileResult.filename!;
+                            this.serverOpenedNode = p_openFileResult.node!;
+                            this._addRecentAndLastFile(this.serverOpenedFileName);
+
+                            this.loadSearchSettings();
+                            this._setupRefresh(
+                                this.fromOutline,
+                                {
+                                    tree: true,
+                                    body: true,
+                                    documents: true,
+                                    buttons: true,
+                                    states: true,
+                                }
+                            );
+                            // * TODO : SHOULD LAUNCH REFRESH INSTEAD
+                            // return this._setupOpenedLeoDocument(p_openFileResult);
+                        } else {
+                            this.serverHasOpenedFile = false;
+                            this.serverOpenedFileName = "";
+                            this.serverOpenedNode = undefined;
+                        }
+                        this.launchRefresh();
+
+                        return p_openFileResult;
                     } else {
-                        return Promise.resolve(undefined);
+                        return Promise.resolve(undefined); // User cancelled chooser.
                     }
                 },
                 (p_errorOpen) => {
-                    console.log('in .then not opened or already opened'); // TODO : IS REJECTION BEHAVIOR NECESSARY HERE TOO?
+                    // TODO : IS REJECTION BEHAVIOR NECESSARY HERE TOO?
+                    console.log('in .then not opened or already opened');
                     return Promise.reject(p_errorOpen);
                 }
             );
@@ -4522,16 +4706,17 @@ export class LeoIntegration {
             .then(
                 (p_importFileResult: LeoBridgePackage | undefined) => {
                     if (p_importFileResult) {
-                        return this.launchRefresh(
+                        this._setupRefresh(
+                            false,
                             {
                                 tree: true,
                                 body: true,
                                 documents: true,
                                 buttons: false,
                                 states: true,
-                            },
-                            false
+                            }
                         );
+                        return this.launchRefresh();
                     } else {
                         return Promise.resolve(undefined);
                     }
@@ -4604,7 +4789,18 @@ export class LeoIntegration {
             })
             .then((p_package) => {
                 // refresh and reveal selection
-                this.launchRefresh({ tree: true, body: true, states: true, buttons: true, documents: true }, false, p_package.node);
+                this._setupRefresh(
+                    false,
+                    {
+                        tree: true,
+                        body: true,
+                        states: true,
+                        buttons: true,
+                        documents: true
+                    },
+                    p_package.node
+                );
+                this.launchRefresh();
                 return Promise.resolve(true); // TODO launchRefresh should be a returned promise
             });
     }
@@ -4662,7 +4858,18 @@ export class LeoIntegration {
             })
             .then((p_package) => {
                 // refresh and reveal selection
-                this.launchRefresh({ tree: true, body: true, states: true, buttons: false, documents: false }, false, p_package.node);
+                this._setupRefresh(
+                    false,
+                    {
+                        tree: true,
+                        body: true,
+                        states: true,
+                        buttons: false,
+                        documents: false
+                    },
+                    p_package.node
+                );
+                this.launchRefresh();
                 return Promise.resolve(true); // TODO launchRefresh should be a returned promise
             });
     }
@@ -4681,7 +4888,13 @@ export class LeoIntegration {
                 );
             })
             .then((p_removeButtonResult: LeoBridgePackage) => {
-                this.launchRefresh({ buttons: true }, false);
+                this._setupRefresh(
+                    false,
+                    {
+                        buttons: true
+                    }
+                );
+                this.launchRefresh();
                 return Promise.resolve(true); // TODO launchRefresh should be a returned promise
             });
     }
@@ -4703,7 +4916,16 @@ export class LeoIntegration {
             action,
             JSON.stringify({ repeat: repeat })
         ).then(p_package => {
-            this.launchRefresh({ tree: true, body: true, states: true, buttons: true, }, true);
+            this._setupRefresh(
+                true,
+                {
+                    tree: true,
+                    body: true,
+                    states: true,
+                    buttons: true,
+                }
+            );
+            this.launchRefresh();
             return p_package;
         });
 

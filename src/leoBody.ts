@@ -266,15 +266,16 @@ export class LeoBodyProvider implements vscode.FileSystemProvider {
         this._leoIntegration.sendAction(Constants.LEOBRIDGE.DO_NOTHING)
             .then((p_package) => {
                 // refresh and reveal selection
-                const w_node = this._leoIntegration.apToLeoNode(p_package.node!);
+                const w_node = p_package.node!; // this._leoIntegration.apToLeoNode(p_package.node!);
                 this._leoIntegration.lastSelectedNode = w_node;
                 this._leoIntegration.showOutline();
                 // ! maybe overkill
-                this._leoIntegration.launchRefresh(
+                this._leoIntegration._setupRefresh(
+                    this._leoIntegration.fromOutline, // ??? was 'false' before Jul 10 2022,
                     { tree: true, body: true, states: true, buttons: true, documents: true },
-                    this._leoIntegration.fromOutline, // ??? was 'false' before Jul 10 2022
                     p_package.node
                 );
+                this._leoIntegration.launchRefresh();
             });
     }
 
